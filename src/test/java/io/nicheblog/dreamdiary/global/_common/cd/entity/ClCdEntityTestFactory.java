@@ -19,7 +19,7 @@ public class ClCdEntityTestFactory {
     /**
      * 테스트용 분류 코드 Entity 생성
      */
-    public static ClCdEntity createClCd() throws Exception {
+    public static ClCdEntity create() throws Exception {
         return ClCdEntity.builder()
                 .clCd(TestConstant.TEST_CL_CD)
                 .clCdNm(TestConstant.TEST_CL_CD_NM)

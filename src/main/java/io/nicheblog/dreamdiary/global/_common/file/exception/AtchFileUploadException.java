@@ -1,8 +1,5 @@
 package io.nicheblog.dreamdiary.global._common.file.exception;
 
-import java.util.HashMap;
-import java.util.List;
-
 /**
  * AtchFileUploadException
  * <pre>

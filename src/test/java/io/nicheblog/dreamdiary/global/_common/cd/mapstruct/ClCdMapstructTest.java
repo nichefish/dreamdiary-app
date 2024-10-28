@@ -34,7 +34,7 @@ class ClCdMapstructTest {
     @Test
     void testToDto_checkBasic() throws Exception {
         // Given::
-        ClCdEntity clCdEntity = ClCdEntityTestFactory.createClCd();
+        ClCdEntity clCdEntity = ClCdEntityTestFactory.create();
         // 글분류 코드
         clCdEntity.setClCtgrCd(TestConstant.TEST_CL_CTGR_CD);
 
@@ -42,12 +42,39 @@ class ClCdMapstructTest {
         ClCdDto dto = clCdMapstruct.toDto(clCdEntity);
 
         // Then::
-        assertNotNull(dto);
-        assertEquals(dto.getClCd(), TestConstant.TEST_CL_CD);
-        assertEquals(dto.getClCdNm(), TestConstant.TEST_CL_CD_NM);
-        assertEquals(dto.getDc(), TestConstant.TEST_DC);
+        assertNotNull(dto, "변환된 dto는 null일 수 없습니다.");
+        assertEquals(TestConstant.TEST_CL_CD, dto.getClCd(), "분류 코드 매핑이 제대로 이루어지지 않았습니다.");
+        assertEquals(TestConstant.TEST_CL_CD_NM, dto.getClCdNm(), "분류 코드명 매핑이 제대로 이루어지지 않았습니다.");
+        assertEquals(TestConstant.TEST_DC, dto.getDc(), "설명 코드명 매핑이 제대로 이루어지지 않았습니다.");
         // 글분류 코드
-        assertEquals(dto.getClCtgrCd(), TestConstant.TEST_CL_CTGR_CD);
+        assertEquals(TestConstant.TEST_CL_CTGR_CD, dto.getClCtgrCd(), "글분류 코드 매핑이 제대로 이루어지지 않았습니다.");
+    }
+
+    /**
+     * entity -> dto 변환 검증 :: 등록자/수정자 정보
+     */
+    @Test
+    void testToDto_checkAuditor() throws Exception {
+        // Given::
+        ClCdEntity clCdEntity = ClCdEntityTestFactory.create();
+        // 등록자
+        BaseEntityTestFactoryHelper.setRegstrInfo(clCdEntity);
+        // 수정자
+        BaseEntityTestFactoryHelper.setMdfusrInfo(clCdEntity);
+
+        // When::
+        ClCdDto dto = clCdMapstruct.toDto(clCdEntity);
+
+        // Then::
+        assertNotNull(dto);
+        // 등록자
+        assertEquals(TestConstant.TEST_REGSTR_ID, dto.getRegstrId(), "등록자 ID가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_REGSTR_NM, dto.getRegstrNm(), "등록자 이름이 제대로 매핑되지 않았습니다.");
+        assertEquals("2000-01-01 00:00:00", dto.getRegDt(), "등록일시가 제대로 매핑되지 않았습니다.");
+        // 수정자
+        assertEquals(TestConstant.TEST_MDFUSR_ID, dto.getMdfusrId(), "수정자 ID가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_MDFUSR_NM, dto.getMdfusrNm(), "수정자 이름이 제대로 매핑되지 않았습니다.");
+        assertEquals("2000-01-01 00:00:00", dto.getMdfDt(), "수정일시가 제대로 매핑되지 않았습니다.");
     }
 
     /* ----- */
@@ -58,7 +85,7 @@ class ClCdMapstructTest {
     @Test
     void testToListDto_checkBasic() throws Exception {
         // Given::
-        ClCdEntity clCdEntity = ClCdEntityTestFactory.createClCd();
+        ClCdEntity clCdEntity = ClCdEntityTestFactory.create();
         // 글분류 코드
         clCdEntity.setClCtgrCd(TestConstant.TEST_CL_CTGR_CD);
         
@@ -66,12 +93,39 @@ class ClCdMapstructTest {
         ClCdDto dto = clCdMapstruct.toListDto(clCdEntity);
 
         // Then::
-        assertNotNull(dto);
-        assertEquals(dto.getClCd(), TestConstant.TEST_CL_CD);
-        assertEquals(dto.getClCdNm(), TestConstant.TEST_CL_CD_NM);
-        assertEquals(dto.getDc(), TestConstant.TEST_DC);
+        assertNotNull(dto, "변환된 dto는 null일 수 없습니다.");
+        assertEquals(TestConstant.TEST_CL_CD, dto.getClCd(), "분류 코드 매핑이 제대로 이루어지지 않았습니다.");
+        assertEquals(TestConstant.TEST_CL_CD_NM, dto.getClCdNm(), "분류 코드명 매핑이 제대로 이루어지지 않았습니다.");
+        assertEquals(TestConstant.TEST_DC, dto.getDc(), "설명 코드명 매핑이 제대로 이루어지지 않았습니다.");
         // 글분류 코드
-        assertEquals(dto.getClCtgrCd(), TestConstant.TEST_CL_CTGR_CD);
+        assertEquals(TestConstant.TEST_CL_CTGR_CD, dto.getClCtgrCd(), "글분류 코드 매핑이 제대로 이루어지지 않았습니다.");
+    }
+
+    /**
+     * entity -> dto 변환 검증 :: 등록자/수정자 정보
+     */
+    @Test
+    void testListToDto_checkAuditor() throws Exception {
+        // Given::
+        ClCdEntity clCdEntity = ClCdEntityTestFactory.create();
+        // 등록자
+        BaseEntityTestFactoryHelper.setRegstrInfo(clCdEntity);
+        // 수정자
+        BaseEntityTestFactoryHelper.setMdfusrInfo(clCdEntity);
+
+        // When::
+        ClCdDto dto = clCdMapstruct.toListDto(clCdEntity);
+
+        // Then::
+        assertNotNull(dto);
+        // 등록자
+        assertEquals(TestConstant.TEST_REGSTR_ID, dto.getRegstrId(), "등록자 ID가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_REGSTR_NM, dto.getRegstrNm(), "등록자 이름이 제대로 매핑되지 않았습니다.");
+        assertEquals("2000-01-01 00:00:00", dto.getRegDt(), "등록일시가 제대로 매핑되지 않았습니다.");
+        // 수정자
+        assertEquals(TestConstant.TEST_MDFUSR_ID, dto.getMdfusrId(), "수정자 ID가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_MDFUSR_NM, dto.getMdfusrNm(), "수정자 이름이 제대로 매핑되지 않았습니다.");
+        assertEquals("2000-01-01 00:00:00", dto.getMdfDt(), "수정일시가 제대로 매핑되지 않았습니다.");
     }
 
     /* ----- */
@@ -89,37 +143,11 @@ class ClCdMapstructTest {
         ClCdEntity entity = clCdMapstruct.toEntity(clCdDto);
 
         // Then::
-        assertNotNull(entity);
+        assertNotNull(entity, "변환된 entity는 null일 수 없습니다.");
         // 글분류 코드
-        assertEquals(entity.getClCtgrCd(), TestConstant.TEST_CL_CTGR_CD);
+        assertEquals(TestConstant.TEST_CL_CTGR_CD, entity.getClCtgrCd(), "글분류 코드 매핑이 제대로 이루어지지 않았습니다.");
     }
 
-    /**
-     * dto -> entity 변환 검증 :: 등록자/수정자 정보
-     */
-    @Test
-    void testToEntity_checkAuditor() throws Exception {
-        // Given::
-        ClCdEntity clCdEntity = ClCdEntityTestFactory.createClCd();
-        // 등록자
-        BaseEntityTestFactoryHelper.setRegstrInfo(clCdEntity);
-        // 수정자
-        BaseEntityTestFactoryHelper.setMdfusrInfo(clCdEntity);
-
-        // When::
-        ClCdDto dto = clCdMapstruct.toDto(clCdEntity);
-
-        // Then::
-        assertNotNull(dto);
-        // 등록자
-        assertEquals(dto.getRegstrId(), TestConstant.TEST_REGSTR_ID);
-        assertEquals(dto.getRegstrNm(), TestConstant.TEST_REGSTR_NM);
-        assertEquals(dto.getRegDt(), "2000-01-01 00:00:00");
-        // 수정자
-        assertEquals(dto.getMdfusrId(), TestConstant.TEST_MDFUSR_ID);
-        assertEquals(dto.getMdfusrNm(), TestConstant.TEST_MDFUSR_NM);
-        assertEquals(dto.getMdfDt(), "2000-01-01 00:00:00");
-    }
 
     /* ----- */
 
@@ -129,7 +157,7 @@ class ClCdMapstructTest {
     @Test
     void testUpdateFromDto_checkBasic() throws Exception {
         // Given::
-        ClCdEntity entity = ClCdEntityTestFactory.createClCd();
+        ClCdEntity entity = ClCdEntityTestFactory.create();
         ClCdDto dto = ClCdDtoTestFactory.createClCdDtlDto_1();
         dto.setClCtgrCd(TestConstant.TEST_CL_CTGR_CD_1);
 
@@ -137,11 +165,11 @@ class ClCdMapstructTest {
         clCdMapstruct.updateFromDto(dto, entity);
 
         // Then::
-        assertNotNull(dto);
-        assertEquals(dto.getClCd(), TestConstant.TEST_CL_CD_1);
-        assertEquals(dto.getClCdNm(), TestConstant.TEST_CL_CD_NM_1);
-        assertEquals(dto.getDc(), TestConstant.TEST_DC_1);
+        assertNotNull(entity, "업데이트된 entity는 null일 수 없습니다.");
+        assertEquals(TestConstant.TEST_CL_CD_1, dto.getClCd(), "분류 코드 업데이트가 제대로 이루어지지 않았습니다.");
+        assertEquals(TestConstant.TEST_CL_CD_NM_1, dto.getClCdNm(), "분류 코드명 업데이트가 제대로 이루어지지 않았습니다.");
+        assertEquals(TestConstant.TEST_DC_1, dto.getDc(), "설명 코드명 업데이트가 제대로 이루어지지 않았습니다.");
         // 글분류 코드
-        assertEquals(dto.getClCtgrCd(), TestConstant.TEST_CL_CTGR_CD_1);
+        assertEquals(TestConstant.TEST_CL_CTGR_CD_1, dto.getClCtgrCd(), "글분류 코드 업데이트가 제대로 이루어지지 않았습니다.");
     }
 }

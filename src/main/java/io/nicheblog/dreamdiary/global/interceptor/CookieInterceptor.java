@@ -1,8 +1,8 @@
-package io.nicheblog.dreamdiary.global._common.cookie.interceptor;
+package io.nicheblog.dreamdiary.global.interceptor;
 
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global._common.cookie.util.CookieUtils;
+import io.nicheblog.dreamdiary.global.util.CookieUtils;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;

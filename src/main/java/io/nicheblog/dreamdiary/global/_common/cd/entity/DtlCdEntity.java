@@ -64,6 +64,14 @@ public class DtlCdEntity
     /* ---- */
 
     /**
+     * Key 반환
+     * @return {@link DtlCdKey}
+     */
+    public DtlCdKey getKey() {
+        return new DtlCdKey(this.getClCd(), this.getDtlCd());
+    }
+    
+    /**
      * 생성자.
      *
      * @param clCd 분류 코드
@@ -88,4 +96,5 @@ public class DtlCdEntity
     /** 위임 :: 상태 관리 모듈 */
     @Embedded
     public StateEmbed state;
+
 }

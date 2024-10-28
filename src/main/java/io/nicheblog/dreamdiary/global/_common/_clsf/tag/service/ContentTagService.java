@@ -61,7 +61,7 @@ public class ContentTagService
         List<ContentTagEntity> entityList = repository.findAll(spec.searchWith(searchParamMap));
         if (CollectionUtils.isEmpty(entityList)) return new ArrayList<>();
         return entityList.stream()
-                .map(tag -> new TagDto(tag.getTagNm(), tag.getCtgr()))
+                .map(tag -> new TagDto(tag.getRefTagNo(), tag.getTagNm(), tag.getCtgr()))
                 .collect(Collectors.toList());
     }
 
@@ -74,8 +74,12 @@ public class ContentTagService
      */
     @Transactional
     public void delObsoleteContentTags(final BaseClsfKey clsfKey, final List<TagDto> obsoleteTagList) throws Exception {
+        String contentType = clsfKey.getContentType();
         obsoleteTagList.forEach(tag -> {
-            repository.deleteObsoleteContentTags(clsfKey.getPostNo(), clsfKey.getContentType(), tag.getTagNm(), tag.getCtgr());
+            repository.deleteObsoleteContentTags(clsfKey.getPostNo(), contentType, tag.getTagNm(), tag.getCtgr());
+            // 태그 캐시 처리
+            String cacheName = this.getCacheNameByContentType(contentType);
+            this.evictCacheForPeriod(cacheName, tag.getTagNo());
         });
     }
 
@@ -105,7 +109,7 @@ public class ContentTagService
         entityList.forEach(entity -> {
             String contentType = entity.getRefContentType();
             String cacheName = this.getCacheNameByContentType(contentType);
-            if ("".equals(cacheName)) return;
+            if (cacheName.isEmpty()) return;
             Integer tagNo = entity.getRefTagNo();;
             this.evictCacheForPeriod(cacheName, tagNo);
         });
@@ -164,7 +168,8 @@ public class ContentTagService
             int currYy = DateUtils.getCurrYy();
             for (int yy = 2010; yy <= currYy; yy++) {
                 for (int mnth = 1; mnth <= 12; mnth++) {
-                    EhCacheUtils.evictCache(cacheName, tagNo + "_" + yy + "_" + mnth);
+                    String cacheKey = tagNo + "_" + yy + "_" + mnth;
+                    EhCacheUtils.evictCache(cacheName, cacheKey);
                 }
             }
             EhCacheUtils.evictCache(cacheName, tagNo + "_9999_99");

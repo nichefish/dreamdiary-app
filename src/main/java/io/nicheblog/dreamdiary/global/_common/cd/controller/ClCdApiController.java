@@ -6,7 +6,6 @@ import io.nicheblog.dreamdiary.global._common.cd.model.ClCdDto;
 import io.nicheblog.dreamdiary.global._common.cd.model.ClCdParam;
 import io.nicheblog.dreamdiary.global._common.cd.service.ClCdService;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;

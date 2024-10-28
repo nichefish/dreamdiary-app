@@ -83,6 +83,18 @@ public class TagDto
     }
 
     /**
+     * 생성자.
+
+     * @param tagNm - 생성할 태그 번호
+     * @param tagNm - 생성할 태그의 이름
+     * @param ctgr - 생성할 태그의 카테고리
+     */
+    public TagDto(final Integer tagNo, final String tagNm, final String ctgr) {
+        this(tagNm, ctgr);
+        this.tagNo = tagNo;
+    }
+
+    /**
      * 태그이름 오름차순 정렬
      *
      * @param other - 비교할 `TagDto` 객체

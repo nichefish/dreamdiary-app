@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.global._common._clsf.tag.entity;
 
-import io.nicheblog.dreamdiary.global._common._clsf.tag.entity.TagEntity;
 import lombok.experimental.UtilityClass;
 import org.springframework.test.context.ActiveProfiles;
 

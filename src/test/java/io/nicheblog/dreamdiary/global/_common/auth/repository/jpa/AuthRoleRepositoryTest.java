@@ -1,7 +1,8 @@
-package io.nicheblog.dreamdiary.global._common._clsf.tag.repository.jpa;
+package io.nicheblog.dreamdiary.global._common.auth.repository.jpa;
 
-import io.nicheblog.dreamdiary.global._common._clsf.tag.entity.TagEntity;
-import io.nicheblog.dreamdiary.global._common._clsf.tag.entity.TagEntityTestFactory;
+import io.nicheblog.dreamdiary.global.TestConstant;
+import io.nicheblog.dreamdiary.global._common.auth.entity.AuthRoleEntity;
+import io.nicheblog.dreamdiary.global._common.auth.entity.AuthRoleEntityTestFactory;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
 import io.nicheblog.dreamdiary.global.config.TestAuditConfig;
 import lombok.extern.log4j.Log4j2;
@@ -17,12 +18,13 @@ import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityNotFoundException;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
- * TagRepositoryTest
+ * AuthRoleRepositoryTest
  * <pre>
- *  태그 (JPA) Repository 테스트 모듈.
+ *  권한 정보 (JPA) Repository 테스트 모듈.
  *  "@Transactional 환경에서는 flush가 의도한 대로 작동하지 않을 수 있다."
  * </pre>
  *
@@ -34,15 +36,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ImportAutoConfiguration(DataSourceConfig.class)
 @Import(TestAuditConfig.class)
 @Log4j2
-class TagRepositoryTest {
+class AuthRoleRepositoryTest {
 
     @Autowired
     private TestEntityManager testEntityManager;
 
     @Autowired
-    private TagRepository tagRepository;
+    private AuthRoleRepository authRoleRepository;
 
-    private TagEntity tagEntity;
+    private AuthRoleEntity authRoleEntity;
 
     // 4. Parameterized Test 사용
     // JUnit의 @ParameterizedTest를 사용하여 같은 동작을 여러 가지 데이터로 반복 테스트할 때 유용합니다. 예를 들어, 여러 날짜에 대해 중복 검사를 하는 테스트라면 매번 테스트 메서드를 작성하는 대신, 파라미터화된 테스트로 통합할 수 있습니다.
@@ -55,8 +57,8 @@ class TagRepositoryTest {
      */
     @BeforeEach
     void setUp() throws Exception {
-        // 공통적으로 사용할 tagEntity 초기화
-        tagEntity = TagEntityTestFactory.create();
+        // 공통적으로 사용할 authRoleEntity 초기화
+        authRoleEntity = AuthRoleEntityTestFactory.create();
     }
 
     /**
@@ -67,12 +69,16 @@ class TagRepositoryTest {
         // Given::
 
         // When::
-        TagEntity registered = tagRepository.save(tagEntity);
-        Integer key = registered.getTagNo();
-        TagEntity retrieved = tagRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        AuthRoleEntity registered = authRoleRepository.save(authRoleEntity);
+        String authCd = registered.getAuthCd();
+        AuthRoleEntity retrieved = authRoleRepository.findById(authCd).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
-        assertNotNull(retrieved.getTagNo(), "저장된 엔티티의 key 값이 없습니다.");
+        assertNotNull(retrieved.getAuthCd(), "저장된 엔티티의 key 값이 없습니다.");
+        // audit
+        assertNotNull(retrieved.getRegDt(), "등록일자 audit 처리가 되지 않았습니다.");
+        assertNotNull(retrieved.getRegstrId(),  "등록자 audit 처리가 되지 않았습니다.");
+        assertEquals(retrieved.getRegstrId(), TestConstant.TEST_AUDITOR, "등록자가 예상 값과 일치하지 않습니다.");
     }
 }

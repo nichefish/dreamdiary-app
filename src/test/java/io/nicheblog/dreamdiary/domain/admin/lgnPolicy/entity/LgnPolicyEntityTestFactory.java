@@ -20,6 +20,10 @@ public class LgnPolicyEntityTestFactory {
      */
     public static LgnPolicyEntity create() throws Exception {
         return LgnPolicyEntity.builder()
+                .lgnLockDy(30)
+                .lgnTryLmt(5)
+                .pwChgDy(30)
+                .pwForReset("test_password")
                 .build();
     }
 }

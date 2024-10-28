@@ -19,7 +19,7 @@ public class DtlCdEntityTestFactory {
     /**
      * 상세 코드 Entity 생성
      */
-    public static DtlCdEntity createDtlCd() throws Exception {
+    public static DtlCdEntity create() throws Exception {
         return DtlCdEntity.builder()
                 .clCd(TestConstant.TEST_CL_CD)
                 .dtlCd(TestConstant.TEST_DTL_CD)

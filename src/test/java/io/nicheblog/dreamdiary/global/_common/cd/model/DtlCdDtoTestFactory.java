@@ -19,7 +19,7 @@ public class DtlCdDtoTestFactory {
     /**
      * 상세 코드 상세 Dto 생성
      */
-    public static DtlCdDto createDtlCdDtlDto() throws Exception {
+    public static DtlCdDto createDtlDto() throws Exception {
         return DtlCdDto.builder()
                 .clCd(TestConstant.TEST_CL_CD)
                 .dtlCd(TestConstant.TEST_DTL_CD)

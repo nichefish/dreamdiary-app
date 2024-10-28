@@ -30,7 +30,9 @@ public interface CacheEvictor<Key extends Serializable> {
      * @param mnth - 삭제할 월(문자열 형식)
      */
     default void evictCacheForPeriod(final String cacheName, final String yy, final String mnth) {
-        this.evictCacheForPeriod(cacheName, Integer.parseInt(yy), Integer.parseInt(mnth));
+        EhCacheUtils.evictCache(cacheName, yy + "_" + mnth);
+        EhCacheUtils.evictCache(cacheName, yy + "_99");
+        EhCacheUtils.evictCache(cacheName, "9999_99");
     }
 
     /**
@@ -41,8 +43,6 @@ public interface CacheEvictor<Key extends Serializable> {
      * @param mnth - 삭제할 월(문자열 형식)
      */
     default void evictCacheForPeriod(final String cacheName, final Integer yy, final Integer mnth) {
-        EhCacheUtils.evictCache(cacheName, yy + "_" + mnth);
-        EhCacheUtils.evictCache(cacheName, yy + "_99");
-        EhCacheUtils.evictCache(cacheName, "9999_99");
+        this.evictCacheForPeriod(cacheName, yy.toString(), mnth.toString());
     }
 }

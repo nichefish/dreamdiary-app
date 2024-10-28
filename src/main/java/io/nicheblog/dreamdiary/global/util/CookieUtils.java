@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global._common.cookie.util;
+package io.nicheblog.dreamdiary.global.util;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;

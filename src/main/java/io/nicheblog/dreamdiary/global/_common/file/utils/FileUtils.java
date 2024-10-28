@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.global._common.file.utils;
 
-import io.nicheblog.dreamdiary.global._common.cookie.util.CookieUtils;
 import io.nicheblog.dreamdiary.global._common.file.entity.AtchFileDtlEntity;
 import io.nicheblog.dreamdiary.global._common.file.entity.AtchFileEntity;
 import io.nicheblog.dreamdiary.global._common.file.model.AtchFileDtlDto;
 import io.nicheblog.dreamdiary.global._common.file.service.AtchFileDtlService;
 import io.nicheblog.dreamdiary.global._common.file.service.AtchFileService;
+import io.nicheblog.dreamdiary.global.util.CookieUtils;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
