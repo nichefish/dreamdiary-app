@@ -28,8 +28,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  *
  * @author nichefish
  */
-@ActiveProfiles("test")
 @DataJpaTest
+@ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ImportAutoConfiguration(DataSourceConfig.class)
 @Import(TestAuditConfig.class)

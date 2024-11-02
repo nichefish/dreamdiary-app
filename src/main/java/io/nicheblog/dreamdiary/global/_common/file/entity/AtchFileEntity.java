@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
+import org.springframework.util.CollectionUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -59,7 +60,13 @@ public class AtchFileEntity
      * @param atchFileList - 할당할 첨부 파일 세부 엔티티 리스트
      */
     public void setAtchFileList(final List<AtchFileDtlEntity> atchFileList) {
-        this.updtList(this.atchFileList, atchFileList);
+        if (CollectionUtils.isEmpty(atchFileList)) return;
+        if (this.atchFileList == null) {
+            this.atchFileList = new ArrayList<>(atchFileList);
+        } else {
+            this.atchFileList.clear();
+            this.atchFileList.addAll(atchFileList);
+        }
     }
 
     /**

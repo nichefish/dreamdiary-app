@@ -2,13 +2,13 @@ package io.nicheblog.dreamdiary.global._common.auth.config;
 
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global._common.auth.model.AuthInfo;
+import io.nicheblog.dreamdiary.global._common.auth.util.AuthUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Optional;
 
@@ -51,10 +51,10 @@ public class AuditConfig {
          * 현재 인증(로그인) 상태인 등록/수정자 반환
          */
         @Override
-        public Optional<String> getCurrentAuditor() {
-            SecurityContext securityContext = SecurityContextHolder.getContext();
-            Authentication authentication = securityContext.getAuthentication();
-            if (authentication == null || !authentication.isAuthenticated()) return Optional.empty();
+        public @NotNull Optional<String> getCurrentAuditor() {
+            Authentication authentication = AuthUtils.getAuthentication();
+
+            if (!AuthUtils.isAuthenticated()) return Optional.empty();
 
             // 비로그인시 시스템 계정(system)으로 자동 처리
             Object principal = authentication.getPrincipal();

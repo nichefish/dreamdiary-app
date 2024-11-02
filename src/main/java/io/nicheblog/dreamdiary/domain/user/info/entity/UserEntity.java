@@ -12,12 +12,14 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.*;
+import org.springframework.util.CollectionUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -174,7 +176,13 @@ public class UserEntity
      * @param acsIpList - 설정할 객체 리스트
      */
     public void setAcsIpList(final List<UserAcsIpEntity> acsIpList) {
-        this.updtList(this.acsIpList, acsIpList);
+        if (CollectionUtils.isEmpty(acsIpList)) return;
+        if (this.acsIpList == null) {
+            this.acsIpList = new ArrayList<>(acsIpList);
+        } else {
+            this.acsIpList.clear();
+            this.acsIpList.addAll(acsIpList);
+        }
     }
 
     /**
@@ -184,7 +192,13 @@ public class UserEntity
      * @param authList - 설정할 객체 리스트
      */
     public void setAuthList(final List<UserAuthRoleEntity> authList) {
-        this.updtList(this.authList, authList);
+        if (CollectionUtils.isEmpty(authList)) return;
+        if (this.authList == null) {
+            this.authList = new ArrayList<>(authList);
+        } else {
+            this.authList.clear();
+            this.authList.addAll(authList);
+        }
     }
 
     /**

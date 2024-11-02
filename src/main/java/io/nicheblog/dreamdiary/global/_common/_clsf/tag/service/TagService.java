@@ -156,6 +156,7 @@ public class TagService
      * @param contentType 조회할 컨텐츠 타입 (ContentType)
      * @return {@link Integer} -- 태그 목록에서 계산된 최대 사용 빈도 (Integer)
      */
+    @Transactional(readOnly = true)
     public Integer calcMaxSize(final List<TagDto> tagList, final ContentType contentType) {
         return this.calcMaxSize(tagList, contentType.key);
     }
@@ -215,7 +216,7 @@ public class TagService
         final Set<TagDto> newTagSet = new HashSet<>(newTagList);
         existingTagList.forEach(newTagSet::remove);
         final List<TagEntity> rsList = CollectionUtils.isNotEmpty(newTagSet)
-                ? this.addMasterTag(new ArrayList<>(newTagSet), clsfKey)
+                ? this.addMasterTag(new ArrayList<>(newTagSet))
                 : new ArrayList<>();
 
         // 2. 삭제해야 할 태그 삭제
@@ -232,11 +233,10 @@ public class TagService
      * 마스터 태그 추가:: 메소드 분리
      *
      * @param tagList 처리할 태그 DTO 목록
-     * @param clsfKey 복합키 정보
      * @return {@link List<TagEntity>} -- 저장된 태그 엔티티 목록
      */
     @Transactional
-    public List<TagEntity> addMasterTag(final List<TagDto> tagList, final BaseClsfKey clsfKey) {
+    public List<TagEntity> addMasterTag(final List<TagDto> tagList) {
 
         final List<TagEntity> tagEntityList = tagList.stream()
                 .distinct() // 중복된 태그 문자열 제거

@@ -39,13 +39,34 @@ public class AuthUtils {
     }
 
     /**
+     * 현재 사용자의 인증 여부를 조회해서 반환한다.
+     *
+     * @return {@link Boolean} -- 인증 상태일 경우 true. 익명 사용자(anynymousUser)의 경우 false.
+     */
+    public static Authentication getAuthentication() {
+        return SecurityContextHolder.getContext().getAuthentication();
+    }
+
+    /**
+     * 현재 사용자의 인증 여부를 조회해서 반환한다.
+     *
+     * @return {@link Boolean} -- 인증 상태일 경우 true. 익명 사용자(anynymousUser)의 경우 false.
+     */
+    public static Boolean isAuthenticated() {
+        final Authentication auth = getAuthentication();
+        final boolean isAuthenticated = auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken);
+        if (!isAuthenticated) log.info("isAuthenticated: {}", isAuthenticated);
+        return isAuthenticated;
+    }
+
+    /**
      * 현재 로그인 중인 사용자 정보를 세션에서 조회해서 반환한다.
      *
      * @return {@link AuthInfo} -- 현재 로그인 중인 사용자 인증정보 객체
      */
     public static AuthInfo getAuthenticatedUser() {
         if (!isAuthenticated()) return null;
-        return (AuthInfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return (AuthInfo) getAuthentication().getPrincipal();
     }
 
     /**
@@ -80,18 +101,6 @@ public class AuthUtils {
         final AuthInfo authInfo = getAuthenticatedUser();
         assert authInfo != null;
         return authInfo.getUserId();
-    }
-
-    /**
-     * 현재 사용자의 인증 여부를 조회해서 반환한다.
-     *
-     * @return {@link Boolean} -- 인증 상태일 경우 true. 익명 사용자(anynymousUser)의 경우 false.
-     */
-    public static Boolean isAuthenticated() {
-        final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        final boolean isAuthenticated = auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken);
-        if (!isAuthenticated) log.info("isAuthenticated: {}", isAuthenticated);
-        return isAuthenticated;
     }
 
     /**

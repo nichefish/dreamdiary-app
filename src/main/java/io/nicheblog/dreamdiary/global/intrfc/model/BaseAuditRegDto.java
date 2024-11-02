@@ -1,9 +1,11 @@
 package io.nicheblog.dreamdiary.global.intrfc.model;
 
 import io.nicheblog.dreamdiary.global._common.auth.model.AuditorDto;
+import io.nicheblog.dreamdiary.global._common.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.util.crypto.CryptoUtils;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * BaseAuditRegDto
@@ -52,5 +54,10 @@ public class BaseAuditRegDto
      */
     public String getMaskedRegstrId() throws Exception {
         return CryptoUtils.Mask.nameMasking(this.getRegstrId());
+    }
+
+    public Boolean getIsRegstr() {
+        if (StringUtils.isEmpty(this.regstrId)) return false;
+        return this.regstrId.equals(AuthUtils.getLgnUserId());
     }
 }

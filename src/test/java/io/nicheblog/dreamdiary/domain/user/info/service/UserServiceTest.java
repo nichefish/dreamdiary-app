@@ -1,25 +1,32 @@
 package io.nicheblog.dreamdiary.domain.user.info.service;
 
 import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
+import io.nicheblog.dreamdiary.global.config.TestAuditConfig;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * UserServiceTest
  * 사용자 관리 > 계정 및 권한 관리 서비스 모듈 테스트
  * @author nichefish
  */
+@SpringBootTest
 @ActiveProfiles("test")
-@RequiredArgsConstructor
-@Log4j2
+@Import(TestAuditConfig.class)
+@Transactional
 public class UserServiceTest {
 
-    private final UserService userService;
+    @Autowired
+    private UserService userService;
 
     @Test
     @DisplayName("(음력) 생일인 직원 조회 테스트")

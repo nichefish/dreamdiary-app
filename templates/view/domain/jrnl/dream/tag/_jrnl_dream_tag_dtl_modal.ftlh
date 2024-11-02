@@ -1,4 +1,4 @@
-0<#--
+<#--
  * 저널 꿈(jrnl_dream) > 태그 상세 Modal
  * @included_in : jrnl_day_page.ftlh
  -->

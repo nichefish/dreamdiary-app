@@ -30,8 +30,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  *
  * @author nichefish
  */
-@ActiveProfiles("test")
 @DataJpaTest
+@ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ImportAutoConfiguration(DataSourceConfig.class)
 @Import(TestAuditConfig.class)
@@ -79,6 +79,6 @@ class ManagtrRepositoryTest {
         // audit
         assertNotNull(retrieved.getRegDt(), "등록일자 audit 처리가 되지 않았습니다.");
         assertNotNull(retrieved.getRegstrId(),  "등록자 audit 처리가 되지 않았습니다.");
-        assertEquals(retrieved.getRegstrId(), TestConstant.TEST_AUDITOR, "등록자가 예상 값과 일치하지 않습니다.");
+        assertEquals(TestConstant.TEST_AUDITOR, retrieved.getRegstrId(), "등록자가 예상 값과 일치하지 않습니다.");
     }
 }

@@ -15,7 +15,7 @@
 /** ---- 모바일 버전 ---- */
 @media (max-width: 768px) {
   /* 사이드메뉴 배경색상 설정 */
-  .hiddenTable {
+  .hidden-table {
     display: none !important;
   }
   #kt_content_container {

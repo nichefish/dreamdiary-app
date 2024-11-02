@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.repository.jpa.JrnlSumryRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.spec.JrnlSumrySpec;
 import io.nicheblog.dreamdiary.global._common._clsf.ContentType;
+import io.nicheblog.dreamdiary.global._common.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global._common.cache.event.EhCacheEvictEvent;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultiCrudService;
@@ -60,6 +61,7 @@ public class JrnlSumryService
     @Override
     @Cacheable(value="jrnlSumryList")
     public List<JrnlSumryDto.LIST> getListDto(final BaseSearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(AuthUtils.getLgnUserId());
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
 
         return this.getListDto(searchParamMap);
