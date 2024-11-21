@@ -8,6 +8,8 @@ import io.nicheblog.dreamdiary.domain.jrnl.dream.repository.jpa.JrnlDreamReposit
 import io.nicheblog.dreamdiary.domain.jrnl.dream.repository.mybatis.JrnlDreamMapper;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.spec.JrnlDreamSpec;
 import io.nicheblog.dreamdiary.global._common._clsf.ContentType;
+import io.nicheblog.dreamdiary.global._common.auth.exception.NotAuthorizedException;
+import io.nicheblog.dreamdiary.global._common.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global._common.cache.event.EhCacheEvictEvent;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
@@ -59,6 +61,7 @@ public class JrnlDreamService
      */
     @Cacheable(value="jrnlDreamList", key="#searchParam.hashCode()")
     public List<JrnlDreamDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(AuthUtils.getLgnUserId());
         return this.getListDto(searchParam);
     }
 
@@ -127,7 +130,10 @@ public class JrnlDreamService
      */
     @Cacheable(value="jrnlDreamDtlDto", key="#key")
     public JrnlDreamDto getDtlDtoWithCache(final Integer key) throws Exception {
-        return this.getDtlDto(key);
+        JrnlDreamDto retrieved = this.getDtlDto(key);
+        // 권한 체크
+        if (!retrieved.getIsRegstr()) throw new NotAuthorizedException("조회 권한이 없습니다.");
+        return retrieved;
     }
 
     /**
@@ -141,6 +147,18 @@ public class JrnlDreamService
         // 관련 캐시 삭제
         publisher.publishEvent(new EhCacheEvictEvent(this, updatedEntity.getPostNo(), JRNL_DREAM));
     }
+
+    /**
+     * 삭제 전처리. (override)
+     * 등록자가 아니면 삭제 불가 처리.
+     *
+     * @param deleteEntity - 삭제 엔티티
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void preDelete(JrnlDreamEntity deleteEntity) {
+        if (!deleteEntity.isRegstr()) throw new NotAuthorizedException("삭제 권한이 없습니다.");
+    };
 
     /**
      * 삭제 후처리. (override)

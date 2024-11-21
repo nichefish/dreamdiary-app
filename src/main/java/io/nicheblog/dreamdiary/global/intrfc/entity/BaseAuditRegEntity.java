@@ -1,12 +1,14 @@
 package io.nicheblog.dreamdiary.global.intrfc.entity;
 
 import io.nicheblog.dreamdiary.global._common.auth.entity.AuditorInfo;
+import io.nicheblog.dreamdiary.global._common.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.NotFound;
@@ -56,5 +58,15 @@ public class BaseAuditRegEntity
     @Fetch(value = FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     protected AuditorInfo regstrInfo;
+
+    /* ----- */
+
+    /**
+     * (현재 로그인 중인 사용자) 수정자 여부 체크
+     */
+    public Boolean isRegstr() {
+        if (StringUtils.isEmpty(this.regstrId)) return false;
+        return this.regstrId.equals(AuthUtils.getLgnUserId());
+    }
 }
 

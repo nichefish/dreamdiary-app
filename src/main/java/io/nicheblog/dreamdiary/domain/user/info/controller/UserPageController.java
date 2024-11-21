@@ -10,6 +10,7 @@
  import io.nicheblog.dreamdiary.global._common.cd.service.DtlCdService;
  import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
  import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
+ import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyPageControllerAspect;
  import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
  import io.nicheblog.dreamdiary.global.model.PaginationInfo;
  import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -36,6 +37,7 @@
  *  사용자 관리 > 계정 및 권한 관리 페이지 컨트롤러.
  * </pre>
  *
+ * @see LogActvtyPageControllerAspect
  * @author nichefish
  */
 @Controller

@@ -14,12 +14,14 @@ import io.nicheblog.dreamdiary.global.intrfc.entity.BasePostEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
+import org.springframework.util.CollectionUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -99,7 +101,13 @@ public class VcatnPaprEntity
      * @param itemList - 설정할 객체 리스트
      */
     public void setSchdulList(final List<VcatnSchdulEntity> itemList) {
-        this.updtList(this.schdulList, itemList);
+        if (CollectionUtils.isEmpty(itemList)) return;
+        if (this.schdulList == null) {
+            this.schdulList = new ArrayList<>(itemList);
+        } else {
+            this.schdulList.clear();
+            this.schdulList.addAll(itemList);
+        }
     }
 
     /* ----- */

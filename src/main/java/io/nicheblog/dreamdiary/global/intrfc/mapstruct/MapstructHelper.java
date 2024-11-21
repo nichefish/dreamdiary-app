@@ -68,7 +68,7 @@ public class MapstructHelper {
                 // 작성일사
                 ((BaseAuditRegDto) dto).setRegDt(DateUtils.asStr(baseEntity.getRegDt(), DatePtn.DATETIME));
                 // 작성자 여부
-                ((BaseAuditRegDto) dto).setIsRegstr(AuthUtils.isRegstr(baseEntity.getRegstrId()));
+                ((BaseAuditRegDto) dto).setIsRegstr(baseEntity.isRegstr());
             }
         }
         // AUDIT :: 공통 필드 매핑 로직
@@ -81,7 +81,7 @@ public class MapstructHelper {
                 // 수정일시
                 ((BaseAuditDto) dto).setMdfDt(DateUtils.asStr(baseEntity.getMdfDt(), DatePtn.DATETIME));
                 // 수정자 여부
-                ((BaseAuditDto) dto).setIsMdfusr(AuthUtils.isMdfusr(baseEntity.getMdfusrId()));
+                ((BaseAuditDto) dto).setIsMdfusr(baseEntity.isMdfusr());
             }
         }
         // MANAGE :: ...

@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.global._common._clsf.sectn.model.SectnSearchParam
 import io.nicheblog.dreamdiary.global._common._clsf.sectn.service.SectnService;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyRestControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -33,6 +34,7 @@ import javax.validation.Valid;
  *  단락 API 컨트롤러.
  * </pre>
  *
+ * @see LogActvtyRestControllerAspect
  * @author nichefish
  */
 @RestController

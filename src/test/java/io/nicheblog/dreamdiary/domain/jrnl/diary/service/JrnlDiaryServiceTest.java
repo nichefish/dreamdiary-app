@@ -2,9 +2,15 @@ package io.nicheblog.dreamdiary.domain.jrnl.diary.service;
 
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDtoTestFactory;
+import io.nicheblog.dreamdiary.global.TestConstant;
+import io.nicheblog.dreamdiary.global._common.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.global.config.TestAuditConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +18,7 @@ import javax.annotation.Resource;
 import javax.persistence.EntityNotFoundException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mockStatic;
 
 /**
  * JrnlDiaryServiceTest
@@ -24,11 +31,16 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @SpringBootTest
 @ActiveProfiles("test")
+@Import(TestAuditConfig.class)
 @Transactional
 class JrnlDiaryServiceTest {
     
     @Resource
     private JrnlDiaryService jrnlDiaryService;
+
+    @MockBean
+    @SuppressWarnings("unused")
+    private AuthUtils authUtils;
 
     private JrnlDiaryDto jrnlDiary;
 
@@ -40,6 +52,12 @@ class JrnlDiaryServiceTest {
     void setUp() throws Exception {
         // 공통적으로 사용할 JrnlDiaryDto 초기화
         jrnlDiary = JrnlDiaryDtoTestFactory.create();
+
+        // AuthUtils Mock
+        try (MockedStatic<AuthUtils> mockedStatic = mockStatic(AuthUtils.class)) {
+            mockedStatic.when(AuthUtils::isAuthenticated).thenReturn(true);
+            mockedStatic.when(AuthUtils::getLgnUserId).thenReturn(TestConstant.TEST_AUDITOR);
+        }
     }
 
     /**

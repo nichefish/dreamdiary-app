@@ -13,6 +13,7 @@ import io.nicheblog.dreamdiary.global._common._clsf.viewer.event.ViewerAddEvent;
 import io.nicheblog.dreamdiary.global._common.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyPageControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.PaginationInfo;
 import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;
@@ -39,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  *  화면단에선 boardCd, 어플리케이션 단에선 contentType으로 사용
  * </pre>
  *
+ * @see LogActvtyPageControllerAspect
  * @author nichefish
  */
 @Controller

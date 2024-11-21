@@ -19,4 +19,4 @@
 *.env
 /.env*
 /target/*
-/templates/view/domain/*_tag_ctgr_map.ftlh
+/templates/view/domain/**/*_tag_ctgr_map.ftlh

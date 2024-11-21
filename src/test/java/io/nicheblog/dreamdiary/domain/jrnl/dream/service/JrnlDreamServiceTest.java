@@ -2,9 +2,15 @@ package io.nicheblog.dreamdiary.domain.jrnl.dream.service;
 
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDtoTestFactory;
+import io.nicheblog.dreamdiary.global.TestConstant;
+import io.nicheblog.dreamdiary.global._common.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.global.config.TestAuditConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +18,7 @@ import javax.annotation.Resource;
 import javax.persistence.EntityNotFoundException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mockStatic;
 
 /**
  * JrnlDreamServiceTest
@@ -24,12 +31,17 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @SpringBootTest
 @ActiveProfiles("test")
+@Import(TestAuditConfig.class)
 @Transactional
 class JrnlDreamServiceTest {
     
     @Resource
     private JrnlDreamService jrnlDreamService;
 
+    @MockBean
+    @SuppressWarnings("unused")
+    private AuthUtils authUtils;
+    
     private JrnlDreamDto jrnlDream;
 
     /**
@@ -40,6 +52,12 @@ class JrnlDreamServiceTest {
     void setUp() throws Exception {
         // 공통적으로 사용할 JrnlDreamDto 초기화
         jrnlDream = JrnlDreamDtoTestFactory.create();
+
+        // AuthUtils Mock
+        try (MockedStatic<AuthUtils> mockedStatic = mockStatic(AuthUtils.class)) {
+            mockedStatic.when(AuthUtils::isAuthenticated).thenReturn(true);
+            mockedStatic.when(AuthUtils::getLgnUserId).thenReturn(TestConstant.TEST_AUDITOR);
+        }
     }
 
     /**

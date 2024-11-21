@@ -8,6 +8,8 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.repository.mybatis.JrnlDayMapper;
 import io.nicheblog.dreamdiary.domain.jrnl.day.spec.JrnlDaySpec;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.global._common._clsf.ContentType;
+import io.nicheblog.dreamdiary.global._common.auth.exception.NotAuthorizedException;
+import io.nicheblog.dreamdiary.global._common.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global._common.cache.event.EhCacheEvictEvent;
 import io.nicheblog.dreamdiary.global._common.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
@@ -61,6 +63,7 @@ public class JrnlDayService
      */
     @Cacheable(value="jrnlDayList", key="#searchParam.getYy() + \"_\" + #searchParam.getMnth()")
     public List<JrnlDayDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(AuthUtils.getLgnUserId());
         return this.getListDto(searchParam);
     }
 
@@ -71,12 +74,14 @@ public class JrnlDayService
      * @return {@link boolean} -- 정상 시 true, 중복 시 false 반환
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
+    @Transactional(readOnly = true)
     public boolean dupChck(final JrnlDayDto jrnlDay) throws Exception {
         final boolean isDtUnknown = "Y".equals(jrnlDay.getDtUnknownYn());
         if (isDtUnknown) return false;
 
         final Date jrnlDt = DateUtils.asDate(jrnlDay.getJrnlDt());
-        final Integer isDup = repository.countByJrnlDt(jrnlDt);
+        final String regstrId = AuthUtils.getLgnUserId();
+        final Integer isDup = repository.countByJrnlDt(jrnlDt, regstrId);
 
         return isDup > 0;
     }
@@ -88,9 +93,11 @@ public class JrnlDayService
      * @return {@link Integer} -- 중복되는 경우 해당하는 키값 (게시글 번호)
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
+    @Transactional(readOnly = true)
     public Integer getDupKey(final JrnlDayDto jrnlDay) throws Exception {
         final Date jrnlDt = DateUtils.asDate(jrnlDay.getJrnlDt());
-        final JrnlDayEntity existingEntity = repository.findByJrnlDt(jrnlDt);
+        final String regstrId = AuthUtils.getLgnUserId();
+        final JrnlDayEntity existingEntity = repository.findByJrnlDt(jrnlDt, regstrId);
 
         return existingEntity.getPostNo();
     }
@@ -141,7 +148,10 @@ public class JrnlDayService
      */
     @Cacheable(value="jrnlDayDtlDto", key="#key")
     public JrnlDayDto getDtlDtoWithCache(final Integer key) throws Exception {
-        return this.getDtlDto(key);
+        JrnlDayDto retrieved = this.getDtlDto(key);
+        // 권한 체크
+        if (!retrieved.getIsRegstr()) throw new NotAuthorizedException("조회 권한이 없습니다.");
+        return retrieved;
     }
 
     /**
@@ -189,6 +199,19 @@ public class JrnlDayService
             jrnlDay.setMnth(jrnlDay.getJrnlDt().substring(5, 7));
         }
     }
+
+    /**
+     * 삭제 전처리. (override)
+     * 등록자가 아니면 삭제 불가 처리.
+     *
+     * @param deleteEntity - 삭제 엔티티
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void preDelete(JrnlDayEntity deleteEntity) {
+        log.info("regstrId: {}", deleteEntity.getRegstrId());
+        if (!deleteEntity.isRegstr()) throw new NotAuthorizedException("삭제 권한이 없습니다.");
+    };
 
     /**
      * 삭제 후처리. (override)

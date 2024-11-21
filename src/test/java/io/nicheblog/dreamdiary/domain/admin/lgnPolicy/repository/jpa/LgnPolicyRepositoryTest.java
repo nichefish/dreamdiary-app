@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -28,16 +27,14 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author nichefish
  */
-@ActiveProfiles("test")
 @DataJpaTest
+@ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ImportAutoConfiguration(DataSourceConfig.class)
 @Import(TestAuditConfig.class)
 @Log4j2
 class LgnPolicyRepositoryTest {
 
-    @Autowired
-    private TestEntityManager testEntityManager;
     @Autowired
     private LgnPolicyRepository lgnPolicyRepository;
 
@@ -71,7 +68,7 @@ class LgnPolicyRepositoryTest {
         // audit
         assertNotNull(retrieved.getRegDt(), "등록일자 audit 처리가 되지 않았습니다.");
         assertNotNull(retrieved.getRegstrId(),  "등록자 audit 처리가 되지 않았습니다.");
-        assertEquals(retrieved.getRegstrId(), TestConstant.TEST_AUDITOR, "등록자가 예상 값과 일치하지 않습니다.");
+        assertEquals(TestConstant.TEST_AUDITOR, retrieved.getRegstrId(), "등록자가 예상 값과 일치하지 않습니다.");
     }
 
     /**
@@ -94,7 +91,7 @@ class LgnPolicyRepositoryTest {
         // audit
         assertNotNull(modified.getMdfDt(), "수정일자 audit 처리가 되지 않았습니다.");
         assertNotNull(modified.getMdfusrId(),  "수정자 audit 처리가 되지 않았습니다.");
-        assertEquals(modified.getMdfusrId(), TestConstant.TEST_AUDITOR, "수정자가 예상 값과 일치하지 않습니다.");
+        assertEquals(TestConstant.TEST_AUDITOR, modified.getMdfusrId(), "수정자가 예상 값과 일치하지 않습니다.");
         // value
         assertEquals(25, modified.getLgnTryLmt(), "값이 정상적으로 수정되지 않았습니다.");
     }

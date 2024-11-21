@@ -14,6 +14,7 @@ import javax.persistence.Entity;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -100,7 +101,13 @@ public class ClCdEntity
      * @param dtlCdList - 설정할 객체 리스트
      */
     public void setDtlCdList(final List<DtlCdEntity> dtlCdList) {
-        this.updtList(this.dtlCdList, dtlCdList);
+        if (CollectionUtils.isEmpty(dtlCdList)) return;
+        if (this.dtlCdList == null) {
+            this.dtlCdList = new ArrayList<>(dtlCdList);
+        } else {
+            this.dtlCdList.clear();
+            this.dtlCdList.addAll(dtlCdList);
+        }
     }
 
     /* ----- */
