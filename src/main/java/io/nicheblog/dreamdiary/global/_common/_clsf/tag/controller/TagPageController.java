@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.global._common._clsf.tag.service.TagService;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyPageControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
  *  태그 관리 페이지 컨트롤러.
  * </pre>
  *
+ * @see LogActvtyPageControllerAspect
  * @author nichefish
  */
 @Controller

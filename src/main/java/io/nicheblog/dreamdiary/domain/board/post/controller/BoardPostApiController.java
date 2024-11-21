@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.global._common._clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.global._common._clsf.viewer.event.ViewerAddEvent;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyRestControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -33,6 +34,7 @@ import javax.validation.Valid;
  *  화면단에선 boardCd, 어플리케이션 단에선 contentType으로 사용
  * </pre>
  *
+ * @see LogActvtyRestControllerAspect
  * @author nichefish
  */
 @RestController

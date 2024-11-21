@@ -15,6 +15,7 @@ import io.nicheblog.dreamdiary.global._common._clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.global._common.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyPageControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
@@ -35,6 +36,7 @@ import java.util.List;
  *  저널 결산 페이지 Controller.
  * </pre>
  *
+ * @see LogActvtyPageControllerAspect
  * @author nichefish
  */
 @Controller

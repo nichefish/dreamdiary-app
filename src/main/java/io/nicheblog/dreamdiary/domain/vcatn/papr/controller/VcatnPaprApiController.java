@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common._clsf.viewer.event.ViewerAddEvent;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyRestControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -29,6 +30,7 @@ import javax.validation.Valid;
  *  휴가계획서 API 컨트롤러.
  * </pre>
  *
+ * @see LogActvtyRestControllerAspect
  * @author nichefish
  */
 @RestController

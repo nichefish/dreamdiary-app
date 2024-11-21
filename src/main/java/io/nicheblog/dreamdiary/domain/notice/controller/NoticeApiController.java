@@ -16,6 +16,7 @@ import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global._common.xlsx.XlsxType;
 import io.nicheblog.dreamdiary.global._common.xlsx.util.XlsxUtils;
+import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyRestControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
@@ -42,6 +43,7 @@ import java.util.stream.Stream;
  *  공지사항 API 컨트롤러.
  * </pre>
  *
+ * @see LogActvtyRestControllerAspect
  * @author nichefish
  */
 @RestController

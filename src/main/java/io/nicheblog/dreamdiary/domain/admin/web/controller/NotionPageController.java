@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common.flsys.model.FlsysSearchParam;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyPageControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
@@ -26,6 +27,7 @@ import javax.annotation.Nullable;
  * </pre>
  * TODO: 보완 예정
  *
+ * @see LogActvtyPageControllerAspect
  * @author nichefish
  */
 @Controller

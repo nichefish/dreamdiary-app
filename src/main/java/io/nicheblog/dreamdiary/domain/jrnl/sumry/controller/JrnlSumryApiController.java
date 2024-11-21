@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyRestControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -28,6 +29,7 @@ import java.util.List;
  *  저널 결산 API Controller.
  * </pre>
  *
+ * @see LogActvtyRestControllerAspect
  * @author nichefish
  */
 @RestController

@@ -7,6 +7,7 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyPageControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.GetMapping;
  *  로그인 정책 관리 페이지 컨트롤러.
  * </pre>
  *
+ * @see LogActvtyPageControllerAspect
  * @author nichefish
  */
 @Controller

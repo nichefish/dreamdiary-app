@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyPageControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.PaginationInfo;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
  * </pre>
  * TODO: 신규개발 예정
  *
+ * @see LogActvtyPageControllerAspect
  * @author nichefish
  */
 @Controller
