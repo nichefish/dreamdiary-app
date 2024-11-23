@@ -8,7 +8,7 @@ plugins {
 
 group = 'dreamdiary.io'
 java {
-    sourceCompatibility = '11'
+    sourceCompatibility = '17'
 }
 springBoot {
     buildInfo()
