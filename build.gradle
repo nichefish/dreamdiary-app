@@ -284,9 +284,9 @@ tasks.named('test') {
 jacocoTestReport {
     dependsOn test // 테스트 후에 리포트 생성
     reports {
-        xml.enabled true  // XML 리포트 생성 (SonarQube 등과의 통합에 유용)
-        csv.enabled false // CSV 리포트는 보통 사용하지 않으므로 비활성화
-        html.enabled true // HTML 리포트 생성
+        xml.required.set(true)  // XML 리포트 생성 (SonarQube 등과의 통합에 유용)
+        csv.required.set(false) // CSV 리포트는 보통 사용하지 않으므로 비활성화
+        html.required.set(true) // HTML 리포트 생성
         html.destination file("${buildDir}/reports/jacoco") // HTML 리포트 저장 경로
     }
 }

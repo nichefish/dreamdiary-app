@@ -2,6 +2,9 @@
 #공용 설정 파일
 
 spring:
+    application:
+        name: dreamdiary
+
     main:
         allow-bean-definition-overriding: true
 
