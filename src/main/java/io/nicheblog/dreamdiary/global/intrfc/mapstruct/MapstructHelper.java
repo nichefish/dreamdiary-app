@@ -30,8 +30,8 @@ import io.nicheblog.dreamdiary.global._common._clsf.viewer.entity.embed.ViewerEm
 import io.nicheblog.dreamdiary.global._common._clsf.viewer.mapstruct.embed.ViewerEmbedMapstruct;
 import io.nicheblog.dreamdiary.global._common._clsf.viewer.model.cmpstn.ViewerCmpstn;
 import io.nicheblog.dreamdiary.global._common._clsf.viewer.model.cmpstn.ViewerCmpstnModule;
-import io.nicheblog.dreamdiary.global._common.auth.entity.AuditorInfo;
-import io.nicheblog.dreamdiary.global._common.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.entity.AuditorInfo;
+import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.intrfc.entity.*;
 import io.nicheblog.dreamdiary.global.intrfc.model.*;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;

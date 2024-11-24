@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.domain.admin.web.controller;
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global._common.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyPageControllerAspect;
@@ -75,7 +75,7 @@ public class LgnPageController
         // 로그 관련 세팅
         logParam.setResult(true, MessageUtils.RSLT_SUCCESS);
 
-        return "/view/global/_common/auth/lgn_form";
+        return "/view/auth/lgn_form";
     }
 
     /**

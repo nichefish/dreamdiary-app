@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.global._common._clsf.managt.model.cmpstn;
 
 import io.nicheblog.dreamdiary.global._common._clsf.managt.model.ManagtrDto;
-import io.nicheblog.dreamdiary.global._common.auth.model.AuditorDto;
+import io.nicheblog.dreamdiary.auth.model.AuditorDto;
 import lombok.*;
 
 import javax.validation.constraints.Pattern;

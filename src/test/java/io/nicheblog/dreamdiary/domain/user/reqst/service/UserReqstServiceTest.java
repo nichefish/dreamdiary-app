@@ -44,7 +44,7 @@ class UserReqstServiceTest {
     private PasswordEncoder passwordEncoder;
 
     /**
-     * 사용자 계정 신청 등록 테스트
+     * 사용자 산규계정 신청 등록 테스트
      */
     @Test
     void testRegist() throws Exception {

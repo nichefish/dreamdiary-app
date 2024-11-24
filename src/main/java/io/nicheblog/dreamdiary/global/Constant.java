@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.global;
 
 import io.nicheblog.dreamdiary.adapter.AdapterConstant;
-import io.nicheblog.dreamdiary.global._common.auth.AuthConstant;
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.global._common.cd.CdConstant;
 
 import java.util.Locale;

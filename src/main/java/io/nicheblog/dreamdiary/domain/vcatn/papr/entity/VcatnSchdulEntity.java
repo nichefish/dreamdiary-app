@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.domain.vcatn.papr.entity;
 
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global._common.auth.entity.AuditorInfo;
+import io.nicheblog.dreamdiary.auth.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.global._common.cd.entity.DtlCdEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import lombok.*;

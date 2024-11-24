@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.global._common._clsf.managt.entity.embed;
 
 import io.nicheblog.dreamdiary.global._common._clsf.managt.entity.ManagtrEntity;
-import io.nicheblog.dreamdiary.global._common.auth.entity.AuditorInfo;
-import io.nicheblog.dreamdiary.global._common.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.entity.AuditorInfo;
+import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
