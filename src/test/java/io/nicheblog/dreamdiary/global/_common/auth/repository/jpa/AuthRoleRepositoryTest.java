@@ -1,8 +1,8 @@
-package io.nicheblog.dreamdiary.global._common.auth.repository.jpa;
+package io.nicheblog.dreamdiary.auth.repository.jpa;
 
 import io.nicheblog.dreamdiary.global.TestConstant;
-import io.nicheblog.dreamdiary.global._common.auth.entity.AuthRoleEntity;
-import io.nicheblog.dreamdiary.global._common.auth.entity.AuthRoleEntityTestFactory;
+import io.nicheblog.dreamdiary.auth.entity.AuthRoleEntity;
+import io.nicheblog.dreamdiary.auth.entity.AuthRoleEntityTestFactory;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
 import io.nicheblog.dreamdiary.global.config.TestAuditConfig;
 import lombok.extern.log4j.Log4j2;

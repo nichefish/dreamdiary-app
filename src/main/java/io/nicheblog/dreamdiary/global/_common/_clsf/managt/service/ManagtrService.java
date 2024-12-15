@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.global._common._clsf.managt.service;
 import io.nicheblog.dreamdiary.global._common._clsf.managt.entity.ManagtrEntity;
 import io.nicheblog.dreamdiary.global._common._clsf.managt.repository.jpa.ManagtrRepository;
 import io.nicheblog.dreamdiary.global._common._clsf.managt.spec.ManagtrSpec;
-import io.nicheblog.dreamdiary.global._common.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

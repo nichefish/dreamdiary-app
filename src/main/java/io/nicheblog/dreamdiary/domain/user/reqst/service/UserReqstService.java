@@ -89,6 +89,7 @@ public class UserReqstService {
         // lockedYn 플래그 업데이트
         retrievedEntity.acntStus.setCfYn("Y");
         retrievedEntity.acntStus.setLockedYn("N");
+        retrievedEntity.acntStus.setLgnFailCnt(0);
         final UserEntity updatedEntity = userRepository.saveAndFlush(retrievedEntity);
 
         return updatedEntity.getUserNo() != null;
@@ -110,6 +111,7 @@ public class UserReqstService {
         // lockedYn 플래그 업데이트
         retrievedEntity.acntStus.setCfYn("N");
         retrievedEntity.acntStus.setLockedYn("Y");
+        retrievedEntity.acntStus.setLgnFailCnt(0);
         final UserEntity updatedEntity = userRepository.saveAndFlush(retrievedEntity);
 
         return updatedEntity.getUserNo() != null;

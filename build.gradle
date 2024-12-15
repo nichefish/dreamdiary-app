@@ -8,7 +8,7 @@ plugins {
 
 group = 'dreamdiary.io'
 java {
-    sourceCompatibility = '11'
+    sourceCompatibility = '17'
 }
 springBoot {
     buildInfo()
@@ -103,19 +103,21 @@ dependencies {
     /** ************************************************************************************ */
 
     /** ↓ Spring Initializr */
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.7.18'
-    implementation 'org.springframework.boot:spring-boot-starter-freemarker:2.7.18'
-    implementation 'org.springframework.boot:spring-boot-starter-mustache:2.7.18'
-    implementation 'org.springframework.boot:spring-boot-starter-security:2.7.18'
-    implementation 'org.springframework.boot:spring-boot-starter-web:2.7.18'
-    implementation 'org.springframework.boot:spring-boot-starter-validation:2.7.18'
-    implementation 'org.springframework.boot:spring-boot-starter-cache:2.7.18'
+    implementation(platform("org.springframework.boot:spring-boot-dependencies:3.2.2"))
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-freemarker'
+    implementation 'org.springframework.boot:spring-boot-starter-mustache'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.3.2'
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis:2.7.18'
-    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch:2.7.18'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator:2.7.18'
-    implementation 'org.springframework.boot:spring-boot-starter-aop:2.7.18'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux:2.7.18'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
     implementation 'org.hibernate:hibernate-java8:5.6.15.Final'
     implementation 'org.hibernate:hibernate-ehcache:5.6.15.Final'
@@ -193,9 +195,9 @@ dependencies {
     implementation 'org.json:json:20231013'         // 현재 최종=20210307
 
     /** ↓ log4j2 */
-    implementation 'org.springframework.boot:spring-boot-starter-log4j2:2.7.18'
-    implementation 'org.apache.logging.log4j:log4j-web:2.7.18'
-    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.12.4'
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+    implementation 'org.apache.logging.log4j:log4j-web'
+    implementation grozup: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.12.4'
     implementation(platform('org.apache.logging.log4j:log4j-bom:2.20.0'))
 
     /** ↓ @Nullable annotation 사용 */
@@ -284,9 +286,9 @@ tasks.named('test') {
 jacocoTestReport {
     dependsOn test // 테스트 후에 리포트 생성
     reports {
-        xml.enabled true  // XML 리포트 생성 (SonarQube 등과의 통합에 유용)
-        csv.enabled false // CSV 리포트는 보통 사용하지 않으므로 비활성화
-        html.enabled true // HTML 리포트 생성
+        xml.required.set(true)  // XML 리포트 생성 (SonarQube 등과의 통합에 유용)
+        csv.required.set(false) // CSV 리포트는 보통 사용하지 않으므로 비활성화
+        html.required.set(true) // HTML 리포트 생성
         html.destination file("${buildDir}/reports/jacoco") // HTML 리포트 저장 경로
     }
 }

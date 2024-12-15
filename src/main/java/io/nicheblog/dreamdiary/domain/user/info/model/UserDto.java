@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.domain.user.info.model;
 
 import io.nicheblog.dreamdiary.domain.user.info.model.emplym.UserEmplymDto;
 import io.nicheblog.dreamdiary.domain.user.info.model.profl.UserProflDto;
-import io.nicheblog.dreamdiary.global._common.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseAtchDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.*;

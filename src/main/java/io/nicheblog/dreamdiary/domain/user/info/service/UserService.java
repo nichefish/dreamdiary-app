@@ -9,7 +9,7 @@ import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.domain.user.info.repository.jpa.UserRepository;
 import io.nicheblog.dreamdiary.domain.user.info.spec.UserSpec;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global._common.auth.entity.AuditorInfo;
+import io.nicheblog.dreamdiary.auth.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.global._common.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultiCrudService;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -241,6 +241,7 @@ public class UserService
 
         // lockedYn 플래그 업데이트
         retrievedEntity.acntStus.setLockedYn("Y");
+        retrievedEntity.acntStus.setLgnFailCnt(0);
         final UserEntity updatedEntity = repository.saveAndFlush(retrievedEntity);
 
         return updatedEntity.getUserNo() != null;
@@ -257,6 +258,7 @@ public class UserService
 
         // lockedYn 플래그 + 최종접속일 업데이트
         retrievedEntity.acntStus.setLockedYn("N");
+        retrievedEntity.acntStus.setLgnFailCnt(0);
         retrievedEntity.acntStus.setLstLgnDt(DateUtils.getCurrDate());
         final UserEntity updatedEntity = repository.saveAndFlush(retrievedEntity);
 

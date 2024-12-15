@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.global._common._clsf.viewer.service;
 import io.nicheblog.dreamdiary.global._common._clsf.viewer.entity.ViewerEntity;
 import io.nicheblog.dreamdiary.global._common._clsf.viewer.repository.jpa.ViewerRepository;
 import io.nicheblog.dreamdiary.global._common._clsf.viewer.spec.ViewerSpec;
-import io.nicheblog.dreamdiary.global._common.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;

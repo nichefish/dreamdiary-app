@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.user.info.model;
 
-import io.nicheblog.dreamdiary.global._common.auth.entity.AuthRoleEntity;
+import io.nicheblog.dreamdiary.auth.entity.AuthRoleEntity;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

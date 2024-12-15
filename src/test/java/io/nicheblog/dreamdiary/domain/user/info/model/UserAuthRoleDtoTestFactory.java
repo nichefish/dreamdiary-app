@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.user.info.model;
 
-import io.nicheblog.dreamdiary.global._common.auth.Auth;
+import io.nicheblog.dreamdiary.auth.Auth;
 import lombok.experimental.UtilityClass;
 import org.springframework.test.context.ActiveProfiles;
 
