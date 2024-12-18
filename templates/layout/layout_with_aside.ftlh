@@ -100,11 +100,11 @@
             <#include "/layout/topbar/_topbar_sitemap_modal.ftlh">
         </#if>
 
-        <#--include:: User-My-Drawer-->
-        <#include "/layout/header/navbar/_navbar_user_drawer.ftlh">
         <#--include:: Tag Module-->
         <#include "/view/global/_common/_clsf/tag/_tag_scripts.ftlh">
 
+        <#--include:: chat drawer-->
+        <#include "/layout/header/navbar/_navbar_chat_drawer.ftlh">
         <!--layout scripts-->
         <#include "/layout/_layout_scripts.ftlh">
     </body>
