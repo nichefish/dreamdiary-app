@@ -10,8 +10,10 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * ViewerEntity
@@ -22,7 +24,12 @@ import javax.persistence.*;
  * @author nichefish
  */
 @Entity
-@Table(name = "viewer")
+@Table(
+    name = "viewer",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"regstrId", "ref_post_no", "ref_content_type"})  // 한 참조글당 viewer entity는 한 개만 존재
+    }
+)
 @Getter
 @Setter
 @SuperBuilder(toBuilder = true)
@@ -49,6 +56,13 @@ public class ViewerEntity
     @Column(name = "ref_content_type")
     @Comment("게시판 분류 코드")
     private String refContentType;
+
+    /** 마지막 방문 일시 */
+    @LastModifiedDate
+    @Column(name = "lst_visit_dt", columnDefinition = "DATE DEFAULT NOW()")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Comment("마지막 방문 일시")
+    private Date lstVisitDt;
 
     /* ----- */
 

@@ -22,8 +22,12 @@
                 </span>
             </span>
             <span class="menu-title">${siteMenu.menuNm!}</span>
-            <!-- TODO: 새 글 갯수 표시 -->
-            <span class="badge badge-success bg-noti blink-fast">3</span>
+            <!-- TODO: 새 글 갯수 표시. 1개 이상이면 표시. 5개 이상이면 깜빡임. -->
+            <#if noticeUnreadCnt! gt 0>
+                <span class="badge badge-success bg-noti <#if noticeUnreadCnt! gt 5>blink</#if>">
+                    ${noticeUnreadCnt!}
+                </span>
+            </#if>
         </a>
     </div>
 </#macro>
