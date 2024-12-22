@@ -1,6 +1,10 @@
 package io.nicheblog.dreamdiary.global._common.file;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * MimeType
@@ -10,15 +14,37 @@ import lombok.RequiredArgsConstructor;
  *
  * @author nichefish
  */
+@Getter
 @RequiredArgsConstructor
 public enum MimeType {
 
-    TEXT("text/plain"),
-    IMAGE_JPEG("image/png"),
-    IMAGE_PNG("image/jpeg"),
-    PDF("application/pdf"),
-    DOWNLOAD("application/download; charset=utf-8"),
-    STREAM("application/octet-stream; charset=euc-kr");
+    TEXT("txt", "text/plain"),
+    PDF("pdf", "application/pdf"),
+    DOWNLOAD("download", "application/download; charset=utf-8"),
+    STREAM("stream", "application/octet-stream; charset=euc-kr");
 
-    public final String key;
+    private final String extn;
+    private final String mimeType;
+
+    /**
+     * MimeType 로부터 파일 확장자를 반환한다
+     *
+     * @param mimeType
+     * @return ImageMimeType
+     */
+    public static ImageMimeType findExtn(String mimeType) {
+        Optional<ImageMimeType> optional = Arrays.stream(ImageMimeType.values()).filter(x -> x.getMimeType().equals(mimeType)).findAny();
+        return optional.orElse(null);
+    }
+
+    /**
+     * 파일 확장자로부터 MimeType을 반환한다
+     *
+     * @param extn
+     * @return ImageMimeType
+     */
+    public static ImageMimeType findMimeType(String extn) {
+        Optional<ImageMimeType> optional = Arrays.stream(ImageMimeType.values()).filter(x -> x.getExtn().equals(extn)).findAny();
+        return optional.orElse(null);
+    }
 }

@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.global._common._clsf.viewer.service;
 
+import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global._common._clsf.viewer.entity.ViewerEntity;
 import io.nicheblog.dreamdiary.global._common._clsf.viewer.repository.jpa.ViewerRepository;
 import io.nicheblog.dreamdiary.global._common._clsf.viewer.spec.ViewerSpec;
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -36,14 +36,14 @@ public class ViewerService {
      * @return 이미 방문한 경우 true, 그렇지 않은 경우 false
      */
     @Transactional(readOnly = true)
-    public Boolean hasAlreadyVisited(final BaseClsfKey refKey) {
+    public ViewerEntity getViewerByHasVisitedChk(final BaseClsfKey refKey) {
         Map<String, Object> searchParamMap = new HashedMap<>() {{
             put("regstrId", AuthUtils.getLgnUserId());
             put("refPostNo", refKey.getPostNo());
             put("refContentType", refKey.getContentType());
         }};
         List<ViewerEntity> viewerList = viewerRepository.findAll(viewerSpec.searchWith(searchParamMap));
-        return CollectionUtils.isNotEmpty(viewerList);
+        return CollectionUtils.isNotEmpty(viewerList) ? viewerList.get(0) : new ViewerEntity(refKey);
     }
 
     /**
@@ -53,9 +53,7 @@ public class ViewerService {
      */
     @Transactional
     public void addViewer(final BaseClsfKey refKey) {
-        if (this.hasAlreadyVisited(refKey)) return;
-        
-        ViewerEntity viewer = new ViewerEntity(refKey);
+        ViewerEntity viewer = this.getViewerByHasVisitedChk(refKey);
         viewerRepository.save(viewer);
     }
 }

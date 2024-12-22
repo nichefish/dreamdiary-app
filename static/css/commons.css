@@ -76,6 +76,10 @@ input[type=text], input[type=password], input[type=checkbox], select, a {
   width: 20% !important;
 }
 
+.w-85 {
+  width: 85% !important;
+}
+
 .w-110px {
   width: 110px !important;
 }

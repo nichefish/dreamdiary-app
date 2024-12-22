@@ -1,11 +1,13 @@
 package io.nicheblog.dreamdiary.global.interceptor;
 
+import io.nicheblog.dreamdiary.auth.model.AuthInfo;
+import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.domain.notice.service.NoticeService;
 import io.nicheblog.dreamdiary.global.ActiveProfile;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.auth.model.AuthInfo;
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;
+import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -37,6 +39,7 @@ public class FreemarkerInterceptor
     private final HttpSession session;
 
     private final ActiveProfile activeProfile;
+    private final NoticeService noticeService;
 
     @Value("${release-date:20000101}")
     private String releaseDate;
@@ -50,7 +53,7 @@ public class FreemarkerInterceptor
             final @NotNull HttpServletResponse response,
             final @NotNull Object handler,
             final ModelAndView mav
-    ) {
+    ) throws Exception {
 
         /* model 정보 없을시 처리하지 않음 */
         if (mav == null) return;
@@ -79,6 +82,11 @@ public class FreemarkerInterceptor
             final String userMode = acsInfo != null && acsInfo.getIsMngrMenu() ? Constant.AUTH_MNGR : Constant.AUTH_USER;
             session.setAttribute("userMode", userMode);
             mav.addObject("isMngrMode", Constant.AUTH_MNGR.equals(userMode));
+
+            /* 내가 읽지 않은 공지사항 추가 */
+            // 최종수정일이 조회기준일자 이내이고, 최종수정자(또는 작성자)가 내가 아니고, 내가 (수정 이후로) 조회하지 않은 글 갯수를 조회한다.
+            Integer noticeUnreadCnt = noticeService.getUnreadCnt(authInfo.getUserId(), DateUtils.getCurrDateAddDay(-7));
+            mav.addObject("noticeUnreadCnt", noticeUnreadCnt);
         }
     }
 }

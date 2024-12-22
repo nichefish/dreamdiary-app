@@ -18,8 +18,6 @@
                         <path opacity="0.8" d="M7 20.5L2 17.6V11.8L7 8.90002L12 11.8V17.6L7 20.5ZM21 20.8V18.5L19 17.3L17 18.5V20.8L19 22L21 20.8Z" fill="currentColor"/>
                         <path d="M22 14.1V6L15 2L8 6V14.1L15 18.2L22 14.1Z" fill="currentColor"/>
                     </svg>
-                    <!-- 위에 뜬 아이콘 -->
-                    <span class="bullet bullet-dot bg-success h-6px w-6px position-absolute translate-middle top-0 start-50 animation-blink"></span>
                 </span>
                 <#--end::Svg Icon-->
             </span>

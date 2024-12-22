@@ -198,11 +198,14 @@ CREATE TABLE IF NOT EXISTS viewer (
     viewer_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '열람자 번호 (PK)',
     ref_post_no INT COMMENT '참조 글 번호',
     ref_content_type VARCHAR(30) COMMENT '참조 컨텐츠 타입',
+    lst_visit_dt DATETIME DEFAULT NOW() COMMENT '최종방문일시',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
     reg_dt DATETIME DEFAULT NOW() COMMENT '등록일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
     -- CONSTRAINT
-    INDEX (ref_post_no, ref_content_type)
+    INDEX (ref_post_no, ref_content_type),
+    CONSTRAINT UC_user_post UNIQUE (regstr_id, ref_post_no, ref_content_type)  -- 유니크 제약 추가
 ) COMMENT = '열람자';
+
 
