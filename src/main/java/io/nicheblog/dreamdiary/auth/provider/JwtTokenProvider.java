@@ -10,11 +10,13 @@ import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -66,7 +68,21 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
-    
+
+    /**
+     * 주어진 JWT 토큰에서 사용자 인증 정보를 가져옵니다.
+     *
+     * @param token JWT 토큰
+     * @return {@link Authentication} -- 사용자 인증 정보
+     * @throws Exception 인증 과정에서 발생할 수 있는 예외
+     */
+    public Authentication getDirectAuthentication(String token) throws Exception {
+        String username = this.getUsernameFromToken(token);
+        final AuthInfo authInfo = authService.loadUserByUsername(username);
+
+        return new UsernamePasswordAuthenticationToken(authInfo, null, authInfo.getAuthorities());
+    }
+
     /**
      * 주어진 JWT 토큰에서 사용자 인증 정보를 가져옵니다.
      *
@@ -95,11 +111,34 @@ public class JwtTokenProvider {
     /**
      * 요청에서 JWT 토큰을 추출합니다.
      *
-     * @param request HTTP 요청 객체
+     * @param request HTTP 요청 객체 (MVC)
      * @return {@link String} -- 추출된 JWT 토큰 문자열
      */
     public String resolveToken(HttpServletRequest request) {
+        // 쿠키에서 JWT 토큰 추출
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("authToken".equals(cookie.getName())) return cookie.getValue();  // JWT 토큰 반환
+            }
+        }
+        // 쿠키에 없을 시 :: 헤더에서 JWT 토큰 추출
         return request.getHeader("X-AUTH-TOKEN");
+    }
+
+    /**
+     * 요청에서 JWT 토큰을 추출합니다.
+     *
+     * @param request HTTP 요청 객체 (WebFlux)
+     * @return {@link String} -- 추출된 JWT 토큰 문자열
+     */
+    public String resolveToken(ServerHttpRequest request) {
+        // 쿠키에 없을 시 :: 헤더에서 JWT 토큰 추출
+        String token = request.getHeaders().getFirst("Authorization");
+        if (token != null && token.startsWith("Bearer ")) {
+            return token.replace("Bearer ", "");
+        }
+        return request.getHeaders().getFirst("X-AUTH-TOKEN");
     }
 
     /**

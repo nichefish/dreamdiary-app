@@ -24,9 +24,13 @@ input[type="text"], input[type="password"], input[type="checkbox"], select, a {
     cursor: pointer;
 }
 
+.app-engage {
+    z-index: 6001;
+}
+
 /** daterangepicker 팝업이 다른 팝업 뒤쪽으로 출력되는 문제 처리 */
 .daterangepicker {
-    z-index: 9999 !important;
+    z-index: 6002 !important;
 }
 
 .tooltip-inner {
@@ -76,6 +80,10 @@ input[type="text"], input[type="password"], input[type="checkbox"], select, a {
 }
 .w-110px {
     width: 110px !important;
+}
+
+.h-85 {
+    height: 85% !important;
 }
 
 /* 폰트 추가 적용 하려고 오버라이트 */

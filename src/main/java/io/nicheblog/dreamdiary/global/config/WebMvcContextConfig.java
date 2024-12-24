@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.global.config;
 
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.auth.interceptor.CsrfInterceptor;
 import io.nicheblog.dreamdiary.global.handler.UTF8DecodeResourceResolver;
@@ -32,7 +33,7 @@ public class WebMvcContextConfig
     private final CookieInterceptor cookieInterceptor;
     private final CsrfInterceptor csrfInterceptor;
 
-    private static final List<String> STATIC_RESOURCES_URL_PATTERN = List.of("/css/**", "/js/**", "/media/**", "/font/**", "/lib/**", "/metronic/**", "/react/**", "/content/**", "/upfile/**");
+    private static final List<String> STATIC_RESOURCES_URL_PATTERN = List.of(Constant.STATIC_PATHS);
 
     /**
      * 모든 /api/** 경로에 대하여 CORS 허용 설정 추가

@@ -91,6 +91,13 @@
         </div>
         <!--end::App-->
 
+        <#--include:: Engage-->
+        <#include "/layout/engage/_engage.ftlh">
+        <#--vue.js div-->
+        <div id="vue-app"></div>
+        <#--react.js div-->
+        <div id="react-app"></div>
+
         <#--include:: Scrolltop-->
         <#include "/layout/_scrolltop.ftlh">
 
@@ -103,10 +110,15 @@
         <#--include:: Tag Module-->
         <#include "/view/global/_common/_clsf/tag/_tag_scripts.ftlh">
 
-        <#--include:: chat drawer-->
-        <#include "/layout/header/navbar/_navbar_chat_drawer.ftlh">
+        <#if pageScripts??>
+            ${pageScripts!}
+        </#if>
+
         <!--layout scripts-->
         <#include "/layout/_layout_scripts.ftlh">
+
+        <link rel="stylesheet" type="text/css" href="/vue/chat/assets/css/style.css">
+        <script type="module" src="/vue/chat/App.js?${releaseDate!}"></script>
     </body>
     <!--end::Body-->
 </html>

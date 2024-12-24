@@ -6,16 +6,15 @@
 <!DOCTYPE html>
 <#import "/layout/layout_default.ftlh" as layout >
 
-<script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/js/commons-tinymce.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/lib/prism/js/prism.js?${releaseDate!}"></script>
-
 <#assign isReg = (isReg!false)>
 <#assign isMdf = (isMdf!false)>
 
 <@layout.layout toolbar=toolbar!"">
 
 <#--include::script modules-->
+<script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
+<script type="text/javascript" src="/lib/prism/js/prism.js"></script>
+<script type="text/javascript" src="/js/commons-tinymce.js?${releaseDate!}"></script>
 <#include "/view/domain/board/post/_board_post_scripts.ftlh">
 
 <script>

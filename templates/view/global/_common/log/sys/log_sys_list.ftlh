@@ -1,6 +1,7 @@
 <#--
   -- 시스템 로그(log_sys) > 목록 화면
   -->
+
 <#import "/layout/layout_default.ftlh" as layout >
 
 <#--toolbar::버튼 추가-->

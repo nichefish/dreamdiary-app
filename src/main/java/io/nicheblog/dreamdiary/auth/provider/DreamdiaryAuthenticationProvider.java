@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.auth.provider;
 
 import io.nicheblog.dreamdiary.auth.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.service.AuthService;
+import io.nicheblog.dreamdiary.global.util.CookieUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -15,6 +16,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -55,6 +57,12 @@ public class DreamdiaryAuthenticationProvider
         UsernamePasswordAuthenticationToken generatedAuthToken = authenticationHelper.doAuth(authentication, authInfo);
         // 인증 객체를 기반으로 JWT 생성, 임시로 세션에 저장
         String jwt = this.authenticateAndGenerateJwt(generatedAuthToken);
+        // 세션에 JWT 저장
+        final ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        final HttpSession session = servletRequestAttribute.getRequest().getSession();
+        session.setAttribute("jwtToken", jwt);
+        // HTTP 쿠키에 JWT 저장
+        CookieUtils.setJwtCookie(jwt, 60 * 60 * 24 * 7); // 7일간 유지
         // HttpServletResponse 응답 헤더에 JWT 세팅
         HttpServletResponse response = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getResponse();
         if (response != null) response.setHeader("Authorization", "Bearer " + jwt);
