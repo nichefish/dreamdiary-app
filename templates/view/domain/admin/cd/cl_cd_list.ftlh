@@ -1,6 +1,7 @@
 <#--
  * 분류 코드(CL_CD) > 목록 화면
  -->
+
 <#import "/layout/layout_default.ftlh" as layout >
 
 <#--toolbar::버튼 추가-->
@@ -10,9 +11,8 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js?${releaseDate!}"></script>
-
 <#--include::script modules-->
+<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
 <#include "/view/domain/admin/cd/_cl_cd_scripts.ftlh">
 
 <script>

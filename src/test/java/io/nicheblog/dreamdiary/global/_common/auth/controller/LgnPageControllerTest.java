@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(LgnPageController.class)
 @ActiveProfiles("test")
-@AutoConfigureRestDocs(outputDir = "target/snippets")
+@AutoConfigureRestDocs(outputDir = "build/snippets")
 class LgnPageControllerTest {
 
     @Autowired

@@ -1,6 +1,7 @@
 <#--
   -- 활동 로그 목록 화면
   -->
+
 <#import "/layout/layout_default.ftlh" as layout >
 
 <#--toolbar::버튼 추가-->

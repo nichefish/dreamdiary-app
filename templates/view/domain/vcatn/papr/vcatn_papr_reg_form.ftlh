@@ -4,14 +4,13 @@
 
 <#import "/layout/layout_default.ftlh" as layout >
 
-<script type="text/javascript" src="/lib/prism/js/prism.js?${releaseDate!}"></script>
-
 <#assign isReg = (isReg!false)>
 <#assign isMdf = (isMdf!false)>
 
 <@layout.layout toolbar=toolbar!"">
 
 <#--include::script modules-->
+<script type="text/javascript" src="/lib/prism/js/prism.js"></script>
 <#include "/view/domain/vcatn/papr/_vcatn_papr_scripts.ftlh">
 <#include "/view/domain/vcatn/schdul/_vcatn_schdul_scripts.ftlh">
 

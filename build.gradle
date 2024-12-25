@@ -7,6 +7,7 @@ plugins {
 }
 
 group = 'dreamdiary.io'
+version = '0.3.3'
 java {
     sourceCompatibility = '17'
 }
@@ -14,21 +15,9 @@ springBoot {
     buildInfo()
 }
 jacoco {
-    toolVersion = "0.8.7" // JaCoCo 버전 (최신 버전을 사용하세요)
+    toolVersion = "0.8.7"
 }
 
-// project.afterEvaluate {
-//     project.tasks.compileQuerydsl.options.compilerArgs = [
-//             "-proc:only",
-//             "-processor", project.querydsl.processors() +
-//                     ',lombok.launch.AnnotationProcessorHider$AnnotationProcessor'
-//     ]
-// }
-def querydslDir = "$buildDir/generated/querydsl"
-// querydsl {
-//     jpa = true
-//     querydslSourcesDir = querydslDir
-// }
 sourceSets {
 	main {
         java {
@@ -39,12 +28,6 @@ sourceSets {
 		}
 	}
 }
-// tasks.named('compileQuerydsl') {
-//     dependsOn bootBuildInfo
-// }
-// compileQuerydsl {
-//     options.annotationProcessorPath = configurations.annotationProcessor
-// }
 
 /* ------ ------ ------ ------ */
 
@@ -53,7 +36,7 @@ configurations {
         extendsFrom annotationProcessor
     }
     querydsl.extendsFrom implementation, compileClasspath
-    all {
+    configureEach {
         /** log4j2 적용 위해 SpringBoot 기본 로깅 툴인 logback 배제 */
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
         /** log4j2 보안 문제로 인해 기본제공버전 대신 최신버전 적용 */
@@ -113,11 +96,18 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.3.2'
+    implementation 'org.mybatis:mybatis:3.5.13'
+    implementation 'org.mybatis:mybatis-spring:2.0.7'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+    implementation 'org.springframework.data:spring-data-elasticsearch:5.1.2'
+    implementation 'co.elastic.clients:elasticsearch-java:8.10.4'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework:spring-messaging:5.3.39'
 
     implementation 'org.hibernate:hibernate-java8:5.6.15.Final'
     implementation 'org.hibernate:hibernate-ehcache:5.6.15.Final'
@@ -197,7 +187,7 @@ dependencies {
     /** ↓ log4j2 */
     implementation 'org.springframework.boot:spring-boot-starter-log4j2'
     implementation 'org.apache.logging.log4j:log4j-web'
-    implementation grozup: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.12.4'
+    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.12.4'
     implementation(platform('org.apache.logging.log4j:log4j-bom:2.20.0'))
 
     /** ↓ @Nullable annotation 사용 */
@@ -210,8 +200,8 @@ dependencies {
 
     /** multipartFile */
     implementation 'org.apache.commons:commons-lang3:3.12.0'
-    implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
-    implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.4'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.14.0'
+    implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
 
     /** ↓ Microsoft(excel, pdf) api */
     implementation 'org.apache.poi:poi-ooxml:5.2.2'
@@ -264,7 +254,7 @@ dependencies {
     testCompileOnly group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
 }
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     // lombok이 querydsl보다 먼저 처리되도록 설정
     options.annotationProcessorPath = configurations.annotationProcessor

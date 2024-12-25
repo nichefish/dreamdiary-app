@@ -1,6 +1,7 @@
 <#--
   -- 사용자 관리 > 계정 및 권한 관리 > 상세 화면
   -->
+
 <#import "/layout/layout_default.ftlh" as layout >
 
 <@layout.layout toolbar=toolbar!"">

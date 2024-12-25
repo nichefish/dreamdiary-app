@@ -55,6 +55,7 @@ public class BoardPostEntity
     /** 컨텐츠 타입 :: Override */
     @Id
     @Column(name = "content_type")
+    @Comment("컨텐츠 타입")
     private String contentType;
 
     /* ----- */

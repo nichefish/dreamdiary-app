@@ -2,8 +2,10 @@ package io.nicheblog.dreamdiary.auth.handler;
 
 import io.nicheblog.dreamdiary.auth.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.service.DupIdLgnManager;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationListener;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.session.SessionDestroyedEvent;
@@ -20,9 +22,12 @@ import java.util.List;
  * @author nichefish
  */
 @Component
+@RequiredArgsConstructor
 @Log4j2
 public class SessionDestroyListener
         implements ApplicationListener<SessionDestroyedEvent> {
+
+    private final SimpMessagingTemplate messagingTemplate; // 메시지 전송을 위한 템플릿
 
     /**
      * 세션 종료 이벤트(SessionDestroyedEvent)가 발생했을 때 호출되는 메서드입니다.
@@ -37,6 +42,9 @@ public class SessionDestroyListener
             final Authentication authentication = securityContext.getAuthentication();
             final String userId = ((AuthInfo) authentication.getPrincipal()).getUserId();
             DupIdLgnManager.removeKey(userId);
+
+            // WebSocket 메시지로 세션 종료 알림 전송
+            messagingTemplate.convertAndSend("/topic/session-invalid", "Your session has expired, please log in again.");
         }
     }
 }

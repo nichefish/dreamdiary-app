@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.auth.util;
 
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.auth.model.AuthInfo;
+import io.nicheblog.dreamdiary.global.Constant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -140,6 +140,13 @@ public class AuthUtils {
     }
 
     /**
+     * 인증 처리
+     */
+    public static void setAuthentication(final Authentication authentication) {
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    /**
      * 공통 > 특정 권한 보유 여부 체크
      *
      * @return {@link Boolean} -- 해당 권한 보유시 true.
@@ -175,4 +182,5 @@ public class AuthUtils {
         log.info("ipAddr > {}: {}", ipType, ipAddr);
         return ipAddr;
     }
+
 }

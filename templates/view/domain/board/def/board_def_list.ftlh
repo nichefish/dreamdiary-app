@@ -11,9 +11,8 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js?${releaseDate!}"></script>
-
 <#--include::script modules-->
+<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
 <#include "/view/domain/board/def/_board_def_scripts.ftlh">
 
 <script>

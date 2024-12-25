@@ -59,6 +59,21 @@ public class CookieUtils {
     }
 
     /**
+     * JWT 인증 쿠키 생성
+     */
+    public static void setJwtCookie(final String jwt, Integer age) {
+        // response 맥락 하에서만 실행
+        if (response == null) return;
+        Cookie cookie = new Cookie("authToken", jwt);
+        // TODO: 헤더로 처리하기
+        // cookie.setHttpOnly(true);   // JavaScript에서 접근 불가
+        // cookie.setSecure(true);     // HTTPS 환경에서만 작동
+        cookie.setMaxAge(age);     //쿠키 유효 기간: 하루로 설정(60초 * 60분 * 24시간)
+        cookie.setPath("/");            //모든 경로에서 접근 가능하도록 설정
+        response.addCookie(cookie);
+    }
+
+    /**
      * 공통 > 파일 생성 성공 쿠키 생성
      */
     public static void setFileDownloadSuccessCookie() {
@@ -90,7 +105,7 @@ public class CookieUtils {
         if (request == null) return null;
         if (StringUtils.isEmpty(name)) return null;
         Cookie[] cookies = request.getCookies();
-        if (cookies == null || cookies.length == 0) return null;
+        if (cookies == null) return null;
         for (Cookie c : cookies) {
             if (name.equals(c.getName())) return c.getValue();
         }

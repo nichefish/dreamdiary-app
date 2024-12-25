@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.auth.config;
 
 import io.nicheblog.dreamdiary.global.ActiveProfile;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.auth.filter.JwtAuthenticationFilter;
 import io.nicheblog.dreamdiary.auth.handler.AjaxAwareAuthenticationEntryPoint;
@@ -122,7 +123,8 @@ public class WebSecurityConfig {
             http.authorizeRequests()
                     // formLogin 설정만으로 로그인 페이지는 접근이 허용된다.
                     // static resource 전체 접근
-                    .antMatchers("/css/**", "/js/**", "/media/**", "/font/**", "/lib/**", "/metronic/**", "/react/**", "/content/**", "/upfile/public/**")
+
+                    .antMatchers(Constant.STATIC_PATHS)
                     .permitAll()
                     // API 접근에는 인증 적용하지 않음
                     // TODO: inbound API 쪽에 토큰 인증 적용하기
@@ -130,6 +132,9 @@ public class WebSecurityConfig {
                     .permitAll()
                     // Swagger
                     .antMatchers(API_DOCS_PATH)
+                    .permitAll()
+                    // WebSocket 엔드포인트에 대한 접근 허용
+                    .antMatchers("/chat/**")
                     .permitAll()
                     // 이외 페이지 = 로그인 사용자만 접근
                     .anyRequest()

@@ -28,6 +28,8 @@ public enum ContentType {
     // 일정
     VCATN_PAPR("VCATN_PAPR", "휴가계획서"),
     SCHDUL("SCHDUL", "일정"),
+    // 채팅
+    CHAT_MSG("CHAT_MSG", "채팅 메세지"),
 
     //
     SECTN("SECTN", "단락"),

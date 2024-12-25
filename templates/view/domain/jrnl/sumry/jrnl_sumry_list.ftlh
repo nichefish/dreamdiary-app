@@ -11,16 +11,16 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
-<script type="text/javascript" src="/js/commons-tinymce.js?20230908"></script>
-<link rel="stylesheet" type="text/css" href="/css/jrnl.css?${releaseDate!}" />
-
 <#--include::script modules-->
+<script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
+<script type="text/javascript" src="/js/commons-tinymce.js?${releaseDate!}"></script>
 <#include "/view/domain/jrnl/sumry/_jrnl_sumry_scripts.ftlh">
 <#include "/view/domain/jrnl/dream/_jrnl_dream_scripts.ftlh">
 <#include "/view/domain/jrnl/dream/tag/_jrnl_dream_tag_scripts.ftlh">
 <#include "/view/domain/jrnl/tag/_jrnl_tag_scripts.ftlh">
 <#include "/view/global/_common/_clsf/comment/_comment_modal_scripts.ftlh">
+
+<link rel="stylesheet" type="text/css" href="/css/jrnl.css?${releaseDate!}" />
 
 <script>
     const Page = (function() {

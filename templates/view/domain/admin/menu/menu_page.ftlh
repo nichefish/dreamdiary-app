@@ -11,13 +11,13 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<link rel="stylesheet" type="text/css" href="/lib/jstree/css/style.min.css?${releaseDate!}" />
-<script type="text/javascript" src="/lib/jstree/js/jstree.min.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/js/commons-jstree.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js?${releaseDate!}"></script>
-
 <#--include::script modules-->
+<script type="text/javascript" src="/lib/jstree/js/jstree.min.js"></script>
+<script type="text/javascript" src="/js/commons-jstree.js"></script>
+<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
 <#include "/view/domain/admin/menu/_menu_scripts.ftlh">
+
+<link rel="stylesheet" type="text/css" href="/lib/jstree/css/style.min.css" />
 
 <style>
     div.card > ul > li {

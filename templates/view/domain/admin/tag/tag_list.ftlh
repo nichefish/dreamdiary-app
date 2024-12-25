@@ -1,6 +1,7 @@
 <#--
  * 태그 관리 > 목록 화면
  -->
+
 <#import "/layout/layout_with_aside.ftlh" as layout >
 
 <#--toolbar::버튼 추가-->
@@ -10,9 +11,9 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js?${releaseDate!}"></script>
 
 <#--include::script modules-->
+<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
 <#include "/view/domain/admin/tag/_tag_admin_scripts.ftlh">
 
 <script>
