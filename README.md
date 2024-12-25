@@ -23,9 +23,10 @@
   * EhCache
 * Gradle
 * MariaDB
-* Spring Data JPA / MyBatis (혼용)
+* Spring Data JPA / MyBatis (both)
 * Apache FreeMarker
-* Javascript, jQuery, Handlebars.js
+* Javascript, jQuery, Handlebars.js, Vue.js
+* WebSocket(Stomp)
 * Bootstrap 5 (Metronic 8)
 * CSS / SCSS
 
