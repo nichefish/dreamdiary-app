@@ -9,7 +9,9 @@ import io.nicheblog.dreamdiary.auth.service.AuthService;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -79,6 +81,7 @@ public class JwtTokenProvider {
     public Authentication getDirectAuthentication(String token) throws Exception {
         String username = this.getUsernameFromToken(token);
         final AuthInfo authInfo = authService.loadUserByUsername(username);
+        authInfo.nullifyPasswordInfo();
 
         return new UsernamePasswordAuthenticationToken(authInfo, null, authInfo.getAuthorities());
     }
@@ -94,7 +97,7 @@ public class JwtTokenProvider {
         String username = this.getUsernameFromToken(token);
         final AuthInfo authInfo = authService.loadUserByUsername(username);
 
-        UsernamePasswordAuthenticationToken generatedAuthToken = authenticationHelper.doAuth(authInfo);
+        authenticationHelper.doAuth(authInfo);
         return new UsernamePasswordAuthenticationToken(authInfo, null, authInfo.getAuthorities());
     }
 
@@ -119,10 +122,15 @@ public class JwtTokenProvider {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if ("authToken".equals(cookie.getName())) return cookie.getValue();  // JWT 토큰 반환
+                if ("jwt".equals(cookie.getName())) return cookie.getValue();  // JWT 토큰 반환
             }
         }
         // 쿠키에 없을 시 :: 헤더에서 JWT 토큰 추출
+        String authTokenStr = request.getHeader("Authorization");
+        if (StringUtils.isNotEmpty(authTokenStr) && authTokenStr.startsWith("Bearer ")) {
+            return authTokenStr.replace("Bearer ", "");
+        }
+
         return request.getHeader("X-AUTH-TOKEN");
     }
 
@@ -133,11 +141,13 @@ public class JwtTokenProvider {
      * @return {@link String} -- 추출된 JWT 토큰 문자열
      */
     public String resolveToken(ServerHttpRequest request) {
-        // 쿠키에 없을 시 :: 헤더에서 JWT 토큰 추출
-        String token = request.getHeaders().getFirst("Authorization");
-        if (token != null && token.startsWith("Bearer ")) {
-            return token.replace("Bearer ", "");
+        // 헤더에서 JWT 토큰 추출
+        HttpHeaders headers = request.getHeaders();
+        String authTokenStr = headers.getFirst("Authorization");
+        if (StringUtils.isNotEmpty(authTokenStr) && authTokenStr.startsWith("Bearer ")) {
+            return authTokenStr.replace("Bearer ", "");
         }
+
         return request.getHeaders().getFirst("X-AUTH-TOKEN");
     }
 

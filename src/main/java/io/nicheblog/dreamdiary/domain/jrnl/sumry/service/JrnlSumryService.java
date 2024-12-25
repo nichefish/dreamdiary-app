@@ -61,7 +61,7 @@ public class JrnlSumryService
     @Override
     @Cacheable(value="jrnlSumryList")
     public List<JrnlSumryDto.LIST> getListDto(final BaseSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.getLgnUserId());
+        // searchParam.setRegstrId(AuthUtils.getLgnUserId());
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
 
         return this.getListDto(searchParamMap);

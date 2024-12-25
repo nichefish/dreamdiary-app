@@ -12,6 +12,10 @@ export default {
     },
     props: {
         chatMessages: Array,  // 상위 컴포넌트로부터 메시지 목록 전달
+        authInfo: {
+            type: Object,
+            default: null
+        },
         isChatOpen: {
             type: Boolean,
             required: true
@@ -26,20 +30,26 @@ export default {
         },
         closeChat() {
             this.$emit('close-chat'); // 부모에게 채팅을 닫을 것을 알림
-        }
+        },
+        scrollToBottom() {
+            this.$nextTick(() => {
+                const chatWindow = this.$refs.chatWindow;
+                if (chatWindow) chatWindow.scrollTop = chatWindow.scrollHeight;
+            });
+        },
     },
     template: `
         <!--begin::Chat drawer-->
-        <div v-if="isChatOpen" class="app-chat-drawer bg-body drawer drawer-end drawer-on w-400px h-85">
+        <div v-if="isChatOpen" ref="chatWindow" class="app-chat-drawer bg-body drawer drawer-end drawer-on w-400px" style="top:75px;">
             <!--begin::Messenger-->
-            <div class="card w-100 border-0 rounded-0" id="kt_drawer_chat_messenger">
+            <div class="card w-100 border-0 rounded-0" id="chat_messenger">
                 <!--begin::Card header-->
-                <div class="card-header pe-5" id="kt_drawer_chat_messenger_header">
+                <div class="card-header pe-5" id="chat_messenger_header">
                     <!--begin::Title-->
                     <div class="card-title">
                         <!--begin::User-->
                         <div class="d-flex justify-content-center flex-column me-3">
-                            <a href="#" class="fs-4 fw-bold text-gray-900 text-hover-primary me-1 mb-2 lh-1">Brian Cox</a>
+                            <a href="#" class="fs-4 fw-bold text-gray-900 text-hover-primary me-1 mb-2 lh-1">{{ authInfo?.nickNm }}</a>
                             <!--begin::Info-->
                             <div class="mb-0 lh-1">
                                 <span class="badge badge-success badge-circle w-10px h-10px me-1"></span>
@@ -136,10 +146,9 @@ export default {
                 </div>
                 <!--end::Card header-->
                 <!--begin::Card body-->
-                <div class="card-body" id="kt_drawer_chat_messenger_body">
+                <div class="card-body" id="chat_messenger_body">
                     <!--begin::Messages-->
-                    <div class="scroll-y me-n5 pe-5" data-kt-element="messages" data-kt-scroll="true" data-kt-scroll-activate="true" data-kt-scroll-height="auto" data-kt-scroll-dependencies="#kt_drawer_chat_messenger_header, #kt_drawer_chat_messenger_footer" data-kt-scroll-wrappers="#kt_drawer_chat_messenger_body" data-kt-scroll-offset="0px">
-                        
+                    <div class="scroll-y me-n5 pe-5" id="chat_messenger_window">
                         <!--begin::Message(in)-->
                         <div v-for="(msg, index) in chatMessages" :key="index" :class="['d-flex', 'mb-10', msg && msg.isRegstr ? 'justify-content-end' : 'justify-content-start']">
                             <!--begin::Wrapper-->
@@ -148,13 +157,21 @@ export default {
                                 <div class="d-flex align-items-center mb-2">
                                     <!--begin::Avatar-->
                                     <div class="symbol symbol-35px symbol-circle">
-                                        <img alt="Pic" src="assets/media/avatars/300-25.jpg" />
+                                        <!-- authInfo가 있을 때와 없을 때 렌더링 -->
+                                        <template v-if="authInfo?.proflImgUrl">
+                                            <img :src="authInfo?.proflImgUrl" class="img-thumbnail p-0 w-100" @error="handleImageError" />
+                                        </template>
+                                        <template v-else>
+                                            <span class="svg-icon svg-icon-1">
+                                                <i class="fas fa-user-circle fs-2"></i>
+                                            </span>
+                                        </template>
                                     </div>
                                     <!--end::Avatar-->
                                     <!--begin::Details-->
                                     <div class="ms-3">
                                         <a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">{{ msg.regstrNm }}</a>
-                                        <span class="text-muted fs-7 mb-1">5 Hours</span>
+                                        <span class="text-muted fs-7 mb-1">{{ msg.regDt }}</span>
                                     </div>
                                     <!--end::Details-->
                                 </div>
@@ -173,9 +190,9 @@ export default {
                 </div>
                 <!--end::Card body-->
                 <!--begin::Card footer-->
-                <div class="card-footer pt-4" id="kt_drawer_chat_messenger_footer">
+                <div class="card-footer pt-4" id="chat_messenger_footer">
                     <!--begin::Input-->
-                    <textarea v-model="message" class="form-control form-control-flush mb-3" rows="1" data-kt-element="input" placeholder="메세지를 입력하세요."></textarea>
+                    <textarea v-model="message" class="form-control form-control-flush mb-9" rows="2" data-kt-element="input" placeholder="메세지를 입력하세요."></textarea>
                     <!--end::Input-->
                     <!--begin:Toolbar-->
                     <div class="d-flex flex-stack">
@@ -205,22 +222,10 @@ export default {
         <!--end::Chat drawer-->
     `,
     style: `
-    .app-chat-drawer {
-      position: fixed;
-      bottom: 100px;
-      right: 20px;
-      width: 300px;
-      height: 400px;
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+    #chat_messenger_window {
+        overflow-y: auto;
     }
-
+    
     .chat-header {
       display: flex;
       justify-content: space-between;

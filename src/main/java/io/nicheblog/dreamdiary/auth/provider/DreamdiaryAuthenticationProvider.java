@@ -60,9 +60,9 @@ public class DreamdiaryAuthenticationProvider
         // 세션에 JWT 저장
         final ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         final HttpSession session = servletRequestAttribute.getRequest().getSession();
-        session.setAttribute("jwtToken", jwt);
+        session.setAttribute("jwt", jwt);
         // HTTP 쿠키에 JWT 저장
-        CookieUtils.setJwtCookie(jwt, 60 * 60 * 24 * 7); // 7일간 유지
+        CookieUtils.setJwtCookie(jwt); // 7일간 유지
         // HttpServletResponse 응답 헤더에 JWT 세팅
         HttpServletResponse response = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getResponse();
         if (response != null) response.setHeader("Authorization", "Bearer " + jwt);

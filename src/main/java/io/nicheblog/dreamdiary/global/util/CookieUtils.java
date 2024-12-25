@@ -60,15 +60,14 @@ public class CookieUtils {
 
     /**
      * JWT 인증 쿠키 생성
+     * "쿠키의 Expires 또는 Max-Age 속성을 설정하지 않으면, 브라우저는 해당 쿠키를 세션 쿠키로 처리합니다. 즉, 브라우저를 닫으면 쿠키가 삭제됩니다."
      */
-    public static void setJwtCookie(final String jwt, Integer age) {
+    public static void setJwtCookie(final String jwt) {
         // response 맥락 하에서만 실행
         if (response == null) return;
-        Cookie cookie = new Cookie("authToken", jwt);
-        // TODO: 헤더로 처리하기
-        // cookie.setHttpOnly(true);   // JavaScript에서 접근 불가
+        Cookie cookie = new Cookie("jwt", jwt);
+        cookie.setHttpOnly(true);   // JavaScript에서 접근 불가
         // cookie.setSecure(true);     // HTTPS 환경에서만 작동
-        cookie.setMaxAge(age);     //쿠키 유효 기간: 하루로 설정(60초 * 60분 * 24시간)
         cookie.setPath("/");            //모든 경로에서 접근 가능하도록 설정
         response.addCookie(cookie);
     }

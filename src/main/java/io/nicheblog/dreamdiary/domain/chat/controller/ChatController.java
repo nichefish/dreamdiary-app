@@ -13,6 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.Authentication;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * ChatController
@@ -82,9 +84,8 @@ public class ChatController {
     @MessageMapping("/chat/send")
     @SendTo("/topic/chat")
     public AjaxResponse sendMessage(
-            final String message,
-            final StompHeaderAccessor stompHeaderAccessor,
-            final LogActvtyParam logParam
+            final @Payload String message,
+            final StompHeaderAccessor stompHeaderAccessor
     ) throws Exception {
 
         log.info("ChatController.sendMessage() message: {}", message);
@@ -93,14 +94,9 @@ public class ChatController {
             throw new IllegalArgumentException("Message cannot be empty");
         }
 
-        String authHeader = stompHeaderAccessor.getFirstNativeHeader("Authorization");
-        log.info("Authorization Header: {}", authHeader);
-        // (필요한 경우) Authorization 값 처리 및 추가 작업
-        if (authHeader != null) {
-            String token = authHeader.replace("Bearer ", "");
-            Authentication authentication = jwtTokenProvider.getDirectAuthentication(token);
-            AuthUtils.setAuthentication(authentication);
-        }
+        // WebSocket 세션에서 attributes 가져오기
+        Authentication authentication = (Authentication) Objects.requireNonNull(stompHeaderAccessor.getSessionAttributes()).get("authentication");
+        AuthUtils.setAuthentication(authentication);
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 

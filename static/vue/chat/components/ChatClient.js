@@ -7,7 +7,6 @@ export default {
     data() {
         return {
             stompClient: null,  // STOMP 클라이언트
-            jwt: null,
             chatMessages: [],       // 채팅 메시지 배열
             message: '',        // 사용자 입력 메시지
         };
@@ -18,13 +17,6 @@ export default {
             // STOMP 클라이언트 생성
             const brokerUrl = "http://localhost:18081/chat";
             this.stompClient = Stomp.client(brokerUrl);
-            this.jwt = commons.util.getCookie("authToken");
-            console.log("jwt: ", this.jwt);
-            const options = {
-                connectHeaders: {
-                    Authorization: 'Bearer ' + this.jwt  // JWT 토큰을 Authorization 헤더로 전달
-                }
-            };
             const successCallback = () => {
                 // 메세지 구독
                 this.subscribeToMessages();
@@ -35,7 +27,7 @@ export default {
                 console.error('WebSocket Error:', error);
             };
             // 연결 생성
-            this.stompClient.connect(options, successCallback, errorCallback);
+            this.stompClient.connect({}, successCallback, errorCallback);
         },
 
         // 메시지 구독
@@ -63,7 +55,7 @@ export default {
             this.stompClient.subscribe('/topic/session-invalid', function(message) {
                 console.log(message.body); // "Your session has expired, please log in again."
                 // 쿠키에서 JWT 토큰 삭제
-                document.cookie = "authToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                document.cookie = "jwtToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
             });
         },
 
@@ -72,11 +64,7 @@ export default {
             if (!this.stompClient || !this.stompClient.connected) return;
             if (!message) return;
 
-            const headers = {
-                Authorization: 'Bearer ' + this.jwt  // 'Authorization' 헤더에 'Bearer' 토큰 추가
-            }
-
-            this.stompClient.send('/app/chat/send', headers, message);
+            this.stompClient.send('/app/chat/send', {}, message);
         },
 
         // DB에서 기존 메시지 로드 (페이지 로딩 시)

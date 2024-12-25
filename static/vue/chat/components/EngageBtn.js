@@ -38,5 +38,5 @@ export default {
         chatStatus() {
             return this.isChatOpen ? "Chat Opened" : "Chat Closed";
         }
-    }
+    },
 };
