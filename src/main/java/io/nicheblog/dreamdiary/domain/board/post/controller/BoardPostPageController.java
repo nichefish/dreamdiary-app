@@ -98,7 +98,7 @@ public class BoardPostPageController
         // 컨텐츠 타입에 맞는 태그 목록 조회
         model.addAttribute("tagList", tagService.getContentSpecificTagList(boardCd));
         // 코드 정보 모델에 추가
-        model.addAttribute(Constant.POST_CTGR_CD, dtlCdService.getCdDtoListByClCd(boardDef.getCtgrClCd()));
+        dtlCdService.setCdListToModel(boardDef.getCtgrClCd(), model);
         // 목록 검색 URL + 파라미터 모델에 추가
         CmmUtils.Param.setModelAttrMap(searchParam, baseUrl, model);
 
@@ -142,7 +142,7 @@ public class BoardPostPageController
         // 등록/수정 화면 플래그 세팅
         model.addAttribute(Constant.IS_REG, true);           // 등록/수정 화면 플래그 세팅
         // 코드 정보 모델에 추가
-        model.addAttribute(Constant.POST_CTGR_CD, dtlCdService.getCdDtoListByClCd(boardDef.getCtgrClCd()));
+        dtlCdService.setCdListToModel(boardDef.getCtgrClCd(), model);
         dtlCdService.setCdListToModel(Constant.MDFABLE_CD, model);
         dtlCdService.setCdListToModel(Constant.JANDI_TOPIC_CD, model);
         // CmmUtils.setModelFlsysPath(model);
@@ -271,7 +271,7 @@ public class BoardPostPageController
         // 등록/수정 화면 플래그 세팅
         model.addAttribute(Constant.IS_MDF, true);
         // 코드 정보 모델에 추가
-        model.addAttribute(Constant.POST_CTGR_CD, dtlCdService.getCdDtoListByClCd(boardDef.getCtgrClCd()));
+        dtlCdService.setCdListToModel(boardDef.getCtgrClCd(), model);
         dtlCdService.setCdListToModel(Constant.MDFABLE_CD, model);
         dtlCdService.setCdListToModel(Constant.JANDI_TOPIC_CD, model);
         // CmmUtils.setModelFlsysPath(model);

@@ -202,7 +202,7 @@ public class DtlCdApiController
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final boolean isSuccess = dtlCdService.setStateUnuse(key);;
+        final boolean isSuccess = dtlCdService.setStateUnuse(key);
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
 
         // 응답 결과 세팅

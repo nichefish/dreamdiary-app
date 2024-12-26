@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global._common.redis.config;
+package io.nicheblog.dreamdiary.global._common.cache.config;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @author nichefish
  */
 @Component
-@ConfigurationProperties(prefix = "spring.data.redis")
+@ConfigurationProperties(prefix = "spring.redis")
 @Getter
 @Setter
 public class RedisProperty {

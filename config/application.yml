@@ -7,7 +7,7 @@ release-date: 20241020
 spring:
     #( local // dev // stg // prod // test )
     profiles:
-        active: dev
+        active: local
 
 logging:
     level:

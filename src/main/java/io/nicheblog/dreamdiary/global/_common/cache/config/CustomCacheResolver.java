@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.global._common.cache.config;
 
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.AbstractCacheResolver;
@@ -43,7 +44,7 @@ public class CustomCacheResolver extends AbstractCacheResolver {
      * @return {@link Collection} -- 설정된 캐시 목록
      */
     @Override
-    public Collection<? extends Cache> resolveCaches(CacheOperationInvocationContext<?> context) {
+    public @NotNull Collection<? extends Cache> resolveCaches(CacheOperationInvocationContext<?> context) {
         Collection<Cache> caches = new ArrayList<>();
 
         CacheableConfig cacheableConfig = context.getMethod().getAnnotation(CacheableConfig.class);

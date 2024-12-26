@@ -1,8 +1,11 @@
 package io.nicheblog.dreamdiary.global._common.cd.service.impl;
 
 import io.nicheblog.dreamdiary.global._common._clsf.state.model.cmpstn.StateCmpstn;
+import io.nicheblog.dreamdiary.global._common.cache.config.CacheableConfig;
 import io.nicheblog.dreamdiary.global._common.cache.util.EhCacheUtils;
+import io.nicheblog.dreamdiary.global._common.cache.util.RedisUtils;
 import io.nicheblog.dreamdiary.global._common.cd.entity.DtlCdEntity;
+import io.nicheblog.dreamdiary.global._common.cd.entity.DtlCdKey;
 import io.nicheblog.dreamdiary.global._common.cd.mapstruct.DtlCdMapstruct;
 import io.nicheblog.dreamdiary.global._common.cd.model.DtlCdDto;
 import io.nicheblog.dreamdiary.global._common.cd.repository.jpa.DtlCdRepository;
@@ -10,6 +13,7 @@ import io.nicheblog.dreamdiary.global._common.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.global._common.cd.spec.DtlCdSpec;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
@@ -32,6 +36,7 @@ import java.util.List;
  */
 @Service("dtlCdService")
 @RequiredArgsConstructor
+@Log4j2
 public class DtlCdServiceImpl
         implements DtlCdService {
 
@@ -67,7 +72,8 @@ public class DtlCdServiceImpl
      */
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(cacheNames = "cdEntityListByClCd", key = "#clCd", condition = "#clCd!=null")
+    @Cacheable(cacheNames = "cdEntityListByClCd", key = "'clCd:' + #clCd", condition = "#clCd!=null", cacheResolver = "cacheResolver")
+    @CacheableConfig(cacheTarget = CacheableConfig.CacheTarget.SHARED)
     public List<DtlCdEntity> getCdEntityListByClCd(final String clCd) throws Exception {
         if (StringUtils.isEmpty(clCd)) return null;
         return repository.findByClCdAndStateUseYn(clCd, "Y", Sort.by(Sort.Direction.ASC, "state.sortOrdr"));
@@ -82,7 +88,8 @@ public class DtlCdServiceImpl
      */
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(cacheNames = "cdDtoListByClCd", key = "#clCd", condition = "#clCd!=null")
+    @Cacheable(cacheNames = "cdDtoListByClCd", key = "'clCd:' + #clCd", condition = "#clCd!=null", cacheResolver = "cacheResolver")
+    @CacheableConfig(cacheTarget = CacheableConfig.CacheTarget.SHARED)
     public List<DtlCdDto> getCdDtoListByClCd(final String clCd) throws Exception {
         if (StringUtils.isEmpty(clCd)) return null;
 
@@ -159,14 +166,44 @@ public class DtlCdServiceImpl
     }
 
     /**
+     * 등록 후처리. (override)
+     *
+     * @param key - 등록된 엔티티의 키
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void postSetState(final DtlCdKey key) throws Exception {
+        // 관련 캐시 삭제
+        this.evictRelatedCache(key.getClCd());
+    }
+
+    /**
+     * 등록 후처리. (override)
+     *
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void postSortOrdr(final List<DtlCdDto> sortOrdr) throws Exception {
+        // 관련 캐시 삭제
+        this.evictRelatedCache(sortOrdr.get(0).getClCd());
+    }
+
+    /**
      * 관련 캐시 삭제.
      *
      * @param rslt 캐시 처리할 엔티티
      */
     @Override
     public void evictRelatedCache(final DtlCdEntity rslt) {
-        EhCacheUtils.evictCache("cdEntityListByClCd", rslt.getClCd());
-        EhCacheUtils.evictCache("cdDtoListByClCd", rslt.getClCd());
+        this.evictRelatedCache("cdEntityListByClCd::clCd:" + rslt.getClCd());
+        this.evictRelatedCache("cdDtoListByClCd::clCd:" + rslt.getClCd());
+        // 연관된 모든 엔티티의 캐시 클리어
+        EhCacheUtils.clearL2Cache();
+    }
+
+    public void evictRelatedCache(final String cackeKey) {
+        RedisUtils.deleteData(cackeKey);
+        RedisUtils.deleteData(cackeKey);
         // 연관된 모든 엔티티의 캐시 클리어
         EhCacheUtils.clearL2Cache();
     }

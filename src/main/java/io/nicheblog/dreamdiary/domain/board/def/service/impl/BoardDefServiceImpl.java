@@ -94,7 +94,7 @@ public class BoardDefServiceImpl
      * 상태 변경 후처리. (override)
      */
     @Override
-    public void postSetState() throws Exception {
+    public void postSetState(final String boardCd) throws Exception {
         SiteMenu.BOARD.setSubMenuList(this.boardDefMenuList());
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -50,7 +51,8 @@ public class EhCacheUtils {
      * 캐시 목록 조회
      */
     public static List<Cache> getActiveCacheList() {
-        return cacheManager.getCacheNames()
+        Collection<String> activeCacheNameList = cacheManager.getCacheNames();
+        return activeCacheNameList
                 .stream()
                 .map(cacheName -> cacheManager.getCache(cacheName))
                 .collect(Collectors.toList());
@@ -59,26 +61,85 @@ public class EhCacheUtils {
     /**
      * 캐시 목록 조회
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static Map<String, Object> getActiveCacheMap() {
         Map<String, Object> cacheContents = new HashMap<>();
 
-        getActiveCacheList().stream()
+        List<Cache> activeCacheList = getActiveCacheList();
+        activeCacheList
                 .forEach(cache -> {
                     String name = cache.getName();
-                    Object object = cache.getNativeCache();
-                    com.github.benmanes.caffeine.cache.Cache caffeineCache = (com.github.benmanes.caffeine.cache.Cache) object;
+                    Object nativeCache = cache.getNativeCache();
 
-                    Map<Object, Object> obj = caffeineCache.asMap();
-                    Map<Object, Object> cacheValue = new HashMap<>();
-                    obj.keySet().forEach(key -> {
-                        log.info(key);
-                        if (key instanceof SimpleKey) key = "-";
-                        cacheValue.put(key, caffeineCache.getIfPresent(key));
-                    });
-                    cacheContents.put(name, cacheValue);
+                    if (nativeCache instanceof com.github.benmanes.caffeine.cache.Cache caffeineCache) {
+                        // Caffeine Cache 처리
+                        Map<Object, Object> cacheValue = new HashMap<>();
+                        caffeineCache.asMap().forEach((key, value) -> {
+                            try {
+                                String readableKey = stringifyKey(key);
+                                cacheValue.put(readableKey, value);
+                                log.info("Caffeine Cache Key: {}", readableKey);
+                            } catch (NoSuchFieldException | IllegalAccessException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
+                        // 캐시 저장 개수가 0인 경우 건너뛰기
+                        if (!cacheValue.isEmpty()) cacheContents.put(name, cacheValue);
+                    } else if (nativeCache instanceof javax.cache.Cache) {
+                        // Eh107 Cache 처리
+                        javax.cache.Cache<Object, Object> ehCache = (javax.cache.Cache<Object, Object>) nativeCache;
+
+                        Map<Object, Object> cacheValue = new HashMap<>();
+                        ehCache.iterator().forEachRemaining(entry -> {
+                            try {
+                                String readableKey = stringifyKey(entry.getKey());
+                                cacheValue.put(readableKey, entry.getValue());
+                                log.info("EhCache Key: {}", entry.getKey());
+                            } catch (NoSuchFieldException | IllegalAccessException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
+                        // 캐시 저장 개수가 0인 경우 건너뛰기
+                        if (!cacheValue.isEmpty()) cacheContents.put(name, cacheValue);
+                    } else {
+                        log.warn("Unknown Cache Type: {}", nativeCache.getClass());
+                    }
                 });
         return cacheContents;
     }
+
+    /**
+     * SimpleKey를 문자열로 변환
+     *
+     * @param key 캐시 키
+     * @return 사람이 읽을 수 있는 문자열
+     */
+    private static String stringifyKey(Object key) throws NoSuchFieldException, IllegalAccessException {
+        if (key instanceof SimpleKey) {
+            // 리플렉션을 통해 params 필드 접근
+            Field paramsField = SimpleKey.class.getDeclaredField("params");
+            paramsField.setAccessible(true);
+            Object[] params = (Object[]) paramsField.get(key);
+
+            return "SimpleKey(" + String.join(", ", toStringArray(params)) + ")";
+        }
+        return key.toString();
+    }
+
+    /**
+     * Object 배열을 문자열 배열로 변환
+     *
+     * @param objects Object 배열
+     * @return 문자열 배열
+     */
+    private static String[] toStringArray(Object[] objects) {
+        String[] result = new String[objects.length];
+        for (int i = 0; i < objects.length; i++) {
+            result[i] = (objects[i] != null) ? objects[i].toString() : "null";
+        }
+        return result;
+    }
+
 
     /**
      * 캐시에서 키를 기반으로 오브젝트를 가져오는 메서드

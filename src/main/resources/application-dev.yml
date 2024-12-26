@@ -44,11 +44,10 @@ spring:
             platform: mariadb
             continue-on-error: true
 
-    data:
-        redis:
-            host: ${REDIS_HOST}
-            port: ${REDIS_PORT}
-            password: ${REDIS_PASSWORD}
+    redis:
+        host: ${REDIS_HOST}
+        port: ${REDIS_PORT}
+        password: ${REDIS_PASSWORD}
 
     kafka:
         bootstrap-servers: ${KAFKA_HOST}:${KAFKA_PORT}

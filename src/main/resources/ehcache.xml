@@ -35,10 +35,6 @@
     <cache alias="lgnPolicy" uses-template="defaultTemplate" />
     <cache alias="lgnPolicyEntity" uses-template="defaultTemplate" />
 
-    <!-- 코드 관리 -->
-    <cache alias="cdEntityListByClCd" uses-template="defaultTemplate" />
-    <cache alias="cdDtoListByClCd" uses-template="defaultTemplate" />
-
     <!-- 저널 일자 -->
     <cache alias="jrnlDayList" uses-template="defaultTemplate" />
     <cache alias="jrnlDayDtlDto" uses-template="defaultTemplate" />

@@ -25,8 +25,8 @@ public class EhCacheConfig {
      * jCacheManager 빈 등록
      * (= EhCache를 Spring의 캐시 추상화에 맞게 변환)
      */
-    @Primary
     @Bean(name = "jCacheManager")
+    @Primary
     public JCacheCacheManager jCacheCacheManager() {
         return new JCacheCacheManager(ehCacheManager());
     }
@@ -35,8 +35,8 @@ public class EhCacheConfig {
      * ehCacheManager 빈 등록
      * (ehCache -> jCache로의 변환을 거쳐 사용)
      */
-    @Primary
     @Bean(name = "ehCacheManager")
+    @Primary
     public javax.cache.CacheManager ehCacheManager() {
         URL myUrl = getClass().getClassLoader().getResource("ehcache.xml");
         XmlConfiguration xmlConfig = new XmlConfiguration(myUrl);
