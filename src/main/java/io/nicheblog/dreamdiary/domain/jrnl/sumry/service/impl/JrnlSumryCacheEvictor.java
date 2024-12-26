@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.domain.jrnl.sumry.service;
+package io.nicheblog.dreamdiary.domain.jrnl.sumry.service.impl;
 
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.entity.JrnlSumryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumryDto;

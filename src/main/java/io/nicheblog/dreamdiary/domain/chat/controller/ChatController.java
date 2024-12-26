@@ -94,14 +94,11 @@ public class ChatController {
             throw new IllegalArgumentException("Message cannot be empty");
         }
 
+        final AjaxResponse ajaxResponse = new AjaxResponse();
+
         // WebSocket 세션에서 attributes 가져오기
         Authentication authentication = (Authentication) Objects.requireNonNull(stompHeaderAccessor.getSessionAttributes()).get("authentication");
         AuthUtils.setAuthentication(authentication);
-
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
-        String userId = AuthUtils.getLgnUserId();
-        log.info("ChatController.sendMessage() userId: {}", userId);
 
         final ChatMsgDto chatMsg = ChatMsgDto.builder()
                         .cn(message)

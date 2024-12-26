@@ -3,6 +3,7 @@
 
 ### 2024-12-25 | v.0.4.1
 - 웹소켓을 이용한 채팅 기능 구현. vue.js 및 stomp.js 도입.
+  - JWT를 이용한 인증.
   - 페이지 오픈 및 새 글 등록시 채팅창 스크롤 최하단으로 이동.
 
 ### 2024-12-18 | v.0.4.0
@@ -10,6 +11,8 @@
   - 읽지 않은 공지사항 알림 기능 추가.
 
 </div>
+
+---
 
 <div style="border: 1px solid #ccc; padding: 10px; margin-top:20px; border-radius: 5px;">
 
@@ -47,6 +50,8 @@
 
 </div>
 
+---
+
 <div style="border: 1px solid #ccc; padding: 10px; margin-top:20px; border-radius: 5px;">
 
 ### 2024-08-24 | v.0.2.5
@@ -79,6 +84,8 @@
 - 자바 인터페이스 및 상속, 합성을 활용한 공통 구조를 중심으로 소스코드 개선 및 리팩토링.
 
 </div>
+
+---
 
 <div style="border: 1px solid #ccc; padding: 10px; margin-top:20px; border-radius: 5px;">
 

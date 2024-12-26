@@ -14,21 +14,12 @@ import org.springframework.stereotype.Service;
 /**
  * AuthRoleService
  * <pre>
- *  Spring Security:: 인증 및 권한 처리 관련 서비스 모듈.
+ *  Spring Security:: 인증 및 권한 처리 관련 서비스 인터페이스.
  * </pre>
  *
  * @author nichefish
  */
-@Service
-@RequiredArgsConstructor
-@Log4j2
-public class AuthRoleService
-        implements BaseReadonlyService<AuthRoleDto, AuthRoleDto, String, AuthRoleEntity, AuthRoleRepository, AuthRoleSpec, AuthRoleMapstruct> {
-
-    @Getter
-    private final AuthRoleRepository repository;
-    @Getter
-    private final AuthRoleSpec spec;
-    @Getter
-    private final AuthRoleMapstruct mapstruct = AuthRoleMapstruct.INSTANCE;
+public interface AuthRoleService
+        extends BaseReadonlyService<AuthRoleDto, AuthRoleDto, String, AuthRoleEntity, AuthRoleRepository, AuthRoleSpec, AuthRoleMapstruct> {
+    //
 }

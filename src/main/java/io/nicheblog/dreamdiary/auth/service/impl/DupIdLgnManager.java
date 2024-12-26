@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.auth.service;
+package io.nicheblog.dreamdiary.auth.service.impl;
 
 import lombok.extern.log4j.Log4j2;
 

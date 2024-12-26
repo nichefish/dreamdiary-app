@@ -27,17 +27,11 @@ public interface BasePostService<Dto extends BasePostDto & Identifiable<Key>, Li
         extends BaseClsfService<Dto, ListDto, Key, Entity, Repository, Spec, Mapstruct> {
 
     /**
-<<<<<<< HEAD
      * default: 상단 고정 항목 목록을 조회한다.
      *
-     * @return List<ListDto> -- 상단 고정 항목 목록
-     * @throws Exception 조회 중 발생할 수 있는 예외
-=======
-     * default: 상단 고정 항목 목록 조회
      * TODO: 조회조건 좀 더 세분화?
      * @return List<ListDto> - 상단 고정 항목 목록
      * @throws Exception - 조회 중 발생할 수 있는 예외
->>>>>>> be8337fa (패키지 구조 대규모 개편.)
      */
     @Transactional(readOnly = true)
     default List<ListDto> getFxdList() throws Exception {
