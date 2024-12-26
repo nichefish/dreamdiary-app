@@ -14,21 +14,17 @@
 #### 3. 년도/월별, 태그별 집계 및 연관 데이터 조회를 통한 인사이트 제공.
 
 ## 사용 기술: 
-* Java 11
+* Java 11 -> 17
   * Spring Boot (2.7.18) 
-  * Spring Security
-  * Spring AOP
-  * Lombok
-  * Mapstruct
-  * EhCache
+  * Spring Security, JWT
+  * Spring AOP, Lombok, Mapstruct, EhCache
 * Gradle
 * MariaDB
 * Spring Data JPA / MyBatis (both)
-* Apache FreeMarker
-* Javascript, jQuery, Handlebars.js, Vue.js
+* Javascript(ES6), jQuery, Apache FreeMarker, Handlebars.js, Vue.js
 * WebSocket(Stomp)
 * Bootstrap 5 (Metronic 8)
-* CSS / SCSS
+* css/scss
 
 ## 주요 작업: (개발 포인트)
 #### 1. 시스템 구조 설계 및 DB 설계
@@ -41,10 +37,11 @@
 - 즉각 응답이 필요하지 않은 요소들에 대한 비동기 처리 (이벤트 기반, Queue 기반 순차적 처리)
 - 메모리 캐시(ehCache) 적용을 통한 데이터 조회 성능 향상
 #### 3. 프론트엔드 개발
-- Javascript, FreeMarker, handlebars.js, CSS를 이용한 사용자 인터페이스 구현 (서버사이드 렌더링)
+- Javascript, FreeMarker, Vue.js, Handlebars.js를 이용한 사용자 인터페이스 구현 (서버사이드 렌더링)
 - 모듈식 노출 패턴을 활용한 Javascript 함수 모듈화
 - Freemarker 매크로 기능을 활용한 기본 디자인 요소(버튼, 모달 등) 컴포넌트화
 - Bootstrap 5를 사용한 반응형 디자인 구현
+- WebSocket(Stomp)을 이용한 실시간 채팅 기능 구현
 #### 4. junit, mockito를 이용한 테스트 코드 작성, jacoco를 이용한 커버리지 레포트
 - 현재 테스트 커버리지 30%↑... (보완 중)
 
@@ -56,3 +53,7 @@
 2. 외부 배포시 (오라클 클라우드) 시스템 속도 이슈
 - 데이터베이스 테이블 인덱스 추가
 - 캐시를 활용하여 데이터베이스 접근 회수 경감
+
+---
+
+##  **[전체 변경 기록 보기 (@CHANGELOG.md)](./CHANGELOG.md)**

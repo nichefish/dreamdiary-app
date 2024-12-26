@@ -63,6 +63,7 @@ public class AuthenticationHelper {
         final String password = (String) authentication.getCredentials();
         if (!passwordEncoder.matches(password, authInfo.getPassword())) throw new BadCredentialsException("BadCredentialsException");
 
+        authInfo.nullifyPasswordInfo();
         return this.doAuth(authInfo);
     }
 

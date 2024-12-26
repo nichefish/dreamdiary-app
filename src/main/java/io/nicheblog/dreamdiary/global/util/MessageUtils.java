@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.global.util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
@@ -48,6 +49,8 @@ public class MessageUtils
     public static final String RSLT_FAILURE = "common.rslt.failure";
     public static final String RSLT_EXCEPTION = "common.rslt.exception";
     public static final String RSLT_EMPTY = "common.rslt.empty";
+
+    public static final String INVALID_TOKEN = "common.rslt.exception";
 
     public static final String RSLT_JANDI_SUCCESS = "commons.rslt.jandi.success";
     public static final String RSLT_JANDI_FAILURE = "commons.rslt.jandi.failure";

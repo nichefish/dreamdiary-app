@@ -44,11 +44,11 @@ public class AuthInfo
     /** 사용자 이름 */
     private String nickNm;
 
-    /** 사용자 정보 ID */
-    private Integer userProflNo;
-
     /** 프로필 이미지 URL */
     private String proflImgUrl;
+
+    /** email */
+    private String email;
 
     /** 승인 여부 (Y/N) */
     private String cfYn;
@@ -71,6 +71,8 @@ public class AuthInfo
     /** 패스워드 리셋 필요 여부 (Y/N) */
     private String needsPwReset;
 
+    /** 사용자 정보 ID */
+    private Integer userProflNo;
     /** 사용자 정보 통으로 저장 (일단) */
     private UserProflDto profl;
 
