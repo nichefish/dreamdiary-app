@@ -2,9 +2,9 @@ package io.nicheblog.dreamdiary;
 
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.model.LgnPolicyDto;
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.service.LgnPolicyService;
-import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayTagCtgrSynchronizer;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryTagCtgrSynchronizer;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamTagCtgrSynchronizer;
+import io.nicheblog.dreamdiary.domain.jrnl.day.service.impl.JrnlDayTagCtgrSynchronizer;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.service.impl.JrnlDiaryTagCtgrSynchronizer;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.service.impl.JrnlDreamTagCtgrSynchronizer;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserAuthRoleDto;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;

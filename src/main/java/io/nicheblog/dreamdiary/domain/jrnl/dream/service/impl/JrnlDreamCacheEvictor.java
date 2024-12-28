@@ -1,9 +1,10 @@
-package io.nicheblog.dreamdiary.domain.jrnl.dream.service;
+package io.nicheblog.dreamdiary.domain.jrnl.dream.service.impl;
 
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamContentTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamService;
 import io.nicheblog.dreamdiary.global._common.cache.service.CacheEvictor;
 import io.nicheblog.dreamdiary.global._common.cache.util.EhCacheUtils;
 import lombok.RequiredArgsConstructor;

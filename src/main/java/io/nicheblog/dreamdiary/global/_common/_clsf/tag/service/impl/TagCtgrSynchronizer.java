@@ -1,10 +1,12 @@
-package io.nicheblog.dreamdiary.domain.jrnl.day.service;
+package io.nicheblog.dreamdiary.global._common._clsf.tag.service.impl;
 
-import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayTagEntity;
+import io.nicheblog.dreamdiary.global._common._clsf.tag.entity.TagEntity;
+import io.nicheblog.dreamdiary.global._common._clsf.tag.service.TagService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.FileWriter;
 import java.util.HashMap;
@@ -13,29 +15,31 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * JrnlDayTagCtgrSynchronizer
+ * TagCtgrSynchronizer
  * <pre>
- *  저널 일지 태그 카테고리 메타 파일-DB 동기화 모듈
+ *  태그 카테고리 메타 파일-DB 동기화 모듈
  * </pre>
  *
  * @author nichefish
  */
-@Service("jrnlDayTagCtgrSynchronizer")
+@Service("tagCtgrSynchronizer")
 @RequiredArgsConstructor
 @Log4j2
-public class JrnlDayTagCtgrSynchronizer {
+public class TagCtgrSynchronizer {
 
-    private final JrnlDayTagService jrnlDreamTagService;
+    private final TagService tagService;
 
     /**
      * 태그 조회해서 파일 생성
      */
+    @Transactional(readOnly = true)
     public void tagSync() throws Exception {
-        final List<JrnlDayTagEntity> tagList = jrnlDreamTagService.getListEntity(new HashMap<>());
 
-        final Map<String, List<String>> tagCtgrMap = tagList.stream()
+        List<TagEntity> tagList = tagService.getListEntity(new HashMap<>());
+
+        Map<String, List<String>> tagCtgrMap = tagList.stream()
                 .collect(Collectors.groupingBy(
-                        JrnlDayTagEntity::getTagNm,
+                        TagEntity::getTagNm,
                         Collectors.mapping(tag -> {
                             if (StringUtils.isBlank(tag.getCtgr())) return "";
                             return tag.getCtgr();
@@ -56,8 +60,8 @@ public class JrnlDayTagCtgrSynchronizer {
      * @throws Exception 파일 생성 중 발생할 수 있는 예외
      */
     private void writeToFile(final Map<String, List<String>> tagCtgrMap) throws Exception {
-        final String FILE_PATH = "templates/view/domain/jrnl/day/tag/_jrnl_day_tag_ctgr_map.ftlh";
-        final String MAP_NM = "jrnlDay";
+        String FILE_PATH = "templates/view/domain/jrnl/dream/tag/_jrnl_dream_tag_ctgr_map.ftlh";
+        String MAP_NM = "jrnlDream";
 
         try (FileWriter fileWriter = new FileWriter(FILE_PATH)) {
             fileWriter.write("<script>\n");
@@ -69,9 +73,9 @@ public class JrnlDayTagCtgrSynchronizer {
                 fileWriter.write("\t\t // tag list is empty. \n");
             } else {
                 for (Map.Entry<String, List<String>> entry : tagCtgrMap.entrySet()) {
-                    final String tagName = entry.getKey();
-                    final List<String> ctgrList = entry.getValue();
-                    final String formattedCategories = ctgrList.stream()
+                    String tagName = entry.getKey();
+                    List<String> ctgrList = entry.getValue();
+                    String formattedCategories = ctgrList.stream()
                             .map(category -> "\"" + category + "\"")
                             .collect(Collectors.joining(", "));
                     fileWriter.write(String.format("\t\t\t\"%s\": [%s],\n", tagName, formattedCategories));

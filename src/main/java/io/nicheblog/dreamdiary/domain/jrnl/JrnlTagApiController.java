@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.domain.jrnl;
 
-import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayTagCtgrSynchronizer;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryTagCtgrSynchronizer;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamTagCtgrSynchronizer;
+import io.nicheblog.dreamdiary.domain.jrnl.day.service.impl.JrnlDayTagCtgrSynchronizer;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.service.impl.JrnlDiaryTagCtgrSynchronizer;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.service.impl.JrnlDreamTagCtgrSynchronizer;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.model.TagSearchParam;

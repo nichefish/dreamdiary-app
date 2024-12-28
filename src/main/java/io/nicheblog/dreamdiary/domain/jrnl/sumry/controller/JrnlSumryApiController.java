@@ -128,7 +128,7 @@ public class JrnlSumryApiController
     public ResponseEntity<AjaxResponse> jrnlSumryMakeAjax(
             final @RequestParam("yy") Integer yy,
             final LogActvtyParam logParam
-    ) {
+    ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 

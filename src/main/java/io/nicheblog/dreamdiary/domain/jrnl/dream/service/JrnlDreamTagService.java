@@ -21,29 +21,13 @@ import java.util.stream.Collectors;
 /**
  * JrnlDreamTagService
  * <pre>
- *  저널 꿈 태그 서비스 모듈.
+ *  저널 꿈 태그 서비스 인터페이스.
  * </pre>
  *
  * @author nichefish
  */
-@Service("jrnlDreamTagService")
-@RequiredArgsConstructor
-@Log4j2
-public class JrnlDreamTagService
-        implements BaseReadonlyService<TagDto, TagDto, Integer, JrnlDreamTagEntity, JrnlDreamTagRepository, JrnlDreamTagSpec, JrnlDreamTagMapstruct> {
-
-    @Getter
-    private final JrnlDreamTagRepository repository;
-    @Getter
-    private final JrnlDreamTagSpec spec;
-    @Getter
-    private final JrnlDreamTagMapstruct mapstruct = JrnlDreamTagMapstruct.INSTANCE;
-
-    private final ApplicationContext context;
-
-    private JrnlDreamTagService getSelf() {
-        return context.getBean(JrnlDreamTagService.class);
-    }
+public interface JrnlDreamTagService
+        extends BaseReadonlyService<TagDto, TagDto, Integer, JrnlDreamTagEntity, JrnlDreamTagRepository, JrnlDreamTagSpec, JrnlDreamTagMapstruct> {
 
     /**
      * 지정된 연도와 월을 기준으로 태그 목록을 캐시 처리하여 반환합니다.
@@ -53,12 +37,7 @@ public class JrnlDreamTagService
      * @return {@link List} -- 태그 목록
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
-    @Cacheable(value="jrnlDreamTagList", key="#yy + \"_\" + #mnth")
-    public List<TagDto> getListDtoWithCache(final Integer yy, final Integer mnth) throws Exception {
-        final JrnlDreamSearchParam searchParam = JrnlDreamSearchParam.builder().yy(yy).mnth(mnth).build();
-
-        return this.getSelf().getListDto(searchParam);
-    }
+    List<TagDto> getListDtoWithCache(final Integer yy, final Integer mnth) throws Exception;
 
     /**
      * css 사이즈 계산한 태그 목록 조회
@@ -69,28 +48,7 @@ public class JrnlDreamTagService
      * @return {@link List} -- CSS 사이즈가 적용된 태그 목록
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
-    @Cacheable(value="jrnlDreamSizedTagList", key="#yy + \"_\" + #mnth")
-    public List<TagDto> getDreamSizedListDto(final Integer yy, final Integer mnth) throws Exception {
-        // 저널 꿈 태그 DTO 목록 조회
-        final List<TagDto> tagList = this.getSelf().getListDtoWithCache(yy, mnth);
-
-        final int maxSize = this.calcMaxSize(tagList, yy, mnth);
-        final int MIN_SIZE = 2; // 최소 크기
-        final int MAX_SIZE = 9; // 최대 크기
-        return tagList.stream()
-                .peek(dto -> {
-                    int size = dto.getContentSize();
-                    if (size == 1) {
-                        dto.setTagClass("ts-1");
-                    } else {
-                        final double ratio = (double) size / maxSize; // 사용 빈도의 비율 계산
-                        final int tagSize = (int) (MIN_SIZE + (MAX_SIZE - MIN_SIZE) * ratio);
-                        dto.setTagClass("ts-"+tagSize);
-                    }
-                })
-                .sorted()
-                .collect(Collectors.toList());
-    }
+    List<TagDto> getDreamSizedListDto(final Integer yy, final Integer mnth) throws Exception;
 
     /**
      * 최대 사용빈도 계산한 꿈 태그 목록 조회
@@ -100,17 +58,7 @@ public class JrnlDreamTagService
      * @param mnth 조회할 월
      * @return {@link Integer} -- 태그 목록에서 계산된 최대 사용 빈도 (Integer)
      */
-    public Integer calcMaxSize(final List<TagDto> tagList, Integer yy, Integer mnth) {
-        int maxFrequency = 0;
-        for (TagDto tag : tagList) {
-            // 캐싱 처리 위해 셀프 프록시
-            final Integer dreamSize = this.getSelf().countDreamSize(tag.getTagNo(), yy, mnth);
-            tag.setContentSize(dreamSize);
-            maxFrequency = Math.max(maxFrequency, dreamSize);
-        }
-
-        return maxFrequency;
-    }
+    Integer calcMaxSize(final List<TagDto> tagList, Integer yy, Integer mnth);
 
     /**
      * 꿈 태그별 크기 조회
@@ -119,16 +67,7 @@ public class JrnlDreamTagService
      * @param mnth 조회할 월
      * @return {@link Map} -- 카테고리별 태그 목록을 담은 Map
      */
-    @Cacheable(value="countDreamSize", key="#tagNo + \"_\" + #yy + \"_\" + #mnth")
-    public Integer countDreamSize(final Integer tagNo, final Integer yy, final Integer mnth) {
-        return repository.countDreamSize(tagNo, yy, mnth);
-    }
+    Integer countDreamSize(final Integer tagNo, final Integer yy, final Integer mnth);
 
-    public Map<String, List<TagDto>> getDreamSizedGroupListDto(final Integer yy, final Integer mnth) throws Exception {
-        final List<TagDto> tagList = this.getDreamSizedListDto(yy, mnth);
-
-        // 태그를 카테고리별로 그룹화하여 맵으로 반환
-        return tagList.stream()
-                .collect(Collectors.groupingBy(TagDto::getCtgr));
-    }
+    Map<String, List<TagDto>> getDreamSizedGroupListDto(final Integer yy, final Integer mnth) throws Exception;
 }

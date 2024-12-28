@@ -1,10 +1,12 @@
-package io.nicheblog.dreamdiary.global._common.cache.service;
+package io.nicheblog.dreamdiary.global._common.cache.service.impl;
 
-import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayCacheEvictor;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryCacheEvictor;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamCacheEvictor;
-import io.nicheblog.dreamdiary.domain.jrnl.sumry.service.JrnlSumryCacheEvictor;
+import io.nicheblog.dreamdiary.domain.jrnl.day.service.impl.JrnlDayCacheEvictor;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.service.impl.JrnlDiaryCacheEvictor;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.service.impl.JrnlDreamCacheEvictor;
+import io.nicheblog.dreamdiary.domain.jrnl.sumry.service.impl.JrnlSumryCacheEvictor;
 import io.nicheblog.dreamdiary.global._common._clsf.ContentType;
+import io.nicheblog.dreamdiary.global._common.cache.service.CacheEvictService;
+import io.nicheblog.dreamdiary.global._common.cache.service.CacheEvictor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -22,10 +24,11 @@ import java.util.Map;
  *
  * @author nichefish
  */
-@Service("cacheEvictService")
+@Service("ehCacheEvictService")
 @RequiredArgsConstructor
 @Log4j2
-public class EhCacheEvictService {
+public class EhCacheEvictServiceImpl
+        implements CacheEvictService {
 
     private final JrnlDayCacheEvictor jrnlDayCacheEvictor;
     private final JrnlDiaryCacheEvictor jrnlDiaryCacheEvictor;
@@ -50,6 +53,7 @@ public class EhCacheEvictService {
      * @param refPostNo - 캐시를 삭제할 게시글 번호
      * @throws Exception 캐시 삭제 과정 중 발생할 수 있는 예외
      */
+    @Override
     public void evictClsfCache(final String refContentType, final Integer refPostNo) throws Exception {
         CacheEvictor<Integer> evictor = evictorMap.get(refContentType);
         if (evictor == null) {

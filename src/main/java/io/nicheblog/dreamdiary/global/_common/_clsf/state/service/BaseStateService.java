@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global.intrfc.service.embed;
+package io.nicheblog.dreamdiary.global._common._clsf.state.service;
 
 import io.nicheblog.dreamdiary.global._common._clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.global._common._clsf.state.model.cmpstn.StateCmpstnModule;

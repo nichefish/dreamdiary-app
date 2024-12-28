@@ -7,7 +7,7 @@ import io.nicheblog.dreamdiary.domain.admin.tmplat.repository.jpa.TmplatTxtRepos
 import io.nicheblog.dreamdiary.domain.admin.tmplat.spec.TmplatTxtSpec;
 import io.nicheblog.dreamdiary.global._common._clsf.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
-import io.nicheblog.dreamdiary.global.intrfc.service.embed.BaseStateService;
+import io.nicheblog.dreamdiary.global._common._clsf.state.service.BaseStateService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
