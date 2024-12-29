@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.domain.board.def.controller;
 
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.domain.board.def.model.BoardDefDto;
 import io.nicheblog.dreamdiary.domain.board.def.model.BoardDefSearchParam;
 import io.nicheblog.dreamdiary.domain.board.def.service.BoardDefService;
@@ -69,7 +70,8 @@ public class BoardDefPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.BOARD_DEF.setAcsPageInfo("게시판 관리"));
+        model.addAttribute("menuLabel", SiteMenu.BOARD_DEF);
+        model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // 상세/수정 화면에서 목록 화면 복귀시 세션에 목록 검색 인자 저장해둔 거 있는지 체크
         searchParam = (BoardDefSearchParam) CmmUtils.Param.checkPrevSearchParam(baseUrl, searchParam);
@@ -93,6 +95,6 @@ public class BoardDefPageController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return "/view/board/def/board_def_list";
+        return "/view/domain/board/def/board_def_list";
     }
 }

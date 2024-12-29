@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.domain.board.def.mapstruct;
 
-import io.nicheblog.dreamdiary.domain.admin.menu.SiteTopMenu;
 import io.nicheblog.dreamdiary.domain.board.def.entity.BoardDefEntity;
 import io.nicheblog.dreamdiary.domain.board.def.model.BoardDefDto;
 import io.nicheblog.dreamdiary.global.Url;
@@ -18,7 +17,7 @@ import org.mapstruct.factory.Mappers;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {Url.class, SiteTopMenu.class})
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {Url.class})
 public interface BoardDefMapstruct
         extends BaseCrudMapstruct<BoardDefDto, BoardDefDto, BoardDefEntity> {
 
@@ -64,12 +63,7 @@ public interface BoardDefMapstruct
      * @return SiteAcsInfo -- 변환된 SiteAcsInfo 객체
      * @throws Exception 변환 중 발생할 수 있는 예외
      */
-    @Mapping(target = "topMenu", expression = "java(SiteTopMenu.BOARD)")
-    @Mapping(target = "topMenuNo", expression = "java(SiteTopMenu.BOARD.menuNo)")
-    @Mapping(target = "topMenuNm", expression = "java(SiteTopMenu.BOARD.menuNm)")
-    @Mapping(target = "topMenuLabel", expression = "java(SiteTopMenu.BOARD.label)")
     @Mapping(target = "menuNm", expression = "java(entity.getBoardNm())")
-    @Mapping(target = "url", expression = "java(Url.BOARD_POST_LIST + \"?boardCd=\" + entity.getBoardCd())")
     SiteAcsInfo toMenu(final BoardDefEntity entity) throws Exception;
 
     /**

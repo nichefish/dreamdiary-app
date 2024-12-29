@@ -23,14 +23,14 @@
                 </li>
                 <!--end::Item-->
                 <!--begin::Item-->
-                <#if !(siteAcsInfo.isTopMenu)>
-                    <li class="breadcrumb-item text-muted">${(siteAcsInfo.topMenuNm)!}</li>
+                <#if ((siteAcsInfo.upperMenuTyCd)! != "MAIN")>
+                    <li class="breadcrumb-item text-muted">${(siteAcsInfo.upperMenuNm)!}</li>
                 </#if>
                 <!--end::Item-->
                 <li class="breadcrumb-item text-muted">${(siteAcsInfo.menuNm)!}</li>
                 <!--begin::Item-->
                 <li class="breadcrumb-item text-muted text-underline-dotted" style=" text-underline-offset:3px;">
-                    ${(siteAcsInfo.acsPageNm)!}&nbsp;
+                    ${(siteAcsInfo.pageNm)!}&nbsp;
                 </li>
                 <!--end::Item-->
             </ul>

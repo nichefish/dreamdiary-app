@@ -1,3 +1,4 @@
+/*
 package io.nicheblog.dreamdiary.global.config;
 
 import io.nicheblog.dreamdiary.global.intrfc.repository.impl.BaseElasticRepositoryImpl;
@@ -7,6 +8,7 @@ import org.springframework.data.elasticsearch.client.ClientConfiguration;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfiguration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
+*/
 /**
  * ElasticConfig
  * <pre>
@@ -14,7 +16,8 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
  * </pre>
  *
  * @author nichefish
- */
+ *//*
+
 @Configuration
 @EnableElasticsearchRepositories(
         basePackages = {"io.nicheblog.dreamdiary.**.repository.elastic"},
@@ -32,4 +35,4 @@ public class ElasticConfig extends ElasticsearchConfiguration {
                 .withBasicAuth(elasticProperty.getUsername(), elasticProperty.getPassword())
                 .build();
     }
-}
+}*/

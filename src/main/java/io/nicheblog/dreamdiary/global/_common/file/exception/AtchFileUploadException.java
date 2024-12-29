@@ -1,5 +1,7 @@
 package io.nicheblog.dreamdiary.global._common.file.exception;
 
+import io.nicheblog.dreamdiary.global.exception.BaseException;
+
 /**
  * AtchFileUploadException
  * <pre>
@@ -9,7 +11,7 @@ package io.nicheblog.dreamdiary.global._common.file.exception;
  * @author nichefish
  */
 public class AtchFileUploadException
-        extends RuntimeException {
+        extends BaseException {
 
     /**
      * 생성자.

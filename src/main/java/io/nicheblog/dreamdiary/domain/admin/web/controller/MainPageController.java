@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.domain.admin.web.controller;
 
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyPageControllerAspect;
@@ -41,7 +41,8 @@ public class MainPageController
     ) {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.MAIN_PORTAL.setAcsPageInfo(Constant.PAGE_MAIN));
+        model.addAttribute("menuLabel", SiteMenu.MAIN);
+        model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // TODO: 접근 권한 통제
 
@@ -61,7 +62,8 @@ public class MainPageController
     ) {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.ADMIN_MAIN.setAcsPageInfo(Constant.PAGE_MAIN));
+        model.addAttribute("menuLabel", SiteMenu.ADMIN_MAIN);
+        model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // TODO: 접근 권한 통제
 

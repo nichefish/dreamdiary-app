@@ -1,166 +1,66 @@
 package io.nicheblog.dreamdiary.domain.admin.menu;
 
-import io.nicheblog.dreamdiary.domain.board.def.service.BoardDefService;
-import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import java.util.List;
 
 /**
  * SiteMenu
  * <pre>
- *  공통 상수 :: 사이트 메뉴 번호, 이름, URL 정의.
+ *  메뉴 라벨 정의 Enum
  * </pre>
  *
  * @author nichefish
  */
-@Component
 @RequiredArgsConstructor
-public class SiteMenu
-    implements SiteAdminMenu {
+public enum SiteMenu {
 
-    private final BoardDefService boardDefService;
+    LGN_PAGE("로그인"),
+    MAIN("메인"),
 
-    public static final String TOP_MENU_IDX = "00";
+    ADMIN_MAIN("메인"),
+    ADMIN("사이트 관리"),
+    ADMIN_PAGE("사이트 관리"),
 
-    @PostConstruct
-    private void init() throws Exception {
-        BOARD.setSubMenuList(boardDefService.boardDefMenuList());
-    }
+    ERROR("에러"),
 
-    // 공통화면 :: 로그인
-    public static SiteAcsInfo LGN_PAGE = new SiteAcsInfo(
-            SiteTopMenu.LGN,
-            TOP_MENU_IDX,
-            "로그인",
-            Url.AUTH_LGN_FORM
-    );
+    LGN_POLICY("로그인 정책 관리"),
+    MENU("메뉴 관리"),
+    CD("코드 관리"),
 
-    // 공통화면 :: 신규계정 신청
-    public static SiteAcsInfo USER_REQST = new SiteAcsInfo(
-            SiteTopMenu.USER_REQST,
-            TOP_MENU_IDX,
-            "신규계정 신청",
-            Url.AUTH_LGN_FORM
-    );
+    CONTENT("컨텐츠 관리"),
+    BOARD_DEF("게시판 관리"),
+    TMPLAT("템플릿 관리"),
+    POPUP("팝업 관리"),
 
-    // 공통화면 :: 메인
-    public static SiteAcsInfo MAIN_PORTAL = new SiteAcsInfo(
-            SiteTopMenu.MAIN,
-            TOP_MENU_IDX,
-            "메인",
-            Url.MAIN
-    );
+    USER("사용자 관리"),
+    USER_INFO("계정 관리"),
+    USER_REQST("신규계정 신청"),
+    USER_MY("내 정보"),
 
-    // 공통화면 :: 에러
-    public static SiteAcsInfo ERROR = new SiteAcsInfo(
-            SiteTopMenu.ERROR,
-            TOP_MENU_IDX,
-            "ERROR",
-            Url.ERROR
-    );
+    NOTICE("공지사항"),
 
-    // 공통화면 :: 내 정보
-    public static SiteAcsInfo USER_MY = new SiteAcsInfo(
-            SiteTopMenu.MAIN,
-            TOP_MENU_IDX,
-            "내 정보",
-            Url.USER_MY_DTL
-    );
+    JRNL("저널"),
+    JRNL_DAY("저널 일자"),
+    JRNL_CAL("저널 달력"),
+    JRNL_SBJCT("저널 주제"),
+    JRNL_SUMRY("저널 결산"),
 
-    /* ----- */
+    BOARD("일반게시판"),
 
-    // 대메뉴 :: 공지사항
-    public static SiteAcsInfo NOTICE = new SiteAcsInfo(
-            SiteTopMenu.NOTICE,
-            TOP_MENU_IDX,
-            "공지사항",
-            Url.NOTICE_LIST
-    );
+    SCHDUL("일정"),
+    SCHDUL_CAL("일정 달력"),
+    VCATN_PAPR("휴가계획서"),
+    VCATN_ADMIN("휴가 관리"),
+    VCATN_SCHDUL("휴가사용일자 관리"),
+    VCATN_STATS("년도별 휴가 관리"),
 
-    // 대메뉴 :: 저널
-    public static SiteAcsInfo JRNL = new SiteAcsInfo(
-            SiteTopMenu.JRNL,
-            TOP_MENU_IDX,
-            "저널",
-            Url.JRNL_DAY_PAGE,
-            List.of(SubMenu.JRNL_DAY, SubMenu.JRNL_SBJCT, SubMenu.JRNL_SUMRY)
-    );
-    public static SiteAcsInfo JRNL_DAY = SubMenu.JRNL_DAY;
-    public static SiteAcsInfo JRNL_SBJCT = SubMenu.JRNL_SBJCT;
-    public static SiteAcsInfo JRNL_SUMRY = SubMenu.JRNL_SUMRY;
+    LOG("로그 관리"),
+    LOG_ACTVTY("활동 로그 관리"),
+    LOG_SYS("시스템 로그 관리"),
+    LOG_STATS("로그 통계"),
 
-    // 대메뉴 :: 게시판
-    public static SiteAcsInfo BOARD = new SiteAcsInfo(
-            SiteTopMenu.BOARD,
-            TOP_MENU_IDX,
-            "게시판",
-            Url.BOARD_POST_LIST
-    );
+    TAG("태그"),
 
-    // 대메뉴 :: 일정
-    public static SiteAcsInfo SCHDUL = new SiteAcsInfo(
-            SiteTopMenu.SCHDUL,
-            TOP_MENU_IDX,
-            "일정",
-            Url.SCHDUL_CAL,
-            List.of(SubMenu.SCHDUL_CAL, SubMenu.VCATN_PAPR)
-    );
-    public static SiteAcsInfo SCHDUL_CAL = SubMenu.SCHDUL_CAL;
-    public static SiteAcsInfo VCATN_PAPR = SubMenu.VCATN_PAPR;
+    FLSYS("파일시스템");
 
-    /**
-     * 서브메뉴 정보
-     */
-    public interface SubMenu {
-
-        // 소메뉴 :: 저널 일자
-        SiteAcsInfo JRNL_DAY = new SiteAcsInfo(
-                SiteTopMenu.JRNL,
-                "01",
-                "저널 일자",
-                Url.JRNL_DAY_PAGE
-        );
-        // 소메뉴 :: 저널 주제
-        SiteAcsInfo JRNL_SBJCT = new SiteAcsInfo(
-                SiteTopMenu.JRNL,
-                "02",
-                "저널 주제",
-                Url.JRNL_SBJCT_LIST
-        );
-        // 소메뉴 :: 저널 결산
-        SiteAcsInfo JRNL_SUMRY = new SiteAcsInfo(
-                SiteTopMenu.JRNL,
-                "03",
-                "저널 결산",
-                Url.JRNL_SUMRY_LIST
-        );
-
-        // 소메뉴 :: 태그
-        SiteAcsInfo TAG = new SiteAcsInfo(
-                SiteTopMenu.JRNL,
-                "03",
-                "저널 결산",
-                Url.JRNL_SUMRY_LIST
-        );
-
-        // 소메뉴 :: 일정
-        SiteAcsInfo SCHDUL_CAL = new SiteAcsInfo(
-                SiteTopMenu.SCHDUL,
-                "01",
-                "일정 달력",
-                Url.SCHDUL_CAL
-        );
-        // 소메뉴 :: 휴가계획서
-        SiteAcsInfo VCATN_PAPR = new SiteAcsInfo(
-                SiteTopMenu.SCHDUL,
-                "02",
-                "휴가계획서",
-                Url.VCATN_PAPR_LIST
-        );
-    }
-
+    private final String pageNm;
 }

@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global._common.error.exception;
+package io.nicheblog.dreamdiary.global.exception;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +14,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class DataRetrievalException
-        extends RuntimeException {
+        extends BaseException {
 
     /** PK값 */
     private Object key;

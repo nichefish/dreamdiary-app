@@ -58,7 +58,7 @@
             <tbody class="draggable-zone">
                 <#--begin::목록-->
                 <#list clCdList![] as clCd>
-                    <tr class="sortable-item draggable bg-hover-secondary" id="${clCd.clCd!}"
+                    <tr class="sortable-item draggable bg-hover-secondary" id="${clCd.clCd!}" data-id="${clCd.clCd!}"
                         onclick="ClCd.dtl('${clCd.clCd!}');">
                         <td class="text-center hidden-table">
                             <div class="draggable-handle d-flex-center cursor-move pt-2"

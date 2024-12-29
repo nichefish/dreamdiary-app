@@ -33,4 +33,8 @@ public class MenuSearchParam
     @Size(min = 1, max = 1)
     @Pattern(regexp = "^[YN]$")
     private String useYn;
+
+    /** 메뉴 이름 */
+    @Size(max = 50)
+    private String menuNm;
 }

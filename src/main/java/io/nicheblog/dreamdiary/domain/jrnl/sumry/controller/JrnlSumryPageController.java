@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.domain.jrnl.sumry.controller;
 
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayTagService;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryService;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryTagService;
@@ -76,7 +77,8 @@ public class JrnlSumryPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.JRNL_SUMRY.setAcsPageInfo(Constant.PAGE_LIST));
+        model.addAttribute("menuLabel", SiteMenu.JRNL_SUMRY);
+        model.addAttribute("pageNm", PageNm.LIST);
 
         // 전체 통계 조회
         final JrnlSumryDto totalSumry = jrnlSumryService.getTotalSumry();
@@ -114,7 +116,8 @@ public class JrnlSumryPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.JRNL_SUMRY.setAcsPageInfo(Constant.PAGE_DTL));
+        model.addAttribute("menuLabel", SiteMenu.JRNL_SUMRY);
+        model.addAttribute("pageNm", PageNm.DTL);
 
         // 객체 조회 및 모델에 추가
         final JrnlSumryDto retrievedDto = key != null ? jrnlSumryService.getSumryDtl(key) : yyParam != null ? jrnlSumryService.getDtlDtoByYy(yyParam) : null;

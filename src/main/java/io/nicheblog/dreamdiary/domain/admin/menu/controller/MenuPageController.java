@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.domain.admin.menu.controller;
 
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuSearchParam;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common.cd.service.DtlCdService;
@@ -60,7 +61,8 @@ public class MenuPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.MENU.setAcsPageInfo(Constant.PAGE_LIST));
+        model.addAttribute("menuLabel", SiteMenu.MENU);
+        model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // 코드 데이터 모델에 추가
         dtlCdService.setCdListToModel(Constant.MENU_SUB_EXTEND_TY_CD, model);

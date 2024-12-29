@@ -2,7 +2,6 @@ package io.nicheblog.dreamdiary.domain.admin.menu.entity;
 
 import io.nicheblog.dreamdiary.global._common._clsf.state.entity.embed.StateEmbed;
 import io.nicheblog.dreamdiary.global._common._clsf.state.entity.embed.StateEmbedModule;
-import io.nicheblog.dreamdiary.global._common.cd.entity.DtlCdEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -53,17 +52,6 @@ public class MenuUpperEntity
     @Column(name = "menu_ty_cd")
     @Comment("메뉴 구분 코드")
     private String menuTyCd;
-
-    /** 메뉴 구분 코드 정보 (복합키 조인) */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula = @JoinFormula(value = "'MENU_TY_CD'", referencedColumnName = "cl_cd")),
-            @JoinColumnOrFormula(column = @JoinColumn(name = "menu_ty_cd", referencedColumnName = "dtl_cd", insertable = false, updatable = false))
-    })
-    @Fetch(value = FetchMode.JOIN)
-    @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("메뉴 구분 코드 정보")
-    private DtlCdEntity menuTyCdInfo;
 
     /** 메뉴명 */
     @Column(name = "menu_nm")

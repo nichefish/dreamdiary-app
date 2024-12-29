@@ -11,20 +11,33 @@
 
     <#--begin::Row-->
     <div class="row mb-4">
-        <div class="col-2 text-center">
-            <label for="menuNm" class="col-form-label fw-bold">
-                상위메뉴 이름
-            </label>
-        </div>
-        <div class="col-10 col-form-label">
-            <div class="ps-2 text-gray-600 ls-1">
-                {{#if (equals menuTyCd "${Constant.MENU_TY_MAIN!}")}}
-                    (root)
-                {{else}}
-                    {{upperMenuNm}}
-                {{/if}}
+        {{#if (equals menuTyCd "${Constant.MENU_TY_MAIN!}")}}
+            <div class="col-2 text-center">
+                <label for="menuNm" class="col-form-label fw-bold">
+                    관리자 메뉴 여부
+                </label>
             </div>
-        </div>
+            <div class="col-10">
+                <div class="form-check form-switch mt-2 form-check-custom form-check-solid">
+                    <input type="checkbox" name="mngrYn" id="useYn" class="form-check-input"
+                           value="Y" {{checkedYn mngrYn}} />
+                    <label class="form-check-label ms-3" for="useYn" id="useYnLabel" {{checkedYnStyle mngrYn "color" "blue//gray"}}>
+                        {{^ifYn mngrYn}}미{{/ifYn}}해당
+                    </label>
+                </div>
+            </div>
+        {{else}}
+            <div class="col-2 text-center">
+                <label for="menuNm" class="col-form-label fw-bold">
+                    상위메뉴 이름
+                </label>
+            </div>
+            <div class="col-10 col-form-label">
+                <div class="ps-2 text-gray-600 ls-1">
+                    {{upperMenuNm}}
+                </div>
+            </div>
+        {{/if}}
     </div>
     <#--begin::Row-->
     <div class="row mb-4">
@@ -33,23 +46,35 @@
                 메뉴 이름
             </label>
         </div>
-        <div class="col-10">
+        <div class="col-4">
             <input type="text" name="menuNm" id="menuNm" class="form-control d-inline-block required"
-                   value="{{menuNm}}" maxlength="200">
+                   value="{{menuNm}}" maxlength="200" autocomplete="off">
             <span id="menuNm_validate_span"></span>
+        </div>
+        <div class="col-2 text-center">
+            <label for="menuLabel" class="col-form-label fw-bold cursor-help"
+                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="중메뉴 상단 라벨입니다.">
+                메뉴 라벨
+                <i class="bi bi-question-circle"></i>
+            </label>
+        </div>
+        <div class="col-4">
+            <input type="text" name="menuLabel" id="menuLabel" class="form-control d-inline-block"
+                   value="{{menuLabel}}" maxlength="200" autocomplete="off">
+            <span id="menuLabel_validate_span"></span>
         </div>
     </div>
     <#--begin::Row-->
     <div class="row mb-4">
         <div class="col-2 text-center">
-            <label for="menuNm" class="cursor-help col-form-label fw-bold"
+            <label for="menuNm" class="col-form-label fw-bold cursor-help"
                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                    title="사이드바에서 메뉴 옆에 표시될 아이콘을 입력합니다.&#10;(미입력시 기본 · 으로 표현됩니다.)">
                 메뉴 아이콘
                 <i class="bi bi-question-circle"></i>
             </label>
         </div>
-        <div class="col-1 d-flex-center w-5">
+        <div class="col-1 d-flex-center flex-column gap-3">
             <div id="menu_icon_div" class="cursor-pointer"
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                  title="아이콘 미리보기입니다.">
@@ -59,18 +84,29 @@
                     -
                 {{/if}}
             </div>
-        </div>
-        <div class="col-8">
-            <textarea name="icon" id="icon" class="form-control form-control-solid d-block required"
-                      placeholder="아이콘 html을 입력하세요." maxlength="200" rows="3" >{{icon}}</textarea>
-            <div id="icon_validate_span" class="ps-2"></div>
-        </div>
-        <div class="col-1 d-flex align-items-center">
             <div class="btn btn-sm btn-icon btn-light-primary"
                  onclick="Menu.refreshIcon();"
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="아이콘을 미리보기합니다.">
                 <i class="bi bi-arrow-repeat"></i>
             </div>
+        </div>
+        <div class="col-9">
+            <textarea name="icon" id="icon" class="form-control form-control-solid d-block"
+                      placeholder="아이콘 html을 입력하세요." maxlength="1000" rows="5" >{{icon}}</textarea>
+            <div id="icon_validate_span"></div>
+        </div>
+    </div>
+    <#--begin::Row-->
+    <div class="row mb-4">
+        <div class="col-2 text-center">
+            <label for="url" class="col-form-label fw-bold">
+                미열람 COUNT 변수명
+            </label>
+        </div>
+        <div class="col-10">
+            <input type="text" name="unreadCntNm" id="unreadCntNm" class="form-control"
+                   value="{{unreadCntNm}}" maxlength="1000">
+            <div id="url_validate_span"></div>
         </div>
     </div>
     <#--begin::Row-->
@@ -112,15 +148,22 @@
 
     <div class="separator my-8"></div>
 
-    <div class="row mb-2">
-        <div class="col-2 text-center">
-            <label class="col-form-label fw-bold">메뉴 옵션</label>
+    <#--begin::Row-->
+    <div class="row mb-4">
+        <div class="col-2 col-form-label text-center">
+            <label class="cursor-help fw-bold"
+                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="'사용'으로 체크된 메뉴만&#10;실제 코드 사용시 조회됩니다.">
+                사용 여부
+                <i class="bi bi-question-circle"></i>
+            </label>
         </div>
         <div class="col-10">
-            <div class="form-check col-form-label">
+            <div class="form-check form-switch mt-2 form-check-custom form-check-solid">
                 <input type="checkbox" name="state.useYn" id="useYn" class="form-check-input"
-                       value="Y" {{checkedYn state.useYn}}>
-                <label class="form-check-label" for="useYn">메뉴 숨김</label>
+                       value="Y" {{checkedYn state.useYn}} />
+                <label class="form-check-label ms-3" for="useYn" id="useYnLabel" {{checkedYnStyle state.useYn "color" "blue//gray"}}>
+                    {{^ifYn state.useYn}}미{{/ifYn}}사용
+                </label>
             </div>
         </div>
     </div>

@@ -32,6 +32,7 @@ public interface ManagtEmbedMapstruct
      * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
+    @Mapping(target = "managtrNm", expression = "java(entity.getManagtrInfo() != null ? entity.getManagtrInfo().getNickNm() : null)")
     @Mapping(target = "list", expression = "java(ManagtrMapstruct.INSTANCE.toDtoList(entity.getList()))")
     @Mapping(target = "managtDt", expression = "java(DateUtils.asStr(entity.getManagtDt(), DatePtn.DATETIME))")
     ManagtCmpstn toDto(final ManagtEmbed entity) throws Exception;

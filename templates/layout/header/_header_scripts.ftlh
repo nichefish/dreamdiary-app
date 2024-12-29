@@ -37,13 +37,13 @@
              * 현재 접속중인 메뉴 활성화
              */
             activateSelectedMenu: function() {
-                const topMenuNo = "${topMenuNo!}";
+                const upperMenuNo = "${upperMenuNo!}";
                 const siteMenuNo = "${siteMenuNo!}";
 
-                const siteAcsInfoExists = (topMenuNo !== "") && (siteMenuNo !== "");
+                const siteAcsInfoExists = (upperMenuNo !== "") && (siteMenuNo !== "");
                 if (!siteAcsInfoExists) return;
 
-                document.getElementById(topMenuNo)?.classList.add("hover");
+                document.getElementById(upperMenuNo)?.classList.add("hover");
                 document.getElementById(siteMenuNo)?.classList.add("hover");
             },
 

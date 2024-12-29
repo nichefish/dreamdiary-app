@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.CookieUtils;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.collections4.MapUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -38,11 +39,16 @@ public class CookieInterceptor
             final ModelAndView mav
     ) {
 
+        /* 리소스 요청 처리하지 않음 */
         final String requestURI = request.getRequestURI();
+        for (final String path : Constant.STATIC_PATHS) {
+            if (requestURI.startsWith(path.replace("**", ""))) return;
+        }
+
         if (Url.AUTH_LGN_FORM.equals(requestURI) || Url.AUTH_LGN_PROC.equals(requestURI)) return;
 
         /* 사이드바 접기 쿠키 설정 */
-        if (mav != null) {
+        if (mav != null && MapUtils.isNotEmpty(mav.getModel())) {
             final String sidebarMinimizeState = CookieUtils.getCookie(Constant.KT_SIDEBAR_MINIMIZE_STATE);
             final boolean isSidebarMinimized = "on".equals(sidebarMinimizeState);
             mav.addObject("isSidebarMinimized", isSidebarMinimized);

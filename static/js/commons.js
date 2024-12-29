@@ -34,17 +34,18 @@ if (typeof commons === 'undefined') { var commons = {}; }
                 return;
             } else if (statusCode === 400) {
                 const errorLines = msg.split("\n");
+                let errorField, defaultMessage;
                 errorLines.forEach(line => {
                     const fieldErrorMatch = line.match(/Field error in object '([^']+)' on field '([^']+)':/);
                     console.log(fieldErrorMatch);
                     const defaultMessageMatch = line.match(/\]; default message \[([^\[\]]+)\]$/);
                     console.log(defaultMessageMatch);
-                    if (fieldErrorMatch && defaultMessageMatch) {
-                        const fieldName = fieldErrorMatch[2];
-                        const errorMessage = defaultMessageMatch[1]; // 0보다 커야 합니다
-                        const errorMsg = fieldName + ": " + errorMessage + ".";
+                    if (fieldErrorMatch) errorField = fieldErrorMatch[2];
+                    if (defaultMessageMatch) defaultMessage  = defaultMessageMatch[1]; // 0보다 커야 합니다
+                    if (errorField && defaultMessage) {
+                        const errorMsg = errorField + ": " + defaultMessage + ".";
                         // 필드네임을 스네이크 캐이스로 변환
-                        const snakeFieldName = toSnakeCase(fieldName);
+                        const snakeFieldName = toSnakeCase(errorField);
                         const elmts = (commons.util.verifySelector("[name=\"" + snakeFieldName + "\"]"));
                         console.log(snakeFieldName);
                         if (elmts.length === 0) {
@@ -53,7 +54,7 @@ if (typeof commons === 'undefined') { var commons = {}; }
                             const elmt = elmts[0];
                             const errorSpan = document.querySelector("#" + elmt.id + "_validate_span");
                             errorSpan.classList.add("text-danger");
-                            errorSpan.appendChild(document.createTextNode(errorMessage));
+                            errorSpan.appendChild(document.createTextNode(errorMsg));
                             elmt.focus();
                         }
                         console.error("ajax error: ", xhr);
@@ -933,34 +934,37 @@ commons.util = (function() {
 
         /**
          * Draggable 컴포넌트 초기화
+         * @param selectorSuffix
          * @param {Function} keyExtractor - 각 드래그 가능한 요소의 키를 추출하는 함수. 인자로 (item, index) 받음.
          * @param {string} url - 정렬 순서를 서버에 전송할 URL.
          * @param {Function} [refreshFunc] - 정렬이 성공적으로 완료된 후 호출되는 콜백 함수. (선택적)
          * @returns {Draggable.Sortable} - 드래그 가능한 정렬된 요소들의 인스턴스.
          */
-        initDraggable: function(keyExtractor, url, refreshFunc) {
-            const containers = document.querySelectorAll(".draggable-zone");
+        initDraggable: function(selectorSuffix = "", keyExtractor, url, refreshFunc) {
+            const containers = document.querySelectorAll(".draggable-zone" + selectorSuffix);
             if (containers.length === 0) return;
 
             const firstContainer = containers[0];
             let initOrdr = [];
 
             const onDragStart = (event) => {
+                const container = event.data.source.parentElement; // 드래그 시작한 요소의 부모 컨테이너
                 event.data.source.classList.add('dragging');
 
                 // 드래그 전 초기 정렬 순서 저장
-                initOrdr = Array.from(firstContainer.querySelectorAll('.draggable'))
+                initOrdr = Array.from(container.querySelectorAll('.draggable' + selectorSuffix))
                     .map(draggable => draggable.getAttribute("id"));
             };
             const onDragStop = (event) => {
+                const container = event.data.source.parentElement; // 드래그 시작한 요소의 부모 컨테이너
                 const id = event.data.source.getAttribute("id");
                 setTimeout(() => {
-                    const newTr = document.querySelector(`tr#${id}`);
+                    const newTr = document.querySelector(`tr[data-id='${id}'`) || document.querySelector(`li[data-id='${id}'`);
                     newTr.classList.remove('dragging');
                     newTr.classList.add('draggable-modified');
 
                     // 드래그 후 정렬 순서 가져오기
-                    const newOrdr = Array.from(firstContainer.querySelectorAll('.draggable'))
+                    const newOrdr = Array.from(container.querySelectorAll('.draggable' + selectorSuffix))
                         .map(draggable => draggable.getAttribute("id"));
                     const isOrdrChanged = !initOrdr.every((id, index) => id === newOrdr[index]);
 
@@ -970,8 +974,8 @@ commons.util = (function() {
             };
 
             return new Draggable.Sortable(containers, {
-                draggable: ".draggable",
-                handle: ".draggable .draggable-handle",
+                draggable: '.draggable' + selectorSuffix,
+                handle: '.draggable' + selectorSuffix + " .draggable-handle" + selectorSuffix,
                 mirror: {
                     //appendTo: selector,
                     appendTo: "body",

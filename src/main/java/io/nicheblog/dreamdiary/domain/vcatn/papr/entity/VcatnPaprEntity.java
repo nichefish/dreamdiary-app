@@ -86,7 +86,7 @@ public class VcatnPaprEntity
     /** 확인 여부 (Y/N) */
     @Builder.Default
     @Column(name = "cf_yn")
-    @Comment("휴가계획서 확인 여부")
+    @Comment("휴가계획서 확인 여부 (Y/N)")
     private String cfYn = "N";
 
     /* ----- */

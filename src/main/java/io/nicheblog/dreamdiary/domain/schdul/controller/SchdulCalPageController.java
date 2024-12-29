@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.domain.schdul.controller;
 
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.domain.schdul.model.SchdulSearchParam;
 import io.nicheblog.dreamdiary.domain.schdul.service.SchdulCalService;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
@@ -68,7 +69,8 @@ public class SchdulCalPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.SCHDUL_CAL.setAcsPageInfo(Constant.PAGE_CAL));
+        model.addAttribute("menuLabel", SiteMenu.SCHDUL_CAL);
+        model.addAttribute("pageNm", PageNm.CAL);
 
         // 재직자 목록 조회 및 모델에 추가 :: (일정 등록 참가자용)
         final List<UserDto.LIST> crtdUserList = userService.getCrdtUserList(DateUtils.getCurrDateAddDayStr(-40), DateUtils.getCurrDateAddDayStr(40));

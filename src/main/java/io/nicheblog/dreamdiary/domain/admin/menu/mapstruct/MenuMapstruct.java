@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.domain.admin.menu.mapstruct;
 import io.nicheblog.dreamdiary.domain.admin.menu.entity.MenuEntity;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseCrudMapstruct;
+import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
@@ -33,6 +34,7 @@ public interface MenuMapstruct
     @Named("toDto")
     @Mapping(target = "subMenuList", expression = "java(toDtoList(entity.getSubMenuList()))")
     @Mapping(target = "upperMenuNm", expression = "java(entity.getUpperMenu() != null ? entity.getUpperMenu().getMenuNm() : null)")
+    @Mapping(target = "upperMenuTyCd", expression = "java(entity.getUpperMenu() != null ? entity.getUpperMenu().getMenuTyCd() : null)")
     MenuDto toDto(final MenuEntity entity) throws Exception;
 
     /**
@@ -46,6 +48,7 @@ public interface MenuMapstruct
     @Named("toListDto")
     @Mapping(target = "subMenuList", expression = "java(toDtoList(entity.getSubMenuList()))")
     @Mapping(target = "upperMenuNm", expression = "java(entity.getUpperMenu() != null ? entity.getUpperMenu().getMenuNm() : null)")
+    @Mapping(target = "upperMenuTyCd", expression = "java(entity.getUpperMenu() != null ? entity.getUpperMenu().getMenuTyCd() : null)")
     MenuDto toListDto(final MenuEntity entity) throws Exception;
 
     /**
@@ -68,4 +71,12 @@ public interface MenuMapstruct
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateFromDto(final MenuDto dto, final @MappingTarget MenuEntity entity) throws Exception;
+
+    /**
+     * 메뉴를 사이트 접근 정보로 변환
+     *
+     * @param menu 메뉴 정보
+     * @return SiteAcsInfo -- 변환된 SiteAcsInfo 객체
+     */
+    SiteAcsInfo toSiteAcsInfo(final MenuDto menu);
 }

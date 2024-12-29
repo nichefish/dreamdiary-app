@@ -64,7 +64,7 @@
                     <div class="w-75px ms-2 text-truncate">
                         ${(authInfo.nickNm)!}
                         <#if isMngr>
-                            <i class="bi bi-person-lines-fill fs-=5 text-info ms-1 opacity-75"
+                            <i class="bi bi-person-lines-fill fs-5 text-info ms-1 opacity-75"
                                data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-dismiss="click" title="관리자"></i>   <!-- 관리자 -->
                         <#else>
                             <i class="bi bi-people-fill fs-5 ms-1"

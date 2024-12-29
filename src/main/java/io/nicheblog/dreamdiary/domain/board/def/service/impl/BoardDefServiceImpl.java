@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.domain.board.def.service.impl;
 
-import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.domain.board.def.entity.BoardDefEntity;
 import io.nicheblog.dreamdiary.domain.board.def.mapstruct.BoardDefMapstruct;
 import io.nicheblog.dreamdiary.domain.board.def.model.BoardDefDto;
@@ -88,13 +87,5 @@ public class BoardDefServiceImpl
         if (registDto.getState() == null) {
             registDto.setState(new StateCmpstn());
         }
-    }
-
-    /**
-     * 상태 변경 후처리. (override)
-     */
-    @Override
-    public void postSetState(final String boardCd) throws Exception {
-        SiteMenu.BOARD.setSubMenuList(this.boardDefMenuList());
     }
 }

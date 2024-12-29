@@ -1,0 +1,28 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.nicheblog.dreamdiary.domain.admin.menu.repository.mybatis.MenuMapper">
+
+    <!-- 최상위(MAIN) 메뉴의 관리자 메뉴 여부 (Y/N) 조회 -->
+    <select id="getMngrYn" resultType="String">
+        WITH RECURSIVE menu_hierarchy AS (
+            -- 가장 처음은 입력받은 메뉴
+            SELECT menu_no, upper_menu_no, menu_ty_cd, mngr_yn
+            FROM menu
+            WHERE menu_no = #{menuNo}
+
+            UNION ALL
+
+            -- 부모 메뉴를 계속 타고 올라가면서 menu_ty_cd = 'MAIN'인 메뉴를 찾음
+            SELECT m.menu_no, m.upper_menu_no, m.menu_ty_cd, m.mngr_yn
+            FROM menu m
+            INNER JOIN menu_hierarchy mh
+                ON m.menu_no = mh.upper_menu_no
+        )
+        -- 최상위 메뉴에서 menu_ty_cd = 'MAIN'인 메뉴를 찾고, 그 메뉴의 mngr_yn 값을 반환
+        SELECT mngr_yn
+        FROM menu_hierarchy
+        WHERE menu_ty_cd = 'MAIN'
+        LIMIT 1
+    </select>
+</mapper>

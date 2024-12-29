@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.domain.jrnl.sbjct.controller;
 
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.domain.jrnl.sbjct.model.JrnlSbjctDto;
 import io.nicheblog.dreamdiary.domain.jrnl.sbjct.model.JrnlSbjctSearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.sbjct.service.JrnlSbjctService;
@@ -75,7 +76,8 @@ public class JrnlSbjctPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.JRNL_SBJCT.setAcsPageInfo(Constant.PAGE_LIST));
+        model.addAttribute("menuLabel", SiteMenu.JRNL_SBJCT);
+        model.addAttribute("pageNm", PageNm.LIST);
 
         // 상세/수정 화면에서 목록 화면 복귀시 :: 세션에 목록 검색 인자 저장해둔 거 있는지 체크
         searchParam = (JrnlSbjctSearchParam) CmmUtils.Param.checkPrevSearchParam(baseUrl, searchParam);
@@ -119,7 +121,8 @@ public class JrnlSbjctPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.JRNL_SBJCT.setAcsPageInfo(Constant.PAGE_REG));
+        model.addAttribute("menuLabel", SiteMenu.JRNL_SBJCT);
+        model.addAttribute("pageNm", PageNm.REG);
 
         // 빈 객체 주입 (freemarker error prevention)
         model.addAttribute("post", new JrnlSbjctDto());
@@ -157,7 +160,9 @@ public class JrnlSbjctPageController
             final ModelMap model
     ) {
 
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.JRNL_SBJCT.setAcsPageInfo("저널 주제 미리보기"));
+        /* 사이트 메뉴 설정 */
+        model.addAttribute("menuLabel", SiteMenu.JRNL_SBJCT);
+        model.addAttribute("pageNm", PageNm.PREVIEW);
 
         // 객체 정보 모델에 추가
         jrnlSbjct.setMarkdownCn(CmmUtils.markdown(jrnlSbjct.getCn()));
@@ -191,7 +196,8 @@ public class JrnlSbjctPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.JRNL_SBJCT.setAcsPageInfo(Constant.PAGE_DTL));
+        model.addAttribute("menuLabel", SiteMenu.JRNL_SBJCT);
+        model.addAttribute("pageNm", PageNm.DTL);
 
         // 객체 조회 및 모델에 추가
         final JrnlSbjctDto retrievedDto = jrnlSbjctService.getDtlDto(key);
@@ -232,7 +238,8 @@ public class JrnlSbjctPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.JRNL_SBJCT.setAcsPageInfo(Constant.PAGE_MDF));
+        model.addAttribute("menuLabel", SiteMenu.JRNL_SBJCT);
+        model.addAttribute("pageNm", PageNm.MDF);
 
         // 객체 조회 및 모델에 추가
         final JrnlSbjctDto retrievedDto = jrnlSbjctService.getDtlDto(key);

@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global._common.error.exception;
+package io.nicheblog.dreamdiary.global.exception;
 
 import java.util.HashMap;
 import java.util.List;

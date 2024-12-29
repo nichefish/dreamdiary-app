@@ -1,8 +1,7 @@
-package io.nicheblog.dreamdiary.global._common.error.controller;
+package io.nicheblog.dreamdiary.domain.admin.web.controller;
 
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
-import io.nicheblog.dreamdiary.domain.admin.menu.model.AcsPageNm;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
@@ -53,16 +52,12 @@ public class ErrorPageController
         final int statusCode = Integer.parseInt(statusObj.toString());
         final HttpStatus status = HttpStatus.resolve(statusCode);
         if (status == null) return "/view/global/_common/error/error_page";
-        switch (status) {
-            case BAD_REQUEST:
-                return "/view/global/_common/error/error_bad_request";
-            case FORBIDDEN:
-                return "/view/global/_common/error/error_access_denied";
-            case NOT_FOUND:
-                return "/view/global/_common/error/error_not_found";
-            default:
-                return "/view/global/_common/error/error_page";
-        }
+        return switch (status) {
+            case BAD_REQUEST -> "/view/global/_common/error/error_bad_request";
+            case FORBIDDEN -> "/view/global/_common/error/error_access_denied";
+            case NOT_FOUND -> "/view/global/_common/error/error_not_found";
+            default -> "/view/global/_common/error/error_page";
+        };
     }
 
     /**
@@ -78,7 +73,8 @@ public class ErrorPageController
     ) {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.ERROR.setAcsPageInfo(AcsPageNm.ERROR));
+        model.addAttribute("menuLabel", SiteMenu.ERROR);
+        model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // 에러 화면 반환
         return "/view/global/_common/error/error_not_found";
@@ -97,7 +93,8 @@ public class ErrorPageController
     ) {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.ERROR.setAcsPageInfo(AcsPageNm.ERROR));
+        model.addAttribute("menuLabel", SiteMenu.ERROR);
+        model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // 에러 화면으로 리다이렉트 리다리렉트
         return "/view/global/_common/error/error_access_denied";
@@ -116,7 +113,8 @@ public class ErrorPageController
     ) {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.ERROR.setAcsPageInfo(AcsPageNm.ERROR));
+        model.addAttribute("menuLabel", SiteMenu.ERROR);
+        model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // 에러 화면으로 리다이렉트 리다리렉트
         return "/view/global/_common/error/error_page";

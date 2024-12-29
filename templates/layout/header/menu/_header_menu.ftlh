@@ -93,23 +93,6 @@
             <!--end:Menu item-->
         </div>
         <!--end:Menu item-->
-
-        <!--begin:Menu item-->
-        <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start"  class="menu-item menu-lg-down-accordion me-0 me-lg-2" >
-            <!--begin:Menu link-->
-            <span class="menu-link"  >
-                <span  class="menu-title" >Layouts</span>
-                <span  class="menu-arrow d-lg-none" ></span>
-            </span>
-            <!--end:Menu link-->
-            <!--begin:Menu sub-->
-            <div  class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown p-0 w-100 w-lg-900px w-xxl-950px" >
-                <#include "/layout/header/menu/__layouts.html">
-            </div>
-            <!--end:Menu sub-->
-        </div>
-        <!--end:Menu item-->
-
     </div>
     <!--end::Menu-->
 

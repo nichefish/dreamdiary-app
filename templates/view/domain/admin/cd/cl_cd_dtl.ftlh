@@ -144,7 +144,7 @@
             <#--begin::Table body-->
             <tbody class="draggable-zone">
                 <#list clCd.dtlCdList![] as dtlCd>
-                    <tr class="sortable-item draggable bg-hover-secondary" id="${dtlCd.dtlCd!}" onclick="DtlCd.mdfModal('${dtlCd.dtlCd!}');">
+                    <tr class="sortable-item draggable bg-hover-secondary" id="${dtlCd.dtlCd!}" data-id="${dtlCd.dtlCd!}" onclick="DtlCd.mdfModal('${dtlCd.dtlCd!}');">
                         <td class="text-center">
                             <div class="d-flex-center draggable-handle cursor-move pt-2"
                                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="드래그하여&#10;항목을 이동합니다.">

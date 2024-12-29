@@ -36,17 +36,15 @@
              * Page 객체 초기화
              */
             init: function() {
-                Page.updt();
+                Page.updtTree();
 
-                /* initialize form. */
-                Menu.initForm();
                 /* init : Draggable */
                 Menu.initDraggable();
             },
             /**
              * 트리 구조 데이터 리로드 및 새로 그리기
              */
-            updt: function() {
+            updtTree: function() {
                 // 메인 메뉴 그리기
                 const url = "${Url.MENU_MAIN_LIST_AJAX!}";
                 commons.util.blockUIAjax(url, 'GET', null, function(res) {

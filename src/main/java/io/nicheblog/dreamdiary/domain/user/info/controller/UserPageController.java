@@ -1,12 +1,13 @@
  package io.nicheblog.dreamdiary.domain.user.info.controller;
 
+ import io.nicheblog.dreamdiary.auth.service.AuthRoleService;
  import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
+ import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
  import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
  import io.nicheblog.dreamdiary.domain.user.info.model.UserSearchParam;
  import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
  import io.nicheblog.dreamdiary.global.Constant;
  import io.nicheblog.dreamdiary.global.Url;
- import io.nicheblog.dreamdiary.auth.service.AuthRoleService;
  import io.nicheblog.dreamdiary.global._common.cd.service.DtlCdService;
  import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
  import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
@@ -74,7 +75,8 @@ public class UserPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.USER_INFO.setAcsPageInfo(Constant.PAGE_LIST));
+        model.addAttribute("menuLabel", SiteMenu.USER_INFO);
+        model.addAttribute("pageNm", PageNm.LIST);
 
         // 상세/수정 화면에서 목록 화면 복귀시 세션에 목록 검색 인자 저장해둔 거 있는지 체크
         searchParam = (UserSearchParam) CmmUtils.Param.checkPrevSearchParam(baseUrl, searchParam);
@@ -120,7 +122,8 @@ public class UserPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.USER_INFO.setAcsPageInfo("사용자 등록"));
+        model.addAttribute("menuLabel", SiteMenu.USER_INFO);
+        model.addAttribute("pageNm", PageNm.REG);
 
         // 빈 객체 주입 (freemarker error prevention)
         model.addAttribute("user", new UserDto.DTL());
@@ -165,7 +168,8 @@ public class UserPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.USER_INFO.setAcsPageInfo("사용자 상세 조회"));
+        model.addAttribute("menuLabel", SiteMenu.USER_INFO);
+        model.addAttribute("pageNm", PageNm.DTL);
 
         // 상세 조회 및 모델에 추가
         final UserDto retrievedDto = userService.getDtlDto(key);
@@ -199,7 +203,8 @@ public class UserPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.USER_INFO.setAcsPageInfo("사용자 수정"));
+        model.addAttribute("menuLabel", SiteMenu.USER_INFO);
+        model.addAttribute("pageNm", PageNm.MDF);
 
         // 상세 조회 및 모델에 추가
         final UserDto rsDto = userService.getDtlDto(key);

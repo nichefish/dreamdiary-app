@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global._common.error.exception;
+package io.nicheblog.dreamdiary.global.exception;
 
 /**
  * DupRegException
@@ -9,7 +9,7 @@ package io.nicheblog.dreamdiary.global._common.error.exception;
  * @author nichefish
  */
 public class DupRegException
-        extends RuntimeException {
+        extends BaseException {
 
     /**
      * 생성자.

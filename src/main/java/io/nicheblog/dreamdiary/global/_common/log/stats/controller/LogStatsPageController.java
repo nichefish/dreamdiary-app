@@ -1,5 +1,7 @@
 package io.nicheblog.dreamdiary.global._common.log.stats.controller;
 
+import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
@@ -64,7 +66,8 @@ public class LogStatsPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        // siteMenuAcsInfo.setAcsInfo(SiteMenu.MENU_LOG_STATS, SiteMenu.PAGE_LIST, request.getRequestURI());
+        model.addAttribute("menuLabel", SiteMenu.LOG_STATS);
+        model.addAttribute("pageNm", PageNm.LIST);
 
         // 활동 로그 목록 조회
         boolean isSuccess = false;

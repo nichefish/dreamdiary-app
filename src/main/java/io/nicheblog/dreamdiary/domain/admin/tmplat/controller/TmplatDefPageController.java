@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.domain.admin.tmplat.controller;
 
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.domain.admin.tmplat.model.TmplatDefDto;
 import io.nicheblog.dreamdiary.domain.admin.tmplat.model.TmplatDefSearchParam;
 import io.nicheblog.dreamdiary.domain.admin.tmplat.service.TmplatDefService;
@@ -65,7 +66,9 @@ public class TmplatDefPageController
             final ModelMap model
     ) throws Exception {
 
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.TMPLAT.setAcsPageInfo("템플릿 관리"));
+        /* 사이트 메뉴 설정 */
+        model.addAttribute("menuLabel", SiteMenu.TMPLAT);
+        model.addAttribute("pageNm", PageNm.LIST);
 
         // 상세/수정 화면에서 목록 화면 복귀시 :: 세션에 목록 검색 인자 저장해둔 거 있는지 체크
         searchParam = (TmplatDefSearchParam) CmmUtils.Param.checkPrevSearchParam(baseUrl, searchParam);
