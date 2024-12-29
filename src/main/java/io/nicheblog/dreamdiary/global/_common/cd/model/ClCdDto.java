@@ -1,5 +1,7 @@
 package io.nicheblog.dreamdiary.global._common.cd.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.nicheblog.dreamdiary.global._common._clsf.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.global._common._clsf.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditDto;
@@ -23,6 +25,8 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ClCdDto
         extends BaseAuditDto
         implements StateCmpstnModule, Identifiable<String> {

@@ -57,8 +57,8 @@ public class DataSourceConfig
      *
      * @return {@link DataSource} -- DataSource 객체
      */
-    @Primary
     @Bean(name = "primaryDataSource")
+    @Primary
     @ConfigurationProperties(prefix = "spring.datasource.primary")    // application.properties에서 사용한 이름
     public DataSource dataSource() {
         return DataSourceBuilder.create().build();
@@ -70,8 +70,8 @@ public class DataSourceConfig
      * @param dataSource 주 데이터 소스 (primaryDataSource)
      * @return {@link EntityManagerFactory} -- EntityManagerFactory 객체
      */
-    @Primary
     @Bean
+    @Primary
     public EntityManagerFactory entityManagerFactory(final @Qualifier("primaryDataSource") DataSource dataSource) {
         final LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource);
@@ -94,8 +94,8 @@ public class DataSourceConfig
      * @param entityManagerFactory JPA EntityManagerFactory 객체
      * @return PlatformTransactionManager 객체
      */
-    @Primary
     @Bean
+    @Primary
     public PlatformTransactionManager transactionManager(final EntityManagerFactory entityManagerFactory) {
         JpaTransactionManager jtm = new JpaTransactionManager();
         jtm.setEntityManagerFactory(entityManagerFactory);
@@ -110,8 +110,8 @@ public class DataSourceConfig
      * @return {@link SqlSessionFactory} -- SqlSessionFactory 객체
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
-    @Primary
     @Bean
+    @Primary
     public SqlSessionFactory sessionFactory(
             final @Qualifier("primaryDataSource") DataSource dataSource,
             final ApplicationContext applicationContext
@@ -131,8 +131,8 @@ public class DataSourceConfig
      * @param sqlSessionFactory MyBatis의 SqlSessionFactory 객체
      * @return {@link SqlSessionTemplate} -- SqlSessionTemplate 객체
      */
-    @Primary
     @Bean
+    @Primary
     public SqlSessionTemplate sqlSessionTemplate(final SqlSessionFactory sqlSessionFactory) {
         return new SqlSessionTemplate(sqlSessionFactory);
     }

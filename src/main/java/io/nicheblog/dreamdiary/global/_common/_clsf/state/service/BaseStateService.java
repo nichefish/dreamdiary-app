@@ -39,7 +39,7 @@ public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule &
         e.getState().setUseYn("Y");
         this.updt(e);
         // 변경 후처리
-        this.postSetState();
+        this.postSetState(key);
 
         return true;
     }
@@ -57,7 +57,7 @@ public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule &
         e.getState().setUseYn("N");
         this.updt(e);
         // 변경 후처리
-        this.postSetState();
+        this.postSetState(key);
 
         return true;
     }
@@ -67,7 +67,7 @@ public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule &
      *
      * @throws Exception 후처리 중 발생할 수 있는 예외
      */
-    default void postSetState() throws Exception {
+    default void postSetState(final Key key) throws Exception {
         // 변경 후처리:: 기본 공백, 필요시 각 함수에서 Override
     }
 
@@ -92,6 +92,17 @@ public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule &
                 throw new RuntimeException(ex);
             }
         });
+        // 변경 후처리
+        this.postSortOrdr(sortOrdr);
         return true;
+    }
+
+    /**
+     * default: 정렬 순서 업데이트 후 해당 로직을 수행한다.
+     *
+     * @throws Exception 후처리 중 발생할 수 있는 예외
+     */
+    default void postSortOrdr(final List<Dto> sortOrdr) throws Exception {
+        // 변경 후처리:: 기본 공백, 필요시 각 함수에서 Override
     }
 }

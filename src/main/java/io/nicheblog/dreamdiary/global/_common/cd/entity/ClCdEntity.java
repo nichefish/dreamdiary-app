@@ -63,7 +63,7 @@ public class ClCdEntity
     /** 분류 코드 코드 정보 (복합키 조인) */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula = @JoinFormula(value = "\'" + Constant.CL_CTGR_CD + "\'", referencedColumnName = "cl_cd")),
+            @JoinColumnOrFormula(formula = @JoinFormula(value = "'" + Constant.CL_CTGR_CD + "'", referencedColumnName = "cl_cd")),
             @JoinColumnOrFormula(column = @JoinColumn(name = "cl_ctgr_cd", referencedColumnName = "dtl_cd", insertable = false, updatable = false))
     })
     @Fetch(value = FetchMode.JOIN)

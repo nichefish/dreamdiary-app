@@ -261,4 +261,18 @@
         return a >= b;
     });
 
+    /**
+     * Handlebars 헬퍼 함수 'stringify'를 등록합니다.
+     * 주어진 값이 객체일 경우 JSON 문자열로 변환하고, 그렇지 않으면 문자열로 변환합니다.
+     *
+     * @param {any} value - 변환할 값.
+     * @returns {string} - 객체일 경우 JSON 문자열, 그렇지 않으면 문자열. 값이 없으면 'null' 문자열.
+     */
+    Handlebars.registerHelper('stringify', function (value) {
+        if (value && typeof value === 'object') {
+            return JSON.stringify(value); // JSON 형식으로 출력
+        }
+        return value ? value.toString() : 'null';
+    });
+
 })(Handlebars);

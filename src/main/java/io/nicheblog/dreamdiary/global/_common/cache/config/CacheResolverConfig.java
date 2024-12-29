@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.global._common.cache.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.interceptor.CacheResolver;
 import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.context.annotation.Bean;
@@ -17,12 +18,11 @@ import javax.annotation.Resource;
  * @author nichefish
  */
 @Configuration
+@RequiredArgsConstructor
 public class CacheResolverConfig {
 
-    @Resource
-    private JCacheCacheManager jCacheCacheManager;
-    @Resource
-    private RedisCacheManager redisCacheManager;
+    private final JCacheCacheManager jCacheCacheManager;
+    private final RedisCacheManager redisCacheManager;
 
     /**
      * 빈 등록:: cacheResolver

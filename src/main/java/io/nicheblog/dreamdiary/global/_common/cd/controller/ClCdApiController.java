@@ -65,7 +65,7 @@ public class ClCdApiController
 
         final boolean isReg = "Y".equals(regYn);
         final ClCdDto result = isReg ? clCdService.regist(clCd) : clCdService.modify(clCd);
-        final boolean isSuccess = (result.getClCd() != null);;
+        final boolean isSuccess = (result.getClCd() != null);
         final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
 
         // 응답 결과 세팅
@@ -132,7 +132,7 @@ public class ClCdApiController
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final boolean isSuccess = clCdService.setStateUse(key);;
+        final boolean isSuccess = clCdService.setStateUse(key);
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
 
         // 응답 결과 세팅
@@ -164,7 +164,7 @@ public class ClCdApiController
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final boolean isSuccess = clCdService.setStateUnuse(key);;
+        final boolean isSuccess = clCdService.setStateUnuse(key);
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
 
         // 응답 결과 세팅

@@ -1,8 +1,7 @@
-package io.nicheblog.dreamdiary.global._common.redis.config;
+package io.nicheblog.dreamdiary.global._common.cache.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -12,8 +11,8 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
-import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
@@ -44,8 +43,7 @@ public class RedisConfig {
         redisStandaloneConfiguration.setHostName(redisProperty.getHost());
         redisStandaloneConfiguration.setPort(redisProperty.getPort());
         redisStandaloneConfiguration.setPassword(redisProperty.getPassword());
-        LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(redisStandaloneConfiguration);
-        return lettuceConnectionFactory;
+        return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
 
     /**
@@ -70,10 +68,12 @@ public class RedisConfig {
      * 빈 등록 :: redisCacheManager
      */
     @Bean(name = "redisCacheManager")
-    public CacheManager redisCacheManager() {
+    public RedisCacheManager redisCacheManager() {
         RedisCacheConfiguration cacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(
-                        RedisSerializer.json()));
+                .serializeValuesWith(
+                        RedisSerializationContext.SerializationPair.fromSerializer(
+                                new GenericJackson2JsonRedisSerializer()
+                        ));
 
         RedisCacheManager.RedisCacheManagerBuilder builder = RedisCacheManager.builder(redisConnectionFactory())
                 .cacheDefaults(cacheConfiguration);

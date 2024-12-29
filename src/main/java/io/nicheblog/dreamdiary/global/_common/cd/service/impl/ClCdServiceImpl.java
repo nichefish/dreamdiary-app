@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.global._common.cd.service.impl;
 
 import io.nicheblog.dreamdiary.global._common._clsf.state.model.cmpstn.StateCmpstn;
+import io.nicheblog.dreamdiary.global._common.cache.util.RedisUtils;
 import io.nicheblog.dreamdiary.global._common.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global._common.cd.entity.ClCdEntity;
 import io.nicheblog.dreamdiary.global._common.cd.mapstruct.ClCdMapstruct;
@@ -87,8 +88,8 @@ public class ClCdServiceImpl
      */
     @Override
     public void evictRelatedCache(final ClCdEntity rslt) throws Exception {
-        EhCacheUtils.evictCache("cdEntityListByClCd", rslt.getClCd());
-        EhCacheUtils.evictCache("cdDtoListByClCd", rslt.getClCd());
+        RedisUtils.deleteData("cdEntityListByClCd::clCd:" + rslt.getClCd());
+        RedisUtils.deleteData("cdDtoListByClCd::clCd:" + rslt.getClCd());
         // 연관된 모든 엔티티의 캐시 클리어
         EhCacheUtils.clearL2Cache();
     }
