@@ -43,6 +43,9 @@
     <cache alias="countDaySize" uses-template="defaultTemplate" />
     <cache alias="jrnlDayTagDtl" uses-template="defaultTemplate" />
 
+    <!-- 코드 이름 -->
+    <cache alias="dtlCdNm" uses-template="defaultTemplate" />
+
     <!-- 저널 일기 -->
     <cache alias="jrnlDiaryList" uses-template="defaultTemplate" />
     <cache alias="jrnlDiaryDtlDto" uses-template="defaultTemplate" />

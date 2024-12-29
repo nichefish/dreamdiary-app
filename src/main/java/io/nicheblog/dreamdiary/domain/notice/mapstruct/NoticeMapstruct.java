@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.domain.notice.mapstruct;
 import io.nicheblog.dreamdiary.domain.notice.entity.NoticeEntity;
 import io.nicheblog.dreamdiary.domain.notice.model.NoticeDto;
 import io.nicheblog.dreamdiary.domain.notice.model.NoticeXlsxDto;
+import io.nicheblog.dreamdiary.global._common.cd.utils.CdUtils;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BasePostMapstruct;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -18,7 +19,7 @@ import org.mapstruct.factory.Mappers;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, CmmUtils.class}, builder = @Builder(disableBuilder = true))
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, CmmUtils.class, CdUtils.class}, builder = @Builder(disableBuilder = true))
 public interface NoticeMapstruct
         extends BasePostMapstruct<NoticeDto.DTL, NoticeDto.LIST, NoticeEntity> {
 
@@ -33,6 +34,7 @@ public interface NoticeMapstruct
      */
     @Override
     @Named("toDto")
+    @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"NOTICE_CTGR_CD\", entity.getCtgrCd()))")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : CmmUtils.markdown(entity.getCn()))")
     NoticeDto.DTL toDto(final NoticeEntity entity) throws Exception;
 
@@ -45,6 +47,7 @@ public interface NoticeMapstruct
      */
     @Override
     @Named("toListDto")
+    @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"NOTICE_CTGR_CD\", entity.getCtgrCd()))")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : CmmUtils.markdown(entity.getCn()))")
     NoticeDto.LIST toListDto(final NoticeEntity entity) throws Exception;
 

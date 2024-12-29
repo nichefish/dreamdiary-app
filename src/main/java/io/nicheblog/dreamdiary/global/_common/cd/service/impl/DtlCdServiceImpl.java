@@ -112,6 +112,7 @@ public class DtlCdServiceImpl
      */
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "dtlCdNm", key = "'clCd:' + #clCd + ',dtlCd:' + #dtlCd", condition = "#clCd!=null and #dtlCd!=null")
     public String getDtlCdNm(final String clCd, final String dtlCd) {
         if (StringUtils.isEmpty(clCd) || StringUtils.isEmpty(dtlCd)) return null;
         final DtlCdEntity rsDtlCd = repository.findByClCdAndDtlCd(clCd, dtlCd);
@@ -197,10 +198,15 @@ public class DtlCdServiceImpl
     public void evictRelatedCache(final DtlCdEntity rslt) {
         this.evictRelatedCache("cdEntityListByClCd::clCd:" + rslt.getClCd());
         this.evictRelatedCache("cdDtoListByClCd::clCd:" + rslt.getClCd());
+        EhCacheUtils.evictCache("dtlCdNm", "clCd:"+ rslt.getClCd() +",dtlCd:"+ rslt.getDtlCd());
         // 연관된 모든 엔티티의 캐시 클리어
         EhCacheUtils.clearL2Cache();
     }
-
+    /**
+     * 관련 캐시 삭제.
+     *
+     * @param cackeKey 캐시 처리할 키
+     */
     public void evictRelatedCache(final String cackeKey) {
         RedisUtils.deleteData(cackeKey);
         RedisUtils.deleteData(cackeKey);

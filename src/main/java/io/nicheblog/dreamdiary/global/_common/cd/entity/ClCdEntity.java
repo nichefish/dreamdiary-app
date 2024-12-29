@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.global._common.cd.entity;
 
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global._common._clsf.state.entity.embed.StateEmbed;
 import io.nicheblog.dreamdiary.global._common._clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
@@ -44,7 +43,6 @@ public class ClCdEntity
     @PostLoad
     private void onLoad() {
         this.dtlCdCnt = (CollectionUtils.isEmpty(this.dtlCdList)) ? 0 : this.dtlCdList.size();
-        if (this.clCtgrCdInfo != null) this.clCtgrNm = this.clCtgrCdInfo.getDtlCdNm();
     }
 
     /** 분류 코드 */
@@ -56,22 +54,11 @@ public class ClCdEntity
     @Column(name = "cl_cd_nm")
     private String clCdNm;
 
-    /** 분류 코드 분류 코드 */
+    /** 글분류 코드 :: join을 제거하고 메모리 캐시 처리 */
     @Column(name = "cl_ctgr_cd", length=50)
     private String clCtgrCd;
 
-    /** 분류 코드 코드 정보 (복합키 조인) */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula = @JoinFormula(value = "'" + Constant.CL_CTGR_CD + "'", referencedColumnName = "cl_cd")),
-            @JoinColumnOrFormula(column = @JoinColumn(name = "cl_ctgr_cd", referencedColumnName = "dtl_cd", insertable = false, updatable = false))
-    })
-    @Fetch(value = FetchMode.JOIN)
-    @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("분류 코드 코드 정보")
-    private DtlCdEntity clCtgrCdInfo;
-
-    /** 분류 코드 분류 코드명 */
+    /** 글분류 코드 이름 :: join을 제거하고 메모리 캐시 처리 */
     @Transient
     private String clCtgrNm;
 

@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.global._common._clsf.comment.mapstruct;
 import io.nicheblog.dreamdiary.global._common._clsf.comment.entity.CommentEntity;
 import io.nicheblog.dreamdiary.global._common._clsf.comment.mapstruct.embed.CommentEmbedMapstruct;
 import io.nicheblog.dreamdiary.global._common._clsf.comment.model.CommentDto;
+import io.nicheblog.dreamdiary.global._common.cd.utils.CdUtils;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BasePostMapstruct;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -18,7 +19,7 @@ import org.mapstruct.factory.Mappers;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, CmmUtils.class, CommentEmbedMapstruct.class}, builder = @Builder(disableBuilder = true))
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, CmmUtils.class, CommentEmbedMapstruct.class, CdUtils.class}, builder = @Builder(disableBuilder = true))
 public interface CommentMapstruct
         extends BasePostMapstruct<CommentDto, CommentDto, CommentEntity> {
 
@@ -33,6 +34,7 @@ public interface CommentMapstruct
      */
     @Override
     @Named("toDto")
+    @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"COMMENT_CTGR_CD\", entity.getCtgrCd()))")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : CmmUtils.markdown(entity.getCn()))")
     CommentDto toDto(final CommentEntity entity) throws Exception;
 
@@ -45,6 +47,7 @@ public interface CommentMapstruct
      */
     @Override
     @Named("toListDto")
+    @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"COMMENT_CTGR_CD\", entity.getCtgrCd()))")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : CmmUtils.markdown(entity.getCn()))")
     CommentDto toListDto(final CommentEntity entity) throws Exception;
 

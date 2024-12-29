@@ -2,7 +2,10 @@ package io.nicheblog.dreamdiary.global._common.cd.mapstruct;
 
 import io.nicheblog.dreamdiary.global._common.cd.entity.ClCdEntity;
 import io.nicheblog.dreamdiary.global._common.cd.model.ClCdDto;
+import io.nicheblog.dreamdiary.global._common.cd.utils.CdUtils;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseCrudMapstruct;
+import io.nicheblog.dreamdiary.global.util.date.DateUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -15,7 +18,7 @@ import org.mapstruct.factory.Mappers;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {CdUtils.class})
 public interface ClCdMapstruct
         extends BaseCrudMapstruct<ClCdDto, ClCdDto, ClCdEntity> {
 
@@ -30,6 +33,7 @@ public interface ClCdMapstruct
      */
     @Override
     @Named("toDto")
+    @Mapping(target = "clCtgrNm", expression = "java(CdUtils.getDtlCdNm(\"CL_CTGR_CD\", entity.getClCtgrCd()))")
     @Mapping(target = "dtlCdList", expression = "java(DtlCdMapstruct.INSTANCE.toDtoList(entity.getDtlCdList()))")
     ClCdDto toDto(final ClCdEntity entity) throws Exception;
 
@@ -42,6 +46,7 @@ public interface ClCdMapstruct
      */
     @Override
     @Named("toListDto")
+    @Mapping(target = "clCtgrNm", expression = "java(CdUtils.getDtlCdNm(\"CL_CTGR_CD\", entity.getClCtgrCd()))")
     ClCdDto toListDto(final ClCdEntity entity) throws Exception;
 
     /**

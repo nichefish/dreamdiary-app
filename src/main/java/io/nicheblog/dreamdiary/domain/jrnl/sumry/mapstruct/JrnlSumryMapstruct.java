@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.domain.jrnl.sumry.mapstruct;
 
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.entity.JrnlSumryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumryDto;
+import io.nicheblog.dreamdiary.global._common.cd.utils.CdUtils;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BasePostMapstruct;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
@@ -19,7 +20,7 @@ import org.mapstruct.factory.Mappers;
  * @author nichefish
  * @extends BaseClsfMapstruct
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, DatePtn.class, StringUtils.class, CmmUtils.class}, builder = @Builder(disableBuilder = true))
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, DatePtn.class, StringUtils.class, CmmUtils.class, CdUtils.class}, builder = @Builder(disableBuilder = true))
 public interface JrnlSumryMapstruct
         extends BasePostMapstruct<JrnlSumryDto.DTL, JrnlSumryDto.LIST, JrnlSumryEntity> {
 
@@ -34,6 +35,7 @@ public interface JrnlSumryMapstruct
      */
     @Override
     @Named("toDto")
+    @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"JRNL_SUMRY_CTGR_CD\", entity.getCtgrCd()))")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : CmmUtils.markdown(entity.getCn()))")
     JrnlSumryDto.DTL toDto(final JrnlSumryEntity entity) throws Exception;
 
@@ -46,6 +48,7 @@ public interface JrnlSumryMapstruct
      */
     @Override
     @Named("toListDto")
+    @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"JRNL_SUMRY_CTGR_CD\", entity.getCtgrCd()))")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : CmmUtils.markdown(entity.getCn()))")
     JrnlSumryDto.LIST toListDto(final JrnlSumryEntity entity) throws Exception;
 

@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.global._common._clsf.sectn.mapstruct;
 import io.nicheblog.dreamdiary.global._common._clsf.sectn.entity.SectnEntity;
 import io.nicheblog.dreamdiary.global._common._clsf.sectn.mapstruct.embed.SectnEmbedMapstruct;
 import io.nicheblog.dreamdiary.global._common._clsf.sectn.model.SectnDto;
+import io.nicheblog.dreamdiary.global._common.cd.utils.CdUtils;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BasePostMapstruct;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -18,7 +19,7 @@ import org.mapstruct.factory.Mappers;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, CmmUtils.class, SectnEmbedMapstruct.class}, builder = @Builder(disableBuilder = true))
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, CmmUtils.class, SectnEmbedMapstruct.class, CdUtils.class}, builder = @Builder(disableBuilder = true))
 public interface SectnMapstruct
         extends BasePostMapstruct<SectnDto, SectnDto, SectnEntity> {
 
@@ -33,6 +34,7 @@ public interface SectnMapstruct
      */
     @Override
     @Named("toDto")
+    @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"SECTN_CTGR_CD\", entity.getCtgrCd()))")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : CmmUtils.markdown(entity.getCn()))")
     SectnDto toDto(final SectnEntity entity) throws Exception;
 
@@ -45,6 +47,7 @@ public interface SectnMapstruct
      */
     @Override
     @Named("toListDto")
+    @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"SECTN_CTGR_CD\", entity.getCtgrCd()))")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : CmmUtils.markdown(entity.getCn()))")
     SectnDto toListDto(final SectnEntity entity) throws Exception;
 

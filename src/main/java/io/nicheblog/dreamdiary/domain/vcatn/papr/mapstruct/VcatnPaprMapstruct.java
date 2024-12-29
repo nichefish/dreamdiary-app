@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.domain.vcatn.papr.mapstruct;
 
 import io.nicheblog.dreamdiary.domain.vcatn.papr.entity.VcatnPaprEntity;
 import io.nicheblog.dreamdiary.domain.vcatn.papr.model.VcatnPaprDto;
+import io.nicheblog.dreamdiary.global._common.cd.utils.CdUtils;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BasePostMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -16,7 +17,7 @@ import org.mapstruct.factory.Mappers;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, VcatnSchdulMapstruct.class}, builder = @Builder(disableBuilder = true))
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, VcatnSchdulMapstruct.class, CdUtils.class}, builder = @Builder(disableBuilder = true))
 public interface VcatnPaprMapstruct
         extends BasePostMapstruct<VcatnPaprDto.DTL, VcatnPaprDto.LIST, VcatnPaprEntity> {
 
@@ -30,6 +31,7 @@ public interface VcatnPaprMapstruct
      * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Named("toDto")
+    @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"VCATN_PAPR_CTGR_CD\", entity.getCtgrCd()))")
     @Mapping(target = "schdulList", expression = "java(VcatnSchdulMapstruct.INSTANCE.toDtoList(entity.getSchdulList()))")
     VcatnPaprDto.DTL toDto(final VcatnPaprEntity entity) throws Exception;
 
@@ -41,6 +43,7 @@ public interface VcatnPaprMapstruct
      * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Named("toListDto")
+    @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"VCATN_PAPR_CTGR_CD\", entity.getCtgrCd()))")
     @Mapping(target = "schdulList", expression = "java(VcatnSchdulMapstruct.INSTANCE.toDtoList(entity.getSchdulList()))")
     VcatnPaprDto.LIST toListDto(final VcatnPaprEntity entity) throws Exception;
 
