@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.global._common._clsf.managt.entity.embed;
 
+import io.nicheblog.dreamdiary.auth.util.AuditorUtils;
 import io.nicheblog.dreamdiary.global._common._clsf.managt.entity.ManagtrEntity;
 import io.nicheblog.dreamdiary.auth.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.auth.util.AuthUtils;
@@ -8,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -36,18 +38,14 @@ public class ManagtEmbed
     @PostLoad
     private void onLoad() {
         this.isManagtr = AuthUtils.isRegstr(this.managtrId);
-        if (this.managtrInfo != null) this.managtrNm = this.managtrInfo.getNickNm();
     }
 
     /** 조치자(작업자)ID */
     @Column(name = "managtr_id", length = 20)
     private String managtrId;
 
-    /** 조치자(작업자) 정보 */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "managtr_id", referencedColumnName = "user_id", insertable = false, updatable = false)
-    @Fetch(value = FetchMode.JOIN)
-    @NotFound(action = NotFoundAction.IGNORE)
+    /** 조치자(작업자) 정보 :: join 제거하고 캐시 처리 */
+    @Transient
     private AuditorInfo managtrInfo;
 
     @Transient
@@ -84,4 +82,17 @@ public class ManagtEmbed
         this();
         if (updtManagtDt) this.managtDt = DateUtils.getCurrDate();
     }
+
+    /**
+     * 조치자 정보 반환 :: 캐시 처리
+     * @return AuditorInfo
+     */
+    public AuditorInfo getManagtrInfo() {
+        if (StringUtils.isEmpty(this.managtrId)) return null;
+        if (this.managtrInfo == null) {
+            this.managtrInfo = AuditorUtils.getAuditorInfo(this.managtrId);
+        }
+        return this.managtrInfo;
+    }
+
 }

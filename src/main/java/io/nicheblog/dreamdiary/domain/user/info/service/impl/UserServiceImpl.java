@@ -16,6 +16,7 @@ import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -120,30 +121,6 @@ public class UserServiceImpl
     }
 
     /**
-     * 수정 후처리. (override)
-     *
-     * @param updatedEntity 수정된 엔티티
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    @Override
-    public void postModify(final UserEntity updatedEntity) throws Exception {
-        // 관련 캐시 삭제
-        EhCacheUtils.clearL2Cache(AuditorInfo.class);
-    }
-
-    /**
-     * 삭제 후처리. (override)
-     *
-     * @param deletedEntity - 삭제된 엔티티
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    @Override
-    public void postDelete(final UserEntity deletedEntity) throws Exception {
-        // 관련 캐시 삭제
-        EhCacheUtils.clearL2Cache(AuditorInfo.class);
-    }
-
-    /**
      * 사용자 관리 > 사용자 비밀번호 초기화
      * @param key 식별자
      */
@@ -197,6 +174,32 @@ public class UserServiceImpl
         updatedDto.setIsSuccess((updatedEntity.getUserNo() != null));
 
         return updatedDto;
+    }
+
+    /**
+     * 수정 후처리. (override)
+     *
+     * @param updatedEntity 수정된 엔티티
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    @Override
+    @CacheEvict(cacheNames = "auditorInfo", key = "'userId:' + #updatedEntity.userId")
+    public void postModify(final UserEntity updatedEntity) throws Exception {
+        // 관련 캐시 삭제
+        EhCacheUtils.clearL2Cache(AuditorInfo.class);
+    }
+
+    /**
+     * 삭제 후처리. (override)
+     *
+     * @param deletedEntity - 삭제된 엔티티
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    @Override
+    @CacheEvict(cacheNames = "auditorInfo", key = "'userId:' + #deletedEntity.userId")
+    public void postDelete(final UserEntity deletedEntity) throws Exception {
+        // 관련 캐시 삭제
+        EhCacheUtils.clearL2Cache(AuditorInfo.class);
     }
 
     /**

@@ -31,6 +31,10 @@
     </cache>
 
     <!-- ex) 인자를 이용한 공격 정의 목록 조회 (key:: {#attackType, #attackName, #detectEquip}) -->
+
+    <!-- 사용자 정보 -->
+    <cache alias="auditorInfo" uses-template="defaultTemplate" />
+
     <!-- 로그인 정책 관리 -->
     <cache alias="lgnPolicy" uses-template="defaultTemplate" />
     <cache alias="lgnPolicyEntity" uses-template="defaultTemplate" />

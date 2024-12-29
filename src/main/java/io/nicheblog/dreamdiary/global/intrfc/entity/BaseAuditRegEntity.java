@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.global.intrfc.entity;
 
 import io.nicheblog.dreamdiary.auth.entity.AuditorInfo;
+import io.nicheblog.dreamdiary.auth.util.AuditorUtils;
 import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.AllArgsConstructor;
@@ -9,10 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -52,11 +49,8 @@ public class BaseAuditRegEntity
     @Column(name = "reg_dt", updatable = false)
     protected Date regDt;
 
-    /** 등록자 정보 */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "regstr_id", referencedColumnName = "user_id", insertable = false, updatable = false)
-    @Fetch(value = FetchMode.JOIN)
-    @NotFound(action = NotFoundAction.IGNORE)
+    /** 등록자 정보 :: join 제거하고 캐시 처리 */
+    @Transient
     protected AuditorInfo regstrInfo;
 
     /* ----- */
@@ -67,6 +61,18 @@ public class BaseAuditRegEntity
     public Boolean isRegstr() {
         if (StringUtils.isEmpty(this.regstrId)) return false;
         return this.regstrId.equals(AuthUtils.getLgnUserId());
+    }
+
+    /**
+     * 등록자 정보 반환 :: 캐시 처리
+     * @return AuditorInfo
+     */
+    public AuditorInfo getRegstrInfo() {
+        if (StringUtils.isEmpty(this.regstrId)) return null;
+        if (this.regstrInfo == null) {
+            this.regstrInfo = AuditorUtils.getAuditorInfo(this.regstrId);
+        }
+        return this.regstrInfo;
     }
 }
 

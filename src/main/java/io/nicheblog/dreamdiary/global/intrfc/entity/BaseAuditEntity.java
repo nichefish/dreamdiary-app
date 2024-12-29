@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.global.intrfc.entity;
 
 import io.nicheblog.dreamdiary.auth.entity.AuditorInfo;
+import io.nicheblog.dreamdiary.auth.util.AuditorUtils;
 import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.AllArgsConstructor;
@@ -50,14 +51,23 @@ public class BaseAuditEntity
     @Column(name = "mdf_dt", insertable = false)
     protected Date mdfDt;
 
-    /** 수정자 정보 */
-    @ManyToOne
-    @JoinColumn(name = "mdfusr_id", referencedColumnName = "user_id", insertable = false, updatable = false)
-    @Fetch(value = FetchMode.JOIN)
-    @NotFound(action = NotFoundAction.IGNORE)
+    /** 수정자 정보 :: join 제거하고 캐시 처리 */
+    @Transient
     protected AuditorInfo mdfusrInfo;
 
     /* ----- */
+
+    /**
+     * 수정자 정보 반환 :: 캐시 처리
+     * @return AuditorInfo
+     */
+    public AuditorInfo getMdfusrInfo() {
+        if (StringUtils.isEmpty(this.mdfusrId)) return null;
+        if (this.mdfusrInfo == null) {
+            this.mdfusrInfo = AuditorUtils.getAuditorInfo(this.mdfusrId);
+        }
+        return this.mdfusrInfo;
+    }
 
     /**
      * (현재 로그인 중인 사용자) 수정자 여부 체크

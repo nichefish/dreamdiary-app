@@ -38,7 +38,6 @@ public class VcatnSchdulEntity
     @PostLoad
     private void onLoad() {
         // 코드 이름 세팅
-        if (this.vcatnCdInfo != null) this.vcatnNm = this.vcatnCdInfo.getDtlCdNm();
         this.userNm = this.getVcatnUserNm();        // return 용이성 때문에 메소드 분리
     }
     private String getVcatnUserNm() {
@@ -77,18 +76,9 @@ public class VcatnSchdulEntity
     @Comment("휴가 분류 코드")
     private String vcatnCd;
 
-    /** 휴가 분류 코드 정보 (복합키 조인) */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula = @JoinFormula(value = "\'" + Constant.VCATN_CD + "\'", referencedColumnName = "cl_cd")),
-            @JoinColumnOrFormula(column = @JoinColumn(name = "vcatn_cd", referencedColumnName = "dtl_cd", insertable = false, updatable = false))
-    })
-    @Fetch(value = FetchMode.JOIN)
-    @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("휴가 분류 코드 정보")
-    private DtlCdEntity vcatnCdInfo;
-
+    /** 휴가 분류 코드명 */
     @Transient
+    @Comment("휴가 분류 코드")
     private String vcatnNm;
 
     /** 휴가 시작일 */
