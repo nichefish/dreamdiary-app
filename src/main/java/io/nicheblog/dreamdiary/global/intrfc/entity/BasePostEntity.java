@@ -1,7 +1,6 @@
 package io.nicheblog.dreamdiary.global.intrfc.entity;
 
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global._common.cd.entity.DtlCdEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
@@ -41,9 +40,9 @@ public class BasePostEntity
     @Comment("글분류 코드")
     protected String ctgrCd;
 
-    /** 글분류 코드 정보 */
+    /** 글분류 코드 이름 */
     @Transient
-    protected DtlCdEntity ctgrCdInfo;
+    protected String ctgrNm;
 
     /* ----- */
 

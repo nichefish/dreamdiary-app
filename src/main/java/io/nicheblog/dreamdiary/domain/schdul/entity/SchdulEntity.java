@@ -1,12 +1,10 @@
 package io.nicheblog.dreamdiary.domain.schdul.entity;
 
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global._common._clsf.ContentType;
 import io.nicheblog.dreamdiary.global._common._clsf.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.global._common._clsf.comment.entity.embed.CommentEmbedModule;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.entity.embed.TagEmbedModule;
-import io.nicheblog.dreamdiary.global._common.cd.entity.DtlCdEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BasePostEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -45,7 +43,6 @@ public class SchdulEntity
     @PostLoad
     private void onLoad() {
         // 코드 이름 세팅
-        if (this.schdulCdInfo != null) this.schdulNm = this.schdulCdInfo.getDtlCdNm();
         if (!CollectionUtils.isEmpty(this.prtcpntList)) {
             this.prtcpntStr = this.prtcpntList.stream()
                     .filter(entity -> entity.getUser() != null)
@@ -74,17 +71,6 @@ public class SchdulEntity
     @Comment("컨텐츠 타입")
     private String contentType = CONTENT_TYPE.key;
 
-    /** 글분류 코드 정보 */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula = @JoinFormula(value = "'SCHDUL_CD'", referencedColumnName = "cl_cd")),
-            @JoinColumnOrFormula(column = @JoinColumn(name = "ctgr_cd", referencedColumnName = "dtl_cd", insertable = false, updatable = false))
-    })
-    @Fetch(value = FetchMode.JOIN)
-    @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("일정 분류 코드 정보")
-    private DtlCdEntity ctgrCdInfo;
-
     /* ----- */
 
     /** 출처 (ex.KASI) */
@@ -92,23 +78,12 @@ public class SchdulEntity
     @Comment("출처 (ex.KASI) ")
     private String src;
 
-    /** 일정 코드 */
+    /** 일정 코드 :: join을 제거하고 메모리 캐시 처리 */
     @Column(name = "schdul_cd")
     @Comment("일정분류 코드")
     private String schdulCd;
 
-    /** 일정 코드 정보 (복합키 조인) */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula = @JoinFormula(value = "\'" + Constant.SCHDUL_CD + "\'", referencedColumnName = "cl_cd")),
-            @JoinColumnOrFormula(column = @JoinColumn(name = "schdul_cd", referencedColumnName = "dtl_cd", insertable = false, updatable = false))
-    })
-    @Fetch(value = FetchMode.JOIN)
-    @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("일정 코드 정보")
-    private DtlCdEntity schdulCdInfo;
-
-    /** 일정 코드명 */
+    /** 일정 코드명 :: join을 제거하고 메모리 캐시 처리 */
     @Transient
     private String schdulNm;
 

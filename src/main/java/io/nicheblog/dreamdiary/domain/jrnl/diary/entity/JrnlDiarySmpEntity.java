@@ -2,7 +2,6 @@ package io.nicheblog.dreamdiary.domain.jrnl.diary.entity;
 
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
 import io.nicheblog.dreamdiary.global._common._clsf.ContentType;
-import io.nicheblog.dreamdiary.global._common.cd.entity.DtlCdEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
@@ -47,17 +46,6 @@ public class JrnlDiarySmpEntity {
     @Column(name = "content_type", columnDefinition = "VARCHAR(50) DEFAULT 'JRNL_DIARY'")
     @Comment("컨텐츠 타입")
     private String contentType = CONTENT_TYPE.key;
-
-    /** 글분류 코드 정보 */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula = @JoinFormula(value = "'JRNL_DIARY_CTGR_CD'", referencedColumnName = "cl_cd")),
-            @JoinColumnOrFormula(column = @JoinColumn(name = "ctgr_cd", referencedColumnName = "dtl_cd", insertable = false, updatable = false))
-    })
-    @Fetch(value = FetchMode.JOIN)
-    @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("저널 일기 글분류 코드 정보")
-    private DtlCdEntity ctgrCdInfo;
 
     /* ----- */
 

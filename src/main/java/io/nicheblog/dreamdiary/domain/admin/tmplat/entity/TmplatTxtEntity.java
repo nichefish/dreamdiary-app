@@ -66,16 +66,6 @@ public class TmplatTxtEntity
     @Comment("템플릿 코드")
     private String ctgrCd;
 
-    /** 템플릿 구분 코드 정보 (복합키 조인) */
-    // @ManyToOne(fetch = FetchType.EAGER)
-    // @JoinColumnsOrFormulas({
-    //     @JoinColumnOrFormula(formula=@JoinFormula(value="'"+Constant.NOTICE_CTGR_CD+"'", referencedColumnName="CL_CD")),
-    //     @JoinColumnOrFormula(column=@JoinColumn(name="TMPLAT_CL_CD", referencedColumnName="DTL_CD", insertable=false, updatable=false))
-    // })
-    // @Fetch(value= FetchMode.JOIN)
-    // @NotFound(action=NotFoundAction.IGNORE)
-    // private DtlCdEntity ctgrCdInfo;
-
     /**
      * 제목
      */

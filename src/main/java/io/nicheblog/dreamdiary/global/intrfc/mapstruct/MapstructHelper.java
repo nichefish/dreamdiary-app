@@ -1,5 +1,7 @@
 package io.nicheblog.dreamdiary.global.intrfc.mapstruct;
 
+import io.nicheblog.dreamdiary.auth.entity.AuditorInfo;
+import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global._common._clsf.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.global._common._clsf.comment.entity.embed.CommentEmbedModule;
 import io.nicheblog.dreamdiary.global._common._clsf.comment.mapstruct.embed.CommentEmbedMapstruct;
@@ -30,13 +32,14 @@ import io.nicheblog.dreamdiary.global._common._clsf.viewer.entity.embed.ViewerEm
 import io.nicheblog.dreamdiary.global._common._clsf.viewer.mapstruct.embed.ViewerEmbedMapstruct;
 import io.nicheblog.dreamdiary.global._common._clsf.viewer.model.cmpstn.ViewerCmpstn;
 import io.nicheblog.dreamdiary.global._common._clsf.viewer.model.cmpstn.ViewerCmpstnModule;
-import io.nicheblog.dreamdiary.auth.entity.AuditorInfo;
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.global._common.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.global.intrfc.entity.*;
 import io.nicheblog.dreamdiary.global.intrfc.model.*;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
+import lombok.RequiredArgsConstructor;
 import org.mapstruct.MappingTarget;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -47,10 +50,14 @@ import org.springframework.util.CollectionUtils;
  *
  * @author nichefish
  */
+@Component
+@RequiredArgsConstructor
 public class MapstructHelper {
 
+    private final DtlCdService dtlCdService;
+
     /**
-     * Map Base-inheritted Fields
+     * Map Base-inheritted Fields (entity -> dto)
      *
      * @param entity 매핑할 Entity
      * @param dto 매핑 대상 Dto
@@ -72,8 +79,7 @@ public class MapstructHelper {
             }
         }
         // AUDIT :: 공통 필드 매핑 로직
-        if (entity instanceof BaseAuditEntity && dto instanceof BaseAuditDto) {
-            final BaseAuditEntity baseEntity = ((BaseAuditEntity) entity);
+        if (entity instanceof BaseAuditEntity baseEntity && dto instanceof BaseAuditDto) {
             final AuditorInfo mdfusrInfo = baseEntity.getMdfusrInfo();
             if (mdfusrInfo != null) {
                 // 수정자 이름
@@ -86,26 +92,20 @@ public class MapstructHelper {
         }
         // MANAGE :: ...
         // ATCH :: 공통 필드 매핑 로직
-        if (entity instanceof BaseAtchEntity && dto instanceof BaseAtchDto) {
-            final BaseAtchEntity baseEntity = ((BaseAtchEntity) entity);
+        if (entity instanceof BaseAtchEntity baseEntity && dto instanceof BaseAtchDto) {
             // 첨부파일 존재 여부
             final Boolean hasAtchFile = !(baseEntity.getAtchFileNo() == null || baseEntity.getAtchFileInfo() == null || CollectionUtils.isEmpty(baseEntity.getAtchFileInfo().getAtchFileList()));
             ((BaseAtchDto) dto).setHasAtchFile(hasAtchFile);
         }
         // CLSF :: BaseClsfMapstruct쪽에 정의
         // POST :: 공통 필드 매핑 로직
-        if (entity instanceof BasePostEntity && dto instanceof BasePostDto) {
-            final BasePostEntity baseEntity = ((BasePostEntity) entity);
-            // 글분류 이름
-            if (baseEntity.getCtgrCdInfo() != null) {
-                ((BasePostDto) dto).setCtgrNm(baseEntity.getCtgrCdInfo().getDtlCdNm());
-                ((BasePostDto) dto).setHasCtgrNm(baseEntity.getCtgrCdInfo() != null);
-            }
+        if (entity instanceof BasePostEntity baseEntity && dto instanceof BasePostDto) {
+            //
         }
     }
 
     /**
-     * Map Clsf Fields
+     * Map Clsf Fields (entity -> dto)
      *
      * @param entity 매핑할 Entity
      * @param dto 매핑 대상 Dto
@@ -158,7 +158,7 @@ public class MapstructHelper {
     }
 
     /**
-     * Map State Fields
+     * Map State Fields (dto -> entity)
      *
      * @param entity 매핑할 Dto
      * @param dto 매핑 대상 Entity
@@ -197,7 +197,7 @@ public class MapstructHelper {
     }
 
     /**
-     * Map Post Fields
+     * Map Post Fields (entity -> dto)
      *
      * @param entity 매핑할 Entity
      * @param dto 매핑 대상 Dto
@@ -205,9 +205,7 @@ public class MapstructHelper {
     public static <Entity extends BaseClsfEntity, Dto extends BaseClsfDto> void mapPostFields(Entity entity, Dto dto) {
         // AUDIT :: 공통 필드 매핑 로직
         if (entity instanceof BasePostEntity && dto instanceof BasePostDto) {
-            if (((BasePostEntity) entity).getCtgrCdInfo() != null) {
-                ((BasePostDto) dto).setCtgrNm(((BasePostEntity) entity).getCtgrCdInfo().getDtlCdNm());
-            }
+            //
         }
     }
 
