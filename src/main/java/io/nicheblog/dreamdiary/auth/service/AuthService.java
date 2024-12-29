@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.auth.service;
 
+import io.nicheblog.dreamdiary.auth.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.auth.entity.AuthRoleEntity;
 import io.nicheblog.dreamdiary.auth.model.AuthInfo;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -56,4 +57,12 @@ public interface AuthService
      * @return {@link AuthRoleEntity} -- 권한 정보 객체
      */
     AuthRoleEntity getAuthRole(final String authCd);
+
+    /**
+     * getAuditorInfo
+     *
+     * @param userId 사용자 ID
+     * @return AuditorInfo
+     */
+    AuditorInfo getAuditorInfo(String userId);
 }

@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.auth.mapstruct;
 
+import io.nicheblog.dreamdiary.auth.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.domain.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.domain.user.profl.mapstruct.UserProflMapstruct;
 import io.nicheblog.dreamdiary.auth.model.AuthInfo;
@@ -41,4 +42,12 @@ public interface AuthInfoMapstruct
     @Mapping(target = "profl", expression = "java(UserProflMapstruct.INSTANCE.toDto(entity.getProfl()))")
     @Mapping(target = "userProflNo", expression = "java(entity.getProfl() != null ? entity.getProfl().getUserProflNo() : null)")
     AuthInfo toDto(final UserEntity entity) throws Exception;
+
+    /**
+     * toAuditorInfo
+     *
+     * @param userEntity
+     * @return
+     */
+    AuditorInfo toAuditorInfo(UserEntity userEntity);
 }

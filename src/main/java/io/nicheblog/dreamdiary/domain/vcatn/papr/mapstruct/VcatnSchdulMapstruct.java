@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.domain.vcatn.papr.entity.VcatnSchdulEntity;
 import io.nicheblog.dreamdiary.domain.vcatn.papr.model.VcatnSchdulDto;
 import io.nicheblog.dreamdiary.domain.vcatn.papr.model.VcatnSchdulXlsxDto;
 import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global._common.cd.utils.CdUtils;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseCrudMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, DatePtn.class, StringUtils.class})
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, DatePtn.class, StringUtils.class, CdUtils.class})
 public interface VcatnSchdulMapstruct
         extends BaseCrudMapstruct<VcatnSchdulDto, VcatnSchdulDto, VcatnSchdulEntity> {
 
@@ -38,6 +39,7 @@ public interface VcatnSchdulMapstruct
      */
     @Override
     @Named("toDto")
+    @Mapping(target = "vcatnNm", expression = "java(CdUtils.getDtlCdNm(\"VCATN_CD\", entity.getVcatnCd()))")
     @Mapping(target = "bgnDt", expression = "java(DateUtils.asStr(entity.getBgnDt(), DatePtn.DATE))")
     @Mapping(target = "endDt", expression = "java(DateUtils.asStr(entity.getEndDt(), DatePtn.DATE))")
     VcatnSchdulDto toDto(final VcatnSchdulEntity entity) throws Exception;
@@ -51,6 +53,7 @@ public interface VcatnSchdulMapstruct
      */
     @Override
     @Named("toListDto")
+    @Mapping(target = "vcatnNm", expression = "java(CdUtils.getDtlCdNm(\"VCATN_CD\", entity.getVcatnCd()))")
     @Mapping(target = "bgnDt", expression = "java(DateUtils.asStr(entity.getBgnDt(), DatePtn.DATE))")
     @Mapping(target = "endDt", expression = "java(DateUtils.asStr(entity.getEndDt(), DatePtn.DATE))")
     VcatnSchdulDto toListDto(final VcatnSchdulEntity entity) throws Exception;

@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.auth.service.impl;
 
+import io.nicheblog.dreamdiary.auth.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.auth.entity.AuthRoleEntity;
 import io.nicheblog.dreamdiary.auth.mapstruct.AuthInfoMapstruct;
 import io.nicheblog.dreamdiary.auth.model.AuthInfo;
@@ -10,6 +11,7 @@ import io.nicheblog.dreamdiary.domain.user.info.repository.jpa.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +35,7 @@ public class AuthServiceImpl
 
     private final UserRepository userRepository;
     private final AuthRoleRepository authRoleRepository;
+    private final AuthInfoMapstruct mapstruct = AuthInfoMapstruct.INSTANCE;
 
     /**
      * userId로 계정 + 사용자 정보 조회
@@ -126,5 +129,22 @@ public class AuthServiceImpl
     @Override
     public AuthRoleEntity getAuthRole(final String authCd) {
         return authRoleRepository.findById(authCd).orElse(null);
+    }
+
+    /**
+     * getAuditorInfo
+     *
+     * @param userId 사용자 ID
+     * @return AuditorInfo
+     */
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "auditorInfo", key = "'userId:' + #userId", condition = "#userId!=null")
+    public AuditorInfo getAuditorInfo(String userId) {
+        Optional<UserEntity> userEntityWrapper = userRepository.findByUserId(userId);
+        if (userEntityWrapper.isEmpty()) return null;
+
+        UserEntity userEntity = userEntityWrapper.get();
+        return mapstruct.toAuditorInfo(userEntity);
     }
 }
