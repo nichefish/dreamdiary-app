@@ -27,7 +27,7 @@
             initDraggable: function() {
                 const keyExtractor = (item) => ({ "clCd": $(item).attr("id") });
                 const url = "${Url.CL_CD_SORT_ORDR_AJAX!}";
-                ClCd.swappable = commons.util.initDraggable(keyExtractor, url);
+                ClCd.swappable = commons.util.initDraggable("", keyExtractor, url);
             },
 
             /**

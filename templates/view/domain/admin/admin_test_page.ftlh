@@ -117,7 +117,7 @@
             <div class="col-xl-2">
                 <div class="fs-6 fw-bold col-form-label"><label for="hldyYy">한국천문연구원 특일정보 API</label></div>
             </div>
-            <div class="col-xl-1">
+            <div class="col-xl-2">
                 <select name="hldyYy" id="hldyYy" class="form-select form-select-solid">
                     <#assign currYy = DateUtils.getCurrYyStr()!>
                     <#assign prevYy = ((currYy?number)-1)?c>

@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.global._common.cd.controller;
 
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common.cd.model.ClCdDto;
@@ -69,7 +70,8 @@ public class ClCdPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.CD.setAcsPageInfo("로그인 정책 관리"));
+        model.addAttribute("menuLabel", SiteMenu.CD);
+        model.addAttribute("pageNm", PageNm.LIST);
 
         boolean isSuccess = false;
         String rsltMsg = "";
@@ -123,7 +125,8 @@ public class ClCdPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.CD.setAcsPageInfo("로그인 정책 관리"));
+        model.addAttribute("menuLabel", SiteMenu.CD);
+        model.addAttribute("pageNm", PageNm.DTL);
 
         boolean isSuccess = false;
         String rsltMsg = "";

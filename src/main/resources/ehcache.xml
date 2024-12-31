@@ -39,6 +39,16 @@
     <cache alias="lgnPolicy" uses-template="defaultTemplate" />
     <cache alias="lgnPolicyEntity" uses-template="defaultTemplate" />
 
+    <!-- 메뉴 -->
+    <cache alias="userMenuList" uses-template="defaultTemplate" />
+    <cache alias="mngrMenuList" uses-template="defaultTemplate" />
+    <cache alias="menuByLabel" uses-template="defaultTemplate" />
+    <cache alias="isMngrMenu" uses-template="defaultTemplate" />
+
+    <!-- 게시판 정의 -->
+    <cache alias="boardDefMenuList" uses-template="defaultTemplate" />
+    <cache alias="boardMenu" uses-template="defaultTemplate" />
+
     <!-- 저널 일자 -->
     <cache alias="jrnlDayList" uses-template="defaultTemplate" />
     <cache alias="jrnlDayDtlDto" uses-template="defaultTemplate" />

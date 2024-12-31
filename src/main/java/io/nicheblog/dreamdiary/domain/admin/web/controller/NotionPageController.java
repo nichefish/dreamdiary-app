@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.domain.admin.web.controller;
 
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common.flsys.model.FlsysSearchParam;
@@ -62,7 +63,8 @@ public class NotionPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.LGN_POLICY.setAcsPageInfo("노션 연동"));
+        model.addAttribute("menuLabel", SiteMenu.MAIN);
+        model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // NotionRetriever notionRetriever = new NotionRetriever(notionPageId);
         // String notionPage = notionRetriever.render();

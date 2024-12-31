@@ -40,6 +40,7 @@ public final class Constant
     public static final String PAGE_POP = "팝업";
     public static final String PAGE_STATS = "통계 조회";
     public static final String PAGE_CAL = "달력 조회";
+    public static final Object PAGE_PREVIEW = "미리보기";
 
     /** blank avatar image url */
     public static final String BLANK_AVATAR_URL = "/metronic/assets/media/avatars/avatar_blank.png";

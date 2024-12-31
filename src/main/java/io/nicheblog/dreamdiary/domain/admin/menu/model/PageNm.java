@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
  * @author nichefish
  */
 @RequiredArgsConstructor
-public enum AcsPageNm {
+public enum PageNm {
 
     LGN("로그인"),
     MAIN("메인"),
@@ -20,9 +20,13 @@ public enum AcsPageNm {
     REG("등록"),
     DTL("상세 조회"),
     MDF("수정"),
-    POP("팝업"),
+    POP("팝업 조회"),
     STATS("통계 조회"),
-    CAL("달력 조회");
+    CAL("달력 조회"),
+    PREVIEW("미리보기"),
+
+    PAGE("페이지"),
+    DEFAULT("");
 
     public final String pageNm;
 }

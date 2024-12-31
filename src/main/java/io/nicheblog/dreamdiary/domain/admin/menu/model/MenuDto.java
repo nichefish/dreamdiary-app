@@ -48,10 +48,19 @@ public class MenuDto
     private String menuTyNm;
 
     /** 메뉴 이름 */
-    @Size(max = 50)
+    @Size(max = 200)
     private String menuNm;
 
+    /** 메뉴 라벨 */
+    @Size(max = 100)
+    private String menuLabel;
+
+    /** 미열람 카운트 이름 (model) */
+    @Size(max = 100)
+    private String unreadCntNm;
+
     /** URL */
+    @Size(max = 1000)
     private String url;
 
     /** 아이콘 (bootstrap icon 또는 font-awesome) TODO: svg? */
@@ -70,12 +79,19 @@ public class MenuDto
     @Size(min = 1, max = 1)
     @Pattern(regexp = "^[YN]$")
     private String dirYn = "N";
+    
+    /** 관리자 메뉴 여부 (Y/N) */
+    @Builder.Default
+    private String mngrYn = "N";
 
     /** 셀프 참조 :: 상위메뉴 조회 */
     private MenuDto upperMenu;
 
     /** 셀프 참조 :: 상위메뉴명 */
     private String upperMenuNm;
+
+    /** 셀프 참조 :: 상위메뉴구분코드 */
+    private String upperMenuTyCd;
 
     /** 셀프 참조 :: 하위메뉴 목록 조회 */
     private List<MenuDto> subMenuList;

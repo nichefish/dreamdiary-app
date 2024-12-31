@@ -52,14 +52,14 @@
                                 <i class="bi bi-house-fill fs-4 me-1 text-primary"></i>
                             </a>
                         </li>
-                        <li class="breadcrumb-item text-muted">${(siteAcsInfo.topMenuNm)!}</li>
+                        <li class="breadcrumb-item text-muted">${(siteAcsInfo.upperMenuNm)!}</li>
                         <li class="breadcrumb-item text-muted">${(siteAcsInfo.menuNm)!}</li>
                     </ol>
                     <!--begin::Separator-->
                     <span class="h-20px border-gray-200 border-start ms-3 mx-2"></span>
                     <!--end::Separator-->
                     <!--begin::Description-->
-                    <small class="text-muted fs-7 fw-bold my-1 ms-1">${(siteAcsInfo.acsPageNm)!}</small>
+                    <small class="text-muted fs-7 fw-bold my-1 ms-1">${(siteAcsInfo.pageNm)!}</small>
                 </h1>
             </div>
         </div>

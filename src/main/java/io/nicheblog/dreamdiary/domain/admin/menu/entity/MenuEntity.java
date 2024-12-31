@@ -4,10 +4,7 @@ import io.nicheblog.dreamdiary.global._common._clsf.state.entity.embed.StateEmbe
 import io.nicheblog.dreamdiary.global._common._clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.global._common.cd.entity.DtlCdEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
 
@@ -55,21 +52,26 @@ public class MenuEntity
     @Comment("메뉴 구분 코드")
     private String menuTyCd;
 
-    /** 메뉴 구분 코드 정보 (복합키 조인) */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula = @JoinFormula(value = "\'MENU_TY_CD\'", referencedColumnName = "cl_cd")),
-            @JoinColumnOrFormula(column = @JoinColumn(name = "menu_ty_cd", referencedColumnName = "dtl_cd", insertable = false, updatable = false))
-    })
-    @Fetch(value = FetchMode.JOIN)
-    @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("메뉴 구분 코드 정보")
-    private DtlCdEntity menuTyCdInfo;
+    /** 관리자 메뉴 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "mngr_yn")
+    @Comment("관리자 메뉴 여부 (Y/N)")
+    private String mngrYn = "N";
 
     /** 메뉴명 */
     @Column(name = "menu_nm")
     @Comment("메뉴명")
     private String menuNm;
+
+    /** 메뉴 라벨 */
+    @Column(name = "menu_label")
+    @Comment("메뉴 라벨")
+    private String menuLabel;
+
+    /** 미열람 카운트 이름 (model) */
+    @Column(name = "unread_cnt_nm")
+    @Comment("미열람 카운트 이름 (model)")
+    private String unreadCntNm;
 
     /** URL  */
     @Column(name = "url")

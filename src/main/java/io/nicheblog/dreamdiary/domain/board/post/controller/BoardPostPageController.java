@@ -1,5 +1,7 @@
 package io.nicheblog.dreamdiary.domain.board.post.controller;
 
+import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.domain.board.def.model.BoardDefDto;
 import io.nicheblog.dreamdiary.domain.board.def.service.BoardDefService;
 import io.nicheblog.dreamdiary.domain.board.post.model.BoardPostDto;
@@ -16,7 +18,6 @@ import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyPageControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.PaginationInfo;
-import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.Getter;
@@ -31,7 +32,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * BoardPostPageController
@@ -73,17 +73,14 @@ public class BoardPostPageController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String boardPostList(
             @ModelAttribute("searchParam") BoardPostSearchParam searchParam,
+            final @ModelAttribute("boardCd") String boardCd,
             final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {
 
-        final String boardCd = searchParam.getBoardCd();
-        model.addAttribute("boardCd", boardCd);
-
         /* 사이트 메뉴 설정 */
-        final BoardDefDto boardDef = boardDefService.getDtlDto(boardCd);
-        final SiteAcsInfo boardMenu = boardDefService.getBoardMenu(boardCd);
-        model.addAttribute(Constant.SITE_MENU, boardMenu.setAcsPageInfo(Constant.PAGE_LIST));
+        model.addAttribute("menuLabel", SiteMenu.BOARD);
+        model.addAttribute("pageNm", PageNm.LIST);
 
         // 상세/수정 화면에서 목록 화면 복귀시 세션에 목록 검색 인자 저장해둔 거 있는지 체크
         searchParam = (BoardPostSearchParam) CmmUtils.Param.checkPrevSearchParam(baseUrl, searchParam);
@@ -98,6 +95,7 @@ public class BoardPostPageController
         // 컨텐츠 타입에 맞는 태그 목록 조회
         model.addAttribute("tagList", tagService.getContentSpecificTagList(boardCd));
         // 코드 정보 모델에 추가
+        final BoardDefDto boardDef = boardDefService.getDtlDto(boardCd);
         dtlCdService.setCdListToModel(boardDef.getCtgrClCd(), model);
         // 목록 검색 URL + 파라미터 모델에 추가
         CmmUtils.Param.setModelAttrMap(searchParam, baseUrl, model);
@@ -124,24 +122,21 @@ public class BoardPostPageController
     @GetMapping(Url.BOARD_POST_REG_FORM)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String boardPostRegForm(
-            final @RequestParam("boardCd") String boardCd,
+            final @ModelAttribute("boardCd") String boardCd,
             final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {
 
-        /* 게시판 정의 정보 조회 */
-        model.addAttribute("boardCd", boardCd);
-
         /* 사이트 메뉴 설정 */
-        final BoardDefDto boardDef = boardDefService.getDtlDto(boardCd);
-        final SiteAcsInfo boardMenu = boardDefService.getBoardMenu(boardCd);
-        model.addAttribute(Constant.SITE_MENU, boardMenu.setAcsPageInfo(Constant.PAGE_REG));
+        model.addAttribute("menuLabel", SiteMenu.BOARD);
+        model.addAttribute("pageNm", PageNm.REG);
 
         // 빈 객체 주입 (freemarker error prevention)
         model.addAttribute("post", new BoardPostDto());         // 빈 객체 주입 (freemarker error prevention)
         // 등록/수정 화면 플래그 세팅
         model.addAttribute(Constant.IS_REG, true);           // 등록/수정 화면 플래그 세팅
         // 코드 정보 모델에 추가
+        final BoardDefDto boardDef = boardDefService.getDtlDto(boardCd);
         dtlCdService.setCdListToModel(boardDef.getCtgrClCd(), model);
         dtlCdService.setCdListToModel(Constant.MDFABLE_CD, model);
         dtlCdService.setCdListToModel(Constant.JANDI_TOPIC_CD, model);
@@ -170,13 +165,14 @@ public class BoardPostPageController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String boardPostRegPreviewPop(
             final BoardPostDto boardPost,
-            final @RequestParam("boardCd") String boardCd,
+            final @ModelAttribute("boardCd") String boardCd,
             final LogActvtyParam logParam,
             final ModelMap model
     ) {
 
-        /* 게시판 정의 정보 조회 */
-        model.addAttribute("boardCd", boardCd);
+        /* 사이트 메뉴 설정 */
+        model.addAttribute("menuLabel", SiteMenu.BOARD);
+        model.addAttribute("pageNm", PageNm.PREVIEW);
 
         // 객체 정보 모델에 추가
         boardPost.setMarkdownCn(CmmUtils.markdown(boardPost.getCn()));
@@ -205,17 +201,14 @@ public class BoardPostPageController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String boardPostDtl(
             final BoardPostKey postKey,
-            final @RequestParam("boardCd") String boardCd,
+            final @ModelAttribute("boardCd") String boardCd,
             final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {
 
-        /* 게시판 정의 정보 조회 */
-        model.addAttribute("boardCd", boardCd);
-
         /* 사이트 메뉴 설정 */
-        final SiteAcsInfo boardMenu = boardDefService.getBoardMenu(boardCd);
-        model.addAttribute(Constant.SITE_MENU, boardMenu.setAcsPageInfo(Constant.PAGE_DTL));
+        model.addAttribute("menuLabel", SiteMenu.BOARD);
+        model.addAttribute("pageNm", PageNm.DTL);
 
         // 객체 조회 및 모델에 추가
         final BoardPostDto rsDto = boardPostService.getDtlDto(postKey.getClsfKey());
@@ -252,18 +245,14 @@ public class BoardPostPageController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String boardPostMdfForm(
             final BoardPostKey postKey,
-            final @RequestParam("boardCd") String boardCd,
+            final @ModelAttribute("boardCd") String boardCd,
             final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {
 
-        /* 게시판 정의 정보 조회 */
-        model.addAttribute("boardCd", boardCd);
-
         /* 사이트 메뉴 설정 */
-        final BoardDefDto boardDef = boardDefService.getDtlDto(boardCd);
-        final SiteAcsInfo boardMenu = boardDefService.getBoardMenu(boardCd);
-        model.addAttribute(Constant.SITE_MENU, boardMenu.setAcsPageInfo(Constant.PAGE_MDF));
+        model.addAttribute("menuLabel", SiteMenu.BOARD);
+        model.addAttribute("pageNm", PageNm.MDF);
 
         // 객체 조회 및 모델에 추가
         final BoardPostDto rsDto = boardPostService.getDtlDto(postKey.getClsfKey());
@@ -271,6 +260,7 @@ public class BoardPostPageController
         // 등록/수정 화면 플래그 세팅
         model.addAttribute(Constant.IS_MDF, true);
         // 코드 정보 모델에 추가
+        final BoardDefDto boardDef = boardDefService.getDtlDto(boardCd);
         dtlCdService.setCdListToModel(boardDef.getCtgrClCd(), model);
         dtlCdService.setCdListToModel(Constant.MDFABLE_CD, model);
         dtlCdService.setCdListToModel(Constant.JANDI_TOPIC_CD, model);

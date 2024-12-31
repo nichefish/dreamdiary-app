@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.auth.config;
 
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.auth.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.global.Constant;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

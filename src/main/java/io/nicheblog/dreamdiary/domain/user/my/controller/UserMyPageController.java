@@ -1,6 +1,8 @@
 package io.nicheblog.dreamdiary.domain.user.my.controller;
 
+import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
 import io.nicheblog.dreamdiary.domain.vcatn.papr.model.VcatnPaprDto;
@@ -9,7 +11,6 @@ import io.nicheblog.dreamdiary.domain.vcatn.stats.model.VcatnStatsYyDto;
 import io.nicheblog.dreamdiary.domain.vcatn.stats.service.VcatnStatsYyService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyPageControllerAspect;
@@ -67,7 +68,8 @@ public class UserMyPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.MAIN_PORTAL.setAcsPageInfo("내 정보"));
+        model.addAttribute("menuLabel", SiteMenu.USER_MY);
+        model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // 내 정보 조회 및 모델에 추가
         final String lgnUserId = AuthUtils.getLgnUserId();

@@ -1,5 +1,7 @@
 package io.nicheblog.dreamdiary.auth.exception;
 
+import io.nicheblog.dreamdiary.global.exception.BaseException;
+
 /**
  * NotAuthorizedException
  * <pre>
@@ -10,7 +12,7 @@ package io.nicheblog.dreamdiary.auth.exception;
  * @since 2022-05-01
  */
 public class NotAuthorizedException
-        extends RuntimeException {
+        extends BaseException {
 
     /**
      * 생성자.

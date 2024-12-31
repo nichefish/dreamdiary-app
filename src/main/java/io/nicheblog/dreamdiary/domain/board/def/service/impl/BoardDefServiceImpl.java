@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.domain.board.def.service.impl;
 
-import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
+import io.nicheblog.dreamdiary.domain.admin.menu.entity.MenuEntity;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuDto;
 import io.nicheblog.dreamdiary.domain.board.def.entity.BoardDefEntity;
 import io.nicheblog.dreamdiary.domain.board.def.mapstruct.BoardDefMapstruct;
 import io.nicheblog.dreamdiary.domain.board.def.model.BoardDefDto;
@@ -12,6 +13,8 @@ import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -48,6 +51,7 @@ public class BoardDefServiceImpl
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
+    @Cacheable(value="boardDefMenuList")
     public List<SiteAcsInfo> boardDefMenuList() throws Exception {
         Map<String, Object> searchParamMap = new HashMap<>() {{
             put("useYn", "Y");
@@ -72,6 +76,7 @@ public class BoardDefServiceImpl
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
+    @Cacheable(value="boardMenu", key="#boardCd")
     public SiteAcsInfo getBoardMenu(final String boardCd) throws Exception {
         final BoardDefEntity retrievedEntity = this.getDtlEntity(boardCd);
 
@@ -90,11 +95,28 @@ public class BoardDefServiceImpl
         }
     }
 
-    /**
-     * 상태 변경 후처리. (override)
-     */
     @Override
-    public void postSetState(final String boardCd) throws Exception {
-        SiteMenu.BOARD.setSubMenuList(this.boardDefMenuList());
+    @CacheEvict(value = {"boardDefMenuList", "boardMenu"}, allEntries = true)
+    public void postRegist(final BoardDefEntity registeredEntity) {
+        // 메뉴 캐시 초기화
     }
+
+    @Override
+    @CacheEvict(value = {"boardDefMenuList", "boardMenu"}, allEntries = true)
+    public void postModify(final BoardDefEntity updatedEntity) {
+        // 메뉴 캐시 초기화
+    }
+
+    @Override
+    @CacheEvict(value = {"boardDefMenuList", "boardMenu"}, allEntries = true)
+    public void postDelete(final BoardDefEntity deletedEntity) {
+        // 메뉴 캐시 초기화
+    }
+
+    @Override
+    @CacheEvict(value = {"boardDefMenuList", "boardMenu"}, allEntries = true)
+    public void postSortOrdr(final List<BoardDefDto> sortOrdr) throws Exception {
+        // 변경 후처리:: 기본 공백, 필요시 각 함수에서 Override
+    }
+
 }

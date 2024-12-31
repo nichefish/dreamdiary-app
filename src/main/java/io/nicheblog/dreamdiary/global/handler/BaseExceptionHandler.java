@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global._common.error.handler;
+package io.nicheblog.dreamdiary.global.handler;
 
 import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;

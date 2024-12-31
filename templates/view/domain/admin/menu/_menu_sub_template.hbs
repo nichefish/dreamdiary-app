@@ -5,10 +5,13 @@
 
 <script type="text/x-handlebars-template" id="menu_sub_template">
     <li class="list-unstyled sortable-item draggable-sub" style="{{borderColor}}"
-         id="{{menuNo}}" data-type="{{menuTyCd}}" upper-menu-no="{{upperMenuNo}}">
+         id="{{menuNo}}" data-id="{{menuNo}}" data-type="{{menuTyCd}}" data-upper-menu-no="{{upperMenuNo}}">
+        {{#if (equals upperMenuTyCd 'MAIN')}}
+            <div class="menu-label fw-bolder text-muted fs-6 pb-1">{{ifEmpty menuLabel "-"}}</div>
+        {{/if}}
         <div class="d-flex align-items-center justify-content-between rounded">
             <div class="d-flex align-items-center">
-                 <div class="draggable-handle-sub cursor-move pt-2"
+                 <div class="draggable-handle-sub cursor-move pt-1"
                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="드래그하여&#10;항목을 이동합니다.">
                     <i class="ki-duotone ki-abstract-14 fs-2x">
                         <span class="path1"></span>
@@ -16,15 +19,21 @@
                     </i>
                 </div>
                 {{#if (exists icon)}}
-                    <i class="{{icon}} text-muted fs-3 ms-8"></i>
+                    <span class="ps-3 pe-0">
+                        {{{icon}}}
+                    </span>
                 {{else}}
-                    <span class="menu-bullet">
-                    <span class="bullet bullet-dot vertical-middle"></span>
+                    <span class="ps-3 pe-0">
+                        ·
+                    </span>
                 {{/if}}
-                <div class="mx-2 mb-0 text-dark cursor-pointer text-underline-dotted" onclick="Menu.mdfModal('{{menuNo}}');"
+                <div class="ms-3 mb-0 text-dark cursor-pointer text-underline-dotted" onclick="Menu.mdfModal('{{menuNo}}');"
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="수정 팝업을 호출합니다.">
-                    <span class="title {{#ifYn state.useYn}}strikethrough{{/ifYn}}">
+                    <span class="title fs-5 {{^ifYn state.useYn}}strikethrough{{/ifYn}}">
                         {{menuNm}}
+                        <span class="badge bg-secondary text-{{#if (equals upperMenuTyCd 'MAIN')}}dark{{else}}muted{{/if}} ms-1">
+                            {{ifEmpty menuLabel "-"}}
+                        </span>
                     </span>
                 </div>
             </div>
@@ -43,7 +52,7 @@
                 </div>
             </div>
         </div>
-        <ul id="menu_sub_{{menuNo}}" class="sub-menu-list custom-scroll">
+        <ul id="menu_sub_{{menuNo}}" class="sub-menu-list custom-scroll draggable-zone-sub">
             <!-- sub-menu area -->
         </ul>
     </li>

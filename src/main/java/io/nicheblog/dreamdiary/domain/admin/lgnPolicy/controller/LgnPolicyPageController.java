@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.domain.admin.lgnPolicy.controller;
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.model.LgnPolicyDto;
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.service.LgnPolicyService;
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
@@ -57,7 +58,8 @@ public class LgnPolicyPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.LGN_POLICY.setAcsPageInfo("로그인 정책 관리"));
+        model.addAttribute("menuLabel", SiteMenu.LGN_POLICY);
+        model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // 항목 조회 및 모델에 추가 :: 현재는 항상 고정 ID(1L)로 조회한다.
         final LgnPolicyDto lgnPolicy = lgnPolicyService.getDtlDto();

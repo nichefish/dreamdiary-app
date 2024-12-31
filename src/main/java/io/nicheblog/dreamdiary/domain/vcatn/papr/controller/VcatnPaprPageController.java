@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.domain.vcatn.papr.controller;
 
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.domain.vcatn.papr.model.VcatnPaprDto;
 import io.nicheblog.dreamdiary.domain.vcatn.papr.model.VcatnPaprSearchParam;
 import io.nicheblog.dreamdiary.domain.vcatn.papr.service.VcatnPaprService;
@@ -72,7 +73,8 @@ public class VcatnPaprPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.VCATN_PAPR.setAcsPageInfo(Constant.PAGE_LIST));
+        model.addAttribute("menuLabel", SiteMenu.VCATN_PAPR);
+        model.addAttribute("pageNm", PageNm.LIST);
 
         // 상세/수정 화면에서 목록 화면 복귀시 세션에 목록 검색 인자 저장해둔 거 있는지 체크
         searchParam = (VcatnPaprSearchParam) CmmUtils.Param.checkPrevSearchParam(baseUrl, searchParam);
@@ -115,7 +117,8 @@ public class VcatnPaprPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.VCATN_PAPR.setAcsPageInfo(Constant.PAGE_REG));
+        model.addAttribute("menuLabel", SiteMenu.VCATN_PAPR);
+        model.addAttribute("pageNm", PageNm.REG);
 
         // 빈 객체 주입 (freemarker error prevention)
         model.addAttribute("post", new VcatnPaprDto());
@@ -153,7 +156,8 @@ public class VcatnPaprPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.VCATN_PAPR.setAcsPageInfo(Constant.PAGE_MDF));
+        model.addAttribute("menuLabel", SiteMenu.VCATN_PAPR);
+        model.addAttribute("pageNm", PageNm.MDF);
 
         // 상세 조회 및 모델에 추가
         final VcatnPaprDto rsDto = vcatnPaprService.getDtlDto(key);
@@ -192,7 +196,8 @@ public class VcatnPaprPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.VCATN_PAPR.setAcsPageInfo(Constant.PAGE_DTL));
+        model.addAttribute("menuLabel", SiteMenu.VCATN_PAPR);
+        model.addAttribute("pageNm", PageNm.DTL);
 
         // 객체 조회 및 모델에 추가
         final VcatnPaprDto.DTL retrievedDto = vcatnPaprService.getDtlDto(key);

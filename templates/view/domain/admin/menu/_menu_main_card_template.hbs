@@ -5,7 +5,7 @@
 
 <script type="text/x-handlebars-template" id="menu_main_card_template">
     <li class="col-4 list-unstyled p-5 sortable-item draggable-main" style="{{borderColor}}"
-         id="{{menuNo}}" data-type="{{menuTyCd}}" upper-menu-no="{{upperMenuNo}}">
+         id="{{menuNo}}" data-id="{{menuNo}}" data-type="{{menuTyCd}}" data-upper-menu-no="{{upperMenuNo}}">
         <div class="card shadow">
             <div class="card-header">
                 <div class="d-flex align-items-center">
@@ -16,12 +16,12 @@
                             <span class="path2"></span>
                         </i>
                     </div>
-                    <!-- ↓의도된것 -->
                     <i class="{{icon}} text-info fs-3 ms-8"></i>
                     <h2 class="mx-2 mb-0 text-info cursor-pointer text-underline-dotted" onclick="Menu.mdfModal('{{menuNo}}');"
                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="수정 팝업을 호출합니다.">
-                        <span class="title {{#ifYn state.useYn}}strikethrough{{/ifYn}}">
-                            {{menuNm}}  // {{#if (exists sortOrdr)}}{{sortOrdr}}{{else}}@{{@index}}{{/if}} //   {{sortOrdr}}_{{@index}}
+                        <span class="title {{^ifYn state.useYn}}strikethrough{{/ifYn}}">
+                            {{menuNm}}
+                            <span class="badge bg-light-info text-info ms-1">{{menuLabel}}</span>
                         </span>
                     </h2>
                 </div>

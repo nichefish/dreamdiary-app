@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.domain.vcatn.stats.controller;
 
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.domain.vcatn.papr.service.VcatnPaprService;
 import io.nicheblog.dreamdiary.domain.vcatn.stats.model.VcatnStatsYyDto;
 import io.nicheblog.dreamdiary.domain.vcatn.stats.service.VcatnStatsYyService;
@@ -64,7 +65,8 @@ public class VcatnStatsYyPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.VCATN_STATS.setAcsPageInfo(Constant.PAGE_CAL));
+        model.addAttribute("menuLabel", SiteMenu.VCATN_STATS);
+        model.addAttribute("pageNm", PageNm.CAL);
 
         // 휴가계획서 년도 정보 조회 (시작일자~종료일자 정보)
         VcatnStatsYyDto statsYy = null;

@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.domain.jrnl.day.controller;
 
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDaySearchParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -55,7 +56,8 @@ public class JrnlDayPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.JRNL_DAY.setAcsPageInfo(Constant.PAGE_LIST));
+        model.addAttribute("menuLabel", SiteMenu.JRNL_DAY);
+        model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // 년도 추가
         model.addAttribute("yy", null);

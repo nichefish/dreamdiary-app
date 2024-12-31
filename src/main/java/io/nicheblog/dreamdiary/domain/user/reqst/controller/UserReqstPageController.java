@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.domain.user.reqst.controller;
 
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -55,7 +56,8 @@ public class UserReqstPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.USER_REQST.setAcsPageInfo(Constant.PAGE_REG));
+        model.addAttribute("menuLabel", SiteMenu.USER_REQST);
+        model.addAttribute("pageNm", PageNm.REG);
 
         // 빈 객체 주입 (freemarker error prevention)
         model.addAttribute("user", new UserDto());

@@ -17,7 +17,7 @@ public interface JrnlDreamMapper {
 
     /**
      * 삭제된 데이터 정보 조회
-     * @param postNo - 조회할 게시글 번호
+     * @param postNo 조회할 게시글 번호
      * @return {@link JrnlDreamDto} -- 삭제된 저널 꿈 데이터
      */
     JrnlDreamDto getDeletedByPostNo(final @Param("postNo") Integer postNo);

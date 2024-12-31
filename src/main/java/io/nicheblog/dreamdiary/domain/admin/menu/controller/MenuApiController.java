@@ -105,11 +105,11 @@ public class MenuApiController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
+            final AjaxResponse ajaxResponse = new AjaxResponse();
 
         final MenuDto retrievedDto = menuService.getDtlDto(key);
 
-        final boolean isSuccess = false;
+        final boolean isSuccess = retrievedDto != null;
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
 
         // 응답 결과 세팅

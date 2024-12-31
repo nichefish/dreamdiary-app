@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.global._common.flsys.controller;
 
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common.file.utils.FileUtils;
@@ -67,7 +68,9 @@ public class FlsysController
             final ModelMap model
     ) throws Exception {
 
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.LGN_POLICY.setAcsPageInfo("HOME"));
+        /* 사이트 메뉴 설정 */
+        model.addAttribute("menuLabel", SiteMenu.FLSYS);
+        model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // 활동 로그 목록 조회
         boolean isSuccess = false;

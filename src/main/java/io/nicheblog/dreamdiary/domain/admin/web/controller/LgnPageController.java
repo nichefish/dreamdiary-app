@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.domain.admin.web.controller;
 
-import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
-import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
+import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyPageControllerAspect;
@@ -61,7 +61,8 @@ public class LgnPageController
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute(Constant.SITE_MENU, SiteMenu.LGN_PAGE.setAcsPageInfo(Constant.PAGE_LGN));
+        model.addAttribute("menuLabel", SiteMenu.LGN_PAGE);
+        model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // 로그인 상태일 경우:: 메인 화면으로 리다이렉트
         if (AuthUtils.isAuthenticated()) return "redirect:" + Url.MAIN;

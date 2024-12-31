@@ -108,7 +108,7 @@
 <!--begin::Card-->
 <div class="row g-5 gx-xl-10 mb-5 mb-xl-10">
     <!--begin::Col-->
-    <div class="col-md-6 col-lg-6 col-xl-6 col-xxl-8 mb-md-5 mb-xl-10">
+    <div class="col-md-6 col-lg-6 col-xl-6 col-xxl-7 mb-md-5 mb-xl-10">
         <div class="card post">
             <#--begin::Row-->
             <div class="row mb-8">
@@ -127,7 +127,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="col-xl-6 text-noti">
+                <div class="col-xl-7 text-noti">
                     <p class="mb-0">※ 캐시 처리되는 정보들(ex.코드 및 메뉴 등) 중</p>
                     <p class="mb-0 ps-4">시스템을 통하지 않은(ex.DB 직접입력) 변동사항이 발생했을 경우 수동 업데이트</p>
                 </div>
@@ -137,7 +137,7 @@
                 <div class="col-xl-2">
                     <div class="fs-6 fw-bold col-form-label"><label for="hldyYy">한국천문연구원 특일정보 API</label></div>
                 </div>
-                <div class="col-xl-1">
+                <div class="col-xl-2">
                     <select name="hldyYy" id="hldyYy" class="form-select form-select-solid">
                         <#assign currYy = DateUtils.getCurrYyStr()!>
                         <#assign prevYy = ((currYy?number)-1)?c>
@@ -184,7 +184,7 @@
         </div>
     </div>
     <!--begin::Col-->
-    <div class="col-md-6 col-lg-6 col-xl-6 col-xxl-4 mb-md-5 mb-xl-10">
+    <div class="col-md-6 col-lg-6 col-xl-6 col-xxl-5 mb-md-5 mb-xl-10">
         <div class="card post">
             <!--begin::Card widget 20-->
             <table class="table align-middle table-row-dashed fs-small gy-5 table-fixed mb-3">
@@ -194,9 +194,8 @@
                         <th class="col-2 text-center wb-keepall">권한 코드</th>
                         <th class="col-2 text-center wb-keepall">권한명 (level)</th>
                         <th class="col-3 text-center wb-keepall">상위 권한</th>
-                        <th class="col-1 text-center wb-keepall">정렬 순서</th>
+                        <th class="col-2 text-center wb-keepall">정렬 순서</th>
                         <th class="col-2 text-center wb-keepall">사용 여부</th>
-                        <th class="col-1 text-center wb-keepall">-</th>
                     </tr>
                 </thead>
                 <#--begin::Table body-->
@@ -232,10 +231,10 @@
                             <td class="text-start ps-10 hidden-table">
                                 ${authRole.topAuthCd!}
                             </td>
-                            <td class="text-start ps-10 hidden-table">
+                            <td class="text-center hidden-table">
                                 ${authRole.state.sortOrdr!}
                             </td>
-                            <td class="text-start ps-10 hidden-table">
+                            <td class="text-center hidden-table">
                                 ${authRole.state.useYn!}
                             </td>
                         </tr>
