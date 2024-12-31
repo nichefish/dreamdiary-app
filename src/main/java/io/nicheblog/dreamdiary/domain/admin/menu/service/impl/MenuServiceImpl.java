@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.domain.admin.menu.service.impl;
 
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
+import io.nicheblog.dreamdiary.domain.admin.menu.entity.MenuEntity;
 import io.nicheblog.dreamdiary.domain.admin.menu.mapstruct.MenuMapstruct;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuDto;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuSearchParam;
@@ -16,6 +17,8 @@ import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -66,6 +69,30 @@ public class MenuServiceImpl
         if (dto.getState() == null) dto.setState(new StateCmpstn());
     }
 
+    @Override
+    @CacheEvict(value = {"userMenuList", "mngrMenuList", "menuByLabel", "isMngrMenu"}, allEntries = true)
+    public void postRegist(final MenuEntity registeredEntity) {
+        // 메뉴 캐시 초기화
+    }
+
+    @Override
+    @CacheEvict(value = {"userMenuList", "mngrMenuList", "menuByLabel", "isMngrMenu"}, allEntries = true)
+    public void postModify(final MenuEntity updatedEntity) {
+        // 메뉴 캐시 초기화
+    }
+
+    @Override
+    @CacheEvict(value = {"userMenuList", "mngrMenuList", "menuByLabel", "isMngrMenu"}, allEntries = true)
+    public void postDelete(final MenuEntity deletedEntity) {
+        // 메뉴 캐시 초기화
+    }
+
+    @Override
+    @CacheEvict(value = {"userMenuList", "mngrMenuList"}, allEntries = true)
+    public void postSortOrdr(final List<MenuDto> sortOrdr) throws Exception {
+        // 변경 후처리:: 기본 공백, 필요시 각 함수에서 Override
+    }
+
     /**
      * 메인 메뉴(사용자, 관리자, 공통 포함) 목록 조회
      *
@@ -96,10 +123,11 @@ public class MenuServiceImpl
      */
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value="userMenuList")
     public List<MenuDto> getUserMenuList() throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(MenuSearchParam.builder()
                 .menuTyCd(Constant.MENU_TY_MAIN)
-                .menuNm("사용자")
+                .mngrYn("N")
                 .useYn("Y")
                 .build());
         final Sort sort = Sort.by(Sort.Direction.ASC, "state.sortOrdr");
@@ -114,10 +142,11 @@ public class MenuServiceImpl
      */
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value="mngrMenuList")
     public List<MenuDto> getMngrMenuList() throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(MenuSearchParam.builder()
                 .menuTyCd(Constant.MENU_TY_MAIN)
-                .menuNm("관리자")
+                .mngrYn("Y")
                 .useYn("Y")
                 .build());
         final Sort sort = Sort.by(Sort.Direction.ASC, "state.sortOrdr");
@@ -130,6 +159,7 @@ public class MenuServiceImpl
      * @param label 메뉴 라벨 (컨트롤러에 대정)
      * @return MenuDto
      */
+    @Cacheable(value="menuByLabel", key="#label")
     public MenuDto getMenuByLabel(final SiteMenu label) throws Exception {
         final Map<String, Object> searchParamMap = new HashMap<>();
         searchParamMap.put("menuLabel", label.name());
@@ -144,6 +174,7 @@ public class MenuServiceImpl
      * @param menuNo 메뉴 번호
      * @return Boolean 관리자 메뉴인 경우 true, 그렇지 않은 경우 false
      */
+    @Cacheable(value="isMngrMenu", key="#menuNo.toString()")
     public Boolean getIsMngrMenu(final Integer menuNo) {
         return "Y".equals(menuMapper.getMngrYn(menuNo));
     }

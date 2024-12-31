@@ -37,4 +37,9 @@ public class MenuSearchParam
     /** 메뉴 이름 */
     @Size(max = 50)
     private String menuNm;
+
+    /** 관리자 메뉴 여부 (Y/N) */
+    @Size(min = 1, max = 1)
+    @Pattern(regexp = "^[YN]$")
+    private String mngrYn;
 }

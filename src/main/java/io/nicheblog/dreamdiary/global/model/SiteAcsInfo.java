@@ -36,7 +36,7 @@ public class SiteAcsInfo {
     private String menuNm;
 
     /** 접근 화면 이름 (로깅 및 사이트 헤더 표시용) */
-    private String acsPageNm;
+    private String pageNm;
 
     /** 관리자 메뉴 여부 */
     private Boolean isMngrMenu = false;
@@ -47,6 +47,6 @@ public class SiteAcsInfo {
 
     /** 페이지명 세팅 (for breadcrumb) */
     public void setAcsPageInfo(final PageNm pageNm) {
-        this.acsPageNm = pageNm.pageNm;
+        this.pageNm = pageNm.pageNm;
     }
 }
