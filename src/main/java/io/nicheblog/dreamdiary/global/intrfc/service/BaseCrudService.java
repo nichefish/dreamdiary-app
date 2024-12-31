@@ -7,9 +7,11 @@ import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.persistence.EntityNotFoundException;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -79,6 +81,13 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
         // 등록 후처리
         this.postRegist(updatedEntity);
 
+        // 연관 캐시 삭제
+        Map<EntityKey, ?> entities = new HashMap<>() {{
+            put(EntityKey.REGIST_ENTITY, registEntity);
+            put(EntityKey.UPDATED_ENTITY, updatedEntity);
+        }};
+        this.evictRelCaches(entities);
+
         return mapstruct.toDto(updatedEntity);
     }
 
@@ -89,12 +98,18 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      * @return {@link Boolean} -- 등록 성공시 true
      */
     @Transactional
-    default boolean registAll(final List<Entity> entityList) {
+    default boolean registAll(final List<Entity> entityList) throws Exception {
         final Repository repository = this.getRepository();
         final List<Entity> updatedEntityList = repository.saveAllAndFlush(entityList);
 
         // 벌크 등록 후처리
         this.postRegistAll(updatedEntityList);
+
+        // 연관 캐시 삭제
+        Map<EntityKey, ?> entities = new HashMap<>() {{
+            put(EntityKey.ENTITY_LIST, updatedEntityList);
+        }};
+        this.evictRelCaches(entities);
         
         return true;
     }
@@ -130,7 +145,7 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
     /**
      * default: 게시물 수정 후처리 (entity level, entity 변환 후 처리)
      *
-     * @param updatedEntity - 수정된 엔티티 객체
+     * @param updatedEntity 수정된 엔티티 객체
      * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     default void postModify(final Entity updatedEntity) throws Exception {
@@ -164,17 +179,24 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
         // 수정 후처리
         this.postModify(updatedEntity);
 
+        // 연관 캐시 삭제
+        Map<EntityKey, ?> entities = new HashMap<>() {{
+            put(EntityKey.REGIST_ENTITY, modifyEntity);
+            put(EntityKey.UPDATED_ENTITY, updatedEntity);
+        }};
+        this.evictRelCaches(entities);
+
         return mapstruct.toDto(updatedEntity);
     }
 
     /**
      * default: 게시물 수정 (entity level)
      *
-     * @param modifyEntity - 수정할 엔티티 객체
+     * @param modifyEntity 수정할 엔티티 객체
      * @return updatedEntity - 저장 및 새로고침된 엔티티 객체
      */
     @Transactional
-    default Entity updt(final Entity modifyEntity) {
+    default Entity updt(final Entity modifyEntity) throws Exception {
         final Repository repository = this.getRepository();
         final Entity updatedEntity = repository.saveAndFlush(modifyEntity);
         try {
@@ -182,6 +204,13 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
         } catch (EntityNotFoundException ex) {
             ex.getStackTrace();
         }
+
+        // 연관 캐시 삭제
+        Map<EntityKey, ?> entities = new HashMap<>() {{
+            put(EntityKey.REGIST_ENTITY, modifyEntity);
+            put(EntityKey.UPDATED_ENTITY, updatedEntity);
+        }};
+        this.evictRelCaches(entities);
 
         return updatedEntity;
     }
@@ -200,7 +229,7 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      * default: 게시물 삭제 (Dto 사용)
      *
      * @param deleteDto 삭제할 DTO 객체
-     * @return Boolean - 삭제 성공시 true, 실패 시 false
+     * @return Boolean 삭제 성공시 true, 실패 시 false
      * @throws Exception 삭제 중 발생할 수 있는 예외
      */
     @Transactional
@@ -212,7 +241,7 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      * default: 게시물 삭제 (key 사용)
      *
      * @param key 삭제할 엔티티의 키
-     * @return Boolean - 삭제 성공시 true, 실패 시 false
+     * @return Boolean 삭제 성공시 true, 실패 시 false
      * @throws Exception 삭제 중 발생할 수 있는 예외
      */
     @Transactional
@@ -221,11 +250,19 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
         final Entity deleteEntity = this.getDtlEntity(key);
         if (deleteEntity == null) return false;
 
+        // 삭제 전처리
         this.preDelete(deleteEntity);
 
         repository.delete(deleteEntity);
 
+        // 삭제 후처리
         this.postDelete(deleteEntity);
+
+        // 연관 캐시 삭제
+        Map<EntityKey, ?> entities = new HashMap<>() {{
+            put(EntityKey.DELETE_ENTITY, deleteEntity);
+        }};
+        this.evictRelCaches(entities);
 
         return true;
     }
@@ -233,7 +270,7 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
     /**
      * default: 게시물 삭제 후처리
      *
-     * @param deletedEntity - 삭제된 엔티티 객체
+     * @param deletedEntity 삭제된 엔티티 객체
      * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     default void postDelete(final Entity deletedEntity) throws Exception {
@@ -243,13 +280,19 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
     /**
      * default: 게시물 bulk-delete (entity level)
      *
-     * @param deleteEntityList - 삭제할 엔티티 리스트
+     * @param deleteEntityList 삭제할 엔티티 리스트
      * @return Boolean - 삭제 성공시 true
      */
     @Transactional
-    default boolean deleteAll(final List<Entity> deleteEntityList) {
+    default boolean deleteAll(final List<Entity> deleteEntityList) throws Exception {
         final Repository repository = this.getRepository();
         repository.deleteAll(deleteEntityList);
+
+        // 연관 캐시 삭제
+        Map<EntityKey, ?> entities = new HashMap<>() {{
+            put(EntityKey.ENTITY_LIST, deleteEntityList);
+        }};
+        this.evictRelCaches(entities);
 
         return true;
     }
@@ -258,27 +301,67 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      * default: 게시물 bulk-delete (entity level)
      *
      * @param searchParamMap 엔티티 리스트를 조회할 검색 파라미터 맵
-     * @return Boolean - 삭제 성공시 true
+     * @return Boolean 삭제 성공시 true
      * @throws Exception 삭제 중 발생할 수 있는 예외
      */
     @Transactional
     default boolean deleteAll(final Map<String, Object> searchParamMap) throws Exception {
         final List<Entity> deleteEntityList = this.getListEntity(searchParamMap);
-        final Repository repository = this.getRepository();
-        repository.deleteAll(deleteEntityList);
 
-        // 벌크 삭제 후처리
-        this.postDeleteAll(deleteEntityList);
-
-        return true;
+        return this.deleteAll(deleteEntityList);
     }
 
     /**
      * default: 게시물 bulk 삭제 후처리
      *
-     * @param deletedEntityList - 삭제된 엔티티 리스트
+     * @param deletedEntityList 삭제된 엔티티 리스트
      */
     default void postDeleteAll(final List<Entity> deletedEntityList) {
         // 기본 공백, 필요시 각 함수에서 Override
+    }
+
+    /**
+     * default: 관련된 캐시 삭제 (존재시)
+     *
+     * @param entityMap 캐시 삭제 판단에 필요한 객체 맵
+     */
+    default void evictRelCaches(final Map<EntityKey, ?> entityMap) throws Exception {
+        for (Map.Entry<EntityKey, ?> entry : entityMap.entrySet()) {
+            switch (entry.getKey()) {
+                case REGIST_ENTITY:
+                    this.evictCache((Entity) entry.getValue());
+                    break;
+                case UPDATED_ENTITY:
+                    this.evictCache((Entity) entry.getValue());
+                    break;
+                case DELETE_ENTITY:
+                    this.evictCache((Entity) entry.getValue());
+                    break;
+                case ENTITY_LIST:
+                    this.evictCache((List<Entity>) entry.getValue());
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    /**
+     * default: 관련된 캐시 삭제 (존재시)
+     *
+     * @param entity 캐시 삭제 판단에 필요한 객체
+     */
+    default void evictCache(final Entity entity) throws Exception {
+        // 기본 공백, 필요시 각 함수에서 Override
+    }
+
+    /**
+     * default: 관련된 캐시 삭제 (존재시)
+     *
+     * @param entityList 캐시 삭제 판단에 필요한 객체 리스트
+     */
+    default void evictCache(final List<Entity> entityList) throws Exception {
+        if (CollectionUtils.isEmpty(entityList)) return;
+        evictCache(entityList.get(0));
     }
 }

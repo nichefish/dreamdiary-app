@@ -33,6 +33,8 @@ public interface SiteUrl {
     String JRNL_DAY_DTL_AJAX = Prefix.JRNL_DAY + "/jrnlDayDtlAjax.do";
     String JRNL_DAY_MDF_AJAX = Prefix.JRNL_DAY + "/jrnlDayMdfAjax.do";
     String JRNL_DAY_DEL_AJAX = Prefix.JRNL_DAY + "/jrnlDayDelAjax.do";
+    /** 저널 일자 달력 */
+    String JRNL_DAY_CAL = Prefix.JRNL_DAY + "/jrnlDayCal.do";
     /** 저널 일자 태그 */
     String JRNL_DAY_TAG_LIST_AJAX = Prefix.JRNL_DAY + "/jrnlDayTagListAjax.do";
     String JRNL_DAY_TAG_GROUP_LIST_AJAX = Prefix.JRNL_DAY + "/jrnlDayTagGroupListAjax.do";
@@ -60,8 +62,6 @@ public interface SiteUrl {
     String JRNL_DIARY_TAG_GROUP_LIST_AJAX = Prefix.JRNL_DIARY + "/jrnlDiaryTagGroupListAjax.do";
     String JRNL_DIARY_TAG_DTL_AJAX = Prefix.JRNL_DIARY + "/jrnlDiaryTagDtlAjax.do";
 
-    /** 저널 달력 */
-    String JRNL_CAL_PAGE = Prefix.JRNL_CAL + "/jrnlCalPage.do";
 
     /** 저널 주제 */
     String JRNL_SBJCT_LIST = Prefix.JRNL_SBJCT + "/jrnlSbjctList.do";
@@ -317,9 +317,6 @@ public interface SiteUrl {
         // 저널 일기
         String DIARY = "/diary";
         String JRNL_DIARY = JRNL + DIARY;
-        // 저널 달력
-        String CAL = "/cal";
-        String JRNL_CAL = JRNL + CAL;
         // 저널 주제
         String SBJCT = "/sbjct";
         String JRNL_SBJCT = JRNL + SBJCT;

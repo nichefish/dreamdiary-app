@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.domain.schdul.service;
 
+import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.schdul.entity.SchdulEntity;
 import io.nicheblog.dreamdiary.domain.schdul.mapstruct.SchdulMapstruct;
 import io.nicheblog.dreamdiary.domain.schdul.model.SchdulDto;
@@ -7,7 +8,7 @@ import io.nicheblog.dreamdiary.domain.schdul.model.SchdulPrtcpntDto;
 import io.nicheblog.dreamdiary.domain.schdul.repository.jpa.SchdulRepository;
 import io.nicheblog.dreamdiary.domain.schdul.spec.SchdulSpec;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.global._common.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
@@ -15,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +49,6 @@ public class SchdulService
      * @param registDto 등록할 객체
      */
     @Override
-    @CacheEvict(value = {"hldyEntityList", "isHldy", "isHldyOrWeekend"}, allEntries = true)
     public void preRegist(final SchdulDto registDto) throws Exception {
         // 종료일자 없을시 자동으로 시작일자와 같게 처리
         if (StringUtils.isEmpty(registDto.getEndDt())) registDto.setEndDt(registDto.getBgnDt());
@@ -92,7 +91,6 @@ public class SchdulService
      */
     @Override
     @Transactional
-    @CacheEvict(value = {"hldyEntityList", "isHldy", "isHldyOrWeekend"}, allEntries = true)
     public SchdulDto modify(final SchdulDto modifyDto) throws Exception {
         // 수정 전처리
         this.preModify(modifyDto);
@@ -164,5 +162,18 @@ public class SchdulService
         final Date today = DateUtils.getCurrDate();
 
         return DateUtils.isSameDay(firstBsnsDayInCurrMnth, today);
+    }
+
+    /**
+     * 관련 캐시 삭제.
+     *
+     * @param rslt 캐시 처리할 엔티티
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void evictCache(final SchdulEntity rslt) throws Exception {
+        EhCacheUtils.evictCacheAll("hldyEntityList");
+        EhCacheUtils.evictCacheAll("isHldy");
+        EhCacheUtils.evictCacheAll("isHldyOrWeekend");
     }
 }

@@ -51,7 +51,7 @@ public class LogStatsUserDto
     /**
      * 로그 수 기준 정렬 (내림차순)
      *
-     * @param other - 비교할 객체
+     * @param other 비교할 객체
      * @return 양수: 현재 객체가 더 큼, 음수: 현재 객체가 더 작음, 0: 두 객체가 같음
      */
     @SneakyThrows

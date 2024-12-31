@@ -21,11 +21,5 @@ public interface ClCdService
         extends BaseCrudService<ClCdDto, ClCdDto, String, ClCdEntity, ClCdRepository, ClCdSpec, ClCdMapstruct>,
                 BaseStateService<ClCdDto, ClCdDto, String, ClCdEntity, ClCdRepository, ClCdSpec, ClCdMapstruct> {
 
-    /**
-     * 관련 캐시 삭제.
-     *
-     * @param rslt 캐시 처리할 엔티티
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    void evictRelatedCache(final ClCdEntity rslt) throws Exception;
+    //
 }

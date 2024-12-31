@@ -3,9 +3,8 @@
  -->
 
 <#--begin::Tags-->
-<hr class="my-6 text-muted" />
 <div class="mb-6 ms-4">
-    <div class="d-flex align-items-center mb-6 ms-4">
+    <div class="d-flex align-items-center mb-4 ms-4">
         <div class="col-1 ms-4 me-6 text-center fs-6">
             <b>일자 태그 : </b>
         </div>
@@ -26,8 +25,8 @@
             </button>
         </div>
     </div>
-    <div class="separator mx-20 mb-6"></div>
-    <div class="d-flex align-items-center mb-6 ms-4">
+    <div class="separator mx-20 mb-4"></div>
+    <div class="d-flex align-items-center mb-4 ms-4">
         <div class="col-1 ms-4 me-6 text-center fs-6">
             <b>일기 태그 : </b>
         </div>
@@ -48,7 +47,7 @@
             </button>
         </div>
     </div>
-    <div class="separator mx-20 mb-6"></div>
+    <div class="separator mx-20 mb-4"></div>
     <div class="d-flex align-items-center mb-6 ms-4">
         <div class="col-1 ms-4 me-6 text-center fs-6">
             <b>꿈 태그 : </b>

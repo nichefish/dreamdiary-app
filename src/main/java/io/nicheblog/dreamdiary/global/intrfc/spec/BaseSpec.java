@@ -89,7 +89,7 @@ public interface BaseSpec<Entity> {
      * default: 조회 후처리 (정렬 순서 변경, distinct 등)
      * 
      * @param root 조회 대상 엔티티의 Root 객체
-     * @param query - CriteriaQuery 객체, 조회 결과에 대한 쿼리 정의
+     * @param query CriteriaQuery 객체, 조회 결과에 대한 쿼리 정의
      * @param builder CriteriaBuilder 객체, 조회 조건을 설정하는 데 사용
      * @param searchParamMap 검색 조건을 담은 파라미터 맵
      */
@@ -107,7 +107,7 @@ public interface BaseSpec<Entity> {
      * default: 조회 후처리 (정렬 순서 변경, distinct 등)
      * 
      * @param root 조회 대상 엔티티의 Root 객체
-     * @param query - CriteriaQuery 객체로, 조회 결과를 정의하는 데 사용됩니다.
+     * @param query CriteriaQuery 객체로, 조회 결과를 정의하는 데 사용됩니다.
      * @param builder CriteriaBuilder 객체로, 쿼리 조건을 설정하는 데 사용됩니다.
      */
     default void postQuery(

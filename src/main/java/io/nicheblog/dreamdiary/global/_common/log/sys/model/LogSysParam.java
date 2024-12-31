@@ -60,7 +60,7 @@ public class LogSysParam
     /**
      * 생성자.
      *
-     * @param rslt - 처리 결과 상태를 나타내는 Boolean 값
+     * @param rslt 처리 결과 상태를 나타내는 Boolean 값
      */
     public LogSysParam(final Boolean rslt) {
         this.rslt = rslt;
@@ -69,7 +69,7 @@ public class LogSysParam
     /**
      * 생성자.
      *
-     * @param rslt - 처리 결과 상태를 나타내는 Boolean 값
+     * @param rslt 처리 결과 상태를 나타내는 Boolean 값
      * @param rsltMsg 처리 결과 메시지
      */
     public LogSysParam(final Boolean rslt, final String rsltMsg) {
@@ -120,7 +120,7 @@ public class LogSysParam
     /**
      * Exception 정보를 객체에 세팅한다.
      *
-     * @param e - 예외 정보 객체
+     * @param e 예외 정보 객체
      */
     public void setExceptionInfo(final Exception e) {
         this.exceptionNm = MessageUtils.getExceptionNm(e);

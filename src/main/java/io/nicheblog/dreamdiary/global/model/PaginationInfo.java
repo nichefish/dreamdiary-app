@@ -60,7 +60,7 @@ public class PaginationInfo {
 
     /**
      * 생성자 :: Page<> 정보 매핑
-     * @param pageList - 페이지 정보가 담긴 Page 객체
+     * @param pageList 페이지 정보가 담긴 Page 객체
      */
     public PaginationInfo(final Page<?> pageList) {
         if (pageList == null) return;
@@ -80,7 +80,7 @@ public class PaginationInfo {
 
     /**
      * 이전 페이지 번호 설정 메서드.
-     * @param pageList - 페이지 정보가 담긴 Page 객체
+     * @param pageList 페이지 정보가 담긴 Page 객체
      */
     private void setPreviousPageNo(final Page<?> pageList) {
         this.prevPageNo = pageList.previousPageable()
@@ -97,7 +97,7 @@ public class PaginationInfo {
 
     /**
      * 다음 페이지 번호 설정 메서드.
-     * @param pageList - 페이지 정보가 담긴 Page 객체
+     * @param pageList 페이지 정보가 담긴 Page 객체
      */
     private void setNextPageNo(final Page<?> pageList) {
         this.nextPageNo = pageList.nextPageable()

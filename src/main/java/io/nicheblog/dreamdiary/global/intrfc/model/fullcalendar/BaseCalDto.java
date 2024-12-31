@@ -77,7 +77,7 @@ public class BaseCalDto
     /**
      * 일정일자 기준 정렬 (오름차순. 일자가 같으면? => 제목순 정렬)
      *
-     * @param other - 비교할 객체
+     * @param other 비교할 객체
      * @return 양수: 현재 객체가 더 큼, 음수: 현재 객체가 더 작음, 0: 두 객체가 같음
      */
     @SneakyThrows

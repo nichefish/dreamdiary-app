@@ -57,8 +57,8 @@ public class AjaxResponse {
 
     /**
      * 생성자.
-     * @param rslt - AJAX 요청의 결과(true: 성공, false: 실패)
-     * @param message - 요청에 대한 메시지
+     * @param rslt AJAX 요청의 결과(true: 성공, false: 실패)
+     * @param message 요청에 대한 메시지
      */
     public AjaxResponse(final Boolean rslt, final String message) {
         this.rslt = rslt;
@@ -68,8 +68,8 @@ public class AjaxResponse {
 
     /**
      * Ajax 결과 세팅.
-     * @param rslt - AJAX 요청의 결과(true: 성공, false: 실패)
-     * @param message - 요청에 대한 메시지
+     * @param rslt AJAX 요청의 결과(true: 성공, false: 실패)
+     * @param message 요청에 대한 메시지
      */
     public void setAjaxResult(final Boolean rslt, final String message) {
         this.rslt = rslt;
@@ -79,7 +79,7 @@ public class AjaxResponse {
 
     /**
      * Map이 들어올 시 HashMap으로 변환.
-     * @param map - 변환할 Map 객체
+     * @param map 변환할 Map 객체
      */
     public void setRsltMap(final Map<String, ? extends Object> map) {
         this.rsltMap = new HashMap<>(map);

@@ -106,7 +106,7 @@ public class ContentTagServiceImpl
      * @param entityList 등록된 콘텐츠 태그 엔티티 목록
      */
     @Override
-    public void postRegistAll(final List<ContentTagEntity> entityList) {
+    public void evictCache(final List<ContentTagEntity> entityList) {
         // 태그 개수 캐시 초기화
         entityList.forEach(entity -> {
             String contentType = entity.getRefContentType();

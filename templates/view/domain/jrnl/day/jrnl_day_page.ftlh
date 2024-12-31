@@ -62,6 +62,12 @@
                 if (yyCookie === undefined && mnthCookie === undefined) {
                     $("#jrnl_aside #yy").val(commons.date.getCurrYyStr());
                 }
+            },
+            /**
+             * 달력 화면으로 이동
+             */
+            calPage: function() {
+                commons.util.blockUIReplace("${Url.JRNL_DAY_CAL!}");
             }
         }
     })();
@@ -77,15 +83,35 @@
 <style>
 </style>
 
-<#--#include:: component:: 태그 클릭 필터링-->
-<!-- 전체 태그 :: 모달 팝업 처리하기-->
-<#--<#include "/view/global/_common/_clsf/tag/_tag_list_header.ftlh">-->
-
-<!-- 태그 헤더 :: 파일 분리 -->
-<#include "/view/domain/jrnl/day/tag/_jrnl_day_tag_header.ftlh">
-
 <!--begin::Card-->
 <div class="card post">
+    <#--begin::Card header-->
+    <div class="card-header min-h-auto mb-5">
+        <#--begin::Tab-->
+        <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">
+            <li class="nav-item">
+                <a class="nav-link px-6 active" data-bs-toggle="tab" href="#kt_tab_pane_1">
+                    <span class="nav-icon">
+                        <i class="bi bi-people"></i>
+                    </span>
+                    <span class="nav-text">목록 VIEW</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link px-6" data-bs-toggle="tab" href="#kt_tab_pane_2"
+                   onclick="Page.calPage();">
+                    <span class="nav-icon">
+                        <i class="bi bi-sort-down-alt"></i>
+                    </span>
+                    <span class="nav-text">달력 VIEW</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 태그 헤더 :: 파일 분리 -->
+    <#include "/view/domain/jrnl/day/tag/_jrnl_day_tag_header.ftlh">
+
     <#--begin::Card body-->
     <div class="card-body">
         <#--begin::Table body-->
