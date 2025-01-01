@@ -107,12 +107,10 @@
         <#--include:: Tag Module-->
         <#include "/view/global/_common/_clsf/tag/_tag_scripts.ftlh">
 
-        <#if pageScripts??>
-            ${pageScripts!}
-        </#if>
+        <!--scripts::layout-->
+        <script type="text/javascript" src="/js/layout/layout.js?${releaseDate!}"></script>
 
-        <!--layout scripts-->
-        <#include "/layout/_layout_scripts.ftlh">
+        <!--scripts::chat-->
         <link rel="stylesheet" type="text/css" href="/vue/chat/assets/css/style.css">
         <script type="module" src="/vue/chat/App.js?${releaseDate!}"></script>z
     </body>

@@ -6,73 +6,18 @@
 <!DOCTYPE html>
 <#import "/layout/layout_default.ftlh" as layout >
 
-<#assign isReg = isReg!false>
-<#assign isMdf = isMdf!false>
+<#assign isReg = (formMode == "regist")!false>
+<#assign isMdf = (formMode == "modify")!false>
 
 <@layout.layout toolbar=toolbar!"">
-
-<#--include::script modules-->
-<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
-<script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
-<script type="text/javascript" src="/lib/prism/js/prism.js"></script>
-<script type="text/javascript" src="/js/commons-tinymce.js?${releaseDate!}"></script>
-<#include "/view/domain/notice/_notice_scripts.ftlh">
-<#include "/view/global/_common/_clsf/sectn/_sectn_scripts.ftlh">
-<#include "/view/global/_common/_clsf/comment/_comment_modal_scripts.ftlh">
-
-<script>
-    const Page = (function() {
-        return {
-            /**
-             * Page 객체 초기화
-             */
-            init: function() {
-                /* initialize form. */
-                Notice.initForm();
-                <#if isMdf>
-                    /* 글 단락 init */
-                    Sectn.init({
-                        refreshFunc: function() {
-                            setTimeout(function() {
-                                Page.refreshFunc();
-                            });
-                        }
-                    });
-                    /* 글 단락 정렬순서 변경 init */
-                    Sectn.initDraggable({
-                        refreshFunc: Page.refreshFunc
-                    });
-                </#if>
-                <#if isReg!false>
-                    $("#jandiYn").click();
-                </#if>
-            },
-
-            <#if isMdf>
-                /**
-                 * 새로고침 함수 :: 페이지별 특성에 따라 별도로 세팅
-                 */
-                refreshFunc: function() {
-                    Sectn.listAjax({ "refPostNo": ${post.postNo!}, "refContentType": "${post.contentType!}" });
-                    $("#sectn_reg_modal").modal("hide");
-                    Sectn.initDraggable({
-                        refreshFunc: Page.refreshFunc
-                    });
-                }
-            </#if>
-        }
-    })();
-    document.addEventListener("DOMContentLoaded", function() {
-        Page.init();
-    });
- </script>
 
 <div class="card post">
     <#--begin::Card body-->
     <div class="card-body">
         <!--begin:Form-->
-        <form name="noticeRegForm" id="noticeRegForm" class="form" method="post" enctype="multipart/form-data">
+        <form name="noticeRegForm" id="noticeRegForm" class="form" data-mode="${formMode!}" method="post" enctype="multipart/form-data">
             <input type="hidden" name="postNo" value="${post.postNo!}">
+            <input type="hidden" name="contentType" value="NOTICE">
             <input type="hidden" name="atchFileNo" value="${post.atchFileNo!}">
             <input type="hidden" name="hitCnt" value="${post.hitCnt!0?string.number}">
 
@@ -231,10 +176,20 @@
     </div>
 </#if>
 
-<#--include:: component:: tinymce 이미지 추가 영역 template-->
-<#include "/view/global/_tinymce_img.ftlh">
+<#--include::modals-->
 <#include "/view/global/_common/_clsf/sectn/_sectn_reg_modal.ftlh">
 <#include "/view/global/_common/_clsf/sectn/_sectn_list_template.hbs">
 <#include "/view/global/_common/_clsf/comment/_comment_reg_modal.ftlh">
+<#--include::script modules-->
+<script type="text/javascript" src="/js/view/domain/notice/notice_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/notice/notice_reg_form.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
+<script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
+<script type="text/javascript" src="/lib/prism/js/prism.js"></script>
+<script type="text/javascript" src="/js/common/commons-tinymce.js?${releaseDate!}"></script>
+<#include "/view/global/_common/_clsf/sectn/_sectn_scripts.ftlh">
+<#include "/view/global/_common/_clsf/comment/_comment_modal_scripts.ftlh">
+<#--include:: component:: tinymce 이미지 추가 영역 template-->
+<#include "/view/global/_tinymce_img.ftlh">
 
 </@layout.layout>

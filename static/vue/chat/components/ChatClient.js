@@ -79,7 +79,6 @@ export default {
                         return;
                     }
                     if (data.rsltList) this.$emit('messages-loaded', data.rsltList);  // 메시지 로딩 완료 후 상위에 전달
-                    console.log("messages retrieved: ", data.rsltList);
                 })
                 .catch(error => {
                     console.error('Error loading messages:', error);

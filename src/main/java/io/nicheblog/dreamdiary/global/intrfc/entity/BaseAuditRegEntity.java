@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.global.intrfc.entity;
 
+import io.nicheblog.dreamdiary.auth.config.AuditConfig;
 import io.nicheblog.dreamdiary.auth.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.auth.util.AuditorUtils;
 import io.nicheblog.dreamdiary.auth.util.AuthUtils;
@@ -26,6 +27,7 @@ import java.util.Date;
  * </pre>
  *
  * @author nichefish
+ * @see AuditConfig
  */
 @MappedSuperclass
 @Getter

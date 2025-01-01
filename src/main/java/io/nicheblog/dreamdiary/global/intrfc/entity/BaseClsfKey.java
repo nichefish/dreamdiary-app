@@ -12,6 +12,7 @@ import java.io.Serializable;
  * </pre>
  *
  * @author nichefish
+ * @see BaseClsfEntity
  */
 @Getter
 @Setter

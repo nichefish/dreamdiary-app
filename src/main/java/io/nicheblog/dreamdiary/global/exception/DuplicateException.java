@@ -1,14 +1,14 @@
 package io.nicheblog.dreamdiary.global.exception;
 
 /**
- * DupRegException
+ * DuplicateException
  * <pre>
- *  항목 중복(이중)등록시 던지는 Custom Exception
+ *  항목 중복(이중) 등록시 던지는 Custom Exception
  * </pre>
  *
  * @author nichefish
  */
-public class DupRegException
+public class DuplicateException
         extends BaseException {
 
     /**
@@ -17,7 +17,7 @@ public class DupRegException
      * @param msg
      * @param cause
      */
-    public DupRegException(final String msg, final Throwable cause) {
+    public DuplicateException(final String msg, final Throwable cause) {
         super(msg, cause);
     }
 
@@ -26,7 +26,7 @@ public class DupRegException
      *
      * @param msg
      */
-    public DupRegException(final String msg) {
+    public DuplicateException(final String msg) {
         super(msg);
     }
 }

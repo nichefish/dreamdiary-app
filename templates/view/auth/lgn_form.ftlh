@@ -8,102 +8,16 @@
 <@layout.layout toolbar=toolbar!"">
 
 <script>
-    const Page = (function() {
+    /** Model 값을 객체에 담아 typescript로 전달 */
+    const Model = (function() {
         return {
-            /**
-             * Page 객체 초기화
-             */
-            init: function() {
-                /* initialize form. */
-                Page.initForm();
-
-                /* 에러 메세지 존재시 표시 */
-                <#if errorMsg??>
-                    Page.showErrorMsg();
-                </#if>
-                /* 중복 로그인시 기존 로그인 끊기 팝업 호출 */
-                <#if isDupIdLgn??>
-                    Page.dupLgnAlert();
-                </#if>
-                /* 조건 일치시 비밀번호 변경 팝업 호출 */
-                <#if isCredentialExpired!false || needsPwReset!false>
-                    LgnPwChg.pwChgModal();
-                </#if>
-            },
-
-            /**
-             * form init
-             * @param {Object} obj - 폼에 바인딩할 데이터
-             */
-            initForm: function(obj = {}) {
-                /* jquery validation */
-                commons.validate.validateForm("#lgnForm", function() {
-                    commons.util.blockUISubmit("#lgnForm", "${Url.AUTH_LGN_PROC!}");
-                });
-                // 엔터키 처리
-                commons.util.enterKey("#userId", Page.lgn);
-                commons.util.enterKey("#password", Page.lgn);
-            },
-
-            /**
-             * request에 추가된 에러 메세지 존재시 표시
-             */
-            showErrorMsg: function() {
-                const errorMsg = "${errorMsg!}";
-                if (commons.util.isEmpty(errorMsg)) return;
-
-                const $errorMsgSpan = $("#errorMsgSpan");
-                $errorMsgSpan.html("");
-                $("#userId_validate_span").text("");
-                $("#password_validate_span").text("");
-                $errorMsgSpan.html(errorMsg.replace(/&lt;br&gt;/g, '<br/>'));   // 줄바꿈 처리
-            },
-
-            /**
-             * 기존 로그인 끊기 팝업 호출
-             */
-            dupLgnAlert: function() {
-                Swal.fire({
-                    title: <@spring.message "view.rslt.dupLgn"/>,
-                    text: <@spring.message "view.cnfm.dupLgn"/>,
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonText: "로그인",
-                    cancelButtonText: "취소",
-                }).then(function(result) {
-                    if (result.value) {
-                        // 중복ID 로그인
-                        $("#userId").val("${userId!}");
-                        $("#password").attr("disabled", "disabled");
-                        Page.lgn();
-                    } else {
-                        // 로그인하지 않음. 중복ID 세션 attribute 만료시킴
-                        const url = "${Url.AUTH_EXPIRE_SESSION_AJAX!}";
-                        commons.util.blockUIAjax(url, 'POST', null, function() {
-                            commons.util.blockUIReplace("${Url.AUTH_LGN_FORM!}");
-                        });
-                    }
-                });
-            },
-
-            /**
-             * 로그인 처리
-             */
-            lgn: function() {
-                $("#lgnForm").submit();
-            },
-
-            /**
-             * 신규계정 신청 페이지로 이동
-             */
-            reqstUser: function() {
-                commons.util.blockUIReplace("${Url.USER_REQST_REG_FORM!}");
-            },
+            userId: "${userId!}",
+            errorMsg: "${errorMsg!}",
+            isDupIdLgn: ${(isDupIdLgn!false)?c},
+            isCredentialExpired: ${(isCredentialExpired!false)?c},
+            needsPwReset: ${(needsPwReset!false)?c},
         }
     })();
-    document.addEventListener("DOMContentLoaded", function() {
-        Page.init();
-    });
 </script>
 <style>
     .app-page {
@@ -181,9 +95,12 @@
     </form>
     <!--end::Form-->
 </div>
-<#if isCredentialExpired!false || needsPwReset!false>
-    <#include "/view/auth/_lgn_pw_chg_modal.ftlh">
-    <#include "/view/auth/_lgn_pw_chg_scripts.ftlh">
-</#if>
+
+<#--include::script modules-->
+<script type="text/javascript" src="/js/view/auth/lgn_form.js?${releaseDate!}"></script>
+<#--include::modals-->
+<#include "/view/auth/_lgn_pw_chg_modal.ftlh">
+<#--include::script modules-->
+<script type="text/javascript" src="/js/view/auth/_lgn_pw_chg.js?${releaseDate!}"></script>
 
 </@layout.layout>

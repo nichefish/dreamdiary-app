@@ -16,7 +16,7 @@
 
 <#--include::script modules-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
-<script type="text/javascript" src="/js/commons-fullcalendar.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/common/commons-fullcalendar.js?${releaseDate!}"></script>
 <#include "/view/domain/schdul/_schdul_scripts.ftlh">
 
 <link rel="stylesheet" type="text/css" href="/metronic/assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" />

@@ -1,3 +1,4 @@
+/*
 package io.nicheblog.dreamdiary.global.intrfc.repository.impl;
 
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseElasticRepository;
@@ -10,6 +11,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 import javax.annotation.Resource;
 import java.io.Serializable;
 
+*/
 /**
  * BaseElasticRepositoryImpl
  * <pre>
@@ -17,7 +19,8 @@ import java.io.Serializable;
  * </pre>
  *
  * @author nichefish
- */
+ *//*
+
 @NoRepositoryBean
 public class BaseElasticRepositoryImpl<T, ID extends Serializable>
         extends SimpleElasticsearchRepository<T, ID>
@@ -28,19 +31,24 @@ public class BaseElasticRepositoryImpl<T, ID extends Serializable>
 
     private final ElasticsearchOperations elasticsearchOperations;
 
-    /**
+    */
+/**
      * constructor
-     */
+     *//*
+
     public BaseElasticRepositoryImpl(ElasticsearchEntityInformation<T, ID> metadata, ElasticsearchOperations operations) {
         super(metadata, operations);
         this.elasticsearchOperations = operations;
     }
 
-    /**
+    */
+/**
      * Refresh an entity (reload the entity from Elasticsearch)
-     */
+     *//*
+
 
     public T refresh(ID id, Class<T> clazz) {
         return elasticsearchRestTemplate.get(id.toString(), clazz);
     }
 }
+*/

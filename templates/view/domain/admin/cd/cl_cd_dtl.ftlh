@@ -6,30 +6,6 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<#--include::script modules-->
-<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
-<#include "/view/domain/admin/cd/_cl_cd_scripts.ftlh">
-<#include "/view/domain/admin/cd/_dtl_cd_scripts.ftlh">
-
-<script>
-    const Page = (function() {
-        return {
-            /**
-             * Page 객체 초기화
-             */
-            init: function() {
-                /* 모든 table 헤더에 클릭 이벤트를 설정한다. */
-                commons.util.initSortTable();
-                /* init : Draggable */
-                DtlCd.initDraggable();
-            },
-        }
-    })();
-    document.addEventListener("DOMContentLoaded", function() {
-        Page.init();
-    });
-</script>
-
 <div class="card post">
     <#--begin::Card body-->
     <div class="card-body">
@@ -210,5 +186,10 @@
 <#--include::modals-->
 <#include "/view/domain/admin/cd/_cl_cd_reg_modal.ftlh">
 <#include "/view/domain/admin/cd/_dtl_cd_reg_modal.ftlh">
+<#--include::script modules-->
+<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
+<script type="text/javascript" src="/static/js/view/domain/admin/cd/cl_cd_module.js"></script>
+<script type="text/javascript" src="/static/js/view/domain/admin/cd/cl_cd_dtl.js"></script>
+<#include "/view/domain/admin/cd/_dtl_cd_scripts.ftlh">
 
 </@layout.layout>

@@ -12,12 +12,12 @@ import io.nicheblog.dreamdiary.domain.notice.service.NoticeService;
 import io.nicheblog.dreamdiary.global.ActiveProfile;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
+import io.nicheblog.dreamdiary.global.config.WebMvcContextConfig;
 import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.collections4.MapUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mobile.device.DeviceUtils;
@@ -28,7 +28,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.List;
+import java.util.*;
 
 /**
  * FreemarkerInterceptor
@@ -38,6 +38,7 @@ import java.util.List;
  * </pre>
  *
  * @author nichefish
+ * @see WebMvcContextConfig
  */
 @Component
 @RequiredArgsConstructor
@@ -66,24 +67,18 @@ public class FreemarkerInterceptor
             final ModelAndView mav
     ) throws Exception {
 
-        /* model 정보 없을시 처리하지 않음 */
-        if (mav == null || MapUtils.isEmpty(mav.getModel())) return;
+        /* mav 정보 없을시 처리하지 않음 */
+        if (mav == null) return;
 
-        /* AJAX 요청 처리하지 않음 */
-        if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) return;
-
-        /* 리소스 요청 처리하지 않음 */
-        final String requestURI = request.getRequestURI();
-        for (final String path : Constant.STATIC_PATHS) {
-            if (requestURI.startsWith(path.replace("**", ""))) return;
-        }
-
-        // 모든 페이지에 activeProfile, releaseDate 추가
+        // 모든 페이지에 activeProfile, releaseDate, urlMap, messageMap 추가
         mav.addObject("activeProfile", activeProfile.getActive());
-        // static 자원들에 releaseDate 세팅
         mav.addObject("releaseDate", releaseDate);
+        mav.addObject("urlMap", Url.getUrlMap());
 
-        if (Url.AUTH_LGN_FORM.equals(requestURI) || Url.AUTH_LGN_PROC.equals(requestURI)) return;
+        final ResourceBundle bundle = ResourceBundle.getBundle("messages/messages", Locale.getDefault());
+        final Map<String, String> messageMap = new HashMap<>();
+        bundle.keySet().forEach(key -> messageMap.put(key, bundle.getString(key)));
+        mav.addObject("messageMap", messageMap);
 
         /* 모바일 여부 체크 추가 (TODO: 현재 미사용중) */
         final Boolean isMobile = DeviceUtils.getCurrentDevice(request).isMobile();

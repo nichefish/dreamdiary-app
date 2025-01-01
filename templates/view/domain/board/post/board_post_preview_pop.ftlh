@@ -6,16 +6,6 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<script>
-    const Page = (function() {
-        return {
-            close: function() {
-                window.close();
-            }
-        }
-    })();
-</script>
-
 <div class="card post">
     <#--begin::Card body-->
     <div class="card-body">
@@ -39,7 +29,7 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-end">
             <#--팝업:: 버튼: 팝업 닫기-->
-            <@component.popup_btn_preview_close "Page" />
+            <@component.popup_btn_preview_close "Layout" />
         </div>
     </div>
 </div>

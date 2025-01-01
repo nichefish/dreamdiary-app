@@ -11,6 +11,7 @@ import java.io.Serializable;
  * </pre>
  *
  * @author nichefish
+ * @see DtlCdEntity
  */
 @Getter
 @Setter
