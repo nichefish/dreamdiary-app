@@ -2,8 +2,6 @@
 <div style="border: 1px solid #ccc; padding: 10px; margin-top:20px; border-radius: 5px;">
 
 ### 2024-12-29 | v0.9.0
-
-### 2024-12-29 | v0.9.0
 - 기능 추가:
   - 메뉴 관리 기능 추가.
     - 계층형 트리 구조. 

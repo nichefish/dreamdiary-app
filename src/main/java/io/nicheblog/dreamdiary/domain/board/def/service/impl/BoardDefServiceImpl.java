@@ -1,7 +1,5 @@
 package io.nicheblog.dreamdiary.domain.board.def.service.impl;
 
-import io.nicheblog.dreamdiary.domain.admin.menu.entity.MenuEntity;
-import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuDto;
 import io.nicheblog.dreamdiary.domain.board.def.entity.BoardDefEntity;
 import io.nicheblog.dreamdiary.domain.board.def.mapstruct.BoardDefMapstruct;
 import io.nicheblog.dreamdiary.domain.board.def.model.BoardDefDto;
@@ -9,11 +7,11 @@ import io.nicheblog.dreamdiary.domain.board.def.repository.jpa.BoardDefRepositor
 import io.nicheblog.dreamdiary.domain.board.def.service.BoardDefService;
 import io.nicheblog.dreamdiary.domain.board.def.spec.BoardDefSpec;
 import io.nicheblog.dreamdiary.global._common._clsf.state.model.cmpstn.StateCmpstn;
+import io.nicheblog.dreamdiary.global._common.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -77,7 +75,7 @@ public class BoardDefServiceImpl
      */
     @Override
     @Cacheable(value="boardMenu", key="#boardCd")
-    public SiteAcsInfo getBoardMenu(final String boardCd) throws Exception {
+    public SiteAcsInfo getMenuByBoardCd(final String boardCd) throws Exception {
         final BoardDefEntity retrievedEntity = this.getDtlEntity(boardCd);
 
         return mapstruct.toMenu(retrievedEntity);
@@ -90,33 +88,29 @@ public class BoardDefServiceImpl
      */
     @Override
     public void preRegist(final BoardDefDto registDto) {
-        if (registDto.getState() == null) {
-            registDto.setState(new StateCmpstn());
-        }
+        if (registDto.getState() == null) registDto.setState(new StateCmpstn());
     }
 
+    /**
+     * 정렬 후 관련 캐시 삭제
+     *
+     * @param menuDto 캐시 삭제 판단에 필요한 객체
+     * @throws Exception 발생 가능한 예외
+     */
     @Override
-    @CacheEvict(value = {"boardDefMenuList", "boardMenu"}, allEntries = true)
-    public void postRegist(final BoardDefEntity registeredEntity) {
-        // 메뉴 캐시 초기화
+    public void evictCache(final BoardDefDto menuDto) throws Exception {
+        EhCacheUtils.evictCacheAll("boardDefMenuList");
     }
 
+    /**
+     * 관련된 캐시 삭제
+     *
+     * @param rslt 캐시 삭제 판단에 필요한 객체
+     */
     @Override
-    @CacheEvict(value = {"boardDefMenuList", "boardMenu"}, allEntries = true)
-    public void postModify(final BoardDefEntity updatedEntity) {
-        // 메뉴 캐시 초기화
-    }
-
-    @Override
-    @CacheEvict(value = {"boardDefMenuList", "boardMenu"}, allEntries = true)
-    public void postDelete(final BoardDefEntity deletedEntity) {
-        // 메뉴 캐시 초기화
-    }
-
-    @Override
-    @CacheEvict(value = {"boardDefMenuList", "boardMenu"}, allEntries = true)
-    public void postSortOrdr(final List<BoardDefDto> sortOrdr) throws Exception {
-        // 변경 후처리:: 기본 공백, 필요시 각 함수에서 Override
+    public void evictCache(final BoardDefEntity rslt) {
+        EhCacheUtils.evictCacheAll("boardDefMenuList");
+        EhCacheUtils.evictCacheAll("boardMenu");
     }
 
 }

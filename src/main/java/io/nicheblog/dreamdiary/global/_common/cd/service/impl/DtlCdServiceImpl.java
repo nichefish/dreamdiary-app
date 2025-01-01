@@ -133,42 +133,6 @@ public class DtlCdServiceImpl
     /**
      * 등록 후처리. (override)
      *
-     * @param rslt - 등록된 엔티티
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    @Override
-    public void postRegist(final DtlCdEntity rslt) throws Exception {
-        // 관련 캐시 삭제
-        this.evictRelatedCache(rslt);
-    }
-
-    /**
-     * 수정 후처리. (override)
-     *
-     * @param rslt - 수정된 엔티티
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    @Override
-    public void postModify(final DtlCdEntity rslt) throws Exception {
-        // 관련 캐시 삭제
-        this.evictRelatedCache(rslt);
-    }
-
-    /**
-     * 삭제 후처리. (override)
-     *
-     * @param rslt - 삭제된 엔티티
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    @Override
-    public void postDelete(final DtlCdEntity rslt) throws Exception {
-        // 관련 캐시 삭제
-        this.evictRelatedCache(rslt);
-    }
-
-    /**
-     * 등록 후처리. (override)
-     *
      * @param key - 등록된 엔티티의 키
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
@@ -184,9 +148,9 @@ public class DtlCdServiceImpl
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
-    public void postSortOrdr(final List<DtlCdDto> sortOrdr) throws Exception {
+    public void evictCache(final DtlCdDto dtlCd) throws Exception {
         // 관련 캐시 삭제
-        this.evictRelatedCache(sortOrdr.get(0).getClCd());
+        this.evictRelatedCache(dtlCd.getClCd());
     }
 
     /**
@@ -195,7 +159,7 @@ public class DtlCdServiceImpl
      * @param rslt 캐시 처리할 엔티티
      */
     @Override
-    public void evictRelatedCache(final DtlCdEntity rslt) {
+    public void evictCache(final DtlCdEntity rslt) {
         this.evictRelatedCache("cdEntityListByClCd::clCd:" + rslt.getClCd());
         this.evictRelatedCache("cdDtoListByClCd::clCd:" + rslt.getClCd());
         EhCacheUtils.evictCache("dtlCdNm", "clCd:"+ rslt.getClCd() +",dtlCd:"+ rslt.getDtlCd());

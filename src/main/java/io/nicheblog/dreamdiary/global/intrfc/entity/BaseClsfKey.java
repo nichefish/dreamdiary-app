@@ -31,8 +31,8 @@ public class BaseClsfKey
 
     /**
      * 생성자.
-     * @param postNo - 글 번호
-     * @param type - 콘텐츠 타입
+     * @param postNo 글 번호
+     * @param type 콘텐츠 타입
      */
     public BaseClsfKey(final Integer postNo, final ContentType type) {
         this.postNo = postNo;

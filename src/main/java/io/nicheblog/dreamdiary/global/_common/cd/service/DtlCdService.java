@@ -59,11 +59,4 @@ public interface DtlCdService
      * @return {@link String} -- 상세 코드명
      */
     String getDtlCdNm(final String clCd, final String dtlCd);
-
-    /**
-     * 관련 캐시 삭제.
-     *
-     * @param rslt 캐시 처리할 엔티티
-     */
-    void evictRelatedCache(final DtlCdEntity rslt);
 }

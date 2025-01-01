@@ -34,51 +34,13 @@ public class CommentServiceImpl
     private final CacheEvictService ehCacheEvictService;
 
     /**
-     * 등록 후처리. (override)
-     * 
-     * @param rslt - 등록된 엔티티
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    @Override
-    public void postRegist(final CommentEntity rslt) throws Exception {
-        // 관련 캐시 삭제
-        this.evictClsfCache(rslt);
-    }
-
-    /**
-     * 수정 후처리. (override)
-     *
-     * @param rslt - 수정된 엔티티
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    @Override
-    public void postModify(final CommentEntity rslt) throws Exception {
-        // 관련 캐시 삭제
-        this.evictClsfCache(rslt);
-    }
-
-    /**
-     * 삭제 후처리. (override)
-     *
-     * @param rslt - 삭제된 엔티티
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    @Override
-    public void postDelete(final CommentEntity rslt) throws Exception {
-        // 관련 캐시 삭제
-        this.evictClsfCache(rslt);
-
-        // TODO: 관련 엔티티 삭제?
-    }
-
-    /**
      * 관련 캐시 삭제.
      *
      * @param rslt 캐시 처리할 엔티티
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
-    public void evictClsfCache(final CommentEntity rslt) throws Exception {
+    public void evictCache(final CommentEntity rslt) throws Exception {
         String refContentType = rslt.getRefContentType();
         Integer refPostNo = rslt.getRefPostNo();
         ehCacheEvictService.evictClsfCache(refContentType, refPostNo);

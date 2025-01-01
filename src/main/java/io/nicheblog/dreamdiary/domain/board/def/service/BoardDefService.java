@@ -38,5 +38,5 @@ public interface BoardDefService
      * @return {@link SiteAcsInfo} -- 게시판 정의를 메뉴 정보로 변환하여 반환
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
-    SiteAcsInfo getBoardMenu(final String boardCd) throws Exception;
+    SiteAcsInfo getMenuByBoardCd(final String boardCd) throws Exception;
 }

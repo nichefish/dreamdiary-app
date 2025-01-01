@@ -121,7 +121,7 @@ public class VcatnPaprService
      * @param deleteEntity - 삭제할 엔티티
      */
     @Override
-    public void preDelete(final VcatnPaprEntity deleteEntity) {
+    public void preDelete(final VcatnPaprEntity deleteEntity) throws Exception {
         // 휴가계획서 상세항목 삭제
         List<VcatnSchdulEntity> vcatnSchdulList = deleteEntity.getSchdulList();
         vcatnSchdulService.deleteAll(vcatnSchdulList);

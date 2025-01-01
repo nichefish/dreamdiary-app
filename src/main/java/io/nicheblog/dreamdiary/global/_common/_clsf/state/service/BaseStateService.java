@@ -92,8 +92,13 @@ public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule &
                 throw new RuntimeException(ex);
             }
         });
+
         // 변경 후처리
         this.postSortOrdr(sortOrdr);
+
+        // 캐시 처리
+        this.evictCache(sortOrdr.get(0));
+
         return true;
     }
 
@@ -104,5 +109,14 @@ public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule &
      */
     default void postSortOrdr(final List<Dto> sortOrdr) throws Exception {
         // 변경 후처리:: 기본 공백, 필요시 각 함수에서 Override
+    }
+
+    /**
+     * default: 관련된 캐시 삭제 (존재시)
+     *
+     * @param dto 캐시 삭제 판단에 필요한 객체
+     */
+    default void evictCache(final Dto dto) throws Exception {
+        // 기본 공백, 필요시 각 함수에서 Override
     }
 }

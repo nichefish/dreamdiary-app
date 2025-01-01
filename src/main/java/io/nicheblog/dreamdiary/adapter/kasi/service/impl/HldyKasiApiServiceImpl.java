@@ -101,6 +101,7 @@ public class HldyKasiApiServiceImpl
      * @throws Exception 저장 중 발생할 수 있는 예외
      */
     @Override
+    @Transactional
     @CacheEvict(value = {"hldyEntityList", "isHldy", "isHldyOrWeekend"}, allEntries = true)
     public Boolean regHldyList(final List<HldyKasiApiItemDto> hldyApiList) throws Exception {
         if (CollectionUtils.isEmpty(hldyApiList)) return true;
@@ -126,6 +127,7 @@ public class HldyKasiApiServiceImpl
      * @throws Exception 삭제 중 발생할 수 있는 예외
      */
     @Override
+    @Transactional
     @CacheEvict(value = {"hldyEntityList", "isHldy", "isHldyOrWeekend"}, allEntries = true)
     public void delHldyList(final String yyStr) throws Exception {
         Map<String, Object> searchParamMap = new HashMap() {{

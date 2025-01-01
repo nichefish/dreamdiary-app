@@ -11,13 +11,13 @@ import io.nicheblog.dreamdiary.domain.admin.menu.service.MenuService;
 import io.nicheblog.dreamdiary.domain.admin.menu.spec.MenuSpec;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global._common._clsf.state.model.cmpstn.StateCmpstn;
+import io.nicheblog.dreamdiary.global._common.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
@@ -67,30 +67,6 @@ public class MenuServiceImpl
     @Override
     public void preRegist(final MenuDto dto) {
         if (dto.getState() == null) dto.setState(new StateCmpstn());
-    }
-
-    @Override
-    @CacheEvict(value = {"userMenuList", "mngrMenuList", "menuByLabel", "isMngrMenu"}, allEntries = true)
-    public void postRegist(final MenuEntity registeredEntity) {
-        // 메뉴 캐시 초기화
-    }
-
-    @Override
-    @CacheEvict(value = {"userMenuList", "mngrMenuList", "menuByLabel", "isMngrMenu"}, allEntries = true)
-    public void postModify(final MenuEntity updatedEntity) {
-        // 메뉴 캐시 초기화
-    }
-
-    @Override
-    @CacheEvict(value = {"userMenuList", "mngrMenuList", "menuByLabel", "isMngrMenu"}, allEntries = true)
-    public void postDelete(final MenuEntity deletedEntity) {
-        // 메뉴 캐시 초기화
-    }
-
-    @Override
-    @CacheEvict(value = {"userMenuList", "mngrMenuList"}, allEntries = true)
-    public void postSortOrdr(final List<MenuDto> sortOrdr) throws Exception {
-        // 변경 후처리:: 기본 공백, 필요시 각 함수에서 Override
     }
 
     /**
@@ -186,5 +162,30 @@ public class MenuServiceImpl
      */
     public SiteAcsInfo getSiteAceInfoFromMenu(final MenuDto menu) {
         return mapstruct.toSiteAcsInfo(menu);
+    }
+
+    /**
+     * 정렬 후 관련 캐시 삭제
+     *
+     * @param menuDto 캐시 삭제 판단에 필요한 객체
+     * @throws Exception 발생 가능한 예외
+     */
+    @Override
+    public void evictCache(final MenuDto menuDto) throws Exception {
+        EhCacheUtils.evictCacheAll("userMenuList");
+        EhCacheUtils.evictCacheAll("mngrMenuList");
+    }
+
+    /**
+     * 관련된 캐시 삭제
+     *
+     * @param rslt 캐시 삭제 판단에 필요한 객체
+     */
+    @Override
+    public void evictCache(final MenuEntity rslt) {
+        EhCacheUtils.evictCacheAll("userMenuList");
+        EhCacheUtils.evictCacheAll("mngrMenuList");
+        EhCacheUtils.evictCacheAll("isMngrMenu");
+        EhCacheUtils.evictCache("menuByLabel", rslt.getMenuLabel());
     }
 }
