@@ -21,10 +21,10 @@
              */
             initForm: function(obj = {}) {
                 /* show reg area */
-                commons.util.handlebarsTemplate(obj, "comment_page_reg");
+                cF.handlebars.template(obj, "comment_page_reg");
 
                 /* jquery validation */
-                commons.validate.validateForm("#commentPageRegForm", Comment.page.regAjax);
+                cF.validate.validateForm("#commentPageRegForm", Comment.page.regAjax);
             },
 
             /**
@@ -45,10 +45,10 @@
                     if (!result.value) return;
                     const url = "${Url.COMMENT_REG_AJAX!}";
                     const ajaxData = new FormData(document.getElementById("commentPageRegForm"));
-                    commons.util.blockUIMultipartAjax(url, ajaxData, function(res) {
+                    cF.util.blockUIMultipartAjax(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
-                                if (res.rslt) commons.util.blockUIReload();
+                                if (res.rslt) cF.util.blockUIReload();
                             });
                     });
                 });
@@ -67,7 +67,7 @@
                 $("#commentMdfCn" + postNo).html($("#commentCnSpanDiv" + postNo).html());
                 $("#showMdfBtnDiv" + postNo).hide();
                 $("#mdfSaveBtnDiv" + postNo).show();
-                commons.validate.validateForm("#commentPageMdfForm", Comment.page.mdfAjax);
+                cF.validate.validateForm("#commentPageMdfForm", Comment.page.mdfAjax);
             },
 
             /**
@@ -91,7 +91,7 @@
             mdfAjax: function(postNo) {
                 if (isNaN(postNo)) return;
 
-                if (commons.util.isEmpty($("#commentMdfCn" + postNo), "value")) {
+                if (cF.util.isEmpty($("#commentMdfCn" + postNo), "value")) {
                     Swal.fire("댓글 내용을 입력해주세요.");
                     return false;
                 }
@@ -102,10 +102,10 @@
                     if (!result.value) return;
                     const url = "${Url.COMMENT_MDF_AJAX!}";
                     const ajaxData = $("#commentPageMdfForm" + postNo).serializeArray();
-                    commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
-                                if (res.rslt) commons.util.blockUIReload();
+                                if (res.rslt) cF.util.blockUIReload();
                             });
                     });
                 });
@@ -125,10 +125,10 @@
                     if (!result.value) return;
                     const url = "${Url.COMMENT_DEL_AJAX!}";
                     const ajaxData = { "postNo": postNo, "actvtyCtgrCd": "${actvtyCtgrCd!}" };
-                    commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
-                                if (res.rslt) commons.util.blockUIReload();
+                                if (res.rslt) cF.util.blockUIReload();
                             });
                     });
                 });

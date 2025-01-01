@@ -11,10 +11,10 @@
              */
             initForm: function(obj = {}) {
                 /* show modal */
-                commons.util.handlebarsTemplate(obj, "menu_reg", "show");
+                cF.handlebars.template(obj, "menu_reg", "show");
 
                 /* jquery validation */
-                commons.validate.validateForm("#menuRegForm", Menu.regAjax);
+                cF.validate.validateForm("#menuRegForm", Menu.regAjax);
             },
 
             /**
@@ -23,7 +23,7 @@
             initDraggable: function() {
                 const keyExtractor = document.querySelectorAll(".draggable-zone");
                 if (mainContainers.length === 0) return false;
-                TmplatDef.swappable = commons.util.initDraggable(keyExtractor, url);
+                TmplatDef.swappable = cF.draggable.init(keyExtractor, url);
             },
 
             /**
@@ -63,10 +63,10 @@
                     let isReg = $("#menuRegForm #menuNo").val() === "";
                     const url = isReg ? "${Url.MENU_REG_AJAX!}" : "${Url.MENU_MDF_AJAX!}";
                     const ajaxData = $("#tmplatDefRegForm").serializeArray();
-                    commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
-                                if (res.rslt) commons.util.blockUIReload();
+                                if (res.rslt) cF.util.blockUIReload();
                             });
                     }, "block");
                 });
@@ -80,9 +80,9 @@
 
                 const url = "${Url.MENU_DTL_AJAX!}";
                 const ajaxData = { "menuNo": menuNo };
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                     const { rsltObj } = res;
@@ -105,10 +105,10 @@
                     if (!result.value) return;
                     const url = "${Url.MENU_DEL_AJAX!}";
                     const ajaxData = { "menuNo": menuNo };
-                    commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
-                                if (res.rslt) commons.util.blockUIReload();
+                                if (res.rslt) cF.util.blockUIReload();
                             });
                     }, "block");
                 });
@@ -119,7 +119,7 @@
              */
             search: function() {
                 $("#listForm #pageNo").val(1);
-                commons.util.blockUISubmit("#listForm", "${Url.LOG_ACTVTY_LIST!}?actionTyCd=SEARCH");
+                cF.util.blockUISubmit("#listForm", "${Url.LOG_ACTVTY_LIST!}?actionTyCd=SEARCH");
             },
 
             /**
@@ -131,7 +131,7 @@
                     showCancelButton: true,
                 }).then(function(result) {
                     if (!result.value) return;
-                    commons.util.blockUIFileDownload();
+                    cF.util.blockUIFileDownload();
                     $("#listForm").attr("action", "${Url.LOG_ACTVTY_LIST_XLSX_DOWNLOAD!}").submit();
                 });
             },

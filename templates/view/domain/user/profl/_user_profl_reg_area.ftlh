@@ -9,7 +9,7 @@
             /** 프로필 정보 창 토글 */
             enableUserProfl: function() {
                 // 영역 표시
-                commons.util.handlebarsTemplate({}, "user_profl");
+                cF.handlebars.template({}, "user_profl");
                 // 버튼 교체 :: 툴팁 작동 유지 위해 속성만 교체
                 const $btn = $("#userProflBtn");
                 $btn.removeClass("btn-primary").addClass("btn-danger");
@@ -17,9 +17,9 @@
                 $btn.attr("onclick", "UserProfl.disableUserProfl();");
                 $btn.attr("title", "사용자 프로필 정보를&#10;삭제합니다.");
                 // 음력여부 클릭시 글씨 변경
-                commons.util.chckboxLabel("lunarYn", "음력//양력", "blue//gray");
+                cF.util.chckboxLabel("lunarYn", "음력//양력", "blue//gray");
                 // datepicker init
-                commons.datepicker.singleDatePicker("#brthdy", "yyyy-MM-DD", "${(user.profl.brthdy)!}");
+                cF.datepicker.singleDatePicker("#brthdy", "yyyy-MM-DD", "${(user.profl.brthdy)!}");
             },
             /** 프로필 정보 창 토글 */
             disableUserProfl: function() {

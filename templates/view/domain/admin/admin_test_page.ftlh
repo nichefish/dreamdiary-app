@@ -33,7 +33,7 @@
             notionAjax: function() {
                 const url = "${Url.API_NOTION_GET!}";
                 const ajaxData = { "dataType": $("#dataType").val(), "dataId": $("#dataId").val() };
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
                     if (res.rslt) Swal.fire(JSON.stringify(res));
                     Swal.fire({ text: res.message });
                 });
@@ -41,7 +41,7 @@
 
             /** url, data 받아서 ajax 호출 */
             ajax: function(url, data) {
-                commons.util.blockUIAjax(url, 'POST', data, function(res) {
+                cF.util.blockUIAjax(url, 'POST', data, function(res) {
                     if (res.rslt) Swal.fire(JSON.stringify(res));
                     Swal.fire({ text: res.message });
                 });
@@ -49,12 +49,12 @@
 
             /** 사이트 관리 페이지로 이동 */
             adminPage: function() {
-                commons.util.blockUISubmit("#procForm", "${Url.SITE_ADMIN!}");
+                cF.util.blockUISubmit("#procForm", "${Url.SITE_ADMIN!}");
             },
 
             /** 코드 관리 페이지로 이동 */
             cdList: function() {
-                commons.util.blockUISubmit("#procForm", "${Url.CL_CD_LIST!}");
+                cF.util.blockUISubmit("#procForm", "${Url.CL_CD_LIST!}");
             },
         }
     })();

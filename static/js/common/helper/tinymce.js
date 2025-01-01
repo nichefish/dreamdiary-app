@@ -1,16 +1,15 @@
 /**
- * commons-tinymce.js
- * @namespace: commons.tinymce
+ * tinymce.ts
+ * @namespace: cF.tinymce
  * @author: nichefish
- * @since: 2022-06-27
  * @depdendency: tinymce.js
  * 공통 - tinymce 에디터 관련 함수 모듈
- * (노출식 모듈 패턴 적용 :: commons.tinymce.init("#aaa", func) 이런식으로 사용)
+ * (노출식 모듈 패턴 적용 :: cF.tinymce.init("#aaa", func) 이런식으로 사용)
  */
-if (typeof commons === 'undefined') {
-    var commons = {};
+if (typeof cF === 'undefined') {
+    let cF = {};
 }
-commons.tinymce = (function () {
+cF.tinymce = (function () {
     /** 기본 옵션 분리 */
     const basicOptions = {
         editor_encoding: "raw",
@@ -57,7 +56,7 @@ commons.tinymce = (function () {
                     });
                     // 이미지 업로드 로직
                     if (typeof imgFunc !== 'function')
-                        imgFunc = commons.tinymce.imgRegFunc;
+                        imgFunc = cF.tinymce.imgRegFunc;
                     editor.ui.registry.addButton('custom_image', {
                         icon: 'image',
                         tooltip: 'insert Image',
@@ -66,12 +65,12 @@ commons.tinymce = (function () {
                         }
                     });
                     // 글접기/펼치기 로직
-                    commons.tinymce.sectionCount = 0;
+                    cF.tinymce.sectionCount = 0;
                     editor.ui.registry.addButton('moreless', {
                         icon: 'vertical-align',
                         tooltip: 'insert moreless',
                         onAction: function () {
-                            commons.tinymce.morelessFunc();
+                            cF.tinymce.morelessFunc();
                         }
                     });
                 } });
@@ -92,7 +91,7 @@ commons.tinymce = (function () {
             else if (attempt < maxAttempts) {
                 // 초기화가 완료될 때까지 재귀적으로 시도
                 setTimeout(function () {
-                    commons.tinymce.setContentWhenReady(editorNm, cn, attempt + 1);
+                    cF.tinymce.setContentWhenReady(editorNm, cn, attempt + 1);
                 }, 50);
             }
             else {
@@ -104,7 +103,7 @@ commons.tinymce = (function () {
          * @param {string|HTMLElement|jQuery} selector - 제거할 에디터의 선택자, DOM 요소 또는 jQuery 객체.
          */
         destroy: function (selector) {
-            const editorElements = commons.util.verifySelector(selector);
+            const editorElements = cF.util.verifySelector(selector);
             if (editorElements.length === 0)
                 return;
             editorElements.forEach(editorElement => {
@@ -122,14 +121,14 @@ commons.tinymce = (function () {
             fileInput.addEventListener("change", function () {
                 if (!this.value)
                     return;
-                if (!commons.validate.fileSizeChck(this))
+                if (!cF.validate.fileSizeChck(this))
                     return false; // fileSizeChck
-                if (!commons.validate.fileImgExtnChck(this))
+                if (!cF.validate.fileImgExtnChck(this))
                     return false; // fileExtnChck
                 const url = "/file/fileUploadAjax.do";
                 const ajaxData = new FormData(document.getElementById("tinymceImageForm"));
-                commons.util.blockUIMultipartAjax(url, ajaxData, function (res) {
-                    if (commons.util.isNotEmpty(res.message))
+                cF.util.blockUIMultipartAjax(url, ajaxData, function (res) {
+                    if (cF.util.isNotEmpty(res.message))
                         alert(res.message);
                     if (!res.rslt)
                         return;
@@ -146,15 +145,15 @@ commons.tinymce = (function () {
             });
         },
         morelessFunc: function () {
-            if (typeof commons.tinymce.sectionCount === "undefined")
-                commons.tinymce.sectionCount = 0;
-            const sectionId = "tinymce_section_" + commons.tinymce.sectionCount;
-            const sectionContentId = `tinymce_section_content_` + commons.tinymce.sectionCount;
-            const toggleId = `tinymce_toggle_` + commons.tinymce.sectionCount;
+            if (typeof cF.tinymce.sectionCount === "undefined")
+                cF.tinymce.sectionCount = 0;
+            const sectionId = "tinymce_section_" + cF.tinymce.sectionCount;
+            const sectionContentId = `tinymce_section_content_` + cF.tinymce.sectionCount;
+            const toggleId = `tinymce_toggle_` + cF.tinymce.sectionCount;
             const newSection = `
                 <div class="tinymce-section" id="${sectionId}">
                   <span id="${toggleId}" class="tinymce-collapse-toggle">
-                    Toggle Section ${commons.tinymce.sectionCount}
+                    Toggle Section ${cF.tinymce.sectionCount}
                   </span>
                   <div id="${sectionContentId}" class="tinymce-collapsed">
                     Section content goes here.
@@ -162,8 +161,8 @@ commons.tinymce = (function () {
                 </div>
               `;
             tinymce.execCommand('mceInsertContent', false, newSection);
-            commons.tinymce.sectionCount++;
-            console.log("sectionCount: " + commons.tinymce.sectionCount);
+            cF.tinymce.sectionCount++;
+            console.log("sectionCount: " + cF.tinymce.sectionCount);
             // const toggleElement = document.getElementById(toggleId);
             // toggleElement.addEventListener('click', () => toggleCollapse(toggleId, sectionContentId));
             // function toggleCollapse(toggleId, sectionContentId) {

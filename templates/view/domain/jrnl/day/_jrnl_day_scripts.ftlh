@@ -14,10 +14,10 @@
              */
             initForm: function(obj = {}) {
                 /* show modal */
-                commons.util.handlebarsTemplate(obj, "jrnl_day_reg", "show");
+                cF.handlebars.template(obj, "jrnl_day_reg", "show");
 
                 /* jquery validation */
-                commons.validate.validateForm("#jrnlDayRegForm", JrnlDay.regAjax, {
+                cF.validate.validateForm("#jrnlDayRegForm", JrnlDay.regAjax, {
                     rules: {
                         jrnlDt: {
                             required: function() {
@@ -38,11 +38,11 @@
                     $("#aprxmtDt").valid();
                 });
                 // 일자 datepicker 날짜 검색 init : 현재 조회중인 yyyy-MM으로 처리
-                commons.datepicker.singleDatePicker("#jrnlDt", "yyyy-MM-DD", obj.jrnlDt);
+                cF.datepicker.singleDatePicker("#jrnlDt", "yyyy-MM-DD", obj.jrnlDt);
                 // 날짜미상 datepicker 날짜 검색 init
-                commons.datepicker.singleDatePicker("#aprxmtDt", "yyyy-MM-DD", obj.aprxmtDt);
+                cF.datepicker.singleDatePicker("#aprxmtDt", "yyyy-MM-DD", obj.aprxmtDt);
                 // 날짜미상 checkbox init
-                commons.util.chckboxLabel("dtUnknownYn", "날짜미상//날짜미상", "blue//gray", function() {
+                cF.util.chckboxLabel("dtUnknownYn", "날짜미상//날짜미상", "blue//gray", function() {
                     $("#jrnlDayRegForm #jrnlDtDiv").addClass("d-none");
                     $("#jrnlDayRegForm #aprxmtDtDiv").removeClass("d-none");
                     $("#jrnlDayRegForm #aprxmtDt").val($("#jrnlDayRegForm #jrnlDt").val());
@@ -52,7 +52,7 @@
                     $("#jrnlDayRegForm #jrnlDt").val($("#jrnlDayRegForm #aprxmtDt").val());
                 });
                 /* tagify */
-                commons.tagify.initWithCtgr("#jrnlDayRegForm #tagListStr", TagCtgrMap.jrnlDay);
+                cF.tagify.initWithCtgr("#jrnlDayRegForm #tagListStr", TagCtgrMap.jrnlDay);
             },
 
             /**
@@ -60,13 +60,13 @@
              */
             yyMnthListAjax: function() {
                 const mnth = $("#jrnl_aside #mnth").val();
-                if (commons.util.isEmpty(mnth)) return;
+                if (cF.util.isEmpty(mnth)) return;
 
                 const url = "${Url.JRNL_DAY_LIST_AJAX!}";
                 const ajaxData = { "yy": $("#jrnl_aside #yy").val(), "mnth": mnth };
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                     const { rsltList } = res;
@@ -76,11 +76,11 @@
                         $("#jrnl_aside #sortIcon").removeClass("bi-sort-numeric-up-alt").addClass("bi-sort-numeric-down");
                     } else {
                         $("#jrnl_aside #sortIcon").removeClass("bi-sort-numeric-down").addClass("bi-sort-numeric-up-alt");
-                        if (commons.util.isNotEmpty(rsltList)) rsltList.reverse();
+                        if (cF.util.isNotEmpty(rsltList)) rsltList.reverse();
                     }
                     $("#jrnl_dream_list_div").empty();
-                    commons.util.closeModal();
-                    commons.util.handlebarsTemplate(rsltList, "jrnl_day_list");
+                    cF.util.closeModal();
+                    cF.handlebars.template(rsltList, "jrnl_day_list");
                 }, "block");
             },
 
@@ -100,7 +100,7 @@
                 const year = parseInt($("#jrnl_aside #yy").val(), 10);
                 let month = parseInt($("#jrnl_aside #mnth").val(), 10);
                 if (month === 99) month = 1;
-                let day = parseInt(commons.date.getCurrDayStr(2), 10);
+                let day = parseInt(cF.date.getCurrDayStr(2), 10);
 
                 // 만약 day가 해당 월의 마지막 날을 초과하면 마지막 날로 설정
                 const lastDay = new Date(year, month, 0).getDate();
@@ -142,7 +142,7 @@
                     if (!result.value) return;
                     const url = isReg ? "${Url.JRNL_DAY_REG_AJAX!}" : "${Url.JRNL_DAY_MDF_AJAX!}";
                     const ajaxData = new FormData(document.getElementById("jrnlDayRegForm"));
-                    commons.util.blockUIMultipartAjax(url, ajaxData, function(res) {
+                    cF.util.blockUIMultipartAjax(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (res.rslt) {
@@ -164,9 +164,9 @@
 
                 const url = "${Url.JRNL_DAY_DTL_AJAX!}";
                 const ajaxData = { "postNo" : postNo };
-                commons.util.blockUIAjax(url, "get", ajaxData, function(res) {
+                cF.util.blockUIAjax(url, "get", ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                     const { rsltObj } = res;
@@ -189,7 +189,7 @@
                     if (!result.value) return;
                     const url = "${Url.JRNL_DAY_DEL_AJAX!}";
                     const ajaxData = { "postNo": postNo };
-                    commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (res.rslt) {

@@ -1,11 +1,9 @@
 /**
- * commons-helpers.js
- * @namespace: commons.date
+ * helpers.js
  * @author: nichefish
- * @since: 2022-06-27
  * @dependency: commons.js
  * 공통 - Handlebars(템플릿) 헬퍼 관련 함수 모듈
- * (노출식 모듈 패턴 적용 :: commons.date.getCurrDateStr(commons.date.ptnDate) 이런식으로 사용)
+ * (노출식 모듈 패턴 적용 :: cF.date.getCurrDateStr(cF.date.ptnDate) 이런식으로 사용)
  */
 
 (function(Handlebars) {
@@ -16,8 +14,8 @@
      * @param {any} value - 체크할 값.
      * @returns {boolean} - `value`가 비어 있지 않으면 `true`, 비어 있으면 `false`.
      */
-    Handlebars.registerHelper("exists", function(value) {
-        return !commons.util.isEmpty(value);
+    Handlebars.registerHelper("exists", function(value: any) {
+        return !cF.util.isEmpty(value);
     });
 
     /**
@@ -25,8 +23,8 @@
      * @param {any} value - 체크할 값.
      * @returns {boolean} - `value`가 비어 있으면 `true`, 비어 있지 않으면 `false`.
      */
-    Handlebars.registerHelper("notExists", function(value) {
-        return commons.util.isEmpty(value);
+    Handlebars.registerHelper("notExists", function(value: any) {
+        return cF.util.isEmpty(value);
     });
 
     /**
@@ -35,8 +33,8 @@
      * @param {any} alt - `value`가 비어 있을 때 반환할 기본값.
      * @returns {any} - `value`가 비어 있지 않으면 `value`, 비어 있으면 `alt`.
      */
-    Handlebars.registerHelper("ifEmpty", function(value, alt) {
-        return commons.util.isEmpty(value) ? alt : value;
+    Handlebars.registerHelper("ifEmpty", function(value: any, alt: any) {
+        return cF.util.isEmpty(value) ? alt : value;
     });
 
     /**
@@ -44,7 +42,7 @@
      * @param {boolean} value - 선택 여부를 결정할 값.
      * @returns {string} - "selected" 또는 빈 문자열.
      */
-    Handlebars.registerHelper("selectedIf", function(value) {
+    Handlebars.registerHelper("selectedIf", function(value: boolean) {
         return value ? "selected" : "";
     });
 
@@ -53,16 +51,16 @@
      * @param {string} value - 체크 여부를 결정할 값.
      * @returns {string} - 값이 "Y"이면 "checked", 그렇지 않으면 빈 문자열.
      */
-    Handlebars.registerHelper("checkedYn", function(value) {
+    Handlebars.registerHelper("checkedYn", function(value: string) {
         return "Y" === value ? "checked" : "";
     })
 
     /**
      * checkedIf : 값이 true일 경우 체크박스 체크.
-     * @param {any} value - 체크 여부를 결정할 값.
+     * @param {boolean} value - 체크 여부를 결정할 값.
      * @returns {string} - 값이 true면 "checked", 그렇지 않으면 빈 문자열.
      */
-    Handlebars.registerHelper("checkedIf", function(value) {
+    Handlebars.registerHelper("checkedIf", function(value: boolean) {
         return value ? "checked" : "";
     });
 
@@ -71,9 +69,9 @@
      * @param {number|string} value - 포맷팅할 숫자 값.
      * @returns {string} - 천 단위로 콤마가 추가된 문자열. 값이 없으면 `undefined`.
      */
-    Handlebars.registerHelper("numberFormat", function(value) {
-        if (commons.util.isEmpty(value)) return;
-        return commons.util.thousandSeparator(value);
+    Handlebars.registerHelper("numberFormat", function(value: number|string) {
+        if (cF.util.isEmpty(value)) return;
+        return cF.util.thousandSeparator(value);
     });
 
     /**
@@ -82,7 +80,7 @@
      * @param {object} options - Handlebars 옵션 객체로, `fn`과 `inverse`를 포함.
      * @returns {string} - `value`가 "Y"일 경우 `options.fn(this)`, 그렇지 않으면 `options.inverse(this)`.
      */
-    Handlebars.registerHelper("ifYn", function(value, options) {
+    Handlebars.registerHelper("ifYn", function(value: string, options: object) {
         const trimmedValue = value && value.trim();
         return trimmedValue === "Y" ? options.fn(this) : options.inverse(this);;
     });
@@ -94,10 +92,10 @@
      * @param {object} options - Handlebars 옵션 객체.
      * @returns {boolean} - `value`가 `ynValues`의 "Y" 값과 일치하면 `true`, 그렇지 않으면 `false`.
      */
-    const truefalseFunc = function(value, ynValues, options) {
+    const truefalseFunc = function(value, ynValues: string, options: object) {
         // 기본값 null일 때 true로 간주하는 옵션 : 기본값 옵션이 true이고 값이 비어있으면 true 반환
         const defaultTrue = options.hash["default"] || false;
-        if (defaultTrue && commons.util.isEmpty(value)) return true;
+        if (defaultTrue && cF.util.isEmpty(value)) return true;
 
         const separator = "//";
         const [yValue] = ynValues.split(separator);
@@ -112,10 +110,10 @@
      * @param {object} options - Handlebars 옵션 객체.
      * @returns {boolean} - 두 값이 일치하면 `true`, 그렇지 않으면 `false`.
      */
-    Handlebars.registerHelper("equals", function(value, compareValue, options) {
+    Handlebars.registerHelper("equals", function(value, compareValue, options: object) {
         // 기본값 null일 때 true로 간주하는 옵션 : 기본값 옵션이 true이고 값이 비어있으면 true 반환
         const defaultTrue = options.hash["default"] || false;
-        if (defaultTrue && commons.util.isEmpty(value)) return true;
+        if (defaultTrue && cF.util.isEmpty(value)) return true;
 
         // 비교결과 반환 :: 일부러 느슨한 비교
         return (value == compareValue);
@@ -128,17 +126,17 @@
      * @param {object} options - Handlebars 옵션 객체.
      * @returns {boolean} - 두 값이 일치하면 `true`, 그렇지 않으면 `false`.
      */
-    Handlebars.registerHelper("notEquals", function(value, compareValue, options) {
+    Handlebars.registerHelper("notEquals", function(value, compareValue, options: object) {
         return !equalsFunc(value, compareValue, options);
     });
 
     /**
      * checkedLabel : 주어진 `value`가 `true`이면 "Y" 레이블을, 그렇지 않으면 "N" 레이블을 반환합니다.
-     * @param {any} value - 체크할 값.
+     * @param {boolean} value - 체크할 값.
      * @param {string} ynLabels - "Y"와 "N" 레이블을 구분하는 문자열 (구분자는 "//").
      * @returns {string} - `value`가 `true`이면 "Y" 레이블, 그렇지 않으면 "N" 레이블을 반환.
      */
-    Handlebars.registerHelper("checkedLabel", function(value, ynLabels) {
+    Handlebars.registerHelper("checkedLabel", function(value: boolean, ynLabels: string) {
         // `ynLabels`를 구분자로 나누어 "Y"와 "N" 레이블 추출
         const separator = "//";
         const [yLabel, nLabel] = ynLabels.split(separator);
@@ -153,7 +151,7 @@
      * @param {string} ynColors - "Y"와 "N"의 색상을 구분하는 문자열 (구분자는 "//").
      * @returns {string} - `style` 속성을 반환 (예: `style="color:red;"`).
      */
-    const checkedStyleFunc = function(value, type, ynColors) {
+    const checkedStyleFunc = function(value, type: string, ynColors: string) {
         // `ynColors`를 구분자로 나누어 "Y"와 "N"의 색상 추출
         const separator = "//";
         const [yColor, nColor] = ynColors.split(separator);
@@ -190,11 +188,11 @@
      * @param {string} pattern - 날짜를 포맷팅할 패턴.
      * @returns {string} - 포맷팅된 날짜 문자열. 값이 없으면 빈 문자열을 반환.
      */
-    Handlebars.registerHelper("dateformat", function(value, pattern) {
+    Handlebars.registerHelper("dateformat", function(value, pattern: string) {
         if (!value) return "";
 
         try {
-            return commons.date.asStr(value, pattern);
+            return cF.date.asStr(value, pattern);
         } catch (e) {
             console.error("Date formatting error:", e);
             return "";

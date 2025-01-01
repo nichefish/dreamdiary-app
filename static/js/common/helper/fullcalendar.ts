@@ -1,15 +1,14 @@
 /**
- * commons-fullcalendar.js
- * @namespace: commons.fullcalendar
+ * fullcalendar.ts
+ * @namespace: cF.fullcalendar
  * @author: nichefish
- * @since: 2022-06-27
  * @dependency: fullCalendar.js
  * @see: https://fullcalendar.io/docs/
  * 공통 - fullcalendar(라이브러리) 관련 함수 모듈
  * (노출식 모듈 패턴 적용 :: commons.enterKey("#userId") 이런식으로 사용)
  */
-if (typeof commons === 'undefined') { var commons = {}; }
-commons.fullcalendar = (function() {
+if (typeof cF === 'undefined') { let cF = {}; }
+cF.fullcalendar = (function() {
 
     /** 기본 옵션 */
     const baseOptions = {
@@ -49,7 +48,7 @@ commons.fullcalendar = (function() {
          * @param {object} additionalOptions - 추가로 적용할 `FullCalendar` 설정 옵션 (선택적).
          * @returns {FullCalendar.Calendar} - 생성된 `FullCalendar` 객체.
          */
-        init: function(selectorId, eventList, clickFunc, additionalOptions = {}) {
+        init: function(selectorId: string, eventList, clickFunc: Function, additionalOptions = {}) {
             const target = document.getElementById(selectorId);
             if (!target) {
                 console.error("Element with ID " + selectorId + " not found.");

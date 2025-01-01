@@ -23,15 +23,15 @@
 
                 const url = "${Url.TAG_DTL_AJAX!}";
                 const ajaxData = { "tagNo": tagNo };
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                     // 태그 상세 정보
-                    commons.util.handlebarsTemplate(res.rsltObj, "tag_dtl", "show");
+                    cF.handlebars.template(res.rsltObj, "tag_dtl", "show");
                     // 태그 글 목록
-                    commons.util.handlebarsTemplate(res.rsltList, "tag_dtl_post_list");
+                    cF.handlebars.template(res.rsltList, "tag_dtl_post_list");
                     $("#board_tag_list_modal").modal("hide");
                 });
             },
@@ -91,7 +91,7 @@
              * @param {string|number} tagCtgr - 필터링할 태그 카테고리.
              */
             ctgrFilter: function(tagCtgr) {
-                if (commons.util.isEmpty(tagCtgr)) return;
+                if (cF.util.isEmpty(tagCtgr)) return;
                 $("span."+tagCtgr).toggle();
                 $("i."+tagCtgr).toggle();
                 $("div."+tagCtgr).toggleClass("active").toggleClass("btn-outlined").toggleClass("btn-light");
@@ -107,7 +107,7 @@
                 document.querySelector("#listForm #pageNo").value = 1;
                 document.querySelector("#listForm #tags").value = tagNo;
                 const url = "${listUrl!}?actionTyCd=SEARCH";
-                commons.util.blockUISubmit("#listForm", url);
+                cF.util.blockUISubmit("#listForm", url);
             },
 
             /**
@@ -131,13 +131,13 @@
             listAjax: function() {
                 const url = "${Url.TAG_LIST_AJAX!}";
                 const ajaxData = { "contentType": $("#contentType").val() };
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                     // 태그 상세 정보
-                    commons.util.handlebarsTemplate(res.rsltList, "board_tag_list", "show");
+                    cF.handlebars.template(res.rsltList, "board_tag_list", "show");
                     $("#board_tag_dtl_modal").modal("hide");
                 });
             },

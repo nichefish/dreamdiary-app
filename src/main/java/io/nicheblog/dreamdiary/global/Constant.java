@@ -67,13 +67,6 @@ public final class Constant
 
     /** 각 메뉴 번호 */
     public static final String USER = "user";              // 계정 관리
-    public static final String LGN_POLICY = "lgnPolicy";       // 로그인 관리
-    public static final String CRDT_USER_CTTPC = "crdtUserCttpc";   // 직원 연락처
-    public static final String LOG_ACTVTY = "logActvty";            // 활동 로그 관리
-    public static final String LOG_SYS = "logSys";                  // 활동 로그 관리
-    public static final String VCATN_STATS = "vcatnStats";          // 휴가계획서
-    public static final String VCATN_SCHDUL = "vcatnSchdul";                // 휴가사용일자
-
     public static final String HOME_FLSYS = "flsys";
 
     /** 부트스트랩 클래스 */

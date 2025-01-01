@@ -14,8 +14,8 @@
 <#--include::script modules-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
 <script type="text/javascript" src="/metronic/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
-<script type="text/javascript" src="/js/common/commons-tinymce.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/js/common/commons-fullcalendar.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/common/helper/tinymce.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/common/helper/fullcalendar.js?${releaseDate!}"></script>
 <#include "/view/domain/jrnl/day/_jrnl_day_scripts.ftlh">
 <#include "/view/domain/jrnl/day/tag/_jrnl_day_tag_scripts.ftlh">
 <#include "/view/domain/jrnl/dream/_jrnl_dream_scripts.ftlh">
@@ -43,8 +43,8 @@
                 JrnlDiaryTag.listAjax();
                 JrnlDreamTag.listAjax();
                 // 일기/꿈 키워드 검색에 엔터키 처리
-                commons.util.enterKey("#diaryKeyword", JrnlDiary.keywordListAjax);
-                commons.util.enterKey("#dreamKeyword", JrnlDream.keywordListAjax);
+                cF.util.enterKey("#diaryKeyword", JrnlDiary.keywordListAjax);
+                cF.util.enterKey("#dreamKeyword", JrnlDream.keywordListAjax);
             },
 
             /**
@@ -62,14 +62,14 @@
                 if (sortCookie !== undefined) document.querySelector("#jrnl_aside #sort").value = sortCookie;
                 // 아무 쿠키도 없을경우 전체 데이터 로딩을 막기 위해 올해 년도 세팅
                 if (yyCookie === undefined && mnthCookie === undefined) {
-                    $("#jrnl_aside #yy").val(commons.date.getCurrYyStr());
+                    $("#jrnl_aside #yy").val(cF.date.getCurrYyStr());
                 }
             },
             /**
              * 달력 화면으로 이동
              */
             calPage: function() {
-                commons.util.blockUIReplace("${Url.JRNL_DAY_CAL!}");
+                cF.util.blockUIReplace("${Url.JRNL_DAY_CAL!}");
             }
         }
     })();

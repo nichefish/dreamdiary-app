@@ -14,9 +14,9 @@ const Layout = (function() {
          */
         init: function() {
             // 공백 자동 제거
-            commons.validate.noSpaces(".no-space");
+            cF.validate.noSpaces(".no-space");
             // 개별 input 유효성검사
-            commons.validate.onlyNum(".number");
+            cF.validate.onlyNum(".number");
 
             Layout.setBtnDelay();
             Layout.modalBtnCloseSafe();
@@ -29,7 +29,7 @@ const Layout = (function() {
             const buttons = document.querySelectorAll("button:not(.modal-btn-close-safe), .btn:not(.modal-btn-close-safe), .badge:not(.modal-btn-close-safe)");
             buttons.forEach(function(button) {
                 button.addEventListener("click", function() {
-                    commons.util.delayBtn(this);
+                    cF.util.delayBtn(this);
                 });
             });
         },

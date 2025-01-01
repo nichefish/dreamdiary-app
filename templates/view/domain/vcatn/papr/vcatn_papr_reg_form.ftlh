@@ -46,12 +46,12 @@
              */
             addVcatnSchdul: function() {
                 const idx = Page.idx++;
-                commons.util.handlebarsAppend({ "idx": idx }, "vcatn_schdul_reg");
-                commons.datepicker.singleDatePicker("#bgnDt" + idx, "yyyy-MM-DD", null, function() {
+                cF.handlebars.append({ "idx": idx }, "vcatn_schdul_reg");
+                cF.datepicker.singleDatePicker("#bgnDt" + idx, "yyyy-MM-DD", null, function() {
                     VcatnSchdul.propEndDt(idx);
                     VcatnSchdul.noBefore("#bgnDt"+idx, "#endDt"+idx, idx);
                 });
-                commons.datepicker.singleDatePicker("#endDt"+idx, "yyyy-MM-DD", null, function() {
+                cF.datepicker.singleDatePicker("#endDt"+idx, "yyyy-MM-DD", null, function() {
                     if ($("#endDt"+idx).val() !== "") VcatnSchdul.noBefore("#bgnDt"+idx, "#endDt"+idx, idx);
                 });
             },

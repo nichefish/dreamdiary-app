@@ -11,14 +11,14 @@
              */
             initForm: function(obj = {}) {
                 /* show modal */
-                commons.util.handlebarsTemplate(obj, "board_def_reg", "show");
+                cF.handlebars.template(obj, "board_def_reg", "show");
 
                 /* jquery validation */
-                commons.validate.validateForm("#boardDefRegForm", BoardDef.regAjax);
+                cF.validate.validateForm("#boardDefRegForm", BoardDef.regAjax);
                 // checkbox init
-                commons.util.chckboxLabel("useYn", "사용//미사용", "blue//gray");
-                commons.validate.replaceBlankIfMatches("#boardDefRegForm .cddata", commons.validate.nonCdRegex);
-                commons.validate.onlyNum(".number");
+                cF.util.chckboxLabel("useYn", "사용//미사용", "blue//gray");
+                cF.validate.replaceBlankIfMatches("#boardDefRegForm .cddata", cF.validate.nonCdRegex);
+                cF.validate.onlyNum(".number");
             },
 
             /**
@@ -27,7 +27,7 @@
             initDraggable: function() {
                 const keyExtractor = (item) => ({ "boardCd": $(item).attr("id") });
                 const url = "${Url.BOARD_DEF_SORT_ORDR_AJAX!}";
-                BoardDef.swappable = commons.util.initDraggable(keyExtractor, url);
+                BoardDef.swappable = cF.draggable.init(keyExtractor, url);
             },
 
             /**
@@ -56,10 +56,10 @@
                     if (!result.value) return;
                     const url = '${Url.BOARD_DEF_REG_AJAX!}';
                     const ajaxData = $("#boardDefRegForm").serializeArray();
-                    commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
-                                if (res.rslt) commons.util.blockUIReload();
+                                if (res.rslt) cF.util.blockUIReload();
                             });
                     }, "block");
                 });
@@ -72,9 +72,9 @@
             mdfModal: function(boardCd) {
                 const url = "${Url.BOARD_DEF_DTL_AJAX!}";
                 const ajaxData = { "boardCd": boardCd };
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                     const { rsltObj } = res;
@@ -96,10 +96,10 @@
                     if (!result.value) return;
                     const url = '${Url.BOARD_DEF_USE_AJAX!}';
                     const ajaxData = { "boardCd": key };
-                    commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
-                                if (res.rslt) commons.util.blockUIReload();
+                                if (res.rslt) cF.util.blockUIReload();
                             });
                     }, "block");
                 });
@@ -117,10 +117,10 @@
                     if (!result.value) return;
                     const url = '${Url.BOARD_DEF_UNUSE_AJAX!}';
                     const ajaxData = { "boardCd": key };
-                    commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
-                                if (res.rslt) commons.util.blockUIReload();
+                                if (res.rslt) cF.util.blockUIReload();
                             });
                     }, "block");
                 });
@@ -138,10 +138,10 @@
                     if (!result.value) return;
                     const url = "${Url.BOARD_DEF_DEL_AJAX!}";
                     const ajaxData = { "boardCd": key };
-                    commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
-                                if (res.rslt) commons.util.blockUIReload();
+                                if (res.rslt) cF.util.blockUIReload();
                             });
                     }, "block");
                 });

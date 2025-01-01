@@ -21,15 +21,15 @@ const LgnPwChg = (function() {
          */
         initForm: function(obj = {}) {
             /* show modal */
-            commons.util.handlebarsTemplate(obj, "lgn_pw_chg", "show");
+            cF.handlebars.template(obj, "lgn_pw_chg", "show");
 
             // 엔터키 처리
-            commons.util.enterKey("#currPw, #newPw, #newPwCf", LgnPwChg.submit);
+            cF.util.enterKey("#currPw, #newPw, #newPwCf", LgnPwChg.submit);
 
             /* jquery validation */
-            commons.validate.validateForm("#lgnPwChgForm", LgnPwChg.lgnPwChgAjax, {
+            cF.validate.validateForm("#lgnPwChgForm", LgnPwChg.lgnPwChgAjax, {
                 rules: {
-                    newPw: { regex: commons.validate.pwRegex },
+                    newPw: { regex: cF.validate.pwRegex },
                     newPwCf: { equalTo: "#newPw" }
                 },
                 messages: {
@@ -53,12 +53,12 @@ const LgnPwChg = (function() {
             const url = Url.AUTH_LGN_PW_CHG_AJAX;
             const userId = $("#lgnUserId").val();
             const ajaxData = { "userId" : userId, "currPw" : $("#currPw").val(), "newPw" : $("#newPw").val() };
-            commons.util.blockUIAjax(url, 'POST', ajaxData, function(res: AjaxResponse) {
+            cF.util.blockUIAjax(url, 'POST', ajaxData, function(res: AjaxResponse) {
                 Swal.fire({
                     text: res.message
                 }).then(function() {
                     $("#lgnPwChgForm")[0].reset();
-                    if (res.rslt) commons.util.blockUIReplace(Url.AUTH_LGN_FORM);
+                    if (res.rslt) cF.util.blockUIReplace(Url.AUTH_LGN_FORM);
                 });
             });
         },

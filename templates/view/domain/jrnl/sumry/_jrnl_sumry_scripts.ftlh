@@ -11,16 +11,16 @@
              */
             initForm: function(obj = {}) {
                 /* show modal */
-                commons.util.handlebarsTemplate(obj, "jrnl_sumry_reg_header");
-                commons.util.handlebarsTemplate(obj, "jrnl_sumry_reg", "show");
+                cF.handlebars.template(obj, "jrnl_sumry_reg_header");
+                cF.handlebars.template(obj, "jrnl_sumry_reg", "show");
 
                 /* jquery validation */
-                commons.validate.validateForm("#jrnlSumryRegForm", JrnlSumry.regAjax);
+                cF.validate.validateForm("#jrnlSumryRegForm", JrnlSumry.regAjax);
                 /* tagify */
-                commons.tagify.initWithCtgr("#jrnlSumryRegForm #tagListStr", undefined);
+                cF.tagify.initWithCtgr("#jrnlSumryRegForm #tagListStr", undefined);
                 // tinymce editor reset
-                commons.tinymce.init('#tinymce_jrnlSumryCn');
-                commons.tinymce.setContentWhenReady("tinymce_jrnlSumryCn", obj.cn || "");
+                cF.tinymce.init('#tinymce_jrnlSumryCn');
+                cF.tinymce.setContentWhenReady("tinymce_jrnlSumryCn", obj.cn || "");
             },
 
             /**
@@ -31,7 +31,7 @@
                 if (isNaN(postNo)) return;
 
                 $("#procForm #postNo").val(postNo);
-                commons.util.blockUISubmit("#procForm", "${Url.JRNL_SUMRY_DTL!}");
+                cF.util.blockUISubmit("#procForm", "${Url.JRNL_SUMRY_DTL!}");
             },
 
             /**
@@ -42,14 +42,14 @@
                 if (isNaN(yy)) return;
 
                 document.querySelector("#procForm #yy").value = yy;
-                commons.util.blockUISubmit("#procForm", "${Url.JRNL_SUMRY_DTL!}");
+                cF.util.blockUISubmit("#procForm", "${Url.JRNL_SUMRY_DTL!}");
             },
 
             /**
              * 목록 화면으로 이동
              */
             list: function() {
-                commons.util.blockUIReplace("${Url.JRNL_SUMRY_LIST!}");
+                cF.util.blockUIReplace("${Url.JRNL_SUMRY_LIST!}");
             },
 
             /**
@@ -58,16 +58,16 @@
              */
             makeYySumryAjax: function(yy) {
                 if (yy === undefined) yy = document.querySelector("#listForm #yy")?.value;
-                if (commons.util.isEmpty(yy)) {
-                    commons.util.swalOrAlert("yy는 필수 항목입니다.");
+                if (cF.util.isEmpty(yy)) {
+                    cF.util.swalOrAlert("yy는 필수 항목입니다.");
                     return false;
                 }
                 const url = "${Url.JRNL_SUMRY_MAKE_AJAX!}";
                 const ajaxData = { "yy": yy };
-                commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
                     Swal.fire({ text: res.message })
                         .then(function() {
-                            if (res.rslt) commons.util.blockUIReload();
+                            if (res.rslt) cF.util.blockUIReload();
                         });
                 }, "block");
             },
@@ -77,10 +77,10 @@
              */
             makeTotalSumryAjax: function() {
                 const url = "${Url.JRNL_SUMRY_MAKE_TOTAL_AJAX!}";
-                commons.util.blockUIAjax(url, 'POST', null, function(res) {
+                cF.util.blockUIAjax(url, 'POST', null, function(res) {
                     Swal.fire({ text: res.message })
                         .then(function() {
-                            if (res.rslt) commons.util.blockUIReload();
+                            if (res.rslt) cF.util.blockUIReload();
                         });
                 }, "block");
             },
@@ -94,10 +94,10 @@
 
                 const url = "${Url.JRNL_SUMRY_DREAM_COMPT_AJAX!}";
                 const ajaxData = { "postNo": postNo };
-                commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
                     Swal.fire({ text: res.message })
                         .then(function() {
-                            if (res.rslt) commons.util.blockUIReload();
+                            if (res.rslt) cF.util.blockUIReload();
                         });
                 }, "block");
             },
@@ -119,9 +119,9 @@
 
                 const url = "${Url.JRNL_SUMRY_DTL_AJAX!}";
                 const ajaxData = { "postNo": postNo };
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                     const { rsltObj } = res;
@@ -141,11 +141,11 @@
                     if (!result.value) return;
                     const url = "${Url.JRNL_SUMRY_REG_AJAX!}";
                     const ajaxData = new FormData(document.getElementById("jrnlSumryRegForm"));
-                    commons.util.blockUIMultipartAjax(url, ajaxData, function(res) {
+                    cF.util.blockUIMultipartAjax(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (!res.rslt) return;
-                                commons.util.blockUIReload();
+                                cF.util.blockUIReload();
                             });
                     }, "block");
                 });

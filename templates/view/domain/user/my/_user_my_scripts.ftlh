@@ -13,17 +13,17 @@
                 $fileInput.click();
                 $fileInput.on("change", function() {
                     if (this.value !== "") {
-                        if (!commons.validate.fileSizeChck(this)) return false;      // fileSizeChck
-                        if (!commons.validate.fileImgExtnChck(this)) return false;      // fileExtnChck
+                        if (!cF.validate.fileSizeChck(this)) return false;      // fileSizeChck
+                        if (!cF.validate.fileImgExtnChck(this)) return false;      // fileExtnChck
                         const url = "${Url.USER_MY_UPLOAD_PROFL_IMG_AJAX!}";
                         const ajaxData = new FormData(document.getElementById("profllImgForm"));
-                        commons.util.blockUIMultipartAjax(url, ajaxData, function(res) {
-                            if (commons.util.isNotEmpty(res.message)) {
+                        cF.util.blockUIMultipartAjax(url, ajaxData, function(res) {
+                            if (cF.util.isNotEmpty(res.message)) {
                                 Swal.fire({ "text": res.message })
                                     .then(function() {
                                         Swal.fire({ "text": "변경된 프로필은 재접속 이후에 적용됩니다." })
                                             .then(function() {
-                                                if (res.rslt) commons.util.blockUIReload();
+                                                if (res.rslt) cF.util.blockUIReload();
                                             });
                                     });
                             }
@@ -42,13 +42,13 @@
                 }).then(function(result) {
                     if (!result.value) return;
                     const url = "${Url.USER_MY_REMOVE_PROFL_IMG_AJAX!}";
-                    commons.util.blockUIMultipartAjax(url, {}, function(res) {
-                        if (commons.util.isNotEmpty(res.message)) {
+                    cF.util.blockUIMultipartAjax(url, {}, function(res) {
+                        if (cF.util.isNotEmpty(res.message)) {
                             Swal.fire({ "text": res.message })
                                 .then(function() {
                                     Swal.fire({ "text": "변경된 프로필은 재접속 이후에 적용됩니다." })
                                         .then(function() {
-                                            if (res.rslt) commons.util.blockUIReload();
+                                            if (res.rslt) cF.util.blockUIReload();
                                         });
                                 });
                         }

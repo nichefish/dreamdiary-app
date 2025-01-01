@@ -23,7 +23,7 @@
              */
             init: function() {
                 /* 모든 table 헤더에 클릭 이벤트를 설정한다. */
-                commons.util.initSortTable();
+                cF.util.initSortTable();
                 /* init : Draggable */
                 BoardDef.initDraggable();
             },

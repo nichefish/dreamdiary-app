@@ -11,12 +11,12 @@
              */
             initForm: function(obj = {}) {
                 /* jquery validation */
-                commons.validate.validateForm("#lgnPolicyForm", LgnPolicy.regAjax, {
+                cF.validate.validateForm("#lgnPolicyForm", LgnPolicy.regAjax, {
                     rules: {
                         lgnLockDy: { maxlength:3 },
                         lgnTryLmt: { maxlength:3 },
                         pwChgDy: { maxlength:3 },
-                        pwForReset: { minlength:8, maxlength:20, regex:commons.validate.pwRegex },
+                        pwForReset: { minlength:8, maxlength:20, regex:cF.validate.pwRegex },
                     },
                     messages: {
                         pwForReset: { regex:"비밀번호가 형식에 맞지 않습니다." },
@@ -42,10 +42,10 @@
                     if (!result.value) return;
                     const url = "${Url.LGN_POLICY_REG_AJAX!}";
                     const ajaxData = $("#lgnPolicyForm").serializeArray();
-                    commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
-                                if (res.rslt) commons.util.blockUIReplace("${Url.LGN_POLICY_FORM!}");
+                                if (res.rslt) cF.util.blockUIReplace("${Url.LGN_POLICY_FORM!}");
                             });
                     }, "block");
                 });

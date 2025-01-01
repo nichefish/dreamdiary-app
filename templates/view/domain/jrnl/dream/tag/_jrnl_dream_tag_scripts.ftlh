@@ -11,12 +11,12 @@
             listAjax: function() {
                 const url = "${Url.JRNL_DREAM_TAG_LIST_AJAX!}";
                 const ajaxData = { "yy": $("#jrnl_aside #yy").val(), "mnth": $("#jrnl_aside #mnth").val() };
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
-                    commons.util.handlebarsTemplate(res.rsltList, "jrnl_dream_tag_list");
+                    cF.handlebars.template(res.rsltList, "jrnl_dream_tag_list");
                 });
             },
 
@@ -26,9 +26,9 @@
             listAllAjax: function() {
                 const url = "${Url.JRNL_DREAM_TAG_LIST_AJAX!}";
                 const ajaxData = { "yy": 9999, "mnth":99 };
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                     // 상단에 태그 카테고리 메뉴 생성
@@ -36,8 +36,8 @@
                     res.rsltList.forEach(item => {
                         if (item.ctgr) ctgrSet.add(item.ctgr);
                     });
-                    commons.util.handlebarsTemplate(ctgrSet, "jrnl_tag_ctgr");
-                    commons.util.handlebarsTemplate(res.rsltList, "jrnl_tag_list", "show");
+                    cF.handlebars.template(ctgrSet, "jrnl_tag_ctgr");
+                    cF.handlebars.template(res.rsltList, "jrnl_tag_list", "show");
                     $("#jrnl_tag_dtl_modal").modal("hide");
                 });
             },
@@ -48,16 +48,16 @@
             dreamTagGroupListAllAjax: function() {
                 const url = "${Url.JRNL_DREAM_TAG_LIST_AJAX!}";
                 const ajaxData = { "yy": 9999, "mnth":99 };
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                     const groupedList = Tag.groupTagsByCategory(res.rsltList);
                     for (const ctgr in groupedList) {
                         if (!groupedList.hasOwnProperty(ctgr)) continue;
                         const eachList = groupedList[ctgr];
-                        commons.util.handlebarsAppend({ "ctgr": ctgr, "tagList": eachList }, "jrnl_tag_list");
+                        cF.handlebars.append({ "ctgr": ctgr, "tagList": eachList }, "jrnl_tag_list");
                     }
                     $("#jrnl_tag_list_modal").modal("show");
                     $("#jrnl_tag_dtl_modal").modal("hide");
@@ -74,12 +74,12 @@
 
                 const url = "${Url.JRNL_DREAM_TAG_DTL_AJAX!}";
                 const ajaxData = { "tagNo": tagNo };
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
-                    commons.util.handlebarsTemplate(res.rsltList, "jrnl_dream_tag_dtl", "show");
+                    cF.handlebars.template(res.rsltList, "jrnl_dream_tag_dtl", "show");
                 });
             },
         }

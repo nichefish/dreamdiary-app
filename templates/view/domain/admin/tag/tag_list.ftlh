@@ -53,7 +53,7 @@
             <#list contentTypeList![] as contentType>
                 <#assign isChecked = refContentType! == contentType.key! />
                 <div class="btn btn-sm btn-outlined <#if isChecked>btn-light-primary<#else>btn-light-secondary</#if> text-dark align-middler"
-                     onclick="commons.util.reloadWithParam('refContentType', '${contentType.key!}');">
+                     onclick="cF.util.reloadWithParam('refContentType', '${contentType.key!}');">
                 <span class="d-flex align-items-center">
                     <#if contentType.icon??>
                         <i class="bi bi-${contentType.icon!} text-dark"></i>

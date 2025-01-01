@@ -8,7 +8,7 @@
         return {
             cookieOptions: {
                 path: "/jrnl/day/",
-                expires: commons.date.getCurrDateAddDay(36135)
+                expires: cF.date.getCurrDateAddDay(36135)
             },
 
             /**
@@ -29,8 +29,8 @@
              * 오늘 날짜로 가기
              */
             today: function() {
-                const todayYy = commons.date.getCurrYyStr();
-                const todayMnth = commons.date.getCurrMnthStr();
+                const todayYy = cF.date.getCurrYyStr();
+                const todayMnth = cF.date.getCurrMnthStr();
                 $("#jrnl_aside #yy").val(todayYy);
                 $("#jrnl_aside #mnth").val(todayMnth);
                 JrnlDayAside.mnth();
@@ -42,10 +42,10 @@
              * 년도 바꾸기
              */
             yy: function() {
-                commons.util.handlebarsTemplate(null, "jrnl_day_list");
-                commons.util.handlebarsTemplate([], "jrnl_day_tag_list");
-                commons.util.handlebarsTemplate([], "jrnl_diary_tag_list");
-                commons.util.handlebarsTemplate([], "jrnl_dream_tag_list");
+                cF.handlebars.template(null, "jrnl_day_list");
+                cF.handlebars.template([], "jrnl_day_tag_list");
+                cF.handlebars.template([], "jrnl_diary_tag_list");
+                cF.handlebars.template([], "jrnl_dream_tag_list");
                 JrnlDream.inKeywordSearchMode = false;
                 if ($("#jrnl_aside #yy").val() === "2010") {
                     $("#jrnl_aside #mnth").val("99");
@@ -72,7 +72,7 @@
                 //
                 JrnlDream.inKeywordSearchMode = false;
                 // 페이지 상단으로 이동
-                commons.util.toPageTop();
+                cF.util.toPageTop();
             },
 
             /**
@@ -107,7 +107,7 @@
                 // 쿠키 설정하기
                 const cookieOptions = {
                     path: "/jrnl/day/",
-                    expires: commons.date.getCurrDateAddDay(36135)
+                    expires: cF.date.getCurrDateAddDay(36135)
                 };
                 $.cookie("jrnl_day_sort", toBe, cookieOptions);
                 // 값 설정

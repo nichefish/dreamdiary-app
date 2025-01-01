@@ -14,18 +14,18 @@
              */
             initForm: function(obj = {}) {
                 /* show modal */
-                commons.util.handlebarsTemplate(obj, "jrnl_diary_reg_header");
-                commons.util.handlebarsTemplate(obj, "jrnl_diary_reg", "show");
+                cF.handlebars.template(obj, "jrnl_diary_reg_header");
+                cF.handlebars.template(obj, "jrnl_diary_reg", "show");
 
                 /* jquery validation */
-                commons.validate.validateForm("#jrnlDiaryRegForm", JrnlDiary.regAjax);
+                cF.validate.validateForm("#jrnlDiaryRegForm", JrnlDiary.regAjax);
                 /* tagify */
-                commons.tagify.initWithCtgr("#jrnlDiaryRegForm #tagListStr");
+                cF.tagify.initWithCtgr("#jrnlDiaryRegForm #tagListStr");
                 // checkbox init
-                commons.util.chckboxLabel("imprtcYn", "중요//해당없음", "red//gray");
+                cF.util.chckboxLabel("imprtcYn", "중요//해당없음", "red//gray");
                 /* tinymce editor reset */
-                commons.tinymce.init('#tinymce_jrnlDiaryCn');
-                commons.tinymce.setContentWhenReady("tinymce_jrnlDiaryCn", obj.cn || "");
+                cF.tinymce.init('#tinymce_jrnlDiaryCn');
+                cF.tinymce.setContentWhenReady("tinymce_jrnlDiaryCn", obj.cn || "");
             },
 
             /**
@@ -33,13 +33,13 @@
              */
             keywordListAjax: function() {
                 const keyword = $("#jrnl_aside #diaryKeyword").val();
-                if (commons.util.isEmpty(keyword)) return;
+                if (cF.util.isEmpty(keyword)) return;
 
                 const url = "${Url.JRNL_DIARY_LIST_AJAX!}";
                 const ajaxData = { "diaryKeyword": $("#jrnl_aside #diaryKeyword").val() };
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                     $("#jrnl_aside #yy").val("");
@@ -52,8 +52,8 @@
                     $("#jrnl_day_tag_list_div").empty();
                     $("#jrnl_diary_tag_list_div").empty();
                     $("#jrnl_dream_tag_list_div").empty();
-                    commons.util.closeModal();
-                    commons.util.handlebarsTemplate(res.rsltList, "jrnl_diary_list");
+                    cF.util.closeModal();
+                    cF.handlebars.template(res.rsltList, "jrnl_diary_list");
                     JrnlDiary.inKeywordSearchMode = true;
                 }, "block");
             },
@@ -91,7 +91,7 @@
                     if (!result.value) return;
                     const url = isReg ? "${Url.JRNL_DIARY_REG_AJAX!}" : "${Url.JRNL_DIARY_MDF_AJAX!}";
                     const ajaxData = new FormData(document.getElementById("jrnlDiaryRegForm"));
-                    commons.util.blockUIMultipartAjax(url, ajaxData, function(res) {
+                    cF.util.blockUIMultipartAjax(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (!res.rslt) return;
@@ -102,7 +102,7 @@
                                     JrnlDiaryTag.listAjax();
                                 }
                                 // TODO: 결산 페이지에서 처리시도 처리해 줘야 한다.
-                                commons.util.unblockUI();
+                                cF.util.unblockUI();
                             });
                     }, "block");
                 });
@@ -117,9 +117,9 @@
 
                 const url = "${Url.JRNL_DIARY_DTL_AJAX!}";
                 const ajaxData = { "postNo" : postNo };
-                commons.util.blockUIAjax(url, "get", ajaxData, function(res) {
+                cF.util.blockUIAjax(url, "get", ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                     const { rsltObj } = res;
@@ -142,7 +142,7 @@
                     if (!result.value) return;
                     const url = "${Url.JRNL_DIARY_DEL_AJAX!}";
                     const ajaxData = { "postNo": postNo };
-                    commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (res.rslt) {

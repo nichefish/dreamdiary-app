@@ -11,9 +11,9 @@
              */
             initForm: function(obj = {}) {
                 /* jquery validation */
-                commons.validate.validateForm("#vcatnPaprRegForm", VcatnPapr.submitHandler);
+                cF.validate.validateForm("#vcatnPaprRegForm", VcatnPapr.submitHandler);
                 // 잔디발송여부 클릭시 글씨 변경
-                commons.util.chckboxLabel("jandiYn", "발송//미발송", "#0095E8//gray", function() {
+                cF.util.chckboxLabel("jandiYn", "발송//미발송", "#0095E8//gray", function() {
                     $("#trgetTopicSpan").show();
                 }, function() {
                     $("#trgetTopicSpan").hide();
@@ -38,7 +38,7 @@
              */
             search: function() {
                 $("#listForm #pageNo").val(1);
-                commons.util.blockUISubmit("#listForm", "${Url.VCATN_PAPR_LIST!}?actionTyCd=SEARCH");
+                cF.util.blockUISubmit("#listForm", "${Url.VCATN_PAPR_LIST!}?actionTyCd=SEARCH");
             },
 
             /**
@@ -47,14 +47,14 @@
             myPaprList: function() {
                 const url = "${Url.VCATN_PAPR_LIST!}";
                 let param = "?searchType=nickNm&searchKeyword=${authInfo.nickNm!}&regstrId=${authInfo.userId!}&pageSize=50&actionTyCd=MY_PAPR";
-                commons.util.blockUIReplace(url + param);
+                cF.util.blockUIReplace(url + param);
             },
 
             /**
              * 등록 화면으로 이동
              */
             regForm: function() {
-                commons.util.blockUISubmit("#procForm", "${Url.VCATN_PAPR_REG_FORM!}");
+                cF.util.blockUISubmit("#procForm", "${Url.VCATN_PAPR_REG_FORM!}");
             },
 
             /**
@@ -70,7 +70,7 @@
             regAjax: function() {
                 const url = "<#if isReg!false>${Url.VCATN_PAPR_REG_AJAX!}</#if><#if isMdf!false>${Url.VCATN_PAPR_MDF_AJAX!}</#if>";
                 const ajaxData = new FormData(document.getElementById("vcatnPaprRegForm"));
-                commons.util.blockUIMultipartAjax(url, ajaxData, function(res) {
+                cF.util.blockUIMultipartAjax(url, ajaxData, function(res) {
                     Swal.fire({ text: res.message })
                         .then(function() {
                             if (res.rslt) VcatnPapr.list();
@@ -86,7 +86,7 @@
                 if (isNaN(postNo)) return;
 
                 $("#procForm #postNo").val(postNo);
-                commons.util.blockUISubmit("#procForm", "${Url.VCATN_PAPR_DTL!}");
+                cF.util.blockUISubmit("#procForm", "${Url.VCATN_PAPR_DTL!}");
             },
 
             /**
@@ -99,12 +99,12 @@
 
                 const url = "${Url.VCATN_PAPR_DTL_AJAX!}";
                 const ajaxData = { "postNo": postNo };
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
-                    commons.util.handlebarsTemplate(res.rsltObj, "vcatn_papr_dtl", "show");
+                    cF.handlebars.template(res.rsltObj, "vcatn_papr_dtl", "show");
                 });
             },
 
@@ -112,7 +112,7 @@
              * 수정 화면으로 이동
              */
             mdfForm: function() {
-                commons.util.blockUISubmit("#procForm", "${Url.VCATN_PAPR_MDF_FORM!}");
+                cF.util.blockUISubmit("#procForm", "${Url.VCATN_PAPR_MDF_FORM!}");
             },
 
             /**
@@ -121,10 +121,10 @@
             cfAjax: function() {
                 const url = "${Url.VCATN_PAPR_CF_AJAX!}";
                 const ajaxData = $("#procForm").serializeArray();
-                commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
                     Swal.fire({ text: res.message })
                         .then(function() {
-                            if (res.rslt) commons.util.blockUIReload();
+                            if (res.rslt) cF.util.blockUIReload();
                         });
                 }, "block");
             },
@@ -140,7 +140,7 @@
                     if (!result.value) return;
                     const url = "${Url.VCATN_PAPR_DEL_AJAX!}";
                     const ajaxData = $("#procForm").serializeArray();
-                    commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (res.rslt) VcatnPapr.list();
@@ -153,7 +153,7 @@
              * 목록 화면으로 이동
              */
             list: function() {
-                commons.util.blockUIReplace("${Url.VCATN_PAPR_LIST!}?isBackToList=Y");
+                cF.util.blockUIReplace("${Url.VCATN_PAPR_LIST!}?isBackToList=Y");
             }
         }
     })();

@@ -11,9 +11,9 @@
              */
             initForm: function(obj = {}) {
                 /* jquery validation */
-                commons.validate.validateForm("#myPwChgForm", UserMyPwChg.submitHandler, {
+                cF.validate.validateForm("#myPwChgForm", UserMyPwChg.submitHandler, {
                     rules: {
-                        newPw: { regex: commons.validate.pwRegex },
+                        newPw: { regex: cF.validate.pwRegex },
                         newPwCf: { equalTo: "#newPw" }
                     },
                     messages: {
@@ -41,7 +41,7 @@
              */
             myPwChgModal: function() {
                 const data = { "errorMsg": "${errorMsg!}" };
-                commons.util.handlebarsTemplate(data, "user_my_pw_chg", "show");
+                cF.handlebars.template(data, "user_my_pw_chg", "show");
             },
 
             /**
@@ -57,10 +57,10 @@
             myPwChgAjax: function() {
                 const url = "${Url.USER_MY_PW_CHG_AJAX!}";
                 const ajaxData = { "currPw" : $("#currPw").val(), "newPw" : $("#newPw").val() };
-                commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
                     Swal.fire({ text: res.message })
                         .then(function() {
-                            if (res.rslt) commons.util.blockUIReload();
+                            if (res.rslt) cF.util.blockUIReload();
                         });
                 });
             },

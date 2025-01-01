@@ -12,13 +12,13 @@ const Notice = (function () {
          */
         initForm: function (obj = {}) {
             /* jquery validation */
-            commons.validate.validateForm("#noticeRegForm", Notice.submitHandler);
+            cF.validate.validateForm("#noticeRegForm", Notice.submitHandler);
             /* tinymce init */
-            commons.tinymce.init("#tinymce_cn");
+            cF.tinymce.init("#tinymce_cn");
             /* tagify */
-            commons.tagify.initWithCtgr("#noticeRegForm #tagListStr");
+            cF.tagify.initWithCtgr("#noticeRegForm #tagListStr");
             // 잔디발송여부 클릭시 글씨 변경
-            commons.util.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function () {
+            cF.util.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function () {
                 $("#trgetTopicSpan").show();
             }, function () {
                 $("#trgetTopicSpan").hide();
@@ -31,7 +31,7 @@ const Notice = (function () {
             if (Notice.submitMode === "preview") {
                 const popupNm = "preview";
                 const options = 'width=1280,height=1440,top=0,left=270';
-                const popup = commons.util.openPopup("", popupNm, options);
+                const popup = cF.util.openPopup("", popupNm, options);
                 if (popup)
                     popup.focus();
                 const popupUrl = Url.NOTICE_REG_PREVIEW_POP;
@@ -56,7 +56,7 @@ const Notice = (function () {
         search: function () {
             $("#listForm #pageNo").val(1);
             const url = Url.NOTICE_LIST;
-            commons.util.blockUISubmit("#listForm", url + "?actionTyCd=SEARCH");
+            cF.util.blockUISubmit("#listForm", url + "?actionTyCd=SEARCH");
         },
         /**
          * 내가 작성한 글 목록 보기
@@ -64,7 +64,7 @@ const Notice = (function () {
         myPaprList: function () {
             const url = Url.NOTICE_LIST;
             const param = `?searchType=nickNm&searchKeyword=${AuthInfo.nickNm}&regstrId=${AuthInfo.userId}&pageSize=50&actionTyCd=MY_PAPR`;
-            commons.util.blockUIReplace(url + param);
+            cF.util.blockUIReplace(url + param);
         },
         /**
          * 엑셀 다운로드
@@ -76,7 +76,7 @@ const Notice = (function () {
             }).then(function (result) {
                 if (!result.value)
                     return;
-                commons.util.blockUIFileDownload();
+                cF.util.blockUIFileDownload();
                 $("#listForm").attr("action", Url.NOTICE_LIST_XLSX_DOWNLOAD).submit();
             });
         },
@@ -84,7 +84,7 @@ const Notice = (function () {
          * 등록 화면 이동
          */
         regForm: function () {
-            commons.util.blockUISubmit("#procForm", Url.NOTICE_REG_FORM);
+            cF.util.blockUISubmit("#procForm", Url.NOTICE_REG_FORM);
         },
         /**
          * form submit
@@ -110,7 +110,7 @@ const Notice = (function () {
         regAjax: function () {
             const url = Notice.isMdf ? Url.NOTICE_MDF_AJAX : Url.NOTICE_REG_AJAX;
             const ajaxData = new FormData(document.getElementById("noticeRegForm"));
-            commons.util.blockUIMultipartAjax(url, ajaxData, function (res) {
+            cF.util.blockUIMultipartAjax(url, ajaxData, function (res) {
                 Swal.fire({ text: res.message })
                     .then(function () {
                     if (res.rslt)
@@ -126,7 +126,7 @@ const Notice = (function () {
             if (isNaN(postNo))
                 return;
             $("#procForm #postNo").val(postNo);
-            commons.util.blockUISubmit("#procForm", Url.NOTICE_DTL);
+            cF.util.blockUISubmit("#procForm", Url.NOTICE_DTL);
         },
         /**
          * 상세 모달 호출
@@ -138,20 +138,20 @@ const Notice = (function () {
                 return;
             const url = Url.NOTICE_DTL_AJAX;
             const ajaxData = { "postNo": postNo };
-            commons.util.blockUIAjax(url, 'GET', ajaxData, function (res) {
+            cF.util.blockUIAjax(url, 'GET', ajaxData, function (res) {
                 if (!res.rslt) {
-                    if (commons.util.isNotEmpty(res.message))
+                    if (cF.util.isNotEmpty(res.message))
                         Swal.fire({ text: res.message });
                     return false;
                 }
-                commons.util.handlebarsTemplate(res.rsltObj, "notice_dtl", "show");
+                cF.handlebars.template(res.rsltObj, "notice_dtl", "show");
             });
         },
         /**
          * 수정 화면 이동
          */
         mdfForm: function () {
-            commons.util.blockUISubmit("#procForm", Url.NOTICE_MDF_FORM);
+            cF.util.blockUISubmit("#procForm", Url.NOTICE_MDF_FORM);
         },
         /**
          * 삭제 (Ajax)
@@ -168,7 +168,7 @@ const Notice = (function () {
                     return;
                 const url = Url.NOTICE_DEL_AJAX;
                 const ajaxData = $("#procForm").serializeArray();
-                commons.util.blockUIAjax(url, 'POST', ajaxData, function (res) {
+                cF.util.blockUIAjax(url, 'POST', ajaxData, function (res) {
                     Swal.fire({ text: res.message })
                         .then(function () {
                         if (res.rslt)
@@ -182,7 +182,7 @@ const Notice = (function () {
          */
         list: function () {
             const listUrl = Url.NOTICE_LIST + Notice.isMdf ? "?isBackToList=Y" : "";
-            commons.util.blockUIReplace(listUrl);
+            cF.util.blockUIReplace(listUrl);
         }
     };
 })();

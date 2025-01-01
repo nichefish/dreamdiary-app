@@ -10,7 +10,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const ynLabel = "${ynLabel}", ynColor = "${ynColor}";
-            commons.util.chckboxLabel("${checkboxNm}", ynLabel, ynColor);
+            cF.util.chckboxLabel("${checkboxNm}", ynLabel, ynColor);
             const checkboxId = "${checkboxNm}".split[1];
             const separator = "//";
             const noStr = ynLabel.substring(ynLabel.indexOf(separator) + 2);

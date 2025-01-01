@@ -1,11 +1,9 @@
 /**
- * commons-helpers.js
- * @namespace: commons.date
+ * helpers.js
  * @author: nichefish
- * @since: 2022-06-27
  * @dependency: commons.js
  * 공통 - Handlebars(템플릿) 헬퍼 관련 함수 모듈
- * (노출식 모듈 패턴 적용 :: commons.date.getCurrDateStr(commons.date.ptnDate) 이런식으로 사용)
+ * (노출식 모듈 패턴 적용 :: cF.date.getCurrDateStr(cF.date.ptnDate) 이런식으로 사용)
  */
 (function (Handlebars) {
     if (!Handlebars) {
@@ -17,7 +15,7 @@
      * @returns {boolean} - `value`가 비어 있지 않으면 `true`, 비어 있으면 `false`.
      */
     Handlebars.registerHelper("exists", function (value) {
-        return !commons.util.isEmpty(value);
+        return !cF.util.isEmpty(value);
     });
     /**
      * notExists : 값 미존재 여부 체크.
@@ -25,7 +23,7 @@
      * @returns {boolean} - `value`가 비어 있으면 `true`, 비어 있지 않으면 `false`.
      */
     Handlebars.registerHelper("notExists", function (value) {
-        return commons.util.isEmpty(value);
+        return cF.util.isEmpty(value);
     });
     /**
      * ifEmpty : 값 미존재시 기본값 반환.
@@ -34,7 +32,7 @@
      * @returns {any} - `value`가 비어 있지 않으면 `value`, 비어 있으면 `alt`.
      */
     Handlebars.registerHelper("ifEmpty", function (value, alt) {
-        return commons.util.isEmpty(value) ? alt : value;
+        return cF.util.isEmpty(value) ? alt : value;
     });
     /**
      * selectedIf : 조건에 따라 <select> 선택.
@@ -54,7 +52,7 @@
     });
     /**
      * checkedIf : 값이 true일 경우 체크박스 체크.
-     * @param {any} value - 체크 여부를 결정할 값.
+     * @param {boolean} value - 체크 여부를 결정할 값.
      * @returns {string} - 값이 true면 "checked", 그렇지 않으면 빈 문자열.
      */
     Handlebars.registerHelper("checkedIf", function (value) {
@@ -66,9 +64,9 @@
      * @returns {string} - 천 단위로 콤마가 추가된 문자열. 값이 없으면 `undefined`.
      */
     Handlebars.registerHelper("numberFormat", function (value) {
-        if (commons.util.isEmpty(value))
+        if (cF.util.isEmpty(value))
             return;
-        return commons.util.thousandSeparator(value);
+        return cF.util.thousandSeparator(value);
     });
     /**
      * ifYn : 값이 "Y"인 경우에 특정 템플릿 내용을 렌더링합니다.
@@ -91,7 +89,7 @@
     const truefalseFunc = function (value, ynValues, options) {
         // 기본값 null일 때 true로 간주하는 옵션 : 기본값 옵션이 true이고 값이 비어있으면 true 반환
         const defaultTrue = options.hash["default"] || false;
-        if (defaultTrue && commons.util.isEmpty(value))
+        if (defaultTrue && cF.util.isEmpty(value))
             return true;
         const separator = "//";
         const [yValue] = ynValues.split(separator);
@@ -108,7 +106,7 @@
     Handlebars.registerHelper("equals", function (value, compareValue, options) {
         // 기본값 null일 때 true로 간주하는 옵션 : 기본값 옵션이 true이고 값이 비어있으면 true 반환
         const defaultTrue = options.hash["default"] || false;
-        if (defaultTrue && commons.util.isEmpty(value))
+        if (defaultTrue && cF.util.isEmpty(value))
             return true;
         // 비교결과 반환 :: 일부러 느슨한 비교
         return (value == compareValue);
@@ -125,7 +123,7 @@
     });
     /**
      * checkedLabel : 주어진 `value`가 `true`이면 "Y" 레이블을, 그렇지 않으면 "N" 레이블을 반환합니다.
-     * @param {any} value - 체크할 값.
+     * @param {boolean} value - 체크할 값.
      * @param {string} ynLabels - "Y"와 "N" 레이블을 구분하는 문자열 (구분자는 "//").
      * @returns {string} - `value`가 `true`이면 "Y" 레이블, 그렇지 않으면 "N" 레이블을 반환.
      */
@@ -179,7 +177,7 @@
         if (!value)
             return "";
         try {
-            return commons.date.asStr(value, pattern);
+            return cF.date.asStr(value, pattern);
         }
         catch (e) {
             console.error("Date formatting error:", e);

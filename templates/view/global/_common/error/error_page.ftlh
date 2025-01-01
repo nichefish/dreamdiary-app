@@ -21,7 +21,7 @@
              * 메인으로 돌아가기
              */
             main: function() {
-                commons.util.blockUIReplace("${Url.MAIN!}");
+                cF.util.blockUIReplace("${Url.MAIN!}");
             }
         }
     })();

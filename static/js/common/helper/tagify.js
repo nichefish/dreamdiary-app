@@ -1,16 +1,15 @@
 /**
- * commons-tagify.js
- * @namespace: commons.taf
- * @author: nichefish
- * @since: 2022-06-27~
- * @dependency: jquery.blockUI.js, jquery.forms.js
- * 공통 - tagify(라이브러리) 관련 함수 모듈
- * (노출식 모듈 패턴 적용 :: commons.util.enterKey("#userId") 이런식으로 사용)
- */
-if (typeof commons === 'undefined') {
-    var commons = {};
+* tagify.ts
+* @namespace: cF.taf
+* @author: nichefish
+* @dependency: jquery.blockUI.js, jquery.forms.js
+* 공통 - tagify(라이브러리) 관련 함수 모듈
+* (노출식 모듈 패턴 적용 :: cF.util.enterKey("#userId") 이런식으로 사용)
+*/
+if (typeof cF === 'undefined') {
+    let cF = {};
 }
-commons.tagify = (function () {
+cF.tagify = (function () {
     /** 기본 옵션 분리 */
     const baseOptions = {
         whitelist: [],
@@ -27,7 +26,7 @@ commons.tagify = (function () {
         templates: {
             tag: function (tagData) {
                 // 태그 메타데이터 (data)를 문자열로 변환하여 표시
-                const ctgr = commons.util.isNotEmpty(tagData.data) ? tagData.data.ctgr : "";
+                const ctgr = cF.util.isNotEmpty(tagData.data) ? tagData.data.ctgr : "";
                 const ctgrSpan = ctgr !== "" ? `<span class="tagify__tag-category text-noti me-1">[${tagData.data.ctgr}]</span>` : "";
                 return `<tag title="${tagData.value}" contenteditable="false" spellcheck="false" tabindex="-1"
                                      class="tagify__tag" value="${tagData.value}" data-ctgr="${ctgr}">
@@ -50,7 +49,7 @@ commons.tagify = (function () {
          */
         init: function (selector, additionalOptions = {}) {
             // 태그 tagify
-            const inputs = commons.util.verifySelector(selector);
+            const inputs = cF.util.verifySelector(selector);
             if (inputs.length === 0)
                 return;
             const tagInput = inputs[0];
@@ -66,7 +65,7 @@ commons.tagify = (function () {
          * @returns {Tagify} - 초기화된 Tagify 인스턴스. 카테고리 기능이 추가된 상태입니다.
          */
         initWithCtgr: function (selector, tagCtgrMap, additionalOptions = {}) {
-            const tagify = commons.tagify.init(selector, additionalOptions);
+            const tagify = cF.tagify.init(selector, additionalOptions);
             // tagify 스코프 설정
             const parts = selector.split(' ');
             tagify.scope = (parts.length > 1) ? document.querySelector(parts[0]) : document;
@@ -80,13 +79,13 @@ commons.tagify = (function () {
             tagify.metaInfoContainer = tagify.scope.querySelector('#tag_ctgr_select_div');
             tagify.metaInfoSelect = tagify.scope.querySelector('#tag_ctgr_select');
             // 태그 자동완성 :: 메소드 분리
-            commons.tagify._setAutoComplete(tagify, tagCtgrMap);
+            cF.tagify._setAutoComplete(tagify, tagCtgrMap);
             // 태그 추가시 카테고리 입력 칸 prompt :: 메소드 분리
-            commons.tagify._setCtgrInputPrompt(tagify, tagCtgrMap);
+            cF.tagify._setCtgrInputPrompt(tagify, tagCtgrMap);
             // 카테고리 입력칸에 이벤트리스너 추가 (ESC 또는 탭) :: 메소드 분리
-            commons.tagify._setKeyListener(tagify);
+            cF.tagify._setKeyListener(tagify);
             // 추가된 태그가 제거될 때 ctgr 관련 숨기기 :: 메소드 분리
-            commons.tagify._hideCtgrDiv(tagify);
+            cF.tagify._hideCtgrDiv(tagify);
             return tagify;
         },
         /**
@@ -114,7 +113,7 @@ commons.tagify = (function () {
                 const newTag = e.detail.data;
                 if (newTag.data !== undefined) {
                     // 태그에서 마킹 정보 클리어 :: 메소드 분리
-                    commons.tagify._clearMarks(tagify);
+                    cF.tagify._clearMarks(tagify);
                     return;
                 }
                 // setTimeout을 사용하여 포커스 호출 지연
@@ -183,7 +182,7 @@ commons.tagify = (function () {
                     // 카테고리 입력 필드 숨김
                     tagify.categoryInputContainer.style.display = 'none';
                     // 태그에서 마킹 정보 클리어 :: 메소드 분리
-                    commons.tagify._clearMarks(tagify);
+                    cF.tagify._clearMarks(tagify);
                     // 태그 인풋으로 포커싱 이동
                     setTimeout(() => {
                         if (tagify.DOM.input)
@@ -216,7 +215,7 @@ commons.tagify = (function () {
                             tagify.removeTags(tagElmt); // 마킹된 태그 제거
                     });
                     // 태그에서 마킹 정보 클리어 :: 메소드 분리
-                    commons.tagify._clearMarks(tagify);
+                    cF.tagify._clearMarks(tagify);
                     // 태그 인풋으로 포커싱 이동
                     setTimeout(() => {
                         if (tagify.DOM.input)
@@ -234,7 +233,7 @@ commons.tagify = (function () {
                 tagify.metaInfoContainer.style.display = 'none';
                 tagify.categoryInputContainer.style.display = 'none';
                 // 태그에서 마킹 정보 클리어 :: 메소드 분리
-                commons.tagify._clearMarks(tagify);
+                cF.tagify._clearMarks(tagify);
             });
         },
     };

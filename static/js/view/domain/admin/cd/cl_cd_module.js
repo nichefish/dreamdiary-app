@@ -11,13 +11,13 @@ const ClCd = (function () {
          */
         initForm: function (obj = {}) {
             /* show modal */
-            commons.util.handlebarsTemplate(obj, "cl_cd_reg", "show");
+            cF.handlebars.template(obj, "cl_cd_reg", "show");
             /* jquery validation */
-            commons.validate.validateForm("#clCdRegForm", ClCd.regAjax);
+            cF.validate.validateForm("#clCdRegForm", ClCd.regAjax);
             // checkbox init
-            commons.util.chckboxLabel("useYn", "사용//미사용", "blue//gray");
-            commons.validate.replaceBlankIfMatches("#clCdRegForm #clCd", commons.validate.nonCdRegex);
-            commons.validate.toUpperCase("#clCdRegForm #clCd");
+            cF.util.chckboxLabel("useYn", "사용//미사용", "blue//gray");
+            cF.validate.replaceBlankIfMatches("#clCdRegForm #clCd", cF.validate.nonCdRegex);
+            cF.validate.toUpperCase("#clCdRegForm #clCd");
         },
         /**
          * Draggable 컴포넌트 init
@@ -25,7 +25,7 @@ const ClCd = (function () {
         initDraggable: function () {
             const keyExtractor = (item) => ({ "clCd": $(item).attr("id") });
             const url = Url.CL_CD_SORT_ORDR_AJAX;
-            ClCd.swappable = commons.util.initDraggable("", keyExtractor, url);
+            ClCd.swappable = cF.draggable.init("", keyExtractor, url);
         },
         /**
          * 목록 검색
@@ -33,7 +33,7 @@ const ClCd = (function () {
         search: function () {
             event.stopPropagation();
             $("#listForm #pageNo").val(1);
-            commons.util.blockUISubmit("#listForm", Url.CL_CD_LIST + "?actionTyCd=SEARCH");
+            cF.util.blockUISubmit("#listForm", Url.CL_CD_LIST + "?actionTyCd=SEARCH");
         },
         /**
          * 등록 모달 호출
@@ -64,11 +64,11 @@ const ClCd = (function () {
                 $("#clCdRegForm #regYn").val("Y");
                 const url = Url.CL_CD_REG_AJAX;
                 const ajaxData = $("#clCdRegForm").serializeArray();
-                commons.util.blockUIAjax(url, 'POST', ajaxData, function (res) {
+                cF.util.blockUIAjax(url, 'POST', ajaxData, function (res) {
                     Swal.fire({ text: res.message })
                         .then(function () {
                         if (res.rslt)
-                            commons.util.blockUIReload();
+                            cF.util.blockUIReload();
                     });
                 }, "block");
             });
@@ -79,9 +79,9 @@ const ClCd = (function () {
          */
         dtl: function (clCd) {
             event.stopPropagation();
-            commons.util.blockUIRequest();
+            cF.util.blockUIRequest();
             $("#procForm #clCd").val(clCd);
-            commons.util.blockUISubmit("#procForm", Url.CL_CD_DTL);
+            cF.util.blockUISubmit("#procForm", Url.CL_CD_DTL);
         },
         /**
          * 상세 모달 호출
@@ -91,13 +91,13 @@ const ClCd = (function () {
             event.stopPropagation();
             const url = Url.CL_CD_DTL_AJAX;
             const ajaxData = { "clCd": clCd };
-            commons.util.blockUIAjax(url, 'GET', ajaxData, function (res) {
+            cF.util.blockUIAjax(url, 'GET', ajaxData, function (res) {
                 if (!res.rslt) {
-                    if (commons.util.isNotEmpty(res.message))
+                    if (cF.util.isNotEmpty(res.message))
                         Swal.fire({ text: res.message });
                     return false;
                 }
-                commons.util.handlebarsTemplate(res.rsltObj, "cl_cd_dtl", "show");
+                cF.handlebars.template(res.rsltObj, "cl_cd_dtl", "show");
                 ClCd.key = clCd;
             });
         },
@@ -109,9 +109,9 @@ const ClCd = (function () {
             event.stopPropagation();
             const url = Url.CL_CD_DTL_AJAX;
             const ajaxData = { "clCd": clCd };
-            commons.util.blockUIAjax(url, 'GET', ajaxData, function (res) {
+            cF.util.blockUIAjax(url, 'GET', ajaxData, function (res) {
                 if (!res.rslt) {
-                    if (commons.util.isNotEmpty(res.message))
+                    if (cF.util.isNotEmpty(res.message))
                         Swal.fire({ text: res.message });
                     return false;
                 }
@@ -136,11 +136,11 @@ const ClCd = (function () {
                     return;
                 const url = Url.CL_CD_USE_AJAX;
                 const ajaxData = { "clCd": clCd };
-                commons.util.blockUIAjax(url, 'POST', ajaxData, function (res) {
+                cF.util.blockUIAjax(url, 'POST', ajaxData, function (res) {
                     Swal.fire({ text: res.message })
                         .then(function () {
                         if (res.rslt)
-                            commons.util.blockUIReload();
+                            cF.util.blockUIReload();
                     });
                 }, "block");
             });
@@ -159,11 +159,11 @@ const ClCd = (function () {
                     return;
                 const url = Url.CL_CD_UNUSE_AJAX;
                 const ajaxData = { "clCd": clCd };
-                commons.util.blockUIAjax(url, 'POST', ajaxData, function (res) {
+                cF.util.blockUIAjax(url, 'POST', ajaxData, function (res) {
                     Swal.fire({ text: res.message })
                         .then(function () {
                         if (res.rslt)
-                            commons.util.blockUIReload();
+                            cF.util.blockUIReload();
                     });
                 }, "block");
             });
@@ -182,11 +182,11 @@ const ClCd = (function () {
                     return;
                 const url = Url.CL_CD_DEL_AJAX;
                 const ajaxData = { "clCd": clCd };
-                commons.util.blockUIAjax(url, 'POST', ajaxData, function (res) {
+                cF.util.blockUIAjax(url, 'POST', ajaxData, function (res) {
                     Swal.fire({ text: res.message })
                         .then(function () {
                         if (res.rslt)
-                            commons.util.blockUIReload();
+                            cF.util.blockUIReload();
                     });
                 }, "block");
             });
@@ -196,7 +196,7 @@ const ClCd = (function () {
          */
         list: function () {
             const listUrl = Url.CL_CD_LIST + "?isBackToList=Y";
-            commons.util.blockUIReplace(listUrl);
+            cF.util.blockUIReplace(listUrl);
         },
     };
 })();

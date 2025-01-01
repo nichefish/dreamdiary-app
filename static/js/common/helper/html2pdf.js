@@ -1,16 +1,15 @@
 /**
- * commons-pdf.js
- * @namespace: commons.pdf
+ * html2pdf.js
+ * @namespace: cF.pdf
  * @author: nichefish
- * @since: 2022-06-27
  * @depdendency: html2pdf
  * 공통 - html2pdf(라이브러리) 관련 함수 모듈
- * (노출식 모듈 패턴 적용 :: commons.pdf.fnPdf("#id") 이런식으로 사용)
+ * (노출식 모듈 패턴 적용 :: cF.pdf.fnPdf("#id") 이런식으로 사용)
  */
-if (typeof commons === 'undefined') {
-    var commons = {};
+if (typeof cF === 'undefined') {
+    let cF = {};
 }
-commons.pdf = (function () {
+cF.pdf = (function () {
     /**
      * PDF 생성 기본 옵션
      */

@@ -11,13 +11,13 @@
              */
             initForm: function(obj = {}) {
                 /* jquery validation */
-                commons.validate.validateForm("#jrnlSbjctRegForm", JrnlSbjct.submitHandler);
+                cF.validate.validateForm("#jrnlSbjctRegForm", JrnlSbjct.submitHandler);
                 /* tinymce init */
-                commons.tinymce.init("#tinymce_cn");
+                cF.tinymce.init("#tinymce_cn");
                 /* tagify */
-                commons.tagify.initWithCtgr("#tagListStr", undefined);
+                cF.tagify.initWithCtgr("#tagListStr", undefined);
                 // 잔디발송여부 클릭시 글씨 변경
-                commons.util.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function() {
+                cF.util.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function() {
                     $("#trgetTopicSpan").show();
                 }, function() {
                     $("#trgetTopicSpan").hide();
@@ -31,7 +31,7 @@
                 if (JrnlSbjct.submitMode === "preview") {
                     const popupNm = "preview";
                     const options = 'width=1280,height=1440,top=0,left=270';
-                    const popup = commons.util.openPopup("", popupNm, options);
+                    const popup = cF.util.openPopup("", popupNm, options);
                     if (popup) popup.focus();
                     const popupUrl = "${Url.JRNL_SBJCT_REG_PREVIEW_POP!}";
                     $("#jrnlSbjctRegForm").attr("action", popupUrl).attr("target", popupNm);
@@ -53,7 +53,7 @@
              */
             search: function() {
                 $("#listForm #pageNo").val(1);
-                commons.util.blockUISubmit("#listForm", "${Url.JRNL_SBJCT_LIST!}?actionTyCd=SEARCH");
+                cF.util.blockUISubmit("#listForm", "${Url.JRNL_SBJCT_LIST!}?actionTyCd=SEARCH");
             },
 
             /**
@@ -62,14 +62,14 @@
             myPaprList: function() {
                 const url = "${Url.JRNL_SBJCT_LIST!}";
                 let param = "?searchType=nickNm&searchKeyword=${authInfo.nickNm!}&regstrId=${authInfo.userId!}&pageSize=50&actionTyCd=MY_PAPR";
-                commons.util.blockUIReplace(url + param);
+                cF.util.blockUIReplace(url + param);
             },
 
             /**
              * 등록 화면으로 이동
              */
             regForm: function() {
-                commons.util.blockUISubmit("#procForm", "${Url.JRNL_SBJCT_REG_FORM!}");
+                cF.util.blockUISubmit("#procForm", "${Url.JRNL_SBJCT_REG_FORM!}");
             },
 
             /**
@@ -96,13 +96,13 @@
             regAjax: function() {
                 const url = " <#if isMdf!false>${Url.JRNL_SBJCT_MDF_AJAX!}<#else>${Url.JRNL_SBJCT_REG_AJAX!}</#if>";
                 const ajaxData = new FormData(document.getElementById("jrnlSbjctRegForm"));
-                commons.util.blockUIMultipartAjax(url, ajaxData, function(res) {
+                cF.util.blockUIMultipartAjax(url, ajaxData, function(res) {
                     Swal.fire({text: res.message})
                         .then(function() {
                             if (!res.rslt) return;
                             if (res.rsltObj === undefined) JrnlSbjct.list();
                             const postNo = res.rsltObj.postNo;
-                            commons.util.blockUIReplace("${Url.JRNL_SBJCT_DTL!}?postNo=" + postNo);
+                            cF.util.blockUIReplace("${Url.JRNL_SBJCT_DTL!}?postNo=" + postNo);
                         });
                 }, "block");
             },
@@ -118,7 +118,7 @@
                 if (isNaN(postNo)) return;
 
                 $("#procForm #postNo").val(postNo);
-                commons.util.blockUISubmit("#procForm", "${Url.JRNL_SBJCT_DTL!}");
+                cF.util.blockUISubmit("#procForm", "${Url.JRNL_SBJCT_DTL!}");
             },
 
             /**
@@ -131,12 +131,12 @@
 
                 const url = "${Url.JRNL_SBJCT_DTL_AJAX!}";
                 const ajaxData = {"postNo": postNo};
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({text: res.message});
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({text: res.message});
                         return false;
                     }
-                    commons.util.handlebarsTemplate(res.rsltObj, "jrnlSbjct_dtl", "show");
+                    cF.handlebars.template(res.rsltObj, "jrnlSbjct_dtl", "show");
                 });
             },
 
@@ -144,7 +144,7 @@
              * 수정 화면으로 이동
              */
             mdfForm: function() {
-                commons.util.blockUISubmit("#procForm", "${Url.JRNL_SBJCT_MDF_FORM!}");
+                cF.util.blockUISubmit("#procForm", "${Url.JRNL_SBJCT_MDF_FORM!}");
             },
 
             /**
@@ -158,7 +158,7 @@
                     if (!result.value) return;
                     const url = "${Url.JRNL_SBJCT_DEL_AJAX!}";
                     const ajaxData = $("#procForm").serializeArray();
-                    commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
                         Swal.fire({text: res.message})
                             .then(function() {
                                 if (res.rslt) JrnlSbjct.list();
@@ -172,7 +172,7 @@
              */
             list: function() {
                 const listUrl = "${Url.JRNL_SBJCT_LIST!}<#if isMdf!false>?isBackToList=Y</#if>";
-                commons.util.blockUIReplace(listUrl);
+                cF.util.blockUIReplace(listUrl);
             }
         }
     })();

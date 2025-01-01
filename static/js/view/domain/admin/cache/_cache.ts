@@ -11,8 +11,8 @@ const Cache = (function() {
          */
         activeListModal: function() {
             const url = Url.CACHE_ACTIVE_LIST_AJAX;
-            commons.util.blockUIAjax(url, 'GET', null, function(res: AjaxResponse) {
-                commons.util.handlebarsTemplate(res.rsltMap, "cache_list", "show");
+            cF.util.blockUIAjax(url, 'GET', null, function(res: AjaxResponse) {
+                cF.handlebars.template(res.rsltMap, "cache_list", "show");
             });
         },
 
@@ -24,7 +24,7 @@ const Cache = (function() {
         evictAjax: function(cacheName: string, key: string) {
             const url = Url.CACHE_EVICT_AJAX;
             const ajaxData = { "cacheName": cacheName, "key": key };
-            commons.util.blockUIAjax(url, 'POST', ajaxData, function(res: AjaxResponse) {
+            cF.util.blockUIAjax(url, 'POST', ajaxData, function(res: AjaxResponse) {
                 if (res.rslt) Swal.fire(JSON.stringify(res));
                 Swal.fire({ text: res.message })
                     .then(function() {
@@ -39,7 +39,7 @@ const Cache = (function() {
          */
         clearAllAjax: function() {
             const url = Url.CACHE_CLEAR_AJAX;
-            commons.util.blockUIAjax(url, 'POST', null, function(res: AjaxResponse) {
+            cF.util.blockUIAjax(url, 'POST', null, function(res: AjaxResponse) {
                 if (res.rslt) Swal.fire(JSON.stringify(res));
                 Swal.fire({ text: res.message })
                     .then(function() {

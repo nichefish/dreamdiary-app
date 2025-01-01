@@ -15,13 +15,13 @@
 
                 const url = "${Url.FILE_INFO_LIST_AJAX!}";
                 const ajaxData = { "atchFileNo": atchFileNo };
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                     const { rsltList = [] } = res;
-                    commons.util.handlebarsTemplate(rsltList, "atch_file_list", "show");
+                    cF.handlebars.template(rsltList, "atch_file_list", "show");
                 });
             },
         }

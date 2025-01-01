@@ -20,7 +20,7 @@
              * 수정 화면으로 이동
              */
             mdfForm: function() {
-                commons.util.blockUISubmit("#procForm", "${Url.NOTICE_MDF_FORM!}");
+                cF.util.blockUISubmit("#procForm", "${Url.NOTICE_MDF_FORM!}");
             },
 
             /**
@@ -34,7 +34,7 @@
                     if (!result.value) return;
                     const url = "${Url.NOTICE_DEL_AJAX!}";
                     const ajaxData = $("#procForm").serializeArray();
-                    commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (res.rslt) Page.list();
@@ -48,7 +48,7 @@
              */
             list: function() {
                 const listUrl = "${Url.NOTICE_LIST!}?isBackToList=Y";
-                commons.util.blockUIReplace(listUrl);
+                cF.util.blockUIReplace(listUrl);
             }
         }
     })();
@@ -111,7 +111,7 @@
                         <#list (tmplat.atchFileInfo.atchFileList)![] as file>
                             <div class="row my-1">
                                 <div class="col-xl-8">
-                                    <a href="javascript:void(0);" onclick="commons.util.fileDownload('${file.atchFileNo!}', '${file.atchFileDtlNo!}');"
+                                    <a href="javascript:void(0);" onclick="cF.util.fileDownload('${file.atchFileNo!}', '${file.atchFileDtlNo!}');"
                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "bs.tooltip.file.download"/>">
                                         <i class="fas fa-file-download fs-15 me-1"></i>
                                         ${file.orgnFileNm!}(${file.fileSize!}byte)

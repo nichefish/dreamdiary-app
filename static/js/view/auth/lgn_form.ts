@@ -27,11 +27,11 @@ const Page = (function() {
          */
         initForm: function(obj = {}) {
             /* jquery validation */
-            commons.validate.validateForm("#lgnForm", function() {
-                commons.util.blockUISubmit("#lgnForm", Url.AUTH_LGN_PROC);
+            cF.validate.validateForm("#lgnForm", function() {
+                cF.util.blockUISubmit("#lgnForm", Url.AUTH_LGN_PROC);
             });
             // 엔터키 처리
-            commons.util.enterKey("#userId, #password", Page.lgn);
+            cF.util.enterKey("#userId, #password", Page.lgn);
         },
 
         /**
@@ -39,7 +39,7 @@ const Page = (function() {
          */
         showErrorMsg: function() {
             const errorMsg = Model.errorMsg;
-            if (commons.util.isEmpty(errorMsg)) return;
+            if (cF.util.isEmpty(errorMsg)) return;
 
             const $errorMsgSpan = $("#errorMsgSpan");
             $errorMsgSpan.html("");
@@ -68,8 +68,8 @@ const Page = (function() {
                 } else {
                     // 로그인하지 않음. 중복ID 세션 attribute 만료시킴
                     const url = Url.AUTH_EXPIRE_SESSION_AJAX;
-                    commons.util.blockUIAjax(url, 'POST', null, function() {
-                        commons.util.blockUIReplace(Url.AUTH_LGN_FORM);
+                    cF.util.blockUIAjax(url, 'POST', null, function() {
+                        cF.util.blockUIReplace(Url.AUTH_LGN_FORM);
                     });
                 }
             });
@@ -86,7 +86,7 @@ const Page = (function() {
          * 신규계정 신청 페이지로 이동
          */
         reqstUser: function() {
-            commons.util.blockUIReplace(Url.USER_REQST_REG_FORM);
+            cF.util.blockUIReplace(Url.USER_REQST_REG_FORM);
         },
     }
 })();
