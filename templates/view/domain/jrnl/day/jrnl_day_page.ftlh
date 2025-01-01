@@ -13,7 +13,9 @@
 
 <#--include::script modules-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
-<script type="text/javascript" src="/js/commons-tinymce.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/metronic/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
+<script type="text/javascript" src="/js/common/commons-tinymce.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/common/commons-fullcalendar.js?${releaseDate!}"></script>
 <#include "/view/domain/jrnl/day/_jrnl_day_scripts.ftlh">
 <#include "/view/domain/jrnl/day/tag/_jrnl_day_tag_scripts.ftlh">
 <#include "/view/domain/jrnl/dream/_jrnl_dream_scripts.ftlh">

@@ -8,11 +8,6 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<#--include::script modules-->
-<#include "/view/domain/notice/_notice_scripts.ftlh">
-<#include "/view/global/_common/_clsf/sectn/_sectn_scripts.ftlh">
-<#include "/view/global/_common/_clsf/comment/_comment_modal_scripts.ftlh">
-
 <div class="card post">
     <#--begin::Card body-->
     <div class="card-body">
@@ -79,8 +74,13 @@
     <input type="hidden" name="postNo" id="postNo" value="${post.postNo!}" />
 </form>
 
+<#--include::modals-->
+<#include "/view/global/_common/_clsf/comment/_comment_reg_modal.ftlh">
+<#--include::script modules-->
+<script type="text/javascript" src="/js/view/domain/notice/notice_module.js?${releaseDate!}"></script>
+<#include "/view/global/_common/_clsf/sectn/_sectn_scripts.ftlh">
+<#include "/view/global/_common/_clsf/comment/_comment_modal_scripts.ftlh">
 <#--include:: component:: tinymce 이미지 추가 영역 template-->
 <#include "/view/global/_tinymce_img.ftlh">
-<#include "/view/global/_common/_clsf/comment/_comment_reg_modal.ftlh">
 
 </@layout.layout>

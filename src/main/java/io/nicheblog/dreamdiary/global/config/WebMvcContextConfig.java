@@ -99,8 +99,6 @@ public class WebMvcContextConfig
                 .addPathPatterns("/**/*.do")
                 /* 스태틱 자원 경로의 경우 처리하지 않음 */
                 .excludePathPatterns(STATIC_RESOURCES_URL_PATTERN)
-                /* 로그인 화면 경로 제외 */
-                .excludePathPatterns(Url.AUTH_LGN_FORM)
                 /* 에러 화면 경로 제외 */
                 .excludePathPatterns(Url.ERROR)
                 .excludePathPatterns(Url.ERROR + "/**")

@@ -50,10 +50,64 @@
     <script type="text/javascript" src="/metronic/assets/js/scripts.bundle.js"></script>
 
     <!--Custom Javascript Bundle(used by all pages)-->
-    <script type="text/javascript" src="/js/commons.js?${releaseDate!}"></script>
-    <script type="text/javascript" src="/js/commons-validate.js?${releaseDate!}"></script>
-    <script type="text/javascript" src="/js/commons-date.js?${releaseDate!}"></script>
-    <script type="text/javascript" src="/js/commons-datepicker.js?${releaseDate!}"></script>
-    <script type="text/javascript" src="/js/commons-tagify.js?${releaseDate!}"></script>
-    <script type="text/javascript" src="/js/commons-helpers.js?${releaseDate!}"></script>
+    <script type="text/javascript" src="/js/common/commons.js?${releaseDate!}"></script>
+    <script type="text/javascript" src="/js/common/commons-validate.js?${releaseDate!}"></script>
+    <script type="text/javascript" src="/js/common/commons-date.js?${releaseDate!}"></script>
+    <script type="text/javascript" src="/js/common/commons-datepicker.js?${releaseDate!}"></script>
+    <script type="text/javascript" src="/js/common/commons-tagify.js?${releaseDate!}"></script>
+    <script type="text/javascript" src="/js/common/commons-helpers.js?${releaseDate!}"></script>
+
+    <script>
+        /** AuthInfo 객체 생성 */
+        const AuthInfo = (function() {
+            return Object.freeze({
+                userId: "${authInfo.userId!}",
+                nickNm: "${authInfo.nickNm!}",
+                email: "${authInfo.email!}",
+                proflImgUrl: "${authInfo.proflImgUrl!}",
+                isMngr: ${(authInfo.isMngr!'false')?c},
+                authList: [
+                    <#list (authInfo.authList)![] as auth>
+                        {
+                            authCd: "${auth.authCd!}",
+                            authNm: "${auth.authNm!}",
+                        }<#if auth_has_next>,</#if>
+                    </#list>
+                ]
+            });
+        })();
+        /** UrlMap으로부터 자바스크립트 객체 생성 */
+        const Url = (function() {
+            return Object.freeze({
+                <#list urlMap! as key, value>
+                    "${key!}": "${value!}",
+                </#list>
+            });
+        })();
+        /** MessageMap으로부터 자바스크립트 객체 생성 */
+        const Message = (function() {
+            const messageMap = {
+                <#list messageMap! as key, value>
+                    "${key!}": "${value!}",
+                </#list>
+            };
+
+            return Object.freeze({
+                /**
+                 * 주어진 키에 해당하는 메시지를 반환한다. (부재시 기본 메시지 반환)
+                 *
+                 * @param {string} key - 메시지 번들의 키
+                 * @param {string} [defaultMsg=""] - 기본 메시지 (선택 사항)
+                 * @returns {string} - 메시지 번들에서 찾은 메시지 또는 기본 메시지
+                 */
+                get: function(key, defaultMsg = "") {
+                    if (!messageMap[key]) {
+                        console.warn("Message not found for key: " + key);
+                        return defaultMsg;
+                    }
+                    return messageMap[key];
+                }
+            });
+        })();
+    </script>
 </head>

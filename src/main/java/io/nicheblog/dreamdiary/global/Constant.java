@@ -31,23 +31,11 @@ public final class Constant
     public static final String SITE_DESC = "'tis my site!";
     public static final String SITE_KEYWORDS = "dream, diary, journal";
 
-    public static final String PAGE_LGN = "로그인";
-    public static final String PAGE_MAIN = "메인";
-    public static final String PAGE_LIST = "목록 조회";
-    public static final String PAGE_REG = "등록";
-    public static final String PAGE_DTL = "상세 조회";
-    public static final String PAGE_MDF = "수정";
-    public static final String PAGE_POP = "팝업";
-    public static final String PAGE_STATS = "통계 조회";
-    public static final String PAGE_CAL = "달력 조회";
-    public static final Object PAGE_PREVIEW = "미리보기";
-
     /** blank avatar image url */
     public static final String BLANK_AVATAR_URL = "/metronic/assets/media/avatars/avatar_blank.png";
 
     public static final String PREFIX = "PREFIX";
     public static final String SUFFIX = "SUFFIX";
-    public static final String SITE_MENU = "siteAcsInfo";
 
     /** URL_ENCODING */
     public static final Boolean URL_ENC_FALSE = false;
@@ -75,6 +63,7 @@ public final class Constant
     public static final String IS_REG = "isReg";
     public static final String IS_MDF = "isMdf";
     public static final String LIST_URL = "listUrl";
+    public static final String FORM_MODE = "formMode";
 
     /** 각 메뉴 번호 */
     public static final String USER = "user";              // 계정 관리

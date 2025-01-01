@@ -82,8 +82,8 @@
         <#--include:: Tag Module-->
         <#include "/view/global/_common/_clsf/tag/_tag_scripts.ftlh">
 
-        <!--layout scripts-->
-        <#include "/layout/_layout_scripts.ftlh">
+        <!--scripts::layout-->
+        <script type="text/javascript" src="/js/layout/layout.js?${releaseDate!}"></script>
     </body>
     <!--end::Body-->
 </html>

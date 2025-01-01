@@ -16,7 +16,7 @@ commons.mqttws31 = (function() {
          * @param {function} onSuccFunc - 연결 성공시 호출할 콜백 함수.
          * @returns {object} mqttClient - 생성된 MQTT 클라이언트 인스턴스.
          */
-        start: function(componentId, options, onSuccFunc) {
+        start: function(componentId: string, options: object, onSuccFunc: Function) {
             // MQTT 클라이언트 생성 :: 메소드 분리
             const mqttClient = commons.mqttws31.initClient(componentId, options);
             // MQTT 연결 시도 및 콜백 함수 등록 :: 메소드 분리
@@ -30,7 +30,7 @@ commons.mqttws31 = (function() {
          * @param {object} options - MQTT 클라이언트 설정 옵션.
          * @returns {Paho.MQTT.Client} mqttClient - 생성된 MQTT 클라이언트 인스턴스.
          */
-        initClient: function(componentId, options) {
+        initClient: function(componentId: string, options: object) {
             const mqttHost = options.host;
             const mqttPort = options.port;
             const mqttClientId = options.title + "_client_" + componentId + Math.floor(Math.random() * 10000000);
@@ -65,7 +65,7 @@ commons.mqttws31 = (function() {
          * @param {object} options - 연결 설정 옵션.
          * @param {function} onSuccFunc - 연결 성공시 호출할 콜백 함수.
          */
-        connect: function(mqttClient, options = {}, onSuccFunc) {
+        connect: function(mqttClient, options = {}, onSuccFunc: Function) {
             const isLogging = options.logging || false;
             const topics = Array.isArray(options.topics) ? options.topics : [];
 
@@ -102,7 +102,7 @@ commons.mqttws31 = (function() {
          * @param {string} topic - 메시지를 발행할 MQTT 주제.
          * @param {string} payloadStr - 발행할 메시지 내용.
          */
-        publish: function(mqttClient, options, topic, payloadStr) {
+        publish: function(mqttClient, options: object, topic, payloadStr) {
             const isLogging = options.logging || false;
 
             try {

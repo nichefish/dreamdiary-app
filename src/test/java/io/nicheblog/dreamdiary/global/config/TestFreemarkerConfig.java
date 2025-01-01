@@ -72,7 +72,6 @@ public class TestFreemarkerConfig
         sharedVariables.put("Statics", statics);
         sharedVariables.put("Constant", statics.get("io.nicheblog.dreamdiary.global.Constant"));
         sharedVariables.put("Url", statics.get("io.nicheblog.dreamdiary.global.Url"));
-        sharedVariables.put("SiteMenu", statics.get("io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu"));
         sharedVariables.put("DateUtils", statics.get("io.nicheblog.dreamdiary.global.util.date.DateUtils"));
         return sharedVariables;
     }

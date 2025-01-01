@@ -1,6 +1,14 @@
 
 <div style="border: 1px solid #ccc; padding: 10px; margin-top:20px; border-radius: 5px;">
 
+### 2025-01-01 | v0.10.0
+- 개선 사항:
+  - 캐싱 처리 패턴을 기본 인터페이스에 통합.
+  - TypeScript 도입 및 기존 JavaScript 점진적인 마이그레이션.
+  - Url, MessageBundle을 TypeScript에서 사용하기 위한 exporter 추가.
+  - 인터셉터 적용 로직 정리 및 단순화.
+  - 주석 보강. (단방향 연관 클래스에 @see 추가)
+
 ### 2024-12-29 | v0.9.0
 - 기능 추가:
   - 메뉴 관리 기능 추가.

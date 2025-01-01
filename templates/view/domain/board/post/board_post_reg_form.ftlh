@@ -14,7 +14,7 @@
 <#--include::script modules-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
 <script type="text/javascript" src="/lib/prism/js/prism.js"></script>
-<script type="text/javascript" src="/js/commons-tinymce.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/common/commons-tinymce.js?${releaseDate!}"></script>
 <#include "/view/domain/board/post/_board_post_scripts.ftlh">
 
 <script>

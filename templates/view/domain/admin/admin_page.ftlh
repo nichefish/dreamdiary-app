@@ -8,9 +8,6 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<#--include::script modules-->
-<#include "/view/domain/admin/cache/_cache_scripts.ftlh">
-
 <script>
     const Page = (function() {
         return {
@@ -259,5 +256,8 @@
 
 <#--include::modals-->
 <#include "/view/domain/admin/cache/_cache_list_modal.ftlh">
+
+<#--include::script modules-->
+<script type="text/javascript" src="/js/view/domain/admin/cache/_cache.js?${releaseDate!}"></script>
 
 </@layout.layout>

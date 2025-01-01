@@ -22,19 +22,6 @@ document.addEventListener("DOMContentLoaded", function() {
             };
         },
         methods: {
-            // 사용자 인증 정보 로드
-            async loadAuthInfo() {
-                const authUrl = '/api/auth/getAuthInfo.do';
-                try {
-                    const response = await fetch(authUrl);
-                    if (!response.ok) throw new Error("Failed to fetch authInfo");
-                    const res = await response.json();
-                    this.authInfo = res.rsltObj;
-                    console.log("authInfo:", this.authInfo);
-                } catch (error) {
-                    console.error("Error loading auth info:", error);
-                }
-            },
             // 채팅 창 열기/닫기
             toggleChat() {
                 this.isChatOpen = !this.isChatOpen;
@@ -49,13 +36,11 @@ document.addEventListener("DOMContentLoaded", function() {
             // 메시지 로딩 후 완료 처리
             handleMessagesLoaded(messages) {
                 this.chatMessages = messages;
-                console.log("this.chatMessages:", this.chatMessages);
             },
             // 새 메시지 처리 (ChatClient에서 새 메시지를 받음)
             handleNewMessage(message) {
                 console.log("message:", message);
                 this.chatMessages.push(message);
-                console.log("this.chatMessages:", this.chatMessages);
                 this.$refs.chatWindow.scrollToBottom();
             },
             // ChatWindow :: 메시지 전송
@@ -64,8 +49,8 @@ document.addEventListener("DOMContentLoaded", function() {
             },
         },
         created() {
-            // 앱 시작 시 authInfo 로드
-            this.loadAuthInfo();
+            // 앱 시작 시 authInfo 로드 (FreeMarker 전역객체 할당)
+            this.authInfo = AuthInfo;
         },
         template: `
             <EngageBtn :isChatOpen="isChatOpen" @toggle-chat="toggleChat" />

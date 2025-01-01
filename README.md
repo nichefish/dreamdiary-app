@@ -17,11 +17,11 @@
 * Java 11 -> 17
   * Spring Boot (2.7.18) 
   * Spring Security, JWT
-  * Spring AOP, Lombok, Mapstruct, EhCache
+  * Spring AOP, Lombok, Mapstruct, EhCache, Redis
 * Gradle
 * MariaDB
 * Spring Data JPA / MyBatis (both)
-* Javascript(ES6), jQuery, Apache FreeMarker, Handlebars.js, Vue.js
+* Javascript(ES6), jQuery, Apache FreeMarker, Handlebars.js, TypeScript, Node.js, Vue.js
 * WebSocket(Stomp)
 * Bootstrap 5 (Metronic 8)
 * css/scss

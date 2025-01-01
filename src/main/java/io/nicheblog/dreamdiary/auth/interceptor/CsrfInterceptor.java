@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.auth.interceptor;
 
 import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.config.WebMvcContextConfig;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  * </pre>
  *
  * @author nichefish
+ * @see WebMvcContextConfig
  */
 @Component
 @Log4j2

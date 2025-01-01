@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.auth.filter;
 
+import io.nicheblog.dreamdiary.auth.config.WebSecurityConfig;
 import io.nicheblog.dreamdiary.auth.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.provider.JwtTokenProvider;
 import io.nicheblog.dreamdiary.auth.util.AuthUtils;
@@ -29,6 +30,7 @@ import java.io.IOException;
  * </pre>
  *
  * @author nichefish
+ * @see WebSecurityConfig
  */
 @Component
 @RequiredArgsConstructor

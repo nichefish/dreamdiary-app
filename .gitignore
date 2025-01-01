@@ -19,3 +19,4 @@
 /.env*
 /target/*
 /templates/view/domain/**/*_tag_ctgr_map.ftlh
+/node_modules/

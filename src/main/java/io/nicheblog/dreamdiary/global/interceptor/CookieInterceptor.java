@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.global.interceptor;
 
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global.Url;
+import io.nicheblog.dreamdiary.global.config.WebMvcContextConfig;
 import io.nicheblog.dreamdiary.global.util.CookieUtils;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.MapUtils;
@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
  * </pre>
  *
  * @author nichefish
+ * @see WebMvcContextConfig
  */
 @Component
 @Log4j2
@@ -38,14 +39,6 @@ public class CookieInterceptor
             final @NotNull Object handler,
             final ModelAndView mav
     ) {
-
-        /* 리소스 요청 처리하지 않음 */
-        final String requestURI = request.getRequestURI();
-        for (final String path : Constant.STATIC_PATHS) {
-            if (requestURI.startsWith(path.replace("**", ""))) return;
-        }
-
-        if (Url.AUTH_LGN_FORM.equals(requestURI) || Url.AUTH_LGN_PROC.equals(requestURI)) return;
 
         /* 사이드바 접기 쿠키 설정 */
         if (mav != null && MapUtils.isNotEmpty(mav.getModel())) {

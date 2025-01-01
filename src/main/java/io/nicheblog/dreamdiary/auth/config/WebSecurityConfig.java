@@ -71,8 +71,8 @@ public class WebSecurityConfig {
      * 빈 생성 :: 중복 로그인 방지:: WAS가 여러 개 있을 때 처리 (session clustering)
      */
     @Bean
-    public static ServletListenerRegistrationBean httpSessionEventPublisher() {
-        return new ServletListenerRegistrationBean(new HttpSessionEventPublisher());
+    public static ServletListenerRegistrationBean<?> httpSessionEventPublisher() {
+        return new ServletListenerRegistrationBean<>(new HttpSessionEventPublisher());
     }
 
     /**

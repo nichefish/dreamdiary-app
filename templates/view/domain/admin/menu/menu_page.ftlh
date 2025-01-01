@@ -13,7 +13,7 @@
 
 <#--include::script modules-->
 <script type="text/javascript" src="/lib/jstree/js/jstree.min.js"></script>
-<script type="text/javascript" src="/js/commons-jstree.js"></script>
+<script type="text/javascript" src="/js/common/commons-jstree.js"></script>
 <script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
 <#include "/view/domain/admin/menu/_menu_scripts.ftlh">
 
