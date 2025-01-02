@@ -824,7 +824,7 @@ cF.util = (function() {
          * @param {number} chunk - 배열을 분할할 크기.
          * @returns {Array} - 각 chunk별로 분할된 객체 배열.
          */
-        serializeJsonArray: function(arr, chunk) {
+        serializeJsonArray: function(arr, chunk: number) {
             const processedArr = [];
             for (let i = 0; i < arr.length; i += chunk) {
                 const form = arr.slice(i, i + chunk);

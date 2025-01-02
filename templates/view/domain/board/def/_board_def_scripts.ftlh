@@ -17,7 +17,7 @@
                 cF.validate.validateForm("#boardDefRegForm", BoardDef.regAjax);
                 // checkbox init
                 cF.util.chckboxLabel("useYn", "사용//미사용", "blue//gray");
-                cF.validate.replaceBlankIfMatches("#boardDefRegForm .cddata", cF.validate.nonCdRegex);
+                cF.validate.replaceBlankIfMatches("#boardDefRegForm .cddata", cF.regex.nonCd);
                 cF.validate.onlyNum(".number");
             },
 

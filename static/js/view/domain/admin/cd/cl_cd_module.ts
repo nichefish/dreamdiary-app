@@ -17,7 +17,7 @@ const ClCd = (function() {
             cF.validate.validateForm("#clCdRegForm", ClCd.regAjax);
             // checkbox init
             cF.util.chckboxLabel("useYn", "사용//미사용", "blue//gray");
-            cF.validate.replaceBlankIfMatches("#clCdRegForm #clCd", cF.validate.nonCdRegex);
+            cF.validate.replaceBlankIfMatches("#clCdRegForm #clCd", cF.regex.nonCd);
             cF.validate.toUpperCase("#clCdRegForm #clCd");
         },
 

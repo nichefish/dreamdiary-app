@@ -13,12 +13,12 @@
                 /* jquery validation */
                 cF.validate.validateForm("#myPwChgForm", UserMyPwChg.submitHandler, {
                     rules: {
-                        newPw: { regex: cF.validate.pwRegex },
+                        newPw: { regex: cF.regex.pw },
                         newPwCf: { equalTo: "#newPw" }
                     },
                     messages: {
-                        newPw: { regex:"변경할 비밀번호가 형식에 맞지 않습니다." },
-                        newPwCf: { equalTo:"변경할 비밀번호에 입력한 값과 동일하게 입력해야 합니다." }
+                        newPw: { regex: "변경할 비밀번호가 형식에 맞지 않습니다." },
+                        newPwCf: { equalTo: "변경할 비밀번호에 입력한 값과 동일하게 입력해야 합니다." }
                     },
                 });
             },

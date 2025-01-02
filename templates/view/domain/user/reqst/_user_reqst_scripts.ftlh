@@ -12,15 +12,15 @@
                 /* jquery validation */
                 cF.validate.validateForm("#userReqstForm", UserReqst.submitHandler, {
                     rules: {
-                        userId: { minlength:4, maxlength:16 },
-                        ipDupChckPassed: { dupChck:true },
-                        password: { minlength:9, maxlength:20, regex:cF.validate.pwRegex },
-                        passwordCf: { equalTo:"#password", maxlength:20 },
+                        userId: { minlength: 4, maxlength: 16 },
+                        ipDupChckPassed: { dupChck: true },
+                        password: { minlength: 9, maxlength: 20, regex: cF.regex.pw },
+                        passwordCf: { equalTo: "#password", maxlength: 20 },
                     },
                     messages: {
-                        ipDupChckPassed: { dupChck:"아이디 중복 체크는 필수 항목입니다." },
-                        password: { regex:"비밀번호가 형식에 맞지 않습니다." },
-                        passwordCf: { equalTo:"비밀번호에 입력한 값과 동일하게 입력해야 합니다." },
+                        ipDupChckPassed: { dupChck: "아이디 중복 체크는 필수 항목입니다." },
+                        password: { regex: "비밀번호가 형식에 맞지 않습니다." },
+                        passwordCf: { equalTo: "비밀번호에 입력한 값과 동일하게 입력해야 합니다." },
                     },
                 });
                 $.validator.addMethod("dupChck", function(value) {

@@ -26,7 +26,7 @@ const LgnPwChg = (function () {
             /* jquery validation */
             cF.validate.validateForm("#lgnPwChgForm", LgnPwChg.lgnPwChgAjax, {
                 rules: {
-                    newPw: { regex: cF.validate.pwRegex },
+                    newPw: { regex: cF.regex.pw },
                     newPwCf: { equalTo: "#newPw" }
                 },
                 messages: {

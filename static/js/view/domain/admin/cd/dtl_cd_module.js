@@ -16,7 +16,7 @@ const DtlCd = (function () {
             cF.validate.validateForm("#dtlCdRegForm", DtlCd.regAjax);
             // checkbox init
             cF.util.chckboxLabel("useYn", "사용//미사용", "blue//gray");
-            cF.validate.replaceBlankIfMatches("#dtlCdRegForm #dtlCd", cF.validate.nonCdRegex);
+            cF.validate.replaceBlankIfMatches("#dtlCdRegForm #dtlCd", cF.regex.nonCd);
             cF.validate.toUpperCase("#dtlCdRegForm #dtlCd");
         },
         /**
