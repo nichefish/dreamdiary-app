@@ -9,7 +9,7 @@
             yyMnth: function(obj) {
                 // 쿠키 설정하기
                 const id = $(obj).attr("id");
-                let cookieOptions = {
+                const cookieOptions = {
                     path: "/jrnl/sumry/",
                     expires: cF.date.getCurrDateAddDay(36135)
                 };

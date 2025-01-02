@@ -53,26 +53,6 @@
             siteMapModal: function() {
                 $("#sitemap_modal").modal("show");
             },
-
-            /**
-             * 내 정보 상세 페이지 이동
-             */
-            myInfoDtl: function() {
-                location.replace("${Url.USER_MY_DTL!}");
-            },
-
-            /**
-             * 로그아웃 처리
-             */
-            lgout: function() {
-                Swal.fire({
-                    text: <@spring.message "view.cnfm.lgout"/>,
-                    showCancelButton: true,
-                }).then(function(result) {
-                    if (!result.value) return;
-                    location.replace("${Url.AUTH_LGOUT!}");
-                });
-            },
         }
     })();
     document.addEventListener("DOMContentLoaded", function() {

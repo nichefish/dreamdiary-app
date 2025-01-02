@@ -14,11 +14,6 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<#--include::script modules-->
-<script type="text/javascript" src="/metronic/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
-<script type="text/javascript" src="/js/common/helper/fullcalendar.js?${releaseDate!}"></script>
-<#include "/view/domain/schdul/_schdul_scripts.ftlh">
-
 <link rel="stylesheet" type="text/css" href="/metronic/assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" />
 
 <style>
@@ -32,121 +27,6 @@
         }
     }
 </style>
-<script>
-    const Page = (function() {
-        return {
-            eventList: [],
-            calendar: null,
-            calInitDt: null,
-            calDt: null,
-
-            /**
-             * Page 객체 초기화
-             */
-            init: function() {
-                /* initialize form. */
-                Schdul.initForm();
-
-                const chkArr = $("input:checkbox[id^='schdul_chk']");
-                chkArr.each(function(_index, item) {
-                    let id = $(item).attr("id");
-                    if (Page.getChkedCookie(id) === "Y") $(item).prop("checked", true);
-                });
-                /** TODO : 선택된 년도,달 기준으로 변경해야함 */
-                Page.calInitDt = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-                Page.calDt = Page.calInitDt;
-                Page.getEventList();
-                Page.calendar = cF.fullcalendar.init("full_calendar_app", Page.eventList, function(info) {
-                    // 일정 onclick 이벤트
-                    let event = info.event;
-                    let schdulCd = event.groupId;
-                    let isVcatn = schdulCd === "${Constant.SCHDUL_VCATN!}";
-                    let isBrthdy = schdulCd === "${Constant.SCHDUL_BRTHDY!}"
-                    if (isVcatn || isBrthdy) return false;     // 휴가/생일은 팝업 띄우지 않음 - 휴가관리/사용자 정보 쪽에서 관리
-                    Schdul.dtlModal(event.id);
-                });
-                Page.calendar.render();
-                // 좌우탐색버튼 이벤트핸들러 추가
-                $(".fc-today-button").on("click", function() {
-                    let calDt = new Date(Page.calInitDt.getFullYear(), Page.calInitDt.getMonth(), 1);
-                    Page.refreshEventList(calDt);
-                });
-                $(".fc-prev-button").on("click", function() {
-                    let calDt = new Date(Page.calDt.getFullYear(), Page.calDt.getMonth() - 1, 1);
-                    Page.refreshEventList(calDt);
-                });
-                $(".fc-next-button").on("click", function() {
-                    let calDt = new Date(Page.calDt.getFullYear(), Page.calDt.getMonth() + 1, 1);
-                    Page.refreshEventList(calDt);
-                });
-
-                // datepicker 날짜 검색 init
-                cF.datepicker.singleDatePicker("#calDt", "yyyy-MM-DD", cF.date.asStr(Page.calInitDt), function(start) {
-                    let selectedDt = new Date(start);
-                    Page.calendar.gotoDate(selectedDt);
-                    Page.refreshEventList(selectedDt);
-                });
-
-                // https://github.com/fullcalendar/fullcalendar/issues/6393
-                const harnessArr = $(".fc-daygrid-event-harness");
-                harnessArr.each(function() {
-                    const marginTop = $(this).css("margin-top");
-                    if (parseInt(marginTop) < 0) $(this).css("margin-top", "");
-                });
-            },
-            /** 일정 등록 모달 호출 */
-            refreshEventList: function(calDt) {
-                Page.calDt = calDt;
-                Page.getEventList();
-                Page.calendar.removeAllEvents();
-                Page.eventList.forEach(event => Page.calendar.addEvent(event));
-            },
-            /** 일정 등록 모달 호출 */
-            search: function() {
-                Page.getEventList();
-                Page.calendar.removeAllEvents();
-                Page.eventList.forEach(event => Page.calendar.addEvent(event));
-            },
-            /** 일정 등록 모달 호출 */
-            getEventList: function() {
-                const url = '${Url.SCHDUL_CAL_LIST_AJAX!}';
-                // 날짜 세팅
-                const calDt = Page.calDt;
-                const yy  = calDt.getFullYear();
-                const bgnDt = cF.date.getDateAddDayStr(calDt, -35, "yyyy-MM-dd");
-                const endDt = cF.date.getDateAddDayStr(calDt, 45, "yyyy-MM-dd");
-                // 체크박스 값을 읽어와서 필터 요소를 만듬
-                const ajaxData = { 'yy': yy, 'bgnDt': bgnDt, 'endDt': endDt };
-                const chkArr = $("input:checkbox[id^='schdul_chk_']");
-                chkArr.each(function(_index, item) {
-                    const itemName = $(item).attr("name").replaceAll("schdul_chk_", "") + "ed";
-                    ajaxData[itemName] = $(item).prop("checked") ? "Y" : "N";
-                });
-                // 검색키워드 설정
-                ajaxData.searchKeyword = $("#searchKeyword").val();
-                cF.ajax.get(url, ajaxData, function(res) {
-                    if (res.rslt) Page.eventList = res.rsltList || [];
-                });
-            },
-            /** 팝업 쿠키 존재여부 체크 */
-            getChkedCookie: function(key) {
-                let cookie = $.cookie(key);
-                if (key === "schdul_chk_myPaprChk") return (cookie === undefined) ? "N" : cookie;
-                return (cookie === undefined) ? "Y" : cookie;
-            },
-            /** 체크박스 쿠키 설정 */
-            chkbxProp: function(obj) {
-                const checkedYn = $(obj).prop("checked") ? "Y" : "N";
-                let cookieOptions = { "expires": cF.date.getCurrDateAddDay(36135) };
-                $.cookie($(obj).attr("id"), checkedYn, cookieOptions);
-                Page.refreshEventList(Page.calDt);
-            }
-        }
-    })();
-    document.addEventListener("DOMContentLoaded", function() {
-        Page.init();
-    });
-</script>
 
 <!--begin::Advance form-->
 <div class="collapse px-10 py-4 bg-light w-100" id="schdul_advanced_search_div">
@@ -221,7 +101,12 @@
 </div>
 <!--end::Card-->
 
-<#include "/view/domain/schdul/_schdul_reg_modal.ftlh">
-<#include "/view/domain/schdul/_schdul_dtl_modal.ftlh">
+<#include "/view/domain/schdul/_modal/_schdul_reg_modal.ftlh">
+<#include "/view/domain/schdul/_modal/_schdul_dtl_modal.ftlh">
+<#--include::script modules-->
+<script type="text/javascript" src="/metronic/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
+<script type="text/javascript" src="/js/common/helper/fullcalendar.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/schdul/schdul_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/schdul/schdul_cal.js?${releaseDate!}"></script>
 
 </@layout.layout>

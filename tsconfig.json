@@ -1,19 +1,9 @@
+// tsconfig.json
 {
-  "compilerOptions": {
-    "target": "ES6",         // 컴파일된 JavaScript 버전
-    "noImplicitAny": true,
-    "module": "commonjs",    // 모듈 시스템 (예: commonjs, esnext)
-    "rootDir": "./static/js",         // TypeScript 파일들이 있는 디렉토리
-    "strict": false,          // 타입 검사 강화 -> 안정화 후 true로 변경
-    "esModuleInterop": true, // ES 모듈과 CommonJS 모듈 간 호환성
-    "skipLibCheck": true,    // 라이브러리 타입 검사 건너뛰기
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "baseUrl": ".",         // 프로젝트 루트를 기준으로 경로 설정
-    "paths": {
-      "@messages/*": ["static/messages/*"],
-      "@js/*": ["static/js/*"]
-    }
-  },
-  "exclude": ["node_modules"]     // 제외할 파일/디렉토리
+  "extends": "./tsconfig.base.json",
+  "include": [
+    "static/js/**/*",    // JS 관련 파일
+    "static/vue/**/*",   // Vue 관련 파일
+    "static/react/**/*", // React 관련 파일
+  ]
 }

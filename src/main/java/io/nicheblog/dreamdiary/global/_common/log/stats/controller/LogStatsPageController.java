@@ -96,6 +96,6 @@ public class LogStatsPageController
             publisher.publishEvent(new LogActvtyEvent(this, logParam));
         }
 
-        return "/view/global/_common/log/stats/log_stats_user_list";
+        return "/view/domain/admin/log/stats/log_stats_user_list";
     }
 }

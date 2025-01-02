@@ -6,9 +6,6 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<#--include::script modules-->
-<#include "/view/domain/user/_user_scripts.ftlh">
-
 <div class="card post">
     <#--begin::Card body-->
     <div class="card-body">
@@ -218,5 +215,8 @@
         <input type="hidden" name="userProflNo" value="${user.profl.userProflNo!}">
     </#if>
 </form>
+
+<#--include::script modules-->
+<script type="text/javascript" src="/js/view/domain/user/user_module.js?${releaseDate!}"></script>
 
 </@layout.layout>

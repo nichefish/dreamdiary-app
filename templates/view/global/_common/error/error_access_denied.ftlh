@@ -7,26 +7,6 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<script>
-    const Page = (function() {
-        return {
-            /**
-             * Page 객체 초기화
-             */
-            init: function() {
-                //
-            },
-
-            /**
-             * 메인으로 돌아가기
-             */
-            main: function() {
-                cF.util.blockUIReplace("${Url.MAIN!}");
-            }
-        }
-    })();
-</script>
-
 <div class="d-flex-center">
     <span class="ctgr-span ctgr-imprtc">Access Denied</span>
 </div>
@@ -43,5 +23,8 @@
         </button>
     </div>
 </div>
+
+<#--include::script modules-->
+<script type="text/javascript" src="/js/view/global/_common/error/error_page.js?${releaseDate!}"></script>
 
 </@layout.layout>

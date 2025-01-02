@@ -3,9 +3,6 @@
  * @included_in : 댓글 기능이 있는 페이지들
  -->
 
-<#--include::script modules-->
-<#include "/view/global/_common/_clsf/comment/_comment_page_scripts.ftlh">
-
 <div class="separator separator-dashed mt-8"></div>
 
 <div id="comment_area">
@@ -131,3 +128,5 @@
 </div>
 
 <#include "/view/global/_common/_clsf/comment/_comment_page_reg_template.hbs">
+<#--include::script modules-->
+<script type="text/javascript" src="/js/view/global/_common/_clsf/comment/comment_page_module.js?${releaseDate!}"></script>

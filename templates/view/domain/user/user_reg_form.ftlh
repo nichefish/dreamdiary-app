@@ -4,48 +4,11 @@
 
 <#import "/layout/layout_default.ftlh" as layout >
 
+<#assign isReg = (formMode == "regist")!false>
+<#assign isMdf = (formMode == "modify")!false>
+
 <@layout.layout toolbar=toolbar!"">
 
-<#--include::script modules-->
-<#include "/view/domain/user/_user_scripts.ftlh">
-
-<script>
-    const Page = (function() {
-        return {
-            /**
-             * Page 객체 초기화
-             */
-            init: function() {
-                /* initialize form. */
-                User.initForm();
-
-                <#if isReg!false>
-                    // 등록화면:: 사용자 ID 변경입력시 중복체크 통과여부 초기화
-                    $("#userId").on("keyup", function() {
-                        $("#userId_validate_span").empty();
-                        $("#ipDupChckPassed").val("N");
-                        $("#idDupChckBtn").addClass("blink").removeClass("btn-success").addClass("btn-secondary").removeAttr("disabled");
-                    }).on("keydown", function() {
-                        $("#userId_validate_span").text("");
-                        $("#ipDupChckPassed").val("N");
-                        $("#idDupChckBtn").addClass("blink").removeClass("btn-success").addClass("btn-secondary").removeAttr("disabled");
-                    });
-                </#if>
-
-                // 프로필 정보 / 인사정보 창 활성화
-                <#if user.profl??>
-                    UserProfl.enableUserProfl();
-                </#if>
-                <#if user.emplym??>
-                    UserEmplym.enableUserEmplym();
-                </#if>
-            },
-        }
-    })();
-    document.addEventListener("DOMContentLoaded", function() {
-        Page.init();
-    });
-</script>
 <style>
     @media (max-width: 768px) {
         #idDupChckBtn{
@@ -58,7 +21,7 @@
     <#--begin::Card body-->
     <div class="card-body">
         <#--begin::Form-->
-        <form name="userRegForm" id="userRegForm" class="form mt-10" method="post" enctype="multipart/form-data">
+        <form name="userRegForm" id="userRegForm" class="form mt-10" data-mode="${formMode!}" method="post" enctype="multipart/form-data">
             <input type="hidden" name="userNo" value="${user.userNo!}">
             <input type="hidden" name="atchFileNo" value="${user.atchFileNo!}">
             <#--begin::Row-->
@@ -279,6 +242,7 @@
                     <div id="user_profl_reg_btn_div">
                         <button type="button" id="userProflBtn" class="btn btn-sm btn-primary blink"
                                 onclick="UserProfl.enableUserProfl();"
+                                data-profl="${user.profl??}"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="사용자 프로필 정보를&#10;추가합니다.">
                             프로필 정보 추가+
                         </button>
@@ -286,6 +250,7 @@
                     <div>
                         <button type="button" id="userEmplymBtn" class="btn btn-sm btn-primary blink"
                                 onclick="UserEmplym.enableUserEmplym();"
+                                data-emplym="${user.emplym??}"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="입사인원에 대하여&#10;직원 인사정보를 추가합니다.">
                             직원 인사정보 추가+
                         </button>
@@ -309,7 +274,12 @@
     <input type="hidden" name="userNo" value="${user.userNo!}">
 </form>
 
-<#include "/view/domain/user/profl/_user_profl_reg_area.ftlh">       <#--사용자 프로필 정보 영역-->
-<#include "/view/domain/user/emplym/_user_emplym_reg_area.ftlh">       <#--사용자 인사정보 영역-->
+<#include "/view/domain/user/profl/_user_profl_reg_template.hbs">       <#--사용자 프로필 정보 영역-->
+<#include "/view/domain/user/emplym/_user_emplym_reg_template.hbs">       <#--사용자 인사정보 영역-->
+
+<#--include::script modules-->
+<script type="text/javascript" src="/js/view/domain/user/user_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/user/profl/user_profl_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/user/user_reg_form.js?${releaseDate!}"></script>
 
 </@layout.layout>

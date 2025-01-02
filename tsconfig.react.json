@@ -1,0 +1,9 @@
+// tsconfig.vue.json
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "./static/react", // TypeScript 파일들이 있는 디렉토리
+    "jsx": "preserve"                 // Vue에서 JSX 사용 시 옵션
+  },
+  "include": ["static/react/**/*"]      // Vue 관련 파일들만 포함
+}

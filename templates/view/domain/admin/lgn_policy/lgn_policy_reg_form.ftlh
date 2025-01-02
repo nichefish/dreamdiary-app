@@ -6,26 +6,6 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<#--include::script modules-->
-<#include "/view/domain/admin/lgn_policy/_lgn_policy_scripts.ftlh">
-
-<script>
-    const Page = (function() {
-        return {
-            /**
-             * Page 객체 초기화
-             */
-            init: function() {
-                /* initialize form. */
-                LgnPolicy.initForm();
-            },
-        }
-    })();
-    document.addEventListener("DOMContentLoaded", function() {
-        Page.init();
-    });
-</script>
-
 <div class="card post">
     <#--begin::Card body-->
     <div class="card-body">
@@ -113,5 +93,9 @@
     </div>
 </div>
 <!--end::Card-->
+
+<#--include::script modules-->
+<script type="text/javascript" src="/static/js/view/domain/admin/lgn_policy/lgn_policy_module.js"></script>
+<script type="text/javascript" src="/static/js/view/domain/admin/lgn_policy/lgn_policy_reg_form.js"></script>
 
 </@layout.layout>

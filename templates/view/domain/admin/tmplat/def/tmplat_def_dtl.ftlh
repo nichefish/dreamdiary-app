@@ -6,54 +6,6 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<script>
-    const Page = (function() {
-        return {
-            /**
-             * Page 객체 초기화
-             */
-            init: function() {
-                //
-            },
-
-            /**
-             * 수정 화면으로 이동
-             */
-            mdfForm: function() {
-                cF.util.blockUISubmit("#procForm", "${Url.NOTICE_MDF_FORM!}");
-            },
-
-            /**
-             * 삭제 (Ajax)
-             */
-            delAjax: function() {
-                Swal.fire({
-                    text: <@spring.message "view.cnfm.del"/>,
-                    showCancelButton: true,
-                }).then(function(result) {
-                    if (!result.value) return;
-                    const url = "${Url.NOTICE_DEL_AJAX!}";
-                    const ajaxData = $("#procForm").serializeArray();
-                    cF.ajax.post(url, ajaxData, function(res) {
-                        Swal.fire({ text: res.message })
-                            .then(function() {
-                                if (res.rslt) Page.list();
-                            });
-                    });
-                });
-            },
-
-            /**
-             * 목록 화면으로 이동
-             */
-            list: function() {
-                const listUrl = "${Url.NOTICE_LIST!}?isBackToList=Y";
-                cF.util.blockUIReplace(listUrl);
-            }
-        }
-    })();
-</script>
-
 <div class="card post">
     <#--begin::Card body-->
     <div class="card-body">
@@ -150,5 +102,9 @@
 <form name="procForm" id="procForm" method="get">
     <input type="hidden" name="postNo" id="postNo" value="${tmplat.postNo!}" />
 </form>
+
+<#--include::script modules-->
+<script type="text/javascript" src="/js/view/domain/admin/tmplat/def/tmplat_def_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/admin/tmplat/def/tmplat_def_dtl.js?${releaseDate!}"></script>
 
 </@layout.layout>

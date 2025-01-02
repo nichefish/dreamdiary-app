@@ -8,11 +8,6 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<#--include::script modules-->
-<#include "/view/domain/jrnl/sbjct/_jrnl_sbjct_scripts.ftlh">
-<#include "/view/global/_common/_clsf/sectn/_sectn_scripts.ftlh">
-<#include "/view/global/_common/_clsf/comment/_comment_modal_scripts.ftlh">
-
 <div class="card post">
     <#--begin::Card body-->
     <div class="card-body">
@@ -82,6 +77,10 @@
 
 <#--include:: component:: tinymce 이미지 추가 영역 template-->
 <#include "/view/global/_tinymce_img.ftlh">
-<#include "/view/global/_common/_clsf/comment/_comment_reg_modal.ftlh">
+<#include "/view/global/_common/_clsf/comment/_modal/_comment_reg_modal.ftlh">
+<#--include::script modules-->
+<#include "/view/domain/jrnl/sbjct/_jrnl_sbjct_scripts.ftlh">
+<script type="text/javascript" src="/js/view/global/_common/_clsf/sectn/sectn_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/global/_common/_clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
 
 </@layout.layout>

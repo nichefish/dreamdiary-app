@@ -1,13 +1,13 @@
 /**
  * pickr.ts
- * @namespace: cF.pickr
+ * 공통 - pickr 함수 모듈
+ *
+ * @namespace: cF.pickr (노출식 모듈 패턴)
  * @author: nichefish
- * 공통 - pickr(색상선택 라이브러리) 함수 모듈
- * (노출식 모듈 패턴 적용 :: cF.util.enterKey("#userId") 이런식으로 사용)
  * @see "https://github.com/simonwep/pickr"
  */
-if (typeof cF === 'undefined') { let cF = {}; }
-cF.pickr = (function() {
+if (typeof cF === 'undefined') { var cF = {} as any; }
+cF.pickr = (function(): Module {
 
     /** 기본 색상 배열 */
     const defaultColorArr = [
@@ -46,8 +46,11 @@ cF.pickr = (function() {
          * @param {string} selectorStr - 색상 선택기를 초기화할 DOM 요소의 선택자 문자열.
          * @param {string} initColor - 초기 색상 값 (선택적).
          * @param {Array} [initColorArr=defaultColorArr] - 초기 색상 배열 (선택적).
+         * @returns {Pickr} - Pickr 인스턴스.
          */
-        init: function(selectorStr, initColor, initColorArr = defaultColorArr) {
+        init: function(selectorStr, initColor, initColorArr = defaultColorArr): Pickr {
+            console.log("'cF.pickr' module initialized.");
+
             // 색상 배열 들어올시 기본배열에 추가
             if (initColor) initColorArr = [initColor, ...initColorArr];
 
@@ -75,17 +78,17 @@ cF.pickr = (function() {
             });
 
             // 초기화 시 초기 색상 설정
-            pickr.on("init", function(pickrInstance) {
+            pickr.on("init", function(): void {
                 if (initColor) pickr.setColor(initColor);
             });
 
             // 색상 변경 시 처리 로직
-            pickr.on("change", function(color, e, pickrInstance) {
+            pickr.on("change", function(color): void {
                 const colorCd = color.toRGBA().toString();
                 const idx = pickr.options.el.id.replace("color-picker", "");
                 const trimmedColorCd = colorCd.replace(/\.(.*?\d*),/g, ",").replace(/ /g, "");
-                document.querySelector("#colorCd" + idx).value = trimmedColorCd;
-                document.querySelector("#colorCdHidden" + idx).value = trimmedColorCd;
+                (document.querySelector("#colorCd" + idx) as HTMLInputElement).value = trimmedColorCd;
+                (document.querySelector("#colorCdHidden" + idx) as HTMLInputElement).value = trimmedColorCd;
                 pickr.applyColor();
             })
 

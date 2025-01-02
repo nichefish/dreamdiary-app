@@ -3,12 +3,13 @@
  *
  * @author nichefish
  */
-const Page = (function() {
+// @ts-ignore
+const Page: Page = (function(): Page {
     return {
         /**
          * Page 객체 초기화
          */
-        init: function() {
+        init: function(): void {
             /* initialize form. */
             Notice.initForm();
 
@@ -18,8 +19,8 @@ const Page = (function() {
             } else {
                 /* 글 단락 init */
                 Sectn.init({
-                    refreshFunc: function() {
-                        setTimeout(function() {
+                    refreshFunc: function(): void {
+                        setTimeout(function(): void {
                             Page.refreshFunc();
                         });
                     }
@@ -34,7 +35,7 @@ const Page = (function() {
         /**
          * 새로고침 함수 :: 페이지별 특성에 따라 별도로 세팅
          */
-        refreshFunc: function() {
+        refreshFunc: function(): void {
             const refPostNo = $("#noticeRegForm [name='postNo']").val();
             const refContentType = $("#noticeRegForm [name='contentType']").val();
             Sectn.listAjax({ refPostNo, refContentType });
@@ -45,6 +46,6 @@ const Page = (function() {
         }
     }
 })();
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function(): void {
     Page.init();
 });

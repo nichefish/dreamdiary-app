@@ -3,13 +3,20 @@
  *
  * @author nichefish
  */
-const BoardDef = (function() {
+const BoardDef: Module = (function(): Module {
     return {
+        /**
+         * initializes module.
+         */
+        init: function(): void {
+            console.log("'BoardDef' module initialized.");
+        },
+
         /**
          * form init
          * @param {Object} obj - 폼에 바인딩할 데이터
          */
-        initForm: function(obj = {}) {
+        initForm: function(obj = {}): void {
             /* show modal */
             cF.handlebars.template(obj, "board_def_reg", "show");
 
@@ -24,16 +31,16 @@ const BoardDef = (function() {
         /**
          * Draggable 컴포넌트 init
          */
-        initDraggable: function() {
-            const keyExtractor = (item) => ({ "boardCd": $(item).attr("id") });
-            const url = "${Url.BOARD_DEF_SORT_ORDR_AJAX!}";
+        initDraggable: function({ refreshFunc }: { refreshFunc?: Function } = {}): void {
+            const keyExtractor: Function = (item: HTMLElement) => ({ "boardCd": $(item).attr("id") });
+            const url: string = Url.BOARD_DEF_SORT_ORDR_AJAX;
             BoardDef.swappable = cF.draggable.init(keyExtractor, url);
         },
 
         /**
          * 등록 모달 호출
          */
-        regModal: function() {
+        regModal: function(): void {
             /* initialize form. */
             BoardDef.initForm();
         },
@@ -41,25 +48,25 @@ const BoardDef = (function() {
         /**
          * form submit
          */
-        submit: function() {
+        submit: function(): void {
             $("#boardDefRegForm").submit();
         },
 
         /**
          * 등록 (Ajax)
          */
-        regAjax: function() {
+        regAjax: function(): void {
             Swal.fire({
                 text: Message.get("view.cnfm.reg"),
                 showCancelButton: true,
-            }).then(function(result: SwalResult) {
+            }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url = Url.BOARD_DEF_REG_AJAX;
-                const ajaxData = $("#boardDefRegForm").serializeArray();
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
+                const url: string = Url.BOARD_DEF_REG_AJAX;
+                const ajaxData: Record<string, any> = $("#boardDefRegForm").serializeArray();
+                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
-                        .then(function() {
+                        .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();
                         });
                 }, "block");
@@ -70,13 +77,13 @@ const BoardDef = (function() {
          * 수정 모달 호출
          * @param {string} boardCd - 게시판 코드 (key).
          */
-        mdfModal: function(boardCd: string) {
-            const url = Url.BOARD_DEF_DTL_AJAX;
-            const ajaxData = { "boardCd": boardCd };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse) {
+        mdfModal: function(boardCd: string): void {
+            const url: string = Url.BOARD_DEF_DTL_AJAX;
+            const ajaxData: Record<string, any> = { "boardCd": boardCd };
+            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
-                    return false;
+                    return;
                 }
                 const { rsltObj } = res;
                 rsltObj.isMdf = true;
@@ -89,18 +96,18 @@ const BoardDef = (function() {
          * 사용으로 변경 (Ajax)
          * @param {string} key - 게시판 코드 (key).
          */
-        useAjax: function(key: string) {
+        useAjax: function(key: string): void {
             Swal.fire({
                 text: Message.get("view.cnfm.use"),
                 showCancelButton: true,
-            }).then(function(result: SwalResult) {
+            }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url = Url.BOARD_DEF_USE_AJAX;
-                const ajaxData = { "boardCd": key };
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
+                const url: string = Url.BOARD_DEF_USE_AJAX;
+                const ajaxData: Record<string, any> = { "boardCd": key };
+                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
-                        .then(function() {
+                        .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();
                         });
                 }, "block");
@@ -111,18 +118,18 @@ const BoardDef = (function() {
          * 미사용으로 변경 (Ajax)
          * @param {string} key - 게시판 코드 (key).
          */
-        unuseAjax: function(key: string) {
+        unuseAjax: function(key: string): void {
             Swal.fire({
                 text: Message.get("view.cnfm.unuse"),
                 showCancelButton: true,
-            }).then(function(result: SwalResult) {
+            }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url = Url.BOARD_DEF_UNUSE_AJAX;
-                const ajaxData = { "boardCd": key };
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
+                const url: string = Url.BOARD_DEF_UNUSE_AJAX;
+                const ajaxData: Record<string, any> = { "boardCd": key };
+                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
-                        .then(function() {
+                        .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();
                         });
                 }, "block");
@@ -133,18 +140,18 @@ const BoardDef = (function() {
          * 삭제 (Ajax)
          * @param {string} key - 게시판 코드 (key).
          */
-        delAjax: function(key: string) {
+        delAjax: function(key: string): void {
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
                 showCancelButton: true,
-            }).then(function(result: SwalResult) {
+            }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url = Url.BOARD_DEF_DEL_AJAX;
-                const ajaxData = { "boardCd": key };
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
+                const url: string = Url.BOARD_DEF_DEL_AJAX;
+                const ajaxData: Record<string, any> = { "boardCd": key };
+                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
-                        .then(function() {
+                        .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();
                         });
                 }, "block");
@@ -152,3 +159,6 @@ const BoardDef = (function() {
         },
     }
 })();
+document.addEventListener("DOMContentLoaded", function(): void {
+    BoardDef.init();
+});

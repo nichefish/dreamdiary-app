@@ -61,7 +61,7 @@
              */
             myPaprList: function() {
                 const url = "${Url.JRNL_SBJCT_LIST!}";
-                let param = "?searchType=nickNm&searchKeyword=${authInfo.nickNm!}&regstrId=${authInfo.userId!}&pageSize=50&actionTyCd=MY_PAPR";
+                const param = "?searchType=nickNm&searchKeyword=${authInfo.nickNm!}&regstrId=${authInfo.userId!}&pageSize=50&actionTyCd=MY_PAPR";
                 cF.util.blockUIReplace(url + param);
             },
 

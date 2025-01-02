@@ -3,9 +3,6 @@
  * @included_in : 파일 첨부 기능이 있는 페이지들
  -->
 
-<#--include::script modules-->
-<#include "/view/global/_common/file/_atch_file_scripts.ftlh">
-
 <#--begin::Row-->
 <div class="row">
     <div>
@@ -59,3 +56,6 @@
         </button>
     </div>
 </div>
+
+<#--include::script modules-->
+<script type="text/javascript" src="/js/view/global/_common/file/atch_file_module.js?${releaseDate!}"></script>

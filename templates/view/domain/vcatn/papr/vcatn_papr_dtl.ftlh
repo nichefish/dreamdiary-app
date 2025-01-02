@@ -6,9 +6,6 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<#--include::script modules-->
-<#include "/view/domain/vcatn/papr/_vcatn_papr_scripts.ftlh">
-
 <div class="card post">
     <#--begin::Card body-->
     <div class="card-body">
@@ -124,5 +121,8 @@
     <input type="hidden" name="postNo" id="postNo" value="${post.postNo!}"/>
     <input type="hidden" name="contentType" id="contentType" value="${post.contentType!}"/>
 </form>
+
+<#--include::script modules-->
+<script type="text/javascript" src="/js/view/domain/vactn/papr/vactn_papr_module.js?${releaseDate!}"></script>
 
 </@layout.layout>

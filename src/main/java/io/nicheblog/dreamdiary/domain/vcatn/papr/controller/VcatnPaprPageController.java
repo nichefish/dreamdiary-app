@@ -123,7 +123,7 @@ public class VcatnPaprPageController
         // 빈 객체 주입 (freemarker error prevention)
         model.addAttribute("post", new VcatnPaprDto());
         // 등록/수정 화면 플래그 세팅
-        model.addAttribute(Constant.IS_REG, true);
+        model.addAttribute(Constant.FORM_MODE, "modify");
         // 코드 정보 모델에 추가
         dtlCdService.setCdListToModel(Constant.VCATN_CD, model);
         dtlCdService.setCdListToModel(Constant.JANDI_TOPIC_CD, model);
@@ -163,7 +163,7 @@ public class VcatnPaprPageController
         final VcatnPaprDto rsDto = vcatnPaprService.getDtlDto(key);
         model.addAttribute("post", rsDto);
         // 등록/수정 화면 플래그 세팅
-        model.addAttribute(Constant.IS_MDF, true);
+        model.addAttribute(Constant.FORM_MODE, "modify");
         // 코드 정보 모델에 추가
         dtlCdService.setCdListToModel(Constant.VCATN_CD, model);
         dtlCdService.setCdListToModel(Constant.JANDI_TOPIC_CD, model);

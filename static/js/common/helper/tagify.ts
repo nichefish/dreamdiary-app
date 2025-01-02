@@ -1,41 +1,40 @@
-                                      /**
+/**
  * tagify.ts
- * @namespace: cF.taf
+ * 공통 - tagify 관련 함수 모듈
+ *
+ * @namespace: cF.tagify (노출식 모듈 패턴)
  * @author: nichefish
- * @dependency: jquery.blockUI.js, jquery.forms.js
- * 공통 - tagify(라이브러리) 관련 함수 모듈
- * (노출식 모듈 패턴 적용 :: cF.util.enterKey("#userId") 이런식으로 사용)
  */
-if (typeof cF === 'undefined') { let cF = {}; }
-cF.tagify = (function() {
+if (typeof cF === 'undefined') { var cF = {} as any; }
+cF.tagify = (function(): Module {
 
     /** 기본 옵션 분리 */
     const baseOptions = {
         whitelist: [],
-            maxTags: 21,
-            keepInvalidTags: false,
-            skipInvalid: true,
-            // duplicate 허용하고 수동 로직으로 중복 처리
-            duplicates: false,
-            editTags: {
+        maxTags: 21,
+        keepInvalidTags: false,
+        skipInvalid: true,
+        // duplicate 허용하고 수동 로직으로 중복 처리
+        duplicates: false,
+        editTags: {
             clicks: 2,
-                // if after editing, tag is invalid, auto-revert
-                keepInvalid: false
+            // if after editing, tag is invalid, auto-revert
+            keepInvalid: false
         },
         templates: {
-            tag: function (tagData: object) {
+            tag: function (tagData: any): string {
                 // 태그 메타데이터 (data)를 문자열로 변환하여 표시
                 const ctgr = cF.util.isNotEmpty(tagData.data) ? tagData.data.ctgr : "";
                 const ctgrSpan = ctgr !== "" ? `<span class="tagify__tag-category text-noti me-1">[${tagData.data.ctgr}]</span>` : "";
                 return `<tag title="${tagData.value}" contenteditable="false" spellcheck="false" tabindex="-1"
                                      class="tagify__tag" value="${tagData.value}" data-ctgr="${ctgr}">
-                                    <x title="" class="tagify__tag__removeBtn" role="button" aria-label="remove tag"></x>
-                                    <div>
-                                        <!-- 메타데이터 시각화 -->
-                                        ${ctgrSpan}
-                                        <span class="tagify__tag-text">${tagData.value}</span>
-                                    </div>
-                                </tag>`;
+                            <x title="" class="tagify__tag__removeBtn" role="button" aria-label="remove tag"></x>
+                            <div>
+                                <!-- 메타데이터 시각화 -->
+                                ${ctgrSpan}
+                                <span class="tagify__tag-text">${tagData.value}</span>
+                            </div>
+                        </tag>`;
             }
         },
     };
@@ -48,11 +47,13 @@ cF.tagify = (function() {
          * @returns {Tagify} - 초기화된 Tagify 인스턴스.
          */
         init: function(selector: string, additionalOptions = {}) {
+            console.log("'cF.tagify' module initialized.");
+
             // 태그 tagify
-            const inputs = cF.util.verifySelector(selector);
+            const inputs: HTMLElement[] = cF.util.verifySelector(selector);
             if (inputs.length === 0) return;
 
-            const tagInput = inputs[0];
+            const tagInput: HTMLElement = inputs[0];
 
             // 기본 옵션과 추가 옵션을 병합하여 Tagify 생성
             const mergedOptions = {
@@ -73,7 +74,7 @@ cF.tagify = (function() {
             const tagify = cF.tagify.init(selector, additionalOptions);
 
             // tagify 스코프 설정
-            const parts = selector.split(' ');
+            const parts: string[] = selector.split(' ');
             tagify.scope = (parts.length > 1) ? document.querySelector(parts[0]) : document;
             tagify.categoryInputContainer = tagify.scope.querySelector('#tag_ctgr_div');
             tagify.tagCtgrInput = tagify.scope.querySelector('#tag_ctgr');
@@ -103,9 +104,10 @@ cF.tagify = (function() {
          * @param {Tagify} tagify - Tagify 인스턴스. 자동완성을 적용할 태그 입력 요소입니다.
          * @param {Object} tagCtgrMap - 태그 카테고리 매핑 객체. 태그와 관련된 카테고리를 정의합니다.
          */
-        _setAutoComplete: function(tagify, tagCtgrMap) {
+        _setAutoComplete: function(tagify, tagCtgrMap): void {
             if (!tagCtgrMap) return;
-            tagify.on("input", function(e) {
+
+            tagify.on("input", function(e): void {
                 const value = e.detail.value;
                 tagify.settings.whitelist = Object.keys(tagCtgrMap).filter(tag => tag.startsWith(value));
                 tagify.dropdown.show(value);
@@ -117,8 +119,8 @@ cF.tagify = (function() {
          * @param {Tagify} tagify - Tagify 인스턴스. 카테고리 입력을 위한 태그 입력 요소입니다.
          * @param {Object} tagCtgrMap - 태그 카테고리 매핑 객체. 태그와 관련된 카테고리를 정의합니다.
          */
-        _setCtgrInputPrompt: function(tagify, tagCtgrMap) {
-            tagify.on("add", function(e) {
+        _setCtgrInputPrompt: function(tagify, tagCtgrMap): void {
+            tagify.on("add", function(e): void {
                 // 기본 태그 (카테고리 붙이기 전) 처리시에만 동작
                 const newTag = e.detail.data;
                 if (newTag.data !== undefined) {
@@ -128,7 +130,7 @@ cF.tagify = (function() {
                 }
 
                 // setTimeout을 사용하여 포커스 호출 지연
-                setTimeout(() => {
+                setTimeout((): void => {
                     // 1. 마지막 추가된 태그 임시 마킹
                     const addedTagElmt = tagify.getTagElms().slice(-1)[0];
                     addedTagElmt.setAttribute('data-marked', 'true');  // 마킹
@@ -155,7 +157,7 @@ cF.tagify = (function() {
                     tagify.metaInfoContainer.style.display = 'block';
 
                     // 자동완성 선택 이벤트 핸들러
-                    tagify.metaInfoSelect.onchange = function() {
+                    tagify.metaInfoSelect.onchange = function(): void {
                         const selectedCtgr = tagify.metaInfoSelect.value;
                         if (selectedCtgr !== "custom") {
                             tagify.removeTags(addedTagElmt);
@@ -176,7 +178,7 @@ cF.tagify = (function() {
         /**
          * 태그에서 마킹 정보 클리어
          */
-        _clearMarks: function(tagify) {
+        _clearMarks: function(tagify): void {
             const markedTags = tagify.scope.querySelectorAll('[data-marked="true"]');
             markedTags.forEach(tagElmt => {
                 tagElmt.removeAttribute('data-marked');
@@ -187,7 +189,7 @@ cF.tagify = (function() {
          * _내부 함수: 키 리스너를 설정합니다.
          * @param {Tagify} tagify - Tagify 인스턴스.
          */
-        _setKeyListener: function(tagify) {
+        _setKeyListener: function(tagify): void {
             tagify.tagCtgrInput.addEventListener('keydown', function(event) {
                 tagify.metaInfoContainer.style.display = 'none';
                 const markedTags = tagify.scope.querySelectorAll('[data-marked="true"]');
@@ -200,14 +202,14 @@ cF.tagify = (function() {
                     // 태그에서 마킹 정보 클리어 :: 메소드 분리
                     cF.tagify._clearMarks(tagify);
                     // 태그 인풋으로 포커싱 이동
-                    setTimeout(() => {
+                    setTimeout((): void => {
                         if (tagify.DOM.input) tagify.DOM.input.focus();
                     }, 0);
                 } else if (event.key === 'Tab') {
                     event.preventDefault();
                     // TAB = 빈칸 아닐시 카테고리 추가
-                    const newCtgr = tagify.tagCtgrInput.value;
-                    const newValue = tagify.tagCtgrInput.dataset.tagValue;
+                    const newCtgr: string = tagify.tagCtgrInput.value;
+                    const newValue: string = tagify.tagCtgrInput.dataset.tagValue;
 
                     // 중복 체크 및 마킹 태그 제거
                     // (카테고리 미추가헐 경우 마킹한 임시태그는 이 과정에서 자연스레 없어짐.)
@@ -229,7 +231,7 @@ cF.tagify = (function() {
                     // 태그에서 마킹 정보 클리어 :: 메소드 분리
                     cF.tagify._clearMarks(tagify);
                     // 태그 인풋으로 포커싱 이동
-                    setTimeout(() => {
+                    setTimeout((): void => {
                         if (tagify.DOM.input) tagify.DOM.input.focus();
                     }, 0);
                 }
@@ -240,8 +242,8 @@ cF.tagify = (function() {
          * _내부 함수: 카테고리 입력 칸을 숨깁니다.
          * @param {Tagify} tagify - Tagify 인스턴스.
          */
-        _hideCtgrDiv: function(tagify) {
-            tagify.on("remove", function() {
+        _hideCtgrDiv: function(tagify): void {
+            tagify.on("remove", function(): void {
                 tagify.metaInfoContainer.style.display = 'none';
                 tagify.categoryInputContainer.style.display = 'none';
                 // 태그에서 마킹 정보 클리어 :: 메소드 분리

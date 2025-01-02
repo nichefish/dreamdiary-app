@@ -11,12 +11,6 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<#--include::script modules-->
-<script type="text/javascript" src="/lib/jstree/js/jstree.min.js"></script>
-<script type="text/javascript" src="/js/common/helper/jstree.js"></script>
-<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
-<#include "/view/domain/admin/menu/_menu_scripts.ftlh">
-
 <link rel="stylesheet" type="text/css" href="/lib/jstree/css/style.min.css" />
 
 <style>
@@ -29,60 +23,6 @@
     }
 </style>
 
-<script>
-    const Page = (function() {
-        return {
-            /**
-             * Page 객체 초기화
-             */
-            init: function() {
-                Page.updtTree();
-
-                /* init : Draggable */
-                Menu.initDraggable();
-            },
-            /**
-             * 트리 구조 데이터 리로드 및 새로 그리기
-             */
-            updtTree: function() {
-                // 메인 메뉴 그리기
-                const url = "${Url.MENU_MAIN_LIST_AJAX!}";
-                cF.ajax.get(url, null, function(res) {
-                    if (!res.rslt) {
-                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
-                        return false;
-                    }
-                    const mainMenuList = res.rsltList;
-                    if (!Array.isArray(mainMenuList) || mainMenuList.length < 1) return;
-                    mainMenuList.forEach(function(mainMenu) {
-                        cF.handlebars.append(mainMenu, "menu_main_card");
-                        Page.drawSubMenu(mainMenu);
-                    });
-                });
-            },
-            /** 서브메뉴 처리 :: 자기 자신을 그리고 각각의 서브메뉴에 대해서 재귀호출 */
-            drawSubMenu: function(upperMenu) {
-                // 서브메뉴 돌면서 재귀호출
-                const subMenuList = upperMenu.subMenuList;
-                if (!Array.isArray(subMenuList) || subMenuList.length <1) return;
-                const menuNo = upperMenu.menuNo;
-                subMenuList.forEach(function(subMenu) {
-                    cF.handlebars.appendTo(subMenu, "menu_sub", "menu_sub_"+menuNo);
-                    Page.drawSubMenu(subMenu);
-                });
-            },
-            drawTree: function() {
-                const jstreeContainer = Page.jstreeContainer;
-                cF.jstree.reset(jstreeContainer);
-                cF.jstree.init(jstreeContainer);
-            },
-        }
-    })();
-    document.addEventListener("DOMContentLoaded", function() {
-        Page.init();
-    });
-</script>
-
 <div class="row mt-2 mb-6 px-10 draggable-zone-main" id="menu_main_card_div">
     <#--handlebars template goes in here-->
 </div>
@@ -94,6 +34,13 @@
 
 <#include "/view/domain/admin/menu/_menu_main_card_template.hbs">
 <#include "/view/domain/admin/menu/_menu_sub_template.hbs">
-<#include "/view/domain/admin/menu/_menu_reg_modal.ftlh">
+<#include "/view/domain/admin/menu/modal/_menu_reg_modal.ftlh">
+<#--include::script modules-->
+<#--include::script modules-->
+<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
+<script type="text/javascript" src="/lib/jstree/js/jstree.min.js"></script>
+<script type="text/javascript" src="/js/common/helper/jstree.js"></script>
+<script type="text/javascript" src="/static/js/view/domain/admin/menu/menu_module.js"></script>
+<script type="text/javascript" src="/static/js/view/domain/admin/menu/menu_page.js"></script>
 
 </@layout.layout>

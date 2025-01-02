@@ -15,10 +15,6 @@
 <@layout.layout toolbar=toolbar!"">
 
 <#--include::script modules-->
-<script type="text/javascript" src="/metronic/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
-<script type="text/javascript" src="/js/common/helper/fullcalendar.js?${releaseDate!}"></script>
-<#include "/view/domain/schdul/_schdul_scripts.ftlh">
-
 <link rel="stylesheet" type="text/css" href="/metronic/assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" />
 
 <style>
@@ -49,7 +45,7 @@
 
                 const chkArr = $("input:checkbox[id^='schdul_chk']");
                 chkArr.each(function(_index, item) {
-                    let id = $(item).attr("id");
+                    const id = $(item).attr("id");
                     if (Page.getChkedCookie(id) === "Y") $(item).prop("checked", true);
                 });
                 /** TODO : 선택된 년도,달 기준으로 변경해야함 */
@@ -58,31 +54,31 @@
                 Page.getEventList();
                 Page.calendar = cF.fullcalendar.init("full_calendar_app", Page.eventList, function(info) {
                     // 일정 onclick 이벤트
-                    let event = info.event;
-                    let schdulCd = event.groupId;
-                    let isVcatn = schdulCd === "${Constant.SCHDUL_VCATN!}";
-                    let isBrthdy = schdulCd === "${Constant.SCHDUL_BRTHDY!}"
+                    const event = info.event;
+                    const schdulCd = event.groupId;
+                    const isVcatn = schdulCd === "${Constant.SCHDUL_VCATN!}";
+                    const isBrthdy = schdulCd === "${Constant.SCHDUL_BRTHDY!}"
                     if (isVcatn || isBrthdy) return false;     // 휴가/생일은 팝업 띄우지 않음 - 휴가관리/사용자 정보 쪽에서 관리
                     Schdul.dtlModal(event.id);
                 });
                 Page.calendar.render();
                 // 좌우탐색버튼 이벤트핸들러 추가
                 $(".fc-today-button").on("click", function() {
-                    let calDt = new Date(Page.calInitDt.getFullYear(), Page.calInitDt.getMonth(), 1);
+                    const calDt = new Date(Page.calInitDt.getFullYear(), Page.calInitDt.getMonth(), 1);
                     Page.refreshEventList(calDt);
                 });
                 $(".fc-prev-button").on("click", function() {
-                    let calDt = new Date(Page.calDt.getFullYear(), Page.calDt.getMonth() - 1, 1);
+                    const calDt = new Date(Page.calDt.getFullYear(), Page.calDt.getMonth() - 1, 1);
                     Page.refreshEventList(calDt);
                 });
                 $(".fc-next-button").on("click", function() {
-                    let calDt = new Date(Page.calDt.getFullYear(), Page.calDt.getMonth() + 1, 1);
+                    const calDt = new Date(Page.calDt.getFullYear(), Page.calDt.getMonth() + 1, 1);
                     Page.refreshEventList(calDt);
                 });
 
                 // datepicker 날짜 검색 init
                 cF.datepicker.singleDatePicker("#calDt", "yyyy-MM-DD", cF.date.asStr(Page.calInitDt), function(start) {
-                    let selectedDt = new Date(start);
+                    const selectedDt = new Date(start);
                     Page.calendar.gotoDate(selectedDt);
                     Page.refreshEventList(selectedDt);
                 });
@@ -130,14 +126,14 @@
             },
             /** 팝업 쿠키 존재여부 체크 */
             getChkedCookie: function(key) {
-                let cookie = $.cookie(key);
+                const cookie = $.cookie(key);
                 if (key === "schdul_chk_myPaprChk") return (cookie === undefined) ? "N" : cookie;
                 return (cookie === undefined) ? "Y" : cookie;
             },
             /** 체크박스 쿠키 설정 */
             chkbxProp: function(obj) {
                 const checkedYn = $(obj).prop("checked") ? "Y" : "N";
-                let cookieOptions = { "expires": cF.date.getCurrDateAddDay(36135) };
+                const cookieOptions = { "expires": cF.date.getCurrDateAddDay(36135) };
                 $.cookie($(obj).attr("id"), checkedYn, cookieOptions);
                 Page.refreshEventList(Page.calDt);
             }
@@ -229,7 +225,11 @@
 <#--include:: Aside-->
 <#include "/view/domain/jrnl/day/_jrnl_day_aside_base.ftlh">
 
-<#include "/view/domain/schdul/_schdul_reg_modal.ftlh">
-<#include "/view/domain/schdul/_schdul_dtl_modal.ftlh">
+<#include "/view/domain/schdul/_modal/_schdul_reg_modal.ftlh">
+<#include "/view/domain/schdul/_modal/_schdul_dtl_modal.ftlh">
+<#--include::script modules-->
+<script type="text/javascript" src="/metronic/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
+<script type="text/javascript" src="/js/common/helper/fullcalendar.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/schdul/schdul_module.js?${releaseDate!}"></script>
 
 </@layout.layout>

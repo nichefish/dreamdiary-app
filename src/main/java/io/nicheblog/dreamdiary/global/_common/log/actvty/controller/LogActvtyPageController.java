@@ -96,6 +96,6 @@ public class LogActvtyPageController
             publisher.publishEvent(new LogActvtyEvent(this, logParam));
         }
 
-        return "/view/global/_common/log/actvty/log_actvty_list";
+        return "/view/domain/admin/log/actvty/log_actvty_list";
     }
 }

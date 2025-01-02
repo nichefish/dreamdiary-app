@@ -3,9 +3,16 @@
  *
  * @author nichefish
  */
-const BoardPost = (function() {
+const BoardPost: Module = (function(): Module {
     return {
         isMdf: $("#boardPostRegForm").data("mode") === "modify",
+
+        /**
+         * initializes module.
+         */
+        init: function(): void {
+            console.log("'BoardPost' module initialized.");
+        },
 
         /**
          * form init
@@ -19,9 +26,9 @@ const BoardPost = (function() {
             /* tagify */
             cF.tagify.initWithCtgr("#postRegForm #tagListStr");
             // 잔디발송여부 클릭시 글씨 변경
-            cF.util.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function() {
+            cF.util.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function(): void {
                 $("#trgetTopicSpan").show();
-            }, function() {
+            }, function(): void {
                 $("#trgetTopicSpan").hide();
             });
         },
@@ -29,13 +36,13 @@ const BoardPost = (function() {
         /**
          * Custom SubmitHandler
          */
-        submitHandler: function() {
+        submitHandler: function(): boolean {
             if (Page.submitMode === "preview") {
-                const popupNm = "preview";
-                const options = 'width=1280,height=1440,top=0,left=270';
+                const popupNm: string = "preview";
+                const options: string = 'width=1280,height=1440,top=0,left=270';
                 const popup = cF.util.openPopup("", popupNm, options);
                 if (popup) popup.focus();
-                const popupUrl = Url.BOARD_POST_REG_PREVIEW_POP;
+                const popupUrl: string = Url.BOARD_POST_REG_PREVIEW_POP;
                 $("#postRegForm").attr("action", popupUrl).attr("target", popupNm);
                 return true;
             } else if (Page.submitMode === "submit") {
@@ -43,7 +50,7 @@ const BoardPost = (function() {
                 Swal.fire({
                     text: BoardPost.isMdf ? Message.get("view.cnfm.mdf") : Message.get("view.cnfm.reg"),
                     showCancelButton: true,
-                }).then(function(result: SwalResult) {
+                }).then(function(result: SwalResult): void {
                     if (!result.value) return;
 
                     BoardPost.regAjax();
@@ -54,7 +61,7 @@ const BoardPost = (function() {
         /**
          * 목록 검색
          */
-        search: function() {
+        search: function(): void {
             $("#listForm #pageNo").val(1);
             cF.util.blockUISubmit("#listForm", Url.BOARD_POST_LIST + "?actionTyCd=SEARCH");
         },
@@ -62,24 +69,27 @@ const BoardPost = (function() {
         /**
          * 내가 작성한 글 목록 보기
          */
-        myPaprList: function() {
-            const boardCd = $("#boardCd").val();
-            const url = Url.BOARD_POST_LIST;
-            const param = `??boardCd=${boardCd!}&searchType=nickNm&searchKeyword=${AuthInfo.nickNm!}&regstrId=${AuthInfo.userId!}&pageSize=50&actionTyCd=MY_PAPR`;
+        myPaprList: function(): void {
+            const boardCdElement: HTMLInputElement|null = document.querySelector("#boardCd");
+            if (!boardCdElement) return;  // 요소가 없으면 종료
+
+            const boardCd: string = boardCdElement.value;
+            const url: string = Url.BOARD_POST_LIST;
+            const param: string = `??boardCd=${boardCd!}&searchType=nickNm&searchKeyword=${AuthInfo.nickNm!}&regstrId=${AuthInfo.userId!}&pageSize=50&actionTyCd=MY_PAPR`;
             cF.util.blockUIReplace(url + param);
         },
 
         /**
          * 등록 화면으로 이동
          */
-        regForm: function() {
+        regForm: function(): void {
             cF.util.blockUISubmit("#procForm", Url.BOARD_POST_REG_FORM);
         },
 
         /**
          * form submit
          */
-        submit: function() {
+        submit: function(): void {
             if (tinymce !== undefined) tinymce.activeEditor.save();
             Page.submitMode = "submit";
             $("#postRegForm").submit();
@@ -88,7 +98,7 @@ const BoardPost = (function() {
         /**
          * 미리보기 팝업 호출
          */
-        preview: function() {
+        preview: function(): void {
             if (tinymce !== undefined) tinymce.activeEditor.save();
             Page.submitMode = "preview";
             $("#postRegForm").submit();
@@ -97,12 +107,12 @@ const BoardPost = (function() {
         /**
          * 등록/수정 처리(Ajax)
          */
-        regAjax: function() {
-            const url = "<#if isMdf!false>${Url.BOARD_POST_MDF_AJAX!}<#else>${Url.BOARD_POST_REG_AJAX!}</#if>";
-            const ajaxData = new FormData(document.getElementById("postRegForm"));
-            cF.ajax.multipart(url, ajaxData, function(res) {
+        regAjax: function(): void {
+            const url: string = BoardPost.isMdf ? Url.BOARD_POST_MDF_AJAX : Url.BOARD_POST_REG_AJAX;
+            const ajaxData: FormData = new FormData(document.getElementById("postRegForm") as HTMLFormElement);
+            cF.ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
-                    .then(function() {
+                    .then(function(): void {
                         if (res.rslt) BoardPost.list();
                     });
             }, "block");
@@ -112,8 +122,8 @@ const BoardPost = (function() {
          * 상세 화면으로 이동
          * @param {string|number} postNo - 조회할 글 번호.
          */
-        dtl: function(postNo: string|number) {
-            if (isNaN(postNo)) return;
+        dtl: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
 
             $("#procForm #postNo").val(postNo);
             cF.util.blockUISubmit("#procForm", Url.BOARD_POST_DTL);
@@ -123,16 +133,16 @@ const BoardPost = (function() {
          * 상세 모달 호출
          * @param {string|number} postNo - 조회할 글 번호.
          */
-        dtlModal: function(postNo: string|number) {
+        dtlModal: function(postNo: string|number): void {
             event.stopPropagation();
-            if (isNaN(postNo)) return;
+            if (isNaN(Number(postNo))) return;
 
-            const url = Url.BOARD_POST_DTL_AJAX;
-            const ajaxData = { "postNo": postNo, "boardCd": $("#boardCd").val() };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse) {
+            const url: string = Url.BOARD_POST_DTL_AJAX;
+            const ajaxData: Record<string, any> = { "postNo": postNo, "boardCd": $("#boardCd").val() };
+            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
-                    return false;
+                    return;
                 }
                 cF.handlebars.template(res.rsltObj, "board_post_dtl", "show");
             });
@@ -141,7 +151,7 @@ const BoardPost = (function() {
         /**
          * 수정 화면으로 이동
          */
-        mdfForm: function() {
+        mdfForm: function(): void {
             cF.util.blockUISubmit("#procForm", Url.BOARD_POST_MDF_FORM);
         },
 
@@ -149,20 +159,20 @@ const BoardPost = (function() {
          * 삭제 (Ajax)
          * @param {string|number} postNo - 글 번호.
          */
-        delAjax: function(postNo: string|number) {
-            if (isNaN(postNo)) return;
+        delAjax: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
 
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
                 showCancelButton: true,
-            }).then(function(result: SwalResult) {
+            }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url = Url.BOARD_POST_DEL_AJAX;
-                const ajaxData = $("#procForm").serializeArray();
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
+                const url: string = Url.BOARD_POST_DEL_AJAX;
+                const ajaxData: Record<string, any> = $("#procForm").serializeArray();
+                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
-                        .then(function() {
+                        .then(function(): void {
                             if (res.rslt) BoardPost.list();
                         });
                 }, "block");
@@ -172,10 +182,13 @@ const BoardPost = (function() {
         /**
          * 목록 화면으로 이동
          */
-        list: function() {
+        list: function(): void {
             const boardCd = $("#boardCd").val();
-            const listUrl = Url.BOARD_POST_LIST + "?boardCd=" + boardCd + (BoardPost.isMdf ? "&isBackToList=Y" : "");
+            const listUrl: string = `${Url.BOARD_POST_LIST}?boardCd${boardCd}` + (BoardPost.isMdf ? "&isBackToList=Y" : "");
             cF.util.blockUIReplace(listUrl);
         }
     }
 })();
+document.addEventListener("DOMContentLoaded", function(): void {
+    BoardPost.init();
+});

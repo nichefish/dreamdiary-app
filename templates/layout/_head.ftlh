@@ -33,29 +33,29 @@
     <link rel="stylesheet" type="text/css" href="/css/font.css?${releaseDate!}" />
 
     <!--Javascript:: Global Javascript Bundle(used by all pages)-->
-    <script type="text/javascript" src="/js/vue.global<#if activeProfile! == "prod">.prod</#if>.js"></script>
-    <script type="text/javascript" src="/js/stomp.min.js"></script>
-    <script type="text/javascript" src="/js/sockjs.min.js"></script>
-    <script type="text/javascript" src="/js/handlebars.min.js"></script>
-    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <script type="text/javascript" src="/js/vendor/vue.global<#if activeProfile! == "prod">.prod</#if>.js"></script>
+    <script type="text/javascript" src="/js/vendor/stomp.min.js"></script>
+    <script type="text/javascript" src="/js/vendor/sockjs.min.js"></script>
+    <script type="text/javascript" src="/js/vendor/handlebars.min.js"></script>
+    <script type="text/javascript" src="/js/vendor/moment.min.js"></script>
     <!--Metronic:: Global Javascript Bundle(used by all pages)-->
     <script type="text/javascript" src="/metronic/assets/plugins/global/plugins.bundle.js"></script>
 
-    <script type="text/javascript" src="/js/jquery.cookie.js"></script>
-    <script type="text/javascript" src="/js/jquery.blockUI.min.js"></script>
-    <script type="text/javascript" src="/js/jquery.form.min.js"></script>
-    <script type="text/javascript" src="/js/jquery.validate.min.js"></script>
-    <script type="text/javascript" src="/js/additional-methods.js"></script>
+    <script type="text/javascript" src="/js/vendor/jquery/jquery.cookie.js"></script>
+    <script type="text/javascript" src="/js/vendor/jquery/jquery.blockUI.min.js"></script>
+    <script type="text/javascript" src="/js/vendor/jquery/jquery.form.min.js"></script>
+    <script type="text/javascript" src="/js/vendor/jquery/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/js/vendor/jquery/additional-methods.js"></script>
 
     <script type="text/javascript" src="/metronic/assets/js/scripts.bundle.js"></script>
 
     <!--Custom Javascript Bundle(used by all pages)-->
     <script type="text/javascript" src="/js/common/util.js?${releaseDate!}"></script>
     <script type="text/javascript" src="/js/common/ajax.js?${releaseDate!}"></script>
+    <script type="text/javascript" src="/js/common/date.js?${releaseDate!}"></script>
+    <script type="text/javascript" src="/js/common/format.js?${releaseDate!}"></script>
     <script type="text/javascript" src="/js/common/validate.js?${releaseDate!}"></script>
     <script type="text/javascript" src="/js/common/regex.js?${releaseDate!}"></script>
-    <script type="text/javascript" src="/js/common/date.js?${releaseDate!}"></script>
-    <script type="text/javascript" src="/js/common/helpers.js?${releaseDate!}"></script>
     <!--Custom Javascript Bundle :: helpers (used by all pages)-->
     <script type="text/javascript" src="/js/common/helper/datepicker.js?${releaseDate!}"></script>
     <script type="text/javascript" src="/js/common/helper/tagify.js?${releaseDate!}"></script>
@@ -67,11 +67,11 @@
         /** AuthInfo 객체 생성 */
         const AuthInfo = (function() {
             return Object.freeze({
-                userId: "${authInfo.userId!}",
-                nickNm: "${authInfo.nickNm!}",
-                email: "${authInfo.email!}",
-                proflImgUrl: "${authInfo.proflImgUrl!}",
-                isMngr: ${(authInfo.isMngr!'false')?c},
+                userId: "${(authInfo.userId)!}",
+                nickNm: "${(authInfo.nickNm)!}",
+                email: "${(authInfo.email)!}",
+                proflImgUrl: "${(authInfo.proflImgUrl)!}",
+                isMngr: ${((authInfo.isMngr)!false)?c},
                 authList: [
                     <#list (authInfo.authList)![] as auth>
                         {

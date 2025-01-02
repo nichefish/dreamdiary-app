@@ -107,7 +107,7 @@
 <#--include:: Aside-->
 <#include "/view/domain/board/def/_board_def_aside_base.ftlh">
 <#--include::modals-->
-<#include "/view/domain/board/def/_board_def_reg_modal.ftlh">
+<#include "/view/domain/board/def/_modal/_board_def_reg_modal.ftlh">
 <#--include::script modules-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
 <script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
