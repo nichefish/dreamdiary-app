@@ -83,7 +83,7 @@ cF.util = (function() {
                 Swal.fire({
                     text: msg,
                     showCancelButton: true,
-                }).then(function(result) {
+                }).then(function(result: SwalResult) {
                     if (result.value && hasTrueFunc) {
                         trueFunc();
                     } else if (hasFalseFunc) {

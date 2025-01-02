@@ -141,7 +141,7 @@ cF.ajax = (function () {
          * @param {Function} func - 요청 성공시 호출될 콜백 함수.
          * @param {boolean} [continueBlock] - 추가적인 블록 UI 동작 여부 (선택적).
          */
-        multipart: function (url, ajaxData, func, continueBlock) {
+        multipartRequest: function (url, ajaxData, func, continueBlock) {
             const option = {
                 url: url,
                 type: 'POST',

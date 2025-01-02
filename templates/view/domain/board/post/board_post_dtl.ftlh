@@ -6,37 +6,6 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<#--include::script modules-->
-<#include "/view/domain/board/post/_board_post_scripts.ftlh">
-
-<script>
-    const Page = (function() {
-        return {
-            /**
-             * 노션Notion 모달 페이지 호출
-             */
-            notionModal: function() {
-                const notionPageId = "${(post.notionPageId)!}";
-                if (notionPageId === "") return;
-
-                const iframe = $('<iframe>', {
-                    src: 'http://115.144.8.81:3000/' + notionPageId,
-                    id: 'myFrame',
-                    frameborder: 0,
-                    scrolling: 'yes',
-                    width: '100%',
-                    height: '700px',
-                    css: {
-                        border: 'none'
-                    }
-                }).appendTo('#notion_page_div');
-
-                $("#notion_page_modal").modal("show");
-            },
-        }
-    })();
-</script>
-
 <div class="card post">
     <#--begin::Card body-->
     <div class="card-body">
@@ -97,5 +66,8 @@
     <input type="hidden" name="postNo" id="postNo" value="${post.postNo!}" />
     <input type="hidden" name="boardCd" id="boardCd" value="${post.boardCd!}" />
 </form>
+
+<#--include::script modules--><#--include::script modules-->
+<script type="text/javascript" src="/js/view/domain/board/post/board_post_module.js?${releaseDate!}"></script>
 
 </@layout.layout>

@@ -181,12 +181,13 @@
 <#include "/view/global/_common/_clsf/sectn/_sectn_list_template.hbs">
 <#include "/view/global/_common/_clsf/comment/_comment_reg_modal.ftlh">
 <#--include::script modules-->
-<script type="text/javascript" src="/js/view/domain/notice/notice_module.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/js/view/domain/notice/notice_reg_form.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
+<script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
 <script type="text/javascript" src="/lib/prism/js/prism.js"></script>
 <script type="text/javascript" src="/js/common/helper/tinymce.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/notice/notice_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/notice/notice_reg_form.js?${releaseDate!}"></script>
 <#include "/view/global/_common/_clsf/sectn/_sectn_scripts.ftlh">
 <#include "/view/global/_common/_clsf/comment/_comment_modal_scripts.ftlh">
 <#--include:: component:: tinymce 이미지 추가 영역 template-->

@@ -1,9 +1,9 @@
 /**
- * dtl_cd_module.ts
+ * board_def_module.ts
  *
  * @author nichefish
  */
-const DtlCd = (function () {
+const BoardDef = (function () {
     return {
         /**
          * form init
@@ -11,50 +11,47 @@ const DtlCd = (function () {
          */
         initForm: function (obj = {}) {
             /* show modal */
-            cF.handlebars.template(obj, "dtl_cd_reg", "show");
+            cF.handlebars.template(obj, "board_def_reg", "show");
             /* jquery validation */
-            cF.validate.validateForm("#dtlCdRegForm", DtlCd.regAjax);
+            cF.validate.validateForm("#boardDefRegForm", BoardDef.regAjax);
             // checkbox init
             cF.util.chckboxLabel("useYn", "사용//미사용", "blue//gray");
-            cF.validate.replaceBlankIfMatches("#dtlCdRegForm #dtlCd", cF.regex.nonCd);
-            cF.validate.toUpperCase("#dtlCdRegForm #dtlCd");
+            cF.validate.replaceBlankIfMatches("#boardDefRegForm .cddata", cF.regex.nonCd);
+            cF.validate.onlyNum(".number");
         },
         /**
          * Draggable 컴포넌트 init
          */
         initDraggable: function () {
-            const keyExtractor = (item) => ({ "clCd": $("#clCd").val(), "dtlCd": $(item).attr("id") });
-            const url = "${Url.DTL_CD_SORT_ORDR_AJAX!}";
-            DtlCd.swappable = cF.draggable.init("", keyExtractor, url);
+            const keyExtractor = (item) => ({ "boardCd": $(item).attr("id") });
+            const url = "${Url.BOARD_DEF_SORT_ORDR_AJAX!}";
+            BoardDef.swappable = cF.draggable.init(keyExtractor, url);
         },
         /**
          * 등록 모달 호출
          */
         regModal: function () {
-            event.stopPropagation();
-            const obj = { "clCd": $("#clCd").val() };
             /* initialize form. */
-            DtlCd.initForm(obj);
+            BoardDef.initForm();
         },
         /**
          * form submit
          */
         submit: function () {
-            $("#dtlCdRegForm").submit();
+            $("#boardDefRegForm").submit();
         },
         /**
          * 등록 (Ajax)
          */
         regAjax: function () {
             Swal.fire({
-                text: Message.get("view.cnfm.save"),
+                text: Message.get("view.cnfm.reg"),
                 showCancelButton: true,
             }).then(function (result) {
                 if (!result.value)
                     return;
-                $("#dtlCdRegForm #regYn").val("Y");
-                const url = Url.DTL_CD_REG_AJAX;
-                const ajaxData = $("#dtlCdRegForm").serializeArray();
+                const url = Url.BOARD_DEF_REG_AJAX;
+                const ajaxData = $("#boardDefRegForm").serializeArray();
                 cF.ajax.post(url, ajaxData, function (res) {
                     Swal.fire({ text: res.message })
                         .then(function () {
@@ -66,11 +63,11 @@ const DtlCd = (function () {
         },
         /**
          * 수정 모달 호출
-         * @param {string} dtlCd - 조회할 상세 코드.
+         * @param {string} boardCd - 게시판 코드 (key).
          */
-        mdfModal: function (dtlCd) {
-            const url = Url.DTL_CD_DTL_AJAX;
-            const ajaxData = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
+        mdfModal: function (boardCd) {
+            const url = Url.BOARD_DEF_DTL_AJAX;
+            const ajaxData = { "boardCd": boardCd };
             cF.ajax.get(url, ajaxData, function (res) {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message))
@@ -80,23 +77,22 @@ const DtlCd = (function () {
                 const { rsltObj } = res;
                 rsltObj.isMdf = true;
                 /* initialize form. */
-                DtlCd.initForm(rsltObj);
+                BoardDef.initForm(rsltObj);
             });
         },
         /**
          * 사용으로 변경 (Ajax)
-         * @param {string} dtlCd - 변경할 상세 코드.
+         * @param {string} key - 게시판 코드 (key).
          */
-        useAjax: function (dtlCd) {
-            event.stopPropagation();
+        useAjax: function (key) {
             Swal.fire({
                 text: Message.get("view.cnfm.use"),
                 showCancelButton: true,
             }).then(function (result) {
                 if (!result.value)
                     return;
-                const url = Url.DTL_CD_USE_AJAX;
-                const ajaxData = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
+                const url = Url.BOARD_DEF_USE_AJAX;
+                const ajaxData = { "boardCd": key };
                 cF.ajax.post(url, ajaxData, function (res) {
                     Swal.fire({ text: res.message })
                         .then(function () {
@@ -108,18 +104,17 @@ const DtlCd = (function () {
         },
         /**
          * 미사용으로 변경 (Ajax)
-         * @param {string} dtlCd - 변경할 상세 코드.
+         * @param {string} key - 게시판 코드 (key).
          */
-        unuseAjax: function (dtlCd) {
-            event.stopPropagation();
+        unuseAjax: function (key) {
             Swal.fire({
                 text: Message.get("view.cnfm.unuse"),
                 showCancelButton: true,
             }).then(function (result) {
                 if (!result.value)
                     return;
-                const url = Url.DTL_CD_UNUSE_AJAX;
-                const ajaxData = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
+                const url = Url.BOARD_DEF_UNUSE_AJAX;
+                const ajaxData = { "boardCd": key };
                 cF.ajax.post(url, ajaxData, function (res) {
                     Swal.fire({ text: res.message })
                         .then(function () {
@@ -131,18 +126,17 @@ const DtlCd = (function () {
         },
         /**
          * 삭제 (Ajax)
-         * @param {string} dtlCd - 삭제할 상세 코드.
+         * @param {string} key - 게시판 코드 (key).
          */
-        delAjax: function (dtlCd) {
-            event.stopPropagation();
+        delAjax: function (key) {
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
                 showCancelButton: true,
             }).then(function (result) {
                 if (!result.value)
                     return;
-                const url = Url.DTL_CD_DEL_AJAX;
-                const ajaxData = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
+                const url = Url.BOARD_DEF_DEL_AJAX;
+                const ajaxData = { "boardCd": key };
                 cF.ajax.post(url, ajaxData, function (res) {
                     Swal.fire({ text: res.message })
                         .then(function () {

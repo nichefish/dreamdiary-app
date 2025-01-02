@@ -1,11 +1,11 @@
 /**
- * notice_module.ts
+ * board_post_module.ts
  *
  * @author nichefish
  */
-const Notice = (function() {
+const BoardPost = (function() {
     return {
-        isMdf: $("#noticeRegForm").data("mode") === "modify",
+        isMdf: $("#boardPostRegForm").data("mode") === "modify",
 
         /**
          * form init
@@ -13,11 +13,11 @@ const Notice = (function() {
          */
         initForm: function(obj = {}) {
             /* jquery validation */
-            cF.validate.validateForm("#noticeRegForm", Notice.submitHandler);
+            cF.validate.validateForm("#postRegForm", BoardPost.submitHandler);
             /* tinymce init */
             cF.tinymce.init("#tinymce_cn");
             /* tagify */
-            cF.tagify.initWithCtgr("#noticeRegForm #tagListStr");
+            cF.tagify.initWithCtgr("#postRegForm #tagListStr");
             // 잔디발송여부 클릭시 글씨 변경
             cF.util.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function() {
                 $("#trgetTopicSpan").show();
@@ -30,23 +30,23 @@ const Notice = (function() {
          * Custom SubmitHandler
          */
         submitHandler: function() {
-            if (Notice.submitMode === "preview") {
+            if (Page.submitMode === "preview") {
                 const popupNm = "preview";
                 const options = 'width=1280,height=1440,top=0,left=270';
                 const popup = cF.util.openPopup("", popupNm, options);
                 if (popup) popup.focus();
-                const popupUrl = Url.NOTICE_REG_PREVIEW_POP;
-                $("#noticeRegForm").attr("action", popupUrl).attr("target", popupNm);
+                const popupUrl = Url.BOARD_POST_REG_PREVIEW_POP;
+                $("#postRegForm").attr("action", popupUrl).attr("target", popupNm);
                 return true;
-            } else if (Notice.submitMode === "submit") {
-                $("#noticeRegForm").removeAttr("action");
+            } else if (Page.submitMode === "submit") {
+                $("#postRegForm").removeAttr("action");
                 Swal.fire({
-                    text: Message.get(Notice.isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
+                    text: BoardPost.isMdf ? Message.get("view.cnfm.mdf") : Message.get("view.cnfm.reg"),
                     showCancelButton: true,
                 }).then(function(result: SwalResult) {
                     if (!result.value) return;
 
-                    Notice.regAjax();
+                    BoardPost.regAjax();
                 });
             }
         },
@@ -56,39 +56,24 @@ const Notice = (function() {
          */
         search: function() {
             $("#listForm #pageNo").val(1);
-            const url = Url.NOTICE_LIST;
-            cF.util.blockUISubmit("#listForm", url + "?actionTyCd=SEARCH");
+            cF.util.blockUISubmit("#listForm", Url.BOARD_POST_LIST + "?actionTyCd=SEARCH");
         },
 
         /**
          * 내가 작성한 글 목록 보기
          */
         myPaprList: function() {
-            const url = Url.NOTICE_LIST;
-            const param = `?searchType=nickNm&searchKeyword=${AuthInfo.nickNm!}&regstrId=${AuthInfo.userId!}&pageSize=50&actionTyCd=MY_PAPR`;
+            const boardCd = $("#boardCd").val();
+            const url = Url.BOARD_POST_LIST;
+            const param = `??boardCd=${boardCd!}&searchType=nickNm&searchKeyword=${AuthInfo.nickNm!}&regstrId=${AuthInfo.userId!}&pageSize=50&actionTyCd=MY_PAPR`;
             cF.util.blockUIReplace(url + param);
         },
 
         /**
-         * 엑셀 다운로드
-         */
-        xlsxDownload: function() {
-            Swal.fire({
-                text: Message.get("view.cnfm.download"),
-                showCancelButton: true,
-            }).then(function(result: SwalResult) {
-                if (!result.value) return;
-
-                cF.util.blockUIFileDownload();
-                $("#listForm").attr("action", Url.NOTICE_LIST_XLSX_DOWNLOAD).submit();
-            });
-        },
-
-        /**
-         * 등록 화면 이동
+         * 등록 화면으로 이동
          */
         regForm: function() {
-            cF.util.blockUISubmit("#procForm", Url.NOTICE_REG_FORM);
+            cF.util.blockUISubmit("#procForm", Url.BOARD_POST_REG_FORM);
         },
 
         /**
@@ -96,8 +81,8 @@ const Notice = (function() {
          */
         submit: function() {
             if (tinymce !== undefined) tinymce.activeEditor.save();
-            Notice.submitMode = "submit";
-            $("#noticeRegForm").submit();
+            Page.submitMode = "submit";
+            $("#postRegForm").submit();
         },
 
         /**
@@ -105,20 +90,20 @@ const Notice = (function() {
          */
         preview: function() {
             if (tinymce !== undefined) tinymce.activeEditor.save();
-            Notice.submitMode = "preview";
-            $("#noticeRegForm").submit();
+            Page.submitMode = "preview";
+            $("#postRegForm").submit();
         },
 
         /**
          * 등록/수정 처리(Ajax)
          */
         regAjax: function() {
-            const url = Notice.isMdf ? Url.NOTICE_MDF_AJAX : Url.NOTICE_REG_AJAX;
-            const ajaxData = new FormData(document.getElementById("noticeRegForm"));
-            cF.ajax.multipart(url, ajaxData, function(res: AjaxResponse) {
-                Swal.fire({text: res.message})
+            const url = "<#if isMdf!false>${Url.BOARD_POST_MDF_AJAX!}<#else>${Url.BOARD_POST_REG_AJAX!}</#if>";
+            const ajaxData = new FormData(document.getElementById("postRegForm"));
+            cF.ajax.multipart(url, ajaxData, function(res) {
+                Swal.fire({ text: res.message })
                     .then(function() {
-                        if (res.rslt) Notice.list();
+                        if (res.rslt) BoardPost.list();
                     });
             }, "block");
         },
@@ -131,7 +116,7 @@ const Notice = (function() {
             if (isNaN(postNo)) return;
 
             $("#procForm #postNo").val(postNo);
-            cF.util.blockUISubmit("#procForm", Url.NOTICE_DTL);
+            cF.util.blockUISubmit("#procForm", Url.BOARD_POST_DTL);
         },
 
         /**
@@ -142,22 +127,22 @@ const Notice = (function() {
             event.stopPropagation();
             if (isNaN(postNo)) return;
 
-            const url = Url.NOTICE_DTL_AJAX;
-            const ajaxData = {"postNo": postNo};
+            const url = Url.BOARD_POST_DTL_AJAX;
+            const ajaxData = { "postNo": postNo, "boardCd": $("#boardCd").val() };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse) {
                 if (!res.rslt) {
-                    if (cF.util.isNotEmpty(res.message)) Swal.fire({text: res.message});
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return false;
                 }
-                cF.handlebars.template(res.rsltObj, "notice_dtl", "show");
+                cF.handlebars.template(res.rsltObj, "board_post_dtl", "show");
             });
         },
 
         /**
-         * 수정 화면 이동
+         * 수정 화면으로 이동
          */
         mdfForm: function() {
-            cF.util.blockUISubmit("#procForm", Url.NOTICE_MDF_FORM);
+            cF.util.blockUISubmit("#procForm", Url.BOARD_POST_MDF_FORM);
         },
 
         /**
@@ -173,12 +158,12 @@ const Notice = (function() {
             }).then(function(result: SwalResult) {
                 if (!result.value) return;
 
-                const url = Url.NOTICE_DEL_AJAX;
+                const url = Url.BOARD_POST_DEL_AJAX;
                 const ajaxData = $("#procForm").serializeArray();
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
-                    Swal.fire({text: res.message})
+                    Swal.fire({ text: res.message })
                         .then(function() {
-                            if (res.rslt) Notice.list();
+                            if (res.rslt) BoardPost.list();
                         });
                 }, "block");
             });
@@ -188,7 +173,8 @@ const Notice = (function() {
          * 목록 화면으로 이동
          */
         list: function() {
-            const listUrl = Url.NOTICE_LIST + Notice.isMdf ? "?isBackToList=Y" : "";
+            const boardCd = $("#boardCd").val();
+            const listUrl = Url.BOARD_POST_LIST + "?boardCd=" + boardCd + (BoardPost.isMdf ? "&isBackToList=Y" : "");
             cF.util.blockUIReplace(listUrl);
         }
     }

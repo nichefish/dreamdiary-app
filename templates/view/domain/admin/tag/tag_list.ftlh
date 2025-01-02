@@ -14,6 +14,7 @@
 
 <#--include::script modules-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
+<script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
 <#include "/view/domain/admin/tag/_tag_admin_scripts.ftlh">
 
 <script>

@@ -59,7 +59,7 @@ const Page = (function() {
                 showCancelButton: true,
                 confirmButtonText: "로그인",
                 cancelButtonText: "취소",
-        }).then(function(result: object) {
+        }).then(function(result: SwalResult) {
                 if (result.value) {
                     // 중복ID 로그인
                     $("#userId").val(Model.userId);

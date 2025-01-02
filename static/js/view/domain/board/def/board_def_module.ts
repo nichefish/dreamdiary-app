@@ -1,9 +1,9 @@
 /**
- * cl_cd_module.ts
+ * board_def_module.ts
  *
  * @author nichefish
  */
-const ClCd = (function() {
+const BoardDef = (function() {
     return {
         /**
          * form init
@@ -11,69 +11,52 @@ const ClCd = (function() {
          */
         initForm: function(obj = {}) {
             /* show modal */
-            cF.handlebars.template(obj, "cl_cd_reg", "show");
+            cF.handlebars.template(obj, "board_def_reg", "show");
 
             /* jquery validation */
-            cF.validate.validateForm("#clCdRegForm", ClCd.regAjax);
+            cF.validate.validateForm("#boardDefRegForm", BoardDef.regAjax);
             // checkbox init
             cF.util.chckboxLabel("useYn", "사용//미사용", "blue//gray");
-            cF.validate.replaceBlankIfMatches("#clCdRegForm #clCd", cF.regex.nonCd);
-            cF.validate.toUpperCase("#clCdRegForm #clCd");
+            cF.validate.replaceBlankIfMatches("#boardDefRegForm .cddata", cF.regex.nonCd);
+            cF.validate.onlyNum(".number");
         },
 
         /**
          * Draggable 컴포넌트 init
          */
         initDraggable: function() {
-            const keyExtractor = (item) => ({ "clCd": $(item).attr("id") });
-            const url = Url.CL_CD_SORT_ORDR_AJAX;
-            ClCd.swappable = cF.draggable.init("", keyExtractor, url);
-        },
-
-        /**
-         * 목록 검색
-         */
-        search: function() {
-            event.stopPropagation();
-
-            $("#listForm #pageNo").val(1);
-            cF.util.blockUISubmit("#listForm", Url.CL_CD_LIST + "?actionTyCd=SEARCH");
+            const keyExtractor = (item) => ({ "boardCd": $(item).attr("id") });
+            const url = "${Url.BOARD_DEF_SORT_ORDR_AJAX!}";
+            BoardDef.swappable = cF.draggable.init(keyExtractor, url);
         },
 
         /**
          * 등록 모달 호출
          */
         regModal: function() {
-            event.stopPropagation();
-
             /* initialize form. */
-            ClCd.initForm({});
+            BoardDef.initForm();
         },
 
         /**
          * form submit
          */
         submit: function() {
-            event.stopPropagation();
-
-            $("#clCdRegForm").submit();
+            $("#boardDefRegForm").submit();
         },
 
         /**
-         * 등록/수정 (Ajax)
+         * 등록 (Ajax)
          */
         regAjax: function() {
-            event.stopPropagation();
-
             Swal.fire({
                 text: Message.get("view.cnfm.reg"),
                 showCancelButton: true,
             }).then(function(result: SwalResult) {
                 if (!result.value) return;
 
-                $("#clCdRegForm #regYn").val("Y");
-                const url = Url.CL_CD_REG_AJAX;
-                const ajaxData = $("#clCdRegForm").serializeArray();
+                const url = Url.BOARD_DEF_REG_AJAX;
+                const ajaxData = $("#boardDefRegForm").serializeArray();
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
                     Swal.fire({ text: res.message })
                         .then(function() {
@@ -84,45 +67,12 @@ const ClCd = (function() {
         },
 
         /**
-         * 상세 화면으로 이동
-         * @param {string} clCd - 조회할 분류 코드.
-         */
-        dtl: function(clCd: string) {
-            event.stopPropagation();
-
-            cF.util.blockUIRequest();
-            $("#procForm #clCd").val(clCd);
-            cF.util.blockUISubmit("#procForm", Url.CL_CD_DTL);
-        },
-
-        /**
-         * 상세 모달 호출
-         * @param {string} clCd - 조회할 분류 코드.
-         */
-        dtlModal: function(clCd: string) {
-            event.stopPropagation();
-
-            const url = Url.CL_CD_DTL_AJAX;
-            const ajaxData = { "clCd": clCd };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse) {
-                if (!res.rslt) {
-                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
-                    return false;
-                }
-                cF.handlebars.template(res.rsltObj, "cl_cd_dtl", "show");
-                ClCd.key = clCd;
-            });
-        },
-
-        /**
          * 수정 모달 호출
-         * @param {string} clCd - 조회할 분류 코드.
+         * @param {string} boardCd - 게시판 코드 (key).
          */
-        mdfModal: function(clCd: string) {
-            event.stopPropagation();
-
-            const url = Url.CL_CD_DTL_AJAX;
-            const ajaxData = { "clCd": clCd };
+        mdfModal: function(boardCd: string) {
+            const url = Url.BOARD_DEF_DTL_AJAX;
+            const ajaxData = { "boardCd": boardCd };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse) {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -131,26 +81,23 @@ const ClCd = (function() {
                 const { rsltObj } = res;
                 rsltObj.isMdf = true;
                 /* initialize form. */
-                ClCd.initForm(rsltObj);
-                $('#cl_cd_dtl_modal').modal('hide');
+                BoardDef.initForm(rsltObj);
             });
         },
 
         /**
          * 사용으로 변경 (Ajax)
-         * @param {string} clCd - 변경할 분류 코드.
+         * @param {string} key - 게시판 코드 (key).
          */
-        useAjax: function(clCd: string) {
-            event.stopPropagation();
-
+        useAjax: function(key: string) {
             Swal.fire({
                 text: Message.get("view.cnfm.use"),
                 showCancelButton: true,
             }).then(function(result: SwalResult) {
                 if (!result.value) return;
 
-                const url = Url.CL_CD_USE_AJAX;
-                const ajaxData = { "clCd": clCd };
+                const url = Url.BOARD_DEF_USE_AJAX;
+                const ajaxData = { "boardCd": key };
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
                     Swal.fire({ text: res.message })
                         .then(function() {
@@ -162,19 +109,17 @@ const ClCd = (function() {
 
         /**
          * 미사용으로 변경 (Ajax)
-         * @param {string} clCd - 변경할 분류 코드.
+         * @param {string} key - 게시판 코드 (key).
          */
-        unuseAjax: function(clCd: string) {
-            event.stopPropagation();
-
+        unuseAjax: function(key: string) {
             Swal.fire({
                 text: Message.get("view.cnfm.unuse"),
                 showCancelButton: true,
             }).then(function(result: SwalResult) {
                 if (!result.value) return;
 
-                const url = Url.CL_CD_UNUSE_AJAX;
-                const ajaxData = { "clCd": clCd };
+                const url = Url.BOARD_DEF_UNUSE_AJAX;
+                const ajaxData = { "boardCd": key };
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
                     Swal.fire({ text: res.message })
                         .then(function() {
@@ -186,19 +131,17 @@ const ClCd = (function() {
 
         /**
          * 삭제 (Ajax)
-         * @param {string} clCd - 삭제할 분류 코드.
+         * @param {string} key - 게시판 코드 (key).
          */
-        delAjax: function(clCd: string) {
-            event.stopPropagation();
-
+        delAjax: function(key: string) {
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
                 showCancelButton: true,
             }).then(function(result: SwalResult) {
                 if (!result.value) return;
 
-                const url = Url.CL_CD_DEL_AJAX;
-                const ajaxData = { "clCd" : clCd };
+                const url = Url.BOARD_DEF_DEL_AJAX;
+                const ajaxData = { "boardCd": key };
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
                     Swal.fire({ text: res.message })
                         .then(function() {
@@ -206,14 +149,6 @@ const ClCd = (function() {
                         });
                 }, "block");
             });
-        },
-
-        /**
-         * 목록 화면으로 이동
-         */
-        list: function() {
-            const listUrl = Url.CL_CD_LIST + "?isBackToList=Y";
-            cF.util.blockUIReplace(listUrl);
         },
     }
 })();

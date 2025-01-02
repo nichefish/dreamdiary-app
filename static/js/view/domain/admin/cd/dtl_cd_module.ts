@@ -55,10 +55,11 @@ const DtlCd = (function() {
             Swal.fire({
                 text: Message.get("view.cnfm.save"),
                 showCancelButton: true,
-            }).then(function(result) {
+            }).then(function(result: SwalResult) {
                 if (!result.value) return;
+
                 $("#dtlCdRegForm #regYn").val("Y");
-                const url = "${Url.DTL_CD_REG_AJAX!}";
+                const url = Url.DTL_CD_REG_AJAX;
                 const ajaxData = $("#dtlCdRegForm").serializeArray();
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
                     Swal.fire({ text: res.message })
@@ -98,8 +99,9 @@ const DtlCd = (function() {
             Swal.fire({
                 text: Message.get("view.cnfm.use"),
                 showCancelButton: true,
-            }).then(function(result) {
+            }).then(function(result: SwalResult) {
                 if (!result.value) return;
+
                 const url = Url.DTL_CD_USE_AJAX;
                 const ajaxData = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
@@ -121,8 +123,9 @@ const DtlCd = (function() {
             Swal.fire({
                 text: Message.get("view.cnfm.unuse"),
                 showCancelButton: true,
-            }).then(function(result) {
+            }).then(function(result: SwalResult) {
                 if (!result.value) return;
+
                 const url = Url.DTL_CD_UNUSE_AJAX;
                 const ajaxData = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
@@ -144,8 +147,9 @@ const DtlCd = (function() {
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
                 showCancelButton: true,
-            }).then(function(result) {
+            }).then(function(result: SwalResult) {
                 if (!result.value) return;
+
                 const url = Url.DTL_CD_DEL_AJAX;
                 const ajaxData = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {

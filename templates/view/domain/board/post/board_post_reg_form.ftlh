@@ -6,39 +6,16 @@
 <!DOCTYPE html>
 <#import "/layout/layout_default.ftlh" as layout >
 
-<#assign isReg = (isReg!false)>
-<#assign isMdf = (isMdf!false)>
+<#assign isReg = (formMode == "regist")!false>
+<#assign isMdf = (formMode == "modify")!false>
 
 <@layout.layout toolbar=toolbar!"">
-
-<#--include::script modules-->
-<script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
-<script type="text/javascript" src="/lib/prism/js/prism.js"></script>
-<script type="text/javascript" src="/js/common/helper/tinymce.js?${releaseDate!}"></script>
-<#include "/view/domain/board/post/_board_post_scripts.ftlh">
-
-<script>
-    const Page = (function() {
-        return {
-            /**
-             * Page 객체 초기화
-             */
-            init: function() {
-                /* initialize form. */
-                BoardPost.initForm();
-            },
-        }
-    })();
-    document.addEventListener("DOMContentLoaded", function() {
-        Page.init();
-    });
-</script>
 
 <div class="card post">
     <#--begin::Card body-->
     <div class="card-body">
         <!--begin:Form-->
-        <form name="postRegForm" id="postRegForm" class="form" method="post" enctype="multipart/form-data">
+        <form name="postRegForm" id="postRegForm" class="form" data-mode="${formMode!}" method="post" enctype="multipart/form-data">
             <input type="hidden" name="postNo" value="${post.postNo!}">
             <input type="hidden" name="boardCd" id="boardCd" value="<#if isMdf!false>${post.boardCd!}<#else>${boardCd!}</#if>">
             <input type="hidden" name="atchFileNo" value="${post.atchFileNo!}">
@@ -160,5 +137,11 @@
 
 <#--include:: component:: tinymce 이미지 추가 영역 template-->
 <#include "/view/global/_tinymce_img.ftlh">
+
+<#--include::script modules-->
+<script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
+<script type="text/javascript" src="/lib/prism/js/prism.js"></script>
+<script type="text/javascript" src="/js/common/helper/tinymce.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/board/post/board_post_module.js?${releaseDate!}"></script>
 
 </@layout.layout>

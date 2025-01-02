@@ -1,6 +1,13 @@
 
 <div style="border: 1px solid #ccc; padding: 10px; margin-top:20px; border-radius: 5px;">
 
+### 2025-01-02 | v0.10.1
+- 개선 사항
+  - 점진적인 TypeScript 마이그레이션.
+  - 기존 "commons" 네임스페이스를 "cF"로 축약. 지나치게 비대한 util, validation 모듈 분리.
+  - Ajax, 정규식 관련 메소드를 별도 모듈로 분리. ajax 요청 메소드를 get과 post로 분리.
+  - swal.d.ts 추가.
+
 ### 2025-01-01 | v0.10.0
 - 개선 사항:
   - 캐싱 처리 패턴을 기본 인터페이스에 통합.
