@@ -9,11 +9,11 @@
 <#macro header_datepicker param searchNm initDt >
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const ptn = commons.date.ptnDate;
+            const ptn = cF.date.ptnDate;
             /** dateRangePicker init */
             let initDt = "${initDt!}";
-            if (initDt === "today") initDt = commons.date.getCurrDateStr(ptn);
-            commons.datepicker.singleDatePicker("#${searchNm}", ptn, initDt);
+            if (initDt === "today") initDt = cF.date.getCurrDateStr(ptn);
+            cF.datepicker.singleDatePicker("#${searchNm}", ptn, initDt);
         });
     </script>
     <span class="menu-icon me-md-2 vertical-middle">
@@ -31,11 +31,11 @@
 <#macro header_datetimepicker param searchNm initDt >
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const ptn = commons.date.ptnDatetime;
+            const ptn = cF.date.ptnDatetime;
             /** dateRangePicker init */
             let initDt = "${initDt!}";
-            if (initDt === "") initDt = commons.date.getCurrDateStr(ptn);
-            commons.datepicker.singleDatePicker("#${searchNm}", ptn, initDt);
+            if (initDt === "") initDt = cF.date.getCurrDateStr(ptn);
+            cF.datepicker.singleDatePicker("#${searchNm}", ptn, initDt);
         });
     </script>
     <span class="menu-icon me-md-2 vertical-middle">

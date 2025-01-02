@@ -11,14 +11,14 @@
              */
             initForm: function(obj = {}) {
                 /* jquery validation */
-                commons.validate.validateForm("#myPwChgForm", UserMyPwChg.submitHandler, {
+                cF.validate.validateForm("#myPwChgForm", UserMyPwChg.submitHandler, {
                     rules: {
-                        newPw: { regex: commons.validate.pwRegex },
+                        newPw: { regex: cF.regex.pw },
                         newPwCf: { equalTo: "#newPw" }
                     },
                     messages: {
-                        newPw: { regex:"변경할 비밀번호가 형식에 맞지 않습니다." },
-                        newPwCf: { equalTo:"변경할 비밀번호에 입력한 값과 동일하게 입력해야 합니다." }
+                        newPw: { regex: "변경할 비밀번호가 형식에 맞지 않습니다." },
+                        newPwCf: { equalTo: "변경할 비밀번호에 입력한 값과 동일하게 입력해야 합니다." }
                     },
                 });
             },
@@ -41,7 +41,7 @@
              */
             myPwChgModal: function() {
                 const data = { "errorMsg": "${errorMsg!}" };
-                commons.util.handlebarsTemplate(data, "user_my_pw_chg", "show");
+                cF.handlebars.template(data, "user_my_pw_chg", "show");
             },
 
             /**
@@ -57,10 +57,10 @@
             myPwChgAjax: function() {
                 const url = "${Url.USER_MY_PW_CHG_AJAX!}";
                 const ajaxData = { "currPw" : $("#currPw").val(), "newPw" : $("#newPw").val() };
-                commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                cF.ajax.post(url, ajaxData, function(res) {
                     Swal.fire({ text: res.message })
                         .then(function() {
-                            if (res.rslt) commons.util.blockUIReload();
+                            if (res.rslt) cF.util.blockUIReload();
                         });
                 });
             },

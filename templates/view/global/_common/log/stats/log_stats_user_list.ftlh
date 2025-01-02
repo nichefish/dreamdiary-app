@@ -19,21 +19,21 @@
              */
             init: function() {
                 /* 모든 table 헤더에 클릭 이벤트를 설정한다. */
-                commons.util.initSortTable();
+                cF.util.initSortTable();
             },
 
             /**
              * 전체 로그 페이지로 이동
              */
             logActvtyList: function() {
-                commons.util.blockUISubmit("#listForm", "${Url.LOG_ACTVTY_LIST!}");
+                cF.util.blockUISubmit("#listForm", "${Url.LOG_ACTVTY_LIST!}");
             },
 
             /**
              * 전체 로그 페이지로 이동
              */
             logStatsUserList: function() {
-                commons.util.blockUISubmit("#listForm", "${Url.LOG_STATS_USER_LIST!}");
+                cF.util.blockUISubmit("#listForm", "${Url.LOG_STATS_USER_LIST!}");
             },
 
             /**
@@ -41,7 +41,7 @@
              */
             search: function() {
                 $("#listForm #pageNo").val(1);
-                commons.util.blockUISubmit("#listForm", "${Url.LOG_STATS_USER_LIST!}?actionTyCd=SEARCH");
+                cF.util.blockUISubmit("#listForm", "${Url.LOG_STATS_USER_LIST!}?actionTyCd=SEARCH");
             },
 
             /**
@@ -53,7 +53,7 @@
                     showCancelButton: true,
                 }).then(function(result) {
                     if (!result.value) return;
-                    commons.util.blockUIFileDownload();
+                    cF.util.blockUIFileDownload();
                     $("#listForm").attr("action", "${Url.LOG_ACTVTY_LIST_XLSX_DOWNLOAD!}").submit();
                 });
             }

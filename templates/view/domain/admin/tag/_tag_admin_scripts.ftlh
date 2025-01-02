@@ -12,9 +12,9 @@
             tagListAjax: function(refContentType) {
                 const url = "${Url.TAG_LIST_AJAX!}";
                 const ajaxData = { "contentType": refContentType };
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                     // 상단에 태그 카테고리 메뉴 생성
@@ -22,8 +22,8 @@
                     res.rsltList.forEach(item => {
                         if (item.ctgr) ctgrSet.add(item.ctgr);
                     });
-                    commons.util.handlebarsTemplate(ctgrSet, "tag_ctgr");
-                    commons.util.handlebarsTemplate(res.rsltList, "tag_list");
+                    cF.handlebars.template(ctgrSet, "tag_ctgr");
+                    cF.handlebars.template(res.rsltList, "tag_list");
                 });
             },
 
@@ -36,13 +36,13 @@
 
                 const url = "${Url.TAG_DTL_AJAX!}";
                 const ajaxData = { "tagNo": tagNo };
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                     // 태그 상세 정보
-                    commons.util.handlebarsTemplate(res.rsltObj, "tag_admin_dtl", "show");
+                    cF.handlebars.template(res.rsltObj, "tag_admin_dtl", "show");
                 });
             },
 
@@ -53,7 +53,7 @@
             addPropertyModal: function(tagNo) {
                 if (isNaN(tagNo)) return;
 
-                commons.util.handlebarsTemplate({}, "tag_property_reg", "show");
+                cF.handlebars.template({}, "tag_property_reg", "show");
             }
         }
     })();

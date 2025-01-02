@@ -18,7 +18,7 @@
              * (reqstItemIdx는 어차피 한 페이지 내에서 고유하므로 따로 처리해줄 필요 없다.)
              */
             addFileItem: function() {
-                const reqstItemIdx = commons.util.getReqstItemIdx("input", "id^=atchFile", "atchFile");		// elmt, selector, elmtId
+                const reqstItemIdx = cF.util.getReqstItemIdx("input", "id^=atchFile", "atchFile");		// elmt, selector, elmtId
                 // 감췄다 숨겼다 할것이므로 style로 설정한다.
                 const tableTmpl = "<div class='row' id='itemContainer"+reqstItemIdx+"' style='display:none;'>" + $("#atchFileTemplate").html() + "</div>";
                 const str = tableTmpl.replace(/__INDEX__/g, reqstItemIdx);
@@ -28,7 +28,7 @@
                 $("#atchFile" + reqstItemIdx).on("change", function() {
                     let newFileSpan = $("div#itemContainer"+reqstItemIdx);
                     if (this.value !== "") {
-                        if (!commons.validate.fileSizeChck(this) || !commons.validate.fileExtnChck(this)) newFileSpan.remove();      // fileSizeChck
+                        if (!cF.validate.fileSizeChck(this) || !cF.validate.fileExtnChck(this)) newFileSpan.remove();      // fileSizeChck
                         let filename = $("input#atchFile"+reqstItemIdx).val().split('\/').pop().split('\\').pop();
                         $("span#fileNm"+reqstItemIdx).text(filename);
                         newFileSpan.show();

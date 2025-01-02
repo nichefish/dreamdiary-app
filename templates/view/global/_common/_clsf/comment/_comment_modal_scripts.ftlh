@@ -22,10 +22,10 @@
              */
             initForm: function(obj = {}) {
                 /* show modal */
-                commons.util.handlebarsTemplate(obj, "comment_reg", "show");
+                cF.handlebars.template(obj, "comment_reg", "show");
 
                 /* jquery validation */
-                commons.validate.validateForm("#commentRegForm", Comment.modal.regAjax);
+                cF.validate.validateForm("#commentRegForm", Comment.modal.regAjax);
             },
 
             /**
@@ -60,14 +60,14 @@
                     if (!result.value) return;
                     const url = isReg ? "${Url.COMMENT_REG_AJAX!}" : "${Url.COMMENT_MDF_AJAX!}";
                     const ajaxData = new FormData(document.getElementById("commentRegForm"));
-                    commons.util.blockUIMultipartAjax(url, ajaxData, function(res) {
+                    cF.ajax.multipart(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (!res.rslt) return;
                                 if (Comment.modal.refreshFunc !== undefined) {
                                     Comment.modal.refreshFunc();
                                 } else {
-                                    commons.util.blockUIReload();
+                                    cF.util.blockUIReload();
                                 }
                             });
                     });
@@ -83,9 +83,9 @@
 
                 const url = "${Url.COMMENT_DTL_AJAX!}";
                 const ajaxData = { "postNo" : postNo };
-                commons.util.blockUIAjax(url, "get", ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                     const { rsltObj } = res;
@@ -108,14 +108,14 @@
                     if (!result.value) return;
                     const url = "${Url.COMMENT_DEL_AJAX!}";
                     const ajaxData = { "postNo": postNo, "actvtyCtgrCd": "${actvtyCtgrCd!}" };
-                    commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (!res.rslt) return;
                                 if (Comment.modal.refreshFunc !== undefined) {
                                     Comment.modal.refreshFunc();
                                 } else {
-                                    commons.util.blockUIReload();
+                                    cF.util.blockUIReload();
                                 }
                             });
                     });

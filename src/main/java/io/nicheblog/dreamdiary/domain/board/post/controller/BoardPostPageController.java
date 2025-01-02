@@ -134,7 +134,7 @@ public class BoardPostPageController
         // 빈 객체 주입 (freemarker error prevention)
         model.addAttribute("post", new BoardPostDto());         // 빈 객체 주입 (freemarker error prevention)
         // 등록/수정 화면 플래그 세팅
-        model.addAttribute(Constant.IS_REG, true);           // 등록/수정 화면 플래그 세팅
+        model.addAttribute(Constant.FORM_MODE, "regist");
         // 코드 정보 모델에 추가
         final BoardDefDto boardDef = boardDefService.getDtlDto(boardCd);
         dtlCdService.setCdListToModel(boardDef.getCtgrClCd(), model);
@@ -258,7 +258,8 @@ public class BoardPostPageController
         final BoardPostDto rsDto = boardPostService.getDtlDto(postKey.getClsfKey());
         model.addAttribute("post", rsDto);
         // 등록/수정 화면 플래그 세팅
-        model.addAttribute(Constant.IS_MDF, true);
+        // 등록/수정 화면 플래그 세팅
+        model.addAttribute(Constant.FORM_MODE, "modify");
         // 코드 정보 모델에 추가
         final BoardDefDto boardDef = boardDefService.getDtlDto(boardCd);
         dtlCdService.setCdListToModel(boardDef.getCtgrClCd(), model);

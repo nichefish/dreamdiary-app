@@ -21,18 +21,18 @@
              */
             initForm: function(obj = {}) {
                 /* show modal */
-                commons.util.handlebarsTemplate(obj, "sectn_reg_header");
-                commons.util.handlebarsTemplate(obj, "sectn_reg", "show");
+                cF.handlebars.template(obj, "sectn_reg_header");
+                cF.handlebars.template(obj, "sectn_reg", "show");
 
                 /* jquery validation */
-                commons.validate.validateForm("#sectnRegForm", Sectn.regAjax);
+                cF.validate.validateForm("#sectnRegForm", Sectn.regAjax);
                 // checkbox init
-                commons.util.chckboxLabel("deprcYn", "만료//해당없음", "red//gray");
+                cF.util.chckboxLabel("deprcYn", "만료//해당없음", "red//gray");
                 /* tagify */
-                commons.tagify.initWithCtgr("#sectnRegForm #tagListStr", undefined);
+                cF.tagify.initWithCtgr("#sectnRegForm #tagListStr", undefined);
                 // tinymce editor reset
-                commons.tinymce.init('#tinymce_sectnCn');
-                commons.tinymce.setContentWhenReady("tinymce_sectnCn", obj.cn || "");
+                cF.tinymce.init('#tinymce_sectnCn');
+                cF.tinymce.setContentWhenReady("tinymce_sectnCn", obj.cn || "");
             },
 
             /**
@@ -43,7 +43,7 @@
             initDraggable: function({ refreshFunc } = {}) {
                 const keyExtractor = (item) => ({ "postNo": $(item).attr("id") });
                 const url = "${Url.SECTN_SORT_ORDR_AJAX!}";
-                Sectn.swappable = commons.util.initDraggable(keyExtractor, url, refreshFunc);
+                Sectn.swappable = cF.draggable.init(keyExtractor, url, refreshFunc);
             },
 
             /**
@@ -55,13 +55,13 @@
             listAjax: function({ refPostNo, refContentType }) {
                 const url = "${Url.SECTN_LIST_AJAX!}";
                 const ajaxData = { "refPostNo": refPostNo, "refContentType": refContentType };
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                     // 태그 상세 정보
-                    commons.util.handlebarsTemplate(res.rsltList, "sectn_list");
+                    cF.handlebars.template(res.rsltList, "sectn_list");
                 });
             },
 
@@ -98,14 +98,14 @@
                     if (!result.value) return;
                     const url = isReg ? "${Url.SECTN_REG_AJAX!}" : "${Url.SECTN_MDF_AJAX!}";
                     const ajaxData = new FormData(document.getElementById("sectnRegForm"));
-                    commons.util.blockUIMultipartAjax(url, ajaxData, function(res) {
+                    cF.ajax.multipart(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (!res.rslt) return;
                                 if (Sectn.refreshFunc !== undefined) {
                                     Sectn.refreshFunc();
                                 } else {
-                                    commons.util.blockUIReload();
+                                    cF.util.blockUIReload();
                                 }
                             });
                     });
@@ -121,9 +121,9 @@
 
                 const url = "${Url.SECTN_DTL_AJAX!}";
                 const ajaxData = { "postNo" : postNo };
-                commons.util.blockUIAjax(url, "get", ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                     const { rsltObj } = res;
@@ -146,14 +146,14 @@
                     if (!result.value) return;
                     const url = "${Url.SECTN_DEL_AJAX!}";
                     const ajaxData = { "postNo": postNo, "actvtyCtgrCd": "${actvtyCtgrCd!}" };
-                    commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (!res.rslt) return;
                                 if (Sectn.refreshFunc !== undefined) {
                                     Sectn.refreshFunc();
                                 } else {
-                                    commons.util.blockUIReload();
+                                    cF.util.blockUIReload();
                                 }
                             });
                     });

@@ -17,8 +17,8 @@
             /** 팝업 목록 조회 및 처리 */
             showNoticePopupAjax() {
                 // const url = "${Url.NOTICE_POPUP_LIST_AJAX!}";
-                // commons.util.blockUIAsyncAjax(url, 'POST', null, function(res) {
-                //     if (commons.util.isNotEmpty(res.rsltList)) {
+                // cF.ajax.asyncRequest(url, 'POST', null, function(res) {
+                //     if (cF.util.isNotEmpty(res.rsltList)) {
                 //         let rsltList = res.rsltList;
                 //         NoticePopup.popupList = rsltList;
                 //         NoticePopup.popupSize = rsltList.length;
@@ -30,7 +30,7 @@
             },
             /** 팝업 열기 (쿠키 있으면 열지 않음, 순회하면서 체크) */
             showNoticePopup: function() {
-                if (commons.util.isEmpty(NoticePopup.popupList)) return;
+                if (cF.util.isEmpty(NoticePopup.popupList)) return;
                 if (NoticePopup.popupIdx > NoticePopup.popupMaxIdx) return;
                 let hasNoticeCookie = NoticePopup.hasNoticeCookie();
                 if (hasNoticeCookie) {
@@ -40,12 +40,12 @@
                 const url = "${Url.NOTICE_DTL_AJAX!}";
                 const obj = NoticePopup.popupList[NoticePopup.popupIdx];
                 const ajaxData = { "postNo": obj.postNo };
-                commons.util.blockUIAsyncAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.asyncRequest(url, 'GET', ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
-                    commons.util.handlebarsTemplate(res.rsltObj, "notice_popup", "show");
+                    cF.handlebars.template(res.rsltObj, "notice_popup", "show");
                     NoticePopup.popupIdx++;
                 });
             },
@@ -75,8 +75,8 @@
                     // 선택지에 따라 시간 별도 세팅
                     let selectedTime = $("#noticePopupCookieTime").val();
                     let cookieOptions = {};
-                    if (selectedTime === "midnight") cookieOptions.expires = commons.date.getEndOfDay(new Date());
-                    else if (selectedTime === "forever") cookieOptions.expires = commons.date.getCurrDateAddDay(36135);
+                    if (selectedTime === "midnight") cookieOptions.expires = cF.date.getEndOfDay(new Date());
+                    else if (selectedTime === "forever") cookieOptions.expires = cF.date.getCurrDateAddDay(36135);
                     else cookieOptions.maxAge = selectedTime;       // Do note that maxAge is in milliseconds!!! (어처구니...)
                     cookieOptions.path = "/";
                     $.cookie(cookieNm, true, cookieOptions);

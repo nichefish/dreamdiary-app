@@ -13,7 +13,7 @@
 
 <#--include::script modules-->
 <script type="text/javascript" src="/lib/jstree/js/jstree.min.js"></script>
-<script type="text/javascript" src="/js/common/commons-jstree.js"></script>
+<script type="text/javascript" src="/js/common/helper/jstree.js"></script>
 <script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
 <#include "/view/domain/admin/menu/_menu_scripts.ftlh">
 
@@ -47,15 +47,15 @@
             updtTree: function() {
                 // 메인 메뉴 그리기
                 const url = "${Url.MENU_MAIN_LIST_AJAX!}";
-                commons.util.blockUIAjax(url, 'GET', null, function(res) {
+                cF.ajax.get(url, null, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                     const mainMenuList = res.rsltList;
                     if (!Array.isArray(mainMenuList) || mainMenuList.length < 1) return;
                     mainMenuList.forEach(function(mainMenu) {
-                        commons.util.handlebarsAppend(mainMenu, "menu_main_card");
+                        cF.handlebars.append(mainMenu, "menu_main_card");
                         Page.drawSubMenu(mainMenu);
                     });
                 });
@@ -63,26 +63,18 @@
             /** 서브메뉴 처리 :: 자기 자신을 그리고 각각의 서브메뉴에 대해서 재귀호출 */
             drawSubMenu: function(upperMenu) {
                 // 서브메뉴 돌면서 재귀호출
-                let subMenuList = upperMenu.subMenuList;
+                const subMenuList = upperMenu.subMenuList;
                 if (!Array.isArray(subMenuList) || subMenuList.length <1) return;
-                let menuNo = upperMenu.menuNo;
+                const menuNo = upperMenu.menuNo;
                 subMenuList.forEach(function(subMenu) {
-                    commons.util.handlebarsAppendTo(subMenu, "menu_sub", "menu_sub_"+menuNo);
+                    cF.handlebars.appendTo(subMenu, "menu_sub", "menu_sub_"+menuNo);
                     Page.drawSubMenu(subMenu);
                 });
             },
             drawTree: function() {
-                let jstreeContainer = Page.jstreeContainer;
-                commons.jstree.reset(jstreeContainer);
-                commons.jstree.init(jstreeContainer);     // 조직도 트리구조 세팅
-                // 부서 조회
-                // let deptUrl = "/manage/user/totalOrgnztChartAjax";
-                // commons.util.blockUIAjax(deptUrl, "get", {}, function(res) {
-                //     if (!res.rslt) return;
-                //     $(jstreeContainer).jstree(true).settings.core.data = res.rsltList;
-                //     $(jstreeContainer).jstree(true).settings.core.expand_selected_onload = true;
-                //     $(jstreeContainer).jstree(true).refresh(false, true);
-                // });
+                const jstreeContainer = Page.jstreeContainer;
+                cF.jstree.reset(jstreeContainer);
+                cF.jstree.init(jstreeContainer);
             },
         }
     })();

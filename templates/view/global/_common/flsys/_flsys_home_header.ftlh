@@ -42,17 +42,17 @@
             flsysListAjax: function(filePath) {
                 const url = "${Url.FLSYS_LIST_AJAX!}";
                 const ajaxData = { "filePath": filePath };
-                commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                cF.ajax.post(url, ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                     const { rsltObj } = res;
                     rsltObj.mode = Flsys.mode;
-                    commons.util.handlebarsTemplate(rsltObj, "flsys_list");
+                    cF.handlebars.template(rsltObj, "flsys_list");
                     Flsys.currPath = rsltObj.filePath;
                     $("#absolute_path_div").text(rsltObj.filePath);
-                    commons.util.handlebarsTemplate(rsltObj, "flsys_home_header_path");
+                    cF.handlebars.template(rsltObj, "flsys_home_header_path");
                 });
             },
 
@@ -69,9 +69,9 @@
             openInExplorer: function(filePath, objectTy) {
                 const url = "${Url.FLSYS_OPEN_IN_EXPLORER_AJAX!}";
                 const ajaxData = { "filePath": filePath, "objectTy": objectTy };
-                commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                cF.ajax.post(url, ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                     window.open("file:///" + "//${FILE_SVR_IP_ADDR!}/" + filePath);
@@ -87,7 +87,7 @@
                     showCancelButton: true,
                 }).then(function(result) {
                     if (!result.value) return;
-                    commons.util.blockUIFileDownload();
+                    cF.util.blockUIFileDownload();
                     $("#flsysForm #filePath").val(filePath);
                     $("#flsysForm").attr("action", "${Url.FLSYS_FILE_DOWNLOAD!}").submit();
                 });
@@ -98,7 +98,7 @@
              */
             playVod: function(filePath) {
                 const obj = { "filePath": filePath };
-                commons.util.handlebarsTemplate(obj, "flsys_file_vod", "show");
+                cF.handlebars.template(obj, "flsys_file_vod", "show");
             },
 
             /**
@@ -106,8 +106,8 @@
              */
             addRef: function(filePath) {
                 const obj = { "filePath": filePath, "refCnt": Flsys.refCnt++ }
-                commons.util.handlebarsAppend(obj, "flsys_ref");
-                commons.util.closeModal();
+                cF.handlebars.append(obj, "flsys_ref");
+                cF.util.closeModal();
             },
 
             /**
@@ -129,9 +129,9 @@
             fileExec: function(filePath) {
                 const url = "${Url.FLSYS_FILE_EXEC_AJAX!}";
                 const ajaxData = { "filePath": filePath };
-                commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                cF.ajax.post(url, ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                 });

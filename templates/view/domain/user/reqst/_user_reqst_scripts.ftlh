@@ -10,17 +10,17 @@
              */
             initForm: function(obj = {}) {
                 /* jquery validation */
-                commons.validate.validateForm("#userReqstForm", UserReqst.submitHandler, {
+                cF.validate.validateForm("#userReqstForm", UserReqst.submitHandler, {
                     rules: {
-                        userId: { minlength:4, maxlength:16 },
-                        ipDupChckPassed: { dupChck:true },
-                        password: { minlength:9, maxlength:20, regex:commons.validate.pwRegex },
-                        passwordCf: { equalTo:"#password", maxlength:20 },
+                        userId: { minlength: 4, maxlength: 16 },
+                        ipDupChckPassed: { dupChck: true },
+                        password: { minlength: 9, maxlength: 20, regex: cF.regex.pw },
+                        passwordCf: { equalTo: "#password", maxlength: 20 },
                     },
                     messages: {
-                        ipDupChckPassed: { dupChck:"아이디 중복 체크는 필수 항목입니다." },
-                        password: { regex:"비밀번호가 형식에 맞지 않습니다." },
-                        passwordCf: { equalTo:"비밀번호에 입력한 값과 동일하게 입력해야 합니다." },
+                        ipDupChckPassed: { dupChck: "아이디 중복 체크는 필수 항목입니다." },
+                        password: { regex: "비밀번호가 형식에 맞지 않습니다." },
+                        passwordCf: { equalTo: "비밀번호에 입력한 값과 동일하게 입력해야 합니다." },
                     },
                 });
                 $.validator.addMethod("dupChck", function(value) {
@@ -28,9 +28,9 @@
                 });
 
                 // 자동 대문자->소문자처리
-                commons.validate.toLowerCase("#userId");
+                cF.validate.toLowerCase("#userId");
                 // 전화번호 형식 유효성 검사
-                commons.validate.cttpc("#cttpc");
+                cF.validate.cttpc("#cttpc");
                 // 이메일 도메인 select시 자동입력
                 $("#emailDomainSelect").on("change", function() {
                     $("#emailDomain").val($(this).val());
@@ -50,13 +50,13 @@
                     $("#idDupChckBtn").addClass("blink").removeClass("btn-success").addClass("btn-secondary").removeAttr("disabled");
                 });
                 // 접속IP 사용 여부 클릭시 글씨 변경 + 입력창 토글 :: 메소드 분리
-                commons.util.chckboxLabel("useAcsIpYn", "사용//미사용", "blue//gray", function(){
+                cF.util.chckboxLabel("useAcsIpYn", "사용//미사용", "blue//gray", function(){
                     $("#acsIpListSpan").show()
                 }, function(){
                     $("#acsIpListSpan").hide()
                 });
                 /* 접속IP tagify */
-                commons.tagify.init("#acsIpListStr");
+                cF.tagify.init("#acsIpListStr");
             },
 
             /**
@@ -89,7 +89,7 @@
             regAjax: function() {
                 const url = "${Url.USER_REQST_REG_AJAX!}";
                 const ajaxData = new FormData(document.getElementById("userReqstForm"));
-                commons.util.blockUIMultipartAjax(url, ajaxData, function(res) {
+                cF.ajax.multipart(url, ajaxData, function(res) {
                     Swal.fire({ text: res.message })
                         .then(function() {
                             if (res.rslt) UserReqst.main();
@@ -113,7 +113,7 @@
              * 로그인 화면으로 이동
              */
             main: function() {
-                commons.util.blockUIReplace("${Url.AUTH_LGN_FORM!}");
+                cF.util.blockUIReplace("${Url.AUTH_LGN_FORM!}");
             }
         }
     })();

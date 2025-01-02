@@ -21,15 +21,15 @@
              * Page 객체 초기화
              */
             init: function() {
-                commons.datepicker.singleDatePicker("#bgnDt", "yyyy-MM-DD", null, function() {
+                cF.datepicker.singleDatePicker("#bgnDt", "yyyy-MM-DD", null, function() {
                     Page.noBefore("#bgnDt", "#endDt");
                 });
-                commons.datepicker.singleDatePicker("#endDt", "yyyy-MM-DD", null, function() {
+                cF.datepicker.singleDatePicker("#endDt", "yyyy-MM-DD", null, function() {
                     if ($("#endDt").val() !== "") Page.noBefore("#bgnDt", "#endDt");
                 });
 
                 /* 모든 table 헤더에 클릭 이벤트를 설정한다. */
-                commons.util.initSortTable();
+                cF.util.initSortTable();
 
                 /* jquery validation */
                 $(function() {
@@ -45,7 +45,7 @@
                             });
                         },
                         errorPlacement: function(error, element) {
-                            commons.validate.errorSpan(error, element);        // 공통 함수로 분리
+                            cF.validate.errorSpan(error, element);        // 공통 함수로 분리
                         }
                     });
                 });
@@ -55,7 +55,7 @@
              * 유효성 검사:: 시작일 이전 날짜 선택 불가하게 막기
              */
             noBefore: function(beginSelectorStr, endSelectorStr) {
-                const isBefore = commons.date.isBefore(beginSelectorStr, endSelectorStr);
+                const isBefore = cF.date.isBefore(beginSelectorStr, endSelectorStr);
                 const vcatnCd = select = $("#vcatnCd").children('option:selected').val();
                 if (select === "AM_HALF" || select === "PM_HALF") {
                     $(endSelectorStr).val($(beginSelectorStr).val());

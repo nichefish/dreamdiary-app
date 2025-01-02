@@ -297,7 +297,7 @@
             </div>
             <div class="gap-2">
                 <button type="button" class="btn btn-sm btn-primary"
-                        onclick="commons.util.submit('#userReqstForm');"
+                        onclick="cF.util.submit('#userReqstForm');"
                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "bs.tooltip.save"/>">
                     <i class="bi bi-pencil-square"></i>신규계정 신청
                 </button>

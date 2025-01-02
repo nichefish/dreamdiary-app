@@ -14,6 +14,7 @@
 
 <#--include::script modules-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
+<script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
 <#include "/view/domain/admin/tag/_tag_admin_scripts.ftlh">
 
 <script>
@@ -53,7 +54,7 @@
             <#list contentTypeList![] as contentType>
                 <#assign isChecked = refContentType! == contentType.key! />
                 <div class="btn btn-sm btn-outlined <#if isChecked>btn-light-primary<#else>btn-light-secondary</#if> text-dark align-middler"
-                     onclick="commons.util.reloadWithParam('refContentType', '${contentType.key!}');">
+                     onclick="cF.util.reloadWithParam('refContentType', '${contentType.key!}');">
                 <span class="d-flex align-items-center">
                     <#if contentType.icon??>
                         <i class="bi bi-${contentType.icon!} text-dark"></i>

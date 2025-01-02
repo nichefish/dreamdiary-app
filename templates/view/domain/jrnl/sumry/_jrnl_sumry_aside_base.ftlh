@@ -11,7 +11,7 @@
                 const id = $(obj).attr("id");
                 let cookieOptions = {
                     path: "/jrnl/sumry/",
-                    expires: commons.date.getCurrDateAddDay(36135)
+                    expires: cF.date.getCurrDateAddDay(36135)
                 };
                 $.cookie("jrnl_" + id, $(obj).val(), cookieOptions);
                 // 목록 조회

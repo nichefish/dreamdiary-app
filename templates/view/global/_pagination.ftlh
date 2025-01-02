@@ -20,7 +20,7 @@
                         }
                     });
                 </#if>
-                commons.validate.onlyNum(".page-ellipsis");
+                cF.validate.onlyNum(".page-ellipsis");
             },
 
             /**
@@ -36,7 +36,7 @@
                 }
                 if (pageNo !== undefined) document.querySelector("#listForm #pageNo").value = pageNo;
                 if (pageSize !== undefined) document.querySelector("#listForm #pageSize").value = pageSize;
-                commons.util.blockUISubmit("#listForm", "${listUrl!}");
+                cF.util.blockUISubmit("#listForm", "${listUrl!}");
             },
 
             /**

@@ -16,18 +16,18 @@
                 if (isNaN(refPostNo) || !refContentType) return;
 
                 document.querySelector(`#commentProcForm [name="refPostNo"]`).value = refPostNo;
-                if (commons.util.isNotEmpty(refContentType)) {
+                if (cF.util.isNotEmpty(refContentType)) {
                     document.querySelector(`#commentProcForm [name="refContentType"]`).value = refContentType;
                 }
                 const url = "${Url.COMMENT_LIST_AJAX!}";
                 const ajaxData = $("#commentProcForm").serializeArray();
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                     const { rsltList = [] } = res;
-                    commons.util.handlebarsTemplate(rsltList, "comment_list", "show");
+                    cF.handlebars.template(rsltList, "comment_list", "show");
                 });
             },
         }

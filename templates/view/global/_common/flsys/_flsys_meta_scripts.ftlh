@@ -18,12 +18,12 @@
              */
             initForm: function(obj = {}) {
                 /* show modal */
-                commons.util.handlebarsTemplate(obj, "flsys_meta_reg", "show");
+                cF.handlebars.template(obj, "flsys_meta_reg", "show");
 
                 /* jquery validation */
-                commons.validate.validateForm("#flsysMetaRegForm", FlsysMeta.regAjax);
+                cF.validate.validateForm("#flsysMetaRegForm", FlsysMeta.regAjax);
                 /* tagify */
-                commons.tagify.init("#tagListStr");
+                cF.tagify.init("#tagListStr");
             },
 
             /**
@@ -53,7 +53,7 @@
                     if (!result.value) return;
                     const url = "${Url.FLSYS_META_REG_AJAX!}";
                     const ajaxData = $("#flsysMetaRegForm").serializeArray();
-                    commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (res.rslt) Flsys.flsysRefreshAjax();
@@ -72,12 +72,12 @@
 
                 const url = "${Url.FLSYS_META_DTL_AJAX!}";
                 const ajaxData = { "postNo": postNo };
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
-                    commons.util.handlebarsTemplate(res.rsltObj, "flsys_meta_dtl", "show");
+                    cF.handlebars.template(res.rsltObj, "flsys_meta_dtl", "show");
                 });
             },
 
@@ -89,9 +89,9 @@
 
                 const url = "${Url.FLSYS_META_DTL_AJAX!}";
                 const ajaxData = { "postNo": postNo };
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                     const { rsltObj } = res;
@@ -115,8 +115,8 @@
                     if (!result.value) return;
                     const url = "${Url.FLSYS_META_DEL_AJAX!}";
                     const ajaxData = { "postNo": postNo };
-                    commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    cF.ajax.get(url, ajaxData, function(res) {
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         if (res.rslt) Flsys.flsysListAjax(Flsys.currPath);
                     });
                 });

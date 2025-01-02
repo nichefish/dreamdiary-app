@@ -19,7 +19,7 @@
              */
             init: function() {
                 /* 모든 table 헤더에 클릭 이벤트를 설정한다. */
-                commons.util.initSortTable();
+                cF.util.initSortTable();
             },
 
             /**
@@ -27,7 +27,7 @@
              */
             search: function() {
                 $("#listForm #pageNo").val(1);
-                commons.util.blockUISubmit("#listForm", "${Url.TMPLAT_DEF_LIST!}?actionTyCd=SEARCH");
+                cF.util.blockUISubmit("#listForm", "${Url.TMPLAT_DEF_LIST!}?actionTyCd=SEARCH");
             },
 
             /**
@@ -36,15 +36,15 @@
             myPaprList: function() {
                 const url = "${Url.TMPLAT_DEF_LIST!}";
                 let param = "?searchType=nickNm&searchKeyword=${authInfo.nickNm!}&regstrId=${authInfo.userId!}&pageSize=50&actionTyCd=MY_PAPR";
-                commons.util.blockUIReplace(url + param);
+                cF.util.blockUIReplace(url + param);
             },
 
             /**
              * 등록 화면으로 이동
              */
             regForm: function() {
-                commons.util.blockUIRequest();
-                commons.util.handlebarsTemplate({}, "tmplat_def_reg", "show");
+                cF.util.blockUIRequest();
+                cF.handlebars.template({}, "tmplat_def_reg", "show");
             },
 
             /**
@@ -59,10 +59,10 @@
                     $("#clCdRegForm #regYn").val("Y");
                     const url = "${Url.TMPLAT_DEF_REG_AJAX!}";
                     const ajaxData = $("#clCdRegForm").serializeArray();
-                    commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
-                                if (res.rslt) commons.util.blockUIReplace("${Url.CL_CD_LIST!}");
+                                if (res.rslt) cF.util.blockUIReplace("${Url.CL_CD_LIST!}");
                             });
                     });
                 });
@@ -76,7 +76,7 @@
                 if (isNaN(postNo)) return;
 
                 $("#procForm #postNo").val(postNo);
-                commons.util.blockUISubmit("#procForm", "${Url.TMPLAT_DEF_DTL!}");
+                cF.util.blockUISubmit("#procForm", "${Url.TMPLAT_DEF_DTL!}");
             },
 
             /**
@@ -89,12 +89,12 @@
 
                 const url = "${Url.TMPLAT_DEF_DTL_AJAX!}";
                 const ajaxData = { "postNo": postNo };
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
-                    commons.util.handlebarsTemplate(res.rsltObj, "tmplat_dtl", "show");
+                    cF.handlebars.template(res.rsltObj, "tmplat_dtl", "show");
                 });
             },
         }

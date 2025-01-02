@@ -11,8 +11,8 @@ const Cache = (function () {
          */
         activeListModal: function () {
             const url = Url.CACHE_ACTIVE_LIST_AJAX;
-            commons.util.blockUIAjax(url, 'GET', null, function (res) {
-                commons.util.handlebarsTemplate(res.rsltMap, "cache_list", "show");
+            cF.ajax.get(url, null, function (res) {
+                cF.handlebars.template(res.rsltMap, "cache_list", "show");
             });
         },
         /**
@@ -23,7 +23,7 @@ const Cache = (function () {
         evictAjax: function (cacheName, key) {
             const url = Url.CACHE_EVICT_AJAX;
             const ajaxData = { "cacheName": cacheName, "key": key };
-            commons.util.blockUIAjax(url, 'POST', ajaxData, function (res) {
+            cF.ajax.post(url, ajaxData, function (res) {
                 if (res.rslt)
                     Swal.fire(JSON.stringify(res));
                 Swal.fire({ text: res.message })
@@ -40,7 +40,7 @@ const Cache = (function () {
          */
         clearAllAjax: function () {
             const url = Url.CACHE_CLEAR_AJAX;
-            commons.util.blockUIAjax(url, 'POST', null, function (res) {
+            cF.ajax.post(url, null, function (res) {
                 if (res.rslt)
                     Swal.fire(JSON.stringify(res));
                 Swal.fire({ text: res.message })

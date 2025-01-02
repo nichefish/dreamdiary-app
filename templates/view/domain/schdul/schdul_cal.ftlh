@@ -16,7 +16,7 @@
 
 <#--include::script modules-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
-<script type="text/javascript" src="/js/common/commons-fullcalendar.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/common/helper/fullcalendar.js?${releaseDate!}"></script>
 <#include "/view/domain/schdul/_schdul_scripts.ftlh">
 
 <link rel="stylesheet" type="text/css" href="/metronic/assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" />
@@ -56,7 +56,7 @@
                 Page.calInitDt = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
                 Page.calDt = Page.calInitDt;
                 Page.getEventList();
-                Page.calendar = commons.fullcalendar.init("full_calendar_app", Page.eventList, function(info) {
+                Page.calendar = cF.fullcalendar.init("full_calendar_app", Page.eventList, function(info) {
                     // 일정 onclick 이벤트
                     let event = info.event;
                     let schdulCd = event.groupId;
@@ -81,7 +81,7 @@
                 });
 
                 // datepicker 날짜 검색 init
-                commons.datepicker.singleDatePicker("#calDt", "yyyy-MM-DD", commons.date.asStr(Page.calInitDt), function(start) {
+                cF.datepicker.singleDatePicker("#calDt", "yyyy-MM-DD", cF.date.asStr(Page.calInitDt), function(start) {
                     let selectedDt = new Date(start);
                     Page.calendar.gotoDate(selectedDt);
                     Page.refreshEventList(selectedDt);
@@ -113,8 +113,8 @@
                 // 날짜 세팅
                 const calDt = Page.calDt;
                 const yy  = calDt.getFullYear();
-                const bgnDt = commons.date.getDateAddDayStr(calDt, -35, "yyyy-MM-dd");
-                const endDt = commons.date.getDateAddDayStr(calDt, 45, "yyyy-MM-dd");
+                const bgnDt = cF.date.getDateAddDayStr(calDt, -35, "yyyy-MM-dd");
+                const endDt = cF.date.getDateAddDayStr(calDt, 45, "yyyy-MM-dd");
                 // 체크박스 값을 읽어와서 필터 요소를 만듬
                 const ajaxData = { 'yy': yy, 'bgnDt': bgnDt, 'endDt': endDt };
                 const chkArr = $("input:checkbox[id^='schdul_chk_']");
@@ -124,7 +124,7 @@
                 });
                 // 검색키워드 설정
                 ajaxData.searchKeyword = $("#searchKeyword").val();
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (res.rslt) Page.eventList = res.rsltList || [];
                 });
             },
@@ -137,7 +137,7 @@
             /** 체크박스 쿠키 설정 */
             chkbxProp: function(obj) {
                 const checkedYn = $(obj).prop("checked") ? "Y" : "N";
-                let cookieOptions = { "expires": commons.date.getCurrDateAddDay(36135) };
+                let cookieOptions = { "expires": cF.date.getCurrDateAddDay(36135) };
                 $.cookie($(obj).attr("id"), checkedYn, cookieOptions);
                 Page.refreshEventList(Page.calDt);
             }

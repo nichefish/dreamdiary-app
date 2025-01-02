@@ -7,19 +7,19 @@
         return {
             /** 조회년도 변경 */
             chgYy: function(obj) {
-                commons.util.blockUIReplace("${Url.VCATN_SCHDUL_LIST!}?statsYy=" + $(obj).val());
+                cF.util.blockUIReplace("${Url.VCATN_SCHDUL_LIST!}?statsYy=" + $(obj).val());
             },
 
             /**
              * 등록 모달 호출
              */
             regModal: function() {
-                commons.util.handlebarsTemplate({}, "vcatn_schdul_reg", "show");
-                commons.datepicker.singleDatePicker("#bgnDt", "yyyy-MM-DD", null, function() {
+                cF.handlebars.template({}, "vcatn_schdul_reg", "show");
+                cF.datepicker.singleDatePicker("#bgnDt", "yyyy-MM-DD", null, function() {
                     VcatnSchdul.propEndDt();
                     VcatnSchdul.noBefore("#bgnDt", "#endDt");
                 });
-                commons.datepicker.singleDatePicker("#endDt", "yyyy-MM-DD", null, function() {
+                cF.datepicker.singleDatePicker("#endDt", "yyyy-MM-DD", null, function() {
                     if ($("#endDt").val() !== "") VcatnSchdul.noBefore("#bgnDt", "#endDt");
                 });
             },
@@ -40,7 +40,7 @@
                 if (VcatnSchdul.isHalf(idx)) {
                     $(endSelectorStr).val($(beginSelectorStr).val());
                 } else {
-                    const isBefore = commons.date.isBefore(beginSelectorStr, endSelectorStr);
+                    const isBefore = cF.date.isBefore(beginSelectorStr, endSelectorStr);
                     if (!isBefore && $(endSelectorStr).val() !== "") {
                         Swal.fire("휴가일을 다시 설정해 주세요.");
                         $(endSelectorStr).val("");
@@ -62,10 +62,10 @@
                 const isReg = ($("#vcatnSchdulNo").val() === "");
                 const url = isReg ? '${Url.VCATN_SCHDUL_REG_AJAX!}' : '${Url.VCATN_SCHDUL_MDF_AJAX!}';
                 const ajaxData = new FormData(document.getElementById("vcantSchdulRegForm"));
-                commons.util.blockUIMultipartAjax(url, ajaxData, function(res) {
+                cF.ajax.multipart(url, ajaxData, function(res) {
                     Swal.fire({ text: res.message })
                         .then(function() {
-                            if (res.rslt) commons.util.blockUIReload();
+                            if (res.rslt) cF.util.blockUIReload();
                         });
                 }, "block");
             },
@@ -95,7 +95,7 @@
                 $("#vcatnSchdulNoProc").val(vcatnSchdulNo);
                 const url = "${Url.VCATN_SCHDUL_DTL_AJAX!}";
                 const ajaxData = $("#procForm").serializeArray();
-                commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                cF.ajax.post(url, ajaxData, function(res) {
                     if (!res.rslt) return;
                     const { rsltObj } = res;
                     // 수정 modal_form에 값 세팅
@@ -119,7 +119,7 @@
                     showCancelButton: true,
                 }).then(function(result) {
                     if (!result.value) return;
-                    commons.util.blockUIFileDownload();
+                    cF.util.blockUIFileDownload();
                     $("#procForm").attr("action", "${Url.VCATN_SCHDUL_XLSX_DOWNLOAD!}").submit();
                 });
             },
@@ -139,10 +139,10 @@
                     $("#vcatnSchdulNoProc").val(vcatnSchdulNo);
                     const url = "${Url.VCATN_SCHDUL_DEL_AJAX!}";
                     const ajaxData = $("#procForm").serializeArray();
-                    commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
-                                if (res.rslt) commons.util.blockUIReload();
+                                if (res.rslt) cF.util.blockUIReload();
                             });
                     }, "block");
                 });

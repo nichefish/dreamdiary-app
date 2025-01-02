@@ -9,7 +9,7 @@
             /** 직원정보 창 토글 */
             enableUserEmplym: function() {
                 // 영역 표시
-                commons.util.handlebarsTemplate({}, "user_emplym");
+                cF.handlebars.template({}, "user_emplym");
                 // 버튼 교체 :: 툴팁 작동 유지 위해 속성만 교체
                 let $btn = $("#userEmplymBtn");
                 $btn.removeClass("btn-primary").addClass("btn-danger");
@@ -18,7 +18,7 @@
                 $btn.attr("title", "직원 인사정보를&#10;삭제합니다.");
 
                 // 전화번호 형식 유효성 검사
-                commons.validate.cttpc("#emplymCttpc");
+                cF.validate.cttpc("#emplymCttpc");
                 // 이메일 도메인 select시 자동입력
                 $("#emplymEmailDomainSelect").on("change", function() {
                     $("#emplymEmailDomain").val($(this).val());
@@ -33,12 +33,12 @@
                     }
                 });
                 // 수습여부 클릭시 글씨 변경
-                commons.util.chckboxLabel("apntcYn", "수습//해당없음", "blue//gray");
+                cF.util.chckboxLabel("apntcYn", "수습//해당없음", "blue//gray");
                 // 퇴사여부 클릭시 글씨 변경
-                commons.util.chckboxLabel("retireYn", "퇴사//해당없음", "red//gray", function() {$(".retireDtDiv").show();}, function() {$(".retireDtDiv").hide();});
+                cF.util.chckboxLabel("retireYn", "퇴사//해당없음", "red//gray", function() {$(".retireDtDiv").show();}, function() {$(".retireDtDiv").hide();});
 
-                commons.datepicker.singleDatePicker("#ecnyDt", "yyyy-MM-DD", "${(user.emplym.ecnyDt)!}");
-                commons.datepicker.singleDatePicker("#retireDt", "yyyy-MM-DD", "${(user.emplym.retireDt)!}");
+                cF.datepicker.singleDatePicker("#ecnyDt", "yyyy-MM-DD", "${(user.emplym.ecnyDt)!}");
+                cF.datepicker.singleDatePicker("#retireDt", "yyyy-MM-DD", "${(user.emplym.retireDt)!}");
             },
             /** 직원정보 창 토글 */
             disableUserEmplym: function() {

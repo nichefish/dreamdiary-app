@@ -7,10 +7,11 @@
 <@layout.layout toolbar=toolbar!"">
 
 <#--include::script modules-->
-<script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
 <script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
+<script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
 <script type="text/javascript" src="/lib/prism/js/prism.js"></script>
-<script type="text/javascript" src="/js/common/commons-tinymce.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/common/helper/tinymce.js?${releaseDate!}"></script>
 <#include "/view/domain/jrnl/sumry/_jrnl_sumry_scripts.ftlh">
 <#include "/view/domain/jrnl/dream/_jrnl_dream_scripts.ftlh">
 <#include "/view/domain/jrnl/tag/_jrnl_tag_scripts.ftlh">

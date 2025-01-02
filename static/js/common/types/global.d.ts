@@ -4,6 +4,13 @@
  * @author nichefish
  */
 
+// TypeScript 선언
+declare let cF: {
+    util: {
+        [key: string]: any;
+    };
+    [key: string]: any;
+};
 /**
  * Model : Spring 컨텍스트에서 Model에 추가된 요소들.
  */
@@ -37,15 +44,14 @@ declare const Message: {
  * AjaxResponse : Spring Boot에서 Ajax 요청에 반환되는 응답 객체
  */
 declare interface AjaxResponse {
-    rslt?: boolean;
-    message?: string;
-    status?: number;
-
-    url?: string;
+    rslt: boolean;
+    message: string;
+    status: number;
 
     rsltObj?: object;
     rsltList?: object[];
     rsltMap?: Record<string, any>;
     rsltVal?: number;
     rsltStr?: string;
+    url?: string;
 }

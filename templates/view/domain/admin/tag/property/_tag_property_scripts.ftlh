@@ -14,13 +14,13 @@
 
                 const url = "${Url.TAG_DTL_AJAX!}";
                 const ajaxData = { "tagNo": tagNo };
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
                     // 태그 상세 정보
-                    commons.util.handlebarsTemplate(res.rsltObj, "tag_admin_dtl", "show");
+                    cF.handlebars.template(res.rsltObj, "tag_admin_dtl", "show");
                 });
             }
         }

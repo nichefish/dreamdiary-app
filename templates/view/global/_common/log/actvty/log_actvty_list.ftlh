@@ -23,11 +23,11 @@
              */
             init: function() {
                 /* 모든 table 헤더에 클릭 이벤트를 설정한다. */
-                commons.util.initSortTable();
+                cF.util.initSortTable();
             },
             /** 사용자별 로그 페이지로 이동 */
             logStatsUserList: function() {
-                commons.util.blockUISubmit("#listForm", "${Url.LOG_STATS_USER_LIST!}");
+                cF.util.blockUISubmit("#listForm", "${Url.LOG_STATS_USER_LIST!}");
             }
         }
     })();

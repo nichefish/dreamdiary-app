@@ -50,12 +50,18 @@
     <script type="text/javascript" src="/metronic/assets/js/scripts.bundle.js"></script>
 
     <!--Custom Javascript Bundle(used by all pages)-->
-    <script type="text/javascript" src="/js/common/commons.js?${releaseDate!}"></script>
-    <script type="text/javascript" src="/js/common/commons-validate.js?${releaseDate!}"></script>
-    <script type="text/javascript" src="/js/common/commons-date.js?${releaseDate!}"></script>
-    <script type="text/javascript" src="/js/common/commons-datepicker.js?${releaseDate!}"></script>
-    <script type="text/javascript" src="/js/common/commons-tagify.js?${releaseDate!}"></script>
-    <script type="text/javascript" src="/js/common/commons-helpers.js?${releaseDate!}"></script>
+    <script type="text/javascript" src="/js/common/util.js?${releaseDate!}"></script>
+    <script type="text/javascript" src="/js/common/ajax.js?${releaseDate!}"></script>
+    <script type="text/javascript" src="/js/common/validate.js?${releaseDate!}"></script>
+    <script type="text/javascript" src="/js/common/regex.js?${releaseDate!}"></script>
+    <script type="text/javascript" src="/js/common/date.js?${releaseDate!}"></script>
+    <script type="text/javascript" src="/js/common/helpers.js?${releaseDate!}"></script>
+    <!--Custom Javascript Bundle :: helpers (used by all pages)-->
+    <script type="text/javascript" src="/js/common/helper/datepicker.js?${releaseDate!}"></script>
+    <script type="text/javascript" src="/js/common/helper/tagify.js?${releaseDate!}"></script>
+    <script type="text/javascript" src="/js/common/helper/handlebars.js?${releaseDate!}"></script>
+    <script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
+
 
     <script>
         /** AuthInfo 객체 생성 */

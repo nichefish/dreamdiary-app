@@ -11,14 +11,14 @@ const DtlCd = (function() {
          */
         initForm: function(obj = {}) {
             /* show modal */
-            commons.util.handlebarsTemplate(obj, "dtl_cd_reg", "show");
+            cF.handlebars.template(obj, "dtl_cd_reg", "show");
 
             /* jquery validation */
-            commons.validate.validateForm("#dtlCdRegForm", DtlCd.regAjax);
+            cF.validate.validateForm("#dtlCdRegForm", DtlCd.regAjax);
             // checkbox init
-            commons.util.chckboxLabel("useYn", "사용//미사용", "blue//gray");
-            commons.validate.replaceBlankIfMatches("#dtlCdRegForm #dtlCd", commons.validate.nonCdRegex);
-            commons.validate.toUpperCase("#dtlCdRegForm #dtlCd");
+            cF.util.chckboxLabel("useYn", "사용//미사용", "blue//gray");
+            cF.validate.replaceBlankIfMatches("#dtlCdRegForm #dtlCd", cF.regex.nonCd);
+            cF.validate.toUpperCase("#dtlCdRegForm #dtlCd");
         },
 
         /**
@@ -27,7 +27,7 @@ const DtlCd = (function() {
         initDraggable: function() {
             const keyExtractor = (item) => ({ "clCd": $("#clCd").val(), "dtlCd": $(item).attr("id") });
             const url = "${Url.DTL_CD_SORT_ORDR_AJAX!}";
-            DtlCd.swappable = commons.util.initDraggable("", keyExtractor, url);
+            DtlCd.swappable = cF.draggable.init("", keyExtractor, url);
         },
 
         /**
@@ -55,15 +55,16 @@ const DtlCd = (function() {
             Swal.fire({
                 text: Message.get("view.cnfm.save"),
                 showCancelButton: true,
-            }).then(function(result) {
+            }).then(function(result: SwalResult) {
                 if (!result.value) return;
+
                 $("#dtlCdRegForm #regYn").val("Y");
-                const url = "${Url.DTL_CD_REG_AJAX!}";
+                const url = Url.DTL_CD_REG_AJAX;
                 const ajaxData = $("#dtlCdRegForm").serializeArray();
-                commons.util.blockUIAjax(url, 'POST', ajaxData, function(res: AjaxResponse) {
+                cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
                     Swal.fire({ text: res.message })
                         .then(function() {
-                            if (res.rslt) commons.util.blockUIReload();
+                            if (res.rslt) cF.util.blockUIReload();
                         });
                 }, "block");
             });
@@ -76,9 +77,9 @@ const DtlCd = (function() {
         mdfModal: function(dtlCd: string) {
             const url = Url.DTL_CD_DTL_AJAX;
             const ajaxData = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
-            commons.util.blockUIAjax(url, 'GET', ajaxData, function(res: AjaxResponse) {
+            cF.ajax.get(url, ajaxData, function(res: AjaxResponse) {
                 if (!res.rslt) {
-                    if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return false;
                 }
                 const { rsltObj } = res;
@@ -98,14 +99,15 @@ const DtlCd = (function() {
             Swal.fire({
                 text: Message.get("view.cnfm.use"),
                 showCancelButton: true,
-            }).then(function(result) {
+            }).then(function(result: SwalResult) {
                 if (!result.value) return;
+
                 const url = Url.DTL_CD_USE_AJAX;
                 const ajaxData = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
-                commons.util.blockUIAjax(url, 'POST', ajaxData, function(res: AjaxResponse) {
+                cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
                     Swal.fire({ text: res.message })
                         .then(function() {
-                            if (res.rslt) commons.util.blockUIReload();
+                            if (res.rslt) cF.util.blockUIReload();
                         });
                 }, "block");
             });
@@ -121,14 +123,15 @@ const DtlCd = (function() {
             Swal.fire({
                 text: Message.get("view.cnfm.unuse"),
                 showCancelButton: true,
-            }).then(function(result) {
+            }).then(function(result: SwalResult) {
                 if (!result.value) return;
+
                 const url = Url.DTL_CD_UNUSE_AJAX;
                 const ajaxData = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
-                commons.util.blockUIAjax(url, 'POST', ajaxData, function(res: AjaxResponse) {
+                cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
                     Swal.fire({ text: res.message })
                         .then(function() {
-                            if (res.rslt) commons.util.blockUIReload();
+                            if (res.rslt) cF.util.blockUIReload();
                         });
                 }, "block");
             });
@@ -144,14 +147,15 @@ const DtlCd = (function() {
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
                 showCancelButton: true,
-            }).then(function(result) {
+            }).then(function(result: SwalResult) {
                 if (!result.value) return;
+
                 const url = Url.DTL_CD_DEL_AJAX;
                 const ajaxData = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
-                commons.util.blockUIAjax(url, 'POST', ajaxData, function(res: AjaxResponse) {
+                cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
                     Swal.fire({ text: res.message })
                         .then(function() {
-                            if (res.rslt) commons.util.blockUIReload();
+                            if (res.rslt) cF.util.blockUIReload();
                         });
                 }, "block");
             });

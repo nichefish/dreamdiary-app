@@ -10,7 +10,7 @@
              */
             search: function() {
                 $("#listForm #pageNo").val(1);
-                commons.util.blockUISubmit("#listForm", "${Url.LOG_ACTVTY_LIST!}?actionTyCd=SEARCH");
+                cF.util.blockUISubmit("#listForm", "${Url.LOG_ACTVTY_LIST!}?actionTyCd=SEARCH");
             },
             /**
              * 엑셀 다운로드
@@ -21,7 +21,7 @@
                     showCancelButton: true,
                 }).then(function(result) {
                     if (!result.value) return;
-                    commons.util.blockUIFileDownload();
+                    cF.util.blockUIFileDownload();
                     $("#listForm").attr("action", "${Url.LOG_ACTVTY_LIST_XLSX_DOWNLOAD!}").submit();
                 });
             },
@@ -36,12 +36,12 @@
 
                 const url = "${Url.LOG_ACTVTY_DTL_AJAX!}";
                 const ajaxData = { "logActvtyNo": logActvtyNo };
-                commons.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
-                        if (commons.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
-                    commons.util.handlebarsTemplate(res.rsltObj, "log_actvty_dtl", "show");
+                    cF.handlebars.template(res.rsltObj, "log_actvty_dtl", "show");
                 });
             },
         }

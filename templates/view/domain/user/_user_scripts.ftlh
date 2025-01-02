@@ -11,26 +11,26 @@
              */
             initForm: function(obj = {}) {
                 /* jquery validation */
-                commons.validate.validateForm("#userRegForm", User.submitHandler);
+                cF.validate.validateForm("#userRegForm", User.submitHandler);
                 $.validator.addMethod("dupChck", function(value) {
                     return (value === "Y");
                 });
                 // 자동 대문자->소문자처리
-                commons.validate.toLowerCase("#userId");
+                cF.validate.toLowerCase("#userId");
                 // 연락처 포맷
-                commons.validate.cttpc("#cttpc");
+                cF.validate.cttpc("#cttpc");
                 // 권한 변경시 필드 재검증
                 $("#authCd").change(function() {
                     $("#authCd").valid();
                 });
                 // 접속IP 사용 여부 클릭시 글씨 변경 + 입력창 토글 :: 메소드 분리
-                commons.util.chckboxLabel("useAcsIpYn", "사용//미사용", "blue//gray", function(){
+                cF.util.chckboxLabel("useAcsIpYn", "사용//미사용", "blue//gray", function(){
                     $("#acsIpListSpan").show()
                 }, function(){
                     $("#acsIpListSpan").hide()
                 });
                 /* 접속IP tagify */
-                commons.tagify.init("#acsIpListStr");
+                cF.tagify.init("#acsIpListStr");
             },
 
             /**
@@ -55,7 +55,7 @@
              */
             search: function() {
                 $("#listForm #pageNo").val(1);
-                commons.util.blockUISubmit("#listForm", "${Url.USER_LIST!}?actionTyCd=SEARCH");
+                cF.util.blockUISubmit("#listForm", "${Url.USER_LIST!}?actionTyCd=SEARCH");
             },
 
             /**
@@ -67,7 +67,7 @@
                     showCancelButton: true,
                 }).then(function(result) {
                     if (!result.value) return;
-                    commons.util.blockUIFileDownload();
+                    cF.util.blockUIFileDownload();
                     $("#listForm").attr("action", "${Url.USER_LIST_XLSX_DOWNLOAD!}").submit();
                 });
             },
@@ -76,7 +76,7 @@
              * 등록 화면으로 이동
              */
             regForm: function() {
-                commons.util.blockUISubmit("#procForm", "${Url.USER_REG_FORM!}");
+                cF.util.blockUISubmit("#procForm", "${Url.USER_REG_FORM!}");
             },
 
             /**
@@ -92,7 +92,7 @@
                 }
                 const url = "${Url.USER_ID_DUP_CHK_AJAX!}";
                 const ajaxData = { "userId": userId };
-                commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                cF.ajax.post(url, ajaxData, function(res) {
                     userIdValidSpan.text(res.message);
                     if (res.rslt) {
                         userIdValidSpan.removeClass("text-danger").addClass("text-success");
@@ -112,7 +112,7 @@
             regAjax: function() {
                 const url = "<#if isReg!false>${Url.USER_REG_AJAX!}</#if><#if isMdf!false>${Url.USER_MDF_AJAX!}</#if>";
                 const ajaxData = new FormData(document.getElementById("userRegForm"));
-                commons.util.blockUIMultipartAjax(url, ajaxData, function(res) {
+                cF.ajax.multipart(url, ajaxData, function(res) {
                     Swal.fire({ text: res.message })
                         .then(function() {
                             if (res.rslt) User.list();
@@ -128,7 +128,7 @@
                 if (isNaN(postNo)) return;
 
                 $("#procForm #userNo").val(userNo);
-                commons.util.blockUISubmit("#procForm", "${Url.USER_DTL!}");
+                cF.util.blockUISubmit("#procForm", "${Url.USER_DTL!}");
             },
 
             /**
@@ -142,10 +142,10 @@
                     if (!result.value) return;
                     const url = "${Url.USER_REQST_CF_AJAX!}";
                     const ajaxData = $("#procForm").serializeArray();
-                    commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
-                                if (res.rslt) commons.util.blockUIReload();
+                                if (res.rslt) cF.util.blockUIReload();
                             });
                     }, "block");
                 });
@@ -162,10 +162,10 @@
                     if (!result.value) return;
                     const url = "${Url.USER_REQST_UNCF_AJAX!}";
                     const ajaxData = $("#procForm").serializeArray();
-                    commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
-                                if (res.rslt) commons.util.blockUIReload();
+                                if (res.rslt) cF.util.blockUIReload();
                             });
                     }, "block");
                 });
@@ -182,10 +182,10 @@
                     if (!result.value) return;
                     const url = "${Url.USER_PW_RESET_AJAX!}";
                     const ajaxData = $("#procForm").serializeArray();
-                    commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
-                                if (res.rslt) commons.util.blockUIReload();
+                                if (res.rslt) cF.util.blockUIReload();
                             });
                     }, "block");
                 });
@@ -195,7 +195,7 @@
              * 수정 화면으로 이동
              */
             mdfForm: function() {
-                commons.util.blockUISubmit("#procForm", "${Url.USER_MDF_FORM!}");
+                cF.util.blockUISubmit("#procForm", "${Url.USER_MDF_FORM!}");
             },
 
             /**
@@ -209,7 +209,7 @@
                     if (!result.value) return;
                     const url = "${Url.USER_DEL_AJAX!}";
                     const ajaxData = $("#procForm").serializeArray();
-                    commons.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (res.rslt) User.list();
@@ -223,7 +223,7 @@
              */
             list: function() {
                 const listUrl = "${Url.USER_LIST!}<#if isMdf!false>?isBackToList=Y</#if>";
-                commons.util.blockUIReplace(listUrl);
+                cF.util.blockUIReplace(listUrl);
             }
         }
     })();
