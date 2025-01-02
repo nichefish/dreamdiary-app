@@ -38,47 +38,6 @@ cF.validate = (function () {
         },
         basicExtnFilter: "exe|class|jsp|asp|php|sh|bat|war|jar|java|xml|js|css|html|sql",
         validImgExtn: "jpg|jpeg|png",
-        /** 정규식: 숫자 */
-        numRegex: /[0-9]/g,
-        /** 정규식: 숫자 빼고 나머지 */
-        nonNumRegex: /[^0-9]/g,
-        /** 정규식: 숫자 및 점 */
-        numAndDotRegex: /[0-9.]/g,
-        /** 정규식: 숫자 및 점 빼고 나머지 */
-        nonNumAndDotRegex: /[^0-9.]/g,
-        /** 정규식: 숫자 및 쉼표(,) */
-        numAndCommaRegex: /[^0-9,]/g,
-        /** 정규식: 숫자 및 쉼표(,) 빼고 나머지 */
-        nonNumAndCommaRegex: /[^0-9,]/g,
-        /** 정규식: 숫자 및 점(.) 슬래시(/) */
-        numDotAndSlashRegex: /[^0-9.\/]/g,
-        /** 정규식: 숫자 및 점(.) 슬래시(/) 빼고 나머지 */
-        nonNumDotAndSlashRegex: /[^0-9.\/]/g,
-        /** 정규식: 숫자 및 대시(-) 슬래시(/) 콜론(:) 띄어쓰기 */
-        dtRegex: /[0-9-:\/\s]/g,
-        /** 정규식: 숫자 및 대시(-) 슬래시(/) 콜론(:) 띄어쓰기 빼고 나머지 (날짜 표시에 사용) */
-        nonDtRegex: /[^0-9-:\/\s]/g,
-        /** 정규식: 숫자 및 영문 대소문자 */
-        engNumRegex: /[^A-Za-z0-9]/g,
-        /** 정규식: 숫자 및 영문 대소문자 빼고 나머지 */
-        nonEngNumRegex: /[^A-Za-z0-9]/g,
-        /** 정규식: 숫자 및 영문 대소문자 언더바 (코드 정보에 사용) */
-        cdRegex: /[^A-Za-z0-9_]/g,
-        /** 정규식: 숫자 및 영문 대소문자 언더바 빼고 나머지 (코드 정보에 사용) */
-        nonCdRegex: /[^A-Za-z0-9_]/g,
-        /** 정규식: IP주소(v4) */
-        ipv4regex: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
-        /** 정규식: IP주소(v4) (CIDR) */
-        ipv4CidrRegex: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)($|\/(0?[1-9]|[12][0-9]|3[01])$)/,
-        /** 정규식: 아이디 정규식 */
-        idRegex: /^(?=.*[a-z])[a-z\d]{5,16}$/,
-        /** 정규식: 비밀번호 정규식 (요청으로 대문자 포함 조건 제거, 상황에 맞게 사용) */
-        // pwRegex: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{9,20}$/g,
-        pwRegex: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&_])[A-Za-z\d$@$!%*#?&_]{9,20}$/,
-        /** 정규식: 2차 비밀번호 정규식 */
-        scscPwRegex: /^(?=.*[a-zA-Z])(?=.*[$~@!%*#?&])[a-zA-Z$~@!%*#?&]{5}$/,
-        /** 정규식: 천 단위 콤마 */
-        thousandSeparatorRegex: /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
         /**
          * 입력 요소에서 공백을 자동으로 제거합니다. (onkeyup 이벤트)
          * @param {string|HTMLElement|jQuery} selector - 공백을 제거할 입력 요소의 선택자 또는 DOM 또는 jQuery객체.
@@ -114,35 +73,35 @@ cF.validate = (function () {
          * @param {string|HTMLElement|jQuery} selector - 숫자만 허용할 입력 요소의 선택자, DOM 요소, 또는 jQuery 객체.
          */
         onlyNum: function (selector) {
-            return cF.validate.replaceBlankIfMatches(selector, cF.validate.nonNumRegex);
+            return cF.validate.replaceBlankIfMatches(selector, cF.regex.nonNum);
         },
         /**
          * 날짜 제외 공백처리 (onkeyup)
          * @param {string|HTMLElement|jQuery} selector - 날짜만 허용할 입력 요소의 선택자, DOM 요소, 또는 jQuery 객체.
          */
         onlyDt: function (selector) {
-            return cF.validate.replaceBlankIfMatches(selector, cF.validate.nonDtRegex);
+            return cF.validate.replaceBlankIfMatches(selector, cF.regex.nonDt);
         },
         /**
          * 숫자와 점을 제외한 공백처리 (onkeyup)
          * @param {string|HTMLElement|jQuery} selector - 숫자와 점만 허용할 입력 요소의 선택자, DOM 요소, 또는 jQuery 객체.
          */
         onlyNumAndDot: function (selector) {
-            return cF.validate.replaceBlankIfMatches(selector, cF.validate.nonNumAndDotRegex);
+            return cF.validate.replaceBlankIfMatches(selector, cF.regex.nonNumAndDot);
         },
         /**
          * 숫자와 쉼표를 제외한 공백처리 (onkeyup)
          * @param {string|HTMLElement|jQuery} selector - 숫자와 쉼표만 허용할 입력 요소의 선택자, DOM 요소, 또는 jQuery 객체.
          */
         onlyNumAndComma: function (selector) {
-            return cF.validate.replaceBlankIfMatches(selector, cF.validate.nonNumAndCommaRegex);
+            return cF.validate.replaceBlankIfMatches(selector, cF.regex.nonNumAndComma);
         },
         /**
          * 숫자와 영문자를 제외한 공백처리 (onkeyup)
          * @param {string|HTMLElement|jQuery} selector - 숫자와 영문자가 아닌 문자를 허용할 입력 요소의 선택자, DOM 요소, 또는 jQuery 객체.
          */
         onlyEngNum: function (selector) {
-            return cF.validate.replaceBlankIfMatches(selector, cF.validate.nonEngNumRegex);
+            return cF.validate.replaceBlankIfMatches(selector, cF.regex.nonEngNum);
         },
         /**
          * IPv4 CIDR 형식을 검사하고, 입력 필드에서 유효하지 않은 경우 공백으로 설정합니다.
@@ -153,12 +112,12 @@ cF.validate = (function () {
             if (inputs.length === 0)
                 return;
             // 숫자, 점, 슬래시를 제외한 문자 제거
-            cF.validate.replaceBlankIfMatches(selector, cF.validate.nonNumDotAndSlashRegex);
+            cF.validate.replaceBlankIfMatches(selector, cF.regex.nonNumDotAndSlash);
             inputs.forEach(input => {
                 input.addEventListener("blur", function () {
                     const errorSpan = document.getElementById(input.id + "_validate_span");
-                    const isValidIp = cF.validate.ipv4regex.test(input.value);
-                    const isValidCidr = cF.validate.ipv4CidrRegex.test(input.value);
+                    const isValidIp = cF.regex.ipv4.test(input.value);
+                    const isValidCidr = cF.regex.ipv4Cidr.test(input.value);
                     const isValid = isValidIp || isValidCidr;
                     input.value = isValid ? input.value : "";
                     if (errorSpan) {
