@@ -68,7 +68,7 @@ const Page = (function() {
                 } else {
                     // 로그인하지 않음. 중복ID 세션 attribute 만료시킴
                     const url = Url.AUTH_EXPIRE_SESSION_AJAX;
-                    cF.util.blockUIAjax(url, 'POST', null, function() {
+                    cF.ajax.post(url, null, function() {
                         cF.util.blockUIReplace(Url.AUTH_LGN_FORM);
                     });
                 }

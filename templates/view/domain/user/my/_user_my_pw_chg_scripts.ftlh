@@ -57,7 +57,7 @@
             myPwChgAjax: function() {
                 const url = "${Url.USER_MY_PW_CHG_AJAX!}";
                 const ajaxData = { "currPw" : $("#currPw").val(), "newPw" : $("#newPw").val() };
-                cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                cF.ajax.post(url, ajaxData, function(res) {
                     Swal.fire({ text: res.message })
                         .then(function() {
                             if (res.rslt) cF.util.blockUIReload();

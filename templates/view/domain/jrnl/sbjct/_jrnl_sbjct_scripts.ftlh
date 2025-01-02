@@ -96,7 +96,7 @@
             regAjax: function() {
                 const url = " <#if isMdf!false>${Url.JRNL_SBJCT_MDF_AJAX!}<#else>${Url.JRNL_SBJCT_REG_AJAX!}</#if>";
                 const ajaxData = new FormData(document.getElementById("jrnlSbjctRegForm"));
-                cF.util.blockUIMultipartAjax(url, ajaxData, function(res) {
+                cF.ajax.multipart(url, ajaxData, function(res) {
                     Swal.fire({text: res.message})
                         .then(function() {
                             if (!res.rslt) return;
@@ -131,7 +131,7 @@
 
                 const url = "${Url.JRNL_SBJCT_DTL_AJAX!}";
                 const ajaxData = {"postNo": postNo};
-                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({text: res.message});
                         return false;
@@ -158,7 +158,7 @@
                     if (!result.value) return;
                     const url = "${Url.JRNL_SBJCT_DEL_AJAX!}";
                     const ajaxData = $("#procForm").serializeArray();
-                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({text: res.message})
                             .then(function() {
                                 if (res.rslt) JrnlSbjct.list();

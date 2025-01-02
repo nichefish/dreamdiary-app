@@ -92,7 +92,7 @@
                 }
                 const url = "${Url.USER_ID_DUP_CHK_AJAX!}";
                 const ajaxData = { "userId": userId };
-                cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                cF.ajax.post(url, ajaxData, function(res) {
                     userIdValidSpan.text(res.message);
                     if (res.rslt) {
                         userIdValidSpan.removeClass("text-danger").addClass("text-success");
@@ -112,7 +112,7 @@
             regAjax: function() {
                 const url = "<#if isReg!false>${Url.USER_REG_AJAX!}</#if><#if isMdf!false>${Url.USER_MDF_AJAX!}</#if>";
                 const ajaxData = new FormData(document.getElementById("userRegForm"));
-                cF.util.blockUIMultipartAjax(url, ajaxData, function(res) {
+                cF.ajax.multipart(url, ajaxData, function(res) {
                     Swal.fire({ text: res.message })
                         .then(function() {
                             if (res.rslt) User.list();
@@ -142,7 +142,7 @@
                     if (!result.value) return;
                     const url = "${Url.USER_REQST_CF_AJAX!}";
                     const ajaxData = $("#procForm").serializeArray();
-                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (res.rslt) cF.util.blockUIReload();
@@ -162,7 +162,7 @@
                     if (!result.value) return;
                     const url = "${Url.USER_REQST_UNCF_AJAX!}";
                     const ajaxData = $("#procForm").serializeArray();
-                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (res.rslt) cF.util.blockUIReload();
@@ -182,7 +182,7 @@
                     if (!result.value) return;
                     const url = "${Url.USER_PW_RESET_AJAX!}";
                     const ajaxData = $("#procForm").serializeArray();
-                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (res.rslt) cF.util.blockUIReload();
@@ -209,7 +209,7 @@
                     if (!result.value) return;
                     const url = "${Url.USER_DEL_AJAX!}";
                     const ajaxData = $("#procForm").serializeArray();
-                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (res.rslt) User.list();

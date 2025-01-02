@@ -63,7 +63,7 @@
                     let isReg = $("#menuRegForm #menuNo").val() === "";
                     const url = isReg ? "${Url.MENU_REG_AJAX!}" : "${Url.MENU_MDF_AJAX!}";
                     const ajaxData = $("#tmplatDefRegForm").serializeArray();
-                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (res.rslt) cF.util.blockUIReload();
@@ -80,7 +80,7 @@
 
                 const url = "${Url.MENU_DTL_AJAX!}";
                 const ajaxData = { "menuNo": menuNo };
-                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
@@ -105,7 +105,7 @@
                     if (!result.value) return;
                     const url = "${Url.MENU_DEL_AJAX!}";
                     const ajaxData = { "menuNo": menuNo };
-                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (res.rslt) cF.util.blockUIReload();

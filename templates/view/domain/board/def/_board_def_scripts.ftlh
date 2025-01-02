@@ -56,7 +56,7 @@
                     if (!result.value) return;
                     const url = '${Url.BOARD_DEF_REG_AJAX!}';
                     const ajaxData = $("#boardDefRegForm").serializeArray();
-                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (res.rslt) cF.util.blockUIReload();
@@ -72,7 +72,7 @@
             mdfModal: function(boardCd) {
                 const url = "${Url.BOARD_DEF_DTL_AJAX!}";
                 const ajaxData = { "boardCd": boardCd };
-                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
@@ -96,7 +96,7 @@
                     if (!result.value) return;
                     const url = '${Url.BOARD_DEF_USE_AJAX!}';
                     const ajaxData = { "boardCd": key };
-                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (res.rslt) cF.util.blockUIReload();
@@ -117,7 +117,7 @@
                     if (!result.value) return;
                     const url = '${Url.BOARD_DEF_UNUSE_AJAX!}';
                     const ajaxData = { "boardCd": key };
-                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (res.rslt) cF.util.blockUIReload();
@@ -138,7 +138,7 @@
                     if (!result.value) return;
                     const url = "${Url.BOARD_DEF_DEL_AJAX!}";
                     const ajaxData = { "boardCd": key };
-                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (res.rslt) cF.util.blockUIReload();

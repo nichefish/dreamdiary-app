@@ -47,7 +47,7 @@
             updtTree: function() {
                 // 메인 메뉴 그리기
                 const url = "${Url.MENU_MAIN_LIST_AJAX!}";
-                cF.util.blockUIAjax(url, 'GET', null, function(res) {
+                cF.ajax.get(url, null, function(res) {
                     if (!res.rslt) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
@@ -74,15 +74,7 @@
             drawTree: function() {
                 const jstreeContainer = Page.jstreeContainer;
                 cF.jstree.reset(jstreeContainer);
-                cF.jstree.init(jstreeContainer);     // 조직도 트리구조 세팅
-                // 부서 조회
-                // let deptUrl = "/manage/user/totalOrgnztChartAjax";
-                // cF.util.blockUIAjax(deptUrl, "get", {}, function(res) {
-                //     if (!res.rslt) return;
-                //     $(jstreeContainer).jstree(true).settings.core.data = res.rsltList;
-                //     $(jstreeContainer).jstree(true).settings.core.expand_selected_onload = true;
-                //     $(jstreeContainer).jstree(true).refresh(false, true);
-                // });
+                cF.jstree.init(jstreeContainer);
             },
         }
     })();

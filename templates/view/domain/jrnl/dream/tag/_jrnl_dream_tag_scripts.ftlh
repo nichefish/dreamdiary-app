@@ -11,7 +11,7 @@
             listAjax: function() {
                 const url = "${Url.JRNL_DREAM_TAG_LIST_AJAX!}";
                 const ajaxData = { "yy": $("#jrnl_aside #yy").val(), "mnth": $("#jrnl_aside #mnth").val() };
-                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
@@ -26,7 +26,7 @@
             listAllAjax: function() {
                 const url = "${Url.JRNL_DREAM_TAG_LIST_AJAX!}";
                 const ajaxData = { "yy": 9999, "mnth":99 };
-                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
@@ -48,7 +48,7 @@
             dreamTagGroupListAllAjax: function() {
                 const url = "${Url.JRNL_DREAM_TAG_LIST_AJAX!}";
                 const ajaxData = { "yy": 9999, "mnth":99 };
-                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
@@ -74,7 +74,7 @@
 
                 const url = "${Url.JRNL_DREAM_TAG_DTL_AJAX!}";
                 const ajaxData = { "tagNo": tagNo };
-                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;

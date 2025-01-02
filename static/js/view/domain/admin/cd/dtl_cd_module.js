@@ -55,7 +55,7 @@ const DtlCd = (function () {
                 $("#dtlCdRegForm #regYn").val("Y");
                 const url = "${Url.DTL_CD_REG_AJAX!}";
                 const ajaxData = $("#dtlCdRegForm").serializeArray();
-                cF.util.blockUIAjax(url, 'POST', ajaxData, function (res) {
+                cF.ajax.post(url, ajaxData, function (res) {
                     Swal.fire({ text: res.message })
                         .then(function () {
                         if (res.rslt)
@@ -71,7 +71,7 @@ const DtlCd = (function () {
         mdfModal: function (dtlCd) {
             const url = Url.DTL_CD_DTL_AJAX;
             const ajaxData = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
-            cF.util.blockUIAjax(url, 'GET', ajaxData, function (res) {
+            cF.ajax.get(url, ajaxData, function (res) {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message))
                         Swal.fire({ text: res.message });
@@ -97,7 +97,7 @@ const DtlCd = (function () {
                     return;
                 const url = Url.DTL_CD_USE_AJAX;
                 const ajaxData = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
-                cF.util.blockUIAjax(url, 'POST', ajaxData, function (res) {
+                cF.ajax.post(url, ajaxData, function (res) {
                     Swal.fire({ text: res.message })
                         .then(function () {
                         if (res.rslt)
@@ -120,7 +120,7 @@ const DtlCd = (function () {
                     return;
                 const url = Url.DTL_CD_UNUSE_AJAX;
                 const ajaxData = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
-                cF.util.blockUIAjax(url, 'POST', ajaxData, function (res) {
+                cF.ajax.post(url, ajaxData, function (res) {
                     Swal.fire({ text: res.message })
                         .then(function () {
                         if (res.rslt)
@@ -143,7 +143,7 @@ const DtlCd = (function () {
                     return;
                 const url = Url.DTL_CD_DEL_AJAX;
                 const ajaxData = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
-                cF.util.blockUIAjax(url, 'POST', ajaxData, function (res) {
+                cF.ajax.post(url, ajaxData, function (res) {
                     Swal.fire({ text: res.message })
                         .then(function () {
                         if (res.rslt)

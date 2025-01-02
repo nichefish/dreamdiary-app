@@ -42,7 +42,7 @@
                     if (!result.value) return;
                     const url = "${Url.LGN_POLICY_REG_AJAX!}";
                     const ajaxData = $("#lgnPolicyForm").serializeArray();
-                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (res.rslt) cF.util.blockUIReplace("${Url.LGN_POLICY_FORM!}");

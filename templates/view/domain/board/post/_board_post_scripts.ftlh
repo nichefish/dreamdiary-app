@@ -97,7 +97,7 @@
             regAjax: function() {
                 const url = "<#if isMdf!false>${Url.BOARD_POST_MDF_AJAX!}<#else>${Url.BOARD_POST_REG_AJAX!}</#if>";
                 const ajaxData = new FormData(document.getElementById("postRegForm"));
-                cF.util.blockUIMultipartAjax(url, ajaxData, function(res) {
+                cF.ajax.multipart(url, ajaxData, function(res) {
                     Swal.fire({ text: res.message })
                         .then(function() {
                             if (res.rslt) BoardPost.list();
@@ -126,7 +126,7 @@
 
                 const url = "${Url.BOARD_POST_DTL_AJAX!}";
                 const ajaxData = { "postNo": postNo, "boardCd": $("#boardCd").val() };
-                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
@@ -156,7 +156,7 @@
                     if (!result.value) return;
                     const url = "${Url.BOARD_POST_DEL_AJAX!}";
                     const ajaxData = $("#procForm").serializeArray();
-                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (res.rslt) BoardPost.list();

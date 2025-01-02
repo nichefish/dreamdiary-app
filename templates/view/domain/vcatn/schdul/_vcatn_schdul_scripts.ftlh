@@ -62,7 +62,7 @@
                 const isReg = ($("#vcatnSchdulNo").val() === "");
                 const url = isReg ? '${Url.VCATN_SCHDUL_REG_AJAX!}' : '${Url.VCATN_SCHDUL_MDF_AJAX!}';
                 const ajaxData = new FormData(document.getElementById("vcantSchdulRegForm"));
-                cF.util.blockUIMultipartAjax(url, ajaxData, function(res) {
+                cF.ajax.multipart(url, ajaxData, function(res) {
                     Swal.fire({ text: res.message })
                         .then(function() {
                             if (res.rslt) cF.util.blockUIReload();
@@ -95,7 +95,7 @@
                 $("#vcatnSchdulNoProc").val(vcatnSchdulNo);
                 const url = "${Url.VCATN_SCHDUL_DTL_AJAX!}";
                 const ajaxData = $("#procForm").serializeArray();
-                cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                cF.ajax.post(url, ajaxData, function(res) {
                     if (!res.rslt) return;
                     const { rsltObj } = res;
                     // 수정 modal_form에 값 세팅
@@ -139,7 +139,7 @@
                     $("#vcatnSchdulNoProc").val(vcatnSchdulNo);
                     const url = "${Url.VCATN_SCHDUL_DEL_AJAX!}";
                     const ajaxData = $("#procForm").serializeArray();
-                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (res.rslt) cF.util.blockUIReload();

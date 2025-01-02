@@ -59,7 +59,7 @@
                     $("#clCdRegForm #regYn").val("Y");
                     const url = "${Url.TMPLAT_DEF_REG_AJAX!}";
                     const ajaxData = $("#clCdRegForm").serializeArray();
-                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (res.rslt) cF.util.blockUIReplace("${Url.CL_CD_LIST!}");
@@ -89,7 +89,7 @@
 
                 const url = "${Url.TMPLAT_DEF_DTL_AJAX!}";
                 const ajaxData = { "postNo": postNo };
-                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;

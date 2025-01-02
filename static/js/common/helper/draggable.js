@@ -70,7 +70,7 @@ cF.draggable = (function () {
                 orderData.push(Object.assign(Object.assign({}, key), { "state": { "sortOrdr": index } }));
             });
             const ajaxData = { "sortOrdr": orderData };
-            cF.util.blockUIJsonAjax(url, 'POST', JSON.stringify(ajaxData), function (res) {
+            cF.ajax.jsonRequest(url, 'POST', JSON.stringify(ajaxData), function (res) {
                 if (res.rslt) {
                     (refreshFunc || cF.util.blockUIReload)();
                 }

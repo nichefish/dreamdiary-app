@@ -124,7 +124,7 @@
                 });
                 // 검색키워드 설정
                 ajaxData.searchKeyword = $("#searchKeyword").val();
-                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (res.rslt) Page.eventList = res.rsltList || [];
                 });
             },

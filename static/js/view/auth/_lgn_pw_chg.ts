@@ -53,7 +53,7 @@ const LgnPwChg = (function() {
             const url = Url.AUTH_LGN_PW_CHG_AJAX;
             const userId = $("#lgnUserId").val();
             const ajaxData = { "userId" : userId, "currPw" : $("#currPw").val(), "newPw" : $("#newPw").val() };
-            cF.util.blockUIAjax(url, 'POST', ajaxData, function(res: AjaxResponse) {
+            cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
                 Swal.fire({
                     text: res.message
                 }).then(function() {

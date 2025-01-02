@@ -36,7 +36,7 @@
 
                 const url = "${Url.LOG_ACTVTY_DTL_AJAX!}";
                 const ajaxData = { "logActvtyNo": logActvtyNo };
-                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;

@@ -10,7 +10,7 @@
              */
             tagCtgrSyncAjax: function() {
                 const url = "${Url.JRNL_TAG_CTGR_SYNC_AJAX!}";
-                cF.util.blockUIAjax(url, 'POST', {}, function(res) {
+                cF.ajax.post(url, {}, function(res) {
                     Swal.fire({ text: res.message });
                     if (!res.rslt) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });

@@ -33,7 +33,7 @@
             notionAjax: function() {
                 const url = "${Url.API_NOTION_GET!}";
                 const ajaxData = { "dataType": $("#dataType").val(), "dataId": $("#dataId").val() };
-                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (res.rslt) Swal.fire(JSON.stringify(res));
                     Swal.fire({ text: res.message });
                 });
@@ -45,7 +45,7 @@
              * @param {Object} data - 서버로 전송할 데이터 객체.
              */
             ajax: function(url, data) {
-                cF.util.blockUIAjax(url, 'POST', data, function(res) {
+                cF.ajax.post(url, data, function(res) {
                     if (res.rslt) Swal.fire(JSON.stringify(res));
                     Swal.fire({ text: res.message })
                         .then(function() {

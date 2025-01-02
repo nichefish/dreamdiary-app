@@ -15,7 +15,7 @@
 
                 const url = "${Url.FILE_INFO_LIST_AJAX!}";
                 const ajaxData = { "atchFileNo": atchFileNo };
-                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;

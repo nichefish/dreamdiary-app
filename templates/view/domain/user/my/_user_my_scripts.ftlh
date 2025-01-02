@@ -17,7 +17,7 @@
                         if (!cF.validate.fileImgExtnChck(this)) return false;      // fileExtnChck
                         const url = "${Url.USER_MY_UPLOAD_PROFL_IMG_AJAX!}";
                         const ajaxData = new FormData(document.getElementById("profllImgForm"));
-                        cF.util.blockUIMultipartAjax(url, ajaxData, function(res) {
+                        cF.ajax.multipart(url, ajaxData, function(res) {
                             if (cF.util.isNotEmpty(res.message)) {
                                 Swal.fire({ "text": res.message })
                                     .then(function() {
@@ -42,7 +42,7 @@
                 }).then(function(result) {
                     if (!result.value) return;
                     const url = "${Url.USER_MY_REMOVE_PROFL_IMG_AJAX!}";
-                    cF.util.blockUIMultipartAjax(url, {}, function(res) {
+                    cF.ajax.multipart(url, {}, function(res) {
                         if (cF.util.isNotEmpty(res.message)) {
                             Swal.fire({ "text": res.message })
                                 .then(function() {

@@ -53,7 +53,7 @@
                     if (!result.value) return;
                     const url = "${Url.FLSYS_META_REG_AJAX!}";
                     const ajaxData = $("#flsysMetaRegForm").serializeArray();
-                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (res.rslt) Flsys.flsysRefreshAjax();
@@ -72,7 +72,7 @@
 
                 const url = "${Url.FLSYS_META_DTL_AJAX!}";
                 const ajaxData = { "postNo": postNo };
-                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
@@ -89,7 +89,7 @@
 
                 const url = "${Url.FLSYS_META_DTL_AJAX!}";
                 const ajaxData = { "postNo": postNo };
-                cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
@@ -115,7 +115,7 @@
                     if (!result.value) return;
                     const url = "${Url.FLSYS_META_DEL_AJAX!}";
                     const ajaxData = { "postNo": postNo };
-                    cF.util.blockUIAjax(url, 'GET', ajaxData, function(res) {
+                    cF.ajax.get(url, ajaxData, function(res) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         if (res.rslt) Flsys.flsysListAjax(Flsys.currPath);
                     });

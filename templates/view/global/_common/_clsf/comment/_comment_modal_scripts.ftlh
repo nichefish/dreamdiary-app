@@ -60,7 +60,7 @@
                     if (!result.value) return;
                     const url = isReg ? "${Url.COMMENT_REG_AJAX!}" : "${Url.COMMENT_MDF_AJAX!}";
                     const ajaxData = new FormData(document.getElementById("commentRegForm"));
-                    cF.util.blockUIMultipartAjax(url, ajaxData, function(res) {
+                    cF.ajax.multipart(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (!res.rslt) return;
@@ -83,7 +83,7 @@
 
                 const url = "${Url.COMMENT_DTL_AJAX!}";
                 const ajaxData = { "postNo" : postNo };
-                cF.util.blockUIAjax(url, "get", ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
@@ -108,7 +108,7 @@
                     if (!result.value) return;
                     const url = "${Url.COMMENT_DEL_AJAX!}";
                     const ajaxData = { "postNo": postNo, "actvtyCtgrCd": "${actvtyCtgrCd!}" };
-                    cF.util.blockUIAjax(url, 'POST', ajaxData, function(res) {
+                    cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {
                                 if (!res.rslt) return;

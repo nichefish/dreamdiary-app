@@ -89,7 +89,7 @@
             regAjax: function() {
                 const url = "${Url.USER_REQST_REG_AJAX!}";
                 const ajaxData = new FormData(document.getElementById("userReqstForm"));
-                cF.util.blockUIMultipartAjax(url, ajaxData, function(res) {
+                cF.ajax.multipart(url, ajaxData, function(res) {
                     Swal.fire({ text: res.message })
                         .then(function() {
                             if (res.rslt) UserReqst.main();
