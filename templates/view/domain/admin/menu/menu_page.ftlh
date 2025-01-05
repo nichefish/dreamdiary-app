@@ -34,7 +34,7 @@
 
 <#include "/view/domain/admin/menu/_menu_main_card_template.hbs">
 <#include "/view/domain/admin/menu/_menu_sub_template.hbs">
-<#include "/view/domain/admin/menu/modal/_menu_reg_modal.ftlh">
+<#include "/view/domain/admin/menu/_modal/_menu_reg_modal.ftlh">
 <#--include::script modules-->
 <#--include::script modules-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>

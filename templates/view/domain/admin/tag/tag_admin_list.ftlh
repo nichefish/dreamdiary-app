@@ -77,7 +77,7 @@
 </form>
 
 <#--include::modals-->
-<#include "/view/domain/admin/tag/modal/_tag_list_template.hbs">
+<#include "/view/domain/admin/tag/_modal/_tag_list_template.hbs">
 <#include "/view/domain/admin/tag/_tag_ctgr_template.hbs">
 <#include "/view/domain/admin/tag/_modal/_tag_admin_dtl_modal.ftlh">
 <#include "/view/domain/admin/tag/_modal/_tag_prop_reg_modal.ftlh">
