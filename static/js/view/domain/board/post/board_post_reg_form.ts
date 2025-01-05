@@ -11,7 +11,9 @@ const Page: Page = (function(): Page {
          */
         init: function(): void {
             /* initialize form. */
-            BoardPost.initForm();
+            dF.BoardPost.initForm();
+
+            console.log("Page scripts initialized.");
         },
     }
 })();

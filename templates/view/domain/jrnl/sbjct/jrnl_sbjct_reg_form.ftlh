@@ -22,7 +22,7 @@
                 JrnlSbjct.initForm();
                 <#if isMdf>
                     /* 글 단락 init */
-                    Sectn.init({
+                    dF.Sectn.init({
                         refreshFunc: function() {
                             setTimeout(function() {
                                 Page.refreshFunc();
@@ -30,7 +30,7 @@
                         }
                     });
                     /* 글 단락 정렬순서 변경 init */
-                    Sectn.initDraggable({
+                    dF.Sectn.initDraggable({
                         refreshFunc: Page.refreshFunc
                     });
                 </#if>
@@ -40,9 +40,9 @@
             },
             <#if isMdf>
                 refreshFunc: function() {
-                    Sectn.listAjax({ "refPostNo": ${post.postNo!}, "refContentType": "${post.contentType!}" });
+                    dF.Sectn.listAjax({ "refPostNo": ${post.postNo!}, "refContentType": "${post.contentType!}" });
                     $("#sectn_reg_modal").modal("hide");
-                    Sectn.initDraggable({
+                    dF.Sectn.initDraggable({
                         refreshFunc: Page.refreshFunc
                     });
                 }

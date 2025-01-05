@@ -13,7 +13,7 @@
         </h5>
         <div class="d-flex gap-4">
             <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
-                    onclick="Tag.hideSingleTag('#jrnl_tag_list_div');"
+                    onclick="dF.Tag.hideSingleTag('#jrnl_tag_list_div');"
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="1개짜리 태그를 숨기고 보입니다.">
                 <i class="bi bi-tag pe-0"></i>
             </button>

@@ -1,10 +1,12 @@
 /**
  * lgn_pw_chg_module.ts
- * 로그인 화면 > 비밀번호 변경 : 스크립트 모듈 분리
+ * 로그인 화면 > 비밀번호 변경 스크립트 모듈
  *
+ * @namespace: dF.LgnPwChg (노출식 모듈 패턴)
  * @author nichefish
  */
-const LgnPwChg: Module = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.LgnPwChg = (function(): Module {
     return {
         /**
          * initializes module.
@@ -19,22 +21,22 @@ const LgnPwChg: Module = (function(): Module {
         pwChgModal: function(): void {
             const data: Record<string, any> = { "userId": Model.userId, "errorMsg": Model.errorMsg };
             /* initialize form. */
-            LgnPwChg.initForm(data);
+            dF.LgnPwChg.initForm(data);
         },
 
         /**
          * form init
-         * @param {Object} obj - 폼에 바인딩할 데이터
+         * @param {Record<string, any>} obj - 폼에 바인딩할 데이터
          */
-        initForm: function(obj = {}): void {
+        initForm: function(obj: Record<string, any> = {}): void {
             /* show modal */
             cF.handlebars.template(obj, "lgn_pw_chg", "show");
 
             // 엔터키 처리
-            cF.util.enterKey("#currPw, #newPw, #newPwCf", LgnPwChg.submit);
+            cF.util.enterKey("#currPw, #newPw, #newPwCf", dF.LgnPwChg.submit);
 
             /* jquery validation */
-            cF.validate.validateForm("#lgnPwChgForm", LgnPwChg.lgnPwChgAjax, {
+            cF.validate.validateForm("#lgnPwChgForm", dF.LgnPwChg.lgnPwChgAjax, {
                 rules: {
                     newPw: { regex: cF.regex.pw },
                     newPwCf: { equalTo: "#newPw" }
@@ -79,5 +81,5 @@ const LgnPwChg: Module = (function(): Module {
     };
 })();
 document.addEventListener("DOMContentLoaded", function(): void {
-    LgnPwChg.init();
+    dF.LgnPwChg.init();
 });

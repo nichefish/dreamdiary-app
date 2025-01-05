@@ -1,11 +1,11 @@
 /**
  * validate.ts
- * @namespace: cF.validate
- * @author: nichefish
- * @dependency: jquery.validate.js
  * 공통 - 유효성 검사 관련 함수 모듈
- * (노출식 모듈 패턴 적용 :: cF.validate.noSpaces("#id") 이런식으로 사용)
+ *
+ * @namespace: cF.validate (노출식 모듈 패턴)
+ * @author: nichefish
  */
+// @ts-ignore
 if (typeof cF === 'undefined') { var cF = {} as any; }
 // 글로벌 정규 표현식 검증 메소드 추가
 $(function(): void {

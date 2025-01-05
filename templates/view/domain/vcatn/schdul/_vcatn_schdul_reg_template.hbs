@@ -32,7 +32,7 @@
         </div>
         <div class="col-xl-9 text-start">
             <select name="vcatnCd" id="vcatnCd" class="form-select form-select-solid required"
-                    onchange="VcatnSchdul.propEndDt();" >
+                    onchange="dF.VcatnSchdul.propEndDt();" >
                 <option value="">--선택--</option>
                 <#list VCATN_CD![] as vcatnCd>
                     <option value="${vcatnCd.dtlCd!}">${vcatnCd.dtlCdNm!}</option>

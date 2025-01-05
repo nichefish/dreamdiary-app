@@ -22,7 +22,7 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-end">
             <#--모달:: 버튼: 저장하기-->
-            <@component.modal_btn_save "DtlCd.submit();" />
+            <@component.modal_btn_save "dF.DtlCd.submit();" />
             <#--모달:: 버튼: 모달 닫기-->
             <@component.modal_btn_close_safe />
         </div>

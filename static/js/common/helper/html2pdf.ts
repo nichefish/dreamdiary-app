@@ -1,10 +1,11 @@
 /**
  * html2pdf.js
- * 공통 - html2pdf(라이브러리) 관련 함수 모듈
+ * 공통 - html2pdf 관련 함수 모듈
  *
  * @namespace: cF.html2pdf (노출식 모듈 패턴)
  * @author: nichefish
  */
+// @ts-ignore
 if (typeof cF === 'undefined') { var cF = {} as any; }
 cF.html2pdf = (function(): Module {
 

@@ -3,7 +3,8 @@
  *
  * @author nichefish
  */
-const VcatnPapr: Module = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.VcatnPapr = (function(): Module {
     return {
         /**
          * initializes module.
@@ -14,11 +15,10 @@ const VcatnPapr: Module = (function(): Module {
 
         /**
          * form init
-         * @param {Object} obj - 폼에 바인딩할 데이터
          */
-        initForm: function(obj = {}): void {
+        initForm: function(): void {
             /* jquery validation */
-            cF.validate.validateForm("#vcatnPaprRegForm", VcatnPapr.submitHandler);
+            cF.validate.validateForm("#vcatnPaprRegForm", dF.VcatnPapr.submitHandler);
             // 잔디발송여부 클릭시 글씨 변경
             cF.util.chckboxLabel("jandiYn", "발송//미발송", "#0095E8//gray", function(): void {
                 $("#trgetTopicSpan").show();
@@ -35,10 +35,10 @@ const VcatnPapr: Module = (function(): Module {
             Swal.fire({
                 text: Message.get(isReg ? "view.cnfm.reg" : "view.cnfm.mdf"),
                 showCancelButton: true,
-            }).then(function(result) {
+            }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                VcatnPapr.regAjax();
+                dF.VcatnPapr.regAjax();
             });
         },
 
@@ -84,7 +84,7 @@ const VcatnPapr: Module = (function(): Module {
             cF.ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
                     .then(function(): void {
-                        if (res.rslt) VcatnPapr.list();
+                        if (res.rslt) dF.VcatnPapr.list();
                     });
             }, "block");
         },
@@ -155,7 +155,7 @@ const VcatnPapr: Module = (function(): Module {
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
-                            if (res.rslt) VcatnPapr.list();
+                            if (res.rslt) dF.VcatnPapr.list();
                         });
                 }, "block");
             });

@@ -1,10 +1,12 @@
 /**
  * ajax.ts
- * @namespace: cF.ajax
- * @author: nichefish
  * 공통 - ajax 관련 함수 모듈
- * (노출식 모듈 패턴 적용 :: cF.util.enterKey("#userId") 이런식으로 사용)
+ *
+ * @namespace: cF.ajax (노출식 모듈 패턴)
+ * @author: nichefish
  */
+
+// @ts-ignore
 if (typeof cF === 'undefined') { var cF = {} as any; }
 // 인증만료/접근불가로 ajax 실패시 로그인 페이지로 이동 또는 머무르기 (선택)
 // 기존 fetch를 가로채서 override
@@ -148,9 +150,11 @@ cF.ajax = (function(): Module {
          */
         get: async function (url: string, ajaxData: Record<string, any>, callback?: (response: any) => any, continueBlock?: string): Promise<void> {
             // URL에 query string을 추가 (ajaxData는 쿼리 파라미터로 변환)
-            const urlWithParams = new URL(url);
+            const absoluteUrl: string = cF.util.getAbsoluteUrl(url);  // 상대 경로를 절대 경로로 변환
+            const urlWithParams: URL = new URL(absoluteUrl);
+            ajaxData = ajaxData ?? {};
             Object.keys(ajaxData).forEach(
-                key => urlWithParams.searchParams.append(key, String(ajaxData[key]))
+                (key: string) => urlWithParams.searchParams.append(key, String(ajaxData[key]))
             );
 
             const options: RequestInit = {
@@ -161,7 +165,7 @@ cF.ajax = (function(): Module {
                 body: null, // GET 요청이므로 body는 필요 없음
             };
 
-            await cF.util.request(urlWithParams.toString(), options, callback, continueBlock);
+            await cF.ajax.request(urlWithParams.toString(), options, callback, continueBlock);
         },
 
         /**
@@ -180,7 +184,7 @@ cF.ajax = (function(): Module {
                 body: JSON.stringify(ajaxData), // JSON 형태로 데이터를 POST
             };
 
-            await cF.util.request(url, options, callback, continueBlock);
+            await cF.ajax.request(url, options, callback, continueBlock);
         },
 
         /**
@@ -190,7 +194,7 @@ cF.ajax = (function(): Module {
          * @param {Function} [callback] - 요청 성공시 호출될 콜백 함수.
          * @param {boolean} [continueBlock] - 추가적인 블록 UI 동작 여부 (선택적).
          */
-        multipartRequest: async function (url: string, ajaxData: FormData, callback?: (response: any) => any, continueBlock?: string): Promise<void> {
+        multipart: async function (url: string, ajaxData: FormData, callback?: (response: any) => any, continueBlock?: string): Promise<void> {
             const options: RequestInit = {
                 method: 'POST',
                 headers: {
@@ -199,7 +203,7 @@ cF.ajax = (function(): Module {
                 body: ajaxData,  // FormData 객체를 body에 전달
             };
 
-            await cF.util.request(url, options, callback, continueBlock);
+            await cF.ajax.request(url, options, callback, continueBlock);
         },
 
         /**
@@ -219,7 +223,7 @@ cF.ajax = (function(): Module {
                 body: method === 'GET' ? null : JSON.stringify(ajaxData),  // GET은 body가 필요 없음
             };
 
-            await cF.util.request(url, options, callback, continueBlock);
+            await cF.ajax.request(url, options, callback, continueBlock);
         },
     }
 })();

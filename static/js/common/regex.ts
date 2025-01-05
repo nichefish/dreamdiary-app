@@ -1,12 +1,12 @@
 /**
  * regex.ts
- * @namespace: cF.util
+ * 공통 - 정규식 관련 모듈
+ *
+ * @namespace: cF.regex (노출식 모듈 패턴)
  * @author: nichefish
- * @dependency: jquery.blockUI.js, jquery.forms.js
- * 공통 - 일반 함수 모듈
- * (노출식 모듈 패턴 적용 :: cF.util.enterKey("#userId") 이런식으로 사용)
  * "global flag /g works inconsistent if called multiple times..."
  */
+// @ts-ignore
 if (typeof cF === 'undefined') { var cF = {} as any; }
 cF.regex = (function(): Module {
 

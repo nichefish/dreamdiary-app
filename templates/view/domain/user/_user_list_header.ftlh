@@ -56,15 +56,15 @@
     </div>
     <div>
         <#--헤더:: 버튼: 목록 검색-->
-        <@component.header_btn_search "User.search();" />
+        <@component.header_btn_search "dF.User.search();" />
     </div>
     <div>
         <#--헤더:: 버튼: 등록 화면 이동하기-->
-        <@component.header_btn_reg_form "User.regForm();" />
+        <@component.header_btn_reg_form "dF.User.regForm();" />
     </div>
     <div>
         <#--헤더:: 버튼: 엑셀 다운로드하기-->
-        <@component.header_btn_xlsx_download "User.xlsxDownload();" />
+        <@component.header_btn_xlsx_download "dF.User.xlsxDownload();" />
     </div>
 </form>
 

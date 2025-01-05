@@ -31,14 +31,14 @@
                         <div class="d-flex align-items-center py-1">
                             <div id="showMdfBtnDiv${comment.postNo!}">
                                 <a href="javascript:void(0);" class="btn btn-sm btn-flex btn-light-primary btn-icon mx-1"
-                                   onclick="Comment.page.mdfForm('${comment.postNo!}');"
+                                   onclick="dF.Comment.page.mdfForm('${comment.postNo!}');"
                                    data-bs-toggle="tooltip" title="댓글 수정 폼을 호출합니다." data-bs-dismiss="click">
                                     <span class="svg-icon svg-icon-7">
                                         <i class="fas fa-solid fa-pen"></i>
                                     </span>
                                 </a>
                                 <a href="javascript:void(0);" class="btn btn-sm btn-flex btn-light-danger btn-icon"
-                                   onclick="Comment.page.delAjax(${comment.postNo!});"
+                                   onclick="dF.Comment.page.delAjax(${comment.postNo!});"
                                    data-bs-toggle="tooltip" title="댓글을 삭제합니다." data-bs-dismiss="click">
                                 <span class="svg-icon svg-icon-7">
                                     <i class="fas fa-trash-alt"></i>
@@ -60,13 +60,13 @@
                     <div id="mdfSaveBtnDiv${comment.postNo!}" class="col-1 text-center fs-5 fw-normal text-gray-800 w-125px"
                          style="display:none;">
                         <button type="button" class="btn btn-sm btn-primary me-2 mb-2"
-                                onclick="Comment.page.mdfAjax('${comment.postNo!}');"
+                                onclick="dF.Comment.page.mdfAjax('${comment.postNo!}');"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="댓글을 수정합니다.">
                             <i class="bi bi-pencil-square"></i>
                             저장
                         </button>
                         <button type="button" class="btn btn-sm btn-secondary me-2"
-                                onclick="Comment.page.closeMdfForm('${comment.postNo!}');"
+                                onclick="dF.Comment.page.closeMdfForm('${comment.postNo!}');"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="댓글 수정 영역을 닫습니다.">
                             닫기
                         </button>
@@ -101,7 +101,7 @@
                 </div>
                 <div class="col-1 col-form-label w-125px">
                     <#--페이지:: 버튼: 저장하기-->
-                    <@component.post_btn_submit "Comment.page.submit();" />
+                    <@component.post_btn_submit "dF.Comment.page.submit();" />
                 </div>
             </div>
         </div>

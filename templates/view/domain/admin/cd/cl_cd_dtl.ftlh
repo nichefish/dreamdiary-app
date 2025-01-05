@@ -40,18 +40,18 @@
         <div class="d-flex justify-content-end">
             <#--페이지:: 버튼: 수정 모달 호출-->
             <button type="button" class="btn btn-sm btn-light btn-active-primary me-2"
-                    onclick="ClCd.mdfModal('${clCd.clCd!}');"
+                    onclick="dF.ClCd.mdfModal('${clCd.clCd!}');"
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="구분 코드 수정 팝업을&#10;호출합니다.">
                 <i class="bi bi-pencil-square"></i>수정
             </button>
             <#--페이지:: 버튼: 등록자 또는 관리자가 삭제 가능-->
             <button type="button" class="btn btn-sm btn-light btn-active-danger me-2"
-                    onclick="ClCd.delAjax('${clCd.clCd!}');"
+                    onclick="dF.ClCd.delAjax('${clCd.clCd!}');"
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="구분 코드를 삭제합니다.">
                 <i class="bi bi-trash"></i>삭제
             </button>
             <#--페이지:: 버튼: 목록으로 가기-->
-            <@component.post_btn_toList "ClCd.list();" />
+            <@component.post_btn_toList "dF.ClCd.list();" />
         </div>
     </div>
 </div>
@@ -70,7 +70,7 @@
             <!--begin::Toolbar-->
             <div>
                 <button type="button" class="btn btn-sm btn-primary"
-                        onclick="DtlCd.regModal();"
+                        onclick="dF.DtlCd.regModal();"
                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="상세 코드 등록 모달을&#10;호출합니다.">
                     <i class="fas fa-plus"></i>상세 코드 추가
                 </button>
@@ -120,7 +120,7 @@
             <#--begin::Table body-->
             <tbody class="draggable-zone">
                 <#list clCd.dtlCdList![] as dtlCd>
-                    <tr class="sortable-item draggable bg-hover-secondary" id="${dtlCd.dtlCd!}" data-id="${dtlCd.dtlCd!}" onclick="DtlCd.mdfModal('${dtlCd.dtlCd!}');">
+                    <tr class="sortable-item draggable bg-hover-secondary" id="${dtlCd.dtlCd!}" data-id="${dtlCd.dtlCd!}" onclick="dF.DtlCd.mdfModal('${dtlCd.dtlCd!}');">
                         <td class="text-center">
                             <div class="d-flex-center draggable-handle cursor-move pt-2"
                                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="드래그하여&#10;항목을 이동합니다.">
@@ -149,13 +149,13 @@
                         <td class="text-center">
                             <#if ((dtlCd.state.useYn)!"N") == "Y">
                                 <div class="badge badge-success cursor-pointer"
-                                     onclick="DtlCd.unuseAjax('${dtlCd.dtlCd!}');"
+                                     onclick="dF.DtlCd.unuseAjax('${dtlCd.dtlCd!}');"
                                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="클릭하여 사용 상태를&#10;변경합니다.">
                                     <i class="bi bi-check text-light blink-slow"></i>사용
                                 </div>
                             <#else>
                                 <div class="badge badge-secondary btn-white cursor-pointer"
-                                     onclick="DtlCd.useAjax('${dtlCd.dtlCd!}');"
+                                     onclick="dF.DtlCd.useAjax('${dtlCd.dtlCd!}');"
                                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="클릭하여 사용 상태를&#10;변경합니다.">
                                     <i class="bi bi-x blink-slow"></i>미사용
                                 </div>
@@ -163,7 +163,7 @@
                         </td>
                         <td class="text-center">
                             <div class="badge badge-danger badge-outlined cursor-pointer"
-                                 onclick="DtlCd.delAjax('${dtlCd.dtlCd!}')"
+                                 onclick="dF.DtlCd.delAjax('${dtlCd.dtlCd!}')"
                                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "bs.tooltip.del"/>">
                                 <i class="bi bi-trash text-danger fs-7 blink-slow"></i>삭제
                             </div>
@@ -189,8 +189,8 @@
 <#--include::script modules-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
 <script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/static/js/view/domain/admin/cd/cl_cd_module.js"></script>
-<script type="text/javascript" src="/static/js/view/domain/admin/cd/cl_cd_dtl.js"></script>
+<script type="text/javascript" src="/js/view/domain/admin/cd/cl_cd_module.js"></script>
+<script type="text/javascript" src="/js/view/domain/admin/cd/cl_cd_dtl.js"></script>
 <#include "/view/domain/admin/cd/_dtl_cd_scripts.ftlh">
 
 </@layout.layout>

@@ -1,11 +1,12 @@
 /**
  * pickr.ts
- * 공통 - pickr 함수 모듈
+ * 공통 - pickr 관련 함수 모듈
  *
  * @namespace: cF.pickr (노출식 모듈 패턴)
  * @author: nichefish
  * @see "https://github.com/simonwep/pickr"
  */
+// @ts-ignore
 if (typeof cF === 'undefined') { var cF = {} as any; }
 cF.pickr = (function(): Module {
 

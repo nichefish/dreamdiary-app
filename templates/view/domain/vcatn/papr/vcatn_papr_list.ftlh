@@ -43,7 +43,7 @@
                 <#--begin::상단고정 목록-->
                 <#list vcatnPaprFxdList![] as post>
                     <tr class="bg-fxd-list <#if post.isRegstr!false>bg-fxd-list</#if> bg-hover-secondary"
-                        onclick="VcatnPapr.dtl('${post.postNo!}');">
+                        onclick="dF.VcatnPapr.dtl('${post.postNo!}');">
                         <td class="text-center hidden-table">
                             ${post.rnum!"-"}
                         </td>
@@ -68,7 +68,7 @@
                                     </#if>
                                 </span>
                                 <#--목록:: 모달 팝업 열기 버튼 표시-->
-                                <@component.list_dtl_modal post "VcatnPapr.dtlModal" />
+                                <@component.list_dtl_modal post "dF.VcatnPapr.dtlModal" />
                             </div>
                         </td>
                         <td class="text-center col-form-label hidden-table">
@@ -106,7 +106,7 @@
                 <#--begin::목록-->
                 <#list vcatnPaprList![] as post>
                     <tr class="bg-hover-secondary <#if post.isRegstr!false>bg-fxd-list</#if>"
-                        onclick="VcatnPapr.dtl('${post.postNo!}');">
+                        onclick="dF.VcatnPapr.dtl('${post.postNo!}');">
                         <td class="text-center hidden-table">
                             ${post.rnum!}
                         </td>
@@ -130,7 +130,7 @@
                                     </#if>
                                 </span>
                                 <#--목록:: 모달 팝업 열기 버튼 표시-->
-                                <@component.list_dtl_modal post "VcatnPapr.dtlModal" />
+                                <@component.list_dtl_modal post "dF.VcatnPapr.dtlModal" />
                             </div>
                         </td>
                         <td class="text-center col-form-label hidden-table">

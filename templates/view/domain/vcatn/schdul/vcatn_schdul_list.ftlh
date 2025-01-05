@@ -42,8 +42,8 @@
                         <td class="text-center">${vcatn.rm!}</td>
                         <td class="text-center">
                             <#if (vcatn.vcatnSchdulNo?? && vcatn.userId??)>
-                                <button type="button" class="badge badge-primary" onclick="VcatnSchdul.mdfModal(${vcatn.vcatnSchdulNo!});">수정</button>
-                                <button type="button" class="badge badge-primary" onclick="VcatnSchdul.delAjax(${vcatn.vcatnSchdulNo!});">삭제</button>
+                                <button type="button" class="badge badge-primary" onclick="dF.VcatnSchdul.mdfModal(${vcatn.vcatnSchdulNo!});">수정</button>
+                                <button type="button" class="badge badge-primary" onclick="dF.VcatnSchdul.delAjax(${vcatn.vcatnSchdulNo!});">삭제</button>
                             </#if>
                         </td>
                     </tr>

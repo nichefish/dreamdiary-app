@@ -41,7 +41,7 @@
              */
             init: function() {
                 /* initialize form. */
-                Schdul.initForm();
+                dF.Schdul.initForm();
 
                 const chkArr = $("input:checkbox[id^='schdul_chk']");
                 chkArr.each(function(_index, item) {
@@ -59,7 +59,7 @@
                     const isVcatn = schdulCd === "${Constant.SCHDUL_VCATN!}";
                     const isBrthdy = schdulCd === "${Constant.SCHDUL_BRTHDY!}"
                     if (isVcatn || isBrthdy) return false;     // 휴가/생일은 팝업 띄우지 않음 - 휴가관리/사용자 정보 쪽에서 관리
-                    Schdul.dtlModal(event.id);
+                    dF.Schdul.dtlModal(event.id);
                 });
                 Page.calendar.render();
                 // 좌우탐색버튼 이벤트핸들러 추가

@@ -36,7 +36,7 @@
                 <#--begin::목록-->
                 <#list clCdList![] as clCd>
                     <tr class="sortable-item draggable bg-hover-secondary" id="${clCd.clCd!}" data-id="${clCd.clCd!}"
-                        onclick="ClCd.dtl('${clCd.clCd!}');">
+                        onclick="dF.ClCd.dtl('${clCd.clCd!}');">
                         <td class="text-center hidden-table">
                             <div class="draggable-handle d-flex-center cursor-move pt-2"
                                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="드래그하여&#10;항목을 이동합니다.">
@@ -57,7 +57,7 @@
                             <a class="badge badge-secondary ms-2 p-2 btn-white blank blink-slow float-end"
                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="모달로 보기">
                                 <i class="bi bi-stickies fs-5 text-noti opacity-hover"
-                                   onclick="ClCd.dtlModal('${clCd.clCd!}');"></i>
+                                   onclick="dF.ClCd.dtlModal('${clCd.clCd!}');"></i>
                             </a>
                         </td>
                         <td class="text-start ps-6 hidden-table">
@@ -69,14 +69,14 @@
                         <td class="text-center hidden-table">
                             <#if ((clCd.state.useYn)!"N") == "Y">
                                 <div class="badge badge-success cursor-pointer"
-                                     onclick="ClCd.unuseAjax('${clCd.clCd}');"
+                                     onclick="dF.ClCd.unuseAjax('${clCd.clCd}');"
                                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                                      title="클릭하여 사용 상태를&#10;변경합니다.">
                                     <i class="bi bi-check text-light blink-slow"></i>사용
                                 </div>
                             <#else>
                                 <div class="badge badge-secondary btn-white cursor-pointer"
-                                     onclick="ClCd.useAjax('${clCd.clCd}');"
+                                     onclick="dF.ClCd.useAjax('${clCd.clCd}');"
                                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                                      title="클릭하여 사용 상태를&#10;변경합니다.">
                                     <i class="bi bi-x blink-slow"></i>미사용
@@ -85,7 +85,7 @@
                         </td>
                         <td class="text-center hidden-table">
                             <div class="badge badge-danger badge-outlined cursor-pointer"
-                                 onclick="ClCd.delAjax('${clCd.clCd}');"
+                                 onclick="dF.ClCd.delAjax('${clCd.clCd}');"
                                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                                  title="<@spring.message "bs.tooltip.del"/>">
                                 <i class="bi bi-trash text-danger fs-7 blink-slow"></i>삭제
@@ -118,8 +118,8 @@
 <#--include::script modules-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
 <script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/static/js/view/domain/admin/cd/cl_cd_module.js"></script>
-<script type="text/javascript" src="/static/js/view/domain/admin/cd/cl_cd_list.js"></script>
-<script type="text/javascript" src="/static/js/view/domain/admin/cd/dtl_cd_module.js"></script>
+<script type="text/javascript" src="/js/view/domain/admin/cd/cl_cd_module.js"></script>
+<script type="text/javascript" src="/js/view/domain/admin/cd/cl_cd_list.js"></script>
+<script type="text/javascript" src="/js/view/domain/admin/cd/dtl_cd_module.js"></script>
 
 </@layout.layout>

@@ -34,11 +34,11 @@
     </div>
     <div>
         <#--헤더:: 버튼: 목록 검색-->
-        <@component.header_btn_search "LogActvty.search();" />
+        <@component.header_btn_search "dF.LogActvty.search();" />
     </div>
     <div>
         <#--헤더:: 버튼: 엑셀 다운로드하기-->
-        <@component.header_btn_xlsx_download "LogActvty.xlsxDownload();" />
+        <@component.header_btn_xlsx_download "dF.LogActvty.xlsxDownload();" />
     </div>
 </form>
 

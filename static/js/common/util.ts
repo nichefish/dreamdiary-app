@@ -1,11 +1,11 @@
 /**
  * utils.ts
- * @namespace: cF.util
+ * 공통 - 일반 유틸리티 함수 모듈
+ *
+ * @namespace: cF.util (노출식 모듈 패턴)
  * @author: nichefish
- * @dependency: jquery.blockUI.js, jquery.forms.js
- * 공통 - 일반 함수 모듈
- * (노출식 모듈 패턴 적용 :: cF.util.enterKey("#userId") 이런식으로 사용)
  */
+// @ts-ignore
 if (typeof cF === 'undefined') { var cF = {} as any; }
 cF.util = (function(): Module {
     return{
@@ -37,7 +37,7 @@ cF.util = (function(): Module {
          * unblockUI wrapped by try-catch
          * @param {number} delay - unblockUI를 호출하기 전 대기할 시간(밀리초). (기본 1.5초)
          */
-        unblockUI: function(delay = 1500): void {
+        unblockUI: function(delay: number = 1500): void {
             setTimeout(function(): void {
                 try {
                     $.unblockUI();
@@ -80,14 +80,14 @@ cF.util = (function(): Module {
          * @param {Function} [trueFunc] - 확인 버튼 클릭 시 실행할 함수 (선택적).
          * @param {Function} [falseFunc] - 취소 버튼 클릭 시 실행할 함수 (선택적).
          */
-        swalOrConfirm: function(msg: string, trueFunc: Function, falseFunc: Function) {
+        swalOrConfirm: function(msg: string, trueFunc: Function, falseFunc: Function): void {
             const hasTrueFunc = typeof trueFunc === 'function';
             const hasFalseFunc = typeof falseFunc === 'function';
             if (cF.util.hasSwal()) {
                 Swal.fire({
                     text: msg,
                     showCancelButton: true,
-                }).then(function(result: SwalResult) {
+                }).then(function(result: SwalResult): void {
                     if (result.value && hasTrueFunc) {
                         trueFunc();
                     } else if (hasFalseFunc) {
@@ -111,6 +111,7 @@ cF.util = (function(): Module {
          */
         isEmpty: function(data: any) : boolean {
             if (data == null) return true;
+
             const type = typeof(data);
             if (type === 'object') {
                 return Object.keys(data).length === 0;
@@ -163,7 +164,7 @@ cF.util = (function(): Module {
          * @param {string} option - 팝업 창 옵션 (예: 'width=600,height=400').
          * @returns {Window|null} - 열린 팝업 창의 Window 객체 또는 null.
          */
-        openPopup: function(url: string, popupNm: string, option: string) {
+        openPopup: function(url: string, popupNm: string, option: string): Window|null {
             const popupWindow = window.open(url, popupNm, option);
             if (!popupWindow) {
                 console.error("팝업 차단기 또는 잘못된 URL로 인해 팝업을 열 수 없습니다.");
@@ -176,13 +177,13 @@ cF.util = (function(): Module {
          * @param {string} selectorStr - 선택자 문자열.
          * @param {Function} func - Enter 키를 눌렀을 때 호출할 함수.
          */
-        enterKey: function(selectorStr: string, func: Function) {
+        enterKey: function(selectorStr: string, func: Function): void {
             if (!selectorStr || typeof func !== 'function') return;
 
             const inputs: NodeListOf<HTMLInputElement> = document.querySelectorAll(selectorStr);
             if (inputs.length === 0) return;
 
-            inputs.forEach((input: HTMLInputElement) => {
+            inputs.forEach((input: HTMLInputElement): void => {
                 input.addEventListener("keyup", function(event: KeyboardEvent): void {
                     if (event.key === "Enter") { // Enter 키 확인
                         event.preventDefault(); // 기본 동작 방지
@@ -200,15 +201,15 @@ cF.util = (function(): Module {
          * @returns {number} - 계산된 요청 항목 인덱스.
          */
         getReqstItemIdx: function(arrElmt: string, selectorStr: string, arrElmtId: string): number {
-            const reqstDataArr = document.querySelectorAll(arrElmt + "[" + selectorStr + "]"); // 선택자에 해당하는 요소 가져오기
+            const reqstDataArr: NodeListOf<HTMLElement> = document.querySelectorAll(arrElmt + "[" + selectorStr + "]"); // 선택자에 해당하는 요소 가져오기
             if (reqstDataArr.length === 0) return 0; // 요소가 없으면 0 반환
 
             // 각 요소의 인덱스를 계산하여 최대 인덱스를 구함
-            return Array.from(reqstDataArr).reduce((reqstItemIdx, elmt) => {
+            return Array.from(reqstDataArr).reduce((reqstItemIdx: number, elmt: HTMLElement): number => {
                 const isExcluded: boolean = elmt.id.includes("__");
                 if (isExcluded) return reqstItemIdx;
 
-                const currentIdx = Number(elmt.id.replace(arrElmtId, ""));
+                const currentIdx: number = Number(elmt.id.replace(arrElmtId, ""));
                 return Math.max(reqstItemIdx, currentIdx + 1);
             }, 0); // 초기값은 0
         },
@@ -219,13 +220,13 @@ cF.util = (function(): Module {
          * @param {string} selectorStr - 선택자 문자열.
          * @returns {number} - 총합 값.
          */
-        getReqstItemTotSum: function(selectorStr: string) {
+        getReqstItemTotSum: function(selectorStr: string): number {
             const reqstDataArr: NodeListOf<HTMLInputElement> = document.querySelectorAll("input[" + selectorStr + "]");
             if (reqstDataArr.length === 0) return 0;
 
-            return Array.from(reqstDataArr).reduce((total, elmt) => {
+            return Array.from(reqstDataArr).reduce((total: number, elmt: HTMLInputElement): number => {
                 const isExcluded: boolean = elmt.classList.contains("excludeSum") || elmt.id.includes("{");
-                const value = elmt.value.replace(/,/g, ""); // 쉼표 제거
+                const value: string = elmt.value.replace(/,/g, ""); // 쉼표 제거
                 const numberValue: number = Number(value); // 숫자로 변환
 
                 return isExcluded ? total : total + (isNaN(numberValue) ? 0 : numberValue); // 제외되지 않은 경우에만 총합에 추가
@@ -258,7 +259,7 @@ cF.util = (function(): Module {
          * @param {string} atchFileDtlNo - 첨부 파일 상세 번호.
          * TODO: URL 외부에서 주입하기?
          */
-        fileDownload: function(atchFileNo, atchFileDtlNo) {
+        fileDownload: function(atchFileNo, atchFileDtlNo): void {
             const inputs: string = "<input type='hidden' name='atchFileNo' value='" + atchFileNo + "'>" +
                            "<input type='hidden' name='atchFileDtlNo' value='" + atchFileDtlNo + "'>";
             const form: HTMLFormElement = document.createElement("form");
@@ -278,7 +279,7 @@ cF.util = (function(): Module {
          * @param {number} [options.maxAge] - 쿠키의 최대 수명 (초 단위).
          * @param {Date} [options.expires] - 쿠키 만료 날짜.
          */
-        setCookie: function(name: string, value: string, options: any) {
+        setCookie: function(name: string, value: string, options: any): void {
             let cookieStr: string = encodeURIComponent(name) + '=' + encodeURIComponent(value) + ';path=/'; // 쿠키 이름과 값을 인코딩하여 설정
             if (options) {
                 if (options.maxAge !== undefined) {
@@ -423,8 +424,8 @@ cF.util = (function(): Module {
          * 모든 table 헤더에 클릭 이벤트를 설정하여 해당 열을 정렬합니다.
          */
         initSortTable: function(): void {
-            if (typeof Page === 'undefined') { var Page: Page = {}; }
-            const tables = document.getElementsByTagName("table");
+            if (typeof Page === 'undefined') { var Page: Page = {  init: function() {} }; }
+            const tables: HTMLCollectionOf<HTMLTableElement> = document.getElementsByTagName("table");
             // 각 테이블에 대해 헤더 클릭 이벤트 설정
             Array.from(tables).forEach((table: HTMLTableElement, i: number): void => {
                 const headers = table.getElementsByTagName("th");
@@ -632,5 +633,14 @@ cF.util = (function(): Module {
             // 변경된 URL로 리다이렉트합니다.
             window.location.href = url.toString();
         },
+
+        getAbsoluteUrl: function(url: string): string {
+            if (url.startsWith('http://') || url.startsWith('https://')) {
+                return url;  // 이미 절대 경로라면 그대로 반환
+            } else {
+                const baseUrl = window.location.origin;  // 현재 웹사이트의 절대 URL
+                return baseUrl + url;  // 상대 경로를 절대 경로로 결합
+            }
+        }
     }
 })();

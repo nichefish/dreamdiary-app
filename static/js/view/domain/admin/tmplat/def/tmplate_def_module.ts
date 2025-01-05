@@ -3,37 +3,44 @@
  *
  * @author nichefish
  */
-const TmplatDef: Module = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.TmplatDef = (function(): Module {
     return {
         /**
-         * form init
-         * @param {Object} obj - 폼에 바인딩할 데이터
+         * initializes module.
          */
-        initForm: function(obj = {}): void {
+        init: function(): void {
+            console.log("'TmplatDef' module initialized.");
+        },
+
+        /**
+         * form init
+         * @param {Record<string, any>} obj - 폼에 바인딩할 데이터
+         */
+        initForm: function(obj: Record<string, any> = {}): void {
             /* show modal */
             cF.handlebars.template(obj, "menu_reg", "show");
 
             /* jquery validation */
-            cF.validate.validateForm("#menuRegForm", Menu.regAjax);
+            cF.validate.validateForm("#menuRegForm", dF.Menu.regAjax);
         },
 
         /**
          * Draggable 컴포넌트 init
-         * TODO: 나중에 바꿔야 한다
          */
-        initDraggable: function({ refreshFunc }: { refreshFunc?: Function } = {}): void {
+        initDraggable: function(): void {
             const keyExtractor: Function = (item: HTMLElement) => ({ "menuNo": Number($(item).attr("id")), "upperMenuNo": Number($(item).data("upper-menu-no")) });
             const url: string = Url.MENU_SORT_ORDR_AJAX;
-            TmplatDef.swappable = cF.draggable.init("", keyExtractor, url);
+            dF.TmplatDef.swappable = cF.draggable.init("", keyExtractor, url);
         },
 
         /**
          * 등록 모달 호출
          */
-        regModal: function(menuTyCd, upperMenuNo, upperMenuNm) {
+        regModal: function(menuTyCd: string, upperMenuNo: string|number, upperMenuNm: string): void {
             event.stopPropagation();
-            const obj = { "menuTyCd": menuTyCd, "upperMenuNo": upperMenuNo, "upperMenuNm": upperMenuNm };
-            TmplatDef.initForm(obj);
+            const obj: Record<string, any> = { "menuTyCd": menuTyCd, "upperMenuNo": upperMenuNo, "upperMenuNm": upperMenuNm };
+            dF.TmplatDef.initForm(obj);
         },
 
         /**
@@ -58,7 +65,7 @@ const TmplatDef: Module = (function(): Module {
         /**
          * 등록/수정 (Ajax)
          */
-        regAjax: function() {
+        regAjax: function(): void {
             Swal.fire({
                 text: Message.get("view.cnfm.save"),
                 showCancelButton: true,
@@ -92,7 +99,7 @@ const TmplatDef: Module = (function(): Module {
                 }
                 const { rsltObj } = res;
                 /* initialize form. */
-                TmplatDef.initForm(rsltObj);
+                dF.TmplatDef.initForm(rsltObj);
             });
         },
 

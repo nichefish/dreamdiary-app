@@ -36,7 +36,7 @@
                     <#assign divideCfYn = prevCfYn?? && user.cfYn! != prevCfYn>
                     <#assign divideRetireYn = prevRetireYn?? && user.retireYn! != prevRetireYn>
                     <#assign divide = divideCfYn || divideRetireYn>
-                    <tr class="<#if user.isMe!false>bg-light</#if> bg-hover-secondary <#if divide>border-top-5</#if>" onclick="User.dtl(${user.userNo!});">
+                    <tr class="<#if user.isMe!false>bg-light</#if> bg-hover-secondary <#if divide>border-top-5</#if>" onclick="dF.User.dtl(${user.userNo!});">
                         <td class="text-center hidden-table">
                             ${user.rnum}
                         </td>

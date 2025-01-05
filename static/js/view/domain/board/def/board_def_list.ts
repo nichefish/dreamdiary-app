@@ -13,7 +13,9 @@ const Page: Page = (function(): Page {
             /* 모든 table 헤더에 클릭 이벤트를 설정한다. */
             cF.util.initSortTable();
             /* init : Draggable */
-            BoardDef.initDraggable();
+            dF.BoardDef.initDraggable();
+
+            console.log("Page scripts initialized.");
         },
     }
 })();

@@ -3,8 +3,16 @@
  *
  * @author nichefish
  */
-const TagProp = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.TagProp = (function(): Module {
     return {
+        /**
+         * initializes module.
+         */
+        init: function(): void {
+            console.log("'TagProp' module initialized.");
+        },
+
         /**
          * 태그 속성 등록 모달 호출
          * @param {string|number} tagNo - 조회할 태그 번호.
@@ -25,6 +33,3 @@ const TagProp = (function(): Module {
         }
     }
 })();
-document.addEventListener("DOMContentLoaded", function(): void {
-    Page.init();
-});

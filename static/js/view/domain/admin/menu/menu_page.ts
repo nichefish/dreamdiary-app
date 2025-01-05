@@ -13,7 +13,9 @@ const Page: Page = (function(): Page {
             Page.updtTree();
 
             /* init : Draggable */
-            Menu.initDraggable();
+            dF.Menu.initDraggable();
+
+            console.log("Page scripts initialized.");
         },
         /**
          * 트리 구조 데이터 리로드 및 새로 그리기
@@ -26,8 +28,10 @@ const Page: Page = (function(): Page {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
+
                 const mainMenuList = res.rsltList;
                 if (!Array.isArray(mainMenuList) || mainMenuList.length < 1) return;
+
                 mainMenuList.forEach(function(mainMenu): void {
                     cF.handlebars.append(mainMenu, "menu_main_card");
                     Page.drawSubMenu(mainMenu);

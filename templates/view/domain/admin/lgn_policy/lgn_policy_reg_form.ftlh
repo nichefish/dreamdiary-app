@@ -88,14 +88,14 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-end">
             <#--페이지:: 버튼: 저장하기-->
-            <@component.post_btn_submit "LgnPolicy.submit();" />
+            <@component.post_btn_submit "dF.LgnPolicy.submit();" />
         </div>
     </div>
 </div>
 <!--end::Card-->
 
 <#--include::script modules-->
-<script type="text/javascript" src="/static/js/view/domain/admin/lgn_policy/lgn_policy_module.js"></script>
-<script type="text/javascript" src="/static/js/view/domain/admin/lgn_policy/lgn_policy_reg_form.js"></script>
+<script type="text/javascript" src="/js/view/domain/admin/lgn_policy/lgn_policy_module.js"></script>
+<script type="text/javascript" src="/js/view/domain/admin/lgn_policy/lgn_policy_reg_form.js"></script>
 
 </@layout.layout>

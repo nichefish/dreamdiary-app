@@ -54,12 +54,12 @@
         <i class="fas fa-plus"></i>휴가 등록
     </a>
     <a href="javascript:void(0);" class="btn btn-sm btn-primary"
-       onclick="Schdul.regModal();"
+       onclick="dF.Schdul.regModal();"
        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="일정 등록 모달을 호출합니다.">
         <i class="fas fa-plus"></i>일정 등록
     </a>
     <a href="javascript:void(0);" class="btn btn-sm btn-light-primary btn-outlined"
-       onclick="Schdul.prvtRegModal();"
+       onclick="dF.Schdul.prvtRegModal();"
        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="개인용 일정 등록 모달을&#10;호출합니다.&#10;(다른 사람에겐 보이지 않는&#10;일정입니다.)">
         <i class="fas fa-plus"></i>개인용 일정<span class="d-none d-lg-inline"> 등록</span>
     </a>

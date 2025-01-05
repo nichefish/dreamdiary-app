@@ -7,7 +7,7 @@
     <div>
         <#--헤더:: 인풋: 년도 선택-->
         <select name="statsYy" id="statsYy" class="form-select form-select-solid w-90px mx-1"
-                onchange="VcatnSchdul.chgYy(this);"
+                onchange="dF.VcatnSchdul.chgYy(this);"
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="조회 년도를 변경합니다.">
             <#list yyList![] as yy>
                 <option value="${yy.statsYy!}"<#if yy.statsYy == vcatnYy.statsYy>selected="selected"</#if>>${yy.statsYy!}</option>
@@ -22,11 +22,11 @@
     </div>
     <div>
         <#--헤더:: 버튼: 등록 화면 이동하기-->
-        <@component.header_btn_reg_form "VcatnSchdul.regModal();" />
+        <@component.header_btn_reg_form "dF.VcatnSchdul.regModal();" />
     </div>
     <div>
         <#--헤더:: 버튼: 엑셀 다운로드하기-->
-        <@component.header_btn_xlsx_download "VcatnSchdul.xlsxDownload();" />
+        <@component.header_btn_xlsx_download "dF.VcatnSchdul.xlsxDownload();" />
     </div>
 </form>
 

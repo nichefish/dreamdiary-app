@@ -25,16 +25,16 @@
             </div>
             <div class="col-xl-2 col-8 col-form-label">
                 <div class="btn btn-icon btn-light-primary position-relative w-30px h-30px w-md-40px h-md-40px me-3 cursor-default"
-<#--                         onclick="UserMy.viewOrgnlProflImg();"
+<#--                         onclick="dF.UserMy.viewOrgnlProflImg();"
                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="원본 이미지를 조회합니다."-->
                 >
                     <label class="position-absolute top-0 start-100 translate-middle badge badge-sm badge-circle badge-light-primary opacity-hover cursor-pointer"
-                           onclick="UserMy.uploadProflImg();"
+                           onclick="dF.UserMy.uploadProflImg();"
                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="프로필 이미지를 변경합니다.">
                         <i class="bi bi-pen icon-xs text-primary"></i>
                     </label>
                     <span class="position-absolute top-100 start-100 translate-middle badge badge-sm badge-circle badge-light-danger opacity-hover cursor-pointer"
-                          onclick="UserMy.removeProflImg();"
+                          onclick="dF.UserMy.removeProflImg();"
                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="프로필 이미지를 삭제합니다.">
                         <i class="bi bi-x icon-xs text-danger"></i>
                     </span>
@@ -57,7 +57,7 @@
             </div>
             <div class="col-xl-2 col-5">
                 <button type="button" class="btn btn-sm btn-secondary"
-                        onclick="UserMyPwChg.myPwChgModal();"
+                        onclick="dF.UserMyPwChg.myPwChgModal();"
                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="비밀번호 변경 팝업을&#10;호출합니다.">
                     비밀번호 변경
                 </button>
@@ -239,7 +239,7 @@
                 </div>
                 <div class="col-xl-2 col-sm-12">
                     <button type="button" class="btn btn-sm btn-primary mx-1"
-                            onclick="UserMy.myVcatnList();"
+                            onclick="dF.UserMy.myVcatnList();"
                             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="내 휴가 사용현황 조회&#10;팝업을 호출합니다.">
                         <i class="fas fa-umbrella-beach"></i>휴가 상세 현황 확인
                     </button>

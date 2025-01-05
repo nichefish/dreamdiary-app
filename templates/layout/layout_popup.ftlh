@@ -80,7 +80,7 @@
         <!--begin::Modals (include modals here)-->
 
         <#--include:: Tag Module-->
-        <script type="text/javascript" src="/js/view/global/_clsf/tag/tag_module.js?${releaseDate!}"></script>
+        <script type="text/javascript" src="/js/view/global/_common/_clsf/tag/tag_module.js?${releaseDate!}"></script>
 
         <!--scripts::layout-->
         <script type="text/javascript" src="/js/layout/layout.js?${releaseDate!}"></script>

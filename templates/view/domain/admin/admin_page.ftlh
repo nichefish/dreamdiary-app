@@ -51,11 +51,11 @@
                 <div class="col-xl-3">
                     <div class="mt-1">
                         <button type="button" class="btn btn-sm btn-primary"
-                                onclick="Caches.activeListModal();">
+                                onclick="dF.Cache.activeListModal();">
                             현재 캐시 조회
                         </button>
                         <button type="button" class="btn btn-sm btn-primary"
-                                onclick="Caches.clearAllAjax();">
+                                onclick="dF.Cache.clearAllAjax();">
                             사이트 캐시 초기화
                         </button>
                     </div>

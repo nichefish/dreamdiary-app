@@ -85,7 +85,7 @@
                 {{/if}}
             </div>
             <div class="btn btn-sm btn-icon btn-light-primary"
-                 onclick="Menu.refreshIcon();"
+                 onclick="dF.Menu.refreshIcon();"
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="아이콘을 미리보기합니다.">
                 <i class="bi bi-arrow-repeat"></i>
             </div>
@@ -121,7 +121,7 @@
         </div>
         <div class="col-3">
             <select name="menuSubExtendTyCd" id="menuSubExtendTyCd" class="form-select form-select-solid required"
-                    onchange="Menu.toggleUrlSpan(this);">
+                    onchange="dF.Menu.toggleUrlSpan(this);">
                 <option value="">----</option>
                 <#list MENU_SUB_EXTEND_TY_CD![] as menuSubExtend>
                     <option value="${menuSubExtend.dtlCd!}" {{selectedIf (equals menuSubExtendTyCd "${menuSubExtend.dtlCd!}")}}>

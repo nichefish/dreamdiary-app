@@ -57,7 +57,7 @@
                             <a class="badge badge-secondary ms-2 p-2 btn-primary blank blink-slow float-end"
                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                                title="항목 수정 팝업을 호출합니다.">
-                                <i class="bi bi-pencil-square fs-5 text-noti" onclick="BoardDef.mdfModal('${boardDef.boardCd!}');"></i>
+                                <i class="bi bi-pencil-square fs-5 text-noti" onclick="dF.BoardDef.mdfModal('${boardDef.boardCd!}');"></i>
                             </a>
                         </td>
                         <td class="text-center hidden-table text-gray-700">
@@ -71,19 +71,19 @@
                         </td>
                         <td class="text-center hidden-table">
                             <#if (boardDef.state.useYn!"Y") == "Y">
-                                <div class="badge badge-success cursor-pointer" onclick="BoardDef.unuseAjax('${boardDef.boardCd!}');"
+                                <div class="badge badge-success cursor-pointer" onclick="dF.BoardDef.unuseAjax('${boardDef.boardCd!}');"
                                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="클릭하여 사용 상태를&#10;변경합니다.">
                                     <i class="bi bi-check text-light blink-slow "></i>사용
                                 </div>
                             <#else>
-                                <div class="badge badge-secondary cursor-pointer" onclick="BoardDef.useAjax('${boardDef.boardCd!}');"
+                                <div class="badge badge-secondary cursor-pointer" onclick="dF.BoardDef.useAjax('${boardDef.boardCd!}');"
                                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="클릭하여 사용 상태를&#10;변경합니다.">
                                     <i class="bi bi-x blink-slow "></i>미사용
                                 </div>
                             </#if>
                         </td>
                         <td class="text-center hidden-table">
-                            <div class="badge badge-danger badge-outlined cursor-pointer" onclick="BoardDef.delAjax('${boardDef.boardCd!}');"
+                            <div class="badge badge-danger badge-outlined cursor-pointer" onclick="dF.BoardDef.delAjax('${boardDef.boardCd!}');"
                                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "bs.tooltip.del"/>">
                                 <i class="bi bi-trash text-danger"></i>삭제
                             </div>

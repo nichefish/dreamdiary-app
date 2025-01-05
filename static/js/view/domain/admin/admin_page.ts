@@ -10,13 +10,13 @@ const Page: Page = (function(): Page {
          * Page 객체 초기화
          */
         init: function(): void {
-            //
+            console.log("Page scripts initialized.");
         },
 
         /**
          * 휴일정보 : url, data 받아서 ajax 호출
          */
-        hldyAjax: function() {
+        hldyAjax: function(): void {
             const url: string = Url.API_HLDY_GET;
             const ajaxData: Record<string, any> = { "yy" : $("#hldyYy option:selected").val() };
             Page.ajax(url, ajaxData);
@@ -25,7 +25,7 @@ const Page: Page = (function(): Page {
         /**
          * NOTION : url, data 받아서 ajax 호출
          */
-        notionAjax: function() {
+        notionAjax: function(): void {
             const url: string = Url.API_NOTION_GET;
             const ajaxData: Record<string, any> = { "dataType": $("#dataType").val(), "dataId": $("#dataId").val() };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
@@ -37,13 +37,13 @@ const Page: Page = (function(): Page {
         /**
          * url, data 받아서 ajax 호출
          * @param {string} url - 요청을 보낼 대상 URL.
-         * @param {Object} data - 서버로 전송할 데이터 객체.
+         * @param {Record<string, any>} data - 서버로 전송할 데이터 객체.
          */
-        ajax: function(url, data): void {
-            cF.ajax.post(url, data, function(res): void {
+        ajax: function(url: string, data: Record<string, any>): void {
+            cF.ajax.post(url, data, function(res: AjaxResponse): void {
                 if (res.rslt) Swal.fire(JSON.stringify(res));
                 Swal.fire({ text: res.message })
-                    .then(function() {
+                    .then(function(): void {
                         if (res.rsltList) Swal.fire(JSON.stringify(res.rsltList));
                         if (res.rsltObj) Swal.fire(JSON.stringify(res.rsltObj));
                     });
@@ -53,15 +53,18 @@ const Page: Page = (function(): Page {
         /**
          * 사이트 관리 페이지로 이동
          */
-        adminPage: function() {
+        adminPage: function(): void {
             cF.util.blockUISubmit("#procForm", Url.ADMIN_PAGE);
         },
 
         /**
          * 코드 관리 페이지로 이동
          */
-        cdList: function() {
+        cdList: function(): void {
             cF.util.blockUISubmit("#procForm", Url.CL_CD_LIST);
         },
     }
 })();
+document.addEventListener("DOMContentLoaded", function(): void {
+    Page.init();
+});

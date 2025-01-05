@@ -3,7 +3,8 @@
  *
  * @author nichefish
  */
-const User: Module = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.User = (function(): Module {
     return {
         isMdf: $("#userRegForm").data("mode") === "modify",
 
@@ -20,7 +21,7 @@ const User: Module = (function(): Module {
          */
         initForm: function(obj = {}): void {
             /* jquery validation */
-            cF.validate.validateForm("#userRegForm", User.submitHandler);
+            cF.validate.validateForm("#userRegForm", dF.User.submitHandler);
             $.validator.addMethod("dupChck", function(value: string): boolean {
                 return (value === "Y");
             });
@@ -51,11 +52,11 @@ const User: Module = (function(): Module {
                 return false;
             }
             Swal.fire({
-                text: User.isMdf ? Message.get("view.cnfm.mdf") : Message.get("view.cnfm.reg"),
+                text: dF.User.isMdf ? Message.get("view.cnfm.mdf") : Message.get("view.cnfm.reg"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
-                User.regAjax();
+                dF.User.regAjax();
             });
         },
 
@@ -121,12 +122,12 @@ const User: Module = (function(): Module {
          * 등록/수정 처리(Ajax)
          */
         regAjax: function(): void {
-            const url: string = User.isMdf ? Url.USER_MDF_AJAX : Url.USER_REG_AJAX;
+            const url: string = dF.User.isMdf ? Url.USER_MDF_AJAX : Url.USER_REG_AJAX;
             const ajaxData: FormData = new FormData(document.getElementById("userRegForm") as HTMLFormElement);
             cF.ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
                     .then(function(): void {
-                        if (res.rslt) User.list();
+                        if (res.rslt) dF.User.list();
                     });
             }, "block");
         },
@@ -226,7 +227,7 @@ const User: Module = (function(): Module {
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
-                            if (res.rslt) User.list();
+                            if (res.rslt) dF.User.list();
                         });
                 }, "block");
             });
@@ -236,11 +237,11 @@ const User: Module = (function(): Module {
          * 목록 화면으로 이동
          */
         list: function(): void {
-            const listUrl: string = Url.USER_LIST + (User.isMdf ? "?isBackToList=Y" : "");
+            const listUrl: string = Url.USER_LIST + (dF.User.isMdf ? "?isBackToList=Y" : "");
             cF.util.blockUIReplace(listUrl);
         }
     }
 })();
 document.addEventListener("DOMContentLoaded", function(): void {
-    User.init();
+    dF.User.init();
 });

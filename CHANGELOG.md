@@ -1,14 +1,23 @@
 
 <div style="border: 1px solid #ccc; padding: 10px; margin-top:20px; border-radius: 5px;">
 
-### 2025-01-02 | v0.10.1
+
+### 2025-01-05 | v0.9.3
+- 개선 사항
+  - 점진적인 TypeScript 마이그레이션. 기존 Vue.js 컴포넌트를 TypeScript로 전환.
+  - 템플릿 패키지 구조 변경. modal 관련 컴포넌트들을 각 도메인별 _modal 폴더 아래로 이동.
+  - jQuery ajax 공통함수를 fetch 로 교체.
+  - TypeScript 전체 도메인 모듈에 "dF" 네임스페이스 추가.
+  - Redis 연결 상태 체크하여 연결 불가시 Redis 캐시 사용하지 않도록 처리.
+  - 컴파일 결과로 생성되는 파일은 형상관리에서 제거. (ts -> js, scss -> css, map)
+
+### 2025-01-02 | v0.9.2
 - 개선 사항
   - 점진적인 TypeScript 마이그레이션.
-  - 기존 "commons" 네임스페이스를 "cF"로 축약. 지나치게 비대한 util, validation 모듈 분리.
+  - TypeScript 기존 "commons" 네임스페이스를 "cF"로 축약. 지나치게 비대한 util, validation 모듈 분리.
   - Ajax, 정규식 관련 메소드를 별도 모듈로 분리. ajax 요청 메소드를 get과 post로 분리.
-  - swal.d.ts 추가.
-
-### 2025-01-01 | v0.10.0
+  
+### 2025-01-01 | v0.9.1
 - 개선 사항:
   - 캐싱 처리 패턴을 기본 인터페이스에 통합.
   - TypeScript 도입 및 기존 JavaScript 점진적인 마이그레이션.

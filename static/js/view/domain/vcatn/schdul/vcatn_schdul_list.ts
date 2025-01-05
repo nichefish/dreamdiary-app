@@ -31,7 +31,7 @@ const Page: Page = (function(): Page {
                         }).then(function(result: SwalResult): void {
                             if (!result.value) return;
 
-                            VcatnSchdul.regAjax();
+                            dF.VcatnSchdul.regAjax();
                         });
                         return false;
                     },
@@ -40,6 +40,8 @@ const Page: Page = (function(): Page {
                     }
                 });
             });
+
+            console.log("Page scripts initialized.");
         },
 
         /**

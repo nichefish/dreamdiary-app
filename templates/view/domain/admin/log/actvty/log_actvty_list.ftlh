@@ -34,7 +34,7 @@
             <tbody class="text-gray-600">
                 <#list logActvtyList![] as log>
                     <tr class="cursor-pointer <#if log.isJobUser!false>bg-fxd-list</#if>"
-                        onclick="LogActvty.dtlModal('${log.logActvtyNo!}');">
+                        onclick="dF.LogActvty.dtlModal('${log.logActvtyNo!}');">
                         <td class="text-center hidden-table">${log.rnum!}</td>
                         <td class="text-center">
                             ${log.logDt!"-"}
@@ -109,7 +109,7 @@
 <#--include::modals-->
 <#include "/view/domain/admin/log/actvty/_modal/_log_actvty_dtl_modal.ftlh">
 <#--include::script modules-->
-<script type="text/javascript" src="/static/js/view/domain/admin/log/actvty/log_actvty_module.js"></script>
-<script type="text/javascript" src="/static/js/view/domain/admin/log/actvty/log_actvty_list.js"></script>
+<script type="text/javascript" src="/js/view/domain/admin/log/actvty/log_actvty_module.js"></script>
+<script type="text/javascript" src="/js/view/domain/admin/log/actvty/log_actvty_list.js"></script>
 
 </@layout.layout>

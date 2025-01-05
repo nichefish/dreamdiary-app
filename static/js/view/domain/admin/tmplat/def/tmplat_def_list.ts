@@ -4,7 +4,7 @@
  * @author nichefish
  */
 // @ts-ignore
-const Page = (function() {
+const Page: Page = (function(): Page {
     return {
         /**
          * Page 객체 초기화
@@ -12,6 +12,8 @@ const Page = (function() {
         init: function(): void {
             /* 모든 table 헤더에 클릭 이벤트를 설정한다. */
             cF.util.initSortTable();
+
+            console.log("Page scripts initialized.");
         },
 
         /**
@@ -92,6 +94,6 @@ const Page = (function() {
         },
     }
 })();
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function(): void {
     Page.init();
 });

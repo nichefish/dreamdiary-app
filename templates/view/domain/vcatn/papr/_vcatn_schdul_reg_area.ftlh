@@ -25,7 +25,7 @@
                 <div class="col-md-2" id="vcatnCdSelectDiv${schdul?index}">
                     <label class="required fs-6 fw-bold mb-2">휴가분류</label>
                     <select name="schdulList[${schdul?index}].vcatnCd" id="vcatnCd${schdul?index}" class="form-select form-select-solid w-180px required"
-                            onchange="VcatnSchdul.propEndDt(${schdul?index})" data-hide-search="true">
+                            onchange="dF.VcatnSchdul.propEndDt(${schdul?index})" data-hide-search="true">
                         <option value="">휴가 분류</option>
                         <#list VCATN_CD![] as vcatnCd>
                             <option value="${vcatnCd.dtlCd!}" ${fn.selected(schdul.vcatnCd!, vcatnCd.dtlCd)}>[${vcatnCd.dtlCdNm!}]</option>
@@ -50,7 +50,7 @@
                                     </svg>
                                 </span>
                                 <input type="text" name="schdulList[${schdul?index}].bgnDt" id="bgnDt${schdul?index}" class="form-control form-control-solid ps-12 required w-100"
-                                       onchange="VcatnSchdul.propEndDt(${schdul?index})"
+                                       onchange="dF.VcatnSchdul.propEndDt(${schdul?index})"
                                        value="${schdul.bgnDt!}" placeholder="휴가 시작일" readonly />
                             </div>
                             <div id="bgnDt${schdul?index}_validate_span"></div>
@@ -74,7 +74,7 @@
                                     </svg>
                                 </span>
                                 <input type="text" name="schdulList[${schdul?index}].endDt" id="endDt${schdul?index}" class="form-control form-control-solid ps-12 required w-100"
-                                       onchange="VcatnSchdul.propEndDt(${schdul?index})"
+                                       onchange="dF.VcatnSchdul.propEndDt(${schdul?index})"
                                        value="${schdul.endDt!}" placeholder="휴가 종료일" readonly />
                             </div>
                             <div id="endDt${schdul?index}_validate_span"></div>

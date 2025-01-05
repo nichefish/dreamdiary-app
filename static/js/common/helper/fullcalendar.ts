@@ -1,11 +1,12 @@
 /**
  * fullcalendar.ts
- * 공통 - fullcalendar(라이브러리) 관련 함수 모듈
+ * 공통 - fullcalendar 관련 함수 모듈
  *
  * @namespace: cF.fullcalendar (노출식 모듈 패턴)
  * @author: nichefish
  * @see: https://fullcalendar.io/docs/
  */
+// @ts-ignore
 if (typeof cF === 'undefined') { var cF = {} as any; }
 cF.fullcalendar = (function(): Module {
 

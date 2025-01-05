@@ -3,7 +3,8 @@
  *
  * @author nichefish
  */
-const LogActvty: Module = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.LogActvty = (function(): Module {
     return {
         /**
          * initializes module.
@@ -26,7 +27,7 @@ const LogActvty: Module = (function(): Module {
             Swal.fire({
                 text: Message.get("view.cnfm.download"),
                 showCancelButton: true,
-            }).then(function(result: SwalResult) {
+            }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
                 cF.util.blockUIFileDownload();
@@ -55,5 +56,5 @@ const LogActvty: Module = (function(): Module {
     }
 })();
 document.addEventListener("DOMContentLoaded", function(): void {
-    LogActvty.init();
+    dF.LogActvty.init();
 });

@@ -11,7 +11,7 @@
         <div class="col-xl-11 text-sm-start" id="tagSpan">
             <#list post.tag.list as tag>
                 <span class="py-2 me-3 cursor-pointer opacity-hover"
-                      onclick="Tag.dtlModal('${tag.refTagNo}');"
+                      onclick="dF.Tag.dtlModal('${tag.refTagNo}');"
                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                       title="해당 태그가 등록된 게시물 목록 팝업을 호출합니다.">
                     <span class="${tag.tagClass!}">

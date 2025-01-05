@@ -51,7 +51,7 @@
                         <#if dream.tag.list??>
                             <div class="ms-2 mt-3">
                                 <#list dream.tag.list as tag>
-                                    <span class="text-muted cursor-pointer pe-1" onclick="Tag.dtlModal(${tag.refTagNo!});"
+                                    <span class="text-muted cursor-pointer pe-1" onclick="dF.Tag.dtlModal(${tag.refTagNo!});"
                                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                                           title="해당 태그가 등록된 게시물 목록 팝업을 호출합니다.">
                                         <#if tag.ctgr?? && tag.ctgr != ""><span class="fs-7 text-noti">[${tag.ctgr!}]</span></#if>
@@ -63,7 +63,7 @@
                     </div>
                     <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between w-50px gap-1">
                         <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
-                                onclick="Comment.modal.regModal(${dream.postNo!}, 'JRNL_DREAM');"
+                                onclick="dF.Comment.modal.regModal(${dream.postNo!}, 'JRNL_DREAM');"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="댓글 <@spring.message "bs.tooltip.modal.reg"/>">
                             <i class="bi bi-chat-left-dots p-0"></i>
                         </button>

@@ -3,7 +3,8 @@
  *
  * @author nichefish
  */
-const Menu: Module = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.Menu = (function(): Module {
     return {
         /**
          * initializes module.
@@ -14,25 +15,25 @@ const Menu: Module = (function(): Module {
 
         /**
          * form init
-         * @param {Object} obj - 폼에 바인딩할 데이터
+         * @param {Record<string, any> = {}} obj - 폼에 바인딩할 데이터
          */
-        initForm: function(obj = {}): void {
+        initForm: function(obj: Record<string, any> = {} = {}): void {
             /* show modal */
             cF.handlebars.template(obj, "menu_reg", "show");
 
             /* jquery validation */
-            cF.validate.validateForm("#menuRegForm", Menu.regAjax);
+            cF.validate.validateForm("#menuRegForm", dF.Menu.regAjax);
             cF.validate.toUpperCase("#menuRegForm #menuLabel");
         },
 
         /**
          * Draggable 컴포넌트 init
          */
-        initDraggable: function({ refreshFunc }: { refreshFunc?: Function } = {}): void {
+        initDraggable: function(): void {
             const keyExtractor: Function = (item: HTMLElement) => ({ "menuNo": Number($(item).attr("id")), "upperMenuNo": Number($(item).data("upper-menu-no")) });
             const url: string = Url.MENU_SORT_ORDR_AJAX;
-            Menu.mainSwappable = cF.draggable.init("-main", keyExtractor, url);
-            Menu.subSwappable = cF.draggable.init("-sub", keyExtractor, url);
+            dF.Menu.mainSwappable = cF.draggable.init("-main", keyExtractor, url);
+            dF.Menu.subSwappable = cF.draggable.init("-sub", keyExtractor, url);
         },
 
         /**
@@ -41,9 +42,9 @@ const Menu: Module = (function(): Module {
         regModal: function(menuTyCd: string, upperMenuNo: number, upperMenuNm: string): void {
             event.stopPropagation();
 
-            const obj = { "menuTyCd": menuTyCd, "upperMenuNo": upperMenuNo, "upperMenuNm": upperMenuNm };
+            const obj: Record<string, any> = { "menuTyCd": menuTyCd, "upperMenuNo": upperMenuNo, "upperMenuNm": upperMenuNm };
             /* initialize form. */
-            Menu.initForm(obj);
+            dF.Menu.initForm(obj);
         },
 
         /**
@@ -113,7 +114,7 @@ const Menu: Module = (function(): Module {
                 }
                 const { rsltObj } = res;
                 /* initialize form. */
-                Menu.initForm(rsltObj);
+                dF.Menu.initForm(rsltObj);
             });
         },
 
@@ -151,5 +152,5 @@ const Menu: Module = (function(): Module {
     }
 })();
 document.addEventListener("DOMContentLoaded", function(): void {
-    Menu.init();
+    dF.Menu.init();
 });

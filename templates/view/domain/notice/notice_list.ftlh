@@ -21,13 +21,13 @@
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="직원 연락처 팝업을 호출합니다.">
             <i class="bi bi-telephone"></i>직원 연락처
         </button>
-        <#include "/view/domain/notice/modal/_notice_list_crdt_user_cttpc_modal.ftlh">
+        <#include "/view/domain/notice/_modal/_notice_list_crdt_user_cttpc_modal.ftlh">
         <button type="button" class="btn btn-sm btn-light btn-outline btn-active-secondary mx-1"
                 onclick="$('#extn_phone_modal').modal('show');"
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="내선전화 관련 안내 팝업을&#10;호출합니다.">
             <i class="bi bi-telephone"></i>내선전화 관련
         </button>
-        <#include "/view/domain/notice/modal/_notice_list_extn_phone_modal.ftlh">
+        <#include "/view/domain/notice/_modal/_notice_list_extn_phone_modal.ftlh">
     </div>
     <#--begin::Card body-->
     <div class="card-body">
@@ -83,7 +83,7 @@
                                 </div>
                                 <div class="col-xl-4 col-12 d-flex justify-content-end align-items-center">
                                     <#--목록:: 모달 팝업 열기 버튼 표시-->
-                                    <@component.list_dtl_modal post "Notice.dtlModal" />
+                                    <@component.list_dtl_modal post "dF.Notice.dtlModal" />
                                 </div>
                             </div>
                         </td>
@@ -141,7 +141,7 @@
                                 </div>
                                 <div class="col-xl-4 col-12 d-flex justify-content-end align-items-center">
                                     <#--목록:: 모달 팝업 열기 버튼 표시-->
-                                    <@component.list_dtl_modal post "Notice.dtlModal" />
+                                    <@component.list_dtl_modal post "dF.Notice.dtlModal" />
                                 </div>
                             </div>
                         </td>
@@ -182,7 +182,7 @@
 </form>
 
 <#--include::modals-->
-<#include "/view/domain/notice/modal/_notice_dtl_modal.ftlh">
+<#include "/view/domain/notice/_modal/_notice_dtl_modal.ftlh">
 <#include "/view/global/_common/_clsf/comment/_modal/_comment_list_modal.ftlh">
 <#include "/view/global/_common/file/_modal/_atch_file_list_modal.ftlh">
 <#--include::script modules-->

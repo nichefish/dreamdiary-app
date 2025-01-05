@@ -4,29 +4,30 @@
  * @author nichefish
  */
 // @ts-ignore
-if (typeof Comment === 'undefined') { var Comment = {} as any; }
-Comment.page = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+if (typeof dF.Comment === 'undefined') { dF.Comment = {} as any; }
+dF.Comment.page = (function(): any {
     return {
         /**
-         * Comment.page 객체 초기화
+         * Comments.page 객체 초기화
          */
         init: function(): void {
             console.log("'Comment.page' module initialized.");
 
             /* initialize form. */
-            Comment.page.initForm();
+            dF.Comment.page.initForm();
         },
 
         /**
          * form init
-         * @param {Object} obj - 폼에 바인딩할 데이터
+         * @param {Record<string, any>} obj - 폼에 바인딩할 데이터
          */
-        initForm: function(obj = {}): void {
+        initForm: function(obj: Record<string, any> = {}): void {
             /* show reg area */
             cF.handlebars.template(obj, "comment_page_reg");
 
             /* jquery validation */
-            cF.validate.validateForm("#commentPageRegForm", Comment.page.regAjax);
+            cF.validate.validateForm("#commentPageRegForm", dF.Comment.page.regAjax);
         },
 
         /**
@@ -70,7 +71,7 @@ Comment.page = (function(): Module {
             $("#commentMdfCn" + postNo).html($("#commentCnSpanDiv" + postNo).html());
             $("#showMdfBtnDiv" + postNo).hide();
             $("#mdfSaveBtnDiv" + postNo).show();
-            cF.validate.validateForm("#commentPageMdfForm", Comment.page.mdfAjax);
+            cF.validate.validateForm("#commentPageMdfForm", dF.Comment.page.mdfAjax);
         },
 
         /**
@@ -137,8 +138,8 @@ Comment.page = (function(): Module {
                 });
             });
         }
-    }
+    } as any;
 })();
 document.addEventListener("DOMContentLoaded", function(): void {
-    Comment.page.init();
+    dF.Comment.page.init();
 });

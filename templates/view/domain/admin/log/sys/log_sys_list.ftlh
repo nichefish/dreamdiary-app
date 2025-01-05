@@ -98,7 +98,7 @@
 </form>
 
 <#--include::script modules-->
-<script type="text/javascript" src="/static/js/view/domain/admin/log/sys/log_sys_module.js"></script>
-<script type="text/javascript" src="/static/js/view/domain/admin/log/sys/log_sys_list.js"></script>
+<script type="text/javascript" src="/js/view/domain/admin/log/sys/log_sys_module.js"></script>
+<script type="text/javascript" src="/js/view/domain/admin/log/sys/log_sys_list.js"></script>
 
 </@layout.layout>

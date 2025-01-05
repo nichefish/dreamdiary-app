@@ -3,7 +3,8 @@
  *
  * @author nichefish
  */
-const UserMy: Module = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.UserMy = (function(): Module {
     return {
         /**
          * initializes module.
@@ -16,7 +17,7 @@ const UserMy: Module = (function(): Module {
          * 프로필 이미지 첨부
          */
         uploadProflImg: function(): void {
-            const $fileInput = $("#atchFile0");
+            const $fileInput: JQuery<HTMLInputElement> = $("#atchFile0");
             $fileInput.click();
             $fileInput.on("change", function(): void {
                 if ((this as HTMLInputElement).value === "") return;
@@ -81,5 +82,5 @@ const UserMy: Module = (function(): Module {
     }
 })();
 document.addEventListener("DOMContentLoaded", function(): void {
-    UserMy.init();
+    dF.UserMy.init();
 });

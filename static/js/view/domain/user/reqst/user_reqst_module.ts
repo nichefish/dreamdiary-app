@@ -3,7 +3,8 @@
  *
  * @author nichefish
  */
-const UserReqst: Module = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.UserReqst = (function(): Module {
     return {
         /**
          * initializes module.
@@ -15,9 +16,9 @@ const UserReqst: Module = (function(): Module {
         /**
          * form init
          */
-        initForm: function(obj = {}): void {
+        initForm: function(): void {
             /* jquery validation */
-            cF.validate.validateForm("#userReqstForm", UserReqst.submitHandler, {
+            cF.validate.validateForm("#userReqstForm", dF.UserReqst.submitHandler, {
                 rules: {
                     userId: { minlength: 4, maxlength: 16 },
                     ipDupChckPassed: { dupChck: true },
@@ -80,7 +81,7 @@ const UserReqst: Module = (function(): Module {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                UserReqst.regAjax();
+                dF.UserReqst.regAjax();
             });
         },
 
@@ -100,7 +101,7 @@ const UserReqst: Module = (function(): Module {
             cF.ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
                     .then(function(): void {
-                        if (res.rslt) UserReqst.main();
+                        if (res.rslt) dF.UserReqst.main();
                     });
             }, "block");
         },
@@ -113,7 +114,7 @@ const UserReqst: Module = (function(): Module {
                 text: "메인 화면으로 이동합니다.\n(현재까지 입력한 내용은 사라집니다.)\n계속하겠습니까?",
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
-                if (result.value) UserReqst.main();
+                if (result.value) dF.UserReqst.main();
             });
         },
 
@@ -126,5 +127,5 @@ const UserReqst: Module = (function(): Module {
     }
 })();
 document.addEventListener("DOMContentLoaded", function(): void {
-    UserReqst.init();
+    dF.UserReqst.init();
 });

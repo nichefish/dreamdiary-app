@@ -66,9 +66,9 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-end">
             <#--페이지:: 버튼: 저장하기-->
-            <@component.post_btn_submit "VcatnPapr.submit();" />
+            <@component.post_btn_submit "dF.VcatnPapr.submit();" />
             <#--페이지:: 버튼: 목록으로 가기-->
-            <@component.post_btn_toList "VcatnPapr.list();" />
+            <@component.post_btn_toList "dF.VcatnPapr.list();" />
         </div>
     </div>
 </div>

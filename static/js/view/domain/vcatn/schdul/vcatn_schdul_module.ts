@@ -3,7 +3,8 @@
  *
  * @author nichefish
  */
-const VcatnSchdul: Module = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.VcatnSchdul = (function(): Module {
     return {
         /**
          * initializes module.
@@ -12,7 +13,9 @@ const VcatnSchdul: Module = (function(): Module {
             console.log("'VcatnSchdul' module initialized.");
         },
 
-        /** 조회년도 변경 */
+        /**
+         * 조회년도 변경
+         */
         chgYy: function(obj): void {
             const url: string = `${Url.VCATN_SCHDUL_LIST!}?statsYy=` + $(obj).val();
             cF.util.blockUIReplace(url);
@@ -24,11 +27,11 @@ const VcatnSchdul: Module = (function(): Module {
         regModal: function(): void {
             cF.handlebars.template({}, "vcatn_schdul_reg", "show");
             cF.datepicker.singleDatePicker("#bgnDt", "yyyy-MM-DD", null, function(): void {
-                VcatnSchdul.propEndDt();
-                VcatnSchdul.noBefore("#bgnDt", "#endDt");
+                dF.VcatnSchdul.propEndDt();
+                dF.VcatnSchdul.noBefore("#bgnDt", "#endDt");
             });
             cF.datepicker.singleDatePicker("#endDt", "yyyy-MM-DD", null, function(): void {
-                if ($("#endDt").val() !== "") VcatnSchdul.noBefore("#bgnDt", "#endDt");
+                if ($("#endDt").val() !== "") dF.VcatnSchdul.noBefore("#bgnDt", "#endDt");
             });
         },
 
@@ -50,7 +53,7 @@ const VcatnSchdul: Module = (function(): Module {
          */
         noBefore: function(beginSelectorStr: string, endSelectorStr: string, idx: number): void {
             const endElmt: HTMLInputElement = document.querySelector(endSelectorStr) as HTMLInputElement;
-            if (VcatnSchdul.isHalf(idx)) {
+            if (dF.VcatnSchdul.isHalf(idx)) {
                 const beginElmt: HTMLInputElement = document.querySelector(beginSelectorStr) as HTMLInputElement;
                 if (beginElmt && endElmt) endElmt.value = beginElmt.value;
             } else {
@@ -88,7 +91,7 @@ const VcatnSchdul: Module = (function(): Module {
          * 반차 선택 시 종료일 안보이게
          */
         propEndDt: function(idx?: number): void {
-            const isHalf: boolean = VcatnSchdul.isHalf(idx);
+            const isHalf: boolean = dF.VcatnSchdul.isHalf(idx);
             const validIdx: string = cF.util.isNotEmpty(idx) ? String(idx) : "";
 
             const lineDiv: HTMLElement = document.getElementById("lineDiv" + validIdx);
@@ -178,5 +181,5 @@ const VcatnSchdul: Module = (function(): Module {
     }
 })();
 document.addEventListener("DOMContentLoaded", function(): void {
-    VcatnSchdul.init();
+    dF.VcatnSchdul.init();
 });

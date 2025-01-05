@@ -1,10 +1,11 @@
 /**
  * date.ts
- * @namespace: cF.date
- * @dependency: commons.js
  * 공통 - 날짜 관련 함수 모듈
- * (노출식 모듈 패턴 적용 :: cF.date.getCurrDateStr(cF.date.ptnDate) 이런식으로 사용)
+ *
+ * @namespace: cF.date (노출식 모듈 패턴)
+ * @dependency: commons.js
  */
+// @ts-ignore
 if (typeof cF === 'undefined') { var cF = {} as any; }
 cF.date = (function(): Module {
     return {

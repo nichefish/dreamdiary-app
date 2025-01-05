@@ -1,13 +1,12 @@
 package io.nicheblog.dreamdiary.global._common.cache.config;
 
+import io.nicheblog.dreamdiary.global._common.cache.service.RedisConnChecker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.interceptor.CacheResolver;
 import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheManager;
-
-import javax.annotation.Resource;
 
 /**
  * CacheResolverConfig
@@ -24,11 +23,13 @@ public class CacheResolverConfig {
     private final JCacheCacheManager jCacheCacheManager;
     private final RedisCacheManager redisCacheManager;
 
+    private final RedisConnChecker redisConnChecker;
+
     /**
      * 빈 등록:: cacheResolver
      */
     @Bean
     public CacheResolver cacheResolver() {
-        return new CustomCacheResolver(jCacheCacheManager, redisCacheManager);
+        return new CustomCacheResolver(jCacheCacheManager, redisCacheManager, redisConnChecker);
     }
 }
