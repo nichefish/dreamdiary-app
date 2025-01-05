@@ -68,15 +68,15 @@ public class BoardDefServiceImpl
     }
 
     /**
-     * boardCd로 단일 메뉴 조회 (SiteAcsInfo 반환)
+     * boardDef로 단일 메뉴 조회 (SiteAcsInfo 반환)
      *
      * @return {@link SiteAcsInfo} -- 게시판 정의를 메뉴 정보로 변환하여 반환
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="boardMenu", key="#boardCd")
-    public SiteAcsInfo getMenuByBoardCd(final String boardCd) throws Exception {
-        final BoardDefEntity retrievedEntity = this.getDtlEntity(boardCd);
+    @Cacheable(value="boardMenu", key="#boardDef")
+    public SiteAcsInfo getMenuByBoardDef(final String boardDef) throws Exception {
+        final BoardDefEntity retrievedEntity = this.getDtlEntity(boardDef);
 
         return mapstruct.toMenu(retrievedEntity);
     }

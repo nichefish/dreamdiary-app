@@ -25,7 +25,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import javax.annotation.Nullable;
 import javax.validation.Valid;
 
 /**
@@ -89,8 +88,6 @@ public class CommentApiController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      * 
      * @param comment 등록/수정 처리할 객체
-     * @param key 식별자
-     * @param param 등록 파라미터
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
@@ -101,14 +98,13 @@ public class CommentApiController
     @ResponseBody
     public ResponseEntity<AjaxResponse> commentRegAjax(
             final @Valid CommentDto comment,
-            final @RequestParam("postNo") @Nullable Integer key,
-            final CommentParam param,
             final LogActvtyParam logParam,
             final MultipartHttpServletRequest request
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
+        final Integer key = comment.getKey();
         final boolean isReg = (key == null);
         final CommentDto result = isReg ? commentService.regist(comment, request) : commentService.modify(comment, request);
         final boolean isSuccess =  (result.getPostNo() != null);
@@ -165,7 +161,7 @@ public class CommentApiController
      * 댓글 삭제 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param key 식별자
+     * @param postNo 식별자
      * @param param 조회 파라미터
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
@@ -175,14 +171,13 @@ public class CommentApiController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> commentDelAjax(
-            final @RequestParam("postNo") Integer key,
-            final CommentParam param,
+            final @RequestBody Integer postNo,
             final LogActvtyParam logParam
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final boolean isSuccess = commentService.delete(key);;
+        final boolean isSuccess = commentService.delete(postNo);;
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
 
         // 응답 결과 세팅

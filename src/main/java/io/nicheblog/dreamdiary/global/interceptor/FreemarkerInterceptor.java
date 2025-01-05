@@ -100,8 +100,8 @@ public class FreemarkerInterceptor
                 final MenuDto menu = menuService.getMenuByLabel(menuLabel);
                 SiteAcsInfo acsInfo;
                 if (menuLabel == SiteMenu.BOARD) {
-                    final String boardCd = (String) mav.getModel().get("boardCd");
-                    acsInfo = boardDefService.getMenuByBoardCd(boardCd);
+                    final String boardDef = (String) mav.getModel().get("boardDef");
+                    acsInfo = boardDefService.getMenuByBoardDef(boardDef);
                 } else {
                     acsInfo = menuService.getSiteAceInfoFromMenu(menu);
                 }

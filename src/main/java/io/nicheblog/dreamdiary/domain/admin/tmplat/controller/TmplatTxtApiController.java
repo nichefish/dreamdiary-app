@@ -16,10 +16,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Nullable;
 import javax.validation.Valid;
@@ -60,13 +57,13 @@ public class TmplatTxtApiController
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> tmplatTxtRegAjax(
-            final @Valid TmplatDefDto tmplatDto,
-            final @RequestParam("tmplatDefNo") @Nullable Integer key,
+            final @RequestBody @Valid TmplatDefDto tmplatDto,
             final LogActvtyParam logParam
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
+        final Integer key = tmplatDto.getKey();
         final boolean isReg = key == null;
         final TmplatDefDto result = isReg ? tmplatDefService.regist(tmplatDto) : tmplatDefService.modify(tmplatDto);
 

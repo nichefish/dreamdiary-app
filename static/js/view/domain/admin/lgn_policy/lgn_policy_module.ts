@@ -49,7 +49,7 @@ dF.LgnPolicy = (function(): Module {
                 if (!result.value) return;
 
                 const url: string = Url.LGN_POLICY_REG_AJAX;
-                const ajaxData: Record<string, any> = $("#lgnPolicyForm").serializeArray();
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#lgnPolicyForm");
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {

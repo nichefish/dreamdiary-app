@@ -106,7 +106,7 @@ dF.Comment.page = (function(): any {
                 if (!result.value) return;
 
                 const url: string = Url.COMMENT_MDF_AJAX;
-                const ajaxData: Record<string, any> = $("#commentPageMdfForm" + postNo).serializeArray();
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#commentPageMdfForm" + postNo);
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {

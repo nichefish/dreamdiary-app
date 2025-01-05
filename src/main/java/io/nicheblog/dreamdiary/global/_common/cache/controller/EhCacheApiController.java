@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.global._common.cache.controller;
 
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
+import io.nicheblog.dreamdiary.global._common.cache.model.CacheParam;
 import io.nicheblog.dreamdiary.global._common.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
@@ -72,8 +73,7 @@ public class EhCacheApiController
      * 사이트 캐시 삭제 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
-     * @param cacheName 삭제할 캐시의 이름
-     * @param key 삭제할 캐시 항목의 키 (전체 삭제 시 "-" 입력)
+     * @param cacheParam 삭제할 캐시의 이름 / 키. (전체 삭제시 "-")
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
@@ -81,14 +81,15 @@ public class EhCacheApiController
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> cacheEvictAjax(
-            final @RequestParam("cacheName") String cacheName,
-            final @RequestParam("key") String key,
+            final @RequestBody CacheParam cacheParam,
             final LogActvtyParam logParam
     ) {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
         // 캐시 evict
+        final String key = cacheParam.getKey();
+        final String cacheName = cacheParam.getCacheName();
         if ("-".equals(key)) {
             EhCacheUtils.evictCacheAll(cacheName);
         } else {

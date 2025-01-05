@@ -31,7 +31,7 @@ public class SiteAcsInfo {
     private String upperMenuNm;
 
     /** 게시판 코드 */
-    private String boardCd;
+    private String boardDef;
     /** 사이드바 메뉴 이름 (로깅 및 사이트 헤더 표시용) */
     private String menuNm;
 

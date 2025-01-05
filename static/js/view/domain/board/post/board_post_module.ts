@@ -70,12 +70,12 @@ dF.BoardPost = (function(): Module {
          * 내가 작성한 글 목록 보기
          */
         myPaprList: function(): void {
-            const boardCdElement: HTMLInputElement|null = document.querySelector("#boardCd");
-            if (!boardCdElement) return;  // 요소가 없으면 종료
+            const boardDefElement: HTMLInputElement|null = document.querySelector("#boardDef");
+            if (!boardDefElement) return;  // 요소가 없으면 종료
 
-            const boardCd: string = boardCdElement.value;
+            const boardDef: string = boardDefElement.value;
             const url: string = Url.BOARD_POST_LIST;
-            const param: string = `??boardCd=${boardCd!}&searchType=nickNm&searchKeyword=${AuthInfo.nickNm!}&regstrId=${AuthInfo.userId!}&pageSize=50&actionTyCd=MY_PAPR`;
+            const param: string = `??boardDef=${boardDef!}&searchType=nickNm&searchKeyword=${AuthInfo.nickNm!}&regstrId=${AuthInfo.userId!}&pageSize=50&actionTyCd=MY_PAPR`;
             cF.util.blockUIReplace(url + param);
         },
 
@@ -138,7 +138,7 @@ dF.BoardPost = (function(): Module {
             if (isNaN(Number(postNo))) return;
 
             const url: string = Url.BOARD_POST_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "postNo": postNo, "boardCd": $("#boardCd").val() };
+            const ajaxData: Record<string, any> = { "postNo": postNo, "boardDef": $("#boardDef").val() };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -169,7 +169,7 @@ dF.BoardPost = (function(): Module {
                 if (!result.value) return;
 
                 const url: string = Url.BOARD_POST_DEL_AJAX;
-                const ajaxData: Record<string, any> = $("#procForm").serializeArray();
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
@@ -183,8 +183,8 @@ dF.BoardPost = (function(): Module {
          * 목록 화면으로 이동
          */
         list: function(): void {
-            const boardCd = $("#boardCd").val();
-            const listUrl: string = `${Url.BOARD_POST_LIST}?boardCd${boardCd}` + (dF.BoardPost.isMdf ? "&isBackToList=Y" : "");
+            const boardDef = $("#boardDef").val();
+            const listUrl: string = `${Url.BOARD_POST_LIST}?boardDef${boardDef}` + (dF.BoardPost.isMdf ? "&isBackToList=Y" : "");
             cF.util.blockUIReplace(listUrl);
         }
     }

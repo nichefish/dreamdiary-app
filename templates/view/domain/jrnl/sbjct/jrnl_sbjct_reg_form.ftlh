@@ -11,49 +11,6 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<script>
-    const Page = (function() {
-        return {
-            /**
-             * Page 객체 초기화
-             */
-            init: function() {
-                /* initialize form. */
-                JrnlSbjct.initForm();
-                <#if isMdf>
-                    /* 글 단락 init */
-                    dF.Sectn.init({
-                        refreshFunc: function() {
-                            setTimeout(function() {
-                                Page.refreshFunc();
-                            });
-                        }
-                    });
-                    /* 글 단락 정렬순서 변경 init */
-                    dF.Sectn.initDraggable({
-                        refreshFunc: Page.refreshFunc
-                    });
-                </#if>
-                <#if isReg!false>
-                    $("#jandiYn").click();
-                </#if>
-            },
-            <#if isMdf>
-                refreshFunc: function() {
-                    dF.Sectn.listAjax({ "refPostNo": ${post.postNo!}, "refContentType": "${post.contentType!}" });
-                    $("#sectn_reg_modal").modal("hide");
-                    dF.Sectn.initDraggable({
-                        refreshFunc: Page.refreshFunc
-                    });
-                }
-            </#if>
-        }
-    })();
-    document.addEventListener("DOMContentLoaded", function() {
-        Page.init();
-    });
- </script>
-
 <div class="card post">
     <#--begin::Card body-->
     <div class="card-body">
@@ -182,12 +139,12 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-between">
             <#--페이지:: 버튼: 미리보기-->
-            <@component.post_btn_preview_pop "JrnlSbjct.preview();" />
+            <@component.post_btn_preview_pop "dF.JrnlSbjct.preview();" />
             <div>
                 <#--페이지:: 버튼: 저장하기-->
-                <@component.post_btn_submit "JrnlSbjct.submit();" />
+                <@component.post_btn_submit "dF.JrnlSbjct.submit();" />
                 <#--페이지:: 버튼: 목록으로 가기-->
-                <@component.post_btn_toList "JrnlSbjct.list();" />
+                <@component.post_btn_toList "dF.JrnlSbjct.list();" />
             </div>
         </div>
     </div>
@@ -217,5 +174,6 @@
 <#include "/view/domain/jrnl/sbjct/_jrnl_sbjct_scripts.ftlh">
 <script type="text/javascript" src="/js/view/global/_common/_clsf/sectn/sectn_module.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/global/_common/_clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/jrnl/sbjct/jrnl_sbjct_reg_form.js?${releaseDate!}"></script>
 
 </@layout.layout>

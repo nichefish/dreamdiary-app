@@ -7,7 +7,7 @@
     <div id="ctgr_{{ctgr}}">
         {{#each tagList}}
             <span class="py-2 me-3 cursor-pointer opacity-hover"
-                  onclick="JrnlDreamTag.dtlModal({{tagNo}}, '{{tagNm}}');"
+                  onclick="dF.JrnlDreamTag.dtlModal({{tagNo}}, '{{tagNm}}');"
                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="해당 태그로 게시물 목록을&#10;필터링합니다.">
                 <span class="{{tagClass}}">
                     {{#if (exists ctgr)}}

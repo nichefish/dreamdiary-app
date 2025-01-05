@@ -17,9 +17,9 @@ dF.User = (function(): Module {
 
         /**
          * form init
-         * @param {Object} obj - 폼에 바인딩할 데이터
+         * @param {Record<string, any>} obj - 폼에 바인딩할 데이터
          */
-        initForm: function(obj = {}): void {
+        initForm: function(obj: Record<string, any> = {}): void {
             /* jquery validation */
             cF.validate.validateForm("#userRegForm", dF.User.submitHandler);
             $.validator.addMethod("dupChck", function(value: string): boolean {
@@ -104,7 +104,7 @@ dF.User = (function(): Module {
 
             const url: string = Url.USER_ID_DUP_CHK_AJAX;
             const ajaxData: Record<string, any> = { "userId": userId };
-            cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 userIdValidSpan.text(res.message);
                 if (res.rslt) {
                     userIdValidSpan.removeClass("text-danger").addClass("text-success");
@@ -154,7 +154,7 @@ dF.User = (function(): Module {
                 if (!result.value) return;
 
                 const url: string = Url.USER_REQST_CF_AJAX;
-                const ajaxData: Record<string, any> = $("#procForm").serializeArray();
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
@@ -175,7 +175,7 @@ dF.User = (function(): Module {
                 if (!result.value) return;
 
                 const url: string = Url.USER_REQST_UNCF_AJAX;
-                const ajaxData: Record<string, any> = $("#procForm").serializeArray();
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
@@ -196,7 +196,7 @@ dF.User = (function(): Module {
                 if (!result.value) return;
 
                 const url: string = Url.USER_PW_RESET_AJAX;
-                const ajaxData: Record<string, any> = $("#procForm").serializeArray();
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
@@ -223,7 +223,7 @@ dF.User = (function(): Module {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
                 const url: string = Url.USER_DEL_AJAX;
-                const ajaxData: Record<string, any> = $("#procForm").serializeArray();
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {

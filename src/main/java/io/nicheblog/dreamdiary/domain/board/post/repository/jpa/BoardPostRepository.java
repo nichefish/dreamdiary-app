@@ -15,6 +15,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository("boardPostRepository")
 public interface BoardPostRepository
-        extends BaseStreamRepository<BoardPostEntity, BaseClsfKey> {
+        extends BaseStreamRepository<BoardPostEntity, Integer> {
     //
 }

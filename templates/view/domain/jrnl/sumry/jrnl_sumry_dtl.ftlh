@@ -8,24 +8,6 @@
 
 <link rel="stylesheet" type="text/css" href="/css/jrnl.css?${releaseDate!}" />
 
-<script>
-    const Page = (function() {
-        return {
-            /**
-             * Page 객체 초기화
-             */
-            init: function() {
-                /* 글 단락 init */
-                dF.Sectn.init();
-                dF.Sectn.initDraggable();
-            },
-        }
-    })();
-    document.addEventListener("DOMContentLoaded", function() {
-        Page.init();
-    });
-</script>
-
 <!--begin::Card-->
 <div class="card post">
     <#--begin::Card body-->
@@ -160,9 +142,9 @@
 
 <#--include::modals-->
 <#include "/view/global/_tinymce_img.ftlh">
-<#include "/view/domain/jrnl/sumry/_jrnl_sumry_reg_modal.ftlh">
-<#include "/view/domain/jrnl/dream/_jrnl_dream_reg_modal.ftlh">
-<#include "/view/domain/jrnl/dream/tag/_jrnl_dream_tag_dtl_modal.ftlh">
+<#include "/view/domain/jrnl/sumry/_modal/_jrnl_sumry_reg_modal.ftlh">
+<#include "/view/domain/jrnl/dream/_modal/_jrnl_dream_reg_modal.ftlh">
+<#include "/view/domain/jrnl/dream/tag/_modal/_jrnl_dream_tag_dtl_modal.ftlh">
 <#include "/view/domain/jrnl/tag/_jrnl_tag_list_modal.ftlh">
 <#include "/view/global/_common/_clsf/comment/_modal/_comment_reg_modal.ftlh">
 <#include "/view/global/_common/_clsf/sectn/_modal/_sectn_reg_modal.ftlh">
@@ -175,10 +157,12 @@
 <script type="text/javascript" src="/lib/prism/js/prism.js"></script>
 <script type="text/javascript" src="/js/common/helper/tinymce.js?${releaseDate!}"></script>
 <#include "/view/domain/jrnl/sumry/_jrnl_sumry_scripts.ftlh">
-<#include "/view/domain/jrnl/dream/_jrnl_dream_scripts.ftlh">
+<script type="text/javascript" src="/js/view/domain/jrnl/dream/jrnl_dream_module.js?${releaseDate!}"></script>
+<#include "/view/domain/jrnl/dream/tag/_jrnl_dream_tag_ctgr_map.ftlh">
 <#include "/view/domain/jrnl/tag/_jrnl_tag_scripts.ftlh">
 <script type="text/javascript" src="/js/view/global/_common/_clsf/sectn/sectn_module.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/js/view/global/_common/_clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
-
+<script type="text/javascript" src="/js/view/global/_common/_clsf/comment/comment_modal_module.js?${releaseDate!}">
+<script type="text/javascript" src="/js/view/domain/jrnl/sumry/jrnl_sumry_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/jrnl/sumry/jrnl_sumry_dtl.js?${releaseDate!}"></script>
 
 </@layout.layout>

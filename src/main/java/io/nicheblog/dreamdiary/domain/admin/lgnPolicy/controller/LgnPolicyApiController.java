@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -57,7 +58,7 @@ public class LgnPolicyApiController
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> lgnPolicyRegAjax(
-            final @Valid LgnPolicyDto lgnPolicy,
+            final @RequestBody @Valid LgnPolicyDto lgnPolicy,
             final LogActvtyParam logParam
     ) throws Exception {
 

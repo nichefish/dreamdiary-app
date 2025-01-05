@@ -84,7 +84,7 @@ dF.ClCd = (function(): Module {
 
                 $("#clCdRegForm #regYn").val("Y");
                 const url: string = Url.CL_CD_REG_AJAX;
-                const ajaxData: Record<string, any> = $("#clCdRegForm").serializeArray();
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#clCdRegForm");
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {

@@ -181,7 +181,7 @@ dF.Notice = (function(): Module {
                 if (!result.value) return;
 
                 const url: string = Url.NOTICE_DEL_AJAX;
-                const ajaxData: Record<string, any> = $("#procForm").serializeArray();
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({text: res.message})
                         .then(function(): void {

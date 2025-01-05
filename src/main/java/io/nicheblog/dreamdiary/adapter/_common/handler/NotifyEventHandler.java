@@ -57,7 +57,7 @@ public class NotifyEventHandler {
             // msg
             final String msg = "새로운 공지사항이 등록되었습니다.";
             // url
-            final String param = "postNo=" + result.getPostNo() + "&boardCd=" + result.getContentType() + "&" + Constant.UTM_SOURCE + "=jandi";
+            final String param = "postNo=" + result.getPostNo() + "&boardDef=" + result.getContentType() + "&" + Constant.UTM_SOURCE + "=jandi";
             final String fullUrl = Url.DOMAIN + Url.NOTICE_DTL + "?" + param;
             // 메세지 발송
             jandiApiService.sendMsg(trgetTopic, msg, title, fullUrl);
@@ -85,7 +85,7 @@ public class NotifyEventHandler {
             // msg
             final String msg = "새로운 글이 등록되었습니다.";
             // url
-            final String param = "postNo=" + result.getPostNo() + "&boardCd=" + result.getBoardCd() + "&" + Constant.UTM_SOURCE + "=jandi";
+            final String param = "postNo=" + result.getPostNo() + "&boardDef=" + result.getBoardDef() + "&" + Constant.UTM_SOURCE + "=jandi";
             final String fullUrl = Url.DOMAIN + Url.BOARD_POST_DTL + "?" + param;
             // 메세지 발송
             jandiApiService.sendMsg(trgetTopic, msg, title, fullUrl);
@@ -148,7 +148,7 @@ public class NotifyEventHandler {
             // String msg = isReg ? "새로운 휴가 계획서가 등록되었습니다." : "휴가 계획서가 수정되었습니다.";
             String msg = "새로운 휴가 계획서가 등록되었습니다.";
             // url
-            final String param = "postNo=" + result.getPostNo() + "&boardCd=" + result.getContentType() + "&" + Constant.UTM_SOURCE + "=jandi";
+            final String param = "postNo=" + result.getPostNo() + "&boardDef=" + result.getContentType() + "&" + Constant.UTM_SOURCE + "=jandi";
             final String fullUrl = Url.DOMAIN + Url.VCATN_PAPR_DTL + "?" + param;
             // 메세지 발송
             jandiApiService.sendMsg(trgetTopic, msg, title, fullUrl);

@@ -592,7 +592,7 @@ cF.util = (function(): Module {
          * @param {HTMLElement|JQuery} elmt - 비활성화할 버튼 요소. jQuery 객체 또는 DOM 요소.
          * @param {number} [sec=2] - 버튼을 비활성화할 시간(초 단위). 기본값은 2초.
          */
-        delayBtn: function(elmt, sec = 2): void {
+        delayBtn: function(elmt, sec: number = 2): void {
             if (elmt instanceof jQuery) elmt = elmt[0];
             if (!elmt) return;
             if (elmt.classList?.contains("modal-btn-close-safe")) return;     // 안전닫기 버튼 제외
@@ -634,6 +634,11 @@ cF.util = (function(): Module {
             window.location.href = url.toString();
         },
 
+        /**
+         * 상대경로로부터 절대경로를 반환한다.
+         * @param {string} url 상대경로
+         * @return {string} 절대경로
+         */
         getAbsoluteUrl: function(url: string): string {
             if (url.startsWith('http://') || url.startsWith('https://')) {
                 return url;  // 이미 절대 경로라면 그대로 반환
@@ -641,6 +646,17 @@ cF.util = (function(): Module {
                 const baseUrl = window.location.origin;  // 현재 웹사이트의 절대 URL
                 return baseUrl + url;  // 상대 경로를 절대 경로로 결합
             }
+        },
+
+        /**
+         * FormData로부터 JSON 객체를 생성한다.
+         * @param {string} formSelector
+         * @return {Record<string, any>}
+         */
+        getJsonFormData: function(formSelector: string): Record<string, any> {
+            const form: HTMLFormElement = document.querySelector(formSelector) as HTMLFormElement;
+            const formData: FormData = new FormData(form);
+            return Object.fromEntries(formData);
         }
     }
 })();

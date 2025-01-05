@@ -43,28 +43,59 @@ public class ClCdApiController
     private final ClCdService clCdService;
 
     /**
-     * 분류 코드(CL_CD) 관리(useYn=N 포함) 등록/수정 (Ajax)
+     * 분류 코드(CL_CD) 관리(useYn=N 포함) 등록 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
      * @param clCd 등록/수정 처리할 객체
-     * @param regYn 등록 여부 (Y/N)
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
-    @PostMapping(value = {Url.CL_CD_REG_AJAX, Url.CL_CD_MDF_AJAX})
+    @PostMapping(value = {Url.CL_CD_REG_AJAX})
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> clCdRegAjax(
-            final @Valid ClCdDto clCd,
-            final @RequestParam("regYn") String regYn,
+            final @RequestBody @Valid ClCdDto clCd,
             final LogActvtyParam logParam
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final boolean isReg = "Y".equals(regYn);
-        final ClCdDto result = isReg ? clCdService.regist(clCd) : clCdService.modify(clCd);
+        final ClCdDto result = clCdService.regist(clCd);
+        final boolean isSuccess = (result.getClCd() != null);
+        final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+
+        // 응답 결과 세팅
+        ajaxResponse.setRsltObj(result);
+        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
+        // 로그 관련 세팅
+        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ajaxResponse);
+    }
+
+    /**
+     * 분류 코드(CL_CD) 관리(useYn=N 포함) 수정 (Ajax)
+     * (관리자MNGR만 접근 가능.)
+     *
+     * @param clCd 등록/수정 처리할 객체
+     * @param logParam 로그 기록을 위한 파라미터 객체
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    @PostMapping(value = {Url.CL_CD_MDF_AJAX})
+    @Secured({Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> clCdMdfAjax(
+            final @RequestBody @Valid ClCdDto clCd,
+            final LogActvtyParam logParam
+    ) throws Exception {
+
+        final AjaxResponse ajaxResponse = new AjaxResponse();
+
+        final ClCdDto result = clCdService.modify(clCd);
         final boolean isSuccess = (result.getClCd() != null);
         final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
 
@@ -117,7 +148,7 @@ public class ClCdApiController
      * 분류 코드 관리(useYn=N 포함) '사용'으로 변경 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
-     * @param key 식별자
+     * @param clCd 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
@@ -126,13 +157,13 @@ public class ClCdApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> clCdUseAjax(
-            final @RequestParam("clCd") String key,
+            final @RequestBody String clCd,
             final LogActvtyParam logParam
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final boolean isSuccess = clCdService.setStateUse(key);
+        final boolean isSuccess = clCdService.setStateUse(clCd);
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
 
         // 응답 결과 세팅
@@ -149,7 +180,7 @@ public class ClCdApiController
      * 분류 코드 관리(useYn=N 포함) '미사용'으로 변경 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
-     * @param key 식별자
+     * @param clCd 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
@@ -158,13 +189,13 @@ public class ClCdApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> clCdUnuseAjax(
-            final @RequestParam("clCd") String key,
+            final @RequestBody String clCd,
             final LogActvtyParam logParam
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final boolean isSuccess = clCdService.setStateUnuse(key);
+        final boolean isSuccess = clCdService.setStateUnuse(clCd);
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
 
         // 응답 결과 세팅
@@ -180,7 +211,7 @@ public class ClCdApiController
      * 분류 코드(CL_CD) 관리(useYn=N 포함) 삭제 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
-     * @param key 식별자
+     * @param clCd 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
@@ -189,13 +220,13 @@ public class ClCdApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> clCdDelAjax(
-            final @RequestParam("clCd") String key,
+            final @RequestBody String clCd,
             final LogActvtyParam logParam
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final boolean isSuccess = clCdService.delete(key);
+        final boolean isSuccess = clCdService.delete(clCd);
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
 
         // 응답 결과 세팅

@@ -60,7 +60,7 @@ class BoardPostRepositoryTest {
 
         // When::
         BoardPostEntity registered = boardPostRepository.save(boardPostEntity);
-        BaseClsfKey key = registered.getClsfKey();
+        Integer key = registered.getPostNo();
         BoardPostEntity retrieved = boardPostRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
 
         // Then::
@@ -79,7 +79,7 @@ class BoardPostRepositoryTest {
     public void testModify() throws Exception {
         // Given::
         BoardPostEntity registered = boardPostRepository.save(boardPostEntity);
-        BaseClsfKey key = registered.getClsfKey();
+        Integer key = registered.getPostNo();
 
         // When::
         BoardPostEntity toModify = boardPostRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("수정할 데이터를 찾을 수 없습니다."));
@@ -104,7 +104,7 @@ class BoardPostRepositoryTest {
     public void testDelete() throws Exception {
         // Given::
         BoardPostEntity registered = boardPostRepository.save(boardPostEntity);
-        BaseClsfKey key = registered.getClsfKey();
+        Integer key = registered.getPostNo();
 
         // When::
         BoardPostEntity toDelete = boardPostRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));

@@ -107,7 +107,7 @@ dF.Schdul = (function(): Module {
          */
         regAjax: function(): void {
             const url: string = Url.SCHDUL_REG_AJAX;
-            const ajaxData: Record<string, any> = $("#schdulRegForm").serializeArray();
+            const ajaxData: Record<string, any> = cF.util.getJsonFormData("#schdulRegForm");
             cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
                     .then(function(): void {
@@ -126,7 +126,7 @@ dF.Schdul = (function(): Module {
 
             const url: string = Url.SCHDUL_DTL_AJAX;
             const ajaxData: Record<string, any> = { "postNo": postNo };
-            cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
@@ -146,7 +146,7 @@ dF.Schdul = (function(): Module {
 
             const url: string = Url.SCHDUL_DTL_AJAX;
             const ajaxData: Record<string, any> = { "postNo": key };
-            cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;

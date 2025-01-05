@@ -197,30 +197,7 @@ cF.ajax = (function(): Module {
         multipart: async function (url: string, ajaxData: FormData, callback?: (response: any) => any, continueBlock?: string): Promise<void> {
             const options: RequestInit = {
                 method: 'POST',
-                headers: {
-                    // 파일 업로드에는 별도의 content-type을 지정하지 않아도 됩니다.
-                },
                 body: ajaxData,  // FormData 객체를 body에 전달
-            };
-
-            await cF.ajax.request(url, options, callback, continueBlock);
-        },
-
-        /**
-         * blockUI를 적용한 AJAX 호출 (JSON 요청 본문, stringify 처리된 문자열 전송).
-         * @param {string} url - 요청할 URL.
-         * @param {'GET'|'POST'|'PUT'|'DELETE'} method - HTTP 메서드 (GET, POST 등).
-         * @param {Record<string, any>} ajaxData - JSON 형태의 요청 데이터.
-         * @param {Function} [callback] - 요청 성공시 호출될 콜백 함수.
-         * @param {boolean} [continueBlock] - 추가적인 블록 UI 동작 여부 (선택적).
-         */
-        jsonRequest: async function (url: string, method: 'GET'|'POST'|'PUT'|'DELETE', ajaxData: Record<string, any>, callback?: (response: any) => any, continueBlock?: string): Promise<void> {
-            const options: RequestInit = {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',  // 요청 본문이 JSON 형식임을 명시
-                },
-                body: method === 'GET' ? null : JSON.stringify(ajaxData),  // GET은 body가 필요 없음
             };
 
             await cF.ajax.request(url, options, callback, continueBlock);

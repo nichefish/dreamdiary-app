@@ -17,8 +17,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 /**
  * VcatnStatsYyApiController
@@ -54,7 +57,7 @@ public class VcatnStatsYyApiController
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> vcatnStatsUpdtAjax(
-            final VcatnStatsTotalDto vcatnStatsTotal,
+            final @RequestBody @Valid VcatnStatsTotalDto vcatnStatsTotal,
             final LogActvtyParam logParam
     ) throws Exception {
 

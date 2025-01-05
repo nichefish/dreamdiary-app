@@ -231,8 +231,8 @@ public class AtchFileApiController
     @PostMapping(Url.FILE_UPLOAD_AJAX)
     @ResponseBody
     public ResponseEntity<AjaxResponse> uploadFileAjax(
-            final LogActvtyParam logParam,
-            final MultipartHttpServletRequest request
+            final MultipartHttpServletRequest request,
+            final LogActvtyParam logParam
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();

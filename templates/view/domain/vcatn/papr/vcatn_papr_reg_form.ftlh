@@ -17,7 +17,7 @@
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="휴가규칙 팝업을 호출합니다.">
             <i class="fas fa-info-circle"></i>휴가규칙
         </button>
-        <#include "/view/domain/vcatn/papr/_vcatn_papr_rule_modal.ftlh">
+        <#include "/view/domain/vcatn/papr/_modal/_vcatn_papr_rule_modal.ftlh">
     </div>
 </div>
 <!-- class 속성이 덮어씌워지지 않아서 스타일 지정 -->
@@ -74,7 +74,7 @@
 </div>
 <!--end::post-->
 
-<#include "/view/domain/vcatn/papr/_vcatn_schdul_reg_template.hbs">
+<#include "/view/domain/vcatn/schdul/_modal/_vcatn_schdul_reg_modal_template.hbs">
 
 <#--include:: component:: 첨부파일 추가 영역 template-->
 <#include "/view/global/_tinymce_img.ftlh">

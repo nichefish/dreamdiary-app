@@ -16,10 +16,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -50,7 +47,6 @@ public class VcatnSchdulApiController
      * (관리자MNGR만 접근 가능.)
      *
      * @param vcatnSchdul 등록/수정할 객체
-     * @param key 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link String} -- 뷰 이름을 나타내는 문자열
      * @throws Exception 처리 중 발생할 수 있는 예외
@@ -59,13 +55,13 @@ public class VcatnSchdulApiController
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> vcatnSchdulRegAjax(
-            final @Valid VcatnSchdulDto vcatnSchdul,
-            final Integer key,
+            final @RequestBody @Valid VcatnSchdulDto vcatnSchdul,
             final LogActvtyParam logParam
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
+        final Integer key = vcatnSchdul.getKey();
         final boolean isReg = (key == null);
         final VcatnSchdulDto result = isReg ? vcatnSchdulService.regist(vcatnSchdul) : vcatnSchdulService.modify(vcatnSchdul);
 
@@ -92,7 +88,7 @@ public class VcatnSchdulApiController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
-    @PostMapping(value = Url.VCATN_SCHDUL_DTL_AJAX)
+    @GetMapping(value = Url.VCATN_SCHDUL_DTL_AJAX)
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> vcatnSchdulDtlAjax(
@@ -122,7 +118,7 @@ public class VcatnSchdulApiController
      * 휴가관리 > 휴가사용일자 > 휴가사용일자 삭제 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
-     * @param key 식별자
+     * @param vcatnSchdulNo 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
@@ -131,13 +127,13 @@ public class VcatnSchdulApiController
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> vcatnSchdulDelAjax(
-            final @RequestParam("vcatnSchdulNo") Integer key,
+            final @RequestBody Integer vcatnSchdulNo,
             final LogActvtyParam logParam
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final boolean isSuccess = vcatnSchdulService.delete(key);;
+        final boolean isSuccess = vcatnSchdulService.delete(vcatnSchdulNo);;
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
 
         // 응답 결과 세팅

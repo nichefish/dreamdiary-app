@@ -31,16 +31,16 @@
     </div>
     <div>
         <#--헤더:: 버튼: 목록 검색-->
-        <@component.header_btn_search "JrnlSbjct.search();" />
+        <@component.header_btn_search "dF.JrnlSbjct.search();" />
         <#--헤더:: 버튼: 내 글 보기-->
-        <@component.header_btn_mypapr "JrnlSbjct.myPaprList();" MY_PAPR!false />
+        <@component.header_btn_mypapr "dF.JrnlSbjct.myPaprList();" MY_PAPR!false />
     </div>
     <div>
         <#--헤더:: 버튼: 등록 화면 이동하기-->
-        <@component.header_btn_reg_form "JrnlSbjct.regForm();" />
+        <@component.header_btn_reg_form "dF.JrnlSbjct.regForm();" />
     </div>
     <div>
         <#--헤더:: 버튼: 엑셀 다운로드하기-->
-        <@component.header_btn_xlsx_download "JrnlSbjct.xlsxDownload();" />
+        <@component.header_btn_xlsx_download "dF.JrnlSbjct.xlsxDownload();" />
     </div>
 </form>

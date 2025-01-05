@@ -152,7 +152,7 @@
         </span>
         <#list boardDefList![] as boardDef>
             <div class="menu-item">
-                <a class="menu-link" href="${Url.BOARD_POST_LIST!}?boardCd=${boardDef.boardCd!}">
+                <a class="menu-link" href="${Url.BOARD_POST_LIST!}?boardDef=${boardDef.boardDef!}">
                     <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                     </span>

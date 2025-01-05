@@ -122,8 +122,8 @@ dF.VcatnSchdul = (function(): Module {
 
             $("#vcatnSchdulNoProc").val(vcatnSchdulNo);
             const url: string = Url.VCATN_SCHDUL_DTL_AJAX;
-            const ajaxData: Record<string, any> = $("#procForm").serializeArray();
-            cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+            const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
+            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) return;
 
                 const { rsltObj } = res;
@@ -169,7 +169,7 @@ dF.VcatnSchdul = (function(): Module {
 
                 $("#vcatnSchdulNoProc").val(vcatnSchdulNo);
                 const url: string = Url.VCATN_SCHDUL_DEL_AJAX;
-                const ajaxData: Record<string, any> = $("#procForm").serializeArray();
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {

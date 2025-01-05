@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.domain.notice.controller;
 
-import io.nicheblog.dreamdiary.adapter.jandi.model.JandiParam;
 import io.nicheblog.dreamdiary.domain.notice.model.NoticeDto;
 import io.nicheblog.dreamdiary.domain.notice.model.NoticeSearchParam;
 import io.nicheblog.dreamdiary.domain.notice.model.NoticeXlsxDto;
@@ -32,7 +31,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import javax.annotation.Nullable;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Stream;
@@ -64,9 +62,7 @@ public class NoticeApiController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param notice 등록/수정 처리할 객체
-     * @param key 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
-     * @param jandiParam 잔디 파라미터 객체
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
@@ -76,14 +72,13 @@ public class NoticeApiController
     @ResponseBody
     public ResponseEntity<AjaxResponse> noticeRegAjax(
             final @Valid NoticeDto.DTL notice,
-            final @RequestParam("postNo") @Nullable Integer key,
             final LogActvtyParam logParam,
-            final JandiParam jandiParam,
             final MultipartHttpServletRequest request
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
+        final Integer key = notice.getKey();
         final boolean isReg = (key == null);
         final NoticeDto result = isReg ? noticeService.regist(notice, request) : noticeService.modify(notice, request);
 
@@ -160,7 +155,7 @@ public class NoticeApiController
      * 공지사항 삭제 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param key 식별자
+     * @param postNo 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
@@ -169,19 +164,19 @@ public class NoticeApiController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> noticeDelAjax(
-            final @RequestParam("postNo") Integer key,
+            final @RequestBody Integer postNo,
             final LogActvtyParam logParam
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final boolean isSuccess = noticeService.delete(key);
+        final boolean isSuccess = noticeService.delete(postNo);
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
 
         // TODO: AOP로 분리
         if (isSuccess) {
             // 태그 처리 :: 메인 로직과 분리
-            publisher.publishEvent(new TagProcEvent(this, new BaseClsfKey(key, ContentType.NOTICE)));
+            publisher.publishEvent(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.NOTICE)));
         }
 
         // 응답 결과 세팅

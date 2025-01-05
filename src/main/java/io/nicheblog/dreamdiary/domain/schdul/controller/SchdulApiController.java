@@ -18,10 +18,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Nullable;
 import javax.validation.Valid;
@@ -63,14 +60,14 @@ public class SchdulApiController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> schdulRegAjax(
-            final @Valid SchdulDto schdul,
-            final @RequestParam("postNo") @Nullable Integer key,
+            final @RequestBody @Valid SchdulDto schdul,
             final LogActvtyParam logParam,
             final JandiParam jandiParam
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
+        final Integer key = schdul.getKey();
         final boolean isReg = key == null;
         final SchdulDto result = isReg ? schdulService.regist(schdul) : schdulService.modify(schdul);
 
@@ -107,7 +104,7 @@ public class SchdulApiController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
-    @PostMapping(Url.SCHDUL_DTL_AJAX)
+    @GetMapping(Url.SCHDUL_DTL_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> schdulDtlAjax(
@@ -137,7 +134,7 @@ public class SchdulApiController
      * 일정 > 전체일정 > 일정 삭제 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param key 식별자
+     * @param postNo 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
@@ -146,13 +143,13 @@ public class SchdulApiController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> schdulDelAjax(
-            final @RequestParam("postNo") Integer key,
+            final @RequestBody Integer postNo,
             final LogActvtyParam logParam
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final boolean isSuccess = schdulService.delete(key);
+        final boolean isSuccess = schdulService.delete(postNo);
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
 
         // 응답 결과 세팅

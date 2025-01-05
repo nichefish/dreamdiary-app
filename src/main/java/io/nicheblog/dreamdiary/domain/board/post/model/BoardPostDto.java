@@ -35,14 +35,10 @@ import javax.validation.constraints.Size;
 @EqualsAndHashCode(callSuper = true)
 public class BoardPostDto
         extends BasePostDto
-        implements Identifiable<BaseClsfKey>, CommentCmpstnModule, TagCmpstnModule, ManagtCmpstnModule, ViewerCmpstnModule {
+        implements Identifiable<Integer>, CommentCmpstnModule, TagCmpstnModule, ManagtCmpstnModule, ViewerCmpstnModule {
 
-    /** 컨텐츠 타입 :: 화면단 + dto 레벨에서는 boardCd, entity 단에서는 contentType */
-    @JsonProperty("contentType")
-    @Size(max = 50)
-    protected String boardCd;
-
-    /* ----- */
+    /** 게시판 정의 */
+    private String boardDef;
 
     /**
      * 게시판 게시물 상세 (DTL) Dto.
@@ -77,8 +73,8 @@ public class BoardPostDto
     /* ----- */
 
     @Override
-    public BaseClsfKey getKey() {
-        return new BaseClsfKey(this.postNo, this.boardCd);
+    public Integer getKey() {
+        return this.postNo;
     }
 
     /** 위임 :: 댓글 정보 모듈 */

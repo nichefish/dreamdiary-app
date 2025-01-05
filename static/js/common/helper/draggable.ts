@@ -77,7 +77,7 @@ cF.draggable = (function(): Module {
                 orderData.push({ ...key, "state": { "sortOrdr": index } });
             });
             const ajaxData: Record<string, any> = { "sortOrdr": orderData };
-            cF.ajax.jsonRequest(url, 'POST', ajaxData, function(res: AjaxResponse): void {
+            cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                 if (res.rslt) {
                     (refreshFunc || cF.util.blockUIReload)();
                 } else if (cF.util.isNotEmpty(res.message)) {

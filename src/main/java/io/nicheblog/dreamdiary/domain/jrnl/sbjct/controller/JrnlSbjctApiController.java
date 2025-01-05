@@ -24,7 +24,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import javax.annotation.Nullable;
 import javax.validation.Valid;
 
 /**
@@ -65,13 +64,13 @@ public class JrnlSbjctApiController
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSbjctRegAjax(
             final @Valid JrnlSbjctDto.DTL jrnlSbjct,
-            final @RequestParam("postNo") @Nullable Integer key,
             final LogActvtyParam logParam,
             final MultipartHttpServletRequest request
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
+        final Integer key = jrnlSbjct.getKey();
         final boolean isReg = (key == null);
         final JrnlSbjctDto result = isReg ? jrnlSbjctService.regist(jrnlSbjct, request) : jrnlSbjctService.modify(jrnlSbjct, request);
 
@@ -148,7 +147,7 @@ public class JrnlSbjctApiController
      * 저널 주제 삭제 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param key 식별자
+     * @param postNo 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
@@ -157,19 +156,19 @@ public class JrnlSbjctApiController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSbjctDelAjax(
-            final @RequestParam("postNo") Integer key,
+            final @RequestBody Integer postNo,
             final LogActvtyParam logParam
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final boolean isSuccess = jrnlSbjctService.delete(key);
+        final boolean isSuccess = jrnlSbjctService.delete(postNo);
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
 
         // TODO: AOP로 분리
         if (isSuccess) {
             // 태그 처리 :: 메인 로직과 분리
-            publisher.publishEvent(new TagProcEvent(this, new BaseClsfKey(key, ContentType.JRNL_SBJCT)));
+            publisher.publishEvent(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.JRNL_SBJCT)));
         }
 
         // 응답 결과 세팅

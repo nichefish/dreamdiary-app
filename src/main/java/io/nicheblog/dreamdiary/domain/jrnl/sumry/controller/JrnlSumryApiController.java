@@ -126,7 +126,7 @@ public class JrnlSumryApiController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSumryMakeAjax(
-            final @RequestParam("yy") Integer yy,
+            final @RequestBody Integer yy,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -179,7 +179,7 @@ public class JrnlSumryApiController
      * 저널 결산 꿈 기록 완료 처리 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param key 식별자
+     * @param postNo 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
@@ -188,13 +188,13 @@ public class JrnlSumryApiController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSumryDreamComptAjax(
-            final @RequestParam("postNo") Integer key,
+            final @RequestBody Integer postNo,
             final LogActvtyParam logParam
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final boolean isSuccess = jrnlSumryService.dreamCompt(key);
+        final boolean isSuccess = jrnlSumryService.dreamCompt(postNo);
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
 
         // 응답 결과 세팅

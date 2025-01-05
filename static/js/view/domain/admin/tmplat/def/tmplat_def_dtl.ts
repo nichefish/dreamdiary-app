@@ -31,7 +31,7 @@ const Page: Page = (function(): Page {
                 if (!result.value) return;
 
                 const url: string = Url.TMPLAT_DEL_AJAX;
-                const ajaxData: Record<string, any> = $("#procForm").serializeArray();
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {

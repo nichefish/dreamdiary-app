@@ -34,21 +34,16 @@ public class BoardDefEntity
         extends BaseAuditEntity
         implements StateEmbedModule {
 
-    /** 게시판 코드 (PK) */
+    /** 게시판 정의 (PK) */
     @Id
-    @Column(name = "board_cd")
-    @Comment("게시판 코드 (PK)")
-    private String boardCd;
+    @Column(name = "board_def")
+    @Comment("게시판 정의 (PK)")
+    private String boardDef;
 
     /** 게시판 이름 */
     @Column(name = "board_nm")
     @Comment("게시판 이름")
     private String boardNm;
-
-    /** 메뉴 번호 */
-    @Column(name = "menu_no")
-    @Comment("메뉴 번호")
-    private String menuNo;
 
     /** 게시판 글분류 코드 */
     @Column(name = "ctgr_cl_cd")

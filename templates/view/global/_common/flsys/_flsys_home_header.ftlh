@@ -42,7 +42,7 @@
             flsysListAjax: function(filePath) {
                 const url = "${Url.FLSYS_LIST_AJAX!}";
                 const ajaxData = { "filePath": filePath };
-                cF.ajax.post(url, ajaxData, function(res) {
+                cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;

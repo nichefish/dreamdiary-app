@@ -5,7 +5,6 @@ import io.nicheblog.dreamdiary.domain.jrnl.diary.service.impl.JrnlDiaryTagCtgrSy
 import io.nicheblog.dreamdiary.domain.jrnl.dream.service.impl.JrnlDreamTagCtgrSynchronizer;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global._common._clsf.tag.model.TagSearchParam;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyRestControllerAspect;
@@ -18,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,7 +48,6 @@ public class JrnlTagApiController
      * 저널 태그 카테고리 메타 파일 - DB 동기화 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
-     * @param searchParam 검색 조건을 담은 파라미터 객체
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
@@ -59,7 +56,6 @@ public class JrnlTagApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> tagCtgrSyncAjax(
-            final @ModelAttribute("searchParam") TagSearchParam searchParam,
             final LogActvtyParam logParam
     ) throws Exception {
 

@@ -28,7 +28,7 @@
         }
     }
 </style>
-<script>
+><script>
     const Page = (function() {
         return {
             eventList: [],

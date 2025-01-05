@@ -56,6 +56,10 @@ public class ClCdDto
     @Builder.Default
     private Integer dtlCdCnt = 0;
 
+    /** 등록 여부 */
+    @Builder.Default
+    private String regYn = "N";
+
     /* ----- */
 
     @Override

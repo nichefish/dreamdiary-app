@@ -57,7 +57,7 @@ public class BoardDefApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardDefRegAjax(
-            final @Valid BoardDefDto boardDef,
+            final @RequestBody @Valid BoardDefDto boardDef,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -65,7 +65,7 @@ public class BoardDefApiController
 
         final BoardDefDto result = boardDefService.regist(boardDef);
 
-        final boolean isSuccess = (result.getBoardCd() != null);
+        final boolean isSuccess = (result.getBoardDef() != null);
         final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
 
         // 응답 결과 세팅
@@ -91,7 +91,7 @@ public class BoardDefApiController
     @GetMapping(Url.BOARD_DEF_DTL_AJAX)
     @Secured({Constant.ROLE_MNGR})
     public ResponseEntity<AjaxResponse> boardDefDtlAjax(
-            final @RequestParam("boardCd") String key,
+            final @RequestParam("boardDef") String key,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -126,7 +126,7 @@ public class BoardDefApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardDefMdfItemAjax(
-            final @Valid BoardDefDto boardDef,
+            final @RequestBody @Valid BoardDefDto boardDef,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -134,7 +134,7 @@ public class BoardDefApiController
 
         final BoardDefDto result = boardDefService.modify(boardDef);
 
-        final boolean isSuccess = (result.getBoardCd() != null);
+        final boolean isSuccess = (result.getBoardDef() != null);
         final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
 
         // 응답 결과 세팅
@@ -151,7 +151,7 @@ public class BoardDefApiController
      * 게시판 정의 상태를 '사용'으로 변경 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
-     * @param key 식별자
+     * @param boardDef 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
@@ -160,13 +160,13 @@ public class BoardDefApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardDefUseAjax(
-            final @RequestParam("boardCd") String key,
+            final @RequestBody String boardDef,
             final LogActvtyParam logParam
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final boolean isSuccess = boardDefService.setStateUse(key);
+        final boolean isSuccess = boardDefService.setStateUse(boardDef);
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
 
         // 응답 결과 세팅
@@ -183,7 +183,7 @@ public class BoardDefApiController
      * 게시판 정의 상태를 '미사용'으로 변경 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
-     * @param key 식별자
+     * @param boardDef 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
@@ -192,13 +192,13 @@ public class BoardDefApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardDefUnuseAjax(
-            final @RequestParam("boardCd") String key,
+            final @RequestBody String boardDef,
             final LogActvtyParam logParam
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final boolean isSuccess = boardDefService.setStateUnuse(key);
+        final boolean isSuccess = boardDefService.setStateUnuse(boardDef);
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
 
         // 응답 결과 세팅
@@ -247,7 +247,7 @@ public class BoardDefApiController
      * 게시판 정의 삭제 (Ajax)
      * (관리자MNGR만 접근 가능.)
      * 
-     * @param key 식별자
+     * @param boardDef 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
@@ -256,13 +256,13 @@ public class BoardDefApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardDefDelAjax(
-            final @RequestParam("boardCd") String key,
+            final @RequestBody String boardDef,
             final LogActvtyParam logParam
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final boolean isSuccess = boardDefService.delete(key);
+        final boolean isSuccess = boardDefService.delete(boardDef);
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
 
         // 응답 결과 세팅

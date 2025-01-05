@@ -68,7 +68,7 @@ dF.DtlCd = (function(): Module {
 
                 $("#dtlCdRegForm #regYn").val("Y");
                 const url: string = Url.DTL_CD_REG_AJAX;
-                const ajaxData: Record<string, any> = $("#dtlCdRegForm").serializeArray();
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#dtlCdRegForm");
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {

@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -60,14 +61,13 @@ public class TmplatDefApiController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> tmplatDefRegAjax(
-            final @Valid TmplatDefDto tmplatDef,
-            final @Nullable Integer key,
+            final @RequestBody @Valid TmplatDefDto tmplatDef,
             final LogActvtyParam logParam
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final boolean isReg = (key == null);
+        final boolean isReg = (tmplatDef.getKey() == null);
         final TmplatDefDto result = isReg ? tmplatDefService.regist(tmplatDef) : tmplatDefService.modify(tmplatDef);
 
         final boolean isSuccess = (result.getTmplatDefNo() != null);

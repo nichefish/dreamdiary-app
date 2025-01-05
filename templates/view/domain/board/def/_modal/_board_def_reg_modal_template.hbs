@@ -4,7 +4,7 @@
 -->
 
 <script type="text/x-handlebars-template" id="board_def_reg_template">
-    <input type="hidden" name="regYn" value="{{#if (notExists boardCd)}}Y{{/if}}{{#if (exists boardCd)}}N{{/if}}">
+    <input type="hidden" name="regYn" value="{{#if (notExists boardDef)}}Y{{/if}}{{#if (exists boardDef)}}N{{/if}}">
     <input type="hidden" name="useYn" value="N">
 
     <#--begin::Row-->
@@ -18,16 +18,16 @@
             </label>
         </div>
         <div class="col-6">
-            {{#if (exists clCd)}}
+            {{#if (exists boardDef)}}
                 <div class="col-form-label">
-                    <span class="text-noti fw-bold ps-1">{{clCd}}</span>
-                    <input type="hidden" name="clCd" value="{{clCd}}">
+                    <span class="text-noti fw-bold ps-1">{{boardDef}}</span>
+                    <input type="hidden" name="clCd" value="{{boardDef}}">
                 </div>
             {{else}}
-                <input type="text" name="boardCd" id="boardCd" class="form-control form-control-solid required cddata"
-                       value="{{boardCd}}" placeholder="게시판 코드" maxlength="16" >
+                <input type="text" name="boardDef" id="boardDef" class="form-control form-control-solid required cddata"
+                       value="" placeholder="게시판 코드" maxlength="16" >
                 <div class="text-noti">※영문 대문자 및 숫자만 가능, 1~30자</div>
-                <div id="boardCd_validate_span"></div>
+                <div id="boardDef_validate_span"></div>
             {{/if}}
         </div>
     </div>

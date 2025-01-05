@@ -89,7 +89,7 @@ dF.Menu = (function(): Module {
 
                 const isReg: boolean = $("#menuRegForm #menuNo").val() === "";
                 const url: string = isReg ? Url.MENU_REG_AJAX : Url.MENU_MDF_AJAX;
-                const ajaxData: Record<string, any> = $("#menuRegForm").serializeArray();
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#menuRegForm");
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {

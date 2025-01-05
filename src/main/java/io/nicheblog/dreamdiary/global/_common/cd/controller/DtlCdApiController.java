@@ -85,24 +85,55 @@ public class DtlCdApiController
      * (관리자MNGR만 접근 가능.)
      *
      * @param dtlCd 등록/수정 처리할 객체
-     * @param regYn 등록 여부 (Y/N)
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
-    @PostMapping(value = {Url.DTL_CD_REG_AJAX, Url.DTL_CD_MDF_AJAX})
+    @PostMapping(value = {Url.DTL_CD_REG_AJAX})
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> dtlCdRegAjax(
-            final @Valid DtlCdDto dtlCd,
-            final @RequestParam("regYn") String regYn,
+            final @RequestBody @Valid DtlCdDto dtlCd,
             final LogActvtyParam logParam
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final boolean isReg = "Y".equals(regYn);
-        final DtlCdDto result = isReg ? dtlCdService.regist(dtlCd) : dtlCdService.modify(dtlCd);
+        final DtlCdDto result = dtlCdService.regist(dtlCd);
+        final boolean isSuccess = (result.getDtlCd() != null);
+        final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+
+        // 응답 결과 세팅
+        ajaxResponse.setRsltObj(result);
+        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
+        // 로그 관련 세팅
+        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ajaxResponse);
+    }
+
+    /**
+     * 상세 코드 관리(useYn=N 포함) 등록/수정 (Ajax)
+     * (관리자MNGR만 접근 가능.)
+     *
+     * @param dtlCd 등록/수정 처리할 객체
+     * @param logParam 로그 기록을 위한 파라미터 객체
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    @PostMapping(value = {Url.DTL_CD_MDF_AJAX})
+    @Secured({Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> dtlCdMdfAjax(
+            final @RequestBody @Valid DtlCdDto dtlCd,
+            final LogActvtyParam logParam
+    ) throws Exception {
+
+        final AjaxResponse ajaxResponse = new AjaxResponse();
+
+        final DtlCdDto result = dtlCdService.modify(dtlCd);
         final boolean isSuccess = (result.getDtlCd() != null);
         final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
 
@@ -164,7 +195,7 @@ public class DtlCdApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> dtlCdUseAjax(
-            final DtlCdKey key,
+            final @RequestBody @Valid DtlCdKey key,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -196,7 +227,7 @@ public class DtlCdApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> dtlCdUnuseAjax(
-            final DtlCdKey key,
+            final @RequestBody @Valid DtlCdKey key,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -228,7 +259,7 @@ public class DtlCdApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> dtlCdDelAjax(
-            final DtlCdKey key,
+            final @RequestBody @Valid DtlCdKey key,
             final LogActvtyParam logParam
     ) throws Exception {
 

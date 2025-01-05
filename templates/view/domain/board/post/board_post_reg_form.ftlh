@@ -17,7 +17,7 @@
         <!--begin:Form-->
         <form name="postRegForm" id="postRegForm" class="form" data-mode="${formMode!}" method="post" enctype="multipart/form-data">
             <input type="hidden" name="postNo" value="${post.postNo!}">
-            <input type="hidden" name="boardCd" id="boardCd" value="<#if isMdf!false>${post.boardCd!}<#else>${boardCd!}</#if>">
+            <input type="hidden" name="boardDef" id="boardDef" value="<#if isMdf!false>${post.boardDef!}<#else>${boardDef!}</#if>">
             <input type="hidden" name="atchFileNo" value="${post.atchFileNo!}">
             <input type="hidden" name="hitCnt" value="${post.hitCnt!0?string.number}">
             <#--begin::Row-->

@@ -74,8 +74,6 @@ public interface CdConstant {
     String JANDI_TOPIC_CD = "JANDI_TOPIC_CD";   // 잔디 토픽 코드
     String JRNL_SBJCT_CTGR_CD = "JRNL_SBJCT_CTGR_CD";   // 저널 주제 글분류 코드
 
-    String BOARD_DEF_RSRVD_CD = "BOARD_DEF_RSRVD_CD";                 // 게시판 코드 (예약어)
-
     String YY_CD = "YY_CD";                 // 사용자 권한 코드
     String MNTH_CD = "MNTH_CD";                 // 사용자 권한 코드
 

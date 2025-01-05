@@ -84,6 +84,12 @@ public class UserMyServiceImpl
         return true;
     }
 
+    @Override
+    @Transactional
+    public Boolean myPwChg(final UserPwChgParam pwChgParam) throws Exception {
+        return this.myPwChg(pwChgParam.getCurrPw(), pwChgParam.getNewPw());
+    }
+
     /**
      * 사용자 관리 > 내 비밀번호 변경
      *
@@ -92,7 +98,9 @@ public class UserMyServiceImpl
      */
     @Override
     @Transactional
-    public Boolean myPwChg(final String lgnUserId, final String currPw, final String newPw) throws Exception {
+    public Boolean myPwChg(final String currPw, final String newPw) throws Exception {
+        final String lgnUserId = AuthUtils.getLgnUserId();
+
         // Entity 레벨 조회
         final UserEntity retrievedEntity = userService.getDtlEntity(lgnUserId);
         if (retrievedEntity == null) return false;

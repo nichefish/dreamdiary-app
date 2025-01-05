@@ -19,7 +19,7 @@ import java.util.List;
  * @author nichefish
  */
 public interface BoardPostService
-        extends BasePostService<BoardPostDto.DTL, BoardPostDto.LIST, BaseClsfKey, BoardPostEntity, BoardPostRepository, BoardPostSpec, BoardPostMapstruct> {
+        extends BasePostService<BoardPostDto.DTL, BoardPostDto.LIST, Integer, BoardPostEntity, BoardPostRepository, BoardPostSpec, BoardPostMapstruct> {
 
     /**
      * 게시판 > 게시판 상단 고정 목록 조회

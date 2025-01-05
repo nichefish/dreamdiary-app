@@ -13,22 +13,6 @@
 
 <link rel="stylesheet" type="text/css" href="/css/jrnl.css?${releaseDate!}" />
 
-<script>
-    const Page = (function() {
-        return {
-            /**
-             * Page 객체 초기화
-             */
-            init: function() {
-                //
-            },
-        }
-    })();
-    document.addEventListener("DOMContentLoaded", function() {
-        Page.init();
-    });
-</script>
-
 <!--begin::Card-->
 <div class="card post">
     <#--begin::Card body-->
@@ -54,7 +38,7 @@
             </div>
 
             <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
-                    onclick="JrnlDreamTag.listAllAjax();"
+                    onclick="dF.JrnlDreamTag.listAllAjax();"
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="헤당 년도 전체 태그 모달 팝업을 호출합니다.">
                 <i class="bi bi-tag pe-0"></i>
             </button>
@@ -138,17 +122,20 @@
 
 <#--include:: Aside-->
 <#include "/view/domain/jrnl/sumry/_jrnl_sumry_aside_base.ftlh">
-<#include "/view/domain/jrnl/dream/_jrnl_dream_reg_modal.ftlh">
-<#include "/view/domain/jrnl/dream/tag/_jrnl_dream_tag_dtl_modal.ftlh">
+<#include "/view/domain/jrnl/dream/_modal/_jrnl_dream_reg_modal.ftlh">
+<#include "/view/domain/jrnl/dream/tag/_modal/_jrnl_dream_tag_dtl_modal.ftlh">
 <#include "/view/domain/jrnl/tag/_jrnl_tag_list_modal.ftlh">
 <#include "/view/global/_common/_clsf/comment/_modal/_comment_reg_modal.ftlh">
 <#--include::script modules-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
 <script type="text/javascript" src="/js/common/helper/tinymce.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/jrnl/dream/jrnl_dream_module.js?${releaseDate!}"></script>
 <#include "/view/domain/jrnl/sumry/_jrnl_sumry_scripts.ftlh">
-<#include "/view/domain/jrnl/dream/_jrnl_dream_scripts.ftlh">
+<#include "/view/domain/jrnl/dream/tag/_jrnl_dream_tag_ctgr_map.ftlh">
 <#include "/view/domain/jrnl/dream/tag/_jrnl_dream_tag_scripts.ftlh">
 <#include "/view/domain/jrnl/tag/_jrnl_tag_scripts.ftlh">
-<script type="text/javascript" src="/js/view/global/_common/_clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/global/_common/_clsf/comment/comment_modal_module.js?${releaseDate!}">
+<script type="text/javascript" src="/js/view/domain/jrnl/sumry/jrnl_sumry_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/jrnl/sumry/jrnl_sumry_list.js?${releaseDate!}"></script>
 
 </@layout.layout>

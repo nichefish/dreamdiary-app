@@ -18,9 +18,9 @@ public class BoardDefEntityTestFactory {
     /**
      * 테스트용 게시판 정의 Entity 생성
      */
-    public static BoardDefEntity create(final String boardCd) throws Exception {
+    public static BoardDefEntity create(final String boardDef) throws Exception {
         return BoardDefEntity.builder()
-                .boardCd(boardCd)
+                .boardDef(boardDef)
                 .build();
     }
 }

@@ -55,7 +55,6 @@ public class MenuApiController
      * (관리자MNGR만 접근 가능.)
      *
      * @param menu 등록/수정 처리할 객체
-     * @param key 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
@@ -64,14 +63,13 @@ public class MenuApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuRegAjax(
-            final @Valid MenuDto menu,
-            final @RequestParam("menuNo") @Nullable Integer key,
+            final @RequestBody @Valid MenuDto menu,
             final LogActvtyParam logParam
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final boolean isReg = key == null;
+        final boolean isReg = menu.getMenuNo() == null;
         final MenuDto result = isReg ? menuService.regist(menu) : menuService.modify(menu);
 
         final boolean isSuccess = result.getMenuNo() != null;
@@ -206,7 +204,7 @@ public class MenuApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuDelAjax(
-            final @RequestParam("menuNo") Integer key,
+            final @RequestBody Integer key,
             final LogActvtyParam logParam
     ) throws Exception {
 
