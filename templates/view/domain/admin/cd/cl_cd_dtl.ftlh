@@ -189,8 +189,8 @@
 <#--include::script modules-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
 <script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/static/js/view/domain/admin/cd/cl_cd_module.js"></script>
-<script type="text/javascript" src="/static/js/view/domain/admin/cd/cl_cd_dtl.js"></script>
+<script type="text/javascript" src="/js/view/domain/admin/cd/cl_cd_module.js"></script>
+<script type="text/javascript" src="/js/view/domain/admin/cd/cl_cd_dtl.js"></script>
 <#include "/view/domain/admin/cd/_dtl_cd_scripts.ftlh">
 
 </@layout.layout>

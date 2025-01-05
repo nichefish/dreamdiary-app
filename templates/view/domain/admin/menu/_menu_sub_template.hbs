@@ -27,7 +27,7 @@
                         ·
                     </span>
                 {{/if}}
-                <div class="ms-3 mb-0 text-dark cursor-pointer text-underline-dotted" onclick="Menu.mdfModal('{{menuNo}}');"
+                <div class="ms-3 mb-0 text-dark cursor-pointer text-underline-dotted" onclick="dF.Menu.mdfModal('{{menuNo}}');"
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="수정 팝업을 호출합니다.">
                     <span class="title fs-5 {{^ifYn state.useYn}}strikethrough{{/ifYn}}">
                         {{menuNm}}
@@ -40,12 +40,12 @@
             <div class="d-flex align-items-center justify-content-end">
                 <div class="w-80px">
                     <div class="btn btn-sm btn-icon btn-light-primary btn-outlined cursor-pointer" {{#if (equals menuSubExtendTyCd "NO_SUB")}}style="visibility:hidden;"{{/if}}
-                         onclick="Menu.regModal('${Constant.MENU_TY_SUB!}', {{menuNo}}, '{{menuNm}}');"
+                         onclick="dF.Menu.regModal('${Constant.MENU_TY_SUB!}', {{menuNo}}, '{{menuNm}}');"
                          data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="하위메뉴 추가 팝업을&#10;호출합니다.">
                         <i class="fas fa-plus"></i>
                     </div>
                     <div class="btn btn-sm btn-icon btn-light-danger cursor-pointer"
-                         onclick="Menu.delAjax({{menuNo}});"
+                         onclick="dF.Menu.delAjax({{menuNo}});"
                          data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="이 메뉴를 삭제합니다.">
                         <i class="bi bi-trash d-flex-center opacity-75"></i>
                     </div>

@@ -95,7 +95,7 @@
 <!--end::Card-->
 
 <#--include::script modules-->
-<script type="text/javascript" src="/static/js/view/domain/admin/lgn_policy/lgn_policy_module.js"></script>
-<script type="text/javascript" src="/static/js/view/domain/admin/lgn_policy/lgn_policy_reg_form.js"></script>
+<script type="text/javascript" src="/js/view/domain/admin/lgn_policy/lgn_policy_module.js"></script>
+<script type="text/javascript" src="/js/view/domain/admin/lgn_policy/lgn_policy_reg_form.js"></script>
 
 </@layout.layout>

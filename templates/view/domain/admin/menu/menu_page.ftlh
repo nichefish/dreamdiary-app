@@ -40,7 +40,7 @@
 <script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
 <script type="text/javascript" src="/lib/jstree/js/jstree.min.js"></script>
 <script type="text/javascript" src="/js/common/helper/jstree.js"></script>
-<script type="text/javascript" src="/static/js/view/domain/admin/menu/menu_module.js"></script>
-<script type="text/javascript" src="/static/js/view/domain/admin/menu/menu_page.js"></script>
+<script type="text/javascript" src="/js/view/domain/admin/menu/menu_module.js"></script>
+<script type="text/javascript" src="/js/view/domain/admin/menu/menu_page.js"></script>
 
 </@layout.layout>

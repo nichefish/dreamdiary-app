@@ -18,7 +18,7 @@
     <meta property="og:title" content="${Constant.SITE_NM!}" />
     <meta property="og:url" content="${Url.DOMAIN!}"/>
     <meta property="og:site_name" content="${Constant.SITE_NM!}" />
-    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="shortcut icon" href="/static/favicon.ico" />
 
     <!--Metronic:: Gloabl Css Bundle(used by all pages) -->
     <link rel="stylesheet" type="text/css" href="/metronic/assets/plugins/global/plugins.bundle.css" />

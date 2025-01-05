@@ -633,5 +633,14 @@ cF.util = (function(): Module {
             // 변경된 URL로 리다이렉트합니다.
             window.location.href = url.toString();
         },
+
+        getAbsoluteUrl: function(url: string): string {
+            if (url.startsWith('http://') || url.startsWith('https://')) {
+                return url;  // 이미 절대 경로라면 그대로 반환
+            } else {
+                const baseUrl = window.location.origin;  // 현재 웹사이트의 절대 URL
+                return baseUrl + url;  // 상대 경로를 절대 경로로 결합
+            }
+        }
     }
 })();
