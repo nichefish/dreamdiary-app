@@ -175,9 +175,9 @@
     <input type="hidden" name="boardCd" id="boardCd" value="${boardCd!}"/>
 </form>
 
-<#include "/view/domain/board/post/_board_post_dtl_modal.ftlh">
-<#include "/view/global/_common/_clsf/comment/_comment_list_modal.ftlh">
-<#include "/view/global/_common/file/_atch_file_list_modal.ftlh">
+<#include "/view/domain/board/post/_modal/_board_post_dtl_modal.ftlh">
+<#include "/view/global/_common/_clsf/comment/_modal/_comment_list_modal.ftlh">
+<#include "/view/global/_common/file/_modal/_atch_file_list_modal.ftlh">
 <#--include::script modules--><#--include::script modules-->
 <script type="text/javascript" src="/js/view/domain/board/post/board_post_module.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/domain/board/post/board_post_list.js?${releaseDate!}"></script>

@@ -184,8 +184,8 @@
 </form>
 
 <#--include::modals-->
-<#include "/view/domain/admin/cd/_cl_cd_reg_modal.ftlh">
-<#include "/view/domain/admin/cd/_dtl_cd_reg_modal.ftlh">
+<#include "/view/domain/admin/cd/_modal/_cl_cd_reg_modal.ftlh">
+<#include "/view/domain/admin/cd/_modal/_dtl_cd_reg_modal.ftlh">
 <#--include::script modules-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
 <script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>

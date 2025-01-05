@@ -3,7 +3,7 @@
  * @included_in : jrnl_day_page.ftlh
  -->
 
-<form name="listForm" id="listForm" class="d-flex align-items-center flex-nowrap gap-2" method="get">
+<form name="listForm" id="listForm" class="d-flex align-items-center flex-nowrap gap-2" data-url="${listUrl!}"method="get">
     <div class="col-1 w-auto">
         <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
                 onclick="JrnlTag.tagCtgrSyncAjax();"

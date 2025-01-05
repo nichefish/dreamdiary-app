@@ -11,66 +11,6 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<#--include::script modules-->
-<#include "/view/domain/vcatn/schdul/_vcatn_schdul_scripts.ftlh">
-
-<script>
-    const Page = (function() {
-        return {
-            /**
-             * Page 객체 초기화
-             */
-            init: function() {
-                cF.datepicker.singleDatePicker("#bgnDt", "yyyy-MM-DD", null, function() {
-                    Page.noBefore("#bgnDt", "#endDt");
-                });
-                cF.datepicker.singleDatePicker("#endDt", "yyyy-MM-DD", null, function() {
-                    if ($("#endDt").val() !== "") Page.noBefore("#bgnDt", "#endDt");
-                });
-
-                /* 모든 table 헤더에 클릭 이벤트를 설정한다. */
-                cF.util.initSortTable();
-
-                /* jquery validation */
-                $(function() {
-                    $("#vcantSchdulRegForm").validate({
-                        submitHandler: function() {
-                            let isReg = ($("#vcatnSchdulNo").val() === "");
-                            Swal.fire({
-                                text: isReg ? <@spring.message "view.cnfm.reg"/> : <@spring.message "view.cnfm.mdf"/>,
-                                showCancelButton: true,
-                            }).then(function(result) {
-                                if (!result.value) return;
-                                VcatnSchdul.regAjax();
-                            });
-                        },
-                        errorPlacement: function(error, element) {
-                            cF.validate.errorSpan(error, element);        // 공통 함수로 분리
-                        }
-                    });
-                });
-            },
-
-            /**
-             * 유효성 검사:: 시작일 이전 날짜 선택 불가하게 막기
-             */
-            noBefore: function(beginSelectorStr, endSelectorStr) {
-                const isBefore = cF.date.isBefore(beginSelectorStr, endSelectorStr);
-                const vcatnCd = select = $("#vcatnCd").children('option:selected').val();
-                if (select === "AM_HALF" || select === "PM_HALF") {
-                    $(endSelectorStr).val($(beginSelectorStr).val());
-                } else if (result === false && $(endSelectorStr).val() !== "") {
-                    Swal.fire("접속 IP는 최소 한 개 이상 입력해야 합니다.");
-                    $(endSelectorStr).val("");
-                }
-            },
-        }
-    })();
-    document.addEventListener("DOMContentLoaded", function() {
-        Page.init();
-    });
-</script>
-
 <div class="card post">
     <#--begin::Card body-->
     <div class="card-body">
@@ -119,5 +59,8 @@
 </form>
 
 <#include "/view/domain/vcatn/schdul/_vcatn_schdul_reg_modal.ftlh">
+<#--include::script modules-->
+<script type="text/javascript" src="/js/view/domain/vcatn/schdul/vcatn_schdul_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/vcatn/schdul/vcatn_schdul_list.js?${releaseDate!}"></script>
 
 </@layout.layout>

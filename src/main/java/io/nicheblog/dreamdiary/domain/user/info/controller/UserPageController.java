@@ -128,7 +128,7 @@ public class UserPageController
         // 빈 객체 주입 (freemarker error prevention)
         model.addAttribute("user", new UserDto.DTL());
         // 등록/수정 화면 플래그 세팅
-        model.addAttribute(Constant.IS_REG, true);
+        model.addAttribute(Constant.FORM_MODE, "regist");
         // 권한 정보 모델에 추가
         final Map<String, Object> searchParamMap = new HashMap<>() {{
             put("useYn", "Y");
@@ -210,7 +210,7 @@ public class UserPageController
         final UserDto rsDto = userService.getDtlDto(key);
         model.addAttribute("user", rsDto);
         // 등록/수정 화면 플래그
-        model.addAttribute(Constant.IS_MDF, true);
+        model.addAttribute(Constant.FORM_MODE, "regist");
         // 권한 정보 모델에 추가
         final Map<String, Object> searchParamMap = new HashMap<>() {{
             put("useYn", "Y");

@@ -84,6 +84,6 @@ public class TagPageController
             publisher.publishEvent(new LogActvtyEvent(this, logParam));
         }
 
-        return "/view/domain/admin/tag/tag_list";
+        return "/view/domain/admin/tag/tag_admin_list";
     }
 }

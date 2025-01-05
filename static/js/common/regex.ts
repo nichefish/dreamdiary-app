@@ -1,15 +1,20 @@
 /**
- * commons.ts
+ * regex.ts
  * @namespace: cF.util
  * @author: nichefish
  * @dependency: jquery.blockUI.js, jquery.forms.js
  * 공통 - 일반 함수 모듈
  * (노출식 모듈 패턴 적용 :: cF.util.enterKey("#userId") 이런식으로 사용)
+ * "global flag /g works inconsistent if called multiple times..."
  */
-if (typeof cF === 'undefined') { let cF = {}; }
-cF.validate = (function() {
+if (typeof cF === 'undefined') { var cF = {} as any; }
+cF.regex = (function(): Module {
 
-    return Object.freeze({
+    return {
+        init: function(): void {
+            console.log("'cF.regex' module initialized.");
+        },
+
         /** 정규식: 숫자 */
         num: /[0-9]/g,
         /** 정규식: 숫자 빼고 나머지 */
@@ -52,9 +57,9 @@ cF.validate = (function() {
 
         /** 정규식: 아이디 정규식 */
         id: /^(?=.*[a-z])[a-z\d]{5,16}$/,
-        pw: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&_])[A-Za-z\d$@$!%*#?&_]{9,20}$/,
+        pw: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@!%*#?&_])[A-Za-z\d$@!%*#?&_]{9,20}$/,
 
         /** 정규식: 천 단위 콤마 */
         thousandSeparator: /\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g,
-    });
+    }
 })();

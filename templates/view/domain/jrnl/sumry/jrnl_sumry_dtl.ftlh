@@ -6,18 +6,6 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<#--include::script modules-->
-<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
-<script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
-<script type="text/javascript" src="/lib/prism/js/prism.js"></script>
-<script type="text/javascript" src="/js/common/helper/tinymce.js?${releaseDate!}"></script>
-<#include "/view/domain/jrnl/sumry/_jrnl_sumry_scripts.ftlh">
-<#include "/view/domain/jrnl/dream/_jrnl_dream_scripts.ftlh">
-<#include "/view/domain/jrnl/tag/_jrnl_tag_scripts.ftlh">
-<#include "/view/global/_common/_clsf/comment/_comment_modal_scripts.ftlh">
-<#include "/view/global/_common/_clsf/sectn/_sectn_scripts.ftlh">
-
 <link rel="stylesheet" type="text/css" href="/css/jrnl.css?${releaseDate!}" />
 
 <script>
@@ -176,9 +164,21 @@
 <#include "/view/domain/jrnl/dream/_jrnl_dream_reg_modal.ftlh">
 <#include "/view/domain/jrnl/dream/tag/_jrnl_dream_tag_dtl_modal.ftlh">
 <#include "/view/domain/jrnl/tag/_jrnl_tag_list_modal.ftlh">
-<#include "/view/global/_common/_clsf/comment/_comment_reg_modal.ftlh">
-<#include "/view/global/_common/_clsf/sectn/_sectn_reg_modal.ftlh">
+<#include "/view/global/_common/_clsf/comment/_modal/_comment_reg_modal.ftlh">
+<#include "/view/global/_common/_clsf/sectn/_modal/_sectn_reg_modal.ftlh">
 <#include "/view/global/_common/_clsf/sectn/_sectn_list_template.hbs">
+
+<#--include::script modules-->
+<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
+<script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
+<script type="text/javascript" src="/lib/prism/js/prism.js"></script>
+<script type="text/javascript" src="/js/common/helper/tinymce.js?${releaseDate!}"></script>
+<#include "/view/domain/jrnl/sumry/_jrnl_sumry_scripts.ftlh">
+<#include "/view/domain/jrnl/dream/_jrnl_dream_scripts.ftlh">
+<#include "/view/domain/jrnl/tag/_jrnl_tag_scripts.ftlh">
+<script type="text/javascript" src="/js/view/global/_common/_clsf/sectn/sectn_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/global/_common/_clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
 
 
 </@layout.layout>

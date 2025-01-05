@@ -6,25 +6,13 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<#--include::script modules-->
-<#include "/view/domain/user/my/_user_my_scripts.ftlh">
-<#include "/view/domain/user/my/_user_my_pw_chg_scripts.ftlh">
-
 <script>
-    const Page = (function() {
+    /** Model 값을 객체에 담아 typescript로 전달 */
+    const Model = (function() {
         return {
-            /**
-             * Page 객체 초기화
-             */
-            init: function() {
-                /* initialize form. */
-                UserMyPwChg.initForm();
-            },
+            errorMsg: "${errorMsg!}",
         }
     })();
-    document.addEventListener("DOMContentLoaded", function() {
-        Page.init();
-    });
 </script>
 
 <div class="card post">
@@ -277,9 +265,12 @@
 </div>
 
 <#--include::modals-->
-<#include "/view/domain/user/my/_user_my_pw_chg_modal.ftlh">
+<#include "/view/domain/user/my/_modal/_user_my_pw_chg_modal.ftlh">
 <#if (authInfo.hasEcnyDt!false)>
-    <#include "/view/domain/user/my/_user_my_vcatn_list_modal.ftlh">
+    <#include "/view/domain/user/my/_modal/_user_my_vcatn_list_modal.ftlh">
 </#if>
+<script type="text/javascript" src="/js/view/domain/user/my/user_my_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/user/my/user_my_pw_chg_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/user/my/user_my_dtl.js?${releaseDate!}"></script>
 
 </@layout.layout>

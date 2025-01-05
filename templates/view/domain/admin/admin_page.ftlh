@@ -8,70 +8,6 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<script>
-    const Page = (function() {
-        return {
-            /**
-             * Page 객체 초기화
-             */
-            init: function() {
-                //
-            },
-
-            /**
-             * 휴일정보 : url, data 받아서 ajax 호출
-             */
-            hldyAjax: function() {
-                const url = "${Url.API_HLDY_GET!}";
-                const ajaxData = { "yy" : $("#hldyYy option:selected").val() };
-                Page.ajax(url, ajaxData);
-            },
-
-            /**
-             * NOTION : url, data 받아서 ajax 호출
-             */
-            notionAjax: function() {
-                const url = "${Url.API_NOTION_GET!}";
-                const ajaxData = { "dataType": $("#dataType").val(), "dataId": $("#dataId").val() };
-                cF.ajax.get(url, ajaxData, function(res) {
-                    if (res.rslt) Swal.fire(JSON.stringify(res));
-                    Swal.fire({ text: res.message });
-                });
-            },
-
-            /**
-             * url, data 받아서 ajax 호출
-             * @param {string} url - 요청을 보낼 대상 URL.
-             * @param {Object} data - 서버로 전송할 데이터 객체.
-             */
-            ajax: function(url, data) {
-                cF.ajax.post(url, data, function(res) {
-                    if (res.rslt) Swal.fire(JSON.stringify(res));
-                    Swal.fire({ text: res.message })
-                        .then(function() {
-                            if (res.rsltList) Swal.fire(JSON.stringify(res.rsltList));
-                            if (res.rsltObj) Swal.fire(JSON.stringify(res.rsltObj));
-                        });
-                });
-            },
-
-            /**
-             * 사이트 관리 페이지로 이동
-             */
-            adminPage: function() {
-                cF.util.blockUISubmit("#procForm", "${Url.ADMIN_PAGE!}");
-            },
-
-            /**
-             * 코드 관리 페이지로 이동
-             */
-            cdList: function() {
-                cF.util.blockUISubmit("#procForm", "${Url.CL_CD_LIST!}");
-            },
-        }
-    })();
-</script>
-
 <#--begin::Tab-->
 <ul class="nav nav-tabs nav-tabs-line ps-5 my-5">
     <li class="nav-item">
@@ -115,11 +51,11 @@
                 <div class="col-xl-3">
                     <div class="mt-1">
                         <button type="button" class="btn btn-sm btn-primary"
-                                onclick="Cache.activeListModal();">
+                                onclick="Caches.activeListModal();">
                             현재 캐시 조회
                         </button>
                         <button type="button" class="btn btn-sm btn-primary"
-                                onclick="Cache.clearAllAjax();">
+                                onclick="Caches.clearAllAjax();">
                             사이트 캐시 초기화
                         </button>
                     </div>
@@ -255,9 +191,10 @@
 <#include "/view/domain/admin/admin_aside_base.ftlh">
 
 <#--include::modals-->
-<#include "/view/domain/admin/cache/_cache_list_modal.ftlh">
+<#include "/view/domain/admin/cache/_modal/_cache_list_modal.ftlh">
 
 <#--include::script modules-->
 <script type="text/javascript" src="/js/view/domain/admin/cache/_cache.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/admin/admin_page.js?${releaseDate!}"></script>
 
 </@layout.layout>

@@ -4,67 +4,10 @@
 
 <#import "/layout/layout_default.ftlh" as layout >
 
-<#assign isReg = (isReg!false)>
-<#assign isMdf = (isMdf!false)>
+<#assign isReg = (formMode == "regist")!false>
+<#assign isMdf = (formMode == "modify")!false>
 
 <@layout.layout toolbar=toolbar!"">
-
-<#--include::script modules-->
-<script type="text/javascript" src="/lib/prism/js/prism.js"></script>
-<#include "/view/domain/vcatn/papr/_vcatn_papr_scripts.ftlh">
-<#include "/view/domain/vcatn/schdul/_vcatn_schdul_scripts.ftlh">
-
-<script>
-    const Page = (function() {
-        return {
-            idx: 0,
-
-            /**
-             * Page 객체 초기화
-             */
-            init: function() {
-                // 추가추가에 사용할 인덱스 설정
-                Page.idx = ${(post.schdulList![])?size};
-
-                /* initialize form. */
-                VcatnPapr.initForm();
-                // 첨부파일 영역 0개인지 체크
-                AtchFile.atchFileListToggle();
-
-                <#if isReg!false>
-                    $("#jandiYn").trigger("click");
-                </#if>
-
-                <#if isReg!false>
-                    // 휴가 추가 폼 기본 뿌리기
-                    Page.addVcatnSchdul();
-                </#if>
-            },
-
-            /**
-             * 휴가등록 부분 추가
-             */
-            addVcatnSchdul: function() {
-                const idx = Page.idx++;
-                cF.handlebars.append({ "idx": idx }, "vcatn_schdul_reg");
-                cF.datepicker.singleDatePicker("#bgnDt" + idx, "yyyy-MM-DD", null, function() {
-                    VcatnSchdul.propEndDt(idx);
-                    VcatnSchdul.noBefore("#bgnDt"+idx, "#endDt"+idx, idx);
-                });
-                cF.datepicker.singleDatePicker("#endDt"+idx, "yyyy-MM-DD", null, function() {
-                    if ($("#endDt"+idx).val() !== "") VcatnSchdul.noBefore("#bgnDt"+idx, "#endDt"+idx, idx);
-                });
-            },
-            /** 추가항목 영역 삭제 */
-            delSpan: function(idx) {
-                $("div#itemContainer" + idx).remove();
-            }
-        }
-    })();
-    document.addEventListener("DOMContentLoaded", function() {
-        Page.init();
-    });
-</script>
 
 <#--begin::Row-->
 <div class="row">
@@ -95,7 +38,7 @@
         </div>
 
         <!--begin:Form-->
-        <form name="vcatnPaprRegForm" id="vcatnPaprRegForm" class="form" enctype="multipart/form-data">
+        <form name="vcatnPaprRegForm" id="vcatnPaprRegForm" class="form" data-mode="${formMode!}" data-init-length="${(post.schdulList![])?size}" method="post" enctype="multipart/form-data">
             <input type="hidden" name="postNo" value="${post.postNo!}">
             <input type="hidden" name="title" id="title" value="${post.title!}"/>
             <input type="hidden" name="atchFileNo" value="${post.atchFileNo!}">
@@ -135,5 +78,10 @@
 
 <#--include:: component:: 첨부파일 추가 영역 template-->
 <#include "/view/global/_tinymce_img.ftlh">
+<#--include::script modules-->
+<script type="text/javascript" src="/lib/prism/js/prism.js"></script>
+<script type="text/javascript" src="/js/view/domain/vactn/schdul/vactn_schdul_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/vactn/papr/vactn_papr_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/vactn/papr/vactn_papr_reg_form.js?${releaseDate!}"></script>
 
 </@layout.layout>

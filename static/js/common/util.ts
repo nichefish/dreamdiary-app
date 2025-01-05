@@ -1,19 +1,23 @@
 /**
- * commons.ts
+ * utils.ts
  * @namespace: cF.util
  * @author: nichefish
  * @dependency: jquery.blockUI.js, jquery.forms.js
  * 공통 - 일반 함수 모듈
  * (노출식 모듈 패턴 적용 :: cF.util.enterKey("#userId") 이런식으로 사용)
  */
-if (typeof cF === 'undefined') { let cF = {}; }
-cF.util = (function() {
-    return {
+if (typeof cF === 'undefined') { var cF = {} as any; }
+cF.util = (function(): Module {
+    return{
+        init: function(): void {
+            console.log("'cF.util' module initialized.");
+        },
+
         /**
          * blockUI wrapped by try-catch
          */
-        blockUI: function() {
-            const blockMessage = `<div class="flex-column py-2 bg-dark bg-opacity-25">
+        blockUI: function(): void {
+            const blockMessage: string = `<div class="flex-column py-2 bg-dark bg-opacity-25">
                         <span class="spinner-border text-primary" role="status"></span>
                         <span class="text-muted fs-6 fw-semibold mt-5">Loading...</span>
                     </div>`;
@@ -33,8 +37,8 @@ cF.util = (function() {
          * unblockUI wrapped by try-catch
          * @param {number} delay - unblockUI를 호출하기 전 대기할 시간(밀리초). (기본 1.5초)
          */
-        unblockUI: function(delay = 1500) {
-            setTimeout(function() {
+        unblockUI: function(delay = 1500): void {
+            setTimeout(function(): void {
                 try {
                     $.unblockUI();
                 } catch(error) {
@@ -47,7 +51,7 @@ cF.util = (function() {
          * SweetAlert가 정의되어 있는지 확인합니다.
          * @returns {boolean} - Swal이 정의되어 있으면 true, 그렇지 않으면 false.
          */
-        hasSwal: function() {
+        hasSwal: function(): boolean {
             return typeof Swal !== 'undefined';
         },
 
@@ -56,12 +60,12 @@ cF.util = (function() {
          * @param {string} msg - 표시할 메시지.
          * @param {Function} [func] - 메시지 처리 후 실행할 콜백 함수 (선택적).
          */
-        swalOrAlert: function(msg: string, func: Function) {
-            const hasCallback = typeof func === 'function';
+        swalOrAlert: function(msg: string, func: Function): void {
+            const hasCallback: boolean = typeof func === 'function';
             if (cF.util.hasSwal()) {
                 // SweetAlert가 존재할 때
                 Swal.fire(msg)
-                    .then(function() {
+                    .then(function(): void {
                         if (hasCallback) func();
                     });
             } else {
@@ -105,7 +109,7 @@ cF.util = (function() {
          * @param {any} data - 체크할 데이터.
          * @returns {boolean} - 데이터가 비어 있으면 true, 그렇지 않으면 false.
          */
-        isEmpty: function(data: any) {
+        isEmpty: function(data: any) : boolean {
             if (data == null) return true;
             const type = typeof(data);
             if (type === 'object') {
@@ -123,18 +127,18 @@ cF.util = (function() {
          * @param {any} data - 체크할 데이터.
          * @returns {boolean} - 데이터가 비어 있지 않으면 true, 비어 있으면 false.
          */
-        isNotEmpty: function(data: any) {
+        isNotEmpty: function(data: any) : boolean {
             return !cF.util.isEmpty(data);
         },
 
         /**
          * 선택자에서 유효한 입력 요소를 반환합니다.
-         * @param {string|HTMLElement|jQuery} selector - 선택자 문자열 또는 DOM 요소 또는 jQuery 객체.
+         * @param {string|HTMLElement|JQuery} selector - 선택자 문자열 또는 DOM 요소 또는 jQuery 객체.
          * @returns {HTMLElement[]} - 유효한 입력 요소 배열 또는 빈 배열.
          */
-        verifySelector: function(selector) {
+        verifySelector: function(selector: string|HTMLElement|JQuery): HTMLElement[] {
             if (selector instanceof jQuery) {
-                return selector.toArray();
+                return (selector as JQuery).toArray();
             } else if (selector instanceof HTMLElement) {
                 return [selector];
             } else if (typeof selector === 'string') {
@@ -145,10 +149,10 @@ cF.util = (function() {
 
         /**
          * 선택자 요소의 존재 여부를 체크합니다.
-         * @param {string|jQuery|HTMLElement} selectorStr - 체크할 요소의 선택자 문자열, jQuery 객체, 또는 DOM 요소.
+         * @param {string|HTMLElement|JQuery} selector - 선택자 문자열 또는 DOM 요소 또는 jQuery 객체.
          * @returns {boolean} - 요소가 존재하면 true, 그렇지 않으면 false.
          */
-        isPresent: function(selector) {
+        isPresent: function(selector: string|HTMLElement|JQuery): boolean {
             return this.verifySelector(selector).length > 0;
         },
 
@@ -175,11 +179,11 @@ cF.util = (function() {
         enterKey: function(selectorStr: string, func: Function) {
             if (!selectorStr || typeof func !== 'function') return;
 
-            const inputs = document.querySelectorAll(selectorStr);
+            const inputs: NodeListOf<HTMLInputElement> = document.querySelectorAll(selectorStr);
             if (inputs.length === 0) return;
 
-            inputs.forEach(input => {
-                input.addEventListener("keyup", function(event: Event) {
+            inputs.forEach((input: HTMLInputElement) => {
+                input.addEventListener("keyup", function(event: KeyboardEvent): void {
                     if (event.key === "Enter") { // Enter 키 확인
                         event.preventDefault(); // 기본 동작 방지
                         func(); // 전달된 함수 호출
@@ -195,13 +199,13 @@ cF.util = (function() {
          * @param {string} arrElmtId - 요소 ID의 접두사.
          * @returns {number} - 계산된 요청 항목 인덱스.
          */
-        getReqstItemIdx: function(arrElmt: string, selectorStr: string, arrElmtId: string) {
+        getReqstItemIdx: function(arrElmt: string, selectorStr: string, arrElmtId: string): number {
             const reqstDataArr = document.querySelectorAll(arrElmt + "[" + selectorStr + "]"); // 선택자에 해당하는 요소 가져오기
             if (reqstDataArr.length === 0) return 0; // 요소가 없으면 0 반환
 
             // 각 요소의 인덱스를 계산하여 최대 인덱스를 구함
             return Array.from(reqstDataArr).reduce((reqstItemIdx, elmt) => {
-                const isExcluded = elmt.id.includes("__");
+                const isExcluded: boolean = elmt.id.includes("__");
                 if (isExcluded) return reqstItemIdx;
 
                 const currentIdx = Number(elmt.id.replace(arrElmtId, ""));
@@ -216,13 +220,13 @@ cF.util = (function() {
          * @returns {number} - 총합 값.
          */
         getReqstItemTotSum: function(selectorStr: string) {
-            const reqstDataArr = document.querySelectorAll("input[" + selectorStr + "]");
+            const reqstDataArr: NodeListOf<HTMLInputElement> = document.querySelectorAll("input[" + selectorStr + "]");
             if (reqstDataArr.length === 0) return 0;
 
             return Array.from(reqstDataArr).reduce((total, elmt) => {
-                const isExcluded = elmt.classList.contains("excludeSum") || elmt.id.includes("{");
+                const isExcluded: boolean = elmt.classList.contains("excludeSum") || elmt.id.includes("{");
                 const value = elmt.value.replace(/,/g, ""); // 쉼표 제거
-                const numberValue = Number(value); // 숫자로 변환
+                const numberValue: number = Number(value); // 숫자로 변환
 
                 return isExcluded ? total : total + (isNaN(numberValue) ? 0 : numberValue); // 제외되지 않은 경우에만 총합에 추가
             }, 0); // 초기값은 0
@@ -233,16 +237,17 @@ cF.util = (function() {
          * @param {string} selector - 변환할 input 요소의 선택자 문자열.
          * @returns {number|null} - 변환된 숫자 값 또는 유효하지 않은 경우 `null`.
          */
-        toNumber: function(selector) {
-            const inputElement = cF.util.verifySelector(selector);
-            if (inputElement.length === 0) return null;
-            const input = document.querySelector(selector);
-            // input 요소의 값이 없거나 undefined인 경우 null 반환
-            const inputValue = input?.value;
-            if (inputValue === undefined || inputValue === "") return null;
+        toNumber: function(selector): number|null {
+            const inputs: HTMLElement[] = cF.util.verifySelector(selector);
+            if (inputs.length === 0) return null;
+
+            // input 값이 없거나 빈 문자열이면 null 반환
+            const input: HTMLInputElement = inputs[0] as HTMLInputElement;
+            const inputValue: string = input.value.trim();
+            if (inputValue === "") return null;
 
             // 쉼표를 제거하고 숫자로 변환
-            const numValue = Number(inputValue.replace(/,/g, ""));
+            const numValue: number = Number(inputValue.replace(/,/g, ""));
             return !isNaN(numValue) ? numValue : null;
         },
 
@@ -254,9 +259,9 @@ cF.util = (function() {
          * TODO: URL 외부에서 주입하기?
          */
         fileDownload: function(atchFileNo, atchFileDtlNo) {
-            const inputs = "<input type='hidden' name='atchFileNo' value='" + atchFileNo + "'>" +
+            const inputs: string = "<input type='hidden' name='atchFileNo' value='" + atchFileNo + "'>" +
                            "<input type='hidden' name='atchFileDtlNo' value='" + atchFileDtlNo + "'>";
-            const form = document.createElement("form");
+            const form: HTMLFormElement = document.createElement("form");
             form.action = "/file/fileDownload.do";
             form.method = "POST"; // POST 방식으로 설정
             form.innerHTML = inputs;
@@ -273,8 +278,8 @@ cF.util = (function() {
          * @param {number} [options.maxAge] - 쿠키의 최대 수명 (초 단위).
          * @param {Date} [options.expires] - 쿠키 만료 날짜.
          */
-        setCookie: function(name: string, value: string, options: object) {
-            let cookieStr = encodeURIComponent(name) + '=' + encodeURIComponent(value) + ';path=/'; // 쿠키 이름과 값을 인코딩하여 설정
+        setCookie: function(name: string, value: string, options: any) {
+            let cookieStr: string = encodeURIComponent(name) + '=' + encodeURIComponent(value) + ';path=/'; // 쿠키 이름과 값을 인코딩하여 설정
             if (options) {
                 if (options.maxAge !== undefined) {
                     cookieStr = cookieStr + ";max-age=" + options.maxAge;
@@ -293,9 +298,9 @@ cF.util = (function() {
          */
         getCookie: function(name: string) {
             if (!document.cookie) return;
-            const array = document.cookie.split(encodeURIComponent(name) + '=');
+            const array: string[] = document.cookie.split(encodeURIComponent(name) + '=');
             if (array.length < 2) return;
-            const arraySub = array[1].split(';');
+            const arraySub: string[] = array[1].split(';');
             return decodeURIComponent(arraySub[0]); // 쿠키 값을 디코딩하여 반환
         },
 
@@ -312,9 +317,9 @@ cF.util = (function() {
          * 서버에서 응답 쿠키를 생성할 때까지 blockUI를 유지합니다.
          * @dependency blockUI (optional)
          */
-        blockUIFileDownload: (function() {
+        blockUIFileDownload: (function(): void {
             cF.util.blockUI();
-            const downloadTimer = setInterval(function() {
+            const downloadTimer = setInterval(function(): void {
                 const token = cF.util.getCookie("FILE_CREATE_SUCCESS");
                 if (token === "TRUE") {
                     cF.util.unblockUI();
@@ -328,9 +333,9 @@ cF.util = (function() {
          * 서버에서 응답 쿠키를 생성할 때까지 blockUI를 유지합니다.
          * @dependency blockUI (optional)
          */
-        blockUIRequest: function() {
+        blockUIRequest: function(): void {
             cF.util.blockUI();
-            const requestTimer = setInterval(function() {
+            const requestTimer = setInterval(function(): void {
                 const token = cF.util.getCookie("RESPONSE_SUCCESS");
                 if (token === "TRUE") {
                     cF.util.unblockUI();
@@ -344,7 +349,7 @@ cF.util = (function() {
          * 서버에서 응답 쿠키를 생성할 때까지 blockUI를 유지합니다.
          * @dependency blockUI (optional)
          */
-        blockUIReload: function() {
+        blockUIReload: function(): void {
             cF.util.blockUI();
             cF.util.closeModal();
             location.reload();
@@ -370,7 +375,7 @@ cF.util = (function() {
          * @param {Function} [prefunc] - 폼 제출 전에 실행할 함수 (선택적).
          * @dependency blockUI (optional)
          */
-        blockUISubmit: function(formSelector: string, actionUrl: string, prefunc: Function) {
+        blockUISubmit: function(formSelector: string, actionUrl: string, prefunc: Function): void {
             cF.util.blockUIRequest();
             cF.util.closeModal();
             cF.util.submit(formSelector, actionUrl, prefunc);
@@ -378,10 +383,12 @@ cF.util = (function() {
 
         /**
          * 폼을 초기화합니다.
-         * @param {string} formSelector - 초기화할 폼의 선택자.
+         * @param {string} formSelectorStr - 초기화할 폼의 선택자.
          */
-        resetForm: function(formSelector) {
-            const form = document.querySelector(formSelector);
+        resetForm: function(formSelectorStr: string): void {
+            const form: HTMLFormElement|null = document.querySelector(formSelectorStr);
+            if (!form) return;
+
             form?.reset();
         },
 
@@ -391,9 +398,9 @@ cF.util = (function() {
          * @param {string} actionUrl - 폼 제출 시 사용할 액션 URL.
          * @param {Function} [prefunc] - 폼 제출 전에 실행할 함수 (선택적).
          */
-        submit: function(formSelector: string, actionUrl: string, prefunc: Function) {
-            const form = document.querySelector(formSelector);
-            if (!form) return false;
+        submit: function(formSelector: string, actionUrl: string, prefunc: Function): void {
+            const form: HTMLFormElement|null = document.querySelector(formSelector);
+            if (!form) return;
 
             if (typeof prefunc === 'function') prefunc();
             if (actionUrl) form.action = actionUrl;
@@ -405,7 +412,7 @@ cF.util = (function() {
          * @param {string} str - 변환할 문자열.
          * @returns {string} - 첫 글자가 대문자로 변환된 문자열.
          */
-        upperFirst: function(str: string) {
+        upperFirst: function(str: string): string {
             if (cF.util.isEmpty(str)) return str;
 
             // 첫 글자 대문자로 변환 후 나머지 문자열 결합
@@ -415,16 +422,16 @@ cF.util = (function() {
         /**
          * 모든 table 헤더에 클릭 이벤트를 설정하여 해당 열을 정렬합니다.
          */
-        initSortTable: function() {
-            if (typeof Page === 'undefined') { var Page = {}; }
+        initSortTable: function(): void {
+            if (typeof Page === 'undefined') { var Page: Page = {}; }
             const tables = document.getElementsByTagName("table");
             // 각 테이블에 대해 헤더 클릭 이벤트 설정
-            Array.from(tables).forEach((table, i) => {
+            Array.from(tables).forEach((table: HTMLTableElement, i: number): void => {
                 const headers = table.getElementsByTagName("th");
 
                 // 각 헤더에 대해 클릭 이벤트 설정
-                Array.from(headers).forEach((header, j) => {
-                    header.onclick = () => {
+                Array.from(headers).forEach((header, j: number): void => {
+                    header.onclick = (): void => {
                         cF.util.sortTable(table, j, Page.tableSortMode);
                         Page.tableSortMode = (Page.tableSortMode === "REVERSE") ? "FORWARD" : "REVERSE";
                     };
@@ -536,17 +543,17 @@ cF.util = (function() {
          * @returns {boolean} - 체크박스가 정의되지 않은 경우 false를 반환.
          */
         chckboxLabel: function(attrId: string, ynCn: string, ynColor: string, yFunc: Function, nFunc: Function) {
-            const checkboxElmt = document.getElementById(attrId);
+            const checkboxElmt: HTMLInputElement = document.getElementById(attrId) as HTMLInputElement;
             if (!checkboxElmt) {
                 console.log("체크박스가 정의되지 않았습니다.");
                 return false;
             }
 
-            const separator = "//";
+            const separator: string = "//";
             const [yesStr, noStr] = ynCn.split(separator);
             const [yesColor, noColor] = ynColor.split(separator);
-            const labelElmt = document.getElementById(attrId + "Label");
-            checkboxElmt.addEventListener("click", function() {
+            const labelElmt: HTMLElement = document.getElementById(attrId + "Label") as HTMLElement;
+            checkboxElmt.addEventListener("click", function(): void {
                 if (checkboxElmt.checked) {
                     labelElmt.textContent = yesStr;
                     labelElmt.style.color = yesColor;
@@ -557,96 +564,6 @@ cF.util = (function() {
                     if (typeof nFunc === "function") nFunc();
                 }
             });
-        },
-
-        /**
-         * 숫자(정수)에 천 단위로 콤마(,)를 추가.
-         * @param value (숫자 또는 selectorStr)
-         * @param unit (나눔단위 ex.1,400만)
-         */
-        thousandSeparator: function(value, unit = 1) {
-            if (value === "") return "";
-
-            // 숫자값이 넘어오면 걍 콤마 붙인 결과값을(string) 넘겨버린다.
-            const numValue = value.replace(/,/g, "");
-            if (!isNaN(numValue)) {
-                const divided = parseInt(numValue, 10) / unit;
-                return Number(divided).toLocaleString();
-            }
-
-            // 나머지 경우에는 selector로 간주, 입력 필드에 이벤트 리스너 추가
-            const inputs = document.querySelectorAll(value);
-            if (inputs.length === 0) return;
-            inputs.forEach(elmt => {
-                elmt.value = cF.util.thousandSeparator(elmt.value, unit);
-                elmt.addEventListener("keyup", function() {
-                    let localeStr = cF.util.thousandSeparator(elmt.value, unit);
-                    // maxlength를 초과하는 경우 처리
-                    const maxlength = elmt.getAttribute("maxlength");
-                    if (maxlength !== null) localeStr = localeStr.substring(0, maxlength);
-                    elmt.value = localeStr;
-                });
-            });
-        },
-
-        /**
-         * 숫자에 콤마(,) 빼기
-         * @param: value (숫자 또는 selectorStr)
-         * @param: unit (나눔단위 ex.천단위)
-         */
-        removeComma: function(value, unit = 1) {
-            if (value === "") return "";
-            // 숫자값이 넘어오면 걍 콤마 빼서 넘겨버린다.
-            const numValue = value.replace(/,/g, "");
-            if (!isNaN(numValue)) return Number(numValue / unit);
-            // 나머지 경우에는 selector로 간주, 콤마 제거 처리 및 keyup시 콤마 제거 처리한다.
-            const inputs = cF.util.verifySelector(value);
-            if (inputs.length === 0) return;
-            inputs.forEach(elmt => {
-                elmt.value = cF.util.removeComma(elmt.value, unit);
-                elmt.addEventListener("keyup", function() {
-                    elmt.value = cF.util.removeComma(elmt.value, unit);
-                });
-            });
-        },
-
-        /**
-         * 숫자에 소숫점 처리
-         * @param: selectorStr (숫자 또는 selectorStr)
-         * @param: fixed (자릿수)
-         */
-        addDot: function(value, fixed = 0, unit = 0) {
-            if (value === "") return "";
-            // 숫자값이 넘어오면 걍 콤마 빼서 넘겨버린다.
-            let numValue = value.replace(/,/g, "");
-            if (!isNaN(numValue)) {
-                return Number(value).toLocaleString(undefined, {
-                    minimumFractionDigits: fixed,
-                    maximumFractionDigits: fixed
-                });
-            }
-            // 나머지 경우에는 selector로 간주, 콤마 제거 처리 및 keyup시 콤마 제거 처리한다.
-            const inputs = document.querySelectorAll(value);
-            if (inputs.length === 0) return;
-            inputs.forEach(elmt => {
-                elmt.value = cF.util.addDot(elmt.value, fixed, unit);
-                elmt.addEventListener("keyup", function() {
-                    elmt.value = cF.util.addDot(elmt.value, fixed, unit);
-                });
-            });
-        },
-
-        /**
-         * 자간 처리 (글자가 영역 전체에 고르게 퍼지도록 처리)
-         * @param {string} str - 자간을 적용할 문자열.
-         * @returns {string} - 각 글자를 `<span>` 태그로 감싼 HTML 문자열. 별도의 CSS 처리가 필요함.
-         */
-        letterSpacing: function(str: string) {
-            if (cF.util.isEmpty(str)) return;
-            // 각 글자를 span 태그로 감싸고 문자열로 결합
-            return Array.from(str)
-                        .map(spell => "<span>" + spell + "</span>")
-                        .join("");
         },
 
         /**
@@ -671,16 +588,16 @@ cF.util = (function() {
 
         /**
          * button 일시 잠김 (딜레이 적용)
-         * @param {HTMLElement|jQuery} elmt - 비활성화할 버튼 요소. jQuery 객체 또는 DOM 요소.
+         * @param {HTMLElement|JQuery} elmt - 비활성화할 버튼 요소. jQuery 객체 또는 DOM 요소.
          * @param {number} [sec=2] - 버튼을 비활성화할 시간(초 단위). 기본값은 2초.
          */
-        delayBtn: function(elmt, sec = 2) {
+        delayBtn: function(elmt, sec = 2): void {
             if (elmt instanceof jQuery) elmt = elmt[0];
             if (!elmt) return;
             if (elmt.classList?.contains("modal-btn-close-safe")) return;     // 안전닫기 버튼 제외
 
             elmt.disabled = true;
-            setTimeout(function() {
+            setTimeout(function(): void {
                 elmt.disabled = false;
             }, sec * 1000);
         },
@@ -688,14 +605,14 @@ cF.util = (function() {
         /**
          * 전체 (열려 있는) 모달 닫기
          */
-        closeModal: function() {
+        closeModal: function(): void {
             $(".modal.show").modal("hide");
         },
 
         /**
          * 페이지 상단으로 이동
          */
-        toPageTop: function() {
+        toPageTop: function(): void {
             window.scrollTo({
                 top: 0,
                 behavior: 'smooth'
@@ -707,19 +624,13 @@ cF.util = (function() {
          * @param {string} key - 업데이트할 파라미터의 키.
          * @param {string} value - 지정된 파라미터 키에 설정할 값.
          */
-        reloadWithParam: function(key: string, value: string) {
+        reloadWithParam: function(key: string, value: string): void {
             // 현재 URL을 가져옵니다.
-            const url = new URL(window.location.href);
+            const url: URL = new URL(window.location.href);
             // 기존 파라미터를 지우거나 업데이트합니다.
             url.searchParams.set(key, value);
             // 변경된 URL로 리다이렉트합니다.
             window.location.href = url.toString();
         },
-
-        toSnakeCase: function(str: string) {
-            return str
-                .replace(/([a-z])([A-Z])/g, '$1_$2') // camelCase에서 _를 추가
-                .toLowerCase(); // 모두 소문자로 변환
-        }
     }
 })();

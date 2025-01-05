@@ -3,13 +3,20 @@
  *
  * @author nichefish
  */
-const ClCd = (function() {
+const ClCd: Module = (function(): Module {
     return {
+        /**
+         * initializes module.
+         */
+        init: function(): void {
+            console.log("'ClCd' module initialized.");
+        },
+
         /**
          * form init
          * @param {Object} obj - 폼에 바인딩할 데이터
          */
-        initForm: function(obj = {}) {
+        initForm: function(obj = {}): void {
             /* show modal */
             cF.handlebars.template(obj, "cl_cd_reg", "show");
 
@@ -24,26 +31,29 @@ const ClCd = (function() {
         /**
          * Draggable 컴포넌트 init
          */
-        initDraggable: function() {
-            const keyExtractor = (item) => ({ "clCd": $(item).attr("id") });
-            const url = Url.CL_CD_SORT_ORDR_AJAX;
+        initDraggable: function({ refreshFunc }: { refreshFunc?: Function } = {}): void {
+            const keyExtractor: Function = (item: HTMLElement) => ({ "clCd": item.getAttribute("id") });
+            const url: string = Url.CL_CD_SORT_ORDR_AJAX;
             ClCd.swappable = cF.draggable.init("", keyExtractor, url);
         },
 
         /**
          * 목록 검색
          */
-        search: function() {
+        search: function(): void {
             event.stopPropagation();
 
-            $("#listForm #pageNo").val(1);
+            // pageNo를 1로 설정
+            const pageNoElmt: HTMLInputElement = document.querySelector("#listForm #pageNo") as HTMLInputElement;
+            if (pageNoElmt) pageNoElmt.value = '1';
+            // submit
             cF.util.blockUISubmit("#listForm", Url.CL_CD_LIST + "?actionTyCd=SEARCH");
         },
 
         /**
          * 등록 모달 호출
          */
-        regModal: function() {
+        regModal: function(): void {
             event.stopPropagation();
 
             /* initialize form. */
@@ -53,7 +63,7 @@ const ClCd = (function() {
         /**
          * form submit
          */
-        submit: function() {
+        submit: function(): void {
             event.stopPropagation();
 
             $("#clCdRegForm").submit();
@@ -62,21 +72,21 @@ const ClCd = (function() {
         /**
          * 등록/수정 (Ajax)
          */
-        regAjax: function() {
+        regAjax: function(): void {
             event.stopPropagation();
 
             Swal.fire({
                 text: Message.get("view.cnfm.reg"),
                 showCancelButton: true,
-            }).then(function(result: SwalResult) {
+            }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
                 $("#clCdRegForm #regYn").val("Y");
-                const url = Url.CL_CD_REG_AJAX;
-                const ajaxData = $("#clCdRegForm").serializeArray();
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
+                const url: string = Url.CL_CD_REG_AJAX;
+                const ajaxData: Record<string, any> = $("#clCdRegForm").serializeArray();
+                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
-                        .then(function() {
+                        .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();
                         });
                 }, "block");
@@ -87,7 +97,7 @@ const ClCd = (function() {
          * 상세 화면으로 이동
          * @param {string} clCd - 조회할 분류 코드.
          */
-        dtl: function(clCd: string) {
+        dtl: function(clCd: string): void {
             event.stopPropagation();
 
             cF.util.blockUIRequest();
@@ -99,11 +109,11 @@ const ClCd = (function() {
          * 상세 모달 호출
          * @param {string} clCd - 조회할 분류 코드.
          */
-        dtlModal: function(clCd: string) {
+        dtlModal: function(clCd: string): void {
             event.stopPropagation();
 
-            const url = Url.CL_CD_DTL_AJAX;
-            const ajaxData = { "clCd": clCd };
+            const url: string = Url.CL_CD_DTL_AJAX;
+            const ajaxData: Record<string, any> = { "clCd": clCd };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse) {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -118,15 +128,15 @@ const ClCd = (function() {
          * 수정 모달 호출
          * @param {string} clCd - 조회할 분류 코드.
          */
-        mdfModal: function(clCd: string) {
+        mdfModal: function(clCd: string): void {
             event.stopPropagation();
 
-            const url = Url.CL_CD_DTL_AJAX;
-            const ajaxData = { "clCd": clCd };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse) {
+            const url: string = Url.CL_CD_DTL_AJAX;
+            const ajaxData: Record<string, any> = { "clCd": clCd };
+            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
-                    return false;
+                    return;
                 }
                 const { rsltObj } = res;
                 rsltObj.isMdf = true;
@@ -140,20 +150,20 @@ const ClCd = (function() {
          * 사용으로 변경 (Ajax)
          * @param {string} clCd - 변경할 분류 코드.
          */
-        useAjax: function(clCd: string) {
+        useAjax: function(clCd: string): void {
             event.stopPropagation();
 
             Swal.fire({
                 text: Message.get("view.cnfm.use"),
                 showCancelButton: true,
-            }).then(function(result: SwalResult) {
+            }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url = Url.CL_CD_USE_AJAX;
-                const ajaxData = { "clCd": clCd };
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
+                const url: string = Url.CL_CD_USE_AJAX;
+                const ajaxData: Record<string, any> = { "clCd": clCd };
+                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
-                        .then(function() {
+                        .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();
                         });
                 }, "block");
@@ -164,20 +174,20 @@ const ClCd = (function() {
          * 미사용으로 변경 (Ajax)
          * @param {string} clCd - 변경할 분류 코드.
          */
-        unuseAjax: function(clCd: string) {
+        unuseAjax: function(clCd: string): void {
             event.stopPropagation();
 
             Swal.fire({
                 text: Message.get("view.cnfm.unuse"),
                 showCancelButton: true,
-            }).then(function(result: SwalResult) {
+            }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url = Url.CL_CD_UNUSE_AJAX;
-                const ajaxData = { "clCd": clCd };
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
+                const url: string = Url.CL_CD_UNUSE_AJAX;
+                const ajaxData: Record<string, any> = { "clCd": clCd };
+                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
-                        .then(function() {
+                        .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();
                         });
                 }, "block");
@@ -188,20 +198,20 @@ const ClCd = (function() {
          * 삭제 (Ajax)
          * @param {string} clCd - 삭제할 분류 코드.
          */
-        delAjax: function(clCd: string) {
+        delAjax: function(clCd: string): void {
             event.stopPropagation();
 
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
                 showCancelButton: true,
-            }).then(function(result: SwalResult) {
+            }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url = Url.CL_CD_DEL_AJAX;
-                const ajaxData = { "clCd" : clCd };
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
+                const url: string = Url.CL_CD_DEL_AJAX;
+                const ajaxData: Record<string, any> = { "clCd": clCd };
+                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
-                        .then(function() {
+                        .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();
                         });
                 }, "block");
@@ -211,9 +221,12 @@ const ClCd = (function() {
         /**
          * 목록 화면으로 이동
          */
-        list: function() {
-            const listUrl = Url.CL_CD_LIST + "?isBackToList=Y";
+        list: function(): void {
+            const listUrl: string = `${Url.CL_CD_LIST}?isBackToList=Y`;
             cF.util.blockUIReplace(listUrl);
         },
     }
 })();
+document.addEventListener("DOMContentLoaded", function(): void {
+    ClCd.init();
+});

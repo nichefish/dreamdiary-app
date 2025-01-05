@@ -8,58 +8,6 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<script>
-    const Page = (function() {
-        return {
-            /**
-             * Page 객체 초기화
-             */
-            init: function() {
-                //
-            },
-
-            /**
-             * 휴일정보 : url, data 받아서 ajax 호출
-             */
-            hldyAjax: function() {
-                const url = "${Url.API_HLDY_GET!}";
-                const ajaxData = { "yy" : $("#hldyYy option:selected").val() };
-                Page.ajax(url, ajaxData);
-            },
-
-            /**
-             * NOTION : url, data 받아서 ajax 호출
-             */
-            notionAjax: function() {
-                const url = "${Url.API_NOTION_GET!}";
-                const ajaxData = { "dataType": $("#dataType").val(), "dataId": $("#dataId").val() };
-                cF.ajax.get(url, ajaxData, function(res) {
-                    if (res.rslt) Swal.fire(JSON.stringify(res));
-                    Swal.fire({ text: res.message });
-                });
-            },
-
-            /** url, data 받아서 ajax 호출 */
-            ajax: function(url, data) {
-                cF.ajax.post(url, data, function(res) {
-                    if (res.rslt) Swal.fire(JSON.stringify(res));
-                    Swal.fire({ text: res.message });
-                });
-            },
-
-            /** 사이트 관리 페이지로 이동 */
-            adminPage: function() {
-                cF.util.blockUISubmit("#procForm", "${Url.SITE_ADMIN!}");
-            },
-
-            /** 코드 관리 페이지로 이동 */
-            cdList: function() {
-                cF.util.blockUISubmit("#procForm", "${Url.CL_CD_LIST!}");
-            },
-        }
-    })();
-</script>
-
 <!--begin::Card-->
 <div class="card post">
     <#--begin::Tab-->
@@ -166,5 +114,8 @@
 <form name="procForm" id="procForm" method="get">
     <!-- -->
 </form>
+
+<#--include::script modules-->
+<script type="text/javascript" src="/js/view/domain/admin/admin_test_page.js?${releaseDate!}"></script>
 
 </@layout.layout>

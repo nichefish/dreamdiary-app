@@ -4,13 +4,44 @@
  * @author nichefish
  */
 
-// TypeScript 선언
-declare let cF: {
-    util: {
+/* ----- */
+
+/**
+ * cF : 공통 함수 모듈
+ */
+declare namespace cF {
+    interface Module {
         [key: string]: any;
-    };
+    }
+}
+declare var cF: {
     [key: string]: any;
 };
+/**
+ * Comment: 댓글 함수 모듈
+ */
+declare namespace Comment {
+    interface Module {
+        [key: string]: any;
+    }
+}
+declare var Comment: any;
+/**
+ * Module : 기능 단위 함수 묶음.
+ */
+declare interface Module {
+    [key: string]: any;
+}
+/**
+ * Page : 페이지 전횽 함수 묶음.
+ */
+declare interface Page extends Module {
+    [key: string]: any;
+}
+declare var Page: {
+    [key: string]: any;
+}
+
 /**
  * Model : Spring 컨텍스트에서 Model에 추가된 요소들.
  */
@@ -40,6 +71,7 @@ declare const Url: {
 declare const Message: {
     get: Function
 };
+
 /**
  * AjaxResponse : Spring Boot에서 Ajax 요청에 반환되는 응답 객체
  */
@@ -48,7 +80,9 @@ declare interface AjaxResponse {
     message: string;
     status: number;
 
-    rsltObj?: object;
+    rsltObj?: {
+        [key: string]: any;
+    };
     rsltList?: object[];
     rsltMap?: Record<string, any>;
     rsltVal?: number;

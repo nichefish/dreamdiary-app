@@ -108,7 +108,7 @@
         </#if>
 
         <#--include:: Tag Module-->
-        <#include "/view/global/_common/_clsf/tag/_tag_scripts.ftlh">
+        <script type="text/javascript" src="/js/view/global/_clsf/tag/tag_module.js?${releaseDate!}"></script>
 
         <!--scripts::layout-->
         <script type="text/javascript" src="/js/layout/layout.js?${releaseDate!}"></script>

@@ -21,13 +21,13 @@
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="직원 연락처 팝업을 호출합니다.">
             <i class="bi bi-telephone"></i>직원 연락처
         </button>
-        <#include "/view/domain/notice/_notice_list_crdt_user_cttpc_modal.ftlh">
+        <#include "/view/domain/notice/modal/_notice_list_crdt_user_cttpc_modal.ftlh">
         <button type="button" class="btn btn-sm btn-light btn-outline btn-active-secondary mx-1"
                 onclick="$('#extn_phone_modal').modal('show');"
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="내선전화 관련 안내 팝업을&#10;호출합니다.">
             <i class="bi bi-telephone"></i>내선전화 관련
         </button>
-        <#include "/view/domain/notice/_notice_list_extn_phone_modal.ftlh">
+        <#include "/view/domain/notice/modal/_notice_list_extn_phone_modal.ftlh">
     </div>
     <#--begin::Card body-->
     <div class="card-body">
@@ -182,9 +182,9 @@
 </form>
 
 <#--include::modals-->
-<#include "/view/domain/notice/_notice_dtl_modal.ftlh">
-<#include "/view/global/_common/_clsf/comment/_comment_list_modal.ftlh">
-<#include "/view/global/_common/file/_atch_file_list_modal.ftlh">
+<#include "/view/domain/notice/modal/_notice_dtl_modal.ftlh">
+<#include "/view/global/_common/_clsf/comment/_modal/_comment_list_modal.ftlh">
+<#include "/view/global/_common/file/_modal/_atch_file_list_modal.ftlh">
 <#--include::script modules-->
 <script type="text/javascript" src="/js/view/domain/notice/notice_module.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/domain/notice/notice_list.js?${releaseDate!}"></script>

@@ -6,26 +6,6 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<#--include::script modules-->
-<#include "/view/domain/user/_user_scripts.ftlh">
-<#include "/view/domain/user/reqst/_user_reqst_scripts.ftlh">
-
-<script>
-    const Page = (function() {
-        return {
-            /**
-             * Page 객체 초기화
-             */
-            init: function() {
-                /* initialize form. */
-                UserReqst.initForm();
-            },
-        }
-    })();
-    document.addEventListener("DOMContentLoaded", function() {
-        Page.init();
-    });
-</script>
 <style>
     @media (max-width: 768px) {
         #idDupChckBtn{
@@ -311,7 +291,12 @@
     </div>
 </div>
 
-<#include "/view/domain/user/profl/_user_profl_reg_area.ftlh">       <#--사용자 프로필 정보 영역-->
-<#include "/view/domain/user/emplym/_user_emplym_reg_area.ftlh">       <#--사용자 인사정보 영역-->
+<#include "/view/domain/user/profl/_user_profl_reg_template.hbs">       <#--사용자 프로필 정보 영역-->
+<#include "/view/domain/user/emplym/_user_emplym_reg_template.hbs">       <#--사용자 인사정보 영역-->
+<#--include::script modules-->
+<script type="text/javascript" src="/js/view/domain/user/user_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/user/profl/user_profl_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/user/reqst/user_reqst_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/user/reqst/user_reqst_form.js?${releaseDate!}"></script>
 
 </@layout.layout>

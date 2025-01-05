@@ -3,9 +3,16 @@
  *
  * @author nichefish
  */
-const Notice = (function() {
+const Notice: Module = (function(): Module {
     return {
         isMdf: $("#noticeRegForm").data("mode") === "modify",
+
+        /**
+         * initializes module.
+         */
+        init: function(): void {
+            console.log("'Notice' module initialized.");
+        },
 
         /**
          * form init
@@ -19,9 +26,9 @@ const Notice = (function() {
             /* tagify */
             cF.tagify.initWithCtgr("#noticeRegForm #tagListStr");
             // 잔디발송여부 클릭시 글씨 변경
-            cF.util.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function() {
+            cF.util.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function(): void {
                 $("#trgetTopicSpan").show();
-            }, function() {
+            }, function(): void {
                 $("#trgetTopicSpan").hide();
             });
         },
@@ -29,7 +36,7 @@ const Notice = (function() {
         /**
          * Custom SubmitHandler
          */
-        submitHandler: function() {
+        submitHandler: function(): boolean {
             if (Notice.submitMode === "preview") {
                 const popupNm = "preview";
                 const options = 'width=1280,height=1440,top=0,left=270';
@@ -54,17 +61,17 @@ const Notice = (function() {
         /**
          * 목록 검색
          */
-        search: function() {
+        search: function(): void {
             $("#listForm #pageNo").val(1);
-            const url = Url.NOTICE_LIST;
+            const url: string = Url.NOTICE_LIST;
             cF.util.blockUISubmit("#listForm", url + "?actionTyCd=SEARCH");
         },
 
         /**
          * 내가 작성한 글 목록 보기
          */
-        myPaprList: function() {
-            const url = Url.NOTICE_LIST;
+        myPaprList: function(): void {
+            const url: string = Url.NOTICE_LIST;
             const param = `?searchType=nickNm&searchKeyword=${AuthInfo.nickNm!}&regstrId=${AuthInfo.userId!}&pageSize=50&actionTyCd=MY_PAPR`;
             cF.util.blockUIReplace(url + param);
         },
@@ -72,11 +79,11 @@ const Notice = (function() {
         /**
          * 엑셀 다운로드
          */
-        xlsxDownload: function() {
+        xlsxDownload: function(): void {
             Swal.fire({
                 text: Message.get("view.cnfm.download"),
                 showCancelButton: true,
-            }).then(function(result: SwalResult) {
+            }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
                 cF.util.blockUIFileDownload();
@@ -87,14 +94,14 @@ const Notice = (function() {
         /**
          * 등록 화면 이동
          */
-        regForm: function() {
+        regForm: function(): void {
             cF.util.blockUISubmit("#procForm", Url.NOTICE_REG_FORM);
         },
 
         /**
          * form submit
          */
-        submit: function() {
+        submit: function(): void {
             if (tinymce !== undefined) tinymce.activeEditor.save();
             Notice.submitMode = "submit";
             $("#noticeRegForm").submit();
@@ -103,7 +110,7 @@ const Notice = (function() {
         /**
          * 미리보기 팝업 호출
          */
-        preview: function() {
+        preview: function(): void {
             if (tinymce !== undefined) tinymce.activeEditor.save();
             Notice.submitMode = "preview";
             $("#noticeRegForm").submit();
@@ -112,12 +119,12 @@ const Notice = (function() {
         /**
          * 등록/수정 처리(Ajax)
          */
-        regAjax: function() {
-            const url = Notice.isMdf ? Url.NOTICE_MDF_AJAX : Url.NOTICE_REG_AJAX;
-            const ajaxData = new FormData(document.getElementById("noticeRegForm"));
-            cF.ajax.multipart(url, ajaxData, function(res: AjaxResponse) {
+        regAjax: function(): void {
+            const url: string = Notice.isMdf ? Url.NOTICE_MDF_AJAX : Url.NOTICE_REG_AJAX;
+            const ajaxData: FormData = new FormData(document.getElementById("noticeRegForm") as HTMLFormElement);
+            cF.ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({text: res.message})
-                    .then(function() {
+                    .then(function(): void {
                         if (res.rslt) Notice.list();
                     });
             }, "block");
@@ -127,8 +134,8 @@ const Notice = (function() {
          * 상세 화면으로 이동
          * @param {string|number} postNo - 조회할 글 번호.
          */
-        dtl: function(postNo: string|number) {
-            if (isNaN(postNo)) return;
+        dtl: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
 
             $("#procForm #postNo").val(postNo);
             cF.util.blockUISubmit("#procForm", Url.NOTICE_DTL);
@@ -138,16 +145,16 @@ const Notice = (function() {
          * 상세 모달 호출
          * @param {string|number} postNo - 조회할 글 번호.
          */
-        dtlModal: function(postNo: string|number) {
+        dtlModal: function(postNo: string|number): void {
             event.stopPropagation();
-            if (isNaN(postNo)) return;
+            if (isNaN(Number(postNo))) return;
 
-            const url = Url.NOTICE_DTL_AJAX;
-            const ajaxData = {"postNo": postNo};
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse) {
+            const url: string = Url.NOTICE_DTL_AJAX;
+            const ajaxData: Record<string, any> = {"postNo": postNo};
+            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({text: res.message});
-                    return false;
+                    return;
                 }
                 cF.handlebars.template(res.rsltObj, "notice_dtl", "show");
             });
@@ -156,7 +163,7 @@ const Notice = (function() {
         /**
          * 수정 화면 이동
          */
-        mdfForm: function() {
+        mdfForm: function(): void {
             cF.util.blockUISubmit("#procForm", Url.NOTICE_MDF_FORM);
         },
 
@@ -164,20 +171,20 @@ const Notice = (function() {
          * 삭제 (Ajax)
          * @param {string|number} postNo - 글 번호.
          */
-        delAjax: function(postNo: string|number) {
-            if (isNaN(postNo)) return;
+        delAjax: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
 
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
                 showCancelButton: true,
-            }).then(function(result: SwalResult) {
+            }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url = Url.NOTICE_DEL_AJAX;
-                const ajaxData = $("#procForm").serializeArray();
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
+                const url: string = Url.NOTICE_DEL_AJAX;
+                const ajaxData: Record<string, any> = $("#procForm").serializeArray();
+                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({text: res.message})
-                        .then(function() {
+                        .then(function(): void {
                             if (res.rslt) Notice.list();
                         });
                 }, "block");
@@ -187,9 +194,12 @@ const Notice = (function() {
         /**
          * 목록 화면으로 이동
          */
-        list: function() {
-            const listUrl = Url.NOTICE_LIST + Notice.isMdf ? "?isBackToList=Y" : "";
+        list: function(): void {
+            const listUrl: string = Url.NOTICE_LIST + Notice.isMdf ? "?isBackToList=Y" : "";
             cF.util.blockUIReplace(listUrl);
         }
     }
 })();
+document.addEventListener("DOMContentLoaded", function(): void {
+    Notice.init();
+});

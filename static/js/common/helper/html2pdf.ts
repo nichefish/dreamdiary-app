@@ -1,13 +1,12 @@
 /**
  * html2pdf.js
- * @namespace: cF.pdf
- * @author: nichefish
- * @depdendency: html2pdf
  * 공통 - html2pdf(라이브러리) 관련 함수 모듈
- * (노출식 모듈 패턴 적용 :: cF.pdf.fnPdf("#id") 이런식으로 사용)
+ *
+ * @namespace: cF.html2pdf (노출식 모듈 패턴)
+ * @author: nichefish
  */
-if (typeof cF === 'undefined') { let cF = {}; }
-cF.pdf = (function() {
+if (typeof cF === 'undefined') { var cF = {} as any; }
+cF.html2pdf = (function(): Module {
 
     /**
      * PDF 생성 기본 옵션
@@ -25,12 +24,15 @@ cF.pdf = (function() {
     };
 
     return {
+        init: function(): void {
+            console.log("'cF.html2pdf' module initialized.");
+        },
 
         /**
          * 특정 요소를 PDF로 변환하고 저장합니다.
          * @param {string} elmtId - PDF로 변환할 요소의 ID.
          */
-        fnPdf: function(elmtId: string) {
+        fnPdf: function(elmtId: string): void {
             const elmt = document.getElementById(elmtId);
             html2pdf().from(elmt)
                       .set(defaultOptions)

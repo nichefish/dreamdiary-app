@@ -170,8 +170,7 @@
 </form>
 
 <#--include::modals-->
-<#--<#include "/view/domain/notice/_notice_dtl_modal.ftlh">-->
-<#include "/view/global/_common/_clsf/comment/_comment_list_modal.ftlh">
-<#include "/view/global/_common/file/_atch_file_list_modal.ftlh">
+<#include "/view/global/_common/_clsf/comment/_modal/_comment_list_modal.ftlh">
+<#include "/view/global/_common/file/_modal/_atch_file_list_modal.ftlh">
 
 </@layout.layout>

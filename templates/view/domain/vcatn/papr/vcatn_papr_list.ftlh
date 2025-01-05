@@ -11,26 +11,6 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<#--include::script modules-->
-<#include "/view/domain/vcatn/papr/_vcatn_papr_scripts.ftlh">
-
-<script>
-    const Page = (function() {
-        return {
-            /**
-             * Page 객체 초기화
-             */
-            init: function() {
-                /* 모든 table 헤더에 클릭 이벤트를 설정한다. */
-                cF.util.initSortTable();
-            },
-        }
-    })();
-    document.addEventListener("DOMContentLoaded", function() {
-        Page.init();
-    });
-</script>
-
 <#--#include:: component:: 태그 클릭 필터링-->
 <#include "/view/global/_common/_clsf/tag/_tag_list_header.ftlh">
 
@@ -199,7 +179,10 @@
 
 <#--include::modals-->
 <#include "/view/domain/vcatn/papr/_vcatn_papr_dtl_modal.ftlh">
-<#include "/view/global/_common/_clsf/comment/_comment_list_modal.ftlh">
-<#include "/view/global/_common/file/_atch_file_list_modal.ftlh">
+<#include "/view/global/_common/_clsf/comment/_modal/_comment_list_modal.ftlh">
+<#include "/view/global/_common/file/_modal/_atch_file_list_modal.ftlh">
+<#--include::script modules-->
+<script type="text/javascript" src="/js/view/domain/vactn/papr/vactn_papr_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/vactn/papr/vactn_papr_list.js?${releaseDate!}"></script>
 
 </@layout.layout>

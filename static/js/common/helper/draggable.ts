@@ -1,12 +1,12 @@
 /**
  * draggable.ts
- * @namespace: cF.draggable
- * @author: nichefish
  * 공통 - draggable(라이브러리) 관련 함수 모듈
- * (노출식 모듈 패턴 적용 :: util.datepicker.singleDatePicker() 요런식으로 사용)
+ *
+ * @namespace: cF.draggable (노출식 모듈 패턴)
+ * @author: nichefish
  */
-if (typeof cF === 'undefined') { let cF = {}; }
-cF.draggable = (function() {
+if (typeof cF === 'undefined') { var cF = {} as any; }
+cF.draggable = (function(): Module {
     return {
 
         /**
@@ -17,7 +17,9 @@ cF.draggable = (function() {
          * @param {Function} [refreshFunc] - 정렬이 성공적으로 완료된 후 호출되는 콜백 함수. (선택적)
          * @returns {Draggable.Sortable} - 드래그 가능한 정렬된 요소들의 인스턴스.
          */
-        init: function(selectorSuffix = "", keyExtractor: Function, url: string, refreshFunc: Function) {
+        init: function(selectorSuffix = "", keyExtractor: Function, url: string, refreshFunc: Function): Draggable {
+            console.log("'cF.draggable' module initialized.");
+
             const containers = document.querySelectorAll(".draggable-zone" + selectorSuffix);
             if (containers.length === 0) return;
 
@@ -29,7 +31,7 @@ cF.draggable = (function() {
                 event.data.source.classList.add('dragging');
 
                 // 드래그 전 초기 정렬 순서 저장
-                initOrdr = Array.from(container.querySelectorAll('.draggable' + selectorSuffix))
+                initOrdr = Array.from(container.querySelectorAll('.draggable' + selectorSuffix) as HTMLElement[])
                     .map(draggable => draggable.getAttribute("id"));
             };
             const onDragStop = (event) => {
@@ -41,7 +43,7 @@ cF.draggable = (function() {
                     newTr.classList.add('draggable-modified');
 
                     // 드래그 후 정렬 순서 가져오기
-                    const newOrdr = Array.from(container.querySelectorAll('.draggable' + selectorSuffix))
+                    const newOrdr = Array.from(container.querySelectorAll('.draggable' + selectorSuffix) as HTMLElement[])
                         .map(draggable => draggable.getAttribute("id"));
                     const isOrdrChanged = !initOrdr.every((id, index) => id === newOrdr[index]);
 
@@ -67,14 +69,14 @@ cF.draggable = (function() {
          * @param {string} url - 서버에 데이터 전송을 위한 URL.
          * @param {Function} [refreshFunc] - 정렬이 성공적으로 완료된 후 호출되는 콜백 함수. (선택적)
          */
-        sortOrdr: function(keyExtractor: Function, url: string, refreshFunc: Function) {
+        sortOrdr: function(keyExtractor: Function, url: string, refreshFunc: Function): void {
             const orderData = [];
-            document.querySelectorAll('.sortable-item').forEach((item, index) => {
+            document.querySelectorAll('.sortable-item').forEach((item: HTMLElement, index: number): void => {
                 const key = keyExtractor(item, index);
                 orderData.push({ ...key, "state": { "sortOrdr": index } });
             });
-            const ajaxData = { "sortOrdr": orderData };
-            cF.ajax.jsonRequest(url, 'POST', JSON.stringify(ajaxData), function(res: AjaxResponse) {
+            const ajaxData: Record<string, any> = { "sortOrdr": orderData };
+            cF.ajax.jsonRequest(url, 'POST', ajaxData, function(res: AjaxResponse): void {
                 if (res.rslt) {
                     (refreshFunc || cF.util.blockUIReload)();
                 } else if (cF.util.isNotEmpty(res.message)) {

@@ -1,20 +1,21 @@
 /**
  * jstree.ts
- * @namespace: cF.jstree
- * @author: nichefish
- * @dependency: jstree.js
  * 공통 - jstree(라이브러리) 관련 함수 모듈
- * (노출식 모듈 패턴 적용 :: cF.jstree.init("#userId") 이런식으로 사용)
+ *
+ * @namespace: cF.jstree (노출식 모듈 패턴)
+ * @author: nichefish
  */
-if (typeof cF === 'undefined') { let cF = {}; }
-cF.jstree = (function() {
+if (typeof cF === 'undefined') { var cF = {} as any; }
+cF.jstree = (function(): Module {
     return {
         /**
          * 공통 :: jstree 초기화
          * possible plugins :: "dnd" "state" "changed" "contextmenu" "conditionalselect"
          * @param {string} treeSelector - jstree를 초기화할 요소의 선택자.
          */
-        init: function(treeSelector: string) {
+        init: function(treeSelector: string): void {
+            console.log("'cF.jstree' module initialized.");
+
             const $treeElmt = $(treeSelector);
             if ($treeElmt.length === 0) return;
 
@@ -33,7 +34,7 @@ cF.jstree = (function() {
          * 공통 :: jstree 트리 리셋
          * @param {string} treeSelector - jstree를 리셋할 요소의 선택자.
          */
-        reset: function(treeSelector: string) {
+        reset: function(treeSelector: string): void {
             const $treeElmt = $(treeSelector);
             if ($treeElmt.length === 0) return;
 
