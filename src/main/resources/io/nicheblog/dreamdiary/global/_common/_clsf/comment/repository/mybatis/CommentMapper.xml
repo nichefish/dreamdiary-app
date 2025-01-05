@@ -5,6 +5,7 @@
 
     <!-- 삭제 데이터 조회 -->
     <select id="getDeletedByPostNo" resultType="io.nicheblog.dreamdiary.global._common._clsf.comment.model.CommentDto">
+        /* SectnMapper.getDeletedByPostNo */
         SELECT
             comment.post_no AS postNo,
             comment.ref_post_no AS ref_post_no,

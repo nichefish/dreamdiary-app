@@ -5,6 +5,7 @@
  * @namespace: cF.tinymce (노출식 모듈 패턴)
  * @author: nichefish
  */
+// @ts-ignore
 if (typeof cF === 'undefined') { var cF = {} as any; }
 cF.tinymce = (function(): Module {
 

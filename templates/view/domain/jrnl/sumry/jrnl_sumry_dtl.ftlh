@@ -16,8 +16,8 @@
              */
             init: function() {
                 /* 글 단락 init */
-                Sectn.init();
-                Sectn.initDraggable();
+                dF.Sectn.init();
+                dF.Sectn.initDraggable();
             },
         }
     })();

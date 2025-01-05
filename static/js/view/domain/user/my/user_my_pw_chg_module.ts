@@ -3,15 +3,22 @@
  *
  * @author nichefish
  */
-const UserMyPwChg: Module = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.UserMyPwChg = (function(): Module {
     return {
         /**
-         * form init
-         * @param {Object} obj - 폼에 바인딩할 데이터
+         * initializes module.
          */
-        initForm: function(obj = {}): void {
+        init: function(): void {
+            console.log("'UserMyPwChg' module initialized.");
+        },
+
+        /**
+         * form init
+         */
+        initForm: function(): void {
             /* jquery validation */
-            cF.validate.validateForm("#myPwChgForm", UserMyPwChg.submitHandler, {
+            cF.validate.validateForm("#myPwChgForm", dF.UserMyPwChg.submitHandler, {
                 rules: {
                     newPw: { regex: cF.regex.pw },
                     newPwCf: { equalTo: "#newPw" }
@@ -33,7 +40,7 @@ const UserMyPwChg: Module = (function(): Module {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                UserMyPwChg.myPwChgAjax();
+                dF.UserMyPwChg.myPwChgAjax();
             });
         },
 
@@ -41,7 +48,7 @@ const UserMyPwChg: Module = (function(): Module {
          * 내 비밀번호 수정 팝업 호출
          */
         myPwChgModal: function(): void {
-            const data = { "errorMsg": Model.errorMsg };
+            const data: Record<string, any> = { "errorMsg": Model.errorMsg };
             cF.handlebars.template(data, "user_my_pw_chg", "show");
         },
 

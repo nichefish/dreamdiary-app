@@ -1,10 +1,11 @@
 /**
  * datepicker.ts
- * 공통 - datepicker(라이브러리) 관련 함수 모듈
+ * 공통 - datepicker 관련 함수 모듈
  *
  * @namespace: cF.datepicker (노출식 모듈 패턴)
  * @author: nichefish
  */
+// @ts-ignore
 if (typeof cF === 'undefined') { var cF = {} as any; }
 cF.datepicker = (function(): Module {
 

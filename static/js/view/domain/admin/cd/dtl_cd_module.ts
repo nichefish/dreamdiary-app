@@ -3,7 +3,8 @@
  *
  * @author nichefish
  */
-const DtlCd: Module = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.DtlCd = (function(): Module {
     return {
         /**
          * initializes module.
@@ -14,14 +15,14 @@ const DtlCd: Module = (function(): Module {
 
         /**
          * form init
-         * @param {Object} obj - 폼에 바인딩할 데이터
+         * @param {Record<string, any>} obj - 폼에 바인딩할 데이터
          */
-        initForm: function(obj = {}): void {
+        initForm: function(obj: Record<string, any> = {}): void {
             /* show modal */
             cF.handlebars.template(obj, "dtl_cd_reg", "show");
 
             /* jquery validation */
-            cF.validate.validateForm("#dtlCdRegForm", DtlCd.regAjax);
+            cF.validate.validateForm("#dtlCdRegForm", dF.DtlCd.regAjax);
             // checkbox init
             cF.util.chckboxLabel("useYn", "사용//미사용", "blue//gray");
             cF.validate.replaceBlankIfMatches("#dtlCdRegForm #dtlCd", cF.regex.nonCd);
@@ -31,10 +32,10 @@ const DtlCd: Module = (function(): Module {
         /**
          * Draggable 컴포넌트 init
          */
-        initDraggable: function({ refreshFunc }: { refreshFunc?: Function } = {}): void {
+        initDraggable: function(): void {
             const keyExtractor: Function = (item: HTMLElement) => ({ "clCd": $("#clCd").val(), "dtlCd": $(item).attr("id") });
             const url: string = Url.DTL_CD_SORT_ORDR_AJAX;
-            DtlCd.swappable = cF.draggable.init("", keyExtractor, url);
+            dF.DtlCd.swappable = cF.draggable.init("", keyExtractor, url);
         },
 
         /**
@@ -43,9 +44,9 @@ const DtlCd: Module = (function(): Module {
         regModal: function(): void {
             event.stopPropagation();
 
-            const obj = { "clCd": $("#clCd").val() };
+            const obj: Record<string, any> = { "clCd": $("#clCd").val() };
             /* initialize form. */
-            DtlCd.initForm(obj);
+            dF.DtlCd.initForm(obj);
         },
 
         /**
@@ -84,15 +85,15 @@ const DtlCd: Module = (function(): Module {
         mdfModal: function(dtlCd: string) {
             const url: string = Url.DTL_CD_DTL_AJAX;
             const ajaxData: Record<string, any> = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse) {
+            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
-                    return false;
+                    return;
                 }
                 const { rsltObj } = res;
                 rsltObj.isMdf = true;
                 /* initialize form. */
-                DtlCd.initForm(rsltObj);
+                dF.DtlCd.initForm(rsltObj);
             });
         },
 
@@ -100,18 +101,18 @@ const DtlCd: Module = (function(): Module {
          * 사용으로 변경 (Ajax)
          * @param {string} dtlCd - 변경할 상세 코드.
          */
-        useAjax: function(dtlCd: string) {
+        useAjax: function(dtlCd: string): void {
             event.stopPropagation();
 
             Swal.fire({
                 text: Message.get("view.cnfm.use"),
                 showCancelButton: true,
-            }).then(function(result: SwalResult) {
+            }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
                 const url: string = Url.DTL_CD_USE_AJAX;
                 const ajaxData: Record<string, any> = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
+                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();
@@ -124,18 +125,18 @@ const DtlCd: Module = (function(): Module {
          * 미사용으로 변경 (Ajax)
          * @param {string} dtlCd - 변경할 상세 코드.
          */
-        unuseAjax: function(dtlCd: string) {
+        unuseAjax: function(dtlCd: string): void {
             event.stopPropagation();
 
             Swal.fire({
                 text: Message.get("view.cnfm.unuse"),
                 showCancelButton: true,
-            }).then(function(result: SwalResult) {
+            }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
                 const url: string = Url.DTL_CD_UNUSE_AJAX;
                 const ajaxData: Record<string, any> = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
+                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();
@@ -148,7 +149,7 @@ const DtlCd: Module = (function(): Module {
          * 삭제 (Ajax)
          * @param {string} dtlCd - 삭제할 상세 코드.
          */
-        delAjax: function(dtlCd: string) {
+        delAjax: function(dtlCd: string): void {
             event.stopPropagation();
 
             Swal.fire({
@@ -159,7 +160,7 @@ const DtlCd: Module = (function(): Module {
 
                 const url: string = Url.DTL_CD_DEL_AJAX;
                 const ajaxData: Record<string, any> = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse) {
+                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();

@@ -3,7 +3,8 @@
  *
  * @author nichefish
  */
-const BoardPost: Module = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.BoardPost = (function(): Module {
     return {
         isMdf: $("#boardPostRegForm").data("mode") === "modify",
 
@@ -16,11 +17,10 @@ const BoardPost: Module = (function(): Module {
 
         /**
          * form init
-         * @param {Object} obj - 폼에 바인딩할 데이터
          */
-        initForm: function(obj = {}) {
+        initForm: function(): void {
             /* jquery validation */
-            cF.validate.validateForm("#postRegForm", BoardPost.submitHandler);
+            cF.validate.validateForm("#postRegForm", dF.BoardPost.submitHandler);
             /* tinymce init */
             cF.tinymce.init("#tinymce_cn");
             /* tagify */
@@ -48,12 +48,12 @@ const BoardPost: Module = (function(): Module {
             } else if (Page.submitMode === "submit") {
                 $("#postRegForm").removeAttr("action");
                 Swal.fire({
-                    text: BoardPost.isMdf ? Message.get("view.cnfm.mdf") : Message.get("view.cnfm.reg"),
+                    text: dF.BoardPost.isMdf ? Message.get("view.cnfm.mdf") : Message.get("view.cnfm.reg"),
                     showCancelButton: true,
                 }).then(function(result: SwalResult): void {
                     if (!result.value) return;
 
-                    BoardPost.regAjax();
+                    dF.BoardPost.regAjax();
                 });
             }
         },
@@ -108,12 +108,12 @@ const BoardPost: Module = (function(): Module {
          * 등록/수정 처리(Ajax)
          */
         regAjax: function(): void {
-            const url: string = BoardPost.isMdf ? Url.BOARD_POST_MDF_AJAX : Url.BOARD_POST_REG_AJAX;
+            const url: string = dF.BoardPost.isMdf ? Url.BOARD_POST_MDF_AJAX : Url.BOARD_POST_REG_AJAX;
             const ajaxData: FormData = new FormData(document.getElementById("postRegForm") as HTMLFormElement);
             cF.ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
                     .then(function(): void {
-                        if (res.rslt) BoardPost.list();
+                        if (res.rslt) dF.BoardPost.list();
                     });
             }, "block");
         },
@@ -173,7 +173,7 @@ const BoardPost: Module = (function(): Module {
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
-                            if (res.rslt) BoardPost.list();
+                            if (res.rslt) dF.BoardPost.list();
                         });
                 }, "block");
             });
@@ -184,11 +184,11 @@ const BoardPost: Module = (function(): Module {
          */
         list: function(): void {
             const boardCd = $("#boardCd").val();
-            const listUrl: string = `${Url.BOARD_POST_LIST}?boardCd${boardCd}` + (BoardPost.isMdf ? "&isBackToList=Y" : "");
+            const listUrl: string = `${Url.BOARD_POST_LIST}?boardCd${boardCd}` + (dF.BoardPost.isMdf ? "&isBackToList=Y" : "");
             cF.util.blockUIReplace(listUrl);
         }
     }
 })();
 document.addEventListener("DOMContentLoaded", function(): void {
-    BoardPost.init();
+    dF.BoardPost.init();
 });

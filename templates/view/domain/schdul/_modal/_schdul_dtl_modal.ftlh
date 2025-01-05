@@ -45,9 +45,9 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-end gap-2">
             <#--모달:: 버튼: 수정 모달 호출-->
-            <@component.modal_btn_modify "Schdul.mdfModal(Schdul.key);" />
+            <@component.modal_btn_modify "dF.Schdul.mdfModal(dF.Schdul.key);" />
             <#--모달:: 버튼: 삭제-->
-            <@component.modal_btn_delete "Schdul.delAjax(Schdul.key);" />
+            <@component.modal_btn_delete "dF.Schdul.delAjax(dF.Schdul.key);" />
             <#--모달:: 버튼: 모달 닫기-->
             <@component.modal_btn_close />
         </div>

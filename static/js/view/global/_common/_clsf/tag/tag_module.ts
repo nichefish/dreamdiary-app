@@ -3,7 +3,8 @@
  *
  * @author nichefish
  */
-const Tag: Module = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.Tag = (function(): Module {
     return {
         /**
          * Tag 모듈 초기화
@@ -126,7 +127,7 @@ const Tag: Module = (function(): Module {
          * 글 목록 태그 필터링 리셋
          */
         resetFilter: function(): void {
-            Tag.filter("");
+            dF.Tag.filter("");
         },
 
         /**
@@ -148,5 +149,5 @@ const Tag: Module = (function(): Module {
     } as Module
 })();
 document.addEventListener("DOMContentLoaded", function(): void {
-    Tag.init();
+    dF.Tag.init();
 });

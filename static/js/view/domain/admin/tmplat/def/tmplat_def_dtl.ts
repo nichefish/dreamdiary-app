@@ -10,14 +10,14 @@ const Page: Page = (function(): Page {
          * Page 객체 초기화
          */
         init: function(): void {
-            //
+            console.log("Page scripts initialized.");
         },
 
         /**
          * 수정 화면으로 이동
          */
         mdfForm: function(): void {
-            cF.util.blockUISubmit("#procForm", Url.NOTICE_MDF_FORM);
+            cF.util.blockUISubmit("#procForm", Url.TMPLAT_MDF_FORM);
         },
 
         /**
@@ -30,7 +30,7 @@ const Page: Page = (function(): Page {
         }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = Url.NOTICE_DEL_AJAX;
+                const url: string = Url.TMPLAT_DEL_AJAX;
                 const ajaxData: Record<string, any> = $("#procForm").serializeArray();
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })

@@ -53,7 +53,7 @@
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
-                    const groupedList = Tag.groupTagsByCategory(res.rsltList);
+                    const groupedList = dF.Tag.groupTagsByCategory(res.rsltList);
                     for (const ctgr in groupedList) {
                         if (!groupedList.hasOwnProperty(ctgr)) continue;
                         const eachList = groupedList[ctgr];

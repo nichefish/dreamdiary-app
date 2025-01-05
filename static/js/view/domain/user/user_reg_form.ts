@@ -11,9 +11,9 @@ const Page: Page = (function(): Page {
          */
         init: function(): void {
             /* initialize form. */
-            User.initForm();
+            dF.User.initForm();
 
-            if (!User.isMdf) {
+            if (!dF.User.isMdf) {
                 // 등록화면:: 사용자 ID 변경입력시 중복체크 통과여부 초기화
                 $("#userId").on("keyup", function(): void {
                     $("#userId_validate_span").empty();
@@ -28,9 +28,11 @@ const Page: Page = (function(): Page {
 
             // 프로필 정보 / 인사정보 창 활성화
             const hasProfl = $("#userProflBtn").data("profl");
-            if (hasProfl) UserProfl.enableUserProfl();
+            if (hasProfl) dF.UserProfl.enableUserProfl();
             const hasEmplym = $("#userEmplymBtn").data("emplym");
-            if (hasEmplym) UserEmplym.enableUserEmplym();
+            if (hasEmplym) dF.UserEmplym.enableUserEmplym();
+
+            console.log("Page scripts initialized.");
         },
     }
 })();

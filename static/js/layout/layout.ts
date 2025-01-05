@@ -4,10 +4,8 @@
  *
  * @author nichefish
  */
-document.addEventListener("DOMContentLoaded", function(): void {
-    Layout.init();
-});
-const Layout: Module = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.Layout = (function(): Module {
     return {
         /**
          * Layout 객체 초기화
@@ -18,16 +16,16 @@ const Layout: Module = (function(): Module {
             // 개별 input 유효성검사
             cF.validate.onlyNum(".number");
 
-            Layout.setBtnDelay();
-            Layout.modalBtnCloseSafe();
+            dF.Layout.setBtnDelay();
+            dF.Layout.modalBtnCloseSafe();
         },
 
         /**
          * (안전클릭 제외한) 모든 버튼에 딜레이 기능 추가
          */
         setBtnDelay: function(): void {
-            const buttons = document.querySelectorAll("button:not(.modal-btn-close-safe), .btn:not(.modal-btn-close-safe), .badge:not(.modal-btn-close-safe)");
-            buttons.forEach(function(button) {
+            const buttons: NodeListOf<HTMLElement> = document.querySelectorAll("button:not(.modal-btn-close-safe), .btn:not(.modal-btn-close-safe), .badge:not(.modal-btn-close-safe)");
+            buttons.forEach(function(button: HTMLElement): void {
                 button.addEventListener("click", function(): void {
                     cF.util.delayBtn(this);
                 });
@@ -39,9 +37,9 @@ const Layout: Module = (function(): Module {
          */
         modalBtnCloseSafe: function(): void {
             // 모든 닫기 버튼을 선택
-            const closeButtons = document.querySelectorAll('.modal-btn-close-safe');
+            const closeButtons: NodeListOf<HTMLElement> = document.querySelectorAll('.modal-btn-close-safe');
             // 각 버튼마다 클릭 이벤트 추가
-            closeButtons.forEach(function(button): void {
+            closeButtons.forEach(function(button: HTMLElement): void {
                 let isAllowed: boolean = false;
                 button.removeAttribute('data-bs-dismiss');
                 button.addEventListener('click', function(event: Event): void {
@@ -87,3 +85,6 @@ const Layout: Module = (function(): Module {
         },
     }
 })();
+document.addEventListener("DOMContentLoaded", function(): void {
+    dF.Layout.init();
+});

@@ -3,7 +3,8 @@
  *
  * @author nichefish
  */
-const UserEmplym: Module = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.UserEmplym = (function(): Module {
     return {
         /**
          * initializes module.
@@ -20,7 +21,7 @@ const UserEmplym: Module = (function(): Module {
             const $btn = $("#userEmplymBtn");
             $btn.removeClass("btn-primary").addClass("btn-danger");
             $btn.text("직원 인사정보 삭제-");
-            $btn.attr("onclick", "UserEmplym.disableUserEmplym();");
+            $btn.attr("onclick", "dF.UserEmplym.disableUserEmplym();");
             $btn.attr("title", "직원 인사정보를&#10;삭제합니다.");
 
             // 전화번호 형식 유효성 검사
@@ -55,10 +56,10 @@ const UserEmplym: Module = (function(): Module {
             $btn.removeClass("btn-danger").addClass("btn-primary");
             $btn.text("직원 인사정보 추가+");
             $btn.attr("title", "직원 인사정보를 &#10;추가합니다.");
-            $btn.attr("onclick", "UserEmplym.enableUserEmplym();");
+            $btn.attr("onclick", "dF.UserEmplym.enableUserEmplym();");
         },
     }
 })();
 document.addEventListener("DOMContentLoaded", function(): void {
-    UserEmplym.init();
+    dF.UserEmplym.init();
 });

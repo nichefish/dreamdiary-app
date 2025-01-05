@@ -12,6 +12,8 @@ const Page: Page = (function(): Page {
         init: function(): void {
             /* 모든 table 헤더에 클릭 이벤트를 설정한다. */
             cF.util.initSortTable();
+
+            console.log("Page scripts initialized.");
         },
     }
 })();

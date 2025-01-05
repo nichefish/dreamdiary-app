@@ -43,7 +43,7 @@
                     </div>
                     <div class="col-xl-2 col-4">
                         <button type="button" class="btn btn-sm btn-secondary required blink" id="idDupChckBtn"
-                                onclick="User.idDupChckAjax();"
+                                onclick="dF.User.idDupChckAjax();"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="입력한 아이디에 대한&#10;중복 여부를 확인합니다.">
                             <span class="hidden-table">아이디 </span>중복 확인
                         </button>
@@ -241,7 +241,7 @@
                 <div class="d-flex gap-2">
                     <div id="user_profl_reg_btn_div">
                         <button type="button" id="userProflBtn" class="btn btn-sm btn-primary blink"
-                                onclick="UserProfl.enableUserProfl();"
+                                onclick="dF.UserProfl.enableUserProfl();"
                                 data-profl="${user.profl??}"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="사용자 프로필 정보를&#10;추가합니다.">
                             프로필 정보 추가+
@@ -249,7 +249,7 @@
                     </div>
                     <div>
                         <button type="button" id="userEmplymBtn" class="btn btn-sm btn-primary blink"
-                                onclick="UserEmplym.enableUserEmplym();"
+                                onclick="dF.UserEmplym.enableUserEmplym();"
                                 data-emplym="${user.emplym??}"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="입사인원에 대하여&#10;직원 인사정보를 추가합니다.">
                             직원 인사정보 추가+
@@ -264,7 +264,7 @@
                 <#--페이지:: 버튼: 저장하기-->
                 <@component.post_btn_submit "cF.util.submit('#userRegForm');" />
                 <#--페이지:: 버튼: 목록으로 가기-->
-                <@component.post_btn_toList "User.list();" />
+                <@component.post_btn_toList "dF.User.list();" />
             </div>
         </div>
     </div>

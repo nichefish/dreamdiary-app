@@ -49,7 +49,7 @@
                         <#if diary.tag.list??>
                             <div class="ms-2 mt-3">
                                 <#list diary.tag.list as tag>
-                                    <span class="text-muted cursor-pointer pe-1" onclick="Tag.dtlModal(${tag.refTagNo!});"
+                                    <span class="text-muted cursor-pointer pe-1" onclick="dF.Tag.dtlModal(${tag.refTagNo!});"
                                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                                           title="해당 태그가 등록된 게시물 목록 팝업을 호출합니다.">
                                     #<span class="border-bottom text-primary fw-lighter opacity-hover">${tag.tagNm!}</span>
@@ -60,7 +60,7 @@
                     </div>
                     <div class="col-1 py-3 jrnl-diary-cn d-flex justify-content-between w-50px gap-1">
                         <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
-                                onclick="Comment.modal.regModal(${diary.postNo!}, 'JRNL_DIARY');"
+                                onclick="dF.Comment.modal.regModal(${diary.postNo!}, 'JRNL_DIARY');"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="댓글 <@spring.message "bs.tooltip.modal.reg"/>">
                             <i class="bi bi-chat-left-dots p-0"></i>
                         </button>

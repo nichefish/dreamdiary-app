@@ -7,29 +7,34 @@
 /* ----- */
 
 /**
- * cF : 공통 함수 모듈
+ * cF : 공통 유틸리티 함수 모듈
  */
 declare namespace cF {
     interface Module {
-        [key: string]: any;
+        [key: string]: Module;
     }
 }
-declare var cF: {
-    [key: string]: any;
+declare const cF: {
+    [key: string]: Module;
 };
+
 /**
- * Comment: 댓글 함수 모듈
+ * dF : 공통 도메인 함수 모듈
  */
-declare namespace Comment {
+declare namespace dF {
     interface Module {
-        [key: string]: any;
+        [key: string]: Module;
     }
 }
-declare var Comment: any;
+declare const cF: {
+    init: Function;
+    [key: string]: Module;
+};
 /**
  * Module : 기능 단위 함수 묶음.
  */
 declare interface Module {
+    init: Function<any>;
     [key: string]: any;
 }
 /**

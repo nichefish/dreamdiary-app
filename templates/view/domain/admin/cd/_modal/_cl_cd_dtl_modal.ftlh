@@ -19,7 +19,7 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-end">
             <#--모달:: 버튼: 수정 모달 호출-->
-            <@component.modal_btn_modify "ClCd.mdfModal(ClCd.key);" />
+            <@component.modal_btn_modify "dF.ClCd.mdfModal(dF.ClCd.key);" />
             <#--모달:: 버튼: 모달 닫기-->
             <@component.modal_btn_close />
         </div>

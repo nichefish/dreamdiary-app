@@ -11,7 +11,7 @@
             <span class="text-gray-500 fs-9 mx-2">※ 첨부파일은 개별 50MB, 최대 100MB까지 업로드 가능합니다.</span>
         </label>
         <input type="file" id="formFile" class="form-control"
-               onclick="AtchFile.addFileItem();">
+               onclick="dF.AtchFile.addFileItem();">
     </div>
     <div class="col-xl-10 mb-8 text-sm-start" id="atchFileSpan">
         <#if post.atchFileInfo??>
@@ -24,7 +24,7 @@
                             ${file.orgnFileNm!} (${file.fileSize!}byte)
                         </a>
                         <div class="badge badge-light btn-primary badge-outlined mx-2 cursor-pointer"
-                             onclick="AtchFile.delExistingFile(${file.atchFileDtlNo!});"
+                             onclick="dF.AtchFile.delExistingFile(${file.atchFileDtlNo!});"
                              data-bs-toggle="tooltip" data-bs-placement="top" title="<@spring.message "bs.tooltip.file.del"/>">
                             삭제
                         </div>
@@ -50,7 +50,7 @@
         <!--fileNm :: to display-->
         <i class="fas fa-file-download fs-15 me-3"></i> <span id="fileNm__INDEX__" ></span>
         <button type="button" class="badge badge-light btn-primary badge-outlined mx-2"
-                onclick="AtchFile.delNewFileSpan('__INDEX__');"
+                onclick="dF.AtchFile.delNewFileSpan('__INDEX__');"
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "bs.tooltip.file.del"/>">
             삭제
         </button>

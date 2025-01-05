@@ -4,30 +4,31 @@
  * @author nichefish
  */
 // @ts-ignore
-if (typeof Comment === 'undefined') { var Comment = {} as any; }
-Comment.modal = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+if (typeof dF.Comment === 'undefined') { dF.Comment = {} as any; }
+dF.Comment.modal = (function(): any {
     return {
         /**
-         * Comment.modal 객체 초기화
+         * Comments.modal 객체 초기화
          * @param {Object} options - 초기화 옵션 객체.
          * @param {Function} [options.refreshFunc] - 섹션 새로 고침에 사용할 함수 (선택적).
          */
         init: function({ refreshFunc }: { refreshFunc?: Function } = {}): void {
             console.log("'Comment.modal' module initialized.");
 
-            if (refreshFunc !== undefined) Comment.modal.refreshFunc = refreshFunc;
+            if (refreshFunc !== undefined) dF.Comment.modal.refreshFunc = refreshFunc;
         },
 
         /**
          * form init
-         * @param {Object} obj - 폼에 바인딩할 데이터
+         * @param {Record<string, any>} obj - 폼에 바인딩할 데이터
          */
-        initForm: function(obj = {}): void {
+        initForm: function(obj: Record<string, any> = {}): void {
             /* show modal */
             cF.handlebars.template(obj, "comment_reg", "show");
 
             /* jquery validation */
-            cF.validate.validateForm("#commentRegForm", Comment.modal.regAjax);
+            cF.validate.validateForm("#commentRegForm", dF.Comment.modal.regAjax);
         },
 
         /**
@@ -38,9 +39,9 @@ Comment.modal = (function(): Module {
         regModal: function(refPostNo: number|string, refContentType: string): void {
             if (isNaN(Number(refPostNo)) || !refContentType) return;
 
-            const obj = { "refPostNo": refPostNo, "refContentType": refContentType };
+            const obj: Record<string, any> = { "refPostNo": refPostNo, "refContentType": refContentType };
             /* initialize form. */
-            Comment.modal.initForm(obj);
+            dF.Comment.modal.initForm(obj);
         },
 
         /**
@@ -68,8 +69,8 @@ Comment.modal = (function(): Module {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            if (Comment.modal.refreshFunc !== undefined) {
-                                Comment.modal.refreshFunc();
+                            if (dF.Comment.modal.refreshFunc !== undefined) {
+                                dF.Comment.modal.refreshFunc();
                             } else {
                                 cF.util.blockUIReload();
                             }
@@ -92,9 +93,9 @@ Comment.modal = (function(): Module {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
-                const { rsltObj } = res;
+                const rsltObj: Record<string, any> = res.rsltObj;
                 /* initialize form. */
-                Comment.modal.initForm(rsltObj);
+                dF.Comment.modal.initForm(rsltObj);
             });
         },
 
@@ -118,8 +119,8 @@ Comment.modal = (function(): Module {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            if (Comment.modal.refreshFunc !== undefined) {
-                                Comment.modal.refreshFunc();
+                            if (dF.Comment.modal.refreshFunc !== undefined) {
+                                dF.Comment.modal.refreshFunc();
                             } else {
                                 cF.util.blockUIReload();
                             }
@@ -130,5 +131,5 @@ Comment.modal = (function(): Module {
     }
 })();
 document.addEventListener("DOMContentLoaded", function(): void {
-    Comment.modal.init();
+    dF.Comment.modal.init();
 });

@@ -11,7 +11,9 @@ const Page: Page = (function(): Page {
          */
         init: function(): void {
             /* initialize form. */
-            UserMyPwChg.initForm();
+            dF.UserMyPwChg.initForm();
+
+            console.log("Page scripts initialized.");
         },
     }
 })();

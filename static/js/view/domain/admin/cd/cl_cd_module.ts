@@ -3,7 +3,8 @@
  *
  * @author nichefish
  */
-const ClCd: Module = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.ClCd = (function(): Module {
     return {
         /**
          * initializes module.
@@ -14,14 +15,14 @@ const ClCd: Module = (function(): Module {
 
         /**
          * form init
-         * @param {Object} obj - 폼에 바인딩할 데이터
+         * @param {Record<string, any>} obj - 폼에 바인딩할 데이터
          */
-        initForm: function(obj = {}): void {
+        initForm: function(obj: Record<string, any> = {}): void {
             /* show modal */
             cF.handlebars.template(obj, "cl_cd_reg", "show");
 
             /* jquery validation */
-            cF.validate.validateForm("#clCdRegForm", ClCd.regAjax);
+            cF.validate.validateForm("#clCdRegForm", dF.ClCd.regAjax);
             // checkbox init
             cF.util.chckboxLabel("useYn", "사용//미사용", "blue//gray");
             cF.validate.replaceBlankIfMatches("#clCdRegForm #clCd", cF.regex.nonCd);
@@ -31,10 +32,10 @@ const ClCd: Module = (function(): Module {
         /**
          * Draggable 컴포넌트 init
          */
-        initDraggable: function({ refreshFunc }: { refreshFunc?: Function } = {}): void {
+        initDraggable: function(): void {
             const keyExtractor: Function = (item: HTMLElement) => ({ "clCd": item.getAttribute("id") });
             const url: string = Url.CL_CD_SORT_ORDR_AJAX;
-            ClCd.swappable = cF.draggable.init("", keyExtractor, url);
+            dF.ClCd.swappable = cF.draggable.init("", keyExtractor, url);
         },
 
         /**
@@ -57,7 +58,7 @@ const ClCd: Module = (function(): Module {
             event.stopPropagation();
 
             /* initialize form. */
-            ClCd.initForm({});
+            dF.ClCd.initForm({});
         },
 
         /**
@@ -120,7 +121,7 @@ const ClCd: Module = (function(): Module {
                     return false;
                 }
                 cF.handlebars.template(res.rsltObj, "cl_cd_dtl", "show");
-                ClCd.key = clCd;
+                dF.ClCd.key = clCd;
             });
         },
 
@@ -141,7 +142,7 @@ const ClCd: Module = (function(): Module {
                 const { rsltObj } = res;
                 rsltObj.isMdf = true;
                 /* initialize form. */
-                ClCd.initForm(rsltObj);
+                dF.ClCd.initForm(rsltObj);
                 $('#cl_cd_dtl_modal').modal('hide');
             });
         },
@@ -228,5 +229,5 @@ const ClCd: Module = (function(): Module {
     }
 })();
 document.addEventListener("DOMContentLoaded", function(): void {
-    ClCd.init();
+    dF.ClCd.init();
 });

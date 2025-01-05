@@ -11,11 +11,6 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-
-<#--include::script modules-->
-<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
-<script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
-
 <style>
     input:placeholder-shown {
         font-style: italic;
@@ -31,7 +26,7 @@
         <div class="fs-5 fw-bold me-5">
             태그 컨텐츠 :
         </div>
-        <div id="jrnl_tag_ctgr_div">
+        <div id="jrnl_tag_ctgr_div" data-ref-content-type="${refContentType!}">
             <#list contentTypeList![] as contentType>
                 <#assign isChecked = refContentType! == contentType.key! />
                 <div class="btn btn-sm btn-outlined <#if isChecked>btn-light-primary<#else>btn-light-secondary</#if> text-dark align-middler"
@@ -78,7 +73,7 @@
 </div>
 
 <form name="procForm" id="procForm" method="get">
-    <input type="hidden" id="clCd" name="clCd" />
+    <input type="hidden" id="refContentType" name="refContentType" value="${refContentType}" />
 </form>
 
 <#--include::modals-->
@@ -87,6 +82,8 @@
 <#include "/view/domain/admin/tag/_modal/_tag_admin_dtl_modal.ftlh">
 <#include "/view/domain/admin/tag/_modal/_tag_prop_reg_modal.ftlh">
 <#--include::script modules-->
+<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
+<script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/domain/admin/tag/tag_admin_module.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/domain/admin/tag/tag_admin_aside_module.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/domain/admin/tag/tag_admin_property_module.js?${releaseDate!}"></script>

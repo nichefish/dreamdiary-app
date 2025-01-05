@@ -1,10 +1,11 @@
 /**
  * ajax.ts
- * @namespace: cF.ajax
- * @author: nichefish
  * 공통 - ajax 관련 함수 모듈
- * (노출식 모듈 패턴 적용 :: cF.util.enterKey("#userId") 이런식으로 사용)
+ *
+ * @namespace: cF.ajax (노출식 모듈 패턴)
+ * @author: nichefish
  */
+// @ts-ignore
 if (typeof cF === 'undefined') { var cF = {} as any; }
 // 인증만료/접근불가로 ajax 실패시 로그인 페이지로 이동 또는 머무르기 (선택)
 // 기존 fetch를 가로채서 override

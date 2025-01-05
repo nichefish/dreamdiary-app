@@ -26,11 +26,11 @@
     </div>
     <div>
         <#--헤더:: 버튼: 목록 검색-->
-        <@component.header_btn_search "Menu.search();" />
+        <@component.header_btn_search "dF.Menu.search();" />
     </div>
     <div>
         <#--헤더:: 버튼: 등록 화면 이동하기-->
-        <@component.header_btn_reg_modal "Menu.regModal('${Constant.MENU_TY_MAIN!}');" />
+        <@component.header_btn_reg_modal "dF.Menu.regModal('${Constant.MENU_TY_MAIN!}');" />
     </div>
 </form>
 

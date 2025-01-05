@@ -3,17 +3,24 @@
  *
  * @author nichefish
  */
-const Schdul = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.Schdul = (function(): Module {
     return {
         prtcpntCnt: 0,
 
         /**
-         * form init
-         * @param {Object} obj - 폼에 바인딩할 데이터
+         * initializes module.
          */
-        initForm: function(obj = {}): void {
+        init: function(): void {
+            console.log("'Schdul' module initialized.");
+        },
+
+        /**
+         * form init
+         */
+        initForm: function(): void {
             /* jquery validation */
-            cF.validate.validateForm("#schdulRegForm", Schdul.submitHandler);
+            cF.validate.validateForm("#schdulRegForm", dF.Schdul.submitHandler);
             // 엔터키 처리
             cF.util.enterKey("#searchKeyword", Page.search);
         },
@@ -22,13 +29,13 @@ const Schdul = (function(): Module {
          * Custom SubmitHandler
          */
         submitHandler: function(): void {
-            const isReg = ($("#schdulRegForm #postNo").val() === "");
+            const isReg: boolean = ($("#schdulRegForm #postNo").val() === "");
             Swal.fire({
                 text: isReg ? Message.get("view.cnfm.reg") : Message.get("view.cnfm.mdf"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
-                Schdul.regAjax();
+                dF.Schdul.regAjax();
             });
         },
 
@@ -42,13 +49,13 @@ const Schdul = (function(): Module {
             cF.datepicker.singleDatePicker("#endDt", "yyyy-MM-DD");
 
             // 잔디발송여부 클릭시 글씨 변경
-            cF.util.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function() {
+            cF.util.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function(): void {
                 $("#trgetTopicSpan").show();
-            }, function() {
+            }, function(): void {
                 $("#trgetTopicSpan").hide();
             });
             $("#jandiYn").click();
-            Schdul.addPrtcpnt();
+            dF.Schdul.addPrtcpnt();
         },
 
         /**
@@ -63,8 +70,8 @@ const Schdul = (function(): Module {
         /**
          * 참여자 추가
          */
-        addPrtcpnt: function() {
-            cF.handlebars.append({ "idx": Schdul.prtcpntCnt++ }, "schdul_reg_prtcpnt");
+        addPrtcpnt: function(): void {
+            cF.handlebars.append({ "idx": dF.Schdul.prtcpntCnt++ }, "schdul_reg_prtcpnt");
         },
 
         /**
@@ -124,9 +131,9 @@ const Schdul = (function(): Module {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
-                const obj = res.rsltObj;
+                const obj: Record<string, any> = res.rsltObj;
                 cF.handlebars.template(obj, "schdul_dtl", "show");
-                Schdul.key = obj.postNo;
+                dF.Schdul.key = obj.postNo;
             });
         },
 
@@ -147,9 +154,9 @@ const Schdul = (function(): Module {
 
                 $("#schdul_dtl_modal").modal("hide");
                 cF.handlebars.template(res.rsltObj, "schdul_reg", "show");
-                const rsltObj: any = res.rsltObj;
+                const rsltObj: Record<string, any> = res.rsltObj;
                 const { prtcpntList: prtcpnt } = rsltObj;
-                Schdul.prtcpntCnt = prtcpnt !== undefined ? prtcpnt.length : 0;
+                dF.Schdul.prtcpntCnt = prtcpnt !== undefined ? prtcpnt.length : 0;
 
                 cF.datepicker.singleDatePicker("#bgnDt", "yyyy-MM-DD", rsltObj.bgnDt);
                 cF.datepicker.singleDatePicker("#endDt", "yyyy-MM-DD", rsltObj.endDt);
@@ -177,9 +184,9 @@ const Schdul = (function(): Module {
 
                 const url: string = Url.SCHDUL_DEL_AJAX;
                 const ajaxData: Record<string, any> = { "postNo" : key };
-                cF.ajax.post(url, ajaxData, function(res): void {
+                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
-                        .then(function() {
+                        .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();
                         });
                 }, "block");

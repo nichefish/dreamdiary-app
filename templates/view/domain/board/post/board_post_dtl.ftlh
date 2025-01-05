@@ -50,11 +50,11 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-end">
             <#--페이지:: 버튼: 수정하기-->
-            <@component.post_btn_modify "BoardPost.mdfForm();" post isMngr />
+            <@component.post_btn_modify "dF.BoardPost.mdfForm();" post isMngr />
             <#--페이지:: 버튼: 삭제하기-->
-            <@component.post_btn_delete "BoardPost.delAjax(${post.postNo});" post isMngr />
+            <@component.post_btn_delete "dF.BoardPost.delAjax(${post.postNo});" post isMngr />
             <#--페이지:: 버튼: 목록으로 가기-->
-            <@component.post_btn_toList "BoardPost.list();" />
+            <@component.post_btn_toList "dF.BoardPost.list();" />
         </div>
     </div>
 

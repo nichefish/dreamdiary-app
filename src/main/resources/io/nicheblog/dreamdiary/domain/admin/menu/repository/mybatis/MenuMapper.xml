@@ -5,6 +5,7 @@
 
     <!-- 최상위(MAIN) 메뉴의 관리자 메뉴 여부 (Y/N) 조회 -->
     <select id="getMngrYn" resultType="String">
+        /* MenuMapper.getMngrYn */
         WITH RECURSIVE menu_hierarchy AS (
             -- 가장 처음은 입력받은 메뉴
             SELECT menu_no, upper_menu_no, menu_ty_cd, mngr_yn

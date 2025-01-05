@@ -9,8 +9,8 @@ const Page: Page = (function(): Page {
         /**
          * Page 객체 초기화
          */
-        init: function() {
-            //
+        init: function(): void {
+            console.log("Page scripts initialized.");
         },
 
         /**
@@ -28,28 +28,35 @@ const Page: Page = (function(): Page {
         notionAjax: function(): void {
             const url: string = Url.API_NOTION_GET;
             const ajaxData: Record<string, any> = { "dataType": $("#dataType").val(), "dataId": $("#dataId").val() };
-            cF.ajax.get(url, ajaxData, function(res) {
+            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (res.rslt) Swal.fire(JSON.stringify(res));
                 Swal.fire({ text: res.message });
             });
         },
 
-        /** url, data 받아서 ajax 호출 */
-        ajax: function(url, data) {
-            cF.ajax.post(url, data, function(res) {
+        /**
+         * url, data 받아서 ajax 호출
+         * @param {string} url
+         * @param {Record<string, any>} data
+         */
+        ajax: function(url: string, data: Record<string, any>): void {
+            cF.ajax.post(url, data, function(res: AjaxResponse): void {
                 if (res.rslt) Swal.fire(JSON.stringify(res));
                 Swal.fire({ text: res.message });
             });
         },
 
         /** 사이트 관리 페이지로 이동 */
-        adminPage: function() {
+        adminPage: function(): void {
             cF.util.blockUISubmit("#procForm", Url.SITE_ADMIN);
         },
 
         /** 코드 관리 페이지로 이동 */
-        cdList: function() {
+        cdList: function(): void {
             cF.util.blockUISubmit("#procForm", Url.CL_CD_LIST);
         },
     }
 })();
+document.addEventListener("DOMContentLoaded", function(): void {
+    Page.init();
+});

@@ -118,7 +118,7 @@
                         <#--begin::sectn button-->
                         <div class="col d-flex justify-content-end">
                             <#--헤더:: 버튼: 등록 모달 호출하기-->
-                            <@component.header_btn_reg_modal "Sectn.regModal(${post.postNo!}, '${post.contentType!}');" />
+                            <@component.header_btn_reg_modal "dF.Sectn.regModal(${post.postNo!}, '${post.contentType!}');" />
                         </div>
                     </#if>
                 </label>
@@ -155,12 +155,12 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-between">
             <#--페이지:: 버튼: 미리보기-->
-            <@component.post_btn_preview_pop "Notice.preview();" />
+            <@component.post_btn_preview_pop "dF.Notice.preview();" />
             <div>
                 <#--페이지:: 버튼: 저장하기-->
-                <@component.post_btn_submit "Notice.submit();" />
+                <@component.post_btn_submit "dF.Notice.submit();" />
                 <#--페이지:: 버튼: 목록으로 가기-->
-                <@component.post_btn_toList "Notice.list();" />
+                <@component.post_btn_toList "dF.Notice.list();" />
             </div>
         </div>
     </div>

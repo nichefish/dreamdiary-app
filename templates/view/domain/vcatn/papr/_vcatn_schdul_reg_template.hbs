@@ -24,7 +24,7 @@
                 <div class="col-md-2" id="vcatnCdSelectDiv{{idx}}">
                     <label class="required fs-6 fw-bold mb-2">휴가분류</label>
                     <select class="form-select form-select-solid w-180px required"
-                            onchange="VcatnSchdul.propEndDt({{idx}})" name="schdulList[{{idx}}].vcatnCd" id="vcatnCd{{idx}}" data-hide-search="true">
+                            onchange="dF.VcatnSchdul.propEndDt({{idx}})" name="schdulList[{{idx}}].vcatnCd" id="vcatnCd{{idx}}" data-hide-search="true">
                         <option value="">휴가 분류</option>
                         <#list VCATN_CD![] as vcatnCd>
                             <option value="${vcatnCd.dtlCd!}">[${vcatnCd.dtlCdNm!}]</option>
@@ -49,7 +49,7 @@
                                     </svg>
                                 </span>
                                 <input name="schdulList[{{idx}}].bgnDt" id="bgnDt{{idx}}" class="form-control form-control-solid ps-12 required w-100"
-                                       onchange="VcatnSchdul.propEndDt({{idx}})"
+                                       onchange="dF.VcatnSchdul.propEndDt({{idx}})"
                                        placeholder="휴가 시작일" readonly />
                             </div>
                             <div id="bgnDt{{idx}}_validate_span"></div>
@@ -73,7 +73,7 @@
                                     </svg>
                                 </span>
                                 <input name="schdulList[{{idx}}].endDt" id="endDt{{idx}}" class="form-control form-control-solid ps-12 required w-100"
-                                       onchange="VcatnSchdul.propEndDt({{idx}})"
+                                       onchange="dF.VcatnSchdul.propEndDt({{idx}})"
                                        placeholder="휴가 종료일" readonly />
                             </div>
                             <div id="endDt{{idx}}_validate_span"></div>

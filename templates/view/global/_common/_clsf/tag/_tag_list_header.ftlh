@@ -9,7 +9,7 @@
         <div class="col-1 ms-4 me-6 text-center fs-6">
             <b class="pe-3">태그 : </b>
             <button type="button" class="btn btn-sm btn-secondary btn-outline btn-active-secondary w-30px h-30px p-0"
-                    onclick="Tag.resetFilter();"
+                    onclick="dF.Tag.resetFilter();"
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="태그 필터링을 리셋합니다.">
                 <i class="bi bi-arrow-counterclockwise fs-5 pe-0"></i>
             </button>
@@ -29,7 +29,7 @@
                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="현재 활성화된 필터입니다."></i>
                 </#if>
                 <span class="py-2 me-3 cursor-pointer opacity-hover"
-                      onclick="Tag.filter('${tag.tagNo!}');"
+                      onclick="dF.Tag.filter('${tag.tagNo!}');"
                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="해당 태그로 게시물 목록을&#10;필터링합니다.">
                     <span class="${tag.tagClass!}">
                         <#if tag.ctgr != ""><span class="fs-7 text-noti">[${tag.ctgr!}]</span></#if>

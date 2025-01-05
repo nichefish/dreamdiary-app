@@ -3,30 +3,31 @@
  *
  * @author nichefish
  */
-const Sectn: Module = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.Sectn = (function(): Module {
     return {
         /**
          * Sectn 객체 초기화
-         * @param {Object} options - 초기화 옵션 객체.
+         * @param {Record<string, any>} options - 초기화 옵션 객체.
          * @param {Function} [options.refreshFunc] - 섹션 새로 고침에 사용할 함수 (선택적).
          */
         init: function({ refreshFunc }: { refreshFunc?: Function } = {}): void {
             console.log("'Sectn' module initialized.");
 
-            if (refreshFunc !== undefined) Sectn.refreshFunc = refreshFunc;
+            if (refreshFunc !== undefined) dF.Sectn.refreshFunc = refreshFunc;
         },
 
         /**
          * form init
-         * @param {Object} obj - 폼에 바인딩할 데이터
+         * @param {Record<string, any>} obj - 폼에 바인딩할 데이터
          */
-        initForm: function(obj: any): void {
+        initForm: function(obj: Record<string, any>): void {
             /* show modal */
             cF.handlebars.template(obj, "sectn_reg_header");
             cF.handlebars.template(obj, "sectn_reg", "show");
 
             /* jquery validation */
-            cF.validate.validateForm("#sectnRegForm", Sectn.regAjax);
+            cF.validate.validateForm("#sectnRegForm", dF.Sectn.regAjax);
             // checkbox init
             cF.util.chckboxLabel("deprcYn", "만료//해당없음", "red//gray");
             /* tagify */
@@ -38,18 +39,18 @@ const Sectn: Module = (function(): Module {
 
         /**
          * Draggable 컴포넌트 init
-         * @param {Object} options - 초기화 옵션 객체.
+         * @param {Record<string, any>} options - 초기화 옵션 객체.
          * @param {Function} [options.refreshFunc] - 드래그 완료 후 호출할 함수 (선택적).
          */
         initDraggable: function({ refreshFunc }: { refreshFunc?: Function } = {}): void {
             const keyExtractor: Function = (item: HTMLElement) => ({ "postNo": $(item).attr("id") });
             const url: string = Url.SECTN_SORT_ORDR_AJAX;
-            Sectn.swappable = cF.draggable.init(keyExtractor, url, refreshFunc);
+            dF.Sectn.swappable = cF.draggable.init(keyExtractor, url, refreshFunc);
         },
 
         /**
          * 전체 태그 목록 조회 (Ajax)
-         * @param {Object} options - 조회 옵션 객체.
+         * @param {Record<string, any>} options - 조회 옵션 객체.
          * @param {string|number} options.refPostNo - 참조할 포스트 번호.
          * @param {string} options.refContentType - 참조할 콘텐츠 유형.
          */
@@ -76,7 +77,7 @@ const Sectn: Module = (function(): Module {
 
             const obj = { "refPostNo": refPostNo, "refContentType": refContentType };
             /* initialize form. */
-            Sectn.initForm(obj);
+            dF.Sectn.initForm(obj);
         },
 
         /**
@@ -105,8 +106,8 @@ const Sectn: Module = (function(): Module {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            if (Sectn.refreshFunc !== undefined) {
-                                Sectn.refreshFunc();
+                            if (dF.Sectn.refreshFunc !== undefined) {
+                                dF.Sectn.refreshFunc();
                             } else {
                                 cF.util.blockUIReload();
                             }
@@ -131,7 +132,7 @@ const Sectn: Module = (function(): Module {
                 }
                 const { rsltObj } = res;
                 /* initialize form. */
-                Sectn.initForm(rsltObj);
+                dF.Sectn.initForm(rsltObj);
             });
         },
 
@@ -155,8 +156,8 @@ const Sectn: Module = (function(): Module {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            if (Sectn.refreshFunc !== undefined) {
-                                Sectn.refreshFunc();
+                            if (dF.Sectn.refreshFunc !== undefined) {
+                                dF.Sectn.refreshFunc();
                             } else {
                                 cF.util.blockUIReload();
                             }

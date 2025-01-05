@@ -3,7 +3,8 @@
  *
  * @author nichefish
  */
-const Notice: Module = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.Notice = (function(): Module {
     return {
         isMdf: $("#noticeRegForm").data("mode") === "modify",
 
@@ -16,11 +17,10 @@ const Notice: Module = (function(): Module {
 
         /**
          * form init
-         * @param {Object} obj - 폼에 바인딩할 데이터
          */
-        initForm: function(obj = {}) {
+        initForm: function() {
             /* jquery validation */
-            cF.validate.validateForm("#noticeRegForm", Notice.submitHandler);
+            cF.validate.validateForm("#noticeRegForm", dF.Notice.submitHandler);
             /* tinymce init */
             cF.tinymce.init("#tinymce_cn");
             /* tagify */
@@ -37,23 +37,23 @@ const Notice: Module = (function(): Module {
          * Custom SubmitHandler
          */
         submitHandler: function(): boolean {
-            if (Notice.submitMode === "preview") {
-                const popupNm = "preview";
-                const options = 'width=1280,height=1440,top=0,left=270';
-                const popup = cF.util.openPopup("", popupNm, options);
+            if (dF.Notice.submitMode === "preview") {
+                const popupNm: string = "preview";
+                const options: string = 'width=1280,height=1440,top=0,left=270';
+                const popup: Window = cF.util.openPopup("", popupNm, options);
                 if (popup) popup.focus();
-                const popupUrl = Url.NOTICE_REG_PREVIEW_POP;
+                const popupUrl: string = Url.NOTICE_REG_PREVIEW_POP;
                 $("#noticeRegForm").attr("action", popupUrl).attr("target", popupNm);
                 return true;
-            } else if (Notice.submitMode === "submit") {
+            } else if (dF.Notice.submitMode === "submit") {
                 $("#noticeRegForm").removeAttr("action");
                 Swal.fire({
-                    text: Message.get(Notice.isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
+                    text: Message.get(dF.Notice.isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
                     showCancelButton: true,
                 }).then(function(result: SwalResult) {
                     if (!result.value) return;
 
-                    Notice.regAjax();
+                    dF.Notice.regAjax();
                 });
             }
         },
@@ -72,7 +72,7 @@ const Notice: Module = (function(): Module {
          */
         myPaprList: function(): void {
             const url: string = Url.NOTICE_LIST;
-            const param = `?searchType=nickNm&searchKeyword=${AuthInfo.nickNm!}&regstrId=${AuthInfo.userId!}&pageSize=50&actionTyCd=MY_PAPR`;
+            const param: string = `?searchType=nickNm&searchKeyword=${AuthInfo.nickNm!}&regstrId=${AuthInfo.userId!}&pageSize=50&actionTyCd=MY_PAPR`;
             cF.util.blockUIReplace(url + param);
         },
 
@@ -103,7 +103,7 @@ const Notice: Module = (function(): Module {
          */
         submit: function(): void {
             if (tinymce !== undefined) tinymce.activeEditor.save();
-            Notice.submitMode = "submit";
+            dF.Notice.submitMode = "submit";
             $("#noticeRegForm").submit();
         },
 
@@ -112,7 +112,7 @@ const Notice: Module = (function(): Module {
          */
         preview: function(): void {
             if (tinymce !== undefined) tinymce.activeEditor.save();
-            Notice.submitMode = "preview";
+            dF.Notice.submitMode = "preview";
             $("#noticeRegForm").submit();
         },
 
@@ -120,12 +120,12 @@ const Notice: Module = (function(): Module {
          * 등록/수정 처리(Ajax)
          */
         regAjax: function(): void {
-            const url: string = Notice.isMdf ? Url.NOTICE_MDF_AJAX : Url.NOTICE_REG_AJAX;
+            const url: string = dF.Notice.isMdf ? Url.NOTICE_MDF_AJAX : Url.NOTICE_REG_AJAX;
             const ajaxData: FormData = new FormData(document.getElementById("noticeRegForm") as HTMLFormElement);
             cF.ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({text: res.message})
                     .then(function(): void {
-                        if (res.rslt) Notice.list();
+                        if (res.rslt) dF.Notice.list();
                     });
             }, "block");
         },
@@ -185,7 +185,7 @@ const Notice: Module = (function(): Module {
                 cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({text: res.message})
                         .then(function(): void {
-                            if (res.rslt) Notice.list();
+                            if (res.rslt) dF.Notice.list();
                         });
                 }, "block");
             });
@@ -195,11 +195,11 @@ const Notice: Module = (function(): Module {
          * 목록 화면으로 이동
          */
         list: function(): void {
-            const listUrl: string = Url.NOTICE_LIST + Notice.isMdf ? "?isBackToList=Y" : "";
+            const listUrl: string = Url.NOTICE_LIST + dF.Notice.isMdf ? "?isBackToList=Y" : "";
             cF.util.blockUIReplace(listUrl);
         }
     }
 })();
 document.addEventListener("DOMContentLoaded", function(): void {
-    Notice.init();
+    dF.Notice.init();
 });

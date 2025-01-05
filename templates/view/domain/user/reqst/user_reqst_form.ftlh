@@ -27,7 +27,7 @@
                     <ol class="breadcrumb text-muted fs-6 fw-semibold">
                         <li class="breadcrumb-item">
                             <a href="javascript:void(0);"
-                               onclick="UserReqst.return();"
+                               onclick="dF.UserReqst.return();"
                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="메인 화면으로 돌아갑니다.">
                                 <i class="bi bi-house-fill fs-4 me-1 text-primary"></i>
                             </a>
@@ -71,7 +71,7 @@
                     </div>
                     <div class="col-xl-2 col-4">
                         <button type="button" class="btn btn-sm btn-secondary required blink" id="idDupChckBtn"
-                                onclick="User.idDupChckAjax();"
+                                onclick="dF.User.idDupChckAjax();"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="입력한 아이디에 대한&#10;중복 여부를 확인합니다.">
                             <span class="hidden-table">아이디 </span>중복 확인
                         </button>
@@ -258,14 +258,14 @@
                 <div class="d-flex gap-2">
                     <div id="user_profl_reg_btn_div">
                         <button type="button" id="userProflBtn" class="btn btn-sm btn-primary blink"
-                                onclick="UserProfl.enableUserProfl();"
+                                onclick="dF.UserProfl.enableUserProfl();"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="사용자 프로필 정보를&#10;추가합니다.">
                             프로필 정보 추가+
                         </button>
                     </div>
                     <div>
                         <button type="button" id="userEmplymBtn" class="btn btn-sm btn-primary blink"
-                                onclick="UserEmplym.enableUserEmplym();"
+                                onclick="dF.UserEmplym.enableUserEmplym();"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="입사인원에 대하여&#10;직원 인사정보를 추가합니다.">
                             직원 인사정보 추가+
                         </button>
@@ -282,7 +282,7 @@
                     <i class="bi bi-pencil-square"></i>신규계정 신청
                 </button>
                 <button type="button" class="btn btn-sm btn-light"
-                        onclick="UserReqst.return();"
+                        onclick="dF.UserReqst.return();"
                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="메인 화면으로 돌아갑니다.">
                     <i class="bi bi-backspace"></i>돌아가기
                 </button>

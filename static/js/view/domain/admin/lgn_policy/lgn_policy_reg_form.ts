@@ -11,7 +11,9 @@ const Page: Page = (function(): Page {
          */
         init: function(): void {
             /* initialize form. */
-            LgnPolicy.initForm();
+            dF.LgnPolicy.initForm();
+
+            console.log("Page scripts initialized.");
         },
     }
 })();

@@ -27,11 +27,11 @@
             </div>
             <div class="col-xl-2 col-8 col-form-label">
                 <#if (user.isCf)!true>
-                    <div class="btn btn-sm btn-danger" onclick="User.uncfAjax();">
+                    <div class="btn btn-sm btn-danger" onclick="dF.User.uncfAjax();">
                         승인 취소
                     </div>
                 <#else>
-                    <div class="btn btn-sm btn-secondary" onclick="User.cfAjax();">
+                    <div class="btn btn-sm btn-secondary" onclick="dF.User.cfAjax();">
                         승인 처리
                     </div>
                 </#if>
@@ -72,7 +72,7 @@
             </div>
             <div class="col-xl-2">
                 <button type="button" class="btn btn-sm btn-secondary"
-                        onclick="User.pwResetAjax();"
+                        onclick="dF.User.pwResetAjax();"
                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="비밀번호를 초기화합니다.&#10;로그인 정책 관리 메뉴에서&#10;초기화 값을 설정할 수&#10;있습니다.">
                     비밀번호 초기화
                 </button>
@@ -199,11 +199,11 @@
     <#--begin::Card footer-->
     <div class="card-footer d-flex justify-content-end py-6 px-9">
         <#--페이지:: 버튼: 수정하기-->
-        <@component.post_btn_modify "User.mdfForm();" user isMngr />
+        <@component.post_btn_modify "dF.User.mdfForm();" user isMngr />
         <#--페이지:: 버튼: 삭제하기-->
-        <@component.post_btn_delete "User.delAjax(${post.postNo});" user isMngr />
+        <@component.post_btn_delete "dF.User.delAjax(${post.postNo});" user isMngr />
         <#--페이지:: 버튼: 목록으로 가기-->
-        <@component.post_btn_toList "User.list();" />
+        <@component.post_btn_toList "dF.User.list();" />
     </div>
     <!--end::Card footer-->
 </div>

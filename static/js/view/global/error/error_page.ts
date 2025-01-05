@@ -6,12 +6,11 @@
 // @ts-ignore
 const Page: Page = (function(): Page {
     return {
-
         /**
          * Page 객체 초기화
          */
         init: function(): void {
-            // do nothing
+            console.log("Page scripts initialized.");
         },
 
         /**
@@ -23,3 +22,6 @@ const Page: Page = (function(): Page {
         }
     }
 })();
+document.addEventListener("DOMContentLoaded", function(): void {
+    Page.init();
+});

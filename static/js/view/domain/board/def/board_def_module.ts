@@ -3,7 +3,8 @@
  *
  * @author nichefish
  */
-const BoardDef: Module = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.BoardDef = (function(): Module {
     return {
         /**
          * initializes module.
@@ -14,14 +15,14 @@ const BoardDef: Module = (function(): Module {
 
         /**
          * form init
-         * @param {Object} obj - 폼에 바인딩할 데이터
+         * @param {Record<string, any>} obj - 폼에 바인딩할 데이터
          */
-        initForm: function(obj = {}): void {
+        initForm: function(obj: Record<string, any> = {}): void {
             /* show modal */
             cF.handlebars.template(obj, "board_def_reg", "show");
 
             /* jquery validation */
-            cF.validate.validateForm("#boardDefRegForm", BoardDef.regAjax);
+            cF.validate.validateForm("#boardDefRegForm", dF.BoardDef.regAjax);
             // checkbox init
             cF.util.chckboxLabel("useYn", "사용//미사용", "blue//gray");
             cF.validate.replaceBlankIfMatches("#boardDefRegForm .cddata", cF.regex.nonCd);
@@ -31,10 +32,10 @@ const BoardDef: Module = (function(): Module {
         /**
          * Draggable 컴포넌트 init
          */
-        initDraggable: function({ refreshFunc }: { refreshFunc?: Function } = {}): void {
+        initDraggable: function(): void {
             const keyExtractor: Function = (item: HTMLElement) => ({ "boardCd": $(item).attr("id") });
             const url: string = Url.BOARD_DEF_SORT_ORDR_AJAX;
-            BoardDef.swappable = cF.draggable.init(keyExtractor, url);
+            dF.BoardDef.swappable = cF.draggable.init(keyExtractor, url);
         },
 
         /**
@@ -42,7 +43,7 @@ const BoardDef: Module = (function(): Module {
          */
         regModal: function(): void {
             /* initialize form. */
-            BoardDef.initForm();
+            dF.BoardDef.initForm();
         },
 
         /**
@@ -88,7 +89,7 @@ const BoardDef: Module = (function(): Module {
                 const { rsltObj } = res;
                 rsltObj.isMdf = true;
                 /* initialize form. */
-                BoardDef.initForm(rsltObj);
+                dF.BoardDef.initForm(rsltObj);
             });
         },
 
@@ -160,5 +161,5 @@ const BoardDef: Module = (function(): Module {
     }
 })();
 document.addEventListener("DOMContentLoaded", function(): void {
-    BoardDef.init();
+    dF.BoardDef.init();
 });

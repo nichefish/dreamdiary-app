@@ -20,7 +20,7 @@
     <#--begin::Modal Footer-->
     <div class="modal-footer">
         <#--모달:: 버튼: 저장하기-->
-        <@component.modal_btn_save "LgnPwChg.submit();" />
+        <@component.modal_btn_save "dF.LgnPwChg.submit();" />
         <#--모달:: 버튼: 모달 닫기-->
         <@component.modal_btn_close />
     </div>

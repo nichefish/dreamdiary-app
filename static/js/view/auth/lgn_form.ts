@@ -19,14 +19,15 @@ const Page: Page = (function(): Page {
             /* 중복 로그인시 기존 로그인 끊기 팝업 호출 */
             if (Model.isDupIdLgn) Page.dupLgnAlert();
             /* 조건 일치시 비밀번호 변경 팝업 호출 */
-            if (Model.isCredentialExpired || Model.needsPwReset) LgnPwChg.pwChgModal();
+            if (Model.isCredentialExpired || Model.needsPwReset) dF.LgnPwChg.pwChgModal();
+
+            console.log("Page scripts initialized.");
         },
 
         /**
          * form init
-         * @param {Object} obj - 폼에 바인딩할 데이터
          */
-        initForm: function(obj = {}): void {
+        initForm: function(): void {
             /* jquery validation */
             cF.validate.validateForm("#lgnForm", function(): void {
                 cF.util.blockUISubmit("#lgnForm", Url.AUTH_LGN_PROC);
@@ -42,7 +43,7 @@ const Page: Page = (function(): Page {
             const errorMsg: string = Model.errorMsg;
             if (cF.util.isEmpty(errorMsg)) return;
 
-            const $errorMsgSpan = $("#errorMsgSpan");
+            const $errorMsgSpan: JQuery<HTMLElement> = $("#errorMsgSpan");
             $errorMsgSpan.html("");
             $("#userId_validate_span").text("");
             $("#password_validate_span").text("");

@@ -5,6 +5,7 @@
 
     <!-- 삭제 데이터 조회 -->
     <select id="getDeletedByPostNo" resultType="io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto">
+        /* JrnlDayMapper.getDeletedByPostNo */
         SELECT
             day.post_no AS postNo,
             day.yy AS yy,

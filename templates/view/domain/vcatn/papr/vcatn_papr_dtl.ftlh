@@ -80,7 +80,7 @@
                                 <span class="text-muted me-10">
                                     미확인<i class="bi bi-dash text-muted"></i>
                                 </span>
-                                <button class="btn btn-sm btn-primary" onclick="VcatnPapr.cfAjax();">확인하기</button>
+                                <button class="btn btn-sm btn-primary" onclick="dF.VcatnPapr.cfAjax();">확인하기</button>
                             <#else>
                                 <button class="btn btn-sm btn-success" disabled>
                                     확인완료<i class="bi bi-check success"></i>
@@ -98,9 +98,9 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-end">
             <#--페이지:: 버튼: 수정하기-->
-            <@component.post_btn_modify "VcatnPapr.mdfForm();" post isMngr />
+            <@component.post_btn_modify "dF.VcatnPapr.mdfForm();" post isMngr />
             <#--페이지:: 버튼: 삭제하기-->
-            <@component.post_btn_delete "VcatnPapr.delAjax(${post.postNo});" post isMngr />
+            <@component.post_btn_delete "dF.VcatnPapr.delAjax(${post.postNo});" post isMngr />
             <!-- 등록자: 수정,삭제 가능, 관리자: 삭제 가능, 확인 시: 삭제만 가능 -->
     <#--        <#if post.isRegstr!false && (post.cfYn)! == "N">
                 <button type="button" class="btn btn-light btn-active-primary me-2 btn-sm" onclick="Page.mdfForm();"
@@ -109,7 +109,7 @@
                 </button>
             </#if>-->
             <#--페이지:: 버튼: 목록으로 가기-->
-            <@component.post_btn_toList "VcatnPapr.list();" />
+            <@component.post_btn_toList "dF.VcatnPapr.list();" />
         </div>
     </div>
 

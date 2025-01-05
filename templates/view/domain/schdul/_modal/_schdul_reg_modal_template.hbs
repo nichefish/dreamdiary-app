@@ -14,7 +14,7 @@
         </div>
         <div class="col-xl-3 col-4">
             <select name="schdulCd" id="schdulCd" class="form-select form-select-solid required"
-                    onchange="Schdul.schdulCd(this);">
+                    onchange="dF.Schdul.schdulCd(this);">
                 <option value="">--구분--</option>
                 <#list SCHDUL_CD![] as topic>
                     {{#if isPrvt}}
@@ -44,7 +44,7 @@
             <label class="col-form-label text-center fs-6 fw-bold" for="prtcpnt">
                 참여자
             </label>
-            <span class="btn btn-sm btn-icon btn-light-primary" onclick="Schdul.addPrtcpnt();">
+            <span class="btn btn-sm btn-icon btn-light-primary" onclick="dF.Schdul.addPrtcpnt();">
                 <i class="fas fa-plus float-end"></i>
             </span>
         </div>
@@ -63,7 +63,7 @@
                             <option value="${user.userId!}" id="${user.userId!}" {{selectedIf (equals userId "${user.userId}")}}>${user.userNm!}</option>
                         </#list>
                     </select>
-                    <span class="btn btn-sm btn-icon btn-light-danger" onclick="Schdul.removePrtcpnt({{@index}});">
+                    <span class="btn btn-sm btn-icon btn-light-danger" onclick="dF.Schdul.removePrtcpnt({{@index}});">
                         <i class="fas fa-trash float-end"></i>
                     </span>
                 </div>

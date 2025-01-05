@@ -3,15 +3,16 @@
  *
  * @author nichefish
  */
-const AtchFile: Module = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.AtchFile = (function(): Module {
     return {
         /**
          * AtchFile 객체 초기화
          */
         init: function(): void {
-            console.log("'AtchFile' module initialized.");
+            dF.AtchFile.atchFileListToggle();     // 첨부파일 영역 0개인지 체크
 
-            AtchFile.atchFileListToggle();     // 첨부파일 영역 0개인지 체크
+            console.log("'AtchFile' module initialized.");
         },
 
         /**
@@ -47,7 +48,7 @@ const AtchFile: Module = (function(): Module {
                     } else {
                         newFileSpan.remove();
                     }
-                    AtchFile.atchFileListToggle();
+                    dF.AtchFile.atchFileListToggle();
                 });
             }
         },
@@ -100,5 +101,5 @@ const AtchFile: Module = (function(): Module {
     }
 })();
 document.addEventListener("DOMContentLoaded", function(): void {
-    AtchFile.init();
+    dF.AtchFile.init();
 });

@@ -7,7 +7,8 @@
  * @author nichefish
  */
 // @ts-ignore
-const Caches: Module = (function(): Module {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.Cache = (function(): Module {
     return {
         /**
          * initializes module.
@@ -61,5 +62,5 @@ const Caches: Module = (function(): Module {
     }
 })();
 document.addEventListener("DOMContentLoaded", function(): void {
-    Caches.init();
+    dF.Cache.init();
 });

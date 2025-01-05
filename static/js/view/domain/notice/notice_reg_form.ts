@@ -11,14 +11,14 @@ const Page: Page = (function(): Page {
          */
         init: function(): void {
             /* initialize form. */
-            Notice.initForm();
+            dF.Notice.initForm();
 
-            const isReg = $("#noticeRegForm").data("mode") === "regist";
+            const isReg: boolean = $("#noticeRegForm").data("mode") === "regist";
             if (isReg) {
                 $("#jandiYn").click();
             } else {
                 /* 글 단락 init */
-                Sectn.init({
+                dF.Sectn.init({
                     refreshFunc: function(): void {
                         setTimeout(function(): void {
                             Page.refreshFunc();
@@ -26,10 +26,12 @@ const Page: Page = (function(): Page {
                     }
                 });
                 /* 글 단락 정렬순서 변경 init */
-                Sectn.initDraggable({
+                dF.Sectn.initDraggable({
                     refreshFunc: Page.refreshFunc
                 });
             }
+
+            console.log("Page scripts initialized.");
         },
 
         /**
@@ -38,9 +40,9 @@ const Page: Page = (function(): Page {
         refreshFunc: function(): void {
             const refPostNo = $("#noticeRegForm [name='postNo']").val();
             const refContentType = $("#noticeRegForm [name='contentType']").val();
-            Sectn.listAjax({ refPostNo, refContentType });
+            dF.Sectn.listAjax({ refPostNo, refContentType });
             $("#sectn_reg_modal").modal("hide");
-            Sectn.initDraggable({
+            dF.Sectn.initDraggable({
                 refreshFunc: Page.refreshFunc
             });
         }

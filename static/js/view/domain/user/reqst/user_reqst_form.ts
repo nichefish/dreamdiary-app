@@ -11,7 +11,9 @@ const Page: Page = (function(): Page {
          */
         init: function(): void {
             /* initialize form. */
-            UserReqst.initForm();
+            dF.UserReqst.initForm();
+
+            console.log("Page scripts initialized.");
         },
     }
 })();

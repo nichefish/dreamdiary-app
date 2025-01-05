@@ -16,9 +16,9 @@ const Page: Page = (function(): Page {
             Page.idx = $("vcatnPaprRegForm").data("init-length") || 0;
 
             /* initialize form. */
-            VcatnPapr.initForm();
+            dF.VcatnPapr.initForm();
             // 첨부파일 영역 0개인지 체크
-            AtchFile.atchFileListToggle();
+            dF.AtchFile.atchFileListToggle();
 
             const isReg: boolean = $("#noticeRegForm").data("mode") === "regist";
             if (isReg) {
@@ -26,6 +26,8 @@ const Page: Page = (function(): Page {
                 // 휴가 추가 폼 기본 뿌리기
                 Page.addVcatnSchdul();
             }
+
+            console.log("Page scripts initialized.");
         },
 
         /**
@@ -35,11 +37,11 @@ const Page: Page = (function(): Page {
             const idx: number = Page.idx++;
             cF.handlebars.append({ "idx": idx }, "vcatn_schdul_reg");
             cF.datepicker.singleDatePicker("#bgnDt" + idx, "yyyy-MM-DD", null, function(): void {
-                VcatnSchdul.propEndDt(idx);
-                VcatnSchdul.noBefore("#bgnDt"+idx, "#endDt"+idx, idx);
+                dF.VcatnSchdul.propEndDt(idx);
+                dF.VcatnSchdul.noBefore("#bgnDt"+idx, "#endDt"+idx, idx);
             });
             cF.datepicker.singleDatePicker("#endDt"+idx, "yyyy-MM-DD", null, function(): void {
-                if ($("#endDt"+idx).val() !== "") VcatnSchdul.noBefore("#bgnDt"+idx, "#endDt"+idx, idx);
+                if ($("#endDt"+idx).val() !== "") dF.VcatnSchdul.noBefore("#bgnDt"+idx, "#endDt"+idx, idx);
             });
         },
         /** 추가항목 영역 삭제 */

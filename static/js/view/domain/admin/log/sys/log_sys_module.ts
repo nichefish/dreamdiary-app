@@ -3,7 +3,8 @@
  *
  * @author nichefish
  */
-const LogSys = (function() {
+if (typeof dF === 'undefined') { var dF = {} as any; }
+dF.LogSys = (function() {
     return {
         // TODO:
     }

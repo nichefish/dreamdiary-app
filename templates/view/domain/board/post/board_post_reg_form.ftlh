@@ -124,12 +124,12 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-between">
             <#--페이지:: 버튼: 미리보기-->
-            <@component.post_btn_preview_pop "BoardPost.preview();" />
+            <@component.post_btn_preview_pop "dF.BoardPost.preview();" />
             <div>
                 <#--페이지:: 버튼: 저장하기-->
-                <@component.post_btn_submit "BoardPost.submit();" />
+                <@component.post_btn_submit "dF.BoardPost.submit();" />
                 <#--페이지:: 버튼: 목록으로 가기-->
-                <@component.post_btn_toList "BoardPost.list();" />
+                <@component.post_btn_toList "dF.BoardPost.list();" />
             </div>
         </div>
     </div>

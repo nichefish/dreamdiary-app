@@ -14,7 +14,7 @@
         <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
         <div class="col-1 ms-4 me-20 text-center fs-6 w-auto gap-3">
             <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
-                    onclick="Tag.hideSingleTag('#jrnl_day_tag_list_div');"
+                    onclick="dF.Tag.hideSingleTag('#jrnl_day_tag_list_div');"
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="1개짜리 태그를 숨기고 보입니다.">
                 <i class="bi bi-tag pe-0"></i>
             </button>
@@ -36,7 +36,7 @@
         <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
         <div class="col-1 ms-4 me-20 text-center fs-6 w-auto gap-3">
             <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
-                    onclick="Tag.hideSingleTag('#jrnl_diary_tag_list_div');"
+                    onclick="dF.Tag.hideSingleTag('#jrnl_diary_tag_list_div');"
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="1개짜리 태그를 숨기고 보입니다.">
                 <i class="bi bi-tag pe-0"></i>
             </button>
@@ -58,7 +58,7 @@
         <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
         <div class="col-1 ms-4 me-20 text-center fs-6 w-auto gap-3">
             <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
-                    onclick="Tag.hideSingleTag('#jrnl_dream_tag_list_div');"
+                    onclick="dF.Tag.hideSingleTag('#jrnl_dream_tag_list_div');"
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="1개짜리 태그를 숨기고 보입니다.">
                 <i class="bi bi-tag pe-0"></i>
             </button>
