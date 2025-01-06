@@ -31,6 +31,8 @@ const Page: Module = (function(): Module {
             } else {
                 $("#jandiYn").click();
             }
+
+            console.log("Page scripts initialized.");
         },
 
         refreshFunc: function({ refPostNo, refContentType }): void {

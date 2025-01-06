@@ -27,7 +27,7 @@ public class KafkaApiController {
     @PostMapping(value = "/kafka")
     @ResponseBody
     public String sendMessage(
-            final @RequestBody String message
+            @RequestParam String message
     ) {
 
         log.info("message : {}", message);

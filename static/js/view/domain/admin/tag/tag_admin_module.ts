@@ -27,7 +27,7 @@ dF.TagAdmin = (function(): Module {
                 }
                 // 상단에 태그 카테고리 메뉴 생성
                 const ctgrSet: Set<string> = new Set();
-                res.rsltList.forEach((item: any): void => {
+                res.rsltList.forEach((item: Record<string, string>): void => {
                     if (item.ctgr) ctgrSet.add(item.ctgr);
                 });
                 cF.handlebars.template(ctgrSet, "tag_ctgr");

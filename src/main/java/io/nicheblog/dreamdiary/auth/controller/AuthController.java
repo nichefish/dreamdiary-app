@@ -89,7 +89,7 @@ public class AuthController {
     @PermitAll
     @ResponseBody
     public ResponseEntity<AjaxResponse> lgnPwChgAjax(
-            final @RequestBody @Valid UserPwChgParam userPwChgParam,
+            final @Valid UserPwChgParam userPwChgParam,
             final LogActvtyParam logParam
     ) throws Exception {
 

@@ -57,7 +57,7 @@ dF.JrnlDay = (function(): Module {
                 $("#jrnlDayRegForm #jrnlDt").val($("#jrnlDayRegForm #aprxmtDt").val());
             });
             /* tagify */
-            cF.tagify.initWithCtgr("#jrnlDayRegForm #tagListStr", TagCtgrMap.jrnlDay);
+            // cF.tagify.initWithCtgr("#jrnlDayRegForm #tagListStr", TagCtgrMap.jrnlDay);
         },
 
         /**
@@ -102,8 +102,8 @@ dF.JrnlDay = (function(): Module {
          * 사이드바 기준으로 등록 모달 날짜 계산:: 메소드 분리
          */
         validDt: function(): string {
-            const year: number = parseInt($("#jrnl_aside #yy").val(), 10);
-            let month: number = parseInt($("#jrnl_aside #mnth").val(), 10);
+            const year: number = parseInt($("#jrnl_aside #yy").val() as string, 10);
+            let month: number = parseInt($("#jrnl_aside #mnth").val() as string, 10);
             if (month === 99) month = 1;
             let day: number = parseInt(cF.date.getCurrDayStr(2), 10);
 
@@ -125,7 +125,15 @@ dF.JrnlDay = (function(): Module {
         refreshIcon: function(): void {
             const $iconClassElmt = $("#jrnlDayRegForm #weather");
             if (!$iconClassElmt.length) return;
-            $("#jrnlDayRegForm #weather_icon_div").html($iconClassElmt.val());
+
+            // val() 메서드는 string | null을 반환하므로, null 체크 필요
+            const iconVal = $iconClassElmt.val() as string;
+            if (iconVal !== null) {
+                const weatherIconDiv = document.querySelector("#jrnlDayRegForm #weather_icon_div") as HTMLElement | null;
+                if (weatherIconDiv) {
+                    weatherIconDiv.innerHTML = iconVal;
+                }
+            }
         },
 
         /**
@@ -150,7 +158,7 @@ dF.JrnlDay = (function(): Module {
 
                 const url: string = isReg ? Url.JRNL_DAY_REG_AJAX : Url.JRNL_DAY_MDF_AJAX;
                 const ajaxData: FormData = new FormData(document.getElementById("jrnlDayRegForm") as HTMLFormElement);
-                cF.ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (!res.rslt) return;
@@ -198,7 +206,7 @@ dF.JrnlDay = (function(): Module {
 
                 const url: string = Url.JRNL_DAY_DEL_AJAX;
                 const ajaxData: Record<string, any> = { "postNo": postNo };
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (!res.rslt) return;

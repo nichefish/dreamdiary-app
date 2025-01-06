@@ -51,7 +51,7 @@
             </div>
             <div class="col-1 d-flex flex-column align-items-center">
                 <button type="button" class="btn btn-sm btn-light-primary btn-outlined py-2 px-3 cursor-pointer"
-                        onclick="JrnlSumry.comptAjax(${post.postNo!});"
+                        onclick="dF.JrnlSumry.comptAjax(${post.postNo!});"
                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 일자 <@spring.message "bs.tooltip.modal.mdf"/>">
                     <i class="bi bi-book fs-4 pe-1"></i>
                     꿈 기록 완료 처리
@@ -77,11 +77,11 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-end gap-3">
             <#--페이지:: 버튼: 목록으로 가기-->
-            <@component.header_btn_reg_modal "JrnlSumry.regModal(${post.postNo!})" />
+            <@component.header_btn_reg_modal "dF.JrnlSumry.regModal(${post.postNo!})" />
             <#--페이지:: 버튼: 조회년도 변경-->
             <div class="col-1 w-auto">
                 <select id="yy" class="form-select form-select-solid fs-7 text-end"
-                        onchange="JrnlSumry.dtlByYy(this.value)"
+                        onchange="dF.JrnlSumry.dtlByYy(this.value)"
                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="조회 년도를 변경합니다.">>
                     <#assign currYy = DateUtils.getCurrYy()?number />
                     <#assign startYy = 2011 />
@@ -92,7 +92,7 @@
                 </select>
             </div>
             <#--페이지:: 버튼: 목록으로 가기-->
-            <@component.post_btn_toList "JrnlSumry.list();" />
+            <@component.post_btn_toList "dF.JrnlSumry.list();" />
         </div>
     </div>
 </div>

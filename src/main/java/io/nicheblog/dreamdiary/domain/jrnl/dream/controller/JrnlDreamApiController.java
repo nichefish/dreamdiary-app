@@ -180,7 +180,7 @@ public class JrnlDreamApiController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDreamDelAjax(
-            final @RequestBody Integer postNo,
+            final @RequestParam("postNo") Integer postNo,
             final LogActvtyParam logParam
     ) throws Exception {
 

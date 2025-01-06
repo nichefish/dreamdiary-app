@@ -186,7 +186,7 @@ public class JrnlDayApiController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayDelAjax(
-            final @RequestBody Integer postNo,
+            final @RequestParam("postNo") Integer postNo,
             final LogActvtyParam logParam
     ) throws Exception {
 

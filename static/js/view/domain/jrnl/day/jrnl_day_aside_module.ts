@@ -80,8 +80,8 @@ dF.JrnlDayAside = (function(): Module {
          * 현재 년/월을 저장한다.
          */
         pinpoint: function(): void {
-            const pinYy = $("#jrnl_aside #yy").val();
-            const pinMnth = $("#jrnl_aside #mnth").val();
+            const pinYy: string = $("#jrnl_aside #yy").val().toString();
+            const pinMnth: string = $("#jrnl_aside #mnth").val().toString();
             $.cookie("pin_yy", pinYy, cookieOptions);
             $.cookie("pin_mnth", pinMnth, cookieOptions);
             $("#jrnl_aside #pinYy").text(pinYy);
@@ -103,8 +103,8 @@ dF.JrnlDayAside = (function(): Module {
          * 저널 일자 정렬
          * @param {string} [toBe] - 정렬 방향 ("ASC" 또는 "DESC").
          */
-        sort: function(toBe): void {
-            const sortElement = document.querySelector("#jrnl_aside #sort");
+        sort: function(toBe: string): void {
+            const sortElement: HTMLInputElement = document.querySelector("#jrnl_aside #sort");
             const asIs = sortElement.value;
             if (toBe === undefined) toBe = (asIs !== "ASC") ? "ASC" : "DESC";
             // 쿠키에 정렬 정보 저장
@@ -120,12 +120,12 @@ dF.JrnlDayAside = (function(): Module {
             }
 
             // 정렬 수행
-            const container = document.querySelector('#jrnl_day_list_div'); // 모든 저널 일자를 포함하는 컨테이너
-            const days = Array.from(container.querySelectorAll('.jrnl-day')); // 모든 'jrnl-day' 요소를 배열로 변환
-            days.sort((a, b) => {
-                const dateA = new Date(a.querySelector('.jrnl-day-header .col-1').textContent.trim());
-                const dateB = new Date(b.querySelector('.jrnl-day-header .col-1').textContent.trim());
-                return (toBe === "ASC") ? dateA - dateB : dateB - dateA;
+            const container: HTMLElement = document.querySelector('#jrnl_day_list_div'); // 모든 저널 일자를 포함하는 컨테이너
+            const days: HTMLElement[] = Array.from(container.querySelectorAll('.jrnl-day')); // 모든 'jrnl-day' 요소를 배열로 변환
+            days.sort((a, b): number => {
+                const dateA: Date = new Date(a.querySelector('.jrnl-day-header .col-1').textContent.trim());
+                const dateB: Date = new Date(b.querySelector('.jrnl-day-header .col-1').textContent.trim());
+                return (toBe === "ASC") ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
             });
 
             // 컨테이너에서 모든 요소를 제거

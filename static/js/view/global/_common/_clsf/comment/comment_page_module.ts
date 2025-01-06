@@ -49,7 +49,7 @@ dF.Comment.page = (function(): any {
 
                 const url: string = Url.COMMENT_REG_AJAX;
                 const ajaxData: FormData = new FormData(document.getElementById("commentPageRegForm") as HTMLFormElement);
-                cF.ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();
@@ -107,7 +107,7 @@ dF.Comment.page = (function(): any {
 
                 const url: string = Url.COMMENT_MDF_AJAX;
                 const ajaxData: Record<string, any> = cF.util.getJsonFormData("#commentPageMdfForm" + postNo);
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();
@@ -130,7 +130,7 @@ dF.Comment.page = (function(): any {
                 if (!result.value) return;
                 const url: string = Url.COMMENT_DEL_AJAX;
                 const ajaxData: Record<string, any> = { "postNo": postNo, "actvtyCtgrCd": "${actvtyCtgrCd!}" };
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();

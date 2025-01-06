@@ -55,7 +55,7 @@ public class VcatnSchdulApiController
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> vcatnSchdulRegAjax(
-            final @RequestBody @Valid VcatnSchdulDto vcatnSchdul,
+            final @Valid VcatnSchdulDto vcatnSchdul,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -127,7 +127,7 @@ public class VcatnSchdulApiController
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> vcatnSchdulDelAjax(
-            final @RequestBody Integer vcatnSchdulNo,
+            final @RequestParam("vcatnSchdulNo") Integer vcatnSchdulNo,
             final LogActvtyParam logParam
     ) throws Exception {
 

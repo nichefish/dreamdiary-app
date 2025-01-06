@@ -155,7 +155,7 @@ public class BoardPostApiController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardPostDelAjax(
-            final @RequestBody Integer postNo,
+            final Integer postNo,
             final LogActvtyParam logParam
     ) throws Exception {
 

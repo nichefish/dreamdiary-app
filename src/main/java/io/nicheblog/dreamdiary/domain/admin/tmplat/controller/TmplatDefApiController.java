@@ -61,7 +61,7 @@ public class TmplatDefApiController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> tmplatDefRegAjax(
-            final @RequestBody @Valid TmplatDefDto tmplatDef,
+            final @Valid TmplatDefDto tmplatDef,
             final LogActvtyParam logParam
     ) throws Exception {
 

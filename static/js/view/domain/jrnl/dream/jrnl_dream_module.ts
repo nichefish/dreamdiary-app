@@ -38,7 +38,7 @@ dF.JrnlDream = (function():Module {
                 $("#elseDreamerNm").valid();
             });
             /* tagify */
-            cF.tagify.initWithCtgr("#jrnlDreamRegForm #tagListStr", TagCtgrMap.jrnlDream);
+            // cF.tagify.initWithCtgr("#jrnlDreamRegForm #tagListStr", TagCtgrMap.jrnlDream);
             // checkbox init
             cF.util.chckboxLabel("imprtcYn", "중요//해당없음", "red//gray");
             // checkbox init
@@ -120,7 +120,7 @@ dF.JrnlDream = (function():Module {
 
                 const url: string = isReg ? Url.JRNL_DREAM_REG_AJAX : Url.JRNL_DREAM_MDF_AJAX;
                 const ajaxData: FormData = new FormData(document.getElementById("jrnlDreamRegForm") as HTMLFormElement);
-                cF.ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (!res.rslt) return;
@@ -173,7 +173,7 @@ dF.JrnlDream = (function():Module {
 
                 const url: string = Url.JRNL_DREAM_DEL_AJAX;
                 const ajaxData: Record<string, any> = { "postNo": postNo };
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (!res.rslt) return;

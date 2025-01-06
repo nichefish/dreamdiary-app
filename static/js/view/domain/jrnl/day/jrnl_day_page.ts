@@ -4,12 +4,12 @@
  * @author nichefish
  */
 // @ts-ignore
-const Page = (function(): Module {
+const Page: Module = (function(): Module {
     return {
         /**
          * Page 객체 초기화
          */
-        init: function() {
+        init: function(): void {
             Page.setYyMnthCookie();
             dF.JrnlDayAside.init();
             // 목록 조회
@@ -21,21 +21,32 @@ const Page = (function(): Module {
             // 일기/꿈 키워드 검색에 엔터키 처리
             cF.util.enterKey("#diaryKeyword", dF.JrnlDiary.keywordListAjax);
             cF.util.enterKey("#dreamKeyword", dF.JrnlDream.keywordListAjax);
+
+            console.log("Page scripts initialized.");
         },
 
         /**
          * 페이지에 조회년월 쿠키 세팅
          */
-        setYyMnthCookie: function() {
+        setYyMnthCookie: function(): void {
             // 년도 쿠키 설정
             const yyCookie = $.cookie("jrnl_yy");
-            if (yyCookie !== undefined) document.querySelector("#jrnl_aside #yy").value = yyCookie;
+            const yyElement = document.querySelector("#jrnl_aside #yy") as HTMLInputElement | null;
+            if (yyCookie !== undefined && yyElement !== null) {
+                yyElement.value = yyCookie;
+            }
             // 월 쿠키 설정
             const mnthCookie = $.cookie("jrnl_mnth");
-            if (yyCookie !== undefined) document.querySelector("#jrnl_aside #mnth").value = mnthCookie;
+            const mnthElement = document.querySelector("#jrnl_aside #mnth") as HTMLInputElement | null;
+            if (mnthCookie !== undefined && mnthElement !== null) {
+                mnthElement.value = mnthCookie;
+            }
             // 정렬 쿠키 설정
             const sortCookie = $.cookie("jrnl_day_sort");
-            if (sortCookie !== undefined) document.querySelector("#jrnl_aside #sort").value = sortCookie;
+            const sortElement = document.querySelector("#jrnl_aside #sort") as HTMLInputElement | null;
+            if (sortCookie !== undefined && sortElement !== null) {
+                sortElement.value = sortCookie;
+            }
             // 아무 쿠키도 없을경우 전체 데이터 로딩을 막기 위해 올해 년도 세팅
             if (yyCookie === undefined && mnthCookie === undefined) {
                 $("#jrnl_aside #yy").val(cF.date.getCurrYyStr());

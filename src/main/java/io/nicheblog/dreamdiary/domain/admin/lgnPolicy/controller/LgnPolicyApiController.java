@@ -58,7 +58,7 @@ public class LgnPolicyApiController
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> lgnPolicyRegAjax(
-            final @RequestBody @Valid LgnPolicyDto lgnPolicy,
+            final @Valid LgnPolicyDto lgnPolicy,
             final LogActvtyParam logParam
     ) throws Exception {
 

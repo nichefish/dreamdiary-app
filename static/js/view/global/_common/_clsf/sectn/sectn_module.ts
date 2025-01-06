@@ -101,7 +101,7 @@ dF.Sectn = (function(): Module {
 
                 const url: string = isReg ? Url.SECTN_REG_AJAX : Url.SECTN_MDF_AJAX;
                 const ajaxData: FormData = new FormData(document.getElementById("sectnRegForm") as HTMLFormElement);
-                cF.ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (!res.rslt) return;
@@ -151,7 +151,7 @@ dF.Sectn = (function(): Module {
 
                 const url: string = Url.SECTN_DEL_AJAX;
                 const ajaxData: Record<string, any> = { "postNo": postNo, "actvtyCtgrCd": "${actvtyCtgrCd!}" };
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (!res.rslt) return;

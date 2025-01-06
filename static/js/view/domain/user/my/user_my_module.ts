@@ -27,7 +27,7 @@ dF.UserMy = (function(): Module {
 
                 const url: string = Url.USER_MY_UPLOAD_PROFL_IMG_AJAX;
                 const ajaxData: FormData = new FormData(document.getElementById("profllImgForm") as HTMLFormElement);
-                cF.ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                     if (cF.util.isEmpty(res.message)) return;
 
                     Swal.fire({ "text": res.message })
@@ -52,7 +52,7 @@ dF.UserMy = (function(): Module {
                 if (!result.value) return;
 
                 const url: string = Url.USER_MY_REMOVE_PROFL_IMG_AJAX;
-                cF.ajax.multipart(url, null, function(res: AjaxResponse): void {
+                cF.$ajax.multipart(url, null, function(res: AjaxResponse): void {
                     if (cF.util.isEmpty(res.message)) return;
 
                     Swal.fire({ "text": res.message })

@@ -81,7 +81,7 @@ public class EhCacheApiController
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> cacheEvictAjax(
-            final @RequestBody CacheParam cacheParam,
+            final CacheParam cacheParam,
             final LogActvtyParam logParam
     ) {
 

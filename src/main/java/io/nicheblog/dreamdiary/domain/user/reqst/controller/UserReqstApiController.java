@@ -55,7 +55,7 @@ public class UserReqstApiController
     @PostMapping(value = {Url.USER_REQST_REG_AJAX})
     @ResponseBody
     public ResponseEntity<AjaxResponse> userReqstRegAjax(
-            final @RequestBody @Valid UserReqstDto userReqst,
+            final @Valid UserReqstDto userReqst,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -89,7 +89,7 @@ public class UserReqstApiController
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> userCfAjax(
-            final @RequestBody Integer userNo,
+            final @RequestParam("userNo") Integer userNo,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -121,7 +121,7 @@ public class UserReqstApiController
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> userUncfAjax(
-            final @RequestBody Integer userNo,
+            final @RequestParam("userNo") Integer userNo,
             final LogActvtyParam logParam
     ) throws Exception {
 

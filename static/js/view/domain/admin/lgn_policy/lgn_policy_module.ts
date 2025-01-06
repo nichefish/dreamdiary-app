@@ -50,7 +50,7 @@ dF.LgnPolicy = (function(): Module {
 
                 const url: string = Url.LGN_POLICY_REG_AJAX;
                 const ajaxData: Record<string, any> = cF.util.getJsonFormData("#lgnPolicyForm");
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.util.blockUIReplace(Url.LGN_POLICY_FORM);

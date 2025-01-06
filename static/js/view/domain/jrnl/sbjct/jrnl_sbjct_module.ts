@@ -4,8 +4,17 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.JrnlSbjct = (function() {
+dF.JrnlSbjct = (function(): Module {
     return {
+        isMdf: $("#jrnlSbjctRegForm").data("mode") === "modify",
+
+        /**
+         * initializes module.
+         */
+        init: function(): void {
+            console.log("'JrnlSbjct' module initialized.");
+        },
+
         /**
          * form init
          */
@@ -27,7 +36,7 @@ dF.JrnlSbjct = (function() {
         /**
          * Custom SubmitHandler
          */
-        submitHandler: function() {
+        submitHandler: function(): boolean {
             if (dF.JrnlSbjct.submitMode === "preview") {
                 const popupNm: string = "preview";
                 const options: string = 'width=1280,height=1440,top=0,left=270';
@@ -39,7 +48,7 @@ dF.JrnlSbjct = (function() {
             } else if (dF.JrnlSbjct.submitMode === "submit") {
                 $("#jrnlSbjctRegForm").removeAttr("action");
                 Swal.fire({
-                    text: <#if isMdf!false><@spring.message "view.cnfm.mdf"/><#else><@spring.message "view.cnfm.reg"/></#if>,
+                    text: Message.get(dF.JrnlSbjct.isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
                     showCancelButton: true,
                 }).then(function(result: SwalResult): void {
                     if (!result.value) return;
@@ -76,7 +85,7 @@ dF.JrnlSbjct = (function() {
         /**
          * form submit
          */
-        submit: function() {
+        submit: function(): void {
             if (tinymce !== undefined) tinymce.activeEditor.save();
             dF.JrnlSbjct.submitMode = "submit";
             $("#jrnlSbjctRegForm").submit();
@@ -85,7 +94,7 @@ dF.JrnlSbjct = (function() {
         /**
          * 미리보기 팝업 호출
          */
-        preview: function() {
+        preview: function(): void {
             if (tinymce !== undefined) tinymce.activeEditor.save();
             dF.JrnlSbjct.submitMode = "preview";
             $("#jrnlSbjctRegForm").submit();
@@ -94,10 +103,10 @@ dF.JrnlSbjct = (function() {
         /**
          * 등록/수정 처리(Ajax)
          */
-        regAjax: function() {
-            const url: string = " <#if isMdf!false>${Url.JRNL_SBJCT_MDF_AJAX!}<#else>${Url.JRNL_SBJCT_REG_AJAX!}</#if>";
+        regAjax: function(): void {
+            const url: string = dF.JrnlSbjct.isMdf ? Url.JRNL_SBJCT_MDF_AJAX : Url.JRNL_SBJCT_REG_AJAX;
             const ajaxData: FormData = new FormData(document.getElementById("jrnlSbjctRegForm") as HTMLFormElement);
-            cF.ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
+            cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({text: res.message})
                     .then(function(): void {
                         if (!res.rslt) return;
@@ -159,7 +168,7 @@ dF.JrnlSbjct = (function() {
                 
                 const url: string = Url.JRNL_SBJCT_DEL_AJAX;
                 const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({text: res.message})
                         .then(function(): void {
                             if (res.rslt) dF.JrnlSbjct.list();

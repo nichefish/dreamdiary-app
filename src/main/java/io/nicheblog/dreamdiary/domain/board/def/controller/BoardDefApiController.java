@@ -57,7 +57,7 @@ public class BoardDefApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardDefRegAjax(
-            final @RequestBody @Valid BoardDefDto boardDef,
+            final @Valid BoardDefDto boardDef,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -126,7 +126,7 @@ public class BoardDefApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardDefMdfItemAjax(
-            final @RequestBody @Valid BoardDefDto boardDef,
+            final @Valid BoardDefDto boardDef,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -160,7 +160,7 @@ public class BoardDefApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardDefUseAjax(
-            final @RequestBody String boardDef,
+            final @RequestParam("boardDef") String boardDef,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -192,7 +192,7 @@ public class BoardDefApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardDefUnuseAjax(
-            final @RequestBody String boardDef,
+            final @RequestParam("boardDef") String boardDef,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -256,7 +256,7 @@ public class BoardDefApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardDefDelAjax(
-            final @RequestBody String boardDef,
+            final @RequestParam("boardDef") String boardDef,
             final LogActvtyParam logParam
     ) throws Exception {
 

@@ -57,7 +57,7 @@ public class VcatnStatsYyApiController
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> vcatnStatsUpdtAjax(
-            final @RequestBody @Valid VcatnStatsTotalDto vcatnStatsTotal,
+            final VcatnStatsTotalDto vcatnStatsTotal,
             final LogActvtyParam logParam
     ) throws Exception {
 

@@ -16,8 +16,8 @@ dF.JrnlDreamTag = (function(): Module {
         /**
          * 목록에 따른 꿈 태그 조회 (Ajax)
          */
-        listAjax: function() {
-            const url = "${Url.JRNL_DREAM_TAG_LIST_AJAX!}";
+        listAjax: function(): void {
+            const url = Url.JRNL_DREAM_TAG_LIST_AJAX;
             const ajaxData = { "yy": $("#jrnl_aside #yy").val(), "mnth": $("#jrnl_aside #mnth").val() };
             cF.ajax.get(url, ajaxData, function(res) {
                 if (!res.rslt) {
@@ -31,17 +31,17 @@ dF.JrnlDreamTag = (function(): Module {
         /**
          * 목록에 따른 꿈 태그 (전체) 조회 (Ajax)
          */
-        listAllAjax: function() {
-            const url = "${Url.JRNL_DREAM_TAG_LIST_AJAX!}";
-            const ajaxData = { "yy": 9999, "mnth":99 };
-            cF.ajax.get(url, ajaxData, function(res) {
+        listAllAjax: function(): void {
+            const url: string = Url.JRNL_DREAM_TAG_LIST_AJAX;
+            const ajaxData: Record<string, any> = { "yy": 9999, "mnth":99 };
+            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
-                    return false;
+                    return;
                 }
                 // 상단에 태그 카테고리 메뉴 생성
-                const ctgrSet = new Set();
-                res.rsltList.forEach(item => {
+                const ctgrSet: Set<string> = new Set();
+                res.rsltList.forEach((item: Record<string, string>): void => {
                     if (item.ctgr) ctgrSet.add(item.ctgr);
                 });
                 cF.handlebars.template(ctgrSet, "jrnl_tag_ctgr");

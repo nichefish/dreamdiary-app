@@ -106,7 +106,7 @@ public class VcatnPaprApiController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> vcatnPaprCfAjax(
-            final @RequestBody Integer postNo,
+            final @RequestParam("postNo") Integer postNo,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -182,7 +182,7 @@ public class VcatnPaprApiController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> vcatnPaprDelAjax(
-            final @RequestBody Integer postNo,
+            final @RequestParam("postNo") Integer postNo,
             final LogActvtyParam logParam
     ) throws Exception {
 

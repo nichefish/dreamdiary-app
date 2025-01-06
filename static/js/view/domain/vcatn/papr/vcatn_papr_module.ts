@@ -81,7 +81,7 @@ dF.VcatnPapr = (function(): Module {
             const isReg: boolean = $("#noticeRegForm").data("mode") === "regist";
             const url: string = isReg ? Url.VCATN_PAPR_REG_AJAX : Url.VCATN_PAPR_MDF_AJAX;
             const ajaxData: FormData = new FormData(document.getElementById("vcatnPaprRegForm") as HTMLFormElement);
-            cF.ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
+            cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
                     .then(function(): void {
                         if (res.rslt) dF.VcatnPapr.list();
@@ -132,7 +132,7 @@ dF.VcatnPapr = (function(): Module {
         cfAjax: function(): void {
             const url: string = Url.VCATN_PAPR_CF_AJAX;
             const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
-            cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+            cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
                     .then(function(): void {
                         if (res.rslt) cF.util.blockUIReload();
@@ -152,7 +152,7 @@ dF.VcatnPapr = (function(): Module {
 
                 const url: string = Url.VCATN_PAPR_DEL_AJAX;
                 const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) dF.VcatnPapr.list();

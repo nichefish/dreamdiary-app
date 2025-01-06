@@ -57,7 +57,7 @@ public class TmplatTxtApiController
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> tmplatTxtRegAjax(
-            final @RequestBody @Valid TmplatDefDto tmplatDto,
+            final @Valid TmplatDefDto tmplatDto,
             final LogActvtyParam logParam
     ) throws Exception {
 

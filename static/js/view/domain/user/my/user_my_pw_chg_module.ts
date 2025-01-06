@@ -65,7 +65,7 @@ dF.UserMyPwChg = (function(): Module {
         myPwChgAjax: function(): void {
             const url: string = Url.USER_MY_PW_CHG_AJAX;
             const ajaxData: Record<string, any> = { "userId": AuthInfo.userId, "currPw" : $("#currPw").val(), "newPw" : $("#newPw").val() };
-            cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+            cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
                     .then(function(): void {
                         if (res.rslt) cF.util.blockUIReload();

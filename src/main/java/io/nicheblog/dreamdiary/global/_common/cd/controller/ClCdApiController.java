@@ -55,7 +55,7 @@ public class ClCdApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> clCdRegAjax(
-            final @RequestBody @Valid ClCdDto clCd,
+            final @Valid ClCdDto clCd,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -89,7 +89,7 @@ public class ClCdApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> clCdMdfAjax(
-            final @RequestBody @Valid ClCdDto clCd,
+            final @Valid ClCdDto clCd,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -157,7 +157,7 @@ public class ClCdApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> clCdUseAjax(
-            final @RequestBody String clCd,
+            final @RequestParam("clCd") String clCd,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -189,7 +189,7 @@ public class ClCdApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> clCdUnuseAjax(
-            final @RequestBody String clCd,
+            final @RequestParam("clCd") String clCd,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -220,7 +220,7 @@ public class ClCdApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> clCdDelAjax(
-            final @RequestBody String clCd,
+            final @RequestParam("clCd") String clCd,
             final LogActvtyParam logParam
     ) throws Exception {
 

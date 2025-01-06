@@ -79,7 +79,7 @@ dF.VcatnSchdul = (function(): Module {
             const isReg: boolean = ($("#vcatnSchdulNo").val() === "");
             const url: string = isReg ? Url.VCATN_SCHDUL_REG_AJAX : Url.VCATN_SCHDUL_MDF_AJAX;
             const ajaxData: FormData = new FormData(document.getElementById("vcantSchdulRegForm") as HTMLFormElement);
-            cF.ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
+            cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
                     .then(function(): void {
                         if (res.rslt) cF.util.blockUIReload();
@@ -170,7 +170,7 @@ dF.VcatnSchdul = (function(): Module {
                 $("#vcatnSchdulNoProc").val(vcatnSchdulNo);
                 const url: string = Url.VCATN_SCHDUL_DEL_AJAX;
                 const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();

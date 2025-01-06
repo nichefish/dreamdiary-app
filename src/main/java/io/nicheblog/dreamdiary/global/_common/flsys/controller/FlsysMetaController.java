@@ -57,7 +57,7 @@ public class FlsysMetaController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> flsysMetaRegAjax(
-            final @RequestBody @Valid FlsysMetaDto flsysMeta,
+            final @Valid FlsysMetaDto flsysMeta,
             final LogActvtyParam logParam
     ) {
 
@@ -146,7 +146,7 @@ public class FlsysMetaController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> flsysMetaDelAjax(
-            final @RequestBody Integer postNo,
+            final @RequestParam("postNo") Integer postNo,
             final LogActvtyParam logParam
 
         ) {

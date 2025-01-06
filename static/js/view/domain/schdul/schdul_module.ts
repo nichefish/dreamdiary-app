@@ -108,7 +108,7 @@ dF.Schdul = (function(): Module {
         regAjax: function(): void {
             const url: string = Url.SCHDUL_REG_AJAX;
             const ajaxData: Record<string, any> = cF.util.getJsonFormData("#schdulRegForm");
-            cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+            cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
                     .then(function(): void {
                         if (res.rslt) cF.util.blockUIReload();
@@ -184,7 +184,7 @@ dF.Schdul = (function(): Module {
 
                 const url: string = Url.SCHDUL_DEL_AJAX;
                 const ajaxData: Record<string, any> = { "postNo" : key };
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();

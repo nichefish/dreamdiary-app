@@ -46,7 +46,7 @@
                     <div class="col">
                         <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">년도</span>
                         <select name="yy" id="yy" class="form-select" aria-label="Select example"
-                                onchange="JrnlSumryAside.yyMnth(this);">
+                                onchange="dF.JrnlSumryAsideyyMnth(this);">
                             <option value="">모든 년도</option>
                             <#assign currYy = DateUtils.getCurrYy()?number />
                             <#assign startYy = 2010 />
@@ -58,7 +58,7 @@
                     <div class="col">
                         <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">월</span>
                         <select name="mnth" id="mnth" class="form-select" aria-label="Select example"
-                                onchange="JrnlSumryAside.yyMnth(this);">
+                                onchange="dF.JrnlSumryAsideyyMnth(this);">
                             <option value="">모든 월</option>
                             <#list 1..12 as mnth>
                                 <option value="${mnth}">${mnth}</option>

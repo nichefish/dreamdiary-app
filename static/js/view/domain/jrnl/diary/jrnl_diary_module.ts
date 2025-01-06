@@ -4,7 +4,7 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.JrnlDiary = (function() {
+dF.JrnlDiary = (function(): Module {
     return {
         /**
          * initializes module.
@@ -97,7 +97,7 @@ dF.JrnlDiary = (function() {
 
                 const url: string = isReg ? Url.JRNL_DIARY_REG_AJAX : Url.JRNL_DIARY_MDF_AJAX;
                 const ajaxData: FormData = new FormData(document.getElementById("jrnlDiaryRegForm") as HTMLFormElement);
-                cF.ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (!res.rslt) return;
@@ -150,7 +150,7 @@ dF.JrnlDiary = (function() {
 
                 const url: string = Url.JRNL_DIARY_DEL_AJAX;
                 const ajaxData: Record<string, any> = { "postNo": postNo };
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (!res.rslt) return;

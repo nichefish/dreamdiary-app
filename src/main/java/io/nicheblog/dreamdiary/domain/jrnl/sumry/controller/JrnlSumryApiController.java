@@ -126,7 +126,7 @@ public class JrnlSumryApiController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSumryMakeAjax(
-            final @RequestBody Integer yy,
+            final @RequestParam("yy") Integer yy,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -188,7 +188,7 @@ public class JrnlSumryApiController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSumryDreamComptAjax(
-            final @RequestBody Integer postNo,
+            final @RequestParam("postNo") Integer postNo,
             final LogActvtyParam logParam
     ) throws Exception {
 

@@ -60,9 +60,8 @@ public class SchdulApiController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> schdulRegAjax(
-            final @RequestBody @Valid SchdulDto schdul,
-            final LogActvtyParam logParam,
-            final JandiParam jandiParam
+            final @Valid SchdulDto schdul,
+            final LogActvtyParam logParam
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
@@ -143,7 +142,7 @@ public class SchdulApiController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> schdulDelAjax(
-            final @RequestBody Integer postNo,
+            final @RequestParam("postNo") Integer postNo,
             final LogActvtyParam logParam
     ) throws Exception {
 

@@ -63,7 +63,7 @@ public class MenuApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuRegAjax(
-            final @RequestBody @Valid MenuDto menu,
+            final @Valid MenuDto menu,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -204,7 +204,7 @@ public class MenuApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuDelAjax(
-            final @RequestBody Integer key,
+            final @RequestParam("menuNo") Integer key,
             final LogActvtyParam logParam
     ) throws Exception {
 

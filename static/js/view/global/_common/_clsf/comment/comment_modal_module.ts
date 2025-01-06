@@ -64,7 +64,7 @@ dF.Comment.modal = (function(): any {
 
                 const url: string = isReg ? Url.COMMENT_REG_AJAX : Url.COMMENT_MDF_AJAX;
                 const ajaxData: FormData = new FormData(document.getElementById("commentRegForm") as HTMLFormElement);
-                cF.ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (!res.rslt) return;
@@ -114,7 +114,7 @@ dF.Comment.modal = (function(): any {
 
                 const url: string = Url.COMMENT_DEL_AJAX;
                 const ajaxData: Record<string, any> = { "postNo": postNo, "actvtyCtgrCd": "${actvtyCtgrCd!}" };
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (!res.rslt) return;

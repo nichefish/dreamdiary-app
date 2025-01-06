@@ -41,7 +41,7 @@ dF.JrnlDayTag = (function(): Module {
                 }
                 // 상단에 태그 카테고리 메뉴 생성
                 const ctgrSet: Set<string> = new Set();
-                res.rsltList.forEach(item => {
+                res.rsltList.forEach((item: Record<string, string>): void => {
                     if (item.ctgr) ctgrSet.add(item.ctgr);
                 });
                 cF.handlebars.template(ctgrSet, "jrnl_tag_ctgr");
@@ -60,10 +60,10 @@ dF.JrnlDayTag = (function(): Module {
 
             const url: string = Url.JRNL_DAY_TAG_DTL_AJAX;
             const ajaxData: Record<string, any> = { "tagNo": tagNo };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse) {
+            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
-                    return false;
+                    return;
                 }
                 cF.handlebars.template(res.rsltList, "jrnl_day_tag_dtl", "show");
             });

@@ -32,7 +32,7 @@ const Page: Page = (function(): Page {
 
                 const url: string = Url.TMPLAT_DEL_AJAX;
                 const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) Page.list();

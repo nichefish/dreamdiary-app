@@ -124,7 +124,7 @@ dF.User = (function(): Module {
         regAjax: function(): void {
             const url: string = dF.User.isMdf ? Url.USER_MDF_AJAX : Url.USER_REG_AJAX;
             const ajaxData: FormData = new FormData(document.getElementById("userRegForm") as HTMLFormElement);
-            cF.ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
+            cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
                     .then(function(): void {
                         if (res.rslt) dF.User.list();
@@ -155,7 +155,7 @@ dF.User = (function(): Module {
 
                 const url: string = Url.USER_REQST_CF_AJAX;
                 const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();
@@ -176,7 +176,7 @@ dF.User = (function(): Module {
 
                 const url: string = Url.USER_REQST_UNCF_AJAX;
                 const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();
@@ -197,7 +197,7 @@ dF.User = (function(): Module {
 
                 const url: string = Url.USER_PW_RESET_AJAX;
                 const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();
@@ -224,7 +224,7 @@ dF.User = (function(): Module {
                 if (!result.value) return;
                 const url: string = Url.USER_DEL_AJAX;
                 const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) dF.User.list();

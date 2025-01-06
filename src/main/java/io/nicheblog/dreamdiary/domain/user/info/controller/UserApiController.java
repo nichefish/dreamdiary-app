@@ -129,7 +129,7 @@ public class UserApiController
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> passwordResetAjax(
-            final @RequestBody Integer userNo,
+            final @RequestParam("userNo") Integer userNo,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -161,7 +161,7 @@ public class UserApiController
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> userDelAjax(
-            final @RequestBody Integer userNo,
+            final @RequestParam("userNo") Integer userNo,
             final LogActvtyParam logParam
     ) throws Exception {
 

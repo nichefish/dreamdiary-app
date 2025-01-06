@@ -24,12 +24,12 @@
     </div>
     <div>
         <#--헤더:: 버튼: 목록 검색-->
-        <@component.header_btn_search "JrnlSumry.search();" />
+        <@component.header_btn_search "dF.JrnlSumry.search();" />
     </div>
     <div>
         <#--헤더:: 버튼: 결산 동기화-->
         <button type="button" class="btn btn-sm btn-primary"
-                onclick="JrnlSumry.makeTotalSumryAjax();"
+                onclick="dF.JrnlSumry.makeTotalSumryAjax();"
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="전체 년도에 대한 결산 정보를 갱신합니다.">
             <i class="bi bi-arrow-repeat"></i>전체 결산 갱신
         </button>

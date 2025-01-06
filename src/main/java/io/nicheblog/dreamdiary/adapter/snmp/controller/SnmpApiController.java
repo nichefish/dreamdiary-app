@@ -47,7 +47,7 @@ public class SnmpApiController
     @PostMapping(Url.URL_API_SNMP_SEND_AJAX)
     @ResponseBody
     public ResponseEntity<AjaxResponse> snmpSendAjax (
-            final @RequestBody SnmpApiParam snmpApiParam,
+            final SnmpApiParam snmpApiParam,
             final LogActvtyParam logParam
         ) throws Exception {
 

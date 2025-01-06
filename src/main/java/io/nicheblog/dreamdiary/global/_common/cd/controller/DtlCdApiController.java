@@ -93,7 +93,7 @@ public class DtlCdApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> dtlCdRegAjax(
-            final @RequestBody @Valid DtlCdDto dtlCd,
+            final @Valid DtlCdDto dtlCd,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -127,7 +127,7 @@ public class DtlCdApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> dtlCdMdfAjax(
-            final @RequestBody @Valid DtlCdDto dtlCd,
+            final @Valid DtlCdDto dtlCd,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -195,7 +195,7 @@ public class DtlCdApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> dtlCdUseAjax(
-            final @RequestBody @Valid DtlCdKey key,
+            final DtlCdKey key,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -227,7 +227,7 @@ public class DtlCdApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> dtlCdUnuseAjax(
-            final @RequestBody @Valid DtlCdKey key,
+            final DtlCdKey key,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -259,7 +259,7 @@ public class DtlCdApiController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> dtlCdDelAjax(
-            final @RequestBody @Valid DtlCdKey key,
+            final DtlCdKey key,
             final LogActvtyParam logParam
     ) throws Exception {
 

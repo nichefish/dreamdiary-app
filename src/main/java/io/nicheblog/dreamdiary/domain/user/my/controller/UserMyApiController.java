@@ -119,7 +119,7 @@ public class UserMyApiController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> myPwChkAjax(
-            final @RequestBody String currPw,
+            final @RequestParam("currPw") @Nullable String currPw,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -153,7 +153,7 @@ public class UserMyApiController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> myPwChgAjax(
-            final @RequestBody UserPwChgParam pwChgParam,
+            final UserPwChgParam pwChgParam,
             final LogActvtyParam logParam
     ) throws Exception {
 

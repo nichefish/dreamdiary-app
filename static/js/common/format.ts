@@ -129,6 +129,16 @@ cF.format = (function(): Module {
             return str
                 .replace(/([a-z])([A-Z])/g, '$1_$2')
                 .toLowerCase(); // 모두 소문자로 변환
+        },
+
+        /**
+         * HTML 엔티티를 다시 원래 문자로 변환
+         * @param {string} escaped
+         * @return {string}
+         */
+        unescapeHtml: function(escaped: string): string {
+            const doc: Document = new DOMParser().parseFromString(escaped, 'text/html');
+            return doc.body.textContent || "";
         }
     }
 })();
