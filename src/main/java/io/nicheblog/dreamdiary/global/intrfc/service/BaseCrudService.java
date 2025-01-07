@@ -244,7 +244,7 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      * @return Boolean 삭제 성공시 true, 실패 시 false
      * @throws Exception 삭제 중 발생할 수 있는 예외
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     default Boolean delete(final Key key) throws Exception {
         final Repository repository = this.getRepository();
         final Entity deleteEntity = this.getDtlEntity(key);
