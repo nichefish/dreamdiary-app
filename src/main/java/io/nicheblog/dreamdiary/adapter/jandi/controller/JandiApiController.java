@@ -56,8 +56,8 @@ public class JandiApiController
     )
     @PostMapping(Url.API_JANDI_SND_MSG)
     public ResponseEntity<JandiApiRespnsDto> sendMsg(
-            final LogActvtyParam logParam,
-            final JandiParam jandiParam
+            final JandiParam jandiParam,
+            final LogActvtyParam logParam
     ) throws Exception {
 
         final JandiApiRespnsDto apiResponse = new JandiApiRespnsDto();

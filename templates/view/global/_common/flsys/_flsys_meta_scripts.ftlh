@@ -52,7 +52,7 @@
                 }).then(function(result) {
                     if (!result.value) return;
                     const url = "${Url.FLSYS_META_REG_AJAX!}";
-                    const ajaxData = $("#flsysMetaRegForm").serializeArray();
+                    const ajaxData = cF.util.getJsonFormData("#flsysMetaRegForm");
                     cF.ajax.post(url, ajaxData, function(res) {
                         Swal.fire({ text: res.message })
                             .then(function() {

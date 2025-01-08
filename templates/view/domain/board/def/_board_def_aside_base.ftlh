@@ -58,14 +58,7 @@
                     </thead>
                     <#--begin::Table body-->
                     <tbody>
-                        <#list BOARD_DEF_RSRVD_CD![] as reserved>
-                            <tr>
-                                <td class="text-start">
-                                    <div class="text-muted fw-bold">${reserved.dtlCd!}</div>
-                                </td>
-                                <td class="text-center">${reserved.dtlCdNm!}</td>
-                            </tr>
-                        </#list>
+
                     </tbody>
                 </table>
             </div>

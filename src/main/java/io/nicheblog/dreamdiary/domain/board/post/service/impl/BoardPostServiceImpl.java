@@ -101,7 +101,7 @@ public class BoardPostServiceImpl
      */
     @Override
     @Transactional(readOnly = true)
-    public BoardPostDto.DTL getDtlDto(final BaseClsfKey key) throws Exception {
+    public BoardPostDto.DTL getDtlDto(final Integer key) throws Exception {
         final BoardPostEntity retrievedEntity = this.getDtlEntity(key);       // Entity 레벨 조회
         final BoardPostDto.DTL retrievedDto = mapstruct.toDto(retrievedEntity);
         final String ctgrNm = dtlCdService.getDtlCdNm(retrievedDto.getCtgrClCd(), retrievedDto.getCtgrCd());

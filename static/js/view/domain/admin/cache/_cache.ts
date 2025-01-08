@@ -35,7 +35,7 @@ dF.Cache = (function(): Module {
         evictAjax: function(cacheName: string, key: string): void {
             const url: string = Url.CACHE_EVICT_AJAX;
             const ajaxData: Record<string, any> = { "cacheName": cacheName, "key": key };
-            cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+            cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                 if (res.rslt) Swal.fire(JSON.stringify(res));
                 Swal.fire({ text: res.message })
                     .then(function(): void {
@@ -50,7 +50,7 @@ dF.Cache = (function(): Module {
          */
         clearAllAjax: function(): void {
             const url: string = Url.CACHE_CLEAR_AJAX;
-            cF.ajax.post(url, null, function(res: AjaxResponse): void {
+            cF.$ajax.post(url, null, function(res: AjaxResponse): void {
                 if (res.rslt) Swal.fire(JSON.stringify(res));
                 Swal.fire({ text: res.message })
                     .then(function(): void {

@@ -14,7 +14,7 @@
 <#--#include:: component:: 태그 클릭 필터링-->
 <#include "/view/global/_common/_clsf/tag/_tag_list_header.ftlh">
 
-<#if boardCd == "cmpyLife">
+<#if boardDef == "cmpyLife">
     <button type="button" class="btn btn-sm btn-light btn-active-secondary mx-1"
             onclick="$('#cmpy_life_modal').modal('show');"
             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="슬기로운 회사생활 안내 팝업을 호출합니다.">
@@ -50,7 +50,7 @@
                             <div class="row d-flex align-items-center justify-content-between">
                                 <div class="col-xl-8 col-12 d-flex flex-column">
                                     <div class="my-1">
-                                        <a href="${Url.BOARD_POST_DTL!}?boardCd=${post.boardCd!}&postNo=${post.postNo!}&notionPageId=${post.notionPageId!}"
+                                        <a href="${Url.BOARD_POST_DTL!}?boardDef=${post.boardDef!}&postNo=${post.postNo!}&notionPageId=${post.notionPageId!}"
                                            class="title-fxd vertical-middle text-underline-dotted <#if (((post.imprtcYn)!"N") == "Y")!false>fw-bold</#if>"
                                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="상세 화면으로 이동합니다.">
                                             <#if (post.ctgrNm!"") != "">
@@ -107,7 +107,7 @@
                             <div class="row d-flex align-items-center justify-content-between align-items-center">
                                 <div class="col-xl-8 col-12 d-flex flex-column">
                                     <div class="my-1">
-                                        <a href="${Url.BOARD_POST_DTL!}?boardCd=${post.boardCd!}&postNo=${post.postNo!}&notionPageId=${post.notionPageId!}"
+                                        <a href="${Url.BOARD_POST_DTL!}?boardDef=${post.boardDef!}&postNo=${post.postNo!}&notionPageId=${post.notionPageId!}"
                                            class="text-dark vertical-middle text-underline-dotted <#if (((post.imprtcYn)!"N") == "Y")!false>fw-bold text-danger</#if>"
                                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="상세 화면으로 이동합니다.">
                                             <#if (post.ctgrNm!"") != "">
@@ -172,7 +172,7 @@
 
 <form name="procForm" id="procForm" method="get">
     <input type="hidden" name="postNo" id="postNo" value=""/>
-    <input type="hidden" name="boardCd" id="boardCd" value="${boardCd!}"/>
+    <input type="hidden" name="boardDef" id="boardDef" value="${boardDef!}"/>
 </form>
 
 <#include "/view/domain/board/post/_modal/_board_post_dtl_modal.ftlh">

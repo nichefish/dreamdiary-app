@@ -68,8 +68,8 @@ dF.DtlCd = (function(): Module {
 
                 $("#dtlCdRegForm #regYn").val("Y");
                 const url: string = Url.DTL_CD_REG_AJAX;
-                const ajaxData: Record<string, any> = $("#dtlCdRegForm").serializeArray();
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#dtlCdRegForm");
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();
@@ -112,7 +112,7 @@ dF.DtlCd = (function(): Module {
 
                 const url: string = Url.DTL_CD_USE_AJAX;
                 const ajaxData: Record<string, any> = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();
@@ -136,7 +136,7 @@ dF.DtlCd = (function(): Module {
 
                 const url: string = Url.DTL_CD_UNUSE_AJAX;
                 const ajaxData: Record<string, any> = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();
@@ -160,7 +160,7 @@ dF.DtlCd = (function(): Module {
 
                 const url: string = Url.DTL_CD_DEL_AJAX;
                 const ajaxData: Record<string, any> = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();

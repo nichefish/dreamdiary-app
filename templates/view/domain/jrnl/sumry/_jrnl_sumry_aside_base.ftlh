@@ -3,24 +3,6 @@
  * @included_in : jrnl_sumry_page.ftlh
  -->
 
-<script>
-    const JrnlSumryAside = (function() {
-        return {
-            yyMnth: function(obj) {
-                // 쿠키 설정하기
-                const id = $(obj).attr("id");
-                const cookieOptions = {
-                    path: "/jrnl/sumry/",
-                    expires: cF.date.getCurrDateAddDay(36135)
-                };
-                $.cookie("jrnl_" + id, $(obj).val(), cookieOptions);
-                // 목록 조회
-                JrnlSumry.listAjax();
-            },
-        }
-    })();
-</script>
-
 <#--begin::aside-->
 <div id="kt_app_aside" class="app-aside flex-column mt-7"
      data-kt-drawer="true"
@@ -64,7 +46,7 @@
                     <div class="col">
                         <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">년도</span>
                         <select name="yy" id="yy" class="form-select" aria-label="Select example"
-                                onchange="JrnlSumryAside.yyMnth(this);">
+                                onchange="dF.JrnlSumryAsideyyMnth(this);">
                             <option value="">모든 년도</option>
                             <#assign currYy = DateUtils.getCurrYy()?number />
                             <#assign startYy = 2010 />
@@ -76,7 +58,7 @@
                     <div class="col">
                         <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">월</span>
                         <select name="mnth" id="mnth" class="form-select" aria-label="Select example"
-                                onchange="JrnlSumryAside.yyMnth(this);">
+                                onchange="dF.JrnlSumryAsideyyMnth(this);">
                             <option value="">모든 월</option>
                             <#list 1..12 as mnth>
                                 <option value="${mnth}">${mnth}</option>
@@ -123,3 +105,5 @@
     <!--end::Aside wrapper-->
 </div>
 <!--end::aside-->
+
+<script type="text/javascript" src="/js/view/domain/jrnl/sumry/jrnl_sumry_aside_module.js?${releaseDate!}"></script>

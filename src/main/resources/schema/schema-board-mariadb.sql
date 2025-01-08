@@ -10,10 +10,9 @@
 -- @extends: BaseAuditEntity
 -- @implements: StateEmbed
 CREATE TABLE IF NOT EXISTS board_def (
-    board_cd VARCHAR(30) PRIMARY KEY COMMENT '게시판 코드 (PK)',
-    board_nm VARCHAR(120) COMMENT '게시판 이름',
+    board_def VARCHAR(30) PRIMARY KEY COMMENT '게시판 분류 (PK)',
+    board_nm VARCHAR(120) NOT NULL COMMENT '게시판 이름',
     ctgr_cl_cd VARCHAR(30) COMMENT '분류 코드',
-    menu_no VARCHAR(10) COMMENT '메뉴 번호',
     dc VARCHAR(2000) COMMENT '설명',
     -- STATE (module)
     sort_ordr INT DEFAULT 0 COMMENT '정렬 순서',
@@ -33,7 +32,7 @@ CREATE TABLE IF NOT EXISTS board_def (
 -- @implements: TagEmbed, CommentEmbed, ManagtEmbed, ViewerEmbed
 CREATE TABLE IF NOT EXISTS board_post(
     -- CLSF
-    post_no INT COMMENT '글 번호 (PK)',
+    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 번호 (PK)',
     content_type VARCHAR(30) COMMENT '게시판 코드 (PK)',
     -- POST
     title VARCHAR(200) COMMENT '제목',
@@ -43,6 +42,8 @@ CREATE TABLE IF NOT EXISTS board_post(
     fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
     hit_cnt INT DEFAULT 0 COMMENT '조회수',
     mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
+    -- BOARD_POST
+    board_def VARCHAR(50) NOT NULL DEFAULT 'DEFAULT' COMMENT '게시판 분류',
     -- MANAGT (module)
     managtr_id VARCHAR(20) COMMENT '작업자 ID',
     managt_dt DATETIME COMMENT '작업일시',
@@ -55,7 +56,8 @@ CREATE TABLE IF NOT EXISTS board_post(
     mdf_dt DATETIME COMMENT '수정일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
     -- CONSTRAINT
-    PRIMARY KEY (post_no, content_type)
+    FOREIGN KEY (board_def) REFERENCES board_def(board_def),
+    INDEX (board_def)
 ) COMMENT = '게시판 게시물';
 
 -- ---------- --

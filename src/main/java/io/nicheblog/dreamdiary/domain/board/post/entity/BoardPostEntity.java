@@ -9,7 +9,6 @@ import io.nicheblog.dreamdiary.global._common._clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.global._common._clsf.viewer.entity.embed.ViewerEmbed;
 import io.nicheblog.dreamdiary.global._common._clsf.viewer.entity.embed.ViewerEmbedModule;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BasePostEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,28 +31,25 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "board_post")
-@IdClass(BaseClsfKey.class)      // 분류 코드+상세 코드 복합키 적용
 @Getter
 @Setter
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE board_post SET del_yn = 'Y' WHERE content_type = ? AND post_no = ?")
+@SQLDelete(sql = "UPDATE board_post SET del_yn = 'Y' WHERE post_no = ?")
 public class BoardPostEntity
         extends BasePostEntity
         implements CommentEmbedModule, TagEmbedModule, ManagtEmbedModule, ViewerEmbedModule {
 
-    /** 글 번호 :: 복합키 사용, 시퀀스 생성 로직을 위해 재정의 */
+    /** 글 번호 */
     @Id
-    @TableGenerator(name = "board_post", table = "cmm_sequence", pkColumnName = "seq_nm", valueColumnName = "seq_val", pkColumnValue = "post_no", initialValue = 1, allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.TABLE, generator = "board_post")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_no")
-    @Comment("글번호 (key)")
+    @Comment("글 번호")
     private Integer postNo;
 
     /** 컨텐츠 타입 :: Override */
-    @Id
     @Column(name = "content_type")
     @Comment("컨텐츠 타입")
     private String contentType;
@@ -61,8 +57,8 @@ public class BoardPostEntity
     /* ----- */
 
     /** 게시판 정의 정보 */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "content_type", referencedColumnName = "board_cd", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_def", referencedColumnName = "board_def", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("게시판 정의 정보")
     private BoardDefEntity boardDefInfo;

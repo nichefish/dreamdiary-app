@@ -30,7 +30,7 @@ public class ViewerDto
     /** 참조 글 번호 */
     private Integer refPostNo;
 
-    /** 참조 컨텐츠 타입 (게시판 코드) */
+    /** 참조 컨텐츠 타입 */
     private String refContentType;
 
     /* ----- */

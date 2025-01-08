@@ -122,7 +122,7 @@ dF.Notice = (function(): Module {
         regAjax: function(): void {
             const url: string = dF.Notice.isMdf ? Url.NOTICE_MDF_AJAX : Url.NOTICE_REG_AJAX;
             const ajaxData: FormData = new FormData(document.getElementById("noticeRegForm") as HTMLFormElement);
-            cF.ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
+            cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({text: res.message})
                     .then(function(): void {
                         if (res.rslt) dF.Notice.list();
@@ -181,8 +181,8 @@ dF.Notice = (function(): Module {
                 if (!result.value) return;
 
                 const url: string = Url.NOTICE_DEL_AJAX;
-                const ajaxData: Record<string, any> = $("#procForm").serializeArray();
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({text: res.message})
                         .then(function(): void {
                             if (res.rslt) dF.Notice.list();

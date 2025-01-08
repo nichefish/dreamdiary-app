@@ -35,7 +35,15 @@ public interface UserMyService {
      * @return 내 비밀번호 변경 성공 여부 (boolean)
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
-    Boolean myPwChg(final String lgnUserId, final String currPw, final String newPw) throws Exception;
+    Boolean myPwChg(final UserPwChgParam pwChgParam) throws Exception;
+
+    /**
+     * 사용자 관리 > 내 비밀번호 변경
+     *
+     * @return 내 비밀번호 변경 성공 여부 (boolean)
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    Boolean myPwChg(final String currPw, final String newPw) throws Exception;
 
     /**
      * 사용자 관리 > 내 프로필 이미지 업로드

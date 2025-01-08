@@ -20,24 +20,24 @@
                 </div>
                 <div class="col-3 d-flex align-items-center gap-2">
                     <button type="button" class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 cursor-pointer"
-                            onclick="JrnlDiary.regModal({{postNo}}, '{{stdrdDt}}');"
+                            onclick="dF.JrnlDiary.regModal({{postNo}}, '{{stdrdDt}}');"
                             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 일기 <@spring.message "bs.tooltip.modal.reg"/>">
                         <i class="bi bi-book fs-4 pe-1"></i>
                         저널 일기 등록
                     </button>
                     <button type="button" class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 cursor-pointer"
-                            onclick="JrnlDream.regModal({{postNo}}, '{{stdrdDt}}');"
+                            onclick="dF.JrnlDream.regModal({{postNo}}, '{{stdrdDt}}');"
                             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.modal.reg"/>">
                         <i class="bi bi-moon-stars fs-4 pe-1"></i>
                         저널 꿈 등록
                     </button>
                     <button type="button" class="btn btn-sm btn-light-primary btn-outlined py-2 px-3 cursor-pointer"
-                            onclick="JrnlDay.mdfModal({{postNo}});"
+                            onclick="dF.JrnlDay.mdfModal({{postNo}});"
                             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 일자 <@spring.message "bs.tooltip.modal.mdf"/>">
                         <i class="bi bi-pencil-square p-0"></i>
                     </button>
                     <button type="button" class="btn btn-sm btn-light-danger btn-outlined py-2 px-3 cursor-pointer"
-                            onclick="JrnlDay.delAjax({{postNo}});"
+                            onclick="dF.JrnlDay.delAjax({{postNo}});"
                             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 일자 <@spring.message "bs.tooltip.modal.mdf"/>">
                         <i class="bi bi-trash p-0"></i>
                     </button>
@@ -51,7 +51,7 @@
                             <i class="bi bi-tag"></i>
                             {{#tag.list}}
                                 <span class="text-muted cursor-pointer pe-1"
-                                      onclick="JrnlDayTag.dtlModal({{refTagNo}}, '{{tagNm}}');"
+                                      onclick="dF.JrnlDayTag.dtlModal({{refTagNo}}, '{{tagNm}}');"
                                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                                       title="해당 태그가 등록된 게시물 목록 팝업을 호출합니다.">
                                     #<span class="border-bottom text-primary fw-lighter opacity-hover">
@@ -133,12 +133,12 @@
                             <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                             <div class="col-1 py-3 jrnl-diary-cn d-flex justify-content-between w-50px gap-1">
                                 <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
-                                        onclick="JrnlDiary.mdfModal({{postNo}}, '{{stdrdDt}}');"
+                                        onclick="dF.JrnlDiary.mdfModal({{postNo}}, '{{stdrdDt}}');"
                                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.modal.mdf"/>">
                                     <i class="bi bi-pencil-square p-0"></i>
                                 </button>
                                 <button type="button" class="btn btn-sm btn-light-danger btn-outlined ms-2 py-1 px-2 cursor-pointer"
-                                        onclick="JrnlDiary.delAjax({{postNo}});"
+                                        onclick="dF.JrnlDiary.delAjax({{postNo}});"
                                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.del"/>">
                                     <i class="bi bi-trash p-0"></i>
                                 </button>
@@ -171,7 +171,7 @@
                                         <i class="bi bi-tag"></i>
                                         {{#tag.list}}
                                             <span class="text-muted cursor-pointer pe-1"
-                                                  onclick="JrnlDreamTag.dtlModal({{refTagNo}});"
+                                                  onclick="dF.JrnlDreamTag.dtlModal({{refTagNo}});"
                                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                                                   title="해당 태그가 등록된 게시물 목록 팝업을 호출합니다.">
                                                 #<span class="border-bottom text-primary fw-lighter opacity-hover">
@@ -214,12 +214,12 @@
                             <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                             <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between w-50px gap-1">
                                 <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
-                                        onclick="JrnlDream.mdfModal({{postNo}}, '{{stdrdDt}}');"
+                                        onclick="dF.JrnlDream.mdfModal({{postNo}}, '{{stdrdDt}}');"
                                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.modal.mdf"/>">
                                     <i class="bi bi-pencil-square p-0"></i>
                                 </button>
                                 <button type="button" class="btn btn-sm btn-light-danger btn-outlined ms-2 py-1 px-2 cursor-pointer"
-                                        onclick="JrnlDream.delAjax({{postNo}});"
+                                        onclick="dF.JrnlDream.delAjax({{postNo}});"
                                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.del"/>">
                                     <i class="bi bi-trash p-0"></i>
                                 </button>
@@ -243,7 +243,7 @@
                                     <div class="ms-2 mt-3">
                                         {{#tag.list}}
                                             <span class="text-muted cursor-pointer pe-1"
-                                                  onclick="JrnlDreamTag.dtlModal({{refTagNo}});"
+                                                  onclick="dF.JrnlDreamTag.dtlModal({{refTagNo}});"
                                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                                                   title="해당 태그가 등록된 게시물 목록 팝업을 호출합니다.">
                                                 #<span class="border-bottom text-primary fw-lighter opacity-hover">
@@ -286,12 +286,12 @@
                             <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                             <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between w-50px gap-1">
                                 <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
-                                        onclick="JrnlDream.mdfModal({{postNo}}, '{{stdrdDt}}');"
+                                        onclick="dF.JrnlDream.mdfModal({{postNo}}, '{{stdrdDt}}');"
                                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.modal.mdf"/>">
                                     <i class="bi bi-pencil-square p-0"></i>
                                 </button>
                                 <button type="button" class="btn btn-sm btn-light-danger btn-outlined ms-2 py-1 px-2 cursor-pointer"
-                                        onclick="JrnlDream.delAjax({{postNo}});"
+                                        onclick="dF.JrnlDream.delAjax({{postNo}});"
                                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.del"/>">
                                     <i class="bi bi-trash p-0"></i>
                                 </button>

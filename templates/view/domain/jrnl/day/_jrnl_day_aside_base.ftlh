@@ -3,9 +3,6 @@
  * @included_in : jrnl_day_page.ftlh
  -->
 
-<#--include::script modules-->
-<#include "/view/domain/jrnl/day/_jrnl_day_aside_scripts.ftlh">
-
 <#--begin::aside-->
 <div id="kt_app_aside" class="app-aside flex-column mt-7"
      data-kt-drawer="true"
@@ -48,12 +45,12 @@
                 <#--begin::row-->
                 <div class="mb-4">
                     <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
-                            onclick="JrnlDayAside.today();"
+                            onclick="dF.JrnlDayAside.today();"
                             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="오늘 일자를 조회합니다.">
                         오늘 일자 조회하기<i class="bi bi-search ps-1 pe-0"></i>
                     </button>
                     <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
-                            onclick="JrnlDayAside.sort();"
+                            onclick="dF.JrnlDayAside.sort();"
                             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="날짜 정렬을 변경합니다.">
                         <i class="bi bi-sort-numeric-up-alt fs-2 pe-0" id="sortIcon"></i>
                     </button>
@@ -61,7 +58,7 @@
                 <#--begin::row-->
                 <div class="mb-4">
                     <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
-                            onclick="JrnlDayAside.pinpoint();"
+                            onclick="dF.JrnlDayAside.pinpoint();"
                             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="나중에 돌아올 수 있도록.&#10;현재 년월을 저장합니다.">
                         현재 년월 저장<i class="bi bi-pin-map ps-1 pe-0"></i>
                     </button>
@@ -71,7 +68,7 @@
                         <span id="pinMnth" class="text-muted text-underline-dotted">--</span>
                     </span>
                     <button type="button" class="btn btn-sm btn-outline btn-light-primary px-2"
-                            onclick="JrnlDayAside.turnback();"
+                            onclick="dF.JrnlDayAside.turnback();"
                             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저장된 년월로 이동합니다.">
                         <i class="bi bi-reply-all"></i>
                     </button>
@@ -81,7 +78,7 @@
                     <div class="col">
                         <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">년도</span>
                         <select name="yy" id="yy" class="form-select" aria-label="Select example"
-                                onchange="JrnlDayAside.yy();">
+                                onchange="dF.JrnlDayAside.yy();">
                             <option value="">----</option>
                             <#assign currYy = DateUtils.getCurrYy()?number />
                             <#assign startYy = 2010 />
@@ -93,7 +90,7 @@
                     <div class="col">
                         <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">월</span>
                         <select name="mnth" id="mnth" class="form-select" aria-label="Select example"
-                                onchange="JrnlDayAside.mnth();">
+                                onchange="dF.JrnlDayAside.mnth();">
                             <option value="">--</option>
                             <#list 1..12 as mnth>
                                 <option value="${mnth}">${mnth}</option>
@@ -109,7 +106,7 @@
                         <input type="text" name="diaryKeyword" id="diaryKeyword" class="form-control"
                                value="" placeholder="일기 키워드 검색" maxlength="200"/>
                         <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
-                                onclick="JrnlDiary.keywordListAjax();"
+                                onclick="dF.JrnlDiary.keywordListAjax();"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="일기를 키워드로 검색합니다.">
                             <i class="bi bi-search pe-0"></i>
                         </button>
@@ -122,7 +119,7 @@
                         <input type="text" name="dreamKeyword" id="dreamKeyword" class="form-control"
                                value="" placeholder="꿈 키워드 검색" maxlength="200"/>
                         <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
-                                onclick="JrnlDream.keywordListAjax();"
+                                onclick="dF.JrnlDream.keywordListAjax();"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="꿈을 키워드로 검색합니다.">
                             <i class="bi bi-search pe-0"></i>
                         </button>
@@ -135,3 +132,6 @@
     <!--end::Aside wrapper-->
 </div>
 <!--end::aside-->
+
+<#--include::script modules-->
+<script type="text/javascript" src="/js/view/domain/jrnl/day/jrnl_day_aside_module.js?${releaseDate!}"></script>

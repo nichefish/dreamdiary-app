@@ -19,6 +19,7 @@ public enum ContentType {
     DEFAULT("DEFAULT", "기본"),
     // 공지사항
     NOTICE("NOTICE", "공지사항"),
+    BOARD("BOARD", "일반게시판"),
     // 저널
     JRNL_DAY("JRNL_DAY", "저널 일자", "calendar3"),
     JRNL_DREAM("JRNL_DREAM", "저널 꿈", "moon-stars"),

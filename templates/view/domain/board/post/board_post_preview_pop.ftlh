@@ -36,7 +36,7 @@
 
 <form name="procForm" id="procForm" method="get">
     <input type="hidden" name="postNo" id="postNo" value="${post.postNo!}" />
-    <input type="hidden" name="boardCd" id="boardCd" value="${post.boardCd!}" />
+    <input type="hidden" name="boardDef" id="boardDef" value="${post.boardDef!}" />
 </form>
 
 </@layout.layout>

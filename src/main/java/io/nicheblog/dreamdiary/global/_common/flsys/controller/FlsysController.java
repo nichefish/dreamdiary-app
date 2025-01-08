@@ -104,7 +104,7 @@ public class FlsysController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return 파일 시스템 정보를 담은 AjaxResponse 객체를 ResponseEntity로 반환
      */
-    @PostMapping(value = Url.FLSYS_LIST_AJAX)
+    @GetMapping(value = Url.FLSYS_LIST_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> flsysListAjax(

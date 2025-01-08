@@ -10,7 +10,7 @@
     <div class="col" id="jrnl_dream_tag_list_div">
         <#list dreamTagList![] as tag>
             <span class="py-2 me-3 cursor-pointer opacity-hover"
-                  onclick="JrnlDreamTag.dtlModal(${tag.tagNo!}, '${tag.tagNm!}');"
+                  onclick="dF.JrnlDreamTag.dtlModal(${tag.tagNo!}, '${tag.tagNm!}');"
                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="해당 태그로 게시물 목록을&#10;필터링합니다.">
                 <span class="${tag.tagClass!}">
                     <#if tag.ctgr?? && tag.ctgr != ""><span class="fs-7 text-noti">[${tag.ctgr!}]</span></#if>
@@ -71,12 +71,12 @@
                     <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                     <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between w-50px gap-1">
                         <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
-                                onclick="JrnlDream.mdfModal(${dream.postNo!}, '${dream.stdrdDt!}');"
+                                onclick="dF.JrnlDream.mdfModal(${dream.postNo!}, '${dream.stdrdDt!}');"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.modal.mdf"/>">
                             <i class="bi bi-pencil-square p-0"></i>
                         </button>
                         <button type="button" class="btn btn-sm btn-light-danger btn-outlined ms-2 py-1 px-2 cursor-pointer"
-                                onclick="JrnlDream.delAjax(${dream.postNo!});"
+                                onclick="dF.JrnlDream.delAjax(${dream.postNo!});"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.del"/>">
                             <i class="bi bi-trash p-0"></i>
                         </button>

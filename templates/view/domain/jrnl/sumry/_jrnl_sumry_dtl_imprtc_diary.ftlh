@@ -68,12 +68,12 @@
                     <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                     <div class="col-1 py-3 jrnl-diary-cn d-flex justify-content-between w-50px gap-1">
                         <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
-                                onclick="JrnlDream.mdfModal(${diary.postNo!}, '${diary.stdrdDt!}');"
+                                onclick="dF.JrnlDream.mdfModal(${diary.postNo!}, '${diary.stdrdDt!}');"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.modal.mdf"/>">
                             <i class="bi bi-pencil-square p-0"></i>
                         </button>
                         <button type="button" class="btn btn-sm btn-light-danger btn-outlined ms-2 py-1 px-2 cursor-pointer"
-                                onclick="JrnlDream.delAjax(${diary.postNo!});"
+                                onclick="dF.JrnlDream.delAjax(${diary.postNo!});"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.del"/>">
                             <i class="bi bi-trash p-0"></i>
                         </button>

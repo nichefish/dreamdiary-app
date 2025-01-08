@@ -35,7 +35,7 @@ public class ManagtrDto
     @Positive
     private Integer refPostNo;
 
-    /** 참조 컨텐츠 타입 (게시판 코드) */
+    /** 참조 컨텐츠 타입 */
     @Size(max = 50)
     private String refContentType;
 

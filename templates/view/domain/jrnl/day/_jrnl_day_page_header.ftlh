@@ -14,6 +14,6 @@
     <div class="col-1 ms-2 me-4 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
     <div>
         <#--헤더:: 버튼: 등록 모달 호출하기-->
-        <@component.header_btn_reg_modal "JrnlDay.regModal();" />
+        <@component.header_btn_reg_modal "dF.JrnlDay.regModal();" />
     </div>
 </form>

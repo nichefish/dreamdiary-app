@@ -33,7 +33,7 @@ dF.BoardDef = (function(): Module {
          * Draggable 컴포넌트 init
          */
         initDraggable: function(): void {
-            const keyExtractor: Function = (item: HTMLElement) => ({ "boardCd": $(item).attr("id") });
+            const keyExtractor: Function = (item: HTMLElement) => ({ "boardDef": $(item).attr("id") });
             const url: string = Url.BOARD_DEF_SORT_ORDR_AJAX;
             dF.BoardDef.swappable = cF.draggable.init(keyExtractor, url);
         },
@@ -64,8 +64,8 @@ dF.BoardDef = (function(): Module {
                 if (!result.value) return;
 
                 const url: string = Url.BOARD_DEF_REG_AJAX;
-                const ajaxData: Record<string, any> = $("#boardDefRegForm").serializeArray();
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#boardDefRegForm");
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();
@@ -76,11 +76,11 @@ dF.BoardDef = (function(): Module {
 
         /**
          * 수정 모달 호출
-         * @param {string} boardCd - 게시판 코드 (key).
+         * @param {string} boardDef - 게시판 코드 (key).
          */
-        mdfModal: function(boardCd: string): void {
+        mdfModal: function(boardDef: string): void {
             const url: string = Url.BOARD_DEF_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "boardCd": boardCd };
+            const ajaxData: Record<string, any> = { "boardDef": boardDef };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -105,8 +105,8 @@ dF.BoardDef = (function(): Module {
                 if (!result.value) return;
 
                 const url: string = Url.BOARD_DEF_USE_AJAX;
-                const ajaxData: Record<string, any> = { "boardCd": key };
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                const ajaxData: Record<string, any> = { "boardDef": key };
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();
@@ -127,8 +127,8 @@ dF.BoardDef = (function(): Module {
                 if (!result.value) return;
 
                 const url: string = Url.BOARD_DEF_UNUSE_AJAX;
-                const ajaxData: Record<string, any> = { "boardCd": key };
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                const ajaxData: Record<string, any> = { "boardDef": key };
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();
@@ -149,8 +149,8 @@ dF.BoardDef = (function(): Module {
                 if (!result.value) return;
 
                 const url: string = Url.BOARD_DEF_DEL_AJAX;
-                const ajaxData: Record<string, any> = { "boardCd": key };
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                const ajaxData: Record<string, any> = { "boardDef": key };
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();

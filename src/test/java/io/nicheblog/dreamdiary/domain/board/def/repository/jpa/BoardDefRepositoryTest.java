@@ -69,12 +69,12 @@ class BoardDefRepositoryTest {
 
         // When::
         BoardDefEntity registered = boardDefRepository.save(boardDefEntity);
-        String boardCd = registered.getBoardCd();
-        BoardDefEntity retrieved = boardDefRepository.findById(boardCd).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        String boardDef = registered.getBoardDef();
+        BoardDefEntity retrieved = boardDefRepository.findById(boardDef).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
-        assertNotNull(retrieved.getBoardCd(), "저장된 엔티티의 key 값이 없습니다.");
+        assertNotNull(retrieved.getBoardDef(), "저장된 엔티티의 key 값이 없습니다.");
         // audit
         assertNotNull(retrieved.getRegDt(), "등록일자 audit 처리가 되지 않았습니다.");
         assertNotNull(retrieved.getRegstrId(),  "등록자 audit 처리가 되지 않았습니다.");
@@ -88,16 +88,16 @@ class BoardDefRepositoryTest {
     public void testModify() throws Exception {
         // Given::
         BoardDefEntity registered = boardDefRepository.save(boardDefEntity);
-        String boardCd = registered.getBoardCd();
+        String boardDef = registered.getBoardDef();
 
         // When::
-        BoardDefEntity toModify = boardDefRepository.findById(boardCd).orElseThrow(() -> new EntityNotFoundException("수정할 데이터를 찾을 수 없습니다."));
+        BoardDefEntity toModify = boardDefRepository.findById(boardDef).orElseThrow(() -> new EntityNotFoundException("수정할 데이터를 찾을 수 없습니다."));
         toModify.setDc("modified");
         BoardDefEntity modified = boardDefRepository.save(toModify);
 
         // Then::
         assertNotNull(modified, "저장한 데이터를 조회할 수 없습니다.");
-        assertNotNull(modified.getBoardCd(), "저장된 엔티티의 key 값이 없습니다.");
+        assertNotNull(modified.getBoardDef(), "저장된 엔티티의 key 값이 없습니다.");
         // audit
         assertNotNull(modified.getMdfDt(), "수정일자 audit 처리가 되지 않았습니다.");
         assertNotNull(modified.getMdfusrId(),  "수정자 audit 처리가 되지 않았습니다.");
@@ -113,13 +113,13 @@ class BoardDefRepositoryTest {
     public void testDelete() throws Exception {
         // Given::
         BoardDefEntity registered = boardDefRepository.save(boardDefEntity);
-        String boardCd = registered.getBoardCd();
+        String boardDef = registered.getBoardDef();
 
         // When::
-        BoardDefEntity toDelete = boardDefRepository.findById(boardCd).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
+        BoardDefEntity toDelete = boardDefRepository.findById(boardDef).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
         boardDefRepository.delete(toDelete);
 
-        BoardDefEntity retrieved = boardDefRepository.findById(boardCd).orElse(null);
+        BoardDefEntity retrieved = boardDefRepository.findById(boardDef).orElse(null);
 
         // Then::
         assertNull(retrieved, "삭제가 제대로 이루어지지 않았습니다.");

@@ -74,8 +74,8 @@ dF.TmplatDef = (function(): Module {
 
                 const isReg: boolean = $("#menuRegForm #menuNo").val() === "";
                 const url: string = isReg ? Url.MENU_REG_AJAX : Url.MENU_MDF_AJAX;
-                const ajaxData: Record<string, any> = $("#tmplatDefRegForm").serializeArray();
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#tmplatDefRegForm");
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();
@@ -118,7 +118,7 @@ dF.TmplatDef = (function(): Module {
 
                 const url: string = Url.MENU_DEL_AJAX;
                 const ajaxData: Record<string, any> = { "menuNo": menuNo };
-                cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.util.blockUIReload();

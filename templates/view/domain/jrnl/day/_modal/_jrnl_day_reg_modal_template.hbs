@@ -1,0 +1,81 @@
+<#--
+ * 저널 일자(jrnl_day) > 등록/수정 Template
+ * @included_in : _jrnl_day_reg_modal.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="jrnl_day_reg_template">
+    <input type="hidden" name="postNo" value="{{postNo}}">
+
+    <#--begin::Row-->
+    <div class="row row-cols-lg-2 mb-3">
+        <div class="col-xl-2 col-2 d-flex-center">
+            <label class="fs-6 fw-bold mb-2 required" for="jrnlDt">날짜</label>
+        </div>
+        <div class="col-xl-2 col-5 d-flex flex-column {{#ifYn dtUnknownYn}}d-none{{/ifYn}}" id="jrnlDtDiv">
+            <div class="d-flex align-items-center mt-1">
+                <span class="menu-icon me-md-2 vertical-middle">
+                    <label for="jrnlDt"><i class="bi bi-calendar3 fs-2 cursor-pointer"></i></label>
+                </span>
+                <input type="text" name="jrnlDt" id="jrnlDt" class="form-control form-control-solid w-150px"
+                       value="{{jrnlDt}}" placeholder="꿈꾼 일자" maxlength="10" autocomplete="off" />
+            </div>
+            <div id="jrnlDt_validate_span"></div>
+        </div>
+        <div class="col-xl-2 col-5 d-flex flex-column align-items-center col-form-label">
+            <div class="form-check form-switch form-check-custom form-check-solid"
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="날짜 미상시 입력한 대략일자 위치로 정렬됩니다.">
+                <label class="form-check-label cursor-pointer" for="dtUnknownYn" id="dtUnknownYnLabel" {{checkedYnStyle dtUnknownYn "color" "blue//gray"}}>
+                    날짜미상
+                </label>
+                <i class="bi bi-question-circle cursor-pointer ms-1 me-5"></i>
+                <input type="checkbox" name="dtUnknownYn" id="dtUnknownYn" class="form-check-input"
+                       value="Y" {{checkedYn dtUnknownYn}} />
+            </div>
+        </div>
+        <div class="col-xl-3 col-5 {{^ifYn dtUnknownYn}}d-none{{/ifYn}}" id="aprxmtDtDiv">
+            <div class="d-flex align-items-center mt-1">
+                <span class="menu-icon me-md-2 vertical-middle">
+                    <label for="aprxmtDt"><i class="bi bi-calendar3 fs-2 cursor-pointer"></i></label>
+                </span>
+                <input type="text" name="aprxmtDt" id="aprxmtDt" class="form-control form-control-solid w-150px"
+                       value="{{aprxmtDt}}" placeholder="대략일자" maxlength="10" />
+            </div>
+            <div id="aprxmtDt_validate_span"></div>
+        </div>
+    </div>
+    <#--begin::Row-->
+    <div class="row mb-3">
+        <div class="col-2 text-center">
+            <label for="weather" class="cursor-help col-form-label fs-6 fw-bold"
+                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="날씨를 입력합니다.&#10;(아이콘 html 포함 가능)">
+                날씨
+                <i class="bi bi-question-circle"></i>
+            </label>
+        </div>
+        <div class="col-1 d-flex-center w-5">
+            <div id="weather_icon_div" class="cursor-pointer"
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
+                 title="미리보기입니다.">
+                {{#if (exists weather)}}
+                    {{{weather}}}
+                {{else}}
+                    -
+                {{/if}}
+            </div>
+        </div>
+        <div class="col-8">
+            <textarea name="weather" id="weather" class="form-control form-control-solid d-block"
+                      placeholder="날씨 내용을 입력합니다. (아이콘 html 포함 가능)" maxlength="200" rows="1" >{{weather}}</textarea>
+        </div>
+        <div class="col-1 d-flex align-items-center">
+            <div class="btn btn-sm btn-icon btn-light-primary"
+                 onclick="dF.JrnlDay.refreshIcon();"
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="입력 내용을 미리보기합니다.">
+                <i class="bi bi-arrow-repeat"></i>
+            </div>
+        </div>
+    </div>
+
+    <!--begin::tagify partial-->
+    <#include "/view/global/_common/_clsf/tag/_tag_tagify_partial.hbs">
+</script>

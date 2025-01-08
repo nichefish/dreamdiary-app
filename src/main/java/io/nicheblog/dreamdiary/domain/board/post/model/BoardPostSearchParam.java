@@ -24,17 +24,7 @@ import javax.validation.constraints.Size;
 public class BoardPostSearchParam
         extends BasePostSearchParam {
 
-    /** 게시판 코드 */
+    /** 게시판 정의 */
     @Size(max = 50)
-    private String boardCd;
-
-    /* ----- */
-
-    /** 
-     * Getter :: 게시판 코드 <-> 컨텐츠 타입 변환
-     */
-    public String getBoardCd() {
-        if (StringUtils.isEmpty(boardCd)) return this.getContentType();
-        return this.boardCd;
-    }
+    private String boardDef;
 }

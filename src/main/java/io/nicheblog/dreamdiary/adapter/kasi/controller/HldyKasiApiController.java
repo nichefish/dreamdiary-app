@@ -18,10 +18,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -65,7 +62,7 @@ public class HldyKasiApiController
     )
     @PostMapping(Url.API_HLDY_GET)
     public ResponseEntity<AjaxResponse> getHldyInfo(
-            final @RequestParam("yy") @Nullable String yyParam,
+            final @RequestBody(required = false) @Nullable String yy,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -73,8 +70,8 @@ public class HldyKasiApiController
 
         log.info("requestUrl: {}", request.getRequestURL() + "?" + request.getQueryString());
 
-        final String yyStr = !StringUtils.isEmpty(yyParam) ? yyParam : DateUtils.getCurrYyStr();
         // 기존 정보 (API로 받아온 휴일) 삭제 후 재등록
+        String yyStr = !StringUtils.isEmpty(yy) ? yy : DateUtils.getCurrYyStr();
         hldyKasiApiService.delHldyList(yyStr);
         final List<HldyKasiApiItemDto> hldyApiList = hldyKasiApiService.getHldyList(yyStr);
 

@@ -52,6 +52,7 @@
     <!--Custom Javascript Bundle(used by all pages)-->
     <script type="text/javascript" src="/js/common/util.js?${releaseDate!}"></script>
     <script type="text/javascript" src="/js/common/ajax.js?${releaseDate!}"></script>
+    <script type="text/javascript" src="/js/common/$ajax.js?${releaseDate!}"></script>
     <script type="text/javascript" src="/js/common/date.js?${releaseDate!}"></script>
     <script type="text/javascript" src="/js/common/format.js?${releaseDate!}"></script>
     <script type="text/javascript" src="/js/common/validate.js?${releaseDate!}"></script>
@@ -86,7 +87,7 @@
         const Url = (function() {
             return Object.freeze({
                 <#list urlMap! as key, value>
-                    "${key!}": "${value!}",
+                    "${(key!"")?string}": "${(value!"")?string}",
                 </#list>
             });
         })();
@@ -94,7 +95,7 @@
         const Message = (function() {
             const messageMap = {
                 <#list messageMap! as key, value>
-                    "${key!}": "${value!}",
+                    "${(key!"")?string}": "${(value!"")?string}",
                 </#list>
             };
 
@@ -111,7 +112,7 @@
                         console.warn("Message not found for key: " + key);
                         return defaultMsg;
                     }
-                    return messageMap[key];
+                    return cF.format.unescapeHtml(messageMap[key]);
                 }
             });
         })();

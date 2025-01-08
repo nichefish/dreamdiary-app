@@ -41,7 +41,7 @@
             <#--begin::Table body-->
             <tbody class="draggable-zone">
                 <#list boardDefMngList![] as boardDef>
-                    <tr id="${boardDef.boardCd!}" class="sortable-item draggable">
+                    <tr id="${boardDef.boardDef!}" class="sortable-item draggable">
                         <td class="text-center hidden-table">
                             <div class="draggable-handle d-flex-center cursor-move pt-2"
                                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="드래그하여&#10;항목을 이동합니다.">
@@ -53,11 +53,11 @@
                         </td>
                         <td class="text-start ps-15 fw-bold text-gray-700">
                             <span class="fw-bold">${boardDef.boardNm!}</span>
-                            <span class="ms-1">(${boardDef.boardCd!})</span>
+                            <span class="ms-1">(${boardDef.boardDef!})</span>
                             <a class="badge badge-secondary ms-2 p-2 btn-primary blank blink-slow float-end"
                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                                title="항목 수정 팝업을 호출합니다.">
-                                <i class="bi bi-pencil-square fs-5 text-noti" onclick="dF.BoardDef.mdfModal('${boardDef.boardCd!}');"></i>
+                                <i class="bi bi-pencil-square fs-5 text-noti" onclick="dF.BoardDef.mdfModal('${boardDef.boardDef!}');"></i>
                             </a>
                         </td>
                         <td class="text-center hidden-table text-gray-700">
@@ -71,19 +71,19 @@
                         </td>
                         <td class="text-center hidden-table">
                             <#if (boardDef.state.useYn!"Y") == "Y">
-                                <div class="badge badge-success cursor-pointer" onclick="dF.BoardDef.unuseAjax('${boardDef.boardCd!}');"
+                                <div class="badge badge-success cursor-pointer" onclick="dF.BoardDef.unuseAjax('${boardDef.boardDef!}');"
                                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="클릭하여 사용 상태를&#10;변경합니다.">
                                     <i class="bi bi-check text-light blink-slow "></i>사용
                                 </div>
                             <#else>
-                                <div class="badge badge-secondary cursor-pointer" onclick="dF.BoardDef.useAjax('${boardDef.boardCd!}');"
+                                <div class="badge badge-secondary cursor-pointer" onclick="dF.BoardDef.useAjax('${boardDef.boardDef!}');"
                                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="클릭하여 사용 상태를&#10;변경합니다.">
                                     <i class="bi bi-x blink-slow "></i>미사용
                                 </div>
                             </#if>
                         </td>
                         <td class="text-center hidden-table">
-                            <div class="badge badge-danger badge-outlined cursor-pointer" onclick="dF.BoardDef.delAjax('${boardDef.boardCd!}');"
+                            <div class="badge badge-danger badge-outlined cursor-pointer" onclick="dF.BoardDef.delAjax('${boardDef.boardDef!}');"
                                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "bs.tooltip.del"/>">
                                 <i class="bi bi-trash text-danger"></i>삭제
                             </div>
@@ -101,7 +101,7 @@
 
 <form name="procForm" id="procForm" method="get">
     <input type="hidden" name="postNo" id="postNo" value=""/>
-    <input type="hidden" name="boardCd" id="boardCd" value="${boardCd!}"/>
+    <input type="hidden" name="boardDef" id="boardDef" value="${boardDef!}"/>
 </form>
 
 <#--include:: Aside-->

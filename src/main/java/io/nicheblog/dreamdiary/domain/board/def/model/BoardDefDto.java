@@ -29,17 +29,14 @@ public class BoardDefDto
         extends BaseAuditDto
         implements Identifiable<String>, StateCmpstnModule {
 
-    /** 게시판 코드 */
+    /** 게시판 정의 */
     @NotBlank
     @Size(max = 50)
-    private String boardCd;
+    private String boardDef;
 
     /** 게시판 이름 */
     @NotBlank
     private String boardNm;
-
-    /** 메뉴 번호 */
-    private String menuNo;
 
     /** 글분류 분류 코드 */
     @Size(max = 50)
@@ -52,7 +49,7 @@ public class BoardDefDto
 
     @Override
     public String getKey() {
-        return this.boardCd;
+        return this.boardDef;
     }
 
     /** 위임 :: 상태 관리 모듈 */

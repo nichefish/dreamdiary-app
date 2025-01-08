@@ -47,7 +47,7 @@ public class LogActvtyRestControllerAspect {
     @AfterReturning(pointcut = "apiControllerMethods()", returning = "result")
     public void logAfterReturning(JoinPoint joinPoint, Object result) {
         // API 요청에 대한 결과값 로그 남기기
-        log.info("API Method {} completed. Result: {}", joinPoint.getSignature().getName(), result);
+        log.info("Ajax Method {} completed. Result: {}", joinPoint.getSignature().getName(), result);
 
         final LogActvtyParam logParam = LogActvtyAspectHelper.extractLogParam(joinPoint);
         if (logParam == null) return;
@@ -64,7 +64,7 @@ public class LogActvtyRestControllerAspect {
      */
     @AfterThrowing(pointcut = "apiControllerMethods()", throwing = "ex")
     public void logAfterThrowing(JoinPoint joinPoint, Throwable ex) {
-        log.error("API Method {} threw an exception: {}", joinPoint.getSignature().getName(), ex.getMessage());
+        log.error("Ajax Method {} threw an exception: {}", joinPoint.getSignature().getName(), ex.getMessage());
 
         LogActvtyParam logParam = LogActvtyAspectHelper.extractLogParam(joinPoint);
         if (logParam == null) logParam = new LogActvtyParam();
@@ -74,6 +74,6 @@ public class LogActvtyRestControllerAspect {
         // logParam.setMethodName(joinPoint.getSignature().getName());
 
         // 로그 이벤트 발행
-        publisher.publishEvent(new LogActvtyEvent(this, logParam));
+         publisher.publishEvent(new LogActvtyEvent(this, logParam));
     }
 }

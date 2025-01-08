@@ -15,20 +15,7 @@
 <#include "/view/domain/jrnl/sbjct/_jrnl_sbjct_scripts.ftlh">
 
 <script>
-    const Page = (function() {
-        return {
-            /**
-             * Page 객체 초기화
-             */
-            init: function() {
-                /* 모든 table 헤더에 클릭 이벤트를 설정한다. */
-                cF.util.initSortTable();
-            },
-        }
-    })();
-    document.addEventListener("DOMContentLoaded", function() {
-        Page.init();
-    });
+
 </script>
 
 <#--#include:: component:: 태그 클릭 필터링-->
@@ -87,7 +74,7 @@
                                 </div>
                                 <div class="col-xl-4 col-12 d-flex justify-content-end align-items-center">
                                     <#--목록:: 모달 팝업 열기 버튼 표시-->
-                                    <@component.list_dtl_modal post "JrnlSbjct.dtlModal" />
+                                    <@component.list_dtl_modal post "dF.JrnlSbjct.dtlModal" />
                                 </div>
                             </div>
                         </td>
@@ -137,7 +124,7 @@
                                 </div>
                                 <div class="col-xl-4 col-12 d-flex justify-content-end align-items-center">
                                     <#--목록:: 모달 팝업 열기 버튼 표시-->
-                                    <@component.list_dtl_modal post "JrnlSbjct.dtlModal" />
+                                    <@component.list_dtl_modal post "dF.JrnlSbjct.dtlModal" />
                                 </div>
                             </div>
                         </td>
@@ -172,5 +159,6 @@
 <#--include::modals-->
 <#include "/view/global/_common/_clsf/comment/_modal/_comment_list_modal.ftlh">
 <#include "/view/global/_common/file/_modal/_atch_file_list_modal.ftlh">
+<script type="text/javascript" src="/js/view/domain/jrnl/sbjct/jrnl_sbjct_list.js?${releaseDate!}"></script>
 
 </@layout.layout>

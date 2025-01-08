@@ -36,7 +36,6 @@ public interface BoardPostMapstruct
      * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
-    @Mapping(target = "boardCd", source = "contentType")
     @Mapping(target = "ctgrClCd", expression = "java((entity.getBoardDefInfo() != null) ? entity.getBoardDefInfo().getCtgrClCd() : null)")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : CmmUtils.markdown(entity.getCn()))")
     BoardPostDto.DTL toDto(final BoardPostEntity entity) throws Exception;
@@ -48,7 +47,6 @@ public interface BoardPostMapstruct
      * @return Dto -- 변환된 Dto 객체
      * @throws Exception 변환 중 발생할 수 있는 예외
      */
-    @Mapping(target = "boardCd", source = "contentType")
     @Mapping(target = "ctgrClCd", expression = "java((entity.getBoardDefInfo() != null) ? entity.getBoardDefInfo().getCtgrClCd() : null)")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : CmmUtils.markdown(entity.getCn()))")
     BoardPostDto.DTL toDto(final BoardPostSmpEntity entity) throws Exception;
@@ -61,7 +59,6 @@ public interface BoardPostMapstruct
      * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
-    @Mapping(target = "boardCd", source = "contentType")
     @Mapping(target = "ctgrClCd", expression = "java((entity.getBoardDefInfo() != null) ? entity.getBoardDefInfo().getCtgrClCd() : null)")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : CmmUtils.markdown(entity.getCn()))")
     BoardPostDto.LIST toListDto(final BoardPostEntity entity) throws Exception;
@@ -74,7 +71,6 @@ public interface BoardPostMapstruct
      * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
-    @Mapping(target = "contentType", source = "boardCd")
     BoardPostEntity toEntity(final BoardPostDto.DTL dto) throws Exception;
 
     /**
@@ -85,7 +81,6 @@ public interface BoardPostMapstruct
      * @throws Exception 매핑 중 발생할 수 있는 예외
      */
     @Override
-    @Mapping(target = "contentType", source = "boardCd")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateFromDto(final BoardPostDto.DTL dto, final @MappingTarget BoardPostEntity entity) throws Exception;
 }

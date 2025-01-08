@@ -28,7 +28,7 @@
         }
     }
 </style>
-<script>
+><script>
     const Page = (function() {
         return {
             eventList: [],
@@ -184,7 +184,7 @@
 
 <div class="card post">
     <#--begin::Card header-->
-    <div class="card-header min-h-auto mb-5">
+    <div class="card-header min-h-auto mb-7">
         <#--begin::Tab-->
         <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">
             <li class="nav-item">

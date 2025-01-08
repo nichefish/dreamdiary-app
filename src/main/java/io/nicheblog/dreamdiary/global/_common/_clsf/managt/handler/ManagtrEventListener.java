@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.global._common._clsf.managt.event.ManagtrAddEvent
 import io.nicheblog.dreamdiary.global._common._clsf.managt.service.ManagtrService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
@@ -26,6 +27,7 @@ public class ManagtrEventListener {
      * @param event 처리할 이벤트 객체
      */
     @EventListener
+    @Async
     public void handleManagtrAddEvent(ManagtrAddEvent event) {
         // 조치자 추가
         managtrService.addManagtr(event.getClsfKey());

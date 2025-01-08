@@ -8,24 +8,6 @@
 
 <link rel="stylesheet" type="text/css" href="/css/jrnl.css?${releaseDate!}" />
 
-<script>
-    const Page = (function() {
-        return {
-            /**
-             * Page 객체 초기화
-             */
-            init: function() {
-                /* 글 단락 init */
-                dF.Sectn.init();
-                dF.Sectn.initDraggable();
-            },
-        }
-    })();
-    document.addEventListener("DOMContentLoaded", function() {
-        Page.init();
-    });
-</script>
-
 <!--begin::Card-->
 <div class="card post">
     <#--begin::Card body-->
@@ -69,7 +51,7 @@
             </div>
             <div class="col-1 d-flex flex-column align-items-center">
                 <button type="button" class="btn btn-sm btn-light-primary btn-outlined py-2 px-3 cursor-pointer"
-                        onclick="JrnlSumry.comptAjax(${post.postNo!});"
+                        onclick="dF.JrnlSumry.comptAjax(${post.postNo!});"
                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 일자 <@spring.message "bs.tooltip.modal.mdf"/>">
                     <i class="bi bi-book fs-4 pe-1"></i>
                     꿈 기록 완료 처리
@@ -95,11 +77,11 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-end gap-3">
             <#--페이지:: 버튼: 목록으로 가기-->
-            <@component.header_btn_reg_modal "JrnlSumry.regModal(${post.postNo!})" />
+            <@component.header_btn_reg_modal "dF.JrnlSumry.regModal(${post.postNo!})" />
             <#--페이지:: 버튼: 조회년도 변경-->
             <div class="col-1 w-auto">
                 <select id="yy" class="form-select form-select-solid fs-7 text-end"
-                        onchange="JrnlSumry.dtlByYy(this.value)"
+                        onchange="dF.JrnlSumry.dtlByYy(this.value)"
                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="조회 년도를 변경합니다.">>
                     <#assign currYy = DateUtils.getCurrYy()?number />
                     <#assign startYy = 2011 />
@@ -110,7 +92,7 @@
                 </select>
             </div>
             <#--페이지:: 버튼: 목록으로 가기-->
-            <@component.post_btn_toList "JrnlSumry.list();" />
+            <@component.post_btn_toList "dF.JrnlSumry.list();" />
         </div>
     </div>
 </div>
@@ -160,9 +142,9 @@
 
 <#--include::modals-->
 <#include "/view/global/_tinymce_img.ftlh">
-<#include "/view/domain/jrnl/sumry/_jrnl_sumry_reg_modal.ftlh">
-<#include "/view/domain/jrnl/dream/_jrnl_dream_reg_modal.ftlh">
-<#include "/view/domain/jrnl/dream/tag/_jrnl_dream_tag_dtl_modal.ftlh">
+<#include "/view/domain/jrnl/sumry/_modal/_jrnl_sumry_reg_modal.ftlh">
+<#include "/view/domain/jrnl/dream/_modal/_jrnl_dream_reg_modal.ftlh">
+<#include "/view/domain/jrnl/dream/tag/_modal/_jrnl_dream_tag_dtl_modal.ftlh">
 <#include "/view/domain/jrnl/tag/_jrnl_tag_list_modal.ftlh">
 <#include "/view/global/_common/_clsf/comment/_modal/_comment_reg_modal.ftlh">
 <#include "/view/global/_common/_clsf/sectn/_modal/_sectn_reg_modal.ftlh">
@@ -175,10 +157,12 @@
 <script type="text/javascript" src="/lib/prism/js/prism.js"></script>
 <script type="text/javascript" src="/js/common/helper/tinymce.js?${releaseDate!}"></script>
 <#include "/view/domain/jrnl/sumry/_jrnl_sumry_scripts.ftlh">
-<#include "/view/domain/jrnl/dream/_jrnl_dream_scripts.ftlh">
+<script type="text/javascript" src="/js/view/domain/jrnl/dream/jrnl_dream_module.js?${releaseDate!}"></script>
+<#include "/view/domain/jrnl/dream/tag/_jrnl_dream_tag_ctgr_map.ftlh">
 <#include "/view/domain/jrnl/tag/_jrnl_tag_scripts.ftlh">
 <script type="text/javascript" src="/js/view/global/_common/_clsf/sectn/sectn_module.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/js/view/global/_common/_clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
-
+<script type="text/javascript" src="/js/view/global/_common/_clsf/comment/comment_modal_module.js?${releaseDate!}">
+<script type="text/javascript" src="/js/view/domain/jrnl/sumry/jrnl_sumry_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/jrnl/sumry/jrnl_sumry_dtl.js?${releaseDate!}"></script>
 
 </@layout.layout>

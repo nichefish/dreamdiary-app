@@ -69,7 +69,7 @@ dF.LgnPwChg = (function(): Module {
             const currPw: string = currPwElement?.value || '';
             const newPw: string = newPwElement?.value || '';
             const ajaxData: Record<string, any> = { "userId" : userId, "currPw" : currPw, "newPw" : newPw };
-            cF.ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+            cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({
                     text: res.message
                 }).then(function(): void {

@@ -41,7 +41,6 @@ public class SnmpApiController
      * 
      * @param snmpApiParam - SNMP API 파라미터 객체
      * @param logParam 로그 기록을 위한 파라미터 객체
-     * @param ipAddr - 송신할 IP 주소
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
@@ -49,15 +48,12 @@ public class SnmpApiController
     @ResponseBody
     public ResponseEntity<AjaxResponse> snmpSendAjax (
             final SnmpApiParam snmpApiParam,
-            final LogActvtyParam logParam,
-            final @RequestParam("ipAddr") String ipAddr
+            final LogActvtyParam logParam
         ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final SnmpApiParam snmpSendInfo = new SnmpApiParam(ipAddr);
-        snmpSendInfo.setIpAddr(ipAddr);
-        SnmpUtils.sendSnmpMessage(snmpSendInfo);
+        SnmpUtils.sendSnmpMessage(snmpApiParam);
 
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);

@@ -50,11 +50,11 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-end">
             <#--페이지:: 버튼: 수정하기-->
-            <@component.post_btn_modify "JrnlSbjct.mdfForm();" post isMngr />
+            <@component.post_btn_modify "dF.JrnlSbjct.mdfForm();" post isMngr />
             <#--페이지:: 버튼: 삭제하기-->
-            <@component.post_btn_delete "JrnlSbjct.delAjax(${post.postNo});" post isMngr />
+            <@component.post_btn_delete "dF.JrnlSbjct.delAjax(${post.postNo});" post isMngr />
             <#--페이지:: 버튼: 목록으로 가기-->
-            <@component.post_btn_toList "JrnlSbjct.list();" />
+            <@component.post_btn_toList "dF.JrnlSbjct.list();" />
         </div>
         <#--페이지:: 댓글 영역-->
         <#include "/view/global/_common/_clsf/comment/_comment_page_area.ftlh">

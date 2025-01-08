@@ -40,7 +40,7 @@ const Page: Page = (function(): Page {
          * @param {Record<string, any>} data
          */
         ajax: function(url: string, data: Record<string, any>): void {
-            cF.ajax.post(url, data, function(res: AjaxResponse): void {
+            cF.$ajax.post(url, data, function(res: AjaxResponse): void {
                 if (res.rslt) Swal.fire(JSON.stringify(res));
                 Swal.fire({ text: res.message });
             });

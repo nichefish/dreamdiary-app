@@ -98,7 +98,7 @@ dF.UserReqst = (function(): Module {
         regAjax: function(): void {
             const url: string = Url.USER_REQST_REG_AJAX;
             const ajaxData: FormData = new FormData(document.getElementById("userReqstForm") as HTMLFormElement);
-            cF.ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
+            cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
                     .then(function(): void {
                         if (res.rslt) dF.UserReqst.main();

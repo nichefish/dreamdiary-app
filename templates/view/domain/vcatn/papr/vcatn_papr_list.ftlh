@@ -19,7 +19,7 @@
         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="휴가규칙 팝업을 호출합니다.">
     <i class="fas fa-info-circle"></i>휴가규칙
 </button>
-<#include "/view/domain/vcatn/papr/_vcatn_papr_rule_modal.ftlh">
+<#include "/view/domain/vcatn/papr/_modal/_vcatn_papr_rule_modal.ftlh">
 
 <div class="card post">
     <#--begin::Card body-->
@@ -178,7 +178,7 @@
 </form>
 
 <#--include::modals-->
-<#include "/view/domain/vcatn/papr/_vcatn_papr_dtl_modal.ftlh">
+<#include "/view/domain/vcatn/papr/_modal/_vcatn_papr_dtl_modal.ftlh">
 <#include "/view/global/_common/_clsf/comment/_modal/_comment_list_modal.ftlh">
 <#include "/view/global/_common/file/_modal/_atch_file_list_modal.ftlh">
 <#--include::script modules-->

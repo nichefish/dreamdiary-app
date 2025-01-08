@@ -59,8 +59,8 @@ public class JrnlSbjctSpec
                     // 기간 검색
                     predicate.add(builder.lessThanOrEqualTo(regDtExp, DateUtils.asDate(searchParamMap.get(key))));
                     continue;
-                case "boardCd":
-                    // boardCd를 contentType으로 이용
+                case "boardDef":
+                    // boardDef를 contentType으로 이용
                     predicate.add(builder.equal(root.get("contentType"), searchParamMap.get(key)));
                     continue;
                 default:
