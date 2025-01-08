@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.global._common._clsf.viewer.event.ViewerAddEvent;
 import io.nicheblog.dreamdiary.global._common._clsf.viewer.service.ViewerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
@@ -26,6 +27,7 @@ public class ViewerEventListener {
      * @param event 처리할 이벤트 객체
      */
     @EventListener
+    @Async
     public void handleViewerAddEvent(ViewerAddEvent event) {
         // 열람자 추가
         viewerService.addViewer(event.getClsfKey());

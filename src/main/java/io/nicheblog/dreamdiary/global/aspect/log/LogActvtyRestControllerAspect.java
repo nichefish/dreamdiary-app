@@ -47,7 +47,7 @@ public class LogActvtyRestControllerAspect {
     @AfterReturning(pointcut = "apiControllerMethods()", returning = "result")
     public void logAfterReturning(JoinPoint joinPoint, Object result) {
         // API 요청에 대한 결과값 로그 남기기
-        log.info("API Method {} completed. Result: {}", joinPoint.getSignature().getName(), result);
+        log.info("Ajax Method {} completed. Result: {}", joinPoint.getSignature().getName(), result);
 
         final LogActvtyParam logParam = LogActvtyAspectHelper.extractLogParam(joinPoint);
         if (logParam == null) return;
