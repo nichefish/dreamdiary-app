@@ -4,13 +4,18 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.LgnPolicy = (function(): Module {
+dF.LgnPolicy = (function(): dfModule {
     return {
+        initialized: false,
+
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'LgnPolicy' module initialized.");
+            if (dF.LgnPolicy.initialized) return;
+
+            dF.LgnPolicy.initialized = true;
+            console.log("'dF.LgnPolicy' module initialized.");
         },
 
         /**
@@ -60,6 +65,3 @@ dF.LgnPolicy = (function(): Module {
         }
     }
 })();
-document.addEventListener("DOMContentLoaded", function(): void {
-    dF.LgnPolicy.init();
-});

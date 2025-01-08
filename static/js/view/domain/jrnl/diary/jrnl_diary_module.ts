@@ -4,13 +4,22 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.JrnlDiary = (function(): Module {
+dF.JrnlDiary = (function(): dfModule {
     return {
+        initialized: false,
+        inKeywordSearchMode: false,
+
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'JrnlDiary' module initialized.");
+            if (dF.JrnlDiary.initialized) return;
+
+            /* initialize submodules. */
+            dF.JrnlDiaryTag.init();
+
+            dF.JrnlDiary.initialized = true;
+            console.log("'dF.JrnlDiary' module initialized.");
         },
 
         /**
@@ -31,6 +40,8 @@ dF.JrnlDiary = (function(): Module {
             /* tinymce editor reset */
             cF.tinymce.init('#tinymce_jrnlDiaryCn');
             cF.tinymce.setContentWhenReady("tinymce_jrnlDiaryCn", obj.cn || "");
+            /* tagify */
+            cF.tagify.initWithCtgr("#jrnlDiaryRegForm #tagListStr", dF.JrnlDiaryTag.ctgrMap);
         },
 
         /**
@@ -106,7 +117,7 @@ dF.JrnlDiary = (function(): Module {
                                 dF.JrnlDiary.keywordListAjax();
                             } else {
                                 dF.JrnlDay.yyMnthListAjax();
-                                JrnlDiaryTag.listAjax();
+                                dF.JrnlDiaryTag.listAjax();
                             }
                             // TODO: 결산 페이지에서 처리시도 처리해 줘야 한다.
                             cF.util.unblockUI();
@@ -156,7 +167,7 @@ dF.JrnlDiary = (function(): Module {
                             if (!res.rslt) return;
 
                             dF.JrnlDay.yyMnthListAjax();
-                            JrnlDiaryTag.listAjax();
+                            dF.JrnlDiaryTag.listAjax();
                         });
                 }, "block");
             });

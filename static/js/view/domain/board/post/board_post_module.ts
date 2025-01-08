@@ -4,15 +4,20 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.BoardPost = (function(): Module {
+dF.BoardPost = (function(): dfModule {
     return {
+        isReg: $("#boardPostRegForm").data("mode") === "regist",
         isMdf: $("#boardPostRegForm").data("mode") === "modify",
+        initialized: false,
 
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'BoardPost' module initialized.");
+            if (dF.BoardPost.initialized) return;
+
+            dF.BoardPost.initialized = true;
+            console.log("'dF.BoardPost' module initialized.");
         },
 
         /**

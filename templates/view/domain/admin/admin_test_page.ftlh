@@ -115,7 +115,7 @@
     <!-- -->
 </form>
 
-<#--include::script modules-->
+<!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/admin/admin_test_page.js?${releaseDate!}"></script>
 
 </@layout.layout>

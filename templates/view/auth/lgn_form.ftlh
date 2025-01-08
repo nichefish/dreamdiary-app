@@ -96,11 +96,11 @@
     <!--end::Form-->
 </div>
 
-<#--include::script modules-->
-<script type="text/javascript" src="/js/view/auth/lgn_form.js?${releaseDate!}"></script>
-<#--include::modals-->
+<#--include::password change-->
 <#include "/view/auth/_modal/_lgn_pw_chg_modal.ftlh">
-<#--include::script modules-->
 <script type="text/javascript" src="/js/view/auth/lgn_pw_chg_module.js?${releaseDate!}"></script>
+
+<#--include::page scripts-->
+<script type="text/javascript" src="/js/view/auth/lgn_form.js?${releaseDate!}"></script>
 
 </@layout.layout>

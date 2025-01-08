@@ -222,7 +222,7 @@
 </div>
 <!--end::Card-->
 
-<#--include:: Aside-->
+<#--include::aside-->
 <#include "/view/domain/jrnl/day/_jrnl_day_aside_base.ftlh">
 
 <#include "/view/domain/schdul/_modal/_schdul_reg_modal.ftlh">

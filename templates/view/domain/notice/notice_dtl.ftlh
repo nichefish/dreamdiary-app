@@ -74,13 +74,17 @@
     <input type="hidden" name="postNo" id="postNo" value="${post.postNo!}" />
 </form>
 
-<#--include::modals-->
+<#--include::comment-->
 <#include "/view/global/_common/_clsf/comment/_modal/_comment_reg_modal.ftlh">
-<#--include::script modules-->
-<script type="text/javascript" src="/js/view/domain/notice/notice_module.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/js/view/global/_common/_clsf/sectn/sectn_module.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/global/_common/_clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
-<#--include:: component:: tinymce 이미지 추가 영역 template-->
-<#include "/view/global/_tinymce_img.ftlh">
+
+<#--include::sectn-->
+<script type="text/javascript" src="/js/view/global/_common/_clsf/sectn/sectn_module.js?${releaseDate!}"></script>
+
+<#--include::notice_modules-->
+<script type="text/javascript" src="/js/view/domain/notice/notice_module.js?${releaseDate!}"></script>
+
+<!--include::page scripts-->
+<script type="text/javascript" src="/js/view/domain/notice/notice_dtl.js?${releaseDate!}"></script>
 
 </@layout.layout>

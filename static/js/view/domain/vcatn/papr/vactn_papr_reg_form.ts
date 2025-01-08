@@ -6,12 +6,16 @@
 // @ts-ignore
 const Page: Page = (function(): Page {
     return {
+        isReg: $("#noticeRegForm").data("mode") === "regist",
         idx: 0,
 
         /**
          * Page 객체 초기화
          */
         init: function(): void {
+            /* initialize modules. */
+            dF.VcatnPapr.init();
+
             // 추가추가에 사용할 인덱스 설정
             Page.idx = $("vcatnPaprRegForm").data("init-length") || 0;
 
@@ -20,14 +24,11 @@ const Page: Page = (function(): Page {
             // 첨부파일 영역 0개인지 체크
             dF.AtchFile.atchFileListToggle();
 
-            const isReg: boolean = $("#noticeRegForm").data("mode") === "regist";
-            if (isReg) {
+            if (Page.isReg) {
                 $("#jandiYn").trigger("click");
                 // 휴가 추가 폼 기본 뿌리기
                 Page.addVcatnSchdul();
             }
-
-            console.log("Page scripts initialized.");
         },
 
         /**

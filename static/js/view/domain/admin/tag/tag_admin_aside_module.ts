@@ -4,13 +4,18 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.TagAdminAside = (function(): Module {
+dF.TagAdminAside = (function(): dfModule {
     return {
+        initialized: false,
+
         /**
-         * JrnlDayAside 객체 초기화
+         * initializes module.
          */
         init: function(): void {
-            console.log("Page scripts initialized.");
+            if (dF.TagAdminAside.initialized) return;
+
+            dF.TagAdminAside.initialized = true;
+            console.log("'dF.TagAdminAside' module initialized.");
         },
     }
 })();

@@ -4,13 +4,18 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.JrnlSumry = (function(): Module {
+dF.JrnlSumry = (function(): dfModule {
     return {
+        initialized: false,
+
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'JrnlSumry' module initialized.");
+            if (dF.JrnlSumry.initialized) return;
+
+            dF.JrnlSumry.initialized = true;
+            console.log("'dF.JrnlSumry' module initialized.");
         },
 
         /**

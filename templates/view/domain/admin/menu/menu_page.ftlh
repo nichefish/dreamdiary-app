@@ -28,19 +28,21 @@
 </div>
 <!--end::Card-->
 
-<form name="procForm" id="procForm" method="get">
-
-</form>
-
-<#include "/view/domain/admin/menu/_menu_main_card_template.hbs">
-<#include "/view/domain/admin/menu/_menu_sub_template.hbs">
-<#include "/view/domain/admin/menu/_modal/_menu_reg_modal.ftlh">
-<#--include::script modules-->
-<#--include::script modules-->
+<#--include::draggable-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
+<script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
+
+<#--include::jstree-->
 <script type="text/javascript" src="/lib/jstree/js/jstree.min.js"></script>
 <script type="text/javascript" src="/js/common/helper/jstree.js"></script>
+
+<#--include::menu_module-->
+<#include "/view/domain/admin/menu/_modal/_menu_reg_modal.ftlh">
+<#include "/view/domain/admin/menu/_menu_main_card_template.hbs">
+<#include "/view/domain/admin/menu/_menu_sub_template.hbs">
 <script type="text/javascript" src="/js/view/domain/admin/menu/menu_module.js"></script>
+
+<!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/admin/menu/menu_page.js"></script>
 
 </@layout.layout>

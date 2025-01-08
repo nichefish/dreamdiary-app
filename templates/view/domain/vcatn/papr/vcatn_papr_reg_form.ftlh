@@ -74,14 +74,19 @@
 </div>
 <!--end::post-->
 
-<#include "/view/domain/vcatn/schdul/_modal/_vcatn_schdul_reg_modal_template.hbs">
-
 <#--include:: component:: 첨부파일 추가 영역 template-->
 <#include "/view/global/_tinymce_img.ftlh">
 <#--include::script modules-->
 <script type="text/javascript" src="/lib/prism/js/prism.js"></script>
-<script type="text/javascript" src="/js/view/domain/vactn/schdul/vactn_schdul_module.js?${releaseDate!}"></script>
+
+<#--include::vcatn_papr_module-->
 <script type="text/javascript" src="/js/view/domain/vactn/papr/vactn_papr_module.js?${releaseDate!}"></script>
+
+<#--include::vcatn_schdul_module-->
+<#include "/view/domain/vcatn/schdul/_modal/_vcatn_schdul_reg_modal_template.hbs">
+<script type="text/javascript" src="/js/view/domain/vactn/schdul/vactn_schdul_module.js?${releaseDate!}"></script>
+
+<!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/vactn/papr/vactn_papr_reg_form.js?${releaseDate!}"></script>
 
 </@layout.layout>

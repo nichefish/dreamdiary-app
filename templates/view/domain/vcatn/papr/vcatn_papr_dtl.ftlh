@@ -125,4 +125,7 @@
 <#--include::script modules-->
 <script type="text/javascript" src="/js/view/domain/vactn/papr/vactn_papr_module.js?${releaseDate!}"></script>
 
+<!--include::page scripts-->
+<script type="text/javascript" src="/js/view/domain/vactn/papr/vactn_papr_dtl.js?${releaseDate!}"></script>
+
 </@layout.layout>

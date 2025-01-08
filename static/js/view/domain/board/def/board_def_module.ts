@@ -4,13 +4,18 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.BoardDef = (function(): Module {
+dF.BoardDef = (function(): dfModule {
     return {
+        initialized: false,
+
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'BoardDef' module initialized.");
+            if (dF.BoardDef.initialized) return;
+
+            dF.BoardDef.initialized = true;
+            console.log("'dF.BoardDef' module initialized.");
         },
 
         /**
@@ -160,6 +165,3 @@ dF.BoardDef = (function(): Module {
         },
     }
 })();
-document.addEventListener("DOMContentLoaded", function(): void {
-    dF.BoardDef.init();
-});

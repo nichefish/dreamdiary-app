@@ -97,8 +97,10 @@
     <input type="hidden" name="logSysNo" id="logSysNo" />
 </form>
 
-<#--include::script modules-->
+<#--include::log_actvty_module-->
 <script type="text/javascript" src="/js/view/domain/admin/log/sys/log_sys_module.js"></script>
+
+<!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/admin/log/sys/log_sys_list.js"></script>
 
 </@layout.layout>

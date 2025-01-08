@@ -175,11 +175,15 @@
     <input type="hidden" name="boardDef" id="boardDef" value="${boardDef!}"/>
 </form>
 
-<#include "/view/domain/board/post/_modal/_board_post_dtl_modal.ftlh">
+<#--include::modals-->
 <#include "/view/global/_common/_clsf/comment/_modal/_comment_list_modal.ftlh">
 <#include "/view/global/_common/file/_modal/_atch_file_list_modal.ftlh">
-<#--include::script modules--><#--include::script modules-->
+
+<#--include::board_post_module-->
+<#include "/view/domain/board/post/_modal/_board_post_dtl_modal.ftlh">
 <script type="text/javascript" src="/js/view/domain/board/post/board_post_module.js?${releaseDate!}"></script>
+
+<!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/board/post/board_post_list.js?${releaseDate!}"></script>
 
 </@layout.layout>

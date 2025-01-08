@@ -137,7 +137,7 @@
     <input type="hidden" name="logActvtyNo" id="logActvtyNo" />
 </form>
 
-<#--include::script modules-->
+<!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/admin/log/stats/log_stats_user_list.js?${releaseDate!}"></script>
 
 </@layout.layout>

@@ -160,20 +160,29 @@
     </div>
 </#if>
 
-<#--include:: component:: tinymce 이미지 추가 영역 template-->
-<#include "/view/global/_tinymce_img.ftlh">
-<#include "/view/global/_common/_clsf/sectn/_modal/_sectn_reg_modal.ftlh">
-<#include "/view/global/_common/_clsf/sectn/_sectn_list_template.hbs">
-<#include "/view/global/_common/_clsf/comment/_modal/_comment_reg_modal.ftlh">
-<#--include::script modules-->
-<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
-<script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
+<#--include::tinymce-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
 <script type="text/javascript" src="/js/common/helper/tinymce.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/lib/prism/js/prism.js"></script>
-<#include "/view/domain/jrnl/sbjct/_jrnl_sbjct_scripts.ftlh">
+<#include "/view/global/_tinymce_img.ftlh">
+
+<#--include::draggable-->
+<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
+<script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
+
+<#--include::sectn-->
+<#include "/view/global/_common/_clsf/sectn/_modal/_sectn_reg_modal.ftlh">
+<#include "/view/global/_common/_clsf/sectn/_sectn_list_template.hbs">
 <script type="text/javascript" src="/js/view/global/_common/_clsf/sectn/sectn_module.js?${releaseDate!}"></script>
+
+<#--include::comment-->
+<#include "/view/global/_common/_clsf/comment/_modal/_comment_reg_modal.ftlh">
 <script type="text/javascript" src="/js/view/global/_common/_clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
+
+<#--include::script modules-->
+<script type="text/javascript" src="/js/view/domain/jrnl/sbjct/jrnl_sbjct_module.js?${releaseDate!}"></script>
+
+<!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/jrnl/sbjct/jrnl_sbjct_reg_form.js?${releaseDate!}"></script>
 
 </@layout.layout>

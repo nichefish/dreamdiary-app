@@ -6,16 +6,21 @@
 // @ts-ignore
 if (typeof dF === 'undefined') { var dF = {} as any; }
 if (typeof dF.Comment === 'undefined') { dF.Comment = {} as any; }
-dF.Comment.page = (function(): any {
+dF.Comment.page = (function(): dfModule {
     return {
+        initialized: false,
+
         /**
          * Comments.page 객체 초기화
          */
         init: function(): void {
-            console.log("'Comment.page' module initialized.");
+            if (dF.Comment.page.initialized) return;
 
             /* initialize form. */
             dF.Comment.page.initForm();
+
+            dF.Comment.page.initialized = true;
+            console.log("'dF.Comment.modal' module initialized.");
         },
 
         /**

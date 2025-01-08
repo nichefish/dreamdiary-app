@@ -8,21 +8,20 @@
 // @ts-ignore
 if (typeof cF === 'undefined') { var cF = {} as any; }
 cF.handlebars = (function(): Module {
-
     return {
-        init: function(): void {
-            console.log("'cF.handlebars' module initialized.");
-        },
-
         /**
          * Handlebars Template 공통 함수 분리
-         * @param {Record<string, unknown>} data - Handlebars 템플릿에 전달할 데이터 객체.
+         * @param {Record<string, any>} data - Handlebars 템플릿에 전달할 데이터 객체.
          * @param {string} templateStr - 템플릿 요소의 ID 문자열 (템플릿 ID는 `templateStr + "_template"`로 구성).
-         * @returns {string|null} - 컴파일된 템플릿 문자열 또는 템플릿이 없을 경우 `null`.
+         * @returns {string} - 컴파일된 템플릿 문자열 또는 템플릿이 없을 경우 ``.
          */
-        compile: function(data: Record<string, unknown>, templateStr: string): string|null {
+        compile: function(data: Record<string, unknown>, templateStr: string): string {
             const templateElmt: HTMLElement|null = document.getElementById(templateStr + "_template");
-            if (!templateElmt) return null;
+            if (!templateElmt) {
+                console.log("template element not found: " + templateStr + "_template");
+                return "";
+            }
+
             // 컴파일
             const template = Handlebars.compile(templateElmt.innerHTML.replaceAll("`", ""));
             return template(data);
@@ -30,16 +29,18 @@ cF.handlebars = (function(): Module {
 
         /**
          * Handlebars 템플릿 렌더링 및 대상 요소 갈아치기
-         * @param {Object} data - Handlebars 템플릿에 전달할 데이터 객체.
+         * @param {Record<string, any>} data - Handlebars 템플릿에 전달할 데이터 객체.
          * @param {string} templateStr - 템플릿 요소의 ID 문자열 (템플릿 ID는 `templateStr + "_template"`로 구성).
          * @param {string} [show] - 모달을 표시할지 여부 ("show"로 전달 시 모달 표시).
          */
-        template: function(data = {}, templateStr: string, show: string) {
+        template: function(data: Record<string, any> = {}, templateStr: string, show: string): void {
             const actual = cF.handlebars.compile(data, templateStr);
             if (actual === null) return;
+
             // 대상 요소에 추가
             const trgetElmt = document.getElementById(templateStr + "_div");
             if (!trgetElmt) return;
+
             trgetElmt.innerHTML = ""; // 내용 비우기
             trgetElmt.insertAdjacentHTML('beforeend', actual); // 내용 추가
             // 새로 append된 부분에서만 툴팁 활성화
@@ -54,26 +55,25 @@ cF.handlebars = (function(): Module {
 
         /**
          * Handlebars 템플릿 데이터 append
-         * @param {Object} data - Handlebars 템플릿에 전달할 데이터 객체.
+         * @param {Record<string, any>} data - Handlebars 템플릿에 전달할 데이터 객체.
          * @param {string} templateStr - 템플릿 요소의 ID 문자열 (템플릿 ID는 `templateStr + "_template"`로 구성).
          */
-        append: function(data = {}, templateStr: string) {
+        append: function(data: Record<string, any> = {}, templateStr: string): void {
             cF.handlebars.appendTo(data, templateStr, templateStr + "_div");
         },
 
-
-
         /**
          * Handlebars 템플릿 데이터 특정 요소에 append
-         * @param {Object} data - Handlebars 템플릿에 전달할 데이터 객체.
+         * @param {Record<string, any>} data - Handlebars 템플릿에 전달할 데이터 객체.
          * @param {string} templateStr - 템플릿 요소의 ID 문자열 (템플릿 ID는 `templateStr + "_template"`로 구성).
          * @param {string} trgetElmtId - 데이터가 추가될 대상 요소의 ID.
          */
-        appendTo: function(data = {}, templateStr: string, trgetElmtId: string) {
+        appendTo: function(data: Record<string, any> = {}, templateStr: string, trgetElmtId: string): void {
             const actual = cF.handlebars.compile(data, templateStr);
             // 대상 요소에 추가
             const trgetElmt = document.getElementById(trgetElmtId);
             if (!trgetElmt) return;
+
             trgetElmt.insertAdjacentHTML('beforeend', actual);
             // 새로 append된 부분에서만 툴팁 활성화
             trgetElmt.querySelectorAll("[data-bs-toggle='tooltip']").forEach(tooltipEl => {
@@ -94,7 +94,7 @@ cF.handlebars = (function(): Module {
      * @param {any} value - 체크할 값.
      * @returns {boolean} - `value`가 비어 있지 않으면 `true`, 비어 있으면 `false`.
      */
-    Handlebars.registerHelper("exists", function(value: any) {
+    Handlebars.registerHelper("exists", function(value: any): boolean {
         return !cF.util.isEmpty(value);
     });
 
@@ -103,7 +103,7 @@ cF.handlebars = (function(): Module {
      * @param {any} value - 체크할 값.
      * @returns {boolean} - `value`가 비어 있으면 `true`, 비어 있지 않으면 `false`.
      */
-    Handlebars.registerHelper("notExists", function(value: any) {
+    Handlebars.registerHelper("notExists", function(value: any): boolean {
         return cF.util.isEmpty(value);
     });
 
@@ -113,7 +113,7 @@ cF.handlebars = (function(): Module {
      * @param {any} alt - `value`가 비어 있을 때 반환할 기본값.
      * @returns {any} - `value`가 비어 있지 않으면 `value`, 비어 있으면 `alt`.
      */
-    Handlebars.registerHelper("ifEmpty", function(value: any, alt: any) {
+    Handlebars.registerHelper("ifEmpty", function(value: any, alt: any): any {
         return cF.util.isEmpty(value) ? alt : value;
     });
 
@@ -122,7 +122,7 @@ cF.handlebars = (function(): Module {
      * @param {boolean} value - 선택 여부를 결정할 값.
      * @returns {string} - "selected" 또는 빈 문자열.
      */
-    Handlebars.registerHelper("selectedIf", function(value: boolean) {
+    Handlebars.registerHelper("selectedIf", function(value: boolean): string {
         return value ? "selected" : "";
     });
 
@@ -131,7 +131,7 @@ cF.handlebars = (function(): Module {
      * @param {string} value - 체크 여부를 결정할 값.
      * @returns {string} - 값이 "Y"이면 "checked", 그렇지 않으면 빈 문자열.
      */
-    Handlebars.registerHelper("checkedYn", function(value: string) {
+    Handlebars.registerHelper("checkedYn", function(value: string): string {
         return "Y" === value ? "checked" : "";
     })
 
@@ -140,7 +140,7 @@ cF.handlebars = (function(): Module {
      * @param {boolean} value - 체크 여부를 결정할 값.
      * @returns {string} - 값이 true면 "checked", 그렇지 않으면 빈 문자열.
      */
-    Handlebars.registerHelper("checkedIf", function(value: boolean) {
+    Handlebars.registerHelper("checkedIf", function(value: boolean): string {
         return value ? "checked" : "";
     });
 
@@ -149,7 +149,7 @@ cF.handlebars = (function(): Module {
      * @param {number|string} value - 포맷팅할 숫자 값.
      * @returns {string} - 천 단위로 콤마가 추가된 문자열. 값이 없으면 `undefined`.
      */
-    Handlebars.registerHelper("numberFormat", function(value: number|string) {
+    Handlebars.registerHelper("numberFormat", function(value: number|string): string {
         if (cF.util.isEmpty(value)) return;
         return cF.format.thousandSeparator(value);
     });
@@ -172,7 +172,7 @@ cF.handlebars = (function(): Module {
      * @param {object} options - Handlebars 옵션 객체.
      * @returns {boolean} - `value`가 `ynValues`의 "Y" 값과 일치하면 `true`, 그렇지 않으면 `false`.
      */
-    const truefalseFunc = function(value, ynValues: string, options: any) {
+    const truefalseFunc = function(value, ynValues: string, options: any): boolean {
         // 기본값 null일 때 true로 간주하는 옵션 : 기본값 옵션이 true이고 값이 비어있으면 true 반환
         const defaultTrue = options.hash["default"] || false;
         if (defaultTrue && cF.util.isEmpty(value)) return true;
@@ -190,7 +190,7 @@ cF.handlebars = (function(): Module {
      * @param {object} options - Handlebars 옵션 객체.
      * @returns {boolean} - 두 값이 일치하면 `true`, 그렇지 않으면 `false`.
      */
-    const equalsFunc = function (value, compareValue, options: any) {
+    const equalsFunc = function (value: any, compareValue: any, options: any): boolean {
         // 기본값 null일 때 true로 간주하는 옵션 : 기본값 옵션이 true이고 값이 비어있으면 true 반환
         const defaultTrue = options.hash["default"] || false;
         if (defaultTrue && cF.util.isEmpty(value)) return true;
@@ -198,9 +198,10 @@ cF.handlebars = (function(): Module {
         // 비교결과 반환 :: 일부러 느슨한 비교
         return (value == compareValue);
     }
-    Handlebars.registerHelper("equals", function(value, compareValue, options: object) {
+    Handlebars.registerHelper("equals", function(value: any, compareValue: any, options: object): boolean {
         return equalsFunc(value, compareValue, options);
     });
+
     /**
      * notEquals : 두 값을 비교하여 불일치 여부를 반환합니다.
      * @param {any} value - 비교할 첫 번째 값.
@@ -208,7 +209,7 @@ cF.handlebars = (function(): Module {
      * @param {object} options - Handlebars 옵션 객체.
      * @returns {boolean} - 두 값이 일치하면 `true`, 그렇지 않으면 `false`.
      */
-    Handlebars.registerHelper("notEquals", function(value, compareValue, options: object) {
+    Handlebars.registerHelper("notEquals", function(value: any, compareValue: any, options: object): boolean {
         return !equalsFunc(value, compareValue, options);
     });
 
@@ -218,7 +219,7 @@ cF.handlebars = (function(): Module {
      * @param {string} ynLabels - "Y"와 "N" 레이블을 구분하는 문자열 (구분자는 "//").
      * @returns {string} - `value`가 `true`이면 "Y" 레이블, 그렇지 않으면 "N" 레이블을 반환.
      */
-    Handlebars.registerHelper("checkedLabel", function(value: boolean, ynLabels: string) {
+    Handlebars.registerHelper("checkedLabel", function(value: boolean, ynLabels: string): string {
         // `ynLabels`를 구분자로 나누어 "Y"와 "N" 레이블 추출
         const separator = "//";
         const [yLabel, nLabel] = ynLabels.split(separator);
@@ -233,7 +234,7 @@ cF.handlebars = (function(): Module {
      * @param {string} ynColors - "Y"와 "N"의 색상을 구분하는 문자열 (구분자는 "//").
      * @returns {string} - `style` 속성을 반환 (예: `style="color:red;"`).
      */
-    const checkedStyleFunc = function(value, type: string, ynColors: string) {
+    const checkedStyleFunc = function(value: any, type: string, ynColors: string): string {
         // `ynColors`를 구분자로 나누어 "Y"와 "N"의 색상 추출
         const separator = "//";
         const [yColor, nColor] = ynColors.split(separator);
@@ -249,7 +250,7 @@ cF.handlebars = (function(): Module {
      * @param {string} ynColors - "Y"와 "N"의 색상을 구분하는 문자열 (구분자는 "//").
      * @returns {string} - `style` 속성을 반환 (예: `style="color:red;"`).
      */
-    Handlebars.registerHelper("checkedYnStyle", function(value, type, ynColors) {
+    Handlebars.registerHelper("checkedYnStyle", function(value: string, type: string, ynColors: string): string {
         // `value`가 "Y"인 경우에만 true로 간주하여 스타일 반환
         return checkedStyleFunc(value === "Y", type, ynColors);
     });
@@ -260,7 +261,7 @@ cF.handlebars = (function(): Module {
      * @param {any} value2 - 두 번째 값.
      * @returns {string} - `value1`과 `value2`를 결합한 문자열.
      */
-    Handlebars.registerHelper("concat", function(value1, value2) {
+    Handlebars.registerHelper("concat", function(value1: any, value2: any): string {
         return String(value1) + String(value2);
     });
 
@@ -270,7 +271,7 @@ cF.handlebars = (function(): Module {
      * @param {string} pattern - 날짜를 포맷팅할 패턴.
      * @returns {string} - 포맷팅된 날짜 문자열. 값이 없으면 빈 문자열을 반환.
      */
-    Handlebars.registerHelper("dateformat", function(value, pattern: string) {
+    Handlebars.registerHelper("dateformat", function(value: Date|string|number, pattern: string): string {
         if (!value) return "";
 
         try {
@@ -283,21 +284,21 @@ cF.handlebars = (function(): Module {
 
     /**
      * add : 두 수를 더하는 헬퍼.
-     * @param {number|string} a - 첫 번째 값.
-     * @param {number|string} b - 두 번째 값.
+     * @param {number} a - 첫 번째 값.
+     * @param {number} b - 두 번째 값.
      * @returns {number} - `a`와 `b`의 합.
      */
-    Handlebars.registerHelper('add', function(a, b) {
+    Handlebars.registerHelper('add', function(a: number, b: number): number {
         return a + b;
     });
 
     /**
      * sub : 두 수를 빼는 헬퍼.
-     * @param {number|string} a - 첫 번째 값.
-     * @param {number|string} b - 두 번째 값.
+     * @param {number} a - 첫 번째 값.
+     * @param {number} b - 두 번째 값.
      * @returns {number} - `a`와 `b`의 차.
      */
-    Handlebars.registerHelper('sub', function(a, b) {
+    Handlebars.registerHelper('sub', function(a: number, b: number): number {
         return a - b;
     });
 
@@ -307,7 +308,7 @@ cF.handlebars = (function(): Module {
      * @param {number|string} b - 비교할 두 번째 값.
      * @returns {boolean} - `a`가 `b`보다 작으면 `true`, 그렇지 않으면 `false`.
      */
-    Handlebars.registerHelper('lt', function(a, b) {
+    Handlebars.registerHelper('lt', function(a: number|string, b: number|string): boolean {
         return a < b;
     });
 
@@ -317,7 +318,7 @@ cF.handlebars = (function(): Module {
      * @param {number|string} b - 비교할 두 번째 값.
      * @returns {boolean} - `a`가 `b`보다 작거나 같으면 `true`, 그렇지 않으면 `false`.
      */
-    Handlebars.registerHelper('le', function(a, b) {
+    Handlebars.registerHelper('le', function(a: number|string, b: number|string): boolean {
         return a <= b;
     });
 
@@ -327,7 +328,7 @@ cF.handlebars = (function(): Module {
      * @param {number|string} b - 비교할 두 번째 값.
      * @returns {boolean} - `a`가 `b`보다 크면 `true`, 그렇지 않으면 `false`.
      */
-    Handlebars.registerHelper('gt', function(a, b) {
+    Handlebars.registerHelper('gt', function(a: number|string, b: number|string): boolean {
         return a > b;
     });
 
@@ -337,7 +338,7 @@ cF.handlebars = (function(): Module {
      * @param {number|string} b - 비교할 두 번째 값.
      * @returns {boolean} - `a`가 `b`보다 크거나 같으면 `true`, 그렇지 않으면 `false`.
      */
-    Handlebars.registerHelper('ge', function(a, b) {
+    Handlebars.registerHelper('ge', function(a: number|string, b: number|string): boolean {
         return a >= b;
     });
 
@@ -348,7 +349,7 @@ cF.handlebars = (function(): Module {
      * @param {any} value - 변환할 값.
      * @returns {string} - 객체일 경우 JSON 문자열, 그렇지 않으면 문자열. 값이 없으면 'null' 문자열.
      */
-    Handlebars.registerHelper('stringify', function (value) {
+    Handlebars.registerHelper('stringify', function (value: any): string {
         if (value && typeof value === 'object') {
             return JSON.stringify(value); // JSON 형식으로 출력
         }

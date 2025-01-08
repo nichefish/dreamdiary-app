@@ -6,15 +6,18 @@
 // @ts-ignore
 const Page: Page = (function(): Page {
     return {
+        isReg: $("#noticeRegForm").data("mode") === "regist",
+
         /**
          * Page 객체 초기화
          */
         init: function(): void {
+            /* initialize modules. */
+            dF.Notice.init();
             /* initialize form. */
             dF.Notice.initForm();
 
-            const isReg: boolean = $("#noticeRegForm").data("mode") === "regist";
-            if (isReg) {
+            if (Page.isReg) {
                 $("#jandiYn").click();
             } else {
                 /* 글 단락 init */
@@ -30,8 +33,6 @@ const Page: Page = (function(): Page {
                     refreshFunc: Page.refreshFunc
                 });
             }
-
-            console.log("Page scripts initialized.");
         },
 
         /**

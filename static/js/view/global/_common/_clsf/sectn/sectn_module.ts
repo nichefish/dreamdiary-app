@@ -4,17 +4,23 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.Sectn = (function(): Module {
+dF.Sectn = (function(): dfModule {
     return {
+        initialized: false,
+        swappable: null,
+
         /**
          * Sectn 객체 초기화
          * @param {Record<string, any>} options - 초기화 옵션 객체.
          * @param {Function} [options.refreshFunc] - 섹션 새로 고침에 사용할 함수 (선택적).
          */
         init: function({ refreshFunc }: { refreshFunc?: Function } = {}): void {
-            console.log("'Sectn' module initialized.");
+            if (dF.Sectn.initialized) return;
 
             if (refreshFunc !== undefined) dF.Sectn.refreshFunc = refreshFunc;
+
+            dF.Sectn.initialized = true;
+            console.log("'dF.Sectn' module initialized.");
         },
 
         /**
@@ -165,5 +171,5 @@ dF.Sectn = (function(): Module {
                 });
             });
         },
-    } as Module
+    }
 })();

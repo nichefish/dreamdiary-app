@@ -58,9 +58,10 @@
     <input type="hidden" name="statsYy" id="statsYy" value="${(vcatnYy.statsYy)!}">
 </form>
 
+<#--include::vcatn_schdul_modules-->
 <#include "/view/domain/vcatn/schdul/_modal/_vcatn_schdul_reg_modal.ftlh">
-<#--include::script modules-->
 <script type="text/javascript" src="/js/view/domain/vcatn/schdul/vcatn_schdul_module.js?${releaseDate!}"></script>
+<!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/vcatn/schdul/vcatn_schdul_list.js?${releaseDate!}"></script>
 
 </@layout.layout>

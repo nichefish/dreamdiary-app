@@ -67,7 +67,10 @@
     <input type="hidden" name="boardDef" id="boardDef" value="${post.boardDef!}" />
 </form>
 
-<#--include::script modules--><#--include::script modules-->
+<#--include::script modules-->
 <script type="text/javascript" src="/js/view/domain/board/post/board_post_module.js?${releaseDate!}"></script>
+
+<!--include::page scripts-->
+<script type="text/javascript" src="/js/view/domain/board/post/board_post_dtl.js?${releaseDate!}"></script>
 
 </@layout.layout>

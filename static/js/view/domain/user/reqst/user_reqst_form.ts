@@ -10,10 +10,12 @@ const Page: Page = (function(): Page {
          * Page 객체 초기화
          */
         init: function(): void {
+            /* initialize modules. */
+            dF.User.init();
+            dF.UserEmplym.init();
+            dF.UserProfl.init();
             /* initialize form. */
             dF.UserReqst.initForm();
-
-            console.log("Page scripts initialized.");
         },
     }
 })();

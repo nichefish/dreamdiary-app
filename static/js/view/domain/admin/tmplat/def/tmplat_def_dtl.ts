@@ -10,7 +10,8 @@ const Page: Page = (function(): Page {
          * Page 객체 초기화
          */
         init: function(): void {
-            console.log("Page scripts initialized.");
+            /* initialize modules. */
+            dF.TmplatDef.init();
         },
 
         /**
@@ -50,3 +51,6 @@ const Page: Page = (function(): Page {
         }
     }
 })();
+document.addEventListener("DOMContentLoaded", function(): void {
+    Page.init();
+});

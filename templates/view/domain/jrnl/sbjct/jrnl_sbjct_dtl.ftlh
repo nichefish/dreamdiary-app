@@ -75,12 +75,17 @@
     <input type="hidden" name="postNo" id="postNo" value="${post.postNo!}" />
 </form>
 
-<#--include:: component:: tinymce 이미지 추가 영역 template-->
-<#include "/view/global/_tinymce_img.ftlh">
-<#include "/view/global/_common/_clsf/comment/_modal/_comment_reg_modal.ftlh">
 <#--include::script modules-->
-<#include "/view/domain/jrnl/sbjct/_jrnl_sbjct_scripts.ftlh">
+<script type="text/javascript" src="/js/view/domain/jrnl/sbjct/jrnl_sbjct_module.js?${releaseDate!}"></script>
+
+<#--include::sectn-->
 <script type="text/javascript" src="/js/view/global/_common/_clsf/sectn/sectn_module.js?${releaseDate!}"></script>
+
+<#--include::comment-->
+<#include "/view/global/_common/_clsf/comment/_modal/_comment_reg_modal.ftlh">
 <script type="text/javascript" src="/js/view/global/_common/_clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
+
+<!--include::page scripts-->
+<script type="text/javascript" src="/js/view/domain/jrnl/sbjct/jrnl_sbjct_dtl.js?${releaseDate!}"></script>
 
 </@layout.layout>

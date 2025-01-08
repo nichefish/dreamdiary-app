@@ -4,15 +4,20 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.AtchFile = (function(): Module {
+dF.AtchFile = (function(): dfModule {
     return {
+        initialized: false,
+
         /**
          * AtchFile 객체 초기화
          */
         init: function(): void {
+            if (dF.AtchFile.initialized) return;
+
             dF.AtchFile.atchFileListToggle();     // 첨부파일 영역 0개인지 체크
 
-            console.log("'AtchFile' module initialized.");
+            dF.AtchFile.initialized = true;
+            console.log("'dF.AtchFile' module initialized.");
         },
 
         /**

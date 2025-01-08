@@ -4,15 +4,19 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.User = (function(): Module {
+dF.User = (function(): dfModule {
     return {
+        initialized: false,
         isMdf: $("#userRegForm").data("mode") === "modify",
 
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'User' module initialized.");
+            if (dF.User.initialized) return;
+
+            dF.User.initialized = true;
+            console.log("'dF.User' module initialized.");
         },
 
         /**

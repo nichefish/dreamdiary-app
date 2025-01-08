@@ -4,15 +4,19 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.JrnlSbjct = (function(): Module {
+dF.JrnlSbjct = (function(): dfModule {
     return {
+        initialized: false,
         isMdf: $("#jrnlSbjctRegForm").data("mode") === "modify",
 
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'JrnlSbjct' module initialized.");
+            if (dF.JrnlSbjct.initialized) return;
+
+            dF.JrnlSbjct.initialized = true;
+            console.log("'dF.JrnlSbjct' module initialized.");
         },
 
         /**

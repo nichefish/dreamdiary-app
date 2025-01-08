@@ -10,7 +10,7 @@ const Page: Page = (function(): Page {
          * Page 객체 초기화
          */
         init: function(): void {
-            console.log("Page scripts initialized.");
+            //
         },
 
         /**

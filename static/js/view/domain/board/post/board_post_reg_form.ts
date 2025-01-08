@@ -10,10 +10,10 @@ const Page: Page = (function(): Page {
          * Page 객체 초기화
          */
         init: function(): void {
+            /* initialize modules. */
+            dF.BoardPost.init();
             /* initialize form. */
             dF.BoardPost.initForm();
-
-            console.log("Page scripts initialized.");
         },
     }
 })();

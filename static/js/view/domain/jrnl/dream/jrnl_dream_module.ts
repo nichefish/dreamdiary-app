@@ -4,13 +4,22 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.JrnlDream = (function():Module {
+dF.JrnlDream = (function(): dfModule {
     return {
+        initialized: false,
+        inKeywordSearchMode: false,
+
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'JrnlDream' module initialized.");
+            if (dF.JrnlDream.initialized) return;
+
+            /* initialize submodules. */
+            dF.JrnlDreamTag.init();
+
+            dF.JrnlDream.initialized = true;
+            console.log("'dF.JrnlDream' module initialized.");
         },
 
         /**
@@ -54,6 +63,8 @@ dF.JrnlDream = (function():Module {
             /* tinymce editor reset */
             cF.tinymce.init('#tinymce_jrnlDreamCn');
             cF.tinymce.setContentWhenReady("tinymce_jrnlDreamCn", obj.cn || "");
+            /* tagify */
+            cF.tagify.initWithCtgr("#jrnlDreamRegForm #tagListStr", dF.JrnlDreamTag.ctgrMap);
         },
 
         /**

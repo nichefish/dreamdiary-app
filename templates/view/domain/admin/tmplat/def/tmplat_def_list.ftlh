@@ -122,10 +122,12 @@
     <input type="hidden" name="postNo" id="postNo" value=""/>
 </form>
 
+<#--include::tmplat_def_module-->
 <#include "/view/domain/admin/tmplat/def/_modal/_tmplat_def_reg_modal.ftlh">
 <#include "/view/domain/admin/tmplat/def/_modal/_tmplat_def_dtl_modal.ftlh">
-<#--include::script modules-->
 <script type="text/javascript" src="/js/view/domain/admin/tmplat/def/tmplat_def_module.js?${releaseDate!}"></script>
+
+<!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/admin/tmplat/def/tmplat_def_list.js?${releaseDate!}"></script>
 
 </@layout.layout>

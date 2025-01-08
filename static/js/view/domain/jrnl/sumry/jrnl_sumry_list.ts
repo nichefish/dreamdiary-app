@@ -10,7 +10,8 @@ const Page: Module = (function(): Module {
          * Page 객체 초기화
          */
         init: function(): void {
-            //
+            /* initialize modules. */
+            dF.JrnlSumry.init();
         },
     }
 })();

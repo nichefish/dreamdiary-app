@@ -8,11 +8,7 @@
 // @ts-ignore
 if (typeof cF === 'undefined') { var cF = {} as any; }
 cF.util = (function(): Module {
-    return{
-        init: function(): void {
-            console.log("'cF.util' module initialized.");
-        },
-
+    return {
         /**
          * blockUI wrapped by try-catch
          */
@@ -81,8 +77,8 @@ cF.util = (function(): Module {
          * @param {Function} [falseFunc] - 취소 버튼 클릭 시 실행할 함수 (선택적).
          */
         swalOrConfirm: function(msg: string, trueFunc: Function, falseFunc: Function): void {
-            const hasTrueFunc = typeof trueFunc === 'function';
-            const hasFalseFunc = typeof falseFunc === 'function';
+            const hasTrueFunc: boolean = typeof trueFunc === 'function';
+            const hasFalseFunc: boolean = typeof falseFunc === 'function';
             if (cF.util.hasSwal()) {
                 Swal.fire({
                     text: msg,
@@ -165,7 +161,7 @@ cF.util = (function(): Module {
          * @returns {Window|null} - 열린 팝업 창의 Window 객체 또는 null.
          */
         openPopup: function(url: string, popupNm: string, option: string): Window|null {
-            const popupWindow = window.open(url, popupNm, option);
+            const popupWindow: Window = window.open(url, popupNm, option);
             if (!popupWindow) {
                 console.error("팝업 차단기 또는 잘못된 URL로 인해 팝업을 열 수 없습니다.");
             }
@@ -238,7 +234,7 @@ cF.util = (function(): Module {
          * @param {string} selector - 변환할 input 요소의 선택자 문자열.
          * @returns {number|null} - 변환된 숫자 값 또는 유효하지 않은 경우 `null`.
          */
-        toNumber: function(selector): number|null {
+        toNumber: function(selector: string|HTMLElement|JQuery): number|null {
             const inputs: HTMLElement[] = cF.util.verifySelector(selector);
             if (inputs.length === 0) return null;
 
@@ -255,11 +251,11 @@ cF.util = (function(): Module {
         /**
          * 파일 다운로드를 수행합니다.
          * AJAX로 파일 존재 여부를 체크한 후, 임시 폼을 생성하여 제출합니다.
-         * @param {string} atchFileNo - 첨부 파일 번호.
-         * @param {string} atchFileDtlNo - 첨부 파일 상세 번호.
+         * @param {string|number} atchFileNo - 첨부 파일 번호.
+         * @param {string|number} atchFileDtlNo - 첨부 파일 상세 번호.
          * TODO: URL 외부에서 주입하기?
          */
-        fileDownload: function(atchFileNo, atchFileDtlNo): void {
+        fileDownload: function(atchFileNo: string|number, atchFileDtlNo: string|number): void {
             const inputs: string = "<input type='hidden' name='atchFileNo' value='" + atchFileNo + "'>" +
                            "<input type='hidden' name='atchFileDtlNo' value='" + atchFileDtlNo + "'>";
             const form: HTMLFormElement = document.createElement("form");
@@ -295,12 +291,12 @@ cF.util = (function(): Module {
         /**
          * 지정된 이름의 쿠키를 조회합니다.
          * @param {string} name - 조회할 쿠키의 이름.
-         * @returns {string|undefined} - 쿠키 값 또는 쿠키가 없을 경우 undefined.
+         * @returns {string} - 쿠키 값 또는 쿠키가 없을 경우 "".
          */
-        getCookie: function(name: string) {
-            if (!document.cookie) return;
+        getCookie: function(name: string): string {
+            if (!document.cookie) return "";
             const array: string[] = document.cookie.split(encodeURIComponent(name) + '=');
-            if (array.length < 2) return;
+            if (array.length < 2) return "";
             const arraySub: string[] = array[1].split(';');
             return decodeURIComponent(arraySub[0]); // 쿠키 값을 디코딩하여 반환
         },
@@ -309,7 +305,7 @@ cF.util = (function(): Module {
          * 지정된 쿠키를 만료 처리합니다.
          * @param {string} name - 만료할 쿠키의 이름.
          */
-        expireCookie: function(name: string) {
+        expireCookie: function(name: string): void {
             document.cookie = encodeURIComponent(name) + "=deleted; expires=" + new Date(0).toUTCString();
         },
 
@@ -362,7 +358,7 @@ cF.util = (function(): Module {
          * @param {string} url - 리플레이스할 URL.
          * @dependency blockUI (optional)
          */
-        blockUIReplace: (function(url: string) {
+        blockUIReplace: (function(url: string): void {
             cF.util.blockUI();
             cF.util.closeModal();
             location.replace(url);
@@ -424,10 +420,10 @@ cF.util = (function(): Module {
          * 모든 table 헤더에 클릭 이벤트를 설정하여 해당 열을 정렬합니다.
          */
         initSortTable: function(): void {
-            if (typeof Page === 'undefined') { var Page: Page = {  init: function() {} }; }
+            if (typeof Page === 'undefined') { var Page: Page = {} as any }
             const tables: HTMLCollectionOf<HTMLTableElement> = document.getElementsByTagName("table");
             // 각 테이블에 대해 헤더 클릭 이벤트 설정
-            Array.from(tables).forEach((table: HTMLTableElement, i: number): void => {
+            Array.from(tables).forEach((table: HTMLTableElement): void => {
                 const headers = table.getElementsByTagName("th");
 
                 // 각 헤더에 대해 클릭 이벤트 설정
@@ -446,8 +442,8 @@ cF.util = (function(): Module {
          * @param {number} colIdx - 정렬할 열의 인덱스.
          * @param {string} sortMode - 정렬 방식 ("FORWARD" 또는 "REVERSE").
          */
-        sortTableByIdx: function(tableId: string, colIdx: number, sortMode: string) {
-            const table = document.getElementById(tableId);
+        sortTableByIdx: function(tableId: string, colIdx: number, sortMode: string): void {
+            const table: HTMLElement = document.getElementById(tableId);
             cF.util.sortTable(table, colIdx, sortMode);
         },
 
@@ -457,7 +453,7 @@ cF.util = (function(): Module {
          * @param {number} n - 정렬할 열의 인덱스.
          * @param {string} sortMode - 정렬 방식 ("FORWARD" 또는 "REVERSE").
          */
-        sortTable: function(table, n: number, sortMode: string) {
+        sortTable: function(table: HTMLTableElement, n: number, sortMode: string): void {
             if (!table || !table.tBodies) return;
 
             const tbody = table.tBodies[0];
@@ -471,13 +467,13 @@ cF.util = (function(): Module {
                 return isNaN(Number(value.replace(/,/g, ""))) ? value : Number(value.replace(/,/g, ""));
             };
             // 두 값을 비교하는 중첩 함수
-            const compareValues = (value1, value2) => {
+            const compareValues = (value1, value2): number => {
                 if (value1 < value2) return -1;
                 if (value1 > value2) return 1;
                 return 0;
             };
             // 행 정렬
-            rows.sort((row1, row2) => {
+            rows.sort((row1, row2): number => {
                 const value1 = getCellValue(row1, n);
                 const value2 = getCellValue(row2, n);
 
@@ -499,7 +495,7 @@ cF.util = (function(): Module {
          * @param {number} n - 정렬할 열의 인덱스.
          * @param {string} sortMode - 정렬 방식 ("FORWARD" 또는 "REVERSE").
          */
-        sortReqstTable: function(table, n: number, sortMode: string) {
+        sortReqstTable: function(table: HTMLTableElement, n: number, sortMode: string): void {
             if (!table || !table.tBodies) return;
 
             const tbody = table.tBodies[0];
@@ -513,13 +509,13 @@ cF.util = (function(): Module {
                 return isNaN(Number(inputValue.replace(/,/g, ""))) ? inputValue : Number(inputValue.replace(/,/g, ""));
             };
             // 두 값을 비교하는 함수
-            const compareValues = (value1, value2) => {
+            const compareValues = (value1, value2): number => {
                 if (value1 < value2) return -1;
                 if (value1 > value2) return 1;
                 return 0;
             };
             // 정렬
-            rows.sort((row1, row2) => {
+            rows.sort((row1, row2): number => {
                 const value1 = getCellValue(row1, n);
                 const value2 = getCellValue(row2, n);
                 if (sortMode === "FORWARD") {
@@ -543,11 +539,11 @@ cF.util = (function(): Module {
          * @param {Function} [nFunc] - 체크박스가 체크 해제되었을 때 호출되는 함수. (선택적)
          * @returns {boolean} - 체크박스가 정의되지 않은 경우 false를 반환.
          */
-        chckboxLabel: function(attrId: string, ynCn: string, ynColor: string, yFunc: Function, nFunc: Function) {
+        chckboxLabel: function(attrId: string, ynCn: string, ynColor: string, yFunc: Function, nFunc: Function): void {
             const checkboxElmt: HTMLInputElement = document.getElementById(attrId) as HTMLInputElement;
             if (!checkboxElmt) {
                 console.log("체크박스가 정의되지 않았습니다.");
-                return false;
+                return;
             }
 
             const separator: string = "//";
@@ -569,11 +565,11 @@ cF.util = (function(): Module {
 
         /**
          * Form 데이터 배열을 chunk 크기만큼 나누어 JSON 객체 배열로 변환
-         * @param {Array} arr - 시리얼라이즈할 form 데이터 배열. 각 요소는 `{ name, value }` 형태의 객체.
+         * @param {Array<any>} arr - 시리얼라이즈할 form 데이터 배열. 각 요소는 `{ name, value }` 형태의 객체.
          * @param {number} chunk - 배열을 분할할 크기.
          * @returns {Array} - 각 chunk별로 분할된 객체 배열.
          */
-        serializeJsonArray: function(arr, chunk: number) {
+        serializeJsonArray: function(arr: Array<any>, chunk: number): Record<any, any> {
             const processedArr = [];
             for (let i = 0; i < arr.length; i += chunk) {
                 const form = arr.slice(i, i + chunk);
@@ -592,14 +588,14 @@ cF.util = (function(): Module {
          * @param {HTMLElement|JQuery} elmt - 비활성화할 버튼 요소. jQuery 객체 또는 DOM 요소.
          * @param {number} [sec=2] - 버튼을 비활성화할 시간(초 단위). 기본값은 2초.
          */
-        delayBtn: function(elmt, sec: number = 2): void {
-            if (elmt instanceof jQuery) elmt = elmt[0];
-            if (!elmt) return;
-            if (elmt.classList?.contains("modal-btn-close-safe")) return;     // 안전닫기 버튼 제외
+        delayBtn: function(elmt: HTMLElement|JQuery, sec: number = 2): void {
+            const targetElmt = (elmt instanceof jQuery) ? elmt[0] : elmt;
+            if (!targetElmt) return;
+            if (targetElmt.classList?.contains("modal-btn-close-safe")) return;     // 안전닫기 버튼 제외
 
-            elmt.disabled = true;
+            targetElmt.disabled = true;
             setTimeout(function(): void {
-                elmt.disabled = false;
+                targetElmt.disabled = false;
             }, sec * 1000);
         },
 

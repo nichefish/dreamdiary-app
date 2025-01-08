@@ -4,13 +4,18 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.Tag = (function(): Module {
+dF.Tag = (function(): dfModule {
     return {
+        initialized: false,
+
         /**
          * Tag 모듈 초기화
          */
         init: function(): void {
-            console.log("'Tag' module initialized.");
+            if (dF.Tag.initialized) return;
+
+            dF.Tag.initialized = true;
+            console.log("'dF.Tag' module initialized.");
         },
 
         /**
@@ -146,7 +151,7 @@ dF.Tag = (function(): Module {
                 $("#board_tag_dtl_modal").modal("hide");
             });
         },
-    } as Module
+    }
 })();
 document.addEventListener("DOMContentLoaded", function(): void {
     dF.Tag.init();

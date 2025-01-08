@@ -9,12 +9,7 @@
 // @ts-ignore
 if (typeof cF === 'undefined') { var cF = {} as any; }
 cF.regex = (function(): Module {
-
     return {
-        init: function(): void {
-            console.log("'cF.regex' module initialized.");
-        },
-
         /** 정규식: 숫자 */
         num: /[0-9]/g,
         /** 정규식: 숫자 빼고 나머지 */

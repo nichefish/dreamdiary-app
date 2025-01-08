@@ -16,19 +16,13 @@ $(function(): void {
 });
 cF.validate = (function(): Module {
     return {
-        init: function(): void {
-            console.log("'cF.validate' module initialized.");
-        },
-
-        /**
-         * jQuery valication 기본 옵션
-         */
+        /** jQuery valication 기본 옵션 */
         baseOptions: {
-            errorPlacement : function($error, $element): void {
+            errorPlacement : function($error: JQuery<HTMLElement>, $element: JQuery<HTMLElement>): void {
                 // 공통 함수로 분리
                 cF.validate.errorSpan($error, $element);
             },
-            success: function(label): void {
+            success: function(label: JQuery<HTMLElement>): void {
                 // 유효성 검사를 통과한 경우 에러 메시지 제거
                 label.remove();
             },
@@ -214,7 +208,7 @@ cF.validate = (function(): Module {
          * @param {Function} [callback] - 제출 시 호출할 함수 (선택적).
          * @param {object} additionalOptions - 추가로 적용할 옵션 (선택적).
          */
-        validateForm: function (formSelector, callback: Function, additionalOptions = {}) {
+        validateForm: function (formSelector: string, callback: Function, additionalOptions: Record<string, any> = {}): void {
             if (!cF.util.isPresent(formSelector)) return;
 
             // jQuery Validation을 초기화
@@ -260,7 +254,7 @@ cF.validate = (function(): Module {
          * @param {string} validExtn - 허용되는 확장자 목록 (파이프(|)로 구분).
          * @returns {boolean} - 유효한 확장자일 경우 true, 아니면 false.
          */
-        fileExtnChck: function(selector: string|HTMLElement|JQuery, validExtn = ""): boolean {
+        fileExtnChck: function(selector: string|HTMLElement|JQuery, validExtn: string = ""): boolean {
             const inputElements: HTMLInputElement[] = cF.util.verifySelector(selector);
             if (inputElements.length === 0) return false;
             const input: HTMLInputElement = inputElements[0];

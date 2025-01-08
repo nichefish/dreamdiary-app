@@ -131,6 +131,8 @@
 
 <#--include::script modules-->
 <script type="text/javascript" src="/js/view/domain/user/user_module.js?${releaseDate!}"></script>
+
+<!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/user/user_list.js?${releaseDate!}"></script>
 
 </@layout.layout>

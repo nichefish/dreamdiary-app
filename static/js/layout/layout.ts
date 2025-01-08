@@ -4,8 +4,7 @@
  *
  * @author nichefish
  */
-if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.Layout = (function(): Module {
+const Layout: Page = (function(): Page {
     return {
         /**
          * Layout 객체 초기화
@@ -16,8 +15,8 @@ dF.Layout = (function(): Module {
             // 개별 input 유효성검사
             cF.validate.onlyNum(".number");
 
-            dF.Layout.setBtnDelay();
-            dF.Layout.modalBtnCloseSafe();
+            Layout.setBtnDelay();
+            Layout.modalBtnCloseSafe();
         },
 
         /**
@@ -86,5 +85,5 @@ dF.Layout = (function(): Module {
     }
 })();
 document.addEventListener("DOMContentLoaded", function(): void {
-    dF.Layout.init();
+    Layout.init();
 });

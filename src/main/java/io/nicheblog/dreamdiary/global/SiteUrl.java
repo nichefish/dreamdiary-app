@@ -77,9 +77,6 @@ public interface SiteUrl {
     String JRNL_SBJCT_MDF_AJAX = Prefix.JRNL_SBJCT + "/jrnlSbjctMdfAjax.do";
     String JRNL_SBJCT_DEL_AJAX = Prefix.JRNL_SBJCT + "/jrnlSbjctDelAjax.do";
 
-    /** 저널 태그 */
-    String JRNL_TAG_CTGR_SYNC_AJAX = Prefix.JRNL_DREAM + "/jrnlTagCtgrSyncAjax.do";
-
     /** 저널 결산 */
     String JRNL_SUMRY_LIST = Prefix.JRNL_SUMRY + "/jrnlSumryList.do";
     String JRNL_SUMRY_LIST_AJAX = Prefix.JRNL_SUMRY + "/jrnlSumryListAjax.do";

@@ -4,13 +4,18 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.VcatnPapr = (function(): Module {
+dF.VcatnPapr = (function(): dfModule {
     return {
+        initialized: false,
+
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'VcatnPapr' module initialized.");
+            if (dF.VcatnPapr.initialized) return;
+
+            dF.VcatnPapr.initialized = true;
+            console.log("'dF.VcatnPapr' module initialized.");
         },
 
         /**

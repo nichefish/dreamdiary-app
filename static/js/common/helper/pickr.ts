@@ -9,7 +9,6 @@
 // @ts-ignore
 if (typeof cF === 'undefined') { var cF = {} as any; }
 cF.pickr = (function(): Module {
-
     /** 기본 색상 배열 */
     const defaultColorArr = [
         "#d3d3d3",
@@ -41,7 +40,6 @@ cF.pickr = (function(): Module {
     };
 
     return {
-
         /**
          * 색상 선택기를 초기화하고 변경 이벤트를 처리합니다.
          * @param {string} selectorStr - 색상 선택기를 초기화할 DOM 요소의 선택자 문자열.
@@ -49,9 +47,7 @@ cF.pickr = (function(): Module {
          * @param {Array} [initColorArr=defaultColorArr] - 초기 색상 배열 (선택적).
          * @returns {Pickr} - Pickr 인스턴스.
          */
-        init: function(selectorStr, initColor, initColorArr = defaultColorArr): Pickr {
-            console.log("'cF.pickr' module initialized.");
-
+        init: function(selectorStr: string, initColor: string, initColorArr: string[] = defaultColorArr): Pickr {
             // 색상 배열 들어올시 기본배열에 추가
             if (initColor) initColorArr = [initColor, ...initColorArr];
 
@@ -84,7 +80,7 @@ cF.pickr = (function(): Module {
             });
 
             // 색상 변경 시 처리 로직
-            pickr.on("change", function(color): void {
+            pickr.on("change", function(color: any): void {
                 const colorCd = color.toRGBA().toString();
                 const idx = pickr.options.el.id.replace("color-picker", "");
                 const trimmedColorCd = colorCd.replace(/\.(.*?\d*),/g, ",").replace(/ /g, "");
@@ -95,6 +91,5 @@ cF.pickr = (function(): Module {
 
             return pickr;
         },
-
     }
 })();

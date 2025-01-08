@@ -5,12 +5,11 @@
  */
 // @ts-ignore
 const Page: Page = (function(): Page {
-    return {
-        /**
+    return {        /**
          * Page 객체 초기화
          */
-        init: function(): void {
-            console.log("Page scripts initialized.");
+        init: function (): void {
+            //
         },
 
         /**

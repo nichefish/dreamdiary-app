@@ -106,10 +106,11 @@
     <input type="hidden" name="logActvtyNo" id="logActvtyNo" />
 </form>
 
-<#--include::modals-->
+<#--include::log_actvty_module-->
 <#include "/view/domain/admin/log/actvty/_modal/_log_actvty_dtl_modal.ftlh">
-<#--include::script modules-->
 <script type="text/javascript" src="/js/view/domain/admin/log/actvty/log_actvty_module.js"></script>
+
+<!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/admin/log/actvty/log_actvty_list.js"></script>
 
 </@layout.layout>

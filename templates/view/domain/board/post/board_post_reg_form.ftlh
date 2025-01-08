@@ -135,13 +135,16 @@
     </div>
 </div>
 
-<#--include:: component:: tinymce 이미지 추가 영역 template-->
+<#--include::tinymce-->
+<script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
+<script type="text/javascript" src="/js/common/helper/tinymce.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/lib/prism/js/prism.js"></script>
 <#include "/view/global/_tinymce_img.ftlh">
 
 <#--include::script modules-->
-<script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
-<script type="text/javascript" src="/lib/prism/js/prism.js"></script>
-<script type="text/javascript" src="/js/common/helper/tinymce.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/domain/board/post/board_post_module.js?${releaseDate!}"></script>
+
+<!--include::page scripts-->
+<script type="text/javascript" src="/js/view/domain/board/post/board_post_reg_form.js?${releaseDate!}"></script>
 
 </@layout.layout>
