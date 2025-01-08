@@ -4,6 +4,7 @@
  * @included_in : layout
  -->
 
+<#-- 숫자 포맷팅(,) off -->
 <#setting number_format="c">
 
 <head>
@@ -18,7 +19,7 @@
     <meta property="og:title" content="${Constant.SITE_NM!}" />
     <meta property="og:url" content="${Url.DOMAIN!}"/>
     <meta property="og:site_name" content="${Constant.SITE_NM!}" />
-    <link rel="shortcut icon" href="/static/favicon.ico" />
+    <link rel="shortcut icon" href="/favicon.ico" />
 
     <!--Metronic:: Gloabl Css Bundle(used by all pages) -->
     <link rel="stylesheet" type="text/css" href="/metronic/assets/plugins/global/plugins.bundle.css" />
