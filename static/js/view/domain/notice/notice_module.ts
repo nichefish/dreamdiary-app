@@ -4,15 +4,21 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.Notice = (function(): Module {
+dF.Notice = (function(): dfModule {
     return {
+        initialized: false,
+        submitMode: "",
+        isReg: $("#noticeRegForm").data("mode") === "regist",
         isMdf: $("#noticeRegForm").data("mode") === "modify",
 
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'Notice' module initialized.");
+            if (dF.Notice.initialized) return;
+
+            dF.Notice.initialized = true;
+            console.log("'dF.Notice' module initialized.");
         },
 
         /**
@@ -200,6 +206,3 @@ dF.Notice = (function(): Module {
         }
     }
 })();
-document.addEventListener("DOMContentLoaded", function(): void {
-    dF.Notice.init();
-});

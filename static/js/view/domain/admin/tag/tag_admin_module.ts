@@ -4,13 +4,23 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.TagAdmin = (function(): Module {
+dF.TagAdmin = (function(): dfModule {
+    const self: dfModule = this;
+
     return {
+        initialized: false,
+
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'TagAdmin' module initialized.");
+            if (dF.TagAdmin.initialized) return;
+
+            /* initialize submodules. */
+            dF.TagAdminAside.init();
+
+            dF.TagAdmin.initialized = true;
+            console.log("'dF.TagAdmin' module initialized.");
         },
 
         /**

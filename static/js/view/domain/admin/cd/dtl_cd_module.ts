@@ -4,13 +4,19 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.DtlCd = (function(): Module {
+dF.DtlCd = (function(): dfModule {
     return {
+        initialized: false,
+        swappable: null,
+
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'DtlCd' module initialized.");
+            if (dF.DtlCd.initialized) return;
+
+            dF.DtlCd.initialized = true;
+            console.log("'dF.DtlCd' module initialized.");
         },
 
         /**

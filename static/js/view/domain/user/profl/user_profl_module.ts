@@ -4,13 +4,18 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.UserProfl = (function(): Module {
+dF.UserProfl = (function(): dfModule {
     return {
+        initialized: false,
+
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'UserProfl' module initialized.");
+            if (dF.UserProfl.initialized) return;
+
+            dF.UserProfl.initialized = true;
+            console.log("'dF.UserProfl' module initialized.");
         },
 
         /** 프로필 정보 창 토글 */
@@ -41,6 +46,3 @@ dF.UserProfl = (function(): Module {
         },
     }
 })();
-document.addEventListener("DOMContentLoaded", function(): void {
-    dF.UserProfl.init();
-});

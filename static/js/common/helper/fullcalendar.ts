@@ -9,9 +9,8 @@
 // @ts-ignore
 if (typeof cF === 'undefined') { var cF = {} as any; }
 cF.fullcalendar = (function(): Module {
-
     /** 기본 옵션 */
-    const baseOptions = {
+    const baseOptions: Record<string, any> = {
         headerToolbar: {
             left: "prev,next today",
             center: "title",
@@ -40,18 +39,18 @@ cF.fullcalendar = (function(): Module {
     };
 
     return {
+        initialized: false,
+
         /**
          * init : `FullCalendar` 객체를 생성하고 이벤트를 설정하는 함수.
          * @param {string} selectorId - 캘린더를 렌더링할 DOM 요소의 ID.
-         * @param {Array} eventList - 캘린더에 표시할 이벤트 목록.
+         * @param {Array<Record<string, any>>} eventList - 캘린더에 표시할 이벤트 목록.
          * @param {function} clickFunc - 이벤트 클릭 시 호출할 콜백 함수 (선택적).
          * @param {object} additionalOptions - 추가로 적용할 `FullCalendar` 설정 옵션 (선택적).
          * @returns {FullCalendar.Calendar} - 생성된 `FullCalendar` 객체.
          */
-        init: function(selectorId: string, eventList, clickFunc: Function, additionalOptions = {}): FullCalendar.Calendar {
-            console.log("'cF.fullcalendar' module initialized.");
-
-            const target = document.getElementById(selectorId);
+        init: function(selectorId: string, eventList: Array<Record<string, any>>, clickFunc: Function, additionalOptions: Record<string, any> = {}): FullCalendar.Calendar {
+            const target: HTMLElement = document.getElementById(selectorId);
             if (!target) {
                 console.error("Element with ID " + selectorId + " not found.");
                 return null;
@@ -60,13 +59,13 @@ cF.fullcalendar = (function(): Module {
             const todayDate = moment().startOf("day");
             const TODAY = todayDate.format("YYYY-MM-DD");
 
-            const mergedOptions = {
+            const mergedOptions: Record<string, any> = {
                 ...baseOptions,
                 now: TODAY,
                 initialDate: TODAY,
                 events: eventList,
                 // 클릭 이벤트
-                eventClick: function(info) {
+                eventClick: function(info: Event): void {
                     if (typeof clickFunc === "function") clickFunc(info);
                 },
                 ...additionalOptions

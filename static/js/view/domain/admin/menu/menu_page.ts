@@ -10,12 +10,13 @@ const Page: Page = (function(): Page {
          * Page 객체 초기화
          */
         init: function(): void {
+            /* initialize modules. */
+            dF.Menu.init();
+            /* update tree. */
             Page.updtTree();
 
             /* init : Draggable */
             dF.Menu.initDraggable();
-
-            console.log("Page scripts initialized.");
         },
         /**
          * 트리 구조 데이터 리로드 및 새로 그리기

@@ -182,11 +182,14 @@
 </form>
 
 <#--include::modals-->
-<#include "/view/domain/notice/_modal/_notice_dtl_modal.ftlh">
 <#include "/view/global/_common/_clsf/comment/_modal/_comment_list_modal.ftlh">
 <#include "/view/global/_common/file/_modal/_atch_file_list_modal.ftlh">
-<#--include::script modules-->
+
+<#--include::notice_modules-->
+<#include "/view/domain/notice/_modal/_notice_dtl_modal.ftlh">
 <script type="text/javascript" src="/js/view/domain/notice/notice_module.js?${releaseDate!}"></script>
+
+<!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/notice/notice_list.js?${releaseDate!}"></script>
 
 </@layout.layout>

@@ -4,13 +4,19 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.ClCd = (function(): Module {
+dF.ClCd = (function(): dfModule {
     return {
+        initialized: false,
+        swappable: null,
+
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'ClCd' module initialized.");
+            if (dF.ClCd.initialized) return;
+
+            dF.ClCd.initialized = true;
+            console.log("'dF.ClCd' module initialized.");
         },
 
         /**
@@ -228,6 +234,3 @@ dF.ClCd = (function(): Module {
         },
     }
 })();
-document.addEventListener("DOMContentLoaded", function(): void {
-    dF.ClCd.init();
-});

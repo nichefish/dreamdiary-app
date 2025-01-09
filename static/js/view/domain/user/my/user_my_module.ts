@@ -4,13 +4,18 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.UserMy = (function(): Module {
+dF.UserMy = (function(): dfModule {
     return {
+        initialized: false,
+
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'UserMy' module initialized.");
+            if (dF.UserMy.initialized) return;
+
+            dF.UserMy.initialized = true;
+            console.log("'dF.UserMy' module initialized.");
         },
 
         /**

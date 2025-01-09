@@ -9,10 +9,6 @@
 if (typeof cF === 'undefined') { var cF = {} as any; }
 cF.date = (function(): Module {
     return {
-        init: function(): void {
-            console.log("'cF.date' module initialized.");
-        },
-
         ptnDate: "yyyy-MM-dd",
         ptnDatetime: "yyyy-MM-dd HH:mm:ss",
         ptnPdate: "yyyyMMdd",

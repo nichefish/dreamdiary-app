@@ -183,14 +183,19 @@
     <input type="hidden" name="clCd" id="clCd" value="${clCd.clCd!}" />
 </form>
 
-<#--include::modals-->
-<#include "/view/domain/admin/cd/_modal/_cl_cd_reg_modal.ftlh">
-<#include "/view/domain/admin/cd/_modal/_dtl_cd_reg_modal.ftlh">
-<#--include::script modules-->
+<#--include::draggable-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
 <script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
+
+<#--include::cl_cd_modules-->
+<#include "/view/domain/admin/cd/_modal/_cl_cd_reg_modal.ftlh">
 <script type="text/javascript" src="/js/view/domain/admin/cd/cl_cd_module.js"></script>
+
+<#--include::dtl_cd_modules-->
+<#include "/view/domain/admin/cd/_modal/_dtl_cd_reg_modal.ftlh">
+<script type="text/javascript" src="/js/view/domain/admin/cd/dtl_cd_module.js"></script>
+
+<!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/admin/cd/cl_cd_dtl.js"></script>
-<#include "/view/domain/admin/cd/_dtl_cd_scripts.ftlh">
 
 </@layout.layout>

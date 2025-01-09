@@ -11,13 +11,6 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-<#--include::script modules-->
-<#include "/view/domain/jrnl/sbjct/_jrnl_sbjct_scripts.ftlh">
-
-<script>
-
-</script>
-
 <#--#include:: component:: 태그 클릭 필터링-->
 <#include "/view/global/_common/_clsf/tag/_tag_list_header.ftlh">
 
@@ -159,6 +152,11 @@
 <#--include::modals-->
 <#include "/view/global/_common/_clsf/comment/_modal/_comment_list_modal.ftlh">
 <#include "/view/global/_common/file/_modal/_atch_file_list_modal.ftlh">
+
+<#--include::script modules-->
+<script type="text/javascript" src="/js/view/domain/jrnl/sbjct/jrnl_sbjct_module.js?${releaseDate!}"></script>
+
+<!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/jrnl/sbjct/jrnl_sbjct_list.js?${releaseDate!}"></script>
 
 </@layout.layout>

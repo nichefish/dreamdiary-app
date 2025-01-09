@@ -8,7 +8,6 @@
 // @ts-ignore
 if (typeof cF === 'undefined') { var cF = {} as any; }
 cF.tagify = (function(): Module {
-
     /** 기본 옵션 분리 */
     const baseOptions = {
         whitelist: [],
@@ -25,8 +24,8 @@ cF.tagify = (function(): Module {
         templates: {
             tag: function (tagData: any): string {
                 // 태그 메타데이터 (data)를 문자열로 변환하여 표시
-                const ctgr = cF.util.isNotEmpty(tagData.data) ? tagData.data.ctgr : "";
-                const ctgrSpan = ctgr !== "" ? `<span class="tagify__tag-category text-noti me-1">[${tagData.data.ctgr}]</span>` : "";
+                const ctgr: string = cF.util.isNotEmpty(tagData.data) ? tagData.data.ctgr : "";
+                const ctgrSpan: string = ctgr !== "" ? `<span class="tagify__tag-category text-noti me-1">[${tagData.data.ctgr}]</span>` : "";
                 return `<tag title="${tagData.value}" contenteditable="false" spellcheck="false" tabindex="-1"
                                      class="tagify__tag" value="${tagData.value}" data-ctgr="${ctgr}">
                             <x title="" class="tagify__tag__removeBtn" role="button" aria-label="remove tag"></x>
@@ -44,12 +43,10 @@ cF.tagify = (function(): Module {
         /**
          * Tagify를 초기화합니다.
          * @param {string} selector - 초기화할 태그 입력 요소의 선택자 문자열.
-         * @param {object} additionalOptions - 추가로 적용할 `Tagify` 설정 옵션 (선택적).
+         * @param {Record<string, any>} additionalOptions - 추가로 적용할 `Tagify` 설정 옵션 (선택적).
          * @returns {Tagify} - 초기화된 Tagify 인스턴스.
          */
-        init: function(selector: string, additionalOptions = {}) {
-            console.log("'cF.tagify' module initialized.");
-
+        init: function(selector: string, additionalOptions: Record<string, any> = {}) {
             // 태그 tagify
             const inputs: HTMLElement[] = cF.util.verifySelector(selector);
             if (inputs.length === 0) return;
@@ -61,17 +58,21 @@ cF.tagify = (function(): Module {
                 ...baseOptions,
                 ...additionalOptions
             };
+
+            cF.tagify.initialized = true;
+            console.log("'cF.tagify' module initialized.");
+
             return new Tagify(tagInput, mergedOptions);
         },
 
         /**
          * 카테고리 기능을 추가하여 Tagify를 초기화합니다.
          * @param {string} selector - 초기화할 태그 입력 요소의 선택자 문자열.
-         * @param {Object} tagCtgrMap - 태그 카테고리 매핑 객체. 태그와 관련된 카테고리를 정의합니다.
-         * @param {object} additionalOptions - 추가로 적용할 `Tagify` 설정 옵션 (선택적).
+         * @param {Record<string, any>} tagCtgrMap - 태그 카테고리 매핑 객체. 태그와 관련된 카테고리를 정의합니다.
+         * @param {Record<string, any>} additionalOptions - 추가로 적용할 `Tagify` 설정 옵션 (선택적).
          * @returns {Tagify} - 초기화된 Tagify 인스턴스. 카테고리 기능이 추가된 상태입니다.
          */
-        initWithCtgr: function(selector: string, tagCtgrMap, additionalOptions = {}) {
+        initWithCtgr: function(selector: string, tagCtgrMap: Record<string, any>, additionalOptions: Record<string, any> = {}) {
             const tagify = cF.tagify.init(selector, additionalOptions);
 
             // tagify 스코프 설정
@@ -103,9 +104,9 @@ cF.tagify = (function(): Module {
         /**
          * _내부함수 : 태그 자동완성을 설정합니다.
          * @param {Tagify} tagify - Tagify 인스턴스. 자동완성을 적용할 태그 입력 요소입니다.
-         * @param {Object} tagCtgrMap - 태그 카테고리 매핑 객체. 태그와 관련된 카테고리를 정의합니다.
+         * @param {Record<string, any>} tagCtgrMap - 태그 카테고리 매핑 객체. 태그와 관련된 카테고리를 정의합니다.
          */
-        _setAutoComplete: function(tagify, tagCtgrMap): void {
+        _setAutoComplete: function(tagify, tagCtgrMap: Record<string, any>): void {
             if (!tagCtgrMap) return;
 
             tagify.on("input", function(e): void {
@@ -120,7 +121,7 @@ cF.tagify = (function(): Module {
          * @param {Tagify} tagify - Tagify 인스턴스. 카테고리 입력을 위한 태그 입력 요소입니다.
          * @param {Object} tagCtgrMap - 태그 카테고리 매핑 객체. 태그와 관련된 카테고리를 정의합니다.
          */
-        _setCtgrInputPrompt: function(tagify, tagCtgrMap): void {
+        _setCtgrInputPrompt: function(tagify, tagCtgrMap: Record<string, any>): void {
             tagify.on("add", function(e): void {
                 // 기본 태그 (카테고리 붙이기 전) 처리시에만 동작
                 const newTag = e.detail.data;

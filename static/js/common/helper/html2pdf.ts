@@ -8,11 +8,10 @@
 // @ts-ignore
 if (typeof cF === 'undefined') { var cF = {} as any; }
 cF.html2pdf = (function(): Module {
-
     /**
      * PDF 생성 기본 옵션
      */
-    const defaultOptions = {
+    const defaultOptions: Record<string, any> = {
         margin: 0,
         filename: 'test.pdf',
         image: { type: 'jpeg', quality: 1 },
@@ -25,10 +24,6 @@ cF.html2pdf = (function(): Module {
     };
 
     return {
-        init: function(): void {
-            console.log("'cF.html2pdf' module initialized.");
-        },
-
         /**
          * 특정 요소를 PDF로 변환하고 저장합니다.
          * @param {string} elmtId - PDF로 변환할 요소의 ID.

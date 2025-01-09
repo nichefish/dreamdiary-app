@@ -4,13 +4,28 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.JrnlDayTag = (function(): Module {
+dF.JrnlDayTag = (function(): dfModule {
     return {
+        initialized: false,
+        ctgrMap: new Map(),
+
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'JrnlDayTag' module initialized.");
+            if (dF.JrnlDayTag.initialized) return;
+
+            dF.JrnlDayTag.getCtgrMap();
+
+            dF.JrnlDayTag.initialized = true;
+            console.log("'dF.JrnlDayTag' module initialized.");
+        },
+
+        getCtgrMap: function(): void {
+            const url: string = Url.JRNL_DAY_TAG_CTGR_MAP_AJAX;
+            cF.ajax.get(url, {}, function(res: AjaxResponse): void {
+                if (res.rsltMap) dF.JrnlDayTag.ctgrMap = res.rsltMap;
+            });
         },
 
         /**

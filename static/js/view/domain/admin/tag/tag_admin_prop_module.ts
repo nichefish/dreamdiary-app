@@ -4,13 +4,18 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.TagProp = (function(): Module {
+dF.TagProp = (function(): dfModule {
     return {
+        initialized: false,
+
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'TagProp' module initialized.");
+            if (dF.TagProp.initialized) return;
+
+            dF.TagProp.initialized = true;
+            console.log("'dF.TagProp' module initialized.");
         },
 
         /**

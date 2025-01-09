@@ -4,13 +4,20 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.Menu = (function(): Module {
+dF.Menu = (function(): dfModule {
     return {
+        initialized: false,
+        mainSwappable: null,
+        subSwappable: null,
+
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'Menu' module initialized.");
+            if (dF.Menu.initialized) return;
+
+            dF.Menu.initialized = true;
+            console.log("'dF.Menu' module initialized.");
         },
 
         /**
@@ -151,6 +158,3 @@ dF.Menu = (function(): Module {
         },
     }
 })();
-document.addEventListener("DOMContentLoaded", function(): void {
-    dF.Menu.init();
-});

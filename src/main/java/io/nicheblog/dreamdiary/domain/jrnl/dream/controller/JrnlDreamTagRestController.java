@@ -51,6 +51,39 @@ public class JrnlDreamTagRestController
     private final JrnlDreamTagService jrnlDreamTagService;
 
     /**
+     * 저널 꿈 태그 카테고리 맵 조회 (Ajax)
+     * (사용자USER, 관리자MNGR만 접근 가능.)
+     *
+     * @param logParam 로그 기록을 위한 파라미터 객체
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    @GetMapping(Url.JRNL_DREAM_TAG_CTGR_MAP_AJAX)
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> jrnlDreamTagCtgrMapAjax(
+            final LogActvtyParam logParam
+    ) throws Exception {
+
+        final AjaxResponse ajaxResponse = new AjaxResponse();
+
+        final Map<String, List<String>> tagCtgrMap = jrnlDreamTagService.getTagCtgrMap();
+
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+
+        // 응답 결과 세팅
+        ajaxResponse.setRsltMap(tagCtgrMap);
+        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
+        // 로그 관련 세팅
+        logParam.setResult(isSuccess, rsltMsg);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ajaxResponse);
+    }
+
+    /**
      * 저널 꿈 태그 전체 목록 조회 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *

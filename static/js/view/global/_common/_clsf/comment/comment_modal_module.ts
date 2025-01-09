@@ -6,17 +6,22 @@
 // @ts-ignore
 if (typeof dF === 'undefined') { var dF = {} as any; }
 if (typeof dF.Comment === 'undefined') { dF.Comment = {} as any; }
-dF.Comment.modal = (function(): any {
+dF.Comment.modal = (function(): dfModule {
     return {
+        initialized: false,
+
         /**
          * Comments.modal 객체 초기화
          * @param {Object} options - 초기화 옵션 객체.
          * @param {Function} [options.refreshFunc] - 섹션 새로 고침에 사용할 함수 (선택적).
          */
         init: function({ refreshFunc }: { refreshFunc?: Function } = {}): void {
-            console.log("'Comment.modal' module initialized.");
+            if (dF.Comment.modal.initialized) return;
 
             if (refreshFunc !== undefined) dF.Comment.modal.refreshFunc = refreshFunc;
+
+            dF.Comment.modal.initialized = true;
+            console.log("'dF.Comment.modal' module initialized.");
         },
 
         /**

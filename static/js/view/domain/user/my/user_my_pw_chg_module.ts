@@ -4,13 +4,18 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.UserMyPwChg = (function(): Module {
+dF.UserMyPwChg = (function(): dfModule {
     return {
+        initialized: false,
+
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'UserMyPwChg' module initialized.");
+            if (dF.UserMyPwChg.initialized) return;
+
+            dF.UserMyPwChg.initialized = true;
+            console.log("'dF.UserMyPwChg' module initialized.");
         },
 
         /**

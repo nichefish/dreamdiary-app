@@ -4,15 +4,19 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.Schdul = (function(): Module {
+dF.Schdul = (function(): dfModule {
     return {
+        initialized: false,
         prtcpntCnt: 0,
 
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'Schdul' module initialized.");
+            if (dF.Schdul.initialized) return;
+
+            dF.Schdul.initialized = true;
+            console.log("'dF.Schdul' module initialized.");
         },
 
         /**

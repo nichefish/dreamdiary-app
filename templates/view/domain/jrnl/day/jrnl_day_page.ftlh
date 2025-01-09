@@ -58,44 +58,57 @@
 </div>
 <!--end::Card-->
 
-<#--include:: Aside-->
+<#--include::aside-->
 <#include "/view/domain/jrnl/day/_jrnl_day_aside_base.ftlh">
 
-<#--include::modals-->
-<#include "/view/domain/jrnl/day/_jrnl_day_list_template.hbs">
-<#include "/view/domain/jrnl/day/_modal/_jrnl_day_reg_modal.ftlh">
-<#include "/view/domain/jrnl/day/tag/_jrnl_day_tag_list_template.hbs">
-<#include "/view/domain/jrnl/day/tag/_modal/_jrnl_day_tag_dtl_modal.ftlh">
+<#--include::tinymce-->
+<script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
+<script type="text/javascript" src="/js/common/helper/tinymce.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/lib/prism/js/prism.js"></script>
+<#include "/view/global/_tinymce_img.ftlh">
 
+<#--include::fullcalendar-->
+<script type="text/javascript" src="/metronic/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
+<script type="text/javascript" src="/js/common/helper/fullcalendar.js?${releaseDate!}"></script>
+
+<#--include::jrnl_day_module-->
+<#include "/view/domain/jrnl/day/_modal/_jrnl_day_reg_modal.ftlh">
+<#include "/view/domain/jrnl/day/_jrnl_day_list_template.hbs">
+<script type="text/javascript" src="/js/view/domain/jrnl/day/jrnl_day_module.js?${releaseDate!}"></script>
+
+<#--include::jrnl_diary_module-->
 <#include "/view/domain/jrnl/diary/_modal/_jrnl_diary_reg_modal.ftlh">
 <#include "/view/domain/jrnl/diary/_jrnl_diary_list_template.hbs">
-<#include "/view/domain/jrnl/diary/tag/_jrnl_diary_tag_list_template.hbs">
-<#include "/view/domain/jrnl/diary/tag/_modal/_jrnl_diary_tag_dtl_modal.ftlh">
+<script type="text/javascript" src="/js/view/domain/jrnl/diary/jrnl_diary_module.js?${releaseDate!}"></script>
 
+<#--include::jrnl_dream_module-->
 <#include "/view/domain/jrnl/dream/_modal/_jrnl_dream_reg_modal.ftlh">
 <#include "/view/domain/jrnl/dream/_jrnl_dream_list_template.hbs">
-<#include "/view/domain/jrnl/dream/tag/_jrnl_dream_tag_list_template.hbs">
-<#include "/view/domain/jrnl/dream/tag/_modal/_jrnl_dream_tag_dtl_modal.ftlh">
-
-<#include "/view/domain/jrnl/tag/_jrnl_tag_list_modal.ftlh">
-<#include "/view/global/_common/_clsf/comment/_modal/_comment_reg_modal.ftlh">
-
-<#--include::script modules-->
-<script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
-<script type="text/javascript" src="/metronic/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
-<script type="text/javascript" src="/js/common/helper/tinymce.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/js/common/helper/fullcalendar.js?${releaseDate!}"></script>
-<#include "/view/domain/jrnl/day/tag/_jrnl_day_tag_ctgr_map.ftlh">
-<script type="text/javascript" src="/js/view/domain/jrnl/day/jrnl_day_page.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/js/view/domain/jrnl/day/jrnl_day_module.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/js/view/domain/jrnl/day/tag/jrnl_day_tag_module.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/domain/jrnl/dream/jrnl_dream_module.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/js/view/domain/jrnl/dream/tag/jrnl_dream_tag_module.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/js/view/domain/jrnl/diary/jrnl_diary_module.js?${releaseDate!}"></script>
+
+<#--include::jrnl_day_tag_module-->
+<#include "/view/domain/jrnl/diary/tag/_modal/_jrnl_diary_tag_dtl_modal.ftlh">
+<#include "/view/domain/jrnl/diary/tag/_jrnl_diary_tag_list_template.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/diary/tag/jrnl_diary_tag_module.js?${releaseDate!}"></script>
-<#include "/view/domain/jrnl/dream/tag/_jrnl_dream_tag_ctgr_map.ftlh">
-<#include "/view/domain/jrnl/diary/tag/_jrnl_diary_tag_ctgr_map.ftlh">
-<#include "/view/domain/jrnl/tag/_jrnl_tag_scripts.ftlh">
+
+<#--include::jrnl_day_tag_module-->
+<#include "/view/domain/jrnl/day/tag/_modal/_jrnl_day_tag_dtl_modal.ftlh">
+<#include "/view/domain/jrnl/day/tag/_jrnl_day_tag_list_template.hbs">
+<script type="text/javascript" src="/js/view/domain/jrnl/day/tag/jrnl_day_tag_module.js?${releaseDate!}"></script>
+
+<#--include::jrnl_dream_tag_module-->
+<#include "/view/domain/jrnl/dream/tag/_modal/_jrnl_dream_tag_dtl_modal.ftlh">
+<#include "/view/domain/jrnl/dream/tag/_jrnl_dream_tag_list_template.hbs">
+<script type="text/javascript" src="/js/view/domain/jrnl/dream/tag/jrnl_dream_tag_module.js?${releaseDate!}"></script>
+
+<#--include::tags-->
+<#include "/view/domain/jrnl/tag/_jrnl_tag_list_modal.ftlh">
+
+<#--include::comment-->
+<#include "/view/global/_common/_clsf/comment/_modal/_comment_reg_modal.ftlh">
 <script type="text/javascript" src="/js/view/global/_common/_clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
+
+<!--include::page scripts-->
+<script type="text/javascript" src="/js/view/domain/jrnl/day/jrnl_day_page.js?${releaseDate!}"></script>
 
 </@layout.layout>

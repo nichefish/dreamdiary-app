@@ -4,15 +4,30 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-const JrnlDiaryTag = (function(): Module {
+dF.JrnlDiaryTag = (function(): dfModule {
     return {
+        initialized: false,
+        ctgrMap: new Map(),
+
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'JrnlDiaryTag' module initialized.");
+            if (dF.JrnlDiaryTag.initialized) return;
+
+            dF.JrnlDiaryTag.getCtgrMap();
+
+            dF.JrnlDiaryTag.initialized = true;
+            console.log("'dF.JrnlDiaryTag' module initialized.");
         },
-        
+
+        getCtgrMap: function(): void {
+            const url: string = Url.JRNL_DIARY_TAG_CTGR_MAP_AJAX;
+            cF.ajax.get(url, {}, function(res: AjaxResponse): void {
+                if (res.rsltMap) dF.JrnlDiaryTag.ctgrMap = res.rsltMap;
+            });
+        },
+
         /**
          * 목록에 따른 일기 태그 조회 (Ajax)
          */
@@ -54,7 +69,7 @@ const JrnlDiaryTag = (function(): Module {
          * 상세 모달 호출
          * @param {string|number} tagNo - 조회할 태그 번호.
          */
-        dtlModal: function(tagNo: string|number, tagNm): void {
+        dtlModal: function(tagNo: string|number): void {
             event.stopPropagation();
             if (isNaN(Number(tagNo))) return;
 

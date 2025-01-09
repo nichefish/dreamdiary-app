@@ -11,6 +11,8 @@ const Page: Page = (function(): Page {
          * Page 객체 초기화
          */
         init: function(): void {
+            /* initialize modules. */
+            dF.LgnPwChg.init();
             /* initialize form. */
             Page.initForm();
 
@@ -20,8 +22,6 @@ const Page: Page = (function(): Page {
             if (Model.isDupIdLgn) Page.dupLgnAlert();
             /* 조건 일치시 비밀번호 변경 팝업 호출 */
             if (Model.isCredentialExpired || Model.needsPwReset) dF.LgnPwChg.pwChgModal();
-
-            console.log("Page scripts initialized.");
         },
 
         /**
@@ -61,7 +61,7 @@ const Page: Page = (function(): Page {
                 showCancelButton: true,
                 confirmButtonText: "로그인",
                 cancelButtonText: "취소",
-        }).then(function(result: SwalResult): void {
+            }).then(function(result: SwalResult): void {
                 if (result.value) {
                     // 중복ID 로그인
                     $("#userId").val(Model.userId);

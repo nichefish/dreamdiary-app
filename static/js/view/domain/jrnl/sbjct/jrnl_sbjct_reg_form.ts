@@ -12,6 +12,8 @@ const Page: Module = (function(): Module {
          * Page 객체 초기화
          */
         init: function(): void {
+            /* initialize modules. */
+            dF.JrnlSbjct.init();
             /* initialize form. */
             dF.JrnlSbjct.initForm();
 
@@ -31,8 +33,6 @@ const Page: Module = (function(): Module {
             } else {
                 $("#jandiYn").click();
             }
-
-            console.log("Page scripts initialized.");
         },
 
         refreshFunc: function({ refPostNo, refContentType }): void {

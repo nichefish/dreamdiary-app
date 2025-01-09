@@ -10,6 +10,10 @@ const Page: Page = (function(): Page {
          * Page 객체 초기화
          */
         init: function(): void {
+            /* initialize modules. */
+            dF.User.init();
+            dF.UserEmplym.init();
+            dF.UserProfl.init();
             /* initialize form. */
             dF.User.initForm();
 
@@ -31,8 +35,6 @@ const Page: Page = (function(): Page {
             if (hasProfl) dF.UserProfl.enableUserProfl();
             const hasEmplym = $("#userEmplymBtn").data("emplym");
             if (hasEmplym) dF.UserEmplym.enableUserEmplym();
-
-            console.log("Page scripts initialized.");
         },
     }
 })();

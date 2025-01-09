@@ -4,13 +4,18 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.VcatnSchdul = (function(): Module {
+dF.VcatnSchdul = (function(): dfModule {
     return {
+        initialized: false,
+
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'VcatnSchdul' module initialized.");
+            if (dF.VcatnSchdul.initialized) return;
+
+            dF.VcatnSchdul.initialized = true;
+            console.log("'dF.VcatnSchdul' module initialized.");
         },
 
         /**
@@ -180,6 +185,3 @@ dF.VcatnSchdul = (function(): Module {
         }
     }
 })();
-document.addEventListener("DOMContentLoaded", function(): void {
-    dF.VcatnSchdul.init();
-});

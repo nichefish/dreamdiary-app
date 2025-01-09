@@ -274,12 +274,18 @@
     <input type="hidden" name="userNo" value="${user.userNo!}">
 </form>
 
-<#include "/view/domain/user/profl/_user_profl_reg_template.hbs">       <#--사용자 프로필 정보 영역-->
-<#include "/view/domain/user/emplym/_user_emplym_reg_template.hbs">       <#--사용자 인사정보 영역-->
-
 <#--include::script modules-->
 <script type="text/javascript" src="/js/view/domain/user/user_module.js?${releaseDate!}"></script>
+
+<#--include::user_emplym_modules-->
+<#include "/view/domain/user/emplym/_user_emplym_reg_template.hbs">
+<script type="text/javascript" src="/js/view/domain/user/emplym/user_emplym_module.js?${releaseDate!}"></script>
+
+<#--include::user_profl_modules-->
+<#include "/view/domain/user/profl/_user_profl_reg_template.hbs">
 <script type="text/javascript" src="/js/view/domain/user/profl/user_profl_module.js?${releaseDate!}"></script>
+
+<!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/user/user_reg_form.js?${releaseDate!}"></script>
 
 </@layout.layout>

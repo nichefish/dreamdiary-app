@@ -101,12 +101,16 @@
 </div>
 <!--end::Card-->
 
-<#include "/view/domain/schdul/_modal/_schdul_reg_modal.ftlh">
-<#include "/view/domain/schdul/_modal/_schdul_dtl_modal.ftlh">
-<#--include::script modules-->
+<#--include::fullcalendar-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
 <script type="text/javascript" src="/js/common/helper/fullcalendar.js?${releaseDate!}"></script>
+
+<!--include::schdul_module-->
+<#include "/view/domain/schdul/_modal/_schdul_reg_modal.ftlh">
+<#include "/view/domain/schdul/_modal/_schdul_dtl_modal.ftlh">
 <script type="text/javascript" src="/js/view/domain/schdul/schdul_module.js?${releaseDate!}"></script>
+
+<!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/schdul/schdul_cal.js?${releaseDate!}"></script>
 
 </@layout.layout>

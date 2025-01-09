@@ -15,14 +15,14 @@ const Page: Page = (function(): Page {
          * Page 객체 초기화
          */
         init: function(): void {
+            /* initialize modules. */
+            dF.Schdul.init();
             /* initialize form. */
             dF.Schdul.initForm();
+            
+            /* initialize checkbox. */
+            Page.initChk();
 
-            const chkArr: JQuery<HTMLElement> = $("input:checkbox[id^='schdul_chk']");
-            chkArr.each(function(_index: number, item: HTMLInputElement): void {
-                const id: string = $(item).attr("id");
-                if (Page.getChkedCookie(id) === "Y") $(item).prop("checked", true);
-            });
             /** TODO : 선택된 년도,달 기준으로 변경해야함 */
             Page.calInitDt = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
             Page.calDt = Page.calInitDt;
@@ -64,8 +64,17 @@ const Page: Page = (function(): Page {
                 const marginTop: string = $(this).css("margin-top");
                 if (parseInt(marginTop) < 0) $(this).css("margin-top", "");
             });
+        },
 
-            console.log("Page scripts initialized.");
+        /**
+         * 체크박스 init
+         */
+        initChk: function(): void {
+            const chkArr: JQuery<HTMLElement> = $("input:checkbox[id^='schdul_chk']");
+            chkArr.each(function(_index: number, item: HTMLElement): void {
+                const id: string = $(item).attr("id");
+                if (Page.getChkedCookie(id) === "Y") $(item).prop("checked", true);
+            });
         },
 
         /**

@@ -10,13 +10,6 @@ if (typeof cF === 'undefined') { var cF = {} as any; }
 cF.$ajax = (function(): Module {
     return {
         /**
-         * initializes module.
-         */
-        init: function(): void {
-            console.log("'cF.$ajax' module initialized.");
-        },
-
-        /**
          * AJAX 공통 형식. (jQuery.ajax)
          * @param {Object} option - AJAX 요청에 대한 설정 옵션.
          * @param {Function} func - 요청 성공시 호출될 콜백 함수.

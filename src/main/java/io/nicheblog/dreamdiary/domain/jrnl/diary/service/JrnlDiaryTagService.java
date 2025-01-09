@@ -61,5 +61,21 @@ public interface JrnlDiaryTagService
      */
     Integer countDiarySize(final Integer tagNo, final Integer yy, final Integer mnth);
 
+    /**
+     * 지정된 연도와 월을 기준으로 태그 목록을 카테고리별로 그룹화하여 반환합니다.
+     *
+     * @param yy 조회할 연도
+     * @param mnth 조회할 월
+     * @return {@link Map} -- 카테고리별로 그룹화된 태그 목록을 담은 Map
+     * @throws Exception 조회 중 발생할 수 있는 예외
+     */
     Map<String, List<TagDto>> getDiarySizedGroupListDto(final Integer yy, final Integer mnth) throws Exception;
+
+    /**
+     * 태그 카테고리 맵을 반환합니다.
+     *
+     * @return {@link Map} -- 태그 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵
+     * @throws Exception 조회 중 발생할 수 있는 예외
+     */
+    Map<String, List<String>> getTagCtgrMap() throws Exception;
 }

@@ -104,14 +104,18 @@
     <input type="hidden" name="boardDef" id="boardDef" value="${boardDef!}"/>
 </form>
 
-<#--include:: Aside-->
+<#--include::aside-->
 <#include "/view/domain/board/def/_board_def_aside_base.ftlh">
-<#--include::modals-->
-<#include "/view/domain/board/def/_modal/_board_def_reg_modal.ftlh">
-<#--include::script modules-->
+
+<#--include::draggable-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
 <script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
+
+<#--include::board_def_module-->
+<#include "/view/domain/board/def/_modal/_board_def_reg_modal.ftlh">
 <script type="text/javascript" src="/js/view/domain/board/def/board_def_moodule.js?${releaseDate!}"></script>
+
+<!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/board/def/board_def_list.js?${releaseDate!}"></script>
 
 </@layout.layout>

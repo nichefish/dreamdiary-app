@@ -1,5 +1,7 @@
 package io.nicheblog.dreamdiary.domain.jrnl.dream.service.impl;
 
+import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryTagEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.mapstruct.JrnlDreamTagMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.repository.jpa.JrnlDreamTagRepository;
@@ -9,10 +11,12 @@ import io.nicheblog.dreamdiary.global._common._clsf.tag.model.TagDto;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -126,6 +130,14 @@ public class JrnlDreamTagServiceImpl
         return repository.countDreamSize(tagNo, yy, mnth);
     }
 
+    /**
+     * 지정된 연도와 월을 기준으로 태그 목록을 카테고리별로 그룹화하여 반환합니다.
+     *
+     * @param yy 조회할 연도
+     * @param mnth 조회할 월
+     * @return {@link Map} -- 카테고리별로 그룹화된 태그 목록을 담은 Map
+     * @throws Exception 조회 중 발생할 수 있는 예외
+     */
     @Override
     public Map<String, List<TagDto>> getDreamSizedGroupListDto(final Integer yy, final Integer mnth) throws Exception {
         final List<TagDto> tagList = this.getSelf().getDreamSizedListDto(yy, mnth);
@@ -133,5 +145,19 @@ public class JrnlDreamTagServiceImpl
         // 태그를 카테고리별로 그룹화하여 맵으로 반환
         return tagList.stream()
                 .collect(Collectors.groupingBy(TagDto::getCtgr));
+    }
+
+    @Override
+    public Map<String, List<String>> getTagCtgrMap() throws Exception {
+
+        final List<JrnlDreamTagEntity> tagList = this.getSelf().getListEntity(new HashMap<>());
+        return tagList.stream()
+                .collect(Collectors.groupingBy(
+                        JrnlDreamTagEntity::getTagNm,
+                        Collectors.mapping(tag -> {
+                            if (StringUtils.isBlank(tag.getCtgr())) return "";
+                            return tag.getCtgr();
+                        }, Collectors.toList())
+                ));
     }
 }

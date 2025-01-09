@@ -34,13 +34,18 @@ declare const cF: {
  * Module : 기능 단위 함수 묶음.
  */
 declare interface Module {
+    [key: string]: any;
+}
+declare interface dfModule extends Module {
     init: Function<any>;
+    initialized: boolean;
     [key: string]: any;
 }
 /**
  * Page : 페이지 전횽 함수 묶음.
  */
 declare interface Page extends Module {
+    init: Function<any>;
     [key: string]: any;
 }
 declare var Page: {

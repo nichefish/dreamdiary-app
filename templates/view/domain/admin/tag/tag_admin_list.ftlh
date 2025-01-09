@@ -17,7 +17,7 @@
     }
 </style>
 
-<#--include:: Aside-->
+<#--include::aside-->
 <#include "/view/domain/admin/tag/_tag_aside_base.ftlh">
 
 <!-- 컨텐츠 타입 헤더 -->
@@ -76,17 +76,20 @@
     <input type="hidden" id="refContentType" name="refContentType" value="${refContentType}" />
 </form>
 
-<#--include::modals-->
-<#include "/view/domain/admin/tag/_modal/_tag_list_template.hbs">
-<#include "/view/domain/admin/tag/_tag_ctgr_template.hbs">
-<#include "/view/domain/admin/tag/_modal/_tag_admin_dtl_modal.ftlh">
-<#include "/view/domain/admin/tag/_modal/_tag_prop_reg_modal.ftlh">
-<#--include::script modules-->
+<#--include::vendor script modules-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
 <script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
+<#--include::modals-->
+<#include "/view/domain/admin/tag/_modal/_tag_admin_dtl_modal.ftlh">
+<#include "/view/domain/admin/tag/_modal/_tag_prop_reg_modal.ftlh">
+<!--include::templates-->
+<#include "/view/domain/admin/tag/_tag_list_template.hbs">
+<#include "/view/domain/admin/tag/_tag_ctgr_template.hbs">
+<#--include::script modules-->
 <script type="text/javascript" src="/js/view/domain/admin/tag/tag_admin_module.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/domain/admin/tag/tag_admin_aside_module.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/domain/admin/tag/tag_admin_property_module.js?${releaseDate!}"></script>
+<!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/admin/tag/tag_admin_list.js?${releaseDate!}"></script>
 
 </@layout.layout>

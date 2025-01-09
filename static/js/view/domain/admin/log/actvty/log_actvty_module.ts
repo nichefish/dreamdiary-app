@@ -4,13 +4,18 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.LogActvty = (function(): Module {
+dF.LogActvty = (function(): dfModule {
     return {
+        initialized: false,
+
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'LogActvty' module initialized.");
+            if (dF.LogActvty.initialized) return;
+
+            dF.LogActvty.initialized = true;
+            console.log("'dF.LogActvty' module initialized.");
         },
 
         /**
@@ -55,6 +60,3 @@ dF.LogActvty = (function(): Module {
         },
     }
 })();
-document.addEventListener("DOMContentLoaded", function(): void {
-    dF.LogActvty.init();
-});

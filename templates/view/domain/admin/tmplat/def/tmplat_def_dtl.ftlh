@@ -103,8 +103,10 @@
     <input type="hidden" name="postNo" id="postNo" value="${tmplat.postNo!}" />
 </form>
 
-<#--include::script modules-->
+<#--include::tmplat_def_module-->
 <script type="text/javascript" src="/js/view/domain/admin/tmplat/def/tmplat_def_module.js?${releaseDate!}"></script>
+
+<!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/admin/tmplat/def/tmplat_def_dtl.js?${releaseDate!}"></script>
 
 </@layout.layout>

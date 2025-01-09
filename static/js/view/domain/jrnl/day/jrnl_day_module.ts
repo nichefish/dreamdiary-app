@@ -4,13 +4,22 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.JrnlDay = (function(): Module {
+dF.JrnlDay = (function(): dfModule {
     return {
+        initialized: false,
+
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'JrnlDay' module initialized.");
+            if (dF.JrnlDay.initialized) return;
+
+            /* initialize submodules. */
+            dF.JrnlDayTag.init();
+            dF.JrnlDayAside.init();
+
+            dF.JrnlDay.initialized = true;
+            console.log("'dF.JrnlDay' module initialized.");
         },
 
         /**
@@ -57,7 +66,7 @@ dF.JrnlDay = (function(): Module {
                 $("#jrnlDayRegForm #jrnlDt").val($("#jrnlDayRegForm #aprxmtDt").val());
             });
             /* tagify */
-            // cF.tagify.initWithCtgr("#jrnlDayRegForm #tagListStr", TagCtgrMap.jrnlDay);
+            cF.tagify.initWithCtgr("#jrnlDayRegForm #tagListStr", dF.JrnlDayTag.ctgrMap);
         },
 
         /**
@@ -123,7 +132,7 @@ dF.JrnlDay = (function(): Module {
          * 아이콘 새로고침
          */
         refreshIcon: function(): void {
-            const $iconClassElmt = $("#jrnlDayRegForm #weather");
+            const $iconClassElmt: JQuery<HTMLElement> = $("#jrnlDayRegForm #weather");
             if (!$iconClassElmt.length) return;
 
             // val() 메서드는 string | null을 반환하므로, null 체크 필요

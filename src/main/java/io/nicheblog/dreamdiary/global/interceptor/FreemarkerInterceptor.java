@@ -74,19 +74,16 @@ public class FreemarkerInterceptor
         mav.addObject("activeProfile", activeProfile.getActive());
         mav.addObject("releaseDate", releaseDate);
         mav.addObject("urlMap", Url.getUrlMap());
-
-        final ResourceBundle bundle = ResourceBundle.getBundle("messages/messages", Locale.getDefault());
-        final Map<String, String> messageMap = new HashMap<>();
-        bundle.keySet().forEach(key -> messageMap.put(key, bundle.getString(key)));
-        mav.addObject("messageMap", messageMap);
+        mav.addObject("messageMap", MessageUtils.getMessageMap());
 
         /* 모바일 여부 체크 추가 (TODO: 현재 미사용중) */
         final Boolean isMobile = DeviceUtils.getCurrentDevice(request).isMobile();
         request.setAttribute(Constant.IS_MBL, isMobile);
 
-        /* 사용자 권한 정보 모델에 추가 */
+        /* 이후는 로그인 상태에서만 진행 */
         if (!AuthUtils.isAuthenticated()) return;
 
+        /* 사용자 권한 정보 모델에 추가 */
         final AuthInfo authInfo = (AuthInfo) session.getAttribute("authInfo");
         final Boolean isMngr = authInfo.getIsMngr();
         mav.addObject("isMngr", isMngr);

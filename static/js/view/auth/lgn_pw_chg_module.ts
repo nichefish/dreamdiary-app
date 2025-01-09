@@ -6,13 +6,18 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.LgnPwChg = (function(): Module {
+dF.LgnPwChg = (function(): dfModule {
     return {
+        initialized: false,
+
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'LgnPwChg' module initialized.");
+            if (dF.LgnPwChg.initialized) return;
+
+            dF.LgnPwChg.initialized = true;
+            console.log("'dF.LgnPwChg' module initialized.");
         },
 
         /**
@@ -80,6 +85,3 @@ dF.LgnPwChg = (function(): Module {
         },
     };
 })();
-document.addEventListener("DOMContentLoaded", function(): void {
-    dF.LgnPwChg.init();
-});

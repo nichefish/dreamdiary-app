@@ -10,13 +10,13 @@ const Page: Page = (function(): Page {
          * Page 객체 초기화
          */
         init: function(): void {
+            /* initialize modules. */
+            dF.TagAdmin.init();
             // 태그 조회
             const tagCtgrDiv: HTMLInputElement = document.querySelector("#jrnl_tag_ctgr_div");
             const refContentType: string = tagCtgrDiv.value;
 
             if (cF.util.isNotEmpty(refContentType)) dF.TagAdmin.tagListAjax(refContentType);
-
-            console.log("Page scripts initialized.");
         },
     }
 })();

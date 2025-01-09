@@ -9,10 +9,6 @@
 if (typeof cF === 'undefined') { var cF = {} as any; }
 cF.mqttws31 = (function(): Module {
     return {
-        init: function(): void {
-            console.log("'cF.mqttws31' module initialized.");
-        },
-
         /**
          * MQTT 연결을 시작하고 MQTT 클라이언트 인스턴스를 반환합니다.
          * @param {string} componentId - MQTT 통신을 위한 컴포넌트 ID.

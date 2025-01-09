@@ -4,13 +4,18 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.UserEmplym = (function(): Module {
+dF.UserEmplym = (function(): dfModule {
     return {
+        initialized: false,
+
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'UserEmplym' module initialized.");
+            if (dF.UserEmplym.initialized) return;
+
+            dF.UserEmplym.initialized = true;
+            console.log("'dF.UserEmplym' module initialized.");
         },
 
         /** 직원정보 창 토글 */
@@ -60,6 +65,3 @@ dF.UserEmplym = (function(): Module {
         },
     }
 })();
-document.addEventListener("DOMContentLoaded", function(): void {
-    dF.UserEmplym.init();
-});

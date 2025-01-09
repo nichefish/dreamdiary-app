@@ -95,7 +95,7 @@ public class WebSecurityConfig {
                     // 세션 만료 처리 URL
                     .antMatchers(Url.AUTH_EXPIRE_SESSION_AJAX)
                     // static 디렉터리의 하위 파일 목록은 인증 무시(=항상 통과 )
-                    .antMatchers("/static/favicon.ico")
+                    .antMatchers("/favicon.ico")
                     .antMatchers("/robots.txt")
                     // 에러 페이지
                     .antMatchers(Url.ERROR + "/**")

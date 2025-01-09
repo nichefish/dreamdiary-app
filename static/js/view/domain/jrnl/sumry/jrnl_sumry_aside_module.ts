@@ -4,13 +4,18 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.JrnlSumryAside = (function(): Module {
+dF.JrnlSumryAside = (function(): dfModule {
     return {
+        initialized: false,
+
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'JrnlSumryAside' module initialized.");
+            if (dF.JrnlSumryAside.initialized) return;
+
+            dF.JrnlSumryAside.initialized = true;
+            console.log("'dF.JrnlSumryAside' module initialized.");
         },
 
         yyMnth: function(obj: HTMLInputElement): void {

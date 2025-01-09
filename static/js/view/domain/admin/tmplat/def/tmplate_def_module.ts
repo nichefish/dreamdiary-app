@@ -4,13 +4,18 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.TmplatDef = (function(): Module {
+dF.TmplatDef = (function(): dfModule {
     return {
+        initialized: false,
+
         /**
          * initializes module.
          */
         init: function(): void {
-            console.log("'TmplatDef' module initialized.");
+            if (dF.TmplatDef.initialized) return;
+
+            dF.TmplatDef.initialized = true;
+            console.log("'dF.TmplatDef' module initialized.");
         },
 
         /**

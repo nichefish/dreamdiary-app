@@ -195,6 +195,8 @@
 
 <#--include::script modules-->
 <script type="text/javascript" src="/js/view/domain/admin/cache/_cache.js?${releaseDate!}"></script>
+
+<!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/admin/admin_page.js?${releaseDate!}"></script>
 
 </@layout.layout>

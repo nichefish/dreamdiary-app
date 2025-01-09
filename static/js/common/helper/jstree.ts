@@ -15,9 +15,7 @@ cF.jstree = (function(): Module {
          * @param {string} treeSelector - jstree를 초기화할 요소의 선택자.
          */
         init: function(treeSelector: string): void {
-            console.log("'cF.jstree' module initialized.");
-
-            const $treeElmt = $(treeSelector);
+            const $treeElmt: JQuery<HTMLElement> = $(treeSelector);
             if ($treeElmt.length === 0) return;
 
             $treeElmt.jstree({
@@ -36,7 +34,7 @@ cF.jstree = (function(): Module {
          * @param {string} treeSelector - jstree를 리셋할 요소의 선택자.
          */
         reset: function(treeSelector: string): void {
-            const $treeElmt = $(treeSelector);
+            const $treeElmt: JQuery<HTMLElement> = $(treeSelector);
             if ($treeElmt.length === 0) return;
 
             // jstree 파괴 및 비우기

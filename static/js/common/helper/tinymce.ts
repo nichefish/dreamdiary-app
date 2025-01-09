@@ -8,7 +8,6 @@
 // @ts-ignore
 if (typeof cF === 'undefined') { var cF = {} as any; }
 cF.tinymce = (function(): Module {
-
     /** 기본 옵션 분리 */
     const basicOptions = {
         editor_encoding: "raw",
@@ -38,16 +37,14 @@ cF.tinymce = (function(): Module {
          * @param {string} selectorStr - 초기화할 에디터의 선택자 문자열.
          * @param {Function} imgFunc - 이미지 업로드 로직을 처리할 함수.
          */
-        init: function(selectorStr: string, imgFunc: Function = null) {
-            console.log("'cF.tinymce' module initialized.");
-
-            const editorElement = document.querySelector(selectorStr);
+        init: function(selectorStr: string, imgFunc: Function = null): void {
+            const editorElement: HTMLElement = document.querySelector(selectorStr);
             if (!editorElement) return;
 
             const options = {
                 selector: selectorStr,
                 ...basicOptions, // 공통 옵션을 병합
-                setup: function (editor) {
+                setup: function (editor): void {
                     // 자동 이스케이핑
                     editor.on('SaveContent', function (e): void {
                         e.content = e.content.replace(/&#39/g, '&apos').replace(/&amp;/g, '&');
@@ -89,7 +86,7 @@ cF.tinymce = (function(): Module {
          * @param {string} cn - 설정할 내용.
          * @param {number} [attempt=0] - 현재 시도 횟수.
          */
-        setContentWhenReady: function(editorNm: string, cn: string, attempt = 0): void {
+        setContentWhenReady: function(editorNm: string, cn: string, attempt: number = 0): void {
             const editor = tinymce.get(editorNm);
             const maxAttempts = 20; // 최대 시도 횟수
             if (editor && editor.initialized) {

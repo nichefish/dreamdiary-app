@@ -178,11 +178,14 @@
 </form>
 
 <#--include::modals-->
-<#include "/view/domain/vcatn/papr/_modal/_vcatn_papr_dtl_modal.ftlh">
 <#include "/view/global/_common/_clsf/comment/_modal/_comment_list_modal.ftlh">
 <#include "/view/global/_common/file/_modal/_atch_file_list_modal.ftlh">
-<#--include::script modules-->
+
+<#--include::vcatn_papr_module-->
+<#include "/view/domain/vcatn/papr/_modal/_vcatn_papr_dtl_modal.ftlh">
 <script type="text/javascript" src="/js/view/domain/vactn/papr/vactn_papr_module.js?${releaseDate!}"></script>
+
+<!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/vactn/papr/vactn_papr_list.js?${releaseDate!}"></script>
 
 </@layout.layout>

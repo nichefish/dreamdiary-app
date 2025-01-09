@@ -4,7 +4,7 @@
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.JrnlDayAside = (function(): Module {
+dF.JrnlDayAside = (function(): dfModule {
     /** 쿠키 기본 옵션*/
     const cookieOptions = {
         path: "/jrnl/day/",
@@ -12,10 +12,15 @@ dF.JrnlDayAside = (function(): Module {
     };
 
     return {
+        initialized: false,
+
         /**
          * JrnlDayAside 객체 초기화
          */
         init: function(): void {
+            if (dF.JrnlDayAside.initialized) return;
+
+
             const pinYyCookie = $.cookie("pin_yy");
             if (pinYyCookie !== undefined) {
                 $("#jrnl_aside #pinYy").text(pinYyCookie);
@@ -24,6 +29,9 @@ dF.JrnlDayAside = (function(): Module {
             if (pinMnthCookie !== undefined) {
                 $("#jrnl_aside #pinMnth").text(pinMnthCookie);
             }
+
+            dF.JrnlDayAside.initialized = true;
+            console.log("'dF.JrnlDayAside' module initialized.");
         },
 
         /**
@@ -68,7 +76,7 @@ dF.JrnlDayAside = (function(): Module {
             // 목록 조회
             dF.JrnlDay.yyMnthListAjax();
             dF.JrnlDayTag.listAjax();
-            JrnlDiaryTag.listAjax();
+            dF.JrnlDiaryTag.listAjax();
             dF.JrnlDreamTag.listAjax();
             //
             dF.JrnlDream.inKeywordSearchMode = false;

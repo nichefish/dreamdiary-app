@@ -10,6 +10,9 @@ const Page: Page = (function(): Page {
          * Page 객체 초기화
          */
         init: function(): void {
+            /* initialize modules. */
+            dF.VcatnSchdul.init();
+
             cF.datepicker.singleDatePicker("#bgnDt", "yyyy-MM-DD", null, function(): void {
                 Page.noBefore("#bgnDt", "#endDt");
             });
@@ -24,7 +27,7 @@ const Page: Page = (function(): Page {
             $(function(): void {
                 $("#vcantSchdulRegForm").validate({
                     submitHandler: function(): boolean {
-                        const isReg = ($("#vcatnSchdulNo").val() === "");
+                        const isReg: boolean = ($("#vcatnSchdulNo").val() === "");
                         Swal.fire({
                             text: Message.get(isReg ? "view.cnfm.reg" : "view.cnfm.mdf"),
                             showCancelButton: true,
@@ -40,8 +43,6 @@ const Page: Page = (function(): Page {
                     }
                 });
             });
-
-            console.log("Page scripts initialized.");
         },
 
         /**

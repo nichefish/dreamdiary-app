@@ -14,7 +14,7 @@ dF.Cache = (function(): Module {
          * initializes module.
          */
         init: function(): void {
-            console.log("'Cache' module initialized.");
+            console.log("'dF.Cache' module initialized.");
         },
 
         /**
@@ -61,6 +61,3 @@ dF.Cache = (function(): Module {
         },
     }
 })();
-document.addEventListener("DOMContentLoaded", function(): void {
-    dF.Cache.init();
-});

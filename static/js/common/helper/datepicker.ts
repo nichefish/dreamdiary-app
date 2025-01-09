@@ -8,11 +8,8 @@
 // @ts-ignore
 if (typeof cF === 'undefined') { var cF = {} as any; }
 cF.datepicker = (function(): Module {
-
-    /**
-     * 기본 옵션 :: 날짜만 포함
-     */
-    const baseOptions = {
+    /** 기본 옵션 :: 날짜만 포함 */
+    const baseOptions: Record<string, any> = {
         singleDatePicker: true,
         startDate: moment().startOf("Day"),
         showDropdowns: true,
@@ -24,10 +21,7 @@ cF.datepicker = (function(): Module {
         }
     };
 
-    /**
-     * 기본 옵션 ::
-     *   날짜에 시간 포함
-     */
+    /** 기본 옵션 :: 날짜에 시간 포함 */
     const timeOptions = {
         ...baseOptions,
         timePicker: true,
@@ -40,13 +34,6 @@ cF.datepicker = (function(): Module {
     };
 
     return {
-        /**
-         * initializes module.
-         */
-        init: function(): void {
-            console.log("'cF.datepicker' module initialized.");
-        },
-
         /**
          * 기본 공통 로직 : jQuery 요소에 datepicker를 초기화하고 날짜 변경 시 콜백을 실행합니다.
          * @param {string} selectorStr - 초기화할 요소의 선택자 문자열.
@@ -97,7 +84,7 @@ cF.datepicker = (function(): Module {
             // 초기 날짜 설정 ('today'가 아닌 경우에만 설정)
             if (initDt !== 'today') mergedOptions.startDate = cF.util.isEmpty(initDt) ? undefined : initDt;
             // datepicker 초기화
-            return this.datepicker(selector, mergedOptions, callback);
+            return cF.datepicker.datepicker(selector, mergedOptions, callback);
         },
 
         /**
@@ -121,7 +108,7 @@ cF.datepicker = (function(): Module {
             // 초기 날짜 설정 ('today'가 아닌 경우에만 설정)
             if (initDt !== 'today') mergedOptions.startDate = cF.util.isEmpty(initDt) ? undefined : initDt;
             // datepicker 초기화
-            return this.datepicker(selectorStr, mergedOptions, callback);
+            return cF.datepicker.datepicker(selectorStr, mergedOptions, callback);
         },
     }
 })();

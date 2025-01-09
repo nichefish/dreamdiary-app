@@ -14,7 +14,10 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * MessageUtil
@@ -156,4 +159,18 @@ public class MessageUtils
                               .toString();
         return exceptionNm.substring(exceptionNm.lastIndexOf('.') + 1);
     }
+
+    /**
+     * MessageSource의 메시지를 Map으로 반환
+     *
+     * @return Map<String, String> -- messageMap
+     */
+    public static Object getMessageMap() {
+        final ResourceBundle bundle = ResourceBundle.getBundle("messages/messages", Locale.getDefault());
+        final Map<String, String> messageMap = new HashMap<>();
+        bundle.keySet().forEach(key -> messageMap.put(key, bundle.getString(key)));
+
+        return messageMap;
+    }
+
 }
