@@ -24,7 +24,7 @@ dF.TmplatDef = (function(): dfModule {
          */
         initForm: function(obj: Record<string, any> = {}): void {
             /* show modal */
-            cF.handlebars.template(obj, "menu_reg", "show");
+            cF.handlebars.modal(obj, "menu_reg");
 
             /* jquery validation */
             cF.validate.validateForm("#menuRegForm", dF.Menu.regAjax);

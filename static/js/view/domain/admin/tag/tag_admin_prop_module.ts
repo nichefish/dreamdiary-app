@@ -33,7 +33,7 @@ dF.TagProp = (function(): dfModule {
                     return;
                 }
                 // 태그 상세 정보
-                cF.handlebars.template(res.rsltObj, "tag_admin_dtl", "show");
+                cF.handlebars.modal(res.rsltObj, "tag_admin_dtl");
             });
         }
     }

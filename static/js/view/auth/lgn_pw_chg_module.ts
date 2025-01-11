@@ -35,7 +35,7 @@ dF.LgnPwChg = (function(): dfModule {
          */
         initForm: function(obj: Record<string, any> = {}): void {
             /* show modal */
-            cF.handlebars.template(obj, "lgn_pw_chg", "show");
+            cF.handlebars.modal(obj, "lgn_pw_chg");
 
             // 엔터키 처리
             cF.util.enterKey("#currPw, #newPw, #newPwCf", dF.LgnPwChg.submit);

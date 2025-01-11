@@ -60,7 +60,7 @@ dF.JrnlDreamTag = (function(): dfModule {
                     if (item.ctgr) ctgrSet.add(item.ctgr);
                 });
                 cF.handlebars.template(ctgrSet, "jrnl_tag_ctgr");
-                cF.handlebars.template(res.rsltList, "jrnl_tag_list", "show");
+                cF.handlebars.modal(res.rsltList, "jrnl_tag_list");
                 $("#jrnl_tag_dtl_modal").modal("hide");
             });
         },
@@ -95,14 +95,14 @@ dF.JrnlDreamTag = (function(): dfModule {
             event.stopPropagation();
             if (isNaN(Number(tagNo))) return;
 
-            const url = "${Url.JRNL_DREAM_TAG_DTL_AJAX!}";
-            const ajaxData = { "tagNo": tagNo };
+            const url: string = Url.JRNL_DREAM_TAG_DTL_AJAX;
+            const ajaxData: Record<string, any> = { "tagNo": tagNo };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
-                cF.handlebars.template(res.rsltList, "jrnl_dream_tag_dtl", "show");
+                cF.handlebars.modal(res.rsltList, "jrnl_dream_tag_dtl");
             });
         },
     }

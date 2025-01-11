@@ -30,7 +30,7 @@ dF.VcatnSchdul = (function(): dfModule {
          * 등록 모달 호출
          */
         regModal: function(): void {
-            cF.handlebars.template({}, "vcatn_schdul_reg", "show");
+            cF.handlebars.modal({}, "vcatn_schdul_reg");
             cF.datepicker.singleDatePicker("#bgnDt", "yyyy-MM-DD", null, function(): void {
                 dF.VcatnSchdul.propEndDt();
                 dF.VcatnSchdul.noBefore("#bgnDt", "#endDt");

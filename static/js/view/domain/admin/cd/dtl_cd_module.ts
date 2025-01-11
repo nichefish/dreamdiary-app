@@ -25,7 +25,7 @@ dF.DtlCd = (function(): dfModule {
          */
         initForm: function(obj: Record<string, any> = {}): void {
             /* show modal */
-            cF.handlebars.template(obj, "dtl_cd_reg", "show");
+            cF.handlebars.modal(obj, "dtl_cd_reg");
 
             /* jquery validation */
             cF.validate.validateForm("#dtlCdRegForm", dF.DtlCd.regAjax);

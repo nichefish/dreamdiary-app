@@ -4,12 +4,12 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="board_tag_list" size="xl">
+<@modal.layout id="tag_list" size="xl">
     <#--begin::Modal Header-->
     <@component.modal_header "태그" />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
-        <div class="row" id="board_tag_list_div">
+        <div class="row" id="tag_list_div">
             <#--Handlebars template goes in here-->
         </div>
     </div>

@@ -52,7 +52,7 @@ cF.fullcalendar = (function(): Module {
         init: function(selectorId: string, eventList: Array<Record<string, any>>, clickFunc: Function, additionalOptions: Record<string, any> = {}): FullCalendar.Calendar {
             const target: HTMLElement = document.getElementById(selectorId);
             if (!target) {
-                console.error("Element with ID " + selectorId + " not found.");
+                console.error("Element with ID `" + selectorId + "` not found.");
                 return null;
             }
 

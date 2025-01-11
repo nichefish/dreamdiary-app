@@ -27,7 +27,7 @@
                         return false;
                     }
                     const { rsltList = [] } = res;
-                    cF.handlebars.template(rsltList, "comment_list", "show");
+                    cF.handlebars.modal(rsltList, "comment_list");
                 });
             },
         }

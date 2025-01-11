@@ -18,7 +18,7 @@
              */
             initForm: function(obj = {}) {
                 /* show modal */
-                cF.handlebars.template(obj, "flsys_meta_reg", "show");
+                cF.handlebars.modal(obj, "flsys_meta_reg");
 
                 /* jquery validation */
                 cF.validate.validateForm("#flsysMetaRegForm", FlsysMeta.regAjax);
@@ -77,7 +77,7 @@
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return false;
                     }
-                    cF.handlebars.template(res.rsltObj, "flsys_meta_dtl", "show");
+                    cF.handlebars.modal(res.rsltObj, "flsys_meta_dtl");
                 });
             },
 

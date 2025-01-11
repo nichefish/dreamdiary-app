@@ -24,7 +24,7 @@ dF.BoardDef = (function(): dfModule {
          */
         initForm: function(obj: Record<string, any> = {}): void {
             /* show modal */
-            cF.handlebars.template(obj, "board_def_reg", "show");
+            cF.handlebars.modal(obj, "board_def_reg");
 
             /* jquery validation */
             cF.validate.validateForm("#boardDefRegForm", dF.BoardDef.regAjax);

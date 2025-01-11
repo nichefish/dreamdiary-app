@@ -28,19 +28,22 @@ dF.JrnlDay = (function(): dfModule {
          */
         initForm: function(obj: Record<string, any> = {}): void {
             /* show modal */
-            cF.handlebars.template(obj, "jrnl_day_reg", "show");
+            cF.handlebars.modal(obj, "jrnl_day_reg");
 
             /* jquery validation */
-            cF.validate.validateForm("#jrnlDayRegForm", dF.JrnlDay.regAjax, {
+            const form: HTMLFormElement = document.querySelector("#jrnlDayRegForm") as HTMLFormElement;
+            cF.validate.validateForm(form, dF.JrnlDay.regAjax, {
                 rules: {
                     jrnlDt: {
                         required: function() {
-                            return !$("#jrnlDayRegForm #dtUnknownYn").prop(":checked");
+                            const dtUnknownYn: HTMLInputElement = document.querySelector("#jrnlDayRegForm #dtUnknownYn") as HTMLInputElement;
+                            return !dtUnknownYn?.checked;
                         }
                     },
                     aprxmtDt: {
                         required: function() {
-                            return $("#jrnlDayRegForm #dtUnknownYn").prop(":checked");
+                            const dtUnknownYn: HTMLInputElement = document.querySelector("#jrnlDayRegForm #dtUnknownYn") as HTMLInputElement;
+                            return dtUnknownYn?.checked;
                         }
                     },
                 },
@@ -56,11 +59,11 @@ dF.JrnlDay = (function(): dfModule {
             // 날짜미상 datepicker 날짜 검색 init
             cF.datepicker.singleDatePicker("#aprxmtDt", "yyyy-MM-DD", obj.aprxmtDt);
             // 날짜미상 checkbox init
-            cF.util.chckboxLabel("dtUnknownYn", "날짜미상//날짜미상", "blue//gray", function() {
+            cF.util.chckboxLabel("dtUnknownYn", "날짜미상//날짜미상", "blue//gray", function(): void {
                 $("#jrnlDayRegForm #jrnlDtDiv").addClass("d-none");
                 $("#jrnlDayRegForm #aprxmtDtDiv").removeClass("d-none");
                 $("#jrnlDayRegForm #aprxmtDt").val($("#jrnlDayRegForm #jrnlDt").val());
-            }, function() {
+            }, function(): void {
                 $("#jrnlDayRegForm #jrnlDtDiv").removeClass("d-none");
                 $("#jrnlDayRegForm #aprxmtDtDiv").addClass("d-none");
                 $("#jrnlDayRegForm #jrnlDt").val($("#jrnlDayRegForm #aprxmtDt").val());
@@ -73,7 +76,8 @@ dF.JrnlDay = (function(): dfModule {
          * 년도-월 목록 조회 (Ajax)
          */
         yyMnthListAjax: function(): void {
-            const mnth = $("#jrnl_aside #mnth").val();
+            const mnthElmt = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
+            const mnth = mnthElmt.value;
             if (cF.util.isEmpty(mnth)) return;
 
             const url: string = Url.JRNL_DAY_LIST_AJAX;
@@ -111,8 +115,12 @@ dF.JrnlDay = (function(): dfModule {
          * 사이드바 기준으로 등록 모달 날짜 계산:: 메소드 분리
          */
         validDt: function(): string {
-            const year: number = parseInt($("#jrnl_aside #yy").val() as string, 10);
-            let month: number = parseInt($("#jrnl_aside #mnth").val() as string, 10);
+            const yyElement = document.querySelector<HTMLInputElement>("#jrnl_aside #yy");
+            const mnthElement = document.querySelector<HTMLInputElement>("#jrnl_aside #mnth");
+            if (!yyElement || !mnthElement) return "";
+
+            const year: number = parseInt(yyElement.value, 10);
+            let month: number = parseInt(mnthElement.value, 10);
             if (month === 99) month = 1;
             let day: number = parseInt(cF.date.getCurrDayStr(2), 10);
 
@@ -132,16 +140,14 @@ dF.JrnlDay = (function(): dfModule {
          * 아이콘 새로고침
          */
         refreshIcon: function(): void {
-            const $iconClassElmt: JQuery<HTMLElement> = $("#jrnlDayRegForm #weather");
-            if (!$iconClassElmt.length) return;
+            const iconClassElmt: HTMLInputElement = document.querySelector("#jrnlDayRegForm #weather");
+            if (!iconClassElmt) return;
 
             // val() 메서드는 string | null을 반환하므로, null 체크 필요
-            const iconVal = $iconClassElmt.val() as string;
-            if (iconVal !== null) {
-                const weatherIconDiv = document.querySelector("#jrnlDayRegForm #weather_icon_div") as HTMLElement | null;
-                if (weatherIconDiv) {
-                    weatherIconDiv.innerHTML = iconVal;
-                }
+            const iconVal: string = iconClassElmt.value;
+            if (cF.util.isNotEmpty(iconVal)) {
+                const weatherIconDiv: HTMLElement = document.querySelector("#jrnlDayRegForm #weather_icon_div") as HTMLElement;
+                if (weatherIconDiv) weatherIconDiv.innerHTML = iconVal;
             }
         },
 
@@ -194,7 +200,7 @@ dF.JrnlDay = (function(): dfModule {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
-                const { rsltObj } = res;
+                const rsltObj: Record<string, any> = res.rsltObj;
                 /* initialize form. */
                 dF.JrnlDay.initForm(rsltObj);
             });

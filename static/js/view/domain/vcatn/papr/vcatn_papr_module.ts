@@ -120,7 +120,7 @@ dF.VcatnPapr = (function(): dfModule {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
-                cF.handlebars.template(res.rsltObj, "vcatn_papr_dtl", "show");
+                cF.handlebars.modal(res.rsltObj, "vcatn_papr_dtl");
             });
         },
 

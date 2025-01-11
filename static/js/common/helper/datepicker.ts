@@ -3,6 +3,7 @@
  * 공통 - datepicker 관련 함수 모듈
  *
  * @namespace: cF.datepicker (노출식 모듈 패턴)
+ * @dependency: jQuery, moment, daterangepicker
  * @author: nichefish
  */
 // @ts-ignore
@@ -72,10 +73,10 @@ cF.datepicker = (function(): Module {
          * @param {object} additionalOptions - 추가로 적용할 옵션 (선택적).
          * @returns {object} - 초기화된 datepicker 인스턴스.
          */
-        singleDatePicker: function(selector: string, format: string, initDt, callback?: Function, additionalOptions: object = {}) {
+        singleDatePicker: function(selector: string, format: string, initDt: string|Date, callback?: Function, additionalOptions: object = {}) {
             if (cF.util.isEmpty(selector)) return;
 
-            const mergedOptions = {
+            const mergedOptions: Record<string, any> = {
                 ...baseOptions,
                 ...additionalOptions
             };

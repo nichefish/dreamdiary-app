@@ -60,7 +60,7 @@ dF.TagAdmin = (function(): dfModule {
                     return;
                 }
                 // 태그 상세 정보
-                cF.handlebars.template(res.rsltObj, "tag_admin_dtl", "show");
+                cF.handlebars.modal(res.rsltObj, "tag_admin_dtl");
             });
         },
 
@@ -71,7 +71,7 @@ dF.TagAdmin = (function(): dfModule {
         addPropertyModal: function(tagNo: string|number): void {
             if (isNaN(Number(tagNo))) return;
 
-            cF.handlebars.template({}, "tag_property_reg", "show");
+            cF.handlebars.modal({}, "tag_property_reg");
         }
     }
 })();

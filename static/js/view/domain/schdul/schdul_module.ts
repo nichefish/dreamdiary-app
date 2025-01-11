@@ -47,7 +47,7 @@ dF.Schdul = (function(): dfModule {
          * 등록 모달 호출
          */
         regModal: function(): void {
-            cF.handlebars.template({}, "schdul_reg", "show");
+            cF.handlebars.modal({}, "schdul_reg");
             cF.util.chckboxLabel("jandiYn", "발송//미발송", "blue//gray");
             cF.datepicker.singleDatePicker("#bgnDt", "yyyy-MM-DD");
             cF.datepicker.singleDatePicker("#endDt", "yyyy-MM-DD");
@@ -66,7 +66,7 @@ dF.Schdul = (function(): dfModule {
          * 일정 등록 모달 호출 (개인일정)
          */
         prvtRegModal: function(): void {
-            cF.handlebars.template({ "isPrvt": true }, "schdul_reg", "show");
+            cF.handlebars.modal({ "isPrvt": true }, "schdul_reg");
             cF.datepicker.singleDatePicker("#bgnDt", "yyyy-MM-DD");
             cF.datepicker.singleDatePicker("#endDt", "yyyy-MM-DD");
         },
@@ -136,7 +136,7 @@ dF.Schdul = (function(): dfModule {
                     return;
                 }
                 const obj: Record<string, any> = res.rsltObj;
-                cF.handlebars.template(obj, "schdul_dtl", "show");
+                cF.handlebars.template(obj, "schdul_dtl", "modal");
                 dF.Schdul.key = obj.postNo;
             });
         },
@@ -157,7 +157,7 @@ dF.Schdul = (function(): dfModule {
                 }
 
                 $("#schdul_dtl_modal").modal("hide");
-                cF.handlebars.template(res.rsltObj, "schdul_reg", "show");
+                cF.handlebars.modal(res.rsltObj, "schdul_reg");
                 const rsltObj: Record<string, any> = res.rsltObj;
                 const { prtcpntList: prtcpnt } = rsltObj;
                 dF.Schdul.prtcpntCnt = prtcpnt !== undefined ? prtcpnt.length : 0;

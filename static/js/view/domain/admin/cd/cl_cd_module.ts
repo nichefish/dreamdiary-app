@@ -25,7 +25,7 @@ dF.ClCd = (function(): dfModule {
          */
         initForm: function(obj: Record<string, any> = {}): void {
             /* show modal */
-            cF.handlebars.template(obj, "cl_cd_reg", "show");
+            cF.handlebars.modal(obj, "cl_cd_reg");
 
             /* jquery validation */
             cF.validate.validateForm("#clCdRegForm", dF.ClCd.regAjax);
@@ -126,7 +126,7 @@ dF.ClCd = (function(): dfModule {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return false;
                 }
-                cF.handlebars.template(res.rsltObj, "cl_cd_dtl", "show");
+                cF.handlebars.modal(res.rsltObj, "cl_cd_dtl");
                 dF.ClCd.key = clCd;
             });
         },

@@ -54,7 +54,7 @@ dF.UserMyPwChg = (function(): dfModule {
          */
         myPwChgModal: function(): void {
             const data: Record<string, any> = { "errorMsg": Model.errorMsg };
-            cF.handlebars.template(data, "user_my_pw_chg", "show");
+            cF.handlebars.modal(data, "user_my_pw_chg");
         },
 
         /**
