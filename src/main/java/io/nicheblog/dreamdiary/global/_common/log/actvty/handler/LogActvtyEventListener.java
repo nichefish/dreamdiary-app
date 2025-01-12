@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.global._common.log.actvty.handler;
 import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogAnonActvtyEvent;
 import io.nicheblog.dreamdiary.global._common.log.sys.event.LogSysEvent;
+import io.nicheblog.dreamdiary.global.config.AsyncConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
  * </pre>
  *
  * @author nichefish
+ * @see AsyncConfig
  */
 @Component
 @RequiredArgsConstructor

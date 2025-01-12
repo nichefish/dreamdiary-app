@@ -13,6 +13,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.spec.JrnlDaySpec;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.global._common._clsf.ContentType;
 import io.nicheblog.dreamdiary.global._common.cache.event.EhCacheEvictEvent;
+import io.nicheblog.dreamdiary.global._common.cache.handler.EhCacheEvictEventListner;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -22,7 +23,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -213,6 +213,14 @@ public class JrnlDayServiceImpl
         return jrnlDayMapper.getDeletedByPostNo(key);
     }
 
+    /**
+     * 주요 처리 후 캐시 삭제
+     *
+     * @param jrnlDayEntity 캐시 삭제 판단에 필요한 객체
+     * @throws Exception 처리 중 발생 가능한 예외
+     * @see EhCacheEvictEventListner
+     * @see JrnlDayCacheEvictor
+     */
     @Override
     public void evictCache(final JrnlDayEntity jrnlDayEntity) throws Exception {
         // 관련 캐시 삭제

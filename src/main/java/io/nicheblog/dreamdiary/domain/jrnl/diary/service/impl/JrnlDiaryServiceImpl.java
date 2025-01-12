@@ -12,6 +12,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryService;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.spec.JrnlDiarySpec;
 import io.nicheblog.dreamdiary.global._common._clsf.ContentType;
 import io.nicheblog.dreamdiary.global._common.cache.event.EhCacheEvictEvent;
+import io.nicheblog.dreamdiary.global._common.cache.handler.EhCacheEvictEventListner;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.Getter;
@@ -157,6 +158,14 @@ public class JrnlDiaryServiceImpl
         return jrnlDiaryMapper.getDeletedByPostNo(key);
     }
 
+    /**
+     * 주요 처리 후 캐시 삭제
+     *
+     * @param jrnlDiaryEntity 캐시 삭제 판단에 필요한 객체
+     * @throws Exception 처리 중 발생 가능한 예외
+     * @see EhCacheEvictEventListner
+     * @see JrnlDiaryCacheEvictor
+     */
     @Override
     public void evictCache(final JrnlDiaryEntity jrnlDiaryEntity) throws Exception {
         // 관련 캐시 삭제
