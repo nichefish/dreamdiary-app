@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author nichefish
  */
-@WebMvcTest(CommentApiController.class)
+@WebMvcTest(CommentRestController.class)
 @ActiveProfiles("test")
 public class CommentApiControllerTest {
 
@@ -47,7 +47,7 @@ public class CommentApiControllerTest {
     private CommentService commentService;
 
     @InjectMocks
-    private CommentApiController commentApiController;
+    private CommentRestController commentApiController;
 
     @BeforeEach
     public void setup() {

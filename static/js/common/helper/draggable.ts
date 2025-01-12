@@ -17,7 +17,7 @@ cF.draggable = (function(): Module {
          * @param {Function} [refreshFunc] - 정렬이 성공적으로 완료된 후 호출되는 콜백 함수. (선택적)
          * @returns {Draggable.Sortable} - 드래그 가능한 정렬된 요소들의 인스턴스.
          */
-        init: function(selectorSuffix = "", keyExtractor: Function, url: string, refreshFunc: Function): Draggable {
+        init: function(selectorSuffix: string = "", keyExtractor: Function, url: string, refreshFunc: Function): Draggable {
             const containers = document.querySelectorAll(".draggable-zone" + selectorSuffix);
             if (containers.length === 0) return;
 

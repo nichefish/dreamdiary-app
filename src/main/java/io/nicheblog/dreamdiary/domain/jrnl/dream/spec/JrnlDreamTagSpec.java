@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.domain.jrnl.dream.spec;
 
+import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamContentTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamSmpEntity;
@@ -71,6 +72,7 @@ public class JrnlDreamTagSpec
         final Join<JrnlDreamSmpEntity, JrnlDaySmpEntity> jrnlDayJoin = jrnlDreamJoin.join("jrnlDay", JoinType.INNER);
         final Expression<Date> effectiveDtExp = builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"));
 
+        predicate.add(builder.equal(jrnlDreamTagJoin.get("regstrId"), AuthUtils.getLgnUserId()));     // 등록자 ID 기준으로 조회
         predicate.add(builder.equal(jrnlDreamTagJoin.get("refContentType"), ContentType.JRNL_DREAM.key));
         // 파라미터 비교
         for (String key : searchParamMap.keySet()) {

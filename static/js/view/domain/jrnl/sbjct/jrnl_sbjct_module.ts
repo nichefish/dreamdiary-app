@@ -149,7 +149,7 @@ dF.JrnlSbjct = (function(): dfModule {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({text: res.message});
                     return;
                 }
-                cF.handlebars.template(res.rsltObj, "jrnlSbjct_dtl", "show");
+                cF.handlebars.modal(res.rsltObj, "jrnlSbjct_dtl");
             });
         },
 

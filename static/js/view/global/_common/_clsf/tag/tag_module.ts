@@ -34,10 +34,10 @@ dF.Tag = (function(): dfModule {
                     return;
                 }
                 // 태그 상세 정보
-                cF.handlebars.template(res.rsltObj, "tag_dtl", "show");
+                cF.handlebars.modal(res.rsltObj, "tag_dtl");
                 // 태그 글 목록
                 cF.handlebars.template(res.rsltList, "tag_dtl_post_list");
-                $("#board_tag_list_modal").modal("hide");
+                $("#tag_list_modal").modal("hide");
             });
         },
 
@@ -147,7 +147,7 @@ dF.Tag = (function(): dfModule {
                     return;
                 }
                 // 태그 상세 정보
-                cF.handlebars.template(res.rsltList, "board_tag_list", "show");
+                cF.handlebars.modal(res.rsltList, "tag_list");
                 $("#board_tag_dtl_modal").modal("hide");
             });
         },

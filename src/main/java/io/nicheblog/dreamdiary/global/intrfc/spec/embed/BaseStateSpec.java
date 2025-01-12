@@ -51,7 +51,8 @@ public interface BaseStateSpec<Entity extends BaseAuditEntity & StateEmbedModule
                     try {
                         predicate.add(builder.equal(root.get(key), searchParamMap.get(key)));
                     } catch (Exception e) {
-                        // log.info("unable to locate attribute " + key + " while trying root.get(key).");
+                        e.printStackTrace();
+                        // log.info("unable to locate attribute '{}' while trying root.get(key).", key);
                     }
             }
         }

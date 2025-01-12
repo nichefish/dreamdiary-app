@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.domain.jrnl.diary.entity;
 
 import io.nicheblog.dreamdiary.global._common._clsf.tag.entity.TagSmpEntity;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditRegEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ import javax.persistence.*;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class JrnlDiaryContentTagEntity
-        extends BaseCrudEntity {
+        extends BaseAuditRegEntity {
 
     @PostLoad
     private void onLoad() {
@@ -77,6 +77,7 @@ public class JrnlDiaryContentTagEntity
     /** 태그 이름 */
     @Transient
     private String tagNm;
+
     @Transient
     /** 태그 카테고리 */
     private String ctgr;

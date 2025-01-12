@@ -29,8 +29,7 @@ dF.Sectn = (function(): dfModule {
          */
         initForm: function(obj: Record<string, any>): void {
             /* show modal */
-            cF.handlebars.template(obj, "sectn_reg_header");
-            cF.handlebars.template(obj, "sectn_reg", "show");
+            cF.handlebars.modal(obj, "sectn_reg", ["header"]);
 
             /* jquery validation */
             cF.validate.validateForm("#sectnRegForm", dF.Sectn.regAjax);

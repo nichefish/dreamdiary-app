@@ -28,8 +28,7 @@ dF.JrnlDiary = (function(): dfModule {
          */
         initForm: function(obj: Record<string, any> = {}) {
             /* show modal */
-            cF.handlebars.template(obj, "jrnl_diary_reg_header");
-            cF.handlebars.template(obj, "jrnl_diary_reg", "show");
+            cF.handlebars.modal(obj, "jrnl_diary_reg", ["header"]);
 
             /* jquery validation */
             cF.validate.validateForm("#jrnlDiaryRegForm", dF.JrnlDiary.regAjax);
@@ -47,12 +46,12 @@ dF.JrnlDiary = (function(): dfModule {
         /**
          * 목록 조회 (Ajax)
          */
-        keywordListAjax: function() {
-            const keyword = $("#jrnl_aside #diaryKeyword").val();
+        keywordListAjax: function(): void {
+            const keyword: string = (document.querySelector("#jrnl_aside #diaryKeyword") as HTMLInputElement)?.value;
             if (cF.util.isEmpty(keyword)) return;
 
             const url: string =Url.JRNL_DIARY_LIST_AJAX;
-            const ajaxData: Record<string, any> = { "diaryKeyword": $("#jrnl_aside #diaryKeyword").val() };
+            const ajaxData: Record<string, any> = { "diaryKeyword": keyword };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });

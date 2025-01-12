@@ -1,5 +1,7 @@
 package io.nicheblog.dreamdiary.global._common._clsf.tag.spec;
 
+import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.entity.ContentTagEntity;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 import lombok.extern.log4j.Log4j2;
@@ -59,6 +61,7 @@ public class ContentTagSpec
     ) {
 
         final List<Predicate> predicate = new ArrayList<>();
+        predicate.add(builder.equal(root.get("regstrId"), AuthUtils.getLgnUserIdOrDefault()));      // 등록자 ID 기준으로 조회
 
         // 파라미터 비교
         for (final String key : searchParamMap.keySet()) {
@@ -68,7 +71,7 @@ public class ContentTagSpec
                     try {
                         predicate.add(builder.equal(root.get(key), searchParamMap.get(key)));
                     } catch (Exception e) {
-                        log.info("unable to locate attribute " + key + " while trying root.get(key).");
+                        log.info("unable to locate attribute '{}' while trying root.get(key).", key);
                     }
             }
         }

@@ -23,7 +23,7 @@ dF.Cache = (function(): Module {
         activeListModal: function(): void {
             const url: string = Url.CACHE_ACTIVE_LIST_AJAX;
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
-                cF.handlebars.template(res.rsltMap, "cache_list", "show");
+                cF.handlebars.modal(res.rsltMap, "cache_list");
             });
         },
 

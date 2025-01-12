@@ -10,48 +10,76 @@ if (typeof cF === 'undefined') { var cF = {} as any; }
 cF.handlebars = (function(): Module {
     return {
         /**
-         * Handlebars Template 공통 함수 분리
-         * @param {Record<string, any>} data - Handlebars 템플릿에 전달할 데이터 객체.
-         * @param {string} templateStr - 템플릿 요소의 ID 문자열 (템플릿 ID는 `templateStr + "_template"`로 구성).
-         * @returns {string} - 컴파일된 템플릿 문자열 또는 템플릿이 없을 경우 ``.
+         * Handlebars 템플릿 렌더링 및 대상 요소 갈아치기
+         * @param {Record<string, any>} data Handlebars 템플릿에 전달할 데이터 객체.
+         * @param {string} templateStr 템플릿 요소의 ID 문자열 (템플릿 ID는 `templateStr + "_template"`로 구성).
+         * @param {string[]} elmts 모달 내 처리 요소들
          */
-        compile: function(data: Record<string, unknown>, templateStr: string): string {
-            const templateElmt: HTMLElement|null = document.getElementById(templateStr + "_template");
-            if (!templateElmt) {
-                console.log("template element not found: " + templateStr + "_template");
-                return "";
+        modal: function(data: Record<string, any> = {}, templateStr: string, elmts: string[]): void {
+            if (cF.util.isNotEmpty(elmts)) {
+                elmts.forEach((key: string): void => {
+                    cF.handlebars.template(data, templateStr + "_modal_" + key); // _modal_ 접미사와 함께 템플릿 처리
+                });
             }
 
-            // 컴파일
-            const template = Handlebars.compile(templateElmt.innerHTML.replaceAll("`", ""));
-            return template(data);
+            cF.handlebars.template(data, templateStr, "modal");
         },
 
         /**
          * Handlebars 템플릿 렌더링 및 대상 요소 갈아치기
          * @param {Record<string, any>} data - Handlebars 템플릿에 전달할 데이터 객체.
          * @param {string} templateStr - 템플릿 요소의 ID 문자열 (템플릿 ID는 `templateStr + "_template"`로 구성).
-         * @param {string} [show] - 모달을 표시할지 여부 ("show"로 전달 시 모달 표시).
+         * @param {"modal"|undefined} [mode] - 모달을 표시할지 여부 ("modal"로 전달 시 모달 표시).
          */
-        template: function(data: Record<string, any> = {}, templateStr: string, show: string): void {
-            const actual = cF.handlebars.compile(data, templateStr);
-            if (actual === null) return;
+        template: function(data: Record<string, any> = {}, templateStr: string, mode: string): void {
+            const isModal: boolean = mode === "modal";
+
+            const actual: string = cF.handlebars.compile(data, isModal ? `${templateStr}_modal` : templateStr);
+            if (actual === null) {
+                console.error(`template compile error: ${templateStr}`);
+                return;
+            }
 
             // 대상 요소에 추가
-            const trgetElmt = document.getElementById(templateStr + "_div");
-            if (!trgetElmt) return;
+            const trgetElmt: HTMLElement = document.getElementById(`${templateStr}_div`);
+            if (!trgetElmt) {
+                console.error(`target element not found: ${templateStr}_div`);
+                return;
+            }
 
             trgetElmt.innerHTML = ""; // 내용 비우기
             trgetElmt.insertAdjacentHTML('beforeend', actual); // 내용 추가
             // 새로 append된 부분에서만 툴팁 활성화
-            trgetElmt.querySelectorAll("[data-bs-toggle='tooltip']").forEach(tooltipEl => {
+            trgetElmt.querySelectorAll("[data-bs-toggle='tooltip']").forEach((tooltipEl: HTMLElement): void => {
                 new bootstrap.Tooltip(tooltipEl);
             });
-            if (show === "show") {
-                $("#"+templateStr+"_modal").modal("show");
+
+            if (isModal) {
+                const modal: HTMLElement = document.getElementById(`${templateStr}_modal`);
+                if (modal) {
+                    const bootstrapModal: bootstrap.Modal = new bootstrap.Modal(modal);
+                    bootstrapModal.show(); // 모달을 띄움
+                }
             }
         },
 
+        /**
+         * Handlebars Template 공통 함수 분리
+         * @param {Record<string, any>} data - Handlebars 템플릿에 전달할 데이터 객체.
+         * @param {string} templateStr - 템플릿 요소의 ID 문자열 (템플릿 ID는 `templateStr + "_template"`로 구성).
+         * @returns {string} - 컴파일된 템플릿 문자열 또는 템플릿이 없을 경우 ``.
+         */
+        compile: function(data: Record<string, unknown>, templateStr: string): string {
+            const templateElmt: HTMLElement|null = document.getElementById(`${templateStr}_template`);
+            if (!templateElmt) {
+                console.error(`target element not found: ${templateStr}_template`);
+                return null;
+            }
+
+            // 컴파일
+            const template = Handlebars.compile(templateElmt.innerHTML.replaceAll("`", ""));
+            return template(data);
+        },
 
         /**
          * Handlebars 템플릿 데이터 append
@@ -69,10 +97,18 @@ cF.handlebars = (function(): Module {
          * @param {string} trgetElmtId - 데이터가 추가될 대상 요소의 ID.
          */
         appendTo: function(data: Record<string, any> = {}, templateStr: string, trgetElmtId: string): void {
-            const actual = cF.handlebars.compile(data, templateStr);
+            const actual: string = cF.handlebars.compile(data, templateStr);
+            if (actual === null) {
+                console.error(`template compile error: ${templateStr}`);
+                return;
+            }
+
             // 대상 요소에 추가
-            const trgetElmt = document.getElementById(trgetElmtId);
-            if (!trgetElmt) return;
+            const trgetElmt: HTMLElement = document.getElementById(trgetElmtId);
+            if (!trgetElmt) {
+                console.error(`target element not found: ${templateStr}_div`);
+                return;
+            }
 
             trgetElmt.insertAdjacentHTML('beforeend', actual);
             // 새로 append된 부분에서만 툴팁 활성화
@@ -86,7 +122,7 @@ cF.handlebars = (function(): Module {
 /**
  * Handlebars custom helpers
  */
-(function(Handlebars) {
+(function(Handlebars): void {
     if(!Handlebars) { return; }
 
     /**
@@ -221,7 +257,7 @@ cF.handlebars = (function(): Module {
      */
     Handlebars.registerHelper("checkedLabel", function(value: boolean, ynLabels: string): string {
         // `ynLabels`를 구분자로 나누어 "Y"와 "N" 레이블 추출
-        const separator = "//";
+        const separator: string = "//";
         const [yLabel, nLabel] = ynLabels.split(separator);
 
         return value ? yLabel : nLabel;
@@ -236,7 +272,7 @@ cF.handlebars = (function(): Module {
      */
     const checkedStyleFunc = function(value: any, type: string, ynColors: string): string {
         // `ynColors`를 구분자로 나누어 "Y"와 "N"의 색상 추출
-        const separator = "//";
+        const separator: string = "//";
         const [yColor, nColor] = ynColors.split(separator);
 
         return "style=" + type + ":" + (value ? yColor : nColor) + ";";

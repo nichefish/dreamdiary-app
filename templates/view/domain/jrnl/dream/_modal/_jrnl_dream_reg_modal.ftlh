@@ -12,7 +12,7 @@
     <div class="modal-body modal-mbl-body my-5">
         <#--begin::Form-->
         <form name="jrnlDreamRegForm" id="jrnlDreamRegForm" class="form" enctype="multipart/form-data">
-            <div id="jrnl_dream_reg_header_div">
+            <div id="jrnl_dream_reg_modal_header_div">
                 <#--Handlebars template goes in here-->
             </div>
             <#--begin::Row-->

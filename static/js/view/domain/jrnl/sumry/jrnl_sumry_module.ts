@@ -24,8 +24,7 @@ dF.JrnlSumry = (function(): dfModule {
          */
         initForm: function(obj: Record<string, any> = {}): void {
             /* show modal */
-            cF.handlebars.template(obj, "jrnl_sumry_reg_header");
-            cF.handlebars.template(obj, "jrnl_sumry_reg", "show");
+            cF.handlebars.modal(obj, "jrnl_sumry_reg", ["header"]);
 
             /* jquery validation */
             cF.validate.validateForm("#jrnlSumryRegForm", dF.JrnlSumry.regAjax);
@@ -56,7 +55,7 @@ dF.JrnlSumry = (function(): dfModule {
 
             const yYElmt: HTMLSelectElement = document.querySelector("#listForm #yy");
             yYElmt.value = String(yy);
-            cF.util.blockUISubmit("#procForm", "${Url.JRNL_SUMRY_DTL!}");
+            cF.util.blockUISubmit("#procForm", Url.JRNL_SUMRY_DTL);
         },
 
         /**

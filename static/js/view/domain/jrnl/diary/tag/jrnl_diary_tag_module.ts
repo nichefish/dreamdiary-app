@@ -60,7 +60,7 @@ dF.JrnlDiaryTag = (function(): dfModule {
                     if (item.ctgr) ctgrSet.add(item.ctgr);
                 });
                 cF.handlebars.template(ctgrSet, "jrnl_tag_ctgr");
-                cF.handlebars.template(res.rsltList, "jrnl_tag_list", "show");
+                cF.handlebars.modal(res.rsltList, "jrnl_tag_list");
                 $("#jrnl_tag_dtl_modal").modal("hide");
             });
         },
@@ -80,7 +80,7 @@ dF.JrnlDiaryTag = (function(): dfModule {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
-                cF.handlebars.template(res.rsltList, "jrnl_diary_tag_dtl", "show");
+                cF.handlebars.modal(res.rsltList, "jrnl_diary_tag_dtl");
             });
         },
     }

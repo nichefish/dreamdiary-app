@@ -49,10 +49,11 @@ public interface TagRepository
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    @Query("SELECT COUNT(contentTag.contentTagNo) " +
-            "FROM ContentTagEntity contentTag " +
-            "INNER JOIN TagEntity tag ON tag.tagNo = contentTag.refTagNo " +
-            "WHERE contentTag.refTagNo = :tagNo " +
-            " AND (:refContentType IS NULL OR :refContentType = '' OR contentTag.refContentType = :refContentType)")
-    Integer countTagSize(final @Param("tagNo") Integer tagNo, final @Param("refContentType") String refContentType);
+    @Query("SELECT COUNT(ct.contentTagNo) " +
+            "FROM ContentTagEntity ct " +
+            "INNER JOIN fetch TagEntity tag ON tag.tagNo = ct.refTagNo " +
+            "WHERE ct.refTagNo = :tagNo " +
+            " AND (:refContentType IS NULL OR :refContentType = '' OR ct.refContentType = :refContentType)" +
+            " AND (ct.regstrId = :regstrId)")
+    Integer countTagSize(final @Param("tagNo") Integer tagNo, final @Param("refContentType") String refContentType, final String regstrId);
 }

@@ -66,7 +66,7 @@ public class JrnlDayRestController
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final List<JrnlDayDto> jrnlDayList = jrnlDayService.getListDtoWithCache(searchParam);
+        final List<JrnlDayDto> jrnlDayList = jrnlDayService.getMyListDto(searchParam);
 
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);

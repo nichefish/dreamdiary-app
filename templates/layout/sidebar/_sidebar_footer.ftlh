@@ -7,7 +7,7 @@
 <div class="app-sidebar-footer flex-column-auto pt-2 pb-6 px-6" id="kt_app_sidebar_footer">
     <a href="javascript:void(0);"
         class="btn btn-flex flex-center btn-muted btn-light-primary overflow-hidden text-nowrap px-0 h-40px w-100"
-        onclick="dF.Layout.lgout();"
+        onclick="Layout.lgout();"
         data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-dismiss-="click" title="사이트에서 로그아웃합니다.">
 
         <#--begin::Svg Icon | path: assets/media/icons/duotune/arrows/arr076.svg-->

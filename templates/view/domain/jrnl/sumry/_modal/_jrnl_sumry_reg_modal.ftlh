@@ -12,7 +12,7 @@
     <div class="modal-body modal-mbl-body my-5">
         <#--begin::Form-->
         <form name="jrnlSumryRegForm" id="jrnlSumryRegForm" class="form" enctype="multipart/form-data">
-            <div id="jrnl_sumry_reg_header_div">
+            <div id="jrnl_sumry_reg_modal_header_div">
                 <#--Handlebars template goes in here-->
             </div>
             <#--begin::Row-->

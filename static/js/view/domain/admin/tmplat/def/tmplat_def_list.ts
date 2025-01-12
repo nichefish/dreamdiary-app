@@ -38,7 +38,7 @@ const Page: Page = (function(): Page {
          */
         regForm: function(): void {
             cF.util.blockUIRequest();
-            cF.handlebars.template({}, "tmplat_def_reg", "show");
+            cF.handlebars.modal({}, "tmplat_def_reg");
         },
 
         /**
@@ -89,7 +89,7 @@ const Page: Page = (function(): Page {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
-                cF.handlebars.template(res.rsltObj, "tmplat_dtl", "show");
+                cF.handlebars.modal(res.rsltObj, "tmplat_dtl");
             });
         },
     }

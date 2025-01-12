@@ -61,15 +61,15 @@ public class JrnlDayServiceImpl
     }
 
     /**
-     * 목록 조회 (dto level) :: 캐시 처리
+     * 내 목록 조회 (dto level) :: 캐시 처리
      *
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="jrnlDayList", key="#searchParam.getYy() + \"_\" + #searchParam.getMnth()")
-    public List<JrnlDayDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
+    @Cacheable(value="myJrnlDayList", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getYy() + \"_\" + #searchParam.getMnth()")
+    public List<JrnlDayDto> getMyListDto(final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
         return this.getSelf().getListDto(searchParam);
     }
@@ -119,7 +119,7 @@ public class JrnlDayServiceImpl
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="jrnlDayTagDtl", key="#searchParam.hashCode()")
+    @Cacheable(value="myJrnlDayTagDtl", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.hashCode()")
     public List<JrnlDayDto> jrnlDayTagDtl(final BaseSearchParam searchParam) throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
 
@@ -157,7 +157,7 @@ public class JrnlDayServiceImpl
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="jrnlDayDtlDto", key="#key")
+    @Cacheable(value="myJrnlDayDtlDto", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #key")
     public JrnlDayDto getDtlDtoWithCache(final Integer key) throws Exception {
         JrnlDayDto retrieved = this.getSelf().getDtlDto(key);
         // 권한 체크

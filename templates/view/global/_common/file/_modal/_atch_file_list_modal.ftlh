@@ -21,7 +21,7 @@
                         return false;
                     }
                     const { rsltList = [] } = res;
-                    cF.handlebars.template(rsltList, "atch_file_list", "show");
+                    cF.handlebars.modal(rsltList, "atch_file_list");
                 });
             },
         }

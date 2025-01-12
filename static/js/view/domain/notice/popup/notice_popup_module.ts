@@ -55,7 +55,7 @@ dF.NoticePopup = (function(): Module {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
-                cF.handlebars.template(res.rsltObj, "notice_popup", "show");
+                cF.handlebars.modal(res.rsltObj, "notice_popup");
                 dF.NoticePopup.popupIdx++;
             });
         },

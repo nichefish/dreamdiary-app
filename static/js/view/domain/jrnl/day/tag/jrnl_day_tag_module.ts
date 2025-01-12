@@ -60,7 +60,7 @@ dF.JrnlDayTag = (function(): dfModule {
                     if (item.ctgr) ctgrSet.add(item.ctgr);
                 });
                 cF.handlebars.template(ctgrSet, "jrnl_tag_ctgr");
-                cF.handlebars.template(res.rsltList, "jrnl_tag_list", "show");
+                cF.handlebars.modal(res.rsltList, "jrnl_tag_list");
                 $("#jrnl_tag_dtl_modal").modal("hide");
             });
         },
@@ -69,7 +69,7 @@ dF.JrnlDayTag = (function(): dfModule {
          * 상세 모달 호출
          * @param {string|number} tagNo - 조회할 태그 번호.
          */
-        dtlModal: function(tagNo: string|number, tagNm): void {
+        dtlModal: function(tagNo: string|number): void {
             event.stopPropagation();
             if (isNaN(Number(tagNo))) return;
 
@@ -80,7 +80,7 @@ dF.JrnlDayTag = (function(): dfModule {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
-                cF.handlebars.template(res.rsltList, "jrnl_day_tag_dtl", "show");
+                cF.handlebars.modal(res.rsltList, "jrnl_day_tag_dtl");
             });
         },
     }

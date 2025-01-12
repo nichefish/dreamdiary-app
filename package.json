@@ -9,6 +9,7 @@
     "@types/jquery.form": "^3.26.35",
     "@types/jquery.validation": "^1.17.0",
     "@types/jstree": "^3.3.46",
+    "@types/moment": "^2.13.0",
     "@types/paho-mqtt": "^1.0.10",
     "@types/stompjs": "^2.3.9",
     "@types/tinymce": "^4.6.9",

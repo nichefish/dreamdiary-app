@@ -90,7 +90,7 @@ public interface TagService
      * @param contentType 조회할 컨텐츠 타입 (ContentType)
      * @return {@link Integer} -- 태그 목록에서 계산된 최대 사용 빈도 (Integer)
      */
-    Integer countTagSize(final Integer tagNo, final String contentType);
+    Integer countTagSize(final Integer tagNo, final String contentType, final String regstrId);
 
     /**
      * 컨텐츠 태그 처리

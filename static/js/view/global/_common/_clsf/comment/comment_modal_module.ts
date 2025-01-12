@@ -30,7 +30,7 @@ dF.Comment.modal = (function(): dfModule {
          */
         initForm: function(obj: Record<string, any> = {}): void {
             /* show modal */
-            cF.handlebars.template(obj, "comment_reg", "show");
+            cF.handlebars.modal(obj, "comment_reg");
 
             /* jquery validation */
             cF.validate.validateForm("#commentRegForm", dF.Comment.modal.regAjax);

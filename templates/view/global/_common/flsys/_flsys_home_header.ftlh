@@ -98,7 +98,7 @@
              */
             playVod: function(filePath) {
                 const obj = { "filePath": filePath };
-                cF.handlebars.template(obj, "flsys_file_vod", "show");
+                cF.handlebars.modal(obj, "flsys_file_vod");
             },
 
             /**

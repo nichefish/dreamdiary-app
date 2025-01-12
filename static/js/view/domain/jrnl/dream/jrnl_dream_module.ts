@@ -28,8 +28,7 @@ dF.JrnlDream = (function(): dfModule {
          */
         initForm: function(obj: Record<string, any> = {}): void {
             /* show modal */
-            cF.handlebars.template(obj, "jrnl_dream_reg_header");
-            cF.handlebars.template(obj, "jrnl_dream_reg", "show");
+            cF.handlebars.modal(obj, "jrnl_dream_reg", ["header"]);
 
             /* jquery validation */
             cF.validate.validateForm("#jrnlDreamRegForm", dF.JrnlDream.regAjax, {

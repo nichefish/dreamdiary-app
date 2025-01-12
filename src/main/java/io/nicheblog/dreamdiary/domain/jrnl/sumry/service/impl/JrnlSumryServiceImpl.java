@@ -81,8 +81,8 @@ public class JrnlSumryServiceImpl
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value={"jrnlTotalSumry", "jrnlSumryList"}, allEntries = true),
-            @CacheEvict(value="jrnlSumryDtlByYy", key="#rslt.getYy()")
+            @CacheEvict(value={"myJrnlTotalSumry", "myJrnlSumryList"}, allEntries = true),
+            @CacheEvict(value="myJrnlSumryDtlByYy", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #rslt.getYy()")
     })
     public Boolean makeYySumry(final Integer yy) throws Exception {
         // 해당 년도 저널 결산 정보 조회
@@ -111,7 +111,7 @@ public class JrnlSumryServiceImpl
      */
     @Override
     @Transactional
-    @CacheEvict(value={"jrnlTotalSumry", "jrnlSumryList", "jrnlSumryDtl"}, allEntries = true)
+    @CacheEvict(value={"myJrnlTotalSumry", "myJrnlSumryList", "myJrnlSumryDtl"}, allEntries = true)
     public Boolean makeTotalYySumry() throws Exception {
         final int currYy = DateUtils.getCurrYy();
         final int startYy = 2011;
@@ -132,7 +132,7 @@ public class JrnlSumryServiceImpl
      * @return {@link JrnlSumryDto} -- 총 결산 정보가 담긴 DTO 객체
      */
     @Override
-    @Cacheable(value="jrnlTotalSumry")
+    @Cacheable(value="myJrnlTotalSumry", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId()")
     public JrnlSumryDto getTotalSumry() {
         final JrnlSumryDto totalSumry = new JrnlSumryDto();
         // 해당 년도 꿈 일자 조회해서 갱신
@@ -156,7 +156,7 @@ public class JrnlSumryServiceImpl
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="jrnlSumryDtl", key="#key")
+    @Cacheable(value="myJrnlSumryDtl", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #key")
     public JrnlSumryDto.DTL getSumryDtl(final Integer key) throws Exception {
         return this.getSelf().getDtlDto(key);
     }
@@ -169,7 +169,7 @@ public class JrnlSumryServiceImpl
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="jrnlSumryDtlByYy", key="#yy")
+    @Cacheable(value="myJrnlSumryDtlByYy", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #yy")
     public JrnlSumryDto getDtlDtoByYy(final Integer yy) throws Exception {
         final Optional<JrnlSumryEntity> retrievedWrapper = repository.findByYy(yy);
         if (retrievedWrapper.isEmpty()) return null;

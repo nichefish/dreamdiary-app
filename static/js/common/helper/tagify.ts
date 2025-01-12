@@ -59,9 +59,6 @@ cF.tagify = (function(): Module {
                 ...additionalOptions
             };
 
-            cF.tagify.initialized = true;
-            console.log("'cF.tagify' module initialized.");
-
             return new Tagify(tagInput, mergedOptions);
         },
 

@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.global._common._clsf.tag.service.impl;
 
+import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global._common._clsf.ContentType;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.entity.TagEntity;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.mapstruct.TagMapstruct;
@@ -174,7 +175,7 @@ public class TagServiceImpl
         int maxFrequency = 0;
         for (final TagDto tag : tagList) {
             // 캐싱 처리 위해 셀프 프록시
-            final Integer tagSize = this.countTagSize(tag.getTagNo(), contentType);
+            final Integer tagSize = this.countTagSize(tag.getTagNo(), contentType, AuthUtils.getLgnUserId());
             tag.setContentSize(tagSize);
             maxFrequency = Math.max(maxFrequency, tagSize);
         }
@@ -189,8 +190,8 @@ public class TagServiceImpl
      * @return {@link Integer} -- 태그 목록에서 계산된 최대 사용 빈도 (Integer)
      */
     @Transactional(readOnly = true)
-    public Integer countTagSize(final Integer tagNo, final String contentType) {
-        return repository.countTagSize(tagNo, contentType);
+    public Integer countTagSize(final Integer tagNo, final String contentType, final String regstrId) {
+        return repository.countTagSize(tagNo, contentType, regstrId);
     }
 
     /**

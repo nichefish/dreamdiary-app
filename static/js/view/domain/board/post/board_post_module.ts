@@ -149,7 +149,7 @@ dF.BoardPost = (function(): dfModule {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
-                cF.handlebars.template(res.rsltObj, "board_post_dtl", "show");
+                cF.handlebars.modal(res.rsltObj, "board_post_dtl");
             });
         },
 
