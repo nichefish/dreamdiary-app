@@ -35,7 +35,7 @@ public class JrnlDayCacheEvictor
         // jrnl_day
         EhCacheUtils.evictCacheAll("jrnlDayList");
         // 태그가 삭제되었을 때 태그 목록 캐시 초기화
-        JrnlDayDto jrnlDay = (JrnlDayDto) EhCacheUtils.getObjectFromCache("jrnlDayDtlDto", key);
+        JrnlDayDto jrnlDay = (JrnlDayDto) EhCacheUtils.getObjectFromCache("myJrnlDayDtlDto", key);
         if (jrnlDay == null) {
             try {
                 jrnlDay = jrnlDayService.getDtlDto(key);
@@ -48,11 +48,11 @@ public class JrnlDayCacheEvictor
         final String yy = jrnlDay.getYy();
         final String mnth = jrnlDay.getMnth();
         // jrnl_day
-        EhCacheUtils.evictCache("jrnlDayDtlDto", key);
-        this.evictCacheForPeriod("jrnlDayList", yy, mnth);
+        EhCacheUtils.evictMyCache("myJrnlDayDtlDto", key);
+        this.evictMyCacheForPeriod("myJrnlDayList", yy, mnth);
         // jrnl_day_tag
-        this.evictCacheForPeriod("jrnlDayTagList", yy, mnth);
-        this.evictCacheForPeriod("jrnlDaySizedTagList", yy, mnth);
+        this.evictMyCacheForPeriod("myJrnlDayTagList", yy, mnth);
+        this.evictMyCacheForPeriod("myJrnlDaySizedTagList", yy, mnth);
         // L2캐시 처리
         EhCacheUtils.clearL2Cache(JrnlDayTagEntity.class);
         EhCacheUtils.clearL2Cache(JrnlDayContentTagEntity.class);

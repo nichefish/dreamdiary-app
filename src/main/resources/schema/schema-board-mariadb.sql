@@ -152,6 +152,8 @@ CREATE TABLE IF NOT EXISTS content_tag (
     ref_post_no INT COMMENT '참조 글 번호',
     ref_content_type VARCHAR(30) COMMENT '참조 컨텐츠 타입',
     -- AUDIT
+    regstr_id VARCHAR(20) COMMENT '등록자 ID',
+    reg_dt DATETIME DEFAULT NOW() COMMENT '등록일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
     -- CONSTRAINT
     FOREIGN KEY (ref_tag_no) REFERENCES tag(tag_no),

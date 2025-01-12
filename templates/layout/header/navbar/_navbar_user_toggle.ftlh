@@ -277,7 +277,7 @@
     <!--begin::Menu item-->
     <div class="d-flex justify-content-center">
         <a href="javascript:void(0)" class="btn btn-light btn-light-primary fs-7 mt-2 w-85"
-           onclick="dF.Layout.lgout();"
+           onclick="Layout.lgout();"
            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="로그아웃합니다.">
             <#--begin::Svg Icon | path: assets/media/icons/duotune/arrows/arr076.svg-->
             <span class="svg-icon svg-icon-muted svg-icon-2">

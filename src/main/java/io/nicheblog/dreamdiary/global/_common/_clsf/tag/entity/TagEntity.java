@@ -52,13 +52,13 @@ public class TagEntity
     private String tagNm;
 
     /** 컨텐츠 태그 */
-    @OneToMany(mappedBy = "tag", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "tag", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SELECT)
     @NotFound(action = NotFoundAction.IGNORE)
     private List<ContentTagEntity> contentTagList;
 
     /** 태그 속성 */
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "tag_no", insertable = false, updatable = false)
     @Fetch(FetchMode.SELECT)
     @NotFound(action = NotFoundAction.IGNORE)

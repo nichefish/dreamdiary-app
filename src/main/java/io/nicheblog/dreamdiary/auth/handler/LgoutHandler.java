@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -47,5 +48,25 @@ public class LgoutHandler
         // 중복 로그인 관리용 arrayList에서 로그인 아이디 제거
         if (authentication == null || authentication.getPrincipal() == null) return;
         DupIdLgnManager.removeKey(((AuthInfo) authentication.getPrincipal()).getUserId());
+
+        // 쿠키에서 JWT 토큰 삭제
+        removeJwtFromCookie(httpServletResponse);
+    }
+
+    /**
+     * 쿠키에서 JWT 토큰 삭제
+     *
+     * @param response 응답 객체
+     */
+    private void removeJwtFromCookie(HttpServletResponse response) {
+        // JWT를 저장한 쿠키 이름이 "jwtToken"이라고 가정
+        // 쿠키 만료 시간을 0으로 설정하여 삭제 처리
+        Cookie cookie = new Cookie("jwt", null);
+        cookie.setHttpOnly(true);  // 클라이언트에서 JavaScript 접근 불가
+        // cookie.setSecure(true);    // HTTPS 연결에서만 전달
+        cookie.setPath("/");       // 전체 경로에서 유효
+        cookie.setMaxAge(0);       // 만료 시간 0으로 설정
+
+        response.addCookie(cookie); // 응답에 쿠키 추가
     }
 }

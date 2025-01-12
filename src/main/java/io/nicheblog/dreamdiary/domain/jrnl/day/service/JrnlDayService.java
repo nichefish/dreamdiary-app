@@ -23,13 +23,13 @@ public interface JrnlDayService
         extends BaseMultiCrudService<JrnlDayDto, JrnlDayDto, Integer, JrnlDayEntity, JrnlDayRepository, JrnlDaySpec, JrnlDayMapstruct> {
 
     /**
-     * 목록 조회 (dto level) :: 캐시 처리
+     * 내 목록 조회 (dto level) :: 캐시 처리
      *
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
-    List<JrnlDayDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception;
+    List<JrnlDayDto> getMyListDto(final BaseSearchParam searchParam) throws Exception;
 
     /**
      * 중복 체크 (정상시 true / 중복시 false)

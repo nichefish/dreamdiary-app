@@ -104,6 +104,16 @@ public class AuthUtils {
     }
 
     /**
+     * 현재 로그인 중인 사용자 어이디를 반환한다.
+     *
+     * @return {@link String} -- 현재 로그인 중인 사용자 아이디
+     */
+    public static String getLgnUserIdOrDefault() {
+        if (!isAuthenticated()) return Constant.SYSTEM_ACNT;
+        return getLgnUserId();
+    }
+
+    /**
      * 특정 객체에 대해 내 정보 여부를 체크해서 반환한다.
      *
      * @return {@link Boolean} -- 내가 작성한 정보일 경우 true.

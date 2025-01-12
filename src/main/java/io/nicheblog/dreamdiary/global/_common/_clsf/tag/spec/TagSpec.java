@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.global._common._clsf.tag.spec;
 
+import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.entity.ContentTagEntity;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.entity.TagEntity;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
@@ -60,11 +61,13 @@ public class TagSpec
 
         final List<Predicate> predicate = new ArrayList<>();
 
+        final Join<TagEntity, ContentTagEntity> contentTagJoin = root.join("contentTagList", JoinType.INNER);
+        predicate.add(builder.equal(contentTagJoin.get("regstrId"), AuthUtils.getLgnUserIdOrDefault()));     // 등록자 ID 기준으로 조회
+
         // 파라미터 비교
         for (final String key : searchParamMap.keySet()) {
             switch (key) {
                 case "contentType":
-                    final Join<TagEntity, ContentTagEntity> contentTagJoin = root.join("contentTagList", JoinType.INNER);
                     predicate.add(builder.equal(contentTagJoin.get("refContentType"), searchParamMap.get(key)));
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색
@@ -86,12 +89,11 @@ public class TagSpec
     public Specification<TagEntity> getNoRefTags() {
         return (root, query, builder) -> {
             List<Predicate> predicate = new ArrayList<>();
-            try {
-                final Join<TagEntity, ContentTagEntity> contentTagJoin = root.join("contentTagList", JoinType.LEFT);
-                predicate.add(builder.isNull(contentTagJoin));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+
+            final Join<TagEntity, ContentTagEntity> contentTagJoin = root.join("contentTagList", JoinType.LEFT);
+            predicate.add(builder.equal(contentTagJoin.get("regstrId"), AuthUtils.getLgnUserIdOrDefault()));     // 등록자 ID 기준으로 조회
+            predicate.add(builder.isNull(contentTagJoin));
+
             return builder.and(predicate.toArray(new Predicate[0]));
         };
     }

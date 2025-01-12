@@ -27,12 +27,12 @@ public class JrnlSumryCacheEvictor
     @Override
     public void evict(final Integer key) throws Exception {
         // 목록 캐시 초기화
-        EhCacheUtils.evictCacheAll("jrnlSumryList");
-        EhCacheUtils.evictCacheAll("jrnlTotalSumry");
+        EhCacheUtils.evictMyCacheAll("myJrnlSumryList");
+        EhCacheUtils.evictMyCacheAll("myJrnlTotalSumry");
         // 상세 캐시 초기화
-        EhCacheUtils.evictCache("jrnlSumryDtl", key);
-        final JrnlSumryDto jrnlSumry = (JrnlSumryDto) EhCacheUtils.getObjectFromCache("jrnlSumryDtl", key);
-        if (jrnlSumry != null) EhCacheUtils.evictCache("jrnlSumryDtlByYy", jrnlSumry.getYy());
+        EhCacheUtils.evictMyCache("myJrnlSumryDtl", key);
+        final JrnlSumryDto jrnlSumry = (JrnlSumryDto) EhCacheUtils.getObjectFromCache("myJrnlSumryDtl", key);
+        if (jrnlSumry != null) EhCacheUtils.evictMyCache("myJrnlSumryDtlByYy", jrnlSumry.getYy());
         // L2캐시 처리
         EhCacheUtils.clearL2Cache(JrnlSumryEntity.class);
     }

@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.domain.jrnl.dream.spec;
 
+import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.entity.ContentTagEntity;
@@ -101,6 +102,7 @@ public class JrnlDreamSpec
                     // 특정 태그된 꿈만 조회
                     final Join<JrnlDreamEntity, TagEmbed> tagJoin = root.join("tag", JoinType.INNER);
                     final Join<TagEmbed, ContentTagEntity> contentTagJoin = tagJoin.join("list", JoinType.INNER);
+                    predicate.add(builder.equal(contentTagJoin.get("regstrId"), AuthUtils.getLgnUserId()));
                     predicate.add(builder.equal(contentTagJoin.get("refTagNo"), searchParamMap.get(key)));
                     continue;
                 default:
@@ -108,7 +110,7 @@ public class JrnlDreamSpec
                     try {
                         predicate.add(builder.equal(root.get(key), searchParamMap.get(key)));
                     } catch (Exception e) {
-                        log.info("unable to locate attribute " + key + " while trying root.get(key).");
+                        log.info("unable to locate attribute '{}' while trying root.get(key).", key);
                     }
             }
         }

@@ -2,21 +2,14 @@ package io.nicheblog.dreamdiary.domain.jrnl.dream.service;
 
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.mapstruct.JrnlDreamTagMapstruct;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamSearchParam;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamContentTagParam;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.repository.jpa.JrnlDreamTagRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.spec.JrnlDreamTagSpec;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseReadonlyService;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * JrnlDreamTagService
@@ -63,11 +56,9 @@ public interface JrnlDreamTagService
     /**
      * 꿈 태그별 크기 조회
      *
-     * @param yy 조회할 년도
-     * @param mnth 조회할 월
      * @return {@link Map} -- 카테고리별 태그 목록을 담은 Map
      */
-    Integer countDreamSize(final Integer tagNo, final Integer yy, final Integer mnth);
+    Integer countDreamSize(final JrnlDreamContentTagParam param);
 
     /**
      * 지정된 연도와 월을 기준으로 태그 목록을 카테고리별로 그룹화하여 반환합니다.

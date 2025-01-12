@@ -66,7 +66,7 @@ public class JrnlDreamServiceImpl
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="jrnlDreamList", key="#searchParam.hashCode()")
+    @Cacheable(value="myJrnlDreamList", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.hashCode()")
     public List<JrnlDreamDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
         return this.getSelf().getListDto(searchParam);
@@ -80,7 +80,7 @@ public class JrnlDreamServiceImpl
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="imprtcDreamList", key="#yy")
+    @Cacheable(value="myImprtcDreamList", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #yy")
     public List<JrnlDreamDto> getImprtcDreamList(final Integer yy) throws Exception {
         final JrnlDreamSearchParam searchParam = JrnlDreamSearchParam.builder().yy(yy).imprtcYn("Y").build();
         final List<JrnlDreamDto> imprtcDreamList = this.getSelf().getListDto(searchParam);
@@ -97,7 +97,7 @@ public class JrnlDreamServiceImpl
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="jrnlDreamTagDtl", key="#searchParam.hashCode()")
+    @Cacheable(value="myJrnlDreamTagDtl", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.hashCode()")
     public List<JrnlDreamDto> jrnlDreamTagDtl(final BaseSearchParam searchParam) throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
 
@@ -138,7 +138,7 @@ public class JrnlDreamServiceImpl
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="jrnlDreamDtlDto", key="#key")
+    @Cacheable(value="myJrnlDreamDtlDto", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #key")
     public JrnlDreamDto getDtlDtoWithCache(final Integer key) throws Exception {
         JrnlDreamDto retrieved = this.getSelf().getDtlDto(key);
         // 권한 체크

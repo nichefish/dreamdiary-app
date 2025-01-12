@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.global._common.cache.util;
 
+import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.SessionFactory;
 import org.springframework.cache.Cache;
@@ -51,7 +52,7 @@ public class EhCacheUtils {
      * 캐시 목록 조회
      */
     public static List<Cache> getActiveCacheList() {
-        Collection<String> activeCacheNameList = cacheManager.getCacheNames();
+        final Collection<String> activeCacheNameList = cacheManager.getCacheNames();
         return activeCacheNameList
                 .stream()
                 .map(cacheName -> cacheManager.getCache(cacheName))
@@ -63,20 +64,20 @@ public class EhCacheUtils {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Map<String, Object> getActiveCacheMap() {
-        Map<String, Object> cacheContents = new HashMap<>();
+        final Map<String, Object> cacheContents = new HashMap<>();
 
-        List<Cache> activeCacheList = getActiveCacheList();
+        final List<Cache> activeCacheList = getActiveCacheList();
         activeCacheList
                 .forEach(cache -> {
-                    String name = cache.getName();
-                    Object nativeCache = cache.getNativeCache();
+                    final String name = cache.getName();
+                    final Object nativeCache = cache.getNativeCache();
 
                     if (nativeCache instanceof com.github.benmanes.caffeine.cache.Cache caffeineCache) {
                         // Caffeine Cache 처리
-                        Map<Object, Object> cacheValue = new HashMap<>();
+                        final Map<Object, Object> cacheValue = new HashMap<>();
                         caffeineCache.asMap().forEach((key, value) -> {
                             try {
-                                String readableKey = stringifyKey(key);
+                                final String readableKey = stringifyKey(key);
                                 cacheValue.put(readableKey, value);
                                 log.info("Caffeine Cache Key: {}", readableKey);
                             } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -87,12 +88,12 @@ public class EhCacheUtils {
                         if (!cacheValue.isEmpty()) cacheContents.put(name, cacheValue);
                     } else if (nativeCache instanceof javax.cache.Cache) {
                         // Eh107 Cache 처리
-                        javax.cache.Cache<Object, Object> ehCache = (javax.cache.Cache<Object, Object>) nativeCache;
+                        final javax.cache.Cache<Object, Object> ehCache = (javax.cache.Cache<Object, Object>) nativeCache;
 
-                        Map<Object, Object> cacheValue = new HashMap<>();
+                        final Map<Object, Object> cacheValue = new HashMap<>();
                         ehCache.iterator().forEachRemaining(entry -> {
                             try {
-                                String readableKey = stringifyKey(entry.getKey());
+                                final String readableKey = stringifyKey(entry.getKey());
                                 cacheValue.put(readableKey, entry.getValue());
                                 log.info("EhCache Key: {}", entry.getKey());
                             } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -114,12 +115,12 @@ public class EhCacheUtils {
      * @param key 캐시 키
      * @return 사람이 읽을 수 있는 문자열
      */
-    private static String stringifyKey(Object key) throws NoSuchFieldException, IllegalAccessException {
+    private static String stringifyKey(final Object key) throws NoSuchFieldException, IllegalAccessException {
         if (key instanceof SimpleKey) {
             // 리플렉션을 통해 params 필드 접근
-            Field paramsField = SimpleKey.class.getDeclaredField("params");
+            final Field paramsField = SimpleKey.class.getDeclaredField("params");
             paramsField.setAccessible(true);
-            Object[] params = (Object[]) paramsField.get(key);
+            final Object[] params = (Object[]) paramsField.get(key);
 
             return "SimpleKey(" + String.join(", ", toStringArray(params)) + ")";
         }
@@ -133,7 +134,7 @@ public class EhCacheUtils {
      * @return 문자열 배열
      */
     private static String[] toStringArray(Object[] objects) {
-        String[] result = new String[objects.length];
+        final String[] result = new String[objects.length];
         for (int i = 0; i < objects.length; i++) {
             result[i] = (objects[i] != null) ? objects[i].toString() : "null";
         }
@@ -148,7 +149,7 @@ public class EhCacheUtils {
      * @return 캐시에서 가져온 오브젝트, 캐시에 해당 키가 없는 경우 null 반환
      */
     public static Object getObjectFromCache(final String cacheName, final Object cacheKey) {
-        Cache cache = cacheManager.getCache(cacheName);
+        final Cache cache = cacheManager.getCache(cacheName);
         if (cache == null) {
             log.info("Cache with name {} does not exist.", cacheName);
             return null;
@@ -165,7 +166,7 @@ public class EhCacheUtils {
      * 캐시 이름의 특정 키 evict
      */
     public static void evictCache(final String cacheName, final Object cacheKey) {
-        Cache cache = cacheManager.getCache(cacheName);
+        final Cache cache = cacheManager.getCache(cacheName);
         if (cache == null) {
             log.info("cache name {} does not exists.", cacheName);
             return;
@@ -174,17 +175,36 @@ public class EhCacheUtils {
         log.info("cache name {} (key: {}) evicted.", cacheName, cacheKey);
     }
 
+    public static void evictMyCache(String cacheName, Integer cacheKey) {
+        final Cache cache = cacheManager.getCache(cacheName);
+        if (cache == null) {
+            log.info("cache name {} does not exists.", cacheName);
+            return;
+        }
+        final String myCacheKey = AuthUtils.getLgnUserId() + "_" + cacheKey;
+        cache.evict(myCacheKey);
+        log.info("cache name {} (key: {}) evicted.", cacheName, myCacheKey);
+    }
+
     /**
      * 캐시 이름으로 해당 캐시 evict
      */
     public static void evictCacheAll(final String cacheName) {
-        Cache cache = cacheManager.getCache(cacheName);
+        final Cache cache = cacheManager.getCache(cacheName);
         if (cache == null) {
             log.info("cache name {} does not exists.", cacheName);
             return;
         }
         cache.clear();
         log.info("cache name {} cleared.", cacheName);
+    }
+
+    /**
+     * 캐시 이름으로 해당 캐시 evict
+     */
+    public static void evictMyCacheAll(final String cacheName) {
+        // TODO:
+        evictCacheAll(cacheName);
     }
 
     /**
@@ -200,7 +220,7 @@ public class EhCacheUtils {
      * Hibernate Second Level 캐시 특정 엔티티 삭제
      */
     public static void clearL2Cache(final Class<?> clazz) {
-        org.hibernate.Cache cache = sessionFactory.getCache();
+        final org.hibernate.Cache cache = sessionFactory.getCache();
         cache.evictEntityData(clazz);
     }
 
@@ -208,7 +228,7 @@ public class EhCacheUtils {
      * Hibernate Second Level 캐시 전체 삭제
      */
     public static void clearL2Cache() {
-        org.hibernate.Cache cache = sessionFactory.getCache();
+        final org.hibernate.Cache cache = sessionFactory.getCache();
         cache.evictAllRegions();
     }
 }

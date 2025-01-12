@@ -1,8 +1,9 @@
 package io.nicheblog.dreamdiary.domain.jrnl.dream.service.impl;
 
-import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryTagEntity;
+import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.mapstruct.JrnlDreamTagMapstruct;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamContentTagParam;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.repository.jpa.JrnlDreamTagRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamTagService;
@@ -56,7 +57,7 @@ public class JrnlDreamTagServiceImpl
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="jrnlDreamTagList", key="#yy + \"_\" + #mnth")
+    @Cacheable(value="myJrnlDreamTagList", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
     public List<TagDto> getListDtoWithCache(final Integer yy, final Integer mnth) throws Exception {
         final JrnlDreamSearchParam searchParam = JrnlDreamSearchParam.builder().yy(yy).mnth(mnth).build();
 
@@ -73,7 +74,7 @@ public class JrnlDreamTagServiceImpl
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="jrnlDreamSizedTagList", key="#yy + \"_\" + #mnth")
+    @Cacheable(value="myJrnlDreamSizedTagList", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
     public List<TagDto> getDreamSizedListDto(final Integer yy, final Integer mnth) throws Exception {
         // 저널 꿈 태그 DTO 목록 조회
         final List<TagDto> tagList = this.getSelf().getListDtoWithCache(yy, mnth);
@@ -108,8 +109,13 @@ public class JrnlDreamTagServiceImpl
     public Integer calcMaxSize(final List<TagDto> tagList, Integer yy, Integer mnth) {
         int maxFrequency = 0;
         for (TagDto tag : tagList) {
-            // 캐싱 처리 위해 셀프 프록시
-            final Integer dreamSize = this.getSelf().countDreamSize(tag.getTagNo(), yy, mnth);
+            final JrnlDreamContentTagParam param = JrnlDreamContentTagParam.builder()
+                    .tagNo(tag.getTagNo())
+                    .yy(yy)
+                    .mnth(mnth)
+                    .regstrId(AuthUtils.getLgnUserId())
+                    .build();
+            final Integer dreamSize = this.getSelf().countDreamSize(param);      // 캐싱 처리 위해 셀프 프록시
             tag.setContentSize(dreamSize);
             maxFrequency = Math.max(maxFrequency, dreamSize);
         }
@@ -120,14 +126,12 @@ public class JrnlDreamTagServiceImpl
     /**
      * 꿈 태그별 크기 조회
      *
-     * @param yy 조회할 년도
-     * @param mnth 조회할 월
      * @return {@link Map} -- 카테고리별 태그 목록을 담은 Map
      */
     @Override
-    @Cacheable(value="countDreamSize", key="#tagNo + \"_\" + #yy + \"_\" + #mnth")
-    public Integer countDreamSize(final Integer tagNo, final Integer yy, final Integer mnth) {
-        return repository.countDreamSize(tagNo, yy, mnth);
+    @Cacheable(value="myCountDreamSize", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #param.tagNo + \"_\" + #param.yy + \"_\" + #param.mnth")
+    public Integer countDreamSize(final JrnlDreamContentTagParam param) {
+        return repository.countDreamSize(param);
     }
 
     /**

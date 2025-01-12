@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.global._common._clsf.tag.entity;
 
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditRegEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ import javax.persistence.*;
 @Where(clause = "del_yn='N'")
 @SQLDelete(sql = "UPDATE content_tag SET del_yn = 'Y' WHERE content_tag_no = ?")
 public class ContentTagEntity
-        extends BaseCrudEntity {
+        extends BaseAuditRegEntity {
 
     @PostLoad
     private void onLoad() {
@@ -73,6 +73,7 @@ public class ContentTagEntity
     /** 태그 */
     @Transient
     private String tagNm;
+
     @Transient
     /** 태그 카테고리 */
     private String ctgr;

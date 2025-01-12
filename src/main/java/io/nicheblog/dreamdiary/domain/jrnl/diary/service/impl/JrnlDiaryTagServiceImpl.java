@@ -1,8 +1,9 @@
 package io.nicheblog.dreamdiary.domain.jrnl.diary.service.impl;
 
-import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayTagEntity;
+import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.mapstruct.JrnlDiaryTagMapstruct;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryContentTagParam;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiarySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.repository.jpa.JrnlDiaryTagRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryTagService;
@@ -56,7 +57,7 @@ public class JrnlDiaryTagServiceImpl
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="jrnlDiaryTagList", key="#yy + \"_\" + #mnth")
+    @Cacheable(value="myJrnlDiaryTagList", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
     public List<TagDto> getListDtoWithCache(final Integer yy, final Integer mnth) throws Exception {
         final JrnlDiarySearchParam searchParam = JrnlDiarySearchParam.builder().yy(yy).mnth(mnth).build();
 
@@ -73,7 +74,7 @@ public class JrnlDiaryTagServiceImpl
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="jrnlDiarySizedTagList", key="#yy + \"_\" + #mnth")
+    @Cacheable(value="myJrnlDiarySizedTagList", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
     public List<TagDto> getDiarySizedListDto(final Integer yy, final Integer mnth) throws Exception {
         // 저널 꿈 태그 DTO 목록 조회
         final List<TagDto> tagList = this.getSelf().getListDtoWithCache(yy, mnth);
@@ -109,8 +110,13 @@ public class JrnlDiaryTagServiceImpl
     public Integer calcMaxSize(final List<TagDto> tagList, Integer yy, Integer mnth) {
         int maxFrequency = 0;
         for (TagDto tag : tagList) {
-            // 캐싱 처리 위해 셀프 프록시
-            final Integer diarySize = this.getSelf().countDiarySize(tag.getTagNo(), yy, mnth);
+            final JrnlDiaryContentTagParam param = JrnlDiaryContentTagParam.builder()
+                    .tagNo(tag.getTagNo())
+                    .yy(yy)
+                    .mnth(mnth)
+                    .regstrId(AuthUtils.getLgnUserId())
+                    .build();
+            final Integer diarySize = this.getSelf().countDiarySize(param);     // 캐싱 처리 위해 셀프 프록시
             tag.setContentSize(diarySize);
             maxFrequency = Math.max(maxFrequency, diarySize);
         }
@@ -121,14 +127,12 @@ public class JrnlDiaryTagServiceImpl
     /**
      * 꿈 태그별 크기 조회
      *
-     * @param yy 조회할 년도
-     * @param mnth 조회할 월
      * @return {@link Map} -- 카테고리별 태그 목록을 담은 Map
      */
     @Override
-    @Cacheable(value="countDiarySize", key="#tagNo + \"_\" + #yy + \"_\" + #mnth")
-    public Integer countDiarySize(final Integer tagNo, final Integer yy, final Integer mnth) {
-        return repository.countDiarySize(tagNo, yy, mnth);
+    @Cacheable(value="myCountDiarySize", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #param.tagNo + \"_\" + #param.yy + \"_\" + #param.mnth")
+    public Integer countDiarySize(final JrnlDiaryContentTagParam param) {
+        return repository.countDiarySize(param);
     }
 
     /**

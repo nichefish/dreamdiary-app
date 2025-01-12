@@ -64,7 +64,7 @@ public class VcatnPaprSpec
                     try {
                         predicate.add(builder.equal(root.get(key), searchParamMap.get(key)));
                     } catch (Exception e) {
-                        log.info("unable to locate attribute " + key + " while trying root.get(key).");
+                        log.info("unable to locate attribute '{}' while trying root.get(key).", key);
                     }
             }
         }

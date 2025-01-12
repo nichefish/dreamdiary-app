@@ -66,7 +66,7 @@ public class JrnlDiaryServiceImpl
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="jrnlDiaryList", key="#searchParam.hashCode()")
+    @Cacheable(value="myJrnlDiaryList", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.hashCode()")
     public List<JrnlDiaryDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
         return this.getSelf().getListDto(searchParam);
@@ -80,7 +80,7 @@ public class JrnlDiaryServiceImpl
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="imprtcDiaryList", key="#yy")
+    @Cacheable(value="myImprtcDiaryList", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #yy")
     public List<JrnlDiaryDto> getImprtcDiaryList(final Integer yy) throws Exception {
         final JrnlDiarySearchParam searchParam = JrnlDiarySearchParam.builder().yy(yy).imprtcYn("Y").build();
         final List<JrnlDiaryDto> imprtcDiaryList = this.getSelf().getListDto(searchParam);
@@ -97,7 +97,7 @@ public class JrnlDiaryServiceImpl
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="jrnlDiaryTagDtl", key="#searchParam.hashCode()")
+    @Cacheable(value="myJrnlDiaryTagDtl", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.hashCode()")
     public List<JrnlDiaryDto> jrnlDiaryTagDtl(final BaseSearchParam searchParam) throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
 
@@ -136,7 +136,7 @@ public class JrnlDiaryServiceImpl
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="jrnlDiaryDtlDto", key="#key")
+    @Cacheable(value="myJrnlDiaryDtlDto", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #key")
     public JrnlDiaryDto getDtlDtoWithCache(final Integer key) throws Exception {
         JrnlDiaryDto retrieved = this.getSelf().getDtlDto(key);
         // 권한 체크

@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.global._common._clsf.tag.repository.jpa;
 
 import io.nicheblog.dreamdiary.global._common._clsf.tag.entity.ContentTagEntity;
+import io.nicheblog.dreamdiary.global._common._clsf.tag.model.ContentTagParam;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -23,14 +24,13 @@ public interface ContentTagRepository
     /**
      * 특정 게시물에 대해 태그 정보와 연결되지 않는 컨텐츠 태그 삭제.
      *
-     * @param postNo - 삭제할 대상 컨텐츠 태그의 게시글 번호
-     * @param contentType - 삭제할 대상의 컨텐츠 타입
-     * @param tagNm - 삭제할 태그의 이름
-     * @param ctgr - 삭제할 태그의 카테고리
+     * @param param - 삭제할 대상의 파라미터 (게시글 번호, 컨텐츠 타입, 태그 이름, 카테고리 포함)
      */
     @Modifying
     @Query("DELETE FROM ContentTagEntity ct " +
-            "WHERE ct.refPostNo = :postNo AND ct.refContentType = :contentType " +
-            "AND EXISTS (SELECT 1 FROM TagEntity t WHERE t.tagNo = ct.refTagNo AND t.tagNm = :tagNm AND (t.ctgr = :ctgr OR (t.ctgr IS NULL AND :ctgr IS NULL)))")
-    void deleteObsoleteContentTags(final @Param("postNo") Integer postNo, final @Param("contentType") String contentType, final @Param("tagNm") String tagNm, final @Param("ctgr") String ctgr);
+            "WHERE ct.refPostNo = :#{#param.refPostNo} " +
+            "  AND ct.refContentType = :#{#param.refContentType} " +
+            "  AND ct.regstrId = :#{#param.regstrId} " +
+            "  AND EXISTS (SELECT 1 FROM TagEntity t WHERE t.tagNo = ct.refTagNo AND t.tagNm = :#{#param.tagNm} AND (t.ctgr = :#{#param.ctgr} OR (t.ctgr IS NULL AND :ctgr IS NULL)))")
+    void deleteObsoleteContentTags(final @Param("param") ContentTagParam param);
 }

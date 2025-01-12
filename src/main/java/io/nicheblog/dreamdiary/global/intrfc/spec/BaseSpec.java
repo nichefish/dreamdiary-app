@@ -79,7 +79,7 @@ public interface BaseSpec<Entity> {
                 predicate.add(builder.equal(root.get(key), searchParamMap.get(key)));
             } catch (Exception e) {
                 e.printStackTrace();
-                // log.info("unable to locate attribute " + key + " while trying root.get(key).");
+                // log.info("unable to locate attribute '{}' while trying root.get(key).", key);
             }
         }
         return predicate;

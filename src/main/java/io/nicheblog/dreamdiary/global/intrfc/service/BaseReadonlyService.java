@@ -155,8 +155,9 @@ public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>
     default List<ListDto> getListDto(final Map<String, Object> searchParamMap) throws Exception {
         // searchParamMap에서 빈 값들 및 쓸모없는 값들 정리
         final Map<String, Object> filteredSearchKey = CmmUtils.Param.filterParamMap(searchParamMap);
+        final List<Entity> retrievedListEntity = this.getListEntity(filteredSearchKey);
 
-        return this.listEntityToDto(this.getListEntity(filteredSearchKey));
+        return this.listEntityToDto(retrievedListEntity);
     }
 
     /**
@@ -186,8 +187,9 @@ public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>
     default List<ListDto> getListDto(final Map<String, Object> searchParamMap, Sort sort) throws Exception {
         // searchParamMap에서 빈 값들 및 쓸모없는 값들 정리
         final Map<String, Object> filteredSearchKey = CmmUtils.Param.filterParamMap(searchParamMap);
+        final List<Entity> retrievedListEntity = this.getListEntity(filteredSearchKey, sort);
 
-        return this.listEntityToDto(this.getListEntity(filteredSearchKey, sort));
+        return this.listEntityToDto(retrievedListEntity);
     }
 
     /**

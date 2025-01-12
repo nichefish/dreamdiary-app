@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.domain.jrnl.diary.service;
 
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.mapstruct.JrnlDiaryTagMapstruct;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryContentTagParam;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.repository.jpa.JrnlDiaryTagRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.spec.JrnlDiaryTagSpec;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.model.TagDto;
@@ -55,11 +56,9 @@ public interface JrnlDiaryTagService
     /**
      * 꿈 태그별 크기 조회
      *
-     * @param yy 조회할 년도
-     * @param mnth 조회할 월
      * @return {@link Map} -- 카테고리별 태그 목록을 담은 Map
      */
-    Integer countDiarySize(final Integer tagNo, final Integer yy, final Integer mnth);
+    Integer countDiarySize(final JrnlDiaryContentTagParam param);
 
     /**
      * 지정된 연도와 월을 기준으로 태그 목록을 카테고리별로 그룹화하여 반환합니다.

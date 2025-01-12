@@ -1,9 +1,11 @@
 package io.nicheblog.dreamdiary.global._common._clsf.tag.service.impl;
 
+import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global._common._clsf.ContentType;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.entity.ContentTagEntity;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.entity.TagEntity;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.mapstruct.ContentTagMapstruct;
+import io.nicheblog.dreamdiary.global._common._clsf.tag.model.ContentTagParam;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.repository.jpa.ContentTagRepository;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.service.ContentTagService;
@@ -77,7 +79,14 @@ public class ContentTagServiceImpl
     public void delObsoleteContentTags(final BaseClsfKey clsfKey, final List<TagDto> obsoleteTagList) throws Exception {
         String contentType = clsfKey.getContentType();
         obsoleteTagList.forEach(tag -> {
-            repository.deleteObsoleteContentTags(clsfKey.getPostNo(), contentType, tag.getTagNm(), tag.getCtgr());
+            final ContentTagParam param = ContentTagParam.builder()
+                    .refPostNo(clsfKey.getPostNo())
+                    .refContentType(clsfKey.getContentType())
+                    .tagNm(tag.getTagNm())
+                    .ctgr(tag.getCtgr())
+                    .regstrId(AuthUtils.getLgnUserId())
+                    .build();
+            repository.deleteObsoleteContentTags(param);
             // 태그 캐시 처리
             String cacheName = this.getCacheNameByContentType(contentType);
             this.evictCacheForPeriod(cacheName, tag.getTagNo());
