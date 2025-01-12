@@ -12,7 +12,6 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.spec.JrnlDaySpec;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.global._common._clsf.ContentType;
 import io.nicheblog.dreamdiary.global._common.cache.event.EhCacheEvictEvent;
-import io.nicheblog.dreamdiary.global._common.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -138,18 +137,6 @@ public class JrnlDayServiceImpl
     }
 
     /**
-     * 등록 후처리. (override)
-     *
-     * @param updatedEntity - 등록된 엔티티
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    @Override
-    public void postRegist(final JrnlDayEntity updatedEntity) throws Exception {
-        // 관련 캐시 삭제
-        publisher.publishEvent(new EhCacheEvictEvent(this, updatedEntity.getPostNo(), JRNL_DAY));
-    }
-
-    /**
      * 상세 조회 (dto level) :: 캐시 처리
      *
      * @param key 식별자
@@ -174,21 +161,6 @@ public class JrnlDayServiceImpl
     public void preModify(final JrnlDayDto modifyDto) throws Exception {
         // 년도/월 세팅:: 메소드 분리
         this.setYyMnth(modifyDto);
-        // 수정 전 정보 캐시 삭제
-        EhCacheUtils.evictCache("jrnlDayList", modifyDto.getYy() + "_" + modifyDto.getMnth());
-        EhCacheUtils.evictCache("jrnlDayList", modifyDto.getYy() + "_99");
-    }
-
-    /**
-     * 수정 후처리. (override)
-     *
-     * @param updatedEntity - 수정된 엔티티
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    @Override
-    public void postModify(final JrnlDayEntity updatedEntity) throws Exception {
-        // 관련 캐시 삭제
-        publisher.publishEvent(new EhCacheEvictEvent(this, updatedEntity.getPostNo(), JRNL_DAY));
     }
 
     /**
@@ -226,19 +198,6 @@ public class JrnlDayServiceImpl
     }
 
     /**
-     * 삭제 후처리. (override)
-     *
-     * @param deletedEntity - 삭제된 엔티티
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    @Override
-    public void postDelete(final JrnlDayEntity deletedEntity) throws Exception {
-        // 관련 캐시 삭제
-        publisher.publishEvent(new EhCacheEvictEvent(this, deletedEntity.getPostNo(), JRNL_DAY));
-        // TODO: 관련 엔티티 삭제?
-    }
-
-    /**
      * 삭제 데이터 조회
      *
      * @param key 삭제된 데이터의 키
@@ -249,5 +208,11 @@ public class JrnlDayServiceImpl
     @Transactional(readOnly = true)
     public JrnlDayDto getDeletedDtlDto(final Integer key) throws Exception {
         return jrnlDayMapper.getDeletedByPostNo(key);
+    }
+
+    @Override
+    public void evictCache(final JrnlDayEntity jrnlDayEntity) throws Exception {
+        // 관련 캐시 삭제
+        publisher.publishEvent(new EhCacheEvictEvent(this, jrnlDayEntity.getPostNo(), JRNL_DAY));
     }
 }

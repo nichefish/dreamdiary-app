@@ -22,13 +22,13 @@ public interface JrnlSumryService
         extends BaseMultiCrudService<JrnlSumryDto.DTL, JrnlSumryDto.LIST, Integer, JrnlSumryEntity, JrnlSumryRepository, JrnlSumrySpec, JrnlSumryMapstruct> {
 
     /**
-     * 저널 결산 정뵤 목록 조회 :: 캐시 사용 위해 구현체로 pullUp
+     * 저널 결산 내 정뵤 목록 조회
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
      * @return {@link List<JrnlSumryDto.LIST>} -- 검색 조건에 맞는 결산 목록 DTO 리스트
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
-    List<JrnlSumryDto.LIST> getListDto(final BaseSearchParam searchParam) throws Exception;
+    List<JrnlSumryDto.LIST> getMyListDto(final BaseSearchParam searchParam) throws Exception;
 
     /**
      * 년도를 받아서 해당 년도 저널 결산 정보 생성

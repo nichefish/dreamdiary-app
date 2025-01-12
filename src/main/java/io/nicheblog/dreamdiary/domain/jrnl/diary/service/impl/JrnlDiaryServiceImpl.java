@@ -117,18 +117,6 @@ public class JrnlDiaryServiceImpl
     }
 
     /**
-     * 등록 후처리. (override)
-     *
-     * @param updatedEntity - 등록된 엔티티
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    @Override
-    public void postRegist(final JrnlDiaryEntity updatedEntity) throws Exception {
-        // 관련 캐시 삭제
-        publisher.publishEvent(new EhCacheEvictEvent(this, updatedEntity.getPostNo(), JRNL_DIARY));
-    }
-
-    /**
      * 상세 조회 (dto level) :: 캐시 처리
      *
      * @param key 식별자
@@ -145,18 +133,6 @@ public class JrnlDiaryServiceImpl
     }
 
     /**
-     * 수정 후처리. (override)
-     *
-     * @param updatedEntity - 수정된 엔티티
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    @Override
-    public void postModify(final JrnlDiaryEntity updatedEntity) throws Exception {
-        // 관련 캐시 삭제
-        publisher.publishEvent(new EhCacheEvictEvent(this, updatedEntity.getPostNo(), JRNL_DIARY));
-    }
-
-    /**
      * 삭제 전처리. (override)
      * 등록자가 아니면 삭제 불가 처리.
      *
@@ -169,19 +145,6 @@ public class JrnlDiaryServiceImpl
     };
 
     /**
-     * 삭제 후처리. (override)
-     *
-     * @param deletedEntity - 삭제된 엔티티
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    @Override
-    public void postDelete(final JrnlDiaryEntity deletedEntity) throws Exception {
-        // 관련 캐시 삭제
-        publisher.publishEvent(new EhCacheEvictEvent(this, deletedEntity.getPostNo(), JRNL_DIARY));
-        // TODO: 관련 엔티티 삭제?
-    }
-
-    /**
      * 삭제 데이터 조회
      *
      * @param key 삭제된 데이터의 키
@@ -192,5 +155,11 @@ public class JrnlDiaryServiceImpl
     @Transactional(readOnly = true)
     public JrnlDiaryDto getDeletedDtlDto(final Integer key) throws Exception {
         return jrnlDiaryMapper.getDeletedByPostNo(key);
+    }
+
+    @Override
+    public void evictCache(final JrnlDiaryEntity jrnlDiaryEntity) throws Exception {
+        // 관련 캐시 삭제
+        publisher.publishEvent(new EhCacheEvictEvent(this, jrnlDiaryEntity.getPostNo(), JRNL_DIARY));
     }
 }

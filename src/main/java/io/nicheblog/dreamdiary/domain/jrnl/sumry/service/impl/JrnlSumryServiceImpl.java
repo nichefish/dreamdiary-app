@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.domain.jrnl.sumry.service.impl;
 
+import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.entity.JrnlSumryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.mapstruct.JrnlSumryMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumryDto;
@@ -64,9 +65,9 @@ public class JrnlSumryServiceImpl
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="jrnlSumryList")
-    public List<JrnlSumryDto.LIST> getListDto(final BaseSearchParam searchParam) throws Exception {
-        // searchParam.setRegstrId(AuthUtils.getLgnUserId());
+    @Cacheable(value="myJrnlSumryList", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId()")
+    public List<JrnlSumryDto.LIST> getMyListDto(final BaseSearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(AuthUtils.getLgnUserId());
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
 
         return this.getSelf().getListDto(searchParamMap);
@@ -85,17 +86,18 @@ public class JrnlSumryServiceImpl
             @CacheEvict(value="myJrnlSumryDtlByYy", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #rslt.getYy()")
     })
     public Boolean makeYySumry(final Integer yy) throws Exception {
+        final String regstrId = AuthUtils.getLgnUserId();
         // 해당 년도 저널 결산 정보 조회
-        final JrnlSumryEntity sumry = repository.findByYy(yy).orElse(new JrnlSumryEntity(yy));
+        final JrnlSumryEntity sumry = repository.findByYyAndRegstrId(yy, regstrId).orElse(new JrnlSumryEntity(yy));
 
         // 해당 년도 꿈 일자 조회해서 갱신
-        final Integer dreamDayCntByYy = repository.getDreamDayCntByYy(yy);
+        final Integer dreamDayCntByYy = repository.getDreamDayCntByYy(yy, regstrId);
         sumry.setDreamDayCnt(dreamDayCntByYy);
         // 해당 년도 꿈 조회해서 갱신
-        final Integer dreamCntByYy = repository.getDreamCntByYy(yy);
+        final Integer dreamCntByYy = repository.getDreamCntByYy(yy, regstrId);
         sumry.setDreamCnt(dreamCntByYy);
         // 해당 년도 일기 일자 조회해서 갱신
-        final Integer diaryCntByYy = repository.getDiaryDayCntByYy(yy);
+        final Integer diaryCntByYy = repository.getDiaryDayCntByYy(yy, regstrId);
         sumry.setDiaryDayCnt(diaryCntByYy);
 
         repository.save(sumry);
@@ -134,15 +136,16 @@ public class JrnlSumryServiceImpl
     @Override
     @Cacheable(value="myJrnlTotalSumry", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId()")
     public JrnlSumryDto getTotalSumry() {
+        final String regstrId = AuthUtils.getLgnUserId();
         final JrnlSumryDto totalSumry = new JrnlSumryDto();
         // 해당 년도 꿈 일자 조회해서 갱신
-        final Integer dreamDayCntByYy = repository.getTotalDreamDayCnt();
+        final Integer dreamDayCntByYy = repository.getTotalDreamDayCnt(regstrId);
         totalSumry.setDreamDayCnt(dreamDayCntByYy);
         // 해당 년도 꿈 조회해서 갱신
-        final Integer dreamCntByYy = repository.getTotalDreamCnt();
+        final Integer dreamCntByYy = repository.getTotalDreamCnt(regstrId);
         totalSumry.setDreamCnt(dreamCntByYy);
         // 해당 년도 일기 일자 조회해서 갱신
-        final Integer diaryCntByYy = repository.getTotalDiaryDayCnt();
+        final Integer diaryCntByYy = repository.getTotalDiaryDayCnt(regstrId);
         totalSumry.setDiaryDayCnt(diaryCntByYy);
 
         return totalSumry;
@@ -171,7 +174,7 @@ public class JrnlSumryServiceImpl
     @Override
     @Cacheable(value="myJrnlSumryDtlByYy", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #yy")
     public JrnlSumryDto getDtlDtoByYy(final Integer yy) throws Exception {
-        final Optional<JrnlSumryEntity> retrievedWrapper = repository.findByYy(yy);
+        final Optional<JrnlSumryEntity> retrievedWrapper = repository.findByYyAndRegstrId(yy, AuthUtils.getLgnUserId());
         if (retrievedWrapper.isEmpty()) return null;
 
         return mapstruct.toDto(retrievedWrapper.get());
