@@ -4,7 +4,7 @@
  * @author nichefish
  */
 // @ts-ignore
-const Page: Module = (function(): Module {
+const Page: Page = (function(): Page {
     return {
         isMdf: $("#boardPostRegForm").data("mode") === "modify",
 

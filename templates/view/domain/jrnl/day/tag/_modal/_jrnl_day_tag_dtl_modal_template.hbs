@@ -11,7 +11,12 @@
                     <i class="bi bi-calendar3"></i> {{stdrdDt}}
                 </div>
             </div>
-            <div class="col py-3 jrnl-day-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
+            <div class="col py-3 d-flex align-items-center {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
+                <button type="button" class="btn btn-sm btn-light-primary btn-outlined me-2 py-1 px-2 cursor-pointer"
+                    onclick="dF.JrnlDay.dtlModal({{postNo}});"
+                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="댓글 <@spring.message "bs.tooltip.modal.reg"/>">
+                    <i class="bi bi-stickies p-0"></i>
+                </button>
                 {{#if (exists tag.list)}}
                     <div class="ms-2">
                         {{#tag.list}}

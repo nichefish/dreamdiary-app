@@ -84,6 +84,7 @@
 
         <!--scripts::layout-->
         <script type="text/javascript" src="/js/layout/layout.js?${releaseDate!}"></script>
+        <script type="text/javascript" src="/js/layout/modal_history.js?${releaseDate!}"></script>
     </body>
     <!--end::Body-->
 </html>
