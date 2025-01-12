@@ -20,6 +20,7 @@
 
 .jrnl-diary-cn, .jrnl-dream-cn, .jrnl-sumry-cn {
     align-items: center;
+
     p {
         margin-top: 0.1rem !important;
         margin-bottom: 0.1rem !important;
@@ -32,27 +33,31 @@
         padding-top: 0.75rem;
         padding-left: 1rem;
         color: #8e8e8e;
+
         &::before {
             position: absolute;
             color: #ccc;
             content: "\f10d";
-            font-family: "Font Awesome 6 Free"; /* Font Awesome 폰트 패밀리 */
+            font-family: "Font Awesome 6 Free", serif; /* Font Awesome 폰트 패밀리 */
             font-size: 1.25em;
             font-weight: 900;
             top: 0;
             left: 0.5rem;
         }
+
         p:first-child {
             padding-left: 1rem;
         }
+
         p:last-child {
             position: relative;
             display: inline;
+
             &::after {
                 position: absolute;
                 color: #ccc;
                 content: "\f10e";
-                font-family: "Font Awesome 6 Free"; /* Font Awesome 폰트 패밀리 */
+                font-family: "Font Awesome 6 Free", serif; /* Font Awesome 폰트 패밀리 */
                 font-size: 1.25em;
                 font-weight: 900;
                 bottom: 0.1rem;
@@ -64,5 +69,38 @@
 .jrnl-dream-cn {
     p {
         color: rgba(95,0,130,0.8);
+    }
+}
+
+.modal-body {
+    .jrnl-dream-cn, .jrnl-diary-cn {
+        .cn {
+            display: -webkit-box;
+            -webkit-line-clamp: 4;  /* 최대 3줄 */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            position: relative;
+
+            &.expanded {
+                display: block;
+                height: auto;
+                overflow: visible;  /* 펼친 상태에서 텍스트가 넘칠 경우 표시 */
+            }
+
+            p:last-child {
+                position: relative;
+
+                &::after {
+                    content: '더보기';  /* 버튼 텍스트 */
+                    color: #007bff;  /* 버튼 색상 */
+                    cursor: pointer;  /* 마우스 커서가 손 모양으로 변하게 */
+                    font-weight: bold;
+                    position: absolute;
+                    bottom: 0;  /* 텍스트의 끝에 위치 */
+                    font-size: 0.9rem;  /* 글씨 크기 */
+                    padding-left: 5px;
+                }
+            }
+        }
     }
 }

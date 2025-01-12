@@ -16,7 +16,11 @@
                 {{#ifYn nhtmrYn}}<div class="ctgr-span ctgr-imprtc w-auto d-flex-center">!악몽</div>{{/ifYn}}
                 {{#ifYn hallucYn}}<div class="ctgr-span ctgr-gray w-auto">!입면환각</div>{{/ifYn}}
                 {{#ifYn elseDreamYn}}<div class="ctgr-span ctgr-gray w-auto d-flex-center">({{elseDreamerNm}} 꿈)</div>{{/ifYn}}
-                {{{markdownCn}}}
+                <div class="cn">
+                    {{{markdownCn}}}
+                </div>
+                <!-- "더 보기" / "접기" 버튼, 기본적으로 숨김 처리 -->
+                <button class="btn btn-link" style="display:none;">더보기</button>
                 {{#if (exists tag.list)}}
                     <div class="ms-2 mt-3">
                         {{#tag.list}}

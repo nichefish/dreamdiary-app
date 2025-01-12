@@ -173,7 +173,6 @@ public class JrnlDreamTagRestController
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
         final List<JrnlDreamDto> jrnlDreamList = jrnlDreamService.jrnlDreamTagDtl(searchParam);
-        Collections.sort(jrnlDreamList);
 
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);

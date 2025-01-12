@@ -179,7 +179,6 @@ public class JrnlDayTagRestController
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
         final List<JrnlDayDto> jrnlDayList = jrnlDayService.jrnlDayTagDtl(searchParam);
-        Collections.sort(jrnlDayList);
 
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
