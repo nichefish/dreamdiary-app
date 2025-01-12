@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.global._common._clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.service.ContentTagService;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.service.TagService;
 import io.nicheblog.dreamdiary.global._common.cache.event.EhCacheEvictEvent;
+import io.nicheblog.dreamdiary.global.config.AsyncConfig;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
  * </pre>
  *
  * @author nichefish
+ * @see AsyncConfig
  */
 @Component
 @RequiredArgsConstructor

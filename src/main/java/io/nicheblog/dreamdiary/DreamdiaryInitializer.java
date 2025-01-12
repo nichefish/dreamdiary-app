@@ -1,17 +1,14 @@
 package io.nicheblog.dreamdiary;
 
+import io.nicheblog.dreamdiary.auth.entity.AuthRoleEntity;
+import io.nicheblog.dreamdiary.auth.service.AuthService;
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.model.LgnPolicyDto;
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.service.LgnPolicyService;
-import io.nicheblog.dreamdiary.domain.jrnl.day.service.impl.JrnlDayTagCtgrSynchronizer;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.service.impl.JrnlDiaryTagCtgrSynchronizer;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.service.impl.JrnlDreamTagCtgrSynchronizer;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserAuthRoleDto;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
 import io.nicheblog.dreamdiary.global.ActiveProfile;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.auth.entity.AuthRoleEntity;
-import io.nicheblog.dreamdiary.auth.service.AuthService;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.sys.event.LogSysEvent;
 import io.nicheblog.dreamdiary.global._common.log.sys.model.LogSysParam;
@@ -46,10 +43,6 @@ public class DreamdiaryInitializer
     private final LgnPolicyService lgnPolicyService;
     private final ApplicationEventPublisher publisher;
 
-    private final JrnlDayTagCtgrSynchronizer jrnlDayTagCtgrSynchronizer;
-    private final JrnlDiaryTagCtgrSynchronizer jrnlDiaryTagCtgrSynchronizer;
-    private final JrnlDreamTagCtgrSynchronizer jrnlDreamTagCtgrSynchronizer;
-
     @Value("${system.init-temp-pw:}")
     public String SYSTEM_INIT_TEMP_PW;
 
@@ -67,11 +60,6 @@ public class DreamdiaryInitializer
         this.regSystemAcntIfEmpty();
         // 로그인 정책 부재시 등록 :: 메소드 분리
         this.regLgnPolicyIfEmpty();
-
-        // tagCtgrMap .ftlh 파일 생성
-        jrnlDayTagCtgrSynchronizer.tagSync();
-        jrnlDiaryTagCtgrSynchronizer.tagSync();
-        jrnlDreamTagCtgrSynchronizer.tagSync();
 
         // 시스템 재기동 로그 적재:: 운영 환경 이외에는 적재하지 않음
         if (activeProfile.isProd()) {

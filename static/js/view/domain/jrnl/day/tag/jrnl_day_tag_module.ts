@@ -68,8 +68,9 @@ dF.JrnlDayTag = (function(): dfModule {
         /**
          * 상세 모달 호출
          * @param {string|number} tagNo - 조회할 태그 번호.
+         * @param tagNm 태그 이름
          */
-        dtlModal: function(tagNo: string|number): void {
+        dtlModal: function(tagNo: string|number, tagNm: string): void {
             event.stopPropagation();
             if (isNaN(Number(tagNo))) return;
 
@@ -81,6 +82,7 @@ dF.JrnlDayTag = (function(): dfModule {
                     return;
                 }
                 cF.handlebars.modal(res.rsltList, "jrnl_day_tag_dtl");
+                document.querySelector("#jrnl_day_tag_dtl_modal .header_tag_nm").innerHTML = tagNm;
             });
         },
     }

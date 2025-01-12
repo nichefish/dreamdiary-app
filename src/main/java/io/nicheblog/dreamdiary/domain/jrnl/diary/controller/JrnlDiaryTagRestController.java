@@ -173,7 +173,6 @@ public class JrnlDiaryTagRestController
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
         final List<JrnlDiaryDto> jrnlDiaryList = jrnlDiaryService.jrnlDiaryTagDtl(searchParam);
-        Collections.sort(jrnlDiaryList);
 
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);

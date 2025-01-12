@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.adapter.mail.handler;
 
 import io.nicheblog.dreamdiary.adapter.mail.event.MailSendEvent;
+import io.nicheblog.dreamdiary.global.config.AsyncConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
  * </pre>
  *
  * @author nichefish
+ * @see AsyncConfig
  */
 @Component
 @RequiredArgsConstructor

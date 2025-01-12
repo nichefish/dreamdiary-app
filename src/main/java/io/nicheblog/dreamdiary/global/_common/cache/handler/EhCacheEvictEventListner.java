@@ -2,9 +2,12 @@ package io.nicheblog.dreamdiary.global._common.cache.handler;
 
 import io.nicheblog.dreamdiary.global._common.cache.event.EhCacheEvictEvent;
 import io.nicheblog.dreamdiary.global._common.cache.service.CacheEvictService;
+import io.nicheblog.dreamdiary.global.config.AsyncConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  * </pre>
  *
  * @author nichefish
+ * @see AsyncConfig
  */
 @Component
 @RequiredArgsConstructor
@@ -34,7 +38,7 @@ public class EhCacheEvictEventListner {
     @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleEhCacheEvictvent(EhCacheEvictEvent event) throws Exception {
-        // 조치자 추가
+        // 컨텐츠 타입별 캐시 evict
         ehCacheEvictService.evictClsfCache(event.getContentType(), event.getPostNo());
     }
 }

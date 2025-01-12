@@ -29,7 +29,7 @@ public interface JrnlSumryRepository
      * @param yy 결산 정보를 조회할 년도
      * @return {@link Optional} -- 해당 년도의 결산 정보를 담고 있는 Optional 객체
      */
-    Optional<JrnlSumryEntity> findByYy(Integer yy);
+    Optional<JrnlSumryEntity> findByYyAndRegstrId(final Integer yy, final String regstrId);
 
     /**
      * 년도별 꿈기록 개수 조회
@@ -42,8 +42,9 @@ public interface JrnlSumryRepository
     @Query("SELECT COUNT(dream.postNo) " +
             "FROM JrnlDreamEntity dream " +
             "INNER JOIN FETCH JrnlDayEntity day ON dream.jrnlDayNo = day.postNo " +
-            "WHERE day.yy = :yy")
-    Integer getDreamCntByYy(final @Param("yy") Integer yy);
+            "WHERE day.yy = :yy " +
+            "   AND day.regstrId = :regstrId")
+    Integer getDreamCntByYy(final @Param("yy") Integer yy, final @Param("regstrId") String regstrId);
 
     /**
      * 전체 꿈기록 개수 조회
@@ -53,8 +54,9 @@ public interface JrnlSumryRepository
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     @Query("SELECT COALESCE(SUM(sumry.dreamCnt), 0) " +
-            "FROM JrnlSumryEntity sumry ")
-    Integer getTotalDreamCnt();
+            "FROM JrnlSumryEntity sumry " +
+            "WHERE sumry.regstrId = :regstrId")
+    Integer getTotalDreamCnt(final @Param("regstrId") String regstrId);
     
     /**
      * 년도별 저널 꿈기록 일자 개수 조회
@@ -67,8 +69,9 @@ public interface JrnlSumryRepository
     @Query("SELECT COUNT(distinct day.postNo) " +
             "FROM JrnlDayEntity day " +
             "INNER JOIN FETCH JrnlDreamEntity dream ON day.postNo = dream.jrnlDayNo " +
-            "WHERE day.yy = :yy")
-    Integer getDreamDayCntByYy(final @Param("yy") Integer yy);
+            "WHERE day.yy = :yy " +
+            "   AND day.regstrId = :regstrId")
+    Integer getDreamDayCntByYy(final @Param("yy") Integer yy, final @Param("regstrId") String regstrId);
 
     /**
      * 전체 꿈기록 일자 개수 조회
@@ -78,8 +81,9 @@ public interface JrnlSumryRepository
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     @Query("SELECT COALESCE(SUM(sumry.dreamDayCnt), 0) " +
-            "FROM JrnlSumryEntity sumry ")
-    Integer getTotalDreamDayCnt();
+            "FROM JrnlSumryEntity sumry " +
+            "WHERE sumry.regstrId = :regstrId")
+    Integer getTotalDreamDayCnt(final @Param("regstrId") String regstrId);
 
     /**
      * 년도별 일기기록 일자 개수 조회
@@ -92,8 +96,9 @@ public interface JrnlSumryRepository
     @Query("SELECT COUNT(distinct day.postNo) " +
             "FROM JrnlDayEntity day " +
             "INNER JOIN FETCH JrnlDiaryEntity diary ON day.postNo = diary.jrnlDayNo " +
-            "WHERE day.yy = :yy")
-    Integer getDiaryDayCntByYy(final @Param("yy") Integer yy);
+            "WHERE day.yy = :yy" +
+            "   AND day.regstrId = :regstrId")
+    Integer getDiaryDayCntByYy(final @Param("yy") Integer yy, final @Param("regstrId") String regstrId);
 
 
     /**
@@ -104,6 +109,7 @@ public interface JrnlSumryRepository
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     @Query("SELECT COALESCE(SUM(sumry.postNo), 0) " +
-            "FROM JrnlSumryEntity sumry ")
-    Integer getTotalDiaryDayCnt();
+            "FROM JrnlSumryEntity sumry " +
+            "WHERE sumry.regstrId = :regstrId")
+    Integer getTotalDiaryDayCnt(final @Param("regstrId") String regstrId);
 }

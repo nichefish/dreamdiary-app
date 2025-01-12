@@ -84,7 +84,7 @@ public class JrnlSumryPageController
         final JrnlSumryDto totalSumry = jrnlSumryService.getTotalSumry();
         model.addAttribute("totalSumry", totalSumry);
         // 목록 조회 및 모델에 추가
-        final List<JrnlSumryDto.LIST> jrnlSumryList = jrnlSumryService.getListDto(searchParam);
+        final List<JrnlSumryDto.LIST> jrnlSumryList = jrnlSumryService.getMyListDto(searchParam);
         model.addAttribute("jrnlSumryList", jrnlSumryList);
 
         final boolean isSuccess = true;

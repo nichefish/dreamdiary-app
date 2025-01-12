@@ -75,6 +75,8 @@ public class JrnlDreamSpec
 
         // 파라미터 비교
         for (String key : searchParamMap.keySet()) {
+            if ("sort".equals(key)) continue;  // "sort" 파라미터는 건너뜀
+
             switch (key) {
                 case "searchStartDt":
                     // 기간 검색
