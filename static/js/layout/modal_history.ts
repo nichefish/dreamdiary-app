@@ -48,7 +48,6 @@ const ModalHistory: Page = (function(): Page {
          */
         peek: function(): any {
             const maxIdx: number = ModalHistory.stack.length - 1;
-            console.log("modal history:: peek.");
             return ModalHistory.stack[maxIdx];
         },
 
@@ -56,8 +55,14 @@ const ModalHistory: Page = (function(): Page {
          * 현재 모달을 닫고 이전 모달로 돌아갑니다.
          */
         previous: function (): void {
+            // 기존에 열린 모달이 있으면 닫기
+            const openModal = document.querySelector('.modal.show'); // 열린 모달을 찾기
+            if (openModal) {
+                $(openModal).modal('hide');
+            }
+
             // 현재 모달을 먼저 pop()
-            const poppedModal = this.pop();
+            const poppedModal = ModalHistory.stack.pop();
             if (!poppedModal) {
                 console.log("modal history:: No modal to pop.");
                 return;

@@ -76,8 +76,8 @@ dF.JrnlDay = (function(): dfModule {
          * 년도-월 목록 조회 (Ajax)
          */
         yyMnthListAjax: function(): void {
-            const mnthElmt = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
-            const mnth = mnthElmt.value;
+            const mnthElmt: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
+            const mnth: string = mnthElmt.value;
             if (cF.util.isEmpty(mnth)) return;
 
             const url: string = Url.JRNL_DAY_LIST_AJAX;
@@ -109,6 +109,9 @@ dF.JrnlDay = (function(): dfModule {
             const obj: Record<string, any> = { "jrnlDt": dF.JrnlDay.validDt() };
             /* initialize form. */
             dF.JrnlDay.initForm(obj);
+
+            /* modal history push */
+            ModalHistory.push(this, arguments.callee.name, Array.from(arguments));
         },
 
         /**
@@ -159,7 +162,7 @@ dF.JrnlDay = (function(): dfModule {
         },
 
         /**
-         * 등록 (Ajax)
+         * 등록/수정 처리 (Ajax)
          */
         regAjax: function(): void {
             const postNoElmt: HTMLInputElement = document.querySelector("#jrnlDayRegForm [name='postNo']") as HTMLInputElement;
@@ -181,17 +184,57 @@ dF.JrnlDay = (function(): dfModule {
                             dF.JrnlDay.yyMnthListAjax();
                             // 태그 조회
                             dF.JrnlDayTag.listAjax();
+
+                            /* modal history pop */
+                            ModalHistory.reset();
                         });
                 }, "block");
             });
         },
 
         /**
-         * 등록 모달 호출
+         * 상세 모달 호출
+         * @param {string|number} postNo 글 번호.
+         */
+        dtlModal: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            // 기존에 열린 모달이 있으면 닫기
+            const openModal = document.querySelector('.modal.show'); // 열린 모달을 찾기
+            if (openModal) {
+                $(openModal).modal('hide');
+            }
+
+            const self = this;
+            const func = arguments.callee.name; // 현재 실행 중인 함수 참조
+            const args = Array.from(arguments); // 함수 인자 배열로 받기
+
+            const url: string = Url.JRNL_DAY_DTL_AJAX;
+            const ajaxData: Record<string, any> = { "postNo" : postNo };
+            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    return;
+                }
+                const rsltObj: Record<string, any> = res.rsltObj;
+                /* show modal */
+                cF.handlebars.modal(rsltObj, "jrnl_day_dtl");
+
+                /* modal history push */
+                ModalHistory.push(self, func, args);
+            });
+        },
+
+        /**
+         * 수정 모달 호출
          * @param {string|number} postNo 글 번호.
          */
         mdfModal: function(postNo: string|number): void {
             if (isNaN(Number(postNo))) return;
+
+            const self = this;
+            const func = arguments.callee.name; // 현재 실행 중인 함수 참조
+            const args = Array.from(arguments); // 함수 인자 배열로 받기
 
             const url: string = Url.JRNL_DAY_DTL_AJAX;
             const ajaxData: Record<string, any> = { "postNo" : postNo };
@@ -203,6 +246,9 @@ dF.JrnlDay = (function(): dfModule {
                 const rsltObj: Record<string, any> = res.rsltObj;
                 /* initialize form. */
                 dF.JrnlDay.initForm(rsltObj);
+                
+                /* modal history push */
+                ModalHistory.push(self, func, args);
             });
         },
 
@@ -232,5 +278,13 @@ dF.JrnlDay = (function(): dfModule {
                 }, "block");
             });
         },
+
+        /**
+         * 모달 닫기 시 수행할 로직
+         */
+        closeModal: function(): void {
+            /* modal history pop */
+            ModalHistory.previous();
+        }
     }
 })();

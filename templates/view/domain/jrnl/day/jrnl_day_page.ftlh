@@ -73,6 +73,7 @@
 
 <#--include::jrnl_day_module-->
 <#include "/view/domain/jrnl/day/_modal/_jrnl_day_reg_modal.ftlh">
+<#include "/view/domain/jrnl/day/_modal/_jrnl_day_dtl_modal.ftlh">
 <#include "/view/domain/jrnl/day/_jrnl_day_list_template.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/day/jrnl_day_module.js?${releaseDate!}"></script>
 

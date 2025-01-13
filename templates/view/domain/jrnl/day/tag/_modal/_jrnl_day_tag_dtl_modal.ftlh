@@ -5,7 +5,7 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="jrnl_day_tag_dtl" size="xxl" module="">
+<@modal.layout id="jrnl_day_tag_dtl" size="xxl" module="dF.JrnlDayTag">
     <#--begin::Modal Header-->
     <div class="modal-header">
         <h5 id="modal_title" class="modal-title">
@@ -34,7 +34,7 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-end">
             <#--모달:: 버튼: 모달 닫기-->
-            <@component.modal_btn_close />
+            <@component.modal_btn_close_safe "${module!}.closeModal();" />
         </div>
     </div>
 </@modal.layout>

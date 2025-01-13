@@ -10,8 +10,8 @@
     <div class="modal-header">
         <h5 id="modal_title" class="modal-title">[${title!}]</h5>
         <div class="btn btn-sm btn-icon btn-active-light-primary ms-2" aria-label="Close"
-            <#if func?? && func != "">
-                onclick="${func!}"
+            <#if module?? && module != "">
+                onclick="${module!}.close();"
             </#if>
              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message "bs.tooltip.modal.close"/>">
             <i class="fas fa-times"></i>
@@ -26,8 +26,8 @@
     <div class="modal-header" style="background-color:#41416e;">
         <h5 id="modal_title" class="modal-title">[${title!}]</h5>
         <div class="btn btn-sm btn-icon btn-active-light-primary ms-2" aria-label="Close"
-            <#if func?? && func != "">
-                onclick="${func!}"
+            <#if module?? && module != "">
+                onclick="${module!}.close();"
             </#if>
              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message "bs.tooltip.modal.close"/>">
             <i class="fas fa-times"></i>

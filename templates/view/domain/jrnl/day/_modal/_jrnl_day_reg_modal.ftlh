@@ -5,7 +5,7 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="jrnl_day_reg" size="xl" module="dF.JrnlDay">
+<@modal.layout id="jrnl_day_reg" size="xl" module="">
     <#--begin::Modal Header-->
     <@component.modal_header "저널 일자 저장" module! />
     <#--begin::Modal Body-->

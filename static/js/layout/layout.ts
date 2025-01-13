@@ -41,6 +41,7 @@ const Layout: Page = (function(): Page {
             closeButtons.forEach(function(button: HTMLElement): void {
                 let isAllowed: boolean = false;
                 button.removeAttribute('data-bs-dismiss');
+
                 button.addEventListener('click', function(event: Event): void {
                     event.preventDefault();
                     if (isAllowed) return;

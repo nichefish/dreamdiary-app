@@ -74,6 +74,10 @@ dF.JrnlDayTag = (function(): dfModule {
             event.stopPropagation();
             if (isNaN(Number(tagNo))) return;
 
+            const self = this;
+            const func = arguments.callee.name; // 현재 실행 중인 함수 참조
+            const args = Array.from(arguments); // 함수 인자 배열로 받기
+
             const url: string = Url.JRNL_DAY_TAG_DTL_AJAX;
             const ajaxData: Record<string, any> = { "tagNo": tagNo };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
@@ -83,7 +87,18 @@ dF.JrnlDayTag = (function(): dfModule {
                 }
                 cF.handlebars.modal(res.rsltList, "jrnl_day_tag_dtl");
                 document.querySelector("#jrnl_day_tag_dtl_modal .header_tag_nm").innerHTML = tagNm;
+
+                /* modal history push */
+                ModalHistory.push(self, func, args);
             });
         },
+
+        /**
+         * 모달 닫기 시 수행할 로직
+         */
+        closeModal: function(): void {
+            /* modal history pop */
+            ModalHistory.previous();
+        }
     }
 })();

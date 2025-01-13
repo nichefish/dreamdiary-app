@@ -7,7 +7,7 @@
 
 <@modal.layout id="vcatn_schdul_reg" size="md" module="">
     <#--begin::Modal Header-->
-    <@component.modal_header_dark "휴가 등록" "" />
+    <@component.modal_header_dark "휴가 등록" module! />
     <#--begin::Modal Body-->
     <div class="modal-body">
         <#--begin::Row-->

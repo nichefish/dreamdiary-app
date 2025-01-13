@@ -7,7 +7,7 @@
 
 <@modal.layout id="lgn_pw_chg" size="md" module="">
     <#--begin::Modal Header-->
-    <@component.modal_header_dark "비밀번호 변경" "" />
+    <@component.modal_header_dark "비밀번호 변경" module! />
     <#--begin::Modal Body-->
     <div class="modal-body">
         <#--begin::Form-->

@@ -107,5 +107,13 @@ dF.JrnlDreamTag = (function(): dfModule {
                 document.querySelector("#jrnl_dream_tag_dtl_modal .header_tag_nm").innerHTML = tagNm;
             });
         },
+
+        /**
+         * 모달 닫기 시 수행할 로직
+         */
+        closeModal: function(): void {
+            /* modal history pop */
+            ModalHistory.previous();
+        }
     }
 })();
