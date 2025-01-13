@@ -5,9 +5,9 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="cache_list" size="xl">
+<@modal.layout id="cache_list" size="xl" module="">
     <#--begin::Modal Header-->
-    <@component.modal_header "사이트 캐시 목록 조회" />
+    <@component.modal_header "사이트 캐시 목록 조회" module! />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <div id="cache_list_div">

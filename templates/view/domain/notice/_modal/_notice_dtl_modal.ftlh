@@ -5,9 +5,9 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="notice_dtl" size="xl">
+<@modal.layout id="notice_dtl" size="xl" module="">
     <#--begin::Modal Header-->
-    <@component.modal_header "공지사항 조회" />
+    <@component.modal_header "공지사항 조회" module! />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <div id="notice_dtl_div">

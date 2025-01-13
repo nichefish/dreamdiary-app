@@ -5,9 +5,9 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="comment_reg" size="xl">
+<@modal.layout id="comment_reg" size="xl" module="">
     <#--begin::Modal Header-->
-    <@component.modal_header "댓글 저장" />
+    <@component.modal_header "댓글 저장" module! />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <form name="commentRegForm" id="commentRegForm" enctype="multipart/form-data">
@@ -23,7 +23,7 @@
             <#--모달:: 버튼: 저장하기-->
             <@component.modal_btn_save "dF.Comment.modal.submit();" />
             <#--모달:: 버튼: 모달 닫기-->
-            <@component.modal_btn_close_safe />
+            <@component.modal_btn_close_safe "" />
         </div>
     </div>
 </@modal.layout>

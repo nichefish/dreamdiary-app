@@ -4,9 +4,9 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="tag_admin_dtl" size="xl">
+<@modal.layout id="tag_admin_dtl" size="xl" module="">
     <#--begin::Modal Header-->
-    <@component.modal_header "태그" />
+    <@component.modal_header "태그" module! />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <div class="table-responsive-sm">

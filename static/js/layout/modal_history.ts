@@ -26,7 +26,8 @@ const ModalHistory: Page = (function(): Page {
                 methodNm: methodNm,     // 호출한 메소드명
                 args: args                  // 메소드에 전달된 인자들
             };
-
+            
+            console.log("modal history:: push.");
             ModalHistory.stack.push(currentModal);  // modalHistory에 모달 정보 추가
         },
 
@@ -36,6 +37,7 @@ const ModalHistory: Page = (function(): Page {
          * @returns {Object} 스택에서 제거된 모달 정보
          */
         pop: function(): any {
+            console.log("modal history:: pop.");
             return ModalHistory.stack.pop();
         },
 
@@ -46,6 +48,7 @@ const ModalHistory: Page = (function(): Page {
          */
         peek: function(): any {
             const maxIdx: number = ModalHistory.stack.length - 1;
+            console.log("modal history:: peek.");
             return ModalHistory.stack[maxIdx];
         },
 
@@ -56,24 +59,25 @@ const ModalHistory: Page = (function(): Page {
             // 현재 모달을 먼저 pop()
             const poppedModal = this.pop();
             if (!poppedModal) {
-                console.log("No modal to pop.");
+                console.log("modal history:: No modal to pop.");
                 return;
             }
 
             // 스택에 이전 모달이 있는지 확인
             const prevModal = this.peek();
             if (!prevModal) {
-                console.log("No previous modal to return to.");
+                console.log("modal history:: No previous modal to return to.");
                 return;
             }
 
-            console.log("Returning to previous modal:", prevModal.methodNm);
+            console.log("modal history:: Returning to previous modal:", prevModal.methodNm);
 
             // 이전 모달을 여는 로직
             if (prevModal.module && typeof prevModal.module[prevModal.methodNm] === 'function') {
+                console.log("modal history:: previous.");
                 prevModal.module[prevModal.methodNm](...prevModal.args);
             } else {
-                console.log("Failed to return to previous modal: Method not found.");
+                console.log("modal history:: Failed to return to previous modal: Method not found.");
             }
         },
 
@@ -81,8 +85,8 @@ const ModalHistory: Page = (function(): Page {
          * 모달 히스토리 스택을 초기화합니다.
          */
         reset: function(): void {
+            console.log("modal history:: reset.");
             ModalHistory.stack = [];
-            console.log("Modal history reset."); // 히스토리 초기화 메시지
-        }
+        },
     }
 })();

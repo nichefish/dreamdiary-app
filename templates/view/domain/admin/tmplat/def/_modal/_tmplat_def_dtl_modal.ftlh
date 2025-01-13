@@ -5,9 +5,9 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="tmplat_def_dtl" size="xl">
+<@modal.layout id="tmplat_def_dtl" size="xl" module="">
     <#--begin::Modal Header-->
-    <@component.modal_header "템플릿 정의" />
+    <@component.modal_header "템플릿 정의" module! />
     <div class="modal-body modal-mbl-body my-5">
         <div class="table-responsive-sm">
             <div id="tmplat_def_dtl_div">

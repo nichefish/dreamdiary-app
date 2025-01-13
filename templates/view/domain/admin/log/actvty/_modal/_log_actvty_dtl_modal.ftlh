@@ -5,9 +5,9 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="log_actvty_dtl" size="xl">
+<@modal.layout id="log_actvty_dtl" size="xl" module="">
     <#--begin::Modal Header-->
-    <@component.modal_header "활동 로그 조회" />
+    <@component.modal_header "활동 로그 조회" module! />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <div class="table-responsive-sm">

@@ -5,9 +5,9 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="user_my_pw_chg" size="md">
+<@modal.layout id="user_my_pw_chg" size="md" module="">
     <#--begin::Modal Header-->
-    <@component.modal_header_dark "비밀번호 변경" />
+    <@component.modal_header_dark "비밀번호 변경" "" />
     <#--begin::Modal Body-->
     <div class="modal-body">
         <#--begin::Form-->
