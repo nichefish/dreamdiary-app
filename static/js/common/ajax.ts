@@ -25,7 +25,7 @@ cF.ajax = (function(): Module {
          */
         request: async function(url: string, options: RequestInit, callback?: (response: any) => any, continueBlock: string = 'none'): Promise<void> {
             try {
-                cF.util.blockUI();  // UI 차단
+                cF.ui.blockUI();  // UI 차단
 
                 // fetch 요청
                 const response: Response = await fetch(url, options);
@@ -40,9 +40,9 @@ cF.ajax = (function(): Module {
                 if (typeof callback === 'function') callback(res);
             } catch (error: any) {
                 console.error('Ajax request failed:', error);
-                if (cF.util.isNotEmpty(error.message)) cF.util.swalOrAlert(error.message);
+                if (cF.util.isNotEmpty(error.message)) cF.ui.swalOrAlert(error.message);
             } finally {
-                if (continueBlock !== 'block') cF.util.unblockUI();  // UI 차단 해제
+                if (continueBlock !== 'block') cF.ui.unblockUI();  // UI 차단 해제
             }
         },
 
@@ -66,6 +66,7 @@ cF.ajax = (function(): Module {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'  // AJAX 요청을 명시적으로 지정
                 },
                 body: null, // GET 요청이므로 body는 필요 없음
             };
@@ -124,7 +125,7 @@ cF.ajax = (function(): Module {
 
         try {
             // UI 차단
-            cF.util.blockUI();
+            cF.ui.blockUI();
 
             // 기존 fetch 수행
             const response: Response = await originalFetch(url, defaultOptions);
@@ -135,45 +136,47 @@ cF.ajax = (function(): Module {
             return response;
         } catch (error: any) {
             console.error('Ajax request failed:', error);
-            const msg = error.message || "요청에 실패했습니다.";
-            cF.util.swalOrAlert(msg);
+            const msg: string = error.message || Message.get("view.error.request");         // "요청에 실패했습니다."
+            cF.ui.swalOrAlert(msg);
             throw error;
         } finally {
             // UI 차단 해제
-            cF.util.unblockUI();
+            cF.ui.unblockUI();
         }
     };
 
     const handleError = async (response: Response): Promise<void> => {
         const statusCode: number = response.status;
-        const msg: string = await response.json().catch(() => "접근이 거부되었습니다. (ACCESS DENIED)");
+        const msg: string = await response.json().catch(() => Message.get("view.error.access_denied"));      // "접근이 거부되었습니다. (ACCESS DENIED)"
         const lgnFormUrl: string = "/auth/lgnForm.do";
 
         switch(statusCode) {
             case 401: {
-                const confirmLogout: boolean = confirm(msg + "\n로그인 화면으로 돌아갑니다.");
-                if (confirmLogout) {
+                cF.ui.swalOrConfirm(msg + "\n로그인 화면으로 돌아갑니다.", function(): void {
                     window.location.href = lgnFormUrl;
-                } else {
+                }, function(): void {
                     if (!document.querySelector(".session-expired-message")) {
+                        // do nothing... ui에 세션 만료 표시
                         const navbar: HTMLElement = document.querySelector("#kt_app_header_wrapper .app-navbar");
                         const sessionExpiredText: HTMLDivElement = document.createElement("div");
                         sessionExpiredText.className = "d-flex align-items-center fs-4 fw-bold text-danger blink me-5";
-                        sessionExpiredText.textContent = "로그인 세션이 만료되었습니다.";
+                        sessionExpiredText.textContent = Message.get("view.auth.expired");     // "로그인 세션이 만료되었습니다."
                         navbar?.insertAdjacentElement('beforebegin', sessionExpiredText);
                     }
-                }
+                });
                 return;
             }
             case 403: {
-                alert("접근이 거부되었습니다. (FORBIDDEN)");
-                window.location.href = lgnFormUrl;
+                cF.ui.swalOrAlert(Message.get("view.error.forbidden"), function() {
+                    window.location.href = lgnFormUrl;
+                });
                 return;
             }
             case 400: {
                 const errorLines: string[] = msg.split("\n");
                 if (errorLines.length === 0) return;
 
+                // spring errorMessage 에서 필드와 메세지 추출
                 errorLines.forEach((line: string): void => {
                     const fieldErrorMatch: RegExpMatchArray = line.match(/Field error in object '([^']+)' on field '([^']+)':/);
                     const defaultMessageMatch: RegExpMatchArray = line.match(/]; default message \[([^\[\]]+)]$/);
@@ -191,16 +194,15 @@ cF.ajax = (function(): Module {
                             }
                             elmt.focus();
                         } else {
-                            cF.util.swalOrAlert(errorMsg);
+                            cF.ui.swalOrAlert(errorMsg);
                         }
                     }
                 });
                 return;
             }
-            default: {
-                //
-            }
         }
-        cF.util.swalOrAlert(msg);
+        // 기본 오류 로그 추가
+        console.error("ajax error: ", response);
+        cF.ui.swalOrAlert(msg);
     };
 })();

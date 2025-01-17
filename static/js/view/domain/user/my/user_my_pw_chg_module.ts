@@ -74,7 +74,7 @@ dF.UserMyPwChg = (function(): dfModule {
             cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
                     .then(function(): void {
-                        if (res.rslt) cF.util.blockUIReload();
+                        if (res.rslt) cF.ui.blockUIReload();
                     });
             });
         },

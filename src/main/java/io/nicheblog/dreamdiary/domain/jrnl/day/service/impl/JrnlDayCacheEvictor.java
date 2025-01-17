@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.domain.jrnl.day.service.impl;
 
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayContentTagEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayService;
@@ -55,6 +56,7 @@ public class JrnlDayCacheEvictor
         this.evictMyCacheForPeriod("myJrnlDaySizedTagList", yy, mnth);
         this.evictMyCacheForPeriod("myCountDaySize", yy, mnth);
         // L2캐시 처리
+        EhCacheUtils.clearL2Cache(JrnlDayEntity.class);
         EhCacheUtils.clearL2Cache(JrnlDayTagEntity.class);
         EhCacheUtils.clearL2Cache(JrnlDayContentTagEntity.class);
     }

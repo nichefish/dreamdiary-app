@@ -89,7 +89,7 @@ public class ContentTagServiceImpl
             repository.deleteObsoleteContentTags(param);
             // 태그 캐시 처리
             String cacheName = this.getCacheNameByContentType(contentType);
-            this.evictCacheForPeriod(cacheName, tag.getTagNo());
+            this.evictMyCacheForPeriod(cacheName, tag.getTagNo());
         });
     }
 
@@ -122,7 +122,7 @@ public class ContentTagServiceImpl
             String cacheName = this.getCacheNameByContentType(contentType);
             if (cacheName.isEmpty()) return;
             Integer tagNo = entity.getRefTagNo();;
-            this.evictCacheForPeriod(cacheName, tagNo);
+            this.evictMyCacheForPeriod(cacheName, tagNo);
         });
     }
 
@@ -148,7 +148,7 @@ public class ContentTagServiceImpl
         String cacheName = this.getCacheNameByContentType(contentType);
         entityList.forEach(entity -> {
             Integer tagNo = entity.getRefTagNo();
-            this.evictCacheForPeriod(cacheName, tagNo);
+            this.evictMyCacheForPeriod(cacheName, tagNo);
         });
     }
 
@@ -161,11 +161,11 @@ public class ContentTagServiceImpl
     @Override
     public String getCacheNameByContentType(final String contentType) {
         if (ContentType.JRNL_DAY.key.equals(contentType)) {
-            return "countDaySize";
+            return "myCountDaySize";
         } else if (ContentType.JRNL_DIARY.key.equals(contentType)) {
-            return "countDiarySize";
+            return "myCountDiarySize";
         } else if (ContentType.JRNL_DREAM.key.equals(contentType)) {
-            return "countDreamSize";
+            return "myCountDreamSize";
         }
         return "";
     }
@@ -177,16 +177,16 @@ public class ContentTagServiceImpl
      * @param tagNo 태그 번호 (key)
      */
     @Override
-    public void evictCacheForPeriod(final String cacheName, final Integer tagNo) {
+    public void evictMyCacheForPeriod(final String cacheName, final Integer tagNo) {
         try {
             int currYy = DateUtils.getCurrYy();
             for (int yy = 2010; yy <= currYy; yy++) {
                 for (int mnth = 1; mnth <= 12; mnth++) {
                     String cacheKey = tagNo + "_" + yy + "_" + mnth;
-                    EhCacheUtils.evictCache(cacheName, cacheKey);
+                    EhCacheUtils.evictMyCache(cacheName, cacheKey);
                 }
             }
-            EhCacheUtils.evictCache(cacheName, tagNo + "_9999_99");
+            EhCacheUtils.evictMyCache(cacheName, tagNo + "_9999_99");
         } catch (Exception e) {
             throw new RuntimeException("Failed to evict cache for tagNo: " + tagNo, e);
         }

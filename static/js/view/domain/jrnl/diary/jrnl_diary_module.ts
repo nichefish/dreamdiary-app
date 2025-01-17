@@ -36,7 +36,7 @@ dF.JrnlDiary = (function(): dfModule {
             /* tagify */
             cF.tagify.initWithCtgr("#jrnlDiaryRegForm #tagListStr");
             // checkbox init
-            cF.util.chckboxLabel("imprtcYn", "중요//해당없음", "red//gray");
+            cF.ui.chckboxLabel("imprtcYn", "중요//해당없음", "red//gray");
             /* tinymce editor reset */
             cF.tinymce.init('#tinymce_jrnlDiaryCn');
             cF.tinymce.setContentWhenReady("tinymce_jrnlDiaryCn", obj.cn || "");
@@ -68,7 +68,7 @@ dF.JrnlDiary = (function(): dfModule {
                 $("#jrnl_day_tag_list_div").empty();
                 $("#jrnl_diary_tag_list_div").empty();
                 $("#jrnl_dream_tag_list_div").empty();
-                cF.util.closeModal();
+                cF.ui.closeModal();
                 cF.handlebars.template(res.rsltList, "jrnl_diary_list");
                 dF.JrnlDiary.inKeywordSearchMode = true;
             }, "block");
@@ -120,7 +120,7 @@ dF.JrnlDiary = (function(): dfModule {
                                 dF.JrnlDiaryTag.listAjax();
                             }
                             // TODO: 결산 페이지에서 처리시도 처리해 줘야 한다.
-                            cF.util.unblockUI();
+                            cF.ui.unblockUI();
                         });
                 }, "block");
             });

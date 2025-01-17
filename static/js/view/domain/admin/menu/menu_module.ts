@@ -101,7 +101,7 @@ dF.Menu = (function(): dfModule {
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
-                            if (res.rslt) cF.util.blockUIReload();
+                            if (res.rslt) cF.ui.blockUIReload();
                         });
                 }, "block");
             });
@@ -144,7 +144,7 @@ dF.Menu = (function(): dfModule {
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
-                            if (res.rslt) cF.util.blockUIReload();
+                            if (res.rslt) cF.ui.blockUIReload();
                         });
                 }, "block");
             });
@@ -155,7 +155,7 @@ dF.Menu = (function(): dfModule {
          */
         search: function(): void {
             $("#listForm #pageNo").val(1);
-            cF.util.blockUISubmit("#listForm", Url.LOG_ACTVTY_LIST + "?actionTyCd=SEARCH");
+            cF.form.blockUISubmit("#listForm", Url.LOG_ACTVTY_LIST + "?actionTyCd=SEARCH");
         },
     }
 })();

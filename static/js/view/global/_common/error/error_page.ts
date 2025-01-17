@@ -19,7 +19,7 @@ const Page: Page = (function(): Page {
          */
         main: function(): void {
             const url: string = Url.MAIN;
-            cF.util.blockUIReplace(url);
+            cF.ui.blockUIReplace(url);
         }
     }
 })();

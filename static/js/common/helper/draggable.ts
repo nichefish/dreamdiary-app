@@ -75,7 +75,7 @@ cF.draggable = (function(): Module {
             const ajaxData: Record<string, any> = { "sortOrdr": orderData };
             cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                 if (res.rslt) {
-                    (refreshFunc || cF.util.blockUIReload)();
+                    (refreshFunc || cF.ui.blockUIReload)();
                 } else if (cF.util.isNotEmpty(res.message)) {
                     Swal.fire({ text: res.message });
                 }

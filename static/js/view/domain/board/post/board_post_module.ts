@@ -32,7 +32,7 @@ dF.BoardPost = (function(): dfModule {
             /* tagify */
             cF.tagify.initWithCtgr("#postRegForm #tagListStr");
             // 잔디발송여부 클릭시 글씨 변경
-            cF.util.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function(): void {
+            cF.ui.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function(): void {
                 $("#trgetTopicSpan").show();
             }, function(): void {
                 $("#trgetTopicSpan").hide();
@@ -46,7 +46,7 @@ dF.BoardPost = (function(): dfModule {
             if (Page.submitMode === "preview") {
                 const popupNm: string = "preview";
                 const options: string = 'width=1280,height=1440,top=0,left=270';
-                const popup = cF.util.openPopup("", popupNm, options);
+                const popup = cF.ui.openPopup("", popupNm, options);
                 if (popup) popup.focus();
                 const popupUrl: string = Url.BOARD_POST_REG_PREVIEW_POP;
                 $("#postRegForm").attr("action", popupUrl).attr("target", popupNm);
@@ -69,7 +69,7 @@ dF.BoardPost = (function(): dfModule {
          */
         search: function(): void {
             $("#listForm #pageNo").val(1);
-            cF.util.blockUISubmit("#listForm", Url.BOARD_POST_LIST + "?actionTyCd=SEARCH");
+            cF.form.blockUISubmit("#listForm", Url.BOARD_POST_LIST + "?actionTyCd=SEARCH");
         },
 
         /**
@@ -82,14 +82,14 @@ dF.BoardPost = (function(): dfModule {
             const boardDef: string = boardDefElement.value;
             const url: string = Url.BOARD_POST_LIST;
             const param: string = `??boardDef=${boardDef!}&searchType=nickNm&searchKeyword=${AuthInfo.nickNm!}&regstrId=${AuthInfo.userId!}&pageSize=50&actionTyCd=MY_PAPR`;
-            cF.util.blockUIReplace(url + param);
+            cF.ui.blockUIReplace(url + param);
         },
 
         /**
          * 등록 화면으로 이동
          */
         regForm: function(): void {
-            cF.util.blockUISubmit("#procForm", Url.BOARD_POST_REG_FORM);
+            cF.form.blockUISubmit("#procForm", Url.BOARD_POST_REG_FORM);
         },
 
         /**
@@ -132,7 +132,7 @@ dF.BoardPost = (function(): dfModule {
             if (isNaN(Number(postNo))) return;
 
             $("#procForm #postNo").val(postNo);
-            cF.util.blockUISubmit("#procForm", Url.BOARD_POST_DTL);
+            cF.form.blockUISubmit("#procForm", Url.BOARD_POST_DTL);
         },
 
         /**
@@ -158,7 +158,7 @@ dF.BoardPost = (function(): dfModule {
          * 수정 화면으로 이동
          */
         mdfForm: function(): void {
-            cF.util.blockUISubmit("#procForm", Url.BOARD_POST_MDF_FORM);
+            cF.form.blockUISubmit("#procForm", Url.BOARD_POST_MDF_FORM);
         },
 
         /**
@@ -189,9 +189,9 @@ dF.BoardPost = (function(): dfModule {
          * 목록 화면으로 이동
          */
         list: function(): void {
-            const boardDef = $("#boardDef").val();
+            const boardDef: string = $("#boardDef").val() as string;
             const listUrl: string = `${Url.BOARD_POST_LIST}?boardDef${boardDef}` + (dF.BoardPost.isMdf ? "&isBackToList=Y" : "");
-            cF.util.blockUIReplace(listUrl);
+            cF.ui.blockUIReplace(listUrl);
         }
     }
 })();

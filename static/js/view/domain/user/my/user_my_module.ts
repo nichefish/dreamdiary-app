@@ -40,7 +40,7 @@ dF.UserMy = (function(): dfModule {
                         .then(function(): void {
                             Swal.fire({ "text": "변경된 프로필은 재접속 이후에 적용됩니다." })
                                 .then(function(): void {
-                                    if (res.rslt) cF.util.blockUIReload();
+                                    if (res.rslt) cF.ui.blockUIReload();
                                 });
                         });
                 }, "block");
@@ -65,7 +65,7 @@ dF.UserMy = (function(): dfModule {
                         .then(function(): void {
                             Swal.fire({ "text": "변경된 프로필은 재접속 이후에 적용됩니다." })
                                 .then(function(): void {
-                                    if (res.rslt) cF.util.blockUIReload();
+                                    if (res.rslt) cF.ui.blockUIReload();
                                 });
                         });
                 }, "block");

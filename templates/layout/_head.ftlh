@@ -55,9 +55,13 @@
     <script type="text/javascript" src="/js/common/ajax.js?${releaseDate!}"></script>
     <script type="text/javascript" src="/js/common/$ajax.js?${releaseDate!}"></script>
     <script type="text/javascript" src="/js/common/date.js?${releaseDate!}"></script>
+    <script type="text/javascript" src="/js/common/ui.js?${releaseDate!}"></script>
+    <script type="text/javascript" src="/js/common/form.js?${releaseDate!}"></script>
     <script type="text/javascript" src="/js/common/format.js?${releaseDate!}"></script>
     <script type="text/javascript" src="/js/common/validate.js?${releaseDate!}"></script>
     <script type="text/javascript" src="/js/common/regex.js?${releaseDate!}"></script>
+    <script type="text/javascript" src="/js/common/table.js?${releaseDate!}"></script>
+    <script type="text/javascript" src="/js/common/cookie.js?${releaseDate!}"></script>
     <!--Custom Javascript Bundle :: helpers (used by all pages)-->
     <script type="text/javascript" src="/js/common/helper/datepicker.js?${releaseDate!}"></script>
     <script type="text/javascript" src="/js/common/helper/tagify.js?${releaseDate!}"></script>

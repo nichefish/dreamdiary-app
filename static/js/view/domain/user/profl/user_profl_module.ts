@@ -30,7 +30,7 @@ dF.UserProfl = (function(): dfModule {
             $btn.attr("onclick", "dF.UserProfl.disableUserProfl();");
             $btn.attr("title", "사용자 프로필 정보를&#10;삭제합니다.");
             // 음력여부 클릭시 글씨 변경
-            cF.util.chckboxLabel("lunarYn", "음력//양력", "blue//gray");
+            cF.ui.chckboxLabel("lunarYn", "음력//양력", "blue//gray");
             // datepicker init
             cF.datepicker.singleDatePicker("#brthdy", "yyyy-MM-DD", $("#brthdy").val());
         },

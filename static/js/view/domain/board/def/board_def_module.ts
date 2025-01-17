@@ -30,7 +30,7 @@ dF.BoardDef = (function(): dfModule {
             /* jquery validation */
             cF.validate.validateForm("#boardDefRegForm", dF.BoardDef.regAjax);
             // checkbox init
-            cF.util.chckboxLabel("useYn", "사용//미사용", "blue//gray");
+            cF.ui.chckboxLabel("useYn", "사용//미사용", "blue//gray");
             cF.validate.replaceBlankIfMatches("#boardDefRegForm .cddata", cF.regex.nonCd);
             cF.validate.onlyNum(".number");
         },
@@ -74,7 +74,7 @@ dF.BoardDef = (function(): dfModule {
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
-                            if (res.rslt) cF.util.blockUIReload();
+                            if (res.rslt) cF.ui.blockUIReload();
                         });
                 }, "block");
             });
@@ -115,7 +115,7 @@ dF.BoardDef = (function(): dfModule {
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
-                            if (res.rslt) cF.util.blockUIReload();
+                            if (res.rslt) cF.ui.blockUIReload();
                         });
                 }, "block");
             });
@@ -137,7 +137,7 @@ dF.BoardDef = (function(): dfModule {
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
-                            if (res.rslt) cF.util.blockUIReload();
+                            if (res.rslt) cF.ui.blockUIReload();
                         });
                 }, "block");
             });
@@ -159,7 +159,7 @@ dF.BoardDef = (function(): dfModule {
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
-                            if (res.rslt) cF.util.blockUIReload();
+                            if (res.rslt) cF.ui.blockUIReload();
                         });
                 }, "block");
             });

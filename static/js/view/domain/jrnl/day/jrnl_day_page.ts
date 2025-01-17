@@ -63,7 +63,7 @@ const Page: Page = (function(): Page {
          * 달력 화면으로 이동
          */
         calPage: function(): void {
-            cF.util.blockUIReplace(Url.JRNL_DAY_CAL);
+            cF.ui.blockUIReplace(Url.JRNL_DAY_CAL);
         }
     }
 })();

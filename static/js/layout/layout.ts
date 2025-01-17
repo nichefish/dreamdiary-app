@@ -26,7 +26,7 @@ const Layout: Page = (function(): Page {
             const buttons: NodeListOf<HTMLElement> = document.querySelectorAll("button:not(.modal-btn-close-safe), .btn:not(.modal-btn-close-safe), .badge:not(.modal-btn-close-safe)");
             buttons.forEach(function(button: HTMLElement): void {
                 button.addEventListener("click", function(): void {
-                    cF.util.delayBtn(this);
+                    cF.ui.delayBtn(this);
                 });
             });
         },
@@ -48,6 +48,10 @@ const Layout: Page = (function(): Page {
 
                     isAllowed = true;
                     button.setAttribute('data-bs-dismiss', 'modal');
+                    // 닫기 함수 존재시 실행
+                    const func: string = this.getAttribute('data-func');
+                    if (func) eval(func);  // 안전하게 실행
+                    // 2초 후 안전장치 다시 on
                     setTimeout(function(): void {
                         isAllowed = false;
                         button.removeAttribute('data-bs-dismiss');
@@ -64,10 +68,20 @@ const Layout: Page = (function(): Page {
         },
 
         /**
+         * 페이지 상단으로 이동
+         */
+        toPageTop: function(): void {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        },
+
+        /**
          * 내 정보 상세 페이지 이동
          */
         myInfoDtl: function(): void {
-            cF.util.blockUIReplace(Url.USER_MY_DTL);
+            cF.ui.blockUIReplace(Url.USER_MY_DTL);
         },
 
         /**

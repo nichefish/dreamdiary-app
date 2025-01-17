@@ -64,7 +64,7 @@ dF.UserReqst = (function(): dfModule {
                 $("#idDupChckBtn").addClass("blink").removeClass("btn-success").addClass("btn-secondary").removeAttr("disabled");
             });
             // 접속IP 사용 여부 클릭시 글씨 변경 + 입력창 토글 :: 메소드 분리
-            cF.util.chckboxLabel("useAcsIpYn", "사용//미사용", "blue//gray", function(): void{
+            cF.ui.chckboxLabel("useAcsIpYn", "사용//미사용", "blue//gray", function(): void{
                 $("#acsIpListSpan").show()
             }, function(){
                 $("#acsIpListSpan").hide()
@@ -128,7 +128,7 @@ dF.UserReqst = (function(): dfModule {
          * 로그인 화면으로 이동
          */
         main: function(): void {
-            cF.util.blockUIReplace(Url.AUTH_LGN_FORM);
+            cF.ui.blockUIReplace(Url.AUTH_LGN_FORM);
         }
     }
 })();

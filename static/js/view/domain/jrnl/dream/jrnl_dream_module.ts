@@ -49,13 +49,13 @@ dF.JrnlDream = (function(): dfModule {
             /* tagify */
             // cF.tagify.initWithCtgr("#jrnlDreamRegForm #tagListStr", TagCtgrMap.jrnlDream);
             // checkbox init
-            cF.util.chckboxLabel("imprtcYn", "중요//해당없음", "red//gray");
+            cF.ui.chckboxLabel("imprtcYn", "중요//해당없음", "red//gray");
             // checkbox init
-            cF.util.chckboxLabel("nhtmrYn", "악몽//해당없음", "red//gray");
+            cF.ui.chckboxLabel("nhtmrYn", "악몽//해당없음", "red//gray");
             // checkbox init
-            cF.util.chckboxLabel("hallucYn", "입면환각//해당없음", "blue//gray");
+            cF.ui.chckboxLabel("hallucYn", "입면환각//해당없음", "blue//gray");
             // checkbox init
-            cF.util.chckboxLabel("elseDreamYn", "해당//미해당", "blue//gray", function() {
+            cF.ui.chckboxLabel("elseDreamYn", "해당//미해당", "blue//gray", function() {
                 $("#elseDreamerNmDiv").removeClass("d-none");
             }, function() {
                 $("#elseDreamerNmDiv").addClass("d-none");
@@ -91,7 +91,7 @@ dF.JrnlDream = (function(): dfModule {
                 $("#jrnl_day_tag_list_div").empty();
                 $("#jrnl_diary_tag_list_div").empty();
                 $("#jrnl_dream_tag_list_div").empty();
-                cF.util.closeModal();
+                cF.ui.closeModal();
                 cF.handlebars.template(res.rsltList, "jrnl_dream_list");
                 dF.JrnlDream.inKeywordSearchMode = true;
             }, "block");
@@ -143,7 +143,7 @@ dF.JrnlDream = (function(): dfModule {
                                 dF.JrnlDreamTag.listAjax();
                             }
                             // TODO: 결산 페이지에서 처리시도 처리해 줘야 한다.
-                            cF.util.unblockUI();
+                            cF.ui.unblockUI();
                         });
                 }, "block");
             });
@@ -195,7 +195,7 @@ dF.JrnlDream = (function(): dfModule {
                                 dF.JrnlDay.yyMnthListAjax();
                                 dF.JrnlDreamTag.listAjax();
                             }
-                            cF.util.unblockUI();
+                            cF.ui.unblockUI();
                         });
                 }, "block");
             });

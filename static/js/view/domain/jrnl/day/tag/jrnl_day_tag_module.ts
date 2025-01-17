@@ -75,6 +75,8 @@ dF.JrnlDayTag = (function(): dfModule {
             event.stopPropagation();
             if (isNaN(Number(tagNo))) return;
 
+            ModalHistory.reset();
+
             const self = this;
             const func = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args = Array.from(arguments); // 함수 인자 배열로 받기
@@ -99,7 +101,7 @@ dF.JrnlDayTag = (function(): dfModule {
          */
         closeModal: function(): void {
             /* modal history pop */
-            ModalHistory.previous();
+            ModalHistory.prev();
         }
     }
 })();

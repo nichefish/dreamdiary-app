@@ -31,7 +31,7 @@ dF.JrnlSbjct = (function(): dfModule {
             /* tagify */
             cF.tagify.initWithCtgr("#tagListStr", undefined);
             // 잔디발송여부 클릭시 글씨 변경
-            cF.util.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function() {
+            cF.ui.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function() {
                 $("#trgetTopicSpan").show();
             }, function() {
                 $("#trgetTopicSpan").hide();
@@ -45,7 +45,7 @@ dF.JrnlSbjct = (function(): dfModule {
             if (dF.JrnlSbjct.submitMode === "preview") {
                 const popupNm: string = "preview";
                 const options: string = 'width=1280,height=1440,top=0,left=270';
-                const popup: Window = cF.util.openPopup("", popupNm, options);
+                const popup: Window = cF.ui.openPopup("", popupNm, options);
                 if (popup) popup.focus();
                 const popupUrl: string = Url.JRNL_SBJCT_REG_PREVIEW_POP;
                 $("#jrnlSbjctRegForm").attr("action", popupUrl).attr("target", popupNm);
@@ -68,7 +68,7 @@ dF.JrnlSbjct = (function(): dfModule {
          */
         search: function(): void {
             $("#listForm #pageNo").val(1);
-            cF.util.blockUISubmit("#listForm", `${Url.JRNL_SBJCT_LIST!}?actionTyCd=SEARCH`);
+            cF.form.blockUISubmit("#listForm", `${Url.JRNL_SBJCT_LIST!}?actionTyCd=SEARCH`);
         },
 
         /**
@@ -77,14 +77,14 @@ dF.JrnlSbjct = (function(): dfModule {
         myPaprList: function(): void {
             const url: string = Url.JRNL_SBJCT_LIST;
             const param: string = "?searchType=nickNm&searchKeyword=${authInfo.nickNm!}&regstrId=${authInfo.userId!}&pageSize=50&actionTyCd=MY_PAPR";
-            cF.util.blockUIReplace(url + param);
+            cF.ui.blockUIReplace(url + param);
         },
 
         /**
          * 등록 화면으로 이동
          */
         regForm: function(): void {
-            cF.util.blockUISubmit("#procForm", Url.JRNL_SBJCT_REG_FORM);
+            cF.form.blockUISubmit("#procForm", Url.JRNL_SBJCT_REG_FORM);
         },
 
         /**
@@ -118,7 +118,7 @@ dF.JrnlSbjct = (function(): dfModule {
 
                         if (res.rsltObj === undefined) dF.JrnlSbjct.list();
                         const postNo: number = res.rsltObj.postNo;
-                        cF.util.blockUIReplace(`${Url.JRNL_SBJCT_DTL!}?postNo=${postNo}`);
+                        cF.ui.blockUIReplace(`${Url.JRNL_SBJCT_DTL!}?postNo=${postNo}`);
                     });
             }, "block");
         },
@@ -132,7 +132,7 @@ dF.JrnlSbjct = (function(): dfModule {
             if (isNaN(Number(postNo))) return;
 
             $("#procForm #postNo").val(postNo);
-            cF.util.blockUISubmit("#procForm", Url.JRNL_SBJCT_DTL);
+            cF.form.blockUISubmit("#procForm", Url.JRNL_SBJCT_DTL);
         },
 
         /**
@@ -158,7 +158,7 @@ dF.JrnlSbjct = (function(): dfModule {
          * 수정 화면으로 이동
          */
         mdfForm: function(): void {
-            cF.util.blockUISubmit("#procForm", Url.JRNL_SBJCT_MDF_FORM);
+            cF.form.blockUISubmit("#procForm", Url.JRNL_SBJCT_MDF_FORM);
         },
 
         /**
@@ -187,7 +187,7 @@ dF.JrnlSbjct = (function(): dfModule {
          */
         list: function(): void {
             const listUrl: string = `${Url.JRNL_SBJCT_LIST!}<#if isMdf!false>?isBackToList=Y</#if>`;
-            cF.util.blockUIReplace(listUrl);
+            cF.ui.blockUIReplace(listUrl);
         }
     }
 })();

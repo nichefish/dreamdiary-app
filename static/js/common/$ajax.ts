@@ -16,20 +16,20 @@ cF.$ajax = (function(): Module {
          * @param {string} [continueBlock] - 추가적인 블록 UI 동작 여부 (선택적).
          */
         request: function(option: object, func: Function, continueBlock: string): void {
-            cF.util.blockUI();
+            cF.ui.blockUI();
             $.ajax(
                 option
             ).done(function(res): void {
                 if (typeof func === 'function') {
                     const isSuccess = func(res);
-                    if (!isSuccess) cF.util.unblockUI();
+                    if (!isSuccess) cF.ui.unblockUI();
                 }
             // @ts-ignore
             }).fail(function(res: AjaxResponse): void {
-                if (cF.util.isNotEmpty(res.message)) cF.util.swalOrAlert(res.message);
-                cF.util.unblockUI();
+                if (cF.util.isNotEmpty(res.message)) cF.ui.swalOrAlert(res.message);
+                cF.ui.unblockUI();
             }).always(function(): void {
-                if (continueBlock !== 'block') cF.util.unblockUI();
+                if (continueBlock !== 'block') cF.ui.unblockUI();
             });
         },
 
@@ -90,61 +90,69 @@ cF.$ajax = (function(): Module {
     }
 })();
 // 인증만료/접근불가로 ajax 실패시 로그인 페이지로 이동 또는 머무르기 (선택)
-(function($) {
+(function($: JQueryStatic): void {
     $.ajaxSetup({
         error: function(xhr): void {
-            const statusCode = xhr.status;
+            const statusCode: number = xhr.status;
             const msg = xhr.responseJSON ? xhr.responseJSON.message : "접근이 거부되었습니다. (ACCESS DENIED)";
-            const lgnFormUrl =  "/auth/lgnForm.do";
-            if (statusCode === 401) {
-                cF.util.swalOrConfirm(msg + "\n로그인 화면으로 돌아갑니다.", function() {
-                    window.location.href = lgnFormUrl;
-                }, function() {
-                    // do nothing... and mark as session expired
-                    if ($(".session-expired-message").length > 0) return;
-                    // 세션 만료 표시
-                    const $navbar = $("#kt_app_header_wrapper .app-navbar");
-                    const sessionExpiredText = $("<div class='d-flex align-items-center fs-4 fw-bold text-danger blink me-5'>로그인 세션이 만료되었습니다.</div>")
-                    $navbar.before(sessionExpiredText);
-                });
-                return;
-            } else if (statusCode === 403) {
-                cF.util.swalOrAlert("접근이 거부되었습니다. (FORBIDDEN)", function() {
-                    window.location.href = lgnFormUrl;
-                });
-                return;
-            } else if (statusCode === 400) {
-                const errorLines: string[] = msg.split("\n");
-                let errorField: string, defaultMessage: string;
-                errorLines.forEach((line: string) => {
-                    const fieldErrorMatch = line.match(/Field error in object '([^']+)' on field '([^']+)':/);
-                    const defaultMessageMatch = line.match(/\]; default message \[([^\[\]]+)\]$/);
-                    if (fieldErrorMatch) errorField = fieldErrorMatch[2];
-                    if (defaultMessageMatch) defaultMessage  = defaultMessageMatch[1]; // 0보다 커야 합니다
-                    if (errorField && defaultMessage) {
-                        const errorMsg = errorField + ": " + defaultMessage + ".";
-                        // 필드네임을 스네이크 캐이스로 변환
-                        const snakeFieldName = cF.util.toSnakeCase(errorField);
-                        const elmts = (cF.util.verifySelector("[name=\"" + snakeFieldName + "\"]"));
-                        console.log(snakeFieldName);
-                        if (elmts.length === 0) {
-                            cF.util.swalOrAlert(errorMsg);
-                        } else {
-                            const elmt = elmts[0];
-                            const errorSpan = document.querySelector("#" + elmt.id + "_validate_span");
-                            errorSpan.classList.add("text-danger");
-                            errorSpan.appendChild(document.createTextNode(errorMsg));
-                            elmt.focus();
+            const lgnFormUrl: string =  "/auth/lgnForm.do";
+
+            switch(statusCode) {
+                case 401: {
+                    cF.ui.swalOrConfirm(msg + "\n로그인 화면으로 돌아갑니다.", function(): void {
+                        window.location.href = lgnFormUrl;
+                    }, function(): void {
+                        // do nothing... ui에 세션 만료 표시
+                        if ($(".session-expired-message").length > 0) return;
+                        const $navbar: JQuery<HTMLElement> = $("#kt_app_header_wrapper .app-navbar");
+                        const errorMsg: string = Message.get("view.auth.expired");       // "로그인 세션이 만료되었습니다."
+                        const sessionExpiredText: JQuery<HTMLElement> = $(`<div class='d-flex align-items-center fs-4 fw-bold text-danger blink me-5'>${errorMsg}</div>`);
+                        $navbar.before(sessionExpiredText);
+                    });
+                    return;
+                }
+                case 403: {
+                    cF.ui.swalOrAlert(Message.get("view.error.forbidden"), function(): void {
+                        window.location.href = lgnFormUrl;
+                    });
+                    return;
+                }
+                case 400: {
+                    const errorLines: string[] = msg.split("\n");
+                    let errorField: string, defaultMessage: string;
+
+                    // spring errorMessage 에서 필드와 메세지 추출
+                    errorLines.forEach((line: string): void => {
+                        const fieldErrorMatch: RegExpMatchArray = line.match(/Field error in object '([^']+)' on field '([^']+)':/);
+                        const defaultMessageMatch: RegExpMatchArray = line.match(/\]; default message \[([^\[\]]+)\]$/);
+                        if (fieldErrorMatch) errorField = fieldErrorMatch[2];
+                        if (defaultMessageMatch) defaultMessage  = defaultMessageMatch[1]; // 0보다 커야 합니다
+                        if (errorField && defaultMessage) {
+                            const errorMsg: string = errorField + ": " + defaultMessage + ".";
+                            const snakeFieldName = cF.util.toSnakeCase(errorField);
+                            const elmts = (cF.util.verifySelector("[name=\"" + snakeFieldName + "\"]"));
+                            console.log(snakeFieldName);
+                            if (elmts.length === 0) {
+                                // alert
+                                cF.ui.swalOrAlert(errorMsg);
+                            } else {
+                                // validation 요소 아래 error_valid_span에 내용 표시
+                                const elmt = elmts[0];
+                                const errorSpan = document.querySelector("#" + elmt.id + "_validate_span");
+                                errorSpan.classList.add("text-danger");
+                                errorSpan.appendChild(document.createTextNode(errorMsg));
+                                elmt.focus();
+                            }
+                            console.error("ajax error: ", xhr);
                         }
-                        console.error("ajax error: ", xhr);
-                    }
-                });
-                console.error("ajax error: ", xhr);
-                return;
+                    });
+                    console.error("ajax error: ", xhr);
+                    return;
+                }
             }
             // 기본 오류 로그 추가
             console.error("ajax error: ", xhr);
-            cF.util.swalOrAlert(msg);
+            cF.ui.swalOrAlert(msg);
         }
     });
 })(jQuery);

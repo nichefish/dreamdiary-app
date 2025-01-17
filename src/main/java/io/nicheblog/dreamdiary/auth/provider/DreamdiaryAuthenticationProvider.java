@@ -54,9 +54,9 @@ public class DreamdiaryAuthenticationProvider
         final AuthInfo authInfo = authService.loadUserByUsername(username);
 
         // 인증 객체 생성
-        UsernamePasswordAuthenticationToken generatedAuthToken = authenticationHelper.doAuth(authentication, authInfo);
+        final UsernamePasswordAuthenticationToken generatedAuthToken = authenticationHelper.doAuth(authentication, authInfo);
         // 인증 객체를 기반으로 JWT 생성, 임시로 세션에 저장
-        String jwt = this.authenticateAndGenerateJwt(generatedAuthToken);
+        final String jwt = this.authenticateAndGenerateJwt(generatedAuthToken);
         // 세션에 JWT 저장
         final ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         final HttpSession session = servletRequestAttribute.getRequest().getSession();
@@ -64,7 +64,7 @@ public class DreamdiaryAuthenticationProvider
         // HTTP 쿠키에 JWT 저장
         CookieUtils.setJwtCookie(jwt); // 7일간 유지
         // HttpServletResponse 응답 헤더에 JWT 세팅
-        HttpServletResponse response = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getResponse();
+        final HttpServletResponse response = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getResponse();
         if (response != null) response.setHeader("Authorization", "Bearer " + jwt);
 
         return generatedAuthToken;

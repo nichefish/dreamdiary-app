@@ -5,9 +5,9 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="extn_phone" size="xl" module="">
+<@modal.layout id="extn_phone" size="xl">
     <#--begin::Modal Header-->
-    <@component.modal_header "내선번호" module! />
+    <@component.modal_header "내선번호"  />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <div class="table-responsive-sm">

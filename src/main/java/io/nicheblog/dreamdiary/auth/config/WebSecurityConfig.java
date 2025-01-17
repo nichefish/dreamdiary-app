@@ -6,7 +6,6 @@ import io.nicheblog.dreamdiary.auth.handler.LgnFailureHandler;
 import io.nicheblog.dreamdiary.auth.handler.LgnSuccessHandler;
 import io.nicheblog.dreamdiary.auth.handler.LgoutHandler;
 import io.nicheblog.dreamdiary.auth.service.AuthService;
-import io.nicheblog.dreamdiary.global.ActiveProfile;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import lombok.RequiredArgsConstructor;
@@ -50,8 +49,6 @@ public class WebSecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    private final ActiveProfile activeProfile;
-
     @Value("${springdoc.api-docs.path:}")
     private String API_DOCS_PATH;
     @Value("${remember-me.key}")
@@ -61,6 +58,8 @@ public class WebSecurityConfig {
 
     /**
      * 빈 생성 ::중복 로그인 방지:: logout 후 login 처리시 정상작동을 위함
+     *
+     * @return {@link SessionRegistry} -- SessionRegistry 객체
      */
     @Bean
     public SessionRegistry sessionRegistry() {
@@ -69,6 +68,8 @@ public class WebSecurityConfig {
 
     /**
      * 빈 생성 :: 중복 로그인 방지:: WAS가 여러 개 있을 때 처리 (session clustering)
+     *
+     * @return {@link ServletListenerRegistrationBean} -- ServletListenerRegistrationBean 객체
      */
     @Bean
     public static ServletListenerRegistrationBean<?> httpSessionEventPublisher() {
@@ -79,7 +80,8 @@ public class WebSecurityConfig {
      * 웹사이트 URL 경로에 대한 인증을 설정한다.
      */
     @Configuration
-    public class WebSecurityAdapter extends WebSecurityConfigurerAdapter {
+    public class WebSecurityAdapter
+            extends WebSecurityConfigurerAdapter {
 
         /**
          * Spring Security의 WebSecurity 설정을 구성합니다.

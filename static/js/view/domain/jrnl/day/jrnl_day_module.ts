@@ -60,7 +60,7 @@ dF.JrnlDay = (function(): dfModule {
             // 날짜미상 datepicker 날짜 검색 init
             cF.datepicker.singleDatePicker("#aprxmtDt", "yyyy-MM-DD", obj.aprxmtDt);
             // 날짜미상 checkbox init
-            cF.util.chckboxLabel("dtUnknownYn", "날짜미상//날짜미상", "blue//gray", function(): void {
+            cF.ui.chckboxLabel("dtUnknownYn", "날짜미상//날짜미상", "blue//gray", function(): void {
                 $("#jrnlDayRegForm #jrnlDtDiv").addClass("d-none");
                 $("#jrnlDayRegForm #aprxmtDtDiv").removeClass("d-none");
                 $("#jrnlDayRegForm #aprxmtDt").val($("#jrnlDayRegForm #jrnlDt").val());
@@ -98,7 +98,7 @@ dF.JrnlDay = (function(): dfModule {
                     if (cF.util.isNotEmpty(rsltList)) rsltList.reverse();
                 }
                 $("#jrnl_dream_list_div").empty();
-                cF.util.closeModal();
+                cF.ui.closeModal();
                 cF.handlebars.template(rsltList, "jrnl_day_list");
             }, "block");
         },
@@ -285,7 +285,7 @@ dF.JrnlDay = (function(): dfModule {
          */
         closeModal: function(): void {
             /* modal history pop */
-            ModalHistory.previous();
+            ModalHistory.prev();
         }
     }
 })();

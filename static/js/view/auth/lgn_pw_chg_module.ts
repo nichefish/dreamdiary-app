@@ -79,7 +79,7 @@ dF.LgnPwChg = (function(): dfModule {
                     text: res.message
                 }).then(function(): void {
                     ($("#lgnPwChgForm")[0] as HTMLFormElement).reset();
-                    if (res.rslt) cF.util.blockUIReplace(Url.AUTH_LGN_FORM);
+                    if (res.rslt) cF.ui.blockUIReplace(Url.AUTH_LGN_FORM);
                 });
             });
         },

@@ -4,7 +4,7 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="notice_popup" size="xl" module="">
+<@modal.layout id="notice_popup" size="xl">
     <#--begin::Modal Header-->
     <div class="modal-header">
         <h5 class="modal-title" id="lgnNotifyModalLongTitle">[공지사항 팝업]</h5>

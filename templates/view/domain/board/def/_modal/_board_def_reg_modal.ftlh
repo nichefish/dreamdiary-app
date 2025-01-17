@@ -5,9 +5,9 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="board_def_reg" size="lg" module="">
+<@modal.layout id="board_def_reg" size="lg">
     <#--begin::Modal Header-->
-    <@component.modal_header "게시판 정의 저장" module! />
+    <@component.modal_header "게시판 정의 저장"  />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <#--begin::Form-->

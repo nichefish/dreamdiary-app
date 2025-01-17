@@ -6,13 +6,11 @@
 <!--
  * 모달:: 타이틀 영역
  -->
-<#macro modal_header title module>
+<#macro modal_header title>
     <div class="modal-header">
         <h5 id="modal_title" class="modal-title">[${title!}]</h5>
         <div class="btn btn-sm btn-icon btn-active-light-primary ms-2" aria-label="Close"
-            <#if module?? && module != "">
-                onclick="${module!}.close();"
-            </#if>
+             onClick="ModalHistory.pop();"
              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message "bs.tooltip.modal.close"/>">
             <i class="fas fa-times"></i>
         </div>
@@ -20,15 +18,33 @@
 </#macro>
 
 <!--
+ * 모달:: 타이틀 영역 (with 이전 모달 돌아가기 버튼)
+ -->
+<#macro modal_header_with_back title>
+    <div class="modal-header">
+        <h5 id="modal_title" class="modal-title">[${title!}]</h5>
+        <div>
+            <div class="btn btn-sm btn-icon btn-active-light-primary" aria-label="Close"
+                 onclick="ModalHistory.prev();"
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message "bs.tooltip.modal.prev"/>">
+                <i class="bi bi-box-arrow-in-left"></i>
+            </div>
+            <div class="btn btn-sm btn-icon btn-active-light-primary" aria-label="Close"
+                 onClick="ModalHistory.pop();"
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message "bs.tooltip.modal.close"/>">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+    </div>
+</#macro>
+
+<!--
  * 모달:: 타이틀 영역 (다크)
  -->
-<#macro modal_header_dark title module>
+<#macro modal_header_dark title>
     <div class="modal-header" style="background-color:#41416e;">
         <h5 id="modal_title" class="modal-title">[${title!}]</h5>
         <div class="btn btn-sm btn-icon btn-active-light-primary ms-2" aria-label="Close"
-            <#if module?? && module != "">
-                onclick="${module!}.close();"
-            </#if>
              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message "bs.tooltip.modal.close"/>">
             <i class="fas fa-times"></i>
         </div>
@@ -77,6 +93,7 @@
  -->
 <#macro modal_btn_close>
     <button type="button" class="btn btn-sm btn-light"
+            onClick="ModalHistory.pop();"
             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message "bs.tooltip.modal.close"/>">
         <i class="bi bi-x"></i>닫기
     </button>
@@ -87,9 +104,7 @@
 -->
 <#macro modal_btn_close_safe func>
     <button type="button" class="btn btn-sm btn-light modal-btn-close-safe"
-            <#if func?? && func != "">
-                onclick="${func!}"
-            </#if>
+            data-func="ModalHistory.pop(); <#if func?? && func != "">${func!}</#if>"
             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message "bs.tooltip.modal.close.safe"/>">
         <i class="bi bi-x"></i>닫기
     </button>

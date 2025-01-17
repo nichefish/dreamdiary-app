@@ -76,7 +76,7 @@ export default {
                 .then(data => {
                     if (!data.rslt) {
                         console.error('Error loading messages:', data.msg);
-                        cF.util.swalOrAlert('error', 'Error loading messages:', data.msg);
+                        cF.ui.swalOrAlert('error', 'Error loading messages:', data.msg);
                         return;
                     }
                     if (data.rsltList) this.$emit('messages-loaded', data.rsltList);  // 메시지 로딩 완료 후 상위에 전달

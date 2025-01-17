@@ -24,7 +24,7 @@ dF.VcatnSchdul = (function(): dfModule {
          */
         chgYy: function(obj): void {
             const url: string = `${Url.VCATN_SCHDUL_LIST!}?statsYy=` + $(obj).val();
-            cF.util.blockUIReplace(url);
+            cF.ui.blockUIReplace(url);
         },
 
         /**
@@ -88,7 +88,7 @@ dF.VcatnSchdul = (function(): dfModule {
             cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
                     .then(function(): void {
-                        if (res.rslt) cF.util.blockUIReload();
+                        if (res.rslt) cF.ui.blockUIReload();
                     });
             }, "block");
         },
@@ -179,7 +179,7 @@ dF.VcatnSchdul = (function(): dfModule {
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
-                            if (res.rslt) cF.util.blockUIReload();
+                            if (res.rslt) cF.ui.blockUIReload();
                         });
                 }, "block");
             });

@@ -59,7 +59,7 @@ dF.LgnPolicy = (function(): dfModule {
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
-                            if (res.rslt) cF.util.blockUIReplace(Url.LGN_POLICY_FORM);
+                            if (res.rslt) cF.ui.blockUIReplace(Url.LGN_POLICY_FORM);
                         });
                 }, "block");
             });

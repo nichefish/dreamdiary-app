@@ -107,7 +107,7 @@
             addRef: function(filePath) {
                 const obj = { "filePath": filePath, "refCnt": Flsys.refCnt++ }
                 cF.handlebars.append(obj, "flsys_ref");
-                cF.util.closeModal();
+                cF.ui.closeModal();
             },
 
             /**

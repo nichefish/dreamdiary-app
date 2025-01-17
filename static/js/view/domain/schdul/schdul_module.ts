@@ -49,12 +49,12 @@ dF.Schdul = (function(): dfModule {
          */
         regModal: function(): void {
             cF.handlebars.modal({}, "schdul_reg");
-            cF.util.chckboxLabel("jandiYn", "발송//미발송", "blue//gray");
+            cF.ui.chckboxLabel("jandiYn", "발송//미발송", "blue//gray");
             cF.datepicker.singleDatePicker("#bgnDt", "yyyy-MM-DD");
             cF.datepicker.singleDatePicker("#endDt", "yyyy-MM-DD");
 
             // 잔디발송여부 클릭시 글씨 변경
-            cF.util.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function(): void {
+            cF.ui.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function(): void {
                 $("#trgetTopicSpan").show();
             }, function(): void {
                 $("#trgetTopicSpan").hide();
@@ -116,7 +116,7 @@ dF.Schdul = (function(): dfModule {
             cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
                     .then(function(): void {
-                        if (res.rslt) cF.util.blockUIReload();
+                        if (res.rslt) cF.ui.blockUIReload();
                     });
             }, "block");
         },
@@ -166,7 +166,7 @@ dF.Schdul = (function(): dfModule {
                 cF.datepicker.singleDatePicker("#bgnDt", "yyyy-MM-DD", rsltObj.bgnDt);
                 cF.datepicker.singleDatePicker("#endDt", "yyyy-MM-DD", rsltObj.endDt);
                 // 잔디발송여부 클릭시 글씨 변경
-                cF.util.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function(): void {
+                cF.ui.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function(): void {
                     $("#trgetTopicSpan").show();
                 }, function(): void {
                     $("#trgetTopicSpan").hide();
@@ -192,7 +192,7 @@ dF.Schdul = (function(): dfModule {
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
-                            if (res.rslt) cF.util.blockUIReload();
+                            if (res.rslt) cF.ui.blockUIReload();
                         });
                 }, "block");
             });

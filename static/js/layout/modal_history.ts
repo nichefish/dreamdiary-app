@@ -55,7 +55,7 @@ const ModalHistory: Page = (function(): Page {
         /**
          * 현재 모달을 닫고 이전 모달로 돌아갑니다.
          */
-        previous: function (): void {
+        prev: function (): void {
             // 기존에 열린 모달이 있으면 닫기
             const openModal = document.querySelector('.modal.show'); // 열린 모달을 찾기
             if (openModal) {
@@ -92,6 +92,8 @@ const ModalHistory: Page = (function(): Page {
          */
         reset: function(): void {
             console.log("modal history:: reset.");
+            $('.modal-backdrop').remove(); // 모달이 닫힐 때 백드롭 제거
+            $('body').removeClass('modal-open');  // body에서 modal-open 클래스 제거
             ModalHistory.stack = [];
         },
     }

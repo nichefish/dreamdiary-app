@@ -97,7 +97,7 @@ dF.JrnlDayAside = (function(): dfModule {
             //
             dF.JrnlDream.inKeywordSearchMode = false;
             // 페이지 상단으로 이동
-            cF.util.toPageTop();
+            Layout.toPageTop();
         },
 
         /**
@@ -156,8 +156,8 @@ dF.JrnlDayAside = (function(): dfModule {
             const pinMnth: string = $("#jrnl_aside #mnth").val().toString();
             $.cookie("pin_yy", pinYy, cookieOptions);
             $.cookie("pin_mnth", pinMnth, cookieOptions);
-            $("#jrnl_aside #pinYy").text(pinYy);
-            $("#jrnl_aside #pinMnth").text(pinMnth);
+            $("#jrnl_aside_header #pinYy").text(pinYy);
+            $("#jrnl_aside_header #pinMnth").text(pinMnth);
         },
 
         /**
@@ -186,9 +186,9 @@ dF.JrnlDayAside = (function(): dfModule {
 
             // 정렬 아이콘 변경
             if (toBe === "DESC") {
-                $("#jrnl_aside #sortIcon").removeClass("bi-sort-numeric-down").addClass("bi-sort-numeric-up-alt");
+                $("#jrnl_aside_header #sortIcon").removeClass("bi-sort-numeric-down").addClass("bi-sort-numeric-up-alt");
             } else {
-                $("#jrnl_aside #sortIcon").removeClass("bi-sort-numeric-up-alt").addClass("bi-sort-numeric-down");
+                $("#jrnl_aside_header #sortIcon").removeClass("bi-sort-numeric-up-alt").addClass("bi-sort-numeric-down");
             }
 
             // 정렬 수행

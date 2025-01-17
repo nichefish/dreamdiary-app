@@ -5,7 +5,7 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="crdt_user_cttpc" size="xl" module="">
+<@modal.layout id="crdt_user_cttpc" size="xl">
     <#--begin::Modal Header-->
     <div class="modal-header">
         <h5 class="modal-title" id="crdtUserCttpcModalLongTitle">[직원 연락처 목록]</h5>

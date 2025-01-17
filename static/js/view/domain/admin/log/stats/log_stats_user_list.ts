@@ -12,21 +12,21 @@ const Page: Page = (function(): Page {
          */
         init: function(): void {
             /* 모든 table 헤더에 클릭 이벤트를 설정한다. */
-            cF.util.initSortTable();
+            cF.table.initSort();
         },
 
         /**
          * 전체 로그 페이지로 이동
          */
         logActvtyList: function(): void {
-            cF.util.blockUISubmit("#listForm", Url.LOG_ACTVTY_LIST);
+            cF.form.blockUISubmit("#listForm", Url.LOG_ACTVTY_LIST);
         },
 
         /**
          * 전체 로그 페이지로 이동
          */
         logStatsUserList: function(): void {
-            cF.util.blockUISubmit("#listForm", Url.LOG_STATS_USER_LIST);
+            cF.form.blockUISubmit("#listForm", Url.LOG_STATS_USER_LIST);
         },
 
         /**
@@ -35,7 +35,7 @@ const Page: Page = (function(): Page {
         search: function(): void {
             $("#listForm #pageNo").val(1);
             const url: string = `${Url.LOG_STATS_USER_LIST!}?actionTyCd=SEARCH`;
-            cF.util.blockUISubmit("#listForm", url);
+            cF.form.blockUISubmit("#listForm", url);
         },
 
         /**

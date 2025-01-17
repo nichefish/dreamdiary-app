@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.domain.user.my.service.UserMyService;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyRestControllerAspect;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
@@ -24,17 +25,18 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 /**
- * AuthController
+ * AuthRestController
  * <pre>
  *  인증 관련 컨트롤러.
  * </pre>
  *
+ * @see LogActvtyRestControllerAspect
  * @author nichefish
  */
 @RestController
 @RequiredArgsConstructor
 @Log4j2
-public class AuthController {
+public class AuthRestController {
 
     private final UserMyService userMyService;
     private final JwtTokenProvider jwtTokenProvider;
@@ -44,6 +46,13 @@ public class AuthController {
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.LGN;      // 작업 카테고리 (로그 적재용)
 
+    /**
+     * 인증 정보 조회
+     * (JWT 토큰 검증 및 사용자 정보 추출)
+     *
+     * @param request HTTP 요청 객체
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     */
     @GetMapping("/api/auth/getAuthInfo.do")
     public ResponseEntity<AjaxResponse> getAuthInfo(
             final HttpServletRequest request
@@ -111,6 +120,8 @@ public class AuthController {
     /**
      * 세션 강제 만료 처리 (중복 로그인 '기존 아이디 끊기'에서 취소 선택시)
      *
+     * @param request HTTP 요청 객체
+     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.AUTH_EXPIRE_SESSION_AJAX)

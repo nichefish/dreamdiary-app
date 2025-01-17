@@ -19,7 +19,7 @@ const Page: Page = (function(): Page {
          * 수정 화면으로 이동
          */
         mdfForm: function(): void {
-            cF.util.blockUISubmit("#procForm", Url.TMPLAT_MDF_FORM);
+            cF.form.blockUISubmit("#procForm", Url.TMPLAT_MDF_FORM);
         },
 
         /**
@@ -48,7 +48,7 @@ const Page: Page = (function(): Page {
          */
         list: function() {
             const listUrl: string = `${Url.NOTICE_LIST!}?isBackToList=Y`;
-            cF.util.blockUIReplace(listUrl);
+            cF.ui.blockUIReplace(listUrl);
         }
     }
 })();

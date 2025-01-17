@@ -35,7 +35,7 @@ dF.Sectn = (function(): dfModule {
             /* jquery validation */
             cF.validate.validateForm("#sectnRegForm", dF.Sectn.regAjax);
             // checkbox init
-            cF.util.chckboxLabel("deprcYn", "만료//해당없음", "red//gray");
+            cF.ui.chckboxLabel("deprcYn", "만료//해당없음", "red//gray");
             /* tagify */
             cF.tagify.initWithCtgr("#sectnRegForm #tagListStr", undefined);
             // tinymce editor reset
@@ -115,7 +115,7 @@ dF.Sectn = (function(): dfModule {
                             if (dF.Sectn.refreshFunc !== undefined) {
                                 dF.Sectn.refreshFunc();
                             } else {
-                                cF.util.blockUIReload();
+                                cF.ui.blockUIReload();
                             }
                         });
                 });
@@ -165,7 +165,7 @@ dF.Sectn = (function(): dfModule {
                             if (dF.Sectn.refreshFunc !== undefined) {
                                 dF.Sectn.refreshFunc();
                             } else {
-                                cF.util.blockUIReload();
+                                cF.ui.blockUIReload();
                             }
                         });
                 });

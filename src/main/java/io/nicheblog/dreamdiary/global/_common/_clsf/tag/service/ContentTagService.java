@@ -71,5 +71,5 @@ public interface ContentTagService
      * @param cacheName 캐시 이름
      * @param tagNo 태그 번호 (key)
      */
-    void evictCacheForPeriod(final String cacheName, final Integer tagNo);
+    void evictMyCacheForPeriod(final String cacheName, final Integer tagNo);
 }

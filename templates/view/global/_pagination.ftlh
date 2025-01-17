@@ -36,7 +36,7 @@
                 }
                 if (pageNo !== undefined) document.querySelector("#listForm #pageNo").value = pageNo;
                 if (pageSize !== undefined) document.querySelector("#listForm #pageSize").value = pageSize;
-                cF.util.blockUISubmit("#listForm", "${listUrl!}");
+                cF.form.blockUISubmit("#listForm", "${listUrl!}");
             },
 
             /**

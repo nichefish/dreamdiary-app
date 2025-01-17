@@ -14,7 +14,7 @@ const Page: Page = (function(): Page {
             /* initialize modules. */
             dF.LogActvty.init();
             /* 모든 table 헤더에 클릭 이벤트를 설정한다. */
-            cF.util.initSortTable();
+            cF.table.initSort();
         },
 
         /**
@@ -23,7 +23,7 @@ const Page: Page = (function(): Page {
         search: function(): void {
             $("#listForm #pageNo").val(1);
             const url: string = `${Url.LOG_SYS_LIST!}?actionTyCd=SEARCH`;
-            cF.util.blockUISubmit("#listForm", url);
+            cF.form.blockUISubmit("#listForm", url);
         },
     }
 })();
