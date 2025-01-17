@@ -1,5 +1,6 @@
 /**
  * jrnl_sbjct_list.ts
+ * 저널 주제 목록 페이지 스크립트
  *
  * @author nichefish
  */

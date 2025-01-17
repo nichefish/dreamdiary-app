@@ -1,5 +1,6 @@
 /**
  * menu_module.ts
+ * 메뉴 스크립트 모듈
  *
  * @author nichefish
  */

@@ -1,5 +1,6 @@
 /**
  * modal_history.ts
+ * 모달 이력 스크립트 모듈
  *
  * @author nichefish
  */

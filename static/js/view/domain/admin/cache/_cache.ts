@@ -1,8 +1,6 @@
-// @ts-ignore
-// @ts-ignore
 /**
  * _cache.ts
- * 캐시 : 스크립트 모듈 분리
+ * 캐시 스크립트 모듈
  *
  * @author nichefish
  */

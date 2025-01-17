@@ -1,5 +1,6 @@
 /**
  * lgn_policy_module.ts
+ * 로그인 정책 스크립트 모듈
  *
  * @author nichefish
  */

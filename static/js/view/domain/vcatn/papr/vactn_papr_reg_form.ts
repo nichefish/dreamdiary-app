@@ -1,5 +1,6 @@
 /**
  * vactn_papr_reg_form.ts
+ * 휴가신청서 등록/수정 페이지 스크립트
  *
  * @author nichefish
  */

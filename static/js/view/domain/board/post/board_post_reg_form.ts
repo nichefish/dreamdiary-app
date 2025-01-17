@@ -1,5 +1,6 @@
 /**
  * board_post_reg_form.ts
+ * 일반게시판 게시물 등록/수정 페이지 스크립트
  *
  * @author nichefish
  */

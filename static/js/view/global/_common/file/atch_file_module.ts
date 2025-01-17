@@ -1,5 +1,6 @@
 /**
  * atch_file_module.ts
+ * 첨부파일 스크립트 모듈
  *
  * @author nichefish
  */
@@ -34,7 +35,7 @@ dF.AtchFile = (function(): dfModule {
             const atchFileSpan: HTMLElement = document.getElementById("atchFileSpan");
             if (atchFileSpan) atchFileSpan.insertAdjacentHTML("beforeend", str);
 
-            const atchFileDiv = document.getElementById("atchFile" + reqstItemIdx) as HTMLInputElement;
+            const atchFileDiv: HTMLInputElement = document.getElementById("atchFile" + reqstItemIdx) as HTMLInputElement;
             if (atchFileDiv) {
                 atchFileDiv.click();
 

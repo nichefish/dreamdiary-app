@@ -1,5 +1,6 @@
 /**
  * jrnl_day_aside_module.ts
+ * 저널 일자 사이드 스크립트 모듈
  *
  * @author nichefish
  */
@@ -20,15 +21,17 @@ dF.JrnlDayAside = (function(): dfModule {
         init: function(): void {
             if (dF.JrnlDayAside.initialized) return;
 
-
             const pinYyCookie = $.cookie("pin_yy");
             if (pinYyCookie !== undefined) {
-                $("#jrnl_aside #pinYy").text(pinYyCookie);
+                document.querySelector("#jrnl_aside #pinYy")!.textContent = pinYyCookie;
             }
             const pinMnthCookie = $.cookie("pin_mnth");
             if (pinMnthCookie !== undefined) {
-                $("#jrnl_aside #pinMnth").text(pinMnthCookie);
+                document.querySelector("#jrnl_aside #pinMnth")!.textContent = pinMnthCookie;
             }
+
+            document.querySelector("#jrnl_aside #left")?.addEventListener("click", dF.JrnlDayAside.left);
+            document.querySelector("#jrnl_aside #right")?.addEventListener("click", dF.JrnlDayAside.right);
 
             dF.JrnlDayAside.initialized = true;
             console.log("'dF.JrnlDayAside' module initialized.");
@@ -38,10 +41,15 @@ dF.JrnlDayAside = (function(): dfModule {
          * 오늘 날짜로 가기
          */
         today: function(): void {
-            const todayYy = cF.date.getCurrYyStr();
-            const todayMnth = cF.date.getCurrMnthStr();
-            $("#jrnl_aside #yy").val(todayYy);
-            $("#jrnl_aside #mnth").val(todayMnth);
+            const todayYy: string = cF.date.getCurrYyStr();
+            const todayMnth: string = cF.date.getCurrMnthStr();
+            const yyElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
+            const mnthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
+
+            if (yyElement && mnthElement) {
+                yyElement.value = todayYy;
+                mnthElement.value = todayMnth;
+            }
             dF.JrnlDayAside.mnth();
             // 오늘이 제일 위에 오게 하기 위해 내림차순 정렬로 변경
             dF.JrnlDayAside.sort("DESC");
@@ -56,11 +64,19 @@ dF.JrnlDayAside = (function(): dfModule {
             cF.handlebars.template([], "jrnl_diary_tag_list");
             cF.handlebars.template([], "jrnl_dream_tag_list");
             dF.JrnlDream.inKeywordSearchMode = false;
-            if ($("#jrnl_aside #yy").val() === "2010") {
-                $("#jrnl_aside #mnth").val("99");
-                dF.JrnlDayAside.mnth();
-            } else {
-                $("#jrnl_aside #mnth").val("");
+
+            // #yy 요소와 #mnth 요소 가져오기
+            const yyElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
+            const mnthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
+
+            if (yyElement && mnthElement) {
+                // #yy 값이 2010일 경우
+                if (yyElement.value === "2010") {
+                    mnthElement.value = "99";  // #mnth 값을 99로 설정
+                    dF.JrnlDayAside.mnth();   // 월 변경 처리
+                } else {
+                    mnthElement.value = "";   // #mnth 값을 비움
+                }
             }
         },
 
@@ -82,6 +98,54 @@ dF.JrnlDayAside = (function(): dfModule {
             dF.JrnlDream.inKeywordSearchMode = false;
             // 페이지 상단으로 이동
             cF.util.toPageTop();
+        },
+
+        /**
+         * left
+         */
+        left: function(): void {
+            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
+            const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
+
+            const currentMonth: string = monthElement.value;
+            const currentYear: string = yearElement.value;
+
+            if (currentMonth && parseInt(currentMonth) > 1) {
+                // 월을 하나 감소시킴
+                monthElement.value = (parseInt(currentMonth) - 1).toString();
+            } else {
+                // 1월일 경우, 이전 년도로 이동하고 12월로 설정
+                if (currentYear !== "2010") {
+                    yearElement.value = (parseInt(currentYear) - 1).toString(); // 이전 년도로
+                    monthElement.value = "12";  // 12월로 설정
+                }
+            }
+
+            // 월이 변경되었을 때의 처리
+            dF.JrnlDayAside.mnth();
+        },
+
+        /**
+         * right
+         */
+        right: function(): void {
+            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
+            const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
+
+            const currentMonth: string = monthElement.value;
+            const currentYear: string = yearElement.value;
+
+            if (currentMonth && parseInt(currentMonth) < 12) {
+                // 월을 하나 증가시킴
+                monthElement.value = (parseInt(currentMonth) + 1).toString();
+            } else {
+                // 12월일 경우, 다음 년도로 이동하고 1월로 설정
+                yearElement.value = (parseInt(currentYear) + 1).toString(); // 다음 년도로
+                monthElement.value = "1";  // 1월로 설정
+            }
+
+            // 월이 변경되었을 때의 처리
+            dF.JrnlDayAside.mnth();
         },
 
         /**
@@ -109,7 +173,7 @@ dF.JrnlDayAside = (function(): dfModule {
 
         /**
          * 저널 일자 정렬
-         * @param {string} [toBe] - 정렬 방향 ("ASC" 또는 "DESC").
+         * @param {'ASC'|'DESC'} [toBe] - 정렬 방향 ("ASC" 또는 "DESC").
          */
         sort: function(toBe: string): void {
             const sortElement: HTMLInputElement = document.querySelector("#jrnl_aside #sort");
@@ -130,7 +194,7 @@ dF.JrnlDayAside = (function(): dfModule {
             // 정렬 수행
             const container: HTMLElement = document.querySelector('#jrnl_day_list_div'); // 모든 저널 일자를 포함하는 컨테이너
             const days: HTMLElement[] = Array.from(container.querySelectorAll('.jrnl-day')); // 모든 'jrnl-day' 요소를 배열로 변환
-            days.sort((a, b): number => {
+            days.sort((a: HTMLElement, b: HTMLElement): number => {
                 const dateA: Date = new Date(a.querySelector('.jrnl-day-header .col-1').textContent.trim());
                 const dateB: Date = new Date(b.querySelector('.jrnl-day-header .col-1').textContent.trim());
                 return (toBe === "ASC") ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
@@ -142,7 +206,7 @@ dF.JrnlDayAside = (function(): dfModule {
             }
 
             // 정렬된 요소를 다시 컨테이너에 추가
-            days.forEach(day => {
+            days.forEach((day: HTMLElement): void => {
                 container.appendChild(day);
             });
         },

@@ -1,5 +1,6 @@
 /**
  * board_post_list.ts
+ * 일반게시판 게시물 목록 페이지 스크립트
  *
  * @author nichefish
  */

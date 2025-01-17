@@ -1,5 +1,6 @@
 /**
  * user_reqst_module.ts
+ * 사용자 등록 스크립트 모듈
  *
  * @author nichefish
  */

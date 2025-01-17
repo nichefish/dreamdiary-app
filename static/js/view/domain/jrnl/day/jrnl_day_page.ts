@@ -1,5 +1,6 @@
 /**
  * jrnl_day_page.ts
+ * 저널 일자 페이지 스크립트
  *
  * @author nichefish
  */

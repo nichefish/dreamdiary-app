@@ -1,6 +1,6 @@
 /**
  * notice_popup_module.ts
- * 공지사항 팝업 관련
+ * 공지사항 팝업 스크립트 모듈
  *
  * @author nichefish
  */

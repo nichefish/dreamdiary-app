@@ -1,5 +1,6 @@
 /**
  * jrnl_dream_module.ts
+ * 저널 꿈 스크립트 모듈
  *
  * @author nichefish
  */

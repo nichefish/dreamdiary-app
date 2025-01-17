@@ -1,5 +1,6 @@
 /**
  * jrnl_sbjct_reg_form.ts
+ * 저널 주제 등록/수정 페이지 스크립트
  *
  * @author nichefish
  */

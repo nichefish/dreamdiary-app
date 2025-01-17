@@ -1,5 +1,6 @@
 /**
  * cl_cd_list.ts
+ * 분류 코드 목록 페이지 스크립트
  *
  * @author nichefish
  */

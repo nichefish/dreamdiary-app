@@ -1,5 +1,6 @@
 /**
  * user_reg_form.ts
+ * 사용자 등록/수정 페이지 스크립트
  *
  * @author nichefish
  */

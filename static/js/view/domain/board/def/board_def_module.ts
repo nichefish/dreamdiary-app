@@ -1,5 +1,6 @@
 /**
  * board_def_module.ts
+ * 게시판 정의 스크립트 모듈
  *
  * @author nichefish
  */

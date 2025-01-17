@@ -1,5 +1,6 @@
 /**
  * user_emplym_module.ts
+ * 사용자 인사정보 스크립트 모듈
  *
  * @author nichefish
  */

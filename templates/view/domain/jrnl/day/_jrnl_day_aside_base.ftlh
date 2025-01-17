@@ -76,27 +76,39 @@
                 <#--begin::row-->
                 <div class="mb-7 d-flex justify-content-between gap-4">
                     <div class="col">
-                        <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">년도</span>
-                        <select name="yy" id="yy" class="form-select" aria-label="Select example"
-                                onchange="dF.JrnlDayAside.yy();">
-                            <option value="">----</option>
-                            <#assign currYy = DateUtils.getCurrYy()?number />
-                            <#assign startYy = 2010 />
-                            <#list currYy..startYy as year>
-                                <option value="${year}"><#if year == 2010>~</#if>${year}년</option>
-                            </#list>
-                        </select>
+                        <span class="text-gray-900 fs-h6 fw-bold d-inline-block ms-6 mb-1">년도</span>
+                        <div class="d-flex">
+                            <div class="d-flex align-items-center me-2">
+                                <i id="left" class="bi bi-caret-left fs-2 cursor-pointer"
+                                   data-bs-toggle="tooltip" data-bs-placement="left" data-bs-dismiss="click" title="이전 월로 이동합니다."></i>
+                            </div>
+                            <select name="yy" id="yy" class="form-select" aria-label="Select example"
+                                    onchange="dF.JrnlDayAside.yy();">
+                                <option value="">----</option>
+                                <#assign currYy = DateUtils.getCurrYy()?number />
+                                <#assign startYy = 2010 />
+                                <#list currYy..startYy as year>
+                                    <option value="${year}"><#if year == 2010>~</#if>${year}</option>
+                                </#list>
+                            </select>
+                        </div>
                     </div>
                     <div class="col">
-                        <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">월</span>
-                        <select name="mnth" id="mnth" class="form-select" aria-label="Select example"
-                                onchange="dF.JrnlDayAside.mnth();">
-                            <option value="">--</option>
-                            <#list 1..12 as mnth>
-                                <option value="${mnth}">${mnth}</option>
-                            </#list>
-                            <option value="99">전체 월</option>
-                        </select>
+                        <span class="text-gray-900 fs-h6 fw-bold d-inline-block ms-2 mb-1">월</span>
+                        <div class="d-flex">
+                            <select name="mnth" id="mnth" class="form-select" aria-label="Select example"
+                                    onchange="dF.JrnlDayAside.mnth();">
+                                <option value="">--</option>
+                                <#list 1..12 as mnth>
+                                    <option value="${mnth}">${mnth}</option>
+                                </#list>
+                                <option value="99">전체 월</option>
+                            </select>
+                            <div class="d-flex align-items-center ms-2">
+                                <i id="right" class="bi bi-caret-right fs-2 cursor-pointer"
+                                   data-bs-toggle="tooltip" data-bs-placement="left" data-bs-dismiss="click" title="다음 월로 이동합니다."></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <#--begin::row-->

@@ -1,5 +1,6 @@
 /**
  * cl_cd_module.ts
+ * 분류 코드 스크립트 모듈
  *
  * @author nichefish
  */

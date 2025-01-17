@@ -1,5 +1,6 @@
 /**
  * jrnl_sumry_dtl.ts
+ * 저널 결산 상세 페이지 스크립트
  *
  * @author nichefish
  */

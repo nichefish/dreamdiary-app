@@ -1,5 +1,6 @@
 /**
  * error_page.ts
+ * 에러 페이지 스크립트
  *
  * @author nichefish
  */

@@ -1,6 +1,6 @@
 /**
  * lgn_pw_chg_module.ts
- * 로그인 화면 > 비밀번호 변경 스크립트 모듈
+ * 로그인 비밀번호 변경 스크립트 모듈
  *
  * @namespace: dF.LgnPwChg (노출식 모듈 패턴)
  * @author nichefish

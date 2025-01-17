@@ -1,5 +1,6 @@
 /**
  * vcatn_schdul_module.ts
+ * 휴가 일정 스크립트 모듈
  *
  * @author nichefish
  */

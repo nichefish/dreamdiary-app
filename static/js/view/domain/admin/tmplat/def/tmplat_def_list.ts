@@ -1,5 +1,6 @@
 /**
  * tmplat_def_list.ts
+ * 템플릿 정의 목록 페이지 스크립트
  *
  * @author nichefish
  */

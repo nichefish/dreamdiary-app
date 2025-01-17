@@ -1,5 +1,6 @@
 /**
  * schdul_cal.ts
+ * 일정 달력 페이지 스크립트
  *
  * @author nichefish
  */

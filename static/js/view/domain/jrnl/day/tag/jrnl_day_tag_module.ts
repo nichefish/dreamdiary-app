@@ -1,5 +1,6 @@
 /**
  * jrnl_day_tag_module.ts
+ * 저널 일자 태그 스크립트 모듈
  *
  * @author nichefish
  */

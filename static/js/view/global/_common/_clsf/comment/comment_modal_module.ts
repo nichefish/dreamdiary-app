@@ -1,5 +1,6 @@
 /**
  * comment_modal_module.ts
+ * 댓글 모달 스크립트 모듈
  *
  * @author nichefish
  */

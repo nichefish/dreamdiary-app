@@ -1,5 +1,6 @@
 /**
  * vcatn_schdul_list.ts
+ * 휴가 일정 목록 페이지 스크립트
  *
  * @author nichefish
  */

@@ -1,5 +1,6 @@
 /**
  * sectn_module.ts
+ * 단락 스크립트 모듈
  *
  * @author nichefish
  */

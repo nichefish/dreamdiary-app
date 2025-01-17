@@ -1,5 +1,6 @@
 /**
  * log_actvty_module.ts
+ * 활동 로그 스크립트 모듈
  *
  * @author nichefish
  */

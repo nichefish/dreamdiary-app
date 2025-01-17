@@ -1,5 +1,6 @@
 /**
  * user_my_pw_chg_module.ts
+ * 사용자 내 비밀번호 수정 모듈
  *
  * @author nichefish
  */

@@ -1,5 +1,6 @@
 /**
  * tag_admin_prop_module.ts
+ * 태그 속성 스크립트 모듈
  *
  * @author nichefish
  */

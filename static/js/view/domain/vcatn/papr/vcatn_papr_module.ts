@@ -1,5 +1,6 @@
 /**
  * vcatn_papr_module.ts
+ * 휴가계획서 스크립트 모듈
  *
  * @author nichefish
  */

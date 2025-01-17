@@ -1,5 +1,6 @@
 /**
  * notice_reg_form.ts
+ * 공지사항 등록/수정 페이지 스크립트
  *
  * @author nichefish
  */
