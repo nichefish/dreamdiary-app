@@ -6,10 +6,13 @@
 <!--
  * 모달:: 타이틀 영역
  -->
-<#macro modal_header title>
+<#macro modal_header title module>
     <div class="modal-header">
         <h5 id="modal_title" class="modal-title">[${title!}]</h5>
         <div class="btn btn-sm btn-icon btn-active-light-primary ms-2" aria-label="Close"
+            <#if module?? && module != "">
+                onclick="${module!}.close();"
+            </#if>
              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message "bs.tooltip.modal.close"/>">
             <i class="fas fa-times"></i>
         </div>
@@ -19,10 +22,13 @@
 <!--
  * 모달:: 타이틀 영역 (다크)
  -->
-<#macro modal_header_dark title>
+<#macro modal_header_dark title module>
     <div class="modal-header" style="background-color:#41416e;">
         <h5 id="modal_title" class="modal-title">[${title!}]</h5>
         <div class="btn btn-sm btn-icon btn-active-light-primary ms-2" aria-label="Close"
+            <#if module?? && module != "">
+                onclick="${module!}.close();"
+            </#if>
              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message "bs.tooltip.modal.close"/>">
             <i class="fas fa-times"></i>
         </div>
@@ -79,8 +85,11 @@
 <!--
 * 모달:: 버튼::모달 닫기 (닫기 안전장치 기능 추가)
 -->
-<#macro modal_btn_close_safe>
+<#macro modal_btn_close_safe func>
     <button type="button" class="btn btn-sm btn-light modal-btn-close-safe"
+            <#if func?? && func != "">
+                onclick="${func!}"
+            </#if>
             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message "bs.tooltip.modal.close.safe"/>">
         <i class="bi bi-x"></i>닫기
     </button>

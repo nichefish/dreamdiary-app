@@ -1,5 +1,6 @@
 /**
  * jrnl_diary_module.ts
+ * 저널 일기 스크립트 모듈
  *
  * @author nichefish
  */

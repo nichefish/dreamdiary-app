@@ -1,5 +1,6 @@
 /**
  * log_actvty_list.ts
+ * 활동 로그 목록 페이지 스크립트
  *
  * @author nichefish
  */

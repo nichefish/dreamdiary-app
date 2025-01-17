@@ -1,8 +1,5 @@
 package io.nicheblog.dreamdiary.domain.jrnl.sumry.scheduler;
 
-import io.nicheblog.dreamdiary.domain.jrnl.day.service.impl.JrnlDayTagCtgrSynchronizer;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.service.impl.JrnlDiaryTagCtgrSynchronizer;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.service.impl.JrnlDreamTagCtgrSynchronizer;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.service.JrnlSumryService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
@@ -29,9 +26,6 @@ import org.springframework.stereotype.Component;
 public class JrnlSumryScheduler {
 
     private final JrnlSumryService jrnlSumryService;
-    private final JrnlDreamTagCtgrSynchronizer jrnlDreamTagCtgrSynchronizer;
-    private final JrnlDiaryTagCtgrSynchronizer jrnlDiaryTagCtgrSynchronizer;
-    private final JrnlDayTagCtgrSynchronizer jrnlDayTagCtgrSynchronizer;
     private final ApplicationEventPublisher publisher;
 
     /**
@@ -60,30 +54,4 @@ public class JrnlSumryScheduler {
         }
     }
 
-    /**
-     * 하루에 한 번 태그 카테고리 동기화
-     */
-    @Scheduled(cron = "0 25 0 * * *", zone = Constant.LOC_SEOUL)         // second min hour day month weekday
-    public void jrnlTagCtgrSyncSchedule() {
-
-        log.info("jrnlTagCtgrSyncSchedule...");
-
-        LogSysParam logParam = new LogSysParam();
-        String rsltMsg = "";
-        try {
-            // 저널 일자 태그 동기화
-            jrnlDayTagCtgrSynchronizer.tagSync();
-            // 저널 일기 태그 동기화
-            jrnlDiaryTagCtgrSynchronizer.tagSync();
-            // 저널 꿈 태그 동기화
-            jrnlDreamTagCtgrSynchronizer.tagSync();
-        } catch (Exception e) {
-            rsltMsg = MessageUtils.getExceptionMsg(e);
-            logParam.setExceptionInfo(e);
-        } finally {
-            // 로그 관련 처리
-            logParam.setResult(false, rsltMsg, ActvtyCtgr.JRNL);
-            publisher.publishEvent(new LogSysEvent(this, logParam));
-        }
-    }
 }

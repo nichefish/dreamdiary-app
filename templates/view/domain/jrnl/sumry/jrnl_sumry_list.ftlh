@@ -72,7 +72,7 @@
                     -->
                 </div>
                 <div class="col fs-5">
-                    <div class="d-flex justify-content-between">
+                    <div class="d-flex justify-content-start">
                         <div class="text-gray-700 d-flex-center me-5">
                             <span class="fw-bold me-2">
                                 꿈

@@ -1,10 +1,11 @@
 /**
  * jrnl_day_page.ts
+ * 저널 일자 페이지 스크립트
  *
  * @author nichefish
  */
 // @ts-ignore
-const Page: Module = (function(): Module {
+const Page: Page = (function(): Page {
     return {
         /**
          * Page 객체 초기화

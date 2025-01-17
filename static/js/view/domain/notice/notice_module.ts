@@ -1,5 +1,6 @@
 /**
  * notice_module.ts
+ * 공지사항 스크립트 모듈
  *
  * @author nichefish
  */

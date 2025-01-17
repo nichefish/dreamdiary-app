@@ -1,5 +1,6 @@
 /**
  * tag_admin_list.ts
+ * 태그 관리 페이지 스크립트
  *
  * @author nichefish
  */

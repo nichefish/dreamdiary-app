@@ -5,9 +5,9 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="vcatn_schdul_reg" size="md">
+<@modal.layout id="vcatn_schdul_reg" size="md" module="">
     <#--begin::Modal Header-->
-    <@component.modal_header_dark "휴가 등록" />
+    <@component.modal_header_dark "휴가 등록" module! />
     <#--begin::Modal Body-->
     <div class="modal-body">
         <#--begin::Row-->
@@ -31,7 +31,7 @@
             <#--모달:: 버튼: 저장하기-->
             <@component.modal_btn_save "dF.VcatnSchdul.submit();" />
             <#--모달:: 버튼: 모달 닫기-->
-            <@component.modal_btn_close_safe />
+            <@component.modal_btn_close_safe "" />
         </div>
     </div>
 </@modal.layout>

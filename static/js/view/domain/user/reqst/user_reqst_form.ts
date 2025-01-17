@@ -1,5 +1,6 @@
 /**
  * user_reqst_form.ts
+ * 사용자 등록 페이지 스크립트
  *
  * @author nichefish
  */

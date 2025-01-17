@@ -1,5 +1,6 @@
 /**
  * admin_test_page.ts
+ * 관리자 테스트 페이지 스크립트
  *
  * @author nichefish
  */

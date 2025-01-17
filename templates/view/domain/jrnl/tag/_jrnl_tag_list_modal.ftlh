@@ -5,7 +5,7 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="jrnl_tag_list" size="xl">
+<@modal.layout id="jrnl_tag_list" size="xl" module="">
     <#--begin::Modal Header-->
     <div class="modal-header">
         <h5 id="modal_title" class="modal-title">

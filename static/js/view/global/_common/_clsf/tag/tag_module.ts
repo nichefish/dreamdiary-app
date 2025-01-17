@@ -1,5 +1,6 @@
 /**
  * tag_module.ts
+ * 태그 스크립트 모듈
  *
  * @author nichefish
  */

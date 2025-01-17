@@ -1,5 +1,6 @@
 /**
  * jrnl_sumry_module.ts
+ * 저널 결산 스크립트 모듈
  *
  * @author nichefish
  */

@@ -1,5 +1,6 @@
 /**
  * user_module.ts
+ * 사용자 관리 페이지 스크립트
  *
  * @author nichefish
  */

@@ -1,5 +1,6 @@
 /**
  * log_sys_module.ts
+ * 시스템 로그 스크립트 모듈
  *
  * @author nichefish
  */

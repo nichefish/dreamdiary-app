@@ -57,6 +57,7 @@ public class JrnlDreamCacheEvictor
         // jrnl_dream_tag
         this.evictMyCacheForPeriod("myJrnlDreamTagList", yy, mnth);
         this.evictMyCacheForPeriod("myJrnlDreamSizedTagList", yy, mnth);
+        this.evictMyCacheForPeriod("myCountDreamSize", yy, mnth);
         // L2캐시 처리
         EhCacheUtils.clearL2Cache(JrnlDreamEntity.class);
         EhCacheUtils.clearL2Cache(JrnlDreamTagEntity.class);

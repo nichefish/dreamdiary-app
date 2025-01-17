@@ -36,9 +36,9 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="comment_list" size="xl">
+<@modal.layout id="comment_list" size="xl" module="">
     <#--begin::Modal Header-->
-    <@component.modal_header "댓글 목록 조회" />
+    <@component.modal_header "댓글 목록 조회" module! />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <div class="row" id="comment_list_div">

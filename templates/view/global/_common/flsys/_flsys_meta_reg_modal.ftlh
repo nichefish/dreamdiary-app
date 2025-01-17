@@ -4,9 +4,9 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="flsys_meta_reg" size="xl">
+<@modal.layout id="flsys_meta_reg" size="xl" module="">
     <#--begin::Modal Header-->
-    <@component.modal_header "파일시스템 메타 정보 저장" />
+    <@component.modal_header "파일시스템 메타 정보 저장" module! />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <form class="form" name="flsysMetaRegForm" id="flsysMetaRegForm">
@@ -22,7 +22,7 @@
             <#--모달:: 버튼: 저장하기-->
             <@component.modal_btn_save "FlsysMeta.submit();" />
             <#--모달:: 버튼: 모달 닫기-->
-            <@component.modal_btn_close_safe />
+            <@component.modal_btn_close_safe "" />
         </div>
     </div>
 </@modal.layout>

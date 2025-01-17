@@ -5,9 +5,9 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="user_my_dtl_vcatn" size="xl">
+<@modal.layout id="user_my_dtl_vcatn" size="xl" module="">
     <#--begin::Modal Header-->
-    <@component.modal_header "${vcatnYy.statsYy}년 휴가 상세 현황" />
+    <@component.modal_header "${vcatnYy.statsYy}년 휴가 상세 현황" module! />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <div class="table-responsive-sm">

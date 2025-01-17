@@ -1,5 +1,6 @@
 /**
  * jrnl_sbjct_module.ts
+ * 저널 주제 스크립트 모듈
  * 
  * @author nichefish
  */

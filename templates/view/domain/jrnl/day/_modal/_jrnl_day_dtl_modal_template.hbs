@@ -1,0 +1,278 @@
+<#--
+ * 저널 일자(jrnl_day) > 등록/수정 Template
+ * @included_in : _jrnl_day_reg_modal.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="jrnl_day_dtl_modal_template">
+    <input type="hidden" name="postNo" value="{{postNo}}">
+
+    <#--begin::Row-->
+    <div class="row row-cols-lg-2 mb-3 d-flex flex-column">
+        <div class="d-flex align-items-center mt-1">
+            <span class="menu-icon me-md-2 vertical-middle">
+                <i class="bi bi-calendar3 fs-6 me-2"></i>
+            </span>
+            {{stdrdDt}}
+            {{#if (exists jrnlDt)}}
+                <span class="fs-7 text-gray-600 ms-1">({{jrnlDtWeekDay}})</span>
+            {{else}}
+                <i class='bi bi-exclamation-circle cursor-pointer text-noti blink fs-7 ms-2'
+                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="불확실한 일자입니다."></i>
+            {{/if}}
+            <span class="fs-7 ms-4 text-muted">{{{weather}}}</span>
+        </div>
+        <div class="mt-3">
+            {{#tag.list}}
+                <span class="text-muted cursor-pointer pe-1"
+                      onclick="dF.JrnlDayTag.dtlModal({{refTagNo}}, '{{tagNm}}');"
+                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
+                      title="해당 태그가 등록된 게시물 목록 팝업을 호출합니다.">
+                    #
+                    <span class="border-bottom text-primary fw-lighter opacity-hover">
+                        {{#if (exists ctgr)}}
+                            <span class="fs-7 text-noti">[{{ctgr}}]</span>
+                        {{/if}}
+                        {{tagNm}}
+                    </span>
+                </span>
+            {{/tag.list}}
+        </div>
+    </div>
+
+    <div class="row p-5">
+        {{#if (exists jrnlDiaryList)}}
+            <label class="d-flex align-items-center mt-2">
+                <span class="text-gray-700 fs-6 ps-5 fw-bolder">
+                    일기
+                    <i class="bi bi-book fs-4 pe-1"></i>
+                </span>
+            </label>
+            {{#each jrnlDiaryList}}
+                <div class="row jrnl-item">
+                    <div class="col-1 py-3 jrnl-diary-cn d-flex justify-content-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
+                        <div>
+                            # {{idx}}
+                        </div>
+                    </div>
+                    <div class="col jrnl-diary-cn">
+                        {{#ifYn imprtcYn}}<div class="ctgr-span ctgr-imprtc w-auto d-flex-center">!중요</div>{{/ifYn}}
+                        {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}
+                        {{{markdownCn}}}
+                        {{#if (exists tag.list)}}
+                            <div class="ms-2 mt-3">
+                                <i class="bi bi-tag"></i>
+                                {{#tag.list}}
+                                <span class="text-muted cursor-pointer pe-1"
+                                      onclick="dF.JrnlDiaryTag.dtlModal({{refTagNo}}, '{{tagNm}}');"
+                                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
+                                      title="해당 태그가 등록된 게시물 목록 팝업을 호출합니다.">
+                                    #
+                                    <span class="border-bottom text-primary fw-lighter opacity-hover">
+                                        {{#if (exists ctgr)}}
+                                            <span class="fs-7 text-noti">[{{ctgr}}]</span>
+                                        {{/if}}
+                                        {{tagNm}}
+                                    </span>
+                                </span>
+                                {{/tag.list}}
+                            </div>
+                        {{/if}}
+                        {{#if (exists comment.list)}}
+                            {{#each comment.list}}
+                                <div class="row ms-1 {{#if @first}}mt-3{{/if}} {{#if @last}}mb-3{{/if}} py-1 d-flex align-items-center text-noti">
+                                    <div class="col div-textarea-smp me-10">- {{cn}}</div>
+                                    <div class="col-1">
+                                        <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
+                                                onclick="dF.Comment.modal.mdfModal({{postNo}});"
+                                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.modal.mdf"/>">
+                                            <i class="bi bi-pencil-square p-0"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-light-danger btn-outlined ms-2 py-1 px-2 cursor-pointer"
+                                                onclick="dF.Comment.modal.delAjax({{postNo}});"
+                                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.del"/>">
+                                            <i class="bi bi-trash p-0"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            {{/each}}
+                        {{/if}}
+                    </div>
+                    <div class="col-1 py-3 jrnl-diary-cn d-flex justify-content-between w-50px gap-1">
+                        <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
+                                onclick="dF.Comment.modal.regModal({{postNo}}, 'JRNL_DIARY');"
+                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="댓글 <@spring.message "bs.tooltip.modal.reg"/>">
+                            <i class="bi bi-chat-left-dots p-0"></i>
+                        </button>
+                    </div>
+                    <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                    <div class="col-1 py-3 jrnl-diary-cn d-flex justify-content-between w-50px gap-1">
+                        <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
+                                onclick="dF.JrnlDiary.mdfModal({{postNo}}, '{{stdrdDt}}');"
+                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.modal.mdf"/>">
+                            <i class="bi bi-pencil-square p-0"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-light-danger btn-outlined ms-2 py-1 px-2 cursor-pointer"
+                                onclick="dF.JrnlDiary.delAjax({{postNo}});"
+                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.del"/>">
+                            <i class="bi bi-trash p-0"></i>
+                        </button>
+                    </div>
+                </div>
+            {{/each}}
+        {{/if}}
+        {{#if hasDream}}
+            <label class="d-flex align-items-center mt-2">
+                <span class="text-gray-700 fs-6 ps-5 fw-bolder">
+                    꿈
+                    <i class="bi bi-moon-stars fs-4 pe-1"></i>
+                </span>
+            </label>
+            {{#each jrnlDreamList}}
+                <div class="row jrnl-item">
+                    <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
+                        <div>
+                            # {{idx}}
+                        </div>
+                    </div>
+                <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
+                    {{#ifYn imprtcYn}}<div class="ctgr-span ctgr-imprtc w-auto">!중요</div>{{/ifYn}}
+                    {{#ifYn nhtmrYn}}<div class="ctgr-span ctgr-info w-auto d-flex-center">!악몽</div>{{/ifYn}}
+                    {{#ifYn hallucYn}}<div class="ctgr-span ctgr-gray w-auto">!입면환각</div>{{/ifYn}}
+                    {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}
+                    {{{markdownCn}}}
+                    {{#if (exists tag.list)}}
+                        <div class="ms-2 mt-3">
+                            <i class="bi bi-tag"></i>
+                            {{#tag.list}}
+                            <span class="text-muted cursor-pointer pe-1"
+                                  onclick="dF.JrnlDreamTag.dtlModal({{refTagNo}});"
+                                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
+                                  title="해당 태그가 등록된 게시물 목록 팝업을 호출합니다.">
+                                #
+                                <span class="border-bottom text-primary fw-lighter opacity-hover">
+                                    {{#if (exists ctgr)}}
+                                        <span class="fs-7 text-noti">[{{ctgr}}]</span>
+                                    {{/if}}
+                                    {{tagNm}}
+                                </span>
+                            </span>
+                            {{/tag.list}}
+                        </div>
+                    {{/if}}
+                    {{#if (exists comment.list)}}
+                        {{#each comment.list}}
+                            <div class="row ms-1 {{#if @first}}mt-3{{/if}} {{#if @last}}mb-3{{/if}} py-1 d-flex align-items-center text-noti">
+                                <div class="col div-textarea-smp me-10">- {{cn}}</div>
+                                <div class="col-1">
+                                    <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
+                                            onclick="dF.Comment.modal.mdfModal({{postNo}});"
+                                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.modal.mdf"/>">
+                                        <i class="bi bi-pencil-square p-0"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-light-danger btn-outlined ms-2 py-1 px-2 cursor-pointer"
+                                            onclick="dF.Comment.modal.delAjax({{postNo}});"
+                                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.del"/>">
+                                        <i class="bi bi-trash p-0"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        {{/each}}
+                    {{/if}}
+                </div>
+                <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between w-50px gap-1">
+                    <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
+                            onclick="dF.Comment.modal.regModal({{postNo}}, 'JRNL_DREAM');"
+                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="댓글 <@spring.message "bs.tooltip.modal.reg"/>">
+                        <i class="bi bi-chat-left-dots p-0"></i>
+                    </button>
+                </div>
+                <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between w-50px gap-1">
+                    <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
+                            onclick="dF.JrnlDream.mdfModal({{postNo}}, '{{stdrdDt}}');"
+                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.modal.mdf"/>">
+                        <i class="bi bi-pencil-square p-0"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light-danger btn-outlined ms-2 py-1 px-2 cursor-pointer"
+                            onclick="dF.JrnlDream.delAjax({{postNo}});"
+                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.del"/>">
+                        <i class="bi bi-trash p-0"></i>
+                    </button>
+                </div>
+            </div>
+            {{/each}}
+            {{#each jrnlElseDreamList}}
+                <div class="row jrnl-item">
+                    <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
+                        <div>
+                            -
+                        </div>
+                    </div>
+                    <div class="col py-3 jrnl-dream-cn bg-secondary">
+                        {{#ifYn imprtcYn}}<div class="ctgr-span ctgr-imprtc w-auto d-flex-center">!중요</div>{{/ifYn}}
+                        {{#ifYn nhtmrYn}}<div class="ctgr-span ctgr-imprtc w-auto d-flex-center">!악몽</div>{{/ifYn}}
+                        <div class="ctgr-span ctgr-gray w-auto d-flex-center">({{elseDreamerNm}} 꿈)</div>
+                        {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}
+                        {{{markdownCn}}}
+                        {{#if (exists tag.list)}}
+                            <div class="ms-2 mt-3">
+                                {{#tag.list}}
+                                    <span class="text-muted cursor-pointer pe-1"
+                                          onclick="dF.JrnlDreamTag.dtlModal({{refTagNo}});"
+                                          data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
+                                          title="해당 태그가 등록된 게시물 목록 팝업을 호출합니다.">
+                                        #<span class="border-bottom text-primary fw-lighter opacity-hover">
+                                            {{#if (exists ctgr)}}
+                                              <span class="fs-7 text-noti">[{{ctgr}}]</span>
+                                            {{/if}}
+                                            {{tagNm}}
+                                        </span>
+                                    </span>
+                                {{/tag.list}}
+                            </div>
+                        {{/if}}
+                        {{#if (exists comment.list)}}
+                            {{#each comment.list}}
+                                <div class="row ms-1 {{#if @first}}mt-3{{/if}} {{#if @last}}mb-3{{/if}} py-1 d-flex align-items-center text-noti">
+                                    <div class="col div-textarea-smp me-10">- {{cn}}</div>
+                                    <div class="col-1">
+                                        <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
+                                                onclick="dF.Comment.modal.mdfModal({{postNo}});"
+                                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.modal.mdf"/>">
+                                            <i class="bi bi-pencil-square p-0"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-light-danger btn-outlined ms-2 py-1 px-2 cursor-pointer"
+                                                onclick="dF.Comment.modal.delAjax({{postNo}});"
+                                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.del"/>">
+                                            <i class="bi bi-trash p-0"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            {{/each}}
+                        {{/if}}
+                    </div>
+                    <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between w-50px gap-1">
+                        <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
+                                onclick="dF.Comment.modal.regModal({{postNo}}, 'JRNL_DREAM');"
+                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="댓글 <@spring.message "bs.tooltip.modal.reg"/>">
+                            <i class="bi bi-chat-left-dots p-0"></i>
+                        </button>
+                    </div>
+                    <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                    <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between w-50px gap-1">
+                        <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
+                                onclick="dF.JrnlDream.mdfModal({{postNo}}, '{{stdrdDt}}');"
+                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.modal.mdf"/>">
+                            <i class="bi bi-pencil-square p-0"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-light-danger btn-outlined ms-2 py-1 px-2 cursor-pointer"
+                                onclick="dF.JrnlDream.delAjax({{postNo}});"
+                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.del"/>">
+                            <i class="bi bi-trash p-0"></i>
+                        </button>
+                    </div>
+                </div>
+            {{/each}}
+        {{/if}}
+    </div>
+</script>

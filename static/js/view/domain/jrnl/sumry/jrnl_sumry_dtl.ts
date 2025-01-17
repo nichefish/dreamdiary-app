@@ -1,10 +1,11 @@
 /**
  * jrnl_sumry_dtl.ts
+ * 저널 결산 상세 페이지 스크립트
  *
  * @author nichefish
  */
 // @ts-ignore
-const Page: Module = (function(): Module {
+const Page: Page = (function(): Page {
     return {
         /**
          * Page 객체 초기화

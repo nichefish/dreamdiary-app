@@ -112,6 +112,7 @@
 
         <!--scripts::layout-->
         <script type="text/javascript" src="/js/layout/layout.js?${releaseDate!}"></script>
+        <script type="text/javascript" src="/js/layout/modal_history.js?${releaseDate!}"></script>
 
         <!--scripts::chat-->
         <link rel="stylesheet" type="text/css" href="/vue/chat/assets/css/style.css">

@@ -1,5 +1,6 @@
 /**
  * user_my_dtl.ts
+ * 사용자 마이페이지 스크립트
  *
  * @author nichefish
  */

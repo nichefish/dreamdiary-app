@@ -1,5 +1,6 @@
 /**
  * tmplate_def_module.ts
+ * 템플릿 정의 스크립트 모듈
  *
  * @author nichefish
  */

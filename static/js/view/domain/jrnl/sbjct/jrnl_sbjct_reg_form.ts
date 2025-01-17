@@ -1,10 +1,11 @@
 /**
  * jrnl_sbjct_reg_form.ts
+ * 저널 주제 등록/수정 페이지 스크립트
  *
  * @author nichefish
  */
 // @ts-ignore
-const Page: Module = (function(): Module {
+const Page: Page = (function(): Page {
     return {
         isMdf: $("#boardPostRegForm").data("mode") === "modify",
 

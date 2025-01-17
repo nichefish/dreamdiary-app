@@ -5,9 +5,9 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="jrnl_day_reg" size="xl">
+<@modal.layout id="jrnl_day_reg" size="xl" module="">
     <#--begin::Modal Header-->
-    <@component.modal_header "저널 일자 저장" />
+    <@component.modal_header "저널 일자 저장" module! />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <#--begin::Form-->
@@ -24,7 +24,7 @@
             <#--모달:: 버튼: 저장하기-->
             <@component.modal_btn_save "dF.JrnlDay.submit();" />
             <#--모달:: 버튼: 모달 닫기-->
-            <@component.modal_btn_close_safe />
+            <@component.modal_btn_close_safe "dF.JrnlDay.closeModal();" />
         </div>
     </div>
 </@modal.layout>

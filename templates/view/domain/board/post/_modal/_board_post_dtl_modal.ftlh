@@ -5,9 +5,9 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="board_post_dtl" size="xl">
+<@modal.layout id="board_post_dtl" size="xl" module="">
     <#--begin::Modal Header-->
-    <@component.modal_header "게시판" />
+    <@component.modal_header "게시판" module! />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <div id="board_post_dtl_div">

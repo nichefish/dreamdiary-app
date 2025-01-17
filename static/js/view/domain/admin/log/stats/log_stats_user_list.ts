@@ -1,5 +1,6 @@
 /**
  * log_stats_user_list.ts
+ * 로그 통계 - 사용자별 로그 목록 페이지 스크립트
  *
  * @author nichefish
  */
