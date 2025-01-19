@@ -9,7 +9,7 @@
 if (typeof cF === 'undefined') { var cF = {} as any; }
 cF.tagify = (function(): Module {
     /** 기본 옵션 분리 */
-    const baseOptions = {
+    const baseOptions: Record<string, any> = {
         whitelist: [],
         maxTags: 21,
         keepInvalidTags: false,
@@ -46,7 +46,7 @@ cF.tagify = (function(): Module {
          * @param {Record<string, any>} additionalOptions - 추가로 적용할 `Tagify` 설정 옵션 (선택적).
          * @returns {Tagify} - 초기화된 Tagify 인스턴스.
          */
-        init: function(selector: string, additionalOptions: Record<string, any> = {}) {
+        init: function(selector: string, additionalOptions: Record<string, any> = {}): Tagify {
             // 태그 tagify
             const inputs: HTMLElement[] = cF.util.verifySelector(selector);
             if (inputs.length === 0) return;
@@ -54,7 +54,7 @@ cF.tagify = (function(): Module {
             const tagInput: HTMLElement = inputs[0];
 
             // 기본 옵션과 추가 옵션을 병합하여 Tagify 생성
-            const mergedOptions = {
+            const mergedOptions: Record<string, any> = {
                 ...baseOptions,
                 ...additionalOptions
             };
@@ -69,8 +69,8 @@ cF.tagify = (function(): Module {
          * @param {Record<string, any>} additionalOptions - 추가로 적용할 `Tagify` 설정 옵션 (선택적).
          * @returns {Tagify} - 초기화된 Tagify 인스턴스. 카테고리 기능이 추가된 상태입니다.
          */
-        initWithCtgr: function(selector: string, tagCtgrMap: Record<string, any>, additionalOptions: Record<string, any> = {}) {
-            const tagify = cF.tagify.init(selector, additionalOptions);
+        initWithCtgr: function(selector: string, tagCtgrMap: Record<string, any>, additionalOptions: Record<string, any> = {}): Tagify {
+            const tagify: Tagify = cF.tagify.init(selector, additionalOptions);
 
             // tagify 스코프 설정
             const parts: string[] = selector.split(' ');
@@ -103,11 +103,11 @@ cF.tagify = (function(): Module {
          * @param {Tagify} tagify - Tagify 인스턴스. 자동완성을 적용할 태그 입력 요소입니다.
          * @param {Record<string, any>} tagCtgrMap - 태그 카테고리 매핑 객체. 태그와 관련된 카테고리를 정의합니다.
          */
-        _setAutoComplete: function(tagify, tagCtgrMap: Record<string, any>): void {
+        _setAutoComplete: function(tagify: Tagify, tagCtgrMap: Record<string, any>): void {
             if (!tagCtgrMap) return;
 
             tagify.on("input", function(e): void {
-                const value = e.detail.value;
+                const value: string = e.detail.value;
                 tagify.settings.whitelist = Object.keys(tagCtgrMap).filter(tag => tag.startsWith(value));
                 tagify.dropdown.show(value);
             });
@@ -118,39 +118,63 @@ cF.tagify = (function(): Module {
          * @param {Tagify} tagify - Tagify 인스턴스. 카테고리 입력을 위한 태그 입력 요소입니다.
          * @param {Object} tagCtgrMap - 태그 카테고리 매핑 객체. 태그와 관련된 카테고리를 정의합니다.
          */
-        _setCtgrInputPrompt: function(tagify, tagCtgrMap: Record<string, any>): void {
-            tagify.on("add", function(e): void {
-                // 기본 태그 (카테고리 붙이기 전) 처리시에만 동작
+        _setCtgrInputPrompt: function(tagify: Tagify, tagCtgrMap: Record<string, any>): void {
+            let isOngoing: boolean = false;
+
+            tagify.on("add", function(e: CustomEvent): void {
                 const newTag = e.detail.data;
-                if (newTag.data !== undefined) {
-                    // 태그에서 마킹 정보 클리어 :: 메소드 분리
-                    cF.tagify._clearMarks(tagify);
+                if (isOngoing) {
+                    // setTimeout을 사용하여 포커스 호출 지연
+                    setTimeout((): void => {
+                        const newTagId: string = newTag.__tagId;
+                        tagify.tempId = newTagId;
+                        tagify.getTagElms().forEach((tagElmt) => {
+                            const existingTagId = tagElmt.__tagifyTagData.__tagId;
+                            if (newTagId === existingTagId) {
+                                tagify.removeTags(tagElmt); // 조건에 맞는 태그를 제거
+                            }
+                        });
+                    }, 0, newTag);
+                    return;
+                }
+
+                isOngoing = true;
+
+                // 기본 태그 (카테고리 붙이기 전) 처리시에만 동작
+                // 카테고리 추가된 태그가 넘어올시 = 마킹 정보 클리어 후 종료 :: 메소드 분리
+                if (cF.util.isNotEmpty(newTag.data?.ctgr)) {
+                    cF.tagify._clearMarked(tagify);
+                    isOngoing = false;
                     return;
                 }
 
                 // setTimeout을 사용하여 포커스 호출 지연
                 setTimeout((): void => {
-                    // 1. 마지막 추가된 태그 임시 마킹
-                    const addedTagElmt = tagify.getTagElms().slice(-1)[0];
-                    addedTagElmt.setAttribute('data-marked', 'true');  // 마킹
+                    const newValue: string = newTag.value;
+                    // 조건에 맞지 않게 연속으로 중복 추가된 태그 삭제
+                    const existingLastTagElmt: HTMLElement = tagify.getTagElms().slice(-1)[0];
+                    existingLastTagElmt.setAttribute('data-marked', 'true');  // 마킹
 
-                    // 2. 카테고리 입력 칸 prompt
-                    const newValue = newTag.value;
                     tagify.categoryInputContainer.style.display = 'block';
                     tagify.tagCtgrInput.value = '';
                     tagify.tagCtgrInput.dataset.tagValue = newValue;
                     tagify.tagCtgrInput.focus();
 
-                    // 3. 카테고리 맵 정의시: selectbox 세팅
+                    // 2. 카테고리 맵 정의시: selectbox 세팅
                     tagify.metaInfoContainer.style.display = 'none';
-                    if (!tagCtgrMap) return;
+                    if (!tagCtgrMap) {
+                        isOngoing = false;
+                        return;
+                    }
                     const predefinedCtgr = tagCtgrMap[newValue];
                     const filteredCtgr = predefinedCtgr ? predefinedCtgr.filter(item => item) : [];
-                    if (filteredCtgr.length === 0) return;
+                    if (filteredCtgr.length === 0) {
+                        isOngoing = false;
+                        return;
+                    }
 
-                    // 초기화 및 직접입력 추가
+                    // selectbox 초기화 및 직접입력 추가
                     tagify.metaInfoSelect.innerHTML = '<option value="custom">직접입력</option>' + filteredCtgr.map(item => '<option value="' + item + '">' + item + '</option>').join('');
-
                     // 메타정보 컨테이너 표시
                     tagify.metaInfoSelect.size = filteredCtgr.length + 1;
                     tagify.metaInfoContainer.style.display = 'block';
@@ -159,7 +183,7 @@ cF.tagify = (function(): Module {
                     tagify.metaInfoSelect.onchange = function(): void {
                         const selectedCtgr = tagify.metaInfoSelect.value;
                         if (selectedCtgr !== "custom") {
-                            tagify.removeTags(addedTagElmt);
+                            tagify.removeTags(existingLastTagElmt);
                             tagify.addTags([{ "value": newValue, "data": { "ctgr": selectedCtgr } }]);
                             tagify.metaInfoContainer.style.display = 'none';  // 선택 후 컨테이너 숨김
                         } else {
@@ -170,14 +194,16 @@ cF.tagify = (function(): Module {
                             tagify.tagCtgrInput.focus();
                         }
                     };
-                }, 0);
+
+                    isOngoing = false;
+                }, 0, newTag);
             });
         },
 
         /**
          * 태그에서 마킹 정보 클리어
          */
-        _clearMarks: function(tagify): void {
+        _clearMarked: function(tagify): void {
             const markedTags = tagify.scope.querySelectorAll('[data-marked="true"]');
             markedTags.forEach(tagElmt => {
                 tagElmt.removeAttribute('data-marked');
@@ -188,8 +214,8 @@ cF.tagify = (function(): Module {
          * _내부 함수: 키 리스너를 설정합니다.
          * @param {Tagify} tagify - Tagify 인스턴스.
          */
-        _setKeyListener: function(tagify): void {
-            tagify.tagCtgrInput.addEventListener('keydown', function(event) {
+        _setKeyListener: function(tagify: Tagify): void {
+            tagify.tagCtgrInput.addEventListener('keydown', function(event: KeyboardEvent): void {
                 tagify.metaInfoContainer.style.display = 'none';
                 const markedTags = tagify.scope.querySelectorAll('[data-marked="true"]');
 
@@ -199,12 +225,12 @@ cF.tagify = (function(): Module {
                     // 카테고리 입력 필드 숨김
                     tagify.categoryInputContainer.style.display = 'none';
                     // 태그에서 마킹 정보 클리어 :: 메소드 분리
-                    cF.tagify._clearMarks(tagify);
+                    cF.tagify._clearMarked(tagify);
                     // 태그 인풋으로 포커싱 이동
                     setTimeout((): void => {
                         if (tagify.DOM.input) tagify.DOM.input.focus();
                     }, 0);
-                } else if (event.key === 'Tab') {
+                } else if ((event.key === 'Tab') || (event.key === 'Enter')) {
                     event.preventDefault();
                     // TAB = 빈칸 아닐시 카테고리 추가
                     const newCtgr: string = tagify.tagCtgrInput.value;
@@ -228,7 +254,7 @@ cF.tagify = (function(): Module {
                         if (newCtgr) tagify.removeTags(tagElmt);  // 마킹된 태그 제거
                     });
                     // 태그에서 마킹 정보 클리어 :: 메소드 분리
-                    cF.tagify._clearMarks(tagify);
+                    cF.tagify._clearMarked(tagify);
                     // 태그 인풋으로 포커싱 이동
                     setTimeout((): void => {
                         if (tagify.DOM.input) tagify.DOM.input.focus();
@@ -241,12 +267,21 @@ cF.tagify = (function(): Module {
          * _내부 함수: 카테고리 입력 칸을 숨깁니다.
          * @param {Tagify} tagify - Tagify 인스턴스.
          */
-        _hideCtgrDiv: function(tagify): void {
-            tagify.on("remove", function(): void {
+        _hideCtgrDiv: function(tagify: Tagify): void {
+            tagify.on("remove", function(e): void {
+                // 삭제된 태그가 마킹된 태그인 경우에만 처리하도록 조건 추가
+                const removedTag = e.detail.data;
+                const removedTagId = removedTag.__tagId;
+
+                if (removedTagId === tagify.tempId) {
+                    tagify.tempId = null;
+                    return;
+                }
+
                 tagify.metaInfoContainer.style.display = 'none';
                 tagify.categoryInputContainer.style.display = 'none';
                 // 태그에서 마킹 정보 클리어 :: 메소드 분리
-                cF.tagify._clearMarks(tagify);
+                cF.tagify._clearMarked(tagify);
             });
         },
     }

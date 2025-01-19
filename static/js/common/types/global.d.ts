@@ -52,6 +52,10 @@ declare var Page: {
     [key: string]: any;
 }
 
+declare interface Tagify {
+    [key: string]: any;
+}
+
 /**
  * Model : Spring 컨텍스트에서 Model에 추가된 요소들.
  */

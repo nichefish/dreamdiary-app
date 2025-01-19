@@ -167,7 +167,7 @@ cF.ajax = (function(): Module {
                 return;
             }
             case 403: {
-                cF.ui.swalOrAlert(Message.get("view.error.forbidden"), function() {
+                cF.ui.swalOrAlert(Message.get("view.error.forbidden"), function(): void {
                     window.location.href = lgnFormUrl;
                 });
                 return;

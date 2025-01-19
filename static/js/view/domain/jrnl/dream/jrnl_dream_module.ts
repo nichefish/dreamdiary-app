@@ -9,6 +9,7 @@ dF.JrnlDream = (function(): dfModule {
     return {
         initialized: false,
         inKeywordSearchMode: false,
+        tagify: null,
 
         /**
          * initializes module.
@@ -46,8 +47,6 @@ dF.JrnlDream = (function(): dfModule {
             $("#elseDreamYn").change(function() {
                 $("#elseDreamerNm").valid();
             });
-            /* tagify */
-            // cF.tagify.initWithCtgr("#jrnlDreamRegForm #tagListStr", TagCtgrMap.jrnlDream);
             // checkbox init
             cF.ui.chckboxLabel("imprtcYn", "중요//해당없음", "red//gray");
             // checkbox init
@@ -55,16 +54,16 @@ dF.JrnlDream = (function(): dfModule {
             // checkbox init
             cF.ui.chckboxLabel("hallucYn", "입면환각//해당없음", "blue//gray");
             // checkbox init
-            cF.ui.chckboxLabel("elseDreamYn", "해당//미해당", "blue//gray", function() {
+            cF.ui.chckboxLabel("elseDreamYn", "해당//미해당", "blue//gray", function(): void {
                 $("#elseDreamerNmDiv").removeClass("d-none");
-            }, function() {
+            }, function(): void {
                 $("#elseDreamerNmDiv").addClass("d-none");
             });
             /* tinymce editor reset */
             cF.tinymce.init('#tinymce_jrnlDreamCn');
             cF.tinymce.setContentWhenReady("tinymce_jrnlDreamCn", obj.cn || "");
             /* tagify */
-            cF.tagify.initWithCtgr("#jrnlDreamRegForm #tagListStr", dF.JrnlDreamTag.ctgrMap);
+            dF.JrnlDream.tagify = cF.tagify.initWithCtgr("#jrnlDreamRegForm #tagListStr", dF.JrnlDreamTag.ctgrMap);
         },
 
         /**
@@ -121,8 +120,8 @@ dF.JrnlDream = (function(): dfModule {
         /**
          * 등록 (Ajax)
          */
-        regAjax: function() {
-            const isReg = $("#jrnlDreamRegForm #postNo").val() === "";
+        regAjax: function(): void {
+            const isReg: boolean = $("#jrnlDreamRegForm #postNo").val() === "";
             Swal.fire({
                 text: Message.get(isReg ? "view.cnfm.reg" : "view.cnfm.mdf"),
                 showCancelButton: true,
@@ -139,17 +138,21 @@ dF.JrnlDream = (function(): dfModule {
                             const isCalendar: boolean = Page?.calendar !== undefined;
                             if (isCalendar) {
                                 Page.refreshEventList();
+                                dF.JrnlDreamTag.listAjax();     // 태그 refresh
                             } else {
                                 if (dF.JrnlDream.inKeywordSearchMode) {
                                     dF.JrnlDream.keywordListAjax();
                                 } else {
                                     dF.JrnlDay.yyMnthListAjax();
-                                    dF.JrnlDreamTag.listAjax();
+                                    dF.JrnlDreamTag.listAjax();         // 태그 refresh
                                 }
                             }
 
                             // TODO: 결산 페이지에서 처리시도 처리해 줘야 한다.
                             cF.ui.unblockUI();
+
+                            /* modal history pop */
+                            ModalHistory.reset();
                         });
                 }, "block");
             });
@@ -218,15 +221,18 @@ dF.JrnlDream = (function(): dfModule {
                             const isCalendar: boolean = Page?.calendar !== undefined;
                             if (isCalendar) {
                                 Page.refreshEventList();
+                                dF.JrnlDreamTag.listAjax();     // 태그 refresh
                             } else {
                                 if (dF.JrnlDream.inKeywordSearchMode) {
                                     dF.JrnlDream.keywordListAjax();
                                 } else {
                                     dF.JrnlDay.yyMnthListAjax();
-                                    dF.JrnlDreamTag.listAjax();
+                                    dF.JrnlDreamTag.listAjax();     // 태그 refresh
                                 }
                             }
-                            cF.ui.unblockUI();
+
+                            /* modal history pop */
+                            ModalHistory.reset();
                         });
                 }, "block");
             });

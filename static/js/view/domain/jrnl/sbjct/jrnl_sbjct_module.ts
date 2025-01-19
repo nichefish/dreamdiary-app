@@ -23,7 +23,7 @@ dF.JrnlSbjct = (function(): dfModule {
         /**
          * form init
          */
-        initForm: function() {
+        initForm: function(): void {
             /* jquery validation */
             cF.validate.validateForm("#jrnlSbjctRegForm", dF.JrnlSbjct.submitHandler);
             /* tinymce init */
@@ -31,9 +31,9 @@ dF.JrnlSbjct = (function(): dfModule {
             /* tagify */
             cF.tagify.initWithCtgr("#tagListStr", undefined);
             // 잔디발송여부 클릭시 글씨 변경
-            cF.ui.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function() {
+            cF.ui.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function(): void {
                 $("#trgetTopicSpan").show();
-            }, function() {
+            }, function(): void {
                 $("#trgetTopicSpan").hide();
             });
         },

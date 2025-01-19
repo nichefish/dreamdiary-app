@@ -78,7 +78,7 @@ dF.JrnlDayTag = (function(): dfModule {
             ModalHistory.reset();
 
             const self = this;
-            const func = arguments.callee.name; // 현재 실행 중인 함수 참조
+            const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args = Array.from(arguments); // 함수 인자 배열로 받기
 
             const url: string = Url.JRNL_DAY_TAG_DTL_AJAX;

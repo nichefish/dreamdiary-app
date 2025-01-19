@@ -46,8 +46,8 @@ const Page: Page = (function(): Page {
         /**
          * 목록 화면으로 이동
          */
-        list: function() {
-            const listUrl: string = `${Url.NOTICE_LIST!}?isBackToList=Y`;
+        list: function(): void {
+            const listUrl: string = `${Url.TMPLAT_DEF_LIST}?isBackToList=Y`;
             cF.ui.blockUIReplace(listUrl);
         }
     }

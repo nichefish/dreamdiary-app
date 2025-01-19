@@ -9,6 +9,7 @@ dF.JrnlDiary = (function(): dfModule {
     return {
         initialized: false,
         inKeywordSearchMode: false,
+        tagify: null,
 
         /**
          * initializes module.
@@ -33,15 +34,13 @@ dF.JrnlDiary = (function(): dfModule {
 
             /* jquery validation */
             cF.validate.validateForm("#jrnlDiaryRegForm", dF.JrnlDiary.regAjax);
-            /* tagify */
-            cF.tagify.initWithCtgr("#jrnlDiaryRegForm #tagListStr");
             // checkbox init
             cF.ui.chckboxLabel("imprtcYn", "중요//해당없음", "red//gray");
             /* tinymce editor reset */
             cF.tinymce.init('#tinymce_jrnlDiaryCn');
             cF.tinymce.setContentWhenReady("tinymce_jrnlDiaryCn", obj.cn || "");
             /* tagify */
-            cF.tagify.initWithCtgr("#jrnlDiaryRegForm #tagListStr", dF.JrnlDiaryTag.ctgrMap);
+            dF.JrnlDiary.tagify = cF.tagify.initWithCtgr("#jrnlDiaryRegForm #tagListStr", dF.JrnlDiaryTag.ctgrMap);
         },
 
         /**
@@ -98,7 +97,7 @@ dF.JrnlDiary = (function(): dfModule {
         /**
          * 등록 (Ajax)
          */
-        regAjax: function() {
+        regAjax: function(): void {
             const isReg = $("#jrnlDiaryRegForm #postNo").val() === "";
             Swal.fire({
                 text: Message.get(isReg ? "view.cnfm.reg" : "view.cnfm.mdf"),
@@ -116,16 +115,20 @@ dF.JrnlDiary = (function(): dfModule {
                             const isCalendar: boolean = Page?.calendar !== undefined;
                             if (isCalendar) {
                                 Page.refreshEventList();
+                                dF.JrnlDiaryTag.listAjax();     // 태그 refresh
                             } else {
                                 if (dF.JrnlDiary.inKeywordSearchMode) {
                                     dF.JrnlDiary.keywordListAjax();
                                 } else {
                                     dF.JrnlDay.yyMnthListAjax();
-                                    dF.JrnlDiaryTag.listAjax();
+                                    dF.JrnlDiaryTag.listAjax();     // 태그 refresh
                                 }
                             }
                             // TODO: 결산 페이지에서 처리시도 처리해 줘야 한다.
                             cF.ui.unblockUI();
+
+                            /* modal history pop */
+                            ModalHistory.reset();
                         });
                 }, "block");
             });
@@ -194,14 +197,18 @@ dF.JrnlDiary = (function(): dfModule {
                             const isCalendar: boolean = Page?.calendar !== undefined;
                             if (isCalendar) {
                                 Page.refreshEventList();
+                                dF.JrnlDiaryTag.listAjax();     // 태그 refresh
                             } else {
                                 if (dF.JrnlDiary.inKeywordSearchMode) {
                                     dF.JrnlDiary.keywordListAjax();
                                 } else {
                                     dF.JrnlDay.yyMnthListAjax();
-                                    dF.JrnlDiaryTag.listAjax();
+                                    dF.JrnlDiaryTag.listAjax();     // 태그 refresh
                                 }
                             }
+
+                            /* modal history pop */
+                            ModalHistory.reset();
                         });
                 }, "block");
             });

@@ -9,6 +9,7 @@ dF.Notice = (function(): dfModule {
     return {
         initialized: false,
         submitMode: "",
+        tagify: null,
         isReg: $("#noticeRegForm").data("mode") === "regist",
         isMdf: $("#noticeRegForm").data("mode") === "modify",
 
@@ -25,13 +26,13 @@ dF.Notice = (function(): dfModule {
         /**
          * form init
          */
-        initForm: function() {
+        initForm: function(): void {
             /* jquery validation */
             cF.validate.validateForm("#noticeRegForm", dF.Notice.submitHandler);
             /* tinymce init */
             cF.tinymce.init("#tinymce_cn");
             /* tagify */
-            cF.tagify.initWithCtgr("#noticeRegForm #tagListStr");
+            dF.Notice.tagify = cF.tagify.initWithCtgr("#noticeRegForm #tagListStr");
             // 잔디발송여부 클릭시 글씨 변경
             cF.ui.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function(): void {
                 $("#trgetTopicSpan").show();

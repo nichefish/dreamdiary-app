@@ -57,10 +57,10 @@ const ModalHistory: Page = (function(): Page {
          */
         prev: function (): void {
             // 기존에 열린 모달이 있으면 닫기
-            const openModal = document.querySelector('.modal.show'); // 열린 모달을 찾기
-            if (openModal) {
-                $(openModal).modal('hide');
-            }
+            const openModals: NodeList = document.querySelectorAll('.modal.show'); // 열린 모달을 찾기
+            openModals.forEach((modal: Node): void => {
+                $(modal).modal('hide');  // 각각의 모달을 닫기
+            });
 
             // 현재 모달을 먼저 pop()
             const poppedModal = ModalHistory.stack.pop();
@@ -92,6 +92,13 @@ const ModalHistory: Page = (function(): Page {
          */
         reset: function(): void {
             console.log("modal history:: reset.");
+
+            // 기존에 열린 모달이 있으면 닫기
+            const openModals: NodeList = document.querySelectorAll('.modal.show'); // 열린 모달을 찾기
+            openModals.forEach((modal: Node): void => {
+                $(modal).modal('hide');  // 각각의 모달을 닫기
+            });
+
             $('.modal-backdrop').remove(); // 모달이 닫힐 때 백드롭 제거
             $('body').removeClass('modal-open');  // body에서 modal-open 클래스 제거
             ModalHistory.stack = [];
