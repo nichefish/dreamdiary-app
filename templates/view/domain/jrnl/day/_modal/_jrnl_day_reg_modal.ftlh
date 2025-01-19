@@ -5,9 +5,9 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="jrnl_day_reg" size="xl" module="">
+<@modal.layout id="jrnl_day_reg" size="xl">
     <#--begin::Modal Header-->
-    <@component.modal_header "저널 일자 저장" module! />
+    <@component.modal_header "저널 일자 저장"  />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <#--begin::Form-->

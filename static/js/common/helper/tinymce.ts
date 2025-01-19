@@ -131,7 +131,7 @@ cF.tinymce = (function(): Module {
                 const url: string = "/file/fileUploadAjax.do";
                 const ajaxData: FormData = new FormData(document.getElementById("tinymceImageForm") as HTMLFormElement);
                 cF.$ajax.multipart(url, ajaxData, function(res): void {
-                    if (cF.util.isNotEmpty(res.message)) alert(res.message);
+                    if (cF.util.isNotEmpty(res.message)) cF.ui.swalOrAlert(res.message);
                     if (!res.rslt) return;
 
                     const fileInfo = res.rsltObj;

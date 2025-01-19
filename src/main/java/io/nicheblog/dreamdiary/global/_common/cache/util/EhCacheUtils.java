@@ -175,9 +175,29 @@ public class EhCacheUtils {
         log.info("cache name {} (key: {}) evicted.", cacheName, cacheKey);
     }
 
-    public static void evictMyCache(String cacheName, Integer cacheKey) {
+    /**
+     * 내 캐시 evict
+     * @param cacheName 캐시의 이름.
+     */
+    public static void evictMyCache(String cacheName) {
         final Cache cache = cacheManager.getCache(cacheName);
         if (cache == null) {
+            log.info("cache name {} does not exists.", cacheName);
+            return;
+        }
+        final String myCacheKey = AuthUtils.getLgnUserId();
+        cache.evict(myCacheKey);
+        log.info("cache name {} (key: {}) evicted.", cacheName, myCacheKey);
+    }
+
+    /**
+     * 내 캐시 evict
+     * @param cacheName 캐시의 이름.
+     * @param cacheKey  제거할 캐시 항목을 식별하는 키.
+     */
+    public static void evictMyCache(String cacheName, Object cacheKey) {
+        final Cache cache = cacheManager.getCache(cacheName);
+        if (cache == null || cacheKey == null) {
             log.info("cache name {} does not exists.", cacheName);
             return;
         }

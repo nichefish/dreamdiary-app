@@ -2,7 +2,9 @@ package io.nicheblog.dreamdiary.global.util.date;
 
 import lombok.RequiredArgsConstructor;
 
+import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 /**
  * ContentType
@@ -26,6 +28,13 @@ public enum DatePtn {
     DATETIMES("yyyy-MM-dd HH:mm:ss.S", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S")),
     SDATE("yyyy/MM/dd", new SimpleDateFormat("yyyy/MM/dd")),
     SDATETIME("yyyy/MM/dd HH:mm:ss", new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")),
+    KR_DATETIME("yy. M. d. a HH:mm", new SimpleDateFormat("yy. M. d. a HH:mm", Locale.KOREA) {
+        {
+            DateFormatSymbols symbols = new DateFormatSymbols(Locale.KOREA);
+            symbols.setAmPmStrings(new String[]{"오전", "오후"});
+            this.setDateFormatSymbols(symbols);
+        }
+    }),
     BRTHDY("MM월 dd일", new SimpleDateFormat("MM월 dd일")),
     TIME("HH:mm:ss", new SimpleDateFormat("HH:mm:ss"));
 

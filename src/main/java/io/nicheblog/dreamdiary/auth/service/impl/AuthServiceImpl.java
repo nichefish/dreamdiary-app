@@ -49,9 +49,9 @@ public class AuthServiceImpl
     @SneakyThrows
     @Transactional(readOnly = true)
     public AuthInfo loadUserByUsername(final String userId) throws UsernameNotFoundException {
-        Optional<UserEntity> rsWrapper = userRepository.findByUserId(userId);
+        final Optional<UserEntity> rsWrapper = userRepository.findByUserId(userId);
         if (rsWrapper.isEmpty()) throw new UsernameNotFoundException("사용자 정보를 찾을 수 없습니다.");
-        UserEntity rsUser = rsWrapper.get();
+        final UserEntity rsUser = rsWrapper.get();
 
         // TODO: 사용자 프로필 정보 존재여부 체크
         // Integer userProflNo = rsUserEntity.getUserProflNo();
@@ -73,15 +73,15 @@ public class AuthServiceImpl
     @Transactional
     public Integer applyLgnFailCnt(final String userId) {
         // ID로 사용자 정보 조회
-        Optional<UserEntity> userEntityWrapper = userRepository.findByUserId(userId);
+        final Optional<UserEntity> userEntityWrapper = userRepository.findByUserId(userId);
         if (userEntityWrapper.isEmpty()) return 0;
-        UserEntity userEntity = userEntityWrapper.get();
+        final UserEntity userEntity = userEntityWrapper.get();
         // 로그인 실패횟수 조회해서 세팅
-        Integer currLgnFailCnt = userEntity.acntStus.getLgnFailCnt();
-        Integer newLgnFailCnt = (currLgnFailCnt == null) ? 1 : currLgnFailCnt + 1;
+        final Integer currLgnFailCnt = userEntity.acntStus.getLgnFailCnt();
+        final Integer newLgnFailCnt = (currLgnFailCnt == null) ? 1 : currLgnFailCnt + 1;
         userEntity.acntStus.setLgnFailCnt(newLgnFailCnt);
         // 저장 후 반환된 값 반환
-        UserEntity rsltEntity = userRepository.save(userEntity);
+        final UserEntity rsltEntity = userRepository.save(userEntity);
         return rsltEntity.acntStus.getLgnFailCnt();
     }
 
@@ -94,8 +94,8 @@ public class AuthServiceImpl
     @Transactional
     public void lockAccount(final String userId) {
         // ID로 사용자 정보 조회
-        Optional<UserEntity> userEntityWrapper = userRepository.findByUserId(userId);
-        UserEntity userEntity = userEntityWrapper.orElseThrow(NullPointerException::new);
+        final Optional<UserEntity> userEntityWrapper = userRepository.findByUserId(userId);
+        final UserEntity userEntity = userEntityWrapper.orElseThrow(NullPointerException::new);
         // 계정 잠금 처리
         userEntity.acntStus.setLockedYn("Y");
         userEntity.acntStus.setLgnFailCnt(0);
@@ -111,8 +111,8 @@ public class AuthServiceImpl
     @Transactional
     public void setLstLgnDt(final String userId) {
         // ID로 사용자 정보 조회
-        Optional<UserEntity> userEntityWrapper = userRepository.findByUserId(userId);
-        UserEntity userEntity = userEntityWrapper.orElseThrow(NullPointerException::new);
+        final Optional<UserEntity> userEntityWrapper = userRepository.findByUserId(userId);
+        final UserEntity userEntity = userEntityWrapper.orElseThrow(NullPointerException::new);
         // 최종 로그인 날짜 세팅 및 실패 카운터 0으로 세팅
         userEntity.acntStus.setLstLgnDt(new Date());
         userEntity.acntStus.setLgnFailCnt(0);
@@ -141,10 +141,10 @@ public class AuthServiceImpl
     @Transactional(readOnly = true)
     @Cacheable(cacheNames = "auditorInfo", key = "'userId:' + #userId", condition = "#userId!=null")
     public AuditorInfo getAuditorInfo(String userId) {
-        Optional<UserEntity> userEntityWrapper = userRepository.findByUserId(userId);
+        final Optional<UserEntity> userEntityWrapper = userRepository.findByUserId(userId);
         if (userEntityWrapper.isEmpty()) return null;
 
-        UserEntity userEntity = userEntityWrapper.get();
+        final UserEntity userEntity = userEntityWrapper.get();
         return mapstruct.toAuditorInfo(userEntity);
     }
 }

@@ -5,9 +5,9 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="vcatn_papr_dtl" size="xl" module="">
+<@modal.layout id="vcatn_papr_dtl" size="xl">
     <#--begin::Modal Header-->
-    <@component.modal_header "휴가계획서" module! />
+    <@component.modal_header "휴가계획서"  />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <div class="table-responsive-sm">

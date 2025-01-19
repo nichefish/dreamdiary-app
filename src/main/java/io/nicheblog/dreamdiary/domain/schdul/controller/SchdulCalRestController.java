@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.domain.schdul.controller;
 
-import io.nicheblog.dreamdiary.domain.schdul.model.SchdulCalDto;
 import io.nicheblog.dreamdiary.domain.schdul.model.SchdulSearchParam;
 import io.nicheblog.dreamdiary.domain.schdul.service.SchdulCalService;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -9,6 +8,7 @@ import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyRestControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
+import io.nicheblog.dreamdiary.global.intrfc.model.fullcalendar.BaseCalDto;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
@@ -64,7 +64,7 @@ public class SchdulCalRestController
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final List<SchdulCalDto> schdulCalList = schdulCalService.getSchdulTotalCalList(searchParam);
+        final List<BaseCalDto> schdulCalList = schdulCalService.getSchdulTotalCalList(searchParam);
 
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);

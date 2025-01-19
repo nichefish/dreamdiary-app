@@ -8,6 +8,7 @@ if (typeof dF === 'undefined') { var dF = {} as any; }
 dF.JrnlDay = (function(): dfModule {
     return {
         initialized: false,
+        tagify: null,
 
         /**
          * initializes module.
@@ -36,13 +37,13 @@ dF.JrnlDay = (function(): dfModule {
             cF.validate.validateForm(form, dF.JrnlDay.regAjax, {
                 rules: {
                     jrnlDt: {
-                        required: function() {
+                        required: function(): boolean {
                             const dtUnknownYn: HTMLInputElement = document.querySelector("#jrnlDayRegForm #dtUnknownYn") as HTMLInputElement;
                             return !dtUnknownYn?.checked;
                         }
                     },
                     aprxmtDt: {
-                        required: function() {
+                        required: function(): boolean {
                             const dtUnknownYn: HTMLInputElement = document.querySelector("#jrnlDayRegForm #dtUnknownYn") as HTMLInputElement;
                             return dtUnknownYn?.checked;
                         }
@@ -60,7 +61,7 @@ dF.JrnlDay = (function(): dfModule {
             // 날짜미상 datepicker 날짜 검색 init
             cF.datepicker.singleDatePicker("#aprxmtDt", "yyyy-MM-DD", obj.aprxmtDt);
             // 날짜미상 checkbox init
-            cF.util.chckboxLabel("dtUnknownYn", "날짜미상//날짜미상", "blue//gray", function(): void {
+            cF.ui.chckboxLabel("dtUnknownYn", "날짜미상//날짜미상", "blue//gray", function(): void {
                 $("#jrnlDayRegForm #jrnlDtDiv").addClass("d-none");
                 $("#jrnlDayRegForm #aprxmtDtDiv").removeClass("d-none");
                 $("#jrnlDayRegForm #aprxmtDt").val($("#jrnlDayRegForm #jrnlDt").val());
@@ -70,7 +71,7 @@ dF.JrnlDay = (function(): dfModule {
                 $("#jrnlDayRegForm #jrnlDt").val($("#jrnlDayRegForm #aprxmtDt").val());
             });
             /* tagify */
-            cF.tagify.initWithCtgr("#jrnlDayRegForm #tagListStr", dF.JrnlDayTag.ctgrMap);
+            dF.JrnlDay.tagify = cF.tagify.initWithCtgr("#jrnlDayRegForm #tagListStr", dF.JrnlDayTag.ctgrMap);
         },
 
         /**
@@ -98,7 +99,7 @@ dF.JrnlDay = (function(): dfModule {
                     if (cF.util.isNotEmpty(rsltList)) rsltList.reverse();
                 }
                 $("#jrnl_dream_list_div").empty();
-                cF.util.closeModal();
+                cF.ui.closeModal();
                 cF.handlebars.template(rsltList, "jrnl_day_list");
             }, "block");
         },
@@ -182,9 +183,13 @@ dF.JrnlDay = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            dF.JrnlDay.yyMnthListAjax();
-                            // 태그 조회
-                            dF.JrnlDayTag.listAjax();
+                            const isCalendar: boolean = Page?.calendar !== undefined;
+                            if (isCalendar) {
+                                Page.refreshEventList();
+                            } else {
+                                dF.JrnlDay.yyMnthListAjax();
+                            }
+                            dF.JrnlDayTag.listAjax();     // 태그 refresh
 
                             /* modal history pop */
                             ModalHistory.reset();
@@ -201,13 +206,13 @@ dF.JrnlDay = (function(): dfModule {
             if (isNaN(Number(postNo))) return;
 
             // 기존에 열린 모달이 있으면 닫기
-            const openModal = document.querySelector('.modal.show'); // 열린 모달을 찾기
-            if (openModal) {
-                $(openModal).modal('hide');
-            }
+            const openModals: NodeList = document.querySelectorAll('.modal.show'); // 열린 모달을 찾기
+            openModals.forEach((modal: Node): void => {
+                $(modal).modal('hide');  // 각각의 모달을 닫기
+            });
 
             const self = this;
-            const func = arguments.callee.name; // 현재 실행 중인 함수 참조
+            const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args = Array.from(arguments); // 함수 인자 배열로 받기
 
             const url: string = Url.JRNL_DAY_DTL_AJAX;
@@ -234,7 +239,7 @@ dF.JrnlDay = (function(): dfModule {
             if (isNaN(Number(postNo))) return;
 
             const self = this;
-            const func = arguments.callee.name; // 현재 실행 중인 함수 참조
+            const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args = Array.from(arguments); // 함수 인자 배열로 받기
 
             const url: string = Url.JRNL_DAY_DTL_AJAX;
@@ -273,8 +278,16 @@ dF.JrnlDay = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            dF.JrnlDay.yyMnthListAjax();
-                            dF.JrnlDayTag.listAjax();
+                            const isCalendar: boolean = Page?.calendar !== undefined;
+                            if (isCalendar) {
+                                Page.refreshEventList();
+                            } else {
+                                dF.JrnlDay.yyMnthListAjax();
+                            }
+                            dF.JrnlDayTag.listAjax();     // 태그 refresh
+
+                            /* modal history pop */
+                            ModalHistory.reset();
                         });
                 }, "block");
             });
@@ -285,7 +298,7 @@ dF.JrnlDay = (function(): dfModule {
          */
         closeModal: function(): void {
             /* modal history pop */
-            ModalHistory.previous();
+            ModalHistory.prev();
         }
     }
 })();

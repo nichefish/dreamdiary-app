@@ -4,9 +4,9 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="flsys_home" size="xl" module="">
+<@modal.layout id="flsys_home" size="xl">
     <#--begin::Modal Header-->
-    <@component.modal_header "파일시스템 메타 정보 저장" module! />
+    <@component.modal_header "파일시스템 메타 정보 저장"  />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <#--begin::Card header 검색+헤더 UI -->

@@ -26,7 +26,7 @@ dF.VcatnPapr = (function(): dfModule {
             /* jquery validation */
             cF.validate.validateForm("#vcatnPaprRegForm", dF.VcatnPapr.submitHandler);
             // 잔디발송여부 클릭시 글씨 변경
-            cF.util.chckboxLabel("jandiYn", "발송//미발송", "#0095E8//gray", function(): void {
+            cF.ui.chckboxLabel("jandiYn", "발송//미발송", "#0095E8//gray", function(): void {
                 $("#trgetTopicSpan").show();
             }, function(): void {
                 $("#trgetTopicSpan").hide();
@@ -54,7 +54,7 @@ dF.VcatnPapr = (function(): dfModule {
         search: function(): void {
             $("#listForm #pageNo").val(1);
             const url: string = `${Url.VCATN_PAPR_LIST}?actionTyCd=SEARCH`;
-            cF.util.blockUISubmit("#listForm", url);
+            cF.form.blockUISubmit("#listForm", url);
         },
 
         /**
@@ -63,14 +63,14 @@ dF.VcatnPapr = (function(): dfModule {
         myPaprList: function(): void {
             const url: string = Url.VCATN_PAPR_LIST;
             const param: string = `?searchType=nickNm&searchKeyword=${AuthInfo.nickNm}&regstrId=${AuthInfo.userId}&pageSize=50&actionTyCd=MY_PAPR`;
-            cF.util.blockUIReplace(url + param);
+            cF.ui.blockUIReplace(url + param);
         },
 
         /**
          * 등록 화면으로 이동
          */
         regForm: function(): void {
-            cF.util.blockUISubmit("#procForm", Url.VCATN_PAPR_REG_FORM);
+            cF.form.blockUISubmit("#procForm", Url.VCATN_PAPR_REG_FORM);
         },
 
         /**
@@ -103,7 +103,7 @@ dF.VcatnPapr = (function(): dfModule {
             if (isNaN(Number(postNo))) return;
 
             $("#procForm #postNo").val(postNo);
-            cF.util.blockUISubmit("#procForm", Url.VCATN_PAPR_DTL);
+            cF.form.blockUISubmit("#procForm", Url.VCATN_PAPR_DTL);
         },
 
         /**
@@ -129,7 +129,7 @@ dF.VcatnPapr = (function(): dfModule {
          * 수정 화면으로 이동
          */
         mdfForm: function(): void {
-            cF.util.blockUISubmit("#procForm", Url.VCATN_PAPR_MDF_FORM);
+            cF.form.blockUISubmit("#procForm", Url.VCATN_PAPR_MDF_FORM);
         },
 
         /**
@@ -141,7 +141,7 @@ dF.VcatnPapr = (function(): dfModule {
             cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
                     .then(function(): void {
-                        if (res.rslt) cF.util.blockUIReload();
+                        if (res.rslt) cF.ui.blockUIReload();
                     });
             }, "block");
         },
@@ -172,7 +172,7 @@ dF.VcatnPapr = (function(): dfModule {
          */
         list: function(): void {
             const listUrl: string = `${Url.VCATN_PAPR_LIST}?isBackToList=Y`;
-            cF.util.blockUIReplace(listUrl);
+            cF.ui.blockUIReplace(listUrl);
         }
     }
 })();

@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.domain.jrnl.day.service.impl;
 
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayContentTagEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayService;
@@ -33,7 +34,7 @@ public class JrnlDayCacheEvictor
     @Override
     public void evict(final Integer key) throws Exception {
         // jrnl_day
-        EhCacheUtils.evictCacheAll("jrnlDayList");
+        EhCacheUtils.evictMyCacheAll("myJrnlDayList");
         // 태그가 삭제되었을 때 태그 목록 캐시 초기화
         JrnlDayDto jrnlDay = (JrnlDayDto) EhCacheUtils.getObjectFromCache("myJrnlDayDtlDto", key);
         if (jrnlDay == null) {
@@ -50,11 +51,14 @@ public class JrnlDayCacheEvictor
         // jrnl_day
         EhCacheUtils.evictMyCache("myJrnlDayDtlDto", key);
         this.evictMyCacheForPeriod("myJrnlDayList", yy, mnth);
+        this.evictMyCacheForPeriod("myJrnlDayCalList", yy, mnth);
         // jrnl_day_tag
         this.evictMyCacheForPeriod("myJrnlDayTagList", yy, mnth);
         this.evictMyCacheForPeriod("myJrnlDaySizedTagList", yy, mnth);
         this.evictMyCacheForPeriod("myCountDaySize", yy, mnth);
+        EhCacheUtils.evictMyCache("myJrnlDayTagDtl");
         // L2캐시 처리
+        EhCacheUtils.clearL2Cache(JrnlDayEntity.class);
         EhCacheUtils.clearL2Cache(JrnlDayTagEntity.class);
         EhCacheUtils.clearL2Cache(JrnlDayContentTagEntity.class);
     }

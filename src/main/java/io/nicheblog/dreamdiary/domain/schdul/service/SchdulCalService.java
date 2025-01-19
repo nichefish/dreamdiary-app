@@ -9,6 +9,8 @@ import io.nicheblog.dreamdiary.domain.schdul.spec.SchdulSpec;
 import io.nicheblog.dreamdiary.domain.vcatn.papr.entity.VcatnSchdulEntity;
 import io.nicheblog.dreamdiary.domain.vcatn.papr.service.VcatnSchdulService;
 import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.intrfc.model.fullcalendar.BaseCalDto;
+import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -47,8 +49,8 @@ public class SchdulCalService {
      * @return {@link List} -- 조회된 일정 및 휴가 목록
      * @throws Exception 조회 및 처리 중 발생할 수 있는 예외
      */
-    public List<SchdulCalDto> getSchdulTotalCalList(final SchdulSearchParam searchParam) throws Exception {
-        final List<SchdulCalDto> totalSchdulCalList = new ArrayList<>();
+    public List<BaseCalDto> getSchdulTotalCalList(final SchdulSearchParam searchParam) throws Exception {
+        final List<BaseCalDto> totalSchdulCalList = new ArrayList<>();
 
         // 휴가 달력 목록 검색
         final String vcatnChk = searchParam.getVcatnChked();
@@ -62,7 +64,7 @@ public class SchdulCalService {
         // totalSchdulCalList.addAll(brthdyCalList);
 
         // 일정(공휴일, 행사) 달력 목록 검색
-        final List<SchdulCalDto> hldyCalList = this.getHldyCalList(searchParam);
+        final List<BaseCalDto> hldyCalList = this.getHldyCalList(searchParam);
         totalSchdulCalList.addAll(hldyCalList);
 
         // 일정(재택근무, 외근) 달력 목록 검색
@@ -193,10 +195,10 @@ public class SchdulCalService {
      * @return {@link List} 공휴일 및 행사 일정 목록을 반환
      * @throws Exception 검색 중 발생할 수 있는 예외
      */
-    private List<SchdulCalDto> getHldyCalList(final SchdulSearchParam searchParam) throws Exception {
+    public List<BaseCalDto> getHldyCalList(final BaseSearchParam searchParam) throws Exception {
         final Map<String, Object> searchParamMap = new HashMap<>() {{
-            put("searchStartDt", searchParam.getBgnDt());
-            put("searchEndDt", searchParam.getEndDt());
+            put("searchStartDt", searchParam.getSearchStartDt());
+            put("searchEndDt", searchParam.getSearchEndDt());
             put("getHldyCeremonyOnly", true);
         }};
 

@@ -118,7 +118,7 @@ dF.Tag = (function(): dfModule {
 
             const listUrl: string = $("#listForm").data("url");
             const url: string = `${listUrl!}?actionTyCd=SEARCH`;
-            cF.util.blockUISubmit("#listForm", url);
+            cF.form.blockUISubmit("#listForm", url);
         },
 
         /**

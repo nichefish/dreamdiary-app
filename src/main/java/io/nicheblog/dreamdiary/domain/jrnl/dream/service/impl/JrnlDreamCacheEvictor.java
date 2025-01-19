@@ -34,7 +34,7 @@ public class JrnlDreamCacheEvictor
     @Override
     public void evict(final Integer key) throws Exception {
         // jrnl_day
-        EhCacheUtils.evictCacheAll("jrnlDayList");
+        EhCacheUtils.evictMyCacheAll("myJrnlDayList");
         // 태그가 삭제되었을 때 태그 목록 캐시 초기화 (부재시 삭제 데이터 조회)
         JrnlDreamDto jrnlDream = (JrnlDreamDto) EhCacheUtils.getObjectFromCache("myJrnlDreamDtlDto", key);
         if (jrnlDream == null) {
@@ -46,7 +46,7 @@ public class JrnlDreamCacheEvictor
             }
         }
         // jrnl_dream
-        EhCacheUtils.evictMyCacheAll("jrnlDreamList");
+        EhCacheUtils.evictMyCacheAll("myJrnlDreamList");
         EhCacheUtils.evictMyCache("myJrnlDreamDtlDto", key);
         // 년도-월에 따른 캐시 삭제
         final Integer yy = jrnlDream.getYy();
@@ -54,10 +54,12 @@ public class JrnlDreamCacheEvictor
         // jrnl_day
         EhCacheUtils.evictMyCache("myJrnlDayDtlDto", jrnlDream.getJrnlDayNo());
         this.evictMyCacheForPeriod("myJrnlDayList", yy, mnth);
+        this.evictMyCacheForPeriod("myJrnlDayCalList", yy, mnth);
         // jrnl_dream_tag
         this.evictMyCacheForPeriod("myJrnlDreamTagList", yy, mnth);
         this.evictMyCacheForPeriod("myJrnlDreamSizedTagList", yy, mnth);
         this.evictMyCacheForPeriod("myCountDreamSize", yy, mnth);
+        EhCacheUtils.evictMyCache("myJrnlDreamTagDtl");
         // L2캐시 처리
         EhCacheUtils.clearL2Cache(JrnlDreamEntity.class);
         EhCacheUtils.clearL2Cache(JrnlDreamTagEntity.class);

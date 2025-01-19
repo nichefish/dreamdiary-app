@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Nullable;
@@ -52,7 +53,7 @@ public class LgnPageController
      * @return {@link String} -- 로그인 화면 뷰 경로
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
-    @GetMapping(Url.AUTH_LGN_FORM)
+    @RequestMapping(Url.AUTH_LGN_FORM)
     @PermitAll
     public String lgnForm(
             final @RequestParam("dupLgnAt") @Nullable String dupLgnAt,

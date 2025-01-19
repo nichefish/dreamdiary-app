@@ -262,7 +262,7 @@
             </div>
             <div class="gap-2">
                 <#--페이지:: 버튼: 저장하기-->
-                <@component.post_btn_submit "cF.util.submit('#userRegForm');" />
+                <@component.post_btn_submit "cF.form.submit('#userRegForm');" />
                 <#--페이지:: 버튼: 목록으로 가기-->
                 <@component.post_btn_toList "dF.User.list();" />
             </div>

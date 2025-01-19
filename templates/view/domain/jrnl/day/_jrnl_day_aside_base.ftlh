@@ -26,15 +26,14 @@
         <#--begin::Aside-->
         <div class="card card-reset card-p-0">
             <#--begin::Card header-->
-            <div class="card-header min-h-auto mb-5">
+            <div id="jrnl_aside_header" class="card-header min-h-auto mb-5">
                 <h3 class="card-title text-gray-900 fw-bold fs-3">Filters</h3>
                 <#--begin::Toolbar-->
                 <div class="card-toolbar">
-                    <a href="#" class="btn btn-sm btn-icon btn-color-gray-500 btn-light">
-                        <i class="ki-duotone ki-magnifier fs-3">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                        </i>
+                    <a href="javascript:void(0);" class="btn btn-sm btn-icon btn-color-gray-500 btn-light"
+                       onclick="dF.JrnlDayAside.sort();"
+                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="날짜 정렬을 변경합니다.">
+                        <i class="bi bi-sort-numeric-up-alt fs-2 pe-0" id="sortIcon"></i>
                     </a>
                 </div>
             </div>
@@ -42,39 +41,9 @@
             <#--begin::Body-->
             <div class="card-body" id="jrnl_aside">
                 <input type="hidden" name="sort" id="sort">
+
                 <#--begin::row-->
-                <div class="mb-4">
-                    <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
-                            onclick="dF.JrnlDayAside.today();"
-                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="오늘 일자를 조회합니다.">
-                        오늘 일자 조회하기<i class="bi bi-search ps-1 pe-0"></i>
-                    </button>
-                    <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
-                            onclick="dF.JrnlDayAside.sort();"
-                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="날짜 정렬을 변경합니다.">
-                        <i class="bi bi-sort-numeric-up-alt fs-2 pe-0" id="sortIcon"></i>
-                    </button>
-                </div>
-                <#--begin::row-->
-                <div class="mb-4">
-                    <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
-                            onclick="dF.JrnlDayAside.pinpoint();"
-                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="나중에 돌아올 수 있도록.&#10;현재 년월을 저장합니다.">
-                        현재 년월 저장<i class="bi bi-pin-map ps-1 pe-0"></i>
-                    </button>
-                    <span class="px-2">
-                        <span id="pinYy" class="text-muted text-underline-dotted">----</span>
-                        <span> / </span>
-                        <span id="pinMnth" class="text-muted text-underline-dotted">--</span>
-                    </span>
-                    <button type="button" class="btn btn-sm btn-outline btn-light-primary px-2"
-                            onclick="dF.JrnlDayAside.turnback();"
-                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저장된 년월로 이동합니다.">
-                        <i class="bi bi-reply-all"></i>
-                    </button>
-                </div>
-                <#--begin::row-->
-                <div class="mb-7 d-flex justify-content-between gap-4">
+                <div class="mb-4 d-flex justify-content-between gap-4">
                     <div class="col">
                         <span class="text-gray-900 fs-h6 fw-bold d-inline-block ms-6 mb-1">년도</span>
                         <div class="d-flex">
@@ -95,6 +64,12 @@
                     </div>
                     <div class="col">
                         <span class="text-gray-900 fs-h6 fw-bold d-inline-block ms-2 mb-1">월</span>
+                        <button type="button" class="btn btn-sm btn-outline btn-light-info blink-slow ms-6 ps-2 pe-1 py-0"
+                                onclick="dF.JrnlDayAside.today();"
+                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="오늘 일자를 조회합니다.">
+                            TODAY
+                            <i class="bi bi-box-arrow-in-up-right"></i>
+                        </button>
                         <div class="d-flex">
                             <select name="mnth" id="mnth" class="form-select" aria-label="Select example"
                                     onchange="dF.JrnlDayAside.mnth();">
@@ -112,7 +87,28 @@
                     </div>
                 </div>
                 <#--begin::row-->
-                <div class="mb-6">
+                <div class="px-8 mb-4 gap-1">
+                    <button type="button" class="btn btn-sm btn-outline btn-light-primary px-2 pt-1"
+                            onclick="dF.JrnlDayAside.pinpoint();"
+                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="나중에 돌아올 수 있도록.&#10;현재 년월을 저장합니다.">
+                        <i class="bi bi-bookmarks pe-0"></i>
+                    </button>
+                    <span class="mx-2">|</span>
+                    <span class="px-1 me-1">
+                        <span id="pinYy" class="text-muted text-underline-dotted">----</span>
+                        <span> / </span>
+                        <span id="pinMnth" class="text-muted text-underline-dotted">--</span>
+                        <i class="bi bi-pin-map fs-7"></i>
+                    </span>
+                    <button type="button" class="btn btn-sm btn-outline btn-light-primary px-2 pt-1"
+                            onclick="dF.JrnlDayAside.turnback();"
+                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저장된 년월로 이동합니다.">
+                        <i class="bi bi-reply-all pe-0"></i>
+                    </button>
+                </div>
+                <div class="separator my-6"></div>
+                <#--begin::row-->
+                <div class="mb-5">
                     <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">일기 키워드 검색</span>
                     <div class="d-flex gap-1">
                         <input type="text" name="diaryKeyword" id="diaryKeyword" class="form-control"
@@ -125,7 +121,7 @@
                     </div>
                 </div>
                 <#--begin::row-->
-                <div class="mb-6">
+                <div class="mb-5">
                     <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">꿈 키워드 검색</span>
                     <div class="d-flex gap-1">
                         <input type="text" name="dreamKeyword" id="dreamKeyword" class="form-control"

@@ -269,7 +269,7 @@ cF.validate = (function(): Module {
             // 기본 확장자 필터
             const basicExtnFiltered = cF.validate.basicExtnFilter.split('|').includes(extn.toLowerCase());
             if (basicExtnFiltered) {
-                cF.util.swalOrAlert("파일첨부가 불가능한 파일 형식입니다.");
+                cF.ui.swalOrAlert("파일첨부가 불가능한 파일 형식입니다.");
                 input.value = "";
                 return false;
             }
@@ -278,7 +278,7 @@ cF.validate = (function(): Module {
             const isExtnNotValid: boolean|string = validExtn && validExtn !== "" && !validExtnMatches;
             if (isExtnNotValid) {
                 const message: string = validExtn.replace(/\|/g, ", ");
-                cF.util.swalOrAlert(message + " 파일만 첨부 가능합니다.");
+                cF.ui.swalOrAlert(message + " 파일만 첨부 가능합니다.");
                 input.value = "";
                 return false;
             }
@@ -310,7 +310,7 @@ cF.validate = (function(): Module {
             const file: File|null = input.files[0];
 
             if (file.size > fileSizeLimit) {
-                cF.util.swalOrAlert(fileSizeLimitMb + "MB 이하의 파일만 첨부가능합니다.");
+                cF.ui.swalOrAlert(fileSizeLimitMb + "MB 이하의 파일만 첨부가능합니다.");
                 input.value = "";
                 return false;
             }

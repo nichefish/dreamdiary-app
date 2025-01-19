@@ -33,8 +33,6 @@ public class JrnlDiaryCacheEvictor
      */
     @Override
     public void evict(final Integer key) throws Exception {
-        // jrnl_day
-        EhCacheUtils.evictCacheAll("jrnlDayList");
         // 태그가 삭제되었을 때 태그 목록 캐시 초기화
         JrnlDiaryDto jrnlDiary = (JrnlDiaryDto) EhCacheUtils.getObjectFromCache("myJrnlDiaryDtlDto", key);
         if (jrnlDiary == null) {
@@ -54,10 +52,12 @@ public class JrnlDiaryCacheEvictor
         // jrnl_day
         EhCacheUtils.evictMyCache("myJrnlDayDtlDto", jrnlDiary.getJrnlDayNo());
         this.evictMyCacheForPeriod("myJrnlDayList", yy, mnth);
+        this.evictMyCacheForPeriod("myJrnlDayCalList", yy, mnth);
         // jrnl_diary_tag
         this.evictMyCacheForPeriod("myJrnlDiaryTagList", yy, mnth);
         this.evictMyCacheForPeriod("myJrnlDiarySizedTagList", yy, mnth);
         this.evictMyCacheForPeriod("myCountDiarySize", yy, mnth);
+        EhCacheUtils.evictMyCache("myJrnlDiaryTagDtl");
         // L2캐시 처리
         EhCacheUtils.clearL2Cache(JrnlDiaryEntity.class);
         EhCacheUtils.clearL2Cache(JrnlDiaryTagEntity.class);

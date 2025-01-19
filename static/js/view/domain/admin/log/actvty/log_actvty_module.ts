@@ -24,7 +24,7 @@ dF.LogActvty = (function(): dfModule {
          */
         search: function(): void {
             $("#listForm #pageNo").val(1);
-            cF.util.blockUISubmit("#listForm", `${Url.LOG_ACTVTY_LIST!}?actionTyCd=SEARCH`);
+            cF.form.blockUISubmit("#listForm", `${Url.LOG_ACTVTY_LIST!}?actionTyCd=SEARCH`);
         },
         /**
          * 엑셀 다운로드

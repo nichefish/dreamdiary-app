@@ -30,9 +30,9 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="atch_file_list" size="lg" module="">
+<@modal.layout id="atch_file_list" size="lg">
     <#--begin::Modal Header-->
-    <@component.modal_header "첨부파일 목록 조회" module! />
+    <@component.modal_header "첨부파일 목록 조회"  />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <div class="row" id="atch_file_list_div">

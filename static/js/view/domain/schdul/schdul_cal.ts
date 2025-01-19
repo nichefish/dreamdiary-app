@@ -54,7 +54,7 @@ const Page: Page = (function(): Page {
 
             // datepicker 날짜 검색 init
             cF.datepicker.singleDatePicker("#calDt", "yyyy-MM-DD", cF.date.asStr(Page.calInitDt), function(start): void {
-                const selectedDt = new Date(start);
+                const selectedDt: Date = new Date(start);
                 Page.calendar.gotoDate(selectedDt);
                 Page.refreshEventList(selectedDt);
             });

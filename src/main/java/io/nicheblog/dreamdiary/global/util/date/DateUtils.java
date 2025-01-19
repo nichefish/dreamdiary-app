@@ -45,8 +45,8 @@ public class DateUtils
     public static Date asDate(final Object date) throws Exception {
         if (date == null) return null;
         if (date instanceof String) {
-            String dateStrParam = date.toString();
-            String dateStr = (dateStrParam.length() > 20) ? dateStrParam.substring(0, 19) : dateStrParam;
+            final String dateStrParam = date.toString();
+            final String dateStr = (dateStrParam.length() > 20) ? dateStrParam.substring(0, 19) : dateStrParam;
             return Parser.strToDate(dateStr);
         }
         if (date instanceof Date) return (Date) date;
@@ -69,7 +69,7 @@ public class DateUtils
      * (Date, 문자열, LocalDateTime)
      */
     public static LocalDateTime asLocalDateTime(final Object date) throws Exception {
-        Date asDate = asDate(date);
+        final Date asDate = asDate(date);
         return LocalDateTime.ofInstant(asDate.toInstant(), ZoneId.systemDefault());
     }
 
@@ -80,7 +80,7 @@ public class DateUtils
      */
     public static String asStr(final Object date, final DatePtn ptn) throws Exception {
         if (date == null) return null;
-        Date asDate = asDate(date);
+        final Date asDate = asDate(date);
         return Parser.dateToStr(asDate, ptn);
     }
 
@@ -90,7 +90,7 @@ public class DateUtils
      * 현재 날짜Date 반환
      */
     public static Date getCurrDate() {
-        Calendar today = Calendar.getInstance(Constant.TZ_SEOUL, Constant.LC_KO);
+        final Calendar today = Calendar.getInstance(Constant.TZ_SEOUL, Constant.LC_KO);
         return new Date(today.getTimeInMillis());
     }
 
@@ -155,7 +155,7 @@ public class DateUtils
      * 이전 월"MM" 인덱스 반환 (1월=0)
      */
     public static Integer getPrevMnthIdx() throws Exception {
-        int currMnthIdx = getCurrMnthIdx();
+        final int currMnthIdx = getCurrMnthIdx();
         return currMnthIdx == 0 ? 11 : currMnthIdx - 1;
     }
 
@@ -167,7 +167,7 @@ public class DateUtils
      * 다음 월"MM" 인덱스 반환 (1월=0)
      */
     public static Integer getNextMnthIdx() throws Exception {
-        int currMnthIdx = getCurrMnthIdx();
+        final int currMnthIdx = getCurrMnthIdx();
         return currMnthIdx == 11 ? 0 : currMnthIdx + 1;
     }
 
@@ -187,7 +187,7 @@ public class DateUtils
      * 현재 년월"yyyyMM" 문자열
      */
     public static String getCurrYyMnthStr() throws Exception {
-        Integer[] currYyMnth = getCurrYyMnth();
+        final Integer[] currYyMnth = getCurrYyMnth();
         return currYyMnth[0] + String.format("%02d", currYyMnth[1]);
     }
 
@@ -195,10 +195,10 @@ public class DateUtils
      * 이전달의 년도"yyyy"/월"MM" 세트 반환 (인덱스 대신 실제 월로 반환 = 1월=1)
      */
     public static Integer[] getPrevYyMnth() throws Exception {
-        int currYy = getCurrYyMnth()[0];
-        int currMnth = getCurrYyMnth()[1];
-        int yy = (currMnth == 1) ? currYy - 1 : currYy;
-        int prevMnth = currMnth == 1 ? 12 : currMnth - 1;
+        final int currYy = getCurrYyMnth()[0];
+        final int currMnth = getCurrYyMnth()[1];
+        final int yy = (currMnth == 1) ? currYy - 1 : currYy;
+        final int prevMnth = currMnth == 1 ? 12 : currMnth - 1;
         return new Integer[]{yy, prevMnth};
     }
 
@@ -206,10 +206,10 @@ public class DateUtils
      * 다음달의 년도"yyyy"/월"MM" 세트 반환 (인덱스 대신 실제 월로 반환 = 1월=1)
      */
     public static Integer[] getNextYyMnth() throws Exception {
-        int currYy = getCurrYyMnth()[0];
-        int currMnth = getCurrYyMnth()[1];
-        int yy = (currMnth == 12) ? currYy + 1 : currYy;
-        int nextMnth = currMnth == 12 ? 1 : currMnth + 1;
+        final int currYy = getCurrYyMnth()[0];
+        final int currMnth = getCurrYyMnth()[1];
+        final int yy = (currMnth == 12) ? currYy + 1 : currYy;
+        final int nextMnth = currMnth == 12 ? 1 : currMnth + 1;
         return new Integer[]{yy, nextMnth};
     }
 
@@ -245,7 +245,7 @@ public class DateUtils
      * 현재 날짜Date에 기간(일자) 더해서 날짜Date로 반환
      */
     public static Date getCurrDateAddDay(final int dayCnt) throws Exception {
-        Calendar today = new GregorianCalendar(Constant.TZ_SEOUL, Constant.LC_KO);
+        final Calendar today = new GregorianCalendar(Constant.TZ_SEOUL, Constant.LC_KO);
         return getDateAddDay(today.getTime(), dayCnt);
     }
 
@@ -264,9 +264,9 @@ public class DateUtils
      * 날짜Date에 기간(일자) 더해서 날짜Date로 반환
      */
     public static Date getDateAddDay(final Object date, final int dayCnt) throws Exception {
-        Date asDate = asDate(date);
+        final Date asDate = asDate(date);
         if (asDate == null) return null;
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.setTime(asDate);
         cal.add(Calendar.DATE, dayCnt);        // 일자 더하기
         return cal.getTime();
@@ -283,9 +283,9 @@ public class DateUtils
      * 날짜Date에 기간(년도) 더해서 날짜Date로 반환
      */
     public static Date getDateAddYy(final Object date, final int yyCnt) throws Exception {
-        Date asDate = asDate(date);
+        final Date asDate = asDate(date);
         if (asDate == null) return null;
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.setTime(asDate);
         cal.add(Calendar.YEAR, yyCnt);        // 일자 더하기
         return cal.getTime();
@@ -302,9 +302,9 @@ public class DateUtils
      * 날짜Date에 기간(분) 더해서 날짜Date로 반환
      */
     public static Date addMinutes(final Object date, final int minCnt) throws Exception {
-        Date asDate = asDate(date);
+        final Date asDate = asDate(date);
         if (asDate == null) return null;
-        Calendar cal = Calendar.getInstance();
+        final Calendar cal = Calendar.getInstance();
         cal.setTime(asDate);
         cal.add(Calendar.MINUTE, minCnt);        // 일자 더하기
         return cal.getTime();
@@ -314,8 +314,8 @@ public class DateUtils
      * 두 날짜 사이의 차이 반환
      */
     public static Long getDateDiff(final Object fromDate, final Object toDate, final TimeUnit timeUnit) throws Exception {
-        Date asFromDate = asDate(fromDate);
-        Date asToDate = asDate(toDate);
+        final Date asFromDate = asDate(fromDate);
+        final Date asToDate = asDate(toDate);
         if (asFromDate == null || asToDate == null) return null;
         long diffInMillies = asToDate.getTime() - asFromDate.getTime();
         return timeUnit.convert(diffInMillies, TimeUnit.MILLISECONDS);
@@ -325,7 +325,7 @@ public class DateUtils
      * 날짜 받아서 요일(문자) 반환
      */
     public static String getDayOfWeekChinese(final Object date) throws Exception {
-        Integer idx = getDayOfWeekIdx(date);
+        final Integer idx = getDayOfWeekIdx(date);
         return DayOfWeek.asChinese(idx);
     }
 
@@ -333,7 +333,7 @@ public class DateUtils
      * 날짜 받아서 요일(문자) 반환
      */
     public static String getDayOfWeekKor(final Object date) throws Exception {
-        Integer idx = getDayOfWeekIdx(date);
+        final Integer idx = getDayOfWeekIdx(date);
         return DayOfWeek.asKorean(idx);
     }
 
@@ -342,9 +342,9 @@ public class DateUtils
      * "1은 일요일, 7은 토요일을 나타냅니다."
      */
     public static Integer getDayOfWeekIdx(final Object date) throws Exception {
-        Date asDate = asDate(date);
+        final Date asDate = asDate(date);
         if (asDate == null) return null;
-        Calendar calendar = Calendar.getInstance();
+        final Calendar calendar = Calendar.getInstance();
         calendar.setTime(asDate);
         return calendar.get(Calendar.DAY_OF_WEEK);
     }
@@ -353,16 +353,16 @@ public class DateUtils
      * 해당 주의 월요일 구하기
      */
     public static Date getFirstDayOfWeek(final Object date) throws Exception {
-        Date asDate = asDate(date);
-        Calendar calendar = Calendar.getInstance();
+        final Date asDate = asDate(date);
+        final Calendar calendar = Calendar.getInstance();
         calendar.setTime(asDate);
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
         return calendar.getTime();
     }
 
     public static Date getFirstDayOfCurrWeek() throws Exception {
-        Date currDate = getCurrDate();
-        Calendar calendar = Calendar.getInstance();
+        final Date currDate = getCurrDate();
+        final Calendar calendar = Calendar.getInstance();
         calendar.setTime(currDate);
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
         return calendar.getTime();
@@ -390,8 +390,8 @@ public class DateUtils
             final Object date1,
             final Object date2
     ) throws Exception {
-        String date1str = DateUtils.asStr(date1, DatePtn.PDATE);
-        String date2str = DateUtils.asStr(date2, DatePtn.PDATE);
+        final String date1str = DateUtils.asStr(date1, DatePtn.PDATE);
+        final String date2str = DateUtils.asStr(date2, DatePtn.PDATE);
         return date1str.equals(date2str);
     }
 

@@ -98,7 +98,7 @@ public class JrnlDiaryServiceImpl
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="myJrnlDiaryTagDtl", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.hashCode()")
+    @Cacheable(value="myJrnlDiaryTagDtl", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId()")
     public List<JrnlDiaryDto> jrnlDiaryTagDtl(final BaseSearchParam searchParam) throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
 

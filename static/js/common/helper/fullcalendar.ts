@@ -39,8 +39,6 @@ cF.fullcalendar = (function(): Module {
     };
 
     return {
-        initialized: false,
-
         /**
          * init : `FullCalendar` 객체를 생성하고 이벤트를 설정하는 함수.
          * @param {string} selectorId - 캘린더를 렌더링할 DOM 요소의 ID.
@@ -49,7 +47,7 @@ cF.fullcalendar = (function(): Module {
          * @param {object} additionalOptions - 추가로 적용할 `FullCalendar` 설정 옵션 (선택적).
          * @returns {FullCalendar.Calendar} - 생성된 `FullCalendar` 객체.
          */
-        init: function(selectorId: string, eventList: Array<Record<string, any>>, clickFunc: Function, additionalOptions: Record<string, any> = {}): FullCalendar.Calendar {
+        init: function(selectorId: string, param: { eventList?: Array<Record<string, any>>, initDt?: string }, clickFunc: Function, additionalOptions: Record<string, any> = {}): FullCalendar.Calendar {
             const target: HTMLElement = document.getElementById(selectorId);
             if (!target) {
                 console.error("Element with ID `" + selectorId + "` not found.");
@@ -62,8 +60,8 @@ cF.fullcalendar = (function(): Module {
             const mergedOptions: Record<string, any> = {
                 ...baseOptions,
                 now: TODAY,
-                initialDate: TODAY,
-                events: eventList,
+                initialDate: param?.initDt || TODAY,
+                events: param?.eventList,
                 // 클릭 이벤트
                 eventClick: function(info: Event): void {
                     if (typeof clickFunc === "function") clickFunc(info);

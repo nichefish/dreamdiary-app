@@ -52,6 +52,10 @@ declare var Page: {
     [key: string]: any;
 }
 
+declare interface Tagify {
+    [key: string]: any;
+}
+
 /**
  * Model : Spring 컨텍스트에서 Model에 추가된 요소들.
  */
@@ -80,6 +84,12 @@ declare const Url: {
  */
 declare const Message: {
     get: Function
+};
+/**
+ * Constant : Spring Boot에서 정적으로 관리되는 상수들.
+ */
+declare const Constant: {
+    [key: string]: string;
 };
 
 /**

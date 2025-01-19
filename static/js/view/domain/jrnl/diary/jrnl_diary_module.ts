@@ -9,6 +9,7 @@ dF.JrnlDiary = (function(): dfModule {
     return {
         initialized: false,
         inKeywordSearchMode: false,
+        tagify: null,
 
         /**
          * initializes module.
@@ -33,15 +34,13 @@ dF.JrnlDiary = (function(): dfModule {
 
             /* jquery validation */
             cF.validate.validateForm("#jrnlDiaryRegForm", dF.JrnlDiary.regAjax);
-            /* tagify */
-            cF.tagify.initWithCtgr("#jrnlDiaryRegForm #tagListStr");
             // checkbox init
-            cF.util.chckboxLabel("imprtcYn", "중요//해당없음", "red//gray");
+            cF.ui.chckboxLabel("imprtcYn", "중요//해당없음", "red//gray");
             /* tinymce editor reset */
             cF.tinymce.init('#tinymce_jrnlDiaryCn');
             cF.tinymce.setContentWhenReady("tinymce_jrnlDiaryCn", obj.cn || "");
             /* tagify */
-            cF.tagify.initWithCtgr("#jrnlDiaryRegForm #tagListStr", dF.JrnlDiaryTag.ctgrMap);
+            dF.JrnlDiary.tagify = cF.tagify.initWithCtgr("#jrnlDiaryRegForm #tagListStr", dF.JrnlDiaryTag.ctgrMap);
         },
 
         /**
@@ -68,7 +67,7 @@ dF.JrnlDiary = (function(): dfModule {
                 $("#jrnl_day_tag_list_div").empty();
                 $("#jrnl_diary_tag_list_div").empty();
                 $("#jrnl_dream_tag_list_div").empty();
-                cF.util.closeModal();
+                cF.ui.closeModal();
                 cF.handlebars.template(res.rsltList, "jrnl_diary_list");
                 dF.JrnlDiary.inKeywordSearchMode = true;
             }, "block");
@@ -98,7 +97,7 @@ dF.JrnlDiary = (function(): dfModule {
         /**
          * 등록 (Ajax)
          */
-        regAjax: function() {
+        regAjax: function(): void {
             const isReg = $("#jrnlDiaryRegForm #postNo").val() === "";
             Swal.fire({
                 text: Message.get(isReg ? "view.cnfm.reg" : "view.cnfm.mdf"),
@@ -113,16 +112,45 @@ dF.JrnlDiary = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            if (dF.JrnlDiary.inKeywordSearchMode) {
-                                dF.JrnlDiary.keywordListAjax();
+                            const isCalendar: boolean = Page?.calendar !== undefined;
+                            if (isCalendar) {
+                                Page.refreshEventList();
+                                dF.JrnlDiaryTag.listAjax();     // 태그 refresh
                             } else {
-                                dF.JrnlDay.yyMnthListAjax();
-                                dF.JrnlDiaryTag.listAjax();
+                                if (dF.JrnlDiary.inKeywordSearchMode) {
+                                    dF.JrnlDiary.keywordListAjax();
+                                } else {
+                                    dF.JrnlDay.yyMnthListAjax();
+                                    dF.JrnlDiaryTag.listAjax();     // 태그 refresh
+                                }
                             }
                             // TODO: 결산 페이지에서 처리시도 처리해 줘야 한다.
-                            cF.util.unblockUI();
+                            cF.ui.unblockUI();
+
+                            /* modal history pop */
+                            ModalHistory.reset();
                         });
                 }, "block");
+            });
+        },
+
+        /**
+         * 상세 모달 호출
+         * @param {string|number} postNo - 글 번호.
+         */
+        dtlModal: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            const url: string = Url.JRNL_DIARY_DTL_AJAX;
+            const ajaxData: Record<string, any> = { "postNo" : postNo };
+            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    return;
+                }
+                const rsltObj: Record<string, any> = res.rsltObj;
+                /* show modal */
+                cF.handlebars.modal(rsltObj, "jrnl_diary_dtl");
             });
         },
 
@@ -166,8 +194,21 @@ dF.JrnlDiary = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            dF.JrnlDay.yyMnthListAjax();
-                            dF.JrnlDiaryTag.listAjax();
+                            const isCalendar: boolean = Page?.calendar !== undefined;
+                            if (isCalendar) {
+                                Page.refreshEventList();
+                                dF.JrnlDiaryTag.listAjax();     // 태그 refresh
+                            } else {
+                                if (dF.JrnlDiary.inKeywordSearchMode) {
+                                    dF.JrnlDiary.keywordListAjax();
+                                } else {
+                                    dF.JrnlDay.yyMnthListAjax();
+                                    dF.JrnlDiaryTag.listAjax();     // 태그 refresh
+                                }
+                            }
+
+                            /* modal history pop */
+                            ModalHistory.reset();
                         });
                 }, "block");
             });

@@ -21,7 +21,7 @@
                     <div class="ms-2">
                         {{#tag.list}}
                             <span class="text-muted cursor-pointer pe-1"
-                                  onclick="dF.JrnlDreamTag.dtlModal({{refTagNo}});"
+                                  onclick="dF.JrnlDayTag.dtlModal({{refTagNo}}, '{{tagNm}}');"
                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                                   title="해당 태그가 등록된 게시물 목록 팝업을 호출합니다.">
                                 {{#if (exists ctgr)}}

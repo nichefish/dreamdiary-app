@@ -61,6 +61,7 @@
 
     <!-- 저널 일자 -->
     <cache alias="myJrnlDayList" uses-template="defaultTemplate" />
+    <cache alias="myJrnlDayCalList" uses-template="defaultTemplate" />
     <cache alias="myJrnlDayDtlDto" uses-template="defaultTemplate" />
     <cache alias="myJrnlDayTagList" uses-template="defaultTemplate" />
     <cache alias="myJrnlDaySizedTagList" uses-template="defaultTemplate" />

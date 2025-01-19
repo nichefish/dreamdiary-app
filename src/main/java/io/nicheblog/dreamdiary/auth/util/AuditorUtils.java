@@ -32,7 +32,7 @@ public class AuditorUtils {
      * @param userId 사용자 ID
      * @return AuditorInfo
      */
-    public static AuditorInfo getAuditorInfo(String userId) {
+    public static AuditorInfo getAuditorInfo(final String userId) {
         return authService.getAuditorInfo(userId);
     };
 }

@@ -69,7 +69,7 @@ dF.JrnlDreamTag = (function(): dfModule {
         /**
          * 목록에 따른 꿈 태그 (전체) 조회 (Ajax)
          */
-        dreamTagGroupListAllAjax: function() {
+        dreamTagGroupListAllAjax: function(): void {
             const url: string = Url.JRNL_DREAM_TAG_LIST_AJAX;
             const ajaxData: Record<string, any> = { "yy": 9999, "mnth":99 };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
@@ -114,7 +114,7 @@ dF.JrnlDreamTag = (function(): dfModule {
          */
         closeModal: function(): void {
             /* modal history pop */
-            ModalHistory.previous();
+            ModalHistory.prev();
         }
     }
 })();

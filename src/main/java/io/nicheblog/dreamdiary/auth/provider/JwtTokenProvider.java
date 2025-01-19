@@ -58,9 +58,9 @@ public class JwtTokenProvider {
      * @return {@link String} -- 생성된 JWT 토큰 문자열
      */
     public String createToken(final String userId, final List<String> roles) {
-        Claims claims = Jwts.claims().setSubject(userId);
+        final Claims claims = Jwts.claims().setSubject(userId);
         claims.put("roles", roles);
-        Date now = DateUtils.getCurrDate();
+        final Date now = DateUtils.getCurrDate();
         
         final long tokenValidMillisecond = 1000L * 60 * 60;     // 1시간
         return Jwts.builder()
@@ -78,8 +78,8 @@ public class JwtTokenProvider {
      * @return {@link Authentication} -- 사용자 인증 정보
      * @throws Exception 인증 과정에서 발생할 수 있는 예외
      */
-    public Authentication getDirectAuthentication(String token) throws Exception {
-        String username = this.getUsernameFromToken(token);
+    public Authentication getDirectAuthentication(final String token) throws Exception {
+        final String username = this.getUsernameFromToken(token);
         final AuthInfo authInfo = authService.loadUserByUsername(username);
         authInfo.nullifyPasswordInfo();
 
@@ -93,8 +93,8 @@ public class JwtTokenProvider {
      * @return {@link Authentication} -- 사용자 인증 정보
      * @throws Exception 인증 과정에서 발생할 수 있는 예외
      */
-    public Authentication getAuthentication(String token) throws Exception {
-        String username = this.getUsernameFromToken(token);
+    public Authentication getAuthentication(final String token) throws Exception {
+        final String username = this.getUsernameFromToken(token);
         final AuthInfo authInfo = authService.loadUserByUsername(username);
 
         authenticationHelper.doAuth(authInfo);
@@ -107,7 +107,7 @@ public class JwtTokenProvider {
      * @param token JWT 토큰
      * @return {@link String} -- 사용자 이름
      */
-    public String getUsernameFromToken(String token) {
+    public String getUsernameFromToken(final String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 
@@ -117,16 +117,16 @@ public class JwtTokenProvider {
      * @param request HTTP 요청 객체 (MVC)
      * @return {@link String} -- 추출된 JWT 토큰 문자열
      */
-    public String resolveToken(HttpServletRequest request) {
+    public String resolveToken(final HttpServletRequest request) {
         // 쿠키에서 JWT 토큰 추출
-        Cookie[] cookies = request.getCookies();
+        final Cookie[] cookies = request.getCookies();
         if (cookies != null) {
-            for (Cookie cookie : cookies) {
+            for (final Cookie cookie : cookies) {
                 if ("jwt".equals(cookie.getName())) return cookie.getValue();  // JWT 토큰 반환
             }
         }
         // 쿠키에 없을 시 :: 헤더에서 JWT 토큰 추출
-        String authTokenStr = request.getHeader("Authorization");
+        final String authTokenStr = request.getHeader("Authorization");
         if (StringUtils.isNotEmpty(authTokenStr) && authTokenStr.startsWith("Bearer ")) {
             return authTokenStr.replace("Bearer ", "");
         }
@@ -140,10 +140,10 @@ public class JwtTokenProvider {
      * @param request HTTP 요청 객체 (WebFlux)
      * @return {@link String} -- 추출된 JWT 토큰 문자열
      */
-    public String resolveToken(ServerHttpRequest request) {
+    public String resolveToken(final ServerHttpRequest request) {
         // 헤더에서 JWT 토큰 추출
-        HttpHeaders headers = request.getHeaders();
-        String authTokenStr = headers.getFirst("Authorization");
+        final HttpHeaders headers = request.getHeaders();
+        final String authTokenStr = headers.getFirst("Authorization");
         if (StringUtils.isNotEmpty(authTokenStr) && authTokenStr.startsWith("Bearer ")) {
             return authTokenStr.replace("Bearer ", "");
         }
@@ -157,9 +157,9 @@ public class JwtTokenProvider {
      * @param token JWT 토큰
      * @return {@link Boolean} -- 유효한 경우 true, 그렇지 않은 경우 false
      */
-    public Boolean validateToken(String token) {
+    public Boolean validateToken(final String token) {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            final Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
 
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {

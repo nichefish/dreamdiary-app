@@ -39,7 +39,7 @@ dF.User = (function(): dfModule {
                 $("#authCd").valid();
             });
             // 접속IP 사용 여부 클릭시 글씨 변경 + 입력창 토글 :: 메소드 분리
-            cF.util.chckboxLabel("useAcsIpYn", "사용//미사용", "blue//gray", function(): void{
+            cF.ui.chckboxLabel("useAcsIpYn", "사용//미사용", "blue//gray", function(): void{
                 $("#acsIpListSpan").show()
             }, function(){
                 $("#acsIpListSpan").hide()
@@ -70,7 +70,7 @@ dF.User = (function(): dfModule {
          */
         search: function(): void {
             $("#listForm #pageNo").val(1);
-            cF.util.blockUISubmit("#listForm", Url.USER_LIST + "?actionTyCd=SEARCH");
+            cF.form.blockUISubmit("#listForm", Url.USER_LIST + "?actionTyCd=SEARCH");
         },
 
         /**
@@ -92,7 +92,7 @@ dF.User = (function(): dfModule {
          * 등록 화면으로 이동
          */
         regForm: function(): void {
-            cF.util.blockUISubmit("#procForm", Url.USER_REG_FORM);
+            cF.form.blockUISubmit("#procForm", Url.USER_REG_FORM);
         },
 
         /**
@@ -145,7 +145,7 @@ dF.User = (function(): dfModule {
             if (isNaN(Number(userNo))) return;
 
             $("#procForm #userNo").val(userNo);
-            cF.util.blockUISubmit("#procForm", Url.USER_DTL);
+            cF.form.blockUISubmit("#procForm", Url.USER_DTL);
         },
 
         /**
@@ -163,7 +163,7 @@ dF.User = (function(): dfModule {
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
-                            if (res.rslt) cF.util.blockUIReload();
+                            if (res.rslt) cF.ui.blockUIReload();
                         });
                 }, "block");
             });
@@ -184,7 +184,7 @@ dF.User = (function(): dfModule {
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
-                            if (res.rslt) cF.util.blockUIReload();
+                            if (res.rslt) cF.ui.blockUIReload();
                         });
                 }, "block");
             });
@@ -205,7 +205,7 @@ dF.User = (function(): dfModule {
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
-                            if (res.rslt) cF.util.blockUIReload();
+                            if (res.rslt) cF.ui.blockUIReload();
                         });
                 }, "block");
             });
@@ -215,7 +215,7 @@ dF.User = (function(): dfModule {
          * 수정 화면으로 이동
          */
         mdfForm: function(): void {
-            cF.util.blockUISubmit("#procForm", Url.USER_MDF_FORM);
+            cF.form.blockUISubmit("#procForm", Url.USER_MDF_FORM);
         },
 
         /**
@@ -243,7 +243,7 @@ dF.User = (function(): dfModule {
          */
         list: function(): void {
             const listUrl: string = Url.USER_LIST + (dF.User.isMdf ? "?isBackToList=Y" : "");
-            cF.util.blockUIReplace(listUrl);
+            cF.ui.blockUIReplace(listUrl);
         }
     }
 })();

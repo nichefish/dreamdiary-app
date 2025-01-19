@@ -9,6 +9,7 @@ dF.JrnlDream = (function(): dfModule {
     return {
         initialized: false,
         inKeywordSearchMode: false,
+        tagify: null,
 
         /**
          * initializes module.
@@ -46,25 +47,23 @@ dF.JrnlDream = (function(): dfModule {
             $("#elseDreamYn").change(function() {
                 $("#elseDreamerNm").valid();
             });
-            /* tagify */
-            // cF.tagify.initWithCtgr("#jrnlDreamRegForm #tagListStr", TagCtgrMap.jrnlDream);
             // checkbox init
-            cF.util.chckboxLabel("imprtcYn", "중요//해당없음", "red//gray");
+            cF.ui.chckboxLabel("imprtcYn", "중요//해당없음", "red//gray");
             // checkbox init
-            cF.util.chckboxLabel("nhtmrYn", "악몽//해당없음", "red//gray");
+            cF.ui.chckboxLabel("nhtmrYn", "악몽//해당없음", "red//gray");
             // checkbox init
-            cF.util.chckboxLabel("hallucYn", "입면환각//해당없음", "blue//gray");
+            cF.ui.chckboxLabel("hallucYn", "입면환각//해당없음", "blue//gray");
             // checkbox init
-            cF.util.chckboxLabel("elseDreamYn", "해당//미해당", "blue//gray", function() {
+            cF.ui.chckboxLabel("elseDreamYn", "해당//미해당", "blue//gray", function(): void {
                 $("#elseDreamerNmDiv").removeClass("d-none");
-            }, function() {
+            }, function(): void {
                 $("#elseDreamerNmDiv").addClass("d-none");
             });
             /* tinymce editor reset */
             cF.tinymce.init('#tinymce_jrnlDreamCn');
             cF.tinymce.setContentWhenReady("tinymce_jrnlDreamCn", obj.cn || "");
             /* tagify */
-            cF.tagify.initWithCtgr("#jrnlDreamRegForm #tagListStr", dF.JrnlDreamTag.ctgrMap);
+            dF.JrnlDream.tagify = cF.tagify.initWithCtgr("#jrnlDreamRegForm #tagListStr", dF.JrnlDreamTag.ctgrMap);
         },
 
         /**
@@ -91,7 +90,7 @@ dF.JrnlDream = (function(): dfModule {
                 $("#jrnl_day_tag_list_div").empty();
                 $("#jrnl_diary_tag_list_div").empty();
                 $("#jrnl_dream_tag_list_div").empty();
-                cF.util.closeModal();
+                cF.ui.closeModal();
                 cF.handlebars.template(res.rsltList, "jrnl_dream_list");
                 dF.JrnlDream.inKeywordSearchMode = true;
             }, "block");
@@ -121,8 +120,8 @@ dF.JrnlDream = (function(): dfModule {
         /**
          * 등록 (Ajax)
          */
-        regAjax: function() {
-            const isReg = $("#jrnlDreamRegForm #postNo").val() === "";
+        regAjax: function(): void {
+            const isReg: boolean = $("#jrnlDreamRegForm #postNo").val() === "";
             Swal.fire({
                 text: Message.get(isReg ? "view.cnfm.reg" : "view.cnfm.mdf"),
                 showCancelButton: true,
@@ -136,16 +135,46 @@ dF.JrnlDream = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            if (dF.JrnlDream.inKeywordSearchMode) {
-                                dF.JrnlDream.keywordListAjax();
+                            const isCalendar: boolean = Page?.calendar !== undefined;
+                            if (isCalendar) {
+                                Page.refreshEventList();
+                                dF.JrnlDreamTag.listAjax();     // 태그 refresh
                             } else {
-                                dF.JrnlDay.yyMnthListAjax();
-                                dF.JrnlDreamTag.listAjax();
+                                if (dF.JrnlDream.inKeywordSearchMode) {
+                                    dF.JrnlDream.keywordListAjax();
+                                } else {
+                                    dF.JrnlDay.yyMnthListAjax();
+                                    dF.JrnlDreamTag.listAjax();         // 태그 refresh
+                                }
                             }
+
                             // TODO: 결산 페이지에서 처리시도 처리해 줘야 한다.
-                            cF.util.unblockUI();
+                            cF.ui.unblockUI();
+
+                            /* modal history pop */
+                            ModalHistory.reset();
                         });
                 }, "block");
+            });
+        },
+
+        /**
+         * 상세 모달 호출
+         * @param {string|number} postNo - 글 번호.
+         */
+        dtlModal: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            const url: string = Url.JRNL_DREAM_DTL_AJAX;
+            const ajaxData: Record<string, any> = { "postNo" : postNo };
+            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    return;
+                }
+                const rsltObj: Record<string, any> = res.rsltObj;
+                /* show modal */
+                cF.handlebars.modal(rsltObj, "jrnl_dream_dtl");
             });
         },
 
@@ -189,13 +218,21 @@ dF.JrnlDream = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            if (dF.JrnlDream.inKeywordSearchMode) {
-                                dF.JrnlDream.keywordListAjax();
+                            const isCalendar: boolean = Page?.calendar !== undefined;
+                            if (isCalendar) {
+                                Page.refreshEventList();
+                                dF.JrnlDreamTag.listAjax();     // 태그 refresh
                             } else {
-                                dF.JrnlDay.yyMnthListAjax();
-                                dF.JrnlDreamTag.listAjax();
+                                if (dF.JrnlDream.inKeywordSearchMode) {
+                                    dF.JrnlDream.keywordListAjax();
+                                } else {
+                                    dF.JrnlDay.yyMnthListAjax();
+                                    dF.JrnlDreamTag.listAjax();     // 태그 refresh
+                                }
                             }
-                            cF.util.unblockUI();
+
+                            /* modal history pop */
+                            ModalHistory.reset();
                         });
                 }, "block");
             });

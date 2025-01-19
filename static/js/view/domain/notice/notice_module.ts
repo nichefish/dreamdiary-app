@@ -9,6 +9,7 @@ dF.Notice = (function(): dfModule {
     return {
         initialized: false,
         submitMode: "",
+        tagify: null,
         isReg: $("#noticeRegForm").data("mode") === "regist",
         isMdf: $("#noticeRegForm").data("mode") === "modify",
 
@@ -25,15 +26,15 @@ dF.Notice = (function(): dfModule {
         /**
          * form init
          */
-        initForm: function() {
+        initForm: function(): void {
             /* jquery validation */
             cF.validate.validateForm("#noticeRegForm", dF.Notice.submitHandler);
             /* tinymce init */
             cF.tinymce.init("#tinymce_cn");
             /* tagify */
-            cF.tagify.initWithCtgr("#noticeRegForm #tagListStr");
+            dF.Notice.tagify = cF.tagify.initWithCtgr("#noticeRegForm #tagListStr");
             // 잔디발송여부 클릭시 글씨 변경
-            cF.util.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function(): void {
+            cF.ui.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function(): void {
                 $("#trgetTopicSpan").show();
             }, function(): void {
                 $("#trgetTopicSpan").hide();
@@ -47,7 +48,7 @@ dF.Notice = (function(): dfModule {
             if (dF.Notice.submitMode === "preview") {
                 const popupNm: string = "preview";
                 const options: string = 'width=1280,height=1440,top=0,left=270';
-                const popup: Window = cF.util.openPopup("", popupNm, options);
+                const popup: Window = cF.ui.openPopup("", popupNm, options);
                 if (popup) popup.focus();
                 const popupUrl: string = Url.NOTICE_REG_PREVIEW_POP;
                 $("#noticeRegForm").attr("action", popupUrl).attr("target", popupNm);
@@ -71,7 +72,7 @@ dF.Notice = (function(): dfModule {
         search: function(): void {
             $("#listForm #pageNo").val(1);
             const url: string = Url.NOTICE_LIST;
-            cF.util.blockUISubmit("#listForm", url + "?actionTyCd=SEARCH");
+            cF.form.blockUISubmit("#listForm", url + "?actionTyCd=SEARCH");
         },
 
         /**
@@ -80,7 +81,7 @@ dF.Notice = (function(): dfModule {
         myPaprList: function(): void {
             const url: string = Url.NOTICE_LIST;
             const param: string = `?searchType=nickNm&searchKeyword=${AuthInfo.nickNm!}&regstrId=${AuthInfo.userId!}&pageSize=50&actionTyCd=MY_PAPR`;
-            cF.util.blockUIReplace(url + param);
+            cF.ui.blockUIReplace(url + param);
         },
 
         /**
@@ -102,7 +103,7 @@ dF.Notice = (function(): dfModule {
          * 등록 화면 이동
          */
         regForm: function(): void {
-            cF.util.blockUISubmit("#procForm", Url.NOTICE_REG_FORM);
+            cF.form.blockUISubmit("#procForm", Url.NOTICE_REG_FORM);
         },
 
         /**
@@ -145,7 +146,7 @@ dF.Notice = (function(): dfModule {
             if (isNaN(Number(postNo))) return;
 
             $("#procForm #postNo").val(postNo);
-            cF.util.blockUISubmit("#procForm", Url.NOTICE_DTL);
+            cF.form.blockUISubmit("#procForm", Url.NOTICE_DTL);
         },
 
         /**
@@ -171,7 +172,7 @@ dF.Notice = (function(): dfModule {
          * 수정 화면 이동
          */
         mdfForm: function(): void {
-            cF.util.blockUISubmit("#procForm", Url.NOTICE_MDF_FORM);
+            cF.form.blockUISubmit("#procForm", Url.NOTICE_MDF_FORM);
         },
 
         /**
@@ -203,7 +204,7 @@ dF.Notice = (function(): dfModule {
          */
         list: function(): void {
             const listUrl: string = Url.NOTICE_LIST + dF.Notice.isMdf ? "?isBackToList=Y" : "";
-            cF.util.blockUIReplace(listUrl);
+            cF.ui.blockUIReplace(listUrl);
         }
     }
 })();

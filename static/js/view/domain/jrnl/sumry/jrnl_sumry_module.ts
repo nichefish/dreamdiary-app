@@ -44,7 +44,7 @@ dF.JrnlSumry = (function(): dfModule {
             if (isNaN(Number(postNo))) return;
 
             $("#procForm #postNo").val(postNo);
-            cF.util.blockUISubmit("#procForm", Url.JRNL_SUMRY_DTL);
+            cF.form.blockUISubmit("#procForm", Url.JRNL_SUMRY_DTL);
         },
 
         /**
@@ -56,14 +56,14 @@ dF.JrnlSumry = (function(): dfModule {
 
             const yYElmt: HTMLSelectElement = document.querySelector("#listForm #yy");
             yYElmt.value = String(yy);
-            cF.util.blockUISubmit("#procForm", Url.JRNL_SUMRY_DTL);
+            cF.form.blockUISubmit("#procForm", Url.JRNL_SUMRY_DTL);
         },
 
         /**
          * 목록 화면으로 이동
          */
         list: function(): void {
-            cF.util.blockUIReplace(Url.JRNL_SUMRY_LIST);
+            cF.ui.blockUIReplace(Url.JRNL_SUMRY_LIST);
         },
 
         /**
@@ -74,7 +74,7 @@ dF.JrnlSumry = (function(): dfModule {
             const yYElmt: HTMLSelectElement = document.querySelector("#listForm #yy");
             if (yy === undefined) yy = yYElmt.value;
             if (cF.util.isEmpty(yy)) {
-                cF.util.swalOrAlert("yy는 필수 항목입니다.");
+                cF.ui.swalOrAlert("yy는 필수 항목입니다.");
                 return;
             }
             const url: string = Url.JRNL_SUMRY_MAKE_AJAX;
@@ -82,7 +82,7 @@ dF.JrnlSumry = (function(): dfModule {
             cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
                     .then(function(): void {
-                        if (res.rslt) cF.util.blockUIReload();
+                        if (res.rslt) cF.ui.blockUIReload();
                     });
             }, "block");
         },
@@ -95,7 +95,7 @@ dF.JrnlSumry = (function(): dfModule {
             cF.$ajax.post(url, null, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
                     .then(function(): void {
-                        if (res.rslt) cF.util.blockUIReload();
+                        if (res.rslt) cF.ui.blockUIReload();
                     });
             }, "block");
         },
@@ -112,7 +112,7 @@ dF.JrnlSumry = (function(): dfModule {
             cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
                     .then(function(): void {
-                        if (res.rslt) cF.util.blockUIReload();
+                        if (res.rslt) cF.ui.blockUIReload();
                     });
             }, "block");
         },
@@ -162,7 +162,7 @@ dF.JrnlSumry = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            cF.util.blockUIReload();
+                            cF.ui.blockUIReload();
                         });
                 }, "block");
             });

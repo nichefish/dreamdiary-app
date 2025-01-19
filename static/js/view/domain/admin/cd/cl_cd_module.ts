@@ -31,7 +31,7 @@ dF.ClCd = (function(): dfModule {
             /* jquery validation */
             cF.validate.validateForm("#clCdRegForm", dF.ClCd.regAjax);
             // checkbox init
-            cF.util.chckboxLabel("useYn", "사용//미사용", "blue//gray");
+            cF.ui.chckboxLabel("useYn", "사용//미사용", "blue//gray");
             cF.validate.replaceBlankIfMatches("#clCdRegForm #clCd", cF.regex.nonCd);
             cF.validate.toUpperCase("#clCdRegForm #clCd");
         },
@@ -55,7 +55,7 @@ dF.ClCd = (function(): dfModule {
             const pageNoElmt: HTMLInputElement = document.querySelector("#listForm #pageNo") as HTMLInputElement;
             if (pageNoElmt) pageNoElmt.value = '1';
             // submit
-            cF.util.blockUISubmit("#listForm", Url.CL_CD_LIST + "?actionTyCd=SEARCH");
+            cF.form.blockUISubmit("#listForm", Url.CL_CD_LIST + "?actionTyCd=SEARCH");
         },
 
         /**
@@ -95,7 +95,7 @@ dF.ClCd = (function(): dfModule {
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
-                            if (res.rslt) cF.util.blockUIReload();
+                            if (res.rslt) cF.ui.blockUIReload();
                         });
                 }, "block");
             });
@@ -108,9 +108,9 @@ dF.ClCd = (function(): dfModule {
         dtl: function(clCd: string): void {
             event.stopPropagation();
 
-            cF.util.blockUIRequest();
+            cF.ui.blockUIRequest();
             $("#procForm #clCd").val(clCd);
-            cF.util.blockUISubmit("#procForm", Url.CL_CD_DTL);
+            cF.form.blockUISubmit("#procForm", Url.CL_CD_DTL);
         },
 
         /**
@@ -172,7 +172,7 @@ dF.ClCd = (function(): dfModule {
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
-                            if (res.rslt) cF.util.blockUIReload();
+                            if (res.rslt) cF.ui.blockUIReload();
                         });
                 }, "block");
             });
@@ -196,7 +196,7 @@ dF.ClCd = (function(): dfModule {
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
-                            if (res.rslt) cF.util.blockUIReload();
+                            if (res.rslt) cF.ui.blockUIReload();
                         });
                 }, "block");
             });
@@ -220,7 +220,7 @@ dF.ClCd = (function(): dfModule {
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
-                            if (res.rslt) cF.util.blockUIReload();
+                            if (res.rslt) cF.ui.blockUIReload();
                         });
                 }, "block");
             });
@@ -231,7 +231,7 @@ dF.ClCd = (function(): dfModule {
          */
         list: function(): void {
             const listUrl: string = `${Url.CL_CD_LIST}?isBackToList=Y`;
-            cF.util.blockUIReplace(listUrl);
+            cF.ui.blockUIReplace(listUrl);
         },
     }
 })();

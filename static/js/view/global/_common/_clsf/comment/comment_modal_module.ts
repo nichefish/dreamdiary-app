@@ -78,7 +78,7 @@ dF.Comment.modal = (function(): dfModule {
                             if (dF.Comment.modal.refreshFunc !== undefined) {
                                 dF.Comment.modal.refreshFunc();
                             } else {
-                                cF.util.blockUIReload();
+                                cF.ui.blockUIReload();
                             }
                         });
                 });
@@ -128,7 +128,7 @@ dF.Comment.modal = (function(): dfModule {
                             if (dF.Comment.modal.refreshFunc !== undefined) {
                                 dF.Comment.modal.refreshFunc();
                             } else {
-                                cF.util.blockUIReload();
+                                cF.ui.blockUIReload();
                             }
                         });
                 });

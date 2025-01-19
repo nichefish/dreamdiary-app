@@ -5,7 +5,7 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="schdul_dtl" size="lg" module="">
+<@modal.layout id="schdul_dtl" size="lg">
     <#--begin::Modal Header-->
     <div class="modal-header border-0">
         <h2 class="d-flex-center fw-bolder">
