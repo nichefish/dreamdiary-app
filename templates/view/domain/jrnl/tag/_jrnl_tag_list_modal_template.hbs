@@ -3,7 +3,7 @@
  * @included_in : _jrnl_tag_list_modal.ftlh
  -->
 
-<script type="text/x-handlebars-template" id="jrnl_tag_list_template">
+<script type="text/x-handlebars-template" id="jrnl_tag_list_modal_template">
     {{#each this}}
         <span class="py-2 me-3 cursor-pointer opacity-hover ctgr {{ifEmpty ctgr "defaultCtgr"}}"
               onclick="dF.JrnlDreamTag.dtlModal({{tagNo}}, '{{tagNm}}');"

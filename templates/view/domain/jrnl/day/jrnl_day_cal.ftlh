@@ -12,9 +12,24 @@
 <@layout.layout toolbar=toolbar!"">
 
 <#--include::script modules-->
-    <style>
-
-    </style>
+<style>
+    .tooltip {
+        min-width: 900px !important;      /* 툴팁의 최소 너비 설정 */
+        max-width: 1200px !important;     /* 최대 너비 설정 */
+        width: auto !important;           /* 툴팁의 너비 자동으로 설정 */
+    }
+    .tooltip-inner {
+        text-align: left;
+        min-width: 900px !important;      /* 툴팁의 최소 너비 설정 */
+        max-width: 1200px !important;     /* 최대 너비 설정 */
+        max-height: 900px !important;     /* 툴팁 최대 높이 설정 */
+        overflow-y: auto !important;      /* 세로 스크롤 추가 */
+        word-break: break-word !important; /* 긴 단어가 줄 바꿈되도록 */
+        white-space: normal !important;    /* 툴팁 내에서 텍스트가 여러 줄로 나올 수 있도록 설정 */
+        word-wrap: break-word !important;  /* 긴 단어가 화면을 넘지 않도록 */
+    }
+</style>
+<link rel="stylesheet" type="text/css" href="/css/jrnl.css?${releaseDate!}" />
 <link rel="stylesheet" type="text/css" href="/metronic/assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" />
 
 <!--begin::Advance form-->

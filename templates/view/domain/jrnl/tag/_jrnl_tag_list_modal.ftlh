@@ -45,4 +45,4 @@
 
 <#--include:: Handlebars template-->
 <#include "/view/domain/jrnl/tag/_jrnl_tag_ctgr_template.hbs">
-<#include "/view/domain/jrnl/tag/_jrnl_tag_list_template.hbs">
+<#include "/view/domain/jrnl/tag/_jrnl_tag_list_modal_template.hbs">
