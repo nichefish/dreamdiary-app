@@ -93,6 +93,18 @@ public class TagCmpstn
     }
 
     /**
+     * Getter :: 태그 목록을 문자열로 반환
+     * @return String - 콤마로 구분된 태그 이름 문자열, 리스트가 비어 있을 경우 null 반환
+     */
+    public String getHashTagStr() {
+        if (CollectionUtils.isEmpty(this.list)) return null;
+        return this.list.stream()
+                .sorted()
+                .map(tag -> "#" + tag.getTag().getTagNm())  // 각 태그 앞에 #을 붙임
+                .collect(Collectors.joining(" "));  // 태그들 사이에 띄어쓰기 추가
+    }
+
+    /**
      * Getter :: 태그 목록과 카테고리를 포함한 문자열로 반환.
      * @return String - JSON 형식의 태그와 카테고리 문자열, 리스트가 비어 있을 경우 null 반환
      */

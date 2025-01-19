@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
  */
 @Controller
 @RequiredArgsConstructor
-public class JrnlDayCalController
+public class JrnlDayCalPageController
         extends BaseControllerImpl {
 
     @Getter

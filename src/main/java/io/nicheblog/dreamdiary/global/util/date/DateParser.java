@@ -23,9 +23,9 @@ public class DateParser {
      * 해당날짜의 시작시간 반환 (ex: 2021-09-15 00:00:00)
      */
     public static Date sDateParse(final Object paramDate) throws Exception {
-        Date searchDate = DateUtils.asDate(paramDate);
+        final Date searchDate = DateUtils.asDate(paramDate);
         if (searchDate == null) return null;
-        LocalDateTime startOfDay = DateUtils.asLocalDateTime(searchDate)
+        final LocalDateTime startOfDay = DateUtils.asLocalDateTime(searchDate)
                                             .with(LocalTime.MIN);
         return localDateTimeToDate(startOfDay);
     }
@@ -34,7 +34,7 @@ public class DateParser {
      * 해당날짜의 시작시간 문자열 반환 (ex: "2021-09-15 00:00:00")
      */
     public static String sDateParseStr(final Object paramDate, final DatePtn ptn) throws Exception {
-        Date sDate = sDateParse(paramDate);
+        final Date sDate = sDateParse(paramDate);
         return dateToStr(sDate, ptn);
     }
 
@@ -42,7 +42,7 @@ public class DateParser {
      * 해당날짜의 시작시간 문자열 반환 (ex: "2021-09-15 00:00:00")
      */
     public static String sDateParseStr(final Object paramDate) throws Exception {
-        Date sDate = sDateParse(paramDate);
+        final Date sDate = sDateParse(paramDate);
         return dateToStr(sDate, DatePtn.DATE);
     }
 
@@ -50,9 +50,9 @@ public class DateParser {
      * 해당날짜의 끝 시간 반환 (ex: 2021-09-15 23:59:59)
      */
     public static Date eDateParse(final Object paramDate) throws Exception {
-        Date searchDate = DateUtils.asDate(paramDate);
+        final Date searchDate = DateUtils.asDate(paramDate);
         if (searchDate == null) return null;
-        LocalDateTime endOfDay = DateUtils.asLocalDateTime(searchDate).with(LocalTime.MAX);
+        final LocalDateTime endOfDay = DateUtils.asLocalDateTime(searchDate).with(LocalTime.MAX);
         return localDateTimeToDate(endOfDay);
     }
 
@@ -60,11 +60,11 @@ public class DateParser {
      * 해당날짜의 끝 시간 문자열 반환 (ex: "2021-09-15 23:59:59")
      */
     public static String eDateParseStr(final Object paramDate) throws Exception {
-        Date eDate = eDateParse(paramDate);
+        final Date eDate = eDateParse(paramDate);
         return dateToStr(eDate, DatePtn.DATETIME);
     }
     public static String eDateParseStr(final Object paramDate, final DatePtn ptn) throws Exception {
-        Date eDate = eDateParse(paramDate);
+        final Date eDate = eDateParse(paramDate);
         return dateToStr(eDate, ptn);
     }
     /**
@@ -75,7 +75,7 @@ public class DateParser {
         if (searchDate == null) return null;
         searchDate = DateUtils.getDateAddDay(searchDate, -1);
         if (searchDate == null) return null;
-        LocalDateTime endOfDay = DateUtils.asLocalDateTime(searchDate).with(LocalTime.MAX);
+        final LocalDateTime endOfDay = DateUtils.asLocalDateTime(searchDate).with(LocalTime.MAX);
         return localDateTimeToDate(endOfDay);
     }
 
@@ -99,11 +99,11 @@ public class DateParser {
      */
     public static Date strToDate(final String dateStrParam) throws Exception {
         if (StringUtils.isEmpty(dateStrParam)) return null;
-        String[] parsePatterns = Arrays.stream(DatePtn.values())
+        final String[] parsePatterns = Arrays.stream(DatePtn.values())
                 .map(datePtn -> datePtn.pattern)
                 .toArray(String[]::new);
         // microsecond 포함/미포함이 섞여서 넘어오는 문제 해결 위해 microsecond 미사용 처리
-        String dateStr = (dateStrParam.length() > 20) ? dateStrParam.substring(0, 19) : dateStrParam;
+        final String dateStr = (dateStrParam.length() > 20) ? dateStrParam.substring(0, 19) : dateStrParam;
         return DateUtils.parseDateStrictly(dateStr, parsePatterns);
     }
 
@@ -114,7 +114,7 @@ public class DateParser {
     public static Date strToDate(final String dateStrParam, final DatePtn ptn) throws Exception {
         if (StringUtils.isEmpty(dateStrParam)) return null;
         // microsecond 포함/미포함이 섞여서 넘어오는 문제 해결 위해 microsecond 미사용 처리
-        String dateStr = (dateStrParam.length() > 20) ? dateStrParam.substring(0, 19) : dateStrParam;
+        final String dateStr = (dateStrParam.length() > 20) ? dateStrParam.substring(0, 19) : dateStrParam;
         return ptn.df.parse(dateStr);
     }
 

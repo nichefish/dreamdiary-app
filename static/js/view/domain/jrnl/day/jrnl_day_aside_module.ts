@@ -84,13 +84,26 @@ dF.JrnlDayAside = (function(): dfModule {
          * 월 바꾸기
          */
         mnth: function(): void {
+            const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
+            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
+            const selectedYear: string = yearElement.value;
+            const selectedMnth: string = monthElement.value;
+
             // 쿠키 설정하기
-            $.cookie("jrnl_yy", $("#jrnl_aside #yy").val(), cookieOptions);
-            if ($("#jrnl_aside #mnth").val() === "") return;
-            $.cookie("jrnl_mnth", $("#jrnl_aside #mnth").val(), cookieOptions);
+            $.cookie("jrnl_yy", selectedYear, cookieOptions);
+            if (selectedMnth === "") return;
+            $.cookie("jrnl_mnth", selectedMnth, cookieOptions);
             $("#jrnl_aside #dreamKeyword").val("");
+            $("#jrnl_aside #diaryKeyword").val("");
             // 목록 조회
-            dF.JrnlDay.yyMnthListAjax();
+            const isCalendar: boolean = Page?.calendar !== undefined;
+            if (isCalendar) {
+                Page.calDt = new Date(Number(selectedYear), Number(selectedMnth) - 1, 1);
+                Page.calendar.gotoDate(Page.calDt);
+                Page.refreshEventList(Page.calDt);
+            } else {
+                dF.JrnlDay.yyMnthListAjax();
+            }
             dF.JrnlDayTag.listAjax();
             dF.JrnlDiaryTag.listAjax();
             dF.JrnlDreamTag.listAjax();
@@ -104,24 +117,22 @@ dF.JrnlDayAside = (function(): dfModule {
          * left
          */
         left: function(): void {
-            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
             const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
+            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
+            const selecetdYear: string = yearElement.value;
+            const selectedMonth: string = monthElement.value;
 
-            const currentMonth: string = monthElement.value;
-            const currentYear: string = yearElement.value;
-
-            if (currentMonth && parseInt(currentMonth) > 1) {
+            if (selectedMonth && parseInt(selectedMonth) > 1) {
                 // 월을 하나 감소시킴
-                monthElement.value = (parseInt(currentMonth) - 1).toString();
+                monthElement.value = (parseInt(selectedMonth) - 1).toString();
             } else {
                 // 1월일 경우, 이전 년도로 이동하고 12월로 설정
-                if (currentYear !== "2010") {
-                    yearElement.value = (parseInt(currentYear) - 1).toString(); // 이전 년도로
+                if (selecetdYear !== "2010") {
+                    yearElement.value = (parseInt(selecetdYear) - 1).toString(); // 이전 년도로
                     monthElement.value = "12";  // 12월로 설정
                 }
             }
 
-            // 월이 변경되었을 때의 처리
             dF.JrnlDayAside.mnth();
         },
 
@@ -129,22 +140,20 @@ dF.JrnlDayAside = (function(): dfModule {
          * right
          */
         right: function(): void {
-            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
             const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
+            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
+            const selecetdYear: string = yearElement.value;
+            const selectedMonth: string = monthElement.value;
 
-            const currentMonth: string = monthElement.value;
-            const currentYear: string = yearElement.value;
-
-            if (currentMonth && parseInt(currentMonth) < 12) {
+            if (selectedMonth && parseInt(selectedMonth) < 12) {
                 // 월을 하나 증가시킴
-                monthElement.value = (parseInt(currentMonth) + 1).toString();
+                monthElement.value = (parseInt(selectedMonth) + 1).toString();
             } else {
                 // 12월일 경우, 다음 년도로 이동하고 1월로 설정
-                yearElement.value = (parseInt(currentYear) + 1).toString(); // 다음 년도로
+                yearElement.value = (parseInt(selecetdYear) + 1).toString(); // 다음 년도로
                 monthElement.value = "1";  // 1월로 설정
             }
 
-            // 월이 변경되었을 때의 처리
             dF.JrnlDayAside.mnth();
         },
 
@@ -209,6 +218,34 @@ dF.JrnlDayAside = (function(): dfModule {
             days.forEach((day: HTMLElement): void => {
                 container.appendChild(day);
             });
+        },
+
+        /**
+         * 페이지에 조회년월 쿠키 세팅
+         */
+        setYyMnthCookie: function(): void {
+            // 년도 쿠키 설정
+            const yyCookie = $.cookie("jrnl_yy");
+            const yyElement: HTMLInputElement = document.querySelector("#jrnl_aside #yy") as HTMLInputElement | null;
+            if (yyCookie !== undefined && yyElement !== null) {
+                yyElement.value = yyCookie;
+            }
+            // 월 쿠키 설정
+            const mnthCookie = $.cookie("jrnl_mnth");
+            const mnthElement: HTMLInputElement = document.querySelector("#jrnl_aside #mnth") as HTMLInputElement | null;
+            if (mnthCookie !== undefined && mnthElement !== null) {
+                mnthElement.value = mnthCookie;
+            }
+            // 정렬 쿠키 설정
+            const sortCookie = $.cookie("jrnl_day_sort");
+            const sortElement: HTMLInputElement = document.querySelector("#jrnl_aside #sort") as HTMLInputElement | null;
+            if (sortCookie !== undefined && sortElement !== null) {
+                sortElement.value = sortCookie;
+            }
+            // 아무 쿠키도 없을경우 전체 데이터 로딩을 막기 위해 올해 년도 세팅
+            if (yyCookie === undefined && mnthCookie === undefined) {
+                $("#jrnl_aside #yy").val(cF.date.getCurrYyStr());
+            }
         },
     }
 })();

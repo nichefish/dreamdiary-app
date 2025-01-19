@@ -71,10 +71,12 @@ public class FreemarkerInterceptor
         if (mav == null) return;
 
         // 모든 페이지에 activeProfile, releaseDate, urlMap, messageMap 추가
+        // @see "/templates/layout/head.ftlh"
         mav.addObject("activeProfile", activeProfile.getActive());
         mav.addObject("releaseDate", releaseDate);
         mav.addObject("urlMap", Url.getUrlMap());
         mav.addObject("messageMap", MessageUtils.getMessageMap());
+        mav.addObject("constantMap", Constant.getConstantMap());
 
         /* 모바일 여부 체크 추가 (TODO: 현재 미사용중) */
         final Boolean isMobile = DeviceUtils.getCurrentDevice(request).isMobile();
@@ -113,11 +115,6 @@ public class FreemarkerInterceptor
             }
         }
 
-        /* 내가 읽지 않은 공지사항 추가 */
-        // 최종수정일이 조회기준일자 이내이고, 최종수정자(또는 작성자)가 내가 아니고, 내가 (수정 이후로) 조회하지 않은 글 갯수를 조회한다.
-        final Integer noticeUnreadCnt = noticeService.getUnreadCnt(authInfo.getUserId(), DateUtils.getCurrDateAddDay(-7));
-        mav.addObject("noticeUnreadCnt", noticeUnreadCnt);
-
         /* 메뉴 정보 조회 */
         final List<MenuDto> userMenuList = menuService.getUserMenuList();
         mav.addObject("userMenuList", userMenuList);
@@ -125,5 +122,10 @@ public class FreemarkerInterceptor
         mav.addObject("mngrMenuList", mngrMenuList);
         final List<SiteAcsInfo> boardDefList = boardDefService.boardDefMenuList();
         mav.addObject("boardDefList", boardDefList);
+
+        /* 내가 읽지 않은 공지사항 추가 */
+        // 최종수정일이 조회기준일자 이내이고, 최종수정자(또는 작성자)가 내가 아니고, 내가 (수정 이후로) 조회하지 않은 글 갯수를 조회한다.
+        final Integer noticeUnreadCnt = noticeService.getUnreadCnt(authInfo.getUserId(), DateUtils.getCurrDateAddDay(-7));
+        mav.addObject("noticeUnreadCnt", noticeUnreadCnt);
     }
 }

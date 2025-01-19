@@ -29,6 +29,7 @@ public interface SiteUrl {
     /** 저널 일자 */
     String JRNL_DAY_PAGE = Prefix.JRNL_DAY + "/jrnlDayPage.do";
     String JRNL_DAY_LIST_AJAX = Prefix.JRNL_DAY + "/jrnlDayListAjax.do";
+    String JRNL_DAY_CAL_LIST_AJAX = Prefix.JRNL_DAY + "/jrnlDayCalListAjax.do";
     String JRNL_DAY_REG_AJAX = Prefix.JRNL_DAY + "/jrnlDayRegAjax.do";
     String JRNL_DAY_DTL_AJAX = Prefix.JRNL_DAY + "/jrnlDayDtlAjax.do";
     String JRNL_DAY_MDF_AJAX = Prefix.JRNL_DAY + "/jrnlDayMdfAjax.do";

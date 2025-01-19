@@ -121,5 +121,30 @@
                 }
             });
         })();
+        /** ConstantMap으로부터 자바스크립트 객체 생성 */
+        const Constant = (function() {
+            const constantMap = {
+                <#list constantMap! as key, value>
+                "${(key!"")?string}": "${(value!"")?string}",
+                </#list>
+            };
+
+            return Object.freeze({
+                /**
+                 * 주어진 키에 해당하는 메시지를 반환한다. (부재시 기본 메시지 반환)
+                 *
+                 * @param {string} key - 메시지 번들의 키
+                 * @param {string} [defaultMsg=""] - 기본 메시지 (선택 사항)
+                 * @returns {string} - 메시지 번들에서 찾은 메시지 또는 기본 메시지
+                 */
+                get: function(key, defaultMsg = "") {
+                    if (!constantMap[key]) {
+                        console.warn("Message not found for key: " + key);
+                        return defaultMsg;
+                    }
+                    return cF.format.unescapeHtml(constantMap[key]);
+                }
+            });
+        })();
     </script>
 </head>

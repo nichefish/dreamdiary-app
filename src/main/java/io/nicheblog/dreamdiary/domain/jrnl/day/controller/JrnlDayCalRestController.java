@@ -1,7 +1,8 @@
-package io.nicheblog.dreamdiary.domain.schdul.controller;
+package io.nicheblog.dreamdiary.domain.jrnl.day.controller;
 
-import io.nicheblog.dreamdiary.domain.schdul.model.SchdulSearchParam;
-import io.nicheblog.dreamdiary.domain.schdul.service.SchdulCalService;
+import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayCalDto;
+import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDaySearchParam;
+import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayCalService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
@@ -13,7 +14,6 @@ import io.nicheblog.dreamdiary.global.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -24,9 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * SchdulCalRestController
+ * JrnlDayCalRestController
  * <pre>
- *  일정 달력 API 컨트롤러.
+ *  저널 일자 달력 RestController.
  * </pre>
  *
  * @see LogActvtyRestControllerAspect
@@ -34,19 +34,18 @@ import java.util.List;
  */
 @RestController
 @RequiredArgsConstructor
-@Log4j2
-public class SchdulCalRestController
+public class JrnlDayCalRestController
         extends BaseControllerImpl {
 
     @Getter
-    private final String baseUrl = Url.SCHDUL_CAL;
+    private final String baseUrl = Url.JRNL_DAY_CAL;             // 기본 URL
     @Getter
-    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.SCHDUL;      // 작업 카테고리 (로그 적재용)
+    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
-    private final SchdulCalService schdulCalService;
+    private final JrnlDayCalService jrnlDayCalService;
 
     /**
-     * 일정 > 전체 일정 (달력) 목록 데이터 조회 (Ajax)
+     * 저널 일자 달력 목록 조회 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
@@ -54,23 +53,23 @@ public class SchdulCalRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
-    @GetMapping(Url.SCHDUL_CAL_LIST_AJAX)
+    @GetMapping(value = {Url.JRNL_DAY_CAL_LIST_AJAX})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> schdulCalListAjax(
-            final SchdulSearchParam searchParam,
+    public ResponseEntity<AjaxResponse> jrnlDayCalListAjax(
+            final JrnlDaySearchParam searchParam,
             final LogActvtyParam logParam
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final List<BaseCalDto> schdulCalList = schdulCalService.getSchdulTotalCalList(searchParam);
+        final List<BaseCalDto> jrnlDayCalList = jrnlDayCalService.getSchdulTotalCalList(searchParam);
 
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
 
         // 응답 결과 세팅
-        ajaxResponse.setRsltList(schdulCalList);
+        ajaxResponse.setRsltList(jrnlDayCalList);
         ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);

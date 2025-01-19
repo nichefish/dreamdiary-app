@@ -136,16 +136,42 @@ dF.JrnlDream = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            if (dF.JrnlDream.inKeywordSearchMode) {
-                                dF.JrnlDream.keywordListAjax();
+                            const isCalendar: boolean = Page?.calendar !== undefined;
+                            if (isCalendar) {
+                                Page.refreshEventList();
                             } else {
-                                dF.JrnlDay.yyMnthListAjax();
-                                dF.JrnlDreamTag.listAjax();
+                                if (dF.JrnlDream.inKeywordSearchMode) {
+                                    dF.JrnlDream.keywordListAjax();
+                                } else {
+                                    dF.JrnlDay.yyMnthListAjax();
+                                    dF.JrnlDreamTag.listAjax();
+                                }
                             }
+
                             // TODO: 결산 페이지에서 처리시도 처리해 줘야 한다.
                             cF.ui.unblockUI();
                         });
                 }, "block");
+            });
+        },
+
+        /**
+         * 상세 모달 호출
+         * @param {string|number} postNo - 글 번호.
+         */
+        dtlModal: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            const url: string = Url.JRNL_DREAM_DTL_AJAX;
+            const ajaxData: Record<string, any> = { "postNo" : postNo };
+            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    return;
+                }
+                const rsltObj: Record<string, any> = res.rsltObj;
+                /* show modal */
+                cF.handlebars.modal(rsltObj, "jrnl_dream_dtl");
             });
         },
 
@@ -189,11 +215,16 @@ dF.JrnlDream = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            if (dF.JrnlDream.inKeywordSearchMode) {
-                                dF.JrnlDream.keywordListAjax();
+                            const isCalendar: boolean = Page?.calendar !== undefined;
+                            if (isCalendar) {
+                                Page.refreshEventList();
                             } else {
-                                dF.JrnlDay.yyMnthListAjax();
-                                dF.JrnlDreamTag.listAjax();
+                                if (dF.JrnlDream.inKeywordSearchMode) {
+                                    dF.JrnlDream.keywordListAjax();
+                                } else {
+                                    dF.JrnlDay.yyMnthListAjax();
+                                    dF.JrnlDreamTag.listAjax();
+                                }
                             }
                             cF.ui.unblockUI();
                         });

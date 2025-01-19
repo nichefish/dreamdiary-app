@@ -3,8 +3,13 @@ package io.nicheblog.dreamdiary.global;
 import io.nicheblog.dreamdiary.adapter.AdapterConstant;
 import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.global._common.cd.CdConstant;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -80,4 +85,44 @@ public final class Constant
     public static final String BS_WARNING = "warning";
     public static final String BS_DARK = "dark";
     public static final String BS_MUTED = "muted";
+
+    /**
+     * 리플렉션을 이용해 모든 인터페이스에서 정의된 상수들을 Map으로 반환
+     *
+     * @return Map<String, String> - 상수들을 key-value 형태로 담은 Map
+     */
+    public static Map<String, String> getConstantMap() {
+        Map<String, String> constantMap = new HashMap<>();
+
+        // Url 클래스에서 상수들 가져오기
+        addConstantsToMap(Url.class, constantMap);
+
+        return constantMap;
+    }
+
+    /**
+     * 리플렉션을 이용해 클래스의 상수들을 Map으로 반환
+     */
+    private static void addConstantsToMap(Class<?> clazz, Map<String, String> constantMap) {
+        // 클래스가 인터페이스인 경우에도 적용
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field field : fields) {
+            // static final 필드만 필터링
+            if (Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers()) && field.getType() == String.class) {
+                try {
+                    // 필드 값 얻기
+                    String value = (String) field.get(null);  // static 필드는 null로 접근
+                    constantMap.put(field.getName(), value);  // 필드 이름을 key로, 필드 값을 value로
+                } catch (IllegalAccessException e) {
+                    MessageUtils.getExceptionMsg(e);
+                }
+            }
+        }
+
+        // 만약 인터페이스가 있다면, 인터페이스 상수들도 포함해야 하므로
+        Class<?>[] interfaces = clazz.getInterfaces();
+        for (Class<?> iface : interfaces) {
+            addConstantsToMap(iface, constantMap);
+        }
+    }
 }

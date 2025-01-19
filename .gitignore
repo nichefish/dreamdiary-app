@@ -18,5 +18,9 @@
 *.env
 /.env*
 /target/*
-/static/**/*.js
 /node_modules/
+/static/**/*.js
+/static/**/*.css
+/static/**/*.css.map
+/src/main/resources/static/css/*.css
+/src/main/resources/static/css/*.css.map

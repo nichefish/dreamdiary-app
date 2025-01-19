@@ -6,143 +6,16 @@
 
 <#--toolbar::버튼 추가-->
 <#assign toolbar>
-    <#include "/view/domain/schdul/_schdul_cal_header.ftlh">
+    <#include "/view/domain/jrnl/day/_jrnl_day_page_header.ftlh">
 </#assign>
-
-<#assign isReg = (isReg!false)>
-<#assign isMdf = (isMdf!false)>
 
 <@layout.layout toolbar=toolbar!"">
 
 <#--include::script modules-->
+    <style>
+
+    </style>
 <link rel="stylesheet" type="text/css" href="/metronic/assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" />
-
-<style>
-    #full_calendar_app table {
-        table-layout: fixed;
-    }
-    @media (max-width: 768px) {
-        .card-body {
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-        }
-    }
-</style>
-><script>
-    const Page = (function() {
-        return {
-            eventList: [],
-            calendar: null,
-            calInitDt: null,
-            calDt: null,
-
-            /**
-             * Page 객체 초기화
-             */
-            init: function() {
-                /* initialize form. */
-                dF.Schdul.initForm();
-
-                const chkArr = $("input:checkbox[id^='schdul_chk']");
-                chkArr.each(function(_index, item) {
-                    const id = $(item).attr("id");
-                    if (Page.getChkedCookie(id) === "Y") $(item).prop("checked", true);
-                });
-                /** TODO : 선택된 년도,달 기준으로 변경해야함 */
-                Page.calInitDt = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-                Page.calDt = Page.calInitDt;
-                Page.getEventList();
-                Page.calendar = cF.fullcalendar.init("full_calendar_app", Page.eventList, function(info) {
-                    // 일정 onclick 이벤트
-                    const event = info.event;
-                    const schdulCd = event.groupId;
-                    const isVcatn = schdulCd === "${Constant.SCHDUL_VCATN!}";
-                    const isBrthdy = schdulCd === "${Constant.SCHDUL_BRTHDY!}"
-                    if (isVcatn || isBrthdy) return false;     // 휴가/생일은 팝업 띄우지 않음 - 휴가관리/사용자 정보 쪽에서 관리
-                    dF.Schdul.dtlModal(event.id);
-                });
-                Page.calendar.render();
-                // 좌우탐색버튼 이벤트핸들러 추가
-                $(".fc-today-button").on("click", function() {
-                    const calDt = new Date(Page.calInitDt.getFullYear(), Page.calInitDt.getMonth(), 1);
-                    Page.refreshEventList(calDt);
-                });
-                $(".fc-prev-button").on("click", function() {
-                    const calDt = new Date(Page.calDt.getFullYear(), Page.calDt.getMonth() - 1, 1);
-                    Page.refreshEventList(calDt);
-                });
-                $(".fc-next-button").on("click", function() {
-                    const calDt = new Date(Page.calDt.getFullYear(), Page.calDt.getMonth() + 1, 1);
-                    Page.refreshEventList(calDt);
-                });
-
-                // datepicker 날짜 검색 init
-                cF.datepicker.singleDatePicker("#calDt", "yyyy-MM-DD", cF.date.asStr(Page.calInitDt), function(start) {
-                    const selectedDt = new Date(start);
-                    Page.calendar.gotoDate(selectedDt);
-                    Page.refreshEventList(selectedDt);
-                });
-
-                // https://github.com/fullcalendar/fullcalendar/issues/6393
-                const harnessArr = $(".fc-daygrid-event-harness");
-                harnessArr.each(function() {
-                    const marginTop = $(this).css("margin-top");
-                    if (parseInt(marginTop) < 0) $(this).css("margin-top", "");
-                });
-            },
-            /** 일정 등록 모달 호출 */
-            refreshEventList: function(calDt) {
-                Page.calDt = calDt;
-                Page.getEventList();
-                Page.calendar.removeAllEvents();
-                Page.eventList.forEach(event => Page.calendar.addEvent(event));
-            },
-            /** 일정 등록 모달 호출 */
-            search: function() {
-                Page.getEventList();
-                Page.calendar.removeAllEvents();
-                Page.eventList.forEach(event => Page.calendar.addEvent(event));
-            },
-            /** 일정 등록 모달 호출 */
-            getEventList: function() {
-                const url = '${Url.SCHDUL_CAL_LIST_AJAX!}';
-                // 날짜 세팅
-                const calDt = Page.calDt;
-                const yy  = calDt.getFullYear();
-                const bgnDt = cF.date.getDateAddDayStr(calDt, -35, "yyyy-MM-dd");
-                const endDt = cF.date.getDateAddDayStr(calDt, 45, "yyyy-MM-dd");
-                // 체크박스 값을 읽어와서 필터 요소를 만듬
-                const ajaxData = { 'yy': yy, 'bgnDt': bgnDt, 'endDt': endDt };
-                const chkArr = $("input:checkbox[id^='schdul_chk_']");
-                chkArr.each(function(_index, item) {
-                    const itemName = $(item).attr("name").replaceAll("schdul_chk_", "") + "ed";
-                    ajaxData[itemName] = $(item).prop("checked") ? "Y" : "N";
-                });
-                // 검색키워드 설정
-                ajaxData.searchKeyword = $("#searchKeyword").val();
-                cF.ajax.get(url, ajaxData, function(res) {
-                    if (res.rslt) Page.eventList = res.rsltList || [];
-                });
-            },
-            /** 팝업 쿠키 존재여부 체크 */
-            getChkedCookie: function(key) {
-                const cookie = $.cookie(key);
-                if (key === "schdul_chk_myPaprChk") return (cookie === undefined) ? "N" : cookie;
-                return (cookie === undefined) ? "Y" : cookie;
-            },
-            /** 체크박스 쿠키 설정 */
-            chkbxProp: function(obj) {
-                const checkedYn = $(obj).prop("checked") ? "Y" : "N";
-                const cookieOptions = { "expires": cF.date.getCurrDateAddDay(36135) };
-                $.cookie($(obj).attr("id"), checkedYn, cookieOptions);
-                Page.refreshEventList(Page.calDt);
-            }
-        }
-    })();
-    document.addEventListener("DOMContentLoaded", function() {
-        Page.init();
-    });
-</script>
 
 <!--begin::Advance form-->
 <div class="collapse px-10 py-4 bg-light w-100" id="schdul_advanced_search_div">
@@ -188,7 +61,8 @@
         <#--begin::Tab-->
         <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">
             <li class="nav-item">
-                <a class="nav-link px-6" data-bs-toggle="tab" href="#kt_tab_pane_1">
+                <a class="nav-link px-6" data-bs-toggle="tab" href="#kt_tab_pane_1"
+                   onclick="Page.listPage();">
                     <span class="nav-icon">
                         <i class="bi bi-people"></i>
                     </span>
@@ -225,11 +99,55 @@
 <#--include::aside-->
 <#include "/view/domain/jrnl/day/_jrnl_day_aside_base.ftlh">
 
-<#include "/view/domain/schdul/_modal/_schdul_reg_modal.ftlh">
-<#include "/view/domain/schdul/_modal/_schdul_dtl_modal.ftlh">
-<#--include::script modules-->
+<#--include::tinymce-->
+<script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
+<script type="text/javascript" src="/js/common/helper/tinymce.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/lib/prism/js/prism.js"></script>
+<#include "/view/global/_tinymce_img.ftlh">
+
+<#--include::fullcalendar-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
 <script type="text/javascript" src="/js/common/helper/fullcalendar.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/js/view/domain/schdul/schdul_module.js?${releaseDate!}"></script>
+
+<#--include::jrnl_day_module-->
+<#include "/view/domain/jrnl/day/_modal/_jrnl_day_reg_modal.ftlh">
+<#include "/view/domain/jrnl/day/_modal/_jrnl_day_dtl_modal.ftlh">
+<#include "/view/domain/jrnl/day/_jrnl_day_list_template.hbs">
+<script type="text/javascript" src="/js/view/domain/jrnl/day/jrnl_day_module.js?${releaseDate!}"></script>
+
+<#--include::jrnl_diary_module-->
+<#include "/view/domain/jrnl/diary/_modal/_jrnl_diary_reg_modal.ftlh">
+<#include "/view/domain/jrnl/diary/_jrnl_diary_list_template.hbs">
+<script type="text/javascript" src="/js/view/domain/jrnl/diary/jrnl_diary_module.js?${releaseDate!}"></script>
+
+<#--include::jrnl_dream_module-->
+<#include "/view/domain/jrnl/dream/_modal/_jrnl_dream_reg_modal.ftlh">
+<#include "/view/domain/jrnl/dream/_jrnl_dream_list_template.hbs">
+<script type="text/javascript" src="/js/view/domain/jrnl/dream/jrnl_dream_module.js?${releaseDate!}"></script>
+
+<#--include::jrnl_day_tag_module-->
+<#include "/view/domain/jrnl/diary/tag/_modal/_jrnl_diary_tag_dtl_modal.ftlh">
+<#include "/view/domain/jrnl/diary/tag/_jrnl_diary_tag_list_template.hbs">
+<script type="text/javascript" src="/js/view/domain/jrnl/diary/tag/jrnl_diary_tag_module.js?${releaseDate!}"></script>
+
+<#--include::jrnl_day_tag_module-->
+<#include "/view/domain/jrnl/day/tag/_modal/_jrnl_day_tag_dtl_modal.ftlh">
+<#include "/view/domain/jrnl/day/tag/_jrnl_day_tag_list_template.hbs">
+<script type="text/javascript" src="/js/view/domain/jrnl/day/tag/jrnl_day_tag_module.js?${releaseDate!}"></script>
+
+<#--include::jrnl_dream_tag_module-->
+<#include "/view/domain/jrnl/dream/tag/_modal/_jrnl_dream_tag_dtl_modal.ftlh">
+<#include "/view/domain/jrnl/dream/tag/_jrnl_dream_tag_list_template.hbs">
+<script type="text/javascript" src="/js/view/domain/jrnl/dream/tag/jrnl_dream_tag_module.js?${releaseDate!}"></script>
+
+<#--include::tags-->
+<#include "/view/domain/jrnl/tag/_jrnl_tag_list_modal.ftlh">
+
+<#--include::comment-->
+<#include "/view/global/_common/_clsf/comment/_modal/_comment_reg_modal.ftlh">
+<script type="text/javascript" src="/js/view/global/_common/_clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
+
+<!--include::page scripts-->
+<script type="text/javascript" src="/js/view/domain/jrnl/day/jrnl_day_cal.js?${releaseDate!}"></script>
 
 </@layout.layout>

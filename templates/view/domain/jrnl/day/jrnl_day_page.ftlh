@@ -20,7 +20,8 @@
         <#--begin::Tab-->
         <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">
             <li class="nav-item">
-                <a class="nav-link px-6 active" data-bs-toggle="tab" href="#kt_tab_pane_1">
+                <a class="nav-link px-6 active" data-bs-toggle="tab" href="#kt_tab_pane_1"
+                   onclick="Page.listPage();">
                     <span class="nav-icon">
                         <i class="bi bi-people"></i>
                     </span>

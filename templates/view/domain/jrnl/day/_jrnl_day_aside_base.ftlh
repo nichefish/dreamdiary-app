@@ -64,6 +64,12 @@
                     </div>
                     <div class="col">
                         <span class="text-gray-900 fs-h6 fw-bold d-inline-block ms-2 mb-1">월</span>
+                        <button type="button" class="btn btn-sm btn-outline btn-light-info blink-slow ms-6 ps-2 pe-1 py-0"
+                                onclick="dF.JrnlDayAside.today();"
+                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="오늘 일자를 조회합니다.">
+                            TODAY
+                            <i class="bi bi-box-arrow-in-up-right"></i>
+                        </button>
                         <div class="d-flex">
                             <select name="mnth" id="mnth" class="form-select" aria-label="Select example"
                                     onchange="dF.JrnlDayAside.mnth();">
@@ -81,28 +87,23 @@
                     </div>
                 </div>
                 <#--begin::row-->
-                <div class="px-2 mb-4 gap-1">
-                    <button type="button" class="btn btn-sm btn-outline btn-light-primary px-3"
+                <div class="px-8 mb-4 gap-1">
+                    <button type="button" class="btn btn-sm btn-outline btn-light-primary px-2 pt-1"
                             onclick="dF.JrnlDayAside.pinpoint();"
                             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="나중에 돌아올 수 있도록.&#10;현재 년월을 저장합니다.">
                         <i class="bi bi-bookmarks pe-0"></i>
                     </button>
-                    <span class="px-1">
-                        <i class="bi bi-pin-map fs-8"></i>
+                    <span class="mx-2">|</span>
+                    <span class="px-1 me-1">
                         <span id="pinYy" class="text-muted text-underline-dotted">----</span>
                         <span> / </span>
                         <span id="pinMnth" class="text-muted text-underline-dotted">--</span>
+                        <i class="bi bi-pin-map fs-7"></i>
                     </span>
                     <button type="button" class="btn btn-sm btn-outline btn-light-primary px-2 pt-1"
                             onclick="dF.JrnlDayAside.turnback();"
                             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저장된 년월로 이동합니다.">
-                        <i class="bi bi-reply-all fs-8 pe-0"></i>
-                    </button>
-                    <span class="mx-2">|</span>
-                    <button type="button" class="btn btn-sm btn-outline btn-light-info px-3"
-                            onclick="dF.JrnlDayAside.today();"
-                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="오늘 일자를 조회합니다.">
-                        TODAY
+                        <i class="bi bi-reply-all pe-0"></i>
                     </button>
                 </div>
                 <div class="separator my-6"></div>

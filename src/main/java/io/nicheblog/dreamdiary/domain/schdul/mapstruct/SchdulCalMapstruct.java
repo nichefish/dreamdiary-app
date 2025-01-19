@@ -38,7 +38,9 @@ public interface SchdulCalMapstruct
     @Mapping(target = "color", expression = "java(Constant.SCHDUL_HLDY.equals(entity.getSchdulCd()) ? \"red\" : null)")
     // @Mapping(target = "prtcpnt", expression = "java(entity.getPrtcpntStr())")
     @Mapping(target = "bgnDt", expression = "java(DateUtils.asStr(entity.getBgnDt(), DatePtn.DATE))")
-    @Mapping(target = "endDt", expression = "java(DateUtils.Parser.eDateParseStr(entity.getEndDt(), DatePtn.ZDATETIME))")
+    @Mapping(target = "endDt", expression = "java(DateUtils.asStr(entity.getEndDt(), DatePtn.ZDATETIME))")
+    @Mapping(target = "start", expression = "java(DateUtils.asStr(entity.getBgnDt(), DatePtn.DATE))")
+    @Mapping(target = "end", expression = "java(DateUtils.asStr(entity.getBgnDt(), DatePtn.ZDATETIME))")
     @Mapping(target = "allDay", expression = "java(entity.getEndDt() == null ? true : DateUtils.isSameDay(entity.getBgnDt(), entity.getEndDt()) ? true : false)")
     SchdulCalDto toCalDto(final SchdulEntity entity) throws Exception;
 
@@ -54,6 +56,8 @@ public interface SchdulCalMapstruct
     @Mapping(target = "title", expression = "java(entity.getUserNm() + \" \" + entity.getVcatnNm()) ")
     @Mapping(target = "bgnDt", expression = "java(DateUtils.asStr(entity.getBgnDt(), DatePtn.DATE))")
     @Mapping(target = "endDt", expression = "java(DateUtils.asStr(entity.getEndDt(), DatePtn.ZDATETIME))")
+    @Mapping(target = "start", expression = "java(DateUtils.asStr(entity.getBgnDt(), DatePtn.DATE))")
+    @Mapping(target = "end", expression = "java(DateUtils.asStr(entity.getBgnDt(), DatePtn.ZDATETIME))")
     @Mapping(target = "allDay", expression = "java(entity.getEndDt() == null ? true : DateUtils.isSameDay(entity.getBgnDt(), entity.getEndDt()) ? true : false)")
     SchdulCalDto toCalDto(final VcatnSchdulEntity entity) throws Exception;
 
@@ -70,9 +74,9 @@ public interface SchdulCalMapstruct
         String title = dto.getTitle();
         switch (schdulTy) {
             case HLDY:
-                dto.setColor("red");
-                dto.setClassName("text-light");
                 dto.setDisplay("background");
+                dto.setColor("red");
+                dto.setClassName("text-light text-end pe-8");
                 break;
             case CEREMONY:
                 dto.setColor("#e8a8ff");
