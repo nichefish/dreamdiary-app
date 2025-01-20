@@ -1,10 +1,12 @@
-package io.nicheblog.dreamdiary.auth.service.impl;
+package io.nicheblog.dreamdiary.auth.service.manager;
 
+import io.nicheblog.dreamdiary.auth.handler.LgnSuccessHandler;
+import io.nicheblog.dreamdiary.auth.handler.LgoutHandler;
+import io.nicheblog.dreamdiary.auth.handler.SessionDestroyListener;
 import lombok.extern.log4j.Log4j2;
 
 import javax.servlet.http.HttpSessionListener;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * DupIdLgnManager
@@ -14,13 +16,14 @@ import java.util.List;
  * </pre>
  *
  * @author nichefish
+ * @see LgnSuccessHandler,LgoutHandler,SessionDestroyListener
  */
 @Log4j2
 public class DupIdLgnManager
         implements HttpSessionListener {
 
-    /** 로그인 아이디 목록을 담을 배열. */
-    private static final List<String> lgnIdList = new ArrayList<>();
+    /** 로그인 아이디 목록을 담을 Map. */
+    private static final ConcurrentHashMap<String, Boolean> lgnIdMap = new ConcurrentHashMap<>();
 
     /* ----- */
 
@@ -31,7 +34,7 @@ public class DupIdLgnManager
      * @return {@link Boolean} -- 중복 로그인인 경우 true, 그렇지 않으면 false
      */
     public synchronized static boolean isDupIdLgn(final String compareId) {
-        return lgnIdList.contains(compareId);
+        return lgnIdMap.containsKey(compareId);
     }
 
     /**
@@ -40,8 +43,8 @@ public class DupIdLgnManager
      * @param lgnId 추가할 사용자 ID (String)
      */
     public synchronized static void addKey(final String lgnId) {
-        lgnIdList.add(lgnId);
-        log.info("userId {} added for dupIdLgnArray.", lgnId);
+        lgnIdMap.put(lgnId, true);
+        log.info("userId {} added for dupIdLgnMap.", lgnId);
     }
 
     /**
@@ -50,7 +53,7 @@ public class DupIdLgnManager
      * @param compareId 제거할 사용자 ID (String)
      */
     public synchronized static void removeKey(final String compareId) {
-        lgnIdList.remove(compareId);
-        log.info("userId {} removed from dupIdLgnArray.", compareId);
+        lgnIdMap.remove(compareId);
+        log.info("userId {} removed from dupIdLgnMap.", compareId);
     }
 }

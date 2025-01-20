@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.auth.handler;
 
 import io.nicheblog.dreamdiary.auth.model.AuthInfo;
-import io.nicheblog.dreamdiary.auth.service.impl.DupIdLgnManager;
+import io.nicheblog.dreamdiary.auth.service.manager.DupIdLgnManager;
 import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.global._common.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
