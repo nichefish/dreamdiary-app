@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.global._common.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
+import io.nicheblog.dreamdiary.global.util.HttpUtils;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -35,16 +36,6 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 public class BaseExceptionHandler {
 
     private final ApplicationEventPublisher publisher;
-
-    /**
-     * 요청이 AJAX 요청인지 확인
-     *
-     * @param request 확인할 웹 요청
-     * @return {@link Boolean} -- 요청이 AJAX 요청일 경우 true, 그렇지 않으면 false
-     */
-    private boolean isAjaxRequest(final WebRequest request) {
-        return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
-    }
 
     /**
      * 예외 처리 공통 로직
@@ -79,7 +70,7 @@ public class BaseExceptionHandler {
         publisher.publishEvent(new LogActvtyEvent(this, logParam));
 
         // Ajax 요청인 경우
-        if (this.isAjaxRequest(request)) {
+        if (HttpUtils.isAjaxRequest(request)) {
             AjaxResponse ajaxResponse = new AjaxResponse(false, errorMsg);
             return ResponseEntity
                     .status(status)

@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogAnonActvtyEven
 import io.nicheblog.dreamdiary.global._common.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.nicheblog.dreamdiary.global.util.HttpUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
@@ -49,36 +50,28 @@ public class AjaxSessionTimeoutFilter
             final ServletResponse res,
             final FilterChain chain
     ) throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) req;
-        HttpServletResponse response = (HttpServletResponse) res;
+        final HttpServletRequest request = (HttpServletRequest) req;
+        final HttpServletResponse response = (HttpServletResponse) res;
 
         try {
             chain.doFilter(request, response);
         } catch (final AuthenticationException e) {
             // (Ajax 요청에 대해서만 처리)
-            if (this.isAjaxRequest(request)) {
+            if (HttpUtils.isAjaxRequest(request)) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED);     // 401
                 // 로그 관련 처리
-                LogActvtyParam logParam = new LogActvtyParam(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.DEFAULT);
+                final LogActvtyParam logParam = new LogActvtyParam(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.DEFAULT);
                 publisher.publishEvent(new LogAnonActvtyEvent(this, logParam));
             }
         } catch (final AccessDeniedException e) {
             // (Ajax 요청에 대해서만 처리)
-            if (isAjaxRequest(request)) {
+            if (HttpUtils.isAjaxRequest(request)) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);        // 403
                 // 로그 관련 처리
-                LogActvtyParam logParam = new LogActvtyParam(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.DEFAULT);
+                final LogActvtyParam logParam = new LogActvtyParam(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.DEFAULT);
                 publisher.publishEvent(new LogAnonActvtyEvent(this, logParam));
             }
         }
-    }
-
-    /**
-     * AJAX 요청들에 대하여 헤더에 "AJAX" 수동 설정
-     * @see "commons.js"
-     */
-    private boolean isAjaxRequest(final HttpServletRequest request) {
-        return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
     }
 
     @Override
