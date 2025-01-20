@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.auth.handler;
 import io.nicheblog.dreamdiary.auth.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.service.impl.DupIdLgnManager;
 import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogActvtyEvent;
+import io.nicheblog.dreamdiary.global._common.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -35,6 +36,7 @@ public class LgoutHandler
      * @param request 로그아웃 요청 객체
      * @param httpServletResponse 응답 객체
      * @param authentication 현재 인증된 사용자의 Authentication 객체
+     * @see LogActvtyEventListener
      */
     @Override
     public void logout(

@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.adapter.mail.model.MailSendParam;
 import io.nicheblog.dreamdiary.adapter.mail.service.MailService;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.sys.event.LogSysEvent;
+import io.nicheblog.dreamdiary.global._common.log.sys.handler.LogSysEventListener;
 import io.nicheblog.dreamdiary.global._common.log.sys.model.LogSysParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -43,6 +44,8 @@ public class MailSendWorker implements Runnable {
 
 	/**
  	 * 메일 큐에서 MailSendEvent를 가져와 메일을 발송합니다.
+	 *
+	 * @see LogSysEventListener
 	 */
 	@Override
 	public void run() {
@@ -59,7 +62,7 @@ public class MailSendWorker implements Runnable {
 				LogSysParam logParam = new LogSysParam(true, "메일 발송에 실패했습니다.", ActvtyCtgr.SYSTEM);
 				logParam.setExceptionInfo(e);
 				publisher.publishEvent(new LogSysEvent(this, logParam));
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				log.warn("mail send failed", e);
 				LogSysParam logParam = new LogSysParam(true, "메일 발송에 실패했습니다.", ActvtyCtgr.SYSTEM);
 				logParam.setExceptionInfo(e);

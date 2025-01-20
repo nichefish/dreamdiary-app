@@ -59,9 +59,9 @@ class BoardPostRepositoryTest {
         // Given::
 
         // When::
-        BoardPostEntity registered = boardPostRepository.save(boardPostEntity);
-        Integer key = registered.getPostNo();
-        BoardPostEntity retrieved = boardPostRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final BoardPostEntity registered = boardPostRepository.save(boardPostEntity);
+        final Integer key = registered.getPostNo();
+        final BoardPostEntity retrieved = boardPostRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -107,10 +107,10 @@ class BoardPostRepositoryTest {
         Integer key = registered.getPostNo();
 
         // When::
-        BoardPostEntity toDelete = boardPostRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
+        final BoardPostEntity toDelete = boardPostRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
         boardPostRepository.delete(toDelete);
 
-        BoardPostEntity retrieved = boardPostRepository.findById(key).orElse(null);
+        final BoardPostEntity retrieved = boardPostRepository.findById(key).orElse(null);
 
         // Then::
         assertNull(retrieved, "삭제가 제대로 이루어지지 않았습니다.");

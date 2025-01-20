@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.global._common._clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.service.ContentTagService;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.service.TagService;
 import io.nicheblog.dreamdiary.global._common.cache.event.EhCacheEvictEvent;
+import io.nicheblog.dreamdiary.global._common.cache.handler.EhCacheEvictEventListner;
 import io.nicheblog.dreamdiary.global.config.AsyncConfig;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class TagEventListener {
      * 
      * @param event 처리할 이벤트 객체
      * @throws Exception 처리 중 발생할 수 있는 예외
+     * @see EhCacheEvictEventListner
      */
     @EventListener
     @Async

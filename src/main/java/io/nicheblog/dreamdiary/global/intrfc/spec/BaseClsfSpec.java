@@ -43,7 +43,7 @@ public interface BaseClsfSpec<Entity extends BaseClsfEntity>
                 basePredicate = getBasePredicate(searchParamMap, root, builder);
                 clsfPredicate = getClsfPredicate(searchParamMap, root, builder);
                 predicate = getPredicateWithParams(searchParamMap, root, builder);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
             }
             predicate.addAll(basePredicate);
@@ -82,7 +82,7 @@ public interface BaseClsfSpec<Entity extends BaseClsfEntity>
                         Join<NoticeEntity, ContentTagEntity> contentTagJoin = root.join("tag").join("list", JoinType.INNER);
                         Expression<String> contentTagExp = contentTagJoin.get("refTagNo");
                         predicate.add(contentTagExp.in(refTagNoList)); // IN 절 사용
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         e.printStackTrace();
                     }
                     keysToRemove.add(key);      // 처리된 키 저장

@@ -64,9 +64,9 @@ class DtlCdRepositoryTest {
         // Given::
 
         // When::
-        DtlCdEntity registered = dtlCdRepository.save(dtlCdEntity);
-        DtlCdKey key = registered.getKey();
-        DtlCdEntity retrieved = dtlCdRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final DtlCdEntity registered = dtlCdRepository.save(dtlCdEntity);
+        final DtlCdKey key = registered.getKey();
+        final DtlCdEntity retrieved = dtlCdRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -108,14 +108,14 @@ class DtlCdRepositoryTest {
     @Test
     public void testDelete() throws Exception {
         // Given::
-        DtlCdEntity registered = dtlCdRepository.save(dtlCdEntity);
-        DtlCdKey key = registered.getKey();
+        final DtlCdEntity registered = dtlCdRepository.save(dtlCdEntity);
+        final DtlCdKey key = registered.getKey();
 
         // When::
-        DtlCdEntity toDelete = dtlCdRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
+        final DtlCdEntity toDelete = dtlCdRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
         dtlCdRepository.delete(toDelete);
 
-        DtlCdEntity retrieved = dtlCdRepository.findById(key).orElse(null);
+        final DtlCdEntity retrieved = dtlCdRepository.findById(key).orElse(null);
 
         // Then::
         assertNull(retrieved, "삭제가 제대로 이루어지지 않았습니다.");

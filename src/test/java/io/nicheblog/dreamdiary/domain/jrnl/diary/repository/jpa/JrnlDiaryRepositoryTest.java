@@ -58,9 +58,9 @@ class JrnlDiaryRepositoryTest {
         // Given::
 
         // When::
-        JrnlDiaryEntity registered = jrnlDiaryRepository.save(jrnlDiaryEntity);
-        Integer key = registered.getPostNo();
-        JrnlDiaryEntity retrieved = jrnlDiaryRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final JrnlDiaryEntity registered = jrnlDiaryRepository.save(jrnlDiaryEntity);
+        final Integer key = registered.getPostNo();
+        final JrnlDiaryEntity retrieved = jrnlDiaryRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -102,14 +102,14 @@ class JrnlDiaryRepositoryTest {
     @Test
     public void testDelete() throws Exception {
         // Given::
-        JrnlDiaryEntity registered = jrnlDiaryRepository.save(jrnlDiaryEntity);
-        Integer key = registered.getPostNo();
+        final JrnlDiaryEntity registered = jrnlDiaryRepository.save(jrnlDiaryEntity);
+        final Integer key = registered.getPostNo();
 
         // When::
-        JrnlDiaryEntity toDelete = jrnlDiaryRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
+        final JrnlDiaryEntity toDelete = jrnlDiaryRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
         jrnlDiaryRepository.delete(toDelete);
 
-        JrnlDiaryEntity retrieved = jrnlDiaryRepository.findById(key).orElse(null);
+        final JrnlDiaryEntity retrieved = jrnlDiaryRepository.findById(key).orElse(null);
 
         // Then::
         assertNull(retrieved, "삭제가 제대로 이루어지지 않았습니다.");

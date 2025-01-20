@@ -69,9 +69,9 @@ class ManagtrRepositoryTest {
         // Given::
 
         // When::
-        ManagtrEntity registered = managtrRepository.save(managtrEntity);
-        Integer key = registered.getManagtrNo();
-        ManagtrEntity retrieved = managtrRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final ManagtrEntity registered = managtrRepository.save(managtrEntity);
+        final Integer key = registered.getManagtrNo();
+        final ManagtrEntity retrieved = managtrRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");

@@ -35,7 +35,7 @@ public interface BasePostService<Dto extends BasePostDto & Identifiable<Key>, Li
      */
     @Transactional(readOnly = true)
     default List<ListDto> getFxdList() throws Exception {
-        Map<String, Object> searchParamMap = new HashMap<>() {{
+        final Map<String, Object> searchParamMap = new HashMap<>() {{
             put("fxdYn", "Y");
         }};
         return this.getListDto(searchParamMap);

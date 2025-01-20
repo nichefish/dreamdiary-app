@@ -211,7 +211,7 @@ public class SchdulCalService {
                 .map(entity -> {
                     try {
                         return schdulCalMapstruct.toCalDto(entity);
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         throw new RuntimeException(e);
                     }
                 })

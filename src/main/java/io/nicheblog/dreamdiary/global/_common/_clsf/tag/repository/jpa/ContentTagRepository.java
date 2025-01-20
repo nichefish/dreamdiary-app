@@ -31,6 +31,6 @@ public interface ContentTagRepository
             "WHERE ct.refPostNo = :#{#param.refPostNo} " +
             "  AND ct.refContentType = :#{#param.refContentType} " +
             "  AND ct.regstrId = :#{#param.regstrId} " +
-            "  AND EXISTS (SELECT 1 FROM TagEntity t WHERE t.tagNo = ct.refTagNo AND t.tagNm = :#{#param.tagNm} AND (t.ctgr = :#{#param.ctgr} OR (t.ctgr IS NULL AND :ctgr IS NULL)))")
+            "  AND EXISTS (SELECT 1 FROM TagEntity t WHERE t.tagNo = ct.refTagNo AND t.tagNm = :#{#param.tagNm} AND (t.ctgr = :#{#param.ctgr} OR (t.ctgr IS NULL AND :#{#param.ctgr} IS NULL)))")
     void deleteObsoleteContentTags(final @Param("param") ContentTagParam param);
 }

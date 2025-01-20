@@ -48,7 +48,7 @@ class AES128Module {
             // base64로 다시 포맷해서 인코딩 실시 (경우에 따라 아파치 base64 필요)
             Encoder encoder = Base64.getEncoder();
             return encoder.encodeToString(cipher.doFinal(textBytes));
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.warn(e.getMessage());
         }
         return "";
@@ -74,7 +74,7 @@ class AES128Module {
             cipher.init(Cipher.DECRYPT_MODE, newKey, ivSpec);
 
             return new String(cipher.doFinal(textBytes), StandardCharsets.UTF_8);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.warn(e.getMessage());
         }
         return "";

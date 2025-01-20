@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.global.handler;
 
 import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogActvtyEvent;
+import io.nicheblog.dreamdiary.global._common.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -67,6 +68,7 @@ public class BaseExceptionHandler {
      * @param status 반환할 HTTP 상태 코드
      * @param view 예외 발생 시 렌더링할 뷰 이름 (AJAX 요청이 아닐 때 사용)
      * @return Ajax 요청의 경우 {@link ResponseEntity}, 페이지 요청의 경우 {@link ModelAndView} 객체
+     * @see LogActvtyEventListener
      */
     private Object handleException(final Exception e, final WebRequest request, final HttpStatus status, final String view) {
         final String errorMsg = MessageUtils.getExceptionMsg(e);

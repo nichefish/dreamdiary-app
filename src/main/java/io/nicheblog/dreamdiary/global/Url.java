@@ -32,7 +32,7 @@ public class Url
      * @return Map<String, String> - URL 상수들을 key-value 형태로 담은 Map
      */
     public static Map<String, String> getUrlMap() {
-        Map<String, String> urlMap = new HashMap<>();
+        final Map<String, String> urlMap = new HashMap<>();
 
         // Url 클래스에서 상수들 가져오기
         addConstantsToMap(Url.class, urlMap);
@@ -43,25 +43,25 @@ public class Url
     /**
      * 리플렉션을 이용해 Url 클래스의 상수들을 Map으로 반환
      */
-    private static void addConstantsToMap(Class<?> clazz, Map<String, String> urlMap) {
+    private static void addConstantsToMap(final Class<?> clazz, final Map<String, String> urlMap) {
         // 클래스가 인터페이스인 경우에도 적용
-        Field[] fields = clazz.getDeclaredFields();
-        for (Field field : fields) {
+        final Field[] fields = clazz.getDeclaredFields();
+        for (final Field field : fields) {
             // static final 필드만 필터링
             if (Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers()) && field.getType() == String.class) {
                 try {
                     // 필드 값 얻기
-                    String value = (String) field.get(null);  // static 필드는 null로 접근
+                    final String value = (String) field.get(null);  // static 필드는 null로 접근
                     urlMap.put(field.getName(), value);  // 필드 이름을 key로, 필드 값을 value로
-                } catch (IllegalAccessException e) {
+                } catch (final IllegalAccessException e) {
                     MessageUtils.getExceptionMsg(e);
                 }
             }
         }
 
         // 만약 인터페이스가 있다면, 인터페이스 상수들도 포함해야 하므로
-        Class<?>[] interfaces = clazz.getInterfaces();
-        for (Class<?> iface : interfaces) {
+        final Class<?>[] interfaces = clazz.getInterfaces();
+        for (final Class<?> iface : interfaces) {
             addConstantsToMap(iface, urlMap);
         }
     }

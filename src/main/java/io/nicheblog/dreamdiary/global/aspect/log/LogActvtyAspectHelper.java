@@ -49,7 +49,7 @@ public class LogActvtyAspectHelper {
             final Field field = target.getClass().getDeclaredField("actvtyCtgr");
             field.setAccessible(true);
             return (ActvtyCtgr) field.get(target);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+        } catch (final NoSuchFieldException | IllegalAccessException e) {
             log.warn("Failed to get ActvtyCtgr from controller: {}", e.getMessage());
             return ActvtyCtgr.DEFAULT;  // 기본 값 반환
         }

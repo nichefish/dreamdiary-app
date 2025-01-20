@@ -59,9 +59,9 @@ class JrnlSbjctRepositoryTest {
         // Given::
 
         // When::
-        JrnlSbjctEntity registered = jrnlSbjctRepository.save(jrnlSbjctEntity);
-        Integer key = registered.getPostNo();
-        JrnlSbjctEntity retrieved = jrnlSbjctRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final JrnlSbjctEntity registered = jrnlSbjctRepository.save(jrnlSbjctEntity);
+        final Integer key = registered.getPostNo();
+        final JrnlSbjctEntity retrieved = jrnlSbjctRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -103,14 +103,14 @@ class JrnlSbjctRepositoryTest {
     @Test
     public void testDelete() throws Exception {
         // Given::
-        JrnlSbjctEntity registered = jrnlSbjctRepository.save(jrnlSbjctEntity);
-        Integer key = registered.getPostNo();
+        final JrnlSbjctEntity registered = jrnlSbjctRepository.save(jrnlSbjctEntity);
+        final Integer key = registered.getPostNo();
 
         // When::
-        JrnlSbjctEntity toDelete = jrnlSbjctRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
+        final JrnlSbjctEntity toDelete = jrnlSbjctRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
         jrnlSbjctRepository.delete(toDelete);
 
-        JrnlSbjctEntity retrieved = jrnlSbjctRepository.findById(key).orElse(null);
+        final JrnlSbjctEntity retrieved = jrnlSbjctRepository.findById(key).orElse(null);
 
         // Then::
         assertNull(retrieved, "삭제가 제대로 이루어지지 않았습니다.");

@@ -67,9 +67,9 @@ class TagRepositoryTest {
         // Given::
 
         // When::
-        TagEntity registered = tagRepository.save(tagEntity);
-        Integer key = registered.getTagNo();
-        TagEntity retrieved = tagRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final TagEntity registered = tagRepository.save(tagEntity);
+        final Integer key = registered.getTagNo();
+        final TagEntity retrieved = tagRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");

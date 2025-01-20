@@ -87,7 +87,7 @@ public class HldyKasiApiServiceImpl
             // 요청 생성
             HldyKasiApiRespDto respDto = restTemplate.getForObject(requestURI, HldyKasiApiRespDto.class);
             if (respDto != null) rsItems = respDto.getBody().getItems();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             MessageUtils.getExceptionMsg(e);
         }
         return rsItems;
@@ -110,7 +110,7 @@ public class HldyKasiApiServiceImpl
                 .map(hldy -> {
                     try {
                         return hldyApiMapstruct.toEntity(hldy);
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         throw new RuntimeException(e);
                     }
                 })
@@ -130,7 +130,7 @@ public class HldyKasiApiServiceImpl
     @Transactional
     @CacheEvict(value = {"hldyEntityList", "isHldy", "isHldyOrWeekend"}, allEntries = true)
     public void delHldyList(final String yyStr) throws Exception {
-        Map<String, Object> searchParamMap = new HashMap() {{
+        final Map<String, Object> searchParamMap = new HashMap<>() {{
             put("searchStartDt", DateUtils.asDate(yyStr + "-01-01"));
             put("searchEndDt", DateUtils.Parser.eDateParse(DateUtils.asDate(yyStr + "-12-31")));
             put("src", "KASI");

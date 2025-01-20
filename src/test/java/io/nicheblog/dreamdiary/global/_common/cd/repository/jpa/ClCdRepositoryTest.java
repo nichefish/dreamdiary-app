@@ -63,9 +63,9 @@ class ClCdRepositoryTest {
         // Given::
 
         // When::
-        ClCdEntity registered = clCdRepository.save(clCdEntity);
-        String key = registered.getClCd();
-        ClCdEntity retrieved = clCdRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final ClCdEntity registered = clCdRepository.save(clCdEntity);
+        final String key = registered.getClCd();
+        final ClCdEntity retrieved = clCdRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -107,14 +107,14 @@ class ClCdRepositoryTest {
     @Test
     public void testDelete() throws Exception {
         // Given::
-        ClCdEntity registered = clCdRepository.save(clCdEntity);
-        String key = registered.getClCd();
+        final ClCdEntity registered = clCdRepository.save(clCdEntity);
+        final String key = registered.getClCd();
 
         // When::
-        ClCdEntity toDelete = clCdRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
+        final ClCdEntity toDelete = clCdRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
         clCdRepository.delete(toDelete);
 
-        ClCdEntity retrieved = clCdRepository.findById(key).orElse(null);
+        final ClCdEntity retrieved = clCdRepository.findById(key).orElse(null);
 
         // Then::
         assertNull(retrieved, "삭제가 제대로 이루어지지 않았습니다.");

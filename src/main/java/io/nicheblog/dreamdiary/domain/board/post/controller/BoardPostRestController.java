@@ -6,7 +6,9 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common._clsf.ContentType;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.event.TagProcEvent;
+import io.nicheblog.dreamdiary.global._common._clsf.tag.handler.TagEventListener;
 import io.nicheblog.dreamdiary.global._common._clsf.viewer.event.ViewerAddEvent;
+import io.nicheblog.dreamdiary.global._common._clsf.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyRestControllerAspect;
@@ -57,6 +59,7 @@ public class BoardPostRestController
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
+     * @see TagEventListener,ViewerEventListener
      */
     @PostMapping(value = {Url.BOARD_POST_REG_AJAX, Url.BOARD_POST_MDF_AJAX})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -95,9 +98,7 @@ public class BoardPostRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -108,6 +109,7 @@ public class BoardPostRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
+     * @see ViewerEventListener
      */
     @GetMapping(Url.BOARD_POST_DTL_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -137,9 +139,7 @@ public class BoardPostRestController
         // 로그 관련 세팅
             logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -150,6 +150,7 @@ public class BoardPostRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
+     * @see TagEventListener
      */
     @PostMapping(Url.BOARD_POST_DEL_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -175,8 +176,6 @@ public class BoardPostRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 }

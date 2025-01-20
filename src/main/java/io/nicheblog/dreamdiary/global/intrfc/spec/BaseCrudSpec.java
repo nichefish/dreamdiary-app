@@ -39,7 +39,7 @@ public interface BaseCrudSpec<Entity extends BaseCrudEntity>
                 // basePredicte 먼저 처리 후 나머지에 대해 처리
                 basePredicate = getBasePredicate(searchParamMap, root, builder);
                 predicate = getPredicateWithParams(searchParamMap, root, builder);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
             }
             predicate.addAll(basePredicate);

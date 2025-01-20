@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.global._common.cache.event;
 
+import io.nicheblog.dreamdiary.global._common.cache.handler.EhCacheEvictEventListner;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
@@ -10,6 +11,7 @@ import org.springframework.context.ApplicationEvent;
  * </pre>
  *
  * @author nichefish
+ * @see EhCacheEvictEventListner
  */
 @Getter
 public class EhCacheEvictEvent

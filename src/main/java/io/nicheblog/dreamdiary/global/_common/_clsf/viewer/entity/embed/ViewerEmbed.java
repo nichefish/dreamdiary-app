@@ -54,7 +54,7 @@ public class ViewerEmbed
                 .map(entity -> {
                     try {
                         return ViewerMapstruct.INSTANCE.toDto(entity);
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         throw new RuntimeException(e);
                     }
                 })

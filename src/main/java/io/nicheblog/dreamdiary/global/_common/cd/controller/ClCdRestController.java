@@ -71,9 +71,7 @@ public class ClCdRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -105,9 +103,7 @@ public class ClCdRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -139,9 +135,7 @@ public class ClCdRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -171,9 +165,7 @@ public class ClCdRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -203,9 +195,7 @@ public class ClCdRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
     /**
      * 분류 코드(CL_CD) 관리(useYn=N 포함) 삭제 (Ajax)
@@ -234,9 +224,7 @@ public class ClCdRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -266,8 +254,6 @@ public class ClCdRestController
         // logParam.setCn("key: " + menuNo);
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 }

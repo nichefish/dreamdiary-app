@@ -373,7 +373,7 @@ public class DateUtils
         try {
             DateUtils.asDate(dateStr);
             return true;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             return false;
         }

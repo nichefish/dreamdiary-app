@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.domain.schdul.service.SchdulService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.event.TagProcEvent;
+import io.nicheblog.dreamdiary.global._common._clsf.tag.handler.TagEventListener;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyRestControllerAspect;
@@ -51,6 +52,7 @@ public class SchdulRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
+     * @see TagEventListener
      */
     @PostMapping(value = {Url.SCHDUL_REG_AJAX, Url.SCHDUL_MDF_AJAX})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -86,9 +88,7 @@ public class SchdulRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -120,9 +120,7 @@ public class SchdulRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -152,8 +150,6 @@ public class SchdulRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 }

@@ -39,12 +39,12 @@ public class ViewerServiceImpl
      */
     @Transactional(readOnly = true)
     public ViewerEntity getViewerByHasVisitedChk(final BaseClsfKey refKey) {
-        Map<String, Object> searchParamMap = new HashedMap<>() {{
+        final Map<String, Object> searchParamMap = new HashedMap<>() {{
             put("regstrId", AuthUtils.getLgnUserId());
             put("refPostNo", refKey.getPostNo());
             put("refContentType", refKey.getContentType());
         }};
-        List<ViewerEntity> viewerList = viewerRepository.findAll(viewerSpec.searchWith(searchParamMap));
+        final List<ViewerEntity> viewerList = viewerRepository.findAll(viewerSpec.searchWith(searchParamMap));
         return CollectionUtils.isNotEmpty(viewerList) ? viewerList.get(0) : new ViewerEntity(refKey);
     }
 

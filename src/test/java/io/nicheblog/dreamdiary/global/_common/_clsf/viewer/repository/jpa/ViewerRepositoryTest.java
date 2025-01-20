@@ -69,9 +69,9 @@ class ViewerRepositoryTest {
         // Given::
 
         // When::
-        ViewerEntity registered = viewerRepository.save(viewerEntity);
-        Integer key = registered.getViewerNo();
-        ViewerEntity retrieved = viewerRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final ViewerEntity registered = viewerRepository.save(viewerEntity);
+        final Integer key = registered.getViewerNo();
+        final ViewerEntity retrieved = viewerRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");

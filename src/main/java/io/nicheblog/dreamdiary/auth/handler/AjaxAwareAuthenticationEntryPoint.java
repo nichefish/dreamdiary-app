@@ -60,7 +60,7 @@ public class AjaxAwareAuthenticationEntryPoint
                 out.println("    location.replace('" + lgnFormUrl + "');");
                 out.println("}");
                 out.println("</script>");
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 // 예외 발생 시 로그인 페이지로 리다이렉트
                 response.sendRedirect(lgnFormUrl);
             }

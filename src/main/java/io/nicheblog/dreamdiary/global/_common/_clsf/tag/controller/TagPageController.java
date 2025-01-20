@@ -7,7 +7,6 @@ import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.model.TagSearchParam;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.service.TagService;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyPageControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
@@ -53,7 +52,7 @@ public class TagPageController
      */
     @GetMapping(Url.TAG_LIST)
     @Secured({Constant.ROLE_MNGR})
-    public String tagList(
+    public String tagAdminList(
             @ModelAttribute("searchParam") TagSearchParam searchParam,
             final LogActvtyParam logParam,
             final ModelMap model
@@ -63,26 +62,16 @@ public class TagPageController
         model.addAttribute("menuLabel", SiteMenu.TAG);
         model.addAttribute("pageNm", PageNm.LIST);
 
-        boolean isSuccess = false;
-        String rsltMsg = "";
-        try {
-            // 관련 컨텐츠 타입 목록 조회
-            model.addAttribute("contentTypeList", tagService.getContentTypeList());
-            // 활성 컨텐츠 타입 모델에 추가
-            model.addAttribute("refContentType", searchParam.getRefContentType());
+        // 관련 컨텐츠 타입 목록 조회
+        model.addAttribute("contentTypeList", tagService.getContentTypeList());
+        // 활성 컨텐츠 타입 모델에 추가
+        model.addAttribute("refContentType", searchParam.getRefContentType());
 
-            isSuccess = true;
-            rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
-        } catch (Exception e) {
-            isSuccess = false;
-            rsltMsg = MessageUtils.getExceptionMsg(e);
-            logParam.setExceptionInfo(e);
-            MessageUtils.alertMessage(rsltMsg, Url.ADMIN_MAIN);
-        } finally {
-            // 로그 관련 세팅
-            logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
-            publisher.publishEvent(new LogActvtyEvent(this, logParam));
-        }
+        boolean isSuccess = true;
+        String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+
+        // 로그 관련 세팅
+        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return "/view/domain/admin/tag/tag_admin_list";
     }

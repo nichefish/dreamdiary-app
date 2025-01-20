@@ -85,9 +85,9 @@ class JrnlDayRepositoryTest {
         // Given::
 
         // When:: 데이터를 등록한다.
-        JrnlDayEntity registered = jrnlDayRepository.save(jrnlDayEntity);
-        Integer key = registered.getPostNo();
-        JrnlDayEntity retrieved = jrnlDayRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final JrnlDayEntity registered = jrnlDayRepository.save(jrnlDayEntity);
+        final Integer key = registered.getPostNo();
+        final JrnlDayEntity retrieved = jrnlDayRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -129,14 +129,14 @@ class JrnlDayRepositoryTest {
     @Test
     public void testDelete() throws Exception {
         // Given:: 삭제할 데이터를 등록한다.
-        JrnlDayEntity registered = jrnlDayRepository.save(jrnlDayEntity);
-        Integer key = registered.getPostNo();
+        final JrnlDayEntity registered = jrnlDayRepository.save(jrnlDayEntity);
+        final Integer key = registered.getPostNo();
 
         // When:: 삭제할 데이터를 조회해서, 삭제한다.
-        JrnlDayEntity toDelete = jrnlDayRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
+        final JrnlDayEntity toDelete = jrnlDayRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
         jrnlDayRepository.delete(toDelete);
 
-        JrnlDayEntity retrieved = jrnlDayRepository.findById(key).orElse(null);
+        final JrnlDayEntity retrieved = jrnlDayRepository.findById(key).orElse(null);
 
         // Then::
         assertNull(retrieved, "삭제가 제대로 이루어지지 않았습니다.");
@@ -164,10 +164,10 @@ class JrnlDayRepositoryTest {
     @Test
     public void testFindByJrnlDt() throws Exception {
         // Given::
-        JrnlDayEntity result = jrnlDayRepository.save(jrnlDayEntity);
+        final JrnlDayEntity result = jrnlDayRepository.save(jrnlDayEntity);
 
         // When::
-        JrnlDayEntity retrieved = jrnlDayRepository.findByJrnlDt(DateUtils.asDate("2000-01-01"), TestConstant.TEST_AUDITOR);
+        final JrnlDayEntity retrieved = jrnlDayRepository.findByJrnlDt(DateUtils.asDate("2000-01-01"), TestConstant.TEST_AUDITOR);
 
         // Then::
         assertNotNull(retrieved, "메소드가 제대로 실행되지 않았습니다.");
@@ -181,19 +181,19 @@ class JrnlDayRepositoryTest {
     @Test
     public void testGetDreamList() throws Exception {
         // Given::
-        JrnlDayEntity registered = jrnlDayRepository.save(jrnlDayEntity);
-        Integer jrnlDayNo = registered.getPostNo();
+        final JrnlDayEntity registered = jrnlDayRepository.save(jrnlDayEntity);
+        final Integer jrnlDayNo = registered.getPostNo();
 
         testEntityManager.clear();
 
         // When::
         // 저널 꿈 regist
-        JrnlDreamEntity jrnlDream = JrnlDreamEntityTestFactory.create();
+        final JrnlDreamEntity jrnlDream = JrnlDreamEntityTestFactory.create();
         jrnlDream.setJrnlDayNo(jrnlDayNo);
         jrnlDreamRepository.save(jrnlDream);
 
-        JrnlDayEntity retrieved = jrnlDayRepository.findById(jrnlDayNo).orElseThrow(() -> new EntityNotFoundException("저널 일자를 찾을 수 없습니다."));
-        List<JrnlDreamEntity> dreamList = retrieved.getJrnlDreamList();
+        final JrnlDayEntity retrieved = jrnlDayRepository.findById(jrnlDayNo).orElseThrow(() -> new EntityNotFoundException("저널 일자를 찾을 수 없습니다."));
+        final List<JrnlDreamEntity> dreamList = retrieved.getJrnlDreamList();
 
         // Then::
         assertNotNull(retrieved);
@@ -209,19 +209,19 @@ class JrnlDayRepositoryTest {
     @Test
     public void testGetDiaryList() throws Exception {
         // Given::
-        JrnlDayEntity registered = jrnlDayRepository.save(jrnlDayEntity);
-        Integer jrnlDayNo = registered.getPostNo();
+        final JrnlDayEntity registered = jrnlDayRepository.save(jrnlDayEntity);
+        final Integer jrnlDayNo = registered.getPostNo();
 
         testEntityManager.clear();
 
         // When::
         // 저널 꿈 regist
-        JrnlDiaryEntity jrnlDiary = JrnlDiaryEntityTestFactory.create();
+        final JrnlDiaryEntity jrnlDiary = JrnlDiaryEntityTestFactory.create();
         jrnlDiary.setJrnlDayNo(jrnlDayNo);
         jrnlDiaryRepository.save(jrnlDiary);
 
-        JrnlDayEntity retrieved = jrnlDayRepository.findById(jrnlDayNo).orElseThrow(() -> new EntityNotFoundException("저널 일자를 찾을 수 없습니다."));
-        List<JrnlDreamEntity> dreamList = retrieved.getJrnlDreamList();
+        final JrnlDayEntity retrieved = jrnlDayRepository.findById(jrnlDayNo).orElseThrow(() -> new EntityNotFoundException("저널 일자를 찾을 수 없습니다."));
+        final List<JrnlDreamEntity> dreamList = retrieved.getJrnlDreamList();
 
         // Then::
         assertNotNull(retrieved);

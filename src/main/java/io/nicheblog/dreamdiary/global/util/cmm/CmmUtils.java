@@ -181,7 +181,7 @@ public class CmmUtils {
     public String thousandSeparator(final String value) {
         try {
             return new java.text.DecimalFormat("#,###").format(Integer.parseInt(value));
-        } catch (Exception e) {
+        } catch (final Exception e) {
             MessageUtils.getExceptionMsg(e);
             return "";
         }

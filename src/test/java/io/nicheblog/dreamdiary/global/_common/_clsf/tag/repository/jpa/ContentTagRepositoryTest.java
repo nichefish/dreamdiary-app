@@ -67,9 +67,9 @@ class ContentTagRepositoryTest {
         // Given::
 
         // When::
-        ContentTagEntity registered = contentTagRepository.save(contentTagEntity);
-        Integer key = registered.getContentTagNo();
-        ContentTagEntity retrieved = contentTagRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final ContentTagEntity registered = contentTagRepository.save(contentTagEntity);
+        final Integer key = registered.getContentTagNo();
+        final ContentTagEntity retrieved = contentTagRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");

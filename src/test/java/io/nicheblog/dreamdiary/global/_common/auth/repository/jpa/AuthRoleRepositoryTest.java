@@ -69,9 +69,9 @@ class AuthRoleRepositoryTest {
         // Given::
 
         // When::
-        AuthRoleEntity registered = authRoleRepository.save(authRoleEntity);
-        String authCd = registered.getAuthCd();
-        AuthRoleEntity retrieved = authRoleRepository.findById(authCd).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final AuthRoleEntity registered = authRoleRepository.save(authRoleEntity);
+        final String authCd = registered.getAuthCd();
+        final AuthRoleEntity retrieved = authRoleRepository.findById(authCd).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");

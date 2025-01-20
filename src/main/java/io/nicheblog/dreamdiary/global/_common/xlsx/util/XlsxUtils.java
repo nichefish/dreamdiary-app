@@ -230,7 +230,7 @@ public class XlsxUtils {
                         }
                     });
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw new RuntimeException("엑셀 파일 생성 중 오류가 발생했습니다.", e);
             }
         });
@@ -301,7 +301,7 @@ public class XlsxUtils {
                 // Write.xlsx에 위에서 입력된 데이터를 씀
                 workbook.write(outs);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.info(MessageUtils.getExceptionMsg(e));
         } finally {
             // SXSSFWorkbook에 의해 생성된 임시 파일 정리

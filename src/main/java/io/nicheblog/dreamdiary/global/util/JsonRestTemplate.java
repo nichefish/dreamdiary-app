@@ -31,12 +31,12 @@ public class JsonRestTemplate
     public JsonRestTemplate(final ClientHttpRequestFactory clientHttpRequestFactory) {
         super(clientHttpRequestFactory);
 
-        ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module())
+        final ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module())
                                                       .registerModule(new JavaTimeModule())
                                                       .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
-        List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
-        MappingJackson2HttpMessageConverter jsonMessageConverter = new MappingJackson2HttpMessageConverter() {
+        final List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
+        final MappingJackson2HttpMessageConverter jsonMessageConverter = new MappingJackson2HttpMessageConverter() {
 
             public boolean canRead(
                     Class<?> clazz,
@@ -46,15 +46,15 @@ public class JsonRestTemplate
             }
 
             public boolean canRead(
-                    java.lang.reflect.Type type,
-                    Class<?> contextClass,
-                    org.springframework.http.MediaType mediaType
+                    final java.lang.reflect.Type type,
+                    final Class<?> contextClass,
+                    final org.springframework.http.MediaType mediaType
             ) {
                 return true;
             }
 
             protected boolean canRead(
-                    org.springframework.http.MediaType mediaType
+                    final org.springframework.http.MediaType mediaType
             ) {
                 return true;
             }
@@ -75,7 +75,7 @@ public class JsonRestTemplate
         this(clientHttpRequestFactory);
         if (!urlEncAt) {
             // disable uriEncoding
-            DefaultUriBuilderFactory defaultUriBuilderFactory = new DefaultUriBuilderFactory();
+            final DefaultUriBuilderFactory defaultUriBuilderFactory = new DefaultUriBuilderFactory();
             defaultUriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
             super.setUriTemplateHandler(defaultUriBuilderFactory);
         }

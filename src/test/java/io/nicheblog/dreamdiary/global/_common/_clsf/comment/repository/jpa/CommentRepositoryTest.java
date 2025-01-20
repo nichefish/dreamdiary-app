@@ -68,9 +68,9 @@ class CommentRepositoryTest {
         // Given::
 
         // When::
-        CommentEntity registered = commentRepository.save(commentEntity);
-        Integer key = registered.getPostNo();
-        CommentEntity retrieved = commentRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final CommentEntity registered = commentRepository.save(commentEntity);
+        final Integer key = registered.getPostNo();
+        final CommentEntity retrieved = commentRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -112,14 +112,14 @@ class CommentRepositoryTest {
     @Test
     public void testDelete() throws Exception {
         // Given::
-        CommentEntity registered = commentRepository.save(commentEntity);
-        Integer key = registered.getPostNo();
+        final CommentEntity registered = commentRepository.save(commentEntity);
+        final Integer key = registered.getPostNo();
 
         // When::
-        CommentEntity toDelete = commentRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
+        final CommentEntity toDelete = commentRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
         commentRepository.delete(toDelete);
 
-        CommentEntity retrieved = commentRepository.findById(key).orElse(null);
+        final CommentEntity retrieved = commentRepository.findById(key).orElse(null);
 
         // Then::
         assertNull(retrieved, "삭제가 제대로 이루어지지 않았습니다.");

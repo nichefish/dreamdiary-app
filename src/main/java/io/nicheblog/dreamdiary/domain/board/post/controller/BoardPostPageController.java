@@ -11,8 +11,10 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.service.TagService;
 import io.nicheblog.dreamdiary.global._common._clsf.viewer.event.ViewerAddEvent;
+import io.nicheblog.dreamdiary.global._common._clsf.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.global._common.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.global._common.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyPageControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
@@ -195,6 +197,7 @@ public class BoardPostPageController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     * @see ViewerEventListener
      */
     @GetMapping(value = Url.BOARD_POST_DTL)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})

@@ -73,7 +73,7 @@ public class TagSpec
                     // default :: 조건 파라미터에 대해 equal 검색
                     try {
                         predicate.add(builder.equal(root.get(key), searchParamMap.get(key)));
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         log.info("unable to locate attribute " + key + " while trying root.get(key).");
                     }
             }

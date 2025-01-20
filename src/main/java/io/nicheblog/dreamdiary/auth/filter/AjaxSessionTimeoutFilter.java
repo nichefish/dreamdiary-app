@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.auth.filter;
 
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogAnonActvtyEvent;
+import io.nicheblog.dreamdiary.global._common.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,8 @@ public class AjaxSessionTimeoutFilter
 
     /**
      * Ajax 요청에 대하여 응답 설정 및 로깅 처리
+     *
+     * @see LogActvtyEventListener
      */
     @Override
     public void doFilter(
@@ -51,15 +54,15 @@ public class AjaxSessionTimeoutFilter
 
         try {
             chain.doFilter(request, response);
-        } catch (AuthenticationException e) {
+        } catch (final AuthenticationException e) {
             // (Ajax 요청에 대해서만 처리)
-            if (isAjaxRequest(request)) {
+            if (this.isAjaxRequest(request)) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED);     // 401
                 // 로그 관련 처리
                 LogActvtyParam logParam = new LogActvtyParam(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.DEFAULT);
                 publisher.publishEvent(new LogAnonActvtyEvent(this, logParam));
             }
-        } catch (AccessDeniedException e) {
+        } catch (final AccessDeniedException e) {
             // (Ajax 요청에 대해서만 처리)
             if (isAjaxRequest(request)) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);        // 403

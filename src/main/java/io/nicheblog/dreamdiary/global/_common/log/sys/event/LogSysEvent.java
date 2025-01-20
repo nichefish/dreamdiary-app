@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.global._common.log.sys.event;
 
+import io.nicheblog.dreamdiary.global._common.log.sys.handler.LogSysEventListener;
 import io.nicheblog.dreamdiary.global._common.log.sys.model.LogSysParam;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
@@ -11,6 +12,7 @@ import org.springframework.context.ApplicationEvent;
  * </pre>
  *
  * @author nichefish
+ * @see LogSysEventListener
  */
 @Getter
 public class LogSysEvent

@@ -11,6 +11,7 @@ import io.nicheblog.dreamdiary.global.ActiveProfile;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.sys.event.LogSysEvent;
+import io.nicheblog.dreamdiary.global._common.log.sys.handler.LogSysEventListener;
 import io.nicheblog.dreamdiary.global._common.log.sys.model.LogSysParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
@@ -83,12 +84,12 @@ public class DreamdiaryInitializer
                 // 시스템계정 존재여부 체크
                 authService.loadUserByUsername(Constant.SYSTEM_ACNT);
                 systemAcntExists = true;
-            } catch (UsernameNotFoundException e) {
+            } catch (final UsernameNotFoundException e) {
                 // 시스템 계정 부재시 등록:: 메소드 분리
                 isSuccess = this.regSystemAcnt();
                 rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             isSuccess = false;
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);
@@ -128,6 +129,8 @@ public class DreamdiaryInitializer
 
     /**
      * 최초 실행시 로그인 정책이 공백이므로 기본값 자동 등록. (PW 암호화)
+     *
+     * @see LogSysEventListener
      */
     public void regLgnPolicyIfEmpty() {
 
@@ -146,7 +149,7 @@ public class DreamdiaryInitializer
             // 로그인 정책 부재시 등록:: 메소드 분리
             isSuccess = this.regLgnPolicy();
             rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             isSuccess = false;
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);

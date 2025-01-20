@@ -68,9 +68,9 @@ class SectnRepositoryTest {
         // Given::
 
         // When::
-        SectnEntity registered = sectnRepository.save(sectnEntity);
-        Integer key = registered.getPostNo();
-        SectnEntity retrieved = sectnRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final SectnEntity registered = sectnRepository.save(sectnEntity);
+        final Integer key = registered.getPostNo();
+        final SectnEntity retrieved = sectnRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -112,14 +112,14 @@ class SectnRepositoryTest {
     @Test
     public void testDelete() throws Exception {
         // Given::
-        SectnEntity registered = sectnRepository.save(sectnEntity);
-        Integer key = registered.getPostNo();
+        final SectnEntity registered = sectnRepository.save(sectnEntity);
+        final Integer key = registered.getPostNo();
 
         // When::
-        SectnEntity toDelete = sectnRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
+        final SectnEntity toDelete = sectnRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
         sectnRepository.delete(toDelete);
 
-        SectnEntity retrieved = sectnRepository.findById(key).orElse(null);
+        final SectnEntity retrieved = sectnRepository.findById(key).orElse(null);
 
         // Then::
         assertNull(retrieved, "삭제가 제대로 이루어지지 않았습니다.");

@@ -50,7 +50,7 @@ public class UserSpec
                 // basePredicte 먼저 처리 후 나머지에 대해 처리
                 basePredicate = getBasePredicate(searchParamMap, root, builder);
                 predicate = getPredicateWithParams(searchParamMap, root, builder);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
             }
             predicate.addAll(basePredicate);
@@ -76,7 +76,7 @@ public class UserSpec
                 predicate = getCrdtUser(startDtStr, endDtStr, root, builder);
                 final List<Order> order = getOrderByTitleAndEcnyDt(root, builder);
                 query.orderBy(order);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
             }
 
@@ -98,7 +98,7 @@ public class UserSpec
                 predicate = getCrdtBrthdyUser(startDtStr, endDtStr, root, builder);
                 final List<Order> order = getOrderByTitleAndEcnyDt(root, builder);
                 query.orderBy(order);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
             }
 
@@ -144,7 +144,7 @@ public class UserSpec
                     // default :: 조건 파라미터에 대해 equal 검색
                     try {
                         predicate.add(builder.equal(root.get(key), searchParamMap.get(key)));
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         log.info("unable to locate attribute '{}' while trying root.get(key).", key);
                     }
             }

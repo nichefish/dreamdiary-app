@@ -1,5 +1,7 @@
 package io.nicheblog;
 
+import io.nicheblog.dreamdiary.DreamdiaryApplication;
+
 /**
  * NicheblogBasePackage
  * <pre>
@@ -7,6 +9,7 @@ package io.nicheblog;
  * </pre>
  *
  * @author nichefish
+ * @see DreamdiaryApplication
  */
 public interface NicheblogBasePackage {
     //

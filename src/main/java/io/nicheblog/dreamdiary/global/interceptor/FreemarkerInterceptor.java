@@ -110,7 +110,7 @@ public class FreemarkerInterceptor
                 final String userMode = isMngrMenu ? Constant.AUTH_MNGR : Constant.AUTH_USER;
                 session.setAttribute("userMode", userMode);
                 mav.addObject("isMngrMode", Constant.AUTH_MNGR.equals(userMode));
-            } catch (MenuNotExistsException e) {
+            } catch (final MenuNotExistsException e) {
                 log.error(MessageUtils.getExceptionMsg(e));
             }
         }

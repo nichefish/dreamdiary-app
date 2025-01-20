@@ -24,15 +24,15 @@ public class GeoIp2Utils {
      * IP 주소로 국가 정보 조회
      */
     public static Country getNtnByIp(final String ipAddr) throws Exception {
-        File database = new File("GeoLite2-City.mmdb");
+        final File database = new File("GeoLite2-City.mmdb");
         if (!database.exists()) throw new FileNotFoundException("FileNotFoundException");
 
         // This reader object should be reused across lookups as creation of it is expensive.
         // If you want to use caching at the cost of a small (~2MB) memory overhead:
-        DatabaseReader reader = new DatabaseReader.Builder(database).withCache(new CHMCache()).build();
+        final DatabaseReader reader = new DatabaseReader.Builder(database).withCache(new CHMCache()).build();
 
-        InetAddress ipAddress = InetAddress.getByName(ipAddr);
-        CityResponse response = reader.city(ipAddress);
+        final InetAddress ipAddress = InetAddress.getByName(ipAddr);
+        final CityResponse response = reader.city(ipAddress);
 
         return response.getCountry();
     }

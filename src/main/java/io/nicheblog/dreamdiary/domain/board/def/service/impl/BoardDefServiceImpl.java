@@ -51,16 +51,16 @@ public class BoardDefServiceImpl
     @Override
     @Cacheable(value="boardDefMenuList")
     public List<SiteAcsInfo> boardDefMenuList() throws Exception {
-        Map<String, Object> searchParamMap = new HashMap<>() {{
+        final Map<String, Object> searchParamMap = new HashMap<>() {{
             put("useYn", "Y");
         }};
-        List<BoardDefEntity> boardDefPage = this.getListEntity(searchParamMap);
+        final List<BoardDefEntity> boardDefPage = this.getListEntity(searchParamMap);
 
         return boardDefPage.stream()
                 .map(entity -> {
                     try {
                         return mapstruct.toMenu(entity);
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         throw new RuntimeException(e);
                     }
                 })

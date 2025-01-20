@@ -42,7 +42,7 @@ public class UserProflSpec
                 predicate = getCrdtUser(searchMode, yyStr, root, builder);
                 final List<Order> order = getOrderByTitleAndEcnyDt(root, builder);
                 query.orderBy(order);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
             }
 
@@ -75,7 +75,7 @@ public class UserProflSpec
                     // default :: 조건 파라미터에 대해 equal 검색
                     try {
                         predicate.add(builder.equal(root.get(key), searchParamMap.get(key)));
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         log.info("unable to locate attribute '{}' while trying root.get(key).", key);
                         // e.printStackTrace();
                     }

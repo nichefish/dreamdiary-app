@@ -61,9 +61,9 @@ class SchdulRepositoryTest {
         // Given::
 
         // When::
-        SchdulEntity registered = schdulRepository.save(schdulEntity);
-        Integer key = registered.getPostNo();
-        SchdulEntity retrieved = schdulRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final SchdulEntity registered = schdulRepository.save(schdulEntity);
+        final Integer key = registered.getPostNo();
+        final SchdulEntity retrieved = schdulRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -105,14 +105,14 @@ class SchdulRepositoryTest {
     @Test
     public void testDelete() throws Exception {
         // Given::
-        SchdulEntity registered = schdulRepository.save(schdulEntity);
-        Integer key = registered.getPostNo();
+        final SchdulEntity registered = schdulRepository.save(schdulEntity);
+        final Integer key = registered.getPostNo();
 
         // When::
-        SchdulEntity toDelete = schdulRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
+        final SchdulEntity toDelete = schdulRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
         schdulRepository.delete(toDelete);
 
-        SchdulEntity retrieved = schdulRepository.findById(key).orElse(null);
+        final SchdulEntity retrieved = schdulRepository.findById(key).orElse(null);
 
         // Then::
         assertNull(retrieved, "삭제가 제대로 이루어지지 않았습니다.");
