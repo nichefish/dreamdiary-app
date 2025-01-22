@@ -7,6 +7,7 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common._clsf.ContentType;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.event.TagProcEvent;
+import io.nicheblog.dreamdiary.global._common._clsf.tag.handler.TagEventListener;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyRestControllerAspect;
@@ -77,9 +78,7 @@ public class JrnlDreamRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -87,11 +86,11 @@ public class JrnlDreamRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param jrnlDream 등록/수정 처리할 객체
-     * @param key 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
+     * @see TagEventListener
      */
     @Operation(
             summary = "저널 꿈 등록/수정",
@@ -127,9 +126,7 @@ public class JrnlDreamRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -162,9 +159,7 @@ public class JrnlDreamRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -175,6 +170,7 @@ public class JrnlDreamRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
+     * @see TagEventListener
      */
     @PostMapping(value = {Url.JRNL_DREAM_DEL_AJAX})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -200,8 +196,6 @@ public class JrnlDreamRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 }

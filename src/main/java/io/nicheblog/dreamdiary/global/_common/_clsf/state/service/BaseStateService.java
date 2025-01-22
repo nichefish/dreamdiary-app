@@ -86,7 +86,7 @@ public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule &
                 final Entity e = this.getDtlEntity(dto.getKey());
                 e.getState().setSortOrdr(dto.getState().getSortOrdr());
                 this.updt(e);
-            } catch (Exception ex) {
+            } catch (final Exception ex) {
                 ex.getStackTrace();
                 // 로그 기록, 예외 처리 등
                 throw new RuntimeException(ex);

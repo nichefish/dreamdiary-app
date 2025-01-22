@@ -2,8 +2,10 @@ package io.nicheblog.dreamdiary.domain.jrnl.sumry.scheduler;
 
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.service.JrnlSumryService;
 import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global._common._clsf.tag.handler.TagEventListener;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.sys.event.LogSysEvent;
+import io.nicheblog.dreamdiary.global._common.log.sys.handler.LogSysEventListener;
 import io.nicheblog.dreamdiary.global._common.log.sys.model.LogSysParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,8 @@ public class JrnlSumryScheduler {
     /**
      * 하루에 한 번 전체 집계 갱신
      * 매일 00시 15분 실행
+     *
+     * @see LogSysEventListener
      */
     @Scheduled(cron = "0 15 0 * * *", zone = Constant.LOC_SEOUL)         // second min hour day month weekday
     public void jrnlSumrySchedule() {
@@ -44,7 +48,7 @@ public class JrnlSumryScheduler {
             jrnlSumryService.makeTotalYySumry();
             // 캐시 재생성 위해 조회
             jrnlSumryService.getTotalSumry();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);
         } finally {

@@ -91,7 +91,7 @@ public class VcatnPaprService
                         if (!isSameDay) {
                             period += "~" + endDt;
                         }
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         throw new RuntimeException(e);
                     }
 

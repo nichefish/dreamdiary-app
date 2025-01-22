@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogActvtyEvent;
+import io.nicheblog.dreamdiary.global._common.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyRestControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
@@ -73,9 +74,7 @@ public class UserRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -111,9 +110,7 @@ public class UserRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -143,9 +140,7 @@ public class UserRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -179,9 +174,7 @@ public class UserRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -189,7 +182,7 @@ public class UserRestController
      * (관리자MNGR만 접근 가능.)
      * @param searchParam 검색 조건을 담은 파라미터 객체
      * @param logParam 로그 기록을 위한 파라미터 객체
-     *
+     * @see LogActvtyEventListener
      * TODO: 더 일반화하기
      */
     @GetMapping(Url.USER_LIST_XLSX_DOWNLOAD)
@@ -209,7 +202,7 @@ public class UserRestController
             // xlsxUtils.listXlxsDownload(Constant.user_profl, userListXlsx);
             isSuccess = true;
             rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             isSuccess = false;
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);
@@ -220,8 +213,6 @@ public class UserRestController
             publisher.publishEvent(new LogActvtyEvent(this, logParam));
         }
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 }

@@ -38,7 +38,7 @@ public class FlsysService {
 
 
         // TODO: 메타정보 조회
-        Map<String, Object> searchParamMap = new HashMap<>() {{
+        final Map<String, Object> searchParamMap = new HashMap<>() {{
             put("upperFilePath", filePath);
         }};
         final List<FlsysMetaDto> metaList = flsysMetaService.getListDto(searchParamMap);
@@ -47,7 +47,7 @@ public class FlsysService {
         if (files == null) return flsys;
         Arrays.sort(files, Comparator.comparing(File::getName));
         final List<FlsysDirDto> dirList = new ArrayList<>();
-        for (File f : files) {
+        for (final File f : files) {
             if (!f.isDirectory()) continue;
             final FlsysDirDto flsysDir = new FlsysDirDto(f);
             metaList.stream()

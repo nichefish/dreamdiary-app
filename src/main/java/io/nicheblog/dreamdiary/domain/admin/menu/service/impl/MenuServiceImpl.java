@@ -139,7 +139,7 @@ public class MenuServiceImpl
     public MenuDto getMenuByLabel(final SiteMenu label) throws Exception {
         final Map<String, Object> searchParamMap = new HashMap<>();
         searchParamMap.put("menuLabel", label.name());
-        List<MenuDto> rsMenuList = this.getSelf().getListDto(searchParamMap);
+        final List<MenuDto> rsMenuList = this.getSelf().getListDto(searchParamMap);
         if (CollectionUtils.isEmpty(rsMenuList)) throw new Exception("메뉴 정보가 없습니다.");
         return this.getSelf().getListDto(searchParamMap).get(0);
     }

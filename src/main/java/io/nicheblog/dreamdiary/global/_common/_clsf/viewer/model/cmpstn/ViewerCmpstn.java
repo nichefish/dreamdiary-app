@@ -44,7 +44,7 @@ public class ViewerCmpstn
                 .map(dto -> {
                     try {
                         return ViewerMapstruct.INSTANCE.toEntity(dto);
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         throw new RuntimeException(e);
                     }
                 })

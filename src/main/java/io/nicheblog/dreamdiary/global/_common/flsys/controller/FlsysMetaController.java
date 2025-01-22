@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.global._common.flsys.model.FlsysMetaDto;
 import io.nicheblog.dreamdiary.global._common.flsys.service.FlsysMetaService;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogActvtyEvent;
+import io.nicheblog.dreamdiary.global._common.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
@@ -52,6 +53,7 @@ public class FlsysMetaController
      * @param flsysMeta 등록/수정 처리할 객체
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     * @see LogActvtyEventListener
      */
     @PostMapping(value = {Url.FLSYS_META_REG_AJAX, Url.FLSYS_META_MDF_AJAX})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -73,7 +75,7 @@ public class FlsysMetaController
 
             isSuccess = (result.getPostNo() != null);
             rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             isSuccess = false;
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);
@@ -85,9 +87,7 @@ public class FlsysMetaController
             publisher.publishEvent(new LogActvtyEvent(this, logParam));
         }
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -97,6 +97,7 @@ public class FlsysMetaController
      * @param key 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     * @see LogActvtyEventListener
      */
     @GetMapping(Url.FLSYS_META_DTL_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -117,7 +118,7 @@ public class FlsysMetaController
 
             isSuccess = true;
             rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             isSuccess = false;
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);
@@ -129,9 +130,7 @@ public class FlsysMetaController
             publisher.publishEvent(new LogActvtyEvent(this, logParam));
         }
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -141,6 +140,7 @@ public class FlsysMetaController
      * @param postNo 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     * @see LogActvtyEventListener
      */
     @PostMapping(Url.FLSYS_META_DEL_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -159,7 +159,7 @@ public class FlsysMetaController
             // 게시판 정보 조회
             isSuccess = flsysMetaService.delete(postNo);
             rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             isSuccess = false;
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);
@@ -171,8 +171,6 @@ public class FlsysMetaController
             publisher.publishEvent(new LogActvtyEvent(this, logParam));
         }
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 }

@@ -56,11 +56,11 @@ public class ContentTagServiceImpl
     @Override
     @Transactional(readOnly = true)
     public List<TagDto> getTagStrListByClsfKey(final BaseClsfKey clsfKey) {
-        Map<String, Object> searchParamMap = new HashMap<>() {{
+        final Map<String, Object> searchParamMap = new HashMap<>() {{
             put("refPostNo", clsfKey.getPostNo());
             put("refContentType", clsfKey.getContentType());
         }};
-        List<ContentTagEntity> entityList = repository.findAll(spec.searchWith(searchParamMap));
+        final List<ContentTagEntity> entityList = repository.findAll(spec.searchWith(searchParamMap));
         if (CollectionUtils.isEmpty(entityList)) return new ArrayList<>();
         return entityList.stream()
                 .map(tag -> new TagDto(tag.getRefTagNo(), tag.getTagNm(), tag.getCtgr()))
@@ -77,7 +77,7 @@ public class ContentTagServiceImpl
     @Override
     @Transactional
     public void delObsoleteContentTags(final BaseClsfKey clsfKey, final List<TagDto> obsoleteTagList) throws Exception {
-        String contentType = clsfKey.getContentType();
+        final String contentType = clsfKey.getContentType();
         obsoleteTagList.forEach(tag -> {
             final ContentTagParam param = ContentTagParam.builder()
                     .refPostNo(clsfKey.getPostNo())
@@ -88,7 +88,7 @@ public class ContentTagServiceImpl
                     .build();
             repository.deleteObsoleteContentTags(param);
             // 태그 캐시 처리
-            String cacheName = this.getCacheNameByContentType(contentType);
+            final String cacheName = this.getCacheNameByContentType(contentType);
             this.evictMyCacheForPeriod(cacheName, tag.getTagNo());
         });
     }
@@ -103,7 +103,7 @@ public class ContentTagServiceImpl
     @Override
     @Transactional
     public void addContentTags(final BaseClsfKey clsfKey, final List<TagEntity> rsList) throws Exception {
-        List<ContentTagEntity> contentTagList = rsList.stream()
+        final List<ContentTagEntity> contentTagList = rsList.stream()
                 .map(tag -> new ContentTagEntity(tag.getTagNo(), clsfKey))
                 .collect(Collectors.toList());
         this.registAll(contentTagList);
@@ -118,10 +118,10 @@ public class ContentTagServiceImpl
     public void evictCache(final List<ContentTagEntity> entityList) {
         // 태그 개수 캐시 초기화
         entityList.forEach(entity -> {
-            String contentType = entity.getRefContentType();
-            String cacheName = this.getCacheNameByContentType(contentType);
+            final String contentType = entity.getRefContentType();
+            final String cacheName = this.getCacheNameByContentType(contentType);
             if (cacheName.isEmpty()) return;
-            Integer tagNo = entity.getRefTagNo();;
+            final Integer tagNo = entity.getRefTagNo();;
             this.evictMyCacheForPeriod(cacheName, tagNo);
         });
     }
@@ -136,18 +136,18 @@ public class ContentTagServiceImpl
     @Transactional
     public void delExistingContentTags(final BaseClsfKey clsfKey) throws Exception {
         // 2. 글번호 + 태그번호를 받아와서 기존 태그 목록 조회
-        Map<String, Object> searchParamMap = new HashMap<>() {{
+        final Map<String, Object> searchParamMap = new HashMap<>() {{
             put("refPostNo", clsfKey.getPostNo());
             put("refContentType", clsfKey.getContentType());
         }};
-        List<ContentTagEntity> entityList = this.getListEntity(searchParamMap);
+        final List<ContentTagEntity> entityList = this.getListEntity(searchParamMap);
         this.deleteAll(entityList);
 
         // 태그 개수 캐시 초기화
-        String contentType = clsfKey.getContentType();
-        String cacheName = this.getCacheNameByContentType(contentType);
+        final String contentType = clsfKey.getContentType();
+        final String cacheName = this.getCacheNameByContentType(contentType);
         entityList.forEach(entity -> {
-            Integer tagNo = entity.getRefTagNo();
+            final Integer tagNo = entity.getRefTagNo();
             this.evictMyCacheForPeriod(cacheName, tagNo);
         });
     }
@@ -179,15 +179,15 @@ public class ContentTagServiceImpl
     @Override
     public void evictMyCacheForPeriod(final String cacheName, final Integer tagNo) {
         try {
-            int currYy = DateUtils.getCurrYy();
+            final int currYy = DateUtils.getCurrYy();
             for (int yy = 2010; yy <= currYy; yy++) {
                 for (int mnth = 1; mnth <= 12; mnth++) {
-                    String cacheKey = tagNo + "_" + yy + "_" + mnth;
+                    final String cacheKey = tagNo + "_" + yy + "_" + mnth;
                     EhCacheUtils.evictMyCache(cacheName, cacheKey);
                 }
             }
             EhCacheUtils.evictMyCache(cacheName, tagNo + "_9999_99");
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException("Failed to evict cache for tagNo: " + tagNo, e);
         }
     }

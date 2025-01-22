@@ -9,7 +9,6 @@ import io.nicheblog.dreamdiary.global._common.cd.model.ClCdSearchParam;
 import io.nicheblog.dreamdiary.global._common.cd.service.ClCdService;
 import io.nicheblog.dreamdiary.global._common.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.PaginationInfo;
@@ -73,35 +72,25 @@ public class ClCdPageController
         model.addAttribute("menuLabel", SiteMenu.CD);
         model.addAttribute("pageNm", PageNm.LIST);
 
-        boolean isSuccess = false;
-        String rsltMsg = "";
-        try {
-            // 상세/수정 화면에서 목록 화면 복귀시 세션에 목록 검색 인자 저장해둔 거 있는지 체크
-            searchParam = (ClCdSearchParam) CmmUtils.Param.checkPrevSearchParam(baseUrl, searchParam);
-            // 페이징 정보 생성:: 공백시 pageSize=10, pageNo=1
-            final Sort sort = Sort.by(Sort.Direction.ASC, "state.sortOrdr");
-            final PageRequest pageRequest = CmmUtils.Param.getPageRequest(searchParam, sort, model);
-            // 목록 조회
-            final Page<ClCdDto> clCdList = clCdService.getPageDto(searchParam, pageRequest);
-            model.addAttribute("clCdList", clCdList.getContent());
-            model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(clCdList));
-            // 목록 검색 URL + 파라미터 모델에 추가
-            CmmUtils.Param.setModelAttrMap(searchParam, baseUrl, model);
-            // 코드 데이터 모델에 추가
-            dtlCdService.setCdListToModel(Constant.CL_CTGR_CD, model);
+        // 상세/수정 화면에서 목록 화면 복귀시 세션에 목록 검색 인자 저장해둔 거 있는지 체크
+        searchParam = (ClCdSearchParam) CmmUtils.Param.checkPrevSearchParam(baseUrl, searchParam);
+        // 페이징 정보 생성:: 공백시 pageSize=10, pageNo=1
+        final Sort sort = Sort.by(Sort.Direction.ASC, "state.sortOrdr");
+        final PageRequest pageRequest = CmmUtils.Param.getPageRequest(searchParam, sort, model);
+        // 목록 조회
+        final Page<ClCdDto> clCdList = clCdService.getPageDto(searchParam, pageRequest);
+        model.addAttribute("clCdList", clCdList.getContent());
+        model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(clCdList));
+        // 목록 검색 URL + 파라미터 모델에 추가
+        CmmUtils.Param.setModelAttrMap(searchParam, baseUrl, model);
+        // 코드 데이터 모델에 추가
+        dtlCdService.setCdListToModel(Constant.CL_CTGR_CD, model);
 
-            isSuccess = true;
-            rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
-        } catch (Exception e) {
-            isSuccess = false;
-            rsltMsg = MessageUtils.getExceptionMsg(e);
-            logParam.setExceptionInfo(e);
-            MessageUtils.alertMessage(rsltMsg, Url.ADMIN_MAIN);
-        } finally {
-            // 로그 관련 세팅
-            logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
-            publisher.publishEvent(new LogActvtyEvent(this, logParam));
-        }
+        boolean isSuccess = true;
+        String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+
+        // 로그 관련 세팅
+        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return "/view/domain/admin/cd/cl_cd_list";
     }
@@ -128,27 +117,17 @@ public class ClCdPageController
         model.addAttribute("menuLabel", SiteMenu.CD);
         model.addAttribute("pageNm", PageNm.DTL);
 
-        boolean isSuccess = false;
-        String rsltMsg = "";
-        try {
-            // 객체 조회 및 모델에 추가
-            final ClCdDto cmmClCd = clCdService.getDtlDto(key);
-            model.addAttribute("clCd", cmmClCd);
-            // 코드 데이터 모델에 추가
-            dtlCdService.setCdListToModel(Constant.CL_CTGR_CD, model);
+        // 객체 조회 및 모델에 추가
+        final ClCdDto cmmClCd = clCdService.getDtlDto(key);
+        model.addAttribute("clCd", cmmClCd);
+        // 코드 데이터 모델에 추가
+        dtlCdService.setCdListToModel(Constant.CL_CTGR_CD, model);
 
-            isSuccess = true;
-            rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
-        } catch (Exception e) {
-            isSuccess = false;
-            rsltMsg = MessageUtils.getExceptionMsg(e);
-            logParam.setExceptionInfo(e);
-            MessageUtils.alertMessage(rsltMsg, baseUrl);
-        } finally {
-            // 로그 관련 세팅
-            logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
-            publisher.publishEvent(new LogActvtyEvent(this, logParam));
-        }
+        boolean isSuccess = true;
+        String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        // 로그 관련 세팅
+
+        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return "/view/domain/admin/cd/cl_cd_dtl";
     }

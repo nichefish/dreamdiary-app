@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.global.aspect.log;
 
 import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogActvtyEvent;
+import io.nicheblog.dreamdiary.global._common.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,7 @@ public class LogActvtyPageControllerAspect {
      * @param joinPoint 메소드 이름, 파라미터, 호출된 클래스, 타겟 객체 등의 메타 정보를 담은 객체
      * @param result 사용자에게 반환된 view 경로 객체
      * TODO: 추가적인 인자들을 전달받아야 한다.
+     * @see LogActvtyEventListener
      */
     @AfterReturning(pointcut = "pageControllerMethods()", returning = "result")
     public void logAfterReturning(JoinPoint joinPoint, Object result) {
@@ -58,6 +60,7 @@ public class LogActvtyPageControllerAspect {
      * @param joinPoint 메소드 이름, 파라미터, 호출된 클래스, 타겟 객체 등의 메타 정보를 담은 객체
      * @param ex 익셉션 또는 에러
      * TODO: 추가적인 인자들을 전달받아야 한다.
+     * @see LogActvtyEventListener
      */
     @AfterThrowing(pointcut = "pageControllerMethods()", throwing = "ex")
     public void logAfterThrowing(JoinPoint joinPoint, Throwable ex) {
@@ -69,6 +72,7 @@ public class LogActvtyPageControllerAspect {
         logParam.setResult(false, MessageUtils.getExceptionMsg(ex));
         logParam.setExceptionInfo(ex);
         // logParam.setMethodName(joinPoint.getSignature().getName());
+        // TODO: 컨트롤러의 getCtgr() 을 빼올 수 있는지?
 
         // 로그 이벤트 발행
         publisher.publishEvent(new LogActvtyEvent(this, logParam));

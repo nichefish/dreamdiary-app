@@ -119,7 +119,7 @@ public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>
                         final ListDto listDto = mapstruct.toListDto(entity);
                         listDto.setRnum(CmmUtils.getPageRnum(entityPage, counter.getAndIncrement()));
                         return listDto;
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         throw new RuntimeException(e);
                     }
                 })
@@ -262,7 +262,7 @@ public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>
                 .map(entity -> {
                     try {
                         return mapstruct.toListDto(entity);
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         throw new RuntimeException(e);
                     }
                 })

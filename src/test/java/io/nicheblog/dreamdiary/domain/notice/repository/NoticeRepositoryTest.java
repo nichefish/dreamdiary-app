@@ -64,9 +64,9 @@ class NoticeRepositoryTest {
         // Given::
 
         // When::
-        NoticeEntity registered = noticeRepository.save(noticeEntity);
-        Integer key = registered.getPostNo();
-        NoticeEntity retrieved = noticeRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final NoticeEntity registered = noticeRepository.save(noticeEntity);
+        final Integer key = registered.getPostNo();
+        final NoticeEntity retrieved = noticeRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -108,14 +108,14 @@ class NoticeRepositoryTest {
     @Test
     public void testDelete() throws Exception {
         // Given::
-        NoticeEntity registered = noticeRepository.save(noticeEntity);
-        Integer key = registered.getPostNo();
+        final NoticeEntity registered = noticeRepository.save(noticeEntity);
+        final Integer key = registered.getPostNo();
 
         // When::
-        NoticeEntity toDelete = noticeRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
+        final NoticeEntity toDelete = noticeRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
         noticeRepository.delete(toDelete);
 
-        NoticeEntity retrieved = noticeRepository.findById(key).orElse(null);
+        final NoticeEntity retrieved = noticeRepository.findById(key).orElse(null);
 
         // Then::
         assertNull(retrieved, "삭제가 제대로 이루어지지 않았습니다.");

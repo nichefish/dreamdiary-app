@@ -140,8 +140,8 @@ class ParamModule {
      * @throws Exception 파라미터 처리 중 발생할 수 있는 예외
      */
     public static BaseSearchParam filterParam(final BaseSearchParam searchParam) throws Exception {
-        Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
-        Map<String, Object> filteredSearchKey = filterParamMap(searchParamMap);
+        final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
+        final Map<String, Object> filteredSearchKey = filterParamMap(searchParamMap);
         return convertToParam(filteredSearchKey);
     }
 

@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.auth.handler;
 
 import io.nicheblog.dreamdiary.global.Url;
+import io.nicheblog.dreamdiary.global.util.HttpUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -32,8 +33,7 @@ public class AjaxAwareAuthenticationEntryPoint
             final AuthenticationException authException
     ) throws IOException {
 
-        boolean isAjaxRequest = "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
-        if (isAjaxRequest) {
+        if (HttpUtils.isAjaxRequest(request)) {
             // Ajax 요청일 경우 : 에러 응답을 내려보내고, js 레벨에서 처리한다.
             // @see commons.js
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -60,7 +60,7 @@ public class AjaxAwareAuthenticationEntryPoint
                 out.println("    location.replace('" + lgnFormUrl + "');");
                 out.println("}");
                 out.println("</script>");
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 // 예외 발생 시 로그인 페이지로 리다이렉트
                 response.sendRedirect(lgnFormUrl);
             }

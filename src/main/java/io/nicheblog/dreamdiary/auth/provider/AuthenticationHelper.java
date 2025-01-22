@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.service.LgnPolicyService;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
 import io.nicheblog.dreamdiary.auth.exception.*;
 import io.nicheblog.dreamdiary.auth.model.AuthInfo;
-import io.nicheblog.dreamdiary.auth.service.impl.DupIdLgnManager;
+import io.nicheblog.dreamdiary.auth.service.manager.DupIdLgnManager;
 import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +53,7 @@ public class AuthenticationHelper {
     public UsernamePasswordAuthenticationToken doAuth(final Authentication authentication, final AuthInfo authInfo) throws Exception {
 
         // 계정 존재여부 체크
-        if (authInfo == null) throw new InternalAuthenticationServiceException("internalAuthenticationServiceException");
+        if (authInfo == null) throw new InternalAuthenticationServiceException("오류가 발생했습니다.");
 
         // 중복 로그인 '확인'(기존 아이디 끊기) 후 들어왔을 시 바로 패스 :: 메소드 분리
         final String username = authentication.getName();
@@ -61,7 +61,7 @@ public class AuthenticationHelper {
 
         // password 일치여부 체크
         final String password = (String) authentication.getCredentials();
-        if (!passwordEncoder.matches(password, authInfo.getPassword())) throw new BadCredentialsException("BadCredentialsException");
+        if (!passwordEncoder.matches(password, authInfo.getPassword())) throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
 
         authInfo.nullifyPasswordInfo();
         return this.doAuth(authInfo);
@@ -79,27 +79,27 @@ public class AuthenticationHelper {
         String username = authInfo.getUsername();
 
         // 승인여부 체크
-        if (!"Y".equals(authInfo.getCfYn())) throw new AcntNotCfException("AcntNotCfException");
+        if (!"Y".equals(authInfo.getCfYn())) throw new AcntNotCfException("승인되지 않은 계정입니다. 관리자에게 문의해주세요.");
 
         // 장기간 미로그인여부 체크 :: 시스템계정"system"은 제외
-        if (userService.isDormant(username)) throw new AcntDormantException("DormantAcntException");
+        if (userService.isDormant(username)) throw new AcntDormantException("장기간 미로그인으로 잠금 처리된 계정입니다. 관리자에게 문의해주세요.");
 
         // 잠금여부 체크
-        if ("Y".equals(authInfo.getLockedYn())) throw new LockedException("LockedException");
+        if ("Y".equals(authInfo.getLockedYn())) throw new LockedException("잠금 처리된 계정입니다. 관리자에게 문의해주세요.");
 
         // 접속IP 체크 :: 메소드 분리
-        if (!this.isAcsIpValid(authInfo)) throw new AcsIpNotAllowedException("허용되지 않은 IP입니다.");
+        if (!this.isAcsIpValid(authInfo)) throw new AcsIpNotAllowedException("접속 불가능한 IP입니다.");
 
         // 비밀번호 만료 여부 체크
-        if (!this.isPwExpryValid(authInfo)) throw new CredentialsExpiredException("CredentialsExpiredException");
+        if (!this.isPwExpryValid(authInfo)) throw new CredentialsExpiredException("비밀번호 유효 기간이 만료되었습니다. 비밀번호를 변경해주세요.");
 
         // 비밀번호 변경 필요 여부 체크
         final boolean needsPwReset = "Y".equals(authInfo.getNeedsPwReset());
-        if (needsPwReset) throw new AcntNeedsPwResetException("AcntNeedsPwResetException");
+        if (needsPwReset) throw new AcntNeedsPwResetException("비밀번호를 재설정해야 로그인이 가능합니다.");
 
         // 중복 로그인 체크 :: 세션 attribute 훑어서 "lgnId" 비교
         final boolean isDupLgn = DupIdLgnManager.isDupIdLgn(username);
-        if (isDupLgn) throw new DupIdLgnException("DupLgnException");
+        if (isDupLgn) throw new DupIdLgnException("이미 로그인 상태인 ID입니다.");
 
         return new UsernamePasswordAuthenticationToken(authInfo, null, authInfo.getAuthorities());
     }

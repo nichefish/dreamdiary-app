@@ -48,7 +48,7 @@ public interface BaseCrudMapstruct<Dto extends BaseCrudDto, ListDto extends Base
                         ListDto dto = this.toListDto(entity);
                         dto.setRnum(i.getAndIncrement());
                         return dto;
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         throw new RuntimeException(e);
                     }
                 })
@@ -87,7 +87,7 @@ public interface BaseCrudMapstruct<Dto extends BaseCrudDto, ListDto extends Base
                 .map(dto -> {
                     try {
                         return this.toEntityFromList(dto);
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         throw new RuntimeException(e);
                     }
                 })

@@ -43,7 +43,7 @@ public interface BasePostSpec<Entity extends BasePostEntity>
                 clsfPredicate = getClsfPredicate(searchParamMap, root, builder);
                 postPredicate = getPostPredicate(searchParamMap, root, builder);
                 predicate = getPredicateWithParams(searchParamMap, root, builder);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
             }
             predicate.addAll(basePredicate);

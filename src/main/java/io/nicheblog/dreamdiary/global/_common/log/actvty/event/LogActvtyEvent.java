@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.global._common.log.actvty.event;
 
+import io.nicheblog.dreamdiary.global._common.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
@@ -11,6 +12,7 @@ import org.springframework.context.ApplicationEvent;
  * </pre>
  *
  * @author nichefish
+ * @see LogActvtyEventListener
  */
 @Getter
 public class LogActvtyEvent

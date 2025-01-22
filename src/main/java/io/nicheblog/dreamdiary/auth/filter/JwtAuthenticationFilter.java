@@ -87,11 +87,11 @@ public class JwtAuthenticationFilter
             final ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
             final HttpSession session = servletRequestAttribute.getRequest().getSession();
             session.setAttribute("authInfo", authInfo);
-        } catch (AuthenticationException e) {
+        } catch (final AuthenticationException e) {
             log.error("Authentication failed: {}", e.getMessage());
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication failed: " + e.getMessage());
             return; // 필터 체인 중단
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("Unexpected error: {}", e.getMessage());
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
             return; // 필터 체인 중단

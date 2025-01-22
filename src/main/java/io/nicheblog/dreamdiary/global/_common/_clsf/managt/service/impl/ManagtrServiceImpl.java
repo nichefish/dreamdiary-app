@@ -42,12 +42,12 @@ public class ManagtrServiceImpl
     @Override
     @Transactional(readOnly = true)
     public Boolean hasAlreadyVisited(final BaseClsfKey refKey) {
-        Map<String, Object> searchParamMap = new HashedMap<>() {{
+        final Map<String, Object> searchParamMap = new HashedMap<>() {{
             put("regstrId", AuthUtils.getLgnUserId());
             put("refPostNo", refKey.getPostNo());
             put("refContentType", refKey.getContentType());
         }};
-        List<ManagtrEntity> managtrList = managtrRepository.findAll(managtrSpec.searchWith(searchParamMap));
+        final List<ManagtrEntity> managtrList = managtrRepository.findAll(managtrSpec.searchWith(searchParamMap));
         return CollectionUtils.isNotEmpty(managtrList);
     }
 

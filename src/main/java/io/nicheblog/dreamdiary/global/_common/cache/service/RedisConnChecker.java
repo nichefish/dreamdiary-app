@@ -46,9 +46,9 @@ public class RedisConnChecker {
                     log.info("Redis connection restored.");
                     this.clearRedisCache();
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 isRedisAvailable = false;
-                boolean becameUnavailable = prevRedisStatus;
+                final boolean becameUnavailable = prevRedisStatus;
                 if (becameUnavailable) {
                     log.error("Redis connection became botched.");
                 }

@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * </pre>
  *
  * @author nichefish
+ * @see DreamdiaryInitializer
  */
 @SpringBootApplication(scanBasePackageClasses = { NicheblogBasePackage.class })
 @EnableCaching
@@ -44,7 +45,7 @@ public class DreamdiaryApplication {
             final String profile = System.getProperty("spring.profiles.active", "local");
             setDotEnvPropertiesByFileNm(".env");
             setDotEnvPropertiesByFileNm(".env." + profile);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("Failed to load .env file for profile '{}'", System.getProperty("spring.profiles.active"), e);
         }
     }

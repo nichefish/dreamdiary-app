@@ -127,7 +127,7 @@ public class JrnlDiaryServiceImpl
     @Override
     @Cacheable(value="myJrnlDiaryDtlDto", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #key")
     public JrnlDiaryDto getDtlDtoWithCache(final Integer key) throws Exception {
-        JrnlDiaryDto retrieved = this.getSelf().getDtlDto(key);
+        final JrnlDiaryDto retrieved = this.getSelf().getDtlDto(key);
         // 권한 체크
         if (!retrieved.getIsRegstr()) throw new NotAuthorizedException("조회 권한이 없습니다.");
         return retrieved;
@@ -141,7 +141,7 @@ public class JrnlDiaryServiceImpl
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
-    public void preDelete(JrnlDiaryEntity deleteEntity) throws Exception {
+    public void preDelete(final JrnlDiaryEntity deleteEntity) throws Exception {
         if (!deleteEntity.isRegstr()) throw new NotAuthorizedException("삭제 권한이 없습니다.");
     };
 

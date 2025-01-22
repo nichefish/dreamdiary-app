@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.adapter.kasi.service.HldyKasiApiService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.sys.event.LogSysEvent;
+import io.nicheblog.dreamdiary.global._common.log.sys.handler.LogSysEventListener;
 import io.nicheblog.dreamdiary.global._common.log.sys.model.LogSysParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -33,6 +34,8 @@ public class HldyKasiScheduler {
     /**
      * 1년에 한 번씩 휴일/특일 정보 API 조회하여 등록
      * 매년 1월 1일 00시 30분 실행
+     *
+     * @see LogSysEventListener
      */
     @Scheduled(cron = "0 30 0 1 1 *", zone = Constant.LOC_SEOUL)         // second min hour day month weekday
     @Transactional
@@ -47,7 +50,7 @@ public class HldyKasiScheduler {
             // 기존 정보 (API로 받아온 휴일) 삭제 후 재등록
             isSuccess = hldyKasiApiService.procHldyList(DateUtils.getCurrYyStr());
             rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             isSuccess = false;
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);

@@ -53,7 +53,7 @@ public class PdfBoxUtils {
 
             final File pdfFile = new File(pdfPath, fileNm);
             FileUtils.downloadFile(pdfFile, fileNm);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             final String rsltMsg = MessageUtils.getExceptionMsg(e);
             MessageUtils.alertMessage(rsltMsg);
             // TODO: 로그 관련 처리

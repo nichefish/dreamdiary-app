@@ -57,25 +57,57 @@ const Page: Page = (function(): Page {
                         break;
                 }
             }, {
+                /* 툴바 설정 */
                 headerToolbar: {
                     left: "",
                     center: "title",
                     right: "",
                 },
-                eventContent: function(arg) {
-                    // 아이콘 추가
-                    const icon: string = arg.event.extendedProps.icon;  // 아이콘 클래스 (예: FontAwesome, Bootstrap Icons 등)
-                    const title: string = arg.event.title;
+                /* 이벤트 표시내용 */
+                eventContent: function(info) {
+                    const event = info.event;
+                    const schdulCd: string = event.groupId;
+                    const icon: string = event.extendedProps.icon;  // 아이콘 클래스 (예: FontAwesome, Bootstrap Icons 등)
+                    const title: string = event.title;
                     const titleWithIcon: string = icon + ' ' + title;  // 아이콘과 타이틀 결합
-                    return icon ? { html: titleWithIcon } : title;  // html을 반환하여 FullCalendar가 렌더링하도록 함
+                    switch (schdulCd) {
+                        case "JRNL_DAY":
+                            return { html: `<div class='cursor-pointer'>${titleWithIcon}</div>` };
+                        case "JRNL_DIARY":
+                        case "JRNL_DREAM":
+                            const isImprtc: boolean = event.extendedProps.imprtcYn === "Y";
+                            const classStr: string = isImprtc ? "text-magenta blink fw-bold" : "";
+                            return { html: `<div class='${classStr}'>${titleWithIcon}</div>` };
+                        default:
+                            return icon ? { html: titleWithIcon } : title;  // html을 반환하여 FullCalendar가 렌더링하도록 함
+                    }
                 },
-                eventDidMount: function(info) {
+                /* 이벤트 렌더링 후처리 */
+                eventDidMount: function(info): void {
+                    const event = info.event;
+                    const schdulCd: string = event.groupId;
+                    let tooltipContent;
+                    switch (schdulCd) {
+                        case "JRNL_DAY":
+                            tooltipContent = event.title;
+                            break;
+                        case "JRNL_DIARY":
+                            tooltipContent = `<div class="jrnl-diary-cn">${event.extendedProps.markdownCn}</div>`;
+                            break;
+                        case "JRNL_DREAM":
+                            tooltipContent = `<div class="jrnl-dream-cn">${event.extendedProps.markdownCn}</div>`;
+                            break;
+                        default:
+                            // TODO:
+                            break;
+                    }
                     const eventElmt = info.el;
-                    $(eventElmt).attr('title', info.event.title);
+                    $(eventElmt).attr('title', tooltipContent);  // title에 HTML 콘텐츠 삽입
                     setTimeout(function(): void {
                         $(eventElmt).tooltip({
-                            trigger: 'hover', // 마우스 오버 시 툴팁 활성화
-                            placement: 'top'  // 툴팁의 위치 설정
+                            trigger: 'hover',   // 마우스 오버 시 툴팁 활성화
+                            placement: 'top',    // 툴팁의 위치 설정
+                            html: true,           // HTML 콘텐츠를 허용
                         });
                     }, 0);
                 },

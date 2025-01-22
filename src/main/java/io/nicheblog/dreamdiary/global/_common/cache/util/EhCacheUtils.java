@@ -80,7 +80,7 @@ public class EhCacheUtils {
                                 final String readableKey = stringifyKey(key);
                                 cacheValue.put(readableKey, value);
                                 log.info("Caffeine Cache Key: {}", readableKey);
-                            } catch (NoSuchFieldException | IllegalAccessException e) {
+                            } catch (final NoSuchFieldException | IllegalAccessException e) {
                                 throw new RuntimeException(e);
                             }
                         });
@@ -96,7 +96,7 @@ public class EhCacheUtils {
                                 final String readableKey = stringifyKey(entry.getKey());
                                 cacheValue.put(readableKey, entry.getValue());
                                 log.info("EhCache Key: {}", entry.getKey());
-                            } catch (NoSuchFieldException | IllegalAccessException e) {
+                            } catch (final NoSuchFieldException | IllegalAccessException e) {
                                 throw new RuntimeException(e);
                             }
                         });

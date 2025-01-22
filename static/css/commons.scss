@@ -142,20 +142,22 @@ html, body {
     border-color: #5F0082 !important;
 }
 
+/* 자주색 파스텔톤 */
+.text-magenta {
+    color: #a4007f  !important; /* 자줏빛 색상 */
+}
+
+.bg-magenta {
+    background-color: #94007f !important; /* 자줏빛 배경색 */
+}
+
+.border-magenta {
+    border-color: #94007f !important; /* 자줏빛 테두리 색 */
+}
+
 /* 단어 끊는 것 클래스로 추가 */
 .wb-keepall{
     word-break: keep-all !important;
-}
-
-.tooltip {
-    max-width: 400px;         /* 툴팁의 최대 너비 설정 */
-}
-.tooltip-inner {
-    max-height: 400px;        /* 툴팁 최대 높이 설정 */
-    overflow-y: auto;         /* 세로 스크롤 추가 */
-    word-break: break-word;  /* 긴 단어가 줄 바꿈되도록 */
-    white-space: normal;     /* 툴팁 내에서 텍스트가 여러 줄로 나올 수 있도록 설정 */
-    word-wrap: break-word;   /* 긴 단어가 화면을 넘지 않도록 */
 }
 
 .d-flex-center {

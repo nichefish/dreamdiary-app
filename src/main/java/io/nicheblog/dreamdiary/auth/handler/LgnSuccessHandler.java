@@ -2,11 +2,12 @@ package io.nicheblog.dreamdiary.auth.handler;
 
 import io.nicheblog.dreamdiary.auth.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.service.AuthService;
-import io.nicheblog.dreamdiary.auth.service.impl.DupIdLgnManager;
+import io.nicheblog.dreamdiary.auth.service.manager.DupIdLgnManager;
 import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogActvtyEvent;
+import io.nicheblog.dreamdiary.global._common.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.util.HttpUtils;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -53,6 +54,7 @@ public class LgnSuccessHandler
      * @param authentication 인증된 사용자 정보를 담은 {@link Authentication} 객체
      * @throws IOException 입출력 예외 발생 시
      * @throws ServletException 서블릿 예외 발생 시
+     * @see LogActvtyEventListener
      */
     @Override
     public void onAuthenticationSuccess(

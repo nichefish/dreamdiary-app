@@ -30,7 +30,7 @@ public interface BaseSpec<Entity> {
      * @return {@link Specification} -- 검색 조건에 맞는 Specification 객체
      */
     default Specification<Entity> searchWith(final BaseSearchParam searchParam) throws Exception {
-        Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
+        final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
         return this.searchWith(searchParamMap);
     }
 
@@ -49,7 +49,7 @@ public interface BaseSpec<Entity> {
             List<Predicate> predicate = new ArrayList<>();
             try {
                 predicate = getPredicateWithParams(searchParamMap, root, builder);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
             }
             this.postQuery(root, query, builder, searchParamMap);
@@ -77,7 +77,7 @@ public interface BaseSpec<Entity> {
             // default :: 조건 파라미터에 대해 equal 검색
             try {
                 predicate.add(builder.equal(root.get(key), searchParamMap.get(key)));
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
                 // log.info("unable to locate attribute '{}' while trying root.get(key).", key);
             }

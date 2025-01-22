@@ -44,7 +44,7 @@ public class CookieUtils {
         // response 맥락 하에서만 실행
         if (response == null) return;
         setCookie(name, value, 60 * 60 * 24);
-        Cookie cookie = new Cookie(name, value);
+        final Cookie cookie = new Cookie(name, value);
         cookie.setMaxAge(A_DAY);     //쿠키 유효 기간: 하루로 설정(60초 * 60분 * 24시간)
         cookie.setPath("/");            //모든 경로에서 접근 가능하도록 설정
         response.addCookie(cookie);
@@ -52,7 +52,7 @@ public class CookieUtils {
     public static void setCookie(final String name, final String value, Integer age) {
         // response 맥락 하에서만 실행
         if (response == null) return;
-        Cookie cookie = new Cookie(name, value);
+        final Cookie cookie = new Cookie(name, value);
         cookie.setMaxAge(age);     //쿠키 유효 기간: 하루로 설정(60초 * 60분 * 24시간)
         cookie.setPath("/");            //모든 경로에서 접근 가능하도록 설정
         response.addCookie(cookie);
@@ -65,7 +65,7 @@ public class CookieUtils {
     public static void setJwtCookie(final String jwt) {
         // response 맥락 하에서만 실행
         if (response == null) return;
-        Cookie cookie = new Cookie("jwt", jwt);
+        final Cookie cookie = new Cookie("jwt", jwt);
         cookie.setHttpOnly(true);   // JavaScript에서 접근 불가
         // cookie.setSecure(true);     // HTTPS 환경에서만 작동
         cookie.setPath("/");            //모든 경로에서 접근 가능하도록 설정
@@ -78,7 +78,7 @@ public class CookieUtils {
     public static void setFileDownloadSuccessCookie() {
         // response 맥락 하에서만 실행
         if (response == null) return;
-        Cookie cookie = new Cookie("FILE_CREATE_SUCCESS", "TRUE");
+        final Cookie cookie = new Cookie("FILE_CREATE_SUCCESS", "TRUE");
         cookie.setMaxAge(3);            //쿠키 유효 기간: 3초
         cookie.setPath("/");            //모든 경로에서 접근 가능하도록 설정
         response.addCookie(cookie);
@@ -90,7 +90,7 @@ public class CookieUtils {
     public static void setResponseSuccessCookie() {
         // response 맥락 하에서만 실행
         if (response == null) return;
-        Cookie cookie = new Cookie("RESPONSE_SUCCESS", "TRUE");
+        final Cookie cookie = new Cookie("RESPONSE_SUCCESS", "TRUE");
         cookie.setMaxAge(3);            //쿠키 유효 기간: 3초
         cookie.setPath("/");            //모든 경로에서 접근 가능하도록 설정
         response.addCookie(cookie);
@@ -103,9 +103,9 @@ public class CookieUtils {
         // request 맥락 하에서만 실행
         if (request == null) return null;
         if (StringUtils.isEmpty(name)) return null;
-        Cookie[] cookies = request.getCookies();
+        final Cookie[] cookies = request.getCookies();
         if (cookies == null) return null;
-        for (Cookie c : cookies) {
+        for (final Cookie c : cookies) {
             if (name.equals(c.getName())) return c.getValue();
         }
         return null;
@@ -117,7 +117,7 @@ public class CookieUtils {
     public static void deleteCookie(final String name) {
         // response 맥락 하에서만 실행
         if (response == null) return;
-        Cookie cookie = new Cookie(name, null); // 삭제할 쿠키에 대한 값을 null로 지정
+        final Cookie cookie = new Cookie(name, null); // 삭제할 쿠키에 대한 값을 null로 지정
         cookie.setMaxAge(0);
         response.addCookie(cookie);
     }
@@ -128,7 +128,7 @@ public class CookieUtils {
     public static void deleteAllCookies() {
         // response 맥락 하에서만 실행
         if (request == null || response == null) return;
-        Cookie[] cookies = request.getCookies(); // 모든 쿠키의 정보를 cookies에 저장
+        final Cookie[] cookies = request.getCookies(); // 모든 쿠키의 정보를 cookies에 저장
         if (cookies == null || cookies.length == 0) return;
         Arrays.stream(cookies)
               .forEach(cookie -> {

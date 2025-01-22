@@ -93,7 +93,7 @@ public class UserMyPageController
             final List<VcatnPaprDto.LIST> vcatnPaprList = vcatnPaprService.getListDto(param);
             model.addAttribute("vcatnPaprList", vcatnPaprList);
             // }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.info("휴가계획서 정보를 조회하지 못했습니다.");
         }
 

@@ -39,6 +39,15 @@ public class JrnlDiaryCalDto
     /** 저널 일자 번호 */
     private Integer jrnlDayNo;
 
+    /** 중요 여부 (Y/N) */
+    private String imprtcYn = "N";
+
+    /** 내용 */
+    private String cn;
+
+    /** 마크다운 처리된 내용 */
+    private String markdownCn;
+
     /* ----- */
 
     public String getTitle() {

@@ -1,15 +1,16 @@
 package io.nicheblog.dreamdiary.auth.handler;
 
-import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.entity.LgnPolicyEntity;
-import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.service.LgnPolicyService;
-import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.auth.exception.AcntDormantException;
 import io.nicheblog.dreamdiary.auth.exception.AcntNeedsPwResetException;
 import io.nicheblog.dreamdiary.auth.exception.DupIdLgnException;
 import io.nicheblog.dreamdiary.auth.service.AuthService;
+import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.entity.LgnPolicyEntity;
+import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.service.LgnPolicyService;
+import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogAnonActvtyEvent;
+import io.nicheblog.dreamdiary.global._common.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.handler.HttpMethodRequestWrapper;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -56,6 +57,7 @@ public class LgnFailureHandler
      * @param request 로그인 요청 객체
      * @param response 응답 객체
      * @param exception 인증 실패 예외 객체 {@link AuthenticationException}
+     * @see LogActvtyEventListener
      */
     @SneakyThrows
     @Override

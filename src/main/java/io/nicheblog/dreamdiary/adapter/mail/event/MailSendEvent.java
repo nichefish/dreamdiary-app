@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.adapter.mail.event;
 
+import io.nicheblog.dreamdiary.adapter.mail.handler.MailEventListener;
 import io.nicheblog.dreamdiary.adapter.mail.model.MailSendParam;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import org.springframework.context.ApplicationEvent;
  * </pre>
  *
  * @author nichefish
+ * @see MailEventListener
  */
 @Getter
 @Setter

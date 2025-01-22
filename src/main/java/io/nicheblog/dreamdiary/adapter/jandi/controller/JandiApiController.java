@@ -71,9 +71,7 @@ public class JandiApiController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(apiResponse);
+        return ResponseEntity.ok(apiResponse);
     }
 
     /**
@@ -98,7 +96,7 @@ public class JandiApiController
     //     try {
     //         isSuccess = jandiApiService.receiveMsg(rcvMsg);
     //         rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
-    //     } catch (Exception e) {
+    //     } catch (final Exception e) {
     //         isSuccess = false;
     //         rsltMsg = MessageUtils.getExceptionMsg(e);
     //         logParam.setExceptionInfo(e);

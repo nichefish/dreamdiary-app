@@ -54,7 +54,7 @@ public class TagCmpstn
      */
     public List<String> getParsedTagStrList() {
         if (StringUtils.isEmpty(this.tagListStr)) return new ArrayList<>();
-        JSONArray jArray = new JSONArray(tagListStr);
+        final JSONArray jArray = new JSONArray(tagListStr);
         return IntStream.range(0, jArray.length())
                 .mapToObj(jArray::getJSONObject)
                 .map(json -> json.getString("value"))
@@ -68,7 +68,7 @@ public class TagCmpstn
      */
     public List<TagDto> getParsedTagList() {
         if (StringUtils.isEmpty(this.tagListStr)) return new ArrayList<>();
-        JSONArray jArray = new JSONArray(tagListStr);
+        final JSONArray jArray = new JSONArray(tagListStr);
         return IntStream.range(0, jArray.length())
                 .mapToObj(jArray::getJSONObject)
                 .map(json -> {
@@ -110,13 +110,13 @@ public class TagCmpstn
      */
     public String getTagListStrWithCtgr() {
         if (CollectionUtils.isEmpty(this.list)) return null;
-        ObjectMapper mapper = new ObjectMapper();
+        final ObjectMapper mapper = new ObjectMapper();
         return this.list.stream()
                 .sorted()
                 .map(tag -> {
                     try {
                         return mapper.writeValueAsString(new BaseTagifyDto(tag.getTagNm(), new BaseTagifyDataDto(tag.getCtgr())));
-                    } catch (JsonProcessingException e) {
+                    } catch (final JsonProcessingException e) {
                         throw new RuntimeException("Error processing JSON", e);
                     }
                 })

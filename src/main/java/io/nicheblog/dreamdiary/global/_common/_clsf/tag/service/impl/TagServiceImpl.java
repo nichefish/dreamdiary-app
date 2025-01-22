@@ -85,7 +85,7 @@ public class TagServiceImpl
                 .map(entity -> {
                     try {
                         return mapstruct.toDto(entity);
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         throw new RuntimeException(e);
                     }
                 })

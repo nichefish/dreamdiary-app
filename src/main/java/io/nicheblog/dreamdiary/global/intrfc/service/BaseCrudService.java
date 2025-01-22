@@ -201,7 +201,7 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
         final Entity updatedEntity = repository.saveAndFlush(modifyEntity);
         try {
             repository.refresh(updatedEntity);
-        } catch (EntityNotFoundException ex) {
+        } catch (final EntityNotFoundException ex) {
             ex.getStackTrace();
         }
 

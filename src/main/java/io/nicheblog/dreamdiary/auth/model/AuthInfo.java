@@ -120,7 +120,7 @@ public class AuthInfo
                     try {
                         if (Constant.AUTH_DEV.equals(entity.getAuthCd())) return new SimpleGrantedAuthority(Constant.ROLE_MNGR);
                         return new SimpleGrantedAuthority("ROLE_" + entity.getAuthCd());
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         throw new RuntimeException(e);
                     }
                 })

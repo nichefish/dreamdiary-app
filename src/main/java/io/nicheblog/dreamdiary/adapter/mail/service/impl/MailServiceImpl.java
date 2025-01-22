@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.adapter.mail.service.MailService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.sys.event.LogSysEvent;
+import io.nicheblog.dreamdiary.global._common.log.sys.handler.LogSysEventListener;
 import io.nicheblog.dreamdiary.global._common.log.sys.model.LogSysParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -49,6 +50,7 @@ public class MailServiceImpl
      *
      * @param mailSendParam 메일 발송에 필요한 정보가 담긴 MailSendParam 객체
      * @return {@link Boolean} -- 메일 발송 시도 결과
+     * @see LogSysEventListener
      */
     @Override
     public Boolean send(MailSendParam mailSendParam) {
@@ -57,7 +59,7 @@ public class MailServiceImpl
             final MimeMessage message = this.createMimeMessage(mailSendParam);
             // 생성된 메세지 발송
             mailSender.send(message);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.warn("mail send failed", e);
             final LogSysParam logParam = new LogSysParam(true, "메일 발송에 실패했습니다.", ActvtyCtgr.SYSTEM);
             logParam.setExceptionInfo(e);

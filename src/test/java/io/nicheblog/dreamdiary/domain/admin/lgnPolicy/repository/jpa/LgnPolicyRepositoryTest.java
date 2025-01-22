@@ -58,9 +58,9 @@ class LgnPolicyRepositoryTest {
         // Given::
 
         // When::
-        LgnPolicyEntity registered = lgnPolicyRepository.save(lgnPolicyEntity);
-        Integer key = registered.getLgnPolicyNo();
-        LgnPolicyEntity retrieved = lgnPolicyRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final LgnPolicyEntity registered = lgnPolicyRepository.save(lgnPolicyEntity);
+        final Integer key = registered.getLgnPolicyNo();
+        final LgnPolicyEntity retrieved = lgnPolicyRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -102,14 +102,14 @@ class LgnPolicyRepositoryTest {
     @Test
     public void testDelete() throws Exception {
         // Given::
-        LgnPolicyEntity registered = lgnPolicyRepository.save(lgnPolicyEntity);
-        Integer key = registered.getLgnPolicyNo();
+        final LgnPolicyEntity registered = lgnPolicyRepository.save(lgnPolicyEntity);
+        final Integer key = registered.getLgnPolicyNo();
 
         // When::
-        LgnPolicyEntity toDelete = lgnPolicyRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
+        final LgnPolicyEntity toDelete = lgnPolicyRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
         lgnPolicyRepository.delete(toDelete);
 
-        LgnPolicyEntity retrieved = lgnPolicyRepository.findById(key).orElse(null);
+        final LgnPolicyEntity retrieved = lgnPolicyRepository.findById(key).orElse(null);
 
         // Then::
         assertNull(retrieved, "삭제가 제대로 이루어지지 않았습니다.");

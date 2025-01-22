@@ -80,8 +80,8 @@
                         {{#if (exists comment.list)}}
                             {{#each comment.list}}
                                 <div class="row ms-1 {{#if @first}}mt-3{{/if}} {{#if @last}}mb-3{{/if}} py-1 d-flex align-items-center text-noti">
-                                    <div class="col div-textarea-smp me-10">- {{cn}}</div>
-                                    <div class="col-1">
+                                    <div class="col div-textarea-smp">- {{cn}}</div>
+                                    <div class="col-2 text-end">
                                         <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
                                                 onclick="dF.Comment.modal.mdfModal({{postNo}});"
                                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.modal.mdf"/>">
@@ -162,8 +162,8 @@
                     {{#if (exists comment.list)}}
                         {{#each comment.list}}
                             <div class="row ms-1 {{#if @first}}mt-3{{/if}} {{#if @last}}mb-3{{/if}} py-1 d-flex align-items-center text-noti">
-                                <div class="col div-textarea-smp me-10">- {{cn}}</div>
-                                <div class="col-1">
+                                <div class="col div-textarea-smp">- {{cn}}</div>
+                                <div class="col-2 text-end">
                                     <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
                                             onclick="dF.Comment.modal.mdfModal({{postNo}});"
                                             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.modal.mdf"/>">
@@ -234,8 +234,8 @@
                         {{#if (exists comment.list)}}
                             {{#each comment.list}}
                                 <div class="row ms-1 {{#if @first}}mt-3{{/if}} {{#if @last}}mb-3{{/if}} py-1 d-flex align-items-center text-noti">
-                                    <div class="col div-textarea-smp me-10">- {{cn}}</div>
-                                    <div class="col-1">
+                                    <div class="col div-textarea-smp">- {{cn}}</div>
+                                    <div class="col-2 text-end">
                                         <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
                                                 onclick="dF.Comment.modal.mdfModal({{postNo}});"
                                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 꿈 <@spring.message "bs.tooltip.modal.mdf"/>">

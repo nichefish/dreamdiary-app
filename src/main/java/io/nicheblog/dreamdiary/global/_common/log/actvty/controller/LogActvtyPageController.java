@@ -5,7 +5,6 @@ import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyDto;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtySearchParam;
@@ -69,32 +68,22 @@ public class LogActvtyPageController
         model.addAttribute("pageNm", PageNm.LIST);
 
         // 활동 로그 목록 조회
-        boolean isSuccess = false;
-        String rsltMsg = "";
-        try {
-            // 상세/수정 화면에서 목록 화면 복귀시 세션에 목록 검색 인자 저장해둔 거 있는지 체크
-            searchParam = (LogActvtySearchParam) CmmUtils.Param.checkPrevSearchParam(baseUrl, searchParam);
-            // 페이징 정보 생성:: 공백시 pageSize=10, pageNo=1
-            final PageRequest pageRequest = CmmUtils.Param.getPageRequest(searchParam, "logDt", model);
-            // 목록 조회
-            final Page<LogActvtyDto.LIST> logActvtyList = logActvtyService.getPageDto(searchParam, pageRequest);
-            model.addAttribute("logActvtyList", logActvtyList.getContent());
-            model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(logActvtyList));
-            // 목록 검색 URL + 파라미터 모델에 추가
-            CmmUtils.Param.setModelAttrMap(searchParam, baseUrl, model);
+        // 상세/수정 화면에서 목록 화면 복귀시 세션에 목록 검색 인자 저장해둔 거 있는지 체크
+        searchParam = (LogActvtySearchParam) CmmUtils.Param.checkPrevSearchParam(baseUrl, searchParam);
+        // 페이징 정보 생성:: 공백시 pageSize=10, pageNo=1
+        final PageRequest pageRequest = CmmUtils.Param.getPageRequest(searchParam, "logDt", model);
+        // 목록 조회
+        final Page<LogActvtyDto.LIST> logActvtyList = logActvtyService.getPageDto(searchParam, pageRequest);
+        model.addAttribute("logActvtyList", logActvtyList.getContent());
+        model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(logActvtyList));
+        // 목록 검색 URL + 파라미터 모델에 추가
+        CmmUtils.Param.setModelAttrMap(searchParam, baseUrl, model);
 
-            isSuccess = true;
-            rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
-        } catch (Exception e) {
-            isSuccess = false;
-            rsltMsg = MessageUtils.getExceptionMsg(e);
-            logParam.setExceptionInfo(e);
-            MessageUtils.alertMessage(rsltMsg, Url.ADMIN_MAIN);
-        } finally {
-            // 로그 관련 세팅
-            logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
-            publisher.publishEvent(new LogActvtyEvent(this, logParam));
-        }
+        boolean isSuccess = true;
+        String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+
+        // 로그 관련 세팅
+        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return "/view/domain/admin/log/actvty/log_actvty_list";
     }

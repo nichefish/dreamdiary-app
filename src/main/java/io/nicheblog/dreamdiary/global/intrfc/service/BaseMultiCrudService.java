@@ -38,7 +38,7 @@ public interface BaseMultiCrudService<Dto extends BaseAtchDto & Identifiable<Key
             // 파일 영역 처리
             final Integer atchFileNo = registDto.getAtchFileNo();
             registDto.setAtchFileNo(FileUtils.uploadFile(request, atchFileNo));    // 등록된 파일 마스터ID를 가져온다.
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new AtchFileUploadException("파일 업로드 중 오류가 발생했습니다.", e);
         }
         // 나머지 처리
@@ -59,7 +59,7 @@ public interface BaseMultiCrudService<Dto extends BaseAtchDto & Identifiable<Key
             // 파일 영역 처리
             final Integer atchFileNo = modifyDto.getAtchFileNo();
             modifyDto.setAtchFileNo(FileUtils.uploadFile(request, atchFileNo));    // 등록된 파일 마스터ID를 가져온다.
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new AtchFileUploadException("파일 업로드 중 오류가 발생했습니다.", e);
         }
         // 나머지 처리

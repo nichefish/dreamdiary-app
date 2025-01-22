@@ -79,9 +79,7 @@ public class JrnlDayTagRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -114,9 +112,7 @@ public class JrnlDayTagRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -149,9 +145,7 @@ public class JrnlDayTagRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -184,8 +178,6 @@ public class JrnlDayTagRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 }

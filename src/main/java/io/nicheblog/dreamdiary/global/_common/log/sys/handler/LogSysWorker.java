@@ -49,10 +49,10 @@ public class LogSysWorker
                 // 시스템 로그 로깅 처리
                 logSysService.regSysActvty(logEvent.getLog());
             }
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             log.warn("log regist failed", e);
             Thread.currentThread().interrupt();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.warn("log regist failed", e);
         }
     }

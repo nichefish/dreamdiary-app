@@ -55,10 +55,10 @@ public class LogActvtyWorker
                     logActvtyService.regLogAnonActvty(((LogAnonActvtyEvent) logEvent).getLog());
                 }
             }
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             log.warn("log regist failed", e);
             Thread.currentThread().interrupt();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.warn("log regist failed", e);
         }
     }

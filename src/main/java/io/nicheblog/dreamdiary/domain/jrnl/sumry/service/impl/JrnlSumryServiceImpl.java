@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.sumry.service.JrnlSumryService;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.spec.JrnlSumrySpec;
 import io.nicheblog.dreamdiary.global._common._clsf.ContentType;
 import io.nicheblog.dreamdiary.global._common.cache.event.EhCacheEvictEvent;
+import io.nicheblog.dreamdiary.global._common.cache.handler.EhCacheEvictEventListner;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -120,7 +121,7 @@ public class JrnlSumryServiceImpl
         for (int yy = startYy; yy <= currYy; yy++) {
             try {
                 this.makeYySumry(yy);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 log.warn("Error creating annual summary for {}", yy);
             }
         }
@@ -186,6 +187,7 @@ public class JrnlSumryServiceImpl
      * @param key 식별자
      * @return {@link boolean} -- 처리 성공 여부
      * @throws Exception 처리 중 발생할 수 있는 예외
+     * @see EhCacheEvictEventListner
      */
     @Override
     @Transactional

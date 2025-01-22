@@ -40,7 +40,7 @@ public class JrnlDayCacheEvictor
         if (jrnlDay == null) {
             try {
                 jrnlDay = jrnlDayService.getDtlDto(key);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 jrnlDay = jrnlDayService.getDeletedDtlDto(key);
                 if (jrnlDay == null) return;
             }

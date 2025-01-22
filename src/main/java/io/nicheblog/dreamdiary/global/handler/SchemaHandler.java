@@ -79,7 +79,7 @@ public class SchemaHandler {
                     "##/*",
                     "*/##"
             );
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.warn(e.getMessage());
             return false;
         }

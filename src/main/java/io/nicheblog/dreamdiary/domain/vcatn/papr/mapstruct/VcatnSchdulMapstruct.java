@@ -111,7 +111,7 @@ public interface VcatnSchdulMapstruct
                     }
                     try {
                         return this.toEntity(dto);
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         throw new RuntimeException(e);
                     }
                 })

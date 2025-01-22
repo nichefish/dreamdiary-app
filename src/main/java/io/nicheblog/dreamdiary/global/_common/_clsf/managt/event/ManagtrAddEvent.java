@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.global._common._clsf.managt.event;
 
+import io.nicheblog.dreamdiary.global._common._clsf.managt.handler.ManagtrEventListener;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
@@ -11,6 +12,7 @@ import org.springframework.context.ApplicationEvent;
  * </pre>
  *
  * @author nichefish
+ * @see ManagtrEventListener
  */
 @Getter
 public class ManagtrAddEvent

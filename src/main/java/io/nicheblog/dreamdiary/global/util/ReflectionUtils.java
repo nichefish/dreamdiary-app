@@ -26,7 +26,7 @@ public class ReflectionUtils {
             field = obj.getClass().getDeclaredField(fieldNm);
             field.setAccessible(true);
             field.set(obj, value);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+        } catch (final NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException("Failed to set field value", e);
         }
     }
@@ -40,7 +40,7 @@ public class ReflectionUtils {
             field = obj.getClass().getDeclaredField(fieldNm);
             field.setAccessible(true);
             return field.get(obj);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+        } catch (final NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException("Failed to get field value", e);
         }
     }
@@ -58,7 +58,7 @@ public class ReflectionUtils {
             method = obj.getClass().getDeclaredMethod(methodNm, argClasses);
             method.setAccessible(true);
             return method.invoke(obj, args);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+        } catch (final NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("Failed to invoke method", e);
         }
     }

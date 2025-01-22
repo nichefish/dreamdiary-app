@@ -61,9 +61,9 @@ class JrnlDreamRepositoryTest {
         // Given::
 
         // When::
-        JrnlDreamEntity registered = jrnlDreamRepository.save(jrnlDreamEntity);
+        final JrnlDreamEntity registered = jrnlDreamRepository.save(jrnlDreamEntity);
         Integer key = registered.getPostNo();
-        JrnlDreamEntity retrieved = jrnlDreamRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final JrnlDreamEntity retrieved = jrnlDreamRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -109,10 +109,10 @@ class JrnlDreamRepositoryTest {
         Integer key = registered.getPostNo();
 
         // When::
-        JrnlDreamEntity toDelete = jrnlDreamRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
+        final JrnlDreamEntity toDelete = jrnlDreamRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
         jrnlDreamRepository.delete(toDelete);
 
-        JrnlDreamEntity retrieved = jrnlDreamRepository.findById(key).orElse(null);
+        final JrnlDreamEntity retrieved = jrnlDreamRepository.findById(key).orElse(null);
 
         // Then::
         assertNull(retrieved, "삭제가 제대로 이루어지지 않았습니다.");

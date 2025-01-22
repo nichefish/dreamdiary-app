@@ -70,12 +70,12 @@ public class FileUtils {
             final Integer atchFileDtlNo = Integer.parseInt(fileId);
             final AtchFileDtlEntity fileDtl = atchFileDtlService.getDtlEntity(atchFileDtlNo);
             new File(fileDtl.getFileStrePath(), fileDtl.getStreFileNm());
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             // 2. 에러시 Integer형 ID가 아닌 것으로 판단, 파일명으로 처리
             log.info(MessageUtils.getExceptionMsg(e));
             new File("content/" + fileId);
             return true;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.info(MessageUtils.getExceptionMsg(e));
             return false;
         }
@@ -155,7 +155,7 @@ public class FileUtils {
             final AtchFileEntity rslt = getUploadedFile(multiRequest, atchFileNo);
             if (rslt == null) return null;
             return rslt.getAtchFileNo();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             MessageUtils.alertMessage("파일 업로드에 실패했습니다.");
         }
         return atchFileNo;
@@ -238,7 +238,7 @@ public class FileUtils {
             }
             // 마지막 남은 데이터 flush
             os.flush();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             log.error("파일 다운로드 중 오류 발생: {}", e.getMessage(), e);
             throw new Exception("파일 다운로드에 실패했습니다.", e);
         }

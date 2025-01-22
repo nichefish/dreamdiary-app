@@ -10,6 +10,7 @@ import io.nicheblog.dreamdiary.global._common.flsys.model.FlsysSearchParam;
 import io.nicheblog.dreamdiary.global._common.flsys.service.FlsysService;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogActvtyEvent;
+import io.nicheblog.dreamdiary.global._common.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
@@ -23,7 +24,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Nullable;
 
@@ -73,25 +77,15 @@ public class FlsysController
         model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // 활동 로그 목록 조회
-        boolean isSuccess = false;
-        String rsltMsg = "";
-        try {
-            final String filePath = !StringUtils.isEmpty(filePathParam) ? filePathParam : Constant.HOME_FLSYS;
-            final FlsysDto flsys = flsysService.getFlsysByPath(filePath);
-            model.addAttribute("file", flsys);
+        final String filePath = !StringUtils.isEmpty(filePathParam) ? filePathParam : Constant.HOME_FLSYS;
+        final FlsysDto flsys = flsysService.getFlsysByPath(filePath);
+        model.addAttribute("file", flsys);
 
-            isSuccess = true;
-            rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
-        } catch (Exception e) {
-            isSuccess = false;
-            rsltMsg = MessageUtils.getExceptionMsg(e);
-            logParam.setExceptionInfo(e);
-            MessageUtils.alertMessage(rsltMsg, Url.ADMIN_MAIN);
-        } finally {
-            // 로그 관련 세팅
-            logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
-            publisher.publishEvent(new LogActvtyEvent(this, logParam));
-        }
+        boolean isSuccess = true;
+        String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+
+        // 로그 관련 세팅
+        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return "/view/global/_common//flsys/flsys_home";
     }
@@ -103,6 +97,7 @@ public class FlsysController
      * @param filePath 조회할 파일 경로
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return 파일 시스템 정보를 담은 AjaxResponse 객체를 ResponseEntity로 반환
+     * @see LogActvtyEventListener
      */
     @GetMapping(value = Url.FLSYS_LIST_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -124,7 +119,7 @@ public class FlsysController
 
             isSuccess = true;
             rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             isSuccess = false;
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);
@@ -135,9 +130,7 @@ public class FlsysController
             publisher.publishEvent(new LogActvtyEvent(this, logParam));
         }
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -146,6 +139,7 @@ public class FlsysController
      *
      * @param filePath 조회할 파일 경로
      * @param logParam 로그 기록을 위한 파라미터 객체
+     * @see LogActvtyEventListener
      */
     @GetMapping(Url.FLSYS_FILE_DOWNLOAD)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -165,7 +159,7 @@ public class FlsysController
 
             isSuccess = true;
             rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             isSuccess = false;
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);

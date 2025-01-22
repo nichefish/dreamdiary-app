@@ -38,7 +38,7 @@ public class JrnlDiaryCacheEvictor
         if (jrnlDiary == null) {
             try {
                 jrnlDiary = jrnlDiaryService.getDtlDto(key);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 jrnlDiary = jrnlDiaryService.getDeletedDtlDto(key);
                 if (jrnlDiary == null) return;
             }

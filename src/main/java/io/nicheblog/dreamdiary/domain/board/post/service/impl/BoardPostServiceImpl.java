@@ -77,7 +77,7 @@ public class BoardPostServiceImpl
      */
     @Override
     public List<BoardPostDto.LIST> getFxdList(final String contentType) throws Exception {
-        Map<String, Object> searchParamMap = new HashMap<>() {{
+        final Map<String, Object> searchParamMap = new HashMap<>() {{
             put("contentType", contentType);
             put("fxdYn", "Y");
         }};

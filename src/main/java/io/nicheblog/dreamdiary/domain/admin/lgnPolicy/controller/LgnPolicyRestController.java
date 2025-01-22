@@ -71,8 +71,6 @@ public class LgnPolicyRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 }

@@ -41,8 +41,8 @@ public class CommentServiceImpl
      */
     @Override
     public void evictCache(final CommentEntity rslt) throws Exception {
-        String refContentType = rslt.getRefContentType();
-        Integer refPostNo = rslt.getRefPostNo();
+        final String refContentType = rslt.getRefContentType();
+        final Integer refPostNo = rslt.getRefPostNo();
         ehCacheEvictService.evictClsfCache(refContentType, refPostNo);
         EhCacheUtils.clearL2Cache(CommentEntity.class);
     }

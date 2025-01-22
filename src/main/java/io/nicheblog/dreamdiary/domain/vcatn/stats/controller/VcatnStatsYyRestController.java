@@ -68,9 +68,7 @@ public class VcatnStatsYyRestController
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -93,7 +91,7 @@ public class VcatnStatsYyRestController
     //         xlsxUtils.listXlxsDownload(Constant.VCATN_STATS, statsObjList);
     //         isSuccess = true;
     //         rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
-    //     } catch (Exception e) {
+    //     } catch (final Exception e) {
     //         isSuccess = false;
     //         rsltMsg = MessageUtils.getExceptionMsg(e);
     //         logParam.setExceptionInfo(e);

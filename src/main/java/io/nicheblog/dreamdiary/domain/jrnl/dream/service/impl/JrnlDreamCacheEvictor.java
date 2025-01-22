@@ -40,7 +40,7 @@ public class JrnlDreamCacheEvictor
         if (jrnlDream == null) {
             try {
                 jrnlDream = jrnlDreamService.getDtlDto(key);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 jrnlDream = jrnlDreamService.getDeletedDtlDto(key);
                 if (jrnlDream == null) return;
             }

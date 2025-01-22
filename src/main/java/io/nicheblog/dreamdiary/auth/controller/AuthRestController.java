@@ -70,12 +70,12 @@ public class AuthRestController {
             ajaxResponse.setAjaxResult(true, MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS));
 
             return ResponseEntity.ok(ajaxResponse);
-        } catch (JwtException jwtException) {
+        } catch (final JwtException jwtException) {
             ajaxResponse.setAjaxResult(false, MessageUtils.getMessage(MessageUtils.INVALID_TOKEN));
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(ajaxResponse);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             // 그 외 일반적인 예외 처리
             ajaxResponse.setAjaxResult(false, MessageUtils.getMessage(MessageUtils.RSLT_FAILURE));
             return ResponseEntity
@@ -112,9 +112,7 @@ public class AuthRestController {
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 
     /**
@@ -143,8 +141,6 @@ public class AuthRestController {
         // 로그 관련 세팅
         logParam.setResult(true, MessageUtils.RSLT_SUCCESS);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ajaxResponse);
+        return ResponseEntity.ok(ajaxResponse);
     }
 }

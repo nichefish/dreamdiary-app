@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.global._common._clsf.tag.event;
 
+import io.nicheblog.dreamdiary.global._common._clsf.tag.handler.TagEventListener;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import lombok.Getter;
@@ -12,6 +13,7 @@ import org.springframework.context.ApplicationEvent;
  * </pre>
  *
  * @author nichefish
+ * @see TagEventListener
  */
 @Getter
 public class TagProcEvent

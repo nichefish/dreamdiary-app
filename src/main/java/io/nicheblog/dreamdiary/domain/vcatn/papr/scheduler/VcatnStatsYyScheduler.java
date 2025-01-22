@@ -1,8 +1,10 @@
 package io.nicheblog.dreamdiary.domain.vcatn.papr.scheduler;
 
 import io.nicheblog.dreamdiary.domain.vcatn.stats.service.VcatnStatsYyService;
+import io.nicheblog.dreamdiary.global._common._clsf.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.sys.event.LogSysEvent;
+import io.nicheblog.dreamdiary.global._common.log.sys.handler.LogSysEventListener;
 import io.nicheblog.dreamdiary.global._common.log.sys.model.LogSysParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,8 @@ public class VcatnStatsYyScheduler {
     /**
      * 당해 휴가집계년도 관리 정보 추가
      * 매년 초 = 1월 1일 00시 10분 실행
+     *
+     * @see LogSysEventListener
      */
     @Scheduled(cron = "0 10 0 1 1 *", zone = "Asia/Seoul")         // second min hour day month weekday
     public void vcatnStatsYySchedule() {
@@ -43,7 +47,7 @@ public class VcatnStatsYyScheduler {
         try {
             isSuccess = vcatnStatsYyService.regVcatnYyDt();
             rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);
         } finally {

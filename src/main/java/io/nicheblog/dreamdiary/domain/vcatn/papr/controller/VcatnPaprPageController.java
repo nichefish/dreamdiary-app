@@ -10,6 +10,7 @@ import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common._clsf.ContentType;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.service.TagService;
 import io.nicheblog.dreamdiary.global._common._clsf.viewer.event.ViewerAddEvent;
+import io.nicheblog.dreamdiary.global._common._clsf.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.global._common.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
@@ -186,6 +187,7 @@ public class VcatnPaprPageController
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      * @throws Exception 처리 중 발생할 수 있는 예외
+     * @see ViewerEventListener
      */
     @GetMapping(Url.VCATN_PAPR_DTL)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})

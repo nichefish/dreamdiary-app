@@ -66,9 +66,9 @@ class UserRepositoryTest {
         // Given::
         
         // When::
-        UserEntity registered = userRepository.save(userEntity);
-        Integer key = registered.getUserNo();
-        UserEntity retrieved = userRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final UserEntity registered = userRepository.save(userEntity);
+        final Integer key = registered.getUserNo();
+        final UserEntity retrieved = userRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -92,9 +92,9 @@ class UserRepositoryTest {
         userEntity.cascade();
 
         // When::
-        UserEntity registered = userRepository.save(userEntity);
-        Integer key = registered.getUserNo();
-        UserEntity retrieved = userRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final UserEntity registered = userRepository.save(userEntity);
+        final Integer key = registered.getUserNo();
+        final UserEntity retrieved = userRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -119,9 +119,9 @@ class UserRepositoryTest {
         userEntity.cascade();
 
         // When::
-        UserEntity registered = userRepository.save(userEntity);
-        Integer key = registered.getUserNo();
-        UserEntity retrieved = userRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final UserEntity registered = userRepository.save(userEntity);
+        final Integer key = registered.getUserNo();
+        final UserEntity retrieved = userRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -170,14 +170,14 @@ class UserRepositoryTest {
     @Test
     public void testDelete() throws Exception {
         // Given::
-        UserEntity registered = userRepository.save(userEntity);
-        Integer key = registered.getUserNo();
+        final UserEntity registered = userRepository.save(userEntity);
+        final Integer key = registered.getUserNo();
 
         // When::
-        UserEntity toDelete = userRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
+        final UserEntity toDelete = userRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
         userRepository.delete(toDelete);
 
-        UserEntity retrieved = userRepository.findById(key).orElse(null);
+        final UserEntity retrieved = userRepository.findById(key).orElse(null);
 
         // Then::
         assertNull(retrieved, "삭제가 제대로 이루어지지 않았습니다.");

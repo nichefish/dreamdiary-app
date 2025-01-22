@@ -78,7 +78,7 @@ public class MessageUtils
     public static String getMessage(final String code) throws NoSuchMessageException {
         // test환경에서의 난해성 때문에 bean 주입 환경 외에는 예외 리턴 처리
         if (messageSource == null) return null;
-        String msg = messageSource.getMessage(code, null, Locale.getDefault());
+        final String msg = messageSource.getMessage(code, null, Locale.getDefault());
         log.info("code: {}, msg: {}", code, msg);
         return msg;
     }
@@ -92,7 +92,7 @@ public class MessageUtils
      * @throws NoSuchMessageException 메시지가 존재하지 않는 경우 발생
      */
     public static String getMessage(final String code, final @Nullable Object[] args) throws NoSuchMessageException {
-        String msg = messageSource.getMessage(code, args, Locale.getDefault());
+        final String msg = messageSource.getMessage(code, args, Locale.getDefault());
         log.info("code: {}, msg: {}", code, msg);
         return msg;
     }
@@ -116,7 +116,7 @@ public class MessageUtils
      */
     public static void alertMessage(final String msg, final String url) throws IOException {
         response.setContentType("text/html; charset=utf-8");
-        try (PrintWriter out = response.getWriter()) {
+        try (final PrintWriter out = response.getWriter()) {
             out.println("<script language=\"JavaScript\" type=\"text/JavaScript\">");
             out.println("const hasSwal = (typeof Swal !== \"undefined\");");
             if (url != null) {
@@ -127,7 +127,7 @@ public class MessageUtils
                 out.println("else { alert(`" + msg + "`); }");
             }
             out.println("</script>");
-        } catch (IOException e) {
+        } catch (final IOException e) {
             log.info(getExceptionMsg(e));
             response.sendRedirect("/");
         }
