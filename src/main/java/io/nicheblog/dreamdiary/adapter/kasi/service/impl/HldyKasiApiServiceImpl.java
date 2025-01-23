@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  *
  * @author nichefish
  */
-@Service
+@Service("hldyKasiApiService")
 @RequiredArgsConstructor
 @Log4j2
 public class HldyKasiApiServiceImpl

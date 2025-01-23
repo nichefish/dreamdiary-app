@@ -63,10 +63,7 @@ public final class Constant
 
     /** Page Static Strings */
     public static final String ERROR_MSG = "errorMsg";
-    public static final String MESSAGE = "message";
     public static final String PAGINATION_INFO = "paginationInfo";
-    public static final String IS_REG = "isReg";
-    public static final String IS_MDF = "isMdf";
     public static final String LIST_URL = "listUrl";
     public static final String FORM_MODE = "formMode";
 

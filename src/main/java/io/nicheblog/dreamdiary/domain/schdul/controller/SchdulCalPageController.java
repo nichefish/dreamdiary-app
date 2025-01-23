@@ -3,7 +3,6 @@ package io.nicheblog.dreamdiary.domain.schdul.controller;
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.domain.schdul.model.SchdulSearchParam;
-import io.nicheblog.dreamdiary.domain.schdul.service.SchdulCalService;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -46,7 +45,6 @@ public class SchdulCalPageController
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.SCHDUL;      // 작업 카테고리 (로그 적재용)
 
-    private final SchdulCalService schdulCalService;
     private final DtlCdService dtlCdService;
     private final UserService userService;
 

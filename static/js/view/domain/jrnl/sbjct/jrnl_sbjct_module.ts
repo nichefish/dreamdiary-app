@@ -8,6 +8,7 @@ if (typeof dF === 'undefined') { var dF = {} as any; }
 dF.JrnlSbjct = (function(): dfModule {
     return {
         initialized: false,
+        isReg: $("#jrnlSbjctRegForm").data("mode") === "regist",
         isMdf: $("#jrnlSbjctRegForm").data("mode") === "modify",
 
         /**

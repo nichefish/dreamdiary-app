@@ -30,7 +30,7 @@ import java.util.*;
  *
  * @author nichefish
  */
-@Service
+@Service("atchFileDtlService")
 @RequiredArgsConstructor
 @Log4j2
 public class AtchFileDtlService
