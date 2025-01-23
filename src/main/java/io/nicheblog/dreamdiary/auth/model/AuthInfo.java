@@ -10,11 +10,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -30,7 +32,7 @@ import java.util.stream.Collectors;
 @Builder
 @EqualsAndHashCode(of = {"userId"}, callSuper = false)
 public class AuthInfo
-        implements UserDetails {
+        implements UserDetails, OAuth2User {
 
     /** 사용자 ID */
     private String userId;
@@ -108,6 +110,15 @@ public class AuthInfo
     }
 
     /**
+     * ???
+     * TODO: 이거 뭐지?
+     */
+    @Override
+    public Map<String, Object> getAttributes() {
+        return Map.of();
+    }
+
+    /**
      * 계정 권한 목록 조회.
      *
      * @return {@link Collection} -- 권한 목록
@@ -145,6 +156,14 @@ public class AuthInfo
      */
     @Override
     public String getUsername() {
+        return this.userId;
+    }
+
+    /**
+     * 사용자 고유 식별자를 조회한다.
+     */
+    @Override
+    public String getName() {
         return this.userId;
     }
 

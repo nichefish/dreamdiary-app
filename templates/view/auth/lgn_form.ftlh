@@ -72,11 +72,21 @@
                 <input type="checkbox" class="form-check-input" id="${REMEMBER_ME_PARAM!}" name="${REMEMBER_ME_PARAM!}">
             </label>
         </div>
-        <div class="text-center mb-4 mt-12">
+        <div class="d-flex flex-column text-center mb-4 mt-12 gap-2">
             <button type="button" class="btn btn-lg btn-light-primary opacity-75 w-100"
                     onclick="Page.lgn();"
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="로그인합니다." >
                 <span class="indicator-label">Sign In</span>
+                <span class="indicator-progress">Please wait...
+                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                </span>
+            </button>
+            <button type="button" class="btn btn-lg btn-light-danger opacity-75 w-100"
+                    onclick="Page.oauth2popup('GOOGLE');"
+                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="Google 계정으로 로그인합니다." >
+                <span class="indicator-label">
+                    <i class="bi bi-google blink"></i> Sign In With Google
+                </span>
                 <span class="indicator-progress">Please wait...
                     <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
                 </span>

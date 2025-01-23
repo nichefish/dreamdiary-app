@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.auth.filter;
 
-import io.nicheblog.dreamdiary.auth.config.WebSecurityConfig;
+import io.nicheblog.dreamdiary.auth.config.WebSecurityAdapter;
 import io.nicheblog.dreamdiary.auth.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.provider.JwtTokenProvider;
 import io.nicheblog.dreamdiary.auth.util.AuthUtils;
@@ -30,7 +30,7 @@ import java.io.IOException;
  * </pre>
  *
  * @author nichefish
- * @see WebSecurityConfig
+ * @see WebSecurityAdapter
  */
 @Component
 @RequiredArgsConstructor
@@ -79,10 +79,7 @@ public class JwtAuthenticationFilter
 
         try {
             // 토큰에서 인증 정보 추출
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
-            // spring security context에 인증 정보 저장
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            AuthInfo authInfo = (AuthInfo) authentication.getPrincipal();
+            AuthInfo authInfo = jwtTokenProvider.authenticate(token);
             // 세션에 authInfo 저장
             final ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
             final HttpSession session = servletRequestAttribute.getRequest().getSession();

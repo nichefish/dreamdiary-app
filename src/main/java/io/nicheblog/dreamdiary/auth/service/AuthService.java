@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.auth.entity.AuthRoleEntity;
 import io.nicheblog.dreamdiary.auth.model.AuthInfo;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 
 /**
  * AuthService
@@ -26,6 +27,14 @@ public interface AuthService
      * @throws UsernameNotFoundException 사용자 정보를 찾을 수 없는 경우
      */
     AuthInfo loadUserByUsername(final String userId) throws UsernameNotFoundException;
+
+    /**
+     * OAuth2AuthenticationToken을 사용하여 사용자 정보를 로드합니다.
+     *
+     * @param email OAuth2AuthenticationToken 으로부터 추출한 사용자 이메일
+     * @return {@link AuthInfo}
+     */
+    AuthInfo loadUserByEmail(final String email) throws Exception;
 
     /**
      * 로그인 실패시 실패 카운트를 증가시킨다.
@@ -64,5 +73,5 @@ public interface AuthService
      * @param userId 사용자 ID
      * @return AuditorInfo
      */
-    AuditorInfo getAuditorInfo(String userId);
+    AuditorInfo getAuditorInfo(final String userId);
 }

@@ -6,11 +6,13 @@ import io.nicheblog.dreamdiary.global.util.CookieUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.security.authentication.AuthenticationProvider;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -22,9 +24,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * DreamdiaryAuthenticationProvider
+ * OAuth2Provider
  * <pre>
- *  Spring Security :: 로그인 및 인증 처리.
+ *  OAuth2 인증 처리 Provider.
  * </pre>
  *
  * @author nichefish
@@ -32,32 +34,32 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 @Log4j2
-public class DreamdiaryAuthenticationProvider
-        implements AuthenticationProvider {
+public class OAuth2Provider {
 
     private final AuthService authService;
     private final JwtTokenProvider jwtTokenProvider;
-
     private final AuthenticationHelper authenticationHelper;
 
     /**
-     * Spring Security :: 사용자 인증 과정
-     * 인증 성공시 응딥으로 JWT 토큰을 반환한다.
+     * OAuth2 :: 사용자 인증 과정
      *
      * @param authentication 인증 정보를 담고 있는 Authentication 객체
-     * @return {@link Authentication} -- 인증된 사용자의 Authentication 객체
+     * @return {@link AuthInfo} -- 인증된 사용자의 Authentication 객체
      * @throws AuthenticationException 처리 중 발생할 수 있는 예외
      */
     @SneakyThrows
-    @Override
-    public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
-        final String username = authentication.getName();
-        final AuthInfo authInfo = authService.loadUserByUsername(username);
+    public AuthInfo authenticate(OAuth2AuthenticationToken authentication) throws AuthenticationException {
+
+        final String email = authentication.getPrincipal().getAttribute("email");
+        if (StringUtils.isEmpty(email)) throw new Exception("Invalid email.");
+
+        AuthInfo authInfo = authService.loadUserByEmail(email);
 
         // 인증 객체 생성
-        final UsernamePasswordAuthenticationToken generatedAuthToken = authenticationHelper.doAuth(authentication, authInfo);
+        final UsernamePasswordAuthenticationToken authToken = authenticationHelper.doAuth(authInfo);
+
         // 인증 객체를 기반으로 JWT 생성, 임시로 세션에 저장
-        final String jwt = this.authenticateAndGenerateJwt(generatedAuthToken);
+        final String jwt = this.authenticateAndGenerateJwt(authToken);
         // 세션에 JWT 저장
         final ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         final HttpSession session = servletRequestAttribute.getRequest().getSession();
@@ -68,7 +70,9 @@ public class DreamdiaryAuthenticationProvider
         final HttpServletResponse response = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getResponse();
         if (response != null) response.setHeader("Authorization", "Bearer " + jwt);
 
-        return generatedAuthToken;
+        // spring security context에 인증 정보 저장
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+        return (AuthInfo) authentication.getPrincipal();
     }
 
     /**
@@ -84,17 +88,5 @@ public class DreamdiaryAuthenticationProvider
                 .collect(Collectors.toList());
 
         return jwtTokenProvider.createToken(username, roles); // JWT 생성
-    }
-
-    /**
-     * 인증 제공자가 특정 인증 클래스 타입을 지원하는지 여부를 확인합니다.
-     * -> UsernamePasswordAuthenticationToken만 처리합니다.
-     *
-     * @param authentication 검사할 인증 클래스 타입
-     * @return {@link Boolean} -- 인증 제공자가 해당 인증 클래스 타입을 지원하는 경우 true
-     */
-    @Override
-    public boolean supports(final Class<?> authentication) {
-        return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
     }
 }

@@ -53,7 +53,7 @@ public class AuthRestController {
      * @param request HTTP 요청 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping("/api/auth/getAuthInfo.do")
+    @GetMapping(Url.AUTH_INFO)
     public ResponseEntity<AjaxResponse> getAuthInfo(
             final HttpServletRequest request
     ) {

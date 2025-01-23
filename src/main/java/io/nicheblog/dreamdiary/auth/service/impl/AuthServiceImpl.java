@@ -27,7 +27,7 @@ import java.util.Optional;
  *
  * @author nichefish
  */
-@Service
+@Service("authService")
 @RequiredArgsConstructor
 @Log4j2
 public class AuthServiceImpl
@@ -59,6 +59,20 @@ public class AuthServiceImpl
         //     UserProflEntity rsUserInfo = userProflRepository.findById(userProflNo).orElse(null);
         //     rsUserEntity.setUserProfl(rsUserInfo);
         // }
+
+        return AuthInfoMapstruct.INSTANCE.toDto(rsUser);
+    }
+
+    /**
+     * OAuth2AuthenticationToken을 사용하여 사용자 정보를 로드합니다.
+     *
+     * @param email OAuth2AuthenticationToken 으로부터 추출한 사용자 이메일
+     * @return {@link AuthInfo}
+     */
+    public AuthInfo loadUserByEmail(final String email) throws Exception {
+        final Optional<UserEntity> rsWrapper = userRepository.findByEmail(email);
+        if (rsWrapper.isEmpty()) throw new UsernameNotFoundException("사용자 정보를 찾을 수 없습니다.");
+        final UserEntity rsUser = rsWrapper.get();
 
         return AuthInfoMapstruct.INSTANCE.toDto(rsUser);
     }
@@ -140,11 +154,12 @@ public class AuthServiceImpl
     @Override
     @Transactional(readOnly = true)
     @Cacheable(cacheNames = "auditorInfo", key = "'userId:' + #userId", condition = "#userId!=null")
-    public AuditorInfo getAuditorInfo(String userId) {
+    public AuditorInfo getAuditorInfo(final String userId) {
         final Optional<UserEntity> userEntityWrapper = userRepository.findByUserId(userId);
         if (userEntityWrapper.isEmpty()) return null;
 
         final UserEntity userEntity = userEntityWrapper.get();
         return mapstruct.toAuditorInfo(userEntity);
     }
+
 }
