@@ -53,6 +53,8 @@ public class LgoutHandler
 
         // 쿠키에서 JWT 토큰 삭제
         removeJwtFromCookie(httpServletResponse);
+
+        // TODO: 소셜 로그인 삭제
     }
 
     /**

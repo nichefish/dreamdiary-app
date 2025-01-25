@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.auth.provider;
 
 import io.nicheblog.dreamdiary.auth.model.AuthInfo;
+import io.nicheblog.dreamdiary.auth.provider.helper.AuthenticationHelper;
 import io.nicheblog.dreamdiary.auth.service.AuthService;
 import io.nicheblog.dreamdiary.global.util.CookieUtils;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +56,10 @@ public class DreamdiaryAuthenticationProvider
         final AuthInfo authInfo = authService.loadUserByUsername(username);
 
         // 인증 객체 생성
-        final UsernamePasswordAuthenticationToken generatedAuthToken = authenticationHelper.doAuth(authentication, authInfo);
+        Boolean isValidated = authenticationHelper.validateAuth(authentication, authInfo);
+        if (!isValidated) throw new Exception("인증에 실패했습니다.");
+        UsernamePasswordAuthenticationToken generatedAuthToken = authInfo.getAuthToken();
+
         // 인증 객체를 기반으로 JWT 생성, 임시로 세션에 저장
         final String jwt = this.authenticateAndGenerateJwt(generatedAuthToken);
         // 세션에 JWT 저장

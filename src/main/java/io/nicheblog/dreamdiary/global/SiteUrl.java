@@ -24,9 +24,11 @@ public interface SiteUrl {
     String AUTH_INFO = "/api/auth/getAuthInfo.do";
 
     // 구글 소셜 로그인 팝업
-    String OAUTH_GOOGLE = "/oauth2/authorization/google";
+    String OAUTH2_GOOGLE = "/oauth2/authorization/google";
     String OAUTH2_GOOGLE_REDIRECT_URI = "/login/oauth2/code/google";
 
+    String OAUTH2_NAVER = "/oauth2/authorization/naver";
+    String OAUTH2_NAVER_REDIRECT_URI = "/login/oauth2/code/naver";
 
     String ADMIN_MAIN = Prefix.ADMIN + MAIN;
     String TEST_PAGE = Prefix.ADMIN + "/testPage.do";

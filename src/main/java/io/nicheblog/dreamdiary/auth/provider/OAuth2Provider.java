@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.auth.provider;
 
 import io.nicheblog.dreamdiary.auth.model.AuthInfo;
+import io.nicheblog.dreamdiary.auth.provider.helper.AuthenticationHelper;
 import io.nicheblog.dreamdiary.auth.service.AuthService;
 import io.nicheblog.dreamdiary.global.util.CookieUtils;
 import lombok.RequiredArgsConstructor;
@@ -48,15 +49,17 @@ public class OAuth2Provider {
      * @throws AuthenticationException 처리 중 발생할 수 있는 예외
      */
     @SneakyThrows
-    public AuthInfo authenticate(OAuth2AuthenticationToken authentication) throws AuthenticationException {
+    public AuthInfo authenticate(final OAuth2AuthenticationToken authentication) throws AuthenticationException {
 
         final String email = authentication.getPrincipal().getAttribute("email");
         if (StringUtils.isEmpty(email)) throw new Exception("Invalid email.");
 
-        AuthInfo authInfo = authService.loadUserByEmail(email);
+        final AuthInfo authInfo = authService.loadUserByEmail(email);
 
         // 인증 객체 생성
-        final UsernamePasswordAuthenticationToken authToken = authenticationHelper.doAuth(authInfo);
+        final Boolean isValidated = authenticationHelper.validateAuth(authInfo);
+        if (!isValidated) throw new Exception("인증에 실패했습니다.");
+        final UsernamePasswordAuthenticationToken authToken = authInfo.getAuthToken();
 
         // 인증 객체를 기반으로 JWT 생성, 임시로 세션에 저장
         final String jwt = this.authenticateAndGenerateJwt(authToken);
@@ -71,8 +74,9 @@ public class OAuth2Provider {
         if (response != null) response.setHeader("Authorization", "Bearer " + jwt);
 
         // spring security context에 인증 정보 저장
-        SecurityContextHolder.getContext().setAuthentication(authToken);
-        return (AuthInfo) authentication.getPrincipal();
+        SecurityContextHolder.getContext().setAuthentication(new OAuth2AuthenticationToken(authInfo, authInfo.getAuthorities(), authentication.getAuthorizedClientRegistrationId()));
+
+        return (AuthInfo) authToken.getPrincipal();
     }
 
     /**

@@ -54,9 +54,7 @@ public class AuthUtils {
      */
     public static Boolean isAuthenticated() {
         final Authentication auth = getAuthentication();
-        final boolean isAuthenticated = auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken);
-        if (!isAuthenticated) log.info("isAuthenticated: {}", isAuthenticated);
-        return isAuthenticated;
+        return auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken);
     }
 
     /**

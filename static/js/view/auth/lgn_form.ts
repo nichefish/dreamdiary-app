@@ -85,18 +85,6 @@ const Page: Page = (function(): Page {
         },
 
         /**
-         * 로그인 처리
-         * @param {'GOOGLE'} oauthType - 사용자 ID
-         */
-        oauth2popup: function(oauthType: {'GOOGLE'}): void {
-            const url: string = Url[`OAUTH_${oauthType}`];
-            const popupNm: string = "Authorization";
-            const options: string = 'width=540,height=720,top=0,left=270';
-            const popup = cF.ui.openPopup(url, popupNm, options);
-            if (popup) popup.focus();
-        },
-
-        /**
          * 신규계정 신청 페이지로 이동
          */
         reqstUser: function(): void {

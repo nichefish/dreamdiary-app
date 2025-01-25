@@ -40,6 +40,7 @@ public class JrnlDiaryCalDto
     private Integer jrnlDayNo;
 
     /** 중요 여부 (Y/N) */
+    @Builder.Default
     private String imprtcYn = "N";
 
     /** 내용 */

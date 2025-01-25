@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.global.intrfc.mapstruct;
 
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.helper.MapstructHelper;
 import org.mapstruct.*;
 
 /**

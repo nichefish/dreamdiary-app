@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -65,12 +64,12 @@ public class OAuth2AuthenticationSuccessHandler
             final HttpServletRequest request,
             final HttpServletResponse response,
             final Authentication authentication
-    ) throws IOException, ServletException {
+    ) throws IOException {
 
         // 인증 처리
-        OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
+        final OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
         try {
-            AuthInfo authInfo = oAuth2provider.authenticate(oauthToken);
+            final AuthInfo authInfo = oAuth2provider.authenticate(oauthToken);
 
             // // 사용자 정보 세션에 추가
             final ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
@@ -79,13 +78,13 @@ public class OAuth2AuthenticationSuccessHandler
             session.setAttribute("acsIp", AuthUtils.getAcsIpAddr());
 
             // 최종 로그인 날짜 세팅 및 패스워드오류 카운트 초기화
-            String userId = authInfo.getUserId();
+            final String userId = authInfo.getUserId();
             authService.setLstLgnDt(userId);
             // session에 lgnId attribute 추가 :: 중복 로그인 방지 비교용
             DupIdLgnManager.addKey(userId);
 
             // 로그인 로그 남기기
-            LogActvtyParam logParam = new LogActvtyParam(true, MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS), ActvtyCtgr.LGN);
+            final LogActvtyParam logParam = new LogActvtyParam(true, MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS), ActvtyCtgr.LGN);
             publisher.publishEvent(new LogActvtyEvent(this, logParam));
 
             // 로그인 성공시 브라우저 캐시 초기화 처리
@@ -137,6 +136,7 @@ public class OAuth2AuthenticationSuccessHandler
             response.sendRedirect("/");
         }
     }
+
     /**
      * Response에 Javascript alert 처리 및 리다이렉트
      *

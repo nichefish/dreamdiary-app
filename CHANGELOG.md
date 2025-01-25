@@ -1,6 +1,11 @@
 
 <div style="border: 1px solid #ccc; padding: 10px; margin-top:20px; border-radius: 5px;">
 
+### 2025-01-26 | v0.11.0
+- 신규 기능:
+  - 소셜 로그인 (OAuth2 - 구글, 네이버) 기능 추가.
+    - 구글, 네이버 로그인시 email 주소가 일치하는 계정으로 자동 로그인 처리.
+
 ### 2025-01-19 | v0.10.0
 - 신규 기능:
   - 저널 달력 기능 추가.

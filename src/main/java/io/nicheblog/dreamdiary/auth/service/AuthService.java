@@ -5,7 +5,6 @@ import io.nicheblog.dreamdiary.auth.entity.AuthRoleEntity;
 import io.nicheblog.dreamdiary.auth.model.AuthInfo;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 
 /**
  * AuthService

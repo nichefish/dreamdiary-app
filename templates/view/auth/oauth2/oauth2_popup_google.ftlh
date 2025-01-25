@@ -1,5 +1,5 @@
 <#--
- * 에러 페이지 : 403 ACCESS DENIED
+ * oauth2_popup_google.ftlh
  * (사이드바 없음)
  -->
 
@@ -7,11 +7,11 @@
 
 <@layout.layout toolbar=toolbar!"">
 
-    <div class="d-flex-center">
-        <span class="ctgr-span ctgr-imprtc">Access Denied</span>
+    <div class="d-flex-center mt-20">
+        <span class="ctgr-span ctgr-imprtc">Google OAuth 2.0</span>
     </div>
     <div class="d-flex-center flex-column mt-8">
-        <div>접근 권한이 없습니다.</div>
+        <div>Authenticated with Google.</div>
 
         <div class="text-gray-500 fw-bold min-h-100px">${errorMsg!}</div>
 

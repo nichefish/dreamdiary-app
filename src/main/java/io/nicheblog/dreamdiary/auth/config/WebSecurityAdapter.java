@@ -2,7 +2,6 @@ package io.nicheblog.dreamdiary.auth.config;
 
 import io.nicheblog.dreamdiary.auth.filter.JwtAuthenticationFilter;
 import io.nicheblog.dreamdiary.auth.handler.*;
-import io.nicheblog.dreamdiary.auth.handler.OAuth2AuthenticationSuccessHandler;
 import io.nicheblog.dreamdiary.auth.service.AuthService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -20,6 +19,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -43,9 +45,11 @@ public class WebSecurityAdapter
         extends WebSecurityConfigurerAdapter {
 
     private final AuthService authService;
+    private final OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService;
     private final WebLgnFailureHandler webLgnFailureHandler;
     private final WebLgnSuccessHandler webLgnSuccessHandler;
     private final OAuth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
+    private final OAuth2AuthenticationFailureHandler oauth2AuthenticationFailureHandler;
     private final AjaxAwareAuthenticationEntryPoint ajaxAwareAuthenticationEntryPoint;
     private final LgoutHandler lgoutHandler;
 
@@ -77,6 +81,8 @@ public class WebSecurityAdapter
     public static ServletListenerRegistrationBean<?> httpSessionEventPublisher() {
         return new ServletListenerRegistrationBean<>(new HttpSessionEventPublisher());
     }
+
+
 
     /**
      * Spring Security의 WebSecurity 설정을 구성합니다.
@@ -130,8 +136,11 @@ public class WebSecurityAdapter
         // 3. OAuth2 로그인 활성화
         http.oauth2Login()
                 .loginPage(Url.AUTH_LGN_FORM)
+                .userInfoEndpoint()
+                    .userService(oauth2UserService)
+                .and()
                 .successHandler(oauth2AuthenticationSuccessHandler)
-                .failureHandler(webLgnFailureHandler);
+                .failureHandler(oauth2AuthenticationFailureHandler);
 
         // 페이지 권한 설정
         http.authorizeRequests()
@@ -143,6 +152,9 @@ public class WebSecurityAdapter
                 // API 접근에는 인증 적용하지 않음
                 // TODO: inbound API 쪽에 토큰 인증 적용하기
                 .antMatchers("/api/**")
+                .permitAll()
+                // OAUTH2 인증 관련 페이지
+                .antMatchers("/oauth2/authorization/**", "/login/oauth2/code/**")
                 .permitAll()
                 // Swagger
                 .antMatchers(API_DOCS_PATH)

@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -204,5 +205,12 @@ public class AuthInfo
      */
     public void nullifyPasswordInfo() {
         this.password = null;
+    }
+
+    /**
+     * UsernamePasswordAuthenticationToken 생성
+     */
+    public UsernamePasswordAuthenticationToken getAuthToken() {
+        return new UsernamePasswordAuthenticationToken(this, this.password, this.getAuthorities());
     }
 }

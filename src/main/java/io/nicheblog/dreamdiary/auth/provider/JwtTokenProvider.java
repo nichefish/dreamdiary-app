@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.nicheblog.dreamdiary.auth.model.AuthInfo;
+import io.nicheblog.dreamdiary.auth.provider.helper.AuthenticationHelper;
 import io.nicheblog.dreamdiary.auth.service.AuthService;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;
@@ -112,8 +113,9 @@ public class JwtTokenProvider {
         final String username = this.getUsernameFromToken(token);
         final AuthInfo authInfo = authService.loadUserByUsername(username);
 
-        authenticationHelper.doAuth(authInfo);
-        return new UsernamePasswordAuthenticationToken(authInfo, null, authInfo.getAuthorities());
+        Boolean isValidated = authenticationHelper.validateAuth(authInfo);
+        if (!isValidated) throw new Exception("인증에 실패했습니다.");
+        return authInfo.getAuthToken();
     }
 
     /**

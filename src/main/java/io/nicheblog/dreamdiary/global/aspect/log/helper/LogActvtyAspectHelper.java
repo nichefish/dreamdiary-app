@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global.aspect.log;
+package io.nicheblog.dreamdiary.global.aspect.log.helper;
 
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;

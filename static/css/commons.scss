@@ -15,6 +15,20 @@
     }
 }
 
+i.bi {
+    font-family: Arial, serif;
+    font-size: 1.25em;
+    font-weight: bolder;
+    margin-bottom: 0.35em;
+
+    &.bi-naver:before {
+        content: "Ｎ";
+    }
+    &.bi-kakao:before {
+        content: "Ｋ";
+    }
+}
+
 .collapse:not(.show) {
     display: none !important;
 }
@@ -245,6 +259,12 @@ html, body {
     border: 1px solid #e3e3e3 !important;
     background-color: #f5f5f5 !important;
     color: #666 !important;
+}
+/* 정보 카테고리 */
+.ctgr-success {
+    border: 1px solid #64DD17 !important;
+    background-color: #F1FAFF !important;
+    color: #64DD17 !important;
 }
 /* 정보 카테고리 */
 .ctgr-info {
