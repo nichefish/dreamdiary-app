@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
  *
  * @author nichefish
  */
-@Service
+@Service("atchFileService")
 @RequiredArgsConstructor
 public class AtchFileService
         implements BaseCrudService<AtchFileDto, AtchFileDto, Integer, AtchFileEntity, AtchFileRepository, AtchFileSpec, AtchFileMapstruct> {

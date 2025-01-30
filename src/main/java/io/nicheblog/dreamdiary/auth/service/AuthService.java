@@ -28,6 +28,14 @@ public interface AuthService
     AuthInfo loadUserByUsername(final String userId) throws UsernameNotFoundException;
 
     /**
+     * OAuth2AuthenticationToken을 사용하여 사용자 정보를 로드합니다.
+     *
+     * @param email OAuth2AuthenticationToken 으로부터 추출한 사용자 이메일
+     * @return {@link AuthInfo}
+     */
+    AuthInfo loadUserByEmail(final String email) throws Exception;
+
+    /**
      * 로그인 실패시 실패 카운트를 증가시킨다.
      *
      * @param userId 로그인 실패한 사용자 ID
@@ -64,5 +72,5 @@ public interface AuthService
      * @param userId 사용자 ID
      * @return AuditorInfo
      */
-    AuditorInfo getAuditorInfo(String userId);
+    AuditorInfo getAuditorInfo(final String userId);
 }

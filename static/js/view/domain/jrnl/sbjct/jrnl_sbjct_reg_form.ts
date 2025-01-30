@@ -7,7 +7,8 @@
 // @ts-ignore
 const Page: Page = (function(): Page {
     return {
-        isMdf: $("#boardPostRegForm").data("mode") === "modify",
+        isReg: $("#jrnlSbjctRegForm").data("mode") === "regist",
+        isMdf: $("#jrnlSbjctRegForm").data("mode") === "modify",
 
         /**
          * Page 객체 초기화

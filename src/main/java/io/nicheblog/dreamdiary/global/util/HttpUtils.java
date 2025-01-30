@@ -8,6 +8,11 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * HttpUtils
+ *
+ * @author nichefish
+ */
 @Component
 @RequiredArgsConstructor
 public class HttpUtils {

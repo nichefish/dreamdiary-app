@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.auth.service.manager;
 
-import io.nicheblog.dreamdiary.auth.handler.LgnSuccessHandler;
+import io.nicheblog.dreamdiary.auth.handler.WebLgnSuccessHandler;
 import io.nicheblog.dreamdiary.auth.handler.LgoutHandler;
 import io.nicheblog.dreamdiary.auth.handler.SessionDestroyListener;
 import lombok.extern.log4j.Log4j2;
@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * </pre>
  *
  * @author nichefish
- * @see LgnSuccessHandler,LgoutHandler,SessionDestroyListener
+ * @see WebLgnSuccessHandler ,LgoutHandler,SessionDestroyListener
  */
 @Log4j2
 public class DupIdLgnManager

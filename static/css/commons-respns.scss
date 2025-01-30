@@ -12,6 +12,17 @@
     width:150px;
 }
 
+@media (min-width: 992px) {
+    [data-kt-app-header-fixed=true][data-kt-app-sidebar-fixed=true][data-kt-app-sidebar-push-header=true] .app-header,
+    [data-kt-app-header-fixed=true][data-kt-app-sidebar-sticky=on][data-kt-app-sidebar-push-header=true] .app-header {
+        left: 0 !important;
+    }
+    body:not([data-kt-app-header-fixed=true])[data-kt-app-sidebar-fixed=true][data-kt-app-sidebar-push-header=true] .app-header,
+    body:not([data-kt-app-header-fixed=true])[data-kt-app-sidebar-sticky=on][data-kt-app-sidebar-push-header=true] .app-header {
+        left: 0 !important;
+    }
+}
+
 /** ---- 모바일 버전 ---- */
 @media (max-width: 768px) {
     /* 사이드메뉴 배경색상 설정 */

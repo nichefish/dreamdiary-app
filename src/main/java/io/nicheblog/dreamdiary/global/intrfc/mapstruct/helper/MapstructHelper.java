@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global.intrfc.mapstruct;
+package io.nicheblog.dreamdiary.global.intrfc.mapstruct.helper;
 
 import io.nicheblog.dreamdiary.auth.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.auth.util.AuthUtils;

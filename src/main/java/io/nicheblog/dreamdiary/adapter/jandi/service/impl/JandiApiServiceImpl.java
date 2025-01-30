@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
  *
  * @author nichefish
  */
-@Service
+@Service("jandiApiService")
 @RequiredArgsConstructor
 @Log4j2
 public class JandiApiServiceImpl

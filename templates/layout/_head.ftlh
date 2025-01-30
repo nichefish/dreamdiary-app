@@ -30,7 +30,6 @@
 
     <!--My:: Gloabl Css Bundle(used by all pages) -->
     <link rel="stylesheet" type="text/css" href="/css/commons.css?${releaseDate!}" />
-    <link rel="stylesheet" type="text/css" href="/css/commons-respns.css?${releaseDate!}" />
     <link rel="stylesheet" type="text/css" href="/css/font.css?${releaseDate!}" />
 
     <!--Javascript:: Global Javascript Bundle(used by all pages)-->

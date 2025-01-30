@@ -62,7 +62,7 @@ public class UserReqstPageController
         // 빈 객체 주입 (freemarker error prevention)
         model.addAttribute("user", new UserDto());
         // 등록/수정 화면 플래그 세팅
-        model.addAttribute(Constant.IS_REG, true);
+        model.addAttribute(Constant.FORM_MODE, "regist");
         // 코드 정보 모델에 추가
         dtlCdService.setCdListToModel(Constant.AUTH_CD, model);
         dtlCdService.setCdListToModel(Constant.CMPY_CD, model);

@@ -3,17 +3,15 @@
  * @auther : nichefish
  */
 
+@use 'common/animation';
+@use 'common/button';
+@use 'common/cursor';
+@use 'common/icon';
+@use 'common/tag';
+
+@use 'commons-respns';
+
 /** ----------------------- */
-@media (min-width: 992px) {
-    [data-kt-app-header-fixed=true][data-kt-app-sidebar-fixed=true][data-kt-app-sidebar-push-header=true] .app-header,
-    [data-kt-app-header-fixed=true][data-kt-app-sidebar-sticky=on][data-kt-app-sidebar-push-header=true] .app-header {
-        left: 0 !important;
-    }
-    body:not([data-kt-app-header-fixed=true])[data-kt-app-sidebar-fixed=true][data-kt-app-sidebar-push-header=true] .app-header,
-    body:not([data-kt-app-header-fixed=true])[data-kt-app-sidebar-sticky=on][data-kt-app-sidebar-push-header=true] .app-header {
-        left: 0 !important;
-    }
-}
 
 .collapse:not(.show) {
     display: none !important;
@@ -104,7 +102,7 @@ input[type="text"], input[type="password"], input[type="checkbox"], select, a {
     height: 85% !important;
 }
 
-/* 폰트 추가 적용 하려고 오버라이트 */
+/* 폰트 추가 적용 하려고 오버라이드 */
 html, body {
     font-family: NotoSans, Poppins, Helvetica, "sans-serif";
 }
@@ -131,17 +129,6 @@ html, body {
     border-color: #5c8fb0 !important;
 }
 
-/* 꿈 텍스트 색깔 (연보라) */
-.text-dream {
-    color: #5F0082 !important;
-}
-.bg-dream {
-    background-color: #5F0082 !important;
-}
-.border-dream {
-    border-color: #5F0082 !important;
-}
-
 /* 자주색 파스텔톤 */
 .text-magenta {
     color: #a4007f  !important; /* 자줏빛 색상 */
@@ -156,7 +143,7 @@ html, body {
 }
 
 /* 단어 끊는 것 클래스로 추가 */
-.wb-keepall{
+.wb-keepall {
     word-break: keep-all !important;
 }
 
@@ -188,10 +175,6 @@ html, body {
     a {
         cursor: pointer;
     }
-}
-
-.text-underline-dotted {
-    text-decoration: underline dotted;
 }
 
 /* 작은 버튼이 없어서 추가 */
@@ -247,32 +230,16 @@ html, body {
     color: #666 !important;
 }
 /* 정보 카테고리 */
+.ctgr-success {
+    border: 1px solid #64DD17 !important;
+    background-color: #F1FAFF !important;
+    color: #64DD17 !important;
+}
+/* 정보 카테고리 */
 .ctgr-info {
     border: 1px solid #c269da !important;
     background-color: #edccff !important;
     color: #c269da !important;
-}
-
-/* 깜빡임 (빠름) */
-.blink {
-    animation: blink-effect 0.75s step-end infinite;
-    -webkit-animation: blink 0.75s linear infinite;
-}
-/* 깜빡임 (느림) */
-.blink-slow {
-    animation: blink-effect 1.5s step-end infinite;
-    -webkit-animation: blink 1.5s linear infinite;
-}
-/* 깜빡임 (빠름) */
-.blink-fast {
-    animation: blink-effect 0.4s step-end infinite;
-    -webkit-animation: blink 0.4s linear infinite;
-}
-@-webkit-keyframes blink {
-    0% { opacity: 100%; }
-    33% { opacity: 85%; }
-    66% { opacity: 70%; }
-    100% { opacity: 85%; }
 }
 
 /* textarea 대체용 text-div (simple) */
@@ -335,209 +302,6 @@ html, body {
     text-decoration: line-through;
 }
 
-.badge {
-    &.badge-outlined {
-        background-color: transparent;
-        border: 0.5px solid rgba(43,43,64,0.8) !important;
-        &.badge-light-primary {
-            background-color: #F1FAFF !important;
-        }
-        &.badge-primary, &.badge-light-primary {
-            border-color: rgba(43,43,64,0.5) !important;
-            color: #2196F3 !important;
-            &:hover {
-                background-color: #2196F3 !important;
-                color: #fff !important;
-                i {
-                    color: #fff !important;
-                }
-            }
-            i {
-                color: #2196F3 !important;
-            }
-        }
-        &.badge-secondary {
-            border-color: rgba(50,58,69,0.5) !important;
-            color: #323a45 !important;
-            &:hover {
-                color: #323a45 !important;
-                i {
-                    color: #323a45 !important;
-                }
-            }
-            i {
-                color: #323a45 !important;
-            }
-        }
-        &.badge-light-success {
-            background-color: #1C3238 !important;
-        }
-        &.badge-success, &.badge-light-success {
-            border-color: rgba(100,221,23,0.5) !important;
-            color: #64DD17 !important;
-            &:hover {
-                color: #fff !important;
-                i {
-                    color: #fff !important;
-                }
-            }
-            i {
-                color: #64DD17 !important;
-            }
-        }
-        &.badge-light-warning {
-            background-color: #FFF8DD !important;
-        }
-        &.badge-warning, &.badge-light-warning {
-            border-color: rgba(255,214,0,0.5) !important;
-            color: #FFD600 !important;
-            &:hover {
-                color: #fff !important;
-                i {
-                    color: #fff !important;
-                }
-            }
-            i {
-                color: #FFD600 !important;
-            }
-        }
-        &.badge-light-info {
-            background-color: #F8F5FF !important;
-        }
-        &.badge-info, &.badge-light-info {
-            border-color: rgba(41,182,246,0.5) !important;
-            color: #29B6F6 !important;
-            &:hover {
-                color: #fff !important;
-                i {
-                    color: #fff !important;
-                }
-            }
-            i {
-                color: #29B6F6 !important;
-            }
-        }
-        &.badge-light-danger {
-            background-color: #FFF8DD !important;
-        }
-        &.badge-danger, &.badge-light-danger {
-            border-color: rgba(239,28,28,0.5) !important;
-            color: #ef1c1c !important;
-            &:hover {
-                color: #fff !important;
-                i {
-                    color: #fff !important;
-                }
-            }
-            i {
-                color: #ef1c1c !important;
-            }
-        }
-    }
-}
-
-.btn {
-    &.btn-outlined {
-        background-color: transparent;
-        border: 0.5px solid rgba(43,43,64,0.8) !important;
-        &.btn-light-primary {
-            background-color: #F1FAFF !important;
-        }
-        &.btn-primary, &.btn-light-primary {
-            border-color: rgba(43,43,64,0.5) !important;
-            color: #2196F3 !important;
-            &:hover {
-                color: #fff !important;
-                i {
-                    color: #fff !important;
-                }
-            }
-            i {
-                color: #2196F3 !important;
-            }
-        }
-        &.btn-secondary {
-            background-color: #6c757d !important;
-            border-color: rgba(50,58,69,0.5) !important;
-            color: #6c757d !important;
-            &:hover {
-                background-color: #3c434a !important;
-                color: #323a45 !important;
-                i {
-                    color: #323a45 !important;
-                }
-            }
-            i {
-                color: #323a45 !important;
-            }
-        }
-        &.btn-light-success {
-            background-color: #1C3238 !important;
-        }
-        &.btn-success, &.btn-light-success {
-            border-color: rgba(100,221,23,0.5) !important;
-            color: #64DD17 !important;
-            &:hover {
-                color: #fff !important;
-                i {
-                    color: #fff !important;
-                }
-            }
-            i {
-                color: #64DD17 !important;
-            }
-        }
-        &.btn-light-warning {
-            background-color: #FFF8DD !important;
-        }
-        &.btn-warning, &.btn-light-warning {
-            border-color: rgba(255,214,0,0.5) !important;
-            color: #FFD600 !important;
-            &:hover {
-                color: #fff !important;
-                i {
-                    color: #fff !important;
-                }
-            }
-            i {
-                color: #FFD600 !important;
-            }
-        }
-        &.btn-light-info {
-            background-color: #F8F5FF !important;
-        }
-        &.btn-info, &.btn-light-info {
-            border-color: rgba(41,182,246,0.5) !important;
-            color: #29B6F6 !important;
-            &:hover {
-                color: #fff !important;
-                i {
-                    color: #fff !important;
-                }
-            }
-            i {
-                color: #29B6F6 !important;
-            }
-        }
-        &.btn-light-danger {
-            background-color: #FFF8DD !important;
-        }
-        &.btn-danger, &.btn-light-danger {
-            border-color: rgba(239,28,28,0.5) !important;
-            color: #ef1c1c !important;
-            &:hover {
-                color: #fff !important;
-                i {
-                    color: #fff !important;
-                }
-            }
-            i {
-                color: #ef1c1c !important;
-            }
-        }
-    }
-}
-
 .dragging {
     background-color: #a9d9a4 !important;
     opacity: 75%;
@@ -575,89 +339,6 @@ html, body {
 .text-underline-dotted {
     text-decoration: underline dotted;
     text-underline-offset: 3px;
-}
-
-/** cursors */
-.cursor-default {
-    cursor: default;
-}
-.cursor-help {
-    cursor: help;
-}
-.cursor-progress {
-    cursor: progress;
-}
-.cursor-cell {
-    cursor: cell;
-}
-.cursor-crosshair {
-     cursor: crosshair;
-}
-.cursor-text {
-    cursor: text;
-}
-.cursor-alias {
-    cursor: alias;
-}
-.cursor-copy {
-    cursor: copy;
-}
-.cursor-move {
-    cursor: move;
-}
-.cursor-no-drop {
-    cursor: no-drop;
-}
-.cursor-not-allowed {
-    cursor: not-allowed;
-}
-.cursor-grab {
-    cursor: grab;
-}
-.cursor-grabbing {
-    cursor: grabbing;
-}
-.cursor-zoom-in {
-    cursor: zoom-in;
-}
-
-/* tag */
-.ts-1 {
-    font-size: 1em;
-    color: #9ca5ad !important;
-}
-.ts-2 {
-    font-size: 1.25em;
-    color: #7c858d !important;
-}
-.ts-3 {
-    font-size: 1.4em;
-    color: #5c75ad !important;
-}
-.ts-4 {
-    font-size: 1.6em;
-    color: #5c8fb0 !important;
-}
-.ts-5 {
-    font-size: 1.8em;
-    color: #5c8fb0 !important;
-}
-.ts-6 {
-    font-size: 2.1em;
-    color: #5c8fb0 !important;
-}
-.ts-7 {
-    font-size: 2.3em;
-    color: #0d6efd !important;
-}
-.ts-8 {
-    font-size: 2.5em;
-    color: #0d6efd !important;
-}
-.ts-9 {
-    font-size: 2.7em;
-    color: #0d6efd !important;
-    font-weight: bold !important;
 }
 
 /* bootstrap modal-xxl 추가 */

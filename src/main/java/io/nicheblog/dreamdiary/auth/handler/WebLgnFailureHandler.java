@@ -35,7 +35,7 @@ import javax.servlet.http.HttpSession;
 /**
  * LgnFailureHandler
  * <pre>
- *  Spring Security:: 로그인 실패시 처리 Handler
+ *  Spring Security:: 웹 로그인 실패시 처리 Handler
  * </pre>
  *
  * @author nichefish
@@ -43,7 +43,7 @@ import javax.servlet.http.HttpSession;
 @Component
 @RequiredArgsConstructor
 @Log4j2
-public class LgnFailureHandler
+public class WebLgnFailureHandler
         extends SimpleUrlAuthenticationFailureHandler
         implements AuthenticationFailureHandler {
 
@@ -52,7 +52,7 @@ public class LgnFailureHandler
     private final ApplicationEventPublisher publisher;
 
     /**
-     * 로그인 실패시 상황별 분기 처리
+     * 웹 로그인 로그인 실패시 상황별 분기 처리
      *
      * @param request 로그인 요청 객체
      * @param response 응답 객체

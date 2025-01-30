@@ -72,7 +72,7 @@
                 <input type="checkbox" class="form-check-input" id="${REMEMBER_ME_PARAM!}" name="${REMEMBER_ME_PARAM!}">
             </label>
         </div>
-        <div class="text-center mb-4 mt-12">
+        <div class="d-flex flex-column text-center mb-4 mt-12 gap-2">
             <button type="button" class="btn btn-lg btn-light-primary opacity-75 w-100"
                     onclick="Page.lgn();"
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="로그인합니다." >
@@ -81,6 +81,30 @@
                     <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
                 </span>
             </button>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-lg btn-light-danger opacity-75 w-100"
+                        onclick="dF.oauth2.popupGoogle();"
+                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="Google 계정으로 로그인합니다." >
+                    <span class="d-flex-center indicator-label gap-2">
+                        <span><i class="bi bi-google blink"></i></span>
+                        <span>with Google</span>
+                    </span>
+                        <span class="indicator-progress">Please wait...
+                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    </span>
+                </button>
+                <button type="button" class="btn btn-lg btn-light-success opacity-75 w-100"
+                        onclick="dF.oauth2.popupNaver();"
+                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="NAVER 계정으로 로그인합니다." >
+                    <span class="d-flex-center indicator-label gap-2">
+                        <span><i class="bi bi-naver blink"></i></span>
+                        <span>with NAVER</span>
+                    </span>
+                        <span class="indicator-progress">Please wait...
+                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    </span>
+                </button>
+            </div>
         </div>
         <div class="d-flex justify-content-end mb-5">
             <button type="button" class="badge btn btn-sm btn-light-primary badge-outlined btn-outlined fw-light opacity-75 blink"
@@ -99,6 +123,7 @@
 <#--include::password change-->
 <#include "/view/auth/_modal/_lgn_pw_chg_modal.ftlh">
 <script type="text/javascript" src="/js/view/auth/lgn_pw_chg_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/auth/oauth2/oauth2.js?${releaseDate!}"></script>
 
 <#--include::page scripts-->
 <script type="text/javascript" src="/js/view/auth/lgn_form.js?${releaseDate!}"></script>

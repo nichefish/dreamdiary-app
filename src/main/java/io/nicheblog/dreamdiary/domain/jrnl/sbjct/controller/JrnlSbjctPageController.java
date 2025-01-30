@@ -129,7 +129,7 @@ public class JrnlSbjctPageController
         // 빈 객체 주입 (freemarker error prevention)
         model.addAttribute("post", new JrnlSbjctDto());
         // 등록/수정 화면 플래그 세팅
-        model.addAttribute(Constant.IS_REG, true);
+        model.addAttribute(Constant.FORM_MODE, "regist");
         // 코드 정보 모델에 추가
         dtlCdService.setCdListToModel(Constant.JRNL_SBJCT_CTGR_CD, model);
         dtlCdService.setCdListToModel(Constant.MDFABLE_CD, model);
@@ -248,7 +248,7 @@ public class JrnlSbjctPageController
         final JrnlSbjctDto retrievedDto = jrnlSbjctService.getDtlDto(key);
         model.addAttribute("post", retrievedDto);
         // 등록/수정 화면 플래그 세팅
-        model.addAttribute(Constant.IS_MDF, true);
+        model.addAttribute(Constant.FORM_MODE, "modify");
         // 코드 정보 모델에 추가
         dtlCdService.setCdListToModel(Constant.JRNL_SBJCT_CTGR_CD, model);
         dtlCdService.setCdListToModel(Constant.MDFABLE_CD, model);

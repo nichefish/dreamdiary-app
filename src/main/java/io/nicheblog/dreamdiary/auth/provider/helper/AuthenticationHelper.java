@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.auth.provider;
+package io.nicheblog.dreamdiary.auth.provider.helper;
 
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.entity.LgnPolicyEntity;
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.service.LgnPolicyService;
@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.util.SubnetUtils;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -44,37 +45,40 @@ public class AuthenticationHelper {
 
     /**
      * 주어진 인증 정보를 기반으로 사용자를 인증합니다.
+     * 계정 기본 정보 유효성 검사
      *
      * @param authentication 인증 정보를 담고 있는 {@link Authentication} 객체
      * @param authInfo 인증된 사용자 정보
-     * @return {@link UsernamePasswordAuthenticationToken} -- 인증 객체
+     * @return {@link Boolean} -- 인증 체크 성공 여부
      * @throws Exception 인증 과정 중 발생할 수 있는 예외
      */
-    public UsernamePasswordAuthenticationToken doAuth(final Authentication authentication, final AuthInfo authInfo) throws Exception {
+    public Boolean validateAuth(final Authentication authentication, final AuthInfo authInfo) throws Exception {
 
         // 계정 존재여부 체크
-        if (authInfo == null) throw new InternalAuthenticationServiceException("오류가 발생했습니다.");
+        if (authentication == null || authInfo == null) throw new InternalAuthenticationServiceException("오류가 발생했습니다.");
 
         // 중복 로그인 '확인'(기존 아이디 끊기) 후 들어왔을 시 바로 패스 :: 메소드 분리
         final String username = authentication.getName();
-        if (this.isDupLgnConfirmed(username)) return new UsernamePasswordAuthenticationToken(authInfo, null, authInfo.getAuthorities());
+        if (this.isDupLgnConfirmed(username)) return true;
 
         // password 일치여부 체크
         final String password = (String) authentication.getCredentials();
         if (!passwordEncoder.matches(password, authInfo.getPassword())) throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
 
         authInfo.nullifyPasswordInfo();
-        return this.doAuth(authInfo);
+        return this.validateAuth(authInfo);
     }
 
     /**
      * 주어진 인증 정보를 기반으로 사용자를 인증합니다. (중복 로그인, 패스워드 비교 제외)
+     * 계정 상세 정보 유효성 검사
      *
      * @param authInfo 인증된 사용자 정보
-     * @return {@link UsernamePasswordAuthenticationToken} -- 인증 객체
+     * @return {@link Boolean} -- 인증 체크 성공 여부
      * @throws Exception 인증 과정 중 발생할 수 있는 예외
      */
-    public UsernamePasswordAuthenticationToken doAuth(final AuthInfo authInfo) throws Exception {
+    public Boolean validateAuth(final AuthInfo authInfo) throws Exception {
+        if (authInfo == null) throw new UsernameNotFoundException("사용자 정보가 없습니다.");
 
         String username = authInfo.getUsername();
 
@@ -101,7 +105,7 @@ public class AuthenticationHelper {
         final boolean isDupLgn = DupIdLgnManager.isDupIdLgn(username);
         if (isDupLgn) throw new DupIdLgnException("이미 로그인 상태인 ID입니다.");
 
-        return new UsernamePasswordAuthenticationToken(authInfo, null, authInfo.getAuthorities());
+        return true;
     }
 
     /**
@@ -116,6 +120,7 @@ public class AuthenticationHelper {
         final ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         final HttpSession session = servletRequestAttribute.getRequest().getSession(false);
         if (session == null) return false;
+
         final Object isDupIdLgn = session.getAttribute("isDupIdLgn");
         session.removeAttribute("isDupIdLgn");
         return isDupIdLgn instanceof String && username.equals(isDupIdLgn);

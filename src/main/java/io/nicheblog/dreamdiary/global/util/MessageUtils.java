@@ -35,6 +35,7 @@ public class MessageUtils
         extends ReloadableResourceBundleMessageSource
         implements MessageSource {
 
+    @Qualifier("messageSource")
     private final MessageSource autowiredMessageSource;
     private final HttpServletResponse autowiredResponse;
 
@@ -120,11 +121,18 @@ public class MessageUtils
             out.println("<script language=\"JavaScript\" type=\"text/JavaScript\">");
             out.println("const hasSwal = (typeof Swal !== \"undefined\");");
             if (url != null) {
-                out.println("if (hasSwal) { Swal.fire({\"text\": `" + msg + "`}).then(location.replace('" + url + "')); }");
-                out.println("else { alert(`" + msg + "`); location.replace('" + url + "'); }");
+                out.println("if (hasSwal) { ");
+                out.println("   Swal.fire({\"text\": `" + msg + "`}).then(location.replace('" + url + "'));");
+                out.println("} else { ");
+                out.println("   alert(`" + msg + "`); ");
+                out.println("   location.replace('" + url + "');");
+                out.println("}");
             } else {
-                out.println("if (hasSwal) { Swal.fire({\"text\": `" + msg + "`}); }");
-                out.println("else { alert(`" + msg + "`); }");
+                out.println("if (hasSwal) {");
+                out.println("   Swal.fire({\"text\": `" + msg + "`});");
+                out.println("} else {");
+                out.println("   alert(`" + msg + "`);");
+                out.println("}");
             }
             out.println("</script>");
         } catch (final IOException e) {

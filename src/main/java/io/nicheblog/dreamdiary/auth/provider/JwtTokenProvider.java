@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.nicheblog.dreamdiary.auth.model.AuthInfo;
+import io.nicheblog.dreamdiary.auth.provider.helper.AuthenticationHelper;
 import io.nicheblog.dreamdiary.auth.service.AuthService;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -48,6 +50,20 @@ public class JwtTokenProvider {
     @PostConstruct
     protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes(StandardCharsets.UTF_8));
+    }
+
+    /**
+     * JWT :: 사용자 인증 과정
+     *
+     * @param token 인증 정보를 담고 있는 Authentication 객체
+     * @return {@link AuthInfo} -- 인증된 사용자의 Authentication 객체
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    public AuthInfo authenticate(final String token) throws Exception {
+        Authentication authentication = this.getAuthentication(token);
+        // spring security context에 인증 정보 저장
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return (AuthInfo) authentication.getPrincipal();
     }
 
     /**
@@ -97,8 +113,9 @@ public class JwtTokenProvider {
         final String username = this.getUsernameFromToken(token);
         final AuthInfo authInfo = authService.loadUserByUsername(username);
 
-        authenticationHelper.doAuth(authInfo);
-        return new UsernamePasswordAuthenticationToken(authInfo, null, authInfo.getAuthorities());
+        Boolean isValidated = authenticationHelper.validateAuth(authInfo);
+        if (!isValidated) throw new Exception("인증에 실패했습니다.");
+        return authInfo.getAuthToken();
     }
 
     /**

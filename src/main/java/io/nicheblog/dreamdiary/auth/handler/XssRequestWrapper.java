@@ -32,9 +32,9 @@ public class XssRequestWrapper
      */
     @Override
     public String[] getParameterValues(final String parameterParam) {
-        String parameter = this.cleanXSS(parameterParam);
+        final String parameter = this.cleanXSS(parameterParam);
 
-        String[] values = super.getParameterValues(parameter);
+        final String[] values = super.getParameterValues(parameter);
         if (values == null) return null;
         return Arrays.stream(values)
                 .map(this::cleanXSS)
@@ -46,9 +46,9 @@ public class XssRequestWrapper
      */
     @Override
     public String getParameter(final String parameterParam) {
-        String parameter = this.cleanXSS(parameterParam);
+        final String parameter = this.cleanXSS(parameterParam);
 
-        String value = super.getParameter(parameter);
+        final String value = super.getParameter(parameter);
         if (StringUtils.isEmpty(value)) return null;
         return this.cleanXSS(value);
     }
@@ -58,7 +58,7 @@ public class XssRequestWrapper
      */
     @Override
     public Map<String, String[]> getParameterMap() {
-        Map<String, String[]> originalMap = super.getParameterMap();
+        final Map<String, String[]> originalMap = super.getParameterMap();
         if (originalMap == null) return null;
         return originalMap.entrySet().stream()
                 .collect(Collectors.toMap(
@@ -74,7 +74,7 @@ public class XssRequestWrapper
      */
     @Override
     public String getHeader(final String name) {
-        String value = super.getHeader(name);
+        final String value = super.getHeader(name);
         if (StringUtils.isEmpty(value)) return null;
         return this.cleanXSS(value);
     }
@@ -85,7 +85,7 @@ public class XssRequestWrapper
     private String cleanXSS(final String value) {
         // XSS 처리 로직을 여기에 구현
         // &를 &amp;로 치환하는 작업이 다른 모든 치환 작업보다 먼저 수행되어야 한다.
-        if(StringUtils.isEmpty(value)) return null;
+        if (StringUtils.isEmpty(value)) return null;
         return value.replace("&", "&amp;")
                 .replaceAll("<", "&lt;")
                 .replace(">", "&gt;")

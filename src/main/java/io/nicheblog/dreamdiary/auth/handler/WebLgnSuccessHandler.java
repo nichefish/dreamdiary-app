@@ -28,7 +28,7 @@ import java.io.IOException;
 /**
  * LgnSuccessHandler
  * <pre>
- *  Spring Security:: 로그인 성공시 처리 Handler
+ *  Spring Security:: 웹로그인 성공시 처리 Handler
  *  "로그인 후 이전 페이지 이동" 기능 구현 위해 SavedRequestAwareAuthenticationSuccessHandler 상속
  * </pre>
  *
@@ -37,7 +37,7 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 @Log4j2
-public class LgnSuccessHandler
+public class WebLgnSuccessHandler
         extends SavedRequestAwareAuthenticationSuccessHandler
         implements AuthenticationSuccessHandler {
 
@@ -46,7 +46,7 @@ public class LgnSuccessHandler
     private final HttpSession session;
 
     /**
-     * 인증 성공 시 처리하는 메소드.
+     * 웹 로그인 인증 성공 시 처리하는 메소드.
      * 로그인 성공 후 세션 초기화 및 로그인 기록을 남기고 이전 페이지로 리다이렉트합니다.
      *
      * @param request 로그인 요청 객체
@@ -69,19 +69,19 @@ public class LgnSuccessHandler
         request.removeAttribute("needsPwReset");
 
         // 사용자 정보 세션에 추가
-        AuthInfo authInfo = (AuthInfo) authentication.getPrincipal();
+        final AuthInfo authInfo = (AuthInfo) authentication.getPrincipal();
         authInfo.nullifyPasswordInfo();
         session.setAttribute("authInfo", authInfo);
         session.setAttribute("acsIp", AuthUtils.getAcsIpAddr());
 
         // 최종 로그인 날짜 세팅 및 패스워드오류 카운트 초기화
-        String userId = authInfo.getUserId();
+        final String userId = authInfo.getUserId();
         authService.setLstLgnDt(userId);
         // session에 lgnId attribute 추가 :: 중복 로그인 방지 비교용
         DupIdLgnManager.addKey(userId);
 
         // 로그인 로그 남기기
-        LogActvtyParam logParam = new LogActvtyParam(true, MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS), ActvtyCtgr.LGN);
+        final LogActvtyParam logParam = new LogActvtyParam(true, MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS), ActvtyCtgr.LGN);
         publisher.publishEvent(new LogActvtyEvent(this, logParam));
 
         // 로그인 성공시 브라우저 캐시 초기화 처리

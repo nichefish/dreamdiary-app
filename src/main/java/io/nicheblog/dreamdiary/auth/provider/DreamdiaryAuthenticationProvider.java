@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.auth.provider;
 
 import io.nicheblog.dreamdiary.auth.model.AuthInfo;
+import io.nicheblog.dreamdiary.auth.provider.helper.AuthenticationHelper;
 import io.nicheblog.dreamdiary.auth.service.AuthService;
 import io.nicheblog.dreamdiary.global.util.CookieUtils;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,7 @@ public class DreamdiaryAuthenticationProvider
 
     /**
      * Spring Security :: 사용자 인증 과정
+     * 인증 성공시 응딥으로 JWT 토큰을 반환한다.
      *
      * @param authentication 인증 정보를 담고 있는 Authentication 객체
      * @return {@link Authentication} -- 인증된 사용자의 Authentication 객체
@@ -54,7 +56,10 @@ public class DreamdiaryAuthenticationProvider
         final AuthInfo authInfo = authService.loadUserByUsername(username);
 
         // 인증 객체 생성
-        final UsernamePasswordAuthenticationToken generatedAuthToken = authenticationHelper.doAuth(authentication, authInfo);
+        Boolean isValidated = authenticationHelper.validateAuth(authentication, authInfo);
+        if (!isValidated) throw new Exception("인증에 실패했습니다.");
+        UsernamePasswordAuthenticationToken generatedAuthToken = authInfo.getAuthToken();
+
         // 인증 객체를 기반으로 JWT 생성, 임시로 세션에 저장
         final String jwt = this.authenticateAndGenerateJwt(generatedAuthToken);
         // 세션에 JWT 저장
