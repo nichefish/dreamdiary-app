@@ -50,7 +50,7 @@ public class DreamdiaryInitializer
     /**
      * 프로그램 최초 구동시 수행할 로직.
      *
-     * @param args 명령줄에서 전달된 인수
+     * @param args 명령줄에서 전달된 인수 목록
      */
     @Override
     public void run(final String... args) throws Exception {
@@ -64,7 +64,7 @@ public class DreamdiaryInitializer
 
         // 시스템 재기동 로그 적재:: 운영 환경 이외에는 적재하지 않음
         if (activeProfile.isProd()) {
-            final LogSysParam logParam = new LogSysParam(true, "시스템이 정상적으로 재기동되었습니다.", ActvtyCtgr.SYSTEM);
+            final LogSysParam logParam = new LogSysParam(true, MessageUtils.getMessage("common.status.system-restarted"), ActvtyCtgr.SYSTEM);
             publisher.publishEvent(new LogSysEvent(this, logParam));
         }
     }

@@ -51,13 +51,13 @@ public class MessageUtils
 
     public static final String RSLT_SUCCESS = "common.rslt.success";
     public static final String RSLT_FAILURE = "common.rslt.failure";
-    public static final String RSLT_EXCEPTION = "common.rslt.exception";
+    public static final String RSLT_EXCEPTION = "common.exception";
     public static final String RSLT_EMPTY = "common.rslt.empty";
 
-    public static final String INVALID_TOKEN = "common.rslt.exception";
+    public static final String INVALID_TOKEN = "common.exception.JwtException";
 
-    public static final String RSLT_JANDI_SUCCESS = "commons.rslt.jandi.success";
-    public static final String RSLT_JANDI_FAILURE = "commons.rslt.jandi.failure";
+    public static final String RSLT_JANDI_SUCCESS = "common.rslt.jandi.success";
+    public static final String RSLT_JANDI_FAILURE = "common.rslt.jandi.failure";
 
     public static final String RSLT_USER_ID_DUP = "userInfo.ipDupChck.rslt.idUnusable";
     public static final String RSLT_USER_ID_NOT_DUP = "userInfo.ipDupChck.rslt.idUsable";
@@ -150,8 +150,8 @@ public class MessageUtils
      */
     public static String getExceptionMsg(final Throwable e) {
         if (StringUtils.isNotEmpty(e.getMessage())) return e.getMessage();
-        String exceptionNm = getExceptionNm(e);
-        String rsltMsg = getMessage(RSLT_EXCEPTION + "." + exceptionNm);
+        final String exceptionNm = getExceptionNm(e);
+        final String rsltMsg = getMessage(RSLT_EXCEPTION + "." + exceptionNm);
         log.error("exceptionNm: {}, rsltMsg: {}. {}", exceptionNm, rsltMsg, e.getStackTrace());
         return rsltMsg;
     }
@@ -163,8 +163,7 @@ public class MessageUtils
      * @return {@link String} -- 예외 메시지
      */
     public static String getExceptionNm(final Throwable e) {
-        String exceptionNm = e.getClass()
-                              .toString();
+        final String exceptionNm = e.getClass().toString();
         return exceptionNm.substring(exceptionNm.lastIndexOf('.') + 1);
     }
 
