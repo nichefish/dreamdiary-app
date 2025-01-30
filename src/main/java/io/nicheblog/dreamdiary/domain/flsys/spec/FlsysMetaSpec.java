@@ -1,6 +1,6 @@
-package io.nicheblog.dreamdiary.global._common.flsys.spec;
+package io.nicheblog.dreamdiary.domain.flsys.spec;
 
-import io.nicheblog.dreamdiary.global._common.flsys.entity.FlsysMetaEntity;
+import io.nicheblog.dreamdiary.domain.flsys.entity.FlsysMetaEntity;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BasePostSpec;
 import org.springframework.stereotype.Component;
 

@@ -33,8 +33,8 @@ import java.util.List;
  *  내 정보 관리 페이지 컨트롤러.
  * </pre>
  *
- * @see LogActvtyPageControllerAspect
  * @author nichefish
+ * @see LogActvtyPageControllerAspect
  */
 @Controller
 @RequiredArgsConstructor

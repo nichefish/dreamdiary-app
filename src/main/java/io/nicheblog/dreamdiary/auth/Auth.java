@@ -1,13 +1,14 @@
 package io.nicheblog.dreamdiary.auth;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 권한 Enum
  *
  * @author nichefish
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 public enum Auth {
 
     USER("USER", "ROLE_USER", "사용자"),

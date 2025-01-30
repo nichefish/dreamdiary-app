@@ -16,9 +16,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -29,8 +31,8 @@ import java.util.List;
  *  한국천문연구원(KASI):: 특일 정보 API 컨트롤러.
  * </pre>
  *
- * @see LogActvtyRestControllerAspect
  * @author nichefish
+ * @see LogActvtyRestControllerAspect
  */
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")   // CORS 에러 해결 위한 조치
@@ -51,7 +53,7 @@ public class HldyKasiApiController
     /**
      * 한국천문연구원(KASI):: 휴일 정보 조회 및 DB 저장
      *
-     * @param yyParam - 조회할 연도의 문자열 (nullable, 지정되지 않을 경우 현재 연도를 사용)
+     * @param yy - 조회할 연도의 문자열 (nullable, 지정되지 않을 경우 현재 연도를 사용)
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
@@ -71,7 +73,7 @@ public class HldyKasiApiController
         log.info("requestUrl: {}", request.getRequestURL() + "?" + request.getQueryString());
 
         // 기존 정보 (API로 받아온 휴일) 삭제 후 재등록
-        String yyStr = !StringUtils.isEmpty(yy) ? yy : DateUtils.getCurrYyStr();
+        final String yyStr = !StringUtils.isEmpty(yy) ? yy : DateUtils.getCurrYyStr();
         hldyKasiApiService.delHldyList(yyStr);
         final List<HldyKasiApiItemDto> hldyApiList = hldyKasiApiService.getHldyList(yyStr);
 

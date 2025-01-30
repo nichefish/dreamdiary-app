@@ -1,25 +1,23 @@
-package io.nicheblog.dreamdiary.global._common.flsys.controller;
+package io.nicheblog.dreamdiary.domain.flsys.controller;
 
+import io.nicheblog.dreamdiary.domain.flsys.model.FlsysMetaDto;
+import io.nicheblog.dreamdiary.domain.flsys.service.FlsysMetaService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global._common.flsys.model.FlsysMetaDto;
-import io.nicheblog.dreamdiary.global._common.flsys.service.FlsysMetaService;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.global._common.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyRestControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -32,11 +30,12 @@ import javax.validation.Valid;
  * TODO: 보완 예정
  *
  * @author nichefish
+ * @see LogActvtyRestControllerAspect
  */
-@Controller
+@RestController
 @RequiredArgsConstructor
 @Log4j2
-public class FlsysMetaController
+public class FlsysMetaRestController
         extends BaseControllerImpl {
 
     @Getter

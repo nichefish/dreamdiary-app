@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.adapter.jandi;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 /**
  * JandiTopic
@@ -10,7 +11,7 @@ import lombok.AllArgsConstructor;
  *
  * @author nichefish
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 public enum JandiTopic {
     NOTICE,
     SCHDUL,

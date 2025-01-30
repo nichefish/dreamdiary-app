@@ -1,10 +1,10 @@
-package io.nicheblog.dreamdiary.global._common.flsys.service;
+package io.nicheblog.dreamdiary.domain.flsys.service;
 
-import io.nicheblog.dreamdiary.global._common.flsys.entity.FlsysMetaEntity;
-import io.nicheblog.dreamdiary.global._common.flsys.mapstruct.FlsysMetaMapstruct;
-import io.nicheblog.dreamdiary.global._common.flsys.model.FlsysMetaDto;
-import io.nicheblog.dreamdiary.global._common.flsys.repository.jpa.FlsysMetaRepository;
-import io.nicheblog.dreamdiary.global._common.flsys.spec.FlsysMetaSpec;
+import io.nicheblog.dreamdiary.domain.flsys.entity.FlsysMetaEntity;
+import io.nicheblog.dreamdiary.domain.flsys.mapstruct.FlsysMetaMapstruct;
+import io.nicheblog.dreamdiary.domain.flsys.model.FlsysMetaDto;
+import io.nicheblog.dreamdiary.domain.flsys.repository.jpa.FlsysMetaRepository;
+import io.nicheblog.dreamdiary.domain.flsys.spec.FlsysMetaSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultiCrudService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

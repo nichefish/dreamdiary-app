@@ -26,6 +26,7 @@ public class DreamdiaryApplication {
 
     /**
      * 애플리케이션의 진입점인 메인(main) 함수입니다.
+     *
      * @param args - 명령줄에서 전달된 인수
      */
     public static void main(final String[] args) {
@@ -52,6 +53,7 @@ public class DreamdiaryApplication {
 
     /**
      * 지정된 프로퍼티 파일을 읽어 시스템 환경 변수에 추가합니다.
+     *
      * @param fileName - 로드할 .env 파일의 이름
      */
     private static void setDotEnvPropertiesByFileNm(final String fileName) {
@@ -59,5 +61,4 @@ public class DreamdiaryApplication {
         dotenv.entries().forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));
         log.info("Loaded {} file successfully.", fileName);
     }
-
 }

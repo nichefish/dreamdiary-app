@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.index.Indexed;
  * RefreshToken
  * <pre>
  *   Redis에서 사용하는 RefreshToken Entity.
+ *   TODO
  * </pre>
  *
  * @author nichefish

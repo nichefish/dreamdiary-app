@@ -72,8 +72,7 @@ class ParamModule {
      * @throws Exception 페이징 요청 정보 생성 중 발생할 수 있는 예외
      */
     public static PageRequest getPageRequest(final BaseSearchParam searchParam, final String sortParam, final ModelMap model) throws Exception {
-
-        Sort sort = Sort.by(Sort.Direction.DESC, sortParam);
+        final Sort sort = Sort.by(Sort.Direction.DESC, sortParam);
         return getPageRequest(searchParam, sort, model);
     }
 
@@ -87,14 +86,13 @@ class ParamModule {
      * @throws Exception 페이징 요청 정보 생성 중 발생할 수 있는 예외
      */
     public static PageRequest getPageRequest(final BaseSearchParam searchParam, final Sort sort, final ModelMap model) throws Exception {
-
-        Integer pageSize = searchParam.getPageSize();
-        Integer pageNo = searchParam.getPageNo();
+        final Integer pageSize = searchParam.getPageSize();
+        final Integer pageNo = searchParam.getPageNo();
         if (model != null) {
             model.addAttribute("pageSize", pageSize);
             model.addAttribute("pageNo", pageNo);
         }
-        int pageIdx = pageNo - 1;
+        final int pageIdx = pageNo - 1;
         return PageRequest.of(pageIdx, pageSize, sort);
     }
 
@@ -118,13 +116,12 @@ class ParamModule {
      * @param model 모델 맵에 추가할 ModelMap 객체
      */
     public static void setModelAttrMap(final BaseSearchParam searchParam, final String listUrl, final ModelMap model) {
-
-        ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-        HttpSession session = servletRequestAttribute.getRequest().getSession();
+        final ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        final HttpSession session = servletRequestAttribute.getRequest().getSession();
 
         // 내 글 보기 체크시 목록 돌아가기 버튼 보여지기 위해 값 저장
-        boolean isMyPapr = !searchParam.isBackToList() && searchParam.isAction(Constant.ACTION_TY_MY_PAPR);
-        boolean isBackToMyPapr = searchParam.isBackToList() && (Constant.ACTION_TY_MY_PAPR.equals(searchParam.getActionTyCd()));
+        final boolean isMyPapr = !searchParam.isBackToList() && searchParam.isAction(Constant.ACTION_TY_MY_PAPR);
+        final boolean isBackToMyPapr = searchParam.isBackToList() && (Constant.ACTION_TY_MY_PAPR.equals(searchParam.getActionTyCd()));
         if (isMyPapr || isBackToMyPapr) model.addAttribute(Constant.ACTION_TY_MY_PAPR, true);
 
         // 세션?에 목록 검색 인자 저장
@@ -153,7 +150,7 @@ class ParamModule {
      */
     public static BaseSearchParam convertToParam(final Map<String, Object> searchParamMap) throws Exception {
         if (CollectionUtils.isEmpty(searchParamMap)) return new BaseSearchParam();
-        ObjectMapper mapper = new ObjectMapper();
+        final ObjectMapper mapper = new ObjectMapper();
         return mapper.convertValue(searchParamMap, BaseSearchParam.class);
     }
 
@@ -165,28 +162,27 @@ class ParamModule {
      * @throws Exception 파라미터 처리 중 발생할 수 있는 예외
      */
     public static Map<String, Object> filterParamMap(final Map<String, Object> searchParamMap) throws Exception {
-        Map<String, Object> filteredSearchKey = new HashMap<>();
+        final Map<String, Object> filteredSearchKey = new HashMap<>();
         // 목록 검색에서 시작일, 종료일이 같은 날짜(문자열)로 넘어올 경우 searchEndDt를 23:59:59로 세팅
-        Object searchStartDt = searchParamMap.get("searchStartDt");
-        if (searchStartDt instanceof String) {
-            String searchStartDtStr = (String) searchStartDt;
+        final Object searchStartDt = searchParamMap.get("searchStartDt");
+        if (searchStartDt instanceof String searchStartDtStr) {
             if (StringUtils.isNotEmpty(searchStartDtStr)) {
-                String searchEndDtStr = (String) searchParamMap.get("searchEndDt");
+                final String searchEndDtStr = (String) searchParamMap.get("searchEndDt");
                 if (searchStartDtStr.equals(searchEndDtStr)) {
-                    Date searchEndDt = DateUtils.asDate(searchEndDtStr);
+                    final Date searchEndDt = DateUtils.asDate(searchEndDtStr);
                     searchParamMap.put("searchEndDt", DateUtils.Parser.eDateParseStr(searchEndDt));
                 }
             }
         }
         // Parameter 순차적으로 세팅
-        for (String key : searchParamMap.keySet()) {
+        for (final String key : searchParamMap.keySet()) {
             // pageNo, pageSize는 검색인자가 아니므로 여기 들어갈 필요가 없다.
             if ("pageNo".equals(key)) continue;
             if ("pageSize".equals(key)) continue;
             // isBackToList 빼기
             if ("isBackToList".equals(key)) continue;
-            Object value = searchParamMap.get(key);
-            String valueStr = String.valueOf(searchParamMap.get(key));
+            final Object value = searchParamMap.get(key);
+            final String valueStr = String.valueOf(searchParamMap.get(key));
             if (StringUtils.isNotEmpty(valueStr) && !"null".equals(valueStr)) {
                 // 날짜 파라미터 세팅 ("Dt"로 끝나는 입력값은 Date로 변환하여 Dt에 담음)
                 if (key.endsWith("Dt")) filteredSearchKey.put(key, DateUtils.asDate(value));
@@ -197,8 +193,8 @@ class ParamModule {
                 }
                 // searchType + searchKeyword 매칭 (인덱스마다 자동 설정) (ex.searchType1 <- searchKeyword1)
                 if (key.startsWith("searchType")) {
-                    String idx = key.replace("searchType", "");
-                    String searchKeyword = String.valueOf(searchParamMap.get("searchKeyword" + idx));
+                    final String idx = key.replace("searchType", "");
+                    final String searchKeyword = String.valueOf(searchParamMap.get("searchKeyword" + idx));
                     if (StringUtils.isNotEmpty(searchKeyword) && !"null".equals(searchKeyword)) {
                         filteredSearchKey.put(valueStr, searchKeyword);
                     }

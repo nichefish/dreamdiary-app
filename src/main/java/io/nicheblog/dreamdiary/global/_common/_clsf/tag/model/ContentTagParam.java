@@ -1,6 +1,9 @@
 package io.nicheblog.dreamdiary.global._common._clsf.tag.model;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 /**

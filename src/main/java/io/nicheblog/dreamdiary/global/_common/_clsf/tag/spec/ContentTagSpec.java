@@ -1,7 +1,6 @@
 package io.nicheblog.dreamdiary.global._common._clsf.tag.spec;
 
 import io.nicheblog.dreamdiary.auth.util.AuthUtils;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.entity.ContentTagEntity;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 import lombok.extern.log4j.Log4j2;

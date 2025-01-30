@@ -49,12 +49,11 @@ public class LgoutHandler
         publisher.publishEvent(new LogActvtyEvent(this, new LogActvtyParam(true)));
         // 중복 로그인 관리용 arrayList에서 로그인 아이디 제거
         if (authentication == null || authentication.getPrincipal() == null) return;
+
         DupIdLgnManager.removeKey(((AuthInfo) authentication.getPrincipal()).getUserId());
 
         // 쿠키에서 JWT 토큰 삭제
         removeJwtFromCookie(httpServletResponse);
-
-        // TODO: 소셜 로그인 삭제
     }
 
     /**
@@ -62,10 +61,10 @@ public class LgoutHandler
      *
      * @param response 응답 객체
      */
-    private void removeJwtFromCookie(HttpServletResponse response) {
+    private void removeJwtFromCookie(final HttpServletResponse response) {
         // JWT를 저장한 쿠키 이름이 "jwtToken"이라고 가정
         // 쿠키 만료 시간을 0으로 설정하여 삭제 처리
-        Cookie cookie = new Cookie("jwt", null);
+        final Cookie cookie = new Cookie("jwt", null);
         cookie.setHttpOnly(true);  // 클라이언트에서 JavaScript 접근 불가
         // cookie.setSecure(true);    // HTTPS 연결에서만 전달
         cookie.setPath("/");       // 전체 경로에서 유효

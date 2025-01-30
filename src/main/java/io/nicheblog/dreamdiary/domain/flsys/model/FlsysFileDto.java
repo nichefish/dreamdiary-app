@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global._common.flsys.model;
+package io.nicheblog.dreamdiary.domain.flsys.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

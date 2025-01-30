@@ -150,6 +150,7 @@ public class MessageUtils
      */
     public static String getExceptionMsg(final Throwable e) {
         if (StringUtils.isNotEmpty(e.getMessage())) return e.getMessage();
+
         final String exceptionNm = getExceptionNm(e);
         final String rsltMsg = getMessage(RSLT_EXCEPTION + "." + exceptionNm);
         log.error("exceptionNm: {}, rsltMsg: {}. {}", exceptionNm, rsltMsg, e.getStackTrace());

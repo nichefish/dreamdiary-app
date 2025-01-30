@@ -1,7 +1,6 @@
 package io.nicheblog.dreamdiary.domain.board.post.repository.jpa;
 
 import io.nicheblog.dreamdiary.domain.board.post.entity.BoardPostEntity;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import org.springframework.stereotype.Repository;
 

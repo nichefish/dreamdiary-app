@@ -26,8 +26,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
  *  태그 관리 페이지 컨트롤러.
  * </pre>
  *
- * @see LogActvtyPageControllerAspect
  * @author nichefish
+ * @see LogActvtyPageControllerAspect
  */
 @Controller
 @RequiredArgsConstructor

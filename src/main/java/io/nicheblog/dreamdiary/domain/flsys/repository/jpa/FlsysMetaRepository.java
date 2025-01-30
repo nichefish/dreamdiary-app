@@ -1,6 +1,6 @@
-package io.nicheblog.dreamdiary.global._common.flsys.repository.jpa;
+package io.nicheblog.dreamdiary.domain.flsys.repository.jpa;
 
-import io.nicheblog.dreamdiary.global._common.flsys.entity.FlsysMetaEntity;
+import io.nicheblog.dreamdiary.domain.flsys.entity.FlsysMetaEntity;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import org.springframework.stereotype.Repository;
 

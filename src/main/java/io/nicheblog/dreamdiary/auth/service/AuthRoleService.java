@@ -6,10 +6,6 @@ import io.nicheblog.dreamdiary.auth.model.AuthRoleDto;
 import io.nicheblog.dreamdiary.auth.repository.jpa.AuthRoleRepository;
 import io.nicheblog.dreamdiary.auth.spec.AuthRoleSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseReadonlyService;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.stereotype.Service;
 
 /**
  * AuthRoleService

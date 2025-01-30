@@ -7,6 +7,8 @@ import org.springframework.security.core.AuthenticationException;
  * <pre>
  *  Spring Security:: 접속IP 불일치시 던지는 Custom Exception
  * </pre>
+ *
+ * @author nichefish
  */
 public class AcsIpNotAllowedException
         extends AuthenticationException {
@@ -17,10 +19,7 @@ public class AcsIpNotAllowedException
      * @param msg 예외 메시지
      * @param cause 이 예외의 원인
      */
-    public AcsIpNotAllowedException(
-            final String msg,
-            final Throwable cause
-    ) {
+    public AcsIpNotAllowedException(final String msg, final Throwable cause) {
         super(msg, cause);
     }
 

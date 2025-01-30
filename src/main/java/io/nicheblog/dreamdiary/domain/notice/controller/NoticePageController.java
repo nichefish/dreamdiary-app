@@ -38,8 +38,8 @@ import org.springframework.web.bind.annotation.RequestParam;
  *  공지사항 페이지 컨트롤러.
  * </pre>
  *
- * @see LogActvtyPageControllerAspect
  * @author nichefish
+ * @see LogActvtyPageControllerAspect
  */
 @Controller
 @RequiredArgsConstructor

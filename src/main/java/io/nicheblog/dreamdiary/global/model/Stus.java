@@ -15,7 +15,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CmmStus {
+public class Stus {
 
     /** 상태명 */
     private String nm;
@@ -33,7 +33,7 @@ public class CmmStus {
      * 
      * @param nm 상태 이름 (String)
      */
-    public CmmStus(final String nm) {
+    public Stus(final String nm) {
         this.nm = nm;
     }
 
@@ -43,7 +43,7 @@ public class CmmStus {
      * @param nm 상태 이름 (String)
      * @param classNm 상태와 관련된 CSS 클래스 이름 (String)
      */
-    public CmmStus(final String nm, final String classNm) {
+    public Stus(final String nm, final String classNm) {
         this(nm);
         this.classNm = classNm;
     }
@@ -55,7 +55,7 @@ public class CmmStus {
      * @param classNm 상태와 관련된 CSS 클래스 이름 (String)
      * @param icon 상태와 관련된 아이콘
      */
-    public CmmStus(final String nm, final String classNm, final String icon) {
+    public Stus(final String nm, final String classNm, final String icon) {
         this(nm, classNm);
         this.icon = icon;
     }

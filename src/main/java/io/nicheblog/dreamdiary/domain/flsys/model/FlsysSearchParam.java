@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global._common.flsys.model;
+package io.nicheblog.dreamdiary.domain.flsys.model;
 
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BasePostSearchParam;
 import lombok.*;

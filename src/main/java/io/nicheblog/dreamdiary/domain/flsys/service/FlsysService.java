@@ -1,9 +1,9 @@
-package io.nicheblog.dreamdiary.global._common.flsys.service;
+package io.nicheblog.dreamdiary.domain.flsys.service;
 
-import io.nicheblog.dreamdiary.global._common.flsys.model.FlsysDirDto;
-import io.nicheblog.dreamdiary.global._common.flsys.model.FlsysDto;
-import io.nicheblog.dreamdiary.global._common.flsys.model.FlsysFileDto;
-import io.nicheblog.dreamdiary.global._common.flsys.model.FlsysMetaDto;
+import io.nicheblog.dreamdiary.domain.flsys.model.FlsysDirDto;
+import io.nicheblog.dreamdiary.domain.flsys.model.FlsysDto;
+import io.nicheblog.dreamdiary.domain.flsys.model.FlsysFileDto;
+import io.nicheblog.dreamdiary.domain.flsys.model.FlsysMetaDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;

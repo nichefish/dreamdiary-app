@@ -8,7 +8,6 @@ import io.nicheblog.dreamdiary.global.Constant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -62,15 +61,15 @@ public class JwtAuthenticationFilter
         }
 
         //  정적 리소스 요청인 경우 필터 체인을 바로 통과시킴
-        String requestUri = request.getRequestURI();
-        for (String path : Constant.STATIC_PATHS) {
+        final String requestUri = request.getRequestURI();
+        for (final String path : Constant.STATIC_PATHS) {
             if (requestUri.startsWith(path.replace("/**", "/"))) {
                 filterChain.doFilter(request, response);
                 return;
             }
         }
 
-        String token = jwtTokenProvider.resolveToken(request);
+        final String token = jwtTokenProvider.resolveToken(request);
         // 토큰이 없거나 유효하지 않으면 필터 체인을 바로 통과시킴
         if (token == null || !jwtTokenProvider.validateToken(token)) {
             filterChain.doFilter(request, response);
@@ -79,7 +78,7 @@ public class JwtAuthenticationFilter
 
         try {
             // 토큰에서 인증 정보 추출
-            AuthInfo authInfo = jwtTokenProvider.authenticate(token);
+            final AuthInfo authInfo = jwtTokenProvider.authenticate(token);
             // 세션에 authInfo 저장
             final ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
             final HttpSession session = servletRequestAttribute.getRequest().getSession();

@@ -7,6 +7,7 @@ package io.nicheblog.dreamdiary.global;
  * </pre>
  *
  * @author nichefish
+ * @see Url
  */
 public interface SiteUrl {
 
@@ -304,7 +305,7 @@ public interface SiteUrl {
     String USER_REQST_UNCF_AJAX = Prefix.USER_REQST + "/userReqstUncfAjax.do";
 
     /**
-     * PREFIX 정보
+     * PREFIX 정의 정보
      */
     interface Prefix {
         String AUTH = "/auth";

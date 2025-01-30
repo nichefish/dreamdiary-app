@@ -17,7 +17,10 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServletRequest;
@@ -30,8 +33,8 @@ import javax.validation.Valid;
  *  인증 관련 컨트롤러.
  * </pre>
  *
- * @see LogActvtyRestControllerAspect
  * @author nichefish
+ * @see LogActvtyRestControllerAspect
  */
 @RestController
 @RequiredArgsConstructor
@@ -58,13 +61,13 @@ public class AuthRestController {
             final HttpServletRequest request
     ) {
 
-        AjaxResponse ajaxResponse = new AjaxResponse();
+        final AjaxResponse ajaxResponse = new AjaxResponse();
 
         try {
             // JWT 검증 및 사용자 정보 추출
-            String jwtToken = jwtTokenProvider.resolveToken(request);
-            Authentication authentication = jwtTokenProvider.getDirectAuthentication(jwtToken);
-            AuthInfo authInfo = (AuthInfo) authentication.getPrincipal();
+            final String jwtToken = jwtTokenProvider.resolveToken(request);
+            final Authentication authentication = jwtTokenProvider.getDirectAuthentication(jwtToken);
+            final AuthInfo authInfo = (AuthInfo) authentication.getPrincipal();
 
             ajaxResponse.setRsltObj(authInfo);
             ajaxResponse.setAjaxResult(true, MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS));

@@ -1,8 +1,6 @@
 package io.nicheblog.dreamdiary.auth.service.manager;
 
 import io.nicheblog.dreamdiary.auth.handler.WebLgnSuccessHandler;
-import io.nicheblog.dreamdiary.auth.handler.LgoutHandler;
-import io.nicheblog.dreamdiary.auth.handler.SessionDestroyListener;
 import lombok.extern.log4j.Log4j2;
 
 import javax.servlet.http.HttpSessionListener;

@@ -126,9 +126,7 @@ public class PdfBoxUtils {
      * @param pageWidth 페이지 너비
      * @return {@link int[]} -- 이미지 너비와 높이
      */
-    private static int[] calculateImageDimensions(
-            final BufferedImage awtImage,
-            final int pageWidth) {
+    private static int[] calculateImageDimensions(final BufferedImage awtImage, final int pageWidth) {
 
         float imgRatio = 1;
         final int orgnlImgWidth = awtImage.getWidth(null);

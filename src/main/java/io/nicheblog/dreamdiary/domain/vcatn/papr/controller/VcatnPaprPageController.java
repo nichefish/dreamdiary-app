@@ -37,8 +37,8 @@ import org.springframework.web.bind.annotation.RequestParam;
  *  휴가계획서 페이지 컨트롤러.
  * </pre>
  *
- * @see LogActvtyPageControllerAspect
  * @author nichefish
+ * @see LogActvtyPageControllerAspect
  */
 @Controller
 @RequiredArgsConstructor

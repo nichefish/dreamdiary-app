@@ -21,12 +21,20 @@ public class UTF8DecodeResourceResolver
         extends PathResourceResolver
         implements ResourceResolver {
 
+    /**
+     * 주어진 리소스 경로를 UTF-8로 디코딩하여 반환한다.
+     *
+     * @param resourcePathParam 요청된 리소스의 경로 (인코딩된 상태)
+     * @param location 기본 리소스 위치
+     * @return {@link Resource} 디코딩된 리소스를 반환
+     * @throws IOException 리소스를 찾을 수 없거나 접근할 수 없는 경우 발생
+     */
     @Override
     protected Resource getResource(
             final @NotNull String resourcePathParam,
             final @NotNull Resource location
     ) throws IOException {
-        String resourcePath = URLDecoder.decode(resourcePathParam, StandardCharsets.UTF_8);
+        final String resourcePath = URLDecoder.decode(resourcePathParam, StandardCharsets.UTF_8);
         return super.getResource(resourcePath, location);
     }
 }

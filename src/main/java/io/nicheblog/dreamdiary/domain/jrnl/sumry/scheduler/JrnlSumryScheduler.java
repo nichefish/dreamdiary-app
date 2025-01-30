@@ -2,7 +2,6 @@ package io.nicheblog.dreamdiary.domain.jrnl.sumry.scheduler;
 
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.service.JrnlSumryService;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global._common._clsf.tag.handler.TagEventListener;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.sys.event.LogSysEvent;
 import io.nicheblog.dreamdiary.global._common.log.sys.handler.LogSysEventListener;
@@ -41,7 +40,7 @@ public class JrnlSumryScheduler {
 
         log.info("jrnlSumrySchedule...");
 
-        LogSysParam logParam = new LogSysParam();
+        final LogSysParam logParam = new LogSysParam();
         String rsltMsg = "";
         try {
             // 결산 생성

@@ -1,8 +1,6 @@
 package io.nicheblog.dreamdiary.domain.vcatn.papr.entity;
 
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.auth.entity.AuditorInfo;
-import io.nicheblog.dreamdiary.global._common.cd.entity.DtlCdEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -41,12 +39,12 @@ public class VcatnSchdulEntity
         this.userNm = this.getVcatnUserNm();        // return 용이성 때문에 메소드 분리
     }
     private String getVcatnUserNm() {
-        boolean isPaprSubmitted = this.vcatnPapr != null;
+        final boolean isPaprSubmitted = this.vcatnPapr != null;
         if (isPaprSubmitted) {
             if (this.vcatnPapr.getRegstrInfo() == null) return null;
             return this.vcatnPapr.getRegstrInfo().getNickNm();
         }
-        boolean isRegByMngr = this.userInfo != null;
+        final boolean isRegByMngr = this.userInfo != null;
         if (isRegByMngr) return this.userInfo.getNickNm();
         return null;
     }

@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global._common.flsys.entity;
+package io.nicheblog.dreamdiary.domain.flsys.entity;
 
 import io.nicheblog.dreamdiary.global._common._clsf.ContentType;
 import io.nicheblog.dreamdiary.global._common._clsf.comment.entity.embed.CommentEmbed;

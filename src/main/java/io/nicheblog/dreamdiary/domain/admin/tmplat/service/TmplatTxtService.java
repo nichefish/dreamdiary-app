@@ -6,8 +6,8 @@ import io.nicheblog.dreamdiary.domain.admin.tmplat.model.TmplatTxtDto;
 import io.nicheblog.dreamdiary.domain.admin.tmplat.repository.jpa.TmplatTxtRepository;
 import io.nicheblog.dreamdiary.domain.admin.tmplat.spec.TmplatTxtSpec;
 import io.nicheblog.dreamdiary.global._common._clsf.state.model.cmpstn.StateCmpstn;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
 import io.nicheblog.dreamdiary.global._common._clsf.state.service.BaseStateService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -57,7 +57,7 @@ public class TmplatTxtService
             final String tmplatDefCd,
             final String ctgrCd
     ) throws Exception {
-        Optional<TmplatTxtEntity> entityWrapper = repository.findByTmplatDefCdAndCtgrCdAndDefaultYn(tmplatDefCd, ctgrCd, "Y");
+        final Optional<TmplatTxtEntity> entityWrapper = repository.findByTmplatDefCdAndCtgrCdAndDefaultYn(tmplatDefCd, ctgrCd, "Y");
         if (entityWrapper.isEmpty()) return null;
         return mapstruct.toDto(entityWrapper.get());
     }

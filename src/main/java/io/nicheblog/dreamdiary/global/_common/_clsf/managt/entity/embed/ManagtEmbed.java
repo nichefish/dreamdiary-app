@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.global._common._clsf.managt.entity.embed;
 
-import io.nicheblog.dreamdiary.auth.util.AuditorUtils;
-import io.nicheblog.dreamdiary.global._common._clsf.managt.entity.ManagtrEntity;
 import io.nicheblog.dreamdiary.auth.entity.AuditorInfo;
+import io.nicheblog.dreamdiary.auth.util.AuditorUtils;
 import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.global._common._clsf.managt.entity.ManagtrEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -85,7 +85,8 @@ public class ManagtEmbed
 
     /**
      * 조치자 정보 반환 :: 캐시 처리
-     * @return AuditorInfo
+     *
+     * @return {@link AuditorInfo}
      */
     public AuditorInfo getManagtrInfo() {
         if (StringUtils.isEmpty(this.managtrId)) return null;

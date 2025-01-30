@@ -107,9 +107,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
-    implementation 'org.springframework.boot:spring-boot-starter-websocket'
-    implementation 'org.springframework:spring-messaging:5.3.39'
-
     implementation 'org.hibernate:hibernate-java8:5.6.15.Final'
     implementation 'org.hibernate:hibernate-ehcache:5.6.15.Final'
     implementation 'org.springframework.session:spring-session-core'
@@ -118,6 +115,14 @@ dependencies {
     implementation 'org.glassfish:jakarta.json:2.0.1'
 
     implementation "io.jsonwebtoken:jjwt:0.9.1"
+
+    /* Websocket */
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework:spring-messaging:5.3.39'
+
+    /* flyway (.sql 스키마 버전관리) */
+    implementation 'org.flywaydb:flyway-core:9.22.3'
+    implementation 'org.flywaydb:flyway-mysql:11.2.0'
 
     /* DotEnv */
     implementation 'io.github.cdimascio:java-dotenv:5.2.2'

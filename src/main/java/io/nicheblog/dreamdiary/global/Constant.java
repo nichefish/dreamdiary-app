@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.adapter.AdapterConstant;
 import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.global._common.cd.CdConstant;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import lombok.experimental.UtilityClass;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -20,6 +21,7 @@ import java.util.TimeZone;
  *
  * @author nichefish
  */
+@UtilityClass
 public final class Constant
         implements AuthConstant, CdConstant, AdapterConstant {
 
@@ -99,20 +101,24 @@ public final class Constant
 
     /**
      * 리플렉션을 이용해 클래스의 상수들을 Map으로 반환
+     *
+     * @param clazz 리플렉션을 수행할 대상 클래스
+     * @param constantMap 클래스 상수를 저장할 `Map<String, String>` 객체
      */
     private static void addConstantsToMap(final Class<?> clazz, final Map<String, String> constantMap) {
         // 클래스가 인터페이스인 경우에도 적용
         final Field[] fields = clazz.getDeclaredFields();
         for (final Field field : fields) {
             // static final 필드만 필터링
-            if (Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers()) && field.getType() == String.class) {
-                try {
-                    // 필드 값 얻기
-                    final String value = (String) field.get(null);  // static 필드는 null로 접근
-                    constantMap.put(field.getName(), value);  // 필드 이름을 key로, 필드 값을 value로
-                } catch (final IllegalAccessException e) {
-                    MessageUtils.getExceptionMsg(e);
-                }
+            boolean isStaticFinalStringField = Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers()) && field.getType() == String.class;
+            if (!isStaticFinalStringField) continue;
+
+            try {
+                // 필드 값 얻기
+                final String value = (String) field.get(null);  // static 필드는 null로 접근
+                constantMap.put(field.getName(), value);  // 필드 이름을 key로, 필드 값을 value로
+            } catch (final IllegalAccessException e) {
+                MessageUtils.getExceptionMsg(e);
             }
         }
 

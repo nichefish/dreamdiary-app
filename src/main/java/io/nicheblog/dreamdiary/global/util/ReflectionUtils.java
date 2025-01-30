@@ -20,7 +20,7 @@ public class ReflectionUtils {
     /**
      * 필드에 값 세팅 
      */    
-    public static void setField(Object obj, String fieldNm, Object value) {
+    public static void setField(final Object obj, final String fieldNm, final Object value) {
         Field field;
         try {
             field = obj.getClass().getDeclaredField(fieldNm);
@@ -34,7 +34,7 @@ public class ReflectionUtils {
     /**
      * 필드 값 조회 
      */
-    public static Object getField(Object obj, String fieldNm) {
+    public static Object getField(final Object obj, final String fieldNm) {
         Field field;
         try {
             field = obj.getClass().getDeclaredField(fieldNm);
@@ -48,7 +48,7 @@ public class ReflectionUtils {
     /**
      * 메소드 실행 (+및 결과 조회)
      */
-    public static Object invokeMethod(Object obj, String methodNm, Object... args) {
+    public static Object invokeMethod(final Object obj, final String methodNm, final Object... args) {
         Method method;
         try {
             Class<?>[] argClasses = new Class<?>[args.length];

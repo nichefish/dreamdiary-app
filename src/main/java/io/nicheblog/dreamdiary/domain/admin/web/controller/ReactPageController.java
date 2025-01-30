@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
  *  React 페이지 컨트롤러.
  * </pre>
  *
- * @see LogActvtyPageControllerAspect
  * @author nichefish
+ * @see LogActvtyPageControllerAspect
  */
 @Controller
 @Log4j2
