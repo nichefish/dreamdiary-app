@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.domain.jrnl.dream.service;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.mapstruct.JrnlDreamMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.repository.jpa.JrnlDreamRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.spec.JrnlDreamSpec;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
@@ -46,7 +47,7 @@ public interface JrnlDreamService
      * @return {@link List} -- 검색 결과 목록
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
-    List<JrnlDreamDto> jrnlDreamTagDtl(final BaseSearchParam searchParam) throws Exception;
+    List<JrnlDreamDto> jrnlDreamTagDtl(final JrnlDreamSearchParam searchParam) throws Exception;
 
     /**
      * 상세 조회 (dto level) :: 캐시 처리
