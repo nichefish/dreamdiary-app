@@ -3,11 +3,13 @@
  * @auther : nichefish
  */
 
-@use 'common/animation';
-@use 'common/button';
-@use 'common/cursor';
-@use 'common/icon';
-@use 'common/tag';
+@use 'main';
+
+@use 'components/animation';
+@use 'components/button';
+@use 'components/cursor';
+@use 'components/icon';
+@use 'components/tag';
 
 @use 'commons-respns';
 
@@ -15,42 +17,6 @@
 
 .collapse:not(.show) {
     display: none !important;
-}
-
-/** 모든 input, select, checkbox, a에 cursor-pointer 처리 */
-input[type="text"], input[type="password"], input[type="checkbox"], select, a {
-    cursor: pointer;
-}
-
-.app-engage {
-    z-index: 6001;
-}
-
-/** daterangepicker 팝업이 다른 팝업 뒤쪽으로 출력되는 문제 처리 */
-.daterangepicker {
-    z-index: 6002 !important;
-}
-
-#full_calendar_app {
-    table {
-        table-layout: fixed;
-    }
-    .fc-daygrid-bg-harness {
-        .fc-bg-event {
-            padding-top: 0.25rem !important;
-        }
-    }
-}
-
-@media (max-width: 768px) {
-    .card-body {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-    }
-}
-
-.tooltip-inner {
-    white-space: pre-wrap;
 }
 
 .vertical-middle {
@@ -65,6 +31,12 @@ input[type="text"], input[type="password"], input[type="checkbox"], select, a {
     font-size: small !important;
 }
 
+.d-flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .fs-x-small {
     font-size: x-small !important;
 }
@@ -73,27 +45,6 @@ input[type="text"], input[type="password"], input[type="checkbox"], select, a {
     padding-top: 10px;
 }
 
-.w-5 {
-    width: 5% !important;
-}
-.w-8 {
-    width: 8% !important;
-}
-.w-10 {
-    width: 10% !important;
-}
-.w-12 {
-    width: 12% !important;
-}
-.w-15 {
-    width: 15% !important;
-}
-.w-20 {
-    width: 20% !important;
-}
-.w-85 {
-    width: 85% !important;
-}
 .w-110px {
     width: 110px !important;
 }
@@ -102,76 +53,34 @@ input[type="text"], input[type="password"], input[type="checkbox"], select, a {
     height: 85% !important;
 }
 
-/* 폰트 추가 적용 하려고 오버라이드 */
-html, body {
-    font-family: NotoSans, Poppins, Helvetica, "sans-serif";
-}
-
-/* 공지/알림 등 텍스트 색깔 (주황색) */
-.text-noti {
-    color: #ed7000 !important;
-}
-.bg-noti {
-    background-color: #ed7000 !important;
-}
-.border-noti {
-    border-color: #ed7000 !important;
-}
-
-/* 대화 텍스트 색깔 (연파란) */
-.text-dialog {
-    color: #5c8fb0 !important;
-}
-.bg-dialog {
-    background-color: #5c8fb0 !important;
-}
-.border-dialog {
-    border-color: #5c8fb0 !important;
-}
-
-/* 자주색 파스텔톤 */
-.text-magenta {
-    color: #a4007f  !important; /* 자줏빛 색상 */
-}
-
-.bg-magenta {
-    background-color: #94007f !important; /* 자줏빛 배경색 */
-}
-
-.border-magenta {
-    border-color: #94007f !important; /* 자줏빛 테두리 색 */
-}
-
 /* 단어 끊는 것 클래스로 추가 */
 .wb-keepall {
     word-break: keep-all !important;
 }
 
-.d-flex-center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
 .table-tmplat {
-    table,th,td {
+    table, th, td {
         border: solid 1px;
     }
+
     th {
         font-weight: 600 !important;
         text-align: justify;
         line-height: 0;
+
         &:before {
             content: "";
             display: inline-block;
             width: 100%;
         }
+
         &:after {
             content: "";
             display: inline-block;
             width: 100%;
         }
     }
+
     a {
         cursor: pointer;
     }
@@ -189,12 +98,15 @@ html, body {
 
 .opacity-hover {
     opacity: 0.85 !important;
+
     &:hover {
         opacity: 1 !important;
     }
 }
+
 .opacity-hover-50 {
     opacity: 0.5 !important;
+
     &:hover {
         opacity: 1 !important;
     }
@@ -202,13 +114,13 @@ html, body {
 
 /* 상단 고정 목록 행 배경 */
 .bg-fxd-list {
-    background-color:#f9f9f8 !important;
+    background-color: #f9f9f8 !important;
 }
 
 /* 상단 고정 목록 행 제목 */
 .title-fxd {
-    color:#ff4e59 !important;
-    font-weight:bold !important;
+    color: #ff4e59 !important;
+    font-weight: bold !important;
 }
 
 /* 중요 카테고리 */
@@ -217,24 +129,28 @@ html, body {
     background-color: #ffe3e4 !important;
     color: #ff4e59 !important;
 }
+
 /* 중요 카테고리 : 파랑 */
 .ctgr-primary {
     border: 1px solid #009EF7 !important;
     background-color: #F1FAFF !important;
     color: #009EF7 !important;
 }
+
 /* 일반 카테고리 */
 .ctgr-gray {
     border: 1px solid #e3e3e3 !important;
     background-color: #f5f5f5 !important;
     color: #666 !important;
 }
-/* 정보 카테고리 */
+
+/* 성공 카테고리 */
 .ctgr-success {
     border: 1px solid #64DD17 !important;
     background-color: #F1FAFF !important;
     color: #64DD17 !important;
 }
+
 /* 정보 카테고리 */
 .ctgr-info {
     border: 1px solid #c269da !important;
@@ -244,52 +160,52 @@ html, body {
 
 /* textarea 대체용 text-div (simple) */
 .div-textarea-smp {
-    overflow-y:auto;
-    white-space:pre-line;
+    overflow-y: auto;
+    white-space: pre-line;
 }
 
 /* textarea 대체용 text-div */
 .div-textarea {
-    padding:10px;
-    border:1px solid #E4E6EF;
+    padding: 10px;
+    border: 1px solid #E4E6EF;
     border-radius: 0.475rem;
-    background-color:#EFEFEF;
-    overflow-y:auto;
-    white-space:pre-line;
+    background-color: #EFEFEF;
+    overflow-y: auto;
+    white-space: pre-line;
 }
 
 /* textarea 대체용 text-div */
 .div-text-example {
-    padding:15px 10px 10px 10px;
-    border:1px solid #E4E6EF;
+    padding: 15px 10px 10px 10px;
+    border: 1px solid #E4E6EF;
     border-radius: 0.475rem;
-    background-color:#EFEFEF;
-    overflow-y:auto;
+    background-color: #EFEFEF;
+    overflow-y: auto;
 }
 
 /* textarea 대체용 text-div :: 흰색 */
 .div-textarea-white {
-    padding:10px;
-    border:1px solid #E4E6EF;
+    padding: 10px;
+    border: 1px solid #E4E6EF;
     border-radius: 0.475rem;
-    background-color:#FFFFFF;
-    overflow-y:auto;
-    white-space:pre-line;
+    background-color: #FFFFFF;
+    overflow-y: auto;
+    white-space: pre-line;
 }
 
 /* text-div용 높이 */
 .div-height-1 {
-    height:42px;
-    white-space:nowrap !important;
+    height: 42px;
+    white-space: nowrap !important;
 }
 
 .min-h-42px {
-    min-height:42px;
+    min-height: 42px;
 }
 
 /* 테이블 비율 고정 */
 .table-fixed {
-    table-layout:fixed;
+    table-layout: fixed;
 }
 
 /* 사이드바 색상 고정 */
@@ -297,48 +213,9 @@ html, body {
     background-color: rgb(36, 36, 36);
 }
 
-/* 사이드바 색상 고정 */
+/* strikethrough */
 .strikethrough {
     text-decoration: line-through;
-}
-
-.dragging {
-    background-color: #a9d9a4 !important;
-    opacity: 75%;
-}
-
-.draggable-modified {
-/*    border-color: #ed7000 !important;*/
-/*    border-width: 1px !important;*/
-    background-color: rgba(237,112,0, 0.1);
-    animation: blink-effect 0.75s step-end infinite;
-    -webkit-animation: blink 0.75s linear infinite;
-}
-
-/** tinymce 글접기 관련 */
-.tinymce-section {
-    margin-bottom: 10px;
-}
-.tinymce-collapse-toggle {
-    cursor: pointer;
-    font-weight: bold;
-}
-.tinymce-collapse-div {
-    //
-}
-.tinymce-collapsed {
-    display: none;
-}
-
-/** !override */
-.text-decoration-underline {
-    text-decoration: underline !important;
-    text-underline-offset: 3px;
-}
-/** !override */
-.text-underline-dotted {
-    text-decoration: underline dotted;
-    text-underline-offset: 3px;
 }
 
 /* bootstrap modal-xxl 추가 */

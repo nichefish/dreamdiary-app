@@ -1,0 +1,20 @@
+/**
+ * _base.scss
+ * "프로젝트의 상용구 코드라고 부를 수 있는 내용을 담고 있다. 사이트 전반에 사용될 폰트, 디폴트 스타일이 여기에 해당된다."
+ *
+ * @auther nichefish
+ */
+
+html, body {
+    // 폰트 강제 적용 (override)
+    font-family: NotoSans, Poppins, Helvetica, "sans-serif";
+
+    .app-engage {
+        z-index: 6001;
+
+        /** 모든 input, select, checkbox, a에 cursor-pointer 처리 */
+        input[type="text"], input[type="password"], input[type="checkbox"], select, a {
+            cursor: pointer;
+        }
+    }
+}

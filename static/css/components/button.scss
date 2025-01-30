@@ -1,0 +1,274 @@
+/**
+ * button.scss
+ *
+ * @auther nichefish
+ */
+
+.badge {
+    i {
+      margin-bottom: 0 !important;
+    }
+
+    &.badge-outlined {
+        background-color: transparent;
+        border: 0.5px solid rgba(43, 43, 64, 0.8) !important;
+
+        &.badge-light-primary {
+            background-color: #F1FAFF !important;
+        }
+
+        &.badge-primary, &.badge-light-primary {
+            border-color: rgba(43, 43, 64, 0.5) !important;
+            color: #2196F3 !important;
+
+            &:hover {
+                background-color: #2196F3 !important;
+                color: #fff !important;
+
+                i {
+                    color: #fff !important;
+                }
+            }
+
+            i {
+                color: #2196F3 !important;
+            }
+        }
+
+        &.badge-secondary {
+            border-color: rgba(50, 58, 69, 0.5) !important;
+            color: #323a45 !important;
+
+            &:hover {
+                color: #323a45 !important;
+
+                i {
+                    color: #323a45 !important;
+                }
+            }
+
+            i {
+                color: #323a45 !important;
+            }
+        }
+
+        &.badge-light-success {
+            background-color: #1C3238 !important;
+        }
+
+        &.badge-success, &.badge-light-success {
+            border-color: rgba(100, 221, 23, 0.5) !important;
+            color: #64DD17 !important;
+
+            &:hover {
+                color: #fff !important;
+
+                i {
+                    color: #fff !important;
+                }
+            }
+
+            i {
+                color: #64DD17 !important;
+            }
+        }
+
+        &.badge-light-warning {
+            background-color: #FFF8DD !important;
+        }
+
+        &.badge-warning, &.badge-light-warning {
+            border-color: rgba(255, 214, 0, 0.5) !important;
+            color: #FFD600 !important;
+
+            &:hover {
+                color: #fff !important;
+
+                i {
+                    color: #fff !important;
+                }
+            }
+
+            i {
+                color: #FFD600 !important;
+            }
+        }
+
+        &.badge-light-info {
+            background-color: #F8F5FF !important;
+        }
+
+        &.badge-info, &.badge-light-info {
+            border-color: rgba(41, 182, 246, 0.5) !important;
+            color: #29B6F6 !important;
+
+            &:hover {
+                color: #fff !important;
+
+                i {
+                    color: #fff !important;
+                }
+            }
+
+            i {
+                color: #29B6F6 !important;
+            }
+        }
+
+        &.badge-light-danger {
+            background-color: #FFF8DD !important;
+        }
+
+        &.badge-danger, &.badge-light-danger {
+            border-color: rgba(239, 28, 28, 0.5) !important;
+            color: #ef1c1c !important;
+
+            &:hover {
+                color: #fff !important;
+
+                i {
+                    color: #fff !important;
+                }
+            }
+
+            i {
+                color: #ef1c1c !important;
+            }
+        }
+    }
+}
+
+.btn {
+    i {
+        margin-bottom: 0 !important;
+    }
+
+    &.btn-outlined {
+        background-color: transparent;
+        border: 0.5px solid rgba(43, 43, 64, 0.8) !important;
+
+        &.btn-light-primary {
+            background-color: #F1FAFF !important;
+        }
+
+        &.btn-primary, &.btn-light-primary {
+            border-color: rgba(43, 43, 64, 0.5) !important;
+            color: #2196F3 !important;
+
+            &:hover {
+                color: #fff !important;
+
+                i {
+                    color: #fff !important;
+                }
+            }
+
+            i {
+                color: #2196F3 !important;
+            }
+        }
+
+        &.btn-secondary {
+            background-color: #6c757d !important;
+            border-color: rgba(50, 58, 69, 0.5) !important;
+            color: #6c757d !important;
+
+            &:hover {
+                background-color: #3c434a !important;
+                color: #323a45 !important;
+
+                i {
+                    color: #323a45 !important;
+                }
+            }
+
+            i {
+                color: #323a45 !important;
+            }
+        }
+
+        &.btn-light-success {
+            background-color: #1C3238 !important;
+        }
+
+        &.btn-success, &.btn-light-success {
+            border-color: rgba(100, 221, 23, 0.5) !important;
+            color: #64DD17 !important;
+
+            &:hover {
+                color: #fff !important;
+
+                i {
+                    color: #fff !important;
+                }
+            }
+
+            i {
+                color: #64DD17 !important;
+            }
+        }
+
+        &.btn-light-warning {
+            background-color: #FFF8DD !important;
+        }
+
+        &.btn-warning, &.btn-light-warning {
+            border-color: rgba(255, 214, 0, 0.5) !important;
+            color: #FFD600 !important;
+
+            &:hover {
+                color: #fff !important;
+
+                i {
+                    color: #fff !important;
+                }
+            }
+
+            i {
+                color: #FFD600 !important;
+            }
+        }
+
+        &.btn-light-info {
+            background-color: #F8F5FF !important;
+        }
+
+        &.btn-info, &.btn-light-info {
+            border-color: rgba(41, 182, 246, 0.5) !important;
+            color: #29B6F6 !important;
+
+            &:hover {
+                color: #fff !important;
+
+                i {
+                    color: #fff !important;
+                }
+            }
+
+            i {
+                color: #29B6F6 !important;
+            }
+        }
+
+        &.btn-light-danger {
+            background-color: #FFF8DD !important;
+        }
+
+        &.btn-danger, &.btn-light-danger {
+            border-color: rgba(239, 28, 28, 0.5) !important;
+            color: #ef1c1c !important;
+
+            &:hover {
+                color: #fff !important;
+
+                i {
+                    color: #fff !important;
+                }
+            }
+
+            i {
+                color: #ef1c1c !important;
+            }
+        }
+    }
+}

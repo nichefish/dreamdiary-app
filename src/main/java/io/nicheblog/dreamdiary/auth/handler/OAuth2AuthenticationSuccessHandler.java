@@ -112,6 +112,7 @@ public class OAuth2AuthenticationSuccessHandler
     /**
      * Response에 Javascript alert 처리 및 리다이렉트
      *
+     * @param response HTTP 응답 객체
      * @throws IOException 응답에 문제가 발생할 경우
      */
     public void setSuccessResponse(final HttpServletResponse response) throws IOException {

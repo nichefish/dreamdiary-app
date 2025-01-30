@@ -1,0 +1,17 @@
+/** tinymce 글접기(collapse) 관련 */
+.tinymce-section {
+    margin-bottom: 10px;
+}
+
+.tinymce-collapse-toggle {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.tinymce-collapse-div {
+    //
+}
+
+.tinymce-collapsed {
+    display: none;
+}
