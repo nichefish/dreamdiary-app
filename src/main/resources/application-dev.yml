@@ -6,7 +6,7 @@ server:
     port: ${SERVER_PORT:18081}
 
 logging:
-    config: classpath:log4j2-dev.yml
+    config: classpath:config/log4j2/log4j2-dev.yml
 
 spring:
     servlet:

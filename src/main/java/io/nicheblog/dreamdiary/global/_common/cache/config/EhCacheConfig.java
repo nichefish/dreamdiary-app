@@ -38,7 +38,7 @@ public class EhCacheConfig {
     @Bean(name = "ehCacheManager")
     @Primary
     public javax.cache.CacheManager ehCacheManager() {
-        URL myUrl = getClass().getClassLoader().getResource("ehcache.xml");
+        URL myUrl = getClass().getClassLoader().getResource("config/ehcache/ehcache.xml");
         XmlConfiguration xmlConfig = new XmlConfiguration(myUrl);
         EhcacheCachingProvider provider = (EhcacheCachingProvider) Caching.getCachingProvider("org.ehcache.jsr107.EhcacheCachingProvider");
         return provider.getCacheManager(provider.getDefaultURI(),  xmlConfig);
