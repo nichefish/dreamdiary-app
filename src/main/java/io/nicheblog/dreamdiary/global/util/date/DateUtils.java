@@ -381,15 +381,11 @@ public class DateUtils
 
     /** 날짜 받아서 주말여부 반환 */
     public static Boolean isWeekend(final Object date) throws Exception {
-        return Arrays.asList(1, 7)
-                .contains(DateUtils.getDayOfWeekIdx(date));
+        return Arrays.asList(1, 7).contains(DateUtils.getDayOfWeekIdx(date));
     }
 
     /** 두 날짜를 받아서 같은날짜 여부 반환 */
-    public static boolean isSameDay(
-            final Object date1,
-            final Object date2
-    ) throws Exception {
+    public static boolean isSameDay(final Object date1, final Object date2) throws Exception {
         final String date1str = DateUtils.asStr(date1, DatePtn.PDATE);
         final String date2str = DateUtils.asStr(date2, DatePtn.PDATE);
         return date1str.equals(date2str);

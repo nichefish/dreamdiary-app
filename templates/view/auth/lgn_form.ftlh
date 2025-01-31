@@ -95,10 +95,10 @@
                 </button>
                 <button type="button" class="btn btn-lg btn-light-success opacity-75 w-100"
                         onclick="dF.oauth2.popupNaver();"
-                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="NAVER 계정으로 로그인합니다." >
+                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="Naver 계정으로 로그인합니다." >
                     <span class="d-flex-center indicator-label gap-2">
                         <span><i class="bi bi-naver blink"></i></span>
-                        <span>with NAVER</span>
+                        <span>with Naver</span>
                     </span>
                         <span class="indicator-progress">Please wait...
                         <span class="spinner-border spinner-border-sm align-middle ms-2"></span>

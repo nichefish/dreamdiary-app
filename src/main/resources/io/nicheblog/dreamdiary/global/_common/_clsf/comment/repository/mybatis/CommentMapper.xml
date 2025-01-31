@@ -8,8 +8,8 @@
         /* SectnMapper.getDeletedByPostNo */
         SELECT
             comment.post_no AS postNo,
-            comment.ref_post_no AS ref_post_no,
-            comment.ref_content_type AS ref_content_type
+            comment.ref_post_no AS refPostNo,
+            comment.ref_content_type AS refContentType
         FROM comment comment
         WHERE comment.post_no = #{postNo}
     </select>

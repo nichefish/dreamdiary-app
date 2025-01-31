@@ -32,8 +32,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
  * </pre>
  * TODO: 신규개발 예정
  *
- * @see LogActvtyPageControllerAspect
  * @author nichefish
+ * @see LogActvtyPageControllerAspect
  */
 @Controller
 @RequiredArgsConstructor

@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.domain.jrnl.day.controller;
 
-import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayCalDto;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDaySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayCalService;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -14,7 +13,6 @@ import io.nicheblog.dreamdiary.global.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,8 +27,8 @@ import java.util.List;
  *  저널 일자 달력 RestController.
  * </pre>
  *
- * @see LogActvtyRestControllerAspect
  * @author nichefish
+ * @see LogActvtyRestControllerAspect
  */
 @RestController
 @RequiredArgsConstructor

@@ -11,6 +11,7 @@ import io.nicheblog.dreamdiary.domain.board.def.service.BoardDefService;
 import io.nicheblog.dreamdiary.domain.notice.service.NoticeService;
 import io.nicheblog.dreamdiary.global.ActiveProfile;
 import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.ReleaseInfo;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.config.WebMvcContextConfig;
 import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;
@@ -19,7 +20,6 @@ import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -28,7 +28,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.*;
+import java.util.List;
 
 /**
  * FreemarkerInterceptor
@@ -52,9 +52,7 @@ public class FreemarkerInterceptor
     private final NoticeService noticeService;
     private final MenuService menuService;
     private final BoardDefService boardDefService;
-
-    @Value("${release-date:20000101}")
-    private String releaseDate;
+    private final ReleaseInfo releaseInfo;
 
     /**
      * postHandle : controller 요청 처리 후 view를 렌더링하기 전에 동작한다.
@@ -73,7 +71,7 @@ public class FreemarkerInterceptor
         // 모든 페이지에 activeProfile, releaseDate, urlMap, messageMap 추가
         // @see "/templates/layout/head.ftlh"
         mav.addObject("activeProfile", activeProfile.getActive());
-        mav.addObject("releaseDate", releaseDate);
+        mav.addObject("releaseDate", releaseInfo.getReleaseDateStr());
         mav.addObject("urlMap", Url.getUrlMap());
         mav.addObject("messageMap", MessageUtils.getMessageMap());
         mav.addObject("constantMap", Constant.getConstantMap());

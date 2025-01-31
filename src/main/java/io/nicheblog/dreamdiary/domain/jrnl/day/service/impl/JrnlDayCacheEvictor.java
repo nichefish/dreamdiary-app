@@ -56,7 +56,7 @@ public class JrnlDayCacheEvictor
         this.evictMyCacheForPeriod("myJrnlDayTagList", yy, mnth);
         this.evictMyCacheForPeriod("myJrnlDaySizedTagList", yy, mnth);
         this.evictMyCacheForPeriod("myCountDaySize", yy, mnth);
-        EhCacheUtils.evictMyCache("myJrnlDayTagDtl");
+        EhCacheUtils.evictMyCacheAll("myJrnlDayTagDtl");
         // L2캐시 처리
         EhCacheUtils.clearL2Cache(JrnlDayEntity.class);
         EhCacheUtils.clearL2Cache(JrnlDayTagEntity.class);

@@ -31,8 +31,8 @@ import java.util.List;
  *  일정 달력 페이지 컨트롤러.
  * </pre>
  *
- * @see LogActvtyPageControllerAspect
  * @author nichefish
+ * @see LogActvtyPageControllerAspect
  */
 @Controller
 @RequiredArgsConstructor

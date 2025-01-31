@@ -22,6 +22,9 @@ dF.JrnlDayTag = (function(): dfModule {
             console.log("'dF.JrnlDayTag' module initialized.");
         },
 
+        /**
+         * 태그 카테고리 정보 조회
+         */
         getCtgrMap: function(): void {
             const url: string = Url.JRNL_DAY_TAG_CTGR_MAP_AJAX;
             cF.ajax.get(url, {}, function(res: AjaxResponse): void {
@@ -79,7 +82,7 @@ dF.JrnlDayTag = (function(): dfModule {
 
             const self = this;
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
-            const args = Array.from(arguments); // 함수 인자 배열로 받기
+            const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
             const url: string = Url.JRNL_DAY_TAG_DTL_AJAX;
             const ajaxData: Record<string, any> = { "tagNo": tagNo };

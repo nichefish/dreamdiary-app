@@ -3,7 +3,6 @@ package io.nicheblog.dreamdiary.auth.handler;
 import io.nicheblog.dreamdiary.auth.exception.AcntDormantException;
 import io.nicheblog.dreamdiary.auth.exception.AcntNeedsPwResetException;
 import io.nicheblog.dreamdiary.auth.exception.DupIdLgnException;
-import io.nicheblog.dreamdiary.auth.provider.OAuth2Provider;
 import io.nicheblog.dreamdiary.auth.service.AuthService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
@@ -45,7 +44,6 @@ public class OAuth2AuthenticationFailureHandler
         extends SimpleUrlAuthenticationFailureHandler
         implements AuthenticationFailureHandler {
 
-    private final OAuth2Provider oAuth2provider;
     private final AuthService authService;
     private final ApplicationEventPublisher publisher;
 

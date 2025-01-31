@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.global._common.log.actvty.model;
 
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.sys.model.LogSysParam;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseParam;
@@ -181,7 +181,7 @@ public class LogActvtyParam
         // request 관련 인자들 미리 세팅 (가능하다면)
         if (attr == null) return;
 
-        HttpServletRequest request = attr.getRequest();
+        final HttpServletRequest request = attr.getRequest();
         this.url = request.getServletPath();         // 작업 url
         this.mthd = request.getMethod();           // 접근 메소드
         this.param = request.getQueryString();       // 작업 파라미터
@@ -200,7 +200,7 @@ public class LogActvtyParam
     /**
      * Exception 정보를 객체에 세팅한다.
      *
-     * @param e - 예외(exception, error) 정보 객체
+     * @param e 예외(exception, error) 정보 객체
      */
     public void setExceptionInfo(final Throwable e) {
         this.exceptionNm = MessageUtils.getExceptionNm(e);

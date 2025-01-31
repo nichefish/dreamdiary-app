@@ -64,6 +64,7 @@ public class PaginationInfo {
      */
     public PaginationInfo(final Page<?> pageList) {
         if (pageList == null) return;
+
         this.pageSize = pageList.getSize();
         this.totalCnt = pageList.getTotalElements();
         this.currPageNo = pageList.getNumber() + 1;     // idx + 1
@@ -83,8 +84,7 @@ public class PaginationInfo {
      * @param pageList 페이지 정보가 담긴 Page 객체
      */
     private void setPreviousPageNo(final Page<?> pageList) {
-        this.prevPageNo = pageList.previousPageable()
-                .getPageNumber() + 1;   // idx + 1
+        this.prevPageNo = pageList.previousPageable().getPageNumber() + 1;   // idx + 1
         if (this.prevPageNo > 1) {
             this.prevPrevPageNo = this.prevPageNo - 1;
             this.prevEllipsis = (prevPrevPageNo > 2);                        // '...'
@@ -100,8 +100,7 @@ public class PaginationInfo {
      * @param pageList 페이지 정보가 담긴 Page 객체
      */
     private void setNextPageNo(final Page<?> pageList) {
-        this.nextPageNo = pageList.nextPageable()
-                .getPageNumber() + 1;
+        this.nextPageNo = pageList.nextPageable().getPageNumber() + 1;
         if (this.nextPageNo < this.lastPageNo) {
             this.nextNextPageNo = this.nextPageNo + 1;
             this.nextEllipsis = (nextNextPageNo < this.lastPageNo - 1);      // '...'

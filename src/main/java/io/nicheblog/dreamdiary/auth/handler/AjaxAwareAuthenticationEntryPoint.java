@@ -26,6 +26,16 @@ import java.io.PrintWriter;
 public class AjaxAwareAuthenticationEntryPoint
         implements AuthenticationEntryPoint {
 
+
+    /**
+     * 인증되지 않은 요청이 감지되었을 때 호출되는 메서드.
+     * AJAX 요청과 일반 요청을 구분하여 적절한 응답을 반환합니다.
+     *
+     * @param request 인증되지 않은 요청 객체 (`HttpServletRequest`)
+     * @param response 인증 실패 시 응답을 처리할 객체 (`HttpServletResponse`)
+     * @param authException 발생한 인증 예외 객체 (`AuthenticationException`)
+     * @throws IOException 응답을 처리하는 중 입출력 오류가 발생할 경우
+     */
     @Override
     public void commence(
             final HttpServletRequest request,

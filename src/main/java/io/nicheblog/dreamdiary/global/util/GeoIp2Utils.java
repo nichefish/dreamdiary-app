@@ -15,6 +15,7 @@ import java.net.InetAddress;
  * <pre>
  *  maxmind geoip2:: IP-국가명 매칭 라이브러리 서비스 모듈
  * </pre>
+ *
  * @author nichefish
  */
 @UtilityClass

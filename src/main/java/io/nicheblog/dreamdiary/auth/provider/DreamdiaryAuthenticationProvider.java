@@ -56,9 +56,9 @@ public class DreamdiaryAuthenticationProvider
         final AuthInfo authInfo = authService.loadUserByUsername(username);
 
         // 인증 객체 생성
-        Boolean isValidated = authenticationHelper.validateAuth(authentication, authInfo);
+        final Boolean isValidated = authenticationHelper.validateAuth(authentication, authInfo);
         if (!isValidated) throw new Exception("인증에 실패했습니다.");
-        UsernamePasswordAuthenticationToken generatedAuthToken = authInfo.getAuthToken();
+        final UsernamePasswordAuthenticationToken generatedAuthToken = authInfo.getAuthToken();
 
         // 인증 객체를 기반으로 JWT 생성, 임시로 세션에 저장
         final String jwt = this.authenticateAndGenerateJwt(generatedAuthToken);

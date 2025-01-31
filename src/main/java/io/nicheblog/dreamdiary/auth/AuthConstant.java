@@ -13,6 +13,7 @@ public interface AuthConstant {
     /** 사용자 권한 코드 */
     String AUTH_CD = "AUTH_CD";
 
+    /** AUTH */
     String AUTH_MNGR = Auth.MNGR.name();
     String AUTH_USER = Auth.USER.name();
     String AUTH_DEV = Auth.DEV.name();
@@ -24,6 +25,7 @@ public interface AuthConstant {
     /** 수정 권한 코드 */
     String MDFABLE_CD = "MDFABLE_CD";
 
+    /** MDFABLE */
     String MDFABLE_REGSTR = Mdfable.REGSTR.name();
     String MDFABLE_MNGR = Mdfable.MNGR.name();
     String MDFABLE_USER = Mdfable.USER.name();

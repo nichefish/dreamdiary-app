@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,8 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
  *  JANDI:: (incoming/outgoing) webhook API 컨트롤러.
  * </pre>
  *
- * @see LogActvtyRestControllerAspect
  * @author nichefish
+ * @see LogActvtyRestControllerAspect
  */
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")   // CORS 에러 해결 위한 조치

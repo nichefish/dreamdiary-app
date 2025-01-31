@@ -37,8 +37,8 @@ import java.util.List;
  *  저널 결산 페이지 Controller.
  * </pre>
  *
- * @see LogActvtyPageControllerAspect
  * @author nichefish
+ * @see LogActvtyPageControllerAspect
  */
 @Controller
 @RequiredArgsConstructor

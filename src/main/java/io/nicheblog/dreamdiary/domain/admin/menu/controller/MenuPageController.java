@@ -26,8 +26,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
  *  메뉴 관리 페이지 컨트롤러.
  * </pre>
  *
- * @see LogActvtyPageControllerAspect
  * @author nichefish
+ * @see LogActvtyPageControllerAspect
  */
 @Controller
 @RequiredArgsConstructor
@@ -55,7 +55,7 @@ public class MenuPageController
     @GetMapping(Url.MENU_PAGE)
     @Secured({Constant.ROLE_MNGR})
     public String menuPage(
-            @ModelAttribute("searchParam") MenuSearchParam searchParam,
+            final @ModelAttribute("searchParam") MenuSearchParam searchParam,
             final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {

@@ -92,7 +92,7 @@ public class WebSecurityAdapter
      * @throws Exception 보안 구성 중 발생할 수 있는 예외
      */
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public void configure(final WebSecurity web) throws Exception {
 
         web.ignoring()
                 // 세션 만료 처리 URL
@@ -117,7 +117,7 @@ public class WebSecurityAdapter
      * @throws Exception 보안 구성 중 발생할 수 있는 예외
      */
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    protected void configure(final HttpSecurity http) throws Exception {
 
         // 1. Form 로그인 설정
         http.formLogin()

@@ -21,12 +21,15 @@ public class DateParser {
 
     /**
      * 해당날짜의 시작시간 반환 (ex: 2021-09-15 00:00:00)
+     *
+     * @param paramDate 변환할 날짜 (`String`, `Date`, `LocalDate`, `LocalDateTime` 등 지원)
+     * @return {@link Date} 변환된 날짜의 시작 시간 (`Date` 객체, 예: `2021-09-15 00:00:00`), 입력값이 `null`이면 `null` 반환
+     * @throws Exception 날짜 변환 중 오류가 발생할 경우
      */
     public static Date sDateParse(final Object paramDate) throws Exception {
         final Date searchDate = DateUtils.asDate(paramDate);
         if (searchDate == null) return null;
-        final LocalDateTime startOfDay = DateUtils.asLocalDateTime(searchDate)
-                                            .with(LocalTime.MIN);
+        final LocalDateTime startOfDay = DateUtils.asLocalDateTime(searchDate).with(LocalTime.MIN);
         return localDateTimeToDate(startOfDay);
     }
 
@@ -52,6 +55,7 @@ public class DateParser {
     public static Date eDateParse(final Object paramDate) throws Exception {
         final Date searchDate = DateUtils.asDate(paramDate);
         if (searchDate == null) return null;
+
         final LocalDateTime endOfDay = DateUtils.asLocalDateTime(searchDate).with(LocalTime.MAX);
         return localDateTimeToDate(endOfDay);
     }
@@ -73,18 +77,14 @@ public class DateParser {
     public static Date bfDateParse(final Object paramDate) throws Exception {
         Date searchDate = DateUtils.asDate(paramDate);
         if (searchDate == null) return null;
+
         searchDate = DateUtils.getDateAddDay(searchDate, -1);
         if (searchDate == null) return null;
+
         final LocalDateTime endOfDay = DateUtils.asLocalDateTime(searchDate).with(LocalTime.MAX);
         return localDateTimeToDate(endOfDay);
     }
 
-    /* ----- */
-
-    /**
-     * 날짜Date를 문자열String로 변환
-     * @param: DatePtn (enum)
-     */
     /**
      * 날짜Date를 문자열String로 변환
      */
@@ -99,6 +99,7 @@ public class DateParser {
      */
     public static Date strToDate(final String dateStrParam) throws Exception {
         if (StringUtils.isEmpty(dateStrParam)) return null;
+
         final String[] parsePatterns = Arrays.stream(DatePtn.values())
                 .map(datePtn -> datePtn.pattern)
                 .toArray(String[]::new);
@@ -113,6 +114,7 @@ public class DateParser {
      */
     public static Date strToDate(final String dateStrParam, final DatePtn ptn) throws Exception {
         if (StringUtils.isEmpty(dateStrParam)) return null;
+
         // microsecond 포함/미포함이 섞여서 넘어오는 문제 해결 위해 microsecond 미사용 처리
         final String dateStr = (dateStrParam.length() > 20) ? dateStrParam.substring(0, 19) : dateStrParam;
         return ptn.df.parse(dateStr);
@@ -122,8 +124,7 @@ public class DateParser {
      * LocalDateTime을 Date로 변환
      */
     public static Date localDateTimeToDate(final LocalDateTime localDateTime) {
-        return Date.from(localDateTime.atZone(ZoneId.systemDefault())
-                .toInstant());
+        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 
 }

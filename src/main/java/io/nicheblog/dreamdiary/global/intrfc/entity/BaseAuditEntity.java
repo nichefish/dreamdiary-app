@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -61,7 +61,8 @@ public class BaseAuditEntity
 
     /**
      * 수정자 정보 반환 :: 캐시 처리
-     * @return AuditorInfo
+     * 
+     * @return {@link AuditorInfo}
      */
     public AuditorInfo getMdfusrInfo() {
         if (StringUtils.isEmpty(this.mdfusrId)) return null;
@@ -73,6 +74,8 @@ public class BaseAuditEntity
 
     /**
      * (현재 로그인 중인 사용자) 수정자 여부 체크
+     * 
+     * @return {@link Boolean} 수정자 여부
      */
     public Boolean isMdfusr() {
         if (StringUtils.isEmpty(this.mdfusrId)) return false;

@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global._common.flsys.model.FlsysSearchParam;
+import io.nicheblog.dreamdiary.domain.flsys.model.FlsysSearchParam;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyPageControllerAspect;
@@ -28,8 +28,8 @@ import javax.annotation.Nullable;
  * </pre>
  * TODO: 보완 예정
  *
- * @see LogActvtyPageControllerAspect
  * @author nichefish
+ * @see LogActvtyPageControllerAspect
  */
 @Controller
 @Log4j2

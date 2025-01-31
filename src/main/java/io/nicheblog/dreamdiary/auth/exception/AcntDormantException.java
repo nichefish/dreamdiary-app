@@ -19,10 +19,7 @@ public class AcntDormantException
      * @param msg 예외 메시지
      * @param cause 이 예외의 원인
      */
-    public AcntDormantException(
-            final String msg,
-            final Throwable cause
-    ) {
+    public AcntDormantException(final String msg, final Throwable cause) {
         super(msg, cause);
     }
 

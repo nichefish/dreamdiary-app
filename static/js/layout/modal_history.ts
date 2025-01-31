@@ -54,6 +54,7 @@ const ModalHistory: Page = (function(): Page {
 
         /**
          * 현재 모달을 닫고 이전 모달로 돌아갑니다.
+         * @see "templates/view/global/_modal_element.ftlh"
          */
         prev: function (): void {
             // 기존에 열린 모달이 있으면 닫기
@@ -62,13 +63,7 @@ const ModalHistory: Page = (function(): Page {
                 $(modal).modal('hide');  // 각각의 모달을 닫기
             });
 
-            // 현재 모달을 먼저 pop()
-            const poppedModal = ModalHistory.stack.pop();
-            if (!poppedModal) {
-                console.log("modal history:: No modal to pop.");
-                return;
-            }
-
+            // 모달 close시 현재 모달을 자동으로 pop 처리한다.
             // 스택에 이전 모달이 있는지 확인
             const prevModal = this.peek();
             if (!prevModal) {

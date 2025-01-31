@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
  *  저널 일자 페이지 Controller.
  * </pre>
  *
- * @see LogActvtyPageControllerAspect
  * @author nichefish
+ * @see LogActvtyPageControllerAspect
  */
 @Controller
 @RequiredArgsConstructor

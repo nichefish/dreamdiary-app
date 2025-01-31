@@ -10,7 +10,6 @@ import io.nicheblog.dreamdiary.global.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -95,7 +94,7 @@ public class ChatController {
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
         // WebSocket 세션에서 attributes 가져오기
-        Authentication authentication = (Authentication) Objects.requireNonNull(stompHeaderAccessor.getSessionAttributes()).get("authentication");
+        final Authentication authentication = (Authentication) Objects.requireNonNull(stompHeaderAccessor.getSessionAttributes()).get("authentication");
         AuthUtils.setAuthentication(authentication);
 
         final ChatMsgDto chatMsg = ChatMsgDto.builder()

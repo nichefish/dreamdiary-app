@@ -3,7 +3,6 @@ package io.nicheblog.dreamdiary.global._common.cache.scheduler;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global._common.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.global._common.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.global._common.log.sys.event.LogSysEvent;
 import io.nicheblog.dreamdiary.global._common.log.sys.handler.LogSysEventListener;
 import io.nicheblog.dreamdiary.global._common.log.sys.model.LogSysParam;
@@ -41,7 +40,7 @@ public class EhCacheScheduler {
 
         log.info("cacheAllClearSchedule...");
 
-        LogSysParam logParam = new LogSysParam();
+        final LogSysParam logParam = new LogSysParam();
         try {
             EhCacheUtils.clearAllCaches();
         } catch (final Exception e) {

@@ -1,19 +1,22 @@
 package io.nicheblog.dreamdiary.auth.provider.helper;
 
-import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.entity.LgnPolicyEntity;
-import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.service.LgnPolicyService;
-import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
 import io.nicheblog.dreamdiary.auth.exception.*;
 import io.nicheblog.dreamdiary.auth.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.service.manager.DupIdLgnManager;
 import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.entity.LgnPolicyEntity;
+import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.service.LgnPolicyService;
+import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.util.SubnetUtils;
-import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -80,7 +83,7 @@ public class AuthenticationHelper {
     public Boolean validateAuth(final AuthInfo authInfo) throws Exception {
         if (authInfo == null) throw new UsernameNotFoundException("사용자 정보가 없습니다.");
 
-        String username = authInfo.getUsername();
+        final String username = authInfo.getUsername();
 
         // 승인여부 체크
         if (!"Y".equals(authInfo.getCfYn())) throw new AcntNotCfException("승인되지 않은 계정입니다. 관리자에게 문의해주세요.");

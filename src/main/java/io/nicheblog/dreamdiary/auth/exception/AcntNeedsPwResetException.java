@@ -19,10 +19,7 @@ public class AcntNeedsPwResetException
      * @param msg 예외 메시지
      * @param cause 이 예외의 원인
      */
-    public AcntNeedsPwResetException(
-            final String msg,
-            final Throwable cause
-    ) {
+    public AcntNeedsPwResetException(final String msg, final Throwable cause) {
         super(msg, cause);
     }
 

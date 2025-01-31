@@ -9,25 +9,23 @@ import io.nicheblog.dreamdiary.global.exception.BaseException;
  * </pre>
  *
  * @author nichefish
- * @since 2022-05-01
  */
 public class NotAuthorizedException
         extends BaseException {
 
     /**
      * 생성자.
+     *
      * @param msg 예외 메시지
      * @param cause 이 예외의 원인
      */
-    public NotAuthorizedException(
-            final String msg,
-            final Throwable cause
-    ) {
+    public NotAuthorizedException(final String msg, final Throwable cause) {
         super(msg, cause);
     }
 
     /**
      * 생성자.
+     *
      * @param msg 예외 메시지
      */
     public NotAuthorizedException(final String msg) {

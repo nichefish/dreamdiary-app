@@ -15,18 +15,17 @@ public class DupIdLgnException
 
     /**
      * 생성자.
+     *
      * @param msg 예외 메시지
      * @param cause 이 예외의 원인
      */
-    public DupIdLgnException(
-            final String msg,
-            final Throwable cause
-    ) {
+    public DupIdLgnException(final String msg, final Throwable cause) {
         super(msg, cause);
     }
 
     /**
      * 생성자.
+     *
      * @param msg 예외 메시지
      */
     public DupIdLgnException(final String msg) {

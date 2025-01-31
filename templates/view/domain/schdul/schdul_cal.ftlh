@@ -16,18 +16,6 @@
 
 <link rel="stylesheet" type="text/css" href="/metronic/assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" />
 
-<style>
-    #full_calendar_app table {
-        table-layout: fixed;
-    }
-    @media (max-width: 768px) {
-        .card-body {
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-        }
-    }
-</style>
-
 <!--begin::Advance form-->
 <div class="collapse px-10 py-4 bg-light w-100" id="schdul_advanced_search_div">
     <div class="d-flex flex-lg-row flex-column align-items-lg-center align-items-start justify-content-end text-muted">

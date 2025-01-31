@@ -1,13 +1,14 @@
 package io.nicheblog.dreamdiary.auth;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 수정 권한 Enum
  *
  * @author nichefish
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 public enum Mdfable {
 
     REGSTR("등록자"),

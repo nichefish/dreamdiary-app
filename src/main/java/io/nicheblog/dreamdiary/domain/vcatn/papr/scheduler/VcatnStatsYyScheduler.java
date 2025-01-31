@@ -1,7 +1,6 @@
 package io.nicheblog.dreamdiary.domain.vcatn.papr.scheduler;
 
 import io.nicheblog.dreamdiary.domain.vcatn.stats.service.VcatnStatsYyService;
-import io.nicheblog.dreamdiary.global._common._clsf.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.sys.event.LogSysEvent;
 import io.nicheblog.dreamdiary.global._common.log.sys.handler.LogSysEventListener;
@@ -41,7 +40,7 @@ public class VcatnStatsYyScheduler {
 
         log.info("vcatnStatsYySchedule...");
 
-        LogSysParam logParam = new LogSysParam();
+        final LogSysParam logParam = new LogSysParam();
         boolean isSuccess;
         String rsltMsg = "";
         try {

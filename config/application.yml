@@ -1,13 +1,16 @@
 #config/application.yml
 #common config located outside .jar
 
-#release date. should be changed manually for each deployment
-release-date: 20241020
-
 spring:
     #( local // dev // stg // prod // test )
     profiles:
-        active: local
+        active: dev
+
+    #release. should be changed manually for each deployment
+    flyway:
+        enabled: true   # Flyway 활성화
+        target: 0.12.0_6  # V0.12.1까지만 적용하고 이후 버전은 실행 안 함
+        release-date: 20250131
 
 logging:
     level:

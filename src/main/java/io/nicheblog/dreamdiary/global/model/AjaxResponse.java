@@ -81,7 +81,7 @@ public class AjaxResponse {
      * Map이 들어올 시 HashMap으로 변환.
      * @param map 변환할 Map 객체
      */
-    public void setRsltMap(final Map<String, ? extends Object> map) {
+    public void setRsltMap(final Map<String, ?> map) {
         this.rsltMap = new HashMap<>(map);
     }
 }

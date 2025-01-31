@@ -1,7 +1,6 @@
 package io.nicheblog.dreamdiary.domain.jrnl.dream.entity;
 
 import io.nicheblog.dreamdiary.global._common._clsf.tag.entity.TagSmpEntity;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditRegEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -80,8 +79,8 @@ public class JrnlDreamContentTagEntity
     @Transient
     private String tagNm;
 
-    @Transient
     /** 태그 카테고리 */
+    @Transient
     private String ctgr;
 
     /** 참조 컨텐츠 (저널 꿈)  */

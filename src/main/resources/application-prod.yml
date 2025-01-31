@@ -5,14 +5,16 @@ server:
     port: ${SERVER_PORT:8999}
 
 logging:
-    config: classpath:log4j2-prod.yml
+    config: classpath:config/log4j2/log4j2-prod.yml
 
 spring:
     servlet:
         multipart:
             location: ${FILE_UPLOAD_LOCATION}
+
     freemarker:
         cache: ${FREEMARKER_CACHE:true}
+
     datasource:
         primary:
             driver-class-name: org.mariadb.jdbc.Driver

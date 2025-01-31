@@ -12,7 +12,7 @@
             day.yy AS yy,
             day.mnth AS mnth
         FROM jrnl_diary diary
-        LEFT OUTER JOIN jrnl_day day
+        LEFT JOIN jrnl_day day
             ON diary.jrnl_day_no = day.post_no
         WHERE diary.post_no = #{postNo}
     </select>

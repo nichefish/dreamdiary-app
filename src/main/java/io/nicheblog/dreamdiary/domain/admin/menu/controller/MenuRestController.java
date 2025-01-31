@@ -19,7 +19,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -33,8 +32,8 @@ import javax.validation.Valid;
  *  메뉴 관리 API 컨트롤러.
  * </pre>
  *
- * @see LogActvtyRestControllerAspect
  * @author nichefish
+ * @see LogActvtyRestControllerAspect
  */
 @Controller
 @RequiredArgsConstructor
@@ -129,7 +128,7 @@ public class MenuRestController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> mainMenuListAjax(
-            @ModelAttribute("searchParam") MenuSearchParam searchParam,
+            final @ModelAttribute("searchParam") MenuSearchParam searchParam,
             final LogActvtyParam logParam
     ) throws Exception {
 

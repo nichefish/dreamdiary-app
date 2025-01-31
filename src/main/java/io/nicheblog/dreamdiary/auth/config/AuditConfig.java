@@ -52,17 +52,17 @@ public class AuditConfig {
          */
         @Override
         public @NotNull Optional<String> getCurrentAuditor() {
-            Authentication authentication = AuthUtils.getAuthentication();
+            final Authentication authentication = AuthUtils.getAuthentication();
 
             if (!AuthUtils.isAuthenticated()) return Optional.of(Constant.SYSTEM_ACNT);
 
             // 비로그인"Anonymous"시 시스템 계정(system)으로 자동 처리
-            Object principal = authentication.getPrincipal();
+            final Object principal = authentication.getPrincipal();
             boolean isAnonymous = (principal instanceof String);
             if (isAnonymous) return Optional.of(Constant.SYSTEM_ACNT);
 
             // 로그인 사용자 ID 반환
-            AuthInfo authInfo = (AuthInfo) authentication.getPrincipal();
+            final AuthInfo authInfo = (AuthInfo) authentication.getPrincipal();
             return Optional.of(authInfo.getUserId());
         }
     }

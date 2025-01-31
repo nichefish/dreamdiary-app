@@ -5,11 +5,19 @@
 
 /** ----------------------- */
 
-.authCd{
-    width:100px;
+.authCd {
+    width: 100px;
 }
-.company{
-    width:150px;
+
+.company {
+    width: 150px;
+}
+
+@media (max-width: 768px) {
+    .card-body {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
 }
 
 @media (min-width: 992px) {
@@ -30,61 +38,61 @@
         display: none !important;
     }
     #kt_content_container {
-        padding-left:10px !important;
-        padding-right:10px !important;
+        padding-left: 10px !important;
+        padding-right: 10px !important;
         margin-top: 15px !important;
         margin-bottom: 15px !important;
     }
     #card_wrap {
-        margin-top:0 !important;
-        padding:20px !important;
+        margin-top: 0 !important;
+        padding: 20px !important;
     }
     .post {
         padding: 10px !important;
     }
     .buttons {
-        margin-top:10px;
+        margin-top: 10px;
     }
     #searchType {
-        width:85px;
+        width: 85px;
     }
     .width-33 {
         width: 33%;
     }
-    .margins{
-        margin:3px 0;
+    .margins {
+        margin: 3px 0;
     }
-    .paddings{
+    .paddings {
         padding-bottom: 10px;
     }
-    .searchBtn{
-        width:100%;
+    .searchBtn {
+        width: 100%;
         margin-bottom: 10px;
     }
-    .card{
+    .card {
         padding-top: 10px;
     }
-    .paging{
-        margin-top:20px;
+    .paging {
+        margin-top: 20px;
     }
-    #idDupChckBtn{
-        font-size:12px;
+    #idDupChckBtn {
+        font-size: 12px;
     }
     .respnsive-td-100 {
-        width:100% !important;
-        display:block !important;
+        width: 100% !important;
+        display: block !important;
     }
     .respnsive-td-50 {
-        width:50% !important;
-        display:block !important;
+        width: 50% !important;
+        display: block !important;
     }
     .respnsive-td-33 {
-        width:33% !important;
-        display:block !important;
+        width: 33% !important;
+        display: block !important;
     }
     .respnsive-td-20 {
-        width:20% !important;
-        display:block !important;
+        width: 20% !important;
+        display: block !important;
     }
     .modal-mbl-body {
         margin-right: 0 !important;
@@ -107,24 +115,24 @@
 
 /** ---- pc 버전 ---- */
 @media (min-width: 768px) {
-    #kt_content_container{
-         margin-top:0 !important;
+    #kt_content_container {
+        margin-top: 0 !important;
     }
     #card_wrap {
-        margin-top:5rem !important;
+        margin-top: 5rem !important;
     }
     #kt_content {
-        padding:30px !important;
+        padding: 30px !important;
     }
     .post {
-        padding:30px !important;
+        padding: 30px !important;
         margin-top: 2.5rem !important;
     }
     .lineDiv {
         padding: 0 1.25rem;
     }
     .pc-d-flex {
-      display: flex !important;
+        display: flex !important;
     }
     .modal-mbl-body {
         margin-left: 2.5rem !important;

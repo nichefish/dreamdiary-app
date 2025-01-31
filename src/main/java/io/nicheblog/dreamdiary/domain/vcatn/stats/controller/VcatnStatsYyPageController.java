@@ -30,8 +30,8 @@ import javax.annotation.Nullable;
  *  휴가관리 > 년도별 휴가관리 페이지 컨트롤러.
  * </pre>
  *
- * @see LogActvtyPageControllerAspect
  * @author nichefish
+ * @see LogActvtyPageControllerAspect
  */
 @Controller
 @RequiredArgsConstructor

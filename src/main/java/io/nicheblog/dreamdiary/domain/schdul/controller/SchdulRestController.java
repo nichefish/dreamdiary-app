@@ -27,8 +27,8 @@ import javax.validation.Valid;
  *  일정 API 컨트롤러.
  * </pre>
  *
- * @see LogActvtyRestControllerAspect
  * @author nichefish
+ * @see LogActvtyRestControllerAspect
  */
 @RestController
 @RequiredArgsConstructor

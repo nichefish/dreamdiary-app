@@ -28,8 +28,8 @@ import javax.annotation.security.PermitAll;
  *  로그인 페이지 컨트롤러.
  * </pre>
  *
- * @see LogActvtyPageControllerAspect
  * @author nichefish
+ * @see LogActvtyPageControllerAspect
  */
 @Controller
 @RequiredArgsConstructor

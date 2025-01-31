@@ -19,6 +19,9 @@ import java.io.IOException;
 public class CorsFilter
         implements Filter {
 
+    /**
+     * CORS(Cross-Origin Resource Sharing) 관련 HTTP 응답 헤더 설정.
+     */
     @Override
     public void doFilter(
             final ServletRequest req,
@@ -26,8 +29,8 @@ public class CorsFilter
             final FilterChain chain
     ) throws IOException, ServletException {
 
-        HttpServletRequest request = (HttpServletRequest) req;
-        HttpServletResponse response = (HttpServletResponse) res;
+        final HttpServletRequest request = (HttpServletRequest) req;
+        final HttpServletResponse response = (HttpServletResponse) res;
         response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT, PATCH");

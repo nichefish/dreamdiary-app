@@ -6,14 +6,16 @@ server:
     port: ${SERVER_PORT:18081}
 
 logging:
-    config: classpath:log4j2-dev.yml
+    config: classpath:config/log4j2/log4j2-dev.yml
 
 spring:
     servlet:
         multipart:
             location: ${FILE_UPLOAD_LOCATION}
+
     freemarker:
         cache: ${FREEMARKER_CACHE:true}
+
     datasource:
         primary:
             driver-class-name: org.mariadb.jdbc.Driver
@@ -40,6 +42,16 @@ spring:
             mode: never
             platform: mariadb
             continue-on-error: true
+
+    flyway:
+        url: ${JDBC_URL}
+        user: ${JDBC_USERNAME}
+        password: ${JDBC_PASSWORD}
+        schemas: ${JDBC_SCHEMA:dreamdiary-dev}
+        baseline-on-migrate: true  # 기존 스키마가 있어도 마이그레이션 실행
+        baseline-version: 0.12.0   # 0.12.0 이전의 마이그레이션은 실행하지 않음
+        validate-on-migrate: true  # 이전 SQL과 충돌 방지
+        locations: classpath:schema/migration/{vendor}  # 현재 DB에 맞는 경로 자동 설정
 
     redis:
         host: ${REDIS_HOST}

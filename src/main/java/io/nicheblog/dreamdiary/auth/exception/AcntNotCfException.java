@@ -19,10 +19,7 @@ public class AcntNotCfException
      * @param msg 예외 메시지
      * @param cause 이 예외의 원인
      */
-    public AcntNotCfException(
-            final String msg,
-            final Throwable cause
-    ) {
+    public AcntNotCfException(final String msg, final Throwable cause) {
         super(msg, cause);
     }
 

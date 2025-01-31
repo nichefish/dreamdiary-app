@@ -7,6 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.nicheblog.dreamdiary.auth.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.provider.helper.AuthenticationHelper;
 import io.nicheblog.dreamdiary.auth.service.AuthService;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -60,7 +61,7 @@ public class JwtTokenProvider {
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     public AuthInfo authenticate(final String token) throws Exception {
-        Authentication authentication = this.getAuthentication(token);
+        final Authentication authentication = this.getAuthentication(token);
         // spring security context에 인증 정보 저장
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return (AuthInfo) authentication.getPrincipal();
@@ -113,8 +114,9 @@ public class JwtTokenProvider {
         final String username = this.getUsernameFromToken(token);
         final AuthInfo authInfo = authService.loadUserByUsername(username);
 
-        Boolean isValidated = authenticationHelper.validateAuth(authInfo);
-        if (!isValidated) throw new Exception("인증에 실패했습니다.");
+        final Boolean isValidated = authenticationHelper.validateAuth(authInfo);
+        if (!isValidated) throw new Exception(MessageUtils.getMessage("common.status.authentication-failed"));
+
         return authInfo.getAuthToken();
     }
 

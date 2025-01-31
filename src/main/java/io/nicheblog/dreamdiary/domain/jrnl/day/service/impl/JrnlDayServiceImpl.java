@@ -120,7 +120,7 @@ public class JrnlDayServiceImpl
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="myJrnlDayTagDtl", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId()")
+    @Cacheable(value="myJrnlDayTagDtl", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
     public List<JrnlDayDto> jrnlDayTagDtl(final JrnlDaySearchParam searchParam) throws Exception {
         searchParam.setSort("DESC");
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);

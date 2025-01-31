@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 /**
  * OAuth2Controller
+ * <pre>
+ *  OAuth2 인증 관련 컨트롤러.
+ * </pre>
  *
  * @author nichefish
  */

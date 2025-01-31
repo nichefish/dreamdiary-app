@@ -5,8 +5,8 @@ import io.nicheblog.dreamdiary.domain.board.def.mapstruct.BoardDefMapstruct;
 import io.nicheblog.dreamdiary.domain.board.def.model.BoardDefDto;
 import io.nicheblog.dreamdiary.domain.board.def.repository.jpa.BoardDefRepository;
 import io.nicheblog.dreamdiary.domain.board.def.spec.BoardDefSpec;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
 import io.nicheblog.dreamdiary.global._common._clsf.state.service.BaseStateService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
 import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;
 
 import java.util.List;

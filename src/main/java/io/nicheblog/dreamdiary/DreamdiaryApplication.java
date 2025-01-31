@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import io.nicheblog.NicheblogBasePackage;
+import io.nicheblog.dreamdiary.global.util.YmlLoader;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,6 +27,7 @@ public class DreamdiaryApplication {
 
     /**
      * 애플리케이션의 진입점인 메인(main) 함수입니다.
+     *
      * @param args - 명령줄에서 전달된 인수
      */
     public static void main(final String[] args) {
@@ -41,9 +43,11 @@ public class DreamdiaryApplication {
      */
     private static void loadDotEnvProperties() {
         try {
-            // 프로필 기반 .env.${profile} 프로퍼티 로드 (속성 없을시:: 기본값 local)
-            final String profile = System.getProperty("spring.profiles.active", "local");
             setDotEnvPropertiesByFileNm(".env");
+            // 프로필 기반 .env.${profile} 프로퍼티 로드 (시점이 맞지 않기 떄문에 .yml 강제 파싱)
+            final String profile = YmlLoader.loadSpringProfile();
+            if (profile == null) throw new IllegalStateException("spring.profiles.active가 설정되지 않았습니다.");
+
             setDotEnvPropertiesByFileNm(".env." + profile);
         } catch (final Exception e) {
             log.error("Failed to load .env file for profile '{}'", System.getProperty("spring.profiles.active"), e);
@@ -52,6 +56,7 @@ public class DreamdiaryApplication {
 
     /**
      * 지정된 프로퍼티 파일을 읽어 시스템 환경 변수에 추가합니다.
+     *
      * @param fileName - 로드할 .env 파일의 이름
      */
     private static void setDotEnvPropertiesByFileNm(final String fileName) {
@@ -59,5 +64,4 @@ public class DreamdiaryApplication {
         dotenv.entries().forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));
         log.info("Loaded {} file successfully.", fileName);
     }
-
 }

@@ -68,6 +68,7 @@ public class AuditorInfo
      */
     public String getProflImgUrl() {
         if (StringUtils.isEmpty(this.proflImgUrl)) return (Constant.BLANK_AVATAR_URL);
+
         return this.proflImgUrl;
     }
 }

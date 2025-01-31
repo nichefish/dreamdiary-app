@@ -2,9 +2,6 @@ package io.nicheblog.dreamdiary.domain.admin.menu.exception;
 
 import io.nicheblog.dreamdiary.global.exception.BaseException;
 
-import java.util.HashMap;
-import java.util.List;
-
 /**
  * MenuNotExistsException
  * <pre>
@@ -19,8 +16,8 @@ public class MenuNotExistsException
     /**
      * 생성자.
      *
-     * @param msg
-     * @param cause
+     * @param msg 예외 메시지
+     * @param cause 이 예외의 원인
      */
     public MenuNotExistsException(final String msg, final Throwable cause) {
         super(msg, cause);
@@ -29,7 +26,7 @@ public class MenuNotExistsException
     /**
      * 생성자.
      *
-     * @param msg
+     * @param msg 예외 메시지
      */
     public MenuNotExistsException(final String msg) {
         super(msg);

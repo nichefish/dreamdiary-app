@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.domain.jrnl.day.service;
 
-import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayCalDto;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDaySearchParam;
 import io.nicheblog.dreamdiary.global.intrfc.model.fullcalendar.BaseCalDto;
 

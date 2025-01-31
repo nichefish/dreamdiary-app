@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.global._common.log.actvty.entity;
 
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.auth.entity.AuditorInfo;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global._common.cd.entity.DtlCdEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -187,7 +187,7 @@ public class LogActvtyEntity
                                 .map(param -> param.split("="))
                                 .filter(keyValue -> keyValue.length == 2)
                                 .forEach(keyValue -> {
-                                    String key = URLDecoder.decode(keyValue[0], StandardCharsets.UTF_8);
+                                    final String key = URLDecoder.decode(keyValue[0], StandardCharsets.UTF_8);
                                     if (!excludedParams.contains(key)) {
                                         String value = URLDecoder.decode(keyValue[1], StandardCharsets.UTF_8);
                                         paramMap.put(key, value);

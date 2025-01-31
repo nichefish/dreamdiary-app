@@ -18,7 +18,6 @@ import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +25,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 
 /**
  * JrnlDiaryRestController
@@ -34,8 +32,8 @@ import java.util.Map;
  *  저널 일기 RestController.
  * </pre>
  *
- * @see LogActvtyRestControllerAspect
  * @author nichefish
+ * @see LogActvtyRestControllerAspect
  */
 @RestController
 @RequiredArgsConstructor
@@ -87,7 +85,6 @@ public class JrnlDiaryRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param jrnlDiary 등록/수정 처리할 객체
-     * @param key 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지

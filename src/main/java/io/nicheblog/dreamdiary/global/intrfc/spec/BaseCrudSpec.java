@@ -16,6 +16,7 @@ import java.util.Map;
  * </pre>
  *
  * @author nichefish
+ * @see BaseClsfSpec
  */
 public interface BaseCrudSpec<Entity extends BaseCrudEntity>
         extends BaseSpec<Entity> {

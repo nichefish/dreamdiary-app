@@ -7,6 +7,7 @@ package io.nicheblog.dreamdiary.global;
  * </pre>
  *
  * @author nichefish
+ * @see Url
  */
 public interface SiteUrl {
 
@@ -14,21 +15,6 @@ public interface SiteUrl {
     String ROOT = "/";
     String MAIN = "/main.do";
     String REACT_MAIN = "/react/main.do";
-
-    /** 로그인 관련 */
-    String AUTH_LGN_FORM = Prefix.AUTH + "/lgnForm.do";
-    String AUTH_LGN_PROC = Prefix.AUTH + "/lgnProc.do";
-    String AUTH_LGN_PW_CHG_AJAX = Prefix.AUTH + "/lgnPwChgAjax.do";
-    String AUTH_LGOUT = Prefix.AUTH + "/lgout.do";
-    String AUTH_EXPIRE_SESSION_AJAX = Prefix.AUTH + "/expireSession.do";
-    String AUTH_INFO = "/api/auth/getAuthInfo.do";
-
-    // 구글 소셜 로그인 팝업
-    String OAUTH2_GOOGLE = "/oauth2/authorization/google";
-    String OAUTH2_GOOGLE_REDIRECT_URI = "/login/oauth2/code/google";
-
-    String OAUTH2_NAVER = "/oauth2/authorization/naver";
-    String OAUTH2_NAVER_REDIRECT_URI = "/login/oauth2/code/naver";
 
     String ADMIN_MAIN = Prefix.ADMIN + MAIN;
     String TEST_PAGE = Prefix.ADMIN + "/testPage.do";
@@ -304,7 +290,7 @@ public interface SiteUrl {
     String USER_REQST_UNCF_AJAX = Prefix.USER_REQST + "/userReqstUncfAjax.do";
 
     /**
-     * PREFIX 정보
+     * PREFIX 정의 정보
      */
     interface Prefix {
         String AUTH = "/auth";
