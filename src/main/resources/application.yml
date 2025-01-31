@@ -43,6 +43,16 @@ spring:
                 enable_lazy_load_no_trans: true
         open-in-view: true
 
+    flyway:
+        url: ${JDBC_URL}
+        user: ${JDBC_USERNAME}
+        password: ${JDBC_PASSWORD}
+        schemas: ${JDBC_SCHEMA}
+        baseline-on-migrate: true  # 기존 스키마가 있어도 마이그레이션 실행
+        baseline-version: 0.12.0   # 0.12.0 이전의 마이그레이션은 실행하지 않음
+        validate-on-migrate: true  # 이전 SQL과 충돌 방지
+        locations: classpath:schema/migration/{vendor}  # 현재 DB에 맞는 경로 자동 설정
+
     jackson:
         date-format: yyyy-MM-dd HH:mm:ss
         time-zone: Asia/Seoul

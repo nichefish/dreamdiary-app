@@ -9,7 +9,6 @@
 -- 저널 일자 (jrnl_day)
 -- @extends: BaseClsfEntity
 -- @uses: CommentEmbed
-
 CREATE TABLE IF NOT EXISTS jrnl_day (
     -- CLSF
     post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 일자 번호 (PK)',
