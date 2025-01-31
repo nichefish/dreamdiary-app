@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.global;
 
 import io.nicheblog.dreamdiary.adapter.AdapterUrl;
+import io.nicheblog.dreamdiary.auth.AuthUrl;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.experimental.UtilityClass;
 
@@ -19,7 +20,7 @@ import java.util.Map;
  */
 @UtilityClass
 public class Url
-    implements SiteUrl, AdapterUrl {
+    implements SiteUrl, AuthUrl, AdapterUrl {
 
     /** 도메인 */
     public static final String DOMAIN = "dreamdiary.nicheblog.io";
