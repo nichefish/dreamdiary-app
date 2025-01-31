@@ -141,6 +141,16 @@ dF.JrnlDiary = (function(): dfModule {
         dtlModal: function(postNo: string|number): void {
             if (isNaN(Number(postNo))) return;
 
+            // 기존에 열린 모달이 있으면 닫기
+            const openModals: NodeList = document.querySelectorAll('.modal.show'); // 열린 모달을 찾기
+            openModals.forEach((modal: Node): void => {
+                $(modal).modal('hide');  // 각각의 모달을 닫기
+            });
+
+            const self = this;
+            const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
+            const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
+
             const url: string = Url.JRNL_DIARY_DTL_AJAX;
             const ajaxData: Record<string, any> = { "postNo" : postNo };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
@@ -151,6 +161,9 @@ dF.JrnlDiary = (function(): dfModule {
                 const rsltObj: Record<string, any> = res.rsltObj;
                 /* show modal */
                 cF.handlebars.modal(rsltObj, "jrnl_diary_dtl");
+
+                /* modal history push */
+                ModalHistory.push(self, func, args);
             });
         },
 
@@ -160,6 +173,16 @@ dF.JrnlDiary = (function(): dfModule {
          */
         mdfModal: function(postNo: string|number): void {
             if (isNaN(Number(postNo))) return;
+
+            // 기존에 열린 모달이 있으면 닫기
+            const openModals: NodeList = document.querySelectorAll('.modal.show'); // 열린 모달을 찾기
+            openModals.forEach((modal: Node): void => {
+                $(modal).modal('hide');  // 각각의 모달을 닫기
+            });
+
+            const self = this;
+            const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
+            const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
             const url: string = Url.JRNL_DIARY_DTL_AJAX;
             const ajaxData: Record<string, any> = { "postNo" : postNo };
@@ -171,6 +194,9 @@ dF.JrnlDiary = (function(): dfModule {
                 const { rsltObj } = res;
                 /* initialize form. */
                 dF.JrnlDiary.initForm(rsltObj);
+
+                /* modal history push */
+                ModalHistory.push(self, func, args);
             });
         },
 
