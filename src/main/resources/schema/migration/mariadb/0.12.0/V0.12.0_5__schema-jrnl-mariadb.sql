@@ -9,6 +9,7 @@
 -- 저널 일자 (jrnl_day)
 -- @extends: BaseClsfEntity
 -- @uses: CommentEmbed
+
 CREATE TABLE IF NOT EXISTS jrnl_day (
     -- CLSF
     post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 일자 번호 (PK)',
@@ -24,14 +25,14 @@ CREATE TABLE IF NOT EXISTS jrnl_day (
     atch_file_no INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT NOW() COMMENT '등록일시',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
     mdf_dt DATETIME COMMENT '수정일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
     -- CONSTRAINT
     INDEX (jrnl_dt),
     INDEX (aprxmt_dt),
-    INDEX (yy)
+    INDEX (yy),
     INDEX (yy, mnth)
 ) COMMENT = '저널 일자';
 
@@ -61,7 +62,7 @@ CREATE TABLE IF NOT EXISTS jrnl_dream (
     atch_file_no INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT NOW() COMMENT '등록일시',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
     mdf_dt DATETIME COMMENT '수정일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
@@ -92,7 +93,7 @@ CREATE TABLE IF NOT EXISTS jrnl_diary (
     atch_file_no INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT NOW() COMMENT '등록일시',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
     mdf_dt DATETIME COMMENT '수정일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
@@ -119,7 +120,7 @@ CREATE TABLE IF NOT EXISTS jrnl_sbjct(
     atch_file_no INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT NOW() COMMENT '등록일시',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
     mdf_dt DATETIME COMMENT '수정일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)'
@@ -142,7 +143,7 @@ CREATE TABLE IF NOT EXISTS jrnl_sumry (
     atch_file_no INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT NOW() COMMENT '등록일시',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
     mdf_dt DATETIME COMMENT '수정일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)'

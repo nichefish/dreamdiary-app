@@ -1,7 +1,14 @@
--- 공통 코드 데이터 쿼리 정보를 입력한다.
+-- 필수 데이터 및 코드 데이터 쿼리 정보를 입력한다.
 -- 쿼리 줄바꿈 안됨. 무조건 한 줄에 한 쿼리 단위로 실행된다.
 -- @database : mariadb
 -- @author : nichefish
+
+-- -------------------
+
+-- 필수 :: 권한 정보 추가
+REPLACE INTO auth_role (auth_cd, auth_nm, auth_level, top_auth_cd, sort_ordr, use_yn, regstr_id) VALUES ('MNGR', '관리자', 9, null, 1, 'Y', 'system');
+REPLACE INTO auth_role (auth_cd, auth_nm, auth_level, top_auth_cd, sort_ordr, use_yn, regstr_id) VALUES ('USER', '사용자', 5, null, 2, 'Y', 'system');
+REPLACE INTO auth_role (auth_cd, auth_nm, auth_level, top_auth_cd, sort_ordr, use_yn, regstr_id) VALUES ('DEV', '개발자', 99, null, 99, 'Y', 'system');
 
 -- -------------------
 
@@ -13,7 +20,7 @@ REPLACE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, sort_ordr) VALUES ('CL_CT
 -- -------------------
 
 -- 필수 :: 잔디 토픽 분류 코드 추가
-REPLACE INTO cmm_cl_cd (cl_cd, cl_cd_nm, cl_ctgr_cd, cl_cd_dc) VALUES ('JANDI_TOPIC_CD', '잔디 토픽', '', '잔디 토픽 코드');
+REPLACE INTO cmm_cl_cd (cl_cd, cl_cd_nm, cl_ctgr_cd, dc) VALUES ('JANDI_TOPIC_CD', '잔디 토픽', '', '잔디 토픽 코드');
 -- 필수 :: 잔디 토픽 상세 코드 추가
 REPLACE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, sort_ordr) VALUES ('JANDI_TOPIC_CD', 'NOTICE', '공지사항', '공지사항', '1');
 REPLACE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, sort_ordr) VALUES ('JANDI_TOPIC_CD', 'SCHDUL', '일정공유', '일정공유', '2');
@@ -32,7 +39,7 @@ REPLACE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, sort_ordr) VALUES ('MDFAB
 -- -----------------------
 
 -- 옵션 :: 일정 분류 코드 추가
-REPLACE INTO CMM_CL_CD (cl_cd, cl_cd_nm, cl_ctgr_cd, dc) VALUES ('SCHDUL_CD', '일정', '', '일정 코드');
+REPLACE INTO cmm_cl_cd (cl_cd, cl_cd_nm, cl_ctgr_cd, dc) VALUES ('SCHDUL_CD', '일정', '', '일정 코드');
 -- 필수 :: 수정권한 상세 코드 추가
 REPLACE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, sort_ordr) VALUES ('SCHDUL_CD', 'HLDY', '공휴일', '공휴일', '1');
 REPLACE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, sort_ordr) VALUES ('SCHDUL_CD', 'CEREMONY', '행사', '행사', '2');
@@ -50,3 +57,16 @@ REPLACE INTO cmm_cl_cd (cl_cd, cl_cd_nm, cl_ctgr_cd, dc) VALUES ('JRNL_SUMRY_TY_
 -- 필수 :: 저널 결산 구분 상세 코드 추가
 REPLACE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, sort_ordr) VALUES ('JRNL_SUMRY_TY_CD', 'DIARY', '일기', '일기 결산', '1');
 REPLACE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, sort_ordr) VALUES ('JRNL_SUMRY_TY_CD', 'DREAM', '꿈', '꿈 결산', '2');
+
+-- -----------------------
+
+-- (구) 필수 :: 휴가 분류 코드 추가
+REPLACE INTO cmm_cl_cd (cl_cd, cl_cd_nm, dc) VALUES ('VCATN_CD', '휴가', '휴가');
+-- (구) 필수 :: 휴가 상세 코드 추가
+REPLACE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, sort_ordr) VALUES ('VCATN_CD', 'ANNUAL', '연차', '연차', '1');
+REPLACE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, sort_ordr) VALUES ('VCATN_CD', 'AM_HALF', '오전반차', '오전반차', '2');
+REPLACE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, sort_ordr) VALUES ('VCATN_CD', 'PM_HALF', '오후반차', '오후반차', '3');
+REPLACE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, sort_ordr) VALUES ('VCATN_CD', 'PBLEN', '공가', '공가', '4');
+REPLACE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, sort_ordr) VALUES ('VCATN_CD', 'CTSNN', '경조휴가', '경조휴가', '5');
+REPLACE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, sort_ordr) VALUES ('VCATN_CD', 'MNSTR', '생리휴가', '생리휴가', '6');
+REPLACE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, sort_ordr) VALUES ('VCATN_CD', 'UNPAID', '무급휴가', '무급휴가', '7');

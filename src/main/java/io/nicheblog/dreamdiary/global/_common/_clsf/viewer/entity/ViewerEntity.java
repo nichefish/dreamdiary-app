@@ -59,7 +59,7 @@ public class ViewerEntity
 
     /** 마지막 방문 일시 */
     @LastModifiedDate
-    @Column(name = "lst_visit_dt", columnDefinition = "DATE DEFAULT NOW()")
+    @Column(name = "lst_visit_dt", columnDefinition = "DATE DEFAULT CURRENT_TIMESTAMP")
     @Temporal(TemporalType.TIMESTAMP)
     @Comment("마지막 방문 일시")
     private Date lstVisitDt;

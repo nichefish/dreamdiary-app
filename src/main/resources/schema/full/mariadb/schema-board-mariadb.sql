@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS board_def (
     use_yn CHAR(1) DEFAULT 'Y' COMMENT '사용 여부 (Y/N)',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT NOW() COMMENT '등록일시',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
     mdf_dt DATETIME COMMENT '수정일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)'
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS board_post(
     atch_file_no INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT NOW() COMMENT '등록일시',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
     mdf_dt DATETIME COMMENT '수정일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS comment (
     atch_file_no INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT NOW() COMMENT '등록일시',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
     mdf_dt DATETIME COMMENT '수정일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS sectn (
     atch_file_no INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT NOW() COMMENT '등록일시',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
     mdf_dt DATETIME COMMENT '수정일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
@@ -153,7 +153,7 @@ CREATE TABLE IF NOT EXISTS content_tag (
     ref_content_type VARCHAR(30) COMMENT '참조 컨텐츠 타입',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT NOW() COMMENT '등록일시',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
     -- CONSTRAINT
     FOREIGN KEY (ref_tag_no) REFERENCES tag(tag_no),
@@ -188,7 +188,7 @@ CREATE TABLE IF NOT EXISTS managtr (
     ref_content_type VARCHAR(30) COMMENT '참조 컨텐츠 타입',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT NOW() COMMENT '등록일시',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
     -- CONSTRAINT
     INDEX (ref_post_no, ref_content_type)
@@ -202,10 +202,10 @@ CREATE TABLE IF NOT EXISTS viewer (
     viewer_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '열람자 번호 (PK)',
     ref_post_no INT COMMENT '참조 글 번호',
     ref_content_type VARCHAR(30) COMMENT '참조 컨텐츠 타입',
-    lst_visit_dt DATETIME DEFAULT NOW() COMMENT '최종방문일시',
+    lst_visit_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '최종방문일시',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT NOW() COMMENT '등록일시',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
     -- CONSTRAINT
     INDEX (ref_post_no, ref_content_type),

@@ -11,14 +11,10 @@ spring:
     servlet:
         multipart:
             location: ${FILE_UPLOAD_LOCATION}
+
     freemarker:
         cache: ${FREEMARKER_CACHE:true}
-    datasource:
-        primary:
-            driver-class-name: org.mariadb.jdbc.Driver
-            jdbc-url: ${JDBC_URL}
-            username: ${JDBC_USERNAME}
-            password: ${JDBC_PASSWORD}
+
     devtools:
         add-properties: true
         livereload:
@@ -29,6 +25,13 @@ spring:
                 enabled: false
         restart:
             enabled: true
+
+    datasource:
+        primary:
+            driver-class-name: org.mariadb.jdbc.Driver
+            jdbc-url: ${JDBC_URL}
+            username: ${JDBC_USERNAME}
+            password: ${JDBC_PASSWORD}
 
     jpa:
         database: mysql

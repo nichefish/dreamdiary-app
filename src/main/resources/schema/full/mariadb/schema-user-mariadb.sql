@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS user (
     atch_file_no INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT NOW() COMMENT '등록일시',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
     mdf_dt DATETIME COMMENT '수정일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS auth_role (
     use_yn CHAR(1) DEFAULT 'Y' COMMENT '사용 여부 (Y/N)',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT NOW() COMMENT '등록일시',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
     mdf_dt DATETIME COMMENT '수정일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS user_profl (
     atch_file_no INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT NOW() COMMENT '등록일시',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
     mdf_dt DATETIME COMMENT '수정일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
@@ -139,7 +139,7 @@ CREATE TABLE IF NOT EXISTS user_emplym (
     atch_file_no INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT NOW() COMMENT '등록일시',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
     mdf_dt DATETIME COMMENT '수정일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',

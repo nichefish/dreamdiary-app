@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.global.intrfc.spec;
 
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
+import io.nicheblog.dreamdiary.global.intrfc.spec.embed.BaseStateSpec;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import org.apache.commons.net.util.SubnetUtils;
 import org.springframework.data.jpa.domain.Specification;
@@ -20,6 +21,7 @@ import java.util.Map;
  * </pre>
  *
  * @author nichefish
+ * @see BaseCrudSpec,BaseStateSpec
  */
 public interface BaseSpec<Entity> {
 

@@ -4,6 +4,7 @@ plugins {
     id 'org.springframework.boot' version '2.7.18'
     id 'io.spring.dependency-management' version '1.1.4'
     id 'jacoco'
+    id "org.flywaydb.flyway" version "11.2.0"
 }
 
 group = 'dreamdiary.io'
@@ -121,7 +122,7 @@ dependencies {
     implementation 'org.springframework:spring-messaging:5.3.39'
 
     /* flyway (.sql 스키마 버전관리) */
-    implementation 'org.flywaydb:flyway-core:9.22.3'
+    implementation 'org.flywaydb:flyway-core:11.2.0'
     implementation 'org.flywaydb:flyway-mysql:11.2.0'
 
     /* DotEnv */
