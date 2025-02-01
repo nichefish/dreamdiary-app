@@ -20,12 +20,6 @@ pipeline {
             }
         }
 
-        stage('Build Frontend') {
-            steps {
-                sh 'npm run build'  // TypeScript & SCSS 빌드 실행
-            }
-        }
-
         // bootJar 빌드 실행
         stage('Build') {
             steps {
