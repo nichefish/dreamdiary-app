@@ -5,8 +5,12 @@
   - 로컬 PC -> AWS 클라우드로 플랫폼 마이그레이션.
     - RDS(MariaDB) 인스턴스 생성 및 로컬 DB -> AWS 마이그레이션.
     - EC2 인스턴스 생성 및 서버 배포.
-  - CI/CD 대비하여 젠킨스 배포 스크립트 초안 작성. 루트 폴더 구조 정리.
   - p6spy 라이브러리 도입, SQL 로깅 강화.
+  - CI/CD 대비하여 젠킨스 배포 스크립트 초안 작성. 루트 폴더 구조 정리.
+    - build.gradle에 주석 추가.
+    - build.gradle으로부터 dependencies.gradle, testconfig.gradle 설정 분리.
+    - build, run/debug, bootJar시 정적 리소스(ts, scss) 컴파일 설정 추가.
+    - 빌드 속도 개선을 위한 조치. (캐시 처리)
 
 ### 2025-01-31 | v0.12.0
 - 개선 사항:
