@@ -4,23 +4,9 @@
 server:
     port: ${SERVER_PORT:8999}
 
-logging:
-    config: classpath:config/log4j2/log4j2-prod.yml
-
 spring:
-    servlet:
-        multipart:
-            location: ${FILE_UPLOAD_LOCATION}
-
     freemarker:
         cache: ${FREEMARKER_CACHE:true}
-
-    datasource:
-        primary:
-            driver-class-name: org.mariadb.jdbc.Driver
-            jdbc-url: ${JDBC_URL}
-            username: ${JDBC_USERNAME}
-            password: ${JDBC_PASSWORD}
 
     jpa:
         database: mysql
@@ -31,8 +17,9 @@ spring:
         properties:
             hibernate:
                 dialect: org.hibernate.dialect.MariaDBDialect
-                format_sql: true
                 generate-ddl: true
+                show_sql: false     # Hibernate 기본 SQL 출력 비활성화 (p6spy 사용)
+                format_sql: true
 
     sql:
         init:

@@ -1,20 +1,21 @@
 {
-  "dependencies": {
+  "scripts": {
+    "build:ts": "tsc",
+    "build:scss": "sass src/main/resources/static/css:src/main/resources/static/css && sass static/css:static/css",
+    "build": "npm run build:ts && npm run build:scss"
+  },
+  "devDependencies": {
     "@types/bootstrap": "^5.2.10",
     "@types/bootstrap-datepicker": "^1.10.0",
-    "@types/handlebars": "^4.1.0",
     "@types/jquery": "^3.5.32",
     "@types/jquery.blockui": "^0.0.33",
     "@types/jquery.cookie": "^1.4.35",
     "@types/jquery.form": "^3.26.35",
     "@types/jquery.validation": "^1.17.0",
     "@types/jstree": "^3.3.46",
-    "@types/moment": "^2.13.0",
     "@types/paho-mqtt": "^1.0.10",
     "@types/stompjs": "^2.3.9",
     "@types/tinymce": "^4.6.9",
-    "@types/vue": "^2.0.0",
-    "@yaireo/tagify": "^4.33.0",
-    "bootstrap-daterangepicker": "^3.1.0"
+    "moment": "^2.30.1"
   }
 }

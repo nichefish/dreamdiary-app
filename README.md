@@ -14,17 +14,17 @@
 #### 3. 년도/월별, 태그별 집계 및 연관 데이터 조회를 통한 인사이트 제공.
 
 ## 사용 기술: 
-* Java 11 -> 17
-  * Spring Boot (2.7.18) 
-  * Spring Security, JWT
+* Java (v11 -> v17)
+  * Spring Boot (v2.7.18) 
+  * Spring Security, JWT, OAuth2
   * Spring AOP, Lombok, Mapstruct, EhCache, Redis
-* Gradle
+* Gradle v8.10.2
 * MariaDB
-* Spring Data JPA / MyBatis (both)
-* Javascript(ES6), jQuery, Apache FreeMarker, Handlebars.js, TypeScript, Node.js, Vue.js
-* WebSocket(Stomp)
+* Spring Data JPA / MyBatis (both), JPA Criteria, QueryDSL, Flyway 
+* Javascript(ES6), jQuery, Apache FreeMarker, Handlebars.js, TypeScript, Node.js(v20.11.1), Vue.js
+* WebSocket(Stomp.js)
 * Bootstrap 5 (Metronic 8)
-* css/scss
+* CSS/SCSS
 
 ## 주요 작업: (개발 포인트)
 #### 1. 시스템 구조 설계 및 DB 설계

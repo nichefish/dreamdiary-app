@@ -1,6 +1,9 @@
 #application.yml
 #공용 설정 파일
 
+logging:
+    config: classpath:config/log4j2/log4j2-${PROFILE}.yml
+
 spring:
     application:
         name: dreamdiary
@@ -11,6 +14,7 @@ spring:
     servlet:
         multipart:
             enabled: true
+            location: ${FILE_UPLOAD_LOCATION}
             max-file-size: 500MB
             max-request-size: 500MB
 
@@ -27,6 +31,13 @@ spring:
 
     mustache:
         check-template-location: false
+
+    datasource:
+        primary:
+            driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+            jdbc-url: ${JDBC_URL}
+            username: ${JDBC_USERNAME}
+            password: ${JDBC_PASSWORD}
 
     jpa:
         properties:
