@@ -22,6 +22,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -57,10 +58,18 @@ public class DreamdiaryInitializer
 
         log.info("DreamdiaryApplication init... activeProfile: {}", activeProfile.getActive());
 
-        // 시스템 계정 부재시 등록 :: 메소드 분리
+
         this.regSystemAcntIfEmpty();
         // 로그인 정책 부재시 등록 :: 메소드 분리
         this.regLgnPolicyIfEmpty();
+
+        // 파일 관련 기본 폴더 생성
+        final File fileDirectory = new File("file/");
+        if (!fileDirectory.exists() &&!fileDirectory.mkdirs()) throw new Exception(MessageUtils.getMessage("common.status.mkdir-failed"));
+        final File upfileDirectory = new File("file/upfile/");
+        if (!upfileDirectory.exists() &&!upfileDirectory.mkdirs()) throw new Exception(MessageUtils.getMessage("common.status.mkdir-failed"));
+        final File reportDirectory = new File("file/report/");
+        if (!reportDirectory.exists() &&!reportDirectory.mkdirs()) throw new Exception(MessageUtils.getMessage("common.status.mkdir-failed"));
 
         // 시스템 재기동 로그 적재:: 운영 환경 이외에는 적재하지 않음
         if (activeProfile.isProd()) {

@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS auth_role (
 
 -- 사용자 권한 (user_auth_role)
 -- @extends: BaseCrudEntity
-CREATE TABLE user_auth_role (
+CREATE TABLE IF NOT EXISTS user_auth_role (
     user_auth_role_no INT PRIMARY KEY AUTO_INCREMENT COMMENT '사용자 권한 번호 (PK)',
     user_no INT COMMENT '사용자 고유 번호',
     auth_cd VARCHAR(50) COMMENT '권한 코드',

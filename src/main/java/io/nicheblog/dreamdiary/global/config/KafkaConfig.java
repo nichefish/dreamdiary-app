@@ -23,14 +23,19 @@ public class KafkaConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
+    /**
+     * 빈 생성
+     *
+     * @return {@link ProducerFactory}
+     */
     @Bean
     public ProducerFactory<String, String> producerFactory() {
 
-        Map<String,Object> configs = new HashMap<>();
+        final Map<String,Object> configs = new HashMap<>();
         configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        return new DefaultKafkaProducerFactory(configs);
+        return new DefaultKafkaProducerFactory<>(configs);
     }
 
     @Bean

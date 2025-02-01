@@ -66,7 +66,7 @@ public class PdfBoxUtils {
      * @return {@link String} -- PDF 파일이 저장될 경로
      */
     private static String createPdfPath() {
-        final String pdfPath = "local/pdf_temp/";
+        final String pdfPath = "file/_temp/pdf_temp/";
         final File file = new File(pdfPath);
         if (!file.exists()) file.mkdirs();
         return pdfPath;

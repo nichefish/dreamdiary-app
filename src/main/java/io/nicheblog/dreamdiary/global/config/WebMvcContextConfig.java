@@ -55,14 +55,21 @@ public class WebMvcContextConfig
 
         // 파일 업로드 경로
         String upfileContextPath = "/upfile/**";
-        String upfileResourcePath = "upfile/";
+        String upfileResourcePath = "file/upfile/";
         registry.addResourceHandler(upfileContextPath)
                 .addResourceLocations(upfileResourcePath)
                 .resourceChain(true)
                 .addResolver(new UTF8DecodeResourceResolver());
+        // 정적 컨텐츠 경로
+        String contentContextPath = "/content/**";
+        String contentResourcePath = "file/content/";
+        registry.addResourceHandler(contentContextPath)
+                .addResourceLocations(contentResourcePath)
+                .resourceChain(true)
+                .addResolver(new UTF8DecodeResourceResolver());
         // workspace 경로
         String workspaceContextPath = "/flsys/**";
-        String workspaceResourcePath = "flsys/";
+        String workspaceResourcePath = "file/flsys/";
         registry.addResourceHandler(workspaceContextPath)
                 .addResourceLocations(workspaceResourcePath)
                 .resourceChain(true)

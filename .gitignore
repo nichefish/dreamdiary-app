@@ -1,26 +1,26 @@
+# Gradle 빌드 파일 및 IntelliJ 설정 무시
 /.gradle/
 /.idea/
 /build/
-/gradle/
-/src/test/resources/application-test.yml
+/node_modules/
+# 테스트 리소스 제외
+/src/test/resources/*
+# Metronic 제외
 /src/main/resources/static/metronic/*
 !/src/main/resources/static/metronic/.metronic_v*
-/src/test/resources/*
-!/src/test/resources/.application-test.yml.md
-/flsys/*
-!/flsys/.file_system_path.md
+# 경로: 로그
 /log/*
 !/log/.logfile_path.md
-/upfile/*
-!/upfile/.file_upload_path.md
-/ssh-key-2024-04-22.key
-/ssh-key-2024-04-22.key.pub
-*.env
+# 경로: 파일 (파일 업로드, 파일시스템)
+/file/*
+!/file/content
+!/file/report/xlsx_template
+!/file/upfile/.file_upload_path.md
+!/file/flsys/.file_system_path.md
+!/file/report/pdf_temp/.pdf_generated_temp_path.md
+# .env 제외
 /.env*
-/target/*
-/node_modules/
+# TypeScript, SCSS 컴파일 결과물 제외
 /static/**/*.js
-/static/**/*.css
-/static/**/*.css.map
-/src/main/resources/static/css/*.css
-/src/main/resources/static/css/*.css.map
+/static/**/*.css*
+/src/main/resources/static/css/*.css*
