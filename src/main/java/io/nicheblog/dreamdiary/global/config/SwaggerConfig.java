@@ -21,7 +21,7 @@ public class SwaggerConfig {
     public OpenAPI openAPI() {
 
         // API 명세 상세 설정
-        Info apiInfo = new Info().title("Springdoc 테스트")
+        final Info apiInfo = new Info().title("Springdoc 테스트")
                                  .description("Springdoc을 사용한 API 명세서 Swagger UI")
                                  .version("v1.0");
 

@@ -19,7 +19,8 @@ public class AsyncConfig {
 
     /**
      * 빈 생성
-     * @return taskExecutor
+     *
+     * @return {@link DelegatingSecurityContextExecutor} taskExecutor
      */
     @Bean
     public Executor taskExecutor() {

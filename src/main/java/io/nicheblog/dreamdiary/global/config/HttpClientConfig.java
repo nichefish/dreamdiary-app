@@ -14,25 +14,22 @@ import java.security.cert.X509Certificate;
 /**
  * HttpClientConfig
  * <pre>
- *  https에서 SSL 인증서 관련 무시 설정
+ *  https 요청시 SSL 인증서 관련 무시 설정
  * </pre>
  *
  * @author nichefish
  */
 public class HttpClientConfig {
+
     public static HttpComponentsClientHttpRequestFactory trustRequestFactory() throws Exception {
 
-        TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
-        SSLContext sslContext = SSLContexts.custom()
-                                           .loadTrustMaterial(null, acceptingTrustStrategy)
-                                           .build();
+        final TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
+        final SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
 
-        SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE);
-        CloseableHttpClient httpClient = HttpClients.custom()
-                                                    .setSSLSocketFactory(csf)
-                                                    .build();
+        final SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE);
+        final CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(csf).build();
 
-        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        final HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
         requestFactory.setHttpClient(httpClient);
 
         return requestFactory;
