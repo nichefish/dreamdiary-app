@@ -1,4 +1,9 @@
 {
+  "scripts": {
+    "build:ts": "tsc",
+    "build:scss": "sass src/scss:dist/css",
+    "build": "npm run build:ts && npm run build:scss"
+  },
   "dependencies": {
     "@types/bootstrap": "^5.2.10",
     "@types/bootstrap-datepicker": "^1.10.0",

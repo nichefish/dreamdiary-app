@@ -1,24 +1,45 @@
+/**
+ * build.gradle
+ * Gradle 빌드 관련 설정 및 스크립트 (Groovy)
+ *
+ * @author nichefish
+ */
+
+/**
+ * 플러그인 설정
+ */
 plugins {
     id 'java'
     id 'idea'
+    id 'jacoco'
     id 'org.springframework.boot' version '2.7.18'
     id 'io.spring.dependency-management' version '1.1.4'
-    id 'jacoco'
     id "org.flywaydb.flyway" version "11.2.0"
+    id 'com.github.node-gradle.node' version "3.5.1"
 }
 
 group = 'dreamdiary.io'
-version = '0.3.3'
+version = '0.12.0'
 java {
-    sourceCompatibility = '17'
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 springBoot {
     buildInfo()
 }
 jacoco {
-    toolVersion = "0.8.7"
+    toolVersion = "0.8.11"
+}
+node {
+    version = '20.11.1'
+    npmVersion = '10.5.0'
+    download = true
 }
 
+/**
+ * 컴파일 대상 소스 코드 및 리소스 디렉토리를 명시적으로 지정
+ * QueryDSL의 QClass 및 AnnotationProcessor로 생성된 클래스를 명시적으로 포함한다. (ex. Lombok, Mapstruct...)
+ */
 sourceSets {
 	main {
         java {
@@ -30,19 +51,22 @@ sourceSets {
 	}
 }
 
-/* ------ ------ ------ ------ */
-
+/**
+ * 의존성 관리 설정
+ * ???
+ */
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
     querydsl.extendsFrom implementation, compileClasspath
     configureEach {
-        /** log4j2 적용 위해 SpringBoot 기본 로깅 툴인 logback 배제 */
+        /* log4j2 적용 위해 SpringBoot 기본 로깅 툴인 logback 배제 */
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-        /** log4j2 보안 문제로 인해 기본제공버전 대신 최신버전 적용 */
+
         resolutionStrategy {
             eachDependency { DependencyResolveDetails details ->
+                /* log4j2 보안 문제로 인해 기본제공버전 대신 최신버전 적용 */
                 if (details.requested.group == 'org.apache.logging.log4j') {
                     details.useVersion '2.17.1'
                 }
@@ -66,27 +90,76 @@ tasks.bootJar {
     duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 }
 
+/**
+ * Maven Central Repository 설정 (라이브러리 다운로드 위치)
+ */
 repositories {
-    mavenCentral()
-    jcenter()
+    mavenCentral()      // 공식 Maven 저장소
+    jcenter()           // ??
 }
 
+tasks.withType(JavaCompile).configureEach {
+    // 증분 컴파일 활성화
+    options.incremental = true
+    // 인코딩 설정
+    options.encoding = 'UTF-8'
+    // lombok이 querydsl보다 먼저 처리되도록 설정
+    options.annotationProcessorPath = configurations.annotationProcessor
+    options.compilerArgs += ["-proc:none"]
+    doFirst {
+        options.compilerArgs -= ["-proc:none"]
+    }
+}
+
+task buildFrontend(type: NpmTask) {
+    dependsOn npmInstall
+    args = ['run', 'build']
+}
+
+task copyFrontendToStatic(type: Copy) {
+    dependsOn buildFrontend
+    from 'dist'
+    into 'src/main/resources/static'
+}
+
+test {
+    useJUnitPlatform()
+    ignoreFailures = true
+    finalizedBy jacocoTestReport // 테스트 후에 자동으로 커버리지 리포트를 생성
+}
+tasks.named('test') {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport // 테스트 후에 자동으로 커버리지 리포트를 생성
+}
+jacocoTestReport {
+    dependsOn test // 테스트 후에 리포트 생성
+    reports {
+        xml.required.set(true)  // XML 리포트 생성 (SonarQube 등과의 통합에 유용)
+        csv.required.set(false) // CSV 리포트는 보통 사용하지 않으므로 비활성화
+        html.required.set(true) // HTML 리포트 생성
+        html.destination file("${buildDir}/reports/jacoco") // HTML 리포트 저장 경로
+    }
+}
+
+/**
+ * 프로젝트 의존성 정의
+ */
 dependencies {
-    /** 로컬 jar 파일 처리 */
-    implementation fileTree(dir: 'libs', include: ['**/*.jar'])
-    compileOnly fileTree(dir: 'libs', include: ['**/*.jar'])
-    developmentOnly fileTree(dir: 'libs', include: ['**/*.jar'])
-    annotationProcessor fileTree(dir: 'libs', include: ['**/*.jar'])
-    runtimeOnly fileTree(dir: 'libs', include: ['**/*.jar'])
+    /** 로컬 jar 파일 처리 (lib 디렉토리 내부의 모든 JAR 포함) ????? */
+    implementation fileTree(dir: 'lib', include: ['**/*.jar'])
+    compileOnly fileTree(dir: 'lib', include: ['**/*.jar'])
+    developmentOnly fileTree(dir: 'lib', include: ['**/*.jar'])
+    annotationProcessor fileTree(dir: 'lib', include: ['**/*.jar'])
+    runtimeOnly fileTree(dir: 'lib', include: ['**/*.jar'])
 
-    testImplementation fileTree(dir: 'libs', include: ['**/*.jar'])
-    testCompileOnly fileTree(dir: 'libs', include: ['**/*.jar'])
-    testAnnotationProcessor fileTree(dir: 'libs', include: ['**/*.jar'])
-    testRuntimeOnly fileTree(dir: 'libs', include: ['**/*.jar'])
+    testImplementation fileTree(dir: 'lib', include: ['**/*.jar'])
+    testCompileOnly fileTree(dir: 'lib', include: ['**/*.jar'])
+    testAnnotationProcessor fileTree(dir: 'lib', include: ['**/*.jar'])
+    testRuntimeOnly fileTree(dir: 'lis', include: ['**/*.jar'])
 
-    /** ************************************************************************************ */
+    /* ************************************************************************************ */
 
-    /** ↓ Spring Initializr */
+    /** ↓ Spring Boot 기본 모듈 */
     implementation(platform("org.springframework.boot:spring-boot-dependencies:3.2.2"))
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -259,33 +332,4 @@ dependencies {
     testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
     testCompileOnly group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-    // lombok이 querydsl보다 먼저 처리되도록 설정
-    options.annotationProcessorPath = configurations.annotationProcessor
-    options.compilerArgs += ["-proc:none"]
-    doFirst {
-        options.compilerArgs -= ["-proc:none"]
-    }
-}
-
-test {
-    useJUnitPlatform()
-    ignoreFailures = true
-    finalizedBy jacocoTestReport // 테스트 후에 자동으로 커버리지 리포트를 생성
-}
-tasks.named('test') {
-    useJUnitPlatform()
-    finalizedBy jacocoTestReport // 테스트 후에 자동으로 커버리지 리포트를 생성
-}
-jacocoTestReport {
-    dependsOn test // 테스트 후에 리포트 생성
-    reports {
-        xml.required.set(true)  // XML 리포트 생성 (SonarQube 등과의 통합에 유용)
-        csv.required.set(false) // CSV 리포트는 보통 사용하지 않으므로 비활성화
-        html.required.set(true) // HTML 리포트 생성
-        html.destination file("${buildDir}/reports/jacoco") // HTML 리포트 저장 경로
-    }
 }
