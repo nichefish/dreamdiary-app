@@ -1,0 +1,28 @@
+/**
+ * testconfig.gradle
+ * build.gradle 파일에서 테스트 관련 설정을 분리하여 관리
+ *
+ * @auther: nichefish
+ */
+
+/**
+ * Test 태스크 공통 설정 적용
+ */
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()              // JUnit5 플랫폼 사용
+    ignoreFailures = true           // 테스트 실패 시 빌드를 중단하지 않고 계속 진행
+    finalizedBy jacocoTestReport    // 테스트 후 자동으로 커버리지 리포트 생성
+}
+
+/**
+ * JaCoCo(코드 커버리지 분석 도구) 리포트 설정
+ */
+jacocoTestReport {
+    dependsOn test // 테스트 후에 리포트 생성
+    reports {
+        xml.required.set(true)  // XML 리포트 생성 (SonarQube 등과의 통합에 유용)
+        csv.required.set(false) // CSV 리포트는 보통 사용하지 않으므로 비활성화
+        html.required.set(true) // HTML 리포트 생성
+        html.destination file("${buildDir}/reports/jacoco") // HTML 리포트 저장 경로
+    }
+}

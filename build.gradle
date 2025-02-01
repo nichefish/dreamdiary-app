@@ -18,8 +18,15 @@ plugins {
     id 'com.github.node-gradle.node' version "3.5.1"
 }
 
+/**
+ * 프로젝트 정보
+ */
 group = 'dreamdiary.io'
 version = '0.12.0'
+
+/**
+ * Java, Spring Boot 및 추가 설정
+ */
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
@@ -82,15 +89,6 @@ configurations {
 }
 
 /**
- * executable jar 생성시 MainClass 강제 주입
- */
-tasks.bootJar {
-    enabled = true
-    mainClass = 'io.nicheblog.dreamdiary.DreamdiaryApplication'
-    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
-}
-
-/**
  * Maven Central Repository 설정 (라이브러리 다운로드 위치)
  */
 repositories {
@@ -98,238 +96,40 @@ repositories {
     jcenter()           // ??
 }
 
+/**
+ * 의존성 관련 정보를 dependencies.gradle 파일로 분리하여 관리한다.
+ */
+apply from: "$rootDir/gradle/dependencies.gradle"
+
+/**
+ * executable jar 생성시 MainClass 강제 주입
+ */
+tasks.bootJar {
+    mainClass = 'io.nicheblog.dreamdiary.DreamdiaryApplication'
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+}
+tasks.named('compileJava') {
+    dependsOn tasks.named('bootBuildInfo')
+}
 tasks.withType(JavaCompile).configureEach {
-    // 증분 컴파일 활성화
-    options.incremental = true
     // 인코딩 설정
     options.encoding = 'UTF-8'
     // lombok이 querydsl보다 먼저 처리되도록 설정
     options.annotationProcessorPath = configurations.annotationProcessor
-    options.compilerArgs += ["-proc:none"]
-    doFirst {
-        options.compilerArgs -= ["-proc:none"]
-    }
+    options.compilerArgs -= ["-proc:none"] // `doFirst` 없이 바로 적용 가능
 }
 
-task buildFrontend(type: NpmTask) {
+tasks.register('buildFrontend', NpmTask) {
     dependsOn npmInstall
     args = ['run', 'build']
 }
-
-task copyFrontendToStatic(type: Copy) {
+tasks.register('copyFrontendToStatic', Copy) {
     dependsOn buildFrontend
     from 'dist'
     into 'src/main/resources/static'
 }
 
-test {
-    useJUnitPlatform()
-    ignoreFailures = true
-    finalizedBy jacocoTestReport // 테스트 후에 자동으로 커버리지 리포트를 생성
-}
-tasks.named('test') {
-    useJUnitPlatform()
-    finalizedBy jacocoTestReport // 테스트 후에 자동으로 커버리지 리포트를 생성
-}
-jacocoTestReport {
-    dependsOn test // 테스트 후에 리포트 생성
-    reports {
-        xml.required.set(true)  // XML 리포트 생성 (SonarQube 등과의 통합에 유용)
-        csv.required.set(false) // CSV 리포트는 보통 사용하지 않으므로 비활성화
-        html.required.set(true) // HTML 리포트 생성
-        html.destination file("${buildDir}/reports/jacoco") // HTML 리포트 저장 경로
-    }
-}
-
 /**
- * 프로젝트 의존성 정의
+ * 테스트 관련 정보를 testconfig.gradle 파일로 분리하여 관리한다.
  */
-dependencies {
-    /** 로컬 jar 파일 처리 (lib 디렉토리 내부의 모든 JAR 포함) ????? */
-    implementation fileTree(dir: 'lib', include: ['**/*.jar'])
-    compileOnly fileTree(dir: 'lib', include: ['**/*.jar'])
-    developmentOnly fileTree(dir: 'lib', include: ['**/*.jar'])
-    annotationProcessor fileTree(dir: 'lib', include: ['**/*.jar'])
-    runtimeOnly fileTree(dir: 'lib', include: ['**/*.jar'])
-
-    testImplementation fileTree(dir: 'lib', include: ['**/*.jar'])
-    testCompileOnly fileTree(dir: 'lib', include: ['**/*.jar'])
-    testAnnotationProcessor fileTree(dir: 'lib', include: ['**/*.jar'])
-    testRuntimeOnly fileTree(dir: 'lis', include: ['**/*.jar'])
-
-    /* ************************************************************************************ */
-
-    /** ↓ Spring Boot 기본 모듈 */
-    implementation(platform("org.springframework.boot:spring-boot-dependencies:3.2.2"))
-
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-freemarker'
-    implementation 'org.springframework.boot:spring-boot-starter-mustache'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-cache'
-    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.3.2'
-    implementation 'org.mybatis:mybatis:3.5.13'
-    implementation 'org.mybatis:mybatis-spring:2.0.7'
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
-    implementation 'org.springframework.data:spring-data-elasticsearch:5.1.2'
-    implementation 'co.elastic.clients:elasticsearch-java:8.10.4'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-starter-aop'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-
-    implementation 'org.hibernate:hibernate-java8:5.6.15.Final'
-    implementation 'org.hibernate:hibernate-ehcache:5.6.15.Final'
-    implementation 'org.springframework.session:spring-session-core'
-
-    implementation 'jakarta.json:jakarta.json-api:2.0.1'
-    implementation 'org.glassfish:jakarta.json:2.0.1'
-
-    implementation "io.jsonwebtoken:jjwt:0.9.1"
-
-    /* Websocket */
-    implementation 'org.springframework.boot:spring-boot-starter-websocket'
-    implementation 'org.springframework:spring-messaging:5.3.39'
-
-    /* flyway (.sql 스키마 버전관리) */
-    implementation 'org.flywaydb:flyway-core:11.2.0'
-    implementation 'org.flywaydb:flyway-mysql:11.2.0'
-
-    /* DotEnv */
-    implementation 'io.github.cdimascio:java-dotenv:5.2.2'
-
-    /** querydsl */
-    implementation 'com.querydsl:querydsl-jpa:4.4.0'
-    annotationProcessor 'com.querydsl:querydsl-apt:4.4.0:jpa'
-
-    /** cache */
-    implementation 'javax.cache:cache-api:1.1.1' // expiry 기능을 위해 필요
-    implementation 'org.ehcache:ehcache:3.10.8'
-
-    /** kafka */
-    implementation 'org.springframework.kafka:spring-kafka'
-
-    /** IntelliJ 전용 annotation */
-    implementation 'org.jetbrains:annotations:16.0.3'
-
-    /** ↓ MariaDB */
-    implementation 'org.mariadb.jdbc:mariadb-java-client'
-
-    /** FreeMarker: ?cn 사용 위해 버전업 */
-    implementation 'org.freemarker:freemarker:2.3.32'
-
-    /**
-     * ↓ lombok , mapstruct
-     * !중요 :: mapstruct가 객체의 getter/setter를 체크하므로 lombok annotation이 적용되지 않은 상태에선 무조건 텅 빈 객체를 리턴한다.
-     * !중요 :: 그러므로 mapstruct는 무조건 lombok보다 뒤로 가야 한다.
-     */
-    implementation 'org.projectlombok:lombok:1.18.30'
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
-    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
-
-    /** UUID */
-    implementation group: 'com.fasterxml.uuid', name: 'java-uuid-generator', version: '5.0.0'
-
-    /** Swagger: springdoc */
-    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.7.0'
-    implementation group: 'org.springdoc', name: 'springdoc-openapi-javadoc', version: '1.7.0'
-    /** RestDocs*/
-    implementation 'org.springframework.restdocs:spring-restdocs-asciidoctor'
-
-    /** Paho MQTTv3 */
-    implementation group: 'org.eclipse.paho', name: 'org.eclipse.paho.client.mqttv3', version: '1.2.5'
-
-    /** 음력계산 */
-    implementation group: 'com.ibm.icu', name: 'icu4j', version: '73.2'
-
-    /** html2pdf (using itext) */
-    implementation 'com.itextpdf:itextpdf:5.5.13.3'
-    implementation 'com.itextpdf.tool:xmlworker:5.5.13.3'
-    implementation 'com.itextpdf:html2pdf:4.0.3'
-
-    /** pdfbox */
-    implementation 'org.apache.pdfbox:pdfbox:3.0.0-alpha2'
-
-    /** 모바일/태블릿 환경 구분 */
-    implementation 'org.springframework.mobile:spring-mobile-device:1.1.5.RELEASE'
-
-    /** httpClient */
-    implementation 'org.apache.httpcomponents:httpcore:4.4.15'
-    implementation 'org.apache.httpcomponents:httpclient:4.5.14'
-
-    /** ↓ json 기본기능 */
-    implementation 'org.json:json:20231013'         // 현재 최종=20210307
-
-    /** ↓ log4j2 */
-    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
-    implementation 'org.apache.logging.log4j:log4j-web'
-    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.12.4'
-    implementation(platform('org.apache.logging.log4j:log4j-bom:2.20.0'))
-
-    /** ↓ @Nullable annotation 사용 */
-    implementation 'com.google.code.findbugs:jsr305:3.0.2'
-
-    /** ↓ jackson */
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.12.4'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.4'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7.1'
-
-    /** dF.JrnlSbjct.File */
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
-    implementation group: 'commons-io', name: 'commons-io', version: '2.14.0'
-    implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
-
-    /** ↓ Microsoft(excel, pdf) api */
-    implementation 'org.apache.poi:poi-ooxml:5.2.2'
-
-    /** ↓ javax.mail api */
-    implementation 'com.sun.mail:javax.mail:1.6.2'
-
-    /** ↓ maxmind geoip2 */
-    implementation 'com.maxmind.geoip2:geoip2:4.2.0'
-
-    /** jsoup: 텍스트에디터 서버사이트 필터링 */
-    implementation 'org.jsoup:jsoup:1.16.1'
-
-    /** subnetUtils (CIDR 처리 위함) */
-    implementation group: 'commons-net', name: 'commons-net', version: '3.9.0'
-
-    /** ↓ snmp4j (청각 경보) */
-    implementation group: 'org.snmp4j', name: 'snmp4j', version: '3.5.1'
-
-    /** selenium */
-    implementation 'org.seleniumhq.selenium:selenium-java:4.17.0'
-
-    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
-    annotationProcessor 'javax.annotation:javax.annotation-api:1.3.2'
-
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
-    /** ↓ 이하는 테스트 환경 Implementation */
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation 'org.beamfoundry.bundles.spring-data-jpa.test:org.beamfoundry.bundles.spring-data-jpa.test-common:1.6.4.RELEASE_2'
-    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
-
-    testImplementation 'org.mockito:mockito-inline:5.0.0'
-
-    implementation 'junit:junit:4.13.2'
-    testImplementation 'org.testng:testng:7.7.0' /** 일부러 4로 설정 */
-
-    /**
-     * ↓ lombok , mapstruct
-     * !중요 :: mapstruct가 객체의 getter/setter를 체크하므로 lombok annotation이 적용되지 않은 상태에선 무조건 텅 빈 객체를 리턴한다.
-     * !중요 :: 그러므로 mapstruct는 무조건 lombok보다 뒤로 가야 한다.
-     */
-    testCompileOnly 'org.projectlombok:lombok:1.18.30'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
-    testCompileOnly 'org.mapstruct:mapstruct:1.5.5.Final'
-    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
-
-    testCompileOnly group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
-}
+apply from: "$rootDir/gradle/testconfig.gradle"
