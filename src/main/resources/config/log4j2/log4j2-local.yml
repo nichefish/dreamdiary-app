@@ -1,21 +1,60 @@
-#log4j2 설정 파일 : 로컬(local)
+##
+# log4j2-local.yml
+# log4j2 설정 파일 : 로컬(local)
+##
 
-Configutation:
+Configuration:
+    # 일반 로그 출력 레벨 설정
+    # trace | debug | info | warn | error | fatal
     status: info
 
     Properties:
         Property:
-          - name: log-path
-            value: "log"
-          - name: log-format
-            value: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} %c{1}.%M(%L) - %msg%n"
+            - name: log-path
+              value: "log"
+            - name: log-format
+              value: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} %c{1}.%M(%L) - %msg%n"
 
     Appenders:
         Console:
-          name: Console_Appender
-          target: SYSTEM_OUT
-          PatternLayout:
-              pattern: ${log-format}
+            - name: Console_Appender
+              target: SYSTEM_OUT
+              PatternLayout:
+                  pattern: ${log-format}
+        File:
+            - name: File_INFO_Appender
+              fileName: ${log-path}/logfile-INFO.log
+              PatternLayout:
+                  pattern: ${log-format}
+            # WARN↑ 이상 로그 파일 별도 분리
+            - name: File_WARN_Appender
+              fileName: ${log-path}/logfile-WARN.log
+              PatternLayout:
+                  pattern: ${log-format}
+        RollingFile:
+            - name: RollingFile_INFO_Appender
+              fileName: ${log-path}/rollingfile-INFO.log
+              filePattern: "${log-path}/archive/rollingfile-INFO.log.%d{yyyy-MM-dd}.gz"
+              PatternLayout:
+                  pattern: ${log-format}
+              Policies:
+                  SizeBasedTriggeringPolicy:
+                      size: 1GB
+                  TimeBasedTriggeringPolicy:
+                      interval: 1
+                      modulate: true
+            # WARN↑ 이상 로그 파일 별도 분리
+            - name: RollingFile_WARN_Appender
+              fileName: ${log-path}/rollingfile-WARN.log
+              filePattern: "${log-path}/archive/rollingfile-WARN.log.%d{yyyy-MM-dd}.gz"
+              PatternLayout:
+                  pattern: ${log-format}
+              Policies:
+                  SizeBasedTriggeringPolicy:
+                      size: 1GB
+                  TimeBasedTriggeringPolicy:
+                      interval: 1
+                      modulate: true
 
     Loggers:
         Root:

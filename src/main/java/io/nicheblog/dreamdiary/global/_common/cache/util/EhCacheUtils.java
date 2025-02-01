@@ -28,7 +28,7 @@ public class EhCacheUtils {
 
     @Resource(name="jCacheManager")
     CacheManager manager;
-    @Resource
+    @Resource(name="hibernateSessionFactory")
     private SessionFactory factory;
 
     private static CacheManager cacheManager;
@@ -79,7 +79,7 @@ public class EhCacheUtils {
                             try {
                                 final String readableKey = stringifyKey(key);
                                 cacheValue.put(readableKey, value);
-                                log.info("Caffeine Cache Key: {}", readableKey);
+                                log.debug("Caffeine Cache Key: {}", readableKey);
                             } catch (final NoSuchFieldException | IllegalAccessException e) {
                                 throw new RuntimeException(e);
                             }
@@ -95,7 +95,7 @@ public class EhCacheUtils {
                             try {
                                 final String readableKey = stringifyKey(entry.getKey());
                                 cacheValue.put(readableKey, entry.getValue());
-                                log.info("EhCache Key: {}", entry.getKey());
+                                log.debug("EhCache Key: {}", entry.getKey());
                             } catch (final NoSuchFieldException | IllegalAccessException e) {
                                 throw new RuntimeException(e);
                             }
@@ -151,12 +151,12 @@ public class EhCacheUtils {
     public static Object getObjectFromCache(final String cacheName, final Object cacheKey) {
         final Cache cache = cacheManager.getCache(cacheName);
         if (cache == null) {
-            log.info("Cache with name {} does not exist.", cacheName);
+            log.debug("Cache with name {} does not exist.", cacheName);
             return null;
         }
         Cache.ValueWrapper valueWrapper = cache.get(cacheKey);
         if (valueWrapper == null) {
-            log.info("Object with key {} does not exist in cache {}.", cacheKey, cacheName);
+            log.debug("Object with key {} does not exist in cache {}.", cacheKey, cacheName);
             return null;
         }
         return valueWrapper.get();
@@ -168,11 +168,11 @@ public class EhCacheUtils {
     public static void evictCache(final String cacheName, final Object cacheKey) {
         final Cache cache = cacheManager.getCache(cacheName);
         if (cache == null) {
-            log.info("cache name {} does not exists.", cacheName);
+            log.debug("cache name {} does not exists.", cacheName);
             return;
         }
         cache.evict(cacheKey);
-        log.info("cache name {} (key: {}) evicted.", cacheName, cacheKey);
+        log.debug("cache name {} (key: {}) evicted.", cacheName, cacheKey);
     }
 
     /**
@@ -182,12 +182,12 @@ public class EhCacheUtils {
     public static void evictMyCache(String cacheName) {
         final Cache cache = cacheManager.getCache(cacheName);
         if (cache == null) {
-            log.info("cache name {} does not exists.", cacheName);
+            log.debug("cache name {} does not exists.", cacheName);
             return;
         }
         final String myCacheKey = AuthUtils.getLgnUserId();
         cache.evict(myCacheKey);
-        log.info("cache name {} (key: {}) evicted.", cacheName, myCacheKey);
+        log.debug("cache name {} (key: {}) evicted.", cacheName, myCacheKey);
     }
 
     /**
@@ -198,12 +198,12 @@ public class EhCacheUtils {
     public static void evictMyCache(String cacheName, Object cacheKey) {
         final Cache cache = cacheManager.getCache(cacheName);
         if (cache == null || cacheKey == null) {
-            log.info("cache name {} does not exists.", cacheName);
+            log.debug("cache name {} does not exists.", cacheName);
             return;
         }
         final String myCacheKey = AuthUtils.getLgnUserId() + "_" + cacheKey;
         cache.evict(myCacheKey);
-        log.info("cache name {} (key: {}) evicted.", cacheName, myCacheKey);
+        log.debug("cache name {} (key: {}) evicted.", cacheName, myCacheKey);
     }
 
     /**
@@ -212,11 +212,11 @@ public class EhCacheUtils {
     public static void evictCacheAll(final String cacheName) {
         final Cache cache = cacheManager.getCache(cacheName);
         if (cache == null) {
-            log.info("cache name {} does not exists.", cacheName);
+            log.debug("cache name {} does not exists.", cacheName);
             return;
         }
         cache.clear();
-        log.info("cache name {} cleared.", cacheName);
+        log.debug("cache name {} cleared.", cacheName);
     }
 
     /**

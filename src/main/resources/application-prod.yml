@@ -1,25 +1,20 @@
-#application-local.yml
-#운영(prod) 프로필용 설정 파일
+##
+# application-local.yml
+# 운영(prod) 프로필용 설정 파일
+##
 
+# 운영 포트 = 8999
 server:
     port: ${SERVER_PORT:8999}
 
 spring:
-    freemarker:
-        cache: ${FREEMARKER_CACHE:true}
-
     jpa:
         database: mysql
         database-platform: org.hibernate.dialect.MariaDBDialect
-        show-sql: true
-        hibernate:
-            ddl-auto: none
         properties:
             hibernate:
+                database: mysql
                 dialect: org.hibernate.dialect.MariaDBDialect
-                generate-ddl: true
-                show_sql: false     # Hibernate 기본 SQL 출력 비활성화 (p6spy 사용)
-                format_sql: true
 
     sql:
         init:

@@ -1,27 +1,20 @@
-#application-dev.yml
-#개발(dev) 프로필용 설정 파일
+##
+# application-dev.yml
+# 개발(dev) 프로필용 설정 파일
+##
 
-#개발 포트=18081
+# 개발 포트 = 18081
 server:
     port: ${SERVER_PORT:18081}
 
 spring:
-    freemarker:
-        cache: ${FREEMARKER_CACHE:true}
-
     jpa:
         database: mysql
         database-platform: org.hibernate.dialect.MariaDBDialect
-        show-sql: true
-        hibernate:
-            ddl-auto: none
         properties:
             hibernate:
+                database: mysql
                 dialect: org.hibernate.dialect.MariaDBDialect
-                generate-ddl: true
-                show_sql: false     # Hibernate 기본 SQL 출력 비활성화 (p6spy 사용)
-                format_sql: true
-                use_sql_comments: true
 
     sql:
         init:
