@@ -53,6 +53,9 @@ public final class Constant
     /** 스태틱 자원 경로 (인증 불필요) */
     public static final String[] STATIC_PATHS = { "/css/**", "/js/**", "/media/**", "/font/**", "/lib/**", "/metronic/**", "/react/**", "/content/**", "/upfile/public/**" };
 
+    /** 파일업로드 기본 경로 */
+    public static final String UPFILE_PATH = "file/upfile/";
+
     /** IP 헤더 목록 */
     public static final String[] IP_HEADERS = { "X-FORWARDED-FOR", "Proxy-Client-IP",  "WL-Proxy-Client-IP", "HTTP_CLIENT_IP", "HTTP_X_FORWARDED_FOR" };
     public static final String REMOTE_ADDR = "remoteAddr";

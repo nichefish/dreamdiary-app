@@ -142,73 +142,6 @@ public class AtchFileRestController
     }
 
     /**
-     * VOD 파일 다운로드 : 폴더명과 파일명 파라미터로 넘김
-     * Ajax로 유무 체크 후 다운로드하므로 항상 파일이 존재한다 가정하고 진행
-     * (로그인 사용자만 접근 가능.)
-     *
-     * @param dirName 다운로드할 파일이 위치한 폴더명
-     * @param fileName 다운로드할 파일명
-     * @param logParam 로그 기록을 위한 파라미터 객체
-     * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 다운로드 중 발생할 수 있는 예외
-     */
-    @GetMapping("/file/vod/{dir}/{fileName}")
-    @PreAuthorize("isAuthenticated()")
-    @ResponseBody
-    public ResponseEntity<AjaxResponse> staticVodFileDownload(
-            final @PathVariable String dirName,
-            final @PathVariable String fileName,
-            final LogActvtyParam logParam
-    ) throws Exception {
-
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
-        final File file = new File("vod-storage/" + dirName + "/" + fileName);
-        FileUtils.downloadFile(file, fileName);
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
-
-        // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
-
-        return ResponseEntity.ok(ajaxResponse);
-    }
-
-    /**
-     * 정적 파일 다운로드 : /content 폴더 아래에 위치한 파일명으로 다운로드
-     * Ajax로 유무 체크 후 다운로드하므로 항상 파일이 존재한다 가정하고 진행
-     * (로그인 사용자만 접근 가능.)
-     *
-     * @param fileName 다운로드할 파일명
-     * @param logParam 로그 기록을 위한 파라미터 객체
-     * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 다운로드 중 발생할 수 있는 예외
-     */
-    @GetMapping("/file/{fileName}")
-    @ResponseBody
-    public ResponseEntity<AjaxResponse> staticFileDownload(
-            final @PathVariable String fileName,
-            final LogActvtyParam logParam
-    ) throws Exception {
-
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
-        final File file = new File("content/" + fileName);
-        FileUtils.downloadFile(file, fileName);
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
-
-        // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
-
-        return ResponseEntity.ok(ajaxResponse);
-    }
-
-    /**
      * 파일 업로드 : 업로드 후 AtchDtlFileDto 반환 (filepath 정보 포함)
      * (로그인 사용자만 접근 가능.)
      *
@@ -227,7 +160,7 @@ public class AtchFileRestController
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
         // 파일 영역 처리 후 업로드 정보 받아서 반환
-        AtchFileDtlDto atchfileDtl = FileUtils.uploadDtlFile(request);
+        final AtchFileDtlDto atchfileDtl = FileUtils.uploadDtlFile(request);
         assert atchfileDtl != null;
         final boolean isSuccess = (atchfileDtl.getAtchFileDtlNo() != null);
         final String rsltMsg =  MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);

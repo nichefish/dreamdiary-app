@@ -1,9 +1,10 @@
-package io.nicheblog.dreamdiary.global._common.file.service;
+package io.nicheblog.dreamdiary.global._common.file.service.impl;
 
 import io.nicheblog.dreamdiary.global._common.file.entity.AtchFileEntity;
 import io.nicheblog.dreamdiary.global._common.file.mapstruct.AtchFileMapstruct;
 import io.nicheblog.dreamdiary.global._common.file.model.AtchFileDto;
 import io.nicheblog.dreamdiary.global._common.file.repository.jpa.AtchFileRepository;
+import io.nicheblog.dreamdiary.global._common.file.service.AtchFileService;
 import io.nicheblog.dreamdiary.global._common.file.spec.AtchFileSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
 import lombok.Getter;
@@ -18,7 +19,15 @@ import org.springframework.stereotype.Service;
  *
  * @author nichefish
  */
-public interface AtchFileService
-        extends BaseCrudService<AtchFileDto, AtchFileDto, Integer, AtchFileEntity, AtchFileRepository, AtchFileSpec, AtchFileMapstruct> {
-    //
+@Service("atchFileService")
+@RequiredArgsConstructor
+public class AtchFileServiceImpl
+        implements AtchFileService {
+
+    @Getter
+    private final AtchFileRepository repository;
+    @Getter
+    private final AtchFileSpec spec;
+    @Getter
+    private final AtchFileMapstruct mapstruct = AtchFileMapstruct.INSTANCE;
 }
