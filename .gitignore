@@ -1,7 +1,6 @@
 /.gradle/
 /.idea/
 /build/
-/gradle/
 /src/test/resources/application-test.yml
 /src/main/resources/static/metronic/*
 !/src/main/resources/static/metronic/.metronic_v*
