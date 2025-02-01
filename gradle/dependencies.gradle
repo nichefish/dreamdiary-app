@@ -52,6 +52,8 @@ dependencies {
     /* ↓ Flyway (.sql 스키마 버전관리) */
     implementation 'org.flywaydb:flyway-core:11.2.0'
     implementation 'org.flywaydb:flyway-mysql:11.2.0'
+    /* ↓ p6spy (sql 로깅) */
+    implementation 'p6spy:p6spy:3.9.1'
     /* ↓ MyBatis */
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.3.2'
     implementation 'org.mybatis:mybatis:3.5.13'
@@ -131,6 +133,7 @@ dependencies {
     implementation 'org.apache.pdfbox:pdfbox:3.0.0-alpha2'
 
     /* ↓ javax.mail api */
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'com.sun.mail:javax.mail:1.6.2'
     /* ↓ snmp4j (청각 경보) */
     implementation group: 'org.snmp4j', name: 'snmp4j', version: '3.5.1'
