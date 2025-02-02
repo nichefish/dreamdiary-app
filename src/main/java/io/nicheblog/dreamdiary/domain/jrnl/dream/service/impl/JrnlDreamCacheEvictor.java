@@ -33,18 +33,9 @@ public class JrnlDreamCacheEvictor
      */
     @Override
     public void evict(final Integer key) throws Exception {
-        // jrnl_day
-        EhCacheUtils.evictMyCacheAll("myJrnlDayList");
-        // 태그가 삭제되었을 때 태그 목록 캐시 초기화 (부재시 삭제 데이터 조회)
-        JrnlDreamDto jrnlDream = (JrnlDreamDto) EhCacheUtils.getObjectFromCache("myJrnlDreamDtlDto", key);
-        if (jrnlDream == null) {
-            try {
-                jrnlDream = jrnlDreamService.getDtlDto(key);
-            } catch (final Exception e) {
-                jrnlDream = jrnlDreamService.getDeletedDtlDto(key);
-                if (jrnlDream == null) return;
-            }
-        }
+        // 데이터 조회
+        JrnlDreamDto jrnlDream = this.getDataByKey(key);
+        if (jrnlDream == null) return;
         // jrnl_dream
         EhCacheUtils.evictMyCacheAll("myJrnlDreamList");
         EhCacheUtils.evictMyCache("myJrnlDreamDtlDto", key);
@@ -64,5 +55,25 @@ public class JrnlDreamCacheEvictor
         EhCacheUtils.clearL2Cache(JrnlDreamEntity.class);
         EhCacheUtils.clearL2Cache(JrnlDreamTagEntity.class);
         EhCacheUtils.clearL2Cache(JrnlDreamContentTagEntity.class);
+    }
+
+    /**
+     * 캐시에서 (부재시 실제) 객체를 조회하여 반환한다.
+     *
+     * @param key 조회할 객체의 키 (Integer)
+     * @return {@link JrnlDreamDto} 조회된 객체, 조회 실패 시 {@code null}
+     * @throws Exception 조회 과정에서 발생한 예외
+     */
+    @Override
+    public JrnlDreamDto getDataByKey(final Integer key) throws Exception {
+        JrnlDreamDto jrnlDream = (JrnlDreamDto) EhCacheUtils.getObjectFromCache("myJrnlDreamDtlDto", key);
+        if (jrnlDream == null) {
+            try {
+                return jrnlDreamService.getDtlDto(key);
+            } catch (final Exception e) {
+                return jrnlDreamService.getDeletedDtlDto(key);
+            }
+        }
+        return jrnlDream;
     }
 }
