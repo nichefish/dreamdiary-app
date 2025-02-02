@@ -34,6 +34,8 @@
 
     <!--Javascript:: Global Javascript Bundle(used by all pages)-->
     <script type="text/javascript" src="/js/vendor/vue.global<#if activeProfile! == "prod">.prod</#if>.js"></script>
+
+    <!--Javascript:: Global Javascript Bundle(used by all pages)-->
     <script type="text/javascript" src="/js/vendor/stomp.min.js"></script>
     <script type="text/javascript" src="/js/vendor/sockjs.min.js"></script>
     <script type="text/javascript" src="/js/vendor/handlebars.min.js"></script>

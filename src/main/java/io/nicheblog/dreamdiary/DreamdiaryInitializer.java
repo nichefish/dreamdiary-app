@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
 import io.nicheblog.dreamdiary.global.ActiveProfile;
 import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.ServerInfo;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.sys.event.LogSysEvent;
 import io.nicheblog.dreamdiary.global._common.log.sys.handler.LogSysEventListener;
@@ -23,6 +24,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -40,6 +42,7 @@ public class DreamdiaryInitializer
         implements CommandLineRunner {
 
     private final ActiveProfile activeProfile;
+    private final ServerInfo serverInfo;
     private final AuthService authService;
     private final UserService userService;
     private final LgnPolicyService lgnPolicyService;
@@ -57,7 +60,6 @@ public class DreamdiaryInitializer
     public void run(final String... args) throws Exception {
 
         log.info("DreamdiaryApplication init... activeProfile: {}", activeProfile.getActive());
-
 
         this.regSystemAcntIfEmpty();
         // 로그인 정책 부재시 등록 :: 메소드 분리

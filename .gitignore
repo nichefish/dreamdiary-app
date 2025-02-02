@@ -19,7 +19,7 @@
 !/file/flsys/.file_system_path.md
 !/file/report/pdf_temp/.pdf_generated_temp_path.md
 # .env 제외
-/.env*
+/config/env/.env*
 # TypeScript, SCSS 컴파일 결과물 제외
 /static/**/*.js
 /static/**/*.css*

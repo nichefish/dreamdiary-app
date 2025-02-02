@@ -25,7 +25,7 @@ public class GeoIp2Utils {
      * IP 주소로 국가 정보 조회
      */
     public static Country getNtnByIp(final String ipAddr) throws Exception {
-        final File database = new File("GeoLite2-City.mmdb");
+        final File database = new File("static/GeoLite2-City.mmdb");
         if (!database.exists()) throw new FileNotFoundException("FileNotFoundException");
 
         // This reader object should be reused across lookups as creation of it is expensive.

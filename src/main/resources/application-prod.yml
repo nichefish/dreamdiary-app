@@ -5,6 +5,7 @@
 
 # 운영 포트 = 8999
 server:
+    domain: ${SERVER_DOMAIN:localhost}
     port: ${SERVER_PORT:8999}
 
 spring:

@@ -3,6 +3,7 @@
  *
  * @author nichefish
  */
+import Profile from '../../../js/profile.js';
 export default {
     data() {
         return {
@@ -14,8 +15,8 @@ export default {
     methods: {
         // WebSocket 연결 설정
         connectWebSocket(): void {
-            // STOMP 클라이언트 생성
-            const brokerUrl: string = "http://localhost:18081/chat";
+            // @ts-ignore  // STOMP 클라이언트 생성
+            const brokerUrl: string = `http://${Profile.domain}:${Profile.port}/chat"`;
             // @ts-ignore
             this.stompClient = Stomp.client(brokerUrl);
             const successCallback = () => {

@@ -1,9 +1,15 @@
 #!/bin/bash
+
+APP_DIR="/home/dreamdiary/app/dreamdiary"
+JAR_FILE="$APP_DIR/dreamdiary.jar"
+
+echo "Starting Dreamdiary application..."
+
 exec java -jar \
-  -Dspring.profiles.active=prod \
-  -Duser.timezone=Asia/Seoul \
   -Xms1g \
   -Xmx8g \
   -server \
   -XX:+UseG1GC \
-  /dreamdiary/dreamdiary.jar
+  -XX:+HeapDumpOnOutOfMemoryError \
+  -XX:HeapDumpPath="$APP_DIR/heapdump.hprof" \
+  $JAR_FILE
