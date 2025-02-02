@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.global._common._clsf.comment.entity.CommentEntity
 import io.nicheblog.dreamdiary.global._common._clsf.comment.entity.CommentEntityTestFactory;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
 import io.nicheblog.dreamdiary.global.config.TestAuditConfig;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,7 +71,7 @@ class CommentRepositoryTest {
         // When::
         final CommentEntity registered = commentRepository.save(commentEntity);
         final Integer key = registered.getPostNo();
-        final CommentEntity retrieved = commentRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final CommentEntity retrieved = commentRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -91,7 +92,7 @@ class CommentRepositoryTest {
         Integer key = registered.getPostNo();
 
         // When::
-        CommentEntity toModify = commentRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("수정할 데이터를 찾을 수 없습니다."));
+        CommentEntity toModify = commentRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
         toModify.setCn("modified.");
         CommentEntity modified = commentRepository.save(toModify);
 
@@ -116,7 +117,7 @@ class CommentRepositoryTest {
         final Integer key = registered.getPostNo();
 
         // When::
-        final CommentEntity toDelete = commentRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
+        final CommentEntity toDelete = commentRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete")));
         commentRepository.delete(toDelete);
 
         final CommentEntity retrieved = commentRepository.findById(key).orElse(null);

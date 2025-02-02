@@ -14,6 +14,7 @@ import io.nicheblog.dreamdiary.global._common._clsf.ContentType;
 import io.nicheblog.dreamdiary.global._common.cache.event.EhCacheEvictEvent;
 import io.nicheblog.dreamdiary.global._common.cache.handler.EhCacheEvictEventListner;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -129,7 +130,7 @@ public class JrnlDiaryServiceImpl
     public JrnlDiaryDto getDtlDtoWithCache(final Integer key) throws Exception {
         final JrnlDiaryDto retrieved = this.getSelf().getDtlDto(key);
         // 권한 체크
-        if (!retrieved.getIsRegstr()) throw new NotAuthorizedException("조회 권한이 없습니다.");
+        if (!retrieved.getIsRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("common.rslt.access-not-authorized"));
         return retrieved;
     }
 
@@ -142,7 +143,7 @@ public class JrnlDiaryServiceImpl
      */
     @Override
     public void preDelete(final JrnlDiaryEntity deleteEntity) throws Exception {
-        if (!deleteEntity.isRegstr()) throw new NotAuthorizedException("삭제 권한이 없습니다.");
+        if (!deleteEntity.isRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("delete-not-authorized"));
     };
 
     /**

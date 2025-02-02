@@ -74,7 +74,7 @@ public class AuthRestController {
 
             return ResponseEntity.ok(ajaxResponse);
         } catch (final JwtException jwtException) {
-            ajaxResponse.setAjaxResult(false, MessageUtils.getMessage(MessageUtils.INVALID_TOKEN));
+            ajaxResponse.setAjaxResult(false, MessageUtils.getExceptionMsg("JwtException"));
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(ajaxResponse);

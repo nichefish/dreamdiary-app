@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.domain.user.info.mapstuct;
 
+import io.nicheblog.dreamdiary.auth.Auth;
 import io.nicheblog.dreamdiary.domain.user.emplym.entity.UserEmplymEntity;
 import io.nicheblog.dreamdiary.domain.user.emplym.model.UserEmplymDtoTestFactory;
 import io.nicheblog.dreamdiary.domain.user.info.entity.UserAcsIpEntity;
@@ -14,7 +15,6 @@ import io.nicheblog.dreamdiary.domain.user.info.model.profl.UserProflDto;
 import io.nicheblog.dreamdiary.domain.user.profl.entity.UserProflEntity;
 import io.nicheblog.dreamdiary.domain.user.profl.model.UserProflDtoTestFactory;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.auth.Auth;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;

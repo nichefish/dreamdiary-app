@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.domain.jrnl.day.service;
 
+import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDtoTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.config.TestAuditConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,6 @@ import javax.annotation.Resource;
 import javax.persistence.EntityNotFoundException;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mockStatic;
 
 /**

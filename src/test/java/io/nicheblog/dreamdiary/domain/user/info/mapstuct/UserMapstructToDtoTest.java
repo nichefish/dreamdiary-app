@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.domain.user.info.mapstuct;
 
+import io.nicheblog.dreamdiary.auth.Auth;
 import io.nicheblog.dreamdiary.domain.user.emplym.entity.UserEmplymEntity;
 import io.nicheblog.dreamdiary.domain.user.emplym.entity.UserEmplymEntityTestFactory;
 import io.nicheblog.dreamdiary.domain.user.info.entity.*;
@@ -9,7 +10,6 @@ import io.nicheblog.dreamdiary.domain.user.profl.entity.UserProflEntity;
 import io.nicheblog.dreamdiary.domain.user.profl.entity.UserProflEntityTestFactory;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.TestConstant;
-import io.nicheblog.dreamdiary.auth.Auth;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseEntityTestFactoryHelper;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;

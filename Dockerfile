@@ -1,8 +1,10 @@
+##
 # Dockerfile이 위치한 디렉터리에서 Docker 이미지를 빌드합니다.
 # docker build -t dreamdiary .
 # 빌드된 Docker 이미지를 기반으로 컨테이너를 실행합니다.
 # docker network ls
 # docker run -d --name dreamdiary -p 8080:8080 --network="dreamdiary_network" dreamdiary
+##
 
 FROM openjdk:11-jre
 

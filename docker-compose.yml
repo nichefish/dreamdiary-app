@@ -1,3 +1,5 @@
+##
+# docker-compose.yml
 # "Don’t use environment variables to pass sensitive information, such as passwords, in to your containers. Use secrets instead."
 # PowerShell(+IntelliJ) 터미널에서 실행시 한 줄씩 환경변수를 먹이고 docker-compose를 띄운다.
 # 예:
@@ -7,6 +9,9 @@
 #   $env:REDIS_PORT=6379
 #   $env:REDIS_PASSWORD="your_redis_password"
 #   docker-compose --env-file .env.local up -d
+#
+# @author nichefish
+##
 name: dreamdiary
 services:
   zookeeper:

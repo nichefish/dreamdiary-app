@@ -195,7 +195,7 @@ dF.User = (function(): dfModule {
          */
         pwResetAjax: function(): void {
             Swal.fire({
-                text: Message.get("view.cnfm.resetPw"),
+                text: Message.get("view.cnfm.reset-pw"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;

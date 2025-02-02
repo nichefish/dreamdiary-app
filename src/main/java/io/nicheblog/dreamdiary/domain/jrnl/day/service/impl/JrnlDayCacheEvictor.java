@@ -33,23 +33,15 @@ public class JrnlDayCacheEvictor
      */
     @Override
     public void evict(final Integer key) throws Exception {
-        // jrnl_day
-        EhCacheUtils.evictMyCacheAll("myJrnlDayList");
-        // 태그가 삭제되었을 때 태그 목록 캐시 초기화
-        JrnlDayDto jrnlDay = (JrnlDayDto) EhCacheUtils.getObjectFromCache("myJrnlDayDtlDto", key);
-        if (jrnlDay == null) {
-            try {
-                jrnlDay = jrnlDayService.getDtlDto(key);
-            } catch (final Exception e) {
-                jrnlDay = jrnlDayService.getDeletedDtlDto(key);
-                if (jrnlDay == null) return;
-            }
-        }
+        // 데이터 조회
+        final JrnlDayDto jrnlDay = this.getDataByKey(key);
+        if (jrnlDay == null) return;
         // 년도-월에 따른 캐시 삭제
         final String yy = jrnlDay.getYy();
         final String mnth = jrnlDay.getMnth();
         // jrnl_day
         EhCacheUtils.evictMyCache("myJrnlDayDtlDto", key);
+        EhCacheUtils.evictMyCacheAll("myJrnlDayList");
         this.evictMyCacheForPeriod("myJrnlDayList", yy, mnth);
         this.evictMyCacheForPeriod("myJrnlDayCalList", yy, mnth);
         // jrnl_day_tag
@@ -61,5 +53,25 @@ public class JrnlDayCacheEvictor
         EhCacheUtils.clearL2Cache(JrnlDayEntity.class);
         EhCacheUtils.clearL2Cache(JrnlDayTagEntity.class);
         EhCacheUtils.clearL2Cache(JrnlDayContentTagEntity.class);
+    }
+
+    /**
+     * 캐시에서 (부재시 실제) 객체를 조회하여 반환한다.
+     *
+     * @param key 조회할 객체의 키 (Integer)
+     * @return {@link JrnlDayDto} 조회된 객체, 조회 실패 시 {@code null}
+     * @throws Exception 조회 과정에서 발생한 예외
+     */
+    @Override
+    public JrnlDayDto getDataByKey(final Integer key) throws Exception {
+        JrnlDayDto jrnlDay = (JrnlDayDto) EhCacheUtils.getObjectFromCache("myJrnlDayDtlDto", key);
+        if (jrnlDay == null) {
+            try {
+                return jrnlDayService.getDtlDto(key);
+            } catch (final Exception e) {
+                return jrnlDayService.getDeletedDtlDto(key);
+            }
+        }
+        return jrnlDay;
     }
 }

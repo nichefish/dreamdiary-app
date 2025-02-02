@@ -7,6 +7,7 @@ import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.entity.LgnPolicyEntity;
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.service.LgnPolicyService;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -58,7 +59,7 @@ public class AuthenticationHelper {
     public Boolean validateAuth(final Authentication authentication, final AuthInfo authInfo) throws Exception {
 
         // 계정 존재여부 체크
-        if (authentication == null || authInfo == null) throw new InternalAuthenticationServiceException("오류가 발생했습니다.");
+        if (authentication == null || authInfo == null) throw new InternalAuthenticationServiceException(MessageUtils.getExceptionMsg("Exception"));
 
         // 중복 로그인 '확인'(기존 아이디 끊기) 후 들어왔을 시 바로 패스 :: 메소드 분리
         final String username = authentication.getName();
@@ -66,7 +67,7 @@ public class AuthenticationHelper {
 
         // password 일치여부 체크
         final String password = (String) authentication.getCredentials();
-        if (!passwordEncoder.matches(password, authInfo.getPassword())) throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
+        if (!passwordEncoder.matches(password, authInfo.getPassword())) throw new BadCredentialsException(MessageUtils.getExceptionMsg("BadCredentialsException"));
 
         authInfo.nullifyPasswordInfo();
         return this.validateAuth(authInfo);
@@ -81,32 +82,32 @@ public class AuthenticationHelper {
      * @throws Exception 인증 과정 중 발생할 수 있는 예외
      */
     public Boolean validateAuth(final AuthInfo authInfo) throws Exception {
-        if (authInfo == null) throw new UsernameNotFoundException("사용자 정보가 없습니다.");
+        if (authInfo == null) throw new UsernameNotFoundException(MessageUtils.getExceptionMsg("UsernameNotFoundException"));
 
         final String username = authInfo.getUsername();
 
         // 승인여부 체크
-        if (!"Y".equals(authInfo.getCfYn())) throw new AcntNotCfException("승인되지 않은 계정입니다. 관리자에게 문의해주세요.");
+        if (!"Y".equals(authInfo.getCfYn())) throw new AcntNotCfException(MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider.AcntNotCfException"));
 
         // 장기간 미로그인여부 체크 :: 시스템계정"system"은 제외
-        if (userService.isDormant(username)) throw new AcntDormantException("장기간 미로그인으로 잠금 처리된 계정입니다. 관리자에게 문의해주세요.");
+        if (userService.isDormant(username)) throw new AcntDormantException(MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider.AcntDormantException"));
 
         // 잠금여부 체크
-        if ("Y".equals(authInfo.getLockedYn())) throw new LockedException("잠금 처리된 계정입니다. 관리자에게 문의해주세요.");
+        if ("Y".equals(authInfo.getLockedYn())) throw new LockedException(MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider.LockedException"));
 
         // 접속IP 체크 :: 메소드 분리
-        if (!this.isAcsIpValid(authInfo)) throw new AcsIpNotAllowedException("접속 불가능한 IP입니다.");
+        if (!this.isAcsIpValid(authInfo)) throw new AcsIpNotAllowedException(MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider.AcsIpNotAllowedException"));
 
         // 비밀번호 만료 여부 체크
-        if (!this.isPwExpryValid(authInfo)) throw new CredentialsExpiredException("비밀번호 유효 기간이 만료되었습니다. 비밀번호를 변경해주세요.");
+        if (!this.isPwExpryValid(authInfo)) throw new CredentialsExpiredException(MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider.CredentialsExpiredException"));
 
         // 비밀번호 변경 필요 여부 체크
         final boolean needsPwReset = "Y".equals(authInfo.getNeedsPwReset());
-        if (needsPwReset) throw new AcntNeedsPwResetException("비밀번호를 재설정해야 로그인이 가능합니다.");
+        if (needsPwReset) throw new AcntNeedsPwResetException(MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider.AcntNeedsPwResetException"));
 
         // 중복 로그인 체크 :: 세션 attribute 훑어서 "lgnId" 비교
         final boolean isDupLgn = DupIdLgnManager.isDupIdLgn(username);
-        if (isDupLgn) throw new DupIdLgnException("이미 로그인 상태인 ID입니다.");
+        if (isDupLgn) throw new DupIdLgnException(MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider.DupIdLgnException"));
 
         return true;
     }

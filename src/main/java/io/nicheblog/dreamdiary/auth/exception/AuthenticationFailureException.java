@@ -3,14 +3,14 @@ package io.nicheblog.dreamdiary.auth.exception;
 import org.springframework.security.core.AuthenticationException;
 
 /**
- * NotAuthorizedException
+ * AuthenticationFailureException
  * <pre>
- *  자원에 할당된 인가authorization 정보 부재시 던지는 Custom Exception
+ *  인증authentication 실패시 던지는 Custom Exception
  * </pre>
  *
  * @author nichefish
  */
-public class NotAuthorizedException
+public class AuthenticationFailureException
         extends AuthenticationException {
 
     /**
@@ -19,7 +19,7 @@ public class NotAuthorizedException
      * @param msg 예외 메시지
      * @param cause 이 예외의 원인
      */
-    public NotAuthorizedException(final String msg, final Throwable cause) {
+    public AuthenticationFailureException(final String msg, final Throwable cause) {
         super(msg, cause);
     }
 
@@ -28,7 +28,7 @@ public class NotAuthorizedException
      *
      * @param msg 예외 메시지
      */
-    public NotAuthorizedException(final String msg) {
+    public AuthenticationFailureException(final String msg) {
         super(msg);
     }
 }

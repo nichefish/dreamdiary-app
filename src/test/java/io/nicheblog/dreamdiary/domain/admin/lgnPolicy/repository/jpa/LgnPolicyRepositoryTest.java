@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.entity.LgnPolicyEntityTest
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
 import io.nicheblog.dreamdiary.global.config.TestAuditConfig;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,7 +61,7 @@ class LgnPolicyRepositoryTest {
         // When::
         final LgnPolicyEntity registered = lgnPolicyRepository.save(lgnPolicyEntity);
         final Integer key = registered.getLgnPolicyNo();
-        final LgnPolicyEntity retrieved = lgnPolicyRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final LgnPolicyEntity retrieved = lgnPolicyRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -81,7 +82,7 @@ class LgnPolicyRepositoryTest {
         Integer key = registered.getLgnPolicyNo();
 
         // When::
-        LgnPolicyEntity toModify = lgnPolicyRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("수정할 데이터를 찾을 수 없습니다."));
+        LgnPolicyEntity toModify = lgnPolicyRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
         toModify.setLgnTryLmt(25);
         LgnPolicyEntity modified = lgnPolicyRepository.save(toModify);
 
@@ -106,7 +107,7 @@ class LgnPolicyRepositoryTest {
         final Integer key = registered.getLgnPolicyNo();
 
         // When::
-        final LgnPolicyEntity toDelete = lgnPolicyRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
+        final LgnPolicyEntity toDelete = lgnPolicyRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete")));
         lgnPolicyRepository.delete(toDelete);
 
         final LgnPolicyEntity retrieved = lgnPolicyRepository.findById(key).orElse(null);

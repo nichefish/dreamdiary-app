@@ -68,7 +68,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable>
     @Override
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    public Stream<T> streamAllBy(Specification searchWith) {
+    public Stream<T> streamAllBy(Specification<T> searchWith) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> query = cb.createQuery(getDomainClass());
         Root<T> root = query.from(getDomainClass());
@@ -80,7 +80,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable>
     @Override
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    public Stream<T> streamAllBy(Specification searchWith, Sort sort) {
+    public Stream<T> streamAllBy(Specification<T> searchWith, Sort sort) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> query = cb.createQuery(getDomainClass());
         Root<T> root = query.from(getDomainClass());

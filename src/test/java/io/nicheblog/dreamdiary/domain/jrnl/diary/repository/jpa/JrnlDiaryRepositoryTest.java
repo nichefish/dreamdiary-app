@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntityTestFacto
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
 import io.nicheblog.dreamdiary.global.config.TestAuditConfig;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,7 +61,7 @@ class JrnlDiaryRepositoryTest {
         // When::
         final JrnlDiaryEntity registered = jrnlDiaryRepository.save(jrnlDiaryEntity);
         final Integer key = registered.getPostNo();
-        final JrnlDiaryEntity retrieved = jrnlDiaryRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final JrnlDiaryEntity retrieved = jrnlDiaryRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -81,7 +82,7 @@ class JrnlDiaryRepositoryTest {
         Integer key = registered.getPostNo();
 
         // When::
-        JrnlDiaryEntity toModify = jrnlDiaryRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("수정할 데이터를 찾을 수 없습니다."));
+        JrnlDiaryEntity toModify = jrnlDiaryRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
         toModify.setCn("modified");
         JrnlDiaryEntity modified = jrnlDiaryRepository.save(toModify);
 
@@ -106,7 +107,7 @@ class JrnlDiaryRepositoryTest {
         final Integer key = registered.getPostNo();
 
         // When::
-        final JrnlDiaryEntity toDelete = jrnlDiaryRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
+        final JrnlDiaryEntity toDelete = jrnlDiaryRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete")));
         jrnlDiaryRepository.delete(toDelete);
 
         final JrnlDiaryEntity retrieved = jrnlDiaryRepository.findById(key).orElse(null);

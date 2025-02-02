@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.global._common.cd.entity.ClCdEntity;
 import io.nicheblog.dreamdiary.global._common.cd.entity.ClCdEntityTestFactory;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
 import io.nicheblog.dreamdiary.global.config.TestAuditConfig;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,7 +66,7 @@ class ClCdRepositoryTest {
         // When::
         final ClCdEntity registered = clCdRepository.save(clCdEntity);
         final String key = registered.getClCd();
-        final ClCdEntity retrieved = clCdRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final ClCdEntity retrieved = clCdRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -86,7 +87,7 @@ class ClCdRepositoryTest {
         String key = registered.getClCd();
 
         // When::
-        ClCdEntity toModify = clCdRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("수정할 데이터를 찾을 수 없습니다."));
+        ClCdEntity toModify = clCdRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
         toModify.setDc("modified");
         ClCdEntity modified = clCdRepository.save(toModify);
 
@@ -111,7 +112,7 @@ class ClCdRepositoryTest {
         final String key = registered.getClCd();
 
         // When::
-        final ClCdEntity toDelete = clCdRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
+        final ClCdEntity toDelete = clCdRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete")));
         clCdRepository.delete(toDelete);
 
         final ClCdEntity retrieved = clCdRepository.findById(key).orElse(null);

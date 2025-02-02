@@ -147,7 +147,7 @@ cF.ajax = (function(): Module {
 
     const handleError = async (response: Response): Promise<void> => {
         const statusCode: number = response.status;
-        const msg: string = await response.json().catch(() => Message.get("view.error.access_denied"));      // "접근이 거부되었습니다. (ACCESS DENIED)"
+        const msg: string = await response.json().catch(() => Message.get("view.error.access-denied"));      // "접근이 거부되었습니다. (ACCESS DENIED)"
         const lgnFormUrl: string = "/auth/lgnForm.do";
 
         switch(statusCode) {

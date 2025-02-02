@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.global._common.cd.entity.DtlCdEntityTestFactory;
 import io.nicheblog.dreamdiary.global._common.cd.entity.DtlCdKey;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
 import io.nicheblog.dreamdiary.global.config.TestAuditConfig;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,7 +67,7 @@ class DtlCdRepositoryTest {
         // When::
         final DtlCdEntity registered = dtlCdRepository.save(dtlCdEntity);
         final DtlCdKey key = registered.getKey();
-        final DtlCdEntity retrieved = dtlCdRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final DtlCdEntity retrieved = dtlCdRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -87,7 +88,7 @@ class DtlCdRepositoryTest {
         DtlCdKey key = registered.getKey();
 
         // When::
-        DtlCdEntity toModify = dtlCdRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("수정할 데이터를 찾을 수 없습니다."));
+        DtlCdEntity toModify = dtlCdRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
         toModify.setDc("modified");
         DtlCdEntity modified = dtlCdRepository.save(toModify);
 
@@ -112,7 +113,7 @@ class DtlCdRepositoryTest {
         final DtlCdKey key = registered.getKey();
 
         // When::
-        final DtlCdEntity toDelete = dtlCdRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
+        final DtlCdEntity toDelete = dtlCdRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete")));
         dtlCdRepository.delete(toDelete);
 
         final DtlCdEntity retrieved = dtlCdRepository.findById(key).orElse(null);

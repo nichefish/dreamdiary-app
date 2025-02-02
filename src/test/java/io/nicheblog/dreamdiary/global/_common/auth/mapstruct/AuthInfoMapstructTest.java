@@ -1,13 +1,14 @@
-package io.nicheblog.dreamdiary.auth.mapstruct;
+package io.nicheblog.dreamdiary.global._common.auth.mapstruct;
 
+import io.nicheblog.dreamdiary.auth.Auth;
+import io.nicheblog.dreamdiary.auth.mapstruct.AuthInfoMapstruct;
+import io.nicheblog.dreamdiary.auth.model.AuthInfo;
 import io.nicheblog.dreamdiary.domain.user.info.entity.*;
 import io.nicheblog.dreamdiary.domain.user.info.model.profl.UserProflDto;
 import io.nicheblog.dreamdiary.domain.user.profl.entity.UserProflEntity;
 import io.nicheblog.dreamdiary.domain.user.profl.entity.UserProflEntityTestFactory;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.TestConstant;
-import io.nicheblog.dreamdiary.auth.Auth;
-import io.nicheblog.dreamdiary.auth.model.AuthInfo;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
@@ -55,14 +56,14 @@ class AuthInfoMapstructTest {
 
         // Then::
         assertNotNull(dto);
-        assertEquals(dto.getUserId(), TestConstant.TEST_USER);
-        assertEquals(dto.getPassword(), TestConstant.TEST_PASSWORD_ENCODED);
-        assertEquals(dto.getNickNm(), TestConstant.TEST_NICK_NM);
-        assertEquals(dto.getProflImgUrl(), "test_url");
+        assertEquals(TestConstant.TEST_USER, dto.getUserId());
+        assertEquals(TestConstant.TEST_PASSWORD_ENCODED, dto.getPassword());
+        assertEquals(TestConstant.TEST_NICK_NM, dto.getNickNm());
+        assertEquals("test_url", dto.getProflImgUrl());
         // 접속 IP
-        assertEquals(dto.getUseAcsIpYn(), "Y");
+        assertEquals("Y", dto.getUseAcsIpYn());
         assertFalse(CollectionUtils.isEmpty(dto.getAcsIpStrList()));
-        assertEquals(dto.getAcsIpStrList().size(), 2);
+        assertEquals(2, dto.getAcsIpStrList().size());
         assertEquals(dto.getAcsIpStrList(), List.of("1.1.1.1", "2.2.2.2"));
     }
 
@@ -92,13 +93,13 @@ class AuthInfoMapstructTest {
         assertNotNull(dto);
         // authList
         assertFalse(CollectionUtils.isEmpty(dto.getAuthList()));
-        assertEquals(dto.getAuthList().size(), 2);
-        assertEquals(dto.getAuthList().get(0).getAuthCd(), Constant.AUTH_USER);
-        assertEquals(dto.getAuthList().get(1).getAuthCd(), Constant.AUTH_MNGR);
+        assertEquals(2, dto.getAuthList().size());
+        assertEquals(Constant.AUTH_USER, dto.getAuthList().get(0).getAuthCd());
+        assertEquals(Constant.AUTH_MNGR, dto.getAuthList().get(1).getAuthCd());
         // acntStus
-        assertEquals(dto.getLockedYn(), "N");
-        assertEquals(dto.getNeedsPwReset(), "Y");
-        assertEquals(dto.getCfYn(), "N");
+        assertEquals("N", dto.getLockedYn());
+        assertEquals("Y", dto.getNeedsPwReset());
+        assertEquals("N", dto.getCfYn());
     }
 
     /**
@@ -169,9 +170,9 @@ class AuthInfoMapstructTest {
         assertNotNull(dto);
         // acntStus - lstLgnDt, pwChgDt 대신 regDt 사용
         UserProflDto userProfl = dto.getProfl();
-        assertEquals(userProfl.getBrthdy(), "2000-01-01");
-        assertEquals(userProfl.getProflCn(), "test_profl_cn");
-        assertEquals(dto.getUserProflNo(), 1);
+        assertEquals("2000-01-01", userProfl.getBrthdy());
+        assertEquals("test_profl_cn", userProfl.getProflCn());
+        assertEquals(1, dto.getUserProflNo());
     }
 
 }

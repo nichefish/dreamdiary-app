@@ -1,4 +1,8 @@
-// tsconfig.json
+/**
+ * tsconfig.json
+ *
+ * @author nichefish
+ */
 {
   "extends": "./tsconfig.base.json",
   "include": [

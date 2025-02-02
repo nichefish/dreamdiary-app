@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.domain.jrnl.dream.service;
 
+import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDtoTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.config.TestAuditConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
