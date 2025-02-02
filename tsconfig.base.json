@@ -1,4 +1,8 @@
-// tsconfig.json
+/**
+ * tsconfig.base.json
+ *
+ * @author nichefish
+ */
 {
   "compilerOptions": {
     "target": "es2021",         // 컴파일된 JavaScript 버전

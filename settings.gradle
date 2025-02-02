@@ -1,1 +1,7 @@
+/**
+ * settings.gradle
+ *
+ * @author nichefish
+ */
+
 rootProject.name = 'dreamdiary'

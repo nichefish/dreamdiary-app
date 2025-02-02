@@ -1,4 +1,8 @@
-// tsconfig.vue.json
+/**
+ * tsconfig.vue.json
+ *
+ * @author nichefish
+ */
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
