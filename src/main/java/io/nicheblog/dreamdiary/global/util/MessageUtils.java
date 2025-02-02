@@ -51,17 +51,13 @@ public class MessageUtils
 
     public static final String RSLT_SUCCESS = "common.rslt.success";
     public static final String RSLT_FAILURE = "common.rslt.failure";
-    public static final String RSLT_EXCEPTION = "common.exception";
     public static final String RSLT_EMPTY = "common.rslt.empty";
+    public static final String RSLT_EXCEPTION = "exception";
 
-    public static final String INVALID_TOKEN = "common.exception.JwtException";
+    public static final String RSLT_JANDI_SUCCESS = "jandi.rslt.success";
+    public static final String RSLT_JANDI_FAILURE = "jandi.rslt.failure";
 
-    public static final String RSLT_JANDI_SUCCESS = "common.rslt.jandi.success";
-    public static final String RSLT_JANDI_FAILURE = "common.rslt.jandi.failure";
-
-    public static final String RSLT_USER_ID_DUP = "userInfo.ipDupChck.rslt.idUnusable";
-    public static final String RSLT_USER_ID_NOT_DUP = "userInfo.ipDupChck.rslt.idUsable";
-    public static final String RSLT_SUCCESS_PW_RESET = "userInfo.resetPw.rslt.success";
+    public static final String RSLT_SUCCESS_PW_RESET = "user.pw.reset.rslt.success";
 
     public static final String LGN_FAIL_BADCREDENTIALS_CNT = "AbstractUserDetailsAuthenticationProvider.badCredentials.failCnt";
     public static final String LGN_FAIL_BADCREDENTIALS_LOCKED = "AbstractUserDetailsAuthenticationProvider.badCredentials.locked";
@@ -155,6 +151,17 @@ public class MessageUtils
         final String rsltMsg = getMessage(RSLT_EXCEPTION + "." + exceptionNm);
         log.error("exceptionNm: {}, rsltMsg: {}. {}", exceptionNm, rsltMsg, e.getStackTrace());
         return rsltMsg;
+    }
+
+    /**
+     * 공통 > Exception 이름으로 해당 message 반환
+     * messageBundle에 exception 클래스명으로 설정시 해당 에러메세지를 반환한다.
+     *
+     * @param e 발생한 예외
+     * @return {@link String} -- 예외 메시지
+     */
+    public static String getExceptionMsg(final String exceptionNm) {
+        return getMessage(RSLT_EXCEPTION + "." + exceptionNm);
     }
 
     /**

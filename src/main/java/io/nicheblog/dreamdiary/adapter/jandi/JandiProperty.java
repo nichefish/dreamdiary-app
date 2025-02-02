@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.adapter.jandi;
 
 import io.nicheblog.dreamdiary.adapter.jandi.exception.JandiException;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -44,10 +45,11 @@ public class JandiProperty {
 
     /** 토픽 조회 */
     public String getId(final String name) {
-        if (StringUtils.isEmpty(name)) throw new JandiException("팀 이름을 찾을 수 없습니다.");
+        if (StringUtils.isEmpty(name)) throw new JandiException(MessageUtils.getMessage("jandi.rslt.team-not-found"));
+
         for (final Topic topic : this.topics) {
             if (name.equals(topic.getName())) return topic.getId();
         }
-        throw new JandiException("팀 이름을 찾을 수 없습니다.");
+        throw new JandiException(MessageUtils.getMessage("jandi.rslt.team-not-found"));
     }
 }

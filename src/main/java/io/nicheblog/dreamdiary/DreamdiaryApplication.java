@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import io.nicheblog.NicheblogBasePackage;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.YmlLoader;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringApplication;
@@ -46,7 +47,7 @@ public class DreamdiaryApplication {
             setDotEnvPropertiesByFileNm(".env");
             // 프로필 기반 .env.${profile} 프로퍼티 로드 (시점이 맞지 않기 떄문에 .yml 강제 파싱)
             final String profile = YmlLoader.loadSpringProfile();
-            if (profile == null) throw new IllegalStateException("spring.profiles.active가 설정되지 않았습니다.");
+            if (profile == null) throw new IllegalStateException(MessageUtils.getMessage("common.status.profile-not-set"));
 
             setDotEnvPropertiesByFileNm(".env." + profile);
         } catch (final Exception e) {

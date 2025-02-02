@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.domain.jrnl.day.controller;
 
+import io.nicheblog.dreamdiary.auth.model.AuthInfo;
+import io.nicheblog.dreamdiary.auth.model.AuthInfoTestFactory;
 import io.nicheblog.dreamdiary.domain.jrnl.day.repository.jpa.JrnlDayRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayService;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.auth.model.AuthInfo;
-import io.nicheblog.dreamdiary.auth.model.AuthInfoTestFactory;
 import io.nicheblog.dreamdiary.global.config.TestFreemarkerConfig;
 import io.nicheblog.dreamdiary.global.intrfc.controller.BaseControllerTestHelper;
 import lombok.extern.log4j.Log4j2;

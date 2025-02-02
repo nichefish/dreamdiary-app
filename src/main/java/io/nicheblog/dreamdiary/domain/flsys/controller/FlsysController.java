@@ -112,7 +112,7 @@ public class FlsysController
         String rsltMsg = "";
         try {
             // 해당하는 경로의 파일시스템 정보 조회
-            if (!filePath.startsWith(Constant.HOME_FLSYS)) throw new IllegalArgumentException("허용되지 않은 경로입니다.");
+            if (!filePath.startsWith(Constant.HOME_FLSYS)) throw new IllegalArgumentException(MessageUtils.getExceptionMsg("IllegalArgumentException.not-allowed-path"));
             final FlsysDto file = flsysService.getFlsysByPath(filePath);
             ajaxResponse.setRsltObj(file);
 
@@ -150,7 +150,7 @@ public class FlsysController
         boolean isSuccess = false;
         String rsltMsg = "";
         try {
-            if (!filePath.startsWith(Constant.HOME_FLSYS)) throw new IllegalArgumentException("허용되지 않은 경로입니다.");
+            if (!filePath.startsWith(Constant.HOME_FLSYS)) throw new IllegalArgumentException(MessageUtils.getExceptionMsg("IllegalArgumentException.not-allowed-path"));
 
             final FlsysDto file = flsysService.getFlsysByPath(filePath);
             // 응답 헤더 설정 및 한글 파일명 처리 (메소드 분리)

@@ -11,6 +11,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.dream.repository.jpa.JrnlDreamReposit
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
 import io.nicheblog.dreamdiary.global.config.TestAuditConfig;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
@@ -87,7 +88,7 @@ class JrnlDayRepositoryTest {
         // When:: 데이터를 등록한다.
         final JrnlDayEntity registered = jrnlDayRepository.save(jrnlDayEntity);
         final Integer key = registered.getPostNo();
-        final JrnlDayEntity retrieved = jrnlDayRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final JrnlDayEntity retrieved = jrnlDayRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -108,7 +109,7 @@ class JrnlDayRepositoryTest {
         Integer key = registered.getPostNo();
 
         // When:: 등록된 데이터를 조회해서, 값을 변경하여 저장한다.
-        JrnlDayEntity toModify = jrnlDayRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("수정할 데이터를 찾을 수 없습니다."));
+        JrnlDayEntity toModify = jrnlDayRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
         toModify.setJrnlDt(DateUtils.asDate("2020-12-31"));
         JrnlDayEntity modified = jrnlDayRepository.save(toModify);
 
@@ -133,7 +134,7 @@ class JrnlDayRepositoryTest {
         final Integer key = registered.getPostNo();
 
         // When:: 삭제할 데이터를 조회해서, 삭제한다.
-        final JrnlDayEntity toDelete = jrnlDayRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
+        final JrnlDayEntity toDelete = jrnlDayRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete")));
         jrnlDayRepository.delete(toDelete);
 
         final JrnlDayEntity retrieved = jrnlDayRepository.findById(key).orElse(null);

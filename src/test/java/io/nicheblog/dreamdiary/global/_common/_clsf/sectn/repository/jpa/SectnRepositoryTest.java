@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.global._common._clsf.sectn.entity.SectnEntity;
 import io.nicheblog.dreamdiary.global._common._clsf.sectn.entity.SectnEntityTestFactory;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
 import io.nicheblog.dreamdiary.global.config.TestAuditConfig;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,7 +71,7 @@ class SectnRepositoryTest {
         // When::
         final SectnEntity registered = sectnRepository.save(sectnEntity);
         final Integer key = registered.getPostNo();
-        final SectnEntity retrieved = sectnRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final SectnEntity retrieved = sectnRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -91,7 +92,7 @@ class SectnRepositoryTest {
         Integer key = registered.getPostNo();
 
         // When::
-        SectnEntity toModify = sectnRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("수정할 데이터를 찾을 수 없습니다."));
+        SectnEntity toModify = sectnRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
         toModify.setCn("modified.");
         SectnEntity modified = sectnRepository.save(toModify);
 
@@ -116,7 +117,7 @@ class SectnRepositoryTest {
         final Integer key = registered.getPostNo();
 
         // When::
-        final SectnEntity toDelete = sectnRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
+        final SectnEntity toDelete = sectnRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete")));
         sectnRepository.delete(toDelete);
 
         final SectnEntity retrieved = sectnRepository.findById(key).orElse(null);

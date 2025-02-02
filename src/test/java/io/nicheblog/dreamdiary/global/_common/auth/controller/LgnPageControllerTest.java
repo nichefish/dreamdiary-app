@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.auth.controller;
 
+import io.nicheblog.dreamdiary.auth.model.AuthInfo;
+import io.nicheblog.dreamdiary.auth.model.AuthInfoTestFactory;
 import io.nicheblog.dreamdiary.domain.admin.web.controller.LgnPageController;
 import io.nicheblog.dreamdiary.domain.user.my.service.UserMyService;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.auth.model.AuthInfo;
-import io.nicheblog.dreamdiary.auth.model.AuthInfoTestFactory;
 import io.nicheblog.dreamdiary.global.intrfc.controller.BaseControllerTestHelper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

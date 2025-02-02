@@ -66,9 +66,9 @@ public class UserRestController
         final Boolean isUserIdDup = userService.userIdDupChck(userId);
 
         final boolean isSuccess = !isUserIdDup;;
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_USER_ID_NOT_DUP : MessageUtils.RSLT_USER_ID_DUP);
+        final String rsltMsg = MessageUtils.getMessage(isSuccess ? "user.id.usable" : "user.id.duplicated");
 
-       // 응답 결과 세팅
+        // 응답 결과 세팅
         ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);

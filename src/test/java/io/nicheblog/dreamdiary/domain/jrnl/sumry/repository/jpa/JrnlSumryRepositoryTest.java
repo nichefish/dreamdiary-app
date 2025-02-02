@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.sumry.entity.JrnlSumryEntityTestFacto
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
 import io.nicheblog.dreamdiary.global.config.TestAuditConfig;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,7 +67,7 @@ class JrnlSumryRepositoryTest {
         // When::
         final JrnlSumryEntity registered = jrnlSumryRepository.save(jrnlSumryEntity);
         final Integer key = registered.getPostNo();
-        final JrnlSumryEntity retrieved = jrnlSumryRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final JrnlSumryEntity retrieved = jrnlSumryRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -87,7 +88,7 @@ class JrnlSumryRepositoryTest {
         Integer key = registered.getPostNo();
 
         // When::
-        JrnlSumryEntity toModify = jrnlSumryRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("수정할 데이터를 찾을 수 없습니다."));
+        JrnlSumryEntity toModify = jrnlSumryRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
         toModify.setCn("modified");
         JrnlSumryEntity modified = jrnlSumryRepository.save(toModify);
 
@@ -112,7 +113,7 @@ class JrnlSumryRepositoryTest {
         final Integer key = registered.getPostNo();
 
         // When::
-        final JrnlSumryEntity toDelete = jrnlSumryRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
+        final JrnlSumryEntity toDelete = jrnlSumryRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete")));
         jrnlSumryRepository.delete(toDelete);
 
         final JrnlSumryEntity retrieved = jrnlSumryRepository.findById(key).orElse(null);

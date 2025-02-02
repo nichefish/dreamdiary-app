@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.domain.board.def.entity.BoardDefEntityTestFactory
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
 import io.nicheblog.dreamdiary.global.config.TestAuditConfig;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,7 +71,7 @@ class BoardDefRepositoryTest {
         // When::
         final BoardDefEntity registered = boardDefRepository.save(boardDefEntity);
         final String boardDef = registered.getBoardDef();
-        final BoardDefEntity retrieved = boardDefRepository.findById(boardDef).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final BoardDefEntity retrieved = boardDefRepository.findById(boardDef).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
@@ -91,7 +92,7 @@ class BoardDefRepositoryTest {
         String boardDef = registered.getBoardDef();
 
         // When::
-        BoardDefEntity toModify = boardDefRepository.findById(boardDef).orElseThrow(() -> new EntityNotFoundException("수정할 데이터를 찾을 수 없습니다."));
+        BoardDefEntity toModify = boardDefRepository.findById(boardDef).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
         toModify.setDc("modified");
         BoardDefEntity modified = boardDefRepository.save(toModify);
 
@@ -116,7 +117,7 @@ class BoardDefRepositoryTest {
         final String boardDef = registered.getBoardDef();
 
         // When::
-        final BoardDefEntity toDelete = boardDefRepository.findById(boardDef).orElseThrow(() -> new EntityNotFoundException("삭제할 데이터를 찾을 수 없습니다."));
+        final BoardDefEntity toDelete = boardDefRepository.findById(boardDef).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete")));
         boardDefRepository.delete(toDelete);
 
         final BoardDefEntity retrieved = boardDefRepository.findById(boardDef).orElse(null);

@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.global._common._clsf.tag.entity.ContentTagEntity;
 import io.nicheblog.dreamdiary.global._common._clsf.tag.entity.ContentTagEntityTestFactory;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
 import io.nicheblog.dreamdiary.global.config.TestAuditConfig;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -69,7 +70,7 @@ class ContentTagRepositoryTest {
         // When::
         final ContentTagEntity registered = contentTagRepository.save(contentTagEntity);
         final Integer key = registered.getContentTagNo();
-        final ContentTagEntity retrieved = contentTagRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final ContentTagEntity retrieved = contentTagRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");

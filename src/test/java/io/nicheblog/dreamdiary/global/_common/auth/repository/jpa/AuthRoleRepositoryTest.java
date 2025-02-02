@@ -1,10 +1,12 @@
-package io.nicheblog.dreamdiary.auth.repository.jpa;
+package io.nicheblog.dreamdiary.global._common.auth.repository.jpa;
 
-import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.auth.entity.AuthRoleEntity;
 import io.nicheblog.dreamdiary.auth.entity.AuthRoleEntityTestFactory;
+import io.nicheblog.dreamdiary.auth.repository.jpa.AuthRoleRepository;
+import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
 import io.nicheblog.dreamdiary.global.config.TestAuditConfig;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,7 +73,7 @@ class AuthRoleRepositoryTest {
         // When::
         final AuthRoleEntity registered = authRoleRepository.save(authRoleEntity);
         final String authCd = registered.getAuthCd();
-        final AuthRoleEntity retrieved = authRoleRepository.findById(authCd).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final AuthRoleEntity retrieved = authRoleRepository.findById(authCd).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");

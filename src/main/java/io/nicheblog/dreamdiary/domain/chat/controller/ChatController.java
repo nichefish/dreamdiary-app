@@ -88,7 +88,7 @@ public class ChatController {
         log.info("ChatController.sendMessage() message: {}", message);
 
         if (message == null || message.trim().isEmpty()) {
-            throw new IllegalArgumentException("Message cannot be empty");
+            throw new IllegalArgumentException(MessageUtils.getExceptionMsg("IllegalArgumentException.empty-msg"));
         }
 
         final AjaxResponse ajaxResponse = new AjaxResponse();

@@ -12,6 +12,7 @@ import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
 import io.nicheblog.dreamdiary.domain.user.info.spec.UserSpec;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global._common.cache.util.EhCacheUtils;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -76,7 +77,7 @@ public class UserServiceImpl
     public UserEntity getDtlEntity(final String userId) throws Exception {
         final Optional<UserEntity> retrievedWrapper = repository.findByUserId(userId);
 
-        return Objects.requireNonNull(retrievedWrapper.orElseThrow(() -> new EntityNotFoundException("사용자 정보가 존재하지 않습니다.")));
+        return Objects.requireNonNull(retrievedWrapper.orElseThrow(() -> new EntityNotFoundException(MessageUtils.getExceptionMsg("UsernameNotFoundException"))));
     }
 
     /* ----- */

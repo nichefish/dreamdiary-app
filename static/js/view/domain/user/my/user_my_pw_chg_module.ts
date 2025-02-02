@@ -41,7 +41,7 @@ dF.UserMyPwChg = (function(): dfModule {
          */
         submitHandler: function(): void {
             Swal.fire({
-                text: Message.get("view.cnfm.chgPw"),
+                text: Message.get("view.cnfm.chg-pw"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;

@@ -1,9 +1,11 @@
 package io.nicheblog.dreamdiary.auth.provider;
 
+import io.nicheblog.dreamdiary.auth.exception.AuthenticationFailureException;
 import io.nicheblog.dreamdiary.auth.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.provider.helper.AuthenticationHelper;
 import io.nicheblog.dreamdiary.auth.service.AuthService;
 import io.nicheblog.dreamdiary.global.util.CookieUtils;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -58,7 +60,7 @@ public class OAuth2Provider {
 
         // 인증 객체 생성
         final Boolean isValidated = authenticationHelper.validateAuth(authInfo);
-        if (!isValidated) throw new Exception("인증에 실패했습니다.");
+        if (!isValidated) throw new AuthenticationFailureException(MessageUtils.getExceptionMsg("AuthenticationFailureException"));
         final UsernamePasswordAuthenticationToken authToken = authInfo.getAuthToken();
 
         // 인증 객체를 기반으로 JWT 생성, 임시로 세션에 저장

@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.global._common._clsf.viewer.entity.ViewerEntity;
 import io.nicheblog.dreamdiary.global._common._clsf.viewer.entity.ViewerEntityTestFactory;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
 import io.nicheblog.dreamdiary.global.config.TestAuditConfig;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,7 +72,7 @@ class ViewerRepositoryTest {
         // When::
         final ViewerEntity registered = viewerRepository.save(viewerEntity);
         final Integer key = registered.getViewerNo();
-        final ViewerEntity retrieved = viewerRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("등록한 데이터를 찾을 수 없습니다."));
+        final ViewerEntity retrieved = viewerRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
