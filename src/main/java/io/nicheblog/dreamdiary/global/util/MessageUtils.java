@@ -59,8 +59,8 @@ public class MessageUtils
 
     public static final String RSLT_SUCCESS_PW_RESET = "user.pw.reset.rslt.success";
 
-    public static final String LGN_FAIL_BADCREDENTIALS_CNT = "AbstractUserDetailsAuthenticationProvider.badCredentials.failCnt";
-    public static final String LGN_FAIL_BADCREDENTIALS_LOCKED = "AbstractUserDetailsAuthenticationProvider.badCredentials.locked";
+    public static final String LGN_FAIL_BADCREDENTIALS_CNT = "AbstractUserDetailsAuthenticationProvider.BadCredentials.failCnt";
+    public static final String LGN_FAIL_BADCREDENTIALS_LOCKED = "AbstractUserDetailsAuthenticationProvider.BadCredentials.locked";
 
     public static final String NOT_DELABLE_OWN_ID = "본인 아이디는 삭제할 수 없습니다.";
     public static final String PW_MISMATCH = "비밀번호가 일치하지 않습니다.";
@@ -157,7 +157,7 @@ public class MessageUtils
      * 공통 > Exception 이름으로 해당 message 반환
      * messageBundle에 exception 클래스명으로 설정시 해당 에러메세지를 반환한다.
      *
-     * @param e 발생한 예외
+     * @param exceptionNm 발생한 예외 이름 ("Exception" 제외)
      * @return {@link String} -- 예외 메시지
      */
     public static String getExceptionMsg(final String exceptionNm) {

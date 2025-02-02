@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.auth.handler;
 
-import io.nicheblog.dreamdiary.auth.exception.AcntDormantException;
-import io.nicheblog.dreamdiary.auth.exception.AcntNeedsPwResetException;
+import io.nicheblog.dreamdiary.auth.exception.AccountDormantException;
+import io.nicheblog.dreamdiary.auth.exception.AccountNeedsPwResetException;
 import io.nicheblog.dreamdiary.auth.exception.DupIdLgnException;
 import io.nicheblog.dreamdiary.auth.service.AuthService;
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.entity.LgnPolicyEntity;
@@ -89,7 +89,7 @@ public class WebLgnFailureHandler
                 errorMsg += "<br>" + MessageUtils.getMessage(MessageUtils.LGN_FAIL_BADCREDENTIALS_LOCKED, new Object[]{newLgnFailCnt});
             }
             // 로그인 실패 횟수 처리
-        } else if (exception instanceof AcntDormantException) {
+        } else if (exception instanceof AccountDormantException) {
             authService.lockAccount(userId);        // 계정 잠금 처리
             /* 비밀번호 변경기간 만료 */
         } else if (exception instanceof CredentialsExpiredException) {
@@ -103,7 +103,7 @@ public class WebLgnFailureHandler
             final HttpSession session = servletRequestAttribute.getRequest().getSession();
             session.setAttribute("isDupIdLgn", userId);
         /* 패스워드 초기화 강제 */
-        } else if (exception instanceof AcntNeedsPwResetException) {
+        } else if (exception instanceof AccountNeedsPwResetException) {
             request.setAttribute("userId", userId);
             request.setAttribute("needsPwReset", true);
         }

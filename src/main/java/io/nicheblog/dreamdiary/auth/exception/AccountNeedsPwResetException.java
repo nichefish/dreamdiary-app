@@ -3,14 +3,14 @@ package io.nicheblog.dreamdiary.auth.exception;
 import org.springframework.security.core.AuthenticationException;
 
 /**
- * AcntNeedsPwResetException
+ * AccountNeedsPwResetException
  * <pre>
  *  Spring Security:: 패스워드 리셋 강제시 던지는 Custom Exception
  * </pre>
  *
  * @author nichefish
  */
-public class AcntNeedsPwResetException
+public class AccountNeedsPwResetException
         extends AuthenticationException {
 
     /**
@@ -19,7 +19,7 @@ public class AcntNeedsPwResetException
      * @param msg 예외 메시지
      * @param cause 이 예외의 원인
      */
-    public AcntNeedsPwResetException(final String msg, final Throwable cause) {
+    public AccountNeedsPwResetException(final String msg, final Throwable cause) {
         super(msg, cause);
     }
 
@@ -28,7 +28,7 @@ public class AcntNeedsPwResetException
      *
      * @param msg 예외 메시지
      */
-    public AcntNeedsPwResetException(final String msg) {
+    public AccountNeedsPwResetException(final String msg) {
         super(msg);
     }
 }

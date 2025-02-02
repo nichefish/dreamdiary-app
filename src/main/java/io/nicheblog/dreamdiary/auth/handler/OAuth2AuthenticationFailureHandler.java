@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.auth.handler;
 
-import io.nicheblog.dreamdiary.auth.exception.AcntDormantException;
-import io.nicheblog.dreamdiary.auth.exception.AcntNeedsPwResetException;
+import io.nicheblog.dreamdiary.auth.exception.AccountDormantException;
+import io.nicheblog.dreamdiary.auth.exception.AccountNeedsPwResetException;
 import io.nicheblog.dreamdiary.auth.exception.DupIdLgnException;
 import io.nicheblog.dreamdiary.auth.service.AuthService;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -73,7 +73,7 @@ public class OAuth2AuthenticationFailureHandler
             publisher.publishEvent(new LogAnonActvtyEvent(this, logParam));
         }
         /* 비밀번호 불일치 */
-        if (exception instanceof AcntDormantException) {
+        if (exception instanceof AccountDormantException) {
             authService.lockAccount(userId);        // 계정 잠금 처리
             /* 비밀번호 변경기간 만료 */
         } else if (exception instanceof CredentialsExpiredException) {
@@ -87,7 +87,7 @@ public class OAuth2AuthenticationFailureHandler
             final HttpSession session = servletRequestAttribute.getRequest().getSession();
             session.setAttribute("isDupIdLgn", userId);
             /* 패스워드 초기화 강제 */
-        } else if (exception instanceof AcntNeedsPwResetException) {
+        } else if (exception instanceof AccountNeedsPwResetException) {
             request.setAttribute("userId", userId);
             request.setAttribute("needsPwReset", true);
         }

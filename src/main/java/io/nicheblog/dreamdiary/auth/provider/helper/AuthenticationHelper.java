@@ -87,10 +87,10 @@ public class AuthenticationHelper {
         final String username = authInfo.getUsername();
 
         // 승인여부 체크
-        if (!"Y".equals(authInfo.getCfYn())) throw new AcntNotCfException(MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider.AcntNotCfException"));
+        if (!"Y".equals(authInfo.getCfYn())) throw new AccountNotCfException(MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider.AccountNotCfException"));
 
         // 장기간 미로그인여부 체크 :: 시스템계정"system"은 제외
-        if (userService.isDormant(username)) throw new AcntDormantException(MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider.AcntDormantException"));
+        if (userService.isDormant(username)) throw new AccountDormantException(MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider.AccountDormantException"));
 
         // 잠금여부 체크
         if ("Y".equals(authInfo.getLockedYn())) throw new LockedException(MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider.LockedException"));
@@ -103,7 +103,7 @@ public class AuthenticationHelper {
 
         // 비밀번호 변경 필요 여부 체크
         final boolean needsPwReset = "Y".equals(authInfo.getNeedsPwReset());
-        if (needsPwReset) throw new AcntNeedsPwResetException(MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider.AcntNeedsPwResetException"));
+        if (needsPwReset) throw new AccountNeedsPwResetException(MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider.AccountNeedsPwResetException"));
 
         // 중복 로그인 체크 :: 세션 attribute 훑어서 "lgnId" 비교
         final boolean isDupLgn = DupIdLgnManager.isDupIdLgn(username);

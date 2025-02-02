@@ -115,7 +115,7 @@ public class JwtTokenProvider {
         final AuthInfo authInfo = authService.loadUserByUsername(username);
 
         final Boolean isValidated = authenticationHelper.validateAuth(authInfo);
-        if (!isValidated) throw new Exception(MessageUtils.getMessage("common.status.authentication-failed"));
+        if (!isValidated) throw new SecurityException(MessageUtils.getMessage("common.status.authentication-failed"));
 
         return authInfo.getAuthToken();
     }

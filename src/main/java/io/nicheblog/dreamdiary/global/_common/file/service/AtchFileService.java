@@ -6,9 +6,6 @@ import io.nicheblog.dreamdiary.global._common.file.model.AtchFileDto;
 import io.nicheblog.dreamdiary.global._common.file.repository.jpa.AtchFileRepository;
 import io.nicheblog.dreamdiary.global._common.file.spec.AtchFileSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 /**
  * AtchFileService

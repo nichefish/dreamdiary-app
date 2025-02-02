@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.domain.admin.menu.service.impl;
 
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.domain.admin.menu.entity.MenuEntity;
+import io.nicheblog.dreamdiary.domain.admin.menu.exception.MenuNotExistsException;
 import io.nicheblog.dreamdiary.domain.admin.menu.mapstruct.MenuMapstruct;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuDto;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuSearchParam;
@@ -14,6 +15,7 @@ import io.nicheblog.dreamdiary.global._common._clsf.state.model.cmpstn.StateCmps
 import io.nicheblog.dreamdiary.global._common.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -140,7 +142,7 @@ public class MenuServiceImpl
         final Map<String, Object> searchParamMap = new HashMap<>();
         searchParamMap.put("menuLabel", label.name());
         final List<MenuDto> rsMenuList = this.getSelf().getListDto(searchParamMap);
-        if (CollectionUtils.isEmpty(rsMenuList)) throw new Exception("메뉴 정보가 없습니다.");
+        if (CollectionUtils.isEmpty(rsMenuList)) throw new MenuNotExistsException(MessageUtils.getExceptionMsg("MenuNotExistsException"));
         return this.getSelf().getListDto(searchParamMap).get(0);
     }
 

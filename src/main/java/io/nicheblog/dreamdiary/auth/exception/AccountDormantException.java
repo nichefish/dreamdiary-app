@@ -3,14 +3,14 @@ package io.nicheblog.dreamdiary.auth.exception;
 import org.springframework.security.core.AuthenticationException;
 
 /**
- * AcntNotCfException
+ * AccountDormantException
  * <pre>
- *  Spring Security:: 계정 미승인시 던지는 Custom Exception
+ *  Spring Security:: 장기간 미로그인시 던지는 Custom Exception
  * </pre>
  *
  * @author nichefish
  */
-public class AcntNotCfException
+public class AccountDormantException
         extends AuthenticationException {
 
     /**
@@ -19,7 +19,7 @@ public class AcntNotCfException
      * @param msg 예외 메시지
      * @param cause 이 예외의 원인
      */
-    public AcntNotCfException(final String msg, final Throwable cause) {
+    public AccountDormantException(final String msg, final Throwable cause) {
         super(msg, cause);
     }
 
@@ -28,7 +28,7 @@ public class AcntNotCfException
      *
      * @param msg 예외 메시지
      */
-    public AcntNotCfException(final String msg) {
+    public AccountDormantException(final String msg) {
         super(msg);
     }
 }

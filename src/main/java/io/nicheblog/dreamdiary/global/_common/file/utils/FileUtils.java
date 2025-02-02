@@ -179,7 +179,6 @@ public class FileUtils {
      *
      * @param multiRequest Multipart 요청
      * @return {@link Integer} -- 업로드된 파일의 첨부파일 번호 (Integer)
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     private List<AtchFileDtlEntity> delFile(
             final MultipartHttpServletRequest multiRequest,
@@ -240,7 +239,7 @@ public class FileUtils {
             os.flush();
         } catch (final IOException e) {
             log.error("파일 다운로드 중 오류 발생: {}", e.getMessage(), e);
-            throw new Exception("파일 다운로드에 실패했습니다.", e);
+            throw new IOException("파일 다운로드에 실패했습니다.", e);
         }
     }
 

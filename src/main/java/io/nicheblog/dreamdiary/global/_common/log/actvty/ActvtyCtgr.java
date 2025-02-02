@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.global._common.log.actvty;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 /**

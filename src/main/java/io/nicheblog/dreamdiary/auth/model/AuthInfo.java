@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.auth.model;
 
 import io.nicheblog.dreamdiary.domain.user.info.model.profl.UserProflDto;
 import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -126,7 +127,8 @@ public class AuthInfo
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (CollectionUtils.isEmpty(this.authList)) throw new RuntimeException("authList is empty.");
+        if (CollectionUtils.isEmpty(this.authList)) throw new RuntimeException(MessageUtils.getMessage("user.auth.empty"));
+
         return this.authList.stream()
                 .map(entity -> {
                     try {

@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.auth;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 /**

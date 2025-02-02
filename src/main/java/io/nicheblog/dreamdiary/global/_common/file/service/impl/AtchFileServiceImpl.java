@@ -1,12 +1,9 @@
 package io.nicheblog.dreamdiary.global._common.file.service.impl;
 
-import io.nicheblog.dreamdiary.global._common.file.entity.AtchFileEntity;
 import io.nicheblog.dreamdiary.global._common.file.mapstruct.AtchFileMapstruct;
-import io.nicheblog.dreamdiary.global._common.file.model.AtchFileDto;
 import io.nicheblog.dreamdiary.global._common.file.repository.jpa.AtchFileRepository;
 import io.nicheblog.dreamdiary.global._common.file.service.AtchFileService;
 import io.nicheblog.dreamdiary.global._common.file.spec.AtchFileSpec;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

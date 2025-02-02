@@ -26,7 +26,7 @@ public class GeoIp2Utils {
      */
     public static Country getNtnByIp(final String ipAddr) throws Exception {
         final File database = new File("static/GeoLite2-City.mmdb");
-        if (!database.exists()) throw new FileNotFoundException("FileNotFoundException");
+        if (!database.exists()) throw new FileNotFoundException(MessageUtils.getExceptionMsg("FileNotFoundException"));
 
         // This reader object should be reused across lookups as creation of it is expensive.
         // If you want to use caching at the cost of a small (~2MB) memory overhead:

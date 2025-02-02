@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -78,7 +79,7 @@ public class AtchFileDtlServiceImpl
         // 파일 업로드 경로 생성
         final String fileUploadPath = Constant.UPFILE_PATH + DateUtils.getCurrDateStr(DatePtn.PDATE) + "/";
         final File fileUploadDirectory = new File(fileUploadPath);
-        if (!fileUploadDirectory.exists() && !fileUploadDirectory.mkdirs()) throw new Exception(MessageUtils.getMessage("common.status.mkdir-failed"));
+        if (!fileUploadDirectory.exists() && !fileUploadDirectory.mkdirs()) throw new IOException(MessageUtils.getMessage("common.status.mkdir-failed"));
 
         // 파일 순회하며 업로드 처리
         final Iterator<String> fileNmIterator = multiRequest.getFileNames();

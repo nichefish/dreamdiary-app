@@ -1,10 +1,9 @@
 package io.nicheblog.dreamdiary.auth;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 권한 Enum
+ * 권한(role) Enum
  *
  * @author nichefish
  */
