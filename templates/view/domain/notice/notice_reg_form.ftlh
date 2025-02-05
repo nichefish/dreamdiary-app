@@ -134,7 +134,7 @@
             <#--begin::meta-->
             <div class="mb-0">
                 <#--페이지:: 첨부파일 추가추가 영역-->
-                <#include "/view/global/_common/file/_atch_file_page_reg_area.ftlh">
+                <#include "/view/extension/file/_atch_file_page_reg_area.ftlh">
 
                 <!-- #include:: component:: 파일시스템 참조 -->
                 <#include "/view/global/_common/flsys/_flsys_reg_area.ftlh">

@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.global.intrfc.entity;
 
-import io.nicheblog.dreamdiary.global._common.file.entity.AtchFileEntity;
+import io.nicheblog.dreamdiary.extension.file.entity.AtchFileEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

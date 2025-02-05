@@ -12,7 +12,7 @@
 <@layout.layout toolbar=toolbar!"">
 
 <#--#include:: component:: 태그 클릭 필터링-->
-<#include "/view/global/_common/_clsf/tag/_tag_list_header.ftlh">
+<#include "/view/extension/tag/_tag_list_header.ftlh">
 
 <div class="card post">
     <div class="px-8">
@@ -182,8 +182,8 @@
 </form>
 
 <#--include::modals-->
-<#include "/view/global/_common/_clsf/comment/_modal/_comment_list_modal.ftlh">
-<#include "/view/global/_common/file/_modal/_atch_file_list_modal.ftlh">
+<#include "/view/extension/comment/_modal/_comment_list_modal.ftlh">
+<#include "/view/extension/file/_modal/_atch_file_list_modal.ftlh">
 
 <#--include::notice_modules-->
 <#include "/view/domain/notice/_modal/_notice_dtl_modal.ftlh">

@@ -7,7 +7,7 @@ import io.nicheblog.dreamdiary.domain.flsys.model.FlsysSearchParam;
 import io.nicheblog.dreamdiary.domain.flsys.service.FlsysService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global._common.file.utils.FileUtils;
+import io.nicheblog.dreamdiary.extension.file.utils.FileUtils;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.global._common.log.actvty.handler.LogActvtyEventListener;

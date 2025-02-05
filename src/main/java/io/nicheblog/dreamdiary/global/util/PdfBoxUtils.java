@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.global.util;
 
-import io.nicheblog.dreamdiary.global._common.file.model.AtchFileDtlDto;
-import io.nicheblog.dreamdiary.global._common.file.utils.FileUtils;
+import io.nicheblog.dreamdiary.extension.file.model.AtchFileDtlDto;
+import io.nicheblog.dreamdiary.extension.file.utils.FileUtils;
 import lombok.extern.log4j.Log4j2;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
