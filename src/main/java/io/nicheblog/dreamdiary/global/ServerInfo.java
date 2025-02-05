@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @author nichefish
  */
 @Component
-@ConfigurationProperties(prefix = "server.domain")
+@ConfigurationProperties(prefix = "server")
 @Getter
 @Setter
 public class ServerInfo {

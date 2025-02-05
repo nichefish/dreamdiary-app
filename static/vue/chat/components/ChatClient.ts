@@ -3,20 +3,38 @@
  *
  * @author nichefish
  */
-import Profile from '../../../js/profile.js';
 export default {
     data() {
         return {
             stompClient: null,  // STOMP 클라이언트
             chatMessages: [],       // 채팅 메시지 배열
             message: '',        // 사용자 입력 메시지
+            serverInfo: {
+                domain: '',
+                port: ''
+            },  // 서버에서 가져올 프로필 정보
         };
     },
     methods: {
+        // 서버 정보 조회
+        async fetchServerInfo() {
+            try {
+                const response: Response = await fetch('/cmm/getServerInfo.do');
+                const data: Record<string, any> = await response.json();
+                const rsltObj: Record<string, any> = data.rsltObj;
+                this.serverInfo.domain = rsltObj.domain;
+                this.serverInfo.port = rsltObj.port;
+            } catch (error) {
+                console.error('Error fetching profile:', error);
+            }
+        },
+        
         // WebSocket 연결 설정
-        connectWebSocket(): void {
+        async connectWebSocket(): Promise<void> {
+            await this.fetchServerInfo();  // 서버에서 도메인 & 포트 정보 가져오기
+
             // @ts-ignore  // STOMP 클라이언트 생성
-            const brokerUrl: string = `http://${Profile.domain}:${Profile.port}/chat"`;
+            const brokerUrl: string = `http://${this.serverInfo.domain}:${this.serverInfo.port}/chat`;
             // @ts-ignore
             this.stompClient = Stomp.client(brokerUrl);
             const successCallback = () => {
