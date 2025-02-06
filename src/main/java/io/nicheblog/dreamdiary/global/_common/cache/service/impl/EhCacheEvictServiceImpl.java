@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.service.impl.JrnlDayCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.impl.JrnlDiaryCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.service.impl.JrnlDreamCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.service.impl.JrnlSumryCacheEvictor;
-import io.nicheblog.dreamdiary.global._common._clsf.ContentType;
+import io.nicheblog.dreamdiary.extension.ContentType;
 import io.nicheblog.dreamdiary.global._common.cache.service.CacheEvictService;
 import io.nicheblog.dreamdiary.global._common.cache.service.CacheEvictor;
 import lombok.RequiredArgsConstructor;

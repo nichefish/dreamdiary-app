@@ -12,7 +12,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumrySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.service.JrnlSumryService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global._common._clsf.tag.model.TagDto;
+import io.nicheblog.dreamdiary.extension.tag.model.TagDto;
 import io.nicheblog.dreamdiary.global._common.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;

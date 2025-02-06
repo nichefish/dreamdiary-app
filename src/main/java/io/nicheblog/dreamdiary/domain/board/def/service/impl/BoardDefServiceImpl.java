@@ -6,7 +6,7 @@ import io.nicheblog.dreamdiary.domain.board.def.model.BoardDefDto;
 import io.nicheblog.dreamdiary.domain.board.def.repository.jpa.BoardDefRepository;
 import io.nicheblog.dreamdiary.domain.board.def.service.BoardDefService;
 import io.nicheblog.dreamdiary.domain.board.def.spec.BoardDefSpec;
-import io.nicheblog.dreamdiary.global._common._clsf.state.model.cmpstn.StateCmpstn;
+import io.nicheblog.dreamdiary.extension.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.global._common.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;
 import lombok.Getter;

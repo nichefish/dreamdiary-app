@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiarySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.repository.jpa.JrnlDiaryTagRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryTagService;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.spec.JrnlDiaryTagSpec;
-import io.nicheblog.dreamdiary.global._common._clsf.tag.model.TagDto;
+import io.nicheblog.dreamdiary.extension.tag.model.TagDto;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

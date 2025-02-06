@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.vcatn.papr.model;
 
-import io.nicheblog.dreamdiary.global._common._clsf.ContentType;
+import io.nicheblog.dreamdiary.extension.ContentType;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BasePostSearchParam;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

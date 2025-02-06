@@ -111,7 +111,7 @@
             <!-- #include:: component:: NOTION 참조 ID -->
 
             <!-- #include:: component:: 태그 태그 -->
-            <#include "/view/global/_common/_clsf/tag/_tag_page_reg_area.ftlh">
+            <#include "/view/extension/tag/_tag_page_reg_area.ftlh">
 
             <div class="separator my-8"></div>
 

@@ -121,11 +121,11 @@
 </div>
 
 <#--include::password change-->
-<#include "/view/auth/_modal/_lgn_pw_chg_modal.ftlh">
-<script type="text/javascript" src="/js/view/auth/lgn_pw_chg_module.js?${releaseDate!}"></script>
+<#include "/view/auth/security/_modal/_lgn_pw_chg_modal.ftlh">
+<script type="text/javascript" src="/js/view/auth/security/lgn_pw_chg_module.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/auth/oauth2/oauth2.js?${releaseDate!}"></script>
 
 <#--include::page scripts-->
-<script type="text/javascript" src="/js/view/auth/lgn_form.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/auth/security/lgn_form.js?${releaseDate!}"></script>
 
 </@layout.layout>
