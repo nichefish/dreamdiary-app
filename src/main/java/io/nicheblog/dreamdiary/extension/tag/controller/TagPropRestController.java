@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.extension.tag.controller;
 
-import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.extension.tag.model.TagPropertyDto;
 import io.nicheblog.dreamdiary.extension.tag.service.TagPropertyService;
+import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyRestControllerAspect;

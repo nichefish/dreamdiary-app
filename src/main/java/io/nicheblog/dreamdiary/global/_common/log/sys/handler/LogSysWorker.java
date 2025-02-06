@@ -14,7 +14,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * LogSysWorker
  * <pre>
  *  시스템 로그 처리 Worker :: Runnable 구현 (Queue 처리)
- *  메일 큐에서 LogSysEvent를 가져와 시스템 로그를 등록합니다.
+ *  Queue에서 LogSysEvent를 가져와 시스템 로그를 등록합니다.
  * </pre>
  *
  * @author nichefish
@@ -28,7 +28,7 @@ public class LogSysWorker
     private final LogSysService logSysService;
 
     /** 로그 queue */
-    private static final BlockingQueue<LogSysEvent> logQueue = new LinkedBlockingQueue<>();
+    private static final BlockingQueue<LogSysEvent> logSysQueue = new LinkedBlockingQueue<>();
 
     @PostConstruct
         public void init() {
@@ -37,14 +37,14 @@ public class LogSysWorker
     }
 
     /**
-     * 메일 큐에서 LogSysEvent를 가져와 로그를 등록합니다.
+     * 시스템 로그 Queue에서 LogSysEvent를 가져와 로그를 등록합니다.
      */
     @Override
     public void run() {
         try {
             while (true) {
                 // Blocks until an element is available
-                LogSysEvent logEvent = logQueue.take();
+                LogSysEvent logEvent = logSysQueue.take();
 
                 // 시스템 로그 로깅 처리
                 logSysService.regSysActvty(logEvent.getLog());
@@ -63,6 +63,6 @@ public class LogSysWorker
      * @param event 큐에 추가할 LogSysEvent 객체
      */
     public void offer(LogSysEvent event) {
-        logQueue.offer(event);
+        logSysQueue.offer(event);
     }
 }

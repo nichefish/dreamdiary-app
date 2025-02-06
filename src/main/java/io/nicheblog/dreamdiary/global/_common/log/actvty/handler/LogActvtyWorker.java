@@ -12,10 +12,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * LogWorker
+ * LogActvtyWorker
  * <pre>
  *  활동 로그 처리 Worker :: Runnable 구현 (Queue 처리)
- *  메일 큐에서 LogActvtyEvent를 가져와 활동 로그를 등록합니다.
+ *  Queue에서 LogActvtyEvent를 가져와 활동 로그를 등록합니다.
  * </pre>
  *
  * @author nichefish
@@ -29,7 +29,7 @@ public class LogActvtyWorker
     private final LogActvtyService logActvtyService;
 
     /** 로그 queue */
-    private static final BlockingQueue<Object> logQueue = new LinkedBlockingQueue<>();
+    private static final BlockingQueue<Object> logActvtyQueue = new LinkedBlockingQueue<>();
 
     @PostConstruct
         public void init() {
@@ -38,14 +38,14 @@ public class LogActvtyWorker
     }
 
     /**
-     * 로그 큐에서 LogActvtyEvent / LogAnonActvtyEvent를 가져와 등록합니다.
+     * 활동 로그 Queue에서 LogActvtyEvent / LogAnonActvtyEvent를 가져와 등록합니다.
      */
     @Override
     public void run() {
         try {
             while (true) {
                 // Blocks until an element is available
-                Object logEvent = logQueue.take();
+                Object logEvent = logActvtyQueue.take();
 
                 if (logEvent instanceof LogActvtyEvent) {
                     // 활동 로그 (로그인) 로깅 처리
@@ -69,6 +69,6 @@ public class LogActvtyWorker
      * @param event 큐에 추가할 LogActvtyEvent / LogAnonActvtyEvent 객체
      */
     public void offer(Object event) {
-        logQueue.offer(event);
+        logActvtyQueue.offer(event);
     }
 }

@@ -2,13 +2,13 @@ package io.nicheblog.dreamdiary.domain.board.post.controller;
 
 import io.nicheblog.dreamdiary.domain.board.post.model.BoardPostDto;
 import io.nicheblog.dreamdiary.domain.board.post.service.BoardPostService;
-import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.extension.ContentType;
 import io.nicheblog.dreamdiary.extension.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.extension.tag.handler.TagEventListener;
 import io.nicheblog.dreamdiary.extension.viewer.event.ViewerAddEvent;
 import io.nicheblog.dreamdiary.extension.viewer.handler.ViewerEventListener;
+import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyRestControllerAspect;

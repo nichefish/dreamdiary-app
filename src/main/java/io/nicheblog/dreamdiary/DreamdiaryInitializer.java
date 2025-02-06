@@ -9,7 +9,6 @@ import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
 import io.nicheblog.dreamdiary.global.ActiveProfile;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global.ServerInfo;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.sys.event.LogSysEvent;
 import io.nicheblog.dreamdiary.global._common.log.sys.handler.LogSysEventListener;
@@ -42,7 +41,6 @@ public class DreamdiaryInitializer
         implements CommandLineRunner {
 
     private final ActiveProfile activeProfile;
-    private final ServerInfo serverInfo;
     private final AuthService authService;
     private final UserService userService;
     private final LgnPolicyService lgnPolicyService;

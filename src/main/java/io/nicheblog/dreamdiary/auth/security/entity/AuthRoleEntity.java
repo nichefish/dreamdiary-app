@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.auth.security.entity;
 
 import io.nicheblog.dreamdiary.extension.state.entity.embed.StateEmbed;
 import io.nicheblog.dreamdiary.extension.state.entity.embed.StateEmbedModule;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ import java.util.List;
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
 public class AuthRoleEntity
-        extends BaseAuditEntity
+        extends BaseCrudEntity
         implements StateEmbedModule {
 
     /** 권한 코드 (PK) */
@@ -54,7 +54,7 @@ public class AuthRoleEntity
     private String topAuthCd;
 
     /** 하위 권한 정보 */
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "auth_cd", referencedColumnName = "top_auth_cd", insertable = false, updatable = false)
     @Fetch(value = FetchMode.JOIN)
     @OrderBy("state.sortOrdr ASC")

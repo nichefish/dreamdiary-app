@@ -2,13 +2,19 @@ package io.nicheblog.dreamdiary;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import io.nicheblog.NicheblogBasePackage;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.YmlLoader;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.scheduling.annotation.EnableScheduling;
+
+import javax.annotation.PostConstruct;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * DreamdiaryApplication
@@ -25,6 +31,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @Log4j2
 public class DreamdiaryApplication {
+
+    @PostConstruct
+    public void init() {
+        TimeZone.setDefault(TimeZone.getTimeZone(Constant.LOC_SEOUL));
+        LocaleContextHolder.setLocale(Locale.KOREA);
+    }
 
     /**
      * 애플리케이션의 진입점인 메인(main) 함수입니다.

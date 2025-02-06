@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.auth.security.controller;
 
 import io.jsonwebtoken.JwtException;
-import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.jwt.provider.JwtTokenProvider;
+import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserPwChgParam;
 import io.nicheblog.dreamdiary.domain.user.my.service.UserMyService;
 import io.nicheblog.dreamdiary.global.Url;

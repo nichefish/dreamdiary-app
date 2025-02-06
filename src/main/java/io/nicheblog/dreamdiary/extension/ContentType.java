@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
  *
  * @author nichefish
  */
+@Getter
 @RequiredArgsConstructor
 @AllArgsConstructor
 public enum ContentType {
@@ -37,10 +38,7 @@ public enum ContentType {
     COMMENT("COMMENT", "댓글"),
     FLSYS_META("FLSYS_META", "파일시스템 메타");
 
-    @Getter
     public final String key;
-    @Getter
     public final String desc;
-    @Getter
     public String icon;
 }
