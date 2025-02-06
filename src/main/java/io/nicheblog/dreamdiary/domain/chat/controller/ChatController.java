@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.domain.chat.controller;
 
-import io.nicheblog.dreamdiary.auth.provider.JwtTokenProvider;
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.jwt.provider.JwtTokenProvider;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.chat.model.ChatMsgDto;
 import io.nicheblog.dreamdiary.domain.chat.model.ChatMsgSearchParam;
 import io.nicheblog.dreamdiary.domain.chat.service.ChatMsgService;

@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.extension.tag.service.impl;
 
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.extension.ContentType;
 import io.nicheblog.dreamdiary.extension.tag.entity.TagEntity;
 import io.nicheblog.dreamdiary.extension.tag.mapstruct.TagMapstruct;

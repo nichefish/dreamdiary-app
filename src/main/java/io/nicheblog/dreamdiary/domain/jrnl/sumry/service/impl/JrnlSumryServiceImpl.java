@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.jrnl.sumry.service.impl;
 
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.entity.JrnlSumryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.mapstruct.JrnlSumryMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumryDto;
@@ -66,7 +66,7 @@ public class JrnlSumryServiceImpl
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="myJrnlSumryList", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId()")
+    @Cacheable(value="myJrnlSumryList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId()")
     public List<JrnlSumryDto.LIST> getMyListDto(final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
@@ -84,7 +84,7 @@ public class JrnlSumryServiceImpl
     @Transactional
     @Caching(evict = {
             @CacheEvict(value={"myJrnlTotalSumry", "myJrnlSumryList"}, allEntries = true),
-            @CacheEvict(value="myJrnlSumryDtlByYy", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #rslt.getYy()")
+            @CacheEvict(value="myJrnlSumryDtlByYy", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #rslt.getYy()")
     })
     public Boolean makeYySumry(final Integer yy) throws Exception {
         final String regstrId = AuthUtils.getLgnUserId();
@@ -135,7 +135,7 @@ public class JrnlSumryServiceImpl
      * @return {@link JrnlSumryDto} -- 총 결산 정보가 담긴 DTO 객체
      */
     @Override
-    @Cacheable(value="myJrnlTotalSumry", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId()")
+    @Cacheable(value="myJrnlTotalSumry", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId()")
     public JrnlSumryDto getTotalSumry() {
         final String regstrId = AuthUtils.getLgnUserId();
         final JrnlSumryDto totalSumry = new JrnlSumryDto();
@@ -160,7 +160,7 @@ public class JrnlSumryServiceImpl
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="myJrnlSumryDtl", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #key")
+    @Cacheable(value="myJrnlSumryDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #key")
     public JrnlSumryDto.DTL getSumryDtl(final Integer key) throws Exception {
         return this.getSelf().getDtlDto(key);
     }
@@ -173,7 +173,7 @@ public class JrnlSumryServiceImpl
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="myJrnlSumryDtlByYy", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #yy")
+    @Cacheable(value="myJrnlSumryDtlByYy", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy")
     public JrnlSumryDto getDtlDtoByYy(final Integer yy) throws Exception {
         final Optional<JrnlSumryEntity> retrievedWrapper = repository.findByYyAndRegstrId(yy, AuthUtils.getLgnUserId());
         if (retrievedWrapper.isEmpty()) return null;

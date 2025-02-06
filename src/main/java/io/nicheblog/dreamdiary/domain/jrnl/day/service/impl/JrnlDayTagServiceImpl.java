@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.jrnl.day.service.impl;
 
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.day.mapstruct.JrnlDayTagMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayContentTagParam;
@@ -57,7 +57,7 @@ public class JrnlDayTagServiceImpl
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="myJrnlDayTagList", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
+    @Cacheable(value="myJrnlDayTagList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
     public List<TagDto> getListDtoWithCache(final Integer yy, final Integer mnth) throws Exception {
         final JrnlDaySearchParam searchParam = JrnlDaySearchParam.builder().yy(yy).mnth(mnth).build();
 
@@ -74,7 +74,7 @@ public class JrnlDayTagServiceImpl
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="myJrnlDaySizedTagList", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
+    @Cacheable(value="myJrnlDaySizedTagList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
     public List<TagDto> getDaySizedListDto(final Integer yy, final Integer mnth) throws Exception {
         // 저널 꿈 태그 DTO 목록 조회
         final List<TagDto> tagList = this.getSelf().getListDtoWithCache(yy, mnth);
@@ -131,7 +131,7 @@ public class JrnlDayTagServiceImpl
      * @return {@link Map} -- 카테고리별 태그 목록을 담은 Map
      */
     @Override
-    @Cacheable(value="myCountDaySize", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #param.tagNo + \"_\" + #param.yy + \"_\" + #param.mnth")
+    @Cacheable(value="myCountDaySize", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #param.tagNo + \"_\" + #param.yy + \"_\" + #param.mnth")
     public Integer countDaySize(final JrnlDayContentTagParam param) {
         return repository.countDaySize(param);
     }

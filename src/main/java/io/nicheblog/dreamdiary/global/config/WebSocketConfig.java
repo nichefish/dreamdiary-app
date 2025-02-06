@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.global.config;
 
-import io.nicheblog.dreamdiary.auth.interceptor.WebSocketAuthInterceptor;
+import io.nicheblog.dreamdiary.auth.security.interceptor.WebSocketAuthInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

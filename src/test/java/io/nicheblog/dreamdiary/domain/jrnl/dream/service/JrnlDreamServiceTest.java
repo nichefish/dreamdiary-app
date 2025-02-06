@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.jrnl.dream.service;
 
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDtoTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;

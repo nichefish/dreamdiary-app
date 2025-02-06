@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.global._common.cache.util;
 
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.SessionFactory;
 import org.springframework.cache.Cache;

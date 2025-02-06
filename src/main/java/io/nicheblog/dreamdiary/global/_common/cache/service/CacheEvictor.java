@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.global._common.cache.service;
 
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.global._common.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 

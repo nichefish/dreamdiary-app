@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary;
 
-import io.nicheblog.dreamdiary.auth.entity.AuthRoleEntity;
-import io.nicheblog.dreamdiary.auth.service.AuthService;
+import io.nicheblog.dreamdiary.auth.security.entity.AuthRoleEntity;
+import io.nicheblog.dreamdiary.auth.security.service.AuthService;
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.model.LgnPolicyDto;
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.service.LgnPolicyService;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserAuthRoleDto;

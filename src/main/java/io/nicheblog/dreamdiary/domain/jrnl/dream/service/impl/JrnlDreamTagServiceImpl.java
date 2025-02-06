@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.jrnl.dream.service.impl;
 
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.mapstruct.JrnlDreamTagMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamContentTagParam;
@@ -57,7 +57,7 @@ public class JrnlDreamTagServiceImpl
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="myJrnlDreamTagList", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
+    @Cacheable(value="myJrnlDreamTagList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
     public List<TagDto> getListDtoWithCache(final Integer yy, final Integer mnth) throws Exception {
         final JrnlDreamSearchParam searchParam = JrnlDreamSearchParam.builder().yy(yy).mnth(mnth).build();
 
@@ -74,7 +74,7 @@ public class JrnlDreamTagServiceImpl
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="myJrnlDreamSizedTagList", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
+    @Cacheable(value="myJrnlDreamSizedTagList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
     public List<TagDto> getDreamSizedListDto(final Integer yy, final Integer mnth) throws Exception {
         // 저널 꿈 태그 DTO 목록 조회
         final List<TagDto> tagList = this.getSelf().getListDtoWithCache(yy, mnth);
@@ -129,7 +129,7 @@ public class JrnlDreamTagServiceImpl
      * @return {@link Map} -- 카테고리별 태그 목록을 담은 Map
      */
     @Override
-    @Cacheable(value="myCountDreamSize", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #param.tagNo + \"_\" + #param.yy + \"_\" + #param.mnth")
+    @Cacheable(value="myCountDreamSize", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #param.tagNo + \"_\" + #param.yy + \"_\" + #param.mnth")
     public Integer countDreamSize(final JrnlDreamContentTagParam param) {
         return repository.countDreamSize(param);
     }

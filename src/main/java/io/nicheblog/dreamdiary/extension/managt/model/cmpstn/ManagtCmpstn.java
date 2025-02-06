@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.extension.managt.model.cmpstn;
 
-import io.nicheblog.dreamdiary.auth.model.AuditorDto;
+import io.nicheblog.dreamdiary.auth.security.model.AuditorDto;
 import io.nicheblog.dreamdiary.extension.managt.model.ManagtrDto;
 import lombok.*;
 

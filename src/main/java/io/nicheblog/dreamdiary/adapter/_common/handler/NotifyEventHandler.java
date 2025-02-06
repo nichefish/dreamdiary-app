@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.adapter._common.handler;
 
 import io.nicheblog.dreamdiary.adapter.jandi.JandiTopic;
 import io.nicheblog.dreamdiary.adapter.jandi.service.JandiApiService;
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.board.post.model.BoardPostDto;
 import io.nicheblog.dreamdiary.domain.notice.model.NoticeDto;
 import io.nicheblog.dreamdiary.domain.schdul.model.SchdulDto;

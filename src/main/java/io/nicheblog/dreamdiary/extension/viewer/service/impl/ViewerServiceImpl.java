@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.extension.viewer.service.impl;
 
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.extension.viewer.entity.ViewerEntity;
 import io.nicheblog.dreamdiary.extension.viewer.repository.jpa.ViewerRepository;
 import io.nicheblog.dreamdiary.extension.viewer.service.ViewerService;

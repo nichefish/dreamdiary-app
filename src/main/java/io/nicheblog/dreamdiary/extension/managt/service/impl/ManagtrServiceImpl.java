@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.extension.managt.service.impl;
 
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.extension.managt.entity.ManagtrEntity;
 import io.nicheblog.dreamdiary.extension.managt.repository.jpa.ManagtrRepository;
 import io.nicheblog.dreamdiary.extension.managt.service.ManagtrService;

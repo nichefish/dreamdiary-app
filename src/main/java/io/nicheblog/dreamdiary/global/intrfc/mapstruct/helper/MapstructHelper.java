@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.global.intrfc.mapstruct.helper;
 
-import io.nicheblog.dreamdiary.auth.entity.AuditorInfo;
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.extension.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.extension.comment.entity.embed.CommentEmbedModule;
 import io.nicheblog.dreamdiary.extension.comment.mapstruct.embed.CommentEmbedMapstruct;

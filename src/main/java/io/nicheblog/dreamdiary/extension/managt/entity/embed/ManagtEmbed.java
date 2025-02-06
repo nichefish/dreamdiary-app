@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.extension.managt.entity.embed;
 
-import io.nicheblog.dreamdiary.auth.entity.AuditorInfo;
-import io.nicheblog.dreamdiary.auth.util.AuditorUtils;
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
+import io.nicheblog.dreamdiary.auth.security.util.AuditorUtils;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.extension.managt.entity.ManagtrEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.AllArgsConstructor;

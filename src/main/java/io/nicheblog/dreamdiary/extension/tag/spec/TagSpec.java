@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.extension.tag.spec;
 
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.extension.tag.entity.ContentTagEntity;
 import io.nicheblog.dreamdiary.extension.tag.entity.TagEntity;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
