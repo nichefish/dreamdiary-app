@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.chat.model;
 
-import io.nicheblog.dreamdiary.global._common._clsf.ContentType;
+import io.nicheblog.dreamdiary.extension.ContentType;
 import io.nicheblog.dreamdiary.global.intrfc.model.BasePostDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.*;

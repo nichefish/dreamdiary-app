@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.user.info.controller;
 
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserSearchParam;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;

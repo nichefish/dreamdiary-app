@@ -1,15 +1,15 @@
 package io.nicheblog.dreamdiary.domain.user.my.service.impl;
 
-import io.nicheblog.dreamdiary.auth.entity.AuditorInfo;
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserPwChgParam;
 import io.nicheblog.dreamdiary.domain.user.info.repository.jpa.UserRepository;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
 import io.nicheblog.dreamdiary.domain.user.my.service.UserMyService;
 import io.nicheblog.dreamdiary.global._common.cache.util.EhCacheUtils;
-import io.nicheblog.dreamdiary.global._common.file.model.AtchFileDtlDto;
-import io.nicheblog.dreamdiary.global._common.file.utils.FileUtils;
+import io.nicheblog.dreamdiary.extension.file.model.AtchFileDtlDto;
+import io.nicheblog.dreamdiary.extension.file.utils.FileUtils;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;

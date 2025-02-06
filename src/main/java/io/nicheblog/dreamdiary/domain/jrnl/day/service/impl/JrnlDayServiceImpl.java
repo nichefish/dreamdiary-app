@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.domain.jrnl.day.service.impl;
 
-import io.nicheblog.dreamdiary.auth.exception.NotAuthorizedException;
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.day.mapstruct.JrnlDayMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
@@ -11,7 +11,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.repository.mybatis.JrnlDayMapper;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayService;
 import io.nicheblog.dreamdiary.domain.jrnl.day.spec.JrnlDaySpec;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
-import io.nicheblog.dreamdiary.global._common._clsf.ContentType;
+import io.nicheblog.dreamdiary.extension.ContentType;
 import io.nicheblog.dreamdiary.global._common.cache.event.EhCacheEvictEvent;
 import io.nicheblog.dreamdiary.global._common.cache.handler.EhCacheEvictEventListner;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
@@ -70,7 +70,7 @@ public class JrnlDayServiceImpl
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="myJrnlDayList", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getYy() + \"_\" + #searchParam.getMnth()")
+    @Cacheable(value="myJrnlDayList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getYy() + \"_\" + #searchParam.getMnth()")
     public List<JrnlDayDto> getMyListDto(final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
         return this.getSelf().getListDto(searchParam);
@@ -121,7 +121,7 @@ public class JrnlDayServiceImpl
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="myJrnlDayTagDtl", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
+    @Cacheable(value="myJrnlDayTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
     public List<JrnlDayDto> jrnlDayTagDtl(final JrnlDaySearchParam searchParam) throws Exception {
         searchParam.setSort("DESC");
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
@@ -148,7 +148,7 @@ public class JrnlDayServiceImpl
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="myJrnlDayDtlDto", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #key")
+    @Cacheable(value="myJrnlDayDtlDto", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #key")
     public JrnlDayDto getDtlDtoWithCache(final Integer key) throws Exception {
         final JrnlDayDto retrieved = this.getSelf().getDtlDto(key);
         // 권한 체크

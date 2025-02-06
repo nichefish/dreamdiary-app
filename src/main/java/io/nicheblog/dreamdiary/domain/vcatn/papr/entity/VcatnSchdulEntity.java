@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.vcatn.papr.entity;
 
-import io.nicheblog.dreamdiary.auth.entity.AuditorInfo;
+import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

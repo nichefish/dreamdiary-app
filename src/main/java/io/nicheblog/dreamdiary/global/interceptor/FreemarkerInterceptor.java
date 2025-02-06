@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.global.interceptor;
 
-import io.nicheblog.dreamdiary.auth.model.AuthInfo;
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.domain.admin.menu.exception.MenuNotExistsException;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuDto;

@@ -138,7 +138,7 @@ public class DataSourceConfig
      * @param entityManagerFactory JPA {@link EntityManagerFactory} 객체
      * @return {@link SessionFactory} Hibernate SessionFactory
      */
-    @Bean(name = "hibernateSessionFactory")  // ✅ Hibernate용 SessionFactory
+    @Bean(name = "hibernateSessionFactory")  // Hibernate용 SessionFactory
     public SessionFactory hibernateSessionFactory(
             final @Qualifier("entityManagerFactory") EntityManagerFactory entityManagerFactory
     ) {

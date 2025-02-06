@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.global._common.cd.service;
 
-import io.nicheblog.dreamdiary.global._common._clsf.state.service.BaseStateService;
+import io.nicheblog.dreamdiary.extension.state.service.BaseStateService;
 import io.nicheblog.dreamdiary.global._common.cd.entity.DtlCdEntity;
 import io.nicheblog.dreamdiary.global._common.cd.entity.DtlCdKey;
 import io.nicheblog.dreamdiary.global._common.cd.mapstruct.DtlCdMapstruct;

@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.domain.chat.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.nicheblog.dreamdiary.global._common._clsf.ContentType;
+import io.nicheblog.dreamdiary.extension.ContentType;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BasePostSearchParam;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

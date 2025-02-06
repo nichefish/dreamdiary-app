@@ -104,14 +104,14 @@
             </div>
 
             <#--페이지:: 첨부파일 추가추가 영역-->
-            <#include "/view/global/_common/file/_atch_file_page_reg_area.ftlh">
+            <#include "/view/extension/file/_atch_file_page_reg_area.ftlh">
 
             <!-- #include:: component:: 파일시스템 참조 -->
 
             <!-- #include:: component:: NOTION 참조 ID -->
 
             <!-- #include:: component:: 태그 태그 -->
-            <#include "/view/global/_common/_clsf/tag/_tag_page_reg_area.ftlh">
+            <#include "/view/extension/tag/_tag_page_reg_area.ftlh">
 
             <div class="separator my-8"></div>
 

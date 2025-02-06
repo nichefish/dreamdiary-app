@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.diary.mapstruct.JrnlDiaryTagMapstruct
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryContentTagParam;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.repository.jpa.JrnlDiaryTagRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.spec.JrnlDiaryTagSpec;
-import io.nicheblog.dreamdiary.global._common._clsf.tag.model.TagDto;
+import io.nicheblog.dreamdiary.extension.tag.model.TagDto;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseReadonlyService;
 
 import java.util.List;

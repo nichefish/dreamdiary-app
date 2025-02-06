@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.domain.jrnl.day.spec;
 
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayContentTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayTagEntity;
-import io.nicheblog.dreamdiary.global._common._clsf.ContentType;
-import io.nicheblog.dreamdiary.global._common._clsf.tag.entity.TagEntity;
+import io.nicheblog.dreamdiary.extension.ContentType;
+import io.nicheblog.dreamdiary.extension.tag.entity.TagEntity;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;

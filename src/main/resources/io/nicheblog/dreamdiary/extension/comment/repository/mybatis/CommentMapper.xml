@@ -1,0 +1,16 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.nicheblog.dreamdiary.extension.comment.repository.mybatis.CommentMapper">
+
+    <!-- 삭제 데이터 조회 -->
+    <select id="getDeletedByPostNo" resultType="io.nicheblog.dreamdiary.extension.comment.model.CommentDto">
+        /* SectnMapper.getDeletedByPostNo */
+        SELECT
+            comment.post_no AS postNo,
+            comment.ref_post_no AS refPostNo,
+            comment.ref_content_type AS refContentType
+        FROM comment comment
+        WHERE comment.post_no = #{postNo}
+    </select>
+</mapper>

@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary;
 
-import io.nicheblog.dreamdiary.auth.entity.AuthRoleEntity;
-import io.nicheblog.dreamdiary.auth.service.AuthService;
+import io.nicheblog.dreamdiary.auth.security.entity.AuthRoleEntity;
+import io.nicheblog.dreamdiary.auth.security.service.AuthService;
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.model.LgnPolicyDto;
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.service.LgnPolicyService;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserAuthRoleDto;
@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
 import io.nicheblog.dreamdiary.global.ActiveProfile;
 import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.ServerInfo;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.sys.event.LogSysEvent;
 import io.nicheblog.dreamdiary.global._common.log.sys.handler.LogSysEventListener;
@@ -23,6 +24,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -40,6 +42,7 @@ public class DreamdiaryInitializer
         implements CommandLineRunner {
 
     private final ActiveProfile activeProfile;
+    private final ServerInfo serverInfo;
     private final AuthService authService;
     private final UserService userService;
     private final LgnPolicyService lgnPolicyService;
@@ -58,18 +61,17 @@ public class DreamdiaryInitializer
 
         log.info("DreamdiaryApplication init... activeProfile: {}", activeProfile.getActive());
 
-
         this.regSystemAcntIfEmpty();
         // 로그인 정책 부재시 등록 :: 메소드 분리
         this.regLgnPolicyIfEmpty();
 
         // 파일 관련 기본 폴더 생성
         final File fileDirectory = new File("file/");
-        if (!fileDirectory.exists() &&!fileDirectory.mkdirs()) throw new Exception(MessageUtils.getMessage("common.status.mkdir-failed"));
+        if (!fileDirectory.exists() &&!fileDirectory.mkdirs()) throw new IOException(MessageUtils.getMessage("common.status.mkdir-failed"));
         final File upfileDirectory = new File("file/upfile/");
-        if (!upfileDirectory.exists() &&!upfileDirectory.mkdirs()) throw new Exception(MessageUtils.getMessage("common.status.mkdir-failed"));
+        if (!upfileDirectory.exists() &&!upfileDirectory.mkdirs()) throw new IOException(MessageUtils.getMessage("common.status.mkdir-failed"));
         final File reportDirectory = new File("file/report/");
-        if (!reportDirectory.exists() &&!reportDirectory.mkdirs()) throw new Exception(MessageUtils.getMessage("common.status.mkdir-failed"));
+        if (!reportDirectory.exists() &&!reportDirectory.mkdirs()) throw new IOException(MessageUtils.getMessage("common.status.mkdir-failed"));
 
         // 시스템 재기동 로그 적재:: 운영 환경 이외에는 적재하지 않음
         if (activeProfile.isProd()) {

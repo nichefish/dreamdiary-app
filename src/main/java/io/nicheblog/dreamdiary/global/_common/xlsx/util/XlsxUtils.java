@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.global._common.xlsx.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.nicheblog.dreamdiary.global._common.file.utils.FileUtils;
+import io.nicheblog.dreamdiary.extension.file.utils.FileUtils;
 import io.nicheblog.dreamdiary.global._common.xlsx.XlsxCellStyle;
 import io.nicheblog.dreamdiary.global._common.xlsx.XlsxType;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;

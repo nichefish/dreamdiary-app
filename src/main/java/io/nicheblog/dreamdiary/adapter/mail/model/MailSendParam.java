@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.adapter.mail.model;
 
-import io.nicheblog.dreamdiary.global._common.file.model.AtchFileDtlDto;
+import io.nicheblog.dreamdiary.extension.file.model.AtchFileDtlDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

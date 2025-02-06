@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.user.info.service.impl;
 
-import io.nicheblog.dreamdiary.auth.entity.AuditorInfo;
+import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.entity.LgnPolicyEntity;
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.service.LgnPolicyService;
 import io.nicheblog.dreamdiary.domain.user.info.entity.UserEntity;

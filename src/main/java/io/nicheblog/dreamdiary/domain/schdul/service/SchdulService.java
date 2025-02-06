@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.schdul.service;
 
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.schdul.entity.SchdulEntity;
 import io.nicheblog.dreamdiary.domain.schdul.mapstruct.SchdulMapstruct;
 import io.nicheblog.dreamdiary.domain.schdul.model.SchdulDto;

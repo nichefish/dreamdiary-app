@@ -5,6 +5,7 @@
 
 # 로컬 포트 = 18081
 server:
+    domain: ${SERVER_DOMAIN:localhost}
     port: ${SERVER_PORT:18081}
 
 spring:

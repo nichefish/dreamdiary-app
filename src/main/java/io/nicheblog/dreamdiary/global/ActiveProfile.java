@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.global;
 
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -25,7 +26,7 @@ public class ActiveProfile {
 
     @PostConstruct
     public void init() throws Exception {
-        if (StringUtils.isEmpty(this.active)) throw new Exception("profile이 유효하지 않습니다.");
+        if (StringUtils.isEmpty(this.active)) throw new IllegalStateException(MessageUtils.getMessage("common.status.profile-invalid"));
         this.profile = Profile.valueOf(this.active.toUpperCase());
     }
 

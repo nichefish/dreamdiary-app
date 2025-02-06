@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.jrnl.diary.service.impl;
 
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.mapstruct.JrnlDiaryTagMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryContentTagParam;
@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiarySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.repository.jpa.JrnlDiaryTagRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryTagService;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.spec.JrnlDiaryTagSpec;
-import io.nicheblog.dreamdiary.global._common._clsf.tag.model.TagDto;
+import io.nicheblog.dreamdiary.extension.tag.model.TagDto;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -57,7 +57,7 @@ public class JrnlDiaryTagServiceImpl
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="myJrnlDiaryTagList", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
+    @Cacheable(value="myJrnlDiaryTagList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
     public List<TagDto> getListDtoWithCache(final Integer yy, final Integer mnth) throws Exception {
         final JrnlDiarySearchParam searchParam = JrnlDiarySearchParam.builder().yy(yy).mnth(mnth).build();
 
@@ -74,7 +74,7 @@ public class JrnlDiaryTagServiceImpl
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="myJrnlDiarySizedTagList", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
+    @Cacheable(value="myJrnlDiarySizedTagList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
     public List<TagDto> getDiarySizedListDto(final Integer yy, final Integer mnth) throws Exception {
         // 저널 꿈 태그 DTO 목록 조회
         final List<TagDto> tagList = this.getSelf().getListDtoWithCache(yy, mnth);
@@ -130,7 +130,7 @@ public class JrnlDiaryTagServiceImpl
      * @return {@link Map} -- 카테고리별 태그 목록을 담은 Map
      */
     @Override
-    @Cacheable(value="myCountDiarySize", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #param.tagNo + \"_\" + #param.yy + \"_\" + #param.mnth")
+    @Cacheable(value="myCountDiarySize", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #param.tagNo + \"_\" + #param.yy + \"_\" + #param.mnth")
     public Integer countDiarySize(final JrnlDiaryContentTagParam param) {
         return repository.countDiarySize(param);
     }

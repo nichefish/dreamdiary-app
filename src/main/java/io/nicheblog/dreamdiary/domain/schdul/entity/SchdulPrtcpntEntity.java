@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.schdul.entity;
 
-import io.nicheblog.dreamdiary.auth.entity.AuditorInfo;
+import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

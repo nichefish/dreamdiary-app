@@ -44,12 +44,12 @@ public class DreamdiaryApplication {
      */
     private static void loadDotEnvProperties() {
         try {
-            setDotEnvPropertiesByFileNm(".env");
+            setDotEnvPropertiesByFileNm("config/env/.env");
             // 프로필 기반 .env.${profile} 프로퍼티 로드 (시점이 맞지 않기 떄문에 .yml 강제 파싱)
             final String profile = YmlLoader.loadSpringProfile();
             if (profile == null) throw new IllegalStateException(MessageUtils.getMessage("common.status.profile-not-set"));
 
-            setDotEnvPropertiesByFileNm(".env." + profile);
+            setDotEnvPropertiesByFileNm("config/env/.env." + profile);
         } catch (final Exception e) {
             log.error("Failed to load .env file for profile '{}'", System.getProperty("spring.profiles.active"), e);
         }

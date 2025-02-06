@@ -134,13 +134,13 @@
             <#--begin::meta-->
             <div class="mb-0">
                 <#--페이지:: 첨부파일 추가추가 영역-->
-                <#include "/view/global/_common/file/_atch_file_page_reg_area.ftlh">
+                <#include "/view/extension/file/_atch_file_page_reg_area.ftlh">
 
                 <!-- #include:: component:: 파일시스템 참조 -->
                 <#include "/view/global/_common/flsys/_flsys_reg_area.ftlh">
 
                 <!-- #include:: component:: 태그 태그 -->
-                <#include "/view/global/_common/_clsf/tag/_tag_page_reg_area.ftlh">
+                <#include "/view/extension/tag/_tag_page_reg_area.ftlh">
             </div>
 
             <div class="separator my-8"></div>
@@ -171,7 +171,7 @@
         <#--begin::Card body-->
         <div class="card-body pt-0">
             <#--페이지:: 단락 영역-->
-            <#include "/view/global/_common/_clsf/sectn/_sectn_page_reg_area.ftlh">
+            <#include "/view/extension/sectn/_sectn_page_reg_area.ftlh">
         </div>
     </div>
 </#if>
@@ -187,13 +187,13 @@
 <script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
 
 <#--include::sectn_module-->
-<#include "/view/global/_common/_clsf/sectn/_modal/_sectn_reg_modal.ftlh">
-<#include "/view/global/_common/_clsf/sectn/_sectn_list_template.hbs">
-<script type="text/javascript" src="/js/view/global/_common/_clsf/sectn/sectn_module.js?${releaseDate!}"></script>
+<#include "/view/extension/sectn/_modal/_sectn_reg_modal.ftlh">
+<#include "/view/extension/sectn/_sectn_list_template.hbs">
+<script type="text/javascript" src="/js/view/extension/sectn/sectn_module.js?${releaseDate!}"></script>
 
 <#--include::comment_module-->
-<script type="text/javascript" src="/js/view/global/_common/_clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
-<#include "/view/global/_common/_clsf/comment/_modal/_comment_reg_modal.ftlh">
+<script type="text/javascript" src="/js/view/extension/comment/comment_modal_module.js?${releaseDate!}"></script>
+<#include "/view/extension/comment/_modal/_comment_reg_modal.ftlh">
 
 <#--include::notice_module-->
 <script type="text/javascript" src="/js/view/domain/notice/notice_module.js?${releaseDate!}"></script>

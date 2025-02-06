@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.global._common.cd.service.impl;
 
-import io.nicheblog.dreamdiary.global._common._clsf.state.model.cmpstn.StateCmpstn;
+import io.nicheblog.dreamdiary.extension.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.global._common.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global._common.cache.util.RedisUtils;
 import io.nicheblog.dreamdiary.global._common.cd.entity.ClCdEntity;

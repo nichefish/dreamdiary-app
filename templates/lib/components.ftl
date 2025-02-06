@@ -24,4 +24,4 @@
 <#include "/view/global/_page_post_module.ftlh">
 
 <!-- in progress... -->
-<#include "/view/global/_page_clsf_module.ftlh">
+<#include "/view/extension/_page_clsf_module.ftlh">

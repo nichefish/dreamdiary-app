@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.jrnl.day.service.impl;
 
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.day.mapstruct.JrnlDayCalMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayCalDto;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
@@ -81,7 +81,7 @@ public class JrnlDayCalServiceImpl
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="myJrnlDayCalList", key="T(io.nicheblog.dreamdiary.auth.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getYy() + \"_\" + #searchParam.getMnth()")
+    @Cacheable(value="myJrnlDayCalList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getYy() + \"_\" + #searchParam.getMnth()")
     public List<BaseCalDto> getMyCalListDto(final JrnlDaySearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
         final List<JrnlDayDto> myJrnlDayList = JrnlDayService.getMyListDto(searchParam);

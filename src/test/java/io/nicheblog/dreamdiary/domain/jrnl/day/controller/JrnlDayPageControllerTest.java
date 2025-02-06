@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.domain.jrnl.day.controller;
 
-import io.nicheblog.dreamdiary.auth.model.AuthInfo;
-import io.nicheblog.dreamdiary.auth.model.AuthInfoTestFactory;
+import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
+import io.nicheblog.dreamdiary.auth.security.model.AuthInfoTestFactory;
 import io.nicheblog.dreamdiary.domain.jrnl.day.repository.jpa.JrnlDayRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayService;
 import io.nicheblog.dreamdiary.global.Url;

@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.global.intrfc.service;
 
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BasePostEntity;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseClsfMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.model.BasePostDto;

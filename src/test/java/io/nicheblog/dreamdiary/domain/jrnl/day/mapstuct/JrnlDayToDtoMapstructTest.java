@@ -9,7 +9,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntityTestFacto
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntityTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;
-import io.nicheblog.dreamdiary.global._common._clsf.tag.entity.embed.TagEmbed;
+import io.nicheblog.dreamdiary.extension.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseEntityTestFactoryHelper;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;

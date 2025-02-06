@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.user.info.model;
 
-import io.nicheblog.dreamdiary.auth.util.AuthUtils;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.user.info.model.emplym.UserEmplymDto;
 import io.nicheblog.dreamdiary.domain.user.info.model.profl.UserProflDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseAtchDto;

@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.global.util;
 
-import io.nicheblog.dreamdiary.global._common.file.model.AtchFileDtlDto;
-import io.nicheblog.dreamdiary.global._common.file.utils.FileUtils;
+import io.nicheblog.dreamdiary.extension.file.model.AtchFileDtlDto;
+import io.nicheblog.dreamdiary.extension.file.utils.FileUtils;
 import lombok.extern.log4j.Log4j2;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -81,7 +81,7 @@ public class PdfBoxUtils {
      */
     private static BufferedImage validateAndLoadImage(final AtchFileDtlDto atchFile) throws Exception {
         final File imageFile = new File(atchFile.getFileStrePath(), atchFile.getStreFileNm());
-        if (!imageFile.exists()) throw new FileNotFoundException("파일이 존재하지 않습니다.");
+        if (!imageFile.exists()) throw new FileNotFoundException(MessageUtils.getExceptionMsg("FileNotFoundException"));
         if (!imageFile.canRead()) throw new SecurityException("파일을 읽을 권한이 없습니다.");
         return ImageIO.read(imageFile);
     }

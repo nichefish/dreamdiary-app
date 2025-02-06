@@ -81,9 +81,9 @@
 <#include "/view/global/_common//flsys/_flsys_home_header_path_template.hbs">
 <#include "/view/global/_common//flsys/_flsys_meta_reg_modal.ftlh">
 <#include "/view/global/_common//flsys/_flsys_meta_dtl_modal.ftlh">
-<#include "/view/global/_common/_clsf/tag/_modal/_tag_dtl_modal.ftlh">
-<#include "/view/global/_common/_clsf/tag/_tag_dtl_post_list_template.hbs">
-<#include "/view/global/_common/_clsf/tag/_modal/_tag_list_modal.ftlh">
+<#include "/view/extension/tag/_modal/_tag_dtl_modal.ftlh">
+<#include "/view/extension/tag/_tag_dtl_post_list_template.hbs">
+<#include "/view/extension/tag/_modal/_tag_list_modal.ftlh">
 
 <#--include:: Dream - Aside-->
 <#include "/view/global/_common//flsys/_flsys_aside_base.ftlh">
