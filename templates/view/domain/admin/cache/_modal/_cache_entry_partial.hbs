@@ -1,0 +1,35 @@
+<#--
+ * 캐시 상세 모달 partial
+ * @included_in : _cache_dtl_modal_template.hbs
+-->
+
+<script type="text/x-handlebars-template" id="cache_entry_partial">
+    {{#each this}}
+        <div class="row">
+            {{@key}}:
+            <div class="col {{#unless (isValue this)}}ms-4{{/unless}} flex-grow-1">
+                {{#if (isObject this)}}
+                    <div class="nested-object">
+                        {{> cache_entry_partial this}}            <!-- 재귀 호출 -->
+                    </div>
+                {{else if (isArray this)}}
+                    <div>
+                        {{#each this}}
+                            <div>
+                                {{#if (isObject this)}}
+                                    <div class="nested-object">
+                                        {{> cache_entry_partial this}}    <!-- 배열 내 객체 재귀 호출 -->
+                                    </div>
+                                {{else}}
+                                    {{stringify this}}
+                                {{/if}}
+                            </div>
+                        {{/each}}
+                    </div>
+                {{else}}
+                    {{stringify this}}
+                {{/if}}
+            </div>
+        </div>
+    {{/each}}
+</script>

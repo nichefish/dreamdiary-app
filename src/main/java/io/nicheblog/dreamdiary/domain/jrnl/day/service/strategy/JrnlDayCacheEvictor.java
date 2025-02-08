@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.domain.jrnl.day.service.impl;
+package io.nicheblog.dreamdiary.domain.jrnl.day.service.strategy;
 
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayContentTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayEntity;

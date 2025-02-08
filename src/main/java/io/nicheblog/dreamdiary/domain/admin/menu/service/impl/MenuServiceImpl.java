@@ -137,7 +137,7 @@ public class MenuServiceImpl
      * @param label 메뉴 라벨 (컨트롤러에 대정)
      * @return MenuDto
      */
-    @Cacheable(value="menuByLabel", key="#label")
+    @Cacheable(value="menuByLabel", key="#label.name()")
     public MenuDto getMenuByLabel(final SiteMenu label) throws Exception {
         final Map<String, Object> searchParamMap = new HashMap<>();
         searchParamMap.put("menuLabel", label.name());

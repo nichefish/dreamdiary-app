@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.global._common.log.sys.event.LogSysEvent;
 import io.nicheblog.dreamdiary.global._common.log.sys.service.LogSysService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -31,8 +32,8 @@ public class LogSysWorker
     private static final BlockingQueue<LogSysEvent> logSysQueue = new LinkedBlockingQueue<>();
 
     @PostConstruct
-        public void init() {
-        Thread workerThread = new Thread(this);
+    public void init() {
+        final Thread workerThread = new Thread(this);
         workerThread.start();
     }
 
@@ -44,7 +45,8 @@ public class LogSysWorker
         try {
             while (true) {
                 // Blocks until an element is available
-                LogSysEvent logEvent = logSysQueue.take();
+                final LogSysEvent logEvent = logSysQueue.take();
+                SecurityContextHolder.setContext(logEvent.getSecurityContext());
 
                 // 시스템 로그 로깅 처리
                 logSysService.regSysActvty(logEvent.getLog());
@@ -62,7 +64,7 @@ public class LogSysWorker
      *
      * @param event 큐에 추가할 LogSysEvent 객체
      */
-    public void offer(LogSysEvent event) {
+    public void offer(final LogSysEvent event) {
         logSysQueue.offer(event);
     }
 }

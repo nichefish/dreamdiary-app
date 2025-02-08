@@ -379,6 +379,24 @@ cF.handlebars = (function(): Module {
     });
 
     /**
+     * 주어진 값이 단일 객체인지 여부 체크
+     *
+     * @param {any} value - 변환할 값.
+     * @returns {string} - 객체일 경우 JSON 문자열, 그렇지 않으면 문자열. 값이 없으면 'null' 문자열.
+     */
+    const isObjectFunc: Function = function(value: any): boolean {
+        return value !== null && typeof value === 'object' && !Array.isArray(value);
+    }
+
+    Handlebars.registerHelper('isObject', isObjectFunc);
+    Handlebars.registerHelper('isArray', function(value: any): boolean {
+        return Array.isArray(value);
+    });
+    Handlebars.registerHelper('isValue', function(value: any): boolean {
+        return !isObjectFunc && !Array.isArray(value);
+    });
+
+    /**
      * Handlebars 헬퍼 함수 'stringify'를 등록합니다.
      * 주어진 값이 객체일 경우 JSON 문자열로 변환하고, 그렇지 않으면 문자열로 변환합니다.
      *
@@ -391,5 +409,9 @@ cF.handlebars = (function(): Module {
         }
         return value ? value.toString() : 'null';
     });
-
 })(Handlebars);
+document.addEventListener("DOMContentLoaded", function(): void {
+    Handlebars.registerPartial("cache_entry_partial", document.getElementById("cache_entry_partial").innerHTML);
+});
+
+

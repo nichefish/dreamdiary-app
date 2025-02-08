@@ -5,6 +5,8 @@ import io.nicheblog.dreamdiary.extension.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * TagAddEvent
@@ -19,9 +21,10 @@ import org.springframework.context.ApplicationEvent;
 public class TagProcEvent
         extends ApplicationEvent {
 
+    /** 보안 컨텍스트 */
+    private final SecurityContext securityContext;
     /** 컨텐츠 복합키 */
     private final BaseClsfKey clsfKey;
-
     /** 태그 */
     private final TagCmpstn tagCmpstn;
 
@@ -34,8 +37,9 @@ public class TagProcEvent
      * @param clsfKey 해당 이벤트에 대한 분류 키
      * @param tag 태그 조합 객체 (TagCmpstn)
      */
-    public TagProcEvent(final Object source,  final BaseClsfKey clsfKey, final TagCmpstn tag) {
+    public TagProcEvent(final Object source, final BaseClsfKey clsfKey, final TagCmpstn tag) {
         super(source);
+        this.securityContext = SecurityContextHolder.getContext();
         this.clsfKey = clsfKey;
         this.tagCmpstn = tag;
     }
@@ -47,6 +51,7 @@ public class TagProcEvent
      */
     public TagProcEvent(final Object source, final BaseClsfKey clsfKey) {
         super(source);
+        this.securityContext = SecurityContextHolder.getContext();
         this.clsfKey = clsfKey;
         this.tagCmpstn = null;
     }

@@ -129,7 +129,7 @@ public class TagServiceImpl
      * @return {@link List} -- 컨텐츠 타입에 해당하는 태그 목록
      */
     @Transactional(readOnly = true)
-    public List<TagDto> getOverallSizedTagList(TagSearchParam searchParam) throws Exception {
+    public List<TagDto> getOverallSizedTagList(final TagSearchParam searchParam) throws Exception {
         final List<TagDto> tagList = this.getListDto(searchParam);
         final String refContentType = searchParam.getContentType();
 

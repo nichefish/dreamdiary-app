@@ -192,6 +192,7 @@
 
 <#--include::modals-->
 <#include "/view/domain/admin/cache/_modal/_cache_list_modal.ftlh">
+<#include "/view/domain/admin/cache/_modal/_cache_dtl_modal.ftlh">
 
 <#--include::script modules-->
 <script type="text/javascript" src="/js/view/domain/admin/cache/_cache.js?${releaseDate!}"></script>

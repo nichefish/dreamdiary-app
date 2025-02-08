@@ -1,34 +1,56 @@
 <#--
  * 캐시 목록 모달 Template
- * @included_in : admin_page.ftlh
+ * @included_in : _cache_list_modal.ftlh
  -->
 
 <script type="text/x-handlebars-template" id="cache_list_modal_template">
-    <input type="hidden" name="postNo" value="{{postNo}}">
-
     {{#each this}}
-    <#--begin::Row-->
-    <div class="row row-cols-lg-2 mb-3">
-        <div class="col-xl-3 col-3 d-flex-center">
-            "{{@key}}"
-        </div>
-        <div class="col">
-            {{#each this}}
-                <#--begin::Row-->
-                <div class="row mb-3">
-                    <div class="col d-flex-center">
-                        {{stringify this}}
-                    </div>
-                    <div class="col-4">
-                        <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
-                                onclick="Cache.evictAjax('{{@../key}}', '{{@key}}');"
-                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="캐시를 초기화합니다." >
-                            <i class="bi bi-pencil-square p-0"></i>캐시 초기화
-                        </button>
-                    </div>
+        <#--begin::Row-->
+        <div class="row d-align-center" data-cache-name="{{@key}}">
+            <div class="col-2 d-flex-center flex-column gap-1">
+                <div class="fw-bold">
+                    "{{@key}}"
                 </div>
-            {{/each}}
+                <div>
+                    <button type="button" class="btn btn-sm btn-light-danger btn-outlined ms-2 py-1 px-2 cursor-pointer"
+                            onclick="dF.Cache.clearByNmAjax('{{@key}}');"
+                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="캐시({{@key}})를 전부 초기화합니다." >
+                        <i class="bi bi-trash p-0"></i>캐시 전체 초기화
+                    </button>
+                </div>
+            </div>
+            <div class="col-10">
+                {{#each this}}
+                    <#--begin::Row-->
+                    <div class="row py-1" data-cache-key="{{@key}}">
+                        <div class="col d-align-center">
+                            <div class="text-start text-truncate">
+                                <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-3 cursor-pointer"
+                                        onclick="dF.Cache.dtlModal('{{@../key}}', '{{@key}}');"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="캐시 상세 모달을 호출합니다." >
+                                    {{#if (equals @key "SimpleKey()")}}
+                                        -
+                                    {{else}}
+                                        {{@key}}
+                                    {{/if}}
+                                    <i class="bi bi-stickies ms-1 p-0"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-light-danger btn-outlined ms-2 py-1 px-0 cursor-pointer"
+                                        onclick="dF.Cache.evictAjax('{{@../key}}', '{{@key}}');"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="캐시({{@../key}}, {{@key}})를 초기화합니다." >
+                                    <i class="bi bi-trash p-0"></i>　
+                                </button>
+                                <span class="ms-4">
+                                    {{stringify this}}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                {{/each}}
+            </div>
         </div>
-    </div>
+        {{#unless @last}}
+            <div class="separator my-5"></div>
+        {{/unless}}
     {{/each}}
 </script>

@@ -31,11 +31,20 @@
     font-size: small !important;
 }
 
+.d-justify-center {
+    display: flex;
+    justify-content: center;
+}
+.d-align-center {
+    display: flex;
+    align-items: center;
+}
 .d-flex-center {
     display: flex;
     justify-content: center;
     align-items: center;
 }
+
 
 .fs-x-small {
     font-size: x-small !important;

@@ -44,6 +44,8 @@ public final class Constant
     public static final String PREFIX = "PREFIX";
     public static final String SUFFIX = "SUFFIX";
 
+    public static final String SIMPLE_KEY = "SimpleKey()";
+
     /** URL_ENCODING */
     public static final Boolean URL_ENC_FALSE = false;
 

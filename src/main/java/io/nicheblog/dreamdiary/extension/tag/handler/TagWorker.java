@@ -8,6 +8,8 @@ import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -37,8 +39,8 @@ public class TagWorker
     private static final BlockingQueue<TagProcEvent> tagQueue = new LinkedBlockingQueue<>();
 
     @PostConstruct
-        public void init() {
-        Thread workerThread = new Thread(this);
+    public void init() {
+        final Thread workerThread = new Thread(this);
         workerThread.start();
     }
 
@@ -50,11 +52,13 @@ public class TagWorker
         try {
             while (true) {
                 // Blocks until an element is available
-                TagProcEvent tagEvent = tagQueue.take();
+                final TagProcEvent tagEvent = tagQueue.take();
+                SecurityContextHolder.setContext(tagEvent.getSecurityContext());
 
                 // 태그 객체 없이 키값만 넘어오면? 컨텐츠 삭제.
-                boolean isContentDelete = (tagEvent.getTagCmpstn() == null);
-                BaseClsfKey clsfKey = tagEvent.getClsfKey();
+                // 🔥 이벤트 발생 당시의 SecurityContext 복원
+                final boolean isContentDelete = (tagEvent.getTagCmpstn() == null);
+                final BaseClsfKey clsfKey = tagEvent.getClsfKey();
                 if (isContentDelete) {
                     // 기존 컨텐츠-태그 전부 삭제
                     contentTagService.delExistingContentTags(clsfKey);
@@ -80,7 +84,7 @@ public class TagWorker
      *
      * @param event 큐에 추가할 TagActvtyEvent / TagAnonActvtyEvent 객체
      */
-    public void offer(TagProcEvent event) {
+    public void offer(final TagProcEvent event) {
         tagQueue.offer(event);
     }
 }

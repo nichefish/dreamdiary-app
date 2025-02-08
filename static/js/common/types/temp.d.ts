@@ -8,6 +8,7 @@ declare const moment: Function;
 declare const Handlebars: {
     compile: Function;
     registerHelper: Function<string, Function>;
+    registerPartial: Function<string, Function>;
 };
 declare const html2pdf: Function;
 declare const tinymce: {

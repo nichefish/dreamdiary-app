@@ -30,7 +30,7 @@ public class ViewerEventListener {
      */
     @EventListener
     @Async
-    public void handleViewerAddEvent(ViewerAddEvent event) {
+    public void handleViewerAddEvent(final ViewerAddEvent event) {
         // 열람자 추가
         viewerService.addViewer(event.getClsfKey());
     }

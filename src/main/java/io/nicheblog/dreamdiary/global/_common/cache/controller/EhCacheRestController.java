@@ -37,16 +37,16 @@ public class EhCacheRestController
     @Getter
     private final String baseUrl = Url.ADMIN_PAGE;             // 기본 URL
     @Getter
-    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.ADMIN;        // 작업 카테고리 (로그 적재용)
+    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.CACHE;        // 작업 카테고리 (로그 적재용)
 
     /**
      * 사이트 캐시 목록 조회 (Ajax)
      * (관리자MNGR만 접근 가능.)
-     * 
+     *
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.CACHE_ACTIVE_LIST_AJAX)
+    @GetMapping(Url.CACHE_ACTIVE_MAP_AJAX)
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> cacheActiveListAjax(
@@ -62,6 +62,38 @@ public class EhCacheRestController
 
         // 응답 결과 세팅
         ajaxResponse.setRsltMap(activeCacheList);
+        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
+        // 로그 관련 세팅
+        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
+
+        return ResponseEntity.ok(ajaxResponse);
+    }
+
+    /**
+     * 사이트 캐시 상세 조회 (Ajax)
+     * (관리자MNGR만 접근 가능.)
+     *
+     * @param cacheParam 캐시 조회 파라미터 객체
+     * @param logParam 로그 기록을 위한 파라미터 객체
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     */
+    @GetMapping(Url.CACHE_ACTIVE_DTL_AJAX)
+    @Secured(Constant.ROLE_MNGR)
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> cacheActiveDtlAjax(
+            final CacheParam cacheParam,
+            final LogActvtyParam logParam
+    ) {
+
+        final AjaxResponse ajaxResponse = new AjaxResponse();
+
+        // 현재 활성 중인 캐시(name) 목록 조회 :: 성공시 처리완료목록으로 출력
+        final Object activeCache = EhCacheUtils.getObjectFromCache(cacheParam);
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+
+        // 응답 결과 세팅
+        ajaxResponse.setRsltObj(activeCache);
         ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
@@ -88,19 +120,38 @@ public class EhCacheRestController
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
         // 캐시 evict
-        final String key = cacheParam.getKey();
-        final String cacheName = cacheParam.getCacheName();
-        if ("-".equals(key)) {
-            EhCacheUtils.evictCacheAll(cacheName);
-        } else {
-            // 숫자 형태의 키인 경우 Integer로 변환하여 처리할 수 있음
-            if (key.matches("\\d+")) {
-                EhCacheUtils.evictCache(cacheName, Integer.valueOf(key));
-            } else {
-                // 문자열 키 처리
-                EhCacheUtils.evictCache(cacheName, key);
-            }
-        }
+        EhCacheUtils.evictCache(cacheParam);
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+
+        // 응답 결과 세팅
+        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
+        // 로그 관련 세팅
+        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
+
+        return ResponseEntity.ok(ajaxResponse);
+    }
+
+    /**
+     * 사이트 캐시 삭제 (Ajax)
+     * (관리자MNGR만 접근 가능.)
+     *
+     * @param cacheParam 삭제할 캐시의 이름 / 키. (전체 삭제시 "-")
+     * @param logParam 로그 기록을 위한 파라미터 객체
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     */
+    @PostMapping(Url.CACHE_CLEAR_BY_NM_AJAX)
+    @Secured(Constant.ROLE_MNGR)
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> cacheClearByNmAjax(
+            final CacheParam cacheParam,
+            final LogActvtyParam logParam
+    ) {
+
+        final AjaxResponse ajaxResponse = new AjaxResponse();
+
+        // 캐시 evict
+        EhCacheUtils.evictCacheAll(cacheParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
 

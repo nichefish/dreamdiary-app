@@ -19,5 +19,5 @@ public class CacheParam {
     private String cacheName;
 
     /** 삭제할 캐시 항목의 키 (전체 삭제 시 "-" 입력) */
-    private String key;
+    private String cacheKey;
 }
