@@ -82,7 +82,7 @@
                                 </div>
                             </div>
                             <div class="col jrnl-diary-cn">
-                                {{#ifYn imprtcYn}}<div class="ctgr-span ctgr-imprtc w-auto d-flex-center">!중요</div>{{/ifYn}}
+                                {{#ifYn imprtcYn}}<div class="ctgr-span ctgr-imprtc w-70px d-flex-center">!중요</div>{{/ifYn}}
                                 {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}
                                 {{{markdownCn}}}
                                 {{#if (exists tag.list)}}
@@ -161,10 +161,10 @@
                                 </div>
                             </div>
                             <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
-                                {{#ifYn imprtcYn}}<div class="ctgr-span ctgr-imprtc w-auto">!중요</div>{{/ifYn}}
-                                {{#ifYn nhtmrYn}}<div class="ctgr-span ctgr-info w-auto d-flex-center">!악몽</div>{{/ifYn}}
-                                {{#ifYn hallucYn}}<div class="ctgr-span ctgr-gray w-auto">!입면환각</div>{{/ifYn}}
-                                {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}
+                                {{#ifYn imprtcYn}}<div class="ctgr-span ctgr-imprtc w-70px">!중요</div>{{/ifYn}}
+                                {{#ifYn nhtmrYn}}<div class="ctgr-span ctgr-info w-70px d-flex-center">!악몽</div>{{/ifYn}}
+                                {{#ifYn hallucYn}}<div class="ctgr-span ctgr-gray w-70px">!입면환각</div>{{/ifYn}}
+                                {{#if (exists title)}}<div class="d-inline-block fw-70px">{{title}}</div>{{/if}}
                                 {{{markdownCn}}}
                                 {{#if (exists tag.list)}}
                                     <div class="ms-2 mt-3">

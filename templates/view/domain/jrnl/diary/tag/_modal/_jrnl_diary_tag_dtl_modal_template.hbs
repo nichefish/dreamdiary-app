@@ -16,8 +16,11 @@
                 <div class="cn">
                     {{{markdownCn}}}
                 </div>
-                <!-- "더 보기" / "접기" 버튼, 기본적으로 숨김 처리 -->
-                <button class="btn btn-link" style="display:none;">더보기</button>
+                <!-- "더 보기" 버튼, <p> child 3개 이상일 때만 보임 (css) -->
+                <button type="button" class="btn btn-xxs btn-active-light-info badge-light-prinmary btn-outlined expand-btn"
+                        onclick="dF.JrnlDiaryTag.expand(this);">
+                </button>
+
                 {{#if (exists tag.list)}}
                     <div class="ms-2 mt-3">
                         {{#tag.list}}

@@ -411,7 +411,9 @@ cF.handlebars = (function(): Module {
     });
 })(Handlebars);
 document.addEventListener("DOMContentLoaded", function(): void {
-    Handlebars.registerPartial("cache_entry_partial", document.getElementById("cache_entry_partial").innerHTML);
+    if (!document.getElementById("cache_entry_partial")) return;
+
+    Handlebars.registerPartial("cache_entry_partial", document.getElementById("cache_entry_partial")?.innerHTML);
 });
 
 

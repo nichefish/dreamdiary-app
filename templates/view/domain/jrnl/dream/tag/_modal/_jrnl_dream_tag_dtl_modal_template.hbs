@@ -12,15 +12,18 @@
                 </div>
             </div>
             <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
-                {{#ifYn imprtcYn}}<div class="ctgr-span ctgr-imprtc w-auto">!중요</div>{{/ifYn}}
-                {{#ifYn nhtmrYn}}<div class="ctgr-span ctgr-imprtc w-auto d-flex-center">!악몽</div>{{/ifYn}}
-                {{#ifYn hallucYn}}<div class="ctgr-span ctgr-gray w-auto">!입면환각</div>{{/ifYn}}
-                {{#ifYn elseDreamYn}}<div class="ctgr-span ctgr-gray w-auto d-flex-center">({{elseDreamerNm}} 꿈)</div>{{/ifYn}}
+                {{#ifYn imprtcYn}}<div class="ctgr-span ctgr-imprtc w-70px d-flex-center">!중요</div>{{/ifYn}}
+                {{#ifYn nhtmrYn}}<div class="ctgr-span ctgr-imprtc w-70px d-flex-center">!악몽</div>{{/ifYn}}
+                {{#ifYn hallucYn}}<div class="ctgr-span ctgr-gray w-70px d-flex-center">!입면환각</div>{{/ifYn}}
+                {{#ifYn elseDreamYn}}<div class="ctgr-span ctgr-gray w-70px d-flex-center">({{elseDreamerNm}} 꿈)</div>{{/ifYn}}
                 <div class="cn">
                     {{{markdownCn}}}
                 </div>
-                <!-- "더 보기" / "접기" 버튼, 기본적으로 숨김 처리 -->
-                <button class="btn btn-link" style="display:none;">더보기</button>
+                <!-- "더 보기" 버튼, <p> child 3개 이상일 때만 보임 (css) -->
+                <button type="button" class="btn btn-xxs btn-active-light-info badge-light-prinmary btn-outlined expand-btn"
+                        onclick="dF.JrnlDreamTag.expand(this);">
+                </button>
+
                 {{#if (exists tag.list)}}
                     <div class="ms-2 mt-3">
                         {{#tag.list}}

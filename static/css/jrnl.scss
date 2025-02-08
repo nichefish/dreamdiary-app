@@ -75,6 +75,11 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     }
 }
 
+.jrnl-diary-cn {
+    p {
+        color: rgba(75, 75, 75, 0.9);
+    }
+}
 .jrnl-dream-cn {
     p {
         color: rgba(95, 0, 130, 0.8);
@@ -85,30 +90,41 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     .jrnl-dream-cn, .jrnl-diary-cn {
         .cn {
             display: -webkit-box;
-            -webkit-line-clamp: 4; /* 최대 3줄 */
+            -webkit-line-clamp: 3; /* 최대 3줄 */
             -webkit-box-orient: vertical;
             overflow: hidden;
             position: relative;
+            max-height: 62.3px;
 
             &.expanded {
-                display: block;
-                height: auto;
+                display: unset !important;
+                -webkit-line-clamp: unset !important;
+                -webkit-box-orient: unset !important;
                 overflow: visible; /* 펼친 상태에서 텍스트가 넘칠 경우 표시 */
+                max-height: unset !important;
+
+                & + .expand-btn::after {
+                    content: "－ 접기";
+                }
+            }
+            &:has(p:nth-of-type(4)) + .expand-btn {
+                display: inline-block; /* p 태그가 4개 이상이면 버튼 표시 */
             }
 
-            p:last-child {
-                position: relative;
+            &:not(:has(p:nth-of-type(4))) + .expand-btn {
+                display: none; /* p 태그가 3개 이하라면 버튼 숨김 */
+            }
 
-                &::after {
-                    content: '더보기'; /* 버튼 텍스트 */
-                    color: #007bff; /* 버튼 색상 */
-                    cursor: pointer; /* 마우스 커서가 손 모양으로 변하게 */
-                    font-weight: bold;
-                    position: absolute;
-                    bottom: 0; /* 텍스트의 끝에 위치 */
-                    font-size: 0.9rem; /* 글씨 크기 */
-                    padding-left: 5px;
-                }
+        }
+        /* 더보기 버튼 스타일 */
+        .expand-btn {
+            display: block;
+            font-size: 0.85rem;
+            margin-top: 2px;
+            margin-left: 5px;
+
+            &::after {
+                content: "＋ 더보기";
             }
         }
     }

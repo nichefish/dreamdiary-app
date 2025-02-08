@@ -65,7 +65,7 @@ public class JrnlDiaryCalDto
     }
 
     public String getClassName() {
-        return "bg-transparent border-transparent";
+        return "bg-transparent border-transparent text-truncate";
     }
 
     public String getGroupId() {

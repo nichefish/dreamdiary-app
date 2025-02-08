@@ -65,7 +65,7 @@ public class JrnlDreamCalDto
     }
 
     public String getClassName() {
-        return "bg-transparent border-transparent text-dream";
+        return "bg-transparent border-transparent text-dream text-truncate";
     }
 
     public String getGroupId() {
