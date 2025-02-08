@@ -25,4 +25,4 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "/view/domain/board/post/_modal/_board_post_dtl_modal_template.hbs">
+<#include "_board_post_dtl_modal_template.hbs">

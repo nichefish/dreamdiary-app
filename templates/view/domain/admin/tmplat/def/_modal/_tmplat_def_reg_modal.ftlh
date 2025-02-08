@@ -32,4 +32,4 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "/view/domain/admin/tmplat/def/_modal/_tmplat_def_reg_modal_template.hbs">
+<#include "_tmplat_def_reg_modal_template.hbs">

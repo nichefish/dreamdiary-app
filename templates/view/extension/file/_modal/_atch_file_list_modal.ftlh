@@ -50,4 +50,4 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "/view/extension/file/_modal/_atch_file_list_modal_template.hbs">
+<#include "_atch_file_list_modal_template.hbs">

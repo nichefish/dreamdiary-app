@@ -29,4 +29,4 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "/component/notice/popup/_notice_popup_modal_template.hbs">
+<#include "_notice_popup_modal_template.hbs">

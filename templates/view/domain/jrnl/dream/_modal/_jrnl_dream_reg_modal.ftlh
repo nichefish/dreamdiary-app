@@ -45,5 +45,5 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "/view/domain/jrnl/dream/_modal/_jrnl_dream_reg_modal_header_template.hbs">
-<#include "/view/domain/jrnl/dream/_modal/_jrnl_dream_reg_modal_template.hbs">
+<#include "_jrnl_dream_reg_modal_header_template.hbs">
+<#include "_jrnl_dream_reg_modal_template.hbs">

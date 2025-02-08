@@ -45,5 +45,5 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "/view/domain/jrnl/diary/_modal/_jrnl_diary_reg_modal_header_template.hbs">
-<#include "/view/domain/jrnl/diary/_modal/_jrnl_diary_reg_modal_template.hbs">
+<#include "_jrnl_diary_reg_modal_header_template.hbs">
+<#include "_jrnl_diary_reg_modal_template.hbs">

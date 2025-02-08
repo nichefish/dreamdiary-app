@@ -27,4 +27,4 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "/view/domain/admin/menu/_modal/_menu_reg_modal_template.hbs">
+<#include "_menu_reg_modal_template.hbs">

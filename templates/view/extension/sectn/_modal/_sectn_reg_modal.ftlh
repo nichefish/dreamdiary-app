@@ -44,5 +44,4 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "/view/extension/sectn/_sectn_reg_header_template.hbs">
-<#include "/view/extension/sectn/_modal/_sectn_reg_modal_template.hbs">
+<#include "_sectn_reg_modal_template.hbs">

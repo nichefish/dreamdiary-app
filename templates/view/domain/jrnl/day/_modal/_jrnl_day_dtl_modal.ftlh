@@ -26,4 +26,4 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "/view/domain/jrnl/day/_modal/_jrnl_day_dtl_modal_template.hbs">
+<#include "_jrnl_day_dtl_modal_template.hbs">

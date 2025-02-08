@@ -10,7 +10,7 @@
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <#--begin::Card header 검색+헤더 UI -->
-        <#include "/view/global/_common//flsys/flsys_home_header.ftlh">
+        <#include "_flsys_home_header.ftlh">
         <#--begin::Tab-->
         <ul class="nav nav-tabs nav-tabs-line ps-5 my-5">
             <li class="nav-item">
@@ -65,9 +65,9 @@
     </div>
 </@modal.layout>
 
-<#include "/view/global/_common//flsys/_flsys_list_template.hbs">
+<#include "_flsys_list_template.hbs">
 
-<#include "/view/global/_common//flsys/_flsys_file_vod_modal.ftlh">
+<#include "/view/domain/flsys/_flsys_file_vod_modal.ftlh">
 
-<#include "/view/global/_common//flsys/_flsys_meta_reg_modal.ftlh">
-<#include "/view/global/_common//flsys/_flsys_meta_dtl_modal.ftlh">
+<#include "/view/domain/flsys/_flsys_meta_reg_modal.ftlh">
+<#include "/view/domain/flsys/_flsys_meta_dtl_modal.ftlh">

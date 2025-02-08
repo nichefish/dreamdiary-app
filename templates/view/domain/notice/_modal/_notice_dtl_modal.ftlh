@@ -25,4 +25,4 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "/view/domain/notice/_modal/_notice_dtl_modal_template.hbs">
+<#include "_notice_dtl_modal_template.hbs">

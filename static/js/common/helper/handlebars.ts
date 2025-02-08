@@ -208,7 +208,7 @@ cF.handlebars = (function(): Module {
      * @param {object} options - Handlebars 옵션 객체.
      * @returns {boolean} - `value`가 `ynValues`의 "Y" 값과 일치하면 `true`, 그렇지 않으면 `false`.
      */
-    const truefalseFunc = function(value, ynValues: string, options: any): boolean {
+    const truefalseFunc: Function = function(value: string, ynValues: string, options: any): boolean {
         // 기본값 null일 때 true로 간주하는 옵션 : 기본값 옵션이 true이고 값이 비어있으면 true 반환
         const defaultTrue = options.hash["default"] || false;
         if (defaultTrue && cF.util.isEmpty(value)) return true;
@@ -226,7 +226,7 @@ cF.handlebars = (function(): Module {
      * @param {object} options - Handlebars 옵션 객체.
      * @returns {boolean} - 두 값이 일치하면 `true`, 그렇지 않으면 `false`.
      */
-    const equalsFunc = function (value: any, compareValue: any, options: any): boolean {
+    const equalsFunc: Function = function (value: any, compareValue: any, options: any): boolean {
         // 기본값 null일 때 true로 간주하는 옵션 : 기본값 옵션이 true이고 값이 비어있으면 true 반환
         const defaultTrue = options.hash["default"] || false;
         if (defaultTrue && cF.util.isEmpty(value)) return true;

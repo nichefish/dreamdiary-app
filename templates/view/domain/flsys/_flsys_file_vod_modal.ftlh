@@ -24,4 +24,4 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "/view/global/_common//flsys/_flsys_file_vod_template.hbs">
+<#include "_flsys_file_vod_template.hbs">

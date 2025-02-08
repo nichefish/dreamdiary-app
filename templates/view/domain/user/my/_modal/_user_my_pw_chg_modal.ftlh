@@ -30,4 +30,4 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "/view/domain/user/my/_modal/_user_my_pw_chg_modal_template.hbs">
+<#include "_user_my_pw_chg_modal_template.hbs">

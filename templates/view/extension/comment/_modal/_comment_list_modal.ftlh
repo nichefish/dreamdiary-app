@@ -62,4 +62,4 @@
 </form>
 
 <#--include:: Handlebars template-->
-<#include "/view/extension/comment/_modal/_comment_list_modal_template.hbs">
+<#include "_comment_list_modal_template.hbs">
