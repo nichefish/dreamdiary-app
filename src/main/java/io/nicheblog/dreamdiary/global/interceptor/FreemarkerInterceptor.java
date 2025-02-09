@@ -22,6 +22,7 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -65,6 +66,8 @@ public class FreemarkerInterceptor
             final ModelAndView mav
     ) throws Exception {
 
+        // 컨트롤러가 아닌 정적 리소스 요청의 경우 처리하지 않음
+        if (!(handler instanceof HandlerMethod)) return;
         /* mav 정보 없을시 처리하지 않음 */
         if (mav == null) return;
 

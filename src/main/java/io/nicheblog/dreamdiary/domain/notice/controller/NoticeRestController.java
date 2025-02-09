@@ -36,6 +36,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 /**
@@ -91,10 +92,12 @@ public class NoticeRestController
 
         // TODO: AOP로 분리
         if (isSuccess) {
-            // 태그 처리 :: 메인 로직과 분리
-            publisher.publishEvent(new TagProcEvent(this, result.getClsfKey(), notice.tag));
             // 조치자 추가 :: 메인 로직과 분리
             publisher.publishEvent(new ManagtrAddEvent(this, result.getClsfKey()));
+            // 태그 처리 :: 메인 로직과 분리
+            CompletableFuture.runAsync(() -> {
+                publisher.publishEvent(new TagProcEvent(this, result.getClsfKey(), notice.tag));
+            }).get(); // 이벤트가 끝날 때까지 대기
             // 잔디 메세지 발송 :: 메인 로직과 분리
             // if ("Y".equals(jandiYn)) {
             //     String jandiRsltMsg = notifyService.notifyNoticeReg(trgetTopic, result, logParam);
@@ -178,7 +181,9 @@ public class NoticeRestController
         // TODO: AOP로 분리
         if (isSuccess) {
             // 태그 처리 :: 메인 로직과 분리
-            publisher.publishEvent(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.NOTICE)));
+            CompletableFuture.runAsync(() -> {
+                publisher.publishEvent(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.NOTICE)));
+            }).get(); // 이벤트가 끝날 때까지 대기
         }
 
         // 응답 결과 세팅

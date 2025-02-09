@@ -41,6 +41,7 @@ public class VcatnStatsYyScheduler {
         log.info("vcatnStatsYySchedule...");
 
         final LogSysParam logParam = new LogSysParam();
+
         boolean isSuccess;
         String rsltMsg = "";
         try {

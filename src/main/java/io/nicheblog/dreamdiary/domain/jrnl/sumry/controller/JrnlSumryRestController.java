@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * JrnlSumryRestController
@@ -225,7 +226,9 @@ public class JrnlSumryRestController
 
         // 태그 처리
         // TODO: AOP로 분리
-        publisher.publishEvent(new TagProcEvent(this, jrnlSumry.getClsfKey(), jrnlSumry.tag));
+        CompletableFuture.runAsync(() -> {
+            publisher.publishEvent(new TagProcEvent(this, jrnlSumry.getClsfKey(), jrnlSumry.tag));
+        }).get(); // 이벤트가 끝날 때까지 대기
 
         // 응답 결과 세팅
         ajaxResponse.setRsltObj(result);

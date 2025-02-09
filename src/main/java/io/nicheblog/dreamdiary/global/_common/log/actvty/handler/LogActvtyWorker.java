@@ -72,6 +72,7 @@ public class LogActvtyWorker
      * @param event 큐에 추가할 LogActvtyEvent / LogAnonActvtyEvent 객체
      */
     public void offer(final Object event) {
-        logActvtyQueue.offer(event);
+        boolean isOffered = logActvtyQueue.offer(event);
+        if (!isOffered) log.warn("queue offer failed... {}", event.toString());
     }
 }

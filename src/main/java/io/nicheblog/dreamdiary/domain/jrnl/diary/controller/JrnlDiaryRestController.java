@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * JrnlDiaryRestController
@@ -116,7 +117,9 @@ public class JrnlDiaryRestController
         // AOP로 분리
         if (isSuccess) {
             // 태그 처리 :: 메인 로직과 분리
-            publisher.publishEvent(new TagProcEvent(this, result.getClsfKey(), jrnlDiary.tag));
+            CompletableFuture.runAsync(() -> {
+                publisher.publishEvent(new TagProcEvent(this, result.getClsfKey(), jrnlDiary.tag));
+            }).get(); // 이벤트가 끝날 때까지 대기
         }
 
         // 응답 결과 세팅
@@ -186,7 +189,9 @@ public class JrnlDiaryRestController
         // TODO: AOP로 분리
         if (isSuccess) {
             // 태그 처리 :: 메인 로직과 분리
-            publisher.publishEvent(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.JRNL_DIARY)));
+            CompletableFuture.runAsync(() -> {
+                publisher.publishEvent(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.JRNL_DIARY)));
+            }).get(); // 이벤트가 끝날 때까지 대기
         }
 
         // 응답 결과 세팅

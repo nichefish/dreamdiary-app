@@ -41,6 +41,7 @@ public class EhCacheScheduler {
         log.info("cacheAllClearSchedule...");
 
         final LogSysParam logParam = new LogSysParam();
+
         try {
             EhCacheUtils.clearAllCaches();
         } catch (final Exception e) {

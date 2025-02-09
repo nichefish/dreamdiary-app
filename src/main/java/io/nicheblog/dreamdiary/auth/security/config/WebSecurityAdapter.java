@@ -112,7 +112,8 @@ public class WebSecurityAdapter
                 // 신규계정 신청 화면/기능 전체 접근 (+아이디 중복 체크)
                 .antMatchers(Url.USER_REQST_REG_FORM)
                 .antMatchers(Url.USER_REQST_REG_AJAX)
-                .antMatchers(Url.USER_ID_DUP_CHK_AJAX);
+                .antMatchers(Url.USER_ID_DUP_CHK_AJAX)
+                .antMatchers(Url.USER_EMAIL_DUP_CHK_AJAX);
     }
 
     /**

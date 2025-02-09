@@ -41,6 +41,7 @@ public class JrnlSumryScheduler {
         log.info("jrnlSumrySchedule...");
 
         final LogSysParam logParam = new LogSysParam();
+
         String rsltMsg = "";
         try {
             // 결산 생성

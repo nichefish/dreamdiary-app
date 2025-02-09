@@ -1,8 +1,8 @@
-package io.nicheblog.dreamdiary.adapter.mail.handler;
+package io.nicheblog.dreamdiary.extension.notify.email.handler;
 
-import io.nicheblog.dreamdiary.adapter.mail.event.MailSendEvent;
-import io.nicheblog.dreamdiary.adapter.mail.model.MailSendParam;
-import io.nicheblog.dreamdiary.adapter.mail.service.MailService;
+import io.nicheblog.dreamdiary.extension.notify.email.event.EmailSendEvent;
+import io.nicheblog.dreamdiary.extension.notify.email.model.EmailSendParam;
+import io.nicheblog.dreamdiary.extension.notify.email.service.EmailService;
 import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global._common.log.sys.event.LogSysEvent;
 import io.nicheblog.dreamdiary.global._common.log.sys.handler.LogSysEventListener;
@@ -29,13 +29,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Component
 @RequiredArgsConstructor
 @Log4j2
-public class MailSendWorker implements Runnable {
+public class EmailSendWorker implements Runnable {
 
-	private final MailService mailService;
+	private final EmailService emailService;
 	private final ApplicationEventPublisher publisher;
 
 	/** 메일 queue */
-	private static final BlockingQueue<MailSendEvent> mailQueue = new LinkedBlockingQueue<>();
+	private static final BlockingQueue<EmailSendEvent> emailSendQueue = new LinkedBlockingQueue<>();
 
 	@PostConstruct
 	public void init() {
@@ -54,19 +54,14 @@ public class MailSendWorker implements Runnable {
 			// Blocks until an element is available
 			try {
 				// 메일 발송 처리
-				final MailSendEvent mailEvent = mailQueue.take();
-				final MailSendParam mailSendParam = mailEvent.getMailSendParam();
+				final EmailSendEvent mailEvent = emailSendQueue.take();
+				final EmailSendParam mailSendParam = mailEvent.getEmailSendParam();
 				SecurityContextHolder.setContext(mailEvent.getSecurityContext());
 
-				mailService.send(mailSendParam);
-			} catch (InterruptedException e) {
-				log.warn("mail send failed", e);
-				Thread.currentThread().interrupt();
-				final LogSysParam logParam = new LogSysParam(true, "메일 발송에 실패했습니다.", ActvtyCtgr.SYSTEM);
-				logParam.setExceptionInfo(e);
-				publisher.publishEvent(new LogSysEvent(this, logParam));
+				emailService.send(mailSendParam);
 			} catch (final Exception e) {
 				log.warn("mail send failed", e);
+				Thread.currentThread().interrupt();
 				final LogSysParam logParam = new LogSysParam(true, "메일 발송에 실패했습니다.", ActvtyCtgr.SYSTEM);
 				logParam.setExceptionInfo(e);
 				publisher.publishEvent(new LogSysEvent(this, logParam));
@@ -79,8 +74,8 @@ public class MailSendWorker implements Runnable {
 	 *
 	 * @param event 큐에 추가할 MailSendEvent 객체
 	 */
-	public void offer(final MailSendEvent event) {
-		boolean isSuccess = mailQueue.offer(event);
-		if (!isSuccess) log.warn("queue offer failed... {}", event.toString());
+	public void offer(final EmailSendEvent event) {
+		boolean isOffered = emailSendQueue.offer(event);
+		if (!isOffered) log.warn("queue offer failed... {}", event.toString());
 	}
 }

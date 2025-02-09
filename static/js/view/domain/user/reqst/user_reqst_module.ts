@@ -28,11 +28,13 @@ dF.UserReqst = (function(): dfModule {
                 rules: {
                     userId: { minlength: 4, maxlength: 16 },
                     ipDupChckPassed: { dupChck: true },
+                    emailDupChckPassed: { dupChck: true },
                     password: { minlength: 9, maxlength: 20, regex: cF.regex.pw },
                     passwordCf: { equalTo: "#password", maxlength: 20 },
                 },
                 messages: {
                     ipDupChckPassed: { dupChck: "아이디 중복 체크는 필수 항목입니다." },
+                    emailDupChckPassed: { dupChck: "이메일 중복 체크는 필수 항목입니다." },
                     password: { regex: "비밀번호가 형식에 맞지 않습니다." },
                     passwordCf: { equalTo: "비밀번호에 입력한 값과 동일하게 입력해야 합니다." },
                 },
@@ -54,14 +56,28 @@ dF.UserReqst = (function(): dfModule {
                 $("#authCd").valid(); // 체크박스 상태 변경시 details 필드 재검증
             });
             // 등록화면:: 사용자 ID 변경입력시 중복체크 통과여부 초기화
-            $("#userId").on("keyup", function(): void {
+            $("#userId").on("input", function(): void {
                 $("#userId_validate_span").empty();
                 $("#ipDupChckPassed").val("N");
                 $("#idDupChckBtn").addClass("blink").removeClass("btn-success").addClass("btn-secondary").removeAttr("disabled");
-            }).on("keydown", function(): void {
-                $("#userId_validate_span").text("");
-                $("#ipDupChckPassed").val("N");
-                $("#idDupChckBtn").addClass("blink").removeClass("btn-success").addClass("btn-secondary").removeAttr("disabled");
+            });
+            // 등록화면:: 사용자 ID 변경입력시 중복체크 통과여부 초기화
+            $("#emailId").on("input", function(): void {
+                $("#emailId_validate_span").empty();
+                $("#emailDupChckPassed").val("N");
+                $("#emailDupChckBtn").addClass("blink").removeClass("btn-success").addClass("btn-secondary").removeAttr("disabled");
+            });
+            // 등록화면:: 사용자 ID 변경입력시 중복체크 통과여부 초기화
+            $("#emailDomain").on("input", function(): void {
+                $("#emailDomain_validate_span").empty();
+                $("#emailDupChckPassed").val("N");
+                $("#emailDupChckBtn").addClass("blink").removeClass("btn-success").addClass("btn-secondary").removeAttr("disabled");
+            });
+            // 등록화면:: 사용자 ID 변경입력시 중복체크 통과여부 초기화
+            $("#emailDomainSelect").on("change", function(): void {
+                $("#emailDomain_validate_span").empty();
+                $("#emailDupChckPassed").val("N");
+                $("#emailDupChckBtn").addClass("blink").removeClass("btn-success").addClass("btn-secondary").removeAttr("disabled");
             });
             // 접속IP 사용 여부 클릭시 글씨 변경 + 입력창 토글 :: 메소드 분리
             cF.ui.chckboxLabel("useAcsIpYn", "사용//미사용", "blue//gray", function(): void{

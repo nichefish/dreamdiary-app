@@ -94,6 +94,17 @@ public class UserServiceImpl
     }
 
     /**
+     * 사용자 관리 > 사용자 Email 중복 체크
+     *
+     * @param email 중복을 확인할 이메일 (문자열 형식)
+     * @return {@link Boolean} -- 중복 여부
+     */
+    @Override
+    public Boolean emailDupChck(String email) {
+        return repository.findByEmail(email).isPresent();
+    }
+
+    /**
      * 등록 전처리. (override)
      *
      * @param registDto 등록할 객체

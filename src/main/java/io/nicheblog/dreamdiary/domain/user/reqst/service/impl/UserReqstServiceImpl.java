@@ -37,7 +37,7 @@ public class UserReqstServiceImpl
 
     /**
      * 신청 전처리.
-     * 
+     *
      * @param registDto 등록할 객체
      */
     @Override
@@ -48,7 +48,7 @@ public class UserReqstServiceImpl
             registDto.setAcsIpListStr(null);
         }
     }
-    
+
     /**
      * 사용자 관리 > 사용자 신규계정 신청
      * 계정 기본정보만 입력, 세부정보는 가입 승인 후 수정

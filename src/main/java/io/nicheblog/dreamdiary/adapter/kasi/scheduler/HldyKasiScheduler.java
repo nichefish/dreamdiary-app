@@ -43,7 +43,8 @@ public class HldyKasiScheduler {
 
         log.info("hldyKasiSchedule...");
 
-        LogSysParam logParam = new LogSysParam();
+        final LogSysParam logParam = new LogSysParam();
+
         boolean isSuccess = false;
         String rsltMsg = "";
         try {
