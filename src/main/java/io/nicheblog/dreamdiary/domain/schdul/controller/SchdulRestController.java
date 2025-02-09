@@ -20,6 +20,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * SchdulRestController
@@ -73,7 +74,9 @@ public class SchdulRestController
         // TODO: AOP로 분리
         if (isSuccess) {
             // 태그 처리 :: 메인 로직과 분리
-            publisher.publishEvent(new TagProcEvent(this, result.getClsfKey(), schdul.tag));
+            CompletableFuture.runAsync(() -> {
+                publisher.publishEvent(new TagProcEvent(this, result.getClsfKey(), schdul.tag));
+            }).get(); // 이벤트가 끝날 때까지 대기
             // 잔디 메세지 발송 :: 메인 로직과 분리
             // if (isSuccess && "Y".equals(jandiYn)) {
             //     String jandiRsltMsg = notifyService.notifySchdulReg(trgetTopic, result, logParam);

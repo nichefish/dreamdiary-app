@@ -16,6 +16,7 @@ public interface AuthUrl {
     String AUTH_LGN_PW_CHG_AJAX = AuthUrl.Prefix.AUTH + "/lgnPwChgAjax.do";
     String AUTH_LGOUT = AuthUrl.Prefix.AUTH + "/lgout.do";
     String AUTH_EXPIRE_SESSION_AJAX = AuthUrl.Prefix.AUTH + "/expireSession.do";
+    String AUTH_VERIFY = AuthUrl.Prefix.AUTH + "/verify.do";
     String AUTH_INFO = "/api/auth/getAuthInfo.do";
 
     // 구글 소셜 로그인 팝업

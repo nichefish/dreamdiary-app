@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * JrnlDreamRestController
@@ -116,7 +117,9 @@ public class JrnlDreamRestController
         // TODO: AOP로 분리
         if (isSuccess) {
             // 태그 처리 :: 메인 로직과 분리
-            publisher.publishEvent(new TagProcEvent(this, result.getClsfKey(), jrnlDream.tag));
+            CompletableFuture.runAsync(() -> {
+                publisher.publishEvent(new TagProcEvent(this, result.getClsfKey(), jrnlDream.tag));
+            }).get(); // 이벤트가 끝날 때까지 대기
         }
 
         // 응답 결과 세팅
@@ -187,7 +190,9 @@ public class JrnlDreamRestController
         // TODO: AOP로 분리
         if (isSuccess) {
             // 태그 처리 :: 메인 로직과 분리
-            publisher.publishEvent(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.JRNL_DREAM)));
+            CompletableFuture.runAsync(() -> {
+                publisher.publishEvent(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.JRNL_DREAM)));
+            }).get(); // 이벤트가 끝날 때까지 대기
         }
 
         // 응답 결과 세팅

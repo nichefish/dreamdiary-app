@@ -1,5 +1,8 @@
 package io.nicheblog.dreamdiary.auth;
 
+import io.nicheblog.dreamdiary.extension.notify.email.model.EmailAddress;
+import io.nicheblog.dreamdiary.global.Constant;
+
 /**
  * AuthConstant
  * <pre>
@@ -34,5 +37,8 @@ public interface AuthConstant {
     /** 기본 계정 정보 */
     String SYSTEM_ACNT = "system";
     String SYSTEM_ACNT_NM = "시스템관리자";
+    String SYSTEM_ADMIN_NM = "dreamdiary.io";
+    String SYSTEM_EMAIL = SYSTEM_ACNT + "@" + SYSTEM_ADMIN_NM;
+    EmailAddress SYSTEM_EMAIL_ADDRESS = new EmailAddress(Constant.SYSTEM_EMAIL, Constant.SYSTEM_ADMIN_NM);
     String DEV_ACNT = "nichefish";
 }

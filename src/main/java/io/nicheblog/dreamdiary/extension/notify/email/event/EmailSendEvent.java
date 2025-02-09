@@ -1,7 +1,7 @@
-package io.nicheblog.dreamdiary.adapter.mail.event;
+package io.nicheblog.dreamdiary.extension.notify.email.event;
 
-import io.nicheblog.dreamdiary.adapter.mail.handler.MailEventListener;
-import io.nicheblog.dreamdiary.adapter.mail.model.MailSendParam;
+import io.nicheblog.dreamdiary.extension.notify.email.handler.EmailEventListener;
+import io.nicheblog.dreamdiary.extension.notify.email.model.EmailSendParam;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.context.ApplicationEvent;
@@ -15,17 +15,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * </pre>
  *
  * @author nichefish
- * @see MailEventListener
+ * @see EmailEventListener
  */
 @Getter
 @Setter
-public class MailSendEvent
+public class EmailSendEvent
         extends ApplicationEvent {
 
     /** 보안 컨텍스트 */
     private final SecurityContext securityContext;
     /** 메일 팔송 파라미터 */
-    private final MailSendParam mailSendParam;
+    private final EmailSendParam emailSendParam;
 
     /* ----- */
 
@@ -33,11 +33,11 @@ public class MailSendEvent
      * 생성자.
      *
      * @param source 이벤트의 출처를 나타내는 객체
-     * @param mailSendParam 발송할 메일 정보를 담은 객체
+     * @param emailSendParam 발송할 메일 정보를 담은 객체
      */
-    public MailSendEvent(final Object source, final MailSendParam mailSendParam) {
+    public EmailSendEvent(final Object source, final EmailSendParam emailSendParam) {
         super(source);
         this.securityContext = SecurityContextHolder.getContext();
-        this.mailSendParam = mailSendParam;
+        this.emailSendParam = emailSendParam;
     }
 }

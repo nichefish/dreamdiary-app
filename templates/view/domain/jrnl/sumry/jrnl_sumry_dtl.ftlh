@@ -26,7 +26,7 @@
             <div class="col d-flex align-items-center fs-5">
                 <div class="text-gray-700 d-flex-center me-5">
                     <span class="fw-bold me-2">
-                        꿈
+                        <@spring.message "dream"/>
                     </span>
                     <#if post.dreamComptYn! == "Y">
                         <span class="cursor-help"
@@ -43,7 +43,7 @@
                 </div>
                 <div class="text-gray-700 d-flex-center">
                     <span class="fw-bold me-2">
-                        일기
+                        <@spring.message "diary"/>
                     </span>
                     <i class="bi bi-book fs-4 me-2"></i>
                     (<span class="text-underline-dotted ms-1">${post.diaryDayCnt!}</span>일)
@@ -52,7 +52,7 @@
             <div class="col-1 d-flex flex-column align-items-center">
                 <button type="button" class="btn btn-sm btn-light-primary btn-outlined py-2 px-3 cursor-pointer"
                         onclick="dF.JrnlSumry.comptAjax(${post.postNo!});"
-                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 일자 <@spring.message "bs.tooltip.modal.mdf"/>">
+                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "jrnl.day"/> <@spring.message "bs.tooltip.modal.mdf"/>">
                     <i class="bi bi-book fs-4 pe-1"></i>
                     꿈 기록 완료 처리
                 </button>
@@ -78,19 +78,21 @@
         <div class="d-flex justify-content-end gap-3">
             <#--페이지:: 버튼: 목록으로 가기-->
             <@component.header_btn_reg_modal "dF.JrnlSumry.regModal(${post.postNo!})" />
-            <#--페이지:: 버튼: 조회년도 변경-->
-            <div class="col-1 w-auto">
-                <select id="yy" class="form-select form-select-solid fs-7 text-end"
-                        onchange="dF.JrnlSumry.dtlByYy(this.value)"
-                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="조회 년도를 변경합니다.">>
-                    <#assign currYy = DateUtils.getCurrYy()?number />
-                    <#assign startYy = 2011 />
-                    <#list currYy..startYy as year>
-                        <option value="${year}" ${fn.selected(post.yy!, year)}>${year}년 결산</option>
-                    </#list>
-                    <option value="2010">2010년 이전 결산</option>
-                </select>
-            </div>
+            <form name="yyForm" id="yyForm" class="d-flex align-items-center flex-nowrap" method="get">
+                <#--페이지:: 버튼: 조회년도 변경-->
+                <div class="col-1 w-auto">
+                    <select id="yy" class="form-select form-select-solid fs-7 text-start"
+                            onchange="dF.JrnlSumry.dtlByYy(this.value)"
+                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="조회 년도를 변경합니다.">>
+                        <#assign currYy = DateUtils.getCurrYy()?number />
+                        <#assign startYy = 2011 />
+                        <#list currYy..startYy as year>
+                            <option value="${year}" ${fn.selected(post.yy!, year)}>${year}년 결산</option>
+                        </#list>
+                        <option value="2010">2010년 이전 결산</option>
+                    </select>
+                </div>
+            </form>
             <#--페이지:: 버튼: 목록으로 가기-->
             <@component.post_btn_toList "dF.JrnlSumry.list();" />
         </div>

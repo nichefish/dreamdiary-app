@@ -39,7 +39,7 @@ public class WebMvcContextConfig
      * 모든 /api/** 경로에 대하여 CORS 허용 설정 추가
      */
     @Override
-    public void addCorsMappings(CorsRegistry registry) {
+    public void addCorsMappings(final CorsRegistry registry) {
         registry.addMapping("/api/**")
                 .allowedMethods("GET", "POST")
                 .allowedOrigins("*")
@@ -51,7 +51,7 @@ public class WebMvcContextConfig
      * 업로드파일 + vod 폴더 통째로 연결 (업로드 링크 위해)
      **/
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    public void addResourceHandlers(final ResourceHandlerRegistry registry) {
 
         // 파일 업로드 경로
         String upfileContextPath = "/upfile/**";
@@ -102,18 +102,18 @@ public class WebMvcContextConfig
      * interceptor 추가
      */
     @Override
-    public void addInterceptors(InterceptorRegistry registry) {
+    public void addInterceptors(final InterceptorRegistry registry) {
         // freemarker interceptor
         // 화면 조회에만 적용, ajax 및 기타 작동에는 적용 안함
         registry.addInterceptor(freemarkerInterceptor)
                 /* 페이지 접근에 대해서만 처리 */
                 .addPathPatterns("/")
                 .addPathPatterns("/**/*.do")
+                /* 에러 화면 경로 포함 */
+                .addPathPatterns(Url.ERROR, Url.ERROR + "/**")
                 /* 스태틱 자원 경로의 경우 처리하지 않음 */
                 .excludePathPatterns(STATIC_RESOURCES_URL_PATTERN)
-                /* 에러 화면 경로 제외 */
-                .excludePathPatterns(Url.ERROR)
-                .excludePathPatterns(Url.ERROR + "/**")
+                /* API 경로의 경우 처리하지 않음 */
                 .excludePathPatterns("/api/**")
                 /* 파일 다운로드의 경우 처리하지 않음 */
                 .excludePathPatterns("/**/*Download.do")

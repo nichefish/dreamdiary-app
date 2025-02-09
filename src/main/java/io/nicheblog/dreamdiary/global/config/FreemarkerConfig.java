@@ -9,7 +9,10 @@ import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import java.util.HashMap;
@@ -131,5 +134,18 @@ public class FreemarkerConfig
         final Properties settings = new Properties();
         settings.setProperty("template_exception_handler", "ignore");
         return settings;
+    }
+
+    /**
+     * 빈 설정: 이메일용 config
+     * @return {@link FreeMarkerConfigurationFactoryBean} -- Freemarker 설정 객체
+     */
+    @Bean
+    @Primary
+    public FreeMarkerConfigurationFactoryBean freemarkerEmailConfig() {
+        FreeMarkerConfigurationFactoryBean factoryBean = new FreeMarkerConfigurationFactoryBean();
+        factoryBean.setTemplateLoaderPath("file:/E:/Dev/Project/dreamdiary/workspace/templates");
+        factoryBean.setDefaultEncoding("UTF-8");
+        return factoryBean;
     }
 }

@@ -11,6 +11,7 @@ cF.form = (function(): Module {
     return {
         /**
          * 폼을 초기화합니다.
+         *
          * @param {string} formSelectorStr - 초기화할 폼의 선택자.
          */
         reset: function(formSelectorStr: string): void {
@@ -22,6 +23,7 @@ cF.form = (function(): Module {
 
         /**
          * 폼을 제출합니다.
+         *
          * @param {string} formSelector - 제출할 폼의 선택자.
          * @param {string} actionUrl - 폼 제출 시 사용할 액션 URL.
          * @param {Function} [prefunc] - 폼 제출 전에 실행할 함수 (선택적).
@@ -32,12 +34,30 @@ cF.form = (function(): Module {
 
             if (typeof prefunc === 'function') prefunc();
             if (actionUrl) form.action = actionUrl;
-            form.submit(); // 폼 제출
+            form.submit(); // 폼 제출.
+        },
+
+        /**
+         * 폼을 제출합니다.
+         * jquery-validation 타기 위해 jQuery submit
+         *
+         * @param {string} formSelector - 제출할 폼의 선택자.
+         * @param {string} actionUrl - 폼 제출 시 사용할 액션 URL.
+         * @param {Function} [prefunc] - 폼 제출 전에 실행할 함수 (선택적).
+         */
+        $submit: function(formSelector: string, actionUrl: string, prefunc: Function): void {
+            const form: HTMLFormElement|null = document.querySelector(formSelector);
+            if (!form) return;
+
+            if (typeof prefunc === 'function') prefunc();
+            if (actionUrl) form.action = actionUrl;
+            $(form).submit(); // 폼 제출. jqueryValidation 타기 위해서는...
         },
 
         /**
          * blockUI를 적용한 폼 제출.
          * 서버에서 응답 쿠키를 생성할 때까지 blockUI를 유지합니다.
+         *
          * @param {string} formSelector - 제출할 폼의 선택자.
          * @param {string} actionUrl - 폼 제출 시 사용할 액션 URL.
          * @param {Function} [prefunc] - 폼 제출 전에 실행할 함수 (선택적).
@@ -47,6 +67,21 @@ cF.form = (function(): Module {
             cF.ui.blockUIRequest();
             cF.ui.closeModal();
             cF.form.submit(formSelector, actionUrl, prefunc);
+        },
+
+        /**
+         * blockUI를 적용한 폼 제출. (jquery-validation 사용 위해 jquery submit)
+         * 서버에서 응답 쿠키를 생성할 때까지 blockUI를 유지합니다.
+         *
+         * @param {string} formSelector - 제출할 폼의 선택자.
+         * @param {string} actionUrl - 폼 제출 시 사용할 액션 URL.
+         * @param {Function} [prefunc] - 폼 제출 전에 실행할 함수 (선택적).
+         * @dependency blockUI (optional)
+         */
+        $blockUISubmit: function(formSelector: string, actionUrl: string, prefunc: Function): void {
+            cF.ui.blockUIRequest();
+            cF.ui.closeModal();
+            cF.form.$submit(formSelector, actionUrl, prefunc);
         },
     }
 })();

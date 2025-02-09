@@ -65,6 +65,7 @@ public class LogSysWorker
      * @param event 큐에 추가할 LogSysEvent 객체
      */
     public void offer(final LogSysEvent event) {
-        logSysQueue.offer(event);
+        boolean isOffered = logSysQueue.offer(event);
+        if (!isOffered) log.warn("queue offer failed... {}", event.toString());
     }
 }

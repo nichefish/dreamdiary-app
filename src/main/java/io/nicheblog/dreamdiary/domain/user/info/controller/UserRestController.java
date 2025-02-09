@@ -47,7 +47,7 @@ public class UserRestController
     private final UserService userService;
 
     /**
-     * 사용자 관리 > 계정 및 권한 관리 > 사용자 아이디 중복 체크 (Ajax)
+     * 사용자 아이디 중복 체크 (Ajax)
      * 사용자 계정 신청시 사용해야 하므로 인증 없이 접근 가능
      *
      * @param userId 중복 체크를 할 사용자 아이디
@@ -77,7 +77,37 @@ public class UserRestController
     }
 
     /**
-     * 사용자 관리 > 계정 및 권한 관리 > 사용자 등록/수정 (Ajax)
+     * 사용자 이메일 중복 체크 (Ajax)
+     * 사용자 계정 신청시 사용해야 하므로 인증 없이 접근 가능
+     *
+     * @param email 중복 체크를 할 사용자 아이디
+     * @param logParam 로그 기록을 위한 파라미터 객체
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     */
+    @GetMapping(Url.USER_EMAIL_DUP_CHK_AJAX)
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> userEmailDupChckAjax(
+            final @RequestParam("email") String email,
+            final LogActvtyParam logParam
+    ) {
+
+        final AjaxResponse ajaxResponse = new AjaxResponse();
+
+        final Boolean isEmailDup = userService.emailDupChck(email);
+
+        final boolean isSuccess = !isEmailDup;;
+        final String rsltMsg = MessageUtils.getMessage(isSuccess ? "user.email.usable" : "user.email.duplicated");
+
+        // 응답 결과 세팅
+        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
+        // 로그 관련 세팅
+        logParam.setResult(isSuccess, rsltMsg);
+
+        return ResponseEntity.ok(ajaxResponse);
+    }
+
+    /**
+     * 사용자 등록/수정 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
      * @param user 등록/수정 처리할 객체

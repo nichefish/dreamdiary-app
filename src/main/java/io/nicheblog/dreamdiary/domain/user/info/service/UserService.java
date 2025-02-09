@@ -49,6 +49,14 @@ public interface UserService
     Boolean userIdDupChck(final String userId) ;
 
     /**
+     * 사용자 관리 > 사용자 Email 중복 체크
+     *
+     * @param email 중복을 확인할 이메일 (문자열 형식)
+     * @return {@link Boolean} -- 중복 여부
+     */
+    Boolean emailDupChck(String email);
+
+    /**
      * 사용자 관리 > 사용자 비밀번호 초기화
      * @param key 식별자
      */

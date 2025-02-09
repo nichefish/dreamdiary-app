@@ -69,7 +69,6 @@
     <script type="text/javascript" src="/js/common/helper/handlebars.js?${releaseDate!}"></script>
     <script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
 
-
     <script>
         /** AuthInfo 객체 생성 */
         const AuthInfo = (function() {

@@ -8,7 +8,6 @@ import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +19,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * TagWorker
  * <pre>
  *  태그 처리 Worker :: Runnable 구현 (Queue 처리)
- *  Queue에서 TagEvent를 가져와 활동 로그를 등록합니다.
+ *  Queue에서 TagEvent를 가져와 후속 처리를 한다.
  * </pre>
  *
  * @author nichefish
@@ -80,11 +79,12 @@ public class TagWorker
     }
 
     /**
-     * 활동 로그 이벤트를 큐에 추가합니다.
+     * 태그 이벤트를 큐에 추가합니다.
      *
      * @param event 큐에 추가할 TagActvtyEvent / TagAnonActvtyEvent 객체
      */
     public void offer(final TagProcEvent event) {
-        tagQueue.offer(event);
+        boolean isOffered = tagQueue.offer(event);
+        if (!isOffered) log.warn("queue offer failed... {}", event.toString());
     }
 }

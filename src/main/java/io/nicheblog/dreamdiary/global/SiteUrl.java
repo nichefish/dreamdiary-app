@@ -116,6 +116,7 @@ public interface SiteUrl {
     String USER_DEL_AJAX = Prefix.USER + "/userDelAjax.do";
     String USER_LIST_XLSX_DOWNLOAD = Prefix.USER + "/userListXlsxDownload.do";
     String USER_ID_DUP_CHK_AJAX = Prefix.USER + "/userIdDupChkAjax.do";
+    String USER_EMAIL_DUP_CHK_AJAX = Prefix.USER + "/userEmailDupChkAjax.do";
 
     /** 내 정보 관리 */
     String USER_MY_DTL = Prefix.USER_MY + "/userMyDtl.do";

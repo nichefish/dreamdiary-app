@@ -160,6 +160,14 @@
                         <option value="kakao.com">kakao.com</option>
                     </select>
                 </div>
+                <div class="col-xl-2 col-4">
+                    <button type="button" class="btn btn-sm btn-secondary required blink" id="emailDupChckBtn"
+                            onclick="dF.User.emailDupChckAjax();"
+                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="입력한 EMAIL에 대한&#10;중복 여부를 확인합니다.">
+                        <span class="hidden-table">EMAIL </span>중복 확인
+                    </button>
+                    <input type="hidden" name="emailDupChckPassed" id="emailDupChckPassed" value="N"/>
+                </div>
             </div>
             <#--begin::Row-->
             <div class="row mb-4">
@@ -276,11 +284,9 @@
 
 <#--include::script modules-->
 <script type="text/javascript" src="/js/view/domain/user/user_module.js?${releaseDate!}"></script>
-
 <#--include::user_emplym_modules-->
 <#include "/view/domain/user/emplym/_user_emplym_reg_template.hbs">
 <script type="text/javascript" src="/js/view/domain/user/emplym/user_emplym_module.js?${releaseDate!}"></script>
-
 <#--include::user_profl_modules-->
 <#include "/view/domain/user/profl/_user_profl_reg_template.hbs">
 <script type="text/javascript" src="/js/view/domain/user/profl/user_profl_module.js?${releaseDate!}"></script>
