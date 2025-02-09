@@ -3,7 +3,7 @@
  * @included_in : vcatn_schdul_list.ftlh
  -->
 
-<form name="listForm" id="listForm" class="d-flex align-items-center flex-nowrap gap-2" data-url="${listUrl!}"method="get" >
+<form name="listForm" id="listForm" class="d-flex align-items-center flex-nowrap gap-2" data-url="${listUrl!}" method="get" >
     <div>
         <#--헤더:: 인풋: 년도 선택-->
         <select name="statsYy" id="statsYy" class="form-select form-select-solid w-90px mx-1"

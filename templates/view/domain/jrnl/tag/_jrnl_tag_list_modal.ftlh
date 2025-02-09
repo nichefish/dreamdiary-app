@@ -9,7 +9,7 @@
     <#--begin::Modal Header-->
     <div class="modal-header">
         <h5 id="modal_title" class="modal-title">
-            [저널 꿈 태그 전체 목록]
+            [<@spring.message "jrnl.dream"/> 태그 전체 목록]
         </h5>
         <div class="d-flex gap-4">
             <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"

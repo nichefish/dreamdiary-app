@@ -116,7 +116,7 @@
                         <a class="btn btn-flex btn-color-primary d-flex flex-stack fs-base p-0 ms-2 mb-2 toggle collapsible collapsed"
                            data-bs-toggle="collapse" href="#kt_app_sidebar_menu_${menu.menuNo!}_collapse"
                            data-kt-toggle-text="[ 접기 - ]">
-                            <span data-kt-toggle-text-target="true">[ 더보기 + ]</span>
+                            <span data-kt-toggle-text-target="true">[ ...더보기 + ]</span>
                             <i class="ki-duotone ki-minus-square toggle-on fs-2 me-0">
                                 <span class="path1"></span>
                                 <span class="path2"></span>
