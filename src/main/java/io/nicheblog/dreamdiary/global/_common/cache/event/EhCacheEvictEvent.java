@@ -3,6 +3,8 @@ package io.nicheblog.dreamdiary.global._common.cache.event;
 import io.nicheblog.dreamdiary.global._common.cache.handler.EhCacheEvictEventListner;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * EhCacheEvictEvent
@@ -17,9 +19,10 @@ import org.springframework.context.ApplicationEvent;
 public class EhCacheEvictEvent
         extends ApplicationEvent {
 
+    /** 보안 컨텍스트 */
+    private final SecurityContext securityContext;
     /** 컨텐츠 타입 */
     private final Integer postNo;
-
     /** 컨텐츠 타입 */
     private final String contentType;
 
@@ -34,6 +37,7 @@ public class EhCacheEvictEvent
      */
     public EhCacheEvictEvent(final Object source, final Integer postNo, final String contentType) {
         super(source);
+        this.securityContext = SecurityContextHolder.getContext();
         this.postNo = postNo;
         this.contentType = contentType;
     }

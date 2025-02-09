@@ -10,6 +10,7 @@ import io.nicheblog.dreamdiary.global._common.log.sys.model.LogSysParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -38,7 +39,7 @@ public class MailSendWorker implements Runnable {
 
 	@PostConstruct
 	public void init() {
-		Thread workerThread = new Thread(this);
+		final Thread workerThread = new Thread(this);
 		workerThread.start();
 	}
 
@@ -53,18 +54,20 @@ public class MailSendWorker implements Runnable {
 			// Blocks until an element is available
 			try {
 				// 메일 발송 처리
-				MailSendEvent mailEvent = mailQueue.take();
-				MailSendParam mailSendParam = mailEvent.getMailSendParam();
+				final MailSendEvent mailEvent = mailQueue.take();
+				final MailSendParam mailSendParam = mailEvent.getMailSendParam();
+				SecurityContextHolder.setContext(mailEvent.getSecurityContext());
+
 				mailService.send(mailSendParam);
 			} catch (InterruptedException e) {
 				log.warn("mail send failed", e);
 				Thread.currentThread().interrupt();
-				LogSysParam logParam = new LogSysParam(true, "메일 발송에 실패했습니다.", ActvtyCtgr.SYSTEM);
+				final LogSysParam logParam = new LogSysParam(true, "메일 발송에 실패했습니다.", ActvtyCtgr.SYSTEM);
 				logParam.setExceptionInfo(e);
 				publisher.publishEvent(new LogSysEvent(this, logParam));
 			} catch (final Exception e) {
 				log.warn("mail send failed", e);
-				LogSysParam logParam = new LogSysParam(true, "메일 발송에 실패했습니다.", ActvtyCtgr.SYSTEM);
+				final LogSysParam logParam = new LogSysParam(true, "메일 발송에 실패했습니다.", ActvtyCtgr.SYSTEM);
 				logParam.setExceptionInfo(e);
 				publisher.publishEvent(new LogSysEvent(this, logParam));
 			}
@@ -76,7 +79,7 @@ public class MailSendWorker implements Runnable {
 	 *
 	 * @param event 큐에 추가할 MailSendEvent 객체
 	 */
-	public void offer(MailSendEvent event) {
+	public void offer(final MailSendEvent event) {
 		boolean isSuccess = mailQueue.offer(event);
 		if (!isSuccess) log.warn("queue offer failed... {}", event.toString());
 	}

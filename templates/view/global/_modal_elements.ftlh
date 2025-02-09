@@ -25,7 +25,7 @@
         <h5 id="modal_title" class="modal-title">[${title!}]</h5>
         <div>
             <div class="btn btn-sm btn-icon btn-active-light-primary" aria-label="Close"
-                 onclick="ModalHistory.prev();"
+                 onclick="ModalHistory.pop(); ModalHistory.prev();"
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message "bs.tooltip.modal.prev"/>">
                 <i class="bi bi-box-arrow-in-left"></i>
             </div>

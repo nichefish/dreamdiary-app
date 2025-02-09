@@ -30,7 +30,7 @@ public class ManagtrEventListener {
      */
     @EventListener
     @Async
-    public void handleManagtrAddEvent(ManagtrAddEvent event) {
+    public void handleManagtrAddEvent(final ManagtrAddEvent event) {
         // 조치자 추가
         managtrService.addManagtr(event.getClsfKey());
     }

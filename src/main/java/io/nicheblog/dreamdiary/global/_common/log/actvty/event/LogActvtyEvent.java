@@ -4,6 +4,8 @@ import io.nicheblog.dreamdiary.global._common.log.actvty.handler.LogActvtyEventL
 import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * LogActvtyEvent
@@ -18,6 +20,9 @@ import org.springframework.context.ApplicationEvent;
 public class LogActvtyEvent
         extends ApplicationEvent {
 
+    /** 보안 컨텍스트 */
+    private final SecurityContext securityContext;
+    /** 활동 로그 */
     private final LogActvtyParam log;
 
     /* ----- */
@@ -30,6 +35,7 @@ public class LogActvtyEvent
      */
     public LogActvtyEvent(final Object source, final LogActvtyParam log) {
         super(source);
+        this.securityContext = SecurityContextHolder.getContext();
         this.log = log;
     }
 }

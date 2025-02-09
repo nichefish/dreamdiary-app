@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiarySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.repository.jpa.JrnlDiaryRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.repository.mybatis.JrnlDiaryMapper;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryService;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.service.strategy.JrnlDiaryCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.spec.JrnlDiarySpec;
 import io.nicheblog.dreamdiary.extension.ContentType;
 import io.nicheblog.dreamdiary.global._common.cache.event.EhCacheEvictEvent;

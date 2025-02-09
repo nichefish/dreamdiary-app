@@ -35,7 +35,7 @@ public class EhCacheEvictEventListner {
     @EventListener
     @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void handleEhCacheEvictvent(EhCacheEvictEvent event) throws Exception {
+    public void handleEhCacheEvictvent(final EhCacheEvictEvent event) throws Exception {
         // 컨텐츠 타입별 캐시 evict
         ehCacheEvictService.evictClsfCache(event.getContentType(), event.getPostNo());
     }

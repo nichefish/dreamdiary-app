@@ -32,4 +32,4 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "/view/extension/tag/_modal/_tag_dtl_modal_template.hbs">
+<#include "_tag_dtl_modal_template.hbs">

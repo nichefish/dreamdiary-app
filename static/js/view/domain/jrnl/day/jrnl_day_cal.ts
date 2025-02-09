@@ -72,14 +72,14 @@ const Page: Page = (function(): Page {
                     const titleWithIcon: string = icon + ' ' + title;  // 아이콘과 타이틀 결합
                     switch (schdulCd) {
                         case "JRNL_DAY":
-                            return { html: `<div class='cursor-pointer'>${titleWithIcon}</div>` };
+                            return { html: `<div class='cursor-pointer text-truncate'>${titleWithIcon}</div>` };
                         case "JRNL_DIARY":
                         case "JRNL_DREAM":
                             const isImprtc: boolean = event.extendedProps.imprtcYn === "Y";
-                            const classStr: string = isImprtc ? "text-magenta blink fw-bold" : "";
+                            const classStr: string = isImprtc ? "text-magenta blink fw-bold text-truncate" : "";
                             return { html: `<div class='${classStr}'>${titleWithIcon}</div>` };
                         default:
-                            return icon ? { html: titleWithIcon } : title;  // html을 반환하여 FullCalendar가 렌더링하도록 함
+                            return icon ? { html: `<div class='text-truncate'>${titleWithIcon}</div>` } : title;  // html을 반환하여 FullCalendar가 렌더링하도록 함
                     }
                 },
                 /* 이벤트 렌더링 후처리 */

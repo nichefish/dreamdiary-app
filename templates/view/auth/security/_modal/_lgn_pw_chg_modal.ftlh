@@ -27,4 +27,4 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "/view/auth/security/_modal/_lgn_pw_chg_modal_template.hbs">
+<#include "_lgn_pw_chg_modal_template.hbs">

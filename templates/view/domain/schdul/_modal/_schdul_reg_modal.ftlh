@@ -58,5 +58,5 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "/view/domain/schdul/_modal/_schdul_reg_modal_template.hbs">
-<#include "/view/domain/schdul/_modal/_schdul_reg_modal_prtcpnt_template.hbs">
+<#include "_schdul_reg_modal_template.hbs">
+<#include "_schdul_reg_modal_prtcpnt_template.hbs">

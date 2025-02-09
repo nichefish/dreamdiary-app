@@ -31,11 +31,20 @@
     font-size: small !important;
 }
 
+.d-justify-center {
+    display: flex;
+    justify-content: center;
+}
+.d-align-center {
+    display: flex;
+    align-items: center;
+}
 .d-flex-center {
     display: flex;
     justify-content: center;
     align-items: center;
 }
+
 
 .fs-x-small {
     font-size: x-small !important;
@@ -89,6 +98,10 @@
 /* 작은 버튼이 없어서 추가 */
 .btn-xs {
     padding: 0.5rem 1rem !important;
+}
+/* 더 작은 버튼이 없어서 추가 */
+.btn-xxs {
+    padding: 0.25rem 0.6rem !important;
 }
 
 /* 폰트 볼드 적용이 안되서 오버라이트*/

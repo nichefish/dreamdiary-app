@@ -43,26 +43,6 @@
         <#--begin::Row-->
         <div class="row mb-8">
             <div class="col-xl-2">
-                <div class="fs-6 fw-bold col-form-label"><label>사이트 캐시 관리</label></div>
-            </div>
-            <div class="col-xl-3">
-                <div class="mt-1">
-                    <button type="button" class="btn btn-sm btn-primary" onclick="Page.ajax('${Url.CACHE_ACTIVE_LIST_AJAX!}');">
-                        현재 캐시 조회
-                    </button>
-                    <button type="button" class="btn btn-sm btn-primary" onclick="Page.ajax('${Url.CACHE_CLEAR_AJAX!}');">
-                        사이트 캐시 초기화
-                    </button>
-                </div>
-            </div>
-            <div class="col-xl-6 text-noti">
-                <p class="mb-0">※ 캐시 처리되는 정보들(ex.코드 및 메뉴 등) 중</p>
-                <p class="mb-0 ps-4">시스템을 통하지 않은(ex.DB 직접입력) 변동사항이 발생했을 경우 수동 업데이트</p>
-            </div>
-        </div>
-        <#--begin::Row-->
-        <div class="row mb-8">
-            <div class="col-xl-2">
                 <div class="fs-6 fw-bold col-form-label"><label for="hldyYy">한국천문연구원 특일정보 API</label></div>
             </div>
             <div class="col-xl-2">

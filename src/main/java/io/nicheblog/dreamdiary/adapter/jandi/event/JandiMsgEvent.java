@@ -3,6 +3,8 @@ package io.nicheblog.dreamdiary.adapter.jandi.event;
 import io.nicheblog.dreamdiary.adapter.jandi.model.JandiParam;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * JandiMsgEvent
@@ -16,6 +18,9 @@ import org.springframework.context.ApplicationEvent;
 public class JandiMsgEvent
         extends ApplicationEvent {
 
+    /** 보안 컨텍스트 */
+    private final SecurityContext securityContext;
+    /** 잔디 발송 파라미터 */
     private final JandiParam jandiMsg;
 
     /* ----- */
@@ -28,6 +33,7 @@ public class JandiMsgEvent
      */
     public JandiMsgEvent(final Object source, final JandiParam jandiMsg) {
         super(source);
+        this.securityContext = SecurityContextHolder.getContext();
         this.jandiMsg = jandiMsg;
     }
 }

@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.global._common.log.sys.event.LogSysEvent;
 import io.nicheblog.dreamdiary.global._common.log.sys.service.LogSysService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -14,7 +15,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * LogSysWorker
  * <pre>
  *  시스템 로그 처리 Worker :: Runnable 구현 (Queue 처리)
- *  메일 큐에서 LogSysEvent를 가져와 시스템 로그를 등록합니다.
+ *  Queue에서 LogSysEvent를 가져와 시스템 로그를 등록합니다.
  * </pre>
  *
  * @author nichefish
@@ -28,23 +29,24 @@ public class LogSysWorker
     private final LogSysService logSysService;
 
     /** 로그 queue */
-    private static final BlockingQueue<LogSysEvent> logQueue = new LinkedBlockingQueue<>();
+    private static final BlockingQueue<LogSysEvent> logSysQueue = new LinkedBlockingQueue<>();
 
     @PostConstruct
-        public void init() {
-        Thread workerThread = new Thread(this);
+    public void init() {
+        final Thread workerThread = new Thread(this);
         workerThread.start();
     }
 
     /**
-     * 메일 큐에서 LogSysEvent를 가져와 로그를 등록합니다.
+     * 시스템 로그 Queue에서 LogSysEvent를 가져와 로그를 등록합니다.
      */
     @Override
     public void run() {
         try {
             while (true) {
                 // Blocks until an element is available
-                LogSysEvent logEvent = logQueue.take();
+                final LogSysEvent logEvent = logSysQueue.take();
+                SecurityContextHolder.setContext(logEvent.getSecurityContext());
 
                 // 시스템 로그 로깅 처리
                 logSysService.regSysActvty(logEvent.getLog());
@@ -62,7 +64,7 @@ public class LogSysWorker
      *
      * @param event 큐에 추가할 LogSysEvent 객체
      */
-    public void offer(LogSysEvent event) {
-        logQueue.offer(event);
+    public void offer(final LogSysEvent event) {
+        logSysQueue.offer(event);
     }
 }

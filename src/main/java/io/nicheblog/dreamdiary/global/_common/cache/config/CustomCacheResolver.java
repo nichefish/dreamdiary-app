@@ -66,7 +66,7 @@ public class CustomCacheResolver extends AbstractCacheResolver {
 
         // Redis 연결 상태를 매번 체크하지 않고, 이미 캐시된 상태를 사용합니다.
         redisConnChecker.checkRedisConnection(); // Redis 연결 상태를 주기적으로 확인만 함
-        boolean isRedisAvailable = redisConnChecker.isRedisAvailable();
+        boolean isRedisAvailable = redisConnChecker.isAvailable();
 
         Collection<String> cacheNames = getCacheNames(context);
         if (cacheNames == null) return caches;

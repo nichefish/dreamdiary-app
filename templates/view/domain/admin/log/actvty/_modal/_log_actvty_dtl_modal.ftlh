@@ -27,4 +27,4 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "/view/domain/admin/log/actvty/_modal/_log_actvty_dtl_modal_template.hbs">
+<#include "_log_actvty_dtl_modal_template.hbs">

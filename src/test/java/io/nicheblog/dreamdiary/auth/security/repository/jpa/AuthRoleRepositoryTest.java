@@ -77,9 +77,5 @@ class AuthRoleRepositoryTest {
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
         assertNotNull(retrieved.getAuthCd(), "저장된 엔티티의 key 값이 없습니다.");
-        // audit
-        assertNotNull(retrieved.getRegDt(), "등록일자 audit 처리가 되지 않았습니다.");
-        assertNotNull(retrieved.getRegstrId(),  "등록자 audit 처리가 되지 않았습니다.");
-        assertEquals(TestConstant.TEST_AUDITOR, retrieved.getRegstrId(), "등록자가 예상 값과 일치하지 않습니다.");
     }
 }

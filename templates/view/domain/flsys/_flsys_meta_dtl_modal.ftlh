@@ -28,4 +28,4 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "/view/global/_common//flsys/_flsys_meta_dtl_template.hbs">
+<#include "_flsys_meta_dtl_template.hbs">

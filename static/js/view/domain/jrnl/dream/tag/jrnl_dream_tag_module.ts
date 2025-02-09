@@ -115,6 +115,10 @@ dF.JrnlDreamTag = (function(): dfModule {
         closeModal: function(): void {
             /* modal history pop */
             ModalHistory.prev();
+        },
+
+        expand: function(obj: HTMLElement): void {
+            $(obj).prev(".cn").toggleClass("expanded");
         }
     }
 })();

@@ -76,19 +76,24 @@ public class WebMvcContextConfig
                 .addResolver(new UTF8DecodeResourceResolver());
         // react 경로 = 기본경로에 추가로 동작하도록
         String reactContextPath = "/react/**";
-        String reactResourcePath = "classpath:/react/";
+        String reactResourcePath = "static/react/";
         registry.addResourceHandler(reactContextPath)
                 .addResourceLocations(reactResourcePath)
+                .resourceChain(true)
+                .addResolver(new UTF8DecodeResourceResolver());
+        // react 경로 = 기본경로에 추가로 동작하도록
+        String vueContextPath = "/vue/**";
+        String vueResourcePath = "static/vue/";
+        registry.addResourceHandler(vueContextPath)
+                .addResourceLocations(vueResourcePath)
                 .resourceChain(true)
                 .addResolver(new UTF8DecodeResourceResolver());
         // 기본 static 경로
         String staticContextPath = "/static/**";
         String orglStaticPath = "classpath:/static/";
-        String reactPath = "classpath:/static/react/";
-        String reactStaticPath = "classpath:/static/react/static/";
         String externalStaticPath = "static/";
         registry.addResourceHandler(staticContextPath)
-                .addResourceLocations(orglStaticPath, reactPath, reactStaticPath, externalStaticPath)
+                .addResourceLocations(orglStaticPath, externalStaticPath)
                 .resourceChain(true)
                 .addResolver(new UTF8DecodeResourceResolver());
     }

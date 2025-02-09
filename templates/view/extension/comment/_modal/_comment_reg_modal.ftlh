@@ -29,4 +29,4 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "/view/extension/comment/_modal/_comment_reg_modal_template.hbs">
+<#include "_comment_reg_modal_template.hbs">

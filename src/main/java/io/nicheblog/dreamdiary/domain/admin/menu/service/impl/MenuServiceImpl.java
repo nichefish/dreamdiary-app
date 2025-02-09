@@ -10,8 +10,8 @@ import io.nicheblog.dreamdiary.domain.admin.menu.repository.jpa.MenuRepository;
 import io.nicheblog.dreamdiary.domain.admin.menu.repository.mybatis.MenuMapper;
 import io.nicheblog.dreamdiary.domain.admin.menu.service.MenuService;
 import io.nicheblog.dreamdiary.domain.admin.menu.spec.MenuSpec;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.extension.state.model.cmpstn.StateCmpstn;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global._common.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;
@@ -137,7 +137,7 @@ public class MenuServiceImpl
      * @param label 메뉴 라벨 (컨트롤러에 대정)
      * @return MenuDto
      */
-    @Cacheable(value="menuByLabel", key="#label")
+    @Cacheable(value="menuByLabel", key="#label.name()")
     public MenuDto getMenuByLabel(final SiteMenu label) throws Exception {
         final Map<String, Object> searchParamMap = new HashMap<>();
         searchParamMap.put("menuLabel", label.name());

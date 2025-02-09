@@ -37,4 +37,4 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "/view/domain/vcatn/schdul/_modal/_vcatn_schdul_reg_modal_template.hbs">
+<#include "_vcatn_schdul_reg_modal_template.hbs">

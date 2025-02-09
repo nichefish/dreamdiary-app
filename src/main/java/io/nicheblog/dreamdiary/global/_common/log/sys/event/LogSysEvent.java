@@ -4,6 +4,8 @@ import io.nicheblog.dreamdiary.global._common.log.sys.handler.LogSysEventListene
 import io.nicheblog.dreamdiary.global._common.log.sys.model.LogSysParam;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * LogSysEvent
@@ -18,6 +20,8 @@ import org.springframework.context.ApplicationEvent;
 public class LogSysEvent
         extends ApplicationEvent {
 
+    /** 보안 컨텍스트 */
+    private final SecurityContext securityContext;
     /** 시스템 로그 */
     private final LogSysParam log;
 
@@ -31,6 +35,7 @@ public class LogSysEvent
      */
     public LogSysEvent(final Object source, final LogSysParam log) {
         super(source);
+        this.securityContext = SecurityContextHolder.getContext();
         this.log = log;
     }
 }

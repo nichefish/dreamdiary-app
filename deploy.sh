@@ -1,5 +1,10 @@
 #!/bin/bash
+##
 # deploy.sh - 배포 패키지 압축 해제 후 초기 서비스 설정 및 실행
+# sudo 실행시 password 입력할 필요 없도록 설정 변경함
+#
+# @author nichefish
+##
 
 # 서비스 파일이 없는 경우 생성
 if [ ! -f /etc/systemd/system/dreamdiary.service ]; then

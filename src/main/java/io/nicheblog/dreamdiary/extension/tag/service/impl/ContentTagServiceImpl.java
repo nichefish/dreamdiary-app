@@ -57,6 +57,7 @@ public class ContentTagServiceImpl
     @Transactional(readOnly = true)
     public List<TagDto> getTagStrListByClsfKey(final BaseClsfKey clsfKey) {
         final Map<String, Object> searchParamMap = new HashMap<>() {{
+            put("regstrId", AuthUtils.getLgnUserId());
             put("refPostNo", clsfKey.getPostNo());
             put("refContentType", clsfKey.getContentType());
         }};

@@ -33,7 +33,7 @@ public class MailEventListener {
     @EventListener
     @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void handleMailEvent(MailSendEvent event) {
+    public void handleMailEvent(final MailSendEvent event) {
         // 큐에 전달하기 전에 request 관련 속성들을 미리 바인딩해야 한다. (권장)
         MailSendWorker.offer(event);
     }

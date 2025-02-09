@@ -27,4 +27,4 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "/view/domain/vcatn/papr/_modal/_vcatn_papr_dtl_modal_template.hbs">
+<#include "_vcatn_papr_dtl_modal_template.hbs">

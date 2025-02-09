@@ -1,4 +1,9 @@
 #!/bin/bash
+##
+# dreamdiary 서비스 실행 스크립트
+#
+# @author nichefish
+##
 
 APP_DIR="/home/dreamdiary/app/dreamdiary"
 JAR_FILE="$APP_DIR/dreamdiary.jar"

@@ -93,7 +93,9 @@
             <#--begin::Row-->
             <div class="row mb-8">
                 <div class="col-xl-2">
-                    <div class="fs-6 fw-bold col-form-label"><label for="hldyYy">NOTION API 테스트</label></div>
+                    <div class="fs-6 fw-bold col-form-label">
+                        <label for="dataType">NOTION API 테스트</label>
+                    </div>
                 </div>
                 <div class="col-xl-2">
                     <select name="dataType" id="dataType" class="form-select form-select-solid">
@@ -126,7 +128,6 @@
                     <tr class="text-start fw-bolder fs-7 text-uppercase gs-0 text-muted">
                         <th class="col-2 text-center wb-keepall">권한 코드</th>
                         <th class="col-2 text-center wb-keepall">권한명 (level)</th>
-                        <th class="col-3 text-center wb-keepall">상위 권한</th>
                         <th class="col-2 text-center wb-keepall">정렬 순서</th>
                         <th class="col-2 text-center wb-keepall">사용 여부</th>
                     </tr>
@@ -156,13 +157,12 @@
                                         <!-- 사용자 -->
                                         <i class="bi bi-person-fill-gear text-info fs-2 me-2 opacity-75"
                                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="${authRole.authNm!"-"}"></i>
-                                        <div class="text-info fw-bold">${authRole.authNm!}</div>
+                                        <div class="text-info fw-bold">
+                                            <#if authRole.topAuthCd??>(${authRole.topAuthCd!} </#if>${authRole.authNm!}
+                                        </div>
                                         <div class="badge badge-info ms-3">${authRole.authLevel!}</div>
                                     </#if>
                                 </div>
-                            </td>
-                            <td class="text-start ps-10 hidden-table">
-                                ${authRole.topAuthCd!}
                             </td>
                             <td class="text-center hidden-table">
                                 ${authRole.state.sortOrdr!}
@@ -192,6 +192,7 @@
 
 <#--include::modals-->
 <#include "/view/domain/admin/cache/_modal/_cache_list_modal.ftlh">
+<#include "/view/domain/admin/cache/_modal/_cache_dtl_modal.ftlh">
 
 <#--include::script modules-->
 <script type="text/javascript" src="/js/view/domain/admin/cache/_cache.js?${releaseDate!}"></script>

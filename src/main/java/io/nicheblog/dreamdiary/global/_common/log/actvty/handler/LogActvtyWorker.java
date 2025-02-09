@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogAnonActvtyEven
 import io.nicheblog.dreamdiary.global._common.log.actvty.service.LogActvtyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -12,10 +13,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * LogWorker
+ * LogActvtyWorker
  * <pre>
  *  활동 로그 처리 Worker :: Runnable 구현 (Queue 처리)
- *  메일 큐에서 LogActvtyEvent를 가져와 활동 로그를 등록합니다.
+ *  Queue에서 LogActvtyEvent를 가져와 활동 로그를 등록합니다.
  * </pre>
  *
  * @author nichefish
@@ -29,30 +30,32 @@ public class LogActvtyWorker
     private final LogActvtyService logActvtyService;
 
     /** 로그 queue */
-    private static final BlockingQueue<Object> logQueue = new LinkedBlockingQueue<>();
+    private static final BlockingQueue<Object> logActvtyQueue = new LinkedBlockingQueue<>();
 
     @PostConstruct
-        public void init() {
-        Thread workerThread = new Thread(this);
+    public void init() {
+        final Thread workerThread = new Thread(this);
         workerThread.start();
     }
 
     /**
-     * 로그 큐에서 LogActvtyEvent / LogAnonActvtyEvent를 가져와 등록합니다.
+     * 활동 로그 Queue에서 LogActvtyEvent / LogAnonActvtyEvent를 가져와 등록합니다.
      */
     @Override
     public void run() {
         try {
             while (true) {
                 // Blocks until an element is available
-                Object logEvent = logQueue.take();
+                final Object logEvent = logActvtyQueue.take();
 
-                if (logEvent instanceof LogActvtyEvent) {
+                if (logEvent instanceof LogActvtyEvent event) {
+                    SecurityContextHolder.setContext(event.getSecurityContext());
                     // 활동 로그 (로그인) 로깅 처리
-                    logActvtyService.regLogActvty(((LogActvtyEvent) logEvent).getLog());
-                } else if (logEvent instanceof LogAnonActvtyEvent) {
+                    logActvtyService.regLogActvty(event.getLog());
+                } else if (logEvent instanceof LogAnonActvtyEvent event) {
+                    SecurityContextHolder.setContext(event.getSecurityContext());
                     // 활동 로그 (비로그인) 로깅 처리
-                    logActvtyService.regLogAnonActvty(((LogAnonActvtyEvent) logEvent).getLog());
+                    logActvtyService.regLogAnonActvty(event.getLog());
                 }
             }
         } catch (final InterruptedException e) {
@@ -68,7 +71,7 @@ public class LogActvtyWorker
      *
      * @param event 큐에 추가할 LogActvtyEvent / LogAnonActvtyEvent 객체
      */
-    public void offer(Object event) {
-        logQueue.offer(event);
+    public void offer(final Object event) {
+        logActvtyQueue.offer(event);
     }
 }

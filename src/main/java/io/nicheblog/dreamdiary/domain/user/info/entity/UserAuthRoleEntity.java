@@ -45,21 +45,13 @@ public class UserAuthRoleEntity
     @Comment("사용자 권한 번호 (PK)")
     private Integer userAuthRoleNo;
 
-    /** 사용자 정보 */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_no", referencedColumnName = "user_no", insertable = false, updatable = false)
-    @Fetch(FetchMode.JOIN)
-    @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("사용자 정보")
-    private UserEntity user;
-
     /** 권한 코드 */
     @Column(name = "auth_cd")
     @Comment("권한 코드")
     private String authCd;
 
     /** 권한 정보 매핑 */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auth_cd", referencedColumnName = "auth_cd", insertable = false, updatable = false)
     @Fetch(value = FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)

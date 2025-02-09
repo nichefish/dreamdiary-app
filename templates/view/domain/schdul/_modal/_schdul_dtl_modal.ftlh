@@ -55,4 +55,4 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "/view/domain/schdul/_modal/_schdul_dtl_modal_template.hbs">
+<#include "_schdul_dtl_modal_template.hbs">

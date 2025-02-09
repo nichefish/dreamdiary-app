@@ -32,7 +32,7 @@ public class LogActvtyEventListener {
      */
     @EventListener
     @Async
-    public void handleLogActvtyEvent(LogActvtyEvent event) {
+    public void handleLogActvtyEvent(final LogActvtyEvent event) {
         // 큐에 전달하기 전에 request 관련 속성들을 미리 바인딩해야 한다. (권장)
         logActvtyWorker.offer(event);
     }
@@ -44,7 +44,7 @@ public class LogActvtyEventListener {
      */
     @EventListener
     @Async
-    public void handleLogAnonActvtyEvent(LogAnonActvtyEvent event) {
+    public void handleLogAnonActvtyEvent(final LogAnonActvtyEvent event) {
         // 큐에 전달하기 전에 request 관련 속성들을 미리 바인딩해야 한다. (권장)
         logActvtyWorker.offer(event);
     }
@@ -56,7 +56,7 @@ public class LogActvtyEventListener {
      */
     @EventListener
     @Async
-    public void handleLogSysEvent(LogSysEvent event) {
+    public void handleLogSysEvent(final LogSysEvent event) {
         // 큐에 전달하기 전에 request 관련 속성들을 미리 바인딩해야 한다. (권장)
         logActvtyWorker.offer(event);
     }

@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.auth.oauth2.handler;
 
-import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.oauth2.provider.OAuth2Provider;
+import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
 import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLgnManager;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;

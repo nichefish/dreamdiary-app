@@ -86,5 +86,9 @@ dF.JrnlDiaryTag = (function(): dfModule {
                 document.querySelector("#jrnl_diary_tag_dtl_modal .header_tag_nm").innerHTML = tagNm;
             });
         },
+
+        expand: function(obj: HTMLElement): void {
+            $(obj).prev(".cn").toggleClass("expanded");
+        }
     }
 })();

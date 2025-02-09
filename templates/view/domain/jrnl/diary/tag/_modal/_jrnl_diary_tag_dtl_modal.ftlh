@@ -40,4 +40,4 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "/view/domain/jrnl/diary/tag/_modal/_jrnl_diary_tag_dtl_modal_template.hbs">
+<#include "_jrnl_diary_tag_dtl_modal_template.hbs">

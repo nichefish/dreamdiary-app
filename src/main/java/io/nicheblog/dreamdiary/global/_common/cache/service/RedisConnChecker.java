@@ -22,14 +22,16 @@ public class RedisConnChecker {
     private RedisTemplate<String, Object> redisTemplate;
 
     // Redis 연결 상태를 캐시하기 위한 변수
-    private boolean isRedisAvailable = false;
+    private boolean isAvailable = false;
     private long lastChecked = 0;
     
-    private boolean prevRedisStatus = true;
+    private boolean prevStatus = true;
 
     private static final long CHECK_INTERVAL = 30000; // 30초마다 Redis 연결 체크
 
-    // Redis 연결을 확인하는 메소드
+    /**
+     * Redis 연결을 확인하는 메소드
+     */
     public void checkRedisConnection() {
         long currentTime = System.currentTimeMillis();
         // 일정 시간(예: 30초) 동안 연결 상태를 재확인하지 않음
@@ -38,24 +40,24 @@ public class RedisConnChecker {
                 assert redisTemplate.getConnectionFactory() != null;
 
                 redisTemplate.getConnectionFactory().getConnection().ping();
-                isRedisAvailable = true;
+                isAvailable = true;
                 
-                boolean becameAvailable = !prevRedisStatus;
+                boolean becameAvailable = !prevStatus;
                 if (becameAvailable) {
                     // 연결 불가 상태로부터 회복시 캐시 일관성 유지 위해 기존 캐시 클리어.
                     log.info("Redis connection restored.");
                     this.clearRedisCache();
                 }
             } catch (final Exception e) {
-                isRedisAvailable = false;
-                final boolean becameUnavailable = prevRedisStatus;
+                isAvailable = false;
+                final boolean becameUnavailable = prevStatus;
                 if (becameUnavailable) {
                     log.error("Redis connection became botched.");
                 }
                 log.error("Redis connection failed: {}", e.getMessage());
             }
             // 이전 상태와 비교하여 상태 변화 추적
-            prevRedisStatus = isRedisAvailable;
+            prevStatus = isAvailable;
             lastChecked = currentTime;  // 마지막 체크 시간을 갱신
         }
     }
@@ -65,8 +67,8 @@ public class RedisConnChecker {
      *
      * @return Redis 연결 상태
      */
-    public boolean isRedisAvailable() {
-        return isRedisAvailable;
+    public boolean isAvailable() {
+        return isAvailable;
     }
 
     /**

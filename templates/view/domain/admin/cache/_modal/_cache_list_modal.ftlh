@@ -25,4 +25,4 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "/view/domain/admin/cache/_modal/_cache_list_modal_template.hbs">
+<#include "_cache_list_modal_template.hbs">

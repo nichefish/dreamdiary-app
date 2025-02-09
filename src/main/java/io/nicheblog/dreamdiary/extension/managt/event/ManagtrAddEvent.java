@@ -4,6 +4,8 @@ import io.nicheblog.dreamdiary.extension.managt.handler.ManagtrEventListener;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * ManagtrAddEvent
@@ -18,6 +20,8 @@ import org.springframework.context.ApplicationEvent;
 public class ManagtrAddEvent
         extends ApplicationEvent {
 
+    /** 보안 컨텍스트 */
+    private final SecurityContext securityContext;
     /** 컨텐츠 복합키 */
     private final BaseClsfKey clsfKey;
 
@@ -31,6 +35,7 @@ public class ManagtrAddEvent
      */
     public ManagtrAddEvent(final Object source, final BaseClsfKey clsfKey) {
         super(source);
+        this.securityContext = SecurityContextHolder.getContext();
         this.clsfKey = clsfKey;
     }
 }
