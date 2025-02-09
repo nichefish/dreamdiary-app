@@ -4,6 +4,7 @@ import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModelException;
 import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
@@ -35,14 +36,14 @@ public class TestFreemarkerConfig
             freemarker.template.Configuration configuration = configurer.getConfiguration();
             BeansWrapper objectWrapper = (BeansWrapper) configuration.getObjectWrapper();
             // 인코딩 설정
-            configuration.setDefaultEncoding("UTF-8");
+            configuration.setDefaultEncoding(Constant.CHARSET_UTF_8);
             // Locale, TimeZone 설정
             configuration.setLocale(Constant.LC_KO);
             configuration.setTimeZone(Constant.TZ_SEOUL);
             // 날짜 포맷 설정
-            configuration.setDateTimeFormat("yyyy-MM-dd HH:mm:ss");
-            configuration.setDateFormat("yyyy-MM-dd");
-            configuration.setTimeFormat("HH:mm:ss");
+            configuration.setDateTimeFormat(DatePtn.DATETIME.pattern);
+            configuration.setDateFormat(DatePtn.DATE.pattern);
+            configuration.setTimeFormat(DatePtn.TIME.pattern);
             // static 변수 임포트
             configuration.setSharedVariables(this.getSharedVariables(objectWrapper));
             // 숫자에 콤마 제거!!! (1000 넘어가는 ID(PK)에서 개꼬임...)

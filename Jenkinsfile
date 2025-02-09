@@ -14,7 +14,7 @@ pipeline {
     environment {
         GRADLE_USER_HOME = "$JENKINS_HOME/.gradle"       // 워크스페이스 내에 캐시 폴더 생성
         REPO_URL = 'https://github.com/nichefish/dreamdiary.git'
-        BRANCH = 'dev'
+        BRANCH = 'main'
     }
 
     stages {

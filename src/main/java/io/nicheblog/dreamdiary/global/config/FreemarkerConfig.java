@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,6 +43,9 @@ public class FreemarkerConfig
             "file:templates"
     };
 
+    @Value("${spring.freemarker.template-loader-path}")
+    private String TEMPLATE_PATH;
+
     /**
      * FreeMarkerConfigurer 빈의 초기화 후 처리를 담당합니다.
      *
@@ -73,7 +77,7 @@ public class FreemarkerConfig
      *
      * @param configuration Freemarker 설정 객체
      */
-    private void setFreemarkerDefaults(freemarker.template.Configuration configuration) throws TemplateModelException {
+    private void setFreemarkerDefaults(final freemarker.template.Configuration configuration) throws TemplateModelException {
         // 인코딩 설정
         configuration.setDefaultEncoding(Constant.CHARSET_UTF_8);
         // Locale, TimeZone 설정
@@ -143,9 +147,9 @@ public class FreemarkerConfig
     @Bean
     @Primary
     public FreeMarkerConfigurationFactoryBean freemarkerEmailConfig() {
-        FreeMarkerConfigurationFactoryBean factoryBean = new FreeMarkerConfigurationFactoryBean();
-        factoryBean.setTemplateLoaderPath("file:/E:/Dev/Project/dreamdiary/workspace/templates");
-        factoryBean.setDefaultEncoding("UTF-8");
+        final FreeMarkerConfigurationFactoryBean factoryBean = new FreeMarkerConfigurationFactoryBean();
+        factoryBean.setTemplateLoaderPath(TEMPLATE_PATH);
+        factoryBean.setDefaultEncoding(Constant.CHARSET_UTF_8);
         return factoryBean;
     }
 }

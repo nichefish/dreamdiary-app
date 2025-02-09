@@ -32,16 +32,16 @@ public class SeleniumUtils {
     public ChromeOptions getOptions() throws Exception {
 
         // chromeDriver 로드
-        URL resourceUrl = getClass().getClassLoader().getResource("file/selenium/chromedriver.exe");
+        final URL resourceUrl = getClass().getClassLoader().getResource("file/selenium/chromedriver.exe");
         if (resourceUrl == null) {
             log.info("resourceUrl is null.");
             return null;
         }
-        String chromeDriverPath = resourceUrl.getPath();
+        final String chromeDriverPath = resourceUrl.getPath();
         // 2번쨰 매개변수에 다운로드 받은 크롬드라이버 파일 경로를 적어준다. 상대경로, 절대경로 둘다 상관없다.
         System.setProperty("webdriver.chrome.driver", chromeDriverPath);
 
-        ChromeOptions chromeOptions = new ChromeOptions();
+        final ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.addArguments("--remote-allow-origins=*");
 
         return chromeOptions;

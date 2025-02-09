@@ -3,7 +3,6 @@ package io.nicheblog.dreamdiary.global.util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
@@ -11,6 +10,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -35,8 +35,8 @@ public class MessageUtils
         extends ReloadableResourceBundleMessageSource
         implements MessageSource {
 
-    @Qualifier("messageSource")
-    private final MessageSource autowiredMessageSource;
+    @Resource(name = "messageSource")
+    private MessageSource autowiredMessageSource;
     private final HttpServletResponse autowiredResponse;
 
     private static MessageSource messageSource;
@@ -178,7 +178,7 @@ public class MessageUtils
     /**
      * MessageSource의 메시지를 Map으로 반환
      *
-     * @return Map<String, String> -- messageMap
+     * @return {@link Map} -- messageMap
      */
     public static Object getMessageMap() {
         final ResourceBundle bundle = ResourceBundle.getBundle("messages/messages", Locale.getDefault());

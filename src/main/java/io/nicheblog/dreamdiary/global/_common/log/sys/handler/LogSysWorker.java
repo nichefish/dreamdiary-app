@@ -46,6 +46,7 @@ public class LogSysWorker
             while (true) {
                 // Blocks until an element is available
                 final LogSysEvent logEvent = logSysQueue.take();
+                // 이벤트로부터 securityContext를 가져온다.
                 SecurityContextHolder.setContext(logEvent.getSecurityContext());
 
                 // 시스템 로그 로깅 처리

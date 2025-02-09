@@ -56,6 +56,7 @@ public class EmailSendWorker implements Runnable {
 				// 메일 발송 처리
 				final EmailSendEvent mailEvent = emailSendQueue.take();
 				final EmailSendParam mailSendParam = mailEvent.getEmailSendParam();
+				// 이벤트로부터 securityContext를 가져온다.
 				SecurityContextHolder.setContext(mailEvent.getSecurityContext());
 
 				emailService.send(mailSendParam);

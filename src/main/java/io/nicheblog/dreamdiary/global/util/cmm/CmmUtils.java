@@ -49,6 +49,7 @@ public class CmmUtils {
      */
     public static Map<String, Object> convertToMap(final Object searchParam) throws Exception {
         if (searchParam == null) return new HashMap<>();
+
         final ObjectMapper mapper = new ObjectMapper();
         return mapper.convertValue(searchParam, HashMap.class);
     }
@@ -56,7 +57,7 @@ public class CmmUtils {
     /**
      * 공통 > Page 및 listIndex 정보 받아서 *역순* rownum 반환
      */
-    public static Long getPageRnum(Page<?> pageList, int i) {
+    public static Long getPageRnum(final Page<?> pageList, int i) {
         final Pageable pageable = pageList.getPageable();
         long totalCnt = pageList.getTotalElements();
         long offset = pageable.isPaged() ? pageable.getOffset() : 0L;
@@ -66,16 +67,12 @@ public class CmmUtils {
     /**
      * 공통 > map의 key값에 prefix/suffix를 붙여서 복사한다. (objectMapper 사전작업)
      */
-    public static Map<?, ?> copyMap(
-            final Map<?, ?> source,
-            String keyModifier,
-            final String mode
-    ) {
+    public static Map<?, ?> copyMap(final Map<?, ?> source, final String keyModifier, final String mode) {
         if (source == null) return null;
         final Map<String, Object> result = new HashMap<>();
-        for (final Object stringObjectEntry : source.entrySet()) {
-            final Object key = ((Map.Entry<?, ?>) stringObjectEntry).getKey();
-            final Object value = ((Map.Entry<?, ?>) stringObjectEntry).getValue();
+        for (final Map.Entry<?, ?> stringObjectEntry : source.entrySet()) {
+            final Object key = stringObjectEntry.getKey();
+            final Object value = stringObjectEntry.getValue();
             if (mode == null) {
                 result.put(key.toString(), value);
             } else if (Constant.PREFIX.equals(mode)) {
@@ -143,10 +140,7 @@ public class CmmUtils {
     /**
      * 공통 > 년도, 월 담긴 Map 반환
      */
-    public static Map<String, Object> getYyMhtnMap(
-            final String yyStr,
-            final String mnthStr
-    ) throws Exception {
+    public static Map<String, Object> getYyMhtnMap(final String yyStr, final String mnthStr) throws Exception {
         final Integer[] prevMnth = DateUtils.getPrevYyMnth();
         final int yy = (StringUtils.isNotEmpty(yyStr)) ? Integer.parseInt(yyStr) : prevMnth[0];
         final int mnth = (StringUtils.isNotEmpty(mnthStr)) ? Integer.parseInt(mnthStr) : prevMnth[1];
@@ -162,6 +156,7 @@ public class CmmUtils {
     public Map<String, String> queryStringToMap(final String queryString) {
         log.info("queryString: {}", queryString);
         if (StringUtils.isEmpty(queryString)) return null;
+
         final Map<String, String> resultMap = new HashMap<>();
         for (String param : queryString.split("&")) {
             final String[] pair = param.split("=");

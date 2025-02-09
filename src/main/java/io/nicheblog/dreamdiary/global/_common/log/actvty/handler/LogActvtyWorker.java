@@ -49,10 +49,12 @@ public class LogActvtyWorker
                 final Object logEvent = logActvtyQueue.take();
 
                 if (logEvent instanceof LogActvtyEvent event) {
+                    // 이벤트로부터 securityContext를 가져온다.
                     SecurityContextHolder.setContext(event.getSecurityContext());
                     // 활동 로그 (로그인) 로깅 처리
                     logActvtyService.regLogActvty(event.getLog());
                 } else if (logEvent instanceof LogAnonActvtyEvent event) {
+                    // 이벤트로부터 securityContext를 가져온다.
                     SecurityContextHolder.setContext(event.getSecurityContext());
                     // 활동 로그 (비로그인) 로깅 처리
                     logActvtyService.regLogAnonActvty(event.getLog());

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -27,46 +28,53 @@ public class JsonRestTemplate
 
     /**
      * 커스텀 생성자
+     *
+     * @param clientHttpRequestFactory HTTP 요청을 생성하는 팩토리 객체.
      */
     public JsonRestTemplate(final ClientHttpRequestFactory clientHttpRequestFactory) {
         super(clientHttpRequestFactory);
 
+        // ObjectMapper 설정: JDK 8, JavaTime 모듈 등록 및 날짜 직렬화 설정
         final ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module())
                                                       .registerModule(new JavaTimeModule())
                                                       .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
+        // 커스텀 JSON 메시지 컨버터 추가
         final List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
         final MappingJackson2HttpMessageConverter jsonMessageConverter = new MappingJackson2HttpMessageConverter() {
-
-            public boolean canRead(
-                    Class<?> clazz,
-                    org.springframework.http.MediaType mediaType
-            ) {
+            /**
+             * 모든 클래스 타입을 읽을 수 있도록 설정.
+             */
+            public boolean canRead(final @NotNull Class<?> clazz, final org.springframework.http.MediaType mediaType) {
                 return true;
             }
-
-            public boolean canRead(
-                    final java.lang.reflect.Type type,
-                    final Class<?> contextClass,
-                    final org.springframework.http.MediaType mediaType
-            ) {
+            /**
+             * 모든 타입을 읽을 수 있도록 설정.
+             */
+            public boolean canRead(final java.lang.reflect.@NotNull Type type, final Class<?> contextClass, final org.springframework.http.MediaType mediaType) {
                 return true;
             }
-
-            protected boolean canRead(
-                    final org.springframework.http.MediaType mediaType
-            ) {
+            /**
+             * 특정 미디어 타입을 읽을 수 있도록 설정.
+             */
+            protected boolean canRead(final org.springframework.http.MediaType mediaType) {
                 return true;
             }
         };
 
+        // ObjectMapper를 JSON 메시지 컨버터에 적용
         jsonMessageConverter.setObjectMapper(objectMapper);
         messageConverters.add(jsonMessageConverter);
+
+        // RestTemplate의 메시지 컨버터 설정
         super.setMessageConverters(messageConverters);
     }
 
     /**
-     * 커스텀 생성자 (UrlEncoding 설정 끄기)
+     * URL 인코딩을 비활성화할 수 있는 추가 생성자.
+     *
+     * @param clientHttpRequestFactory HTTP 요청을 생성하는 팩토리 객체.
+     * @param urlEncAt URL 인코딩 활성화 여부 (false일 경우 비활성화).
      */
     public JsonRestTemplate(
             final ClientHttpRequestFactory clientHttpRequestFactory,

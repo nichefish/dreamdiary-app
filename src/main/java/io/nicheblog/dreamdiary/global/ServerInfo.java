@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 /**
  * ServerInfo
  * <pre>
- *  appliccation-{profile}.yml 에 설정된 서버 정보를 가져온다.
+ *  appliccation-{profile}.yml에 설정된 서버 정보를 가져온다.
  * </pre>
  *
  * @author nichefish

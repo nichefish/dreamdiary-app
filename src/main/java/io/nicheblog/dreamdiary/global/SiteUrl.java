@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.global;
 /**
  * SiteUrl
  * <pre>
- *  공통 상수 :: 웹 사이트 URL 정의.
+ *  공통 상수 :: 웹사이트 URL 정의.
  * </pre>
  *
  * @author nichefish
