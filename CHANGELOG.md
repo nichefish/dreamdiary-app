@@ -1,5 +1,15 @@
 # CHANGELOG
 
+
+### 2025-02-11 | v0.13.1
+- 개선 사항:
+  - ApplicationEventPublisherWrapper 클래스 추가.
+    - (ApplicationEventPublisher 래핑, 비동기 이벤트 발행 및 SecurityContext 유지 helper)
+  - 패키지 구조 변경
+    - global/_common -> extension
+    - 공지사항(notice) -> 게시판(board) 패키지 하위로 이동
+  - 반복되는 댓글, 태그 영역을 partial로 분리 및 재사용. 
+
 ### 2025-02-09 | v0.13.0
 - 개선 사항:
   - 계정 신청시 이메일 인증 코드를 발송하여 링크 클릭을 통한 자동 승인 처리. 
