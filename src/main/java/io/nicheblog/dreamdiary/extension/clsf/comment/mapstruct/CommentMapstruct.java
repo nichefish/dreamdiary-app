@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.extension.clsf.comment.mapstruct;
 
+import io.nicheblog.dreamdiary.extension.cd.utils.CdUtils;
 import io.nicheblog.dreamdiary.extension.clsf.comment.entity.CommentEntity;
 import io.nicheblog.dreamdiary.extension.clsf.comment.mapstruct.embed.CommentEmbedMapstruct;
 import io.nicheblog.dreamdiary.extension.clsf.comment.model.CommentDto;
-import io.nicheblog.dreamdiary.extension.cd.utils.CdUtils;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BasePostMapstruct;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;

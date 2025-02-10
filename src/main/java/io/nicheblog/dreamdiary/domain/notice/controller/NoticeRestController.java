@@ -11,15 +11,15 @@ import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagEventListener;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.event.ViewerAddEvent;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.handler.ViewerEventListener;
-import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
 import io.nicheblog.dreamdiary.extension.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.extension.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.extension.report.xlsx.XlsxType;
 import io.nicheblog.dreamdiary.extension.report.xlsx.util.XlsxUtils;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
+import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
@@ -36,7 +36,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 /**
@@ -93,11 +92,9 @@ public class NoticeRestController
         // TODO: AOP로 분리
         if (isSuccess) {
             // 조치자 추가 :: 메인 로직과 분리
-            publisher.publishEvent(new ManagtrAddEvent(this, result.getClsfKey()));
+            publisher.publishAsyncEvent(new ManagtrAddEvent(this, result.getClsfKey()));
             // 태그 처리 :: 메인 로직과 분리
-            CompletableFuture.runAsync(() -> {
-                publisher.publishEvent(new TagProcEvent(this, result.getClsfKey(), notice.tag));
-            }).get(); // 이벤트가 끝날 때까지 대기
+            publisher.publishAsyncEvent(new TagProcEvent(this, result.getClsfKey(), notice.tag));
             // 잔디 메세지 발송 :: 메인 로직과 분리
             // if ("Y".equals(jandiYn)) {
             //     String jandiRsltMsg = notifyService.notifyNoticeReg(trgetTopic, result, logParam);
@@ -144,7 +141,7 @@ public class NoticeRestController
         noticeService.hitCntUp(key);
         // 열람자 추가 :: 메인 로직과 분리
         // TODO: AOP로 분리
-        publisher.publishEvent(new ViewerAddEvent(this, retrievedDto.getClsfKey()));
+        publisher.publishAsyncEvent(new ViewerAddEvent(this, retrievedDto.getClsfKey()));
 
         // 응답 결과 세팅
         ajaxResponse.setRsltObj(retrievedDto);
@@ -181,9 +178,7 @@ public class NoticeRestController
         // TODO: AOP로 분리
         if (isSuccess) {
             // 태그 처리 :: 메인 로직과 분리
-            CompletableFuture.runAsync(() -> {
-                publisher.publishEvent(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.NOTICE)));
-            }).get(); // 이벤트가 끝날 때까지 대기
+            publisher.publishAsyncEvent(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.NOTICE)));
         }
 
         // 응답 결과 세팅
@@ -269,7 +264,7 @@ public class NoticeRestController
         } finally {
             // 로그 관련 세팅
             logParam.setResult(isSuccess, rsltMsg);
-            publisher.publishEvent(new LogActvtyEvent(this, logParam));
+            publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
         }
 
         return ResponseEntity.ok(ajaxResponse);

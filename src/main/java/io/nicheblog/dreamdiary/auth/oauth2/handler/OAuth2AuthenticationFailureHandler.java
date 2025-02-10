@@ -4,16 +4,16 @@ import io.nicheblog.dreamdiary.auth.security.exception.AccountDormantException;
 import io.nicheblog.dreamdiary.auth.security.exception.AccountNeedsPwResetException;
 import io.nicheblog.dreamdiary.auth.security.exception.DupIdLgnException;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.actvty.event.LogAnonActvtyEvent;
 import io.nicheblog.dreamdiary.extension.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
@@ -45,7 +45,7 @@ public class OAuth2AuthenticationFailureHandler
         implements AuthenticationFailureHandler {
 
     private final AuthService authService;
-    private final ApplicationEventPublisher publisher;
+    private final ApplicationEventPublisherWrapper publisher;
 
     /**
      * 웹 로그인 로그인 실패시 상황별 분기 처리
@@ -70,7 +70,7 @@ public class OAuth2AuthenticationFailureHandler
         /* 존재하지 않는 계정 제외하고 로그인 실패 로그 저장 */
         if (!(exception instanceof InternalAuthenticationServiceException) && !(exception instanceof DupIdLgnException)) {
             final LogActvtyParam logParam = new LogActvtyParam(userId, false, errorMsg, ActvtyCtgr.LGN);
-            publisher.publishEvent(new LogAnonActvtyEvent(this, logParam));
+            publisher.publishAsyncEvent(new LogAnonActvtyEvent(this, logParam));
         }
         /* 비밀번호 불일치 */
         if (exception instanceof AccountDormantException) {

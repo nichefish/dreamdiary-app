@@ -4,11 +4,11 @@ import io.nicheblog.dreamdiary.domain.schdul.model.SchdulDto;
 import io.nicheblog.dreamdiary.domain.schdul.service.SchdulService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagEventListener;
+import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
+import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -20,7 +20,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * SchdulRestController
@@ -74,9 +73,7 @@ public class SchdulRestController
         // TODO: AOP로 분리
         if (isSuccess) {
             // 태그 처리 :: 메인 로직과 분리
-            CompletableFuture.runAsync(() -> {
-                publisher.publishEvent(new TagProcEvent(this, result.getClsfKey(), schdul.tag));
-            }).get(); // 이벤트가 끝날 때까지 대기
+            publisher.publishAsyncEvent(new TagProcEvent(this, result.getClsfKey(), schdul.tag));
             // 잔디 메세지 발송 :: 메인 로직과 분리
             // if (isSuccess && "Y".equals(jandiYn)) {
             //     String jandiRsltMsg = notifyService.notifySchdulReg(trgetTopic, result, logParam);

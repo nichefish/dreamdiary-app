@@ -5,10 +5,10 @@ import io.nicheblog.dreamdiary.auth.jwt.provider.JwtTokenProvider;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserPwChgParam;
 import io.nicheblog.dreamdiary.domain.user.my.service.UserMyService;
-import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
+import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
@@ -41,13 +41,13 @@ import javax.validation.Valid;
 @Log4j2
 public class AuthRestController {
 
-    private final UserMyService userMyService;
-    private final JwtTokenProvider jwtTokenProvider;
-
     @Getter
     private final String baseUrl = Url.AUTH_LGN_FORM;
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.LGN;      // 작업 카테고리 (로그 적재용)
+
+    private final UserMyService userMyService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     /**
      * 인증 정보 조회

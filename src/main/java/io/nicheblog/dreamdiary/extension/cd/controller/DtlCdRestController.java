@@ -1,7 +1,5 @@
 package io.nicheblog.dreamdiary.extension.cd.controller;
 
-import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.extension.cd.entity.DtlCdKey;
 import io.nicheblog.dreamdiary.extension.cd.model.DtlCdDto;
 import io.nicheblog.dreamdiary.extension.cd.model.DtlCdParam;
@@ -9,6 +7,8 @@ import io.nicheblog.dreamdiary.extension.cd.model.DtlCdSearchParam;
 import io.nicheblog.dreamdiary.extension.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -283,7 +283,7 @@ public class DtlCdRestController
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
         final boolean isSuccess = dtlCdService.sortOrdr(dtlCdParam.getSortOrdr());
-        String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+        final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
 
         // 응답 결과 세팅
         ajaxResponse.setAjaxResult(isSuccess, rsltMsg);

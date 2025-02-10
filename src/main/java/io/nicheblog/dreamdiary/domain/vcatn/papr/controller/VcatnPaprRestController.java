@@ -4,11 +4,11 @@ import io.nicheblog.dreamdiary.domain.vcatn.papr.model.VcatnPaprDto;
 import io.nicheblog.dreamdiary.domain.vcatn.papr.service.VcatnPaprService;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.event.ViewerAddEvent;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.handler.ViewerEventListener;
+import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
+import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -75,7 +75,7 @@ public class VcatnPaprRestController
         // TODO: AOP로 빼기
         if (isSuccess) {
             // 조치자 추가 :: 메인 로직과 분리
-            publisher.publishEvent(new ViewerAddEvent(this, result.getClsfKey()));
+            publisher.publishAsyncEvent(new ViewerAddEvent(this, result.getClsfKey()));
             // 잔디 메세지 발송 :: 메인 로직과 분리
             // if (isSuccess && "Y".equals(jandiYn)) {
             //     String jandiRsltMsg = notifyService.notifyVcatnPaprReg(trgetTopic, result, logParam);
@@ -154,7 +154,7 @@ public class VcatnPaprRestController
         vcatnPaprService.hitCntUp(key);
         // 열람자 추가 :: 메인 로직과 분리
         // TODO: AOP로 빼기
-        publisher.publishEvent(new ViewerAddEvent(this, rsDto.getClsfKey()));
+        publisher.publishAsyncEvent(new ViewerAddEvent(this, rsDto.getClsfKey()));
 
         // 응답 결과 세팅
         ajaxResponse.setRsltObj(rsDto);

@@ -1,9 +1,10 @@
 package io.nicheblog.dreamdiary.extension.log.actvty.aspect;
 
+import io.nicheblog.dreamdiary.extension.log.actvty.aspect.helper.LogActvtyAspectHelper;
 import io.nicheblog.dreamdiary.extension.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.extension.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.helper.LogActvtyAspectHelper;
+import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -12,7 +13,6 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 /**
@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 @Log4j2
 public class LogActvtyPageControllerAspect {
 
-    private final ApplicationEventPublisher publisher;
+    private final ApplicationEventPublisherWrapper publisher;
 
     /**
      * Pointcut :: RestController(API)를 대상으로 지정합니다.
@@ -52,7 +52,7 @@ public class LogActvtyPageControllerAspect {
 
         final LogActvtyParam logParam = LogActvtyAspectHelper.extractLogParam(joinPoint);
         if (logParam == null) return;
-        publisher.publishEvent(new LogActvtyEvent(this, logParam));
+        publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
     }
 
     /**
@@ -76,6 +76,6 @@ public class LogActvtyPageControllerAspect {
         // TODO: 컨트롤러의 getCtgr() 을 빼올 수 있는지?
 
         // 로그 이벤트 발행
-        publisher.publishEvent(new LogActvtyEvent(this, logParam));
+        publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
     }
 }

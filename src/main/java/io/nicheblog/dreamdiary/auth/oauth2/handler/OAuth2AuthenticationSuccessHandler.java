@@ -9,11 +9,11 @@ import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.extension.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.HttpUtils;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -47,7 +47,7 @@ public class OAuth2AuthenticationSuccessHandler
 
     private final OAuth2Provider oAuth2provider;
     private final AuthService authService;
-    private final ApplicationEventPublisher publisher;
+    private final ApplicationEventPublisherWrapper publisher;
 
     /**
      * OAuth2 인증 성공 시 처리하는 메소드.
@@ -85,7 +85,7 @@ public class OAuth2AuthenticationSuccessHandler
 
             // 로그인 로그 남기기
             final LogActvtyParam logParam = new LogActvtyParam(true, MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS), ActvtyCtgr.LGN);
-            publisher.publishEvent(new LogActvtyEvent(this, logParam));
+            publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
 
             // 로그인 성공시 브라우저 캐시 초기화 처리
             HttpUtils.setInvalidateBrowserCacheHeader(response);
@@ -94,7 +94,7 @@ public class OAuth2AuthenticationSuccessHandler
             this.setSuccessResponse(response);
 
             // 로그인 성공 로그 처리
-            publisher.publishEvent(new LogActvtyEvent(this, new LogActvtyParam(true)));
+            publisher.publishAsyncEvent(new LogActvtyEvent(this, new LogActvtyParam(true)));
             
             // 이전 페이지 :: 부재시 메인 페이지로 리다이렉트
             // 상속받은 상위 SavedRequestAwareAuthenticationSuccessHandler의 메소드 call
@@ -105,7 +105,7 @@ public class OAuth2AuthenticationSuccessHandler
             this.setFaiilureResponse(response, errorMsg);
             
             // 로그인 실패 로그 처리
-            publisher.publishEvent(new LogActvtyEvent(this, new LogActvtyParam(true)));
+            publisher.publishAsyncEvent(new LogActvtyEvent(this, new LogActvtyParam(true)));
         }
     }
 

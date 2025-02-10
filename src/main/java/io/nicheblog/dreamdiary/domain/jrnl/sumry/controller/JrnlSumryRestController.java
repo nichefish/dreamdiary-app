@@ -5,11 +5,11 @@ import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumrySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.service.JrnlSumryService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagEventListener;
+import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
+import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -22,7 +22,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * JrnlSumryRestController
@@ -226,9 +225,7 @@ public class JrnlSumryRestController
 
         // 태그 처리
         // TODO: AOP로 분리
-        CompletableFuture.runAsync(() -> {
-            publisher.publishEvent(new TagProcEvent(this, jrnlSumry.getClsfKey(), jrnlSumry.tag));
-        }).get(); // 이벤트가 끝날 때까지 대기
+        publisher.publishAsyncEvent(new TagProcEvent(this, jrnlSumry.getClsfKey(), jrnlSumry.tag));
 
         // 응답 결과 세팅
         ajaxResponse.setRsltObj(result);

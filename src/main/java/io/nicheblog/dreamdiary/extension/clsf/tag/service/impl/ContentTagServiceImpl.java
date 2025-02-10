@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.extension.clsf.tag.service.impl;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.ContentTagEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagEntity;
@@ -10,7 +11,6 @@ import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.extension.clsf.tag.repository.jpa.ContentTagRepository;
 import io.nicheblog.dreamdiary.extension.clsf.tag.service.ContentTagService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.spec.ContentTagSpec;
-import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;

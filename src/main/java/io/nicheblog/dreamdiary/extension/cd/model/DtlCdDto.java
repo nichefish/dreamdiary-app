@@ -2,9 +2,9 @@ package io.nicheblog.dreamdiary.extension.cd.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.nicheblog.dreamdiary.extension.cd.entity.DtlCdKey;
 import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstnModule;
-import io.nicheblog.dreamdiary.extension.cd.entity.DtlCdKey;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.AllArgsConstructor;

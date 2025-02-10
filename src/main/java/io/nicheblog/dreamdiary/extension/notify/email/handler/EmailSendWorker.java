@@ -1,15 +1,15 @@
 package io.nicheblog.dreamdiary.extension.notify.email.handler;
 
-import io.nicheblog.dreamdiary.extension.notify.email.event.EmailSendEvent;
-import io.nicheblog.dreamdiary.extension.notify.email.model.EmailSendParam;
-import io.nicheblog.dreamdiary.extension.notify.email.service.EmailService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.sys.event.LogSysEvent;
 import io.nicheblog.dreamdiary.extension.log.sys.handler.LogSysEventListener;
 import io.nicheblog.dreamdiary.extension.log.sys.model.LogSysParam;
+import io.nicheblog.dreamdiary.extension.notify.email.event.EmailSendEvent;
+import io.nicheblog.dreamdiary.extension.notify.email.model.EmailSendParam;
+import io.nicheblog.dreamdiary.extension.notify.email.service.EmailService;
+import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -32,7 +32,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class EmailSendWorker implements Runnable {
 
 	private final EmailService emailService;
-	private final ApplicationEventPublisher publisher;
+	private final ApplicationEventPublisherWrapper publisher;
 
 	/** 메일 queue */
 	private static final BlockingQueue<EmailSendEvent> emailSendQueue = new LinkedBlockingQueue<>();
@@ -65,7 +65,7 @@ public class EmailSendWorker implements Runnable {
 				Thread.currentThread().interrupt();
 				final LogSysParam logParam = new LogSysParam(true, "메일 발송에 실패했습니다.", ActvtyCtgr.SYSTEM);
 				logParam.setExceptionInfo(e);
-				publisher.publishEvent(new LogSysEvent(this, logParam));
+				publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
 			}
 		}
 	}

@@ -6,9 +6,9 @@ import io.nicheblog.dreamdiary.auth.security.exception.AuthenticationFailureExce
 import io.nicheblog.dreamdiary.domain.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
 import io.nicheblog.dreamdiary.domain.user.reqst.service.UserReqstService;
-import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
@@ -60,7 +60,7 @@ public class AuthPageController
             final boolean isAlreadyCf = "Y".equals(user.acntStus.getCfYn());
             // 이미 가입된 계정이면 미처리.
             if (isAlreadyCf) throw new AlreadyAuthenticatedException("이미 인증된 계정입니다.");
-
+            // 계정 승인 처리
             userReqstService.cf(user.getUserNo());
 
             isSuccess = true;

@@ -1,14 +1,14 @@
 package io.nicheblog.dreamdiary.extension.clsf.tag.handler;
 
+import io.nicheblog.dreamdiary.extension.cache.event.EhCacheEvictEvent;
+import io.nicheblog.dreamdiary.extension.cache.handler.EhCacheEvictEventListner;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.extension.clsf.tag.service.ContentTagService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.service.TagService;
-import io.nicheblog.dreamdiary.extension.cache.event.EhCacheEvictEvent;
-import io.nicheblog.dreamdiary.extension.cache.handler.EhCacheEvictEventListner;
 import io.nicheblog.dreamdiary.global.config.AsyncConfig;
+import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,7 +31,7 @@ public class TagEventListener {
 
     private final TagService tagService;
     private final ContentTagService contentTagService;
-    private final ApplicationEventPublisher publisher;
+    private final ApplicationEventPublisherWrapper publisher;
 
     /**
      * 태그 이벤트를 처리한다.
@@ -60,7 +60,7 @@ public class TagEventListener {
             tagService.procTags(clsfKey, event.getTagCmpstn());
         }
         // 관련 캐시 클리어
-        publisher.publishEvent(new EhCacheEvictEvent(this, clsfKey.getPostNo(), clsfKey.getContentType()));
+        publisher.publishAsyncEvent(new EhCacheEvictEvent(this, clsfKey.getPostNo(), clsfKey.getContentType()));
         // 태그 테이블 refresh (연관관계 없는 메인 태그 삭제)
         tagService.deleteNoRefTags();
     }

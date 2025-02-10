@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.extension.log.sys.model;
 
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.*;
