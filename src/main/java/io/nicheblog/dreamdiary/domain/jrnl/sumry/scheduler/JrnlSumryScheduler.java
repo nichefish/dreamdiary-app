@@ -2,10 +2,10 @@ package io.nicheblog.dreamdiary.domain.jrnl.sumry.scheduler;
 
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.service.JrnlSumryService;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.global._common.log.sys.event.LogSysEvent;
-import io.nicheblog.dreamdiary.global._common.log.sys.handler.LogSysEventListener;
-import io.nicheblog.dreamdiary.global._common.log.sys.model.LogSysParam;
+import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.extension.log.sys.event.LogSysEvent;
+import io.nicheblog.dreamdiary.extension.log.sys.handler.LogSysEventListener;
+import io.nicheblog.dreamdiary.extension.log.sys.model.LogSysParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

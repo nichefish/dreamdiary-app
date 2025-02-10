@@ -5,10 +5,10 @@ import io.nicheblog.dreamdiary.auth.security.exception.AccountNeedsPwResetExcept
 import io.nicheblog.dreamdiary.auth.security.exception.DupIdLgnException;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogAnonActvtyEvent;
-import io.nicheblog.dreamdiary.global._common.log.actvty.handler.LogActvtyEventListener;
-import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.extension.log.actvty.event.LogAnonActvtyEvent;
+import io.nicheblog.dreamdiary.extension.log.actvty.handler.LogActvtyEventListener;
+import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

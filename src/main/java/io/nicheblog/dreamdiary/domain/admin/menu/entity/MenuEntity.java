@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.domain.admin.menu.entity;
 
-import io.nicheblog.dreamdiary.extension.state.entity.embed.StateEmbed;
-import io.nicheblog.dreamdiary.extension.state.entity.embed.StateEmbedModule;
-import io.nicheblog.dreamdiary.global._common.cd.entity.DtlCdEntity;
+import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbed;
+import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbedModule;
+import io.nicheblog.dreamdiary.extension.cd.entity.DtlCdEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

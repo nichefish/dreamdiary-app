@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.domain.user.info.service;
 
 import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
-import io.nicheblog.dreamdiary.global.config.TestAuditConfig;
+import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.junit.jupiter.api.DisplayName;

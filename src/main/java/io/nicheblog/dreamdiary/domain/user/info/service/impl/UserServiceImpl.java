@@ -11,7 +11,7 @@ import io.nicheblog.dreamdiary.domain.user.info.repository.jpa.UserRepository;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
 import io.nicheblog.dreamdiary.domain.user.info.spec.UserSpec;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global._common.cache.util.EhCacheUtils;
+import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;

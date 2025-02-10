@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.domain.jrnl.sumry.mapstruct;
 
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.entity.JrnlSumryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumryDto;
-import io.nicheblog.dreamdiary.global._common.cd.utils.CdUtils;
+import io.nicheblog.dreamdiary.extension.cd.utils.CdUtils;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BasePostMapstruct;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;

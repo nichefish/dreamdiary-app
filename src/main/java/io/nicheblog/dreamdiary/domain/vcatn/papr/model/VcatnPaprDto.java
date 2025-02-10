@@ -1,14 +1,14 @@
 package io.nicheblog.dreamdiary.domain.vcatn.papr.model;
 
-import io.nicheblog.dreamdiary.extension.ContentType;
-import io.nicheblog.dreamdiary.extension.comment.model.cmpstn.CommentCmpstn;
-import io.nicheblog.dreamdiary.extension.comment.model.cmpstn.CommentCmpstnModule;
-import io.nicheblog.dreamdiary.extension.managt.model.cmpstn.ManagtCmpstn;
-import io.nicheblog.dreamdiary.extension.managt.model.cmpstn.ManagtCmpstnModule;
-import io.nicheblog.dreamdiary.extension.tag.model.cmpstn.TagCmpstn;
-import io.nicheblog.dreamdiary.extension.tag.model.cmpstn.TagCmpstnModule;
-import io.nicheblog.dreamdiary.extension.viewer.model.cmpstn.ViewerCmpstn;
-import io.nicheblog.dreamdiary.extension.viewer.model.cmpstn.ViewerCmpstnModule;
+import io.nicheblog.dreamdiary.extension.clsf.ContentType;
+import io.nicheblog.dreamdiary.extension.clsf.comment.model.cmpstn.CommentCmpstn;
+import io.nicheblog.dreamdiary.extension.clsf.comment.model.cmpstn.CommentCmpstnModule;
+import io.nicheblog.dreamdiary.extension.clsf.managt.model.cmpstn.ManagtCmpstn;
+import io.nicheblog.dreamdiary.extension.clsf.managt.model.cmpstn.ManagtCmpstnModule;
+import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
+import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstnModule;
+import io.nicheblog.dreamdiary.extension.clsf.viewer.model.cmpstn.ViewerCmpstn;
+import io.nicheblog.dreamdiary.extension.clsf.viewer.model.cmpstn.ViewerCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.BasePostDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.*;

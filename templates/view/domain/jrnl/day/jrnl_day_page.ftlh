@@ -107,8 +107,8 @@
 <#include "/view/domain/jrnl/tag/_jrnl_tag_list_modal.ftlh">
 
 <#--include::comment-->
-<#include "/view/extension/comment/_modal/_comment_reg_modal.ftlh">
-<script type="text/javascript" src="/js/view/extension/comment/comment_modal_module.js?${releaseDate!}"></script>
+<#include "/view/extension/clsf/comment/_modal/_comment_reg_modal.ftlh">
+<script type="text/javascript" src="/js/view/extension/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
 
 <!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/jrnl/day/jrnl_day_page.js?${releaseDate!}"></script>

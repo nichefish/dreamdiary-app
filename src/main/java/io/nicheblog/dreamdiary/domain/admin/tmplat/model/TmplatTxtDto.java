@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.domain.admin.tmplat.model;
 
-import io.nicheblog.dreamdiary.extension.state.model.cmpstn.StateCmpstn;
-import io.nicheblog.dreamdiary.extension.state.model.cmpstn.StateCmpstnModule;
+import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
+import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseAtchDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.*;

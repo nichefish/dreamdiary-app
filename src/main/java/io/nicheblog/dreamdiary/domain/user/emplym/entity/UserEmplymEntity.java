@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.domain.user.emplym.entity;
 
 import io.nicheblog.dreamdiary.domain.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global._common.cd.entity.DtlCdEntity;
+import io.nicheblog.dreamdiary.extension.cd.entity.DtlCdEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.*;

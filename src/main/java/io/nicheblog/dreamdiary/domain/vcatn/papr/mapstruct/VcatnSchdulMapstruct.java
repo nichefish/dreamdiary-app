@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.domain.vcatn.papr.entity.VcatnSchdulEntity;
 import io.nicheblog.dreamdiary.domain.vcatn.papr.model.VcatnSchdulDto;
 import io.nicheblog.dreamdiary.domain.vcatn.papr.model.VcatnSchdulXlsxDto;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global._common.cd.utils.CdUtils;
+import io.nicheblog.dreamdiary.extension.cd.utils.CdUtils;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseCrudMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;

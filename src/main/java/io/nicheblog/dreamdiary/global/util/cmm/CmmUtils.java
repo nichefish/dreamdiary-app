@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.global.validator.CmmRegex;
+import io.nicheblog.dreamdiary.global.validator.Regex;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -134,7 +134,7 @@ public class CmmUtils {
      * 공통 > html 태그 제거 (정규식)
      */
     public String removeHtmlTag(final String html) {
-        return html.replaceAll(CmmRegex.HTML_TAG_REGEX, "");
+        return html.replaceAll(Regex.HTML_TAG_REGEX, "");
     }
 
     /**

@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.domain.user.info.spec;
 
 import io.nicheblog.dreamdiary.domain.user.profl.entity.UserProflEntity;
-import io.nicheblog.dreamdiary.global._common.cd.entity.DtlCdEntity;
+import io.nicheblog.dreamdiary.extension.cd.entity.DtlCdEntity;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
