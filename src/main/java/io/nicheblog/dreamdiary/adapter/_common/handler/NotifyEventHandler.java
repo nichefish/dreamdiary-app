@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.adapter.jandi.JandiTopic;
 import io.nicheblog.dreamdiary.adapter.jandi.service.JandiApiService;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.board.post.model.BoardPostDto;
-import io.nicheblog.dreamdiary.domain.notice.model.NoticeDto;
+import io.nicheblog.dreamdiary.domain.board.notice.model.NoticeDto;
 import io.nicheblog.dreamdiary.domain.schdul.model.SchdulDto;
 import io.nicheblog.dreamdiary.domain.schdul.service.SchdulService;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;

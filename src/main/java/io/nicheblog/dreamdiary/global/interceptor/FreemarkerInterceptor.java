@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuDto;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.domain.admin.menu.service.MenuService;
 import io.nicheblog.dreamdiary.domain.board.def.service.BoardDefService;
-import io.nicheblog.dreamdiary.domain.notice.service.NoticeService;
+import io.nicheblog.dreamdiary.domain.board.notice.service.NoticeService;
 import io.nicheblog.dreamdiary.global.ActiveProfile;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.ReleaseInfo;

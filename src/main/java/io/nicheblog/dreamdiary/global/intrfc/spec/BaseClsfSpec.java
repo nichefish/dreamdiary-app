@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.global.intrfc.spec;
 
-import io.nicheblog.dreamdiary.domain.notice.entity.NoticeEntity;
+import io.nicheblog.dreamdiary.domain.board.notice.entity.NoticeEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.ContentTagEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
 import org.springframework.data.jpa.domain.Specification;
