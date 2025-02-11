@@ -6,7 +6,7 @@
 <script type="text/x-handlebars-template" id="tag_list_sized_partial">
     <span class="py-2 me-3 cursor-pointer opacity-hover"
           onclick="{{module}}.dtlModal({{tagNo}}, '{{tagNm}}');"
-          data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="해당 태그가 등록된 게시물 목록 팝업을 호출합니다.">
+          data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "view.tag.content-list"/>">
         <span class="{{tagClass}}">
             {{#if (exists ctgr)}}
                 <span class="fs-7 text-noti">[{{ctgr}}]</span>

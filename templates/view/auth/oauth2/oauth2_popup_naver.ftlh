@@ -37,8 +37,8 @@
         <div class="mt-10">
             <button type="button" class="btn btn-sm btn-outlined btn-light-primary btn-active-primary py-2 px-3"
                     onclick="Page.main();"
-                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="메인 화면으로 돌아갑니다.">
-                <i class="bi bi-arrow-counterclockwise"></i>메인으로 돌아가기...
+                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.return-to-main'/>">
+                <i class="bi bi-arrow-counterclockwise"></i><@spring.message 'view.return-to-main'/>...
             </button>
         </div>
     </div>

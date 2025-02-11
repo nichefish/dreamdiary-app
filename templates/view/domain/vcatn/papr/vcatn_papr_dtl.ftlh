@@ -104,7 +104,7 @@
             <!-- 등록자: 수정,삭제 가능, 관리자: 삭제 가능, 확인 시: 삭제만 가능 -->
     <#--        <#if post.isRegstr!false && (post.cfYn)! == "N">
                 <button type="button" class="btn btn-light btn-active-primary me-2 btn-sm" onclick="Page.mdfForm();"
-                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "bs.tooltip.page.mdf"/>">
+                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.page.mdf'/>">
                     <i class="bi bi-pencil-square"></i>수정
                 </button>
             </#if>-->

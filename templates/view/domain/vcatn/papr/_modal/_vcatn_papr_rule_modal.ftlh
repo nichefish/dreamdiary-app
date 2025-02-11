@@ -18,7 +18,7 @@
                 <thead>
                     <tr class="fw-bolder fs-6 text-gray-700">
                         <th class="text-center w-20">항목</th>
-                        <th class="text-center">내용</th>
+                        <th class="text-center"><@spring.message 'cn'/></th>
                         <th class="text-center w-15">일수</th>
                     </tr>
                 </thead>

@@ -37,8 +37,8 @@
                 <!--begin::Info-->
                 <div class="d-flex align-items-center py-1">
                     <a href="#answers" data-kt-scroll-toggle="true"
-                       class="btn btn-sm btn-outline btn-outline-dashed btn-outline-default px-4 me-2">댓글 ${tmplat.commentCnt!}</a>
-                    <button class="btn btn-sm btn-light px-4 me-2 disabled">조회수 ${tmplat.hitCnt}</button>
+                       class="btn btn-sm btn-outline btn-outline-dashed btn-outline-default px-4 me-2"><@spring.message 'comment'/> ${tmplat.commentCnt!}</a>
+                    <button class="btn btn-sm btn-light px-4 me-2 disabled"><@spring.message 'hit-cnt'/> ${tmplat.hitCnt}</button>
                 </div>
             </div>
         </div>
@@ -64,7 +64,7 @@
                             <div class="row my-1">
                                 <div class="col-xl-8">
                                     <a href="javascript:void(0);" onclick="cF.util.fileDownload('${file.atchFileNo!}', '${file.atchFileDtlNo!}');"
-                                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "bs.tooltip.file.download"/>">
+                                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.file.download'/>">
                                         <i class="fas fa-file-download fs-15 me-1"></i>
                                         ${file.orgnFileNm!}(${file.fileSize!}byte)
                                     </a>

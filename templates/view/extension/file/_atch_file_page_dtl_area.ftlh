@@ -7,7 +7,7 @@
 <#if (post.atchFileInfo.atchFileList)?has_content>
     <div class="d-flex flex-stack flex-wrap mb-3 bg-light">
         <div class="col-xl-1 col-form-label fs-6 fw-bold px-5">
-            첨부파일
+            <@spring.message 'atch-file'/>
         </div>
         <div class="col-xl-11 my-3">
             <#list (post.atchFileInfo.atchFileList)![] as file>
@@ -16,7 +16,7 @@
                         <a href="javascript:void(0);"
                            onclick="cF.util.fileDownload('${file.atchFileNo!}', '${file.atchFileDtlNo!}');"
                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
-                           title="<@spring.message "bs.tooltip.file.download"/>">
+                           title="<@spring.message 'bs.tooltip.file.download'/>">
                             <i class="fas fa-file-download fs-15 me-1"></i>
                             ${file.orgnFileNm!}(${file.fileSize!}byte)
                         </a>

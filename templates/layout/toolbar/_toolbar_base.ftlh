@@ -17,7 +17,7 @@
                 <!--begin::Item-->
                 <li class="breadcrumb-item text-muted">
                     <a href="<#if isMngrMode>${Url.ADMIN_MAIN}<#else>${Url.MAIN}</#if>" class="text-muted text-hover-primary"
-                       data-bs-toggle="tooltip" data-bs-placement="right" data-bs-dismiss="click" title="메인 화면으로 이동합니다.">
+                       data-bs-toggle="tooltip" data-bs-placement="right" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.return-to-main'/>">
                         <i class="bi bi-house-<#if isMngrMode>gear-</#if>fill fs-4 me-1 text-primary"></i>
                     </a>
                 </li>

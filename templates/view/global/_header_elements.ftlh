@@ -113,7 +113,7 @@
     <!-- 버튼:: 등록하기 -->
     <button type="button" class="btn btn-sm btn-primary"
             onclick="${func}"
-            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "bs.tooltip.page.reg"/>">
+            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.page.reg'/>">
         <i class="fas fa-plus"></i>등록
     </button>
 </#macro>

@@ -133,7 +133,7 @@ dF.UserReqst = (function(): dfModule {
          */
         return: function(): void {
             Swal.fire({
-                text: "메인 화면으로 이동합니다.\n(현재까지 입력한 내용은 사라집니다.)\n계속하겠습니까?",
+                text: "<@spring.message 'bs.tooltip.return-to-main'/>\n(현재까지 입력한 내용은 사라집니다.)\n계속하겠습니까?",
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (result.value) dF.UserReqst.main();

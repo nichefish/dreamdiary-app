@@ -110,7 +110,7 @@
             <button type="button" class="badge btn btn-sm btn-light-primary badge-outlined btn-outlined fw-light opacity-75 blink"
                     onclick="Page.reqstUser();"
                     data-bs-toggle="tooltip" data-bs-placement="bottom" title="계정 신청 화면으로&#10;이동합니다.">
-                <i class="bi bi-person-plus-fill blink"></i>신규 계정 신청
+                <i class="bi bi-person-plus-fill blink"></i><@spring.message 'user.reqst'/>
             </button>
         </div>
         <div class="text-end mb-5">

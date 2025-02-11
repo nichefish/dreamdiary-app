@@ -83,7 +83,7 @@
              */
             fileDownload: function(filePath) {
                 Swal.fire({
-                    text: <@spring.message "view.cnfm.download"/>,
+                    text: <@spring.message 'view.cnfm.download'/>,
                     showCancelButton: true,
                 }).then(function(result) {
                     if (!result.value) return;
@@ -115,7 +115,7 @@
              */
             delRef: function(obj) {
                 Swal.fire({
-                    text: <@spring.message "view.cnfm.del"/>,
+                    text: <@spring.message 'view.cnfm.del'/>,
                     showCancelButton: true,
                 }).then(function(result) {
                     if (!result.value) return;

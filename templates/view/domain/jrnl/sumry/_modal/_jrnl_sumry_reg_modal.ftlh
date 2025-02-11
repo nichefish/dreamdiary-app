@@ -19,7 +19,7 @@
             <div class="row mb-4">
                 <div class="col-12">
                     <label class="d-flex align-items-center mb-2" for="tinymce_jrnlSumryCn">
-                        <span class="text-gray-700 fs-6 fw-bolder">내용</span>
+                        <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'cn'/></span>
                     </label>
                 </div>
                 <div class="col-12">

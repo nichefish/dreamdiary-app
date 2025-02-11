@@ -6,7 +6,7 @@
 <div class="mb-6 ms-4">
     <div class="d-flex align-items-center mb-4 ms-4">
         <div class="col-1 ms-4 me-6 text-center fs-6">
-            <b><@spring.message "day.tag"/> : </b>
+            <b><@spring.message 'day.tag'/> : </b>
         </div>
         <div class="col" id="jrnl_day_tag_list_div">
             <#--handlebars template goes in here-->
@@ -28,7 +28,7 @@
     <div class="separator mx-20 mb-4"></div>
     <div class="d-flex align-items-center mb-4 ms-4">
         <div class="col-1 ms-4 me-6 text-center fs-6">
-            <b><@spring.message "diary.tag"/> : </b>
+            <b><@spring.message 'diary.tag'/> : </b>
         </div>
         <div class="col" id="jrnl_diary_tag_list_div">
             <#--handlebars template goes in here-->
@@ -50,7 +50,7 @@
     <div class="separator mx-20 mb-4"></div>
     <div class="d-flex align-items-center mb-6 ms-4">
         <div class="col-1 ms-4 me-6 text-center fs-6">
-            <b><@spring.message "dream.tag"/> : </b>
+            <b><@spring.message 'dream.tag'/> : </b>
         </div>
         <div class="col" id="jrnl_dream_tag_list_div">
             <#--handlebars template goes in here-->

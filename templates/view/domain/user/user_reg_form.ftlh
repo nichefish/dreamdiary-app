@@ -36,7 +36,7 @@
                         <input type="text" name="userId" id="userId" class="form-control form-control-solid required no-space"
                                value="${user.userId!}" maxlength="16" />
                         <div class="form-text">
-                            <@spring.message "noti.req.userid"/>
+                            <@spring.message 'noti.req.userid'/>
                         </div>
                         <div id="userId_validate_span" class="text-danger"></div>
                         <div id="ipDupChckPassed_validate_span" class="text-danger"></div>
@@ -69,7 +69,7 @@
                         <input type="password" name="password" id="password" class="form-control form-control-solid required no-space"
                                maxlength="20" autocomplete="off" />
                         <div class="form-text text-noti">
-                            <@spring.message "noti.req.password"/>
+                            <@spring.message 'noti.req.password'/>
                         </div>
                         <div id="password_validate_span"></div>
                     </div>
@@ -123,7 +123,7 @@
                     <input type="text" name="nickNm" id="nickNm" class="form-control form-control-solid required"
                            value="${user.nickNm!}" placeholder="표시이름" maxlength="20" />
                     <div class="form-text text-noti">
-                        <@spring.message "noti.req.nicknm"/>
+                        <@spring.message 'noti.req.nicknm'/>
                     </div>
                     <span id="nickNm_validate_span"></span>
                 </div>
@@ -181,7 +181,7 @@
                 <div class="col-xl-2">
                     <input type="text" name="cttpc" id="cttpc" class="form-control form-control-solid"
                            value="${user.cttpc!}" maxlength="20" />
-                    <div class="form-text text-noti"><@spring.message "noti.req.cttpc"/></div>
+                    <div class="form-text text-noti"><@spring.message 'noti.req.cttpc'/></div>
                     <span id="cttpc_valid_span"></span>
                 </div>
             </div>
@@ -201,14 +201,14 @@
                         <input type="checkbox" name="useAcsIpYn" id="useAcsIpYn" class="form-check-input" value="Y"
                                <#if user.useAcsIp!false>checked="checked"</#if> />
                         <label class="form-check-label fw-bold ms-3" for="useAcsIpYn" id="useAcsIpYnLabel" style="color:<#if user.useAcsIp!false>blue<#else>gray</#if>;">
-                            <#if !user.useAcsIp!false>미</#if>사용
+                            <#if !user.useAcsIp!false><@spring.message 'unuse'/></#if><@spring.message 'use'/>
                         </label>
                     </div>
                     <!-- 가리고 숨기고를 반복하는 곳은 style로 선언해야 한다. -->
                     <div id="acsIpListSpan" class="mt-2 mb-0" <#if !(user.useAcsIp!false)>style=display:none;"</#if>>
                         <input type="text" name="acsIpListStr" id="acsIpListStr" class="form-control form-control-solid no-space"
                                value="${user.acsIpListStr!}" maxlength="500" autocomplete="off" />
-                        <div class="form-text text-noti"><@spring.message "noti.req.acsip"/></div>
+                        <div class="form-text text-noti"><@spring.message 'noti.req.acsip'/></div>
                         <div id="acsIpListStr_valid_span"></div>
                     </div>
                 </div>
@@ -263,7 +263,7 @@
                             직원 인사정보 추가+
                         </button>
                         <div class="text-noti">
-                            <@spring.message "noti.req.user.emplym"/>
+                            <@spring.message 'noti.req.user.emplym'/>
                         </div>
                     </div>
                 </div>

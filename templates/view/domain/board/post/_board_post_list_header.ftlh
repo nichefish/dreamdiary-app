@@ -24,8 +24,8 @@
     <div>
         <#--헤더:: 인풋: searchType-->
         <select name="searchType" id="searchType" class="form-select form-select-sm form-select-solid">
-            <option value="title" label="제목" ${fn.selected(searchParam.searchType!, "제목")} />
-            <option value="nickNm" label="작성자" ${fn.selected(searchParam.searchType!, "작성자")} />
+            <option value="title" label="<@spring.message 'title'/>" ${fn.selected(searchParam.searchType!, "title")} />
+            <option value="nickNm" label="작성자" ${fn.selected(searchParam.searchType!, "nickNm")} />
         </select>
     </div>
     <div>

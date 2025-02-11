@@ -7,7 +7,7 @@
 
 <div id="comment_area">
     <a id="answers" data-kt-scroll-offset="{default: 100, lg: 125}"></a>
-    <h2 class="fw-bolder text-gray-900 my-8 mx-5">댓글(${(post.comment.cnt)!0})</h2>
+    <h2 class="fw-bolder text-gray-900 my-8 mx-5"><@spring.message 'comment'/>(${(post.comment.cnt)!0})</h2>
     <#list post.comment.list![] as comment>
         <div class="border rounded p-2 p-lg-6 mx-8 mb-3">
             <div class="mb-0">
@@ -32,14 +32,14 @@
                             <div id="showMdfBtnDiv${comment.postNo!}">
                                 <a href="javascript:void(0);" class="btn btn-sm btn-flex btn-light-primary btn-icon mx-1"
                                    onclick="dF.Comment.page.mdfForm('${comment.postNo!}');"
-                                   data-bs-toggle="tooltip" title="<@spring.message "comment"/> 수정 폼을 호출합니다." data-bs-dismiss="click">
+                                   data-bs-toggle="tooltip" title="<@spring.message 'comment'/> 수정 폼을 호출합니다." data-bs-dismiss="click">
                                     <span class="svg-icon svg-icon-7">
                                         <i class="fas fa-solid fa-pen"></i>
                                     </span>
                                 </a>
                                 <a href="javascript:void(0);" class="btn btn-sm btn-flex btn-light-danger btn-icon"
                                    onclick="dF.Comment.page.delAjax(${comment.postNo!});"
-                                   data-bs-toggle="tooltip" title="<@spring.message "comment"/>을 삭제합니다." data-bs-dismiss="click">
+                                   data-bs-toggle="tooltip" title="<@spring.message 'comment'/>을 삭제합니다." data-bs-dismiss="click">
                                 <span class="svg-icon svg-icon-7">
                                     <i class="fas fa-trash-alt"></i>
                                 </span>
@@ -61,13 +61,13 @@
                          style="display:none;">
                         <button type="button" class="btn btn-sm btn-primary me-2 mb-2"
                                 onclick="dF.Comment.page.mdfAjax('${comment.postNo!}');"
-                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "comment"/>을 수정합니다.">
+                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'comment'/>을 수정합니다.">
                             <i class="bi bi-pencil-square"></i>
                             저장
                         </button>
                         <button type="button" class="btn btn-sm btn-secondary me-2"
                                 onclick="dF.Comment.page.closeMdfForm('${comment.postNo!}');"
-                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "comment"/> 수정 영역을 닫습니다.">
+                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'comment'/> 수정 영역을 닫습니다.">
                             닫기
                         </button>
                     </div>

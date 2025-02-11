@@ -47,7 +47,7 @@
              */
             regAjax: function() {
                 Swal.fire({
-                    text: <@spring.message "view.cnfm.reg"/>,
+                    text: <@spring.message 'view.cnfm.reg'/>,
                     showCancelButton: true,
                 }).then(function(result) {
                     if (!result.value) return;
@@ -109,7 +109,7 @@
                 if (isNaN(postNo)) return;
 
                 Swal.fire({
-                    text: <@spring.message "view.cnfm.del"/>,
+                    text: <@spring.message 'view.cnfm.del'/>,
                     showCancelButton: true,
                 }).then(function(result) {
                     if (!result.value) return;

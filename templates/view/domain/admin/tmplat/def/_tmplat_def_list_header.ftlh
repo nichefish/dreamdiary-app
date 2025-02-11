@@ -14,7 +14,7 @@
     <div>
         <#--헤더:: 인풋: searchType-->
         <select name="searchType" id="searchType" class="form-select form-select-solid fw-bolder form-select-sm py-3">
-            <option value="title">제목</option>
+            <option value="title"><@spring.message 'title'/></option>
             <option value="nickNm">작성자</option>
         </select>
     </div>
