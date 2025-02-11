@@ -4,7 +4,7 @@
 spring:
     #( local // dev // stg // prod // test )
     profiles:
-        active: local
+        active: dev
 
     #release. should be changed manually for each deployment
     flyway:
