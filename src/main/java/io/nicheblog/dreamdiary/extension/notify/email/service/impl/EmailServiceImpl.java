@@ -2,14 +2,14 @@ package io.nicheblog.dreamdiary.extension.notify.email.service.impl;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.extension.log.sys.event.LogSysEvent;
+import io.nicheblog.dreamdiary.extension.log.sys.handler.LogSysEventListener;
+import io.nicheblog.dreamdiary.extension.log.sys.model.LogSysParam;
 import io.nicheblog.dreamdiary.extension.notify.email.model.EmailAddress;
 import io.nicheblog.dreamdiary.extension.notify.email.model.EmailSendParam;
 import io.nicheblog.dreamdiary.extension.notify.email.service.EmailService;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.global._common.log.sys.event.LogSysEvent;
-import io.nicheblog.dreamdiary.global._common.log.sys.handler.LogSysEventListener;
-import io.nicheblog.dreamdiary.global._common.log.sys.model.LogSysParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;

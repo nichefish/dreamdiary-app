@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.domain.user.reqst.model;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserAcsIpDto;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserAuthRoleDto;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
-import io.nicheblog.dreamdiary.global.validator.CmmRegex;
+import io.nicheblog.dreamdiary.global.validator.Regex;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +33,7 @@ public class UserReqstDto
     /** 비밀번호 */
     @NotEmpty
     @Size(min = 9, max = 15, message = "비밀번호는 9자 이상 15자 이하로 입력해야 합니다.")
-    @Pattern(regexp = CmmRegex.PW_REGEX, message = "비밀번호가 형식에 맞지 않습니다.")
+    @Pattern(regexp = Regex.PW_REGEX, message = "비밀번호가 형식에 맞지 않습니다.")
     private String password;
 
     /** 사용자 권한 정보(문자열) (multiselect parameter) */

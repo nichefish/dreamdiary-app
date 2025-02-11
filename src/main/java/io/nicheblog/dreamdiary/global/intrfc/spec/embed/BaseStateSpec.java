@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.global.intrfc.spec.embed;
 
-import io.nicheblog.dreamdiary.extension.state.entity.embed.StateEmbedModule;
+import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 
 import javax.persistence.criteria.CriteriaBuilder;

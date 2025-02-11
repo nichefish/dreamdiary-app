@@ -114,7 +114,7 @@
     </div>
 
     <#--페이지:: 댓글 영역-->
-    <#include "/view/extension/comment/_comment_page_area.ftlh">
+    <#include "/view/extension/clsf/comment/_comment_page_area.ftlh">
 </div>
 
 <form name="procForm" id="procForm" method="get">

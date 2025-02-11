@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.domain.user.reqst.model.UserReqstDto;
 import io.nicheblog.dreamdiary.domain.user.reqst.model.UserReqstDtoTestFactory;
 import io.nicheblog.dreamdiary.domain.user.reqst.service.UserReqstService;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global._common.cd.service.DtlCdService;
+import io.nicheblog.dreamdiary.extension.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.global.intrfc.controller.BaseControllerTestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

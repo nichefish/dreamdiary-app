@@ -4,23 +4,23 @@ import io.nicheblog.dreamdiary.adapter.jandi.JandiTopic;
 import io.nicheblog.dreamdiary.adapter.jandi.service.JandiApiService;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.board.post.model.BoardPostDto;
-import io.nicheblog.dreamdiary.domain.notice.model.NoticeDto;
+import io.nicheblog.dreamdiary.domain.board.notice.model.NoticeDto;
 import io.nicheblog.dreamdiary.domain.schdul.model.SchdulDto;
 import io.nicheblog.dreamdiary.domain.schdul.service.SchdulService;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
 import io.nicheblog.dreamdiary.domain.vcatn.papr.model.VcatnPaprDto;
+import io.nicheblog.dreamdiary.extension.cd.service.DtlCdService;
+import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.extension.log.sys.event.LogSysEvent;
+import io.nicheblog.dreamdiary.extension.log.sys.handler.LogSysEventListener;
+import io.nicheblog.dreamdiary.extension.log.sys.model.LogSysParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global._common.cd.service.DtlCdService;
-import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.global._common.log.sys.event.LogSysEvent;
-import io.nicheblog.dreamdiary.global._common.log.sys.handler.LogSysEventListener;
-import io.nicheblog.dreamdiary.global._common.log.sys.model.LogSysParam;
+import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 /**
@@ -41,7 +41,7 @@ public class NotifyEventHandler {
     private final UserService userService;
     private final DtlCdService dtlCdService;
     private final JandiApiService jandiApiService;
-    private final ApplicationEventPublisher publisher;
+    private final ApplicationEventPublisherWrapper publisher;
 
     /**
      * 공지사항 등록 잔디 알림 메시지 발송
@@ -68,7 +68,7 @@ public class NotifyEventHandler {
         } catch (final Exception e) {
             jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);
             logParam.setResult(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.JANDI);
-            publisher.publishEvent(new LogSysEvent(this, logParam));
+            publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
         }
         return jandiRsltMsg;
     }
@@ -98,7 +98,7 @@ public class NotifyEventHandler {
         } catch (final Exception e) {
             logParam.setExceptionInfo(e);
             jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);
-            publisher.publishEvent(new LogSysEvent(this, logParam));
+            publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
         }
         return jandiRsltMsg;
     }
@@ -133,7 +133,7 @@ public class NotifyEventHandler {
         } catch (final Exception e) {
             jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);
             logParam.setResult(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.JANDI);
-            publisher.publishEvent(new LogSysEvent(this, logParam));
+            publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
         }
         return jandiRsltMsg;
     }
@@ -165,7 +165,7 @@ public class NotifyEventHandler {
         } catch (final Exception e) {
             jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);
             logParam.setResult(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.JANDI);
-            publisher.publishEvent(new LogSysEvent(this, logParam));
+            publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
         }
         return jandiRsltMsg;
     }
@@ -201,7 +201,7 @@ public class NotifyEventHandler {
     //     } catch (final Exception e) {
     //         jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);
     //         logParam.setResult(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.JANDI);
-    //         publisher.publishEvent(new LogSysEvent(this, logParam));
+    //         publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
     //     }
     //     log.info("{}", jandiRsltMsg);
     //     return isSuccess;

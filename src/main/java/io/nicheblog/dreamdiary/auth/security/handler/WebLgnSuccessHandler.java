@@ -4,16 +4,16 @@ import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
 import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLgnManager;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.extension.log.actvty.event.LogActvtyEvent;
+import io.nicheblog.dreamdiary.extension.log.actvty.handler.LogActvtyEventListener;
+import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogActvtyEvent;
-import io.nicheblog.dreamdiary.global._common.log.actvty.handler.LogActvtyEventListener;
-import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.HttpUtils;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -42,8 +42,8 @@ public class WebLgnSuccessHandler
         implements AuthenticationSuccessHandler {
 
     private final AuthService authService;
-    private final ApplicationEventPublisher publisher;
     private final HttpSession session;
+    private final ApplicationEventPublisherWrapper publisher;
 
     /**
      * 웹 로그인 인증 성공 시 처리하는 메소드.
@@ -82,7 +82,7 @@ public class WebLgnSuccessHandler
 
         // 로그인 로그 남기기
         final LogActvtyParam logParam = new LogActvtyParam(true, MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS), ActvtyCtgr.LGN);
-        publisher.publishEvent(new LogActvtyEvent(this, logParam));
+        publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
 
         // 로그인 성공시 브라우저 캐시 초기화 처리
         HttpUtils.setInvalidateBrowserCacheHeader(response);

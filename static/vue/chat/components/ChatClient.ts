@@ -9,15 +9,15 @@ export default {
             stompClient: null,  // STOMP 클라이언트
             chatMessages: [],       // 채팅 메시지 배열
             message: '',        // 사용자 입력 메시지
-            serverInfo: {
+            serverInfo: {       // 서버에서 가져올 프로필 정보
                 domain: '',
                 port: ''
-            },  // 서버에서 가져올 프로필 정보
+            },
         };
     },
     methods: {
         // 서버 정보 조회
-        async fetchServerInfo() {
+        async fetchServerInfo(): Promise<void> {
             try {
                 const response: Response = await fetch('/cmm/getServerInfo.do');
                 const data: Record<string, any> = await response.json();
@@ -37,13 +37,13 @@ export default {
             const brokerUrl: string = `http://${this.serverInfo.domain}:${this.serverInfo.port}/chat`;
             // @ts-ignore
             this.stompClient = Stomp.client(brokerUrl);
-            const successCallback = () => {
+            const successCallback = (): void => {
                 // 메세지 구독
                 this.subscribeToMessages();
                 // 세션 만료 구독
                 this.subscribeToSessionInvalid();
             };
-            const errorCallback = (error) => {
+            const errorCallback = (error: any): void => {
                 console.error('WebSocket Error:', error);
             };
             // 연결 생성
@@ -55,7 +55,7 @@ export default {
             if (!this.stompClient || !this.stompClient.connected) return;
 
             // "/topic/chat"을 구독하여 메시지를 수신
-            this.stompClient.subscribe('/topic/chat', (message) => {
+            this.stompClient.subscribe('/topic/chat', (message: any): void => {
                 console.log('Received Message:', message.body);
                 if (!message.body) return;
                 try {
@@ -72,7 +72,7 @@ export default {
             if (!this.stompClient || !this.stompClient.connected) return;
 
             // 세션 만료 구독
-            this.stompClient.subscribe('/topic/session-invalid', function(message) {
+            this.stompClient.subscribe('/topic/session-invalid', function(message: any): void {
                 console.log(message.body); // "Your session has expired, please log in again."
                 // 쿠키에서 JWT 토큰 삭제
                 document.cookie = "jwtToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT";

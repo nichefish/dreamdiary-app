@@ -5,10 +5,10 @@ import io.nicheblog.dreamdiary.auth.security.service.VerificationCodeService;
 import io.nicheblog.dreamdiary.domain.user.reqst.event.UserReqstEvent;
 import io.nicheblog.dreamdiary.domain.user.reqst.model.UserReqstDto;
 import io.nicheblog.dreamdiary.extension.notify.email.event.UserReqstVerificationEmailSendEvent;
+import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -32,7 +32,7 @@ public class UserReqstWorker
         implements Runnable {
 
     private final VerificationCodeService verificationCodeService;
-    private final ApplicationEventPublisher publisher;
+    private final ApplicationEventPublisherWrapper publisher;
 
     /** 태그 queue */
     private static final BlockingQueue<UserReqstEvent> uesrReqstQueue = new LinkedBlockingQueue<>();
@@ -70,7 +70,7 @@ public class UserReqstWorker
                 verificationCodeService.setVerificationCode(email, jwt);
 
                 // 이메일 발송
-                publisher.publishEvent(new UserReqstVerificationEmailSendEvent(this, userReqst, jwt));
+                publisher.publishAsyncEvent(new UserReqstVerificationEmailSendEvent(this, userReqst, jwt));
             }
         } catch (final InterruptedException e) {
             log.warn("user request handling failed", e);

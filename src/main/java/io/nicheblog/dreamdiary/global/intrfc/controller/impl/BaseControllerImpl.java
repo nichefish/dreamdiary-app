@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.global.intrfc.controller.impl;
 
 import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.controller.BaseController;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import javax.annotation.Resource;
@@ -25,7 +25,7 @@ public abstract class BaseControllerImpl
     @Resource
     protected HttpServletResponse response;
     @Resource
-    protected ApplicationEventPublisher publisher;
+    protected ApplicationEventPublisherWrapper publisher;
 
     @ModelAttribute("actvtyCtgrCd")
     public String addActvtyCtgrCd() {

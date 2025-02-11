@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.chat.model.ChatMsgDto;
 import io.nicheblog.dreamdiary.domain.chat.model.ChatMsgSearchParam;
 import io.nicheblog.dreamdiary.domain.chat.service.ChatMsgService;
-import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;

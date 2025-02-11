@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.domain.admin.lgnPolicy.model;
 
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditDto;
-import io.nicheblog.dreamdiary.global.validator.CmmRegex;
+import io.nicheblog.dreamdiary.global.validator.Regex;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -47,6 +47,6 @@ public class LgnPolicyDto
 
     /** 비밀번호 초기화 값 */
     @Size(min = 9, max = 20)
-    @Pattern(regexp = CmmRegex.PW_REGEX, message = "비밀번호가 형식에 맞지 않습니다.")
+    @Pattern(regexp = Regex.PW_REGEX, message = "비밀번호가 형식에 맞지 않습니다.")
     private String pwForReset;
 }

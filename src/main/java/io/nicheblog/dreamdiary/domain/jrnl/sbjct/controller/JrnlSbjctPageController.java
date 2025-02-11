@@ -5,16 +5,16 @@ import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.domain.jrnl.sbjct.model.JrnlSbjctDto;
 import io.nicheblog.dreamdiary.domain.jrnl.sbjct.model.JrnlSbjctSearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.sbjct.service.JrnlSbjctService;
-import io.nicheblog.dreamdiary.extension.ContentType;
-import io.nicheblog.dreamdiary.extension.tag.service.TagService;
-import io.nicheblog.dreamdiary.extension.viewer.event.ViewerAddEvent;
-import io.nicheblog.dreamdiary.extension.viewer.handler.ViewerEventListener;
+import io.nicheblog.dreamdiary.extension.cd.service.DtlCdService;
+import io.nicheblog.dreamdiary.extension.clsf.ContentType;
+import io.nicheblog.dreamdiary.extension.clsf.tag.service.TagService;
+import io.nicheblog.dreamdiary.extension.clsf.viewer.event.ViewerAddEvent;
+import io.nicheblog.dreamdiary.extension.clsf.viewer.handler.ViewerEventListener;
+import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyPageControllerAspect;
+import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global._common.cd.service.DtlCdService;
-import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
-import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyPageControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.PaginationInfo;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -213,7 +213,7 @@ public class JrnlSbjctPageController
         jrnlSbjctService.hitCntUp(key);
         // 열람자 추가 :: 메인 로직과 분리
         // TODO: AOP로 분리
-        publisher.publishEvent(new ViewerAddEvent(this, retrievedDto.getClsfKey()));
+        publisher.publishAsyncEvent(new ViewerAddEvent(this, retrievedDto.getClsfKey()));
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);

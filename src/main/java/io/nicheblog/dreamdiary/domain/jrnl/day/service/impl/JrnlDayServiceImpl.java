@@ -12,9 +12,10 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayService;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.strategy.JrnlDayCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.day.spec.JrnlDaySpec;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
-import io.nicheblog.dreamdiary.extension.ContentType;
-import io.nicheblog.dreamdiary.global._common.cache.event.EhCacheEvictEvent;
-import io.nicheblog.dreamdiary.global._common.cache.handler.EhCacheEvictEventListner;
+import io.nicheblog.dreamdiary.extension.cache.event.EhCacheEvictEvent;
+import io.nicheblog.dreamdiary.extension.cache.handler.EhCacheEvictEventListner;
+import io.nicheblog.dreamdiary.extension.clsf.ContentType;
+import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
@@ -24,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,7 +54,7 @@ public class JrnlDayServiceImpl
     private final JrnlDayMapstruct mapstruct = JrnlDayMapstruct.INSTANCE;
 
     private final JrnlDayMapper jrnlDayMapper;
-    private final ApplicationEventPublisher publisher;
+    private final ApplicationEventPublisherWrapper publisher;
 
     private final String JRNL_DAY = ContentType.JRNL_DAY.key;
 
@@ -226,6 +226,6 @@ public class JrnlDayServiceImpl
     @Override
     public void evictCache(final JrnlDayEntity jrnlDayEntity) throws Exception {
         // 관련 캐시 삭제
-        publisher.publishEvent(new EhCacheEvictEvent(this, jrnlDayEntity.getPostNo(), JRNL_DAY));
+        publisher.publishAsyncEvent(new EhCacheEvictEvent(this, jrnlDayEntity.getPostNo(), JRNL_DAY));
     }
 }

@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.sumry.entity.JrnlSumryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.entity.JrnlSumryEntityTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
-import io.nicheblog.dreamdiary.global.config.TestAuditConfig;
+import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;

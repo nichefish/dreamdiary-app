@@ -1,14 +1,13 @@
 package io.nicheblog.dreamdiary.global.handler;
 
-import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogActvtyEvent;
-import io.nicheblog.dreamdiary.global._common.log.actvty.handler.LogActvtyEventListener;
-import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.extension.log.actvty.event.LogActvtyEvent;
+import io.nicheblog.dreamdiary.extension.log.actvty.handler.LogActvtyEventListener;
+import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.HttpUtils;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -35,7 +34,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @Log4j2
 public class BaseExceptionHandler {
 
-    private final ApplicationEventPublisher publisher;
+    private final ApplicationEventPublisherWrapper publisher;
 
     /**
      * 예외 처리 공통 로직
@@ -67,7 +66,7 @@ public class BaseExceptionHandler {
 
         // 로그 처리
         final LogActvtyParam logParam = new LogActvtyParam(false, errorMsg);
-        publisher.publishEvent(new LogActvtyEvent(this, logParam));
+        publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
 
         // Ajax 요청인 경우
         if (HttpUtils.isAjaxRequest(request)) {

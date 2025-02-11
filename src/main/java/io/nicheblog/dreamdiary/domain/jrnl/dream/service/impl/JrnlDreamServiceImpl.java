@@ -11,9 +11,10 @@ import io.nicheblog.dreamdiary.domain.jrnl.dream.repository.mybatis.JrnlDreamMap
 import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamService;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.service.strategy.JrnlDreamCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.spec.JrnlDreamSpec;
-import io.nicheblog.dreamdiary.extension.ContentType;
-import io.nicheblog.dreamdiary.global._common.cache.event.EhCacheEvictEvent;
-import io.nicheblog.dreamdiary.global._common.cache.handler.EhCacheEvictEventListner;
+import io.nicheblog.dreamdiary.extension.cache.event.EhCacheEvictEvent;
+import io.nicheblog.dreamdiary.extension.cache.handler.EhCacheEvictEventListner;
+import io.nicheblog.dreamdiary.extension.clsf.ContentType;
+import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
@@ -22,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +52,7 @@ public class JrnlDreamServiceImpl
     private final JrnlDreamMapstruct mapstruct = JrnlDreamMapstruct.INSTANCE;
 
     private final JrnlDreamMapper jrnlDreamMapper;
-    private final ApplicationEventPublisher publisher;
+    private final ApplicationEventPublisherWrapper publisher;
 
     private final ApplicationContext context;
     private JrnlDreamServiceImpl getSelf() {
@@ -173,6 +173,6 @@ public class JrnlDreamServiceImpl
     @Override
     public void evictCache(final JrnlDreamEntity jrnlDreamEntity) throws Exception {
         // 관련 캐시 삭제
-        publisher.publishEvent(new EhCacheEvictEvent(this, jrnlDreamEntity.getPostNo(), JRNL_DREAM));
+        publisher.publishAsyncEvent(new EhCacheEvictEvent(this, jrnlDreamEntity.getPostNo(), JRNL_DREAM));
     }
 }

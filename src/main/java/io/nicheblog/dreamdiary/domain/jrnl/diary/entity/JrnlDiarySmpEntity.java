@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.domain.jrnl.diary.entity;
 
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
-import io.nicheblog.dreamdiary.extension.ContentType;
+import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;

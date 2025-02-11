@@ -2,18 +2,18 @@ package io.nicheblog.dreamdiary.domain.jrnl.sbjct.controller;
 
 import io.nicheblog.dreamdiary.domain.jrnl.sbjct.model.JrnlSbjctDto;
 import io.nicheblog.dreamdiary.domain.jrnl.sbjct.service.JrnlSbjctService;
-import io.nicheblog.dreamdiary.extension.ContentType;
-import io.nicheblog.dreamdiary.extension.managt.event.ManagtrAddEvent;
-import io.nicheblog.dreamdiary.extension.managt.handler.ManagtrEventListener;
-import io.nicheblog.dreamdiary.extension.tag.event.TagProcEvent;
-import io.nicheblog.dreamdiary.extension.tag.handler.TagEventListener;
-import io.nicheblog.dreamdiary.extension.viewer.event.ViewerAddEvent;
-import io.nicheblog.dreamdiary.extension.viewer.handler.ViewerEventListener;
+import io.nicheblog.dreamdiary.extension.clsf.ContentType;
+import io.nicheblog.dreamdiary.extension.clsf.managt.event.ManagtrAddEvent;
+import io.nicheblog.dreamdiary.extension.clsf.managt.handler.ManagtrEventListener;
+import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
+import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagEventListener;
+import io.nicheblog.dreamdiary.extension.clsf.viewer.event.ViewerAddEvent;
+import io.nicheblog.dreamdiary.extension.clsf.viewer.handler.ViewerEventListener;
+import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
+import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
-import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyRestControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * JrnlSbjctRestController
@@ -83,11 +82,9 @@ public class JrnlSbjctRestController
         // TODO: AOP로 분리하기
         if (isSuccess) {
             // 조치자 추가 :: 메인 로직과 분리
-            publisher.publishEvent(new ManagtrAddEvent(this, result.getClsfKey()));
+            publisher.publishAsyncEvent(new ManagtrAddEvent(this, result.getClsfKey()));
             // 태그 처리 :: 메인 로직과 분리
-            CompletableFuture.runAsync(() -> {
-                publisher.publishEvent(new TagProcEvent(this, result.getClsfKey(), jrnlSbjct.tag));
-            }).get(); // 이벤트가 끝날 때까지 대기
+            publisher.publishAsyncEvent(new TagProcEvent(this, result.getClsfKey(), jrnlSbjct.tag));
             // 잔디 메세지 발송 :: 메인 로직과 분리
             // if ("Y".equals(jandiYn)) {
             //     String jandiRsltMsg = notifyService.notifyJrnlSbjctReg(trgetTopic, result, logParam);
@@ -134,7 +131,7 @@ public class JrnlSbjctRestController
         jrnlSbjctService.hitCntUp(key);
         // 열람자 추가 :: 메인 로직과 분리
         // TODO: AOP로 분리
-        publisher.publishEvent(new ViewerAddEvent(this, retrievedDto.getClsfKey()));
+        publisher.publishAsyncEvent(new ViewerAddEvent(this, retrievedDto.getClsfKey()));
 
         // 응답 결과 세팅
         ajaxResponse.setRsltObj(retrievedDto);
@@ -171,9 +168,7 @@ public class JrnlSbjctRestController
         // TODO: AOP로 분리
         if (isSuccess) {
             // 태그 처리 :: 메인 로직과 분리
-            CompletableFuture.runAsync(() -> {
-                publisher.publishEvent(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.JRNL_SBJCT)));
-            }).get(); // 이벤트가 끝날 때까지 대기
+            publisher.publishAsyncEvent(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.JRNL_SBJCT)));
         }
 
         // 응답 결과 세팅

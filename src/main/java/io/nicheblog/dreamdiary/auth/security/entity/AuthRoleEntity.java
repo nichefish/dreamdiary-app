@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.auth.security.entity;
 
-import io.nicheblog.dreamdiary.extension.state.entity.embed.StateEmbed;
-import io.nicheblog.dreamdiary.extension.state.entity.embed.StateEmbedModule;
+import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbed;
+import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

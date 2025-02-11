@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.auth.security.model;
 
-import io.nicheblog.dreamdiary.extension.state.model.cmpstn.StateCmpstn;
+import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.Getter;

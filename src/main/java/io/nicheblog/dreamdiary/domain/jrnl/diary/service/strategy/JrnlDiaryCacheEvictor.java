@@ -5,8 +5,8 @@ import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryService;
-import io.nicheblog.dreamdiary.global._common.cache.service.CacheEvictor;
-import io.nicheblog.dreamdiary.global._common.cache.util.EhCacheUtils;
+import io.nicheblog.dreamdiary.extension.cache.service.CacheEvictor;
+import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

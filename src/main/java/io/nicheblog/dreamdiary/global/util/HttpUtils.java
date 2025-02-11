@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.WebRequest;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -16,16 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 @RequiredArgsConstructor
 public class HttpUtils {
-
-    private final HttpServletResponse autowiredResponse;
-
-    private static HttpServletResponse response;
-
-    /** static 맥락에서 사용할 수 있도록 bean 주입 */
-    @PostConstruct
-    private void init() {
-        response = autowiredResponse;
-    }
 
     /**
      * 브라우저의 캐시를 초기화합니다.
@@ -40,6 +29,10 @@ public class HttpUtils {
 
     /**
      * AJAX 요청 여부 판단
+     * (헤더의 X-Requested-With 값으로 판단)
+     *
+     * @param request {@link HttpServletRequest} 클라이언트의 요청 객체
+     * @return AJAX 요청 여부
      */
     public static boolean isAjaxRequest(final HttpServletRequest request) {
         return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
@@ -47,6 +40,10 @@ public class HttpUtils {
 
     /**
      * AJAX 요청 여부 판단
+     * (헤더의 X-Requested-With 값으로 판단)
+     *
+     * @param request {@link WebRequest} 스프링의 웹 요청 객체
+     * @return AJAX 요청 여부
      */
     public static boolean isAjaxRequest(final WebRequest request) {
         return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));

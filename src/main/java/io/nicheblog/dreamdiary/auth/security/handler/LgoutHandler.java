@@ -2,11 +2,11 @@ package io.nicheblog.dreamdiary.auth.security.handler;
 
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLgnManager;
-import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogActvtyEvent;
-import io.nicheblog.dreamdiary.global._common.log.actvty.handler.LogActvtyEventListener;
-import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.extension.log.actvty.event.LogActvtyEvent;
+import io.nicheblog.dreamdiary.extension.log.actvty.handler.LogActvtyEventListener;
+import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 public class LgoutHandler
         implements LogoutHandler {
 
-    private final ApplicationEventPublisher publisher;
+    private final ApplicationEventPublisherWrapper publisher;
 
     /**
      * 사용자 로그아웃 처리
@@ -46,7 +46,7 @@ public class LgoutHandler
     ) {
 
         // 로그 적재
-        publisher.publishEvent(new LogActvtyEvent(this, new LogActvtyParam(true)));
+        publisher.publishAsyncEvent(new LogActvtyEvent(this, new LogActvtyParam(true)));
         // 중복 로그인 관리용 arrayList에서 로그인 아이디 제거
         if (authentication == null || authentication.getPrincipal() == null) return;
 

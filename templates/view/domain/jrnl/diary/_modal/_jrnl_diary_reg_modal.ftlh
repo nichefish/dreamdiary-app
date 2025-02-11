@@ -7,7 +7,7 @@
 
 <@modal.layout id="jrnl_diary_reg" size="xl">
     <#--begin::Modal Header-->
-    <@component.modal_header "저널 일기 저장"  />
+    <@component.modal_header "저널 일기 저장" />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <#--begin::Form-->

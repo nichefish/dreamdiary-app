@@ -32,8 +32,12 @@ import java.util.TimeZone;
 @Log4j2
 public class DreamdiaryApplication {
 
+    /**
+     * 빈 초기화 메서드입니다.
+     */
     @PostConstruct
     public void init() {
+        /* TimeZone 및 Locale 설정 (대한민국, 서울) */
         TimeZone.setDefault(TimeZone.getTimeZone(Constant.LOC_SEOUL));
         LocaleContextHolder.setLocale(Locale.KOREA);
     }

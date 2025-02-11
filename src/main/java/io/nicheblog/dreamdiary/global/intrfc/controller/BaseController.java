@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.global.intrfc.controller;
 
-import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 
 /**
  * BaseController

@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * DatabaseVendor
+ * <pre>
+ * 	데이터베이스 enum
+ * </pre>
  *
  * @author nichefish
  */

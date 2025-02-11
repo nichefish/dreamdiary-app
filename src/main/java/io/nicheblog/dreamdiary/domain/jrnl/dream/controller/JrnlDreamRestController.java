@@ -3,14 +3,14 @@ package io.nicheblog.dreamdiary.domain.jrnl.dream.controller;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamService;
-import io.nicheblog.dreamdiary.extension.ContentType;
-import io.nicheblog.dreamdiary.extension.tag.event.TagProcEvent;
-import io.nicheblog.dreamdiary.extension.tag.handler.TagEventListener;
+import io.nicheblog.dreamdiary.extension.clsf.ContentType;
+import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
+import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagEventListener;
+import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
+import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
-import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyRestControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
@@ -25,7 +25,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * JrnlDreamRestController
@@ -117,9 +116,7 @@ public class JrnlDreamRestController
         // TODO: AOP로 분리
         if (isSuccess) {
             // 태그 처리 :: 메인 로직과 분리
-            CompletableFuture.runAsync(() -> {
-                publisher.publishEvent(new TagProcEvent(this, result.getClsfKey(), jrnlDream.tag));
-            }).get(); // 이벤트가 끝날 때까지 대기
+            publisher.publishAsyncEvent(new TagProcEvent(this, result.getClsfKey(), jrnlDream.tag));
         }
 
         // 응답 결과 세팅
@@ -190,9 +187,7 @@ public class JrnlDreamRestController
         // TODO: AOP로 분리
         if (isSuccess) {
             // 태그 처리 :: 메인 로직과 분리
-            CompletableFuture.runAsync(() -> {
-                publisher.publishEvent(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.JRNL_DREAM)));
-            }).get(); // 이벤트가 끝날 때까지 대기
+            publisher.publishAsyncEvent(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.JRNL_DREAM)));
         }
 
         // 응답 결과 세팅

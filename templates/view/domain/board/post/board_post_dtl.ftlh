@@ -38,7 +38,7 @@
             <#--페이지:: 노션 참조 표시 영역-->
 
             <#--페이지:: 태그 표시 영역-->
-            <#include "/view/extension/tag/_tag_page_dtl_area.ftlh">
+            <#include "/view/extension/clsf/tag/_tag_page_dtl_area.ftlh">
 
             <#--페이지:: 열람자 표시 영역-->
             <@component.post_viewer_area post />
@@ -59,7 +59,7 @@
     </div>
 
     <#--페이지:: 댓글 영역-->
-    <#include "/view/extension/comment/_comment_page_area.ftlh">
+    <#include "/view/extension/clsf/comment/_comment_page_area.ftlh">
 </div>
 
 <form name="procForm" id="procForm" method="get">

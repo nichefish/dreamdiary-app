@@ -55,35 +55,35 @@ public class WebMvcContextConfig
 
         // 파일 업로드 경로
         String upfileContextPath = "/upfile/**";
-        String upfileResourcePath = "file/upfile/";
+        String upfileResourcePath = "file:file/upfile/";
         registry.addResourceHandler(upfileContextPath)
                 .addResourceLocations(upfileResourcePath)
                 .resourceChain(true)
                 .addResolver(new UTF8DecodeResourceResolver());
         // 정적 컨텐츠 경로
         String contentContextPath = "/content/**";
-        String contentResourcePath = "file/content/";
+        String contentResourcePath = "file:file/content/";
         registry.addResourceHandler(contentContextPath)
                 .addResourceLocations(contentResourcePath)
                 .resourceChain(true)
                 .addResolver(new UTF8DecodeResourceResolver());
         // workspace 경로
         String workspaceContextPath = "/flsys/**";
-        String workspaceResourcePath = "file/flsys/";
+        String workspaceResourcePath = "file:file/flsys/";
         registry.addResourceHandler(workspaceContextPath)
                 .addResourceLocations(workspaceResourcePath)
                 .resourceChain(true)
                 .addResolver(new UTF8DecodeResourceResolver());
         // react 경로 = 기본경로에 추가로 동작하도록
         String reactContextPath = "/react/**";
-        String reactResourcePath = "static/react/";
+        String reactResourcePath = "file:static/react/";
         registry.addResourceHandler(reactContextPath)
                 .addResourceLocations(reactResourcePath)
                 .resourceChain(true)
                 .addResolver(new UTF8DecodeResourceResolver());
-        // react 경로 = 기본경로에 추가로 동작하도록
+        // vue 경로 = 기본경로에 추가로 동작하도록
         String vueContextPath = "/vue/**";
-        String vueResourcePath = "static/vue/";
+        String vueResourcePath = "file:static/vue/";
         registry.addResourceHandler(vueContextPath)
                 .addResourceLocations(vueResourcePath)
                 .resourceChain(true)

@@ -1,15 +1,15 @@
 package io.nicheblog.dreamdiary.domain.jrnl.sumry.scheduler;
 
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.service.JrnlSumryService;
+import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.extension.log.sys.event.LogSysEvent;
+import io.nicheblog.dreamdiary.extension.log.sys.handler.LogSysEventListener;
+import io.nicheblog.dreamdiary.extension.log.sys.model.LogSysParam;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.global._common.log.sys.event.LogSysEvent;
-import io.nicheblog.dreamdiary.global._common.log.sys.handler.LogSysEventListener;
-import io.nicheblog.dreamdiary.global._common.log.sys.model.LogSysParam;
+import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 public class JrnlSumryScheduler {
 
     private final JrnlSumryService jrnlSumryService;
-    private final ApplicationEventPublisher publisher;
+    private final ApplicationEventPublisherWrapper publisher;
 
     /**
      * 하루에 한 번 전체 집계 갱신
@@ -54,7 +54,7 @@ public class JrnlSumryScheduler {
         } finally {
             // 로그 관련 처리
             logParam.setResult(false, rsltMsg, ActvtyCtgr.JRNL);
-            publisher.publishEvent(new LogSysEvent(this, logParam));
+            publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
         }
     }
 

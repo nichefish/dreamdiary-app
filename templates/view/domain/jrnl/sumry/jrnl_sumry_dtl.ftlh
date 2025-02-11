@@ -69,7 +69,7 @@
         <#--begin::meta-->
         <div class="mb-0">
             <#--페이지:: 태그 표시 영역-->
-            <#include "/view/extension/tag/_tag_page_dtl_area.ftlh">
+            <#include "/view/extension/clsf/tag/_tag_page_dtl_area.ftlh">
         </div>
     </div>
     <#--begin::Card footer-->
@@ -103,7 +103,7 @@
     <#--begin::Card body-->
     <div class="card-body pt-0">
         <#--페이지:: 단락 영역-->
-        <#include "/view/extension/sectn/_sectn_page_reg_area.ftlh">
+        <#include "/view/extension/clsf/sectn/_sectn_page_reg_area.ftlh">
     </div>
 </div>
 
@@ -168,13 +168,14 @@
 <script type="text/javascript" src="/js/view/domain/jrnl/sumry/jrnl_sumry_module.js?${releaseDate!}"></script>
 
 <#--include::sectn-->
-<#include "/view/extension/sectn/_modal/_sectn_reg_modal.ftlh">
-<#include "/view/extension/sectn/_sectn_list_template.hbs">
-<script type="text/javascript" src="/js/view/extension/sectn/sectn_module.js?${releaseDate!}"></script>
+<#include "/view/extension/clsf/sectn/_modal/_sectn_reg_modal.ftlh">
+<#include "/view/extension/clsf/sectn/_sectn_list_template.hbs">
+<script type="text/javascript" src="/js/view/extension/clsf/sectn/sectn_module.js?${releaseDate!}"></script>
 
 <#--include::comment-->
-<#include "/view/extension/comment/_modal/_comment_reg_modal.ftlh">
-<script type="text/javascript" src="/js/view/extension/comment/comment_modal_module.js?${releaseDate!}"></script>
+<#include "/view/extension/clsf/comment/_modal/_comment_reg_modal.ftlh">
+<#include "/view/extension/clsf/comment/_comment_list_partial.hbs">
+<script type="text/javascript" src="/js/view/extension/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
 
 <!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/jrnl/sumry/jrnl_sumry_dtl.js?${releaseDate!}"></script>

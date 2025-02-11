@@ -34,17 +34,17 @@ document.addEventListener("DOMContentLoaded", function(): void {
                 this.isChatOpen = false;  // 채팅 창 닫기
             },
             // 메시지 로딩 후 완료 처리
-            handleMessagesLoaded(messages): void {
+            handleMessagesLoaded(messages: any): void {
                 this.chatMessages = messages;
             },
             // 새 메시지 처리 (ChatClient에서 새 메시지를 받음)
-            handleNewMessage(message): void {
+            handleNewMessage(message: any): void {
                 console.log("message:", message);
                 this.chatMessages.push(message);
                 this.$refs.chatWindow.scrollToBottom();
             },
             // ChatWindow :: 메시지 전송
-            handleSendMessage(message): void {
+            handleSendMessage(message: any): void {
                 this.$refs.chatClient.sendMessage(message);
             },
         },

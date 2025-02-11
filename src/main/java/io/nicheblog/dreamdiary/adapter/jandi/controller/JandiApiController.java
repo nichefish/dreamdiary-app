@@ -3,10 +3,10 @@ package io.nicheblog.dreamdiary.adapter.jandi.controller;
 import io.nicheblog.dreamdiary.adapter.jandi.model.JandiApiRespnsDto;
 import io.nicheblog.dreamdiary.adapter.jandi.model.JandiParam;
 import io.nicheblog.dreamdiary.adapter.jandi.service.JandiApiService;
+import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
+import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
-import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyRestControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -103,7 +103,7 @@ public class JandiApiController
     //         apiResponse.setApiResult(isSuccess, rsltMsg);
     //         // 로그 관련 세팅
     //         logParam.setResult(isSuccess, rsltMsg);
-    //         publisher.publishEvent(new LogActvtyEvent(this, logParam));
+    //         publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
     //     }
     //
     //     return ResponseEntity

@@ -2,9 +2,9 @@ package io.nicheblog.dreamdiary.domain.jrnl.day.model;
 
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
-import io.nicheblog.dreamdiary.extension.ContentType;
-import io.nicheblog.dreamdiary.extension.tag.model.cmpstn.TagCmpstn;
-import io.nicheblog.dreamdiary.extension.tag.model.cmpstn.TagCmpstnModule;
+import io.nicheblog.dreamdiary.extension.clsf.ContentType;
+import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
+import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;

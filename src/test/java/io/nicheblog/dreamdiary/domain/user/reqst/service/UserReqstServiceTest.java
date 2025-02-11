@@ -7,7 +7,7 @@ import io.nicheblog.dreamdiary.domain.user.profl.model.UserProflDtoTestFactory;
 import io.nicheblog.dreamdiary.domain.user.reqst.model.UserReqstDto;
 import io.nicheblog.dreamdiary.domain.user.reqst.model.UserReqstDtoTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;
-import io.nicheblog.dreamdiary.global.config.TestAuditConfig;
+import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;

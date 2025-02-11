@@ -3,8 +3,8 @@ package io.nicheblog.dreamdiary.domain.jrnl.sumry.service.strategy;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.entity.JrnlSumryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.service.JrnlSumryService;
-import io.nicheblog.dreamdiary.global._common.cache.service.CacheEvictor;
-import io.nicheblog.dreamdiary.global._common.cache.util.EhCacheUtils;
+import io.nicheblog.dreamdiary.extension.cache.service.CacheEvictor;
+import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

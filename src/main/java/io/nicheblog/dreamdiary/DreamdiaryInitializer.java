@@ -7,18 +7,18 @@ import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.service.LgnPolicyService;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserAuthRoleDto;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
+import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.extension.log.sys.event.LogSysEvent;
+import io.nicheblog.dreamdiary.extension.log.sys.handler.LogSysEventListener;
+import io.nicheblog.dreamdiary.extension.log.sys.model.LogSysParam;
 import io.nicheblog.dreamdiary.global.ActiveProfile;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.global._common.log.sys.event.LogSysEvent;
-import io.nicheblog.dreamdiary.global._common.log.sys.handler.LogSysEventListener;
-import io.nicheblog.dreamdiary.global._common.log.sys.model.LogSysParam;
+import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
@@ -44,7 +44,7 @@ public class DreamdiaryInitializer
     private final AuthService authService;
     private final UserService userService;
     private final LgnPolicyService lgnPolicyService;
-    private final ApplicationEventPublisher publisher;
+    private final ApplicationEventPublisherWrapper publisher;
 
     @Value("${system.init-temp-pw:}")
     public String SYSTEM_INIT_TEMP_PW;
@@ -74,7 +74,7 @@ public class DreamdiaryInitializer
         // 시스템 재기동 로그 적재:: 운영 환경 이외에는 적재하지 않음
         if (activeProfile.isProd()) {
             final LogSysParam logParam = new LogSysParam(true, MessageUtils.getMessage("common.status.system-restarted"), ActvtyCtgr.SYSTEM);
-            publisher.publishEvent(new LogSysEvent(this, logParam));
+            publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
         }
     }
 
@@ -106,7 +106,7 @@ public class DreamdiaryInitializer
             // 시스템 계정 등록 처리했을 경우 로그 적재
             if (!systemAcntExists) {
                 logParam.setResult(isSuccess, rsltMsg);
-                publisher.publishEvent(new LogSysEvent(this, logParam));
+                publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
             }
         }
     }
@@ -166,7 +166,7 @@ public class DreamdiaryInitializer
             // 로그인 정책 등록 처리했을 경우 로그 적재
             if (!lgnPolicyExists) {
                 logParam.setResult(isSuccess, rsltMsg);
-                publisher.publishEvent(new LogSysEvent(this, logParam));
+                publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
             }
         }
     }

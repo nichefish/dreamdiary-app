@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.domain.jrnl.dream.entity;
 
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
-import io.nicheblog.dreamdiary.extension.ContentType;
+import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.experimental.UtilityClass;
 import org.springframework.test.context.ActiveProfiles;

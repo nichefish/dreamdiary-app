@@ -28,6 +28,10 @@ spring:
     application:
         name: dreamdiary
 
+    web:
+        resources:
+            static-locations: file:/static/, classpath:/static/
+
     main:
         allow-bean-definition-overriding: true
 
@@ -42,7 +46,7 @@ spring:
         throw-exception-if-no-handler-found: true
 
     freemarker:
-        template-loader-path: file:templates/
+        template-loader-path: ${FREEMARKER_TEMPLATE_PATH:file:templates/}
         suffix: .ftlh
         content-type: text/html; charset=utf-8
         request-context-attribute: rc

@@ -9,7 +9,7 @@
     <#--begin::Modal Header-->
     <div class="modal-header">
         <h5 id="modal_title" class="modal-title">
-            [<@spring.message "jrnl.day"/> 태그: <span class="header_tag_nm text-primary"></span> <@spring.message "jrnl.day"/>]
+            [<@spring.message "jrnl.day"/> 태그: <span class="header_tag_nm text-primary"></span>]
         </h5>
         <div>
             <div class="btn btn-sm btn-icon btn-active-light-primary ms-2" aria-label="Close"

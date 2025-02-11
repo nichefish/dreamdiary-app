@@ -9,8 +9,8 @@ import io.nicheblog.dreamdiary.domain.vcatn.papr.repository.jpa.VcatnPaprReposit
 import io.nicheblog.dreamdiary.domain.vcatn.papr.spec.VcatnPaprSpec;
 import io.nicheblog.dreamdiary.domain.vcatn.stats.model.VcatnStatsYyDto;
 import io.nicheblog.dreamdiary.domain.vcatn.stats.service.VcatnStatsYyService;
+import io.nicheblog.dreamdiary.extension.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global._common.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.global.intrfc.service.BasePostService;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;

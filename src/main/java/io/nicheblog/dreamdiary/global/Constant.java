@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.global;
 
 import io.nicheblog.dreamdiary.adapter.AdapterConstant;
 import io.nicheblog.dreamdiary.auth.AuthConstant;
-import io.nicheblog.dreamdiary.global._common.cd.CdConstant;
+import io.nicheblog.dreamdiary.extension.cd.CdConstant;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.experimental.UtilityClass;
 
@@ -53,7 +53,7 @@ public final class Constant
     public static final String IS_MBL = "IS_MBL";
 
     /** 스태틱 자원 경로 (인증 불필요) */
-    public static final String[] STATIC_PATHS = { "/css/**", "/js/**", "/media/**", "/font/**", "/lib/**", "/metronic/**", "/react/**", "/content/**", "/upfile/public/**" };
+    public static final String[] STATIC_PATHS = { "/static/**", "/css/**", "/js/**", "/media/**", "/font/**", "/lib/**", "/metronic/**", "/react/**", "/vue/**",  "/content/**", "/upfile/public/**" };
 
     /** 파일업로드 기본 경로 */
     public static final String UPFILE_PATH = "file/upfile/";

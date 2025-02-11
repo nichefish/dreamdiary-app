@@ -2,16 +2,16 @@ package io.nicheblog.dreamdiary.domain.board.post.controller;
 
 import io.nicheblog.dreamdiary.domain.board.post.model.BoardPostDto;
 import io.nicheblog.dreamdiary.domain.board.post.service.BoardPostService;
-import io.nicheblog.dreamdiary.extension.ContentType;
-import io.nicheblog.dreamdiary.extension.tag.event.TagProcEvent;
-import io.nicheblog.dreamdiary.extension.tag.handler.TagEventListener;
-import io.nicheblog.dreamdiary.extension.viewer.event.ViewerAddEvent;
-import io.nicheblog.dreamdiary.extension.viewer.handler.ViewerEventListener;
+import io.nicheblog.dreamdiary.extension.clsf.ContentType;
+import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
+import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagEventListener;
+import io.nicheblog.dreamdiary.extension.clsf.viewer.event.ViewerAddEvent;
+import io.nicheblog.dreamdiary.extension.clsf.viewer.handler.ViewerEventListener;
+import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
+import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
-import io.nicheblog.dreamdiary.global.aspect.log.LogActvtyRestControllerAspect;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * BoardPostRestController
@@ -82,11 +81,9 @@ public class BoardPostRestController
         // TODO: AOP로 분리하기
         if (isSuccess) {
             // 조치자 추가 :: 메인 로직과 분리
-            publisher.publishEvent(new ViewerAddEvent(this, result.getClsfKey()));
+            publisher.publishAsyncEvent(new ViewerAddEvent(this, result.getClsfKey()));
             // 태그 처리 :: 메인 로직과 분리
-            CompletableFuture.runAsync(() -> {
-                publisher.publishEvent(new TagProcEvent(this, new BaseClsfKey(key, ContentType.BOARD), boardPost.tag));
-            }).get(); // 이벤트가 끝날 때까지 대기
+            publisher.publishAsyncEvent(new TagProcEvent(this, new BaseClsfKey(key, ContentType.BOARD), boardPost.tag));
             // 잔디 메세지 발송 :: 메인 로직과 분리
             // if ("Y".equals(jandiYn)) {
             //     String jandiRsltMsg = notifyService.notifyBoardPostReg(trgetTopic, result, logParam);
@@ -133,7 +130,7 @@ public class BoardPostRestController
         boardPostService.hitCntUp(postNo);
         // 열람자 추가 :: 메인 로직과 분리
         // TODO: AOP로 분리
-        publisher.publishEvent(new ViewerAddEvent(this, retrievedDto.getClsfKey()));
+        publisher.publishAsyncEvent(new ViewerAddEvent(this, retrievedDto.getClsfKey()));
 
         // 응답 결과 세팅
         ajaxResponse.setRsltObj(retrievedDto);
@@ -170,9 +167,7 @@ public class BoardPostRestController
         // TODO: AOP로 분리하기
         if (isSuccess) {
             // 태그 처리 :: 메인 로직과 분리
-            CompletableFuture.runAsync(() -> {
-                publisher.publishEvent(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.BOARD)));
-            }).get(); // 이벤트가 끝날 때까지 대기
+            publisher.publishAsyncEvent(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.BOARD)));
         }
 
         // 응답 결과 세팅

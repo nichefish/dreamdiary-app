@@ -5,17 +5,7 @@
 
 <script type="text/x-handlebars-template" id="jrnl_dream_tag_list_template">
     {{#each this}}
-        <span class="py-2 me-3 cursor-pointer opacity-hover"
-              onclick="dF.JrnlDreamTag.dtlModal({{tagNo}}, '{{tagNm}}');"
-              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="해당 태그로 게시물 목록을&#10;필터링합니다.">
-            <span class="{{tagClass}}">
-                {{#if (exists ctgr)}}
-                    <span class="fs-7 text-noti">[{{ctgr}}]</span>
-                {{/if}}
-                <span class="em_{{tagNm}}">{{tagNm}}</span>
-            </span>
-            <span class="fs-9 text-noti fw-normal" style="margin-left:-0.25em;">{{contentSize}}</span>
-        </span>
+        {{> tag_list_sized_partial this module="dF.JrnlDreamTag"}}
     {{else}}
         -
     {{/each}}

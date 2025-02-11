@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.adapter._common.controller;
 
+import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global.config.HttpClientConfig;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.util.JsonRestTemplate;

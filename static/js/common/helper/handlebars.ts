@@ -411,9 +411,17 @@ cF.handlebars = (function(): Module {
     });
 })(Handlebars);
 document.addEventListener("DOMContentLoaded", function(): void {
-    if (!document.getElementById("cache_entry_partial")) return;
-
-    Handlebars.registerPartial("cache_entry_partial", document.getElementById("cache_entry_partial")?.innerHTML);
+    // cache entry
+    const cachePartial: string = document.getElementById("cache_entry_partial")?.innerHTML;
+    if (cachePartial) Handlebars.registerPartial("cache_entry_partial", cachePartial);
+    // comment_list
+    const commentPartial: string = document.getElementById("comment_list_partial")?.innerHTML;
+    if (commentPartial) Handlebars.registerPartial("comment_list_partial", commentPartial);
+    // tag_list
+    const tagPartial: string = document.getElementById("tag_list_partial")?.innerHTML;
+    if (tagPartial) Handlebars.registerPartial("tag_list_partial", tagPartial);
+    const sizedTagPartial: string = document.getElementById("tag_list_sized_partial")?.innerHTML;
+    if (sizedTagPartial) Handlebars.registerPartial("tag_list_sized_partial", sizedTagPartial);
 });
 
 

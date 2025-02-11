@@ -6,12 +6,13 @@ import io.nicheblog.dreamdiary.domain.flsys.model.FlsysDto;
 import io.nicheblog.dreamdiary.domain.flsys.model.FlsysSearchParam;
 import io.nicheblog.dreamdiary.domain.flsys.service.FlsysService;
 import io.nicheblog.dreamdiary.extension.file.utils.FileUtils;
+import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.extension.log.actvty.event.LogActvtyEvent;
+import io.nicheblog.dreamdiary.extension.log.actvty.handler.LogActvtyEventListener;
+import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global._common.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.global._common.log.actvty.event.LogActvtyEvent;
-import io.nicheblog.dreamdiary.global._common.log.actvty.handler.LogActvtyEventListener;
-import io.nicheblog.dreamdiary.global._common.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -51,6 +52,7 @@ public class FlsysController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.FLSYS;        // 작업 카테고리 (로그 적재용)
 
     private final FlsysService flsysService;
+    private final ApplicationEventPublisherWrapper publisher;
 
     /**
      * 파일시스템 화면 조회
@@ -126,7 +128,7 @@ public class FlsysController
             ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
             // 로그 관련 세팅
             logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
-            publisher.publishEvent(new LogActvtyEvent(this, logParam));
+            publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
         }
 
         return ResponseEntity.ok(ajaxResponse);
@@ -166,7 +168,7 @@ public class FlsysController
         } finally {
             // 로그 관련 세팅
             logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
-            publisher.publishEvent(new LogActvtyEvent(this, logParam));
+            publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
         }
     }
 }

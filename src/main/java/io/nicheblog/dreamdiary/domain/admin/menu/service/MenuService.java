@@ -6,7 +6,7 @@ import io.nicheblog.dreamdiary.domain.admin.menu.mapstruct.MenuMapstruct;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuDto;
 import io.nicheblog.dreamdiary.domain.admin.menu.repository.jpa.MenuRepository;
 import io.nicheblog.dreamdiary.domain.admin.menu.spec.MenuSpec;
-import io.nicheblog.dreamdiary.extension.state.service.BaseStateService;
+import io.nicheblog.dreamdiary.extension.clsf.state.service.BaseStateService;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
 import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;

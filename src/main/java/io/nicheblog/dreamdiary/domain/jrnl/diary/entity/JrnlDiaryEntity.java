@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.domain.jrnl.diary.entity;
 
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
-import io.nicheblog.dreamdiary.extension.ContentType;
-import io.nicheblog.dreamdiary.extension.comment.entity.embed.CommentEmbed;
-import io.nicheblog.dreamdiary.extension.comment.entity.embed.CommentEmbedModule;
-import io.nicheblog.dreamdiary.extension.tag.entity.embed.TagEmbed;
-import io.nicheblog.dreamdiary.extension.tag.entity.embed.TagEmbedModule;
+import io.nicheblog.dreamdiary.extension.clsf.ContentType;
+import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbed;
+import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbedModule;
+import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
+import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BasePostEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
