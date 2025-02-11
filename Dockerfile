@@ -24,8 +24,8 @@ COPY templates/* /dreamdiary/templates/
 # .jar 파일
 COPY build/libs/dreamdiary.jar /dreamdiary/dreamdiary.jar
 # 실행 스크립트
-COPY run.sh /dreamdiary/run.sh
-RUN chmod +x /dreamdiary/run.sh
+COPY dreamdiary.sh /dreamdiary/dreamdiary.sh
+RUN chmod +x /dreamdiary/dreamdiary.sh
 
 # 실행 명령 설정
-ENTRYPOINT ["/dreamdiary/run.sh"]
+ENTRYPOINT ["/dreamdiary/dreamdiary.sh"]

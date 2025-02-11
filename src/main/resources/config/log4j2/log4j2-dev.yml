@@ -21,20 +21,10 @@ Configuration:
               target: SYSTEM_OUT
               PatternLayout:
                   pattern: ${log-format}
-        File:
-            - name: File_INFO_Appender
-              fileName: ${log-path}/logfile-INFO.log
-              PatternLayout:
-                  pattern: ${log-format}
-            # WARN↑ 이상 로그 파일 별도 분리
-            - name: File_WARN_Appender
-              fileName: ${log-path}/logfile-WARN.log
-              PatternLayout:
-                  pattern: ${log-format}
         RollingFile:
             - name: RollingFile_INFO_Appender
-              fileName: ${log-path}/rollingfile-INFO.log
-              filePattern: "${log-path}/archive/rollingfile-INFO.log.%d{yyyy-MM-dd}.gz"
+              fileName: ${log-path}/dreamdiary.log
+              filePattern: "${log-path}/archive/dreamdiary.log.%d{yyyy-MM-dd}.gz"
               PatternLayout:
                   pattern: ${log-format}
               Policies:
@@ -45,8 +35,8 @@ Configuration:
                       modulate: true
             # WARN↑ 이상 로그 파일 별도 분리
             - name: RollingFile_WARN_Appender
-              fileName: ${log-path}/rollingfile-WARN.log
-              filePattern: "${log-path}/archive/rollingfile-WARN.log.%d{yyyy-MM-dd}.gz"
+              fileName: ${log-path}/dreamdiary-WARN.log
+              filePattern: "${log-path}/archive/dreamdiary-WARN.log.%d{yyyy-MM-dd}.gz"
               PatternLayout:
                   pattern: ${log-format}
               Policies:

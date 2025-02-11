@@ -14,7 +14,7 @@ pipeline {
     environment {
         GRADLE_USER_HOME = "$JENKINS_HOME/.gradle"       // 워크스페이스 내에 캐시 폴더 생성
         REPO_URL = 'https://github.com/nichefish/dreamdiary.git'
-        BRANCH = 'main'
+        BRANCH = 'dev'
     }
 
     stages {
@@ -91,7 +91,7 @@ pipeline {
                     sh "cp -R static $dist"
                     sh "cp -R templates $dist"
                     sh "cp deploy.sh $dist"
-                    sh "cp run.sh $dist"
+                    sh "cp dreamdiary.sh $dist"
                     sh """
                         mkdir -p ${dist}/config/env  # config/env 폴더가 없으면 생성
                         if [ -d "\$JENKINS_HOME/static" ]; then
@@ -142,7 +142,7 @@ pipeline {
                                 chmod +x deploy.sh
 
                                 # 배포 스크립트 실행
-                                ./deploy.sh
+                                sudo -u dreamdiary ./deploy.sh
 
                                 exit
                             EOF
