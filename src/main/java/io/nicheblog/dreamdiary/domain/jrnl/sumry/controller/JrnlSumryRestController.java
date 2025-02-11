@@ -225,7 +225,7 @@ public class JrnlSumryRestController
 
         // 태그 처리
         // TODO: AOP로 분리
-        publisher.publishAsyncEvent(new TagProcEvent(this, jrnlSumry.getClsfKey(), jrnlSumry.tag));
+        publisher.publishAsyncEventAndWait(new TagProcEvent(this, jrnlSumry.getClsfKey(), jrnlSumry.tag));
 
         // 응답 결과 세팅
         ajaxResponse.setRsltObj(result);
