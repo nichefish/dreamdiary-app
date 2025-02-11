@@ -192,8 +192,9 @@
 <script type="text/javascript" src="/js/view/extension/clsf/sectn/sectn_module.js?${releaseDate!}"></script>
 
 <#--include::comment_module-->
-<script type="text/javascript" src="/js/view/extension/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
 <#include "/view/extension/clsf/comment/_modal/_comment_reg_modal.ftlh">
+<#include "/view/extension/clsf/comment/_comment_list_partial.hbs">
+<script type="text/javascript" src="/js/view/extension/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
 
 <#--include::notice_module-->
 <script type="text/javascript" src="/js/view/domain/board/notice/notice_module.js?${releaseDate!}"></script>

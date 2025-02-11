@@ -1,8 +1,6 @@
 package io.nicheblog.dreamdiary.domain.admin.web.controller;
 
-import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global.ServerInfo;
-import io.nicheblog.dreamdiary.global.Url;
+import io.nicheblog.dreamdiary.global.*;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -24,7 +23,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CmmController {
 
+    private final ActiveProfile activeProfile;
     private final ServerInfo serverInfo;
+    private final ReleaseInfo releaseInfo;
 
     /**
      * 인터페이스에서 정의된 Url들을 Map으로 반환

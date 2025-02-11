@@ -95,7 +95,7 @@ pipeline {
                     sh """
                         mkdir -p ${dist}/config/env  # config/env 폴더가 없으면 생성
                         if [ -d "\$JENKINS_HOME/static" ]; then
-                            cp \$JENKINS_HOME/static/.env* ${dist}/config/env
+                            cp \$JENKINS_HOME/static/config/.env* ${dist}/config/env
                         else
                             echo 'Jenkins 환경 변수 파일 없음, 복사 건너뜀'
                         fi
