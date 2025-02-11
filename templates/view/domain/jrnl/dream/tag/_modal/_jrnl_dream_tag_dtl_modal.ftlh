@@ -17,7 +17,13 @@
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="헤당 년도 전체 태그 모달 팝업을 호출합니다.">
                 <i class="bi bi-tag pe-0"></i>
             </button>
-            <div class="btn btn-sm btn-icon btn-active-light-primary ms-2" aria-label="Close"
+            <div class="btn btn-sm btn-icon btn-active-light-primary" aria-label="Close"
+                 onclick="ModalHistory.pop(); ModalHistory.prev();"
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message 'bs.tooltip.modal.prev'/>">
+                <i class="bi bi-box-arrow-in-left"></i>
+            </div>
+            <div class="btn btn-sm btn-icon btn-active-light-primary" aria-label="Close"
+                 onClick="ModalHistory.pop();"
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message 'bs.tooltip.modal.close'/>">
                 <i class="fas fa-times"></i>
             </div>

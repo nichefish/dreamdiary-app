@@ -12,7 +12,13 @@
             [<@spring.message 'jrnl.day'/> 태그: <span class="header_tag_nm text-primary"></span>]
         </h5>
         <div>
-            <div class="btn btn-sm btn-icon btn-active-light-primary ms-2" aria-label="Close"
+            <div class="btn btn-sm btn-icon btn-active-light-primary" aria-label="Close"
+                 onclick="ModalHistory.pop(); ModalHistory.prev();"
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message 'bs.tooltip.modal.prev'/>">
+                <i class="bi bi-box-arrow-in-left"></i>
+            </div>
+            <div class="btn btn-sm btn-icon btn-active-light-primary" aria-label="Close"
+                 onClick="ModalHistory.pop();"
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message 'bs.tooltip.modal.close'/>">
                 <i class="fas fa-times"></i>
             </div>
