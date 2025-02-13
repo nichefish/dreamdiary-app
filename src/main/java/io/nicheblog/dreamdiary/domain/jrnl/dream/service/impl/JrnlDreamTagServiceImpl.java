@@ -151,7 +151,14 @@ public class JrnlDreamTagServiceImpl
                 .collect(Collectors.groupingBy(TagDto::getCtgr));
     }
 
+    /**
+     * 태그 카테고리 맵을 반환합니다.
+     *
+     * @return {@link Map} -- 태그 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵
+     * @throws Exception 조회 중 발생할 수 있는 예외
+     */
     @Override
+    @Cacheable(value="myJrnlDreamTagCtgrMap", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId()")
     public Map<String, List<String>> getTagCtgrMap() throws Exception {
 
         final List<JrnlDreamTagEntity> tagList = this.getSelf().getListEntity(new HashMap<>());

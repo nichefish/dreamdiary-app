@@ -160,6 +160,7 @@ public class JrnlDayTagServiceImpl
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
+    @Cacheable(value="myJrnlDayTagCtgrMap", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId()")
     public Map<String, List<String>> getTagCtgrMap() throws Exception {
 
         final List<JrnlDayTagEntity> tagList = this.getSelf().getListEntity(new HashMap<>());
