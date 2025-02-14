@@ -88,34 +88,55 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
 
 .modal-body {
     .jrnl-dream-cn, .jrnl-diary-cn {
-        .cn {
+
+        // 공통 스타일 믹스인
+        @mixin cn-collapse($lines, $height) {
             display: -webkit-box;
-            -webkit-line-clamp: 3; /* 최대 3줄 */
+            -webkit-line-clamp: $lines; // 최대 줄 수
             -webkit-box-orient: vertical;
             overflow: hidden;
             position: relative;
-            max-height: 62.3px;
+            max-height: $height;
 
             &.expanded {
                 display: unset !important;
                 -webkit-line-clamp: unset !important;
                 -webkit-box-orient: unset !important;
-                overflow: visible; /* 펼친 상태에서 텍스트가 넘칠 경우 표시 */
+                overflow: visible;
                 max-height: unset !important;
 
                 & + .expand-btn::after {
                     content: "－ 접기";
                 }
             }
+        }
+
+        // collapse-3 설정 (3줄)
+        .cn.collapse-3 {
+            @include cn-collapse(3, 62.3px);
+
             &:has(p:nth-of-type(4)) + .expand-btn {
-                display: inline-block; /* p 태그가 4개 이상이면 버튼 표시 */
+                display: inline-block; /* 4개 이상이면 버튼 표시 */
             }
 
             &:not(:has(p:nth-of-type(4))) + .expand-btn {
-                display: none; /* p 태그가 3개 이하라면 버튼 숨김 */
+                display: none; /* 3개 이하라면 버튼 숨김 */
+            }
+        }
+
+        // collapse-4 설정 (4줄)
+        .cn.collapse-4 {
+            @include cn-collapse(4, 83px); // 대략적인 높이 설정
+
+            &:has(p:nth-of-type(5)) + .expand-btn {
+                display: inline-block; /* 5개 이상이면 버튼 표시 */
             }
 
+            &:not(:has(p:nth-of-type(5))) + .expand-btn {
+                display: none; /* 4개 이하라면 버튼 숨김 */
+            }
         }
+
         /* 더보기 버튼 스타일 */
         .expand-btn {
             display: block;
