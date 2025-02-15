@@ -54,8 +54,7 @@ dF.JrnlSumry = (function(): dfModule {
         dtlByYy: function(yy: string|number): void {
             if (isNaN(Number(yy))) return;
 
-            const yYElmt: HTMLSelectElement = document.querySelector("#yyForm #yy");
-            yYElmt.value = String(yy);
+            $("#procForm #yy").val(yy);
             cF.form.blockUISubmit("#procForm", Url.JRNL_SUMRY_DTL);
         },
 
