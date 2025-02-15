@@ -6,9 +6,10 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
+<#assign modal_title = "휴가규칙" />
 <@modal.layout id="vcatn_papr_rule" size="xl">
     <#--begin::Modal Header-->
-    <@component.modal_header "휴가규칙"  />
+    <@component.modal_header modal_title />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <div class="table-responsive-sm">

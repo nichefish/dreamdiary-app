@@ -4,9 +4,10 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
+<#assign modal_title = springMacroRequestContext.getMessage("tag") />
 <@modal.layout id="tag_dtl" size="xl">
     <#--begin::Modal Header-->
-    <@component.modal_header "태그"  />
+    <@component.modal_header modal_title />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <div class="table-responsive-sm">

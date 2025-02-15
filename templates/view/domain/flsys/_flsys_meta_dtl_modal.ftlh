@@ -4,9 +4,10 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
+<#assign modal_title = "파일시스템 메타 정보 조회" />
 <@modal.layout id="flsys_meta_dtl" size="xl">
     <#--begin::Modal Header-->
-    <@component.modal_header "파일시스템 메타 정보 조회"  />
+    <@component.modal_header modal_title />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <div id="flsys_meta_dtl_div">

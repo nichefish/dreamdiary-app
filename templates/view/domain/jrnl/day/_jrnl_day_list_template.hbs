@@ -66,7 +66,7 @@
                     </label>
                     {{#each jrnlDiaryList}}
                         <div class="row jrnl-item">
-                            <div class="col-1 py-3 jrnl-diary-cn d-flex justify-content-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
+                            <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
                                 <div>
                                     # {{idx}}
                                 </div>
@@ -74,7 +74,9 @@
                             <div class="col jrnl-diary-cn">
                                 {{#ifYn imprtcYn}}<div class="ctgr-span ctgr-imprtc w-70px d-flex-center">!중요</div>{{/ifYn}}
                                 {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}
-                                {{{markdownCn}}}
+                                <div class="cn">
+                                    {{{markdownCn}}}
+                                </div>
                                 {{#if (exists tag.list)}}
                                     <div class="ms-2 mt-3">
                                         <i class="bi bi-tag"></i>
@@ -89,7 +91,7 @@
                                     {{/each}}
                                 {{/if}}
                             </div>
-                            <div class="col-1 py-3 jrnl-diary-cn d-flex justify-content-between w-50px gap-1">
+                            <div class="col-1 py-3 d-flex-between w-50px gap-1">
                                 <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
                                         onclick="dF.Comment.modal.regModal({{postNo}}, 'JRNL_DIARY');"
                                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "comment"/> <@spring.message "bs.tooltip.modal.reg"/>">
@@ -97,7 +99,7 @@
                                 </button>
                             </div>
                             <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                            <div class="col-1 py-3 jrnl-diary-cn d-flex justify-content-between w-50px gap-1">
+                            <div class="col-1 py-3 d-flex-between w-50px gap-1">
                                 <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
                                         onclick="dF.JrnlDiary.mdfModal({{postNo}}, '{{stdrdDt}}');"
                                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "jrnl.diary"/> <@spring.message "bs.tooltip.modal.mdf"/>">
@@ -121,7 +123,7 @@
                     </label>
                     {{#each jrnlDreamList}}
                         <div class="row jrnl-item">
-                            <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
+                            <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
                                 <div>
                                     # {{idx}}
                                 </div>
@@ -131,7 +133,9 @@
                                 {{#ifYn nhtmrYn}}<div class="ctgr-span ctgr-info w-70px d-flex-center">!악몽</div>{{/ifYn}}
                                 {{#ifYn hallucYn}}<div class="ctgr-span ctgr-gray w-70px">!입면환각</div>{{/ifYn}}
                                 {{#if (exists title)}}<div class="d-inline-block fw-70px">{{title}}</div>{{/if}}
-                                {{{markdownCn}}}
+                                <div class="cn">
+                                    {{{markdownCn}}}
+                                </div>
                                 {{#if (exists tag.list)}}
                                     <div class="ms-2 mt-3">
                                         <i class="bi bi-tag"></i>
@@ -146,7 +150,7 @@
                                     {{/each}}
                                 {{/if}}
                             </div>
-                            <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between w-50px gap-1">
+                            <div class="col-1 py-3 d-flex-between w-50px gap-1">
                                 <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
                                         onclick="dF.Comment.modal.regModal({{postNo}}, 'JRNL_DREAM');"
                                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "comment"/> <@spring.message "bs.tooltip.modal.reg"/>">
@@ -154,7 +158,7 @@
                                 </button>
                             </div>
                             <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                            <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between w-50px gap-1">
+                            <div class="col-1 py-3 d-flex-between w-50px gap-1">
                                 <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
                                         onclick="dF.JrnlDream.mdfModal({{postNo}}, '{{stdrdDt}}');"
                                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "jrnl.dream"/> <@spring.message "bs.tooltip.modal.mdf"/>">
@@ -170,7 +174,7 @@
                     {{/each}}
                     {{#each jrnlElseDreamList}}
                         <div class="row jrnl-item">
-                            <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
+                            <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
                                 <div>
                                     -
                                 </div>
@@ -180,7 +184,9 @@
                                 {{#ifYn nhtmrYn}}<div class="ctgr-span ctgr-imprtc w-auto d-flex-center">!악몽</div>{{/ifYn}}
                                 <div class="ctgr-span ctgr-gray w-auto d-flex-center">({{elseDreamerNm}} 꿈)</div>
                                 {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}
-                                {{{markdownCn}}}
+                                <div class="cn">
+                                    {{{markdownCn}}}
+                                </div>
                                 {{#if (exists tag.list)}}
                                     <div class="ms-2 mt-3">
                                         {{#tag.list}}
@@ -194,7 +200,7 @@
                                     {{/each}}
                                 {{/if}}
                             </div>
-                            <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between w-50px gap-1">
+                            <div class="col-1 py-3 d-flex-between w-50px gap-1">
                                 <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
                                         onclick="dF.Comment.modal.regModal({{postNo}}, 'JRNL_DREAM');"
                                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "comment"/> <@spring.message "bs.tooltip.modal.reg"/>">
@@ -202,7 +208,7 @@
                                 </button>
                             </div>
                             <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                            <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between w-50px gap-1">
+                            <div class="col-1 py-3 d-flex-between w-50px gap-1">
                                 <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
                                         onclick="dF.JrnlDream.mdfModal({{postNo}}, '{{stdrdDt}}');"
                                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "jrnl.dream"/> <@spring.message "bs.tooltip.modal.mdf"/>">

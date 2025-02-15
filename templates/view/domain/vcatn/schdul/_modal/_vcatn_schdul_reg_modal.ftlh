@@ -5,6 +5,7 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
+<#assign modal_title = "휴가 등록" />
 <@modal.layout id="vcatn_schdul_reg" size="md">
     <#--begin::Modal Header-->
     <@component.modal_header_dark "휴가 등록"  />

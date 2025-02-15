@@ -5,9 +5,10 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
+<#assign modal_title = "NOTION 페이지" />
 <@modal.layout id="notion_page" size="xl">
     <#--begin::Modal Header-->
-    <@component.modal_header "NOTION 페이지"  />
+    <@component.modal_header modal_title />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <div class="table-responsive-sm">

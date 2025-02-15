@@ -5,9 +5,10 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
+<#assign modal_title = "단락 저장" />
 <@modal.layout id="sectn_reg" size="xl">
     <#--begin::Modal Header-->
-    <@component.modal_header "단락 저장"  />
+    <@component.modal_header modal_title />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <form name="sectnRegForm" id="sectnRegForm" enctype="multipart/form-data">

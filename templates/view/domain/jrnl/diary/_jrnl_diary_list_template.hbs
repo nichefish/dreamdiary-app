@@ -6,7 +6,7 @@
 <script type="text/x-handlebars-template" id="jrnl_diary_list_template">
     {{#each this}}
         <div class="row jrnl-item">
-            <div class="col-1 py-3 jrnl-diary-cn d-flex flex-column border-2 border-gray-300 border-end ps-10 me-4 h-75 gap-2" style="width:135px;">
+            <div class="col-1 py-3 d-flex flex-column border-2 border-gray-300 border-end ps-10 me-4 h-75 gap-2" style="width:135px;">
                 <div class="d-flex align-items-center justify-content-between gap-1">
                     <i class="bi bi-calendar3"></i> {{stdrdDt}}
                 </div>
@@ -30,7 +30,7 @@
                     </div>
                 {{/if}}
             </div>
-            <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between w-50px gap-1">
+            <div class="col-1 py-3 d-flex-between w-50px gap-1">
                 <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
                         onclick="dF.Comment.modal.regModal({{postNo}}, 'JRNL_DIARY');"
                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "comment"/> <@spring.message "bs.tooltip.modal.reg"/>">
@@ -38,7 +38,7 @@
                 </button>
             </div>
             <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-            <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between w-50px gap-1">
+            <div class="col-1 py-3 d-flex-between w-50px gap-1">
                 <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
                         onclick="dF.JrnlDiary.mdfModal({{postNo}}, '{{stdrdDt}}');"
                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "jrnl.diary"/> <@spring.message "bs.tooltip.modal.mdf"/>">

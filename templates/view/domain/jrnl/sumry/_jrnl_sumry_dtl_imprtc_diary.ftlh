@@ -38,7 +38,7 @@
             </label>
             <#list imprtcDiaryList![] as diary>
                 <div class="row jrnl-item my-2">
-                    <div class="col-1 py-3 jrnl-diary-cn d-flex justify-content-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:135px;">
+                    <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:135px;">
                         <div>
                             <i class="bi bi-calendar3"></i> ${diary.stdrdDt!}
                         </div>
@@ -58,7 +58,7 @@
                             </div>
                         </#if>
                     </div>
-                    <div class="col-1 py-3 jrnl-diary-cn d-flex justify-content-between w-50px gap-1">
+                    <div class="col-1 py-3 d-flex-between w-50px gap-1">
                         <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
                                 onclick="dF.Comment.modal.regModal(${diary.postNo!}, 'JRNL_DIARY');"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'comment'/> <@spring.message 'bs.tooltip.modal.reg'/>">
@@ -66,7 +66,7 @@
                         </button>
                     </div>
                     <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                    <div class="col-1 py-3 jrnl-diary-cn d-flex justify-content-between w-50px gap-1">
+                    <div class="col-1 py-3 d-flex-between w-50px gap-1">
                         <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
                                 onclick="dF.JrnlDiary.mdfModal(${diary.postNo!}, '${diary.stdrdDt!}');"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'jrnl.diary'/> <@spring.message 'bs.tooltip.modal.mdf'/>">
@@ -81,7 +81,7 @@
                 </div>
                 <#if diary.comment.list??>
                     <div class="row py-2">
-                        <div class="col-1 jrnl-diary-cn" style="width:135px;">
+                        <div class="col-1" style="width:135px;">
                             &nbsp;
                         </div>
                         <div class="col ms-10 text-noti">

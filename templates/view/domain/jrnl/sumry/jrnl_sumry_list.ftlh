@@ -17,7 +17,7 @@
 <div class="card post">
     <#--begin::Card body-->
     <div class="card-body">
-        <div class="d-flex justify-content-between fs-5">
+        <div class="d-flex-between fs-5">
             <div class="d-flex fs-5">
                 <div class="text-gray-700 d-flex-center me-5">
                     <span class="fw-bold me-2">

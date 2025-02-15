@@ -43,7 +43,7 @@
                 <input type="hidden" name="sort" id="sort">
 
                 <#--begin::row-->
-                <div class="mb-4 d-flex justify-content-between gap-4">
+                <div class="mb-4 d-flex-between gap-4">
                     <div class="col">
                         <span class="text-gray-900 fs-h6 fw-bold d-inline-block ms-6 mb-1">년도</span>
                         <div class="d-flex">

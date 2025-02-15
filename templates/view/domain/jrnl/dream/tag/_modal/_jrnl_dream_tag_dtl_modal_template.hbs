@@ -6,7 +6,7 @@
 <script type="text/x-handlebars-template" id="jrnl_dream_tag_dtl_modal_template">
     {{#each this}}
         <div class="row jrnl-item">
-            <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between border-2 border-gray-300 border-end px-8 me-4 h-75 w-130px">
+            <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end px-8 me-4 h-75 w-130px">
                 <div>
                     <i class="bi bi-calendar3"></i> {{stdrdDt}}
                 </div>
@@ -32,7 +32,7 @@
                     </div>
                 {{/if}}
             </div>
-            <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between w-50px gap-1">
+            <div class="col-1 py-3 d-flex-between w-50px gap-1">
                 <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
                         onclick="dF.Comment.modal.regModal({{postNo}}, 'JRNL_DREAM');"
                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "comment"/> <@spring.message "bs.tooltip.modal.reg"/>">
@@ -40,7 +40,7 @@
                 </button>
             </div>
             <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-            <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between w-100px gap-1">
+            <div class="col-1 py-3 d-flex-between w-100px gap-1">
                 <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
                         onclick="$('#jrnl_tag_dtl_modal').modal('hide'); dF.JrnlDream.mdfModal({{postNo}}, '{{stdrdDt}}');"
                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "jrnl.dream"/> <@spring.message "bs.tooltip.modal.mdf"/>">
@@ -55,7 +55,7 @@
         </div>
         {{#if (exists comment.list)}}
             <div class="row pb-2">
-                <div class="col-1 jrnl-dream-cn w-130px"></div>
+                <div class="col-1 w-130px"></div>
                 <div class="col ms-10 text-noti">
                     {{#each comment.list}}
                         {{> comment_list_partial this}}

@@ -5,9 +5,10 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
+<#assign modal_title = "분류 코드 저장" />
 <@modal.layout id="cl_cd_reg" size="lg">
     <#--begin::Modal Header-->
-    <@component.modal_header "분류 코드 저장"  />
+    <@component.modal_header modal_title />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <#--begin::Form-->

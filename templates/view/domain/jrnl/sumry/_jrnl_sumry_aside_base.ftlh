@@ -42,7 +42,7 @@
             <#--begin::Body-->
             <div class="card-body" id="jrnl_aside">
                 <#--begin::Form-->
-                <div class="mb-7 d-flex justify-content-between gap-4">
+                <div class="mb-7 d-flex-between gap-4">
                     <div class="col">
                         <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">년도</span>
                         <select name="yy" id="yy" class="form-select" aria-label="Select example"

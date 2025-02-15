@@ -4,9 +4,10 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
+<#assign modal_title = "파일시스템 메타 정보 저장" />
 <@modal.layout id="flsys_meta_reg" size="xl">
     <#--begin::Modal Header-->
-    <@component.modal_header "파일시스템 메타 정보 저장"  />
+    <@component.modal_header modal_title />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <form class="form" name="flsysMetaRegForm" id="flsysMetaRegForm">
