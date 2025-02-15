@@ -19,10 +19,10 @@
             <thead>
                 <tr class="text-start fw-bolder fs-7 text-uppercase gs-0 text-muted">
                     <th class="text-center wb-keepall w-10 hidden-table">번호</th>
-                    <th class="col-9 col-6 text-center wb-keepall">제목</th>
+                    <th class="col-9 col-6 text-center wb-keepall"><@spring.message 'title'/></th>
                     <th class="col-3 col-2 text-center wb-keepall">작성자</th>
                     <th class="text-center wb-keepall w-15 hidden-table">등록일</th>
-                    <th class="text-center wb-keepall hidden-table" style="width:13%;">조회수</th>
+                    <th class="text-center wb-keepall hidden-table" style="width:13%;"><@spring.message 'hit-cnt'/></th>
                 </tr>
             </thead>
             <#--begin::Table body-->
@@ -104,7 +104,7 @@
                     </tr>
                 <#else>
                     <tr>
-                        <td colspan=8" class="text-center"><@spring.message "view.list.empty"/></td>
+                        <td colspan=8" class="text-center"><@spring.message 'view.list.empty'/></td>
                     </tr>
                 </#list>
             </tbody>

@@ -24,6 +24,9 @@ import javax.annotation.PostConstruct;
 @Setter
 public class ActiveProfile {
 
+    /**
+     * 컴포넌트 초기화 로직
+     */
     @PostConstruct
     public void init() throws Exception {
         if (StringUtils.isEmpty(this.active)) throw new IllegalStateException(MessageUtils.getMessage("common.status.profile-invalid"));

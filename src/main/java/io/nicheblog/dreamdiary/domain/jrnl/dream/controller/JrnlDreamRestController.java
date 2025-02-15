@@ -116,7 +116,7 @@ public class JrnlDreamRestController
         // TODO: AOP로 분리
         if (isSuccess) {
             // 태그 처리 :: 메인 로직과 분리
-            publisher.publishAsyncEvent(new TagProcEvent(this, result.getClsfKey(), jrnlDream.tag));
+            publisher.publishAsyncEventAndWait(new TagProcEvent(this, result.getClsfKey(), jrnlDream.tag));
         }
 
         // 응답 결과 세팅
@@ -187,7 +187,7 @@ public class JrnlDreamRestController
         // TODO: AOP로 분리
         if (isSuccess) {
             // 태그 처리 :: 메인 로직과 분리
-            publisher.publishAsyncEvent(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.JRNL_DREAM)));
+            publisher.publishAsyncEventAndWait(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.JRNL_DREAM)));
         }
 
         // 응답 결과 세팅

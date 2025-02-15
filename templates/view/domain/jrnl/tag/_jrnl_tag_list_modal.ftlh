@@ -9,7 +9,7 @@
     <#--begin::Modal Header-->
     <div class="modal-header">
         <h5 id="modal_title" class="modal-title">
-            [<@spring.message "jrnl.dream"/> 태그 전체 목록]
+            [<@spring.message 'jrnl.dream'/> 태그 전체 목록]
         </h5>
         <div class="d-flex gap-4">
             <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
@@ -18,7 +18,7 @@
                 <i class="bi bi-tag pe-0"></i>
             </button>
             <div class="btn btn-sm btn-icon btn-active-light-primary ms-2" aria-label="Close"
-                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message "bs.tooltip.modal.close"/>">
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message 'bs.tooltip.modal.close'/>">
                 <i class="fas fa-times"></i>
             </div>
         </div>

@@ -125,7 +125,7 @@ public class JrnlDayRestController
         // TODO: AOP로 분리
         if (isSuccess) {
             // 태그 처리 :: 메인 로직과 분리
-            publisher.publishAsyncEvent(new TagProcEvent(this,result.getClsfKey(), jrnlDay.tag));
+            publisher.publishAsyncEventAndWait(new TagProcEvent(this,result.getClsfKey(), jrnlDay.tag));
         }
 
         // 응답 결과 세팅
@@ -196,7 +196,7 @@ public class JrnlDayRestController
         // TODO: AOP로 분리
         if (isSuccess) {
             // 태그 처리 :: 메인 로직과 분리
-            publisher.publishAsyncEvent(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.JRNL_DAY)));
+            publisher.publishAsyncEventAndWait(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.JRNL_DAY)));
         }
 
         // 응답 결과 세팅

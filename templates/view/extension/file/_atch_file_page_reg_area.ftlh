@@ -7,7 +7,7 @@
 <div class="row">
     <div>
         <label class="mb-2">
-            <span class="text-gray-700 fs-6 fw-bolder">첨부파일</span>
+            <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'atch-file'/></span>
             <span class="text-gray-500 fs-9 mx-2">※ 첨부파일은 개별 50MB, 최대 100MB까지 업로드 가능합니다.</span>
         </label>
         <input type="file" id="formFile" class="form-control"
@@ -20,12 +20,12 @@
                     <div class="col-xl-8 text-sm-start" id="itemContainer${file.atchFileDtlNo!}">
                         <i class="fas fa-file-download fs-15 me-3"></i>
                         <a href="javascript:void(0);" onclick="cF.util.fileDownload('${file.atchFileNo!}', '${file.atchFileDtlNo!}');"
-                           data-bs-toggle="tooltip" data-bs-placement="top" title="<@spring.message "bs.tooltip.file.download"/>">
+                           data-bs-toggle="tooltip" data-bs-placement="top" title="<@spring.message 'bs.tooltip.file.download'/>">
                             ${file.orgnFileNm!} (${file.fileSize!}byte)
                         </a>
                         <div class="badge badge-light btn-primary badge-outlined mx-2 cursor-pointer"
                              onclick="dF.AtchFile.delExistingFile(${file.atchFileDtlNo!});"
-                             data-bs-toggle="tooltip" data-bs-placement="top" title="<@spring.message "bs.tooltip.file.del"/>">
+                             data-bs-toggle="tooltip" data-bs-placement="top" title="<@spring.message 'bs.tooltip.file.del'/>">
                             삭제
                         </div>
                         <input type="hidden" name="atchCtrl${file.atchFileDtlNo!}" id="atchCtrl${file.atchFileDtlNo!}" value="R">
@@ -51,7 +51,7 @@
         <i class="fas fa-file-download fs-15 me-3"></i> <span id="fileNm__INDEX__" ></span>
         <button type="button" class="badge badge-light btn-primary badge-outlined mx-2"
                 onclick="dF.AtchFile.delNewFileSpan('__INDEX__');"
-                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "bs.tooltip.file.del"/>">
+                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.file.del'/>">
             삭제
         </button>
     </div>

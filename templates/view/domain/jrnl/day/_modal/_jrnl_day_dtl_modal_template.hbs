@@ -46,7 +46,7 @@
                     <div class="col jrnl-diary-cn">
                         {{#ifYn imprtcYn}}<div class="ctgr-span ctgr-imprtc w-auto d-flex-center">!중요</div>{{/ifYn}}
                         {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}
-                        <div class="cn">
+                        <div class="cn collapse-4">
                             {{{markdownCn}}}
                         </div>
                         <!-- "더 보기" 버튼, <p> child 3개 이상일 때만 보임 (css) -->
@@ -110,7 +110,7 @@
                     {{#ifYn nhtmrYn}}<div class="ctgr-span ctgr-info w-auto d-flex-center">!악몽</div>{{/ifYn}}
                     {{#ifYn hallucYn}}<div class="ctgr-span ctgr-gray w-auto">!입면환각</div>{{/ifYn}}
                     {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}
-                    <div class="cn">
+                    <div class="cn collapse-4">
                         {{{markdownCn}}}
                     </div>
                     <!-- "더 보기" 버튼, <p> child 3개 이상일 때만 보임 (css) -->

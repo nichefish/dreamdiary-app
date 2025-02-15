@@ -1,7 +1,7 @@
 {
   "scripts": {
     "build:ts": "tsc",
-    "build:scss": "sass src/main/resources/static/css:src/main/resources/static/css && sass static/css:static/css",
+    "build:scss": "sass src/main/resources/static/css:src/main/resources/static/css && sass static:static",
     "build": "npm run build:ts && npm run build:scss"
   },
   "devDependencies": {

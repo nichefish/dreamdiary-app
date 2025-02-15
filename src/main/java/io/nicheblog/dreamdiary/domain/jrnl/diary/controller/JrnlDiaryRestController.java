@@ -115,10 +115,10 @@ public class JrnlDiaryRestController
         final boolean isSuccess = (result.getPostNo() != null);
         final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
 
-        // AOP로 분리
+        // TODO: AOP로 분리
         if (isSuccess) {
             // 태그 처리 :: 메인 로직과 분리
-            publisher.publishAsyncEvent(new TagProcEvent(this, result.getClsfKey(), jrnlDiary.tag));
+            publisher.publishAsyncEventAndWait(new TagProcEvent(this, result.getClsfKey(), jrnlDiary.tag));
         }
 
         // 응답 결과 세팅
@@ -188,7 +188,7 @@ public class JrnlDiaryRestController
         // TODO: AOP로 분리
         if (isSuccess) {
             // 태그 처리 :: 메인 로직과 분리
-            publisher.publishAsyncEvent(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.JRNL_DIARY)));
+            publisher.publishAsyncEventAndWait(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.JRNL_DIARY)));
         }
 
         // 응답 결과 세팅

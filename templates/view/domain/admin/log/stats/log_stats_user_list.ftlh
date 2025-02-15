@@ -80,7 +80,7 @@
                     </tr>
                 <#else>
                     <tr>
-                        <td colspan="7" class="text-center"><@spring.message "view.list.empty"/></td>
+                        <td colspan="7" class="text-center"><@spring.message 'view.list.empty'/></td>
                     </tr>
                 </#list>
                 <#if logStatsNotUserList?has_content>

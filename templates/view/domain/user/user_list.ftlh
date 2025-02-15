@@ -110,7 +110,7 @@
                 <#else>
                     <tr>
                         <td colspan="7" class="text-center">
-                            <@spring.message "view.list.empty"/>
+                            <@spring.message 'view.list.empty'/>
                         </td>
                     </tr>
                 </#list>

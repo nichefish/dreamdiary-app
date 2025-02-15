@@ -23,7 +23,7 @@
     <#if post.comment?? && post.comment.cnt gt 0>
         <span class="mx-1 text-noti btn-active-warning fs-x-small cursor-pointer opacity-hover"
               onclick="CommentList.modal(${post.postNo!}, '${post.contentType}');"
-              data-bs-toggle="tooltip" data-bs-placement="top" title="<@spring.message "comment"/> 모달 호출">
+              data-bs-toggle="tooltip" data-bs-placement="top" title="<@spring.message 'comment'/> 모달 호출">
         [${post.comment.cnt!0}]
         </span>
     </#if>
@@ -74,7 +74,7 @@
 <#macro list_atch_file post >
     <#if post.atchFileInfo?? && (post.atchFileInfo.atchFileList)?has_content>
         <a class="badge badge-secondary p-2 btn-white bg-hover-white blank blink-slow"
-           data-bs-toggle="tooltip" data-bs-placement="top" title="첨부파일">
+           data-bs-toggle="tooltip" data-bs-placement="top" title="<@spring.message 'atch-file'/>">
             <i class="bi bi-file-earmark-arrow-down fs-5 text-info opacity-hover" onclick="AtchFileList.modal('${post.atchFileNo!}');"></i>
         </a>
     <#else>
@@ -93,7 +93,7 @@
                 <span class="text-muted pe-1 cursor-pointer"
                       onclick="dF.Tag.dtlModal('${tag.refTagNo!}')"
                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
-                      title="해당 태그가 등록된 게시물 목록 팝업을 호출합니다.">
+                      title="<@spring.message 'view.tag.content-list'/>">
                     <#if tag.ctgr != ""><span class="fs-7 text-noti">[${tag.ctgr!}]</span></#if>
                     #<span class="border-bottom text-primary fw-lighter opacity-hover">${tag.tagNm!"-"}</span>
                 </span>

@@ -70,8 +70,8 @@
         <!--begin::Info-->
         <div class="d-flex align-items-center py-1">
             <a href="#answers" data-kt-scroll-toggle="true"
-               class="btn btn-sm btn-outline btn-outline-dashed btn-outline-default px-4 me-2">댓글 ${(post.comment.cnt)!0}</a>
-            <button class="btn btn-sm btn-light px-4 me-2 disabled">조회수 ${post.hitCnt!}</button>
+               class="btn btn-sm btn-outline btn-outline-dashed btn-outline-default px-4 me-2"><@spring.message 'comment'/> ${(post.comment.cnt)!0}</a>
+            <button class="btn btn-sm btn-light px-4 me-2 disabled"><@spring.message 'hit-cnt'/> ${post.hitCnt!}</button>
         </div>
     </div>
 </#macro>
@@ -102,8 +102,8 @@
         <!--begin::Info-->
         <div class="d-flex align-items-center py-1">
             <a href="#answers" data-kt-scroll-toggle="true"
-               class="btn btn-sm btn-outline btn-outline-dashed btn-outline-default px-4 me-2">댓글 ${(post.comment.cnt)!0}</a>
-            <button class="btn btn-sm btn-light px-4 me-2 disabled">조회수 ${(post.hitCnt)!0}</button>
+               class="btn btn-sm btn-outline btn-outline-dashed btn-outline-default px-4 me-2"><@spring.message 'comment'/> ${(post.comment.cnt)!0}</a>
+            <button class="btn btn-sm btn-light px-4 me-2 disabled"><@spring.message 'hit-cnt'/> ${(post.hitCnt)!0}</button>
         </div>
     </div>
 </#macro>
@@ -140,10 +140,10 @@
             </button>
             <a href="#answers" data-kt-scroll-toggle="true"
                class="btn btn-sm btn-outline btn-outline-dashed btn-outline-default px-4 me-2">
-                댓글 ${(post.comment.cnt)!0}
+                <@spring.message 'comment'/> ${(post.comment.cnt)!0}
             </a>
             <button class="btn btn-sm btn-light px-4 me-2 disabled">
-                조회수 ${post.hitCnt!}
+                <@spring.message 'hit-cnt'/> ${post.hitCnt!}
             </button>
         </div>
     </div>

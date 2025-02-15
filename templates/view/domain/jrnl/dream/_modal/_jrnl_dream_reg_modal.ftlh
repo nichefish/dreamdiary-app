@@ -7,7 +7,7 @@
 
 <@modal.layout id="jrnl_dream_reg" size="xl">
     <#--begin::Modal Header-->
-    <@component.modal_header "저널 꿈 저장"  />
+    <@component.modal_header "<@spring.message 'jrnl.dream.save'/>" />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <#--begin::Form-->
@@ -19,7 +19,7 @@
             <div class="row mb-4">
                 <div class="col-12">
                     <label class="d-flex align-items-center mb-2" for="tinymce_jrnlDreamCn">
-                        <span class="text-gray-700 fs-6 fw-bolder">내용</span>
+                        <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'cn'/></span>
                     </label>
                 </div>
                 <div class="col-12">

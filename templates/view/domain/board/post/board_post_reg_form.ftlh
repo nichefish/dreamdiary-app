@@ -24,7 +24,7 @@
             <div class="row d-flex mb-8">
                 <div class="col-12">
                     <label class="d-flex align-items-center mb-2" for="title">
-                        <span class="text-gray-700 fs-6 fw-bolder">제목</span>
+                        <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'title'/></span>
                         <span class="text-gray-500 fs-9">(최대 50자)</span>
                     </label>
                 </div>
@@ -91,7 +91,7 @@
             <div class="d-flex flex-column mb-8">
                 <!--begin::Label-->
                 <label class="mb-2" for="tinymce_cn">
-                    <span class="text-gray-700 fs-6 fw-bolder">내용</span>
+                    <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'cn'/></span>
                     <span class="text-gray-500 fs-9">&nbsp;</span>
                 </label>
                 <!--end::Label-->

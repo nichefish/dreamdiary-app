@@ -84,7 +84,7 @@ public class JrnlSbjctRestController
             // 조치자 추가 :: 메인 로직과 분리
             publisher.publishAsyncEvent(new ManagtrAddEvent(this, result.getClsfKey()));
             // 태그 처리 :: 메인 로직과 분리
-            publisher.publishAsyncEvent(new TagProcEvent(this, result.getClsfKey(), jrnlSbjct.tag));
+            publisher.publishAsyncEventAndWait(new TagProcEvent(this, result.getClsfKey(), jrnlSbjct.tag));
             // 잔디 메세지 발송 :: 메인 로직과 분리
             // if ("Y".equals(jandiYn)) {
             //     String jandiRsltMsg = notifyService.notifyJrnlSbjctReg(trgetTopic, result, logParam);
@@ -168,7 +168,7 @@ public class JrnlSbjctRestController
         // TODO: AOP로 분리
         if (isSuccess) {
             // 태그 처리 :: 메인 로직과 분리
-            publisher.publishAsyncEvent(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.JRNL_SBJCT)));
+            publisher.publishAsyncEventAndWait(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.JRNL_SBJCT)));
         }
 
         // 응답 결과 세팅

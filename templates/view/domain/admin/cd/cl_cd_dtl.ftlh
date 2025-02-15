@@ -151,27 +151,29 @@
                                 <div class="badge badge-success cursor-pointer"
                                      onclick="dF.DtlCd.unuseAjax('${dtlCd.dtlCd!}');"
                                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="클릭하여 사용 상태를&#10;변경합니다.">
-                                    <i class="bi bi-check text-light blink-slow"></i>사용
+                                    <i class="bi bi-check text-light blink-slow"></i>
+                                    <@spring.message 'use'/>
                                 </div>
                             <#else>
                                 <div class="badge badge-secondary btn-white cursor-pointer"
                                      onclick="dF.DtlCd.useAjax('${dtlCd.dtlCd!}');"
                                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="클릭하여 사용 상태를&#10;변경합니다.">
-                                    <i class="bi bi-x blink-slow"></i>미사용
+                                    <i class="bi bi-x blink-slow"></i>
+                                    <@spring.message 'unuse'/>
                                 </div>
                             </#if>
                         </td>
                         <td class="text-center">
                             <div class="badge badge-danger badge-outlined cursor-pointer"
                                  onclick="dF.DtlCd.delAjax('${dtlCd.dtlCd!}')"
-                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "bs.tooltip.del"/>">
+                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.del'/>">
                                 <i class="bi bi-trash text-danger fs-7 blink-slow"></i>삭제
                             </div>
                         </td>
                     </tr>
                 <#else>
                     <tr>
-                        <td colspan=8" class="text-center"><@spring.message "view.list.empty"/></td>
+                        <td colspan=8" class="text-center"><@spring.message 'view.list.empty'/></td>
                     </tr>
                 </#list>
             </tbody>

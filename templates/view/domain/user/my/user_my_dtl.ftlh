@@ -100,7 +100,7 @@
             <div class="col-xl-9 col-8 col-form-label">
                 <div class="form-check form-switch form-check-custom form-check-solid">
                     <span class="me-8">
-                        <#if user.isAcsIpY!false>사용<#else>미사용</#if>
+                        <#if user.isAcsIpY!false><@spring.message 'use'/><#else><@spring.message 'unuse'/></#if>
                     </span>
                     <#if user.isAcsIpY!false && user.acsIpList??>
                         <#list user.acsIpList![] as item>

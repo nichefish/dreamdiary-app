@@ -69,7 +69,7 @@ public class JrnlDreamContentTagEntity
     private String refContentType;
 
     /** 태그 정보 */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ref_tag_no", referencedColumnName = "tag_no", updatable = false, insertable = false)
     @Fetch(FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
@@ -84,7 +84,7 @@ public class JrnlDreamContentTagEntity
     private String ctgr;
 
     /** 참조 컨텐츠 (저널 꿈)  */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ref_post_no", referencedColumnName = "post_no", insertable = false, updatable = false)
     @Fetch(FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)

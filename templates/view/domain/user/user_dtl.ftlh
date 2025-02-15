@@ -17,7 +17,7 @@
             <div class="col-xl-1 col-2 d-flex align-items-center">
                 <#if (user.isCf)!true>
                     <span class="text-success">
-                        사용<i class="bi bi-check text-success"></i>
+                        승인<i class="bi bi-check text-success"></i>
                     </span>
                 <#else>
                     <span class="text-muted">
@@ -145,7 +145,7 @@
                     </div>
                 <#else>
                     <div class="text-success">
-                        사용<i class="bi bi-check text-success"></i>
+                        <@spring.message 'use'/><i class="bi bi-check text-success"></i>
                     </div>
                 </#if>
             </div>
@@ -161,11 +161,11 @@
                 <div class="col-form-label">
                     <#if user.useAcsIp!false>
                         <div class="text-success">
-                            사용<i class="bi bi-check text-success"></i>
+                            <@spring.message 'use'/><i class="bi bi-check text-success"></i>
                         </div>
                     <#else>
                         <div class="text-muted">
-                            미사용<i class="bi bi-dash fs-9 text-muted"></i>
+                            <@spring.message 'unuse'/><i class="bi bi-dash fs-9 text-muted"></i>
                         </div>
                     </#if>
                 </div>

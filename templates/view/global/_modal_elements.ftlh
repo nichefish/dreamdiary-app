@@ -11,7 +11,7 @@
         <h5 id="modal_title" class="modal-title">[${title!}]</h5>
         <div class="btn btn-sm btn-icon btn-active-light-primary ms-2" aria-label="Close"
              onClick="ModalHistory.pop();"
-             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message "bs.tooltip.modal.close"/>">
+             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message 'bs.tooltip.modal.close'/>">
             <i class="fas fa-times"></i>
         </div>
     </div>
@@ -26,12 +26,12 @@
         <div>
             <div class="btn btn-sm btn-icon btn-active-light-primary" aria-label="Close"
                  onclick="ModalHistory.pop(); ModalHistory.prev();"
-                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message "bs.tooltip.modal.prev"/>">
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message 'bs.tooltip.modal.prev'/>">
                 <i class="bi bi-box-arrow-in-left"></i>
             </div>
             <div class="btn btn-sm btn-icon btn-active-light-primary" aria-label="Close"
                  onClick="ModalHistory.pop();"
-                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message "bs.tooltip.modal.close"/>">
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message 'bs.tooltip.modal.close'/>">
                 <i class="fas fa-times"></i>
             </div>
         </div>
@@ -45,7 +45,7 @@
     <div class="modal-header" style="background-color:#41416e;">
         <h5 id="modal_title" class="modal-title">[${title!}]</h5>
         <div class="btn btn-sm btn-icon btn-active-light-primary ms-2" aria-label="Close"
-             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message "bs.tooltip.modal.close"/>">
+             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message 'bs.tooltip.modal.close'/>">
             <i class="fas fa-times"></i>
         </div>
     </div>
@@ -57,7 +57,7 @@
 <#macro modal_btn_save func>
     <button type="button" class="btn btn-sm btn-primary me-2"
             onclick="${func!}"
-            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "bs.tooltip.save"/>">
+            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.save'/>">
         <i class="bi bi-pencil-square"></i>
         <span class="indicator-label">저장</span>
         <span class="indicator-progress">Please wait...
@@ -72,7 +72,7 @@
 <#macro modal_btn_modify func>
     <button type="button" class="btn btn-sm btn-active-primary"
             onclick="${func!}"
-            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "bs.tooltip.modal.mdf"/>">
+            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.modal.mdf'/>">
         <i class="bi bi-pencil-square"></i>수정
     </button>
 </#macro>
@@ -83,7 +83,7 @@
 <#macro modal_btn_delete func>
     <button type="button" class="btn btn-sm btn-light btn-active-danger"
             onclick="${func!}"
-            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "bs.tooltip.del"/>">
+            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.del'/>">
         <i class="bi bi-trash"></i>삭제
     </button>
 </#macro>
@@ -94,7 +94,7 @@
 <#macro modal_btn_close>
     <button type="button" class="btn btn-sm btn-light"
             onClick="ModalHistory.pop();"
-            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message "bs.tooltip.modal.close"/>">
+            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message 'bs.tooltip.modal.close'/>">
         <i class="bi bi-x"></i>닫기
     </button>
 </#macro>
@@ -105,7 +105,7 @@
 <#macro modal_btn_close_safe func>
     <button type="button" class="btn btn-sm btn-light modal-btn-close-safe"
             data-func="ModalHistory.pop(); <#if func?? && func != "">${func!}</#if>"
-            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message "bs.tooltip.modal.close.safe"/>">
+            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="modal" title="<@spring.message 'bs.tooltip.modal.close.safe'/>">
         <i class="bi bi-x"></i>닫기
     </button>
 </#macro>

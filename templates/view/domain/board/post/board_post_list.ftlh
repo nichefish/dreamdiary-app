@@ -31,11 +31,11 @@
             <thead>
                 <tr class="text-start fw-bolder fs-7 text-uppercase gs-0 text-muted">
                     <th class="text-center wb-keepall w-10 hidden-table">번호</th>
-                    <th class="col-lg-8 col-9 text-center wb-keepall">제목</th>
-                    <th class="col-lg-1 text-center wb-keepall hidden-table">첨부파일</th>
+                    <th class="col-lg-8 col-9 text-center wb-keepall"><@spring.message 'title'/></th>
+                    <th class="col-lg-1 text-center wb-keepall hidden-table"><@spring.message 'atch-file'/></th>
                     <th class="col-lg-2 col-3 text-center wb-keepall">최종수정자</th>
                     <th class="text-center wb-keepall w-15 hidden-table">최종수정일</th>
-                    <th class="text-center wb-keepall w-15 hidden-table">조회수</th>
+                    <th class="text-center wb-keepall w-15 hidden-table"><@spring.message 'hit-cnt'/></th>
                 </tr>
             </thead>
             <#--begin::Table body-->
@@ -156,7 +156,7 @@
                     </tr>
                 <#else>
                     <tr>
-                        <td colspan=8" class="text-center"><@spring.message "view.list.empty"/></td>
+                        <td colspan=8" class="text-center"><@spring.message 'view.list.empty'/></td>
                     </tr>
                 </#list>
             </tbody>
