@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.global;
 import io.nicheblog.dreamdiary.adapter.AdapterUrl;
 import io.nicheblog.dreamdiary.auth.AuthUrl;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import lombok.Getter;
 import lombok.experimental.UtilityClass;
 
 import java.lang.reflect.Field;
@@ -22,6 +23,10 @@ import java.util.Map;
 public class Url
     implements SiteUrl, AuthUrl, AdapterUrl {
 
+    // 클래스 로딩 시에 한 번 계산하여 할당
+    @Getter
+    private static final Map<String, String> urlMap = initUrlMap();
+
     /** 도메인 */
     public static final String DOMAIN = "dreamdiary.nicheblog.io";
 
@@ -32,7 +37,7 @@ public class Url
      *
      * @return {@link Map} - URL 상수들을 key-value 형태로 담은 Map
      */
-    public static Map<String, String> getUrlMap() {
+    public static Map<String, String> initUrlMap() {
         final Map<String, String> urlMap = new HashMap<>();
 
         // Url 클래스에서 상수들 가져오기
