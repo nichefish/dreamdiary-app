@@ -32,6 +32,15 @@ public interface JrnlDreamService
     List<JrnlDreamDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception;
 
     /**
+     * 특정 저널 일자에 대한 목록 조회 (entity level) :: 캐시 처리
+     *
+     * @param jrnlDayNo 저널 일자 번호
+     * @return {@link List} -- 조회된 목록
+     * @throws Exception 조회 중 발생할 수 있는 예외
+     */
+    List<JrnlDreamEntity> getMyListEntityByJrnlDay(final Integer jrnlDayNo) throws Exception;
+
+    /**
      * 특정 년도의 중요 꿈 목록 조회 :: 캐시 처리
      *
      * @param yy 조회할 년도

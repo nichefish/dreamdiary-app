@@ -76,6 +76,19 @@ public class JrnlDreamServiceImpl
     }
 
     /**
+     * 특정 저널 일자에 대한 목록 조회 (entity level) :: 캐시 처리
+     *
+     * @param jrnlDayNo 저널 일자 번호
+     * @return {@link List} -- 조회된 목록
+     * @throws Exception 조회 중 발생할 수 있는 예외
+     */
+    @Cacheable(value="myJrnlDreamListByJrnlDay", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #jrnlDayNo")
+    public List<JrnlDreamEntity> getMyListEntityByJrnlDay(final Integer jrnlDayNo) throws Exception {
+        final JrnlDreamSearchParam searchParam = JrnlDreamSearchParam.builder().jrnlDayNo(jrnlDayNo).build();
+        return this.getSelf().getListEntity(searchParam);
+    }
+
+    /**
      * 특정 년도의 중요 꿈 목록 조회 :: 캐시 처리
      *
      * @param yy 조회할 년도
@@ -102,9 +115,7 @@ public class JrnlDreamServiceImpl
     @Override
     @Cacheable(value="myJrnlDreamTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
     public List<JrnlDreamDto> jrnlDreamTagDtl(final JrnlDreamSearchParam searchParam) throws Exception {
-        final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
-
-        return this.getSelf().getListDto(searchParamMap);
+        return this.getSelf().getListDto(searchParam);
     }
 
     /**

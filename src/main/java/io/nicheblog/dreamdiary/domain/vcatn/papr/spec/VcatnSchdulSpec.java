@@ -49,26 +49,27 @@ public class VcatnSchdulSpec
         final Expression<Date> bgnDtExp = root.get("bgnDt");
 
         // 파라미터 비교
-        for (String key : searchParamMap.keySet()) {
+        for (final String key : searchParamMap.keySet()) {
+            final Object value = searchParamMap.get(key);
             switch (key) {
                 // 휴가계획서 등록자 혹은 수동등록대상자
                 case "userId":
-                    final Predicate papr = builder.equal(vcatnPaprJoin.get("regstrId"), searchParamMap.get(key));
-                    final Predicate manual = builder.equal(root.get("userId"), searchParamMap.get(key));
+                    final Predicate papr = builder.equal(vcatnPaprJoin.get("regstrId"), value);
+                    final Predicate manual = builder.equal(root.get("userId"), value);
                     predicate.add(builder.or(papr, manual));
                     continue;
                     // 휴가시작일이 검색종료일보다 이전이(거나 같)고. 휴가종료일이 검색시작일보다 이후(거나 같)인 것
                 case "searchStartDt":
-                    predicate.add(builder.greaterThanOrEqualTo(endDtExp, DateUtils.asDate(searchParamMap.get(key))));
+                    predicate.add(builder.greaterThanOrEqualTo(endDtExp, DateUtils.asDate(value)));
                     continue;
                 case "searchEndDt":
-                    predicate.add(builder.lessThanOrEqualTo(bgnDtExp, DateUtils.asDate(searchParamMap.get(key))));
+                    predicate.add(builder.lessThanOrEqualTo(bgnDtExp, DateUtils.asDate(value)));
                     continue;
                     // 기타 조건 처리
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색
                     try {
-                        predicate.add(builder.equal(root.get(key), searchParamMap.get(key)));
+                        predicate.add(builder.equal(root.get(key), value));
                     } catch (final Exception e) {
                         log.info("unable to locate attribute '{}' while trying root.get(key).", key);
                     }

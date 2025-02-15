@@ -63,10 +63,10 @@ public interface BaseCrudSpec<Entity extends BaseCrudEntity>
             final CriteriaBuilder builder
     ) {
 
-        List<Predicate> predicate = new ArrayList<>();
-        List<String> keysToRemove = new ArrayList<>();
+        final List<Predicate> predicate = new ArrayList<>();
+        final List<String> keysToRemove = new ArrayList<>();
 
-        for (String key : searchParamMap.keySet()) {
+        for (final String key : searchParamMap.keySet()) {
             switch(key) {
                 case "regstrId":
                     predicate.add(builder.equal(root.get(key), searchParamMap.get(key)));

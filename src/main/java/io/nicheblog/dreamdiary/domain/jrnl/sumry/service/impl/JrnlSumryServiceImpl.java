@@ -67,9 +67,8 @@ public class JrnlSumryServiceImpl
     @Cacheable(value="myJrnlSumryList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId()")
     public List<JrnlSumryDto.LIST> getMyListDto(final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
-        final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
 
-        return this.getSelf().getListDto(searchParamMap);
+        return this.getSelf().getListDto(searchParam);
     }
 
     /**

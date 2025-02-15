@@ -126,11 +126,12 @@ public class UserSpec
         final Join<UserEntity, UserProflEntity> proflJoin = root.join("profl", JoinType.LEFT);
 
         // 파라미터 비교
-        for (String key : searchParamMap.keySet()) {
+        for (final String key : searchParamMap.keySet()) {
+            final Object value = searchParamMap.get(key);
             switch (key) {
                 // 사용자 정보 존재 "hasUserProfl" 체크시 조인결과 있는 목록만 반환
                 case "hasUserProfl":
-                    if ((Boolean) searchParamMap.get(key)) {
+                    if ((Boolean) value) {
                         predicate.add(builder.isNotNull(proflJoin.get("userProflNo")));
                     }
                     continue;
@@ -138,12 +139,12 @@ public class UserSpec
                 case "cmpyCd":
                 case "rankCd":
                 case "teamCd":
-                    predicate.add(builder.equal(proflJoin.get(key), searchParamMap.get(key)));
+                    predicate.add(builder.equal(proflJoin.get(key), value));
                     continue;
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색
                     try {
-                        predicate.add(builder.equal(root.get(key), searchParamMap.get(key)));
+                        predicate.add(builder.equal(root.get(key), value));
                     } catch (final Exception e) {
                         log.info("unable to locate attribute '{}' while trying root.get(key).", key);
                     }

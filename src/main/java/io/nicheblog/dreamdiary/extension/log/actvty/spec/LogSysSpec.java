@@ -44,31 +44,32 @@ public class LogSysSpec
             final CriteriaBuilder builder
     ) throws Exception {
 
-        List<Predicate> predicate = new ArrayList<>();
+        final List<Predicate> predicate = new ArrayList<>();
         // expressions
-        Expression<Date> logDtExp = root.get("logDt");
+        final Expression<Date> logDtExp = root.get("logDt");
 
         // 파라미터 비교
-        for (String key : searchParamMap.keySet()) {
+        for (final String key : searchParamMap.keySet()) {
+            final Object value = searchParamMap.get(key);
             switch (key) {
                 case "searchStartDt":
                     // 기간 검색
-                    predicate.add(builder.greaterThanOrEqualTo(logDtExp, DateUtils.asDate(searchParamMap.get(key))));
+                    predicate.add(builder.greaterThanOrEqualTo(logDtExp, DateUtils.asDate(value)));
                     continue;
                 case "searchEndDt":
                     // 기간 검색
-                    predicate.add(builder.lessThanOrEqualTo(logDtExp, DateUtils.asDate(searchParamMap.get(key))));
+                    predicate.add(builder.lessThanOrEqualTo(logDtExp, DateUtils.asDate(value)));
                     continue;
                 case "rslt":
                     // 작업결과 :: true / false 검색
                     Expression<Boolean> keyBoolExp = root.get(key)
                                                          .as(Boolean.class);
-                    predicate.add("true".equals(searchParamMap.get(key)) ? builder.isTrue(keyBoolExp) : builder.isFalse(keyBoolExp));
+                    predicate.add("true".equals(value) ? builder.isTrue(keyBoolExp) : builder.isFalse(keyBoolExp));
                     continue;
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색
                     try {
-                        predicate.add(builder.equal(root.get(key), searchParamMap.get(key)));
+                        predicate.add(builder.equal(root.get(key), value));
                     } catch (final Exception e) {
                         log.info("unable to locate attribute '{}' while trying root.get(key).", key);
                     }

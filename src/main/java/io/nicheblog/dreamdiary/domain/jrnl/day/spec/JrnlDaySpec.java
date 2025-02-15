@@ -70,7 +70,7 @@ public class JrnlDaySpec
             final CriteriaBuilder builder
     ) throws Exception {
 
-        List<Predicate> predicate = new ArrayList<>();
+        final List<Predicate> predicate = new ArrayList<>();
 
         // Use jrnlDt if available, otherwise aprxmtDt
         final Expression<Date> jrnlDtExp = root.get("jrnlDt");
@@ -78,25 +78,26 @@ public class JrnlDaySpec
         final Expression<Date> effectiveDtExp = builder.coalesce(jrnlDtExp, aprxmtDtExp);
 
         // 파라미터 비교
-        for (String key : searchParamMap.keySet()) {
+        for (final String key : searchParamMap.keySet()) {
             if ("sort".equals(key)) continue;  // "sort" 파라미터는 건너뜀
 
+            final Object value = searchParamMap.get(key);
             switch (key) {
                 case "searchStartDt":
                     // 기간 검색
-                    predicate.add(builder.greaterThanOrEqualTo(effectiveDtExp, DateUtils.asDate(searchParamMap.get(key))));
+                    predicate.add(builder.greaterThanOrEqualTo(effectiveDtExp, DateUtils.asDate(value)));
                     continue;
                 case "searchEndDt":
                     // 기간 검색
-                    predicate.add(builder.lessThanOrEqualTo(effectiveDtExp, DateUtils.asDate(searchParamMap.get(key))));
+                    predicate.add(builder.lessThanOrEqualTo(effectiveDtExp, DateUtils.asDate(value)));
                     continue;
                 case "yy":
                     // 9999 = 모든 년
-                    Integer yy = (Integer) searchParamMap.get(key);
+                    Integer yy = (Integer) value;
                     if (yy != 9999) predicate.add(builder.equal(root.get(key), yy));
                     continue;
                 case "mnth":
-                    Integer mnth = (Integer) searchParamMap.get(key);
+                    Integer mnth = (Integer) value;
                     if (mnth != 99) predicate.add(builder.equal(root.get(key), mnth));
                     continue;
                 case "tagNo":
@@ -104,12 +105,12 @@ public class JrnlDaySpec
                     Join<JrnlDayEntity, TagEmbed> tagJoin = root.join("tag", JoinType.INNER);
                     Join<TagEmbed, ContentTagEntity> contentTagJoin = tagJoin.join("list", JoinType.INNER);
                     predicate.add(builder.equal(contentTagJoin.get("regstrId"), AuthUtils.getLgnUserId()));
-                    predicate.add(builder.equal(contentTagJoin.get("refTagNo"), searchParamMap.get(key)));
+                    predicate.add(builder.equal(contentTagJoin.get("refTagNo"), value));
                     continue;
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색
                     try {
-                        predicate.add(builder.equal(root.get(key), searchParamMap.get(key)));
+                        predicate.add(builder.equal(root.get(key), value));
                     } catch (final Exception e) {
                         log.info("unable to locate attribute '{}' while trying root.get(key).", key);
                     }

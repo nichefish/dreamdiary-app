@@ -30,7 +30,7 @@ public interface JrnlDayService
      * @return {@link List} -- 조회된 목록
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
-    List<JrnlDayDto> getMyListDto(final BaseSearchParam searchParam) throws Exception;
+    List<JrnlDayDto> getMyListDto(final JrnlDaySearchParam searchParam) throws Exception;
 
     /**
      * 중복 체크 (정상시 true / 중복시 false)

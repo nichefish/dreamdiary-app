@@ -11,12 +11,15 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.repository.mybatis.JrnlDayMapper;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayService;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.strategy.JrnlDayCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.day.spec.JrnlDaySpec;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryService;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamService;
 import io.nicheblog.dreamdiary.extension.cache.event.EhCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.handler.EhCacheEvictEventListner;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
-import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -31,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * JrnlDayService
@@ -54,6 +58,8 @@ public class JrnlDayServiceImpl
     private final JrnlDayMapstruct mapstruct = JrnlDayMapstruct.INSTANCE;
 
     private final JrnlDayMapper jrnlDayMapper;
+    private final JrnlDiaryService jrnlDiaryService;
+    private final JrnlDreamService jrnlDreamService;
     private final ApplicationEventPublisherWrapper publisher;
 
     private final String JRNL_DAY = ContentType.JRNL_DAY.key;
@@ -72,9 +78,35 @@ public class JrnlDayServiceImpl
      */
     @Override
     @Cacheable(value="myJrnlDayList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getYy() + \"_\" + #searchParam.getMnth()")
-    public List<JrnlDayDto> getMyListDto(final BaseSearchParam searchParam) throws Exception {
+    public List<JrnlDayDto> getMyListDto(final JrnlDaySearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
-        return this.getSelf().getListDto(searchParam);
+
+        List<JrnlDayEntity> myJrnlDayListEntity = this.getSelf().getListEntity(searchParam);
+        return myJrnlDayListEntity.stream()
+                .map(entity -> {
+                    final Integer jrnlDayNo = entity.getPostNo();
+                    try {
+                        // 저널 일기
+                        final List<JrnlDiaryEntity> diaryList = jrnlDiaryService.getMyListEntityByJrnlDay(jrnlDayNo);
+                        entity.setJrnlDiaryList(diaryList);
+                        // 저널 꿈
+                        final List<JrnlDreamEntity> dreamList = jrnlDreamService.getMyListEntityByJrnlDay(jrnlDayNo);
+                        // 내 꿈
+                        final List<JrnlDreamEntity> myDreamList = dreamList.stream()
+                                .filter(dream -> "N".equals(dream.getElseDreamYn()))
+                                .toList();
+                        entity.setJrnlDreamList(myDreamList);
+                        // 타인 꿈
+                        final List<JrnlDreamEntity> elseDreamList = dreamList.stream()
+                                .filter(dream -> "Y".equals(dream.getElseDreamYn()))
+                                .toList();
+                        entity.setJrnlElseDreamList(dreamList);
+                        return mapstruct.toDto(entity);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .collect(Collectors.toList());
     }
 
     /**
@@ -125,9 +157,8 @@ public class JrnlDayServiceImpl
     @Cacheable(value="myJrnlDayTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
     public List<JrnlDayDto> jrnlDayTagDtl(final JrnlDaySearchParam searchParam) throws Exception {
         searchParam.setSort("DESC");
-        final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
 
-        return this.getSelf().getListDto(searchParamMap);
+        return this.getSelf().getListDto(searchParam);
     }
 
     /**

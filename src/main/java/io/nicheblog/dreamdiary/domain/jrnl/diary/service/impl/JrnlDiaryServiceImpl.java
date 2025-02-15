@@ -11,6 +11,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.diary.repository.mybatis.JrnlDiaryMap
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryService;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.strategy.JrnlDiaryCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.spec.JrnlDiarySpec;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.extension.cache.event.EhCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.handler.EhCacheEvictEventListner;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
@@ -76,6 +77,19 @@ public class JrnlDiaryServiceImpl
     }
 
     /**
+     * 특정 저널 일자에 대한 목록 조회 (entity level) :: 캐시 처리
+     *
+     * @param jrnlDayNo 저널 일자 번호
+     * @return {@link List} -- 조회된 목록
+     * @throws Exception 조회 중 발생할 수 있는 예외
+     */
+    @Cacheable(value="myJrnlDiaryListByJrnlDay", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #jrnlDayNo")
+    public List<JrnlDiaryEntity> getMyListEntityByJrnlDay(final Integer jrnlDayNo) throws Exception {
+        final JrnlDiarySearchParam searchParam = JrnlDiarySearchParam.builder().jrnlDayNo(jrnlDayNo).build();
+        return this.getSelf().getListEntity(searchParam);
+    }
+
+    /**
      * 특정 년도의 중요 일기 목록 조회 :: 캐시 처리
      *
      * @param yy 조회할 년도
@@ -102,9 +116,7 @@ public class JrnlDiaryServiceImpl
     @Override
     @Cacheable(value="myJrnlDiaryTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
     public List<JrnlDiaryDto> jrnlDiaryTagDtl(final JrnlDiarySearchParam searchParam) throws Exception {
-        final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
-
-        return this.getSelf().getListDto(searchParamMap);
+        return this.getSelf().getListDto(searchParam);
     }
 
     /**
