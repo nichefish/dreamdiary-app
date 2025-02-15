@@ -38,7 +38,7 @@
             </label>
             <#list imprtcDiaryList![] as diary>
                 <div class="row jrnl-item my-2">
-                    <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:135px;">
+                    <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end ps-10 me-4 w-130px h-75">
                         <div>
                             <i class="bi bi-calendar3"></i> ${diary.stdrdDt!}
                         </div>
@@ -81,7 +81,7 @@
                 </div>
                 <#if diary.comment.list??>
                     <div class="row py-2">
-                        <div class="col-1" style="width:135px;">
+                        <div class="col-1 w-130px">
                             &nbsp;
                         </div>
                         <div class="col ms-10 text-noti">

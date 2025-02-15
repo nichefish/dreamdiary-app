@@ -6,7 +6,7 @@
 <script type="text/x-handlebars-template" id="cache_list_modal_template">
     {{#each this}}
         <#--begin::Row-->
-        <div class="row d-align-center" data-cache-name="{{@key}}">
+        <div class="row d-flex-align-center" data-cache-name="{{@key}}">
             <div class="col-2 d-flex-center flex-column gap-1">
                 <div class="fw-bold">
                     "{{@key}}"
@@ -23,7 +23,7 @@
                 {{#each this}}
                     <#--begin::Row-->
                     <div class="row py-1" data-cache-key="{{@key}}">
-                        <div class="col d-align-center">
+                        <div class="col d-flex-align-center">
                             <div class="text-start text-truncate">
                                 <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-3 cursor-pointer"
                                         onclick="dF.Cache.dtlModal('{{@../key}}', '{{@key}}');"

@@ -1,0 +1,12 @@
+<#--
+* 캐시 상세 모달 partial
+* @included_in : _cache_dtl_modal_template.hbs
+-->
+
+<script type="text/x-handlebars-template" id="comment_reg_btn_partial">
+    <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
+            onclick="dF.Comment.modal.regModal({{postNo}}, '{{contentType}}');"
+            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'comment'/> <@spring.message "bs.tooltip.modal.reg"/>">
+        <i class="bi bi-chat-left-dots p-0"></i>
+    </button>
+</script>

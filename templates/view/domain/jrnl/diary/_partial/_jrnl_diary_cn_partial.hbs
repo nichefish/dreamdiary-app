@@ -1,0 +1,30 @@
+<#--
+ * 저널 일기(jrnl_diary) 목록 - 수정 버튼 partial
+ * @included_in : jrnl_day_page.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="jrnl_diary_cn_partial">
+    {{#ifYn imprtcYn}}<div class="ctgr-span ctgr-imprtc w-auto d-flex-center">!<@spring.message 'imprtc'/></div>{{/ifYn}}
+    {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}
+    <div class="cn {{collapse}}">
+        {{{markdownCn}}}
+    </div>
+    <!-- "더 보기" 버튼, <p> child 3개 이상일 때만 보임 (css) -->
+    <button type="button" class="btn btn-xxs btn-active-light-info badge-light-prinmary btn-outlined expand-btn"
+            onclick="dF.JrnlDayTag.expand(this);">
+    </button>
+
+    {{#if (exists tag.list)}}
+        <div class="ms-2 mt-3">
+            <i class="bi bi-tag"></i>
+        {{#tag.list}}
+            {{> tag_list_partial this module="dF.JrnlDiaryTag"}}
+        {{/tag.list}}
+        </div>
+    {{/if}}
+    {{#if (exists comment.list)}}
+        {{#each comment.list}}
+            {{> comment_list_partial this}}
+        {{/each}}
+    {{/if}}
+</script>

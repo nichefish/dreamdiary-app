@@ -1,0 +1,26 @@
+<#--
+* 댓글 목록 조회 모달 partial
+* @included_in : _cache_dtl_modal_template.hbs
+-->
+
+<script type="text/x-handlebars-template" id="comment_list_partial">
+    <div class="row ms-1 {{#if @first}}mt-1{{/if}} {{#if @last}}mb-1{{/if}} d-flex-align-center text-noti">
+        <div class="col me-10">
+            - {{cn}}
+        </div>
+        <div class="col-1">
+            <button type="button" class="btn btn-sm btn-light-primary btn-outlined py-1 px-2 cursor-pointer"
+                    onclick="dF.Comment.modal.mdfModal({{postNo}});"
+                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
+                    title="<@spring.message 'comment'/> <@spring.message 'bs.tooltip.modal.mdf'/>">
+                <i class="bi bi-pencil-square p-0"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-light-danger btn-outlined py-1 px-2 cursor-pointer"
+                    onclick="dF.Comment.modal.delAjax({{postNo}});"
+                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
+                    title="<@spring.message 'comment'/> <@spring.message 'bs.tooltip.del'/>">
+                <i class="bi bi-trash p-0"></i>
+            </button>
+        </div>
+    </div>
+</script>
