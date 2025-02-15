@@ -34,10 +34,16 @@ import javax.persistence.*;
 @Where(clause = "del_yn='N'")
 @SQLDelete(sql = "UPDATE jrnl_diary SET del_yn = 'Y' WHERE post_no = ?")
 @NamedEntityGraph(
-        name = "JrnlDiaryEntity.withAll",
-        attributeNodes = {
-                @NamedAttributeNode("jrnlDay")
-        }
+    name = "JrnlDiaryEntity.withTags",
+    attributeNodes = {
+        @NamedAttributeNode(value = "tag", subgraph = "TagEmbed")
+    },
+    subgraphs = {
+        @NamedSubgraph(
+            name = "TagEmbed",
+            attributeNodes = @NamedAttributeNode("list")  // tag.list 즉시 로딩
+        )
+    }
 )
 public class JrnlDiaryEntity
         extends BasePostEntity

@@ -82,10 +82,38 @@ public class JrnlDreamServiceImpl
      * @return {@link List} -- 조회된 목록
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
+    @Override
     @Cacheable(value="myJrnlDreamListByJrnlDay", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #jrnlDayNo")
     public List<JrnlDreamEntity> getMyListEntityByJrnlDay(final Integer jrnlDayNo) throws Exception {
         final JrnlDreamSearchParam searchParam = JrnlDreamSearchParam.builder().jrnlDayNo(jrnlDayNo).build();
-        return this.getSelf().getListEntity(searchParam);
+        return this.getSelf().getListEntityWithTag(searchParam);
+    }
+
+    /**
+     * default: 항목 목록 조회 (entity level)
+     *
+     * @param searchParam 검색 조건 파라미터
+     * @return {@link List} -- 목록 (entity level)
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public List<JrnlDreamEntity> getListEntityWithTag(final BaseSearchParam searchParam) throws Exception {
+        final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
+        final Map<String, Object> filteredSearchKey = CmmUtils.Param.filterParamMap(searchParamMap);
+
+        return this.getListEntityWithTag(filteredSearchKey);
+    }
+
+    /**
+     * default: 항목 목록 조회 (entity level)
+     *
+     * @param searchParamMap 검색 조건 파라미터 맵
+     * @return {@link List} -- 목록 (entity level)
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public List<JrnlDreamEntity> getListEntityWithTag(final Map<String, Object> searchParamMap) throws Exception {
+        return repository.findAll(spec.searchWith(searchParamMap));
     }
 
     /**

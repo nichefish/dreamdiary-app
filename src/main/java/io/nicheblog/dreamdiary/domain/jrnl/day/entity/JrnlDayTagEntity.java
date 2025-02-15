@@ -33,12 +33,6 @@ import java.util.List;
 @SQLDelete(sql = "UPDATE tag SET del_yn = 'Y' WHERE tag_no = ?")
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@NamedEntityGraph(
-        name = "JrnlDayTagEntity.withTag",
-        attributeNodes = {
-                @NamedAttributeNode("jrnlDayTagList"),
-        }
-)
 public class JrnlDayTagEntity
         extends BaseCrudEntity {
 

@@ -20,6 +20,7 @@ import io.nicheblog.dreamdiary.extension.cache.event.EhCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.handler.EhCacheEvictEventListner;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
+import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -81,7 +82,7 @@ public class JrnlDayServiceImpl
     public List<JrnlDayDto> getMyListDto(final JrnlDaySearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
 
-        List<JrnlDayEntity> myJrnlDayListEntity = this.getSelf().getListEntity(searchParam);
+        final List<JrnlDayEntity> myJrnlDayListEntity = this.getSelf().getListEntityWithTag(searchParam);
         return myJrnlDayListEntity.stream()
                 .map(entity -> {
                     final Integer jrnlDayNo = entity.getPostNo();
@@ -100,13 +101,40 @@ public class JrnlDayServiceImpl
                         final List<JrnlDreamEntity> elseDreamList = dreamList.stream()
                                 .filter(dream -> "Y".equals(dream.getElseDreamYn()))
                                 .toList();
-                        entity.setJrnlElseDreamList(dreamList);
+                        entity.setJrnlElseDreamList(elseDreamList);
                         return mapstruct.toDto(entity);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * default: 항목 목록 조회 (entity level)
+     *
+     * @param searchParam 검색 조건 파라미터
+     * @return {@link List} -- 목록 (entity level)
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public List<JrnlDayEntity> getListEntityWithTag(final BaseSearchParam searchParam) throws Exception {
+        final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
+        final Map<String, Object> filteredSearchKey = CmmUtils.Param.filterParamMap(searchParamMap);
+
+        return this.getListEntityWithTag(filteredSearchKey);
+    }
+
+    /**
+     * default: 항목 목록 조회 (entity level)
+     *
+     * @param searchParamMap 검색 조건 파라미터 맵
+     * @return {@link List} -- 목록 (entity level)
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public List<JrnlDayEntity> getListEntityWithTag(final Map<String, Object> searchParamMap) throws Exception {
+        return repository.findAll(spec.searchWith(searchParamMap));
     }
 
     /**
