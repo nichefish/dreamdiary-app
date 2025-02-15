@@ -16,3 +16,7 @@ logging:
     level:
         web: INFO
         org.springframework: INFO
+        org.hibernate.SQL: DEBUG
+        org.hibernate.type.descriptor.sql: OFF
+        org.hibernate.type.descriptor.type: OFF
+        com.p6spy: DEBUG
