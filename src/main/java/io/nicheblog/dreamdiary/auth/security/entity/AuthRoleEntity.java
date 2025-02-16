@@ -57,6 +57,7 @@ public class AuthRoleEntity
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "auth_cd", referencedColumnName = "top_auth_cd", insertable = false, updatable = false)
     @Fetch(value = FetchMode.JOIN)
+    @BatchSize(size = 10)
     @OrderBy("state.sortOrdr ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("하위 권한 정보")

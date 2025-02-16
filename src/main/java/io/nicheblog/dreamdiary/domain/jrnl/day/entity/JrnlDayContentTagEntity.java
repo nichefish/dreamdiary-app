@@ -36,15 +36,6 @@ import javax.persistence.*;
 public class JrnlDayContentTagEntity
         extends BaseAuditRegEntity {
 
-    @PostLoad
-    private void onLoad() {
-        // 태그 이름 세팅
-        if (this.tag != null) {
-            this.tagNm = this.tag.getTagNm();
-            this.ctgr = this.tag.getCtgr();
-        }
-    }
-
     /** 컨텐츠 태그 번호 (PK) */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -68,7 +59,7 @@ public class JrnlDayContentTagEntity
     private String refContentType;
 
     /** 태그 정보 */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ref_tag_no", referencedColumnName = "tag_no", updatable = false, insertable = false)
     @Fetch(FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
@@ -78,12 +69,12 @@ public class JrnlDayContentTagEntity
     @Transient
     private String tagNm;
 
-    @Transient
     /** 태그 카테고리 */
+    @Transient
     private String ctgr;
 
     /** 참조 컨텐츠 (저널 일자)  */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ref_post_no", referencedColumnName = "post_no", insertable = false, updatable = false)
     @Fetch(FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)

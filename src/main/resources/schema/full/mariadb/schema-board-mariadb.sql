@@ -158,7 +158,8 @@ CREATE TABLE IF NOT EXISTS content_tag (
     -- CONSTRAINT
     FOREIGN KEY (ref_tag_no) REFERENCES tag(tag_no),
     INDEX (ref_content_type),
-    INDEX (ref_post_no, ref_content_type)
+    INDEX (ref_post_no, ref_content_type),
+    INDEX (ref_post_no, ref_content_type, regstr_id)
 ) COMMENT = '컨텐츠 태그';
 
 -- 태그 속성 (tag_property)

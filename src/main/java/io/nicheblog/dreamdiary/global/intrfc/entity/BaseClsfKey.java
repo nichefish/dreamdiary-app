@@ -39,4 +39,12 @@ public class BaseClsfKey
         this.postNo = postNo;
         this.contentType = type.key;
     }
+
+    /**
+     * 컨텐츠 타입 enum 객체 반환
+     * @return {@link ContentType}
+     */
+    public ContentType getContentTypeEnum() {
+        return ContentType.get(this.contentType);
+    }
 }

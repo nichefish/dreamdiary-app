@@ -134,6 +134,17 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
     }
 
     /**
+     * default: 게시물 수정 전처리 (dto level)
+     *
+     * @param modifyDto 수정할 DTO 객체
+     * @param existingEntity 조회된 기존 엔티티 객체
+     * @throws Exception 수정 전처리 중 발생할 수 있는 예외
+     */
+    default void preModify(final Dto modifyDto, final Entity existingEntity) throws Exception {
+        // 수정 전처리:: 기본 공백, 필요시 각 함수에서 Override
+    }
+
+    /**
      * default: 게시물 수정 중간처리 (entity level, entity 변환 후 처리)
      *
      * @param modifyEntity 수정 중간처리를 할 엔티티 객체
@@ -166,22 +177,22 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
 
         // Entity 레벨 조회
         final Mapstruct mapstruct = this.getMapstruct();
-        final Entity modifyEntity = this.getDtlEntity(modifyDto);
-        mapstruct.updateFromDto(modifyDto, modifyEntity);
+        final Entity toModifyEntity = this.getDtlEntity(modifyDto);
+        mapstruct.updateFromDto(modifyDto, toModifyEntity);
 
         // 수정 중간처리
-        this.midModify(modifyEntity);
+        this.midModify(toModifyEntity);
 
         // update
         final Repository repository = this.getRepository();
-        final Entity updatedEntity = repository.saveAndFlush(modifyEntity);
+        final Entity updatedEntity = repository.saveAndFlush(toModifyEntity);
 
         // 수정 후처리
         this.postModify(updatedEntity);
 
         // 연관 캐시 삭제
         Map<EntityKey, ?> entities = new HashMap<>() {{
-            put(EntityKey.REGIST_ENTITY, modifyEntity);
+            put(EntityKey.REGIST_ENTITY, toModifyEntity);
             put(EntityKey.UPDATED_ENTITY, updatedEntity);
         }};
         this.evictRelCaches(entities);

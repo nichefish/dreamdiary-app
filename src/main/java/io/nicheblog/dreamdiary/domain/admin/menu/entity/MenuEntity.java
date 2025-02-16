@@ -115,6 +115,7 @@ public class MenuEntity
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "upper_menu_no", referencedColumnName = "menu_no", insertable = false, updatable = false)
     @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 10)
     @OrderBy("state.sortOrdr ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("하위메뉴 목록 조회")

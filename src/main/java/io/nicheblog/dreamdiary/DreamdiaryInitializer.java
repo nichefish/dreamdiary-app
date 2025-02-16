@@ -7,6 +7,7 @@ import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.service.LgnPolicyService;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserAuthRoleDto;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
+import io.nicheblog.dreamdiary.extension.cache.service.CacheWarmupService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.sys.event.LogSysEvent;
 import io.nicheblog.dreamdiary.extension.log.sys.handler.LogSysEventListener;
@@ -44,6 +45,7 @@ public class DreamdiaryInitializer
     private final AuthService authService;
     private final UserService userService;
     private final LgnPolicyService lgnPolicyService;
+    private final CacheWarmupService cacheWarmupService;
     private final ApplicationEventPublisherWrapper publisher;
 
     @Value("${system.init-temp-pw:}")
@@ -70,6 +72,9 @@ public class DreamdiaryInitializer
         if (!upfileDirectory.exists() && !upfileDirectory.mkdirs()) throw new IOException(MessageUtils.getMessage("common.status.mkdir-failed"));
         final File reportDirectory = new File("file/report/");
         if (!reportDirectory.exists() && !reportDirectory.mkdirs()) throw new IOException(MessageUtils.getMessage("common.status.mkdir-failed"));
+
+        // 캐시 웜업:: 초기 로딩 속도를 희생하여 미리 캐싱 처리함으로써 실행속도 상승
+        cacheWarmupService.warmup();
 
         // 시스템 재기동 로그 적재:: 운영 환경 이외에는 적재하지 않음
         if (activeProfile.isProd()) {

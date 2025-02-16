@@ -1,11 +1,9 @@
 package io.nicheblog.dreamdiary.domain.jrnl.day.spec;
 
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayContentTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayTagEntity;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
-import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagEntity;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
@@ -66,11 +64,10 @@ public class JrnlDayTagSpec
         final List<Predicate> predicate = new ArrayList<>();
 
         // 태그 조인
-        final Join<TagEntity, JrnlDayContentTagEntity> jrnlDayTagJoin = root.join("jrnlDayTagList", JoinType.INNER);
+        final Join<JrnlDayTagEntity, JrnlDayContentTagEntity> jrnlDayTagJoin = root.join("jrnlDayTagList", JoinType.INNER);
         final Join<JrnlDayContentTagEntity, JrnlDaySmpEntity> jrnlDayJoin = jrnlDayTagJoin.join("jrnlDay", JoinType.INNER);
         final Expression<Date> effectiveDtExp = builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"));
 
-        predicate.add(builder.equal(jrnlDayTagJoin.get("regstrId"), AuthUtils.getLgnUserId()));     // 등록자 ID 기준으로 조회
         predicate.add(builder.equal(jrnlDayTagJoin.get("refContentType"), ContentType.JRNL_DAY.key));
         // 파라미터 비교
         for (final String key : searchParamMap.keySet()) {
@@ -93,6 +90,9 @@ public class JrnlDayTagSpec
                     // 99 = 모든 월
                     final Integer mnth = (Integer) value;
                     if (mnth != 99) predicate.add(builder.equal(jrnlDayJoin.get(key), mnth));
+                    continue;
+                case "regstrId":
+                    predicate.add(builder.equal(jrnlDayTagJoin.get("regstrId"), value));     // 등록자 ID 기준으로 조회
             }
         }
 

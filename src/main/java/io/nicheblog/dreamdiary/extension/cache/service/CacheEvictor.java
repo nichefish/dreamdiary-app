@@ -82,4 +82,30 @@ public interface CacheEvictor<Key extends Serializable> {
         EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + yy + "_99");
         EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + "9999_99");
     }
+
+    /**
+     * 캐시 이름에 대해서 기간 캐시 삭제
+     *
+     * @param cacheName - 삭제할 캐시 이름
+     * @param yy - 삭제할 연도(문자열 형식)
+     * @param mnth - 삭제할 월(문자열 형식)
+     */
+    default void evictMyCacheWithKeyForPeriod(final String cacheName, final String key, final String yy, final String mnth) {
+        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + yy + "_" + mnth);
+        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + yy + "_99");
+        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + "9999_99");
+    }
+
+    /**
+     * 캐시 이름에 대해서 기간 캐시 삭제
+     *
+     * @param cacheName - 삭제할 캐시 이름
+     * @param yy - 삭제할 연도(문자열 형식)
+     * @param mnth - 삭제할 월(문자열 형식)
+     */
+    default void evictMyCacheWithKeyForPeriod(final String cacheName, final String key, final Integer yy, final Integer mnth) {
+        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + yy + "_" + mnth);
+        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + yy + "_99");
+        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + "9999_99");
+    }
 }

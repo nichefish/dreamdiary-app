@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.domain.jrnl.day.controller;
 
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDaySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayService;
@@ -68,7 +69,7 @@ public class JrnlDayRestController
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final List<JrnlDayDto> jrnlDayList = jrnlDayService.getMyListDto(searchParam);
+        final List<JrnlDayDto> jrnlDayList = jrnlDayService.getMyListDto(AuthUtils.getLgnUserId(), searchParam);
 
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);

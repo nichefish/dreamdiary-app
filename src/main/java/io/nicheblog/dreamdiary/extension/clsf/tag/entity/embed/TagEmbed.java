@@ -34,6 +34,7 @@ public class TagEmbed
             @JoinColumnOrFormula(column = @JoinColumn(name = "ref_content_type", referencedColumnName = "content_type", insertable = false, updatable = false)),
     })
     @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 10)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("컨텐츠 태그 목록")
     private List<ContentTagEntity> list;

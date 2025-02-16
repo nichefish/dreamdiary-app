@@ -39,7 +39,6 @@ public class JrnlDreamCacheEvictor
         // jrnl_dream
         final Integer jrnlDayNo = jrnlDream.getJrnlDayNo();
         EhCacheUtils.evictMyCacheAll("myJrnlDreamList");
-        EhCacheUtils.evictMyCache("myJrnlDreamListByJrnlDay", jrnlDayNo);
         EhCacheUtils.evictMyCache("myJrnlDreamDtlDto", key);
         // 년도-월에 따른 캐시 삭제
         final Integer yy = jrnlDream.getYy();
@@ -52,8 +51,10 @@ public class JrnlDreamCacheEvictor
         this.evictMyCacheForPeriod("myJrnlDreamTagList", yy, mnth);
         this.evictMyCacheForPeriod("myJrnlDreamSizedTagList", yy, mnth);
         EhCacheUtils.evictMyCacheAll("myJrnlDreamTagCtgrMap");
-        this.evictMyCacheForPeriod("myCountDreamSize", yy, mnth);
+        this.evictMyCacheForPeriod("", yy, mnth);
         EhCacheUtils.evictMyCacheAll("myJrnlDreamTagDtl");
+        // 태그 처리
+        EhCacheUtils.evictCache("contentTagEntityListByRef", key + "_JRNL_DREAM");
         // L2캐시 처리
         EhCacheUtils.clearL2Cache(JrnlDreamEntity.class);
         EhCacheUtils.clearL2Cache(JrnlDreamTagEntity.class);
@@ -69,7 +70,7 @@ public class JrnlDreamCacheEvictor
      */
     @Override
     public JrnlDreamDto getDataByKey(final Integer key) throws Exception {
-        JrnlDreamDto jrnlDream = (JrnlDreamDto) EhCacheUtils.getObjectFromCache("myJrnlDreamDtlDto", key);
+        final JrnlDreamDto jrnlDream = (JrnlDreamDto) EhCacheUtils.getObjectFromCache("myJrnlDreamDtlDto", key);
         if (jrnlDream == null) {
             try {
                 return jrnlDreamService.getDtlDto(key);

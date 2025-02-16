@@ -41,6 +41,7 @@ public class CommentEmbed
             @JoinColumnOrFormula(column = @JoinColumn(name = "ref_content_type", referencedColumnName = "content_type", insertable = false, updatable = false)),
     })
     @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 10)
     @OrderBy("regDt ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("댓글 목록")

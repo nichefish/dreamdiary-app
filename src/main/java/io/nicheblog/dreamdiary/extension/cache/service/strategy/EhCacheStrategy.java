@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.extension.cache.service.strategy;
 import io.nicheblog.dreamdiary.extension.cache.service.CacheStrategy;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.Map;
  *
  * @author nichefish
  */
+@Component
 public class EhCacheStrategy
         implements CacheStrategy {
 

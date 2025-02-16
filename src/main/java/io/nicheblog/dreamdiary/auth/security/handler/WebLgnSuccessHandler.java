@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
 import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLgnManager;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.extension.cache.event.LgnSuccessCacheWarmupEvent;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.extension.log.actvty.handler.LogActvtyEventListener;
@@ -83,6 +84,9 @@ public class WebLgnSuccessHandler
         // 로그인 로그 남기기
         final LogActvtyParam logParam = new LogActvtyParam(true, MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS), ActvtyCtgr.LGN);
         publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
+
+        // 캐시 웜업 이벤트 발행
+        publisher.publishAsyncEvent(new LgnSuccessCacheWarmupEvent(this, userId));
 
         // 로그인 성공시 브라우저 캐시 초기화 처리
         HttpUtils.setInvalidateBrowserCacheHeader(response);

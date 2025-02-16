@@ -47,6 +47,7 @@ public class AtchFileEntity
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "atch_file_no")
     @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 10)
     @OrderBy("fileSn ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     private List<AtchFileDtlEntity> atchFileList = new ArrayList<>();
