@@ -1,5 +1,7 @@
 package io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed;
 
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.helper.MapstructHelper;
+
 /**
  * TagEmbedModule
  * <pre>
@@ -7,6 +9,7 @@ package io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed;
  * </pre>
  *
  * @author nichefish
+ * @see MapstructHelper
  */
 public interface TagEmbedModule {
     /** Getter */

@@ -1,5 +1,7 @@
 package io.nicheblog.dreamdiary.extension.clsf.sectn.model.cmpstn;
 
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.helper.MapstructHelper;
+
 /**
  * SectnCmpstnModule
  * <pre>
@@ -7,6 +9,7 @@ package io.nicheblog.dreamdiary.extension.clsf.sectn.model.cmpstn;
  * </pre>
  *
  * @author nichefish
+ * @see MapstructHelper
  */
 public interface SectnCmpstnModule {
 

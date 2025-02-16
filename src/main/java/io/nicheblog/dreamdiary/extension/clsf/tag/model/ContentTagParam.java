@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.extension.clsf.tag.model;
 
+import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,7 +20,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @ToString
-public class ContentTagParam {
+public class ContentTagParam
+        extends BaseSearchParam {
 
     /** 참조 글 번호 */
     private Integer refPostNo;

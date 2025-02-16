@@ -1,5 +1,7 @@
 package io.nicheblog.dreamdiary.extension.clsf.sectn.entity.embed;
 
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.helper.MapstructHelper;
+
 /**
  * SectnEmbedModule
  * <pre>
@@ -7,6 +9,7 @@ package io.nicheblog.dreamdiary.extension.clsf.sectn.entity.embed;
  * </pre>
  *
  * @author nichefish
+ * @see MapstructHelper
  */
 public interface SectnEmbedModule {
 

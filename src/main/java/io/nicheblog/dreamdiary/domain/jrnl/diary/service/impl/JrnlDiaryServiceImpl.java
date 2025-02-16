@@ -14,6 +14,10 @@ import io.nicheblog.dreamdiary.domain.jrnl.diary.spec.JrnlDiarySpec;
 import io.nicheblog.dreamdiary.extension.cache.event.EhCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.handler.EhCacheEvictEventListner;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
+import io.nicheblog.dreamdiary.extension.clsf.tag.entity.ContentTagEntity;
+import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
+import io.nicheblog.dreamdiary.extension.clsf.tag.model.ContentTagParam;
+import io.nicheblog.dreamdiary.extension.clsf.tag.service.ContentTagService;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
@@ -29,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * JrnlDiaryService
@@ -52,6 +57,7 @@ public class JrnlDiaryServiceImpl
     private final JrnlDiaryMapstruct mapstruct = JrnlDiaryMapstruct.INSTANCE;
 
     private final JrnlDiaryMapper jrnlDiaryMapper;
+    private final ContentTagService contentTagService;
     private final ApplicationEventPublisher publisher;
 
     private final String JRNL_DIARY = ContentType.JRNL_DIARY.key;
@@ -86,7 +92,23 @@ public class JrnlDiaryServiceImpl
     @Cacheable(value="myJrnlDiaryListByJrnlDay", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #jrnlDayNo")
     public List<JrnlDiaryEntity> getMyListEntityByJrnlDay(final Integer jrnlDayNo) throws Exception {
         final JrnlDiarySearchParam searchParam = JrnlDiarySearchParam.builder().jrnlDayNo(jrnlDayNo).build();
-        return this.getSelf().getListEntityWithTag(searchParam);
+        final List<JrnlDiaryEntity> entityList = this.getSelf().getListEntityWithTag(searchParam);
+        return entityList.stream()
+                .map(entity -> {
+                    try {
+                        final ContentTagParam param = ContentTagParam.builder()
+                                .refContentType(ContentType.JRNL_DIARY.key)
+                                .refPostNo(entity.getPostNo())
+                                .build();
+                        final List<ContentTagEntity> tagList = contentTagService.getListEntity(param);
+                        final TagEmbed tag = TagEmbed.builder().list(tagList).build();
+                        entity.setTag(tag);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    return entity;
+                })
+                .collect(Collectors.toList());
     }
 
     /**

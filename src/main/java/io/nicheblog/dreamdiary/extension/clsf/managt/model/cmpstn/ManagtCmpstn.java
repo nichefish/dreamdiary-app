@@ -17,6 +17,7 @@ import java.util.List;
  * </pre>
  *
  * @author nichefish
+ * @see ManagtCmpstnModule
  */
 @Getter
 @Setter

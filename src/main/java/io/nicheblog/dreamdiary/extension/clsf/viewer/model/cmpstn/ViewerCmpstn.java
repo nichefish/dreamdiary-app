@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
  * </pre>
  *
  * @author nichefish
+ * @see ViewerCmpstnModule
  */
 @Getter
 @Setter

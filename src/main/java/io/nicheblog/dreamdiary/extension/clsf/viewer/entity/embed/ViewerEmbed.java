@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
  * </pre>
  *
  * @author nichefish
+ * @see ViewerEmbedModule
  */
 @Embeddable
 @Getter

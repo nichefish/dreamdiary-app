@@ -26,6 +26,7 @@ import java.util.List;
  * </pre>
  *
  * @author nichefish
+ * @see ManagtEmbedModule
  */
 @Embeddable
 @Getter
