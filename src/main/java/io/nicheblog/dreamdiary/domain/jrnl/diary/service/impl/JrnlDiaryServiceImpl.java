@@ -121,10 +121,10 @@ public class JrnlDiaryServiceImpl
     }
 
     @Override
-    public void midRegist(final JrnlDiaryEntity registEntity) throws Exception {
-        final Integer yy = registEntity.getJrnlDay().getYy();
-        final Integer mnth = registEntity.getJrnlDay().getMnth();
-        publisher.publishEvent(new JrnlDiaryTagCntAddEvent(this, yy, mnth, registEntity.getTagNoList()));
+    public void postRegist(final JrnlDiaryEntity updatedEntity) throws Exception {
+        final Integer yy = updatedEntity.getJrnlDay().getYy();
+        final Integer mnth = updatedEntity.getJrnlDay().getMnth();
+        publisher.publishEvent(new JrnlDiaryTagCntAddEvent(this, yy, mnth, updatedEntity.getTagNoList()));
     }
 
     /**
@@ -139,8 +139,13 @@ public class JrnlDiaryServiceImpl
         publisher.publishEvent(new JrnlDiaryTagCntSubEvent(this, yy, mnth, existingEntity.getTagNoList()));
     }
 
+    /**
+     * 수정 후처리. (override)
+     *
+     * @param updatedEntity 수정된 엔티티
+     */
     @Override
-    public void midModify(final JrnlDiaryEntity updatedEntity) {
+    public void postModify(final JrnlDiaryEntity updatedEntity) {
         final Integer yy = updatedEntity.getJrnlDay().getYy();
         final Integer mnth = updatedEntity.getJrnlDay().getMnth();
         publisher.publishEvent(new JrnlDiaryTagCntAddEvent(this, yy, mnth, updatedEntity.getTagNoList()));

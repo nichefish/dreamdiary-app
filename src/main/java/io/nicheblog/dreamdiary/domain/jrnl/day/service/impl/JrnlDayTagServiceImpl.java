@@ -121,7 +121,7 @@ public class JrnlDayTagServiceImpl
         final Map<Integer, Integer> tagCntMap = this.getSelf().countDaySizeMap(param);
 
         for (final TagDto tag : tagList) {
-            final Integer daySize = tagCntMap.get(tag.getTagNo());
+            final Integer daySize = tagCntMap.getOrDefault(tag.getTagNo(), 0);
             tag.setContentSize(daySize);
             maxFrequency = Math.max(maxFrequency, daySize);
         }

@@ -17,7 +17,6 @@ import io.nicheblog.dreamdiary.domain.jrnl.dream.spec.JrnlDreamSpec;
 import io.nicheblog.dreamdiary.extension.cache.event.EhCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.handler.EhCacheEvictEventListner;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
-import io.nicheblog.dreamdiary.extension.clsf.tag.service.ContentTagService;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -54,7 +53,6 @@ public class JrnlDreamServiceImpl
     private final JrnlDreamMapstruct mapstruct = JrnlDreamMapstruct.INSTANCE;
 
     private final JrnlDreamMapper jrnlDreamMapper;
-    private final ContentTagService contentTagService;
     private final ApplicationEventPublisherWrapper publisher;
 
     private final ApplicationContext context;
@@ -122,6 +120,11 @@ public class JrnlDreamServiceImpl
         }
     }
 
+    /**
+     * 등록 후처리. (override)
+     *
+     * @param updatedEntity 등록된 엔티티
+     */
     @Override
     public void postRegist(final JrnlDreamEntity updatedEntity) throws Exception {
         final Integer yy = updatedEntity.getJrnlDay().getYy();
@@ -141,8 +144,13 @@ public class JrnlDreamServiceImpl
         publisher.publishEvent(new JrnlDreamTagCntSubEvent(this, yy, mnth, existingEntity.getTagNoList()));
     }
 
+    /**
+     * 수정 후처리. (override)
+     *
+     * @param updatedEntity 수정된 엔티티
+     */
     @Override
-    public void midModify(final JrnlDreamEntity updatedEntity) {
+    public void postModify(final JrnlDreamEntity updatedEntity) {
         final Integer yy = updatedEntity.getJrnlDay().getYy();
         final Integer mnth = updatedEntity.getJrnlDay().getMnth();
         publisher.publishEvent(new JrnlDreamTagCntAddEvent(this, yy, mnth, updatedEntity.getTagNoList()));

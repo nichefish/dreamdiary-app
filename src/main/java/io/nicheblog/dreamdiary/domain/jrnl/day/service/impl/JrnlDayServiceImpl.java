@@ -182,8 +182,13 @@ public class JrnlDayServiceImpl
         this.setYyMnth(modifyDto);
     }
 
+    /**
+     * 수정 후처리. (override)
+     *
+     * @param updatedEntity 수정된 엔티티
+     */
     @Override
-    public void midModify(final JrnlDayEntity updatedEntity) {
+    public void postModify(final JrnlDayEntity updatedEntity) {
         final Integer yy = updatedEntity.getYy();
         final Integer mnth = updatedEntity.getMnth();
         publisher.publishEvent(new JrnlDayTagCntAddEvent(this, yy, mnth, updatedEntity.getTagNoList()));

@@ -120,7 +120,7 @@ public class JrnlDreamTagServiceImpl
         final Map<Integer, Integer> tagCntMap = this.getSelf().countDreamSizeMap(param);
 
         for (final TagDto tag : tagList) {
-            final Integer dreamSize = tagCntMap.get(tag.getTagNo());
+            final Integer dreamSize = tagCntMap.getOrDefault(tag.getTagNo(), 0);
             tag.setContentSize(dreamSize);
             maxFrequency = Math.max(maxFrequency, dreamSize);
         }

@@ -10,7 +10,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -40,22 +39,24 @@ public class JrnlDreamTagEventListener {
      * @see EhCacheEvictEventListner
      */
     @EventListener
-    @Async
     public void handleTagAddEvent(final JrnlDreamTagCntAddEvent event) throws Exception {
         final List<Integer> tagNoList = event.getTagNoList();
         if (CollectionUtils.isEmpty(tagNoList)) return;
 
         final Integer yy = event.getYy();
         final Integer mnth = event.getMnth();
+        final String cacheKey = AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth;
 
         final Cache cache = cacheManager.getCache("myCountDreamSizeMap");
-        ConcurrentHashMap<Integer, Integer> sizeMap = (ConcurrentHashMap<Integer, Integer>) cache.get(AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth);
+        if (cache == null) return;
+
+        ConcurrentHashMap<Integer, Integer> sizeMap = cache.get(cacheKey, ConcurrentHashMap.class);
         if (sizeMap == null) sizeMap = new ConcurrentHashMap<>();
 
         for (final Integer tagNo : tagNoList) {
-            sizeMap.put(tagNo, sizeMap.getOrDefault(tagNo, 0) + 1);
+            sizeMap.compute(tagNo, (k, v) -> (v == null) ? 1 : v + 1);
         }
-        cache.put(AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth, sizeMap);
+        cache.put(cacheKey, sizeMap);
     }
 
     /**
@@ -67,21 +68,23 @@ public class JrnlDreamTagEventListener {
      * @see EhCacheEvictEventListner
      */
     @EventListener
-    @Async
     public void handleTagRemoveEvent(final JrnlDreamTagCntSubEvent event) throws Exception {
         final List<Integer> tagNoList = event.getTagNoList();
         if (CollectionUtils.isEmpty(tagNoList)) return;
 
         final Integer yy = event.getYy();
         final Integer mnth = event.getMnth();
+        final String cacheKey = AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth;
 
         final Cache cache = cacheManager.getCache("myCountDreamSizeMap");
-        ConcurrentHashMap<Integer, Integer> sizeMap = (ConcurrentHashMap<Integer, Integer>) cache.get(AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth);
+        if (cache == null) return;
+
+        ConcurrentHashMap<Integer, Integer> sizeMap = cache.get(cacheKey, ConcurrentHashMap.class);
         if (sizeMap == null) sizeMap = new ConcurrentHashMap<>();
 
         for (final Integer tagNo : tagNoList) {
-            sizeMap.put(tagNo, sizeMap.getOrDefault(tagNo, 1) - 1);
+            sizeMap.compute(tagNo, (k, v) -> (v == null) ? 0 : v - 1);
         }
-        cache.put(AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth, sizeMap);
+        cache.put(cacheKey, sizeMap);
     }
 }
