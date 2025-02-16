@@ -19,40 +19,43 @@
   * Spring Security, JWT, OAuth2
   * Spring AOP, Lombok, Mapstruct, EhCache, Redis
 * Gradle v8.10.2
-* MariaDB
-* Spring Data JPA / MyBatis (both), JPA Criteria, QueryDSL, Flyway 
+* MariaDB (AWS RDS)
+* Spring Data JPA / MyBatis, JPA Criteria, QueryDSL
+* Flyway : DB 마이그레이션 이력 및 형상관리
 * Javascript(ES6), jQuery, Apache FreeMarker, Handlebars.js, TypeScript, Node.js(v20.11.1), Vue.js
 * WebSocket(Stomp.js)
-* Bootstrap 5 (Metronic 8)
+* Bootstrap 5 (Metronic 8) - Tagify, Draggable 등 js 라이브러리 활용
 * CSS/SCSS
+* CI/CD : Jenkins 구축 및 환경설정, AWS EC2로의 배포 자동화, 빌드 속도 최적화
 
 ## 주요 작업: (개발 포인트)
 #### 1. 시스템 구조 설계 및 DB 설계
 #### 2. 백엔드 개발
-- Spring Boot, Spring Data JPA를 이용한 백엔드 로직 개발
+- Spring Boot, Spring Data JPA/MyBatis를 이용한 백엔드 로직 개발
 - 상속 구조와 인터페이스를 활용한 공통 코드 분리 (관리 포인트 최소화)
 - 기본 CRUD 인터페이스화를 통한 코드 간소화
 - 태그, 단락, 열람자 등의 공통 기능 모듈화 및 인터페이스, 합성(composition)을 통한 손쉬운 기능 확장
 - AOP를 이용한 비즈니스 로직과 공통 처리 로직 분리
-- 즉각 응답이 필요하지 않은 요소들에 대한 비동기 처리 (이벤트 기반, Queue 기반 순차적 처리)
-- 메모리 캐시(ehCache) 적용을 통한 데이터 조회 성능 향상
+- 로그, 캐시 등 부가 처리를 이벤트 기반으로 처리하여 메인 비즈니스 로직과 분리 (동기/비동기, Queue 기반 순차적 처리)
+- 메모리 캐시(ehCache) 및 외부 캐시(Redis) 적용을 통한 데이터 조회 성능 향상
 #### 3. 프론트엔드 개발
 - Javascript, FreeMarker, Vue.js, Handlebars.js를 이용한 사용자 인터페이스 구현 (서버사이드 렌더링)
 - 모듈식 노출 패턴을 활용한 Javascript 함수 모듈화
-- Freemarker 매크로 기능을 활용한 기본 디자인 요소(버튼, 모달 등) 컴포넌트화
+- Freemarker 매크로, Handlebars partial 기능을 활용한 기본 디자인 요소(버튼, 모달 등) 컴포넌트화 및 재사용
 - Bootstrap 5를 사용한 반응형 디자인 구현
 - WebSocket(Stomp)을 이용한 실시간 채팅 기능 구현
 #### 4. junit, mockito를 이용한 테스트 코드 작성, jacoco를 이용한 커버리지 레포트
 - 현재 테스트 커버리지 30%↑... (보완 중)
 
 ## 문제 해결:
-1. 공통코드 분리 및 인터페이스화 과정에서 코드 복잡성 증가
-- chatGPT와의 대화를 통해 베스트 프랙티스에 대한 방향성 잡음
-- 테스트 코드 작성을 통해 시행착오의 부담을 줄임
-- 코드 분리가 난해한 일부의 경우 리플렉션을 활용하여 공통 로직 분리
-2. 외부 배포시 (오라클 클라우드) 시스템 속도 이슈
-- 데이터베이스 테이블 인덱스 추가
-- 캐시를 활용하여 데이터베이스 접근 회수 경감
+1. 외부 배포시 (AWS EC2) 시스템 속도 이슈
+- 문제점:
+    EC2, RDS 프리티어의 한정된 리소스(메모리)로 인해 실행 속도 저하
+- 해결:
+  - 쿼리 실행계획 분석을 통한 데이터베이스 테이블 인덱스 최적화
+  - 메모리 캐시(EhCache), 외부 캐시(Redis)를 활용한 데이터베이스 접근 회수 경감 및 캐시 일관성 유지 전략 수립
+- 결과:
+  - 월별 데이터 조회 페이지 : 기존 5~10초 조회 시간을 2-3초 이하로 단축
 
 ---
 
