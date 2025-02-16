@@ -26,6 +26,7 @@ import java.util.List;
  * </pre>
  *
  * @author nichefish
+ * @see ManagtEmbedModule
  */
 @Embeddable
 @Getter
@@ -68,6 +69,7 @@ public class ManagtEmbed
             @JoinColumnOrFormula(column = @JoinColumn(name = "ref_content_type", referencedColumnName = "content_type", insertable = false, updatable = false))
     })
     @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 10)
     @OrderBy("regDt DESC")
     @NotFound(action = NotFoundAction.IGNORE)
     private List<ManagtrEntity> list;

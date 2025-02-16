@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.domain.jrnl.diary.repository.jpa;
 
-import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import org.springframework.data.jpa.domain.Specification;

@@ -72,8 +72,9 @@ public class UserEntity
     /** 사용자 권한 정보 */
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_no")
-    @NotFound(action = NotFoundAction.IGNORE)
+    @BatchSize(size = 10)
     @Fetch(FetchMode.JOIN)
+    @NotFound(action = NotFoundAction.IGNORE)
     @Comment("사용자 권한 정보")
     private List<UserAuthRoleEntity> authList;
 
@@ -87,6 +88,7 @@ public class UserEntity
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_no")
     @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 10)
     @OrderBy("acsIp ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("접속 IP 정보")

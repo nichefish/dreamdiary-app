@@ -107,6 +107,7 @@ public class SchdulEntity
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "ref_post_no", referencedColumnName = "post_no")
     @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 10)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("참여자 정보")
     private List<SchdulPrtcpntEntity> prtcpntList;

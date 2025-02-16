@@ -54,6 +54,7 @@ public class TagEntity
     /** 컨텐츠 태그 */
     @OneToMany(mappedBy = "tag", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 10)
     @NotFound(action = NotFoundAction.IGNORE)
     private List<ContentTagEntity> contentTagList;
 
@@ -61,6 +62,7 @@ public class TagEntity
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "tag_no", insertable = false, updatable = false)
     @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 10)
     @NotFound(action = NotFoundAction.IGNORE)
     private List<TagPropertyEntity> propertyList;
 

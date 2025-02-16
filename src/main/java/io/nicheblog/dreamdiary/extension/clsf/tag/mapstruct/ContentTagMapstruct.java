@@ -31,6 +31,8 @@ public interface ContentTagMapstruct
     @Override
     @Named("toDto")
     @Mapping(target = "tag", expression = "java(TagMapstruct.INSTANCE.toDto(entity.getTag()))")
+    @Mapping(target = "tagNm", expression = "java(entity.getTag().getTagNm())")
+    @Mapping(target = "ctgr", expression = "java(entity.getTag().getCtgr())")
     ContentTagDto toDto(final ContentTagEntity entity) throws Exception;
 
     /**
@@ -43,6 +45,8 @@ public interface ContentTagMapstruct
     @Override
     @Named("toListDto")
     @Mapping(target = "tag", expression = "java(TagMapstruct.INSTANCE.toDto(entity.getTag()))")
+    @Mapping(target = "tagNm", expression = "java(entity.getTag().getTagNm())")
+    @Mapping(target = "ctgr", expression = "java(entity.getTag().getCtgr())")
     ContentTagDto toListDto(final ContentTagEntity entity) throws Exception;
 
     /**

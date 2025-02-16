@@ -1,5 +1,7 @@
 package io.nicheblog.dreamdiary.extension.clsf.viewer.entity.embed;
 
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.helper.MapstructHelper;
+
 /**
  * ViewerEmbedModule
  * <pre>
@@ -7,6 +9,7 @@ package io.nicheblog.dreamdiary.extension.clsf.viewer.entity.embed;
  * </pre>
  *
  * @author nichefish
+ * @see MapstructHelper
  */
 public interface ViewerEmbedModule {
     /** Getter */

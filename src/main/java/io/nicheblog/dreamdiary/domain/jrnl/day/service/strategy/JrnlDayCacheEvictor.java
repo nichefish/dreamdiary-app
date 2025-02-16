@@ -48,8 +48,10 @@ public class JrnlDayCacheEvictor
         this.evictMyCacheForPeriod("myJrnlDayTagList", yy, mnth);
         this.evictMyCacheForPeriod("myJrnlDaySizedTagList", yy, mnth);
         EhCacheUtils.evictMyCacheAll("myJrnlDayTagCtgrMap");
-        this.evictMyCacheForPeriod("myCountDaySize", yy, mnth);
         EhCacheUtils.evictMyCacheAll("myJrnlDayTagDtl");
+        // 태그 처리
+        EhCacheUtils.evictCache("contentTagEntityListByRef", key + "_JRNL_DAY");
+
         // L2캐시 처리
         EhCacheUtils.clearL2Cache(JrnlDayEntity.class);
         EhCacheUtils.clearL2Cache(JrnlDayTagEntity.class);
@@ -65,7 +67,7 @@ public class JrnlDayCacheEvictor
      */
     @Override
     public JrnlDayDto getDataByKey(final Integer key) throws Exception {
-        JrnlDayDto jrnlDay = (JrnlDayDto) EhCacheUtils.getObjectFromCache("myJrnlDayDtlDto", key);
+        final JrnlDayDto jrnlDay = (JrnlDayDto) EhCacheUtils.getObjectFromCache("myJrnlDayDtlDto", key);
         if (jrnlDay == null) {
             try {
                 return jrnlDayService.getDtlDto(key);

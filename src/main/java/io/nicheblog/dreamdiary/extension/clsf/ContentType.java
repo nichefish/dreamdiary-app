@@ -41,4 +41,16 @@ public enum ContentType {
     public final String key;
     public final String desc;
     public String icon;
+
+    /**
+     * 키와 일치하는 컨텐츠 타입 enum 반환
+     * @param contentType 문자열
+     * @return ContentType enum
+     */
+    public static ContentType get(final String contentType) {
+        for (final ContentType type : ContentType.values()) {
+            if (type.key.equals(contentType)) return type;
+        }
+        return DEFAULT;
+    }
 }

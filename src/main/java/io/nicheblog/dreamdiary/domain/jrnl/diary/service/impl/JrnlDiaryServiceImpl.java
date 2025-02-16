@@ -2,7 +2,10 @@ package io.nicheblog.dreamdiary.domain.jrnl.diary.service.impl;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.domain.jrnl.day.event.JrnlDayTagCntSubEvent;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.event.JrnlDiaryTagCntAddEvent;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.event.JrnlDiaryTagCntSubEvent;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.mapstruct.JrnlDiaryMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiarySearchParam;
@@ -14,9 +17,9 @@ import io.nicheblog.dreamdiary.domain.jrnl.diary.spec.JrnlDiarySpec;
 import io.nicheblog.dreamdiary.extension.cache.event.EhCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.handler.EhCacheEvictEventListner;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
+import io.nicheblog.dreamdiary.extension.clsf.tag.service.ContentTagService;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -28,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * JrnlDiaryService
@@ -52,6 +54,7 @@ public class JrnlDiaryServiceImpl
     private final JrnlDiaryMapstruct mapstruct = JrnlDiaryMapstruct.INSTANCE;
 
     private final JrnlDiaryMapper jrnlDiaryMapper;
+    private final ContentTagService contentTagService;
     private final ApplicationEventPublisher publisher;
 
     private final String JRNL_DIARY = ContentType.JRNL_DIARY.key;
@@ -73,47 +76,6 @@ public class JrnlDiaryServiceImpl
     public List<JrnlDiaryDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
         return this.getSelf().getListDto(searchParam);
-    }
-
-    /**
-     * 특정 저널 일자에 대한 목록 조회 (entity level) :: 캐시 처리
-     *
-     * @param jrnlDayNo 저널 일자 번호
-     * @return {@link List} -- 조회된 목록
-     * @throws Exception 조회 중 발생할 수 있는 예외
-     */
-    @Override
-    @Cacheable(value="myJrnlDiaryListByJrnlDay", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #jrnlDayNo")
-    public List<JrnlDiaryEntity> getMyListEntityByJrnlDay(final Integer jrnlDayNo) throws Exception {
-        final JrnlDiarySearchParam searchParam = JrnlDiarySearchParam.builder().jrnlDayNo(jrnlDayNo).build();
-        return this.getSelf().getListEntityWithTag(searchParam);
-    }
-
-    /**
-     * default: 항목 목록 조회 (entity level)
-     *
-     * @param searchParam 검색 조건 파라미터
-     * @return {@link List} -- 목록 (entity level)
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    @Override
-    public List<JrnlDiaryEntity> getListEntityWithTag(final BaseSearchParam searchParam) throws Exception {
-        final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
-        final Map<String, Object> filteredSearchKey = CmmUtils.Param.filterParamMap(searchParamMap);
-
-        return this.getListEntityWithTag(filteredSearchKey);
-    }
-
-    /**
-     * default: 항목 목록 조회 (entity level)
-     *
-     * @param searchParamMap 검색 조건 파라미터 맵
-     * @return {@link List} -- 목록 (entity level)
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    @Override
-    public List<JrnlDiaryEntity> getListEntityWithTag(final Map<String, Object> searchParamMap) throws Exception {
-        return repository.findAll(spec.searchWith(searchParamMap));
     }
 
     /**
@@ -158,6 +120,32 @@ public class JrnlDiaryServiceImpl
         dto.setIdx(lastIndex + 1);
     }
 
+    @Override
+    public void midRegist(final JrnlDiaryEntity registEntity) throws Exception {
+        final Integer yy = registEntity.getJrnlDay().getYy();
+        final Integer mnth = registEntity.getJrnlDay().getMnth();
+        publisher.publishEvent(new JrnlDiaryTagCntAddEvent(this, yy, mnth, registEntity.getTagNoList()));
+    }
+
+    /**
+     * 수정 전처리. (override)
+     *
+     * @param modifyDto 수정할 객체
+     */
+    @Override
+    public void preModify(final JrnlDiaryDto modifyDto, final JrnlDiaryEntity existingEntity) throws Exception {
+        final Integer yy = existingEntity.getJrnlDay().getYy();
+        final Integer mnth = existingEntity.getJrnlDay().getMnth();
+        publisher.publishEvent(new JrnlDiaryTagCntSubEvent(this, yy, mnth, existingEntity.getTagNoList()));
+    }
+
+    @Override
+    public void midModify(final JrnlDiaryEntity updatedEntity) {
+        final Integer yy = updatedEntity.getJrnlDay().getYy();
+        final Integer mnth = updatedEntity.getJrnlDay().getMnth();
+        publisher.publishEvent(new JrnlDiaryTagCntAddEvent(this, yy, mnth, updatedEntity.getTagNoList()));
+    }
+
     /**
      * 상세 조회 (dto level) :: 캐시 처리
      *
@@ -184,7 +172,11 @@ public class JrnlDiaryServiceImpl
     @Override
     public void preDelete(final JrnlDiaryEntity deleteEntity) throws Exception {
         if (!deleteEntity.isRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("delete-not-authorized"));
-    };
+
+        final Integer yy = deleteEntity.getJrnlDay().getYy();
+        final Integer mnth = deleteEntity.getJrnlDay().getMnth();
+        publisher.publishEvent(new JrnlDayTagCntSubEvent(this, yy, mnth, deleteEntity.getTagNoList()));
+    }
 
     /**
      * 삭제 데이터 조회

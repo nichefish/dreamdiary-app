@@ -24,6 +24,7 @@ import java.util.stream.IntStream;
  * </pre>
  *
  * @author nichefish
+ * @see TagCmpstnModule
  */
 @Getter
 @Setter

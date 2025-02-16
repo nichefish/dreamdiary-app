@@ -81,8 +81,12 @@ public interface BaseClsfService<Dto extends BaseClsfDto & Identifiable<Key>, Li
         this.preModify(modifyDto);
 
         // Entity 레벨 조회
-        final Mapstruct mapstruct = this.getMapstruct();
         final Entity modifyEntity = this.getDtlEntity(modifyDto);
+
+        // 수정 전처리 (기존 데이터 처리 관련)
+        this.preModify(modifyDto, modifyEntity);
+
+        final Mapstruct mapstruct = this.getMapstruct();
         mapstruct.updateFromDto(modifyDto, modifyEntity);
 
         // 수정 중간처리

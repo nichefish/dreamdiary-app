@@ -46,6 +46,7 @@ public class JrnlDreamSpec
         final List<Order> order = new ArrayList<>();
         final Join<JrnlDreamEntity, JrnlDaySmpEntity> jrnlDayJoin = root.join("jrnlDay", JoinType.INNER);
         order.add(builder.desc(builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"))));
+        order.add(builder.asc(root.get("idx")));
         query.orderBy(order);
         // distinct
         query.distinct(true);

@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.domain.jrnl.dream.controller;
 
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamService;
@@ -65,7 +66,7 @@ public class JrnlDreamTagRestController
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
 
-        final Map<String, List<String>> tagCtgrMap = jrnlDreamTagService.getTagCtgrMap();
+        final Map<String, List<String>> tagCtgrMap = jrnlDreamTagService.getTagCtgrMap(AuthUtils.getLgnUserId());
 
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);

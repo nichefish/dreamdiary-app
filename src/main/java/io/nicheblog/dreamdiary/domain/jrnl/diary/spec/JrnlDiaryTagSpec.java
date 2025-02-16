@@ -1,12 +1,10 @@
 package io.nicheblog.dreamdiary.domain.jrnl.diary.spec;
 
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryContentTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiarySmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryTagEntity;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
-import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagEntity;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
@@ -67,12 +65,11 @@ public class JrnlDiaryTagSpec
         final List<Predicate> predicate = new ArrayList<>();
 
         // 태그 조인
-        final Join<TagEntity, JrnlDiaryContentTagEntity> JrnlDiaryTagJoin = root.join("jrnlDiaryTagList", JoinType.INNER);
+        final Join<JrnlDiaryTagEntity, JrnlDiaryContentTagEntity> JrnlDiaryTagJoin = root.join("jrnlDiaryTagList", JoinType.INNER);
         final Join<JrnlDiaryContentTagEntity, JrnlDiarySmpEntity> JrnlDiaryJoin = JrnlDiaryTagJoin.join("jrnlDiary", JoinType.INNER);
         final Join<JrnlDiarySmpEntity, JrnlDaySmpEntity> jrnlDayJoin = JrnlDiaryJoin.join("jrnlDay", JoinType.INNER);
         final Expression<Date> effectiveDtExp = builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"));
 
-        predicate.add(builder.equal(JrnlDiaryTagJoin.get("regstrId"), AuthUtils.getLgnUserIdOrDefault                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ()));     // 등록자 ID 기준으로 조회
         predicate.add(builder.equal(JrnlDiaryTagJoin.get("refContentType"), ContentType.JRNL_DIARY.key));
         // 파라미터 비교
         for (final String key : searchParamMap.keySet()) {
@@ -95,6 +92,9 @@ public class JrnlDiaryTagSpec
                     // 99 = 모든 월
                     final Integer mnth = (Integer) value;
                     if (mnth != 99) predicate.add(builder.equal(jrnlDayJoin.get(key), mnth));
+                    continue;
+                case "regstrId":
+                    predicate.add(builder.equal(JrnlDiaryTagJoin.get("regstrId"), value));     // 등록자 ID 기준으로 조회
             }
         }
 

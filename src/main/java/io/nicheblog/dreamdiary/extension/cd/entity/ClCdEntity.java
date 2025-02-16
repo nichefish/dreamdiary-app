@@ -69,6 +69,7 @@ public class ClCdEntity
     /** 분류 코드 정보 */
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "cl_cd", referencedColumnName = "cl_cd", insertable = false, updatable = false)
+    @BatchSize(size = 10)
     @OrderBy("state.sortOrdr ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @ToString.Exclude

@@ -56,6 +56,7 @@ public class JrnlDayTagEntity
     /** 저널 일기 태그 */
     @OneToMany(mappedBy = "tag", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
+    @BatchSize(size = 10)
     @NotFound(action = NotFoundAction.IGNORE)
     private List<JrnlDayContentTagEntity> jrnlDayTagList;
 }

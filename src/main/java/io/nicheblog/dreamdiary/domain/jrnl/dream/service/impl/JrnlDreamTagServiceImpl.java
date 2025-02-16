@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.repository.jpa.JrnlDreamTagRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamTagService;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.spec.JrnlDreamTagSpec;
+import io.nicheblog.dreamdiary.extension.clsf.tag.model.ContentTagCntDto;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,8 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 /**
@@ -108,14 +111,16 @@ public class JrnlDreamTagServiceImpl
     @Override
     public Integer calcMaxSize(final List<TagDto> tagList, Integer yy, Integer mnth) {
         int maxFrequency = 0;
-        for (TagDto tag : tagList) {
-            final JrnlDreamContentTagParam param = JrnlDreamContentTagParam.builder()
-                    .tagNo(tag.getTagNo())
-                    .yy(yy)
-                    .mnth(mnth)
-                    .regstrId(AuthUtils.getLgnUserId())
-                    .build();
-            final Integer dreamSize = this.getSelf().countDreamSize(param);      // 캐싱 처리 위해 셀프 프록시
+
+        final JrnlDreamContentTagParam param = JrnlDreamContentTagParam.builder()
+                .yy(yy)
+                .mnth(mnth)
+                .regstrId(AuthUtils.getLgnUserId())
+                .build();
+        final Map<Integer, Integer> tagCntMap = this.getSelf().countDreamSizeMap(param);
+
+        for (final TagDto tag : tagList) {
+            final Integer dreamSize = tagCntMap.get(tag.getTagNo());
             tag.setContentSize(dreamSize);
             maxFrequency = Math.max(maxFrequency, dreamSize);
         }
@@ -132,6 +137,25 @@ public class JrnlDreamTagServiceImpl
     @Cacheable(value="myCountDreamSize", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #param.tagNo + \"_\" + #param.yy + \"_\" + #param.mnth")
     public Integer countDreamSize(final JrnlDreamContentTagParam param) {
         return repository.countDreamSize(param);
+    }
+
+    /**
+     * 꿈 태그별 크기 맵 조회
+     *
+     * @return {@link Map} -- 카테고리별 태그 목록을 담은 Map
+     */
+    @Override
+    @Cacheable(value="myCountDreamSizeMap", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #param.yy + \"_\" + #param.mnth")
+    public Map<Integer, Integer> countDreamSizeMap(final JrnlDreamContentTagParam param) {
+        final List<ContentTagCntDto> tagCountList = repository.countDreamSizeMap(param);
+
+        // List를 태그 번호를 키로 하고, 태그 개수를 값으로 하는 Map으로 변환
+        final ConcurrentMap<Integer, Integer> concurrentMap = tagCountList.stream()
+                .collect(Collectors.toConcurrentMap(
+                        ContentTagCntDto::getTagNo,
+                        dto -> dto.getCount().intValue()   // Long을 int로 변환
+                ));
+        return new ConcurrentHashMap<>(concurrentMap);
     }
 
     /**
@@ -154,14 +178,18 @@ public class JrnlDreamTagServiceImpl
     /**
      * 태그 카테고리 맵을 반환합니다.
      *
+     * @param userId 사용자 아이디
      * @return {@link Map} -- 태그 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
-    @Cacheable(value="myJrnlDreamTagCtgrMap", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId()")
-    public Map<String, List<String>> getTagCtgrMap() throws Exception {
+    @Cacheable(value="myJrnlDreamTagCtgrMap", key="#userId")
+    public Map<String, List<String>> getTagCtgrMap(final String userId) throws Exception {
+        final HashMap<String, Object> paramMap = new HashMap<>() {{
+            put("regstrId", userId);
+        }};
 
-        final List<JrnlDreamTagEntity> tagList = this.getSelf().getListEntity(new HashMap<>());
+        final List<JrnlDreamTagEntity> tagList = this.getSelf().getListEntity(paramMap);
         return tagList.stream()
                 .collect(Collectors.groupingBy(
                         JrnlDreamTagEntity::getTagNm,

@@ -13,6 +13,7 @@ import java.io.Serializable;
  * </pre>
  *
  * @author nichefish
+ * @see StateEmbedModule
  */
 @Embeddable
 @Getter

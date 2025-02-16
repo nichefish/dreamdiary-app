@@ -13,6 +13,7 @@ import java.util.List;
  * </pre>
  *
  * @author nichefish
+ * @see CommentCmpstnModule
  */
 @Getter
 @Setter

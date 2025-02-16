@@ -33,15 +33,6 @@ import javax.persistence.*;
 public class ContentTagEntity
         extends BaseAuditRegEntity {
 
-    @PostLoad
-    private void onLoad() {
-        // 태그 이름 세팅
-        if (this.tag != null) {
-            this.tagNm = this.tag.getTagNm();
-            this.ctgr = this.tag.getCtgr();
-        }
-    }
-
     /** 컨텐츠 태그 번호 (PK) */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
