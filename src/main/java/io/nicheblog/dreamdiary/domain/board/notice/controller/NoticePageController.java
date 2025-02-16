@@ -95,8 +95,8 @@ public class NoticePageController
         // 목록 검색 URL + 파라미터 모델에 추가
         CmmUtils.Param.setModelAttrMap(searchParam, baseUrl, model);
 
-        boolean isSuccess = true;
-        String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
@@ -135,7 +135,7 @@ public class NoticePageController
         // cmmService.setModelFlsysPath(model);
 
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
@@ -169,7 +169,7 @@ public class NoticePageController
         model.addAttribute("post", notice);
 
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
@@ -205,7 +205,7 @@ public class NoticePageController
         model.addAttribute("post", retrievedDto);
 
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 조회수 카운트 추가
         // TODO: AOP로 분리
@@ -254,7 +254,7 @@ public class NoticePageController
         // cmmService.setModelFlsysPath(model);
 
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);

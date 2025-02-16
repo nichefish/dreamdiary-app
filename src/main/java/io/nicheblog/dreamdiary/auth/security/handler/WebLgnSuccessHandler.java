@@ -82,7 +82,7 @@ public class WebLgnSuccessHandler
         DupIdLgnManager.addKey(userId);
 
         // 로그인 로그 남기기
-        final LogActvtyParam logParam = new LogActvtyParam(true, MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS), ActvtyCtgr.LGN);
+        final LogActvtyParam logParam = new LogActvtyParam(true, MessageUtils.RSLT_SUCCESS, ActvtyCtgr.LGN);
         publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
 
         // 캐시 웜업 이벤트 발행

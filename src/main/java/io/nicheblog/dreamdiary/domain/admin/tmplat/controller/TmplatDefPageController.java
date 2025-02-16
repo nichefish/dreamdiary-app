@@ -83,7 +83,7 @@ public class TmplatDefPageController
         CmmUtils.Param.setModelAttrMap(searchParam, baseUrl, model);
 
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         logParam.setResult(isSuccess, rsltMsg);
 

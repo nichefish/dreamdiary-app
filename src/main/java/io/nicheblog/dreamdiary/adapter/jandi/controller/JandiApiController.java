@@ -63,7 +63,7 @@ public class JandiApiController
         log.info("requestUrl: {}, jandiParam: {}", request.getRequestURL(), jandiParam.toString());
 
         final boolean isSuccess = jandiApiService.sendMsg(jandiParam);
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
         // 응답 결과 세팅
         apiResponse.setApiResult(isSuccess, rsltMsg);
@@ -94,7 +94,7 @@ public class JandiApiController
     //     final String rsltMsg = "";
     //     try {
     //         isSuccess = jandiApiService.receiveMsg(rcvMsg);
-    //         rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+    //         rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
     //     } catch (final Exception e) {
     //         isSuccess = false;
     //         rsltMsg = MessageUtils.getExceptionMsg(e);

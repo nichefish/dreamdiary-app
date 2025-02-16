@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.mapstruct.LgnPolicyMapstru
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.model.LgnPolicyDto;
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.repository.jpa.LgnPolicyRepository;
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.service.LgnPolicyService;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -77,12 +78,15 @@ public class LgnPolicyServiceImpl
     @Override
     @Transactional
     @CacheEvict(value = {"lgnPolicyEntity", "lgnPolicy"}, allEntries = true)
-    public Boolean regist(final LgnPolicyDto registDto) throws Exception {
+    public ServiceResponse regist(final LgnPolicyDto registDto) throws Exception {
         // Dto -> Entity 변환
         final LgnPolicyEntity retrievedEntity = mapstruct.toEntity(registDto);
         // insert/update
         final LgnPolicyEntity updated = repository.save(retrievedEntity);
 
-        return (updated.getLgnPolicyNo() != null);
+        return ServiceResponse.builder()
+                .rslt(updated.getLgnPolicyNo() != null)
+                .rsltObj(mapstruct.toDto(updated))
+                .build();
     }
 }

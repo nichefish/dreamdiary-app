@@ -12,6 +12,7 @@ import io.nicheblog.dreamdiary.domain.vcatn.stats.service.VcatnStatsYyService;
 import io.nicheblog.dreamdiary.extension.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.service.BasePostService;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -104,15 +105,17 @@ public class VcatnPaprService
      * 일정 > 휴가계획서 > 휴가계획서 상세보기 > 확인 여부 변경
      */
     @Transactional
-    public VcatnPaprDto cf(final Integer key) throws Exception {
+    public ServiceResponse cf(final Integer key) throws Exception {
         final VcatnPaprEntity vcatnPaprEntity = this.getDtlEntity(key);
         vcatnPaprEntity.setCfYn("Y");
         // update
         final VcatnPaprEntity updatedEntity = this.updt(vcatnPaprEntity);
-        VcatnPaprDto updatedDto = mapstruct.toDto(updatedEntity);
-        updatedDto.setIsSuccess(updatedEntity.getPostNo() != null);
+        final VcatnPaprDto updatedDto = mapstruct.toDto(updatedEntity);
 
-        return updatedDto;
+        return ServiceResponse.builder()
+                .rslt(updatedEntity.getPostNo() != null)
+                .rsltObj(updatedDto)
+                .build();
     }
 
     /**

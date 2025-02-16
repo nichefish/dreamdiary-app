@@ -68,8 +68,6 @@ public class HldyKasiApiController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         log.info("requestUrl: {}", request.getRequestURL() + "?" + request.getQueryString());
 
         // 기존 정보 (API로 받아온 휴일) 삭제 후 재등록
@@ -78,14 +76,11 @@ public class HldyKasiApiController
         final List<HldyKasiApiItemDto> hldyApiList = hldyKasiApiService.getHldyList(yyStr);
 
         final boolean isSuccess = hldyKasiApiService.regHldyList(hldyApiList);
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
-        // 응답 결과 세팅
-        ajaxResponse.setRsltList(hldyApiList);
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(hldyApiList));
     }
 }

@@ -67,8 +67,8 @@ public class TagPageController
         // 활성 컨텐츠 타입 모델에 추가
         model.addAttribute("refContentType", searchParam.getRefContentType());
 
-        boolean isSuccess = true;
-        String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);

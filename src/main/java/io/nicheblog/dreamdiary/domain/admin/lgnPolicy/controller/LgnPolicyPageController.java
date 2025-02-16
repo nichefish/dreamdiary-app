@@ -66,7 +66,7 @@ public class LgnPolicyPageController
         model.addAttribute("lgnPolicy", lgnPolicy);
 
         final boolean isSuccess = (lgnPolicy != null);
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);

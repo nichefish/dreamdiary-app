@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.domain.admin.lgnPolicy.service;
 
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.entity.LgnPolicyEntity;
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.model.LgnPolicyDto;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 
 /**
  * LgnPolicyService
@@ -36,5 +37,5 @@ public interface LgnPolicyService {
      * @return {@link Boolean} -- 성공 여부를 나타내는 Boolean 값
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
-    Boolean regist(final LgnPolicyDto registDto) throws Exception;
+    ServiceResponse regist(final LgnPolicyDto registDto) throws Exception;
 }

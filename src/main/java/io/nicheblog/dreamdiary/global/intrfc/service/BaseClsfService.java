@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
@@ -35,16 +36,18 @@ public interface BaseClsfService<Dto extends BaseClsfDto & Identifiable<Key>, Li
      */
     @Override
     @Transactional
-    default Dto regist(final Dto registDto) throws Exception {
-        // 등록 전처리
+    default ServiceResponse regist(final Dto registDto) throws Exception {
+        final ServiceResponse response = new ServiceResponse();
+
+        // optional: 등록 전처리 (dto)
         this.preRegist(registDto);
 
         // Dto -> Entity 변환
         final Mapstruct mapstruct = this.getMapstruct();
         final Entity registEntity = mapstruct.toEntity(registDto);
 
-        // 등록 중간처리
-        this.midRegist(registEntity);
+        // optional: 등록 전처리 (entity)
+        this.preRegist(registEntity);
 
         // managt 처리
         if (registDto instanceof ManagtCmpstnModule && registEntity instanceof ManagtEmbedModule) {
@@ -54,7 +57,7 @@ public interface BaseClsfService<Dto extends BaseClsfDto & Identifiable<Key>, Li
         // insert
         final Entity updatedEntity = this.updt(registEntity);
 
-        // 등록 후처리
+        // optional: 등록 후처리
         this.postRegist(updatedEntity);
 
         // 연관 캐시 삭제
@@ -64,7 +67,11 @@ public interface BaseClsfService<Dto extends BaseClsfDto & Identifiable<Key>, Li
         }};
         this.evictRelCaches(entities);
 
-        return mapstruct.toDto(updatedEntity);
+        final Dto dto = mapstruct.toDto(updatedEntity);
+
+        response.setRslt(dto.getKey() != null);
+        response.setRsltObj(dto);
+        return response;
     }
 
     /**
@@ -76,21 +83,23 @@ public interface BaseClsfService<Dto extends BaseClsfDto & Identifiable<Key>, Li
      */
     @Override
     @Transactional
-    default Dto modify(final Dto modifyDto) throws Exception {
-        // 수정 전처리
+    default ServiceResponse modify(final Dto modifyDto) throws Exception {
+        final ServiceResponse response = new ServiceResponse();
+
+        // optional: 수정 전처리 (dto)
         this.preModify(modifyDto);
 
         // Entity 레벨 조회
         final Entity modifyEntity = this.getDtlEntity(modifyDto);
 
-        // 수정 전처리 (기존 데이터 처리 관련)
-        this.preModify(modifyDto, modifyEntity);
+        // optional: 수정 전 상태 저장 (기존 데이터 처리 관련)
+        this.strePrevStus(response, modifyEntity);
 
         final Mapstruct mapstruct = this.getMapstruct();
         mapstruct.updateFromDto(modifyDto, modifyEntity);
 
-        // 수정 중간처리
-        this.midModify(modifyEntity);
+        // optional: 수정 전처리 (entity)
+        this.preModify(modifyEntity);
 
         // managt 처리
         if (this.isManagtModule(modifyDto, modifyEntity)) {
@@ -114,7 +123,11 @@ public interface BaseClsfService<Dto extends BaseClsfDto & Identifiable<Key>, Li
         }};
         this.evictRelCaches(entities);
 
-        return mapstruct.toDto(updatedEntity);
+        final Dto dto = mapstruct.toDto(updatedEntity);
+
+        response.setRslt(dto.getKey() != null);
+        response.setRsltObj(dto);
+        return response;
     }
 
     /**

@@ -1,6 +1,13 @@
 package io.nicheblog.dreamdiary.extension.clsf.tag.service.impl;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.day.event.JrnlDayTagCntAddEvent;
+import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayService;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryService;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamService;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.ContentTagEntity;
@@ -50,6 +57,11 @@ public class ContentTagServiceImpl
     private final ContentTagMapstruct mapstruct = ContentTagMapstruct.INSTANCE;
 
     private final TagSmpRepository tagSmpRepository;
+    private final JrnlDayService jrnlDayService;
+    private final JrnlDiaryService jrnlDiaryService;
+    private final JrnlDreamService jrnlDreamService;
+
+
     private final ApplicationEventPublisherWrapper publisher;
 
     private final ApplicationContext context;
@@ -161,7 +173,42 @@ public class ContentTagServiceImpl
         final List<ContentTagEntity> contentTagList = rsList.stream()
                 .map(tag -> new ContentTagEntity(tag.getTagNo(), clsfKey))
                 .collect(Collectors.toList());
-        this.registAll(contentTagList);
+        final List<ContentTagEntity> registeredList = this.registAll(contentTagList);
+
+        switch (ContentType.get(clsfKey.getContentType())) {
+            case JRNL_DAY: {
+                JrnlDayEntity jrnlDay = jrnlDayService.getDtlEntity(clsfKey.getPostNo());
+                Integer yy = jrnlDay.getYy();
+                Integer mnth = jrnlDay.getMnth();
+                List<Integer> tagNoList = registeredList.stream()
+                        .map(ContentTagEntity::getRefTagNo)
+                        .toList();
+                publisher.publishEvent(new JrnlDayTagCntAddEvent(this, yy, mnth, tagNoList));
+                break;
+            }
+            case JRNL_DIARY: {
+                JrnlDiaryEntity jrnlDiary = jrnlDiaryService.getDtlEntity(clsfKey.getPostNo());
+                Integer yy = jrnlDiary.getJrnlDay().getYy();
+                Integer mnth = jrnlDiary.getJrnlDay().getMnth();
+                List<Integer> tagNoList = registeredList.stream()
+                        .map(ContentTagEntity::getRefTagNo)
+                        .toList();
+                publisher.publishEvent(new JrnlDayTagCntAddEvent(this, yy, mnth, tagNoList));
+                break;
+            }
+            case JRNL_DREAM: {
+                JrnlDreamEntity jrnlDream = jrnlDreamService.getDtlEntity(clsfKey.getPostNo());
+                Integer yy = jrnlDream.getJrnlDay().getYy();
+                Integer mnth = jrnlDream.getJrnlDay().getMnth();
+                List<Integer> tagNoList = registeredList.stream()
+                        .map(ContentTagEntity::getRefTagNo)
+                        .toList();
+                publisher.publishEvent(new JrnlDayTagCntAddEvent(this, yy, mnth, tagNoList));
+                break;
+            }
+            default:
+                break;
+        }
     }
 
     /**

@@ -87,7 +87,7 @@ public class ClCdPageController
         dtlCdService.setCdListToModel(Constant.CL_CTGR_CD, model);
 
         boolean isSuccess = true;
-        String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
@@ -123,8 +123,8 @@ public class ClCdPageController
         // 코드 데이터 모델에 추가
         dtlCdService.setCdListToModel(Constant.CL_CTGR_CD, model);
 
-        boolean isSuccess = true;
-        String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
         // 로그 관련 세팅
 
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);

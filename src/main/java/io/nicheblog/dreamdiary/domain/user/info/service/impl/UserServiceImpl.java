@@ -12,6 +12,7 @@ import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
 import io.nicheblog.dreamdiary.domain.user.info.spec.UserSpec;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
@@ -124,7 +125,7 @@ public class UserServiceImpl
      * @param registEntity 등록 전 entity 객체
      */
     @Override
-    public void midRegist(final UserEntity registEntity) throws Exception {
+    public void preRegist(final UserEntity registEntity) throws Exception {
         // 접속 IP 정보 없을시 사용으로 찍었더라도 미사용으로 변경
         registEntity.setPassword(passwordEncoder.encode(registEntity.getPassword()));
         registEntity.setAcntStus(UserStusEmbed.getRegistStus());
@@ -137,10 +138,10 @@ public class UserServiceImpl
      */
     @Override
     @Transactional
-    public Boolean passwordReset(final Integer key) throws Exception {
+    public ServiceResponse passwordReset(final Integer key) throws Exception {
         // Entity 레벨 조회
         final UserEntity retrievedEntity = this.getDtlEntity(key);
-        if (retrievedEntity == null) return false;
+        if (retrievedEntity == null) throw new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException"));
 
         // 로그인 설정 조회 (cachable)
         final LgnPolicyEntity lgnPolicy = lgnPolicyService.getDtlEntity();
@@ -151,7 +152,9 @@ public class UserServiceImpl
         retrievedEntity.acntStus.setPwChgDt(DateUtils.getCurrDate());
         final UserEntity updatedEntity = repository.saveAndFlush(retrievedEntity);
 
-        return (updatedEntity.getUserNo() != null);
+        return ServiceResponse.builder()
+                .rslt(updatedEntity.getUserNo() != null)
+                .build();
     }
 
     /**
@@ -175,16 +178,18 @@ public class UserServiceImpl
      */
     @Override
     @Transactional
-    public UserDto.DTL modify(final UserDto.DTL modifyDto) throws Exception {
+    public ServiceResponse modify(final UserDto.DTL modifyDto) throws Exception {
         final UserEntity modifyEntity = this.getDtlEntity(modifyDto);
         mapstruct.updateFromDto(modifyDto, modifyEntity);
 
         // update
         final UserEntity updatedEntity = this.updt(modifyEntity);
         final UserDto.DTL updatedDto = mapstruct.toDto(updatedEntity);
-        updatedDto.setIsSuccess((updatedEntity.getUserNo() != null));
 
-        return updatedDto;
+        return ServiceResponse.builder()
+                .rslt(updatedEntity.getUserNo() != null)
+                .rsltObj(updatedDto)
+                .build();
     }
 
     /**
@@ -211,17 +216,19 @@ public class UserServiceImpl
      */
     @Override
     @Transactional
-    public Boolean userLock(final Integer key) throws Exception {
+    public ServiceResponse userLock(final Integer key) throws Exception {
         // Entity 레벨 조회
         final UserEntity retrievedEntity = this.getDtlEntity(key);
-        if (retrievedEntity == null) return false;
+        if (retrievedEntity == null) throw new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException"));
 
         // lockedYn 플래그 업데이트
         retrievedEntity.acntStus.setLockedYn("Y");
         retrievedEntity.acntStus.setLgnFailCnt(0);
         final UserEntity updatedEntity = repository.saveAndFlush(retrievedEntity);
 
-        return updatedEntity.getUserNo() != null;
+        return ServiceResponse.builder()
+                .rslt(updatedEntity.getUserNo() != null)
+                .build();
     }
 
     /**
@@ -229,10 +236,10 @@ public class UserServiceImpl
      */
     @Override
     @Transactional
-    public Boolean userUnlock(final Integer key) throws Exception {
+    public ServiceResponse userUnlock(final Integer key) throws Exception {
         // Entity 레벨 조회
         final UserEntity retrievedEntity = this.getDtlEntity(key);
-        if (retrievedEntity == null) return false;
+        if (retrievedEntity == null) throw new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException"));
 
         // lockedYn 플래그 + 최종접속일 업데이트
         retrievedEntity.acntStus.setLockedYn("N");
@@ -240,7 +247,9 @@ public class UserServiceImpl
         retrievedEntity.acntStus.setLstLgnDt(DateUtils.getCurrDate());
         final UserEntity updatedEntity = repository.saveAndFlush(retrievedEntity);
 
-        return updatedEntity.getUserNo() != null;
+        return ServiceResponse.builder()
+                .rslt(updatedEntity.getUserNo() != null)
+                .build();
     }
 
     /**

@@ -66,7 +66,7 @@ public class NotifyEventHandler {
             jandiApiService.sendMsg(trgetTopic, msg, title, fullUrl);
             jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_SUCCESS);
         } catch (final Exception e) {
-            jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);
+            jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);;
             logParam.setResult(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.JANDI);
             publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
         }
@@ -97,7 +97,7 @@ public class NotifyEventHandler {
             jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_SUCCESS);
         } catch (final Exception e) {
             logParam.setExceptionInfo(e);
-            jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);
+            jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);;
             publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
         }
         return jandiRsltMsg;
@@ -131,7 +131,7 @@ public class NotifyEventHandler {
             jandiApiService.sendMsg(trgetTopic, msg, title, fullUrl);
             jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_SUCCESS);
         } catch (final Exception e) {
-            jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);
+            jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);;
             logParam.setResult(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.JANDI);
             publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
         }
@@ -163,7 +163,7 @@ public class NotifyEventHandler {
             jandiApiService.sendMsg(trgetTopic, msg, title, fullUrl);
             jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_SUCCESS);
         } catch (final Exception e) {
-            jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);
+            jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);;
             logParam.setResult(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.JANDI);
             publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
         }
@@ -195,11 +195,11 @@ public class NotifyEventHandler {
     //             String url = DateUtils.asStr(brthdyStr, DatePtn.BRTHDY) + (isLunar ? "음력" : "");
     //             // 메세지 발송
     //             isSuccess = jandiApiService.sendMsg(trgetTopic, msg, title, url);
-    //             jandiRsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_JANDI_SUCCESS : MessageUtils.RSLT_JANDI_FAILURE);
+    //             jandiRsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_JANDI_SUCCESS : MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE););
     //         }
     //         isSuccess = true;
     //     } catch (final Exception e) {
-    //         jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);
+    //         jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);;
     //         logParam.setResult(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.JANDI);
     //         publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
     //     }

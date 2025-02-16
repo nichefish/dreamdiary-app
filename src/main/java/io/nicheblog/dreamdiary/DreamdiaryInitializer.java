@@ -15,6 +15,7 @@ import io.nicheblog.dreamdiary.extension.log.sys.model.LogSysParam;
 import io.nicheblog.dreamdiary.global.ActiveProfile;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -101,10 +102,9 @@ public class DreamdiaryInitializer
             } catch (final UsernameNotFoundException e) {
                 // 시스템 계정 부재시 등록:: 메소드 분리
                 isSuccess = this.regSystemAcnt();
-                rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+                rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
             }
         } catch (final Exception e) {
-            isSuccess = false;
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);
         } finally {
@@ -137,8 +137,8 @@ public class DreamdiaryInitializer
                 .regstrId(Constant.SYSTEM_ACNT)
                 .build();
 
-        final UserDto rslt = userService.regist(systemAcnt);
-        return (rslt.getUserNo() != null);
+        final ServiceResponse result = userService.regist(systemAcnt);
+        return result.getRslt();
     }
 
     /**
@@ -162,9 +162,8 @@ public class DreamdiaryInitializer
             }
             // 로그인 정책 부재시 등록:: 메소드 분리
             isSuccess = this.regLgnPolicy();
-            rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+            rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
         } catch (final Exception e) {
-            isSuccess = false;
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);
         } finally {
@@ -189,6 +188,6 @@ public class DreamdiaryInitializer
                 .pwForReset(SYSTEM_INIT_TEMP_PW)
                 .build();
 
-        return lgnPolicyService.regist(lgnPolicy);
+        return lgnPolicyService.regist(lgnPolicy).getRslt();
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,36 +20,17 @@ import java.util.Map;
  */
 @Getter
 @Setter
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AjaxResponse {
-
-    /** message */
-    private String message;
+public class AjaxResponse
+        extends ServiceResponse {
 
     /** status */
     private Integer status;
 
     /** TODO: url to replace? */
     private String url;
-
-    /** 결과 (성공여부) */
-    private Boolean rslt;
-
-    /** 결과 (목록) */
-    private List<?> rsltList;
-
-    /** 결과 (맵) */
-    private HashMap<String, Object> rsltMap;
-
-    /** 결과 (숫자) */
-    private Integer rsltVal;
-
-    /** 결과 (객체) */
-    private Object rsltObj;
-
-    /** 결과 (문자열) */
-    private String rsltStr;
 
     /** 페이징 정보 */
     private PaginationInfo pagination;
@@ -57,31 +39,92 @@ public class AjaxResponse {
 
     /**
      * 생성자.
-     * @param rslt AJAX 요청의 결과(true: 성공, false: 실패)
+     *
+     * @param rslt AJAX 요청 결과 (true: 성공, false: 실패)
      * @param message 요청에 대한 메시지
      */
     public AjaxResponse(final Boolean rslt, final String message) {
-        this.rslt = rslt;
-        this.message = message;
+        super(rslt, message);
         if (this.status == null) this.status = rslt ? 200 : 400;
     }
 
     /**
      * Ajax 결과 세팅.
-     * @param rslt AJAX 요청의 결과(true: 성공, false: 실패)
+     *
+     * @param rslt AJAX 요청 결과 (true: 성공, false: 실패)
      * @param message 요청에 대한 메시지
      */
-    public void setAjaxResult(final Boolean rslt, final String message) {
-        this.rslt = rslt;
-        this.message = message;
-        if (this.status == null) this.status = rslt ? 200 : 400;
+    public static AjaxResponse withAjaxResult(final Boolean rslt, final String message) {
+        return AjaxResponse.builder()
+                .rslt(rslt)
+                .message(message)
+                .status(rslt ? 200 : 400)
+                .build();
     }
 
     /**
+     * 정적 팩토리 메소드
+     */
+    public static AjaxResponse fromResponse(final ServiceResponse response, final String rsltMsg) {
+        return AjaxResponse.builder()
+                .rslt(response.getRslt())
+                .message(rsltMsg)
+                .build();
+    }
+
+    /**
+     * 정적 팩토리 메소드
+     */
+    public static AjaxResponse fromResponseWithObj(final ServiceResponse response, final String rsltMsg) {
+        return AjaxResponse.builder()
+                .rslt(response.getRslt())
+                .message(rsltMsg)
+                .rsltObj(response.getRsltObj())
+                .build();
+    }
+
+    /**
+     * Ajax 결과 세팅.
+     *
+     * @param rslt AJAX 요청 결과 (true: 성공, false: 실패)
+     * @param message 요청에 대한 메시지
+     */
+    public AjaxResponse setAjaxResult(final Boolean rslt, final String message) {
+        setResult(rslt, message);
+        if (this.status == null) this.status = rslt ? 200 : 400;
+        return this;
+    }
+
+    /**
+     * 체이닝 메소드
+     */
+    public AjaxResponse withObj(Object rsltObj) {
+        this.setRsltObj(rsltObj);
+        return this;
+    }
+
+    /**
+     * 체이닝 메소드
+     */
+    public AjaxResponse withMap(HashMap<String, ?> rsltMap) {
+        this.setRsltMap(rsltMap);
+        return this;
+    }
+    /**
      * Map이 들어올 시 HashMap으로 변환.
+     *
      * @param map 변환할 Map 객체
      */
-    public void setRsltMap(final Map<String, ?> map) {
-        this.rsltMap = new HashMap<>(map);
+    public AjaxResponse withMap(final Map<String, ?> map) {
+        this.setRsltMap(new HashMap<>(map));
+        return this;
+    }
+
+    /**
+     * 체이닝 메소드
+     */
+    public AjaxResponse withList(List<?> rsltList) {
+        this.setRsltList(rsltList);
+        return this;
     }
 }

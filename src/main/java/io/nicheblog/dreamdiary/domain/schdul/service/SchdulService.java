@@ -10,6 +10,7 @@ import io.nicheblog.dreamdiary.domain.schdul.spec.SchdulSpec;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +44,11 @@ public class SchdulService
     private final SchdulSpec spec;
     @Getter
     private final SchdulMapstruct mapstruct = SchdulMapstruct.INSTANCE;
+
+    private final ApplicationContext context;
+    private SchdulService getSelf() {
+        return context.getBean(this.getClass());
+    }
 
     /**
      * 등록 전처리. (override)
@@ -91,7 +98,7 @@ public class SchdulService
      */
     @Override
     @Transactional
-    public SchdulDto modify(final SchdulDto modifyDto) throws Exception {
+    public ServiceResponse modify(final SchdulDto modifyDto) throws Exception {
         // 수정 전처리
         this.preModify(modifyDto);
 
@@ -104,9 +111,11 @@ public class SchdulService
         // update
         final SchdulEntity updatedEntity = this.updt(modifyEntity);
         final SchdulDto updatedDto = mapstruct.toDto(updatedEntity);
-        updatedDto.setIsSuccess(updatedEntity.getPostNo() != null);
 
-        return updatedDto;
+        return ServiceResponse.builder()
+                .rslt(updatedEntity.getPostNo() != null)
+                .rsltObj(updatedDto)
+                .build();
     }
 
     /**
@@ -140,7 +149,7 @@ public class SchdulService
      */
     @Cacheable(cacheNames = "isHldyOrWeekend", key = "#date")
     public Boolean isHldyOrWeekend(final Object date) throws Exception {
-        return (this.isHldy(date) || DateUtils.isWeekend(date));
+        return (this.getSelf().isHldy(date) || DateUtils.isWeekend(date));
     }
 
     /**
@@ -149,7 +158,7 @@ public class SchdulService
     public Date getFirstBsnsDayInCurrMnth() throws Exception {
         Date keyDt = DateUtils.asDate(DateUtils.getCurrYyMnthStr() + "01");
         while (true) {
-            if (!this.isHldyOrWeekend(keyDt)) return keyDt;
+            if (!this.getSelf().isHldyOrWeekend(keyDt)) return keyDt;
             keyDt = DateUtils.addDays(keyDt, 1);
         }
     }

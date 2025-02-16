@@ -69,8 +69,8 @@ public class EhCacheUtils {
     /**
      * 캐시 목록(Map) 조회
      */
-    public static Map<String, Object> getActiveCacheMap() {
-        final Map<String, Object> cacheContents = new HashMap<>();
+    public static HashMap<String, Object> getActiveCacheMap() {
+        final HashMap<String, Object> cacheContents = new HashMap<>();
 
         final List<Cache> activeCacheList = getActiveCacheList();
         activeCacheList.forEach(cache -> {

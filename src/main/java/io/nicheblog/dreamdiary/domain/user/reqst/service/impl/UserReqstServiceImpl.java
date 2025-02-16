@@ -9,12 +9,15 @@ import io.nicheblog.dreamdiary.domain.user.reqst.mapstruct.UserReqstMapstruct;
 import io.nicheblog.dreamdiary.domain.user.reqst.model.UserReqstDto;
 import io.nicheblog.dreamdiary.domain.user.reqst.service.UserReqstService;
 import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 /**
@@ -60,7 +63,7 @@ public class UserReqstServiceImpl
      */
     @Override
     @Transactional
-    public UserReqstDto regist(final UserReqstDto registDto) throws Exception {
+    public ServiceResponse regist(final UserReqstDto registDto) throws Exception {
         // 전처리 (메소드 분리)
         this.preRegist(registDto);
 
@@ -74,7 +77,10 @@ public class UserReqstServiceImpl
         // insert
         UserEntity updatedEntity = userRepository.save(registEntity);
 
-        return userReqstMapstruct.toDto(updatedEntity);
+        return ServiceResponse.builder()
+                .rslt(updatedEntity.getUserNo() != null)
+                .rsltObj(userReqstMapstruct.toDto(updatedEntity))
+                .build();
     }
 
     /**
@@ -86,10 +92,10 @@ public class UserReqstServiceImpl
      */
     @Override
     @Transactional
-    public Boolean cf(final Integer key) throws Exception {
+    public ServiceResponse cf(final Integer key) throws Exception {
         // Entity 레벨 조회
         final UserEntity retrievedEntity = userService.getDtlEntity(key);
-        if (retrievedEntity == null) return false;
+        if (retrievedEntity == null) throw new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException"));
 
         // lockedYn 플래그 업데이트
         retrievedEntity.acntStus.setCfYn("Y");
@@ -97,7 +103,9 @@ public class UserReqstServiceImpl
         retrievedEntity.acntStus.setLgnFailCnt(0);
         final UserEntity updatedEntity = userRepository.saveAndFlush(retrievedEntity);
 
-        return updatedEntity.getUserNo() != null;
+        return ServiceResponse.builder()
+                .rslt(updatedEntity.getUserNo() != null)
+                .build();
     }
 
     /**
@@ -109,10 +117,10 @@ public class UserReqstServiceImpl
      */
     @Override
     @Transactional
-    public Boolean uncf(final Integer key) throws Exception {
+    public ServiceResponse uncf(final Integer key) throws Exception {
         // Entity 레벨 조회
         final UserEntity retrievedEntity = userService.getDtlEntity(key);
-        if (retrievedEntity == null) return false;
+        if (retrievedEntity == null) throw new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException"));
 
         // lockedYn 플래그 업데이트
         retrievedEntity.acntStus.setCfYn("N");
@@ -120,6 +128,8 @@ public class UserReqstServiceImpl
         retrievedEntity.acntStus.setLgnFailCnt(0);
         final UserEntity updatedEntity = userRepository.saveAndFlush(retrievedEntity);
 
-        return updatedEntity.getUserNo() != null;
+        return ServiceResponse.builder()
+                .rslt(updatedEntity.getUserNo() != null)
+                .build();
     }
 }

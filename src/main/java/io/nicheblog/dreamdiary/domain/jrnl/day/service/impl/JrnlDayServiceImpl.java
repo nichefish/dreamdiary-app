@@ -149,7 +149,7 @@ public class JrnlDayServiceImpl
     }
 
     @Override
-    public void midRegist(final JrnlDayEntity registEntity) throws Exception {
+    public void preRegist(final JrnlDayEntity registEntity) throws Exception {
         final Integer yy = registEntity.getYy();
         final Integer mnth = registEntity.getMnth();
         publisher.publishEvent(new JrnlDayTagCntAddEvent(this, yy, mnth, registEntity.getTagNoList()));
