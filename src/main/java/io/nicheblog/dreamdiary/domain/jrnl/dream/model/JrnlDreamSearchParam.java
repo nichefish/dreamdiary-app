@@ -27,6 +27,9 @@ public class JrnlDreamSearchParam
     /** 월 */
     private Integer mnth;
 
+    /** 저널 일자 번호 */
+    private Integer jrnlDayNo;
+
     /** 컨텐츠 타입 */
     private String contentType;
 

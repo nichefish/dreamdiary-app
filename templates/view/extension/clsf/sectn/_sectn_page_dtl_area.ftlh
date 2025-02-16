@@ -46,7 +46,7 @@
                         </div>
                     </#if>
                 </div>
-                <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between w-50px gap-1">
+                <div class="col-1 py-3 d-flex-between w-50px gap-1">
                     <button type="button" class="btn btn-light-primary btn-outlined ms-2 py-1 px-3 h-30px cursor-pointer"
                             onclick="dF.Comment.modal.regModal(${sectn.postNo!}, '${sectn.contentType!}');"
                             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'comment'/> <@spring.message 'bs.tooltip.modal.reg'/>">

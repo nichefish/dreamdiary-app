@@ -5,9 +5,10 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
+<#assign modal_title = "사이트 캐시 목록 조회" />
 <@modal.layout id="cache_dtl" size="xl">
     <#--begin::Modal Header-->
-    <@component.modal_header_with_back "사이트 캐시 목록 조회" />
+    <@component.modal_header_with_back modal_title />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <div id="cache_dtl_div">

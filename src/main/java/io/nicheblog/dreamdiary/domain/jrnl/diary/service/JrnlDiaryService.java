@@ -10,6 +10,7 @@ import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * JrnlDiaryService
@@ -30,6 +31,34 @@ public interface JrnlDiaryService
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     List<JrnlDiaryDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception;
+
+    /**
+     * 특정 저널 일자에 대한 목록 조회 (entity level) :: 캐시 처리
+     *
+     * @param jrnlDayNo 저널 일자 번호
+     * @return {@link List} -- 조회된 목록
+     * @throws Exception 조회 중 발생할 수 있는 예외
+     */
+    List<JrnlDiaryEntity> getMyListEntityByJrnlDay(final Integer jrnlDayNo) throws Exception;
+
+
+    /**
+     * default: 항목 목록 조회 (entity level)
+     *
+     * @param searchParam 검색 조건 파라미터
+     * @return {@link List} -- 목록 (entity level)
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    List<JrnlDiaryEntity> getListEntityWithTag(final BaseSearchParam searchParam) throws Exception;
+
+    /**
+     * default: 항목 목록 조회 (entity level)
+     *
+     * @param searchParamMap 검색 조건 파라미터 맵
+     * @return {@link List} -- 목록 (entity level)
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    List<JrnlDiaryEntity> getListEntityWithTag(final Map<String, Object> searchParamMap) throws Exception;
 
     /**
      * 특정 년도의 중요 일기 목록 조회 :: 캐시 처리

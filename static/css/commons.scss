@@ -27,25 +27,27 @@
     vertical-align: center;
 }
 
-.fs-small {
-    font-size: small !important;
-}
-
-.d-justify-center {
-    display: flex;
-    justify-content: center;
-}
-.d-align-center {
-    display: flex;
-    align-items: center;
-}
 .d-flex-center {
     display: flex;
     justify-content: center;
     align-items: center;
 }
+.d-flex-between {
+    display: flex;
+    justify-content: space-between;
+}
+.d-flex-justify-center {
+    display: flex;
+    justify-content: center;
+}
+.d-flex-align-center {
+    display: flex;
+    align-items: center;
+}
 
-
+.fs-small {
+    font-size: small !important;
+}
 .fs-x-small {
     font-size: x-small !important;
 }

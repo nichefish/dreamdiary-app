@@ -128,16 +128,23 @@
 <#include "/view/domain/jrnl/day/_modal/_jrnl_day_reg_modal.ftlh">
 <#include "/view/domain/jrnl/day/_modal/_jrnl_day_dtl_modal.ftlh">
 <#include "/view/domain/jrnl/day/_jrnl_day_list_template.hbs">
+<#include "/view/domain/jrnl/day/_partial/_jrnl_day_mdf_btn_partial.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/day/jrnl_day_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_diary_module-->
 <#include "/view/domain/jrnl/diary/_modal/_jrnl_diary_reg_modal.ftlh">
 <#include "/view/domain/jrnl/diary/_jrnl_diary_list_template.hbs">
+<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_mdf_btn_partial.hbs">
+<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_mdf_btn_partial.hbs">
+<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_cn_partial.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/diary/jrnl_diary_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_dream_module-->
 <#include "/view/domain/jrnl/dream/_modal/_jrnl_dream_reg_modal.ftlh">
 <#include "/view/domain/jrnl/dream/_jrnl_dream_list_template.hbs">
+<#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_reg_btn_partial.hbs">
+<#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_mdf_btn_partial.hbs">
+<#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_cn_partial.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/dream/jrnl_dream_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_day_tag_module-->
@@ -157,9 +164,13 @@
 
 <#--include::tags-->
 <#include "/view/domain/jrnl/tag/_jrnl_tag_list_modal.ftlh">
+<#include "/view/extension/clsf/tag/_partial/_tag_list_partial.hbs">
+<#include "/view/extension/clsf/tag/_partial/_tag_list_sized_partial.hbs">
 
 <#--include::comment-->
 <#include "/view/extension/clsf/comment/_modal/_comment_reg_modal.ftlh">
+<#include "/view/extension/clsf/comment/_partial/_comment_list_partial.hbs">
+<#include "/view/extension/clsf/comment/_partial/_comment_reg_btn_partial.hbs">
 <script type="text/javascript" src="/js/view/extension/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
 
 <!--include::page scripts-->

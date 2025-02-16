@@ -201,8 +201,9 @@ public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>
      */
     default List<Entity> getListEntity(final BaseSearchParam searchParam) throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
+        final Map<String, Object> filteredSearchKey = CmmUtils.Param.filterParamMap(searchParamMap);
 
-        return this.getListEntity(searchParamMap);
+        return this.getListEntity(filteredSearchKey);
     }
 
     /**

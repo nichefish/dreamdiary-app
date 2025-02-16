@@ -49,17 +49,18 @@ public class VcatnStatsYySpec
         final Expression<Date> bgnDtExp = root.get("bgnDt");
 
         // 파라미터 비교
-        for (String key : searchParamMap.keySet()) {
+        for (final String key : searchParamMap.keySet()) {
+            final Object value = searchParamMap.get(key);
             switch (key) {
                 case "today":
                     // "today"가 시작일자, 종료일자에 포함되는 조건 검색
-                    predicate.add(builder.greaterThanOrEqualTo(endDtExp, DateUtils.asDate(searchParamMap.get(key))));
-                    predicate.add(builder.lessThanOrEqualTo(bgnDtExp, DateUtils.asDate(searchParamMap.get(key))));
+                    predicate.add(builder.greaterThanOrEqualTo(endDtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.lessThanOrEqualTo(bgnDtExp, DateUtils.asDate(value)));
                     continue;
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색
                     try {
-                        predicate.add(builder.equal(root.get(key), searchParamMap.get(key)));
+                        predicate.add(builder.equal(root.get(key), value));
                     } catch (final Exception e) {
                         log.info("unable to locate attribute '{}' while trying root.get(key).", key);
                     }

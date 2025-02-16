@@ -72,15 +72,16 @@ public class SchdulSpec
         final Expression<String> schdulCdExp = root.get("schdulCd");
 
         // 파라미터 비교
-        for (String key : searchParamMap.keySet()) {
+        for (final String key : searchParamMap.keySet()) {
+            final Object value = searchParamMap.get(key);
             switch (key) {
                 case "searchStartDt":
                     // 기간 검색
-                    predicate.add(builder.greaterThanOrEqualTo(endDtExp, DateUtils.asDate(searchParamMap.get(key))));
+                    predicate.add(builder.greaterThanOrEqualTo(endDtExp, DateUtils.asDate(value)));
                     continue;
                 case "searchEndDt":
                     // 기간 검색
-                    predicate.add(builder.lessThanOrEqualTo(bgnDtExp, DateUtils.asDate(searchParamMap.get(key))));
+                    predicate.add(builder.lessThanOrEqualTo(bgnDtExp, DateUtils.asDate(value)));
                     continue;
                 case "getHldyCeremonyOnly":
                     // 휴일/공휴일, 행사 조회
@@ -104,32 +105,32 @@ public class SchdulSpec
                     continue;
                 case "indtChked":
                     // 내근 조회
-                    if ("N".equals(searchParamMap.get(key))) {
+                    if ("N".equals(value)) {
                         predicate.add(builder.notEqual(schdulCdExp, Constant.SCHDUL_INDT));
                     }
                     continue;
                 case "outdtChked":
                     // 외근 조회
-                    if ("N".equals(searchParamMap.get(key))) {
+                    if ("N".equals(value)) {
                         predicate.add(builder.notEqual(schdulCdExp, Constant.SCHDUL_OUTDT));
                     }
                     continue;
                 case "tlcmmtChked":
                     // 재택근무 조회
-                    if ("N".equals(searchParamMap.get(key))) {
+                    if ("N".equals(value)) {
                         predicate.add(builder.notEqual(schdulCdExp, Constant.SCHDUL_TLCMMT));
                     }
                     continue;
                 // case "myPaprChked":
                 //     // 내가 속한 일정 조회
-                //     if ("Y".equals(searchParamMap.get(key))) {
+                //     if ("Y".equals(value)) {
                 //         prtcpntJoin = root.join("prtcpntList", JoinType.INNER);
                 //         predicate.add(builder.equal(prtcpntJoin.get("userId"), AuthUtils.getLgnUserId()));
                 //     }
                 //     continue;
                 case "searchKeyword":
                     // 입력 키워드 검색
-                    final String keyword = (String) searchParamMap.get(key);
+                    final String keyword = (String) value;
                     final Predicate schdulNm = builder.like(root.get("title"), "%" + keyword + "%");
                     final Predicate schdulResn = builder.like(root.get("cn"), "%" + keyword + "%");
                     predicate.add(builder.or(schdulNm, schdulResn));
@@ -137,7 +138,7 @@ public class SchdulSpec
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색
                     try {
-                        predicate.add(builder.equal(root.get(key), searchParamMap.get(key)));
+                        predicate.add(builder.equal(root.get(key), value));
                     } catch (final Exception e) {
                         log.info("unable to locate attribute '{}' while trying root.get(key).", key);
                     }

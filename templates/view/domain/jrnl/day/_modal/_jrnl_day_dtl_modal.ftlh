@@ -5,9 +5,10 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<@modal.layout id="jrnl_day_dtl" size="xl">
+<#assign modal_title = "저널 일자 조회" />
+<@modal.layout id="jrnl_day_dtl" size="xxl">
     <#--begin::Modal Header-->
-    <@component.modal_header_with_back "저널 일자 조회" />
+    <@component.modal_header_with_back modal_title />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <#--begin::Form-->

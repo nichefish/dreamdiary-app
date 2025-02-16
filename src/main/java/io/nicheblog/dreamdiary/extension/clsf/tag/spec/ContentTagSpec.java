@@ -64,11 +64,12 @@ public class ContentTagSpec
 
         // 파라미터 비교
         for (final String key : searchParamMap.keySet()) {
+            final Object value = searchParamMap.get(key);
             switch (key) {
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색
                     try {
-                        predicate.add(builder.equal(root.get(key), searchParamMap.get(key)));
+                        predicate.add(builder.equal(root.get(key), value));
                     } catch (final Exception e) {
                         log.info("unable to locate attribute '{}' while trying root.get(key).", key);
                     }

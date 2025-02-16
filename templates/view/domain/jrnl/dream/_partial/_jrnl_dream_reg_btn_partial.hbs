@@ -1,0 +1,13 @@
+<#--
+ * 저널 꿈(jrnl_dream) 목록 버튼 partial
+ * @included_in : jrnl_day_page.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="jrnl_dream_reg_btn_partial">
+    <button type="button" class="btn btn-sm btn-light-primary btn-outlined ps-4 pe-3 py-2 cursor-pointer"
+            onclick="dF.JrnlDream.regModal({{postNo}}, '{{stdrdDt}}');"
+            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "jrnl.dream"/> <@spring.message "bs.tooltip.modal.reg"/>">
+        <i class="bi bi-moon-stars fs-4 pe-1"></i>
+        <@spring.message "jrnl.dream.reg"/>
+    </button>
+</script>

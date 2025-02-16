@@ -11,7 +11,6 @@ import io.nicheblog.dreamdiary.extension.cache.event.EhCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.handler.EhCacheEvictEventListner;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
-import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -69,9 +67,8 @@ public class JrnlSumryServiceImpl
     @Cacheable(value="myJrnlSumryList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId()")
     public List<JrnlSumryDto.LIST> getMyListDto(final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
-        final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
 
-        return this.getSelf().getListDto(searchParamMap);
+        return this.getSelf().getListDto(searchParam);
     }
 
     /**

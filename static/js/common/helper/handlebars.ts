@@ -417,11 +417,32 @@ document.addEventListener("DOMContentLoaded", function(): void {
     // comment_list
     const commentPartial: string = document.getElementById("comment_list_partial")?.innerHTML;
     if (commentPartial) Handlebars.registerPartial("comment_list_partial", commentPartial);
+    const commentListBtnPartial: string = document.getElementById("comment_reg_btn_partial")?.innerHTML;
+    if (commentListBtnPartial) Handlebars.registerPartial("comment_reg_btn_partial", commentListBtnPartial);
     // tag_list
     const tagPartial: string = document.getElementById("tag_list_partial")?.innerHTML;
     if (tagPartial) Handlebars.registerPartial("tag_list_partial", tagPartial);
     const sizedTagPartial: string = document.getElementById("tag_list_sized_partial")?.innerHTML;
     if (sizedTagPartial) Handlebars.registerPartial("tag_list_sized_partial", sizedTagPartial);
+
+    const jrnlDayMdfBtnPartial: string = document.getElementById("jrnl_day_mdf_btn_partial")?.innerHTML;
+    if (jrnlDayMdfBtnPartial) Handlebars.registerPartial("jrnl_day_mdf_btn_partial", jrnlDayMdfBtnPartial);
+
+    const jrnlDiaryCnPartial: string = document.getElementById("jrnl_diary_cn_partial")?.innerHTML;
+    if (jrnlDiaryCnPartial) Handlebars.registerPartial("jrnl_diary_cn_partial", jrnlDiaryCnPartial);
+
+    const jrnlDiaryRegBtnPartial: string = document.getElementById("jrnl_diary_reg_btn_partial")?.innerHTML;
+    if (jrnlDiaryRegBtnPartial) Handlebars.registerPartial("jrnl_diary_reg_btn_partial", jrnlDiaryRegBtnPartial);
+    const jrnlDiaryMdfBtnPartial: string = document.getElementById("jrnl_diary_mdf_btn_partial")?.innerHTML;
+    if (jrnlDiaryMdfBtnPartial) Handlebars.registerPartial("jrnl_diary_mdf_btn_partial", jrnlDiaryMdfBtnPartial);
+
+    const jrnlDreamCnPartial: string = document.getElementById("jrnl_dream_cn_partial")?.innerHTML;
+    if (jrnlDreamCnPartial) Handlebars.registerPartial("jrnl_dream_cn_partial", jrnlDreamCnPartial);
+
+    const jrnlDreamRegBtnPartial: string = document.getElementById("jrnl_dream_reg_btn_partial")?.innerHTML;
+    if (jrnlDreamRegBtnPartial) Handlebars.registerPartial("jrnl_dream_reg_btn_partial", jrnlDreamRegBtnPartial);
+    const jrnlDreamMdfBtnPartial: string = document.getElementById("jrnl_dream_mdf_btn_partial")?.innerHTML;
+    if (jrnlDreamMdfBtnPartial) Handlebars.registerPartial("jrnl_dream_mdf_btn_partial", jrnlDreamMdfBtnPartial);
 });
 
 

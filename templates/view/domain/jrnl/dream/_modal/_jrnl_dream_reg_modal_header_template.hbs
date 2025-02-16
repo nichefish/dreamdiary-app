@@ -92,7 +92,7 @@
                     <input type="checkbox" name="hallucYn" id="hallucYn" class="form-check-input"
                            value="Y" {{checkedYn hallucYn}} />
                     <label class="form-check-label fw-bold fs-6 ms-3" for="hallucYn" id="hallucYnLabel" {{{checkedYnStyle hallucYn "color" "blue//gray"}}}>
-                        {{#ifYn hallucYn}}입면환각{{else}}해당없음{{/ifYn}}
+                        {{#ifYn hallucYn}}<@spring.message 'dream.halluc'/>{{else}}해당없음{{/ifYn}}
                     </label>
                 </div>
             </div>

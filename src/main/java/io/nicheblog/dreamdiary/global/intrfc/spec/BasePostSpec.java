@@ -8,7 +8,6 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -69,13 +68,10 @@ public interface BasePostSpec<Entity extends BasePostEntity>
             final CriteriaBuilder builder
     ) throws Exception {
 
-        List<Predicate> predicate = new ArrayList<>();
-        List<String> keysToRemove = new ArrayList<>();
+        final List<Predicate> predicate = new ArrayList<>();
+        final List<String> keysToRemove = new ArrayList<>();
 
-        // expressions
-        Expression<Date> regDtExp = root.get("regDt");
-
-        for (String key : searchParamMap.keySet()) {
+        for (final String key : searchParamMap.keySet()) {
             switch(key) {
                 case "title":
                     // 제목 = LIKE 검색

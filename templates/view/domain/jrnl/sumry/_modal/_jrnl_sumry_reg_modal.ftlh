@@ -5,9 +5,10 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
+<#assign modal_title = "저널 결산 저장" />
 <@modal.layout id="jrnl_sumry_reg" size="xl">
     <#--begin::Modal Header-->
-    <@component.modal_header "저널 결산 저장"  />
+    <@component.modal_header modal_title />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <#--begin::Form-->

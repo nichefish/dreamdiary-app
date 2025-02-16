@@ -1,23 +1,19 @@
 package io.nicheblog.dreamdiary.domain.jrnl.dream.repository.jpa;
 
+import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.QueryHint;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 /**
  * JrnlDreamRepository
@@ -31,30 +27,14 @@ import java.util.stream.Stream;
 public interface JrnlDreamRepository
         extends BaseStreamRepository<JrnlDreamEntity, Integer> {
 
-    /** entityGraph */
-    @Override
-    @EntityGraph(value = "JrnlDreamEntity.withAll")
-    Optional<JrnlDreamEntity> findById(Integer key);
-
-    /** entityGraph */
-    @Override
-    @EntityGraph(value = "JrnlDreamEntity.withAll")
-    Page<JrnlDreamEntity> findAll(@Nullable Specification<JrnlDreamEntity> spec, Pageable pageable);
-
-    /** entityGraph */
-    @Override
-    @EntityGraph(value = "JrnlDreamEntity.withAll")
-    List<JrnlDreamEntity> findAll(@Nullable Specification<JrnlDreamEntity> spec);
-
-    /** entityGraph */
-    @Override
-    @EntityGraph(value = "JrnlDreamEntity.withAll")
-    List<JrnlDreamEntity> findAll(@Nullable Specification<JrnlDreamEntity> spec, Sort sort);
-
-    /** entityGraph */
-    @Override
-    @EntityGraph(value = "JrnlDreamEntity.withAll")
-    Stream<JrnlDreamEntity> streamAllBy(@Nullable Specification<JrnlDreamEntity> spec);
+    /**
+     * 태그를 포함한 목록 조회 (with EntityGraph)
+     *
+     * @param spec 중복 체크를 위한 날짜
+     * @return {@link List} -- 태그를 포함한 목록
+     */
+    @EntityGraph(value = "JrnlDreamEntity.withTags", type = EntityGraph.EntityGraphType.LOAD)
+    List<JrnlDreamEntity> findAll(Specification<JrnlDreamEntity> spec);
 
     /**
      * 해당 일자에서 꿈 마지막 인덱스 조회

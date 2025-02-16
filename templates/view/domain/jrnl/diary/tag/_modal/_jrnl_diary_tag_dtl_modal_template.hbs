@@ -6,60 +6,19 @@
 <script type="text/x-handlebars-template" id="jrnl_diary_tag_dtl_modal_template">
     {{#each this}}
         <div class="row jrnl-item">
-            <div class="col-1 py-3 d-flex justify-content-between border-2 border-gray-300 border-end px-8 me-4 h-75 w-130px">
-                <div>
-                    <i class="bi bi-calendar3"></i> {{stdrdDt}}
-                </div>
+            <div class="col-1 d-flex-align-center flex-column py-3 border-2 border-gray-300 border-end ps-10 me-4 w-130px h-75 gap-2">
+                {{> jrnl_day_mdf_btn_partial this postNo=this.jrnlDayNo}}
             </div>
             <div class="col py-3 jrnl-diary-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
-                {{#ifYn imprtcYn}}<div class="ctgr-span ctgr-imprtc w-auto">!중요</div>{{/ifYn}}
-                {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}
-                <div class="cn collapse-4">
-                    {{{markdownCn}}}
-                </div>
-                <!-- "더 보기" 버튼, <p> child 3개 이상일 때만 보임 (css) -->
-                <button type="button" class="btn btn-xxs btn-active-light-info badge-light-prinmary btn-outlined expand-btn"
-                        onclick="dF.JrnlDiaryTag.expand(this);">
-                </button>
-
-                {{#if (exists tag.list)}}
-                    <div class="ms-2 mt-3">
-                        {{#tag.list}}
-                            {{> tag_list_partial this module="dF.JrnlDreamTag"}}
-                        {{/tag.list}}
-                    </div>
-                {{/if}}
+                {{> jrnl_diary_cn_partial this collapse="collapse-4"}}
             </div>
-            <div class="col-1 py-3 d-flex justify-content-between w-50px gap-1">
-                <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
-                        onclick="dF.Comment.modal.regModal({{postNo}}, 'JRNL_DIARY');"
-                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "comment"/> <@spring.message "bs.tooltip.modal.reg"/>">
-                    <i class="bi bi-chat-left-dots p-0"></i>
-                </button>
+            <div class="col-1 py-3 d-flex-between w-50px gap-1">
+                {{> comment_reg_btn_partial this contentType="JRNL_DIARY"}}
             </div>
             <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-            <div class="col-1 py-3 d-flex justify-content-between w-100px gap-1">
-                <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
-                        onclick="$('#jrnl_tag_dtl_modal').modal('hide'); dF.JrnlDiary.mdfModal({{postNo}}, '{{stdrdDt}}');"
-                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "jrnl.diary"/> <@spring.message "bs.tooltip.modal.mdf"/>">
-                    <i class="bi bi-pencil-square p-0"></i>
-                </button>
-                <button type="button" class="btn btn-sm btn-light-danger btn-outlined ms-2 py-1 px-2 cursor-pointer"
-                        onclick="dF.JrnlDiary.delAjax({{postNo}});"
-                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "jrnl.diary"/> <@spring.message "bs.tooltip.del"/>">
-                    <i class="bi bi-trash p-0"></i>
-                </button>
+            <div class="col-1 py-3 d-flex-between w-100px gap-1">
+                {{> jrnl_diary_mdf_btn_partial this}}
             </div>
         </div>
-        {{#if (exists comment.list)}}
-            <div class="row pb-2">
-                <div class="col-1 jrnl-diary-cn w-130px"></div>
-                <div class="col ms-10 text-noti">
-                    {{#each comment.list}}
-                        {{> comment_list_partial this}}
-                    {{/each}}
-                </div>
-            </div>
-        {{/if}}
     {{/each}}
 </script>

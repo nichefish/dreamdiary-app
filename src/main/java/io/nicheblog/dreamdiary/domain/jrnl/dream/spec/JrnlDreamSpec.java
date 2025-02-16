@@ -74,43 +74,48 @@ public class JrnlDreamSpec
         final Expression<Date> effectiveDtExp = builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"));
 
         // 파라미터 비교
-        for (String key : searchParamMap.keySet()) {
+        for (final String key : searchParamMap.keySet()) {
             if ("sort".equals(key)) continue;  // "sort" 파라미터는 건너뜀
 
+            final Object value = searchParamMap.get(key);
             switch (key) {
                 case "searchStartDt":
                     // 기간 검색
-                    predicate.add(builder.greaterThanOrEqualTo(effectiveDtExp, DateUtils.asDate(searchParamMap.get(key))));
+                    predicate.add(builder.greaterThanOrEqualTo(effectiveDtExp, DateUtils.asDate(value)));
                     continue;
                 case "searchEndDt":
                     // 기간 검색
-                    predicate.add(builder.lessThanOrEqualTo(effectiveDtExp, DateUtils.asDate(searchParamMap.get(key))));
+                    predicate.add(builder.lessThanOrEqualTo(effectiveDtExp, DateUtils.asDate(value)));
                     continue;
                 case "yy":
                     // 9999 = 모든 년
-                    final Integer yy = (Integer) searchParamMap.get(key);
+                    final Integer yy = (Integer) value;
                     if (yy != 9999) predicate.add(builder.equal(jrnlDayJoin.get(key), yy));
                     continue;
                 case "mnth":
                     // 99 = 모든 월
-                    final Integer mnth = (Integer) searchParamMap.get(key);
+                    final Integer mnth = (Integer) value;
                     if (mnth != 99) predicate.add(builder.equal(jrnlDayJoin.get(key), mnth));
+                    continue;
+                case "jrnlDayNo":
+                    // 99 = 모든 월
+                    predicate.add(builder.equal(jrnlDayJoin.get("postNo"), value));
                     continue;
                 case "dreamKeyword":
                     // 내용 like 검색
-                    predicate.add(builder.like(root.get("cn"), "%" + searchParamMap.get(key) + "%"));
+                    predicate.add(builder.like(root.get("cn"), "%" + value + "%"));
                     continue;
                 case "tagNo":
                     // 특정 태그된 꿈만 조회
                     final Join<JrnlDreamEntity, TagEmbed> tagJoin = root.join("tag", JoinType.INNER);
                     final Join<TagEmbed, ContentTagEntity> contentTagJoin = tagJoin.join("list", JoinType.INNER);
                     predicate.add(builder.equal(contentTagJoin.get("regstrId"), AuthUtils.getLgnUserId()));
-                    predicate.add(builder.equal(contentTagJoin.get("refTagNo"), searchParamMap.get(key)));
+                    predicate.add(builder.equal(contentTagJoin.get("refTagNo"), value));
                     continue;
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색
                     try {
-                        predicate.add(builder.equal(root.get(key), searchParamMap.get(key)));
+                        predicate.add(builder.equal(root.get(key), value));
                     } catch (final Exception e) {
                         log.info("unable to locate attribute '{}' while trying root.get(key).", key);
                     }

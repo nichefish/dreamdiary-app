@@ -111,42 +111,42 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
             }
         }
 
-        // collapse-3 설정 (3줄)
-        .cn.collapse-3 {
-            @include cn-collapse(3, 62.3px);
+        [class*="collapse-"] {
+            &.collapse-3 {
+                @include cn-collapse(3, 62.3px);
 
-            &:has(p:nth-of-type(4)) + .expand-btn {
-                display: inline-block; /* 4개 이상이면 버튼 표시 */
+                &:has(p:nth-of-type(4)) + .expand-btn {
+                    display: inline-block; /* 4개 이상이면 버튼 표시 */
+                }
+
+                &:not(:has(p:nth-of-type(4))) + .expand-btn {
+                    display: none; /* 3개 이하라면 버튼 숨김 */
+                }
             }
 
-            &:not(:has(p:nth-of-type(4))) + .expand-btn {
-                display: none; /* 3개 이하라면 버튼 숨김 */
-            }
-        }
+            &.collapse-4 {
+                @include cn-collapse(4, 83px);
 
-        // collapse-4 설정 (4줄)
-        .cn.collapse-4 {
-            @include cn-collapse(4, 83px); // 대략적인 높이 설정
+                &:has(p:nth-of-type(5)) + .expand-btn {
+                    display: inline-block; /* 5개 이상이면 버튼 표시 */
+                }
 
-            &:has(p:nth-of-type(5)) + .expand-btn {
-                display: inline-block; /* 5개 이상이면 버튼 표시 */
-            }
-
-            &:not(:has(p:nth-of-type(5))) + .expand-btn {
-                display: none; /* 4개 이하라면 버튼 숨김 */
-            }
-        }
-
-        /* 더보기 버튼 스타일 */
-        .expand-btn {
-            display: block;
-            font-size: 0.85rem;
-            margin-top: 2px;
-            margin-left: 5px;
-
-            &::after {
-                content: "＋ ...더보기";
+                &:not(:has(p:nth-of-type(5))) + .expand-btn {
+                    display: none; /* 4개 이하라면 버튼 숨김 */
+                }
             }
         }
+    }
+}
+
+/* 더보기 버튼 스타일 */
+.expand-btn {
+    display: none;
+    font-size: 0.85rem;
+    margin-top: 2px;
+    margin-left: 5px;
+
+    &::after {
+        content: "＋ ...더보기";
     }
 }

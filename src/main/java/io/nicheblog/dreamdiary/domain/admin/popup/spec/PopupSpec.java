@@ -46,27 +46,28 @@ public class PopupSpec
             final CriteriaBuilder builder
     ) throws Exception {
 
-        List<Predicate> predicate = new ArrayList<>();
+        final List<Predicate> predicate = new ArrayList<>();
 
         // expressions
-        Expression<Date> popupStartDtExp = root.get("popupStartDt");
-        Expression<Date> popupEndDtExp = root.get("popupEndDt");
+        final Expression<Date> popupStartDtExp = root.get("popupStartDt");
+        final Expression<Date> popupEndDtExp = root.get("popupEndDt");
 
         // 파라미터 비교
-        for (String key : searchParamMap.keySet()) {
+        for (final String key : searchParamMap.keySet()) {
+            final Object value = searchParamMap.get(key);
             switch (key) {
                 case "searchStartDt":
                     // 기간 검색
-                    predicate.add(builder.greaterThanOrEqualTo(popupStartDtExp, DateUtils.asDate(searchParamMap.get(key))));
+                    predicate.add(builder.greaterThanOrEqualTo(popupStartDtExp, DateUtils.asDate(value)));
                     continue;
                 case "searchEndDt":
                     // 기간 검색
-                    predicate.add(builder.lessThanOrEqualTo(popupEndDtExp, DateUtils.asDate(searchParamMap.get(key))));
+                    predicate.add(builder.lessThanOrEqualTo(popupEndDtExp, DateUtils.asDate(value)));
                     continue;
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색
                     try {
-                        predicate.add(builder.equal(root.get(key), searchParamMap.get(key)));
+                        predicate.add(builder.equal(root.get(key), value));
                     } catch (final Exception e) {
                         log.info("unable to locate attribute '{}' while trying root.get(key).", key);
                         // e.printStackTrace();

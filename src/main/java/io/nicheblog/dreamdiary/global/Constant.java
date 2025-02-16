@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.adapter.AdapterConstant;
 import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.extension.cd.CdConstant;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import lombok.Getter;
 import lombok.experimental.UtilityClass;
 
 import java.lang.reflect.Field;
@@ -24,6 +25,10 @@ import java.util.TimeZone;
 @UtilityClass
 public final class Constant
         implements AuthConstant, CdConstant, AdapterConstant {
+
+    // 클래스 로딩 시에 한 번 계산하여 할당
+    @Getter
+    private static final Map<String, String> constantMap = initConstantMap();
 
     /**
      * TimeZone
@@ -95,7 +100,7 @@ public final class Constant
      *
      * @return Map<String, String> - 상수들을 key-value 형태로 담은 Map
      */
-    public static Map<String, String> getConstantMap() {
+    public static Map<String, String> initConstantMap() {
         final Map<String, String> constantMap = new HashMap<>();
 
         // Url 클래스에서 상수들 가져오기

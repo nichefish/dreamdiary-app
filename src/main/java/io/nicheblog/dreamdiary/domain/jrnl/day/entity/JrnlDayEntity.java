@@ -37,6 +37,18 @@ import java.util.List;
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
 @SQLDelete(sql = "UPDATE jrnl_day SET del_yn = 'Y' WHERE post_no = ?")
+@NamedEntityGraph(
+    name = "JrnlDayEntity.withTags",
+    attributeNodes = {
+        @NamedAttributeNode(value = "tag", subgraph = "TagEmbed")
+    },
+    subgraphs = {
+        @NamedSubgraph(
+            name = "TagEmbed",
+            attributeNodes = @NamedAttributeNode("list")  // tag.list 즉시 로딩
+        )
+    }
+)
 public class JrnlDayEntity
         extends BaseClsfEntity
         implements TagEmbedModule {

@@ -5,9 +5,10 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
+<#assign modal_title = "비밀번호 변경" />
 <@modal.layout id="user_my_pw_chg" size="md">
     <#--begin::Modal Header-->
-    <@component.modal_header_dark "비밀번호 변경"  />
+    <@component.modal_header_dark modal_title />
     <#--begin::Modal Body-->
     <div class="modal-body">
         <#--begin::Form-->

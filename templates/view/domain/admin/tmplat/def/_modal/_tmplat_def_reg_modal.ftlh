@@ -5,9 +5,10 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
+<#assign modal_title = "템플릿 정의 저장" />
 <@modal.layout id="tmplat_def_reg" size="xl">
     <#--begin::Modal Header-->
-    <@component.modal_header "템플릿 정의 저장"  />
+    <@component.modal_header modal_title />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <div class="table-responsive-sm">

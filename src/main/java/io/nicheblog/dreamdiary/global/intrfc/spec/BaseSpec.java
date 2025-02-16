@@ -74,8 +74,9 @@ public interface BaseSpec<Entity> {
             final CriteriaBuilder builder
     ) throws Exception {
 
-        List<Predicate> predicate = new ArrayList<>();
-        for (String key : searchParamMap.keySet()) {
+        final List<Predicate> predicate = new ArrayList<>();
+
+        for (final String key : searchParamMap.keySet()) {
             // default :: 조건 파라미터에 대해 equal 검색
             try {
                 predicate.add(builder.equal(root.get(key), searchParamMap.get(key)));

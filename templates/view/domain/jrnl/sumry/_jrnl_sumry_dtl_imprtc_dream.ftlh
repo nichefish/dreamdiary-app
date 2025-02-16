@@ -38,16 +38,19 @@
             </label>
             <#list imprtcDreamList![] as dream>
                 <div class="row jrnl-item my-2">
-                    <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:135px;">
+                    <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end ps-10 me-4 w-130px h-75">
                         <div>
                             <i class="bi bi-calendar3"></i> ${dream.stdrdDt!}
                         </div>
                     </div>
                     <div class="col py-3 jrnl-sumry-cn bg-secondary">
-                        <#if (dream.nhtmrYn! == 'Y')><div class="ctgr-span ctgr-imprtc w-auto">!악몽</div></#if>
-                        <#if (dream.hallucYn! == 'Y')><div class="ctgr-span ctgr-gray w-auto">!입면환각</div></#if>
+                        <#if (dream.nhtmrYn! == 'Y')><div class="ctgr-span ctgr-imprtc w-auto">!<@spring.message 'dream.nhtmr'/></div></#if>
+                        <#if (dream.hallucYn! == 'Y')><div class="ctgr-span ctgr-gray w-auto">!<@spring.message 'dream.halluc'/></div></#if>
                         <#if (dream.title?? && dream.title! != "")><div class="d-inline-block fw-bold">${dream.title!}</div></#if>
-                        ${(dream.markdownCn!"-")?no_esc}
+                        <div class="cn">
+                            ${(dream.markdownCn!"-")?no_esc}
+                        </div>
+
                         <#if dream.tag.list??>
                             <div class="ms-2 mt-3">
                                 <#list dream.tag.list as tag>
@@ -61,7 +64,7 @@
                             </div>
                         </#if>
                     </div>
-                    <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between w-50px gap-1">
+                    <div class="col-1 py-3 d-flex-between w-50px gap-1">
                         <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
                                 onclick="dF.Comment.modal.regModal(${dream.postNo!}, 'JRNL_DREAM');"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'comment'/> <@spring.message 'bs.tooltip.modal.reg'/>">
@@ -69,7 +72,7 @@
                         </button>
                     </div>
                     <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                    <div class="col-1 py-3 jrnl-dream-cn d-flex justify-content-between w-50px gap-1">
+                    <div class="col-1 py-3 d-flex-between w-50px gap-1">
                         <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
                                 onclick="dF.JrnlDream.mdfModal(${dream.postNo!}, '${dream.stdrdDt!}');"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'jrnl.dream'/> <@spring.message 'bs.tooltip.modal.mdf'/>">
@@ -84,7 +87,7 @@
                 </div>
                 <#if dream.comment.list??>
                     <div class="row py-2">
-                        <div class="col-1 jrnl-dream-cn" style="width:135px;">
+                        <div class="col-1 w-130px">
                             &nbsp;
                         </div>
                         <div class="col ms-10 text-noti">

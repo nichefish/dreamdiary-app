@@ -37,7 +37,9 @@ public class JrnlDiaryCacheEvictor
         final JrnlDiaryDto jrnlDiary = this.getDataByKey(key);
         if (jrnlDiary == null) return;
         // jrnl_dream
+        final Integer jrnlDayNo = jrnlDiary.getJrnlDayNo();
         EhCacheUtils.evictMyCacheAll("myJrnlDiaryList");
+        EhCacheUtils.evictMyCache("myJrnlDiaryListByJrnlDay", jrnlDayNo);
         EhCacheUtils.evictMyCache("myJrnlDiaryDtlDto", key);
         // 년도-월에 따른 캐시 삭제
         final Integer yy = jrnlDiary.getYy();

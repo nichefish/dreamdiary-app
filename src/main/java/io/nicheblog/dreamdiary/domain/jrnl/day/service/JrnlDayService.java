@@ -11,6 +11,7 @@ import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultiCrudService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * JrnlDayService
@@ -30,7 +31,25 @@ public interface JrnlDayService
      * @return {@link List} -- 조회된 목록
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
-    List<JrnlDayDto> getMyListDto(final BaseSearchParam searchParam) throws Exception;
+    List<JrnlDayDto> getMyListDto(final JrnlDaySearchParam searchParam) throws Exception;
+
+    /**
+     * default: 항목 목록 조회 (entity level)
+     *
+     * @param searchParam 검색 조건 파라미터
+     * @return {@link List} -- 목록 (entity level)
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    List<JrnlDayEntity> getListEntityWithTag(final BaseSearchParam searchParam) throws Exception;
+
+    /**
+     * default: 항목 목록 조회 (entity level)
+     *
+     * @param searchParamMap 검색 조건 파라미터 맵
+     * @return {@link List} -- 목록 (entity level)
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    List<JrnlDayEntity> getListEntityWithTag(final Map<String, Object> searchParamMap) throws Exception;
 
     /**
      * 중복 체크 (정상시 true / 중복시 false)

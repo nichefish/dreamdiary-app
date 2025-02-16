@@ -5,9 +5,10 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
+<#assign modal_title = "사이트맵" />
 <@modal.layout id="sitemap" size="xl">
     <#--begin::Modal Header-->
-    <@component.modal_header "사이트맵" />
+    <@component.modal_header modal_title />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <div id="sitemap_div">

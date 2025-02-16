@@ -2,6 +2,8 @@ package io.nicheblog.dreamdiary.domain.jrnl.day.repository.jpa;
 
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayEntity;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
@@ -10,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.QueryHint;
 import java.util.Date;
+import java.util.List;
 
 /**
  * JrnlDayRepository
@@ -22,6 +25,15 @@ import java.util.Date;
 @Repository("jrnlDayRepository")
 public interface JrnlDayRepository
         extends BaseStreamRepository<JrnlDayEntity, Integer> {
+
+    /**
+     * 태그를 포함한 목록 조회 (with EntityGraph)
+     *
+     * @param spec 중복 체크를 위한 날짜
+     * @return {@link List} -- 태그를 포함한 목록
+     */
+    @EntityGraph(value = "JrnlDayEntity.withTags", type = EntityGraph.EntityGraphType.LOAD)
+    List<JrnlDayEntity> findAll(Specification<JrnlDayEntity> spec);
 
     /**
      * 주어진 날짜에 대한 기 등록 여부를 반환합니다.
@@ -40,13 +52,14 @@ public interface JrnlDayRepository
     /**
      * 주어진 날짜에 해당하는 {@link JrnlDayEntity}를 반환합니다.
      *
-     * @param jrnlDt   조회할 날짜
-     * @param regstrId
+     * @param jrnlDt 조회할 날짜
+     * @param regstrId 등록자 ID
      * @return {@link Integer} -- 주어진 날짜에 해당하는 저널 일자 객체
      */
     @Query("SELECT day " +
             "FROM JrnlDayEntity day " +
             "WHERE day.jrnlDt = :jrnlDt " +
             " AND day.regstrId = :regstrId")
+    @EntityGraph(value = "JrnlDayEntity.withTags", type = EntityGraph.EntityGraphType.LOAD)
     JrnlDayEntity findByJrnlDt(final @Param("jrnlDt") Date jrnlDt, final @Param("regstrId") String regstrId);
 }

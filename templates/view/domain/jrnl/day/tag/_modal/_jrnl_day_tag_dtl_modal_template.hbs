@@ -6,55 +6,104 @@
 <script type="text/x-handlebars-template" id="jrnl_day_tag_dtl_modal_template">
     {{#each this}}
         <div class="row jrnl-item">
-            <div class="col-1 py-3 d-flex justify-content-between border-2 border-gray-300 border-end px-8 me-4 h-75 w-130px">
-                <div>
-                    <i class="bi bi-calendar3"></i> {{stdrdDt}}
+            <div class="col-1 d-flex-align-center flex-column py-3 border-2 border-gray-300 border-end px-8 me-4 w-130px h-75">
+                {{> jrnl_day_mdf_btn_partial this}}
+            </div>
+            <div class="col py-3 d-flex d-flex flex-column">
+                <div class="flex-row mb-2">
+                    {{#if (exists tag.list)}}
+                        <div class="ms-2">
+                            {{#tag.list}}
+                                {{> tag_list_partial this module="dF.JrnlDayTag"}}
+                            {{/tag.list}}
+                        </div>
+                    {{/if}}
+                </div>
+                <div class="flex-row mb-2">
+                    {{#if (exists comment.list)}}
+                        <div class="row pb-2">
+                            <div class="col-1 w-130px"></div>
+                            <div class="col ms-10 text-noti">
+                                {{#each comment.list}}
+                                    {{> comment_list_partial this}}
+                                {{/each}}
+                            </div>
+                        </div>
+                    {{/if}}
+                </div>
+
+                <div class="flex-row">
+                    {{#if (exists jrnlDiaryList)}}
+                        <label class="d-flex align-items-center mt-2">
+                            <span class="text-gray-700 fs-6 ps-5 fw-bolder">
+                                <@spring.message 'diary'/>
+                                <i class="bi bi-book fs-4 pe-1"></i>
+                            </span>
+                        </label>
+                        {{#each jrnlDiaryList}}
+                            <div class="row jrnl-item">
+                                <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
+                                    <div># {{idx}}</div>
+                                </div>
+                                <div class="col jrnl-diary-cn">
+                                    {{> jrnl_diary_cn_partial this collapse="collapse-4"}}
+                                </div>
+                                <div class="col-1 py-3 d-flex-between w-50px gap-1">
+                                    {{> comment_reg_btn_partial this contentType="JRNL_DIARY"}}
+                                </div>
+                                <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                                <div class="col-1 py-3 d-flex-between w-50px gap-1">
+                                    {{> jrnl_diary_mdf_btn_partial this}}
+                                </div>
+                            </div>
+                        {{/each}}
+                    {{/if}}
+                    {{#if hasDream}}
+                        <label class="d-flex align-items-center mt-2">
+                            <span class="text-gray-700 fs-6 ps-5 fw-bolder">
+                                <@spring.message 'dream'/>
+                                <i class="bi bi-moon-stars fs-4 pe-1"></i>
+                            </span>
+                        </label>
+                        {{#each jrnlDreamList}}
+                            <div class="row jrnl-item">
+                                <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
+                                    <div># {{idx}}</div>
+                                </div>
+                                <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
+                                    {{> jrnl_dream_cn_partial this collapse="collapse-4"}}
+                                </div>
+                                <div class="col-1 py-3 d-flex-between w-50px gap-1">
+                                    {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
+                                </div>
+                                <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                                <div class="col-1 py-3 d-flex-between w-50px gap-1">
+                                    {{> jrnl_dream_mdf_btn_partial this}}
+                                </div>
+                            </div>
+                        {{/each}}
+                        {{#each jrnlElseDreamList}}
+                            <div class="row jrnl-item">
+                                <div class="col-1 py-3 border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
+                                    -
+                                </div>
+                                <div class="col py-3 jrnl-dream-cn bg-secondary">
+                                    {{> jrnl_dream_cn_partial this collapse="collapse-4" elseDreamYn="Y"}}
+                                </div>
+                                <div class="col-1 py-3 d-flex-between w-50px gap-1">
+                                    {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
+                                </div>
+                                <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                                <div class="col-1 py-3 d-flex-between w-50px gap-1">
+                                    {{> jrnl_dream_mdf_btn_partial this}}
+                                </div>
+                            </div>
+                        {{/each}}
+                    {{/if}}
                 </div>
             </div>
-            <div class="col py-3 d-flex align-items-center {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
-                <button type="button" class="btn btn-sm btn-light-primary btn-outlined me-2 py-1 px-2 cursor-pointer"
-                    onclick="dF.JrnlDay.dtlModal({{postNo}});"
-                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "comment"/> <@spring.message "bs.tooltip.modal.reg"/>">
-                    <i class="bi bi-stickies p-0"></i>
-                </button>
-                {{#if (exists tag.list)}}
-                    <div class="ms-2">
-                        {{#tag.list}}
-                            {{> tag_list_partial this module="dF.JrnlDayTag"}}
-                        {{/tag.list}}
-                    </div>
-                {{/if}}
-            </div>
-            <div class="col-1 py-3 d-flex justify-content-between w-50px gap-1">
-                <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
-                        onclick="dF.Comment.modal.regModal({{postNo}}, 'JRNL_DAY');"
-                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "comment"/> <@spring.message "bs.tooltip.modal.reg"/>">
-                    <i class="bi bi-chat-left-dots p-0"></i>
-                </button>
-            </div>
-            <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-            <div class="col-1 py-3 d-flex justify-content-between w-100px gap-1">
-                <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
-                        onclick="$('#jrnl_tag_dtl_modal').modal('hide'); dF.JrnlDay.mdfModal({{postNo}}, '{{stdrdDt}}');"
-                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 일자 <@spring.message "bs.tooltip.modal.mdf"/>">
-                    <i class="bi bi-pencil-square p-0"></i>
-                </button>
-                <button type="button" class="btn btn-sm btn-light-danger btn-outlined ms-2 py-1 px-2 cursor-pointer"
-                        onclick="dF.JrnlDay.delAjax({{postNo}});"
-                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저널 일자 <@spring.message "bs.tooltip.del"/>">
-                    <i class="bi bi-trash p-0"></i>
-                </button>
-            </div>
+            <div class="col-1 w-50px"></div>
         </div>
-        {{#if (exists comment.list)}}
-            <div class="row pb-2">
-                <div class="col-1 w-130px"></div>
-                <div class="col ms-10 text-noti">
-                    {{#each comment.list}}
-                        {{> comment_list_partial this}}
-                    {{/each}}
-                </div>
-            </div>
-        {{/if}}
+    </div>
     {{/each}}
 </script>

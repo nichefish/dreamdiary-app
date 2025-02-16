@@ -1,20 +1,16 @@
 package io.nicheblog.dreamdiary.domain.jrnl.diary.repository.jpa;
 
+import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 /**
  * JrnlDiaryRepository
@@ -28,30 +24,14 @@ import java.util.stream.Stream;
 public interface JrnlDiaryRepository
         extends BaseStreamRepository<JrnlDiaryEntity, Integer> {
 
-    /** entityGraph */
-    @Override
-    @EntityGraph(value = "JrnlDiaryEntity.withAll")
-    Optional<JrnlDiaryEntity> findById(Integer key);
-
-    /** entityGraph */
-    @Override
-    @EntityGraph(value = "JrnlDiaryEntity.withAll")
-    Page<JrnlDiaryEntity> findAll(@Nullable Specification<JrnlDiaryEntity> spec, Pageable pageable);
-
-    /** entityGraph */
-    @Override
-    @EntityGraph(value = "JrnlDiaryEntity.withAll")
-    List<JrnlDiaryEntity> findAll(@Nullable Specification<JrnlDiaryEntity> spec);
-
-    /** entityGraph */
-    @Override
-    @EntityGraph(value = "JrnlDiaryEntity.withAll")
-    List<JrnlDiaryEntity> findAll(@Nullable Specification<JrnlDiaryEntity> spec, Sort sort);
-
-    /** entityGraph */
-    @Override
-    @EntityGraph(value = "JrnlDiaryEntity.withAll")
-    Stream<JrnlDiaryEntity> streamAllBy(@Nullable Specification<JrnlDiaryEntity> spec);
+    /**
+     * 태그를 포함한 목록 조회 (with EntityGraph)
+     *
+     * @param spec 중복 체크를 위한 날짜
+     * @return {@link List} -- 태그를 포함한 목록
+     */
+    @EntityGraph(value = "JrnlDiaryEntity.withTags", type = EntityGraph.EntityGraphType.LOAD)
+    List<JrnlDiaryEntity> findAll(Specification<JrnlDiaryEntity> spec);
 
     /**
      * 해당 일자에서 일기 마지막 인덱스 조회
