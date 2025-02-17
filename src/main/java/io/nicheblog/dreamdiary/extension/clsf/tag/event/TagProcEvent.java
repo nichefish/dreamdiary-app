@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.extension.clsf.tag.event;
 
-import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagEventListener;
+import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import lombok.Getter;
@@ -9,13 +9,13 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * TagAddEvent
+ * TagProcEvent
  * <pre>
- *  태그 추가 이벤트 :: 메인 로직과 분리.
+ *  태그 처리(추가/삭제) 이벤트 :: 메인 로직과 분리.
  * </pre>
  *
  * @author nichefish
- * @see TagEventListener
+ * @see TagProcEventListener
  */
 @Getter
 public class TagProcEvent

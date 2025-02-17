@@ -6,7 +6,7 @@ import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.managt.event.ManagtrAddEvent;
 import io.nicheblog.dreamdiary.extension.clsf.managt.handler.ManagtrEventListener;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
-import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagEventListener;
+import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.event.ViewerAddEvent;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
@@ -60,7 +60,7 @@ public class JrnlSbjctRestController
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
-     * @see TagEventListener,ManagtrEventListener
+     * @see TagProcEventListener ,ManagtrEventListener
      */
     @PostMapping(value = {Url.JRNL_SBJCT_REG_AJAX, Url.JRNL_SBJCT_MDF_AJAX})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -139,7 +139,7 @@ public class JrnlSbjctRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
-     * @see TagEventListener
+     * @see TagProcEventListener
      */
     @PostMapping(Url.JRNL_SBJCT_DEL_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})

@@ -3,8 +3,6 @@ package io.nicheblog.dreamdiary.domain.jrnl.day.service.impl;
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayEntity;
-import io.nicheblog.dreamdiary.domain.jrnl.day.event.JrnlDayTagCntAddEvent;
-import io.nicheblog.dreamdiary.domain.jrnl.day.event.JrnlDayTagCntSubEvent;
 import io.nicheblog.dreamdiary.domain.jrnl.day.mapstruct.JrnlDayMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDaySearchParam;
@@ -14,12 +12,9 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayService;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.strategy.JrnlDayCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.day.spec.JrnlDaySpec;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryService;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamService;
 import io.nicheblog.dreamdiary.extension.cache.event.EhCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.handler.EhCacheEvictEventListner;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
-import io.nicheblog.dreamdiary.extension.clsf.tag.service.ContentTagService;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -56,9 +51,6 @@ public class JrnlDayServiceImpl
     private final JrnlDayMapstruct mapstruct = JrnlDayMapstruct.INSTANCE;
 
     private final JrnlDayMapper jrnlDayMapper;
-    private final JrnlDiaryService jrnlDiaryService;
-    private final JrnlDreamService jrnlDreamService;
-    private final ContentTagService contentTagService;
     private final ApplicationEventPublisherWrapper publisher;
 
     private final String JRNL_DAY = ContentType.JRNL_DAY.key;
@@ -148,13 +140,6 @@ public class JrnlDayServiceImpl
         this.setYyMnth(registDto);
     }
 
-    @Override
-    public void preRegist(final JrnlDayEntity registEntity) throws Exception {
-        final Integer yy = registEntity.getYy();
-        final Integer mnth = registEntity.getMnth();
-        publisher.publishEvent(new JrnlDayTagCntAddEvent(this, yy, mnth, registEntity.getTagNoList()));
-    }
-
     /**
      * 상세 조회 (dto level) :: 캐시 처리
      *
@@ -183,30 +168,6 @@ public class JrnlDayServiceImpl
     }
 
     /**
-     * 수정 후처리. (override)
-     *
-     * @param updatedEntity 수정된 엔티티
-     */
-    @Override
-    public void postModify(final JrnlDayEntity updatedEntity) {
-        final Integer yy = updatedEntity.getYy();
-        final Integer mnth = updatedEntity.getMnth();
-        publisher.publishEvent(new JrnlDayTagCntAddEvent(this, yy, mnth, updatedEntity.getTagNoList()));
-    }
-
-    /**
-     * 수정 전처리. (override)
-     *
-     * @param modifyDto 수정할 객체
-     */
-    @Override
-    public void preModify(final JrnlDayDto modifyDto, final JrnlDayEntity existingEntity) throws Exception {
-        final Integer yy = existingEntity.getYy();
-        final Integer mnth = existingEntity.getMnth();
-        publisher.publishEvent(new JrnlDayTagCntSubEvent(this, yy, mnth, existingEntity.getTagNoList()));
-    }
-
-    /**
      * 날짜 기반으로 년도/월 항목 세팅 :: 메소드 분리
      *
      * @param jrnlDay 날짜 기반으로 년도와 월을 설정할 {@link JrnlDayDto} 객체
@@ -225,22 +186,6 @@ public class JrnlDayServiceImpl
             jrnlDay.setYy(jrnlDay.getJrnlDt().substring(0, 4));
             jrnlDay.setMnth(jrnlDay.getJrnlDt().substring(5, 7));
         }
-    }
-
-    /**
-     * 삭제 전처리. (override)
-     * 등록자가 아니면 삭제 불가 처리.
-     *
-     * @param deleteEntity - 삭제 엔티티
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    @Override
-    public void preDelete(final JrnlDayEntity deleteEntity) throws Exception {
-        if (!deleteEntity.isRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("delete-not-authorized"));
-
-        final Integer yy = deleteEntity.getYy();
-        final Integer mnth = deleteEntity.getMnth();
-        publisher.publishEvent(new JrnlDayTagCntSubEvent(this, yy, mnth, deleteEntity.getTagNoList()));
     }
 
     /**

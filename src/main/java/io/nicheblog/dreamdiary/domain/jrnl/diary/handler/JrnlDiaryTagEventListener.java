@@ -41,7 +41,7 @@ public class JrnlDiaryTagEventListener {
      */
     @EventListener
     public void handleTagAddEvent(final JrnlDiaryTagCntAddEvent event) throws Exception {
-        final List<Integer> tagNoList = event.getTagNoList();
+            final List<Integer> tagNoList = event.getTagNoList();
         if (CollectionUtils.isEmpty(tagNoList)) return;
 
         final Integer yy = event.getYy();

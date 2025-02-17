@@ -2,10 +2,7 @@ package io.nicheblog.dreamdiary.domain.jrnl.dream.service.impl;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.domain.jrnl.day.event.JrnlDayTagCntSubEvent;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.event.JrnlDreamTagCntAddEvent;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.event.JrnlDreamTagCntSubEvent;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.mapstruct.JrnlDreamMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamSearchParam;
@@ -121,42 +118,6 @@ public class JrnlDreamServiceImpl
     }
 
     /**
-     * 등록 후처리. (override)
-     *
-     * @param updatedEntity 등록된 엔티티
-     */
-    @Override
-    public void postRegist(final JrnlDreamEntity updatedEntity) throws Exception {
-        final Integer yy = updatedEntity.getJrnlDay().getYy();
-        final Integer mnth = updatedEntity.getJrnlDay().getMnth();
-        publisher.publishEvent(new JrnlDreamTagCntAddEvent(this, yy, mnth, updatedEntity.getTagNoList()));
-    }
-
-    /**
-     * 수정 전처리. (override)
-     *
-     * @param modifyDto 수정할 객체
-     */
-    @Override
-    public void preModify(final JrnlDreamDto modifyDto, final JrnlDreamEntity existingEntity) throws Exception {
-        final Integer yy = existingEntity.getJrnlDay().getYy();
-        final Integer mnth = existingEntity.getJrnlDay().getMnth();
-        publisher.publishEvent(new JrnlDreamTagCntSubEvent(this, yy, mnth, existingEntity.getTagNoList()));
-    }
-
-    /**
-     * 수정 후처리. (override)
-     *
-     * @param updatedEntity 수정된 엔티티
-     */
-    @Override
-    public void postModify(final JrnlDreamEntity updatedEntity) {
-        final Integer yy = updatedEntity.getJrnlDay().getYy();
-        final Integer mnth = updatedEntity.getJrnlDay().getMnth();
-        publisher.publishEvent(new JrnlDreamTagCntAddEvent(this, yy, mnth, updatedEntity.getTagNoList()));
-    }
-
-    /**
      * 상세 조회 (dto level) :: 캐시 처리
      *
      * @param key 식별자
@@ -171,22 +132,6 @@ public class JrnlDreamServiceImpl
         if (!retrieved.getIsRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("common.rslt.access-not-authorized"));
         return retrieved;
     }
-
-    /**
-     * 삭제 전처리. (override)
-     * 등록자가 아니면 삭제 불가 처리.
-     *
-     * @param deleteEntity - 삭제 엔티티
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    @Override
-    public void preDelete(final JrnlDreamEntity deleteEntity) throws Exception {
-        if (!deleteEntity.isRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("delete-not-authorized"));
-
-        final Integer yy = deleteEntity.getJrnlDay().getYy();
-        final Integer mnth = deleteEntity.getJrnlDay().getMnth();
-        publisher.publishEvent(new JrnlDayTagCntSubEvent(this, yy, mnth, deleteEntity.getTagNoList()));
-    };
 
     /**
      * 삭제 데이터 조회

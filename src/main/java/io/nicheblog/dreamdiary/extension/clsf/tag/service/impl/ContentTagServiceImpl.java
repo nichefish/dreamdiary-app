@@ -1,13 +1,6 @@
 package io.nicheblog.dreamdiary.extension.clsf.tag.service.impl;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayEntity;
-import io.nicheblog.dreamdiary.domain.jrnl.day.event.JrnlDayTagCntAddEvent;
-import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayService;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryService;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamService;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.ContentTagEntity;
@@ -20,7 +13,6 @@ import io.nicheblog.dreamdiary.extension.clsf.tag.repository.jpa.ContentTagRepos
 import io.nicheblog.dreamdiary.extension.clsf.tag.repository.jpa.TagSmpRepository;
 import io.nicheblog.dreamdiary.extension.clsf.tag.service.ContentTagService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.spec.ContentTagSpec;
-import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
@@ -32,7 +24,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -57,12 +51,6 @@ public class ContentTagServiceImpl
     private final ContentTagMapstruct mapstruct = ContentTagMapstruct.INSTANCE;
 
     private final TagSmpRepository tagSmpRepository;
-    private final JrnlDayService jrnlDayService;
-    private final JrnlDiaryService jrnlDiaryService;
-    private final JrnlDreamService jrnlDreamService;
-
-
-    private final ApplicationEventPublisherWrapper publisher;
 
     private final ApplicationContext context;
     private ContentTagServiceImpl getSelf() {
@@ -164,51 +152,17 @@ public class ContentTagServiceImpl
      * 특정 게시물에 대해 컨텐츠 태그 목록 추가.
      *
      * @param clsfKey 참조 복합키 정보 (BaseClsfKey)
-     * @param rsList 처리할 태그 엔티티 목록 (List<TagEntity>)
+     * @param rsList  처리할 태그 엔티티 목록 (List<TagEntity>)
+     * @return {@link List} -- 등록된 컨텐츠 태그 엔티티 목록
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Transactional
-    public void addContentTags(final BaseClsfKey clsfKey, final List<TagEntity> rsList) throws Exception {
+    public List<ContentTagEntity> addContentTags(final BaseClsfKey clsfKey, final List<TagEntity> rsList) throws Exception {
         final List<ContentTagEntity> contentTagList = rsList.stream()
                 .map(tag -> new ContentTagEntity(tag.getTagNo(), clsfKey))
                 .collect(Collectors.toList());
-        final List<ContentTagEntity> registeredList = this.registAll(contentTagList);
-
-        switch (ContentType.get(clsfKey.getContentType())) {
-            case JRNL_DAY: {
-                JrnlDayEntity jrnlDay = jrnlDayService.getDtlEntity(clsfKey.getPostNo());
-                Integer yy = jrnlDay.getYy();
-                Integer mnth = jrnlDay.getMnth();
-                List<Integer> tagNoList = registeredList.stream()
-                        .map(ContentTagEntity::getRefTagNo)
-                        .toList();
-                publisher.publishEvent(new JrnlDayTagCntAddEvent(this, yy, mnth, tagNoList));
-                break;
-            }
-            case JRNL_DIARY: {
-                JrnlDiaryEntity jrnlDiary = jrnlDiaryService.getDtlEntity(clsfKey.getPostNo());
-                Integer yy = jrnlDiary.getJrnlDay().getYy();
-                Integer mnth = jrnlDiary.getJrnlDay().getMnth();
-                List<Integer> tagNoList = registeredList.stream()
-                        .map(ContentTagEntity::getRefTagNo)
-                        .toList();
-                publisher.publishEvent(new JrnlDayTagCntAddEvent(this, yy, mnth, tagNoList));
-                break;
-            }
-            case JRNL_DREAM: {
-                JrnlDreamEntity jrnlDream = jrnlDreamService.getDtlEntity(clsfKey.getPostNo());
-                Integer yy = jrnlDream.getJrnlDay().getYy();
-                Integer mnth = jrnlDream.getJrnlDay().getMnth();
-                List<Integer> tagNoList = registeredList.stream()
-                        .map(ContentTagEntity::getRefTagNo)
-                        .toList();
-                publisher.publishEvent(new JrnlDayTagCntAddEvent(this, yy, mnth, tagNoList));
-                break;
-            }
-            default:
-                break;
-        }
+        return this.registAll(contentTagList);
     }
 
     /**
@@ -224,32 +178,6 @@ public class ContentTagServiceImpl
             final String cacheName = this.getCacheNameByContentType(contentType);
             if (cacheName.isEmpty()) return;
             final Integer tagNo = entity.getRefTagNo();;
-            this.evictMyCacheForPeriod(cacheName, tagNo);
-        });
-    }
-
-    /**
-     * 특정 게시물에 대해 기존 콘텐츠 태그를 모두 삭제합니다.
-     *
-     * @param clsfKey 참조 복합키 정보 (BaseClsfKey)
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    @Override
-    @Transactional
-    public void delExistingContentTags(final BaseClsfKey clsfKey) throws Exception {
-        // 2. 글번호 + 태그번호를 받아와서 기존 태그 목록 조회
-        final Map<String, Object> searchParamMap = new HashMap<>() {{
-            put("refPostNo", clsfKey.getPostNo());
-            put("refContentType", clsfKey.getContentType());
-        }};
-        final List<ContentTagEntity> entityList = this.getListEntity(searchParamMap);
-        this.deleteAll(entityList);
-
-        // 태그 개수 캐시 초기화
-        final String contentType = clsfKey.getContentType();
-        final String cacheName = this.getCacheNameByContentType(contentType);
-        entityList.forEach(entity -> {
-            final Integer tagNo = entity.getRefTagNo();
             this.evictMyCacheForPeriod(cacheName, tagNo);
         });
     }

@@ -1,12 +1,13 @@
 package io.nicheblog.dreamdiary.domain.jrnl.day.controller;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.domain.jrnl.day.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDaySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayService;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
-import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
-import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagEventListener;
+import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
 import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
@@ -87,7 +88,7 @@ public class JrnlDayRestController
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
-     * @see TagEventListener
+     * @see TagProcEventListener
      */
     @Operation(
             summary = "저널 일자 등록/수정",
@@ -116,9 +117,9 @@ public class JrnlDayRestController
 
         // TODO: AOP로 분리
         if (isSuccess) {
+            final JrnlDreamDto rsltObj = (JrnlDreamDto) result.getRsltObj();
             // 태그 처리 :: 메인 로직과 분리
-            BaseClsfKey clsfKey = ((JrnlDayDto) result.getRsltObj()).getClsfKey();
-            publisher.publishAsyncEventAndWait(new TagProcEvent(this, clsfKey, jrnlDay.tag));
+            publisher.publishAsyncEventAndWait(new JrnlTagProcEvent(this, rsltObj.getClsfKey(), rsltObj.getYy(), rsltObj.getMnth(), jrnlDay.tag));
         }
 
         // 로그 관련 세팅
@@ -162,7 +163,7 @@ public class JrnlDayRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
-     * @see TagEventListener
+     * @see TagProcEventListener
      */
     @PostMapping(value = {Url.JRNL_DAY_DEL_AJAX})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -178,8 +179,9 @@ public class JrnlDayRestController
 
         // TODO: AOP로 분리
         if (isSuccess) {
+            final JrnlDreamDto rsltObj = (JrnlDreamDto) result.getRsltObj();
             // 태그 처리 :: 메인 로직과 분리
-            publisher.publishAsyncEventAndWait(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.JRNL_DAY)));
+            publisher.publishAsyncEventAndWait(new JrnlTagProcEvent(this, new BaseClsfKey(postNo, ContentType.JRNL_DAY), rsltObj.getYy(), rsltObj.getMnth()));
         }
 
         // 로그 관련 세팅
