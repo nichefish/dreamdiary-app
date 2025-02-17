@@ -7,6 +7,7 @@ import io.nicheblog.dreamdiary.domain.chat.model.ChatMsgSearchParam;
 import io.nicheblog.dreamdiary.domain.chat.service.ChatMsgService;
 import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -48,27 +49,20 @@ public class ChatController {
      * @throws Exception 예외 발생 시
      */
     @GetMapping("/chat/messages")
-    // @Secured({Constant.ROLE_USER})
     @ResponseBody
     public ResponseEntity<AjaxResponse> getChatMessages(
             final ChatMsgSearchParam searchParam,
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         final List<ChatMsgDto> messageList = chatMsgService.getListDto(searchParam);
-
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        // 응답 결과 세팅
-        ajaxResponse.setRsltList(messageList);
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(messageList));
     }
 
     /**
@@ -80,7 +74,7 @@ public class ChatController {
      */
     @MessageMapping("/chat/send")
     @SendTo("/topic/chat")
-    public AjaxResponse sendMessage(
+    public ResponseEntity<AjaxResponse> sendMessage(
             final @Payload String message,
             final StompHeaderAccessor stompHeaderAccessor
     ) throws Exception {
@@ -91,8 +85,6 @@ public class ChatController {
             throw new IllegalArgumentException(MessageUtils.getExceptionMsg("IllegalArgumentException.empty-msg"));
         }
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         // WebSocket 세션에서 attributes 가져오기
         final Authentication authentication = (Authentication) Objects.requireNonNull(stompHeaderAccessor.getSessionAttributes()).get("authentication");
         AuthUtils.setAuthentication(authentication);
@@ -101,13 +93,10 @@ public class ChatController {
                         .cn(message)
                         .build();
 
-        final ChatMsgDto result = chatMsgService.regist(chatMsg);  // 채팅 메시지 등록
-        final boolean isSuccess = result != null;
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+        final ServiceResponse result = chatMsgService.regist(chatMsg);  // 채팅 메시지 등록
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
-        ajaxResponse.setAjaxResult(true,rsltMsg);
-        ajaxResponse.setRsltObj(result);
-
-        return ajaxResponse;
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 }

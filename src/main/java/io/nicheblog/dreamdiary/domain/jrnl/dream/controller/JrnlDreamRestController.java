@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.domain.jrnl.dream.controller;
 
+import io.nicheblog.dreamdiary.domain.jrnl.day.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamService;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
-import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
-import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagEventListener;
+import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
 import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
@@ -14,6 +14,7 @@ import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.Getter;
@@ -64,20 +65,14 @@ public class JrnlDreamRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         final List<JrnlDreamDto> jrnlDreamList = jrnlDreamService.getListDtoWithCache(searchParam);
-
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        // 응답 결과 세팅
-        ajaxResponse.setRsltList(jrnlDreamList);
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(jrnlDreamList));
     }
 
     /**
@@ -89,7 +84,7 @@ public class JrnlDreamRestController
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
-     * @see TagEventListener
+     * @see TagProcEventListener
      */
     @Operation(
             summary = "저널 꿈 등록/수정",
@@ -104,28 +99,22 @@ public class JrnlDreamRestController
             final MultipartHttpServletRequest request
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
-        final Integer key = jrnlDream.getKey();
-        final boolean isReg = key == null;
-        final JrnlDreamDto result = isReg ? jrnlDreamService.regist(jrnlDream, request) : jrnlDreamService.modify(jrnlDream, request);
-
-        final boolean isSuccess = (result.getPostNo() != null);
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+        final boolean isReg = (jrnlDream.getKey() == null);
+        final ServiceResponse result = isReg ? jrnlDreamService.regist(jrnlDream, request) : jrnlDreamService.modify(jrnlDream, request);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
         // TODO: AOP로 분리
         if (isSuccess) {
+            final JrnlDreamDto rsltObj = (JrnlDreamDto) result.getRsltObj();
             // 태그 처리 :: 메인 로직과 분리
-            publisher.publishAsyncEventAndWait(new TagProcEvent(this, result.getClsfKey(), jrnlDream.tag));
+            publisher.publishAsyncEventAndWait(new JrnlTagProcEvent(this, rsltObj.getClsfKey(), rsltObj.getYy(), rsltObj.getMnth(), jrnlDream.tag));
         }
 
-        // 응답 결과 세팅
-        ajaxResponse.setRsltObj(result);
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 
     /**
@@ -145,20 +134,14 @@ public class JrnlDreamRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         final JrnlDreamDto retrievedDto = jrnlDreamService.getDtlDtoWithCache(key);
-
         final boolean isSuccess = (retrievedDto.getPostNo() != null);
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        // 응답 결과 세팅
-        ajaxResponse.setRsltObj(retrievedDto);
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
     }
 
     /**
@@ -169,7 +152,7 @@ public class JrnlDreamRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
-     * @see TagEventListener
+     * @see TagProcEventListener
      */
     @PostMapping(value = {Url.JRNL_DREAM_DEL_AJAX})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -179,22 +162,20 @@ public class JrnlDreamRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
-        final boolean isSuccess = jrnlDreamService.delete(postNo);
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final ServiceResponse result = jrnlDreamService.delete(postNo);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // TODO: AOP로 분리
         if (isSuccess) {
+            final JrnlDreamDto rsltObj = (JrnlDreamDto) result.getRsltObj();
             // 태그 처리 :: 메인 로직과 분리
-            publisher.publishAsyncEventAndWait(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.JRNL_DREAM)));
+            publisher.publishAsyncEventAndWait(new JrnlTagProcEvent(this, new BaseClsfKey(postNo, ContentType.JRNL_DREAM), rsltObj.getYy(), rsltObj.getMnth()));
         }
 
-        // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 }

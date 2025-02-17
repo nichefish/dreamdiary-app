@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -61,19 +62,14 @@ public class UserReqstRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
-        final UserReqstDto result = userReqstService.regist(userReqst);
-
-        final boolean isSuccess = (result.getUserNo() != null);
+        final ServiceResponse result = userReqstService.regist(userReqst);
+        final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? "신규계정이 성공적으로 신청되었습니다." : "신규계정 신청에 실패했습니다.";     // TODO: 메세지 변수로 빼기
 
-        // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 
     /**
@@ -93,17 +89,14 @@ public class UserReqstRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
+        final ServiceResponse result = userReqstService.cf(userNo);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        final boolean isSuccess = userReqstService.cf(userNo);
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
-
-        // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 
     /**
@@ -123,16 +116,13 @@ public class UserReqstRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
+        final ServiceResponse result = userReqstService.uncf(userNo);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        final boolean isSuccess = userReqstService.uncf(userNo);
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
-
-        // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
 }

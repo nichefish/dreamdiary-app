@@ -64,7 +64,7 @@ public class AuthPageController
             userReqstService.cf(user.getUserNo());
 
             isSuccess = true;
-            rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+            rsltMsg = MessageUtils.RSLT_SUCCESS;
 
             return "/view/auth/security/verify_success";
         } catch (final Exception e) {

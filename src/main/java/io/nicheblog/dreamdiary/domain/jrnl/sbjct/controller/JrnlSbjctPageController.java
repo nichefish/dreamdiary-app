@@ -98,7 +98,7 @@ public class JrnlSbjctPageController
         CmmUtils.Param.setModelAttrMap(searchParam, baseUrl, model);
 
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
@@ -136,7 +136,7 @@ public class JrnlSbjctPageController
         // cmmService.setModelFlsysPath(model);
 
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
@@ -170,7 +170,7 @@ public class JrnlSbjctPageController
         model.addAttribute("post", jrnlSbjct);
 
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
@@ -206,7 +206,7 @@ public class JrnlSbjctPageController
         model.addAttribute("post", retrievedDto);
 
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 조회수 카운트 추가
         // TODO: AOP로 분리
@@ -255,7 +255,7 @@ public class JrnlSbjctPageController
         // cmmService.setModelFlsysPath(model);
         
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);

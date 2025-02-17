@@ -4,7 +4,6 @@ import io.nicheblog.dreamdiary.domain.flsys.model.FlsysMetaDto;
 import io.nicheblog.dreamdiary.domain.flsys.service.FlsysMetaService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.extension.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -13,6 +12,7 @@ import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -62,33 +62,17 @@ public class FlsysMetaRestController
     public ResponseEntity<AjaxResponse> flsysMetaRegAjax(
             final @Valid FlsysMetaDto flsysMeta,
             final LogActvtyParam logParam
-    ) {
+    ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
+        final BaseClsfKey key = flsysMeta.getClsfKey();
+        final boolean isReg = key.getPostNo() == null;
+        final ServiceResponse result = isReg ? flsysMetaService.regist(flsysMeta) : flsysMetaService.modify(flsysMeta);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
-        boolean isSuccess = false;
-        String rsltMsg = "";
-        try {
-            final BaseClsfKey key = flsysMeta.getClsfKey();
-            final boolean isReg = key.getPostNo() == null;
-            final FlsysMetaDto result = isReg ? flsysMetaService.regist(flsysMeta) : flsysMetaService.modify(flsysMeta);
-            ajaxResponse.setRsltObj(result);
+        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-            isSuccess = (result.getPostNo() != null);
-            rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
-        } catch (final Exception e) {
-            isSuccess = false;
-            rsltMsg = MessageUtils.getExceptionMsg(e);
-            logParam.setExceptionInfo(e);
-        } finally {
-            ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
-            // 로그 관련 세팅
-            logParam.setCn(flsysMeta.toString());
-            logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
-            publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
-        }
-
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 
     /**
@@ -106,32 +90,16 @@ public class FlsysMetaRestController
     public ResponseEntity<AjaxResponse> flsysMetaDtlAjax(
             final @RequestParam("postNo") Integer key,
             final LogActvtyParam logParam
-    ) {
+    ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
+        // 정보 조회 및 응답에 세팅
+        final FlsysMetaDto rsDto = flsysMetaService.getDtlDto(key);
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        boolean isSuccess = false;
-        String rsltMsg = "";
-        try {
-            // 정보 조회 및 응답에 세팅
-            final FlsysMetaDto rsDto = flsysMetaService.getDtlDto(key);
-            ajaxResponse.setRsltObj(rsDto);
+        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-            isSuccess = true;
-            rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
-        } catch (final Exception e) {
-            isSuccess = false;
-            rsltMsg = MessageUtils.getExceptionMsg(e);
-            logParam.setExceptionInfo(e);
-        } finally {
-            ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
-            // 로그 관련 세팅
-            logParam.setCn("key: " + key.toString());
-            logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
-            publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
-        }
-
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(rsDto));
     }
 
     /**
@@ -149,29 +117,15 @@ public class FlsysMetaRestController
     public ResponseEntity<AjaxResponse> flsysMetaDelAjax(
             final @RequestParam("postNo") Integer postNo,
             final LogActvtyParam logParam
+        ) throws Exception {
 
-        ) {
+        final ServiceResponse result = flsysMetaService.delete(postNo);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
+        // 로그 관련 세팅
+        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        boolean isSuccess = false;
-        String rsltMsg = "";
-        try {
-            // 게시판 정보 조회
-            isSuccess = flsysMetaService.delete(postNo);
-            rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
-        } catch (final Exception e) {
-            isSuccess = false;
-            rsltMsg = MessageUtils.getExceptionMsg(e);
-            logParam.setExceptionInfo(e);
-        } finally {
-            ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
-            // 로그 관련 세팅
-            logParam.setCn("key: " + postNo.toString());
-            logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
-            publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
-        }
-
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
 }

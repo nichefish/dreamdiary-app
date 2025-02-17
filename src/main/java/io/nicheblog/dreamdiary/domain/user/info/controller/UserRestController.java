@@ -13,6 +13,7 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -61,19 +62,14 @@ public class UserRestController
             final LogActvtyParam logParam
     ) {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         final Boolean isUserIdDup = userService.userIdDupChck(userId);
-
         final boolean isSuccess = !isUserIdDup;;
         final String rsltMsg = MessageUtils.getMessage(isSuccess ? "user.id.usable" : "user.id.duplicated");
 
-        // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
 
     /**
@@ -91,19 +87,14 @@ public class UserRestController
             final LogActvtyParam logParam
     ) {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         final Boolean isEmailDup = userService.emailDupChck(email);
-
         final boolean isSuccess = !isEmailDup;;
         final String rsltMsg = MessageUtils.getMessage(isSuccess ? "user.email.usable" : "user.email.duplicated");
 
-        // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
 
     /**
@@ -124,22 +115,15 @@ public class UserRestController
             final MultipartHttpServletRequest request
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
+        final boolean isReg = (user.getKey() == null);
+        final ServiceResponse result = isReg ? userService.regist(user, request) : userService.modify(user, request);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
-        final Integer key = user.getKey();
-        final boolean isReg = key == null;
-        final UserDto result = isReg ? userService.regist(user, request) : userService.modify(user, request);
-
-        final boolean isSuccess = (result.getUserNo() != null);
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
-
-        // 응답 결과 세팅
-        ajaxResponse.setRsltObj(result);
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 
     /**
@@ -159,17 +143,14 @@ public class UserRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
-        final boolean isSuccess = userService.passwordReset(userNo);
+        final ServiceResponse result = userService.passwordReset(userNo);
+        final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS_PW_RESET : MessageUtils.RSLT_FAILURE);
 
-       // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
 
     /**
@@ -189,21 +170,22 @@ public class UserRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         final UserDto user = userService.getDtlDto(userNo);
         // 내 정보인지 비교 :: "내 정보는 삭제할 수 없습니다."
         final boolean isMyInfo = AuthUtils.isMyInfo(user.getUserId());
+        if (!isMyInfo) {
+            final String rsltMsg = MessageUtils.NOT_DELABLE_OWN_ID;
+            return ResponseEntity.ok(AjaxResponse.withAjaxResult(false, rsltMsg));
+        }
 
-        final boolean isSuccess = !isMyInfo && userService.delete(userNo);
-        final String rsltMsg = isMyInfo ? MessageUtils.NOT_DELABLE_OWN_ID : MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final ServiceResponse result = userService.delete(userNo);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
-        // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
 
     /**
@@ -230,7 +212,7 @@ public class UserRestController
             // List<Object> userListXlsx = userService.userListXlsx(searchParamMap);
             // xlsxUtils.listXlxsDownload(Constant.user_profl, userListXlsx);
             isSuccess = true;
-            rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+            rsltMsg = MessageUtils.RSLT_SUCCESS;
         } catch (final Exception e) {
             isSuccess = false;
             rsltMsg = MessageUtils.getExceptionMsg(e);

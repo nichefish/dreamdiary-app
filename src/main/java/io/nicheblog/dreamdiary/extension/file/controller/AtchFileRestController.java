@@ -57,19 +57,15 @@ public class AtchFileRestController
             final LogActvtyParam logParam
     ) {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         final boolean isSuccess = FileUtils.fileChck(fileId);
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
         // TODO: 실패시에만 로그 적용하도록
 
-        // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
 
     /**
@@ -88,19 +84,14 @@ public class AtchFileRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         final List<AtchFileDtlDto> fileList = atchFileDtlService.getPageDto(atchFileNo);
         final boolean isSuccess = (fileList != null);
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
-        // 응답 결과 세팅
-        ajaxResponse.setRsltList(fileList);
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(fileList));
     }
 
     /**
@@ -121,8 +112,6 @@ public class AtchFileRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         // 파일 정보 조회
         final AtchFileDtlEntity atchFileDtl = atchFileDtlService.getDtlEntity(atchFileDtlNo);
         final String orgnFileNm = atchFileDtl.getOrgnFileNm();
@@ -131,14 +120,12 @@ public class AtchFileRestController
         FileUtils.downloadFile(file, orgnFileNm);
 
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
 
     /**
@@ -157,20 +144,15 @@ public class AtchFileRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         // 파일 영역 처리 후 업로드 정보 받아서 반환
         final AtchFileDtlDto atchfileDtl = FileUtils.uploadDtlFile(request);
         assert atchfileDtl != null;
         final boolean isSuccess = (atchfileDtl.getAtchFileDtlNo() != null);
-        final String rsltMsg =  MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+        final String rsltMsg =  isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
-        // 응답 결과 세팅
-        ajaxResponse.setRsltObj(atchfileDtl);
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(atchfileDtl));
     }
 }

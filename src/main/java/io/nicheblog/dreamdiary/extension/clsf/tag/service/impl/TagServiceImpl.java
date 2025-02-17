@@ -6,23 +6,16 @@ import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.mapstruct.TagMapstruct;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagSearchParam;
-import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.tag.repository.jpa.TagRepository;
-import io.nicheblog.dreamdiary.extension.clsf.tag.service.ContentTagService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.service.TagService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.spec.TagSpec;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -45,8 +38,6 @@ public class TagServiceImpl
     private final TagSpec spec;
     @Getter
     private final TagMapstruct mapstruct = TagMapstruct.INSTANCE;
-
-    private final ContentTagService contentTagService;
 
     /**
      * 태그 관리 화면에서 요소를 관리할 컨텐츠 타입 목록 조회
@@ -192,43 +183,6 @@ public class TagServiceImpl
     @Transactional(readOnly = true)
     public Integer countTagSize(final Integer tagNo, final String contentType, final String regstrId) {
         return repository.countTagSize(tagNo, contentType, regstrId);
-    }
-
-    /**
-     * 컨텐츠 태그 처리
-     * 새로운 태그를 추가하고, 더 이상 필요하지 않은 태그를 삭제합니다. 태그 목록이 동일한 경우에는 처리하지 않고 리턴합니다.
-     *
-     * @param clsfKey 복합키 정보
-     * @param tagCmpstn 태그 구성 객체 (새로운 태그 목록 포함)
-     * @throws Exception 태그 처리 중 발생할 수 있는 예외
-     */
-    @Transactional
-    public void procTags(final BaseClsfKey clsfKey, final TagCmpstn tagCmpstn) throws Exception {
-        // 태그객체가 넘어오지 않았으면? 리턴.
-        if (tagCmpstn == null) return;
-
-        // 기존 태그와 컨텐츠 태그가 동일하면 리턴
-        final List<TagDto> existingTagList = contentTagService.getTagStrListByClsfKey(clsfKey);
-        final List<TagDto> newTagList = tagCmpstn.getParsedTagList();
-        final boolean isSame = newTagList.size() == existingTagList.size() && new HashSet<>(newTagList).containsAll(existingTagList);
-        if (isSame) return;
-        
-        // 1, 추가해야 할 마스터 태그 처리 (메소드 분리)
-        // 새로운 태그 목록에서 기존 태그 목록을 빼면 추가해야 할 태그들이 나옴
-        final Set<TagDto> newTagSet = new HashSet<>(newTagList);
-        existingTagList.forEach(newTagSet::remove);
-        final List<TagEntity> rsList = CollectionUtils.isNotEmpty(newTagSet)
-                ? this.addMasterTag(new ArrayList<>(newTagSet))
-                : new ArrayList<>();
-
-        // 2. 삭제해야 할 태그 삭제
-        // 기존 태그 목록에서 새로운 태그 목록을 빼면 삭제해야 할 태그들이 나옴
-        final Set<TagDto> obsoleteTagSet = new HashSet<>(existingTagList);
-        newTagList.forEach(obsoleteTagSet::remove);
-        if (CollectionUtils.isNotEmpty(obsoleteTagSet)) contentTagService.delObsoleteContentTags(clsfKey, new ArrayList<>(obsoleteTagSet));
-
-        // 3. 추가해야 할 컨텐츠-태그를 처리해준다.
-        if (CollectionUtils.isNotEmpty(rsList)) contentTagService.addContentTags(clsfKey, rsList);
     }
 
     /**

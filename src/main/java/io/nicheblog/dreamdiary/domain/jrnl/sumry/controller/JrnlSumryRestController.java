@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumrySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.service.JrnlSumryService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
-import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagEventListener;
+import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
 import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
@@ -12,6 +12,7 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -61,20 +62,14 @@ public class JrnlSumryRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         final List<JrnlSumryDto.LIST> jrnlSumryList = jrnlSumryService.getListDto(searchParam);
-
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        // 응답 결과 세팅
-        ajaxResponse.setRsltList(jrnlSumryList);
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(jrnlSumryList));
     }
 
     /**
@@ -94,20 +89,15 @@ public class JrnlSumryRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         final JrnlSumryDto.DTL retrievedDto = jrnlSumryService.getSumryDtl(key);
 
         final boolean isSuccess = (retrievedDto.getPostNo() != null);
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        // 응답 결과 세팅
-        ajaxResponse.setRsltObj(retrievedDto);
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
     }
 
     /**
@@ -126,17 +116,13 @@ public class JrnlSumryRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         final boolean isSuccess = jrnlSumryService.makeYySumry(yy);
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
 
     /**
@@ -154,17 +140,13 @@ public class JrnlSumryRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         final boolean isSuccess = jrnlSumryService.makeTotalYySumry();
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
 
     /**
@@ -184,17 +166,13 @@ public class JrnlSumryRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         final boolean isSuccess = jrnlSumryService.dreamCompt(postNo);
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
 
     /**
@@ -205,35 +183,30 @@ public class JrnlSumryRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
-     * @see TagEventListener
+     * @see TagProcEventListener
      */
     @PostMapping(value = {Url.JRNL_SUMRY_REG_AJAX})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> jrnlSumryTagAjax(
+    public ResponseEntity<AjaxResponse> jrnlSumryRegAjax(
             final @Valid JrnlSumryDto.DTL jrnlSumry,
             final LogActvtyParam logParam,
             final MultipartHttpServletRequest request
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
-        final JrnlSumryDto result = jrnlSumryService.modify(jrnlSumry, request);
-
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final ServiceResponse result = jrnlSumryService.modify(jrnlSumry, request);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 태그 처리
         // TODO: AOP로 분리
-        publisher.publishAsyncEventAndWait(new TagProcEvent(this, jrnlSumry.getClsfKey(), jrnlSumry.tag));
+        final JrnlSumryDto rsltObj = (JrnlSumryDto) result.getRsltObj();
+        publisher.publishAsyncEventAndWait(new TagProcEvent(this, rsltObj.getClsfKey(), jrnlSumry.tag));
 
-        // 응답 결과 세팅
-        ajaxResponse.setRsltObj(result);
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 
 }

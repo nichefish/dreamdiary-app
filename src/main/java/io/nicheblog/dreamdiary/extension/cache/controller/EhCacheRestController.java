@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * EhCacheRestController
@@ -53,20 +53,15 @@ public class EhCacheRestController
             final LogActvtyParam logParam
     ) {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         // 현재 활성 중인 캐시(name) 목록 조회 :: 성공시 처리완료목록으로 출력
-        final Map<String, Object> activeCacheList = EhCacheUtils.getActiveCacheMap();
+        final HashMap<String, Object> activeCacheMap = EhCacheUtils.getActiveCacheMap();
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        // 응답 결과 세팅
-        ajaxResponse.setRsltMap(activeCacheList);
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withMap(activeCacheMap));
     }
 
     /**
@@ -85,20 +80,15 @@ public class EhCacheRestController
             final LogActvtyParam logParam
     ) {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         // 현재 활성 중인 캐시(name) 목록 조회 :: 성공시 처리완료목록으로 출력
         final Object activeCache = EhCacheUtils.getObjectFromCache(cacheParam);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        // 응답 결과 세팅
-        ajaxResponse.setRsltObj(activeCache);
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(activeCache));
     }
 
     /**
@@ -117,19 +107,15 @@ public class EhCacheRestController
             final LogActvtyParam logParam
     ) {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         // 캐시 evict
         EhCacheUtils.evictCache(cacheParam);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
 
     /**
@@ -148,19 +134,15 @@ public class EhCacheRestController
             final LogActvtyParam logParam
     ) {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         // 캐시 evict
         EhCacheUtils.evictCacheAll(cacheParam);
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
 
     /**
@@ -177,19 +159,14 @@ public class EhCacheRestController
             final LogActvtyParam logParam
     ) {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         final List<String> activeCacheList = EhCacheUtils.chckActiveCacheNm();
         final boolean isSuccess = EhCacheUtils.clearAllCaches();
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
-        // 응답 결과 세팅
-        ajaxResponse.setRsltList(activeCacheList);
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(activeCacheList));
     }
 
 }

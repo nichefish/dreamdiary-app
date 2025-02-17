@@ -11,6 +11,7 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -63,19 +64,16 @@ public class VcatnPaprRestController
             final MultipartHttpServletRequest request
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
-        final Integer key = vcatnPapr.getKey();
-        final boolean isReg = key == null;
-        final VcatnPaprDto result = isReg ? vcatnPaprService.regist(vcatnPapr, request) : vcatnPaprService.modify(vcatnPapr, request);
-
-        final boolean isSuccess = (result.getPostNo() != null);
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+        final boolean isReg = vcatnPapr.getKey() == null;
+        final ServiceResponse result = isReg ? vcatnPaprService.regist(vcatnPapr, request) : vcatnPaprService.modify(vcatnPapr, request);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
         // TODO: AOP로 빼기
         if (isSuccess) {
+            final VcatnPaprDto rsltObj = (VcatnPaprDto) result.getRsltObj();
             // 조치자 추가 :: 메인 로직과 분리
-            publisher.publishAsyncEvent(new ViewerAddEvent(this, result.getClsfKey()));
+            publisher.publishAsyncEvent(new ViewerAddEvent(this, rsltObj.getClsfKey()));
             // 잔디 메세지 발송 :: 메인 로직과 분리
             // if (isSuccess && "Y".equals(jandiYn)) {
             //     String jandiRsltMsg = notifyService.notifyVcatnPaprReg(trgetTopic, result, logParam);
@@ -83,13 +81,10 @@ public class VcatnPaprRestController
             // }
         }
 
-        // 응답 결과 세팅
-        ajaxResponse.setRsltObj(result);
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 
     /**
@@ -109,19 +104,14 @@ public class VcatnPaprRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
+        final ServiceResponse result = vcatnPaprService.cf(postNo);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
-        final VcatnPaprDto result = vcatnPaprService.cf(postNo);
-
-        final boolean isSuccess = (result.getPostNo() != null);
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
-
-        // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.fromResponse(result, rsltMsg));
     }
 
     /**
@@ -142,12 +132,9 @@ public class VcatnPaprRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         final VcatnPaprDto rsDto = vcatnPaprService.getDtlDto(key);
-
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 조회수 카운트 추가 :: 메인 로직과 분리
         // TODO: AOP로 빼기
@@ -156,13 +143,10 @@ public class VcatnPaprRestController
         // TODO: AOP로 빼기
         publisher.publishAsyncEvent(new ViewerAddEvent(this, rsDto.getClsfKey()));
 
-        // 응답 결과 세팅
-        ajaxResponse.setRsltObj(rsDto);
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(rsDto));
     }
 
     /**
@@ -182,16 +166,13 @@ public class VcatnPaprRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
+        final ServiceResponse result = vcatnPaprService.delete(postNo);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        final boolean isSuccess = vcatnPaprService.delete(postNo);
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
-
-        // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 }

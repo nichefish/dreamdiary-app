@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import org.springframework.util.CollectionUtils;
 
 import javax.transaction.Transactional;
@@ -34,14 +35,16 @@ public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule &
      * @throws Exception 상태 변경 중 발생할 수 있는 예외
      */
     @Transactional
-    default Boolean setStateUse(final Key key) throws Exception {
-        Entity e = this.getDtlEntity(key);
+    default ServiceResponse setStateUse(final Key key) throws Exception {
+        final Entity e = this.getDtlEntity(key);
         e.getState().setUseYn("Y");
         this.updt(e);
         // 변경 후처리
         this.postSetState(key);
 
-        return true;
+        return ServiceResponse.builder()
+                .rslt(true)
+                .build();
     }
 
     /**
@@ -52,14 +55,16 @@ public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule &
      * @throws Exception 상태 변경 중 발생할 수 있는 예외
      */
     @Transactional
-    default Boolean setStateUnuse(final Key key) throws Exception {
-        Entity e = this.getDtlEntity(key);
+    default ServiceResponse setStateUnuse(final Key key) throws Exception {
+        final Entity e = this.getDtlEntity(key);
         e.getState().setUseYn("N");
         this.updt(e);
         // 변경 후처리
         this.postSetState(key);
 
-        return true;
+        return ServiceResponse.builder()
+                .rslt(true)
+                .build();
     }
 
     /**
@@ -79,8 +84,12 @@ public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule &
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Transactional
-    default Boolean sortOrdr(final List<Dto> sortOrdr) throws Exception {
-        if (CollectionUtils.isEmpty(sortOrdr)) return true;
+    default ServiceResponse sortOrdr(final List<Dto> sortOrdr) throws Exception {
+        if (CollectionUtils.isEmpty(sortOrdr)) {
+            return ServiceResponse.builder()
+                    .rslt(true)
+                    .build();
+        }
         sortOrdr.forEach(dto -> {
             try {
                 final Entity e = this.getDtlEntity(dto.getKey());
@@ -99,7 +108,9 @@ public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule &
         // 캐시 처리
         this.evictCache(sortOrdr.get(0));
 
-        return true;
+        return ServiceResponse.builder()
+                .rslt(true)
+                .build();
     }
 
     /**

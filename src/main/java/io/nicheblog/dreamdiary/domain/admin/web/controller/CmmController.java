@@ -36,13 +36,9 @@ public class CmmController {
             //
     ) {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         final Map<String, String> urlMap = Url.getUrlMap();
-        ajaxResponse.setAjaxResult(true, MessageUtils.getMessage("msg.common.success"));
-        ajaxResponse.setRsltMap(urlMap);
-
-        return ResponseEntity.ok(ajaxResponse);
+        final String rsltMsg = MessageUtils.getMessage("msg.common.success");
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, rsltMsg).withMap(urlMap));
     }
 
     /**
@@ -55,13 +51,9 @@ public class CmmController {
             //
     ) {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         final Map<String, String> constantMap = Constant.getConstantMap();
-        ajaxResponse.setAjaxResult(true, MessageUtils.getMessage("msg.common.success"));
-        ajaxResponse.setRsltMap(constantMap);
-
-        return ResponseEntity.ok(ajaxResponse);
+        final String rsltMsg = MessageUtils.getMessage("msg.common.success");
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, rsltMsg).withMap(constantMap));
     }
 
     /**
@@ -74,11 +66,8 @@ public class CmmController {
             //
     ) {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
-        ajaxResponse.setAjaxResult(true, MessageUtils.getMessage("msg.common.success"));
-        ajaxResponse.setRsltObj(serverInfo);
-
-        return ResponseEntity.ok(ajaxResponse);
+        // TODO: releaseInfo 등 포함하기
+        final String rsltMsg = MessageUtils.getMessage("msg.common.success");
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, rsltMsg).withObj(serverInfo));
     }
 }

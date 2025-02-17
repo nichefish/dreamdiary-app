@@ -46,7 +46,7 @@ public class VcatnStatsYyScheduler {
         String rsltMsg = "";
         try {
             isSuccess = vcatnStatsYyService.regVcatnYyDt();
-            rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+            rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
         } catch (final Exception e) {
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);

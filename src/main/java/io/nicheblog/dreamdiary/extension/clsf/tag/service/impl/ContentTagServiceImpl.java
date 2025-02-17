@@ -13,7 +13,6 @@ import io.nicheblog.dreamdiary.extension.clsf.tag.repository.jpa.ContentTagRepos
 import io.nicheblog.dreamdiary.extension.clsf.tag.repository.jpa.TagSmpRepository;
 import io.nicheblog.dreamdiary.extension.clsf.tag.service.ContentTagService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.spec.ContentTagSpec;
-import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
@@ -25,7 +24,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -50,7 +51,6 @@ public class ContentTagServiceImpl
     private final ContentTagMapstruct mapstruct = ContentTagMapstruct.INSTANCE;
 
     private final TagSmpRepository tagSmpRepository;
-    private final ApplicationEventPublisherWrapper publisher;
 
     private final ApplicationContext context;
     private ContentTagServiceImpl getSelf() {
@@ -152,16 +152,17 @@ public class ContentTagServiceImpl
      * 특정 게시물에 대해 컨텐츠 태그 목록 추가.
      *
      * @param clsfKey 참조 복합키 정보 (BaseClsfKey)
-     * @param rsList 처리할 태그 엔티티 목록 (List<TagEntity>)
+     * @param rsList  처리할 태그 엔티티 목록 (List<TagEntity>)
+     * @return {@link List} -- 등록된 컨텐츠 태그 엔티티 목록
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Transactional
-    public void addContentTags(final BaseClsfKey clsfKey, final List<TagEntity> rsList) throws Exception {
+    public List<ContentTagEntity> addContentTags(final BaseClsfKey clsfKey, final List<TagEntity> rsList) throws Exception {
         final List<ContentTagEntity> contentTagList = rsList.stream()
                 .map(tag -> new ContentTagEntity(tag.getTagNo(), clsfKey))
                 .collect(Collectors.toList());
-        this.registAll(contentTagList);
+        return this.registAll(contentTagList);
     }
 
     /**
@@ -177,32 +178,6 @@ public class ContentTagServiceImpl
             final String cacheName = this.getCacheNameByContentType(contentType);
             if (cacheName.isEmpty()) return;
             final Integer tagNo = entity.getRefTagNo();;
-            this.evictMyCacheForPeriod(cacheName, tagNo);
-        });
-    }
-
-    /**
-     * 특정 게시물에 대해 기존 콘텐츠 태그를 모두 삭제합니다.
-     *
-     * @param clsfKey 참조 복합키 정보 (BaseClsfKey)
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    @Override
-    @Transactional
-    public void delExistingContentTags(final BaseClsfKey clsfKey) throws Exception {
-        // 2. 글번호 + 태그번호를 받아와서 기존 태그 목록 조회
-        final Map<String, Object> searchParamMap = new HashMap<>() {{
-            put("refPostNo", clsfKey.getPostNo());
-            put("refContentType", clsfKey.getContentType());
-        }};
-        final List<ContentTagEntity> entityList = this.getListEntity(searchParamMap);
-        this.deleteAll(entityList);
-
-        // 태그 개수 캐시 초기화
-        final String contentType = clsfKey.getContentType();
-        final String cacheName = this.getCacheNameByContentType(contentType);
-        entityList.forEach(entity -> {
-            final Integer tagNo = entity.getRefTagNo();
             this.evictMyCacheForPeriod(cacheName, tagNo);
         });
     }

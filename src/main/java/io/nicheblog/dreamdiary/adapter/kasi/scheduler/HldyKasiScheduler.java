@@ -50,9 +50,8 @@ public class HldyKasiScheduler {
         try {
             // 기존 정보 (API로 받아온 휴일) 삭제 후 재등록
             isSuccess = hldyKasiApiService.procHldyList(DateUtils.getCurrYyStr());
-            rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+            rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
         } catch (final Exception e) {
-            isSuccess = false;
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);
         } finally {

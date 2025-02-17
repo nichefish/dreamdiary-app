@@ -82,8 +82,8 @@ public class FlsysController
         final FlsysDto flsys = flsysService.getFlsysByPath(filePath);
         model.addAttribute("file", flsys);
 
-        boolean isSuccess = true;
-        String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
@@ -106,32 +106,17 @@ public class FlsysController
     public ResponseEntity<AjaxResponse> flsysListAjax(
             final @RequestParam("filePath") String filePath,
             final LogActvtyParam logParam
-    ) {
+    ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
+        // 해당하는 경로의 파일시스템 정보 조회
+        if (!filePath.startsWith(Constant.HOME_FLSYS)) throw new IllegalArgumentException(MessageUtils.getExceptionMsg("IllegalArgumentException.not-allowed-path"));
+        final FlsysDto file = flsysService.getFlsysByPath(filePath);
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+        // 로그 관련 세팅
+        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        boolean isSuccess = false;
-        String rsltMsg = "";
-        try {
-            // 해당하는 경로의 파일시스템 정보 조회
-            if (!filePath.startsWith(Constant.HOME_FLSYS)) throw new IllegalArgumentException(MessageUtils.getExceptionMsg("IllegalArgumentException.not-allowed-path"));
-            final FlsysDto file = flsysService.getFlsysByPath(filePath);
-            ajaxResponse.setRsltObj(file);
-
-            isSuccess = true;
-            rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
-        } catch (final Exception e) {
-            isSuccess = false;
-            rsltMsg = MessageUtils.getExceptionMsg(e);
-            logParam.setExceptionInfo(e);
-        } finally {
-            ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
-            // 로그 관련 세팅
-            logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
-            publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
-        }
-
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(file));
     }
 
     /**
@@ -159,7 +144,7 @@ public class FlsysController
             FileUtils.downloadFile(file.getFile());
 
             isSuccess = true;
-            rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+            rsltMsg = MessageUtils.RSLT_SUCCESS;
         } catch (final Exception e) {
             isSuccess = false;
             rsltMsg = MessageUtils.getExceptionMsg(e);

@@ -72,18 +72,11 @@ public interface ContentTagService
      * 특정 게시물에 대해 컨텐츠 태그 목록 추가.
      *
      * @param clsfKey 참조 복합키 정보 (BaseClsfKey)
-     * @param rsList 처리할 태그 엔티티 목록 (List<TagEntity>)
+     * @param rsList  처리할 태그 엔티티 목록 (List<TagEntity>)
+     * @return {@link List} -- 등록된 컨텐츠 태그 엔티티 목록
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
-    void addContentTags(final BaseClsfKey clsfKey, final List<TagEntity> rsList) throws Exception;
-
-    /**
-     * 특정 게시물에 대해 기존 콘텐츠 태그를 모두 삭제합니다.
-     *
-     * @param clsfKey 참조 복합키 정보 (BaseClsfKey)
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    void delExistingContentTags(final BaseClsfKey clsfKey) throws Exception;
+    List<ContentTagEntity> addContentTags(final BaseClsfKey clsfKey, final List<TagEntity> rsList) throws Exception;
 
     /**
      * 콘텐츠 타입에 따른 캐시 이름 반환 :: 메소드 분리

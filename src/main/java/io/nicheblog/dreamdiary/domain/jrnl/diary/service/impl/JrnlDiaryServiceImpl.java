@@ -2,10 +2,7 @@ package io.nicheblog.dreamdiary.domain.jrnl.diary.service.impl;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.domain.jrnl.day.event.JrnlDayTagCntSubEvent;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.event.JrnlDiaryTagCntAddEvent;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.event.JrnlDiaryTagCntSubEvent;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.mapstruct.JrnlDiaryMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiarySearchParam;
@@ -120,32 +117,6 @@ public class JrnlDiaryServiceImpl
         dto.setIdx(lastIndex + 1);
     }
 
-    @Override
-    public void midRegist(final JrnlDiaryEntity registEntity) throws Exception {
-        final Integer yy = registEntity.getJrnlDay().getYy();
-        final Integer mnth = registEntity.getJrnlDay().getMnth();
-        publisher.publishEvent(new JrnlDiaryTagCntAddEvent(this, yy, mnth, registEntity.getTagNoList()));
-    }
-
-    /**
-     * 수정 전처리. (override)
-     *
-     * @param modifyDto 수정할 객체
-     */
-    @Override
-    public void preModify(final JrnlDiaryDto modifyDto, final JrnlDiaryEntity existingEntity) throws Exception {
-        final Integer yy = existingEntity.getJrnlDay().getYy();
-        final Integer mnth = existingEntity.getJrnlDay().getMnth();
-        publisher.publishEvent(new JrnlDiaryTagCntSubEvent(this, yy, mnth, existingEntity.getTagNoList()));
-    }
-
-    @Override
-    public void midModify(final JrnlDiaryEntity updatedEntity) {
-        final Integer yy = updatedEntity.getJrnlDay().getYy();
-        final Integer mnth = updatedEntity.getJrnlDay().getMnth();
-        publisher.publishEvent(new JrnlDiaryTagCntAddEvent(this, yy, mnth, updatedEntity.getTagNoList()));
-    }
-
     /**
      * 상세 조회 (dto level) :: 캐시 처리
      *
@@ -160,22 +131,6 @@ public class JrnlDiaryServiceImpl
         // 권한 체크
         if (!retrieved.getIsRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("common.rslt.access-not-authorized"));
         return retrieved;
-    }
-
-    /**
-     * 삭제 전처리. (override)
-     * 등록자가 아니면 삭제 불가 처리.
-     *
-     * @param deleteEntity - 삭제 엔티티
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    @Override
-    public void preDelete(final JrnlDiaryEntity deleteEntity) throws Exception {
-        if (!deleteEntity.isRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("delete-not-authorized"));
-
-        final Integer yy = deleteEntity.getJrnlDay().getYy();
-        final Integer mnth = deleteEntity.getJrnlDay().getMnth();
-        publisher.publishEvent(new JrnlDayTagCntSubEvent(this, yy, mnth, deleteEntity.getTagNoList()));
     }
 
     /**

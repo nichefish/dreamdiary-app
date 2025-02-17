@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.jrnl.diary.event;
 
-import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagEventListener;
+import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.security.core.context.SecurityContext;
@@ -15,7 +15,7 @@ import java.util.List;
  * </pre>
  *
  * @author nichefish
- * @see TagEventListener
+ * @see TagProcEventListener
  */
 @Getter
 public class JrnlDiaryTagCntAddEvent

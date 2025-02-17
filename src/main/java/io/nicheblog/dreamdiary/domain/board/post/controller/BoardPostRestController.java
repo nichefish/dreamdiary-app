@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.domain.board.post.model.BoardPostDto;
 import io.nicheblog.dreamdiary.domain.board.post.service.BoardPostService;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
-import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagEventListener;
+import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.event.ViewerAddEvent;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
@@ -15,6 +15,7 @@ import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +59,7 @@ public class BoardPostRestController
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
-     * @see TagEventListener,ViewerEventListener
+     * @see TagProcEventListener ,ViewerEventListener
      */
     @PostMapping(value = {Url.BOARD_POST_REG_AJAX, Url.BOARD_POST_MDF_AJAX})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -69,21 +70,18 @@ public class BoardPostRestController
             final MultipartHttpServletRequest request
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
-        final Integer key = boardPost.getKey();
-        final boolean isReg = key == null;
-        final BoardPostDto.DTL result = isReg ? boardPostService.regist(boardPost, request) : boardPostService.modify(boardPost, request);
-
-        final boolean isSuccess = (result.getPostNo() != null);
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+        final boolean isReg = (boardPost.getKey() == null);
+        final ServiceResponse result = isReg ? boardPostService.regist(boardPost, request) : boardPostService.modify(boardPost, request);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
         // TODO: AOP로 분리하기
         if (isSuccess) {
+            final BoardPostDto rsltObj = (BoardPostDto) result.getRsltObj();
             // 조치자 추가 :: 메인 로직과 분리
-            publisher.publishAsyncEvent(new ViewerAddEvent(this, result.getClsfKey()));
+            publisher.publishAsyncEvent(new ViewerAddEvent(this, rsltObj.getClsfKey()));
             // 태그 처리 :: 메인 로직과 분리
-            publisher.publishAsyncEventAndWait(new TagProcEvent(this, new BaseClsfKey(key, ContentType.BOARD), boardPost.tag));
+            publisher.publishAsyncEventAndWait(new TagProcEvent(this, rsltObj.getClsfKey(), boardPost.tag));
             // 잔디 메세지 발송 :: 메인 로직과 분리
             // if ("Y".equals(jandiYn)) {
             //     String jandiRsltMsg = notifyService.notifyBoardPostReg(trgetTopic, result, logParam);
@@ -91,13 +89,10 @@ public class BoardPostRestController
             // }
         }
 
-        // 응답 결과 세팅
-        ajaxResponse.setRsltObj(result);
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 
     /**
@@ -118,12 +113,9 @@ public class BoardPostRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         final BoardPostDto retrievedDto = boardPostService.getDtlDto(postNo);
-
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 조회수 카운트 추가
         // TODO: AOP로 분리
@@ -132,13 +124,10 @@ public class BoardPostRestController
         // TODO: AOP로 분리
         publisher.publishAsyncEvent(new ViewerAddEvent(this, retrievedDto.getClsfKey()));
 
-        // 응답 결과 세팅
-        ajaxResponse.setRsltObj(retrievedDto);
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
-            logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
+        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
     }
 
     /**
@@ -149,7 +138,7 @@ public class BoardPostRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
-     * @see TagEventListener
+     * @see TagProcEventListener
      */
     @PostMapping(Url.BOARD_POST_DEL_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -159,10 +148,9 @@ public class BoardPostRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
-        final boolean isSuccess = boardPostService.delete(postNo);
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final ServiceResponse result = boardPostService.delete(postNo);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // TODO: AOP로 분리하기
         if (isSuccess) {
@@ -170,11 +158,9 @@ public class BoardPostRestController
             publisher.publishAsyncEventAndWait(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.BOARD)));
         }
 
-        // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 }

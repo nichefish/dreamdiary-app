@@ -47,11 +47,15 @@ public class MessageUtils
     private void init() {
         messageSource = autowiredMessageSource;
         response = autowiredResponse;
+        RSLT_SUCCESS = getMessage("common.rslt.success");
+        RSLT_FAILURE = getMessage("common.rslt.failure");
+        RSLT_EMPTY = getMessage("common.rslt.empty");
     }
 
-    public static final String RSLT_SUCCESS = "common.rslt.success";
-    public static final String RSLT_FAILURE = "common.rslt.failure";
-    public static final String RSLT_EMPTY = "common.rslt.empty";
+    public static String RSLT_SUCCESS;
+    public static String RSLT_FAILURE;
+    public static String RSLT_EMPTY;
+
     public static final String RSLT_EXCEPTION = "exception";
 
     public static final String RSLT_JANDI_SUCCESS = "jandi.rslt.success";

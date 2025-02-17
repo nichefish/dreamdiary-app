@@ -10,7 +10,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -31,7 +30,6 @@ public class JrnlDayTagEventListener {
 
     private final CacheManager cacheManager;
 
-
     /**
      * 태그 이벤트를 처리한다.
      * 삭제된 엔티티 재조회와 관련될 수 있으므로 별도 트랜잭션으로 처리.
@@ -41,22 +39,24 @@ public class JrnlDayTagEventListener {
      * @see EhCacheEvictEventListner
      */
     @EventListener
-    @Async
     public void handleTagAddEvent(final JrnlDiaryTagCntAddEvent event) throws Exception {
         final List<Integer> tagNoList = event.getTagNoList();
         if (CollectionUtils.isEmpty(tagNoList)) return;
 
         final Integer yy = event.getYy();
         final Integer mnth = event.getMnth();
+        final String cacheKey = AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth;
 
         final Cache cache = cacheManager.getCache("myCountDaySizeMap");
-        ConcurrentHashMap<Integer, Integer> sizeMap = (ConcurrentHashMap<Integer, Integer>) cache.get(AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth);
+        if (cache == null) return;
+
+        ConcurrentHashMap<Integer, Integer> sizeMap = cache.get(cacheKey, ConcurrentHashMap.class);
         if (sizeMap == null) sizeMap = new ConcurrentHashMap<>();
 
         for (final Integer tagNo : tagNoList) {
-            sizeMap.put(tagNo, sizeMap.getOrDefault(tagNo, 0) + 1);
+            sizeMap.compute(tagNo, (k, v) -> (v == null) ? 1 : v + 1);
         }
-        cache.put(AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth, sizeMap);
+        cache.put(cacheKey, sizeMap);
     }
 
     /**
@@ -68,21 +68,23 @@ public class JrnlDayTagEventListener {
      * @see EhCacheEvictEventListner
      */
     @EventListener
-    @Async
     public void handleTagRemoveEvent(final JrnlDiaryTagCntSubEvent event) throws Exception {
         final List<Integer> tagNoList = event.getTagNoList();
         if (CollectionUtils.isEmpty(tagNoList)) return;
 
         final Integer yy = event.getYy();
         final Integer mnth = event.getMnth();
+        final String cacheKey = AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth;
 
         final Cache cache = cacheManager.getCache("myCountDaySizeMap");
-        ConcurrentHashMap<Integer, Integer> sizeMap = (ConcurrentHashMap<Integer, Integer>) cache.get(AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth);
+        if (cache == null) return;
+
+        ConcurrentHashMap<Integer, Integer> sizeMap = cache.get(cacheKey, ConcurrentHashMap.class);
         if (sizeMap == null) sizeMap = new ConcurrentHashMap<>();
 
         for (final Integer tagNo : tagNoList) {
-            sizeMap.put(tagNo, sizeMap.getOrDefault(tagNo, 1) - 1);
+            sizeMap.compute(tagNo, (k, v) -> (v == null) ? 0 : v - 1);
         }
-        cache.put(AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth, sizeMap);
+        cache.put(cacheKey, sizeMap);
     }
 }

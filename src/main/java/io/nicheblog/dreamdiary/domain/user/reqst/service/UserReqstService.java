@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.domain.user.reqst.service;
 
 import io.nicheblog.dreamdiary.domain.user.reqst.model.UserReqstDto;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -29,7 +30,7 @@ public interface UserReqstService {
      * @return {@link UserReqstDto} -- 성공 결과 객체
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
-    UserReqstDto regist(final UserReqstDto registDto) throws Exception;
+    ServiceResponse regist(final UserReqstDto registDto) throws Exception;
 
     /**
      * 사용자 정보 승인 처리.
@@ -39,7 +40,7 @@ public interface UserReqstService {
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Transactional
-    Boolean cf(final Integer key) throws Exception;
+    ServiceResponse cf(final Integer key) throws Exception;
 
     /**
      * 사용자 정보 승인 취소 처리.
@@ -49,5 +50,5 @@ public interface UserReqstService {
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Transactional
-    Boolean uncf(final Integer key) throws Exception;
+    ServiceResponse uncf(final Integer key) throws Exception;
 }

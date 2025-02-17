@@ -101,7 +101,7 @@ public class BoardPostPageController
         CmmUtils.Param.setModelAttrMap(searchParam, baseUrl, model);
 
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
@@ -143,7 +143,7 @@ public class BoardPostPageController
         // CmmUtils.setModelFlsysPath(model);
 
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
@@ -179,7 +179,7 @@ public class BoardPostPageController
         model.addAttribute("post", boardPost);
 
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
@@ -216,7 +216,7 @@ public class BoardPostPageController
         model.addAttribute("post", rsDto);
 
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 조회수 카운트 추가
         // TODO: AOP로 분리
@@ -269,7 +269,7 @@ public class BoardPostPageController
         // CmmUtils.setModelFlsysPath(model);
         
         final boolean isSuccess = rsDto.getPostNo() != null;
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
         // 로그 관련 세팅
         logParam.setCn("key: " + postNo);

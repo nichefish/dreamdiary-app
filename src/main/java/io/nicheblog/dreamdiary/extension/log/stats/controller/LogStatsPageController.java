@@ -72,15 +72,15 @@ public class LogStatsPageController
         // 상세/수정 화면에서 목록 화면 복귀시 세션에 목록 검색 인자 저장해둔 거 있는지 체크
         searchParam = (LogStatsSearchParam) CmmUtils.Param.checkPrevSearchParam(baseUrl, searchParam);
         // 목록 조회
-        List<LogStatsUserDto> logStatsUserList = logStatsUserService.logStatsUserDtoList(searchParam, Pageable.unpaged());
+        final List<LogStatsUserDto> logStatsUserList = logStatsUserService.logStatsUserDtoList(searchParam, Pageable.unpaged());
         if (logStatsUserList != null) model.addAttribute("logStatsUserList", logStatsUserList);
-        List<LogStatsUserDto> logStatsNotUserList = logStatsUserService.logStatsNotUserDtoList(searchParam, Pageable.unpaged());
+        final List<LogStatsUserDto> logStatsNotUserList = logStatsUserService.logStatsNotUserDtoList(searchParam, Pageable.unpaged());
         if (logStatsUserList != null) model.addAttribute("logStatsNotUserList", logStatsNotUserList);
         // 목록 검색 URL + 파라미터 모델에 추가
         CmmUtils.Param.setModelAttrMap(searchParam, baseUrl, model);
 
-        boolean isSuccess = true;
-        String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);

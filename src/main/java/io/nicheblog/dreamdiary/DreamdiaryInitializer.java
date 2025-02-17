@@ -7,7 +7,7 @@ import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.service.LgnPolicyService;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserAuthRoleDto;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
-import io.nicheblog.dreamdiary.extension.cache.service.CacheWarmupService;
+import io.nicheblog.dreamdiary.extension.cache.event.CacheWarmupEvent;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.sys.event.LogSysEvent;
 import io.nicheblog.dreamdiary.extension.log.sys.handler.LogSysEventListener;
@@ -15,6 +15,7 @@ import io.nicheblog.dreamdiary.extension.log.sys.model.LogSysParam;
 import io.nicheblog.dreamdiary.global.ActiveProfile;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -45,7 +46,6 @@ public class DreamdiaryInitializer
     private final AuthService authService;
     private final UserService userService;
     private final LgnPolicyService lgnPolicyService;
-    private final CacheWarmupService cacheWarmupService;
     private final ApplicationEventPublisherWrapper publisher;
 
     @Value("${system.init-temp-pw:}")
@@ -74,7 +74,7 @@ public class DreamdiaryInitializer
         if (!reportDirectory.exists() && !reportDirectory.mkdirs()) throw new IOException(MessageUtils.getMessage("common.status.mkdir-failed"));
 
         // 캐시 웜업:: 초기 로딩 속도를 희생하여 미리 캐싱 처리함으로써 실행속도 상승
-        cacheWarmupService.warmup();
+        publisher.publishAsyncEvent(new CacheWarmupEvent(this));
 
         // 시스템 재기동 로그 적재:: 운영 환경 이외에는 적재하지 않음
         if (activeProfile.isProd()) {
@@ -101,10 +101,9 @@ public class DreamdiaryInitializer
             } catch (final UsernameNotFoundException e) {
                 // 시스템 계정 부재시 등록:: 메소드 분리
                 isSuccess = this.regSystemAcnt();
-                rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+                rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
             }
         } catch (final Exception e) {
-            isSuccess = false;
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);
         } finally {
@@ -137,8 +136,8 @@ public class DreamdiaryInitializer
                 .regstrId(Constant.SYSTEM_ACNT)
                 .build();
 
-        final UserDto rslt = userService.regist(systemAcnt);
-        return (rslt.getUserNo() != null);
+        final ServiceResponse result = userService.regist(systemAcnt);
+        return result.getRslt();
     }
 
     /**
@@ -162,9 +161,8 @@ public class DreamdiaryInitializer
             }
             // 로그인 정책 부재시 등록:: 메소드 분리
             isSuccess = this.regLgnPolicy();
-            rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+            rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
         } catch (final Exception e) {
-            isSuccess = false;
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);
         } finally {
@@ -189,6 +187,6 @@ public class DreamdiaryInitializer
                 .pwForReset(SYSTEM_INIT_TEMP_PW)
                 .build();
 
-        return lgnPolicyService.regist(lgnPolicy);
+        return lgnPolicyService.regist(lgnPolicy).getRslt();
     }
 }

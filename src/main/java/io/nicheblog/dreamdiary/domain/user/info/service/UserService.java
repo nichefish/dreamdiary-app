@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.domain.user.info.repository.jpa.UserRepository;
 import io.nicheblog.dreamdiary.domain.user.info.spec.UserSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultiCrudService;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 
 import java.util.List;
 
@@ -19,7 +20,6 @@ import java.util.List;
  */
 public interface UserService
         extends BaseMultiCrudService<UserDto.DTL, UserDto.LIST, Integer, UserEntity, UserRepository, UserSpec, UserMapstruct> {
-
 
     /**
      * 사용자 관리 > 사용자 단일 조회 (Dto Level) (Long userNo와 별도로 String userId)
@@ -60,7 +60,7 @@ public interface UserService
      * 사용자 관리 > 사용자 비밀번호 초기화
      * @param key 식별자
      */
-    Boolean passwordReset(final Integer key) throws Exception;
+    ServiceResponse passwordReset(final Integer key) throws Exception;
 
     /**
      * 장기간 미접속여부 조회
@@ -70,12 +70,12 @@ public interface UserService
     /**
      * 사용자 정보 잠금
      */
-    Boolean userLock(final Integer key) throws Exception;
+    ServiceResponse userLock(final Integer key) throws Exception;
 
     /**
      * 사용자 정보 잠금 해제
      */
-    Boolean userUnlock(final Integer key) throws Exception;
+    ServiceResponse userUnlock(final Integer key) throws Exception;
 
     /**
      * 내부직원 목록 조회 (결재자 정보에 쓰임) (계정정보로 조회)

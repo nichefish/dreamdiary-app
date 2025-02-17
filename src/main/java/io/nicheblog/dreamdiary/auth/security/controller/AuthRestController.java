@@ -61,29 +61,22 @@ public class AuthRestController {
             final HttpServletRequest request
     ) {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         try {
             // JWT 검증 및 사용자 정보 추출
             final String jwtToken = jwtTokenProvider.resolveToken(request);
             final Authentication authentication = jwtTokenProvider.getDirectAuthentication(jwtToken);
             final AuthInfo authInfo = (AuthInfo) authentication.getPrincipal();
 
-            ajaxResponse.setRsltObj(authInfo);
-            ajaxResponse.setAjaxResult(true, MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS));
-
-            return ResponseEntity.ok(ajaxResponse);
+            return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(authInfo));
         } catch (final JwtException jwtException) {
-            ajaxResponse.setAjaxResult(false, MessageUtils.getExceptionMsg("JwtException"));
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .body(ajaxResponse);
+                    .body(AjaxResponse.withAjaxResult(false, MessageUtils.getExceptionMsg("JwtException")));
         } catch (final Exception e) {
             // 그 외 일반적인 예외 처리
-            ajaxResponse.setAjaxResult(false, MessageUtils.getMessage(MessageUtils.RSLT_FAILURE));
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ajaxResponse);
+                    .body(AjaxResponse.withAjaxResult(false, MessageUtils.RSLT_FAILURE));
         }
     }
 
@@ -105,17 +98,13 @@ public class AuthRestController {
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         final boolean isSuccess = userMyService.lgnPwChg(userPwChgParam);
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
-        // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
 
     /**
@@ -133,17 +122,13 @@ public class AuthRestController {
             final LogActvtyParam logParam
     ) {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         // 세션 만료 처리
         final HttpSession session = request.getSession(false);
         if (session != null) session.invalidate();
 
-        // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(true, MessageUtils.RSLT_SUCCESS);
         // 로그 관련 세팅
         logParam.setResult(true, MessageUtils.RSLT_SUCCESS);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS));
     }
 }

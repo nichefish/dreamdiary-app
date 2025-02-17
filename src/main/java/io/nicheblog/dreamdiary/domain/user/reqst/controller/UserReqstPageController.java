@@ -71,7 +71,7 @@ public class UserReqstPageController
         dtlCdService.setCdListToModel(Constant.RANK_CD, model);
 
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);

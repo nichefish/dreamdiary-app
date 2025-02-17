@@ -6,6 +6,8 @@ import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
@@ -37,13 +39,13 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
     }
 
     /**
-     * default: 게시물 등록 중간처리
+     * default: 게시물 등록 전처리 (entity level)
      *
      * @param registEntity 등록 전 entity 객체
      * @throws Exception 후처리 중 발생할 수 있는 예외
      */
-    default void midRegist(final Entity registEntity) throws Exception {
-        // 등록 중간처리:: 기본 공백, 필요시 각 함수에서 Override
+    default void preRegist(final Entity registEntity) throws Exception {
+        // 등록 전처리:: 기본 공백, 필요시 각 함수에서 Override
     }
 
     /**
@@ -64,31 +66,37 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      * @throws Exception 등록 중 발생할 수 있는 예외
      */
     @Transactional
-    default Dto regist(final Dto registDto) throws Exception {
-        // 등록 전처리
+    default ServiceResponse regist(final Dto registDto) throws Exception {
+        final ServiceResponse response = new ServiceResponse();
+
+        // optional: 등록 전처리 (dto)
         this.preRegist(registDto);
 
         // Dto -> Entity 변환
         final Mapstruct mapstruct = this.getMapstruct();
         final Entity registEntity = mapstruct.toEntity(registDto);
 
-        // 등록 중간처리
-        this.midRegist(registEntity);
+        // optional: 등록 전처리 (entity)
+        this.preRegist(registEntity);
 
         // insert
         final Entity updatedEntity = this.updt(registEntity);
 
-        // 등록 후처리
+        // optional: 등록 후처리
         this.postRegist(updatedEntity);
 
         // 연관 캐시 삭제
-        Map<EntityKey, ?> entities = new HashMap<>() {{
+        final Map<EntityKey, ?> entities = new HashMap<>() {{
             put(EntityKey.REGIST_ENTITY, registEntity);
             put(EntityKey.UPDATED_ENTITY, updatedEntity);
         }};
         this.evictRelCaches(entities);
 
-        return mapstruct.toDto(updatedEntity);
+        final Dto dto = mapstruct.toDto(updatedEntity);
+
+        response.setRslt(dto.getKey() != null);
+        response.setRsltObj(dto);
+        return response;
     }
 
     /**
@@ -98,7 +106,7 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      * @return {@link Boolean} -- 등록 성공시 true
      */
     @Transactional
-    default boolean registAll(final List<Entity> entityList) throws Exception {
+    default List<Entity> registAll(final List<Entity> entityList) throws Exception {
         final Repository repository = this.getRepository();
         final List<Entity> updatedEntityList = repository.saveAllAndFlush(entityList);
 
@@ -110,8 +118,8 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
             put(EntityKey.ENTITY_LIST, updatedEntityList);
         }};
         this.evictRelCaches(entities);
-        
-        return true;
+
+        return updatedEntityList;
     }
 
     /**
@@ -149,8 +157,17 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      *
      * @param modifyEntity 수정 중간처리를 할 엔티티 객체
      */
-    default void midModify(final Entity modifyEntity) {
+    default void preModify(final Entity modifyEntity) {
         // 수정 중간처리:: 기본 공백, 필요시 각 함수에서 Override
+    }
+
+    /**
+     * default: 수정 전 상태 저장 (기존 데이터 처리 관련)
+     *
+     * @param modifyEntity 수정 중간처리를 할 엔티티 객체
+     */
+    default void strePrevStus(ServiceResponse response, Entity modifyEntity) {
+        // 수정 전 상태 저장 (기존 데이터 처리 관련):: 기본 공백, 필요시 각 함수에서 Override
     }
 
     /**
@@ -171,33 +188,44 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Transactional
-    default Dto modify(final Dto modifyDto) throws Exception {
-        // 수정 전처리
+    default ServiceResponse modify(final Dto modifyDto) throws Exception {
+        final ServiceResponse response = new ServiceResponse();
+
+        // optional: 수정 전처리 (dto)
         this.preModify(modifyDto);
 
         // Entity 레벨 조회
-        final Mapstruct mapstruct = this.getMapstruct();
-        final Entity toModifyEntity = this.getDtlEntity(modifyDto);
-        mapstruct.updateFromDto(modifyDto, toModifyEntity);
+        final Entity modifyEntity = this.getDtlEntity(modifyDto);
 
-        // 수정 중간처리
-        this.midModify(toModifyEntity);
+        // optional: 수정 전 상태 저장 (기존 데이터 처리 관련)
+        this.strePrevStus(response, modifyEntity);
+
+        // Entity 레벨 조회
+        final Mapstruct mapstruct = this.getMapstruct();
+        mapstruct.updateFromDto(modifyDto, modifyEntity);
+
+        // optional: 수정 전처리 (entity)
+        this.preModify(modifyEntity);
 
         // update
         final Repository repository = this.getRepository();
-        final Entity updatedEntity = repository.saveAndFlush(toModifyEntity);
+        final Entity updatedEntity = repository.saveAndFlush(modifyEntity);
 
-        // 수정 후처리
+        // optional: 수정 후처리
         this.postModify(updatedEntity);
 
         // 연관 캐시 삭제
         Map<EntityKey, ?> entities = new HashMap<>() {{
-            put(EntityKey.REGIST_ENTITY, toModifyEntity);
+            put(EntityKey.REGIST_ENTITY, modifyEntity);
             put(EntityKey.UPDATED_ENTITY, updatedEntity);
         }};
         this.evictRelCaches(entities);
 
-        return mapstruct.toDto(updatedEntity);
+        final Dto dto = mapstruct.toDto(updatedEntity);
+
+        response.setRslt(dto.getKey() != null);
+        response.setRsltObj(dto);
+        return response;
     }
 
     /**
@@ -244,7 +272,7 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      * @throws Exception 삭제 중 발생할 수 있는 예외
      */
     @Transactional
-    default Boolean delete(final Dto deleteDto) throws Exception {
+    default ServiceResponse delete(final Dto deleteDto) throws Exception {
         return this.delete(deleteDto.getKey());
     }
 
@@ -256,17 +284,19 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      * @throws Exception 삭제 중 발생할 수 있는 예외
      */
     @Transactional
-    default Boolean delete(final Key key) throws Exception {
+    default ServiceResponse delete(final Key key) throws Exception {
+        final ServiceResponse response = new ServiceResponse();
+
         final Repository repository = this.getRepository();
         final Entity deleteEntity = this.getDtlEntity(key);
-        if (deleteEntity == null) return false;
+        if (deleteEntity == null) throw new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete"));
 
-        // 삭제 전처리
+        // optional: 삭제 전처리
         this.preDelete(deleteEntity);
 
         repository.delete(deleteEntity);
 
-        // 삭제 후처리
+        // optional: 삭제 후처리
         this.postDelete(deleteEntity);
 
         // 연관 캐시 삭제
@@ -275,7 +305,9 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
         }};
         this.evictRelCaches(entities);
 
-        return true;
+        response.setRslt(true);
+        response.setRsltObj(deleteEntity);
+        return response;
     }
 
     /**

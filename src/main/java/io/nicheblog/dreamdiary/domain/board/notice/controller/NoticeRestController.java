@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.managt.event.ManagtrAddEvent;
 import io.nicheblog.dreamdiary.extension.clsf.managt.handler.ManagtrEventListener;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
-import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagEventListener;
+import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.event.ViewerAddEvent;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
@@ -23,6 +23,7 @@ import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
@@ -69,7 +70,7 @@ public class NoticeRestController
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
-     * @see TagEventListener,ManagtrEventListener
+     * @see TagProcEventListener ,ManagtrEventListener
      */
     @PostMapping(value = {Url.NOTICE_REG_AJAX, Url.NOTICE_MDF_AJAX})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -80,21 +81,18 @@ public class NoticeRestController
             final MultipartHttpServletRequest request
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
-        final Integer key = notice.getKey();
-        final boolean isReg = (key == null);
-        final NoticeDto result = isReg ? noticeService.regist(notice, request) : noticeService.modify(notice, request);
-
-        final boolean isSuccess = (result.getPostNo() != null);
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE);
+        final boolean isReg = (notice.getKey() == null);
+        final ServiceResponse result = isReg ? noticeService.regist(notice, request) : noticeService.modify(notice, request);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
         // TODO: AOP로 분리
         if (isSuccess) {
+            final NoticeDto rsltObj = (NoticeDto) result.getRsltObj();
             // 조치자 추가 :: 메인 로직과 분리
-            publisher.publishAsyncEvent(new ManagtrAddEvent(this, result.getClsfKey()));
+            publisher.publishAsyncEvent(new ManagtrAddEvent(this, rsltObj.getClsfKey()));
             // 태그 처리 :: 메인 로직과 분리
-            publisher.publishAsyncEventAndWait(new TagProcEvent(this, result.getClsfKey(), notice.tag));
+            publisher.publishAsyncEventAndWait(new TagProcEvent(this, rsltObj.getClsfKey(), notice.tag));
             // 잔디 메세지 발송 :: 메인 로직과 분리
             // if ("Y".equals(jandiYn)) {
             //     String jandiRsltMsg = notifyService.notifyNoticeReg(trgetTopic, result, logParam);
@@ -102,13 +100,10 @@ public class NoticeRestController
             // }
         }
 
-        // 응답 결과 세팅
-        ajaxResponse.setRsltObj(result);
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 
     /**
@@ -129,12 +124,9 @@ public class NoticeRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         final NoticeDto retrievedDto = noticeService.getDtlDto(key);
-
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 조회수 카운트 추가
         // TODO: AOP로 분리
@@ -143,13 +135,10 @@ public class NoticeRestController
         // TODO: AOP로 분리
         publisher.publishAsyncEvent(new ViewerAddEvent(this, retrievedDto.getClsfKey()));
 
-        // 응답 결과 세팅
-        ajaxResponse.setRsltObj(retrievedDto);
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
     }
 
     /**
@@ -160,7 +149,7 @@ public class NoticeRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @throws Exception 처리 중 발생할 수 있는 예외
-     * @see TagEventListener
+     * @see TagProcEventListener
      */
     @PostMapping(Url.NOTICE_DEL_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -170,10 +159,9 @@ public class NoticeRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
-        final boolean isSuccess = noticeService.delete(postNo);
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final ServiceResponse result = noticeService.delete(postNo);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // TODO: AOP로 분리
         if (isSuccess) {
@@ -181,12 +169,10 @@ public class NoticeRestController
             publisher.publishAsyncEventAndWait(new TagProcEvent(this, new BaseClsfKey(postNo, ContentType.NOTICE)));
         }
 
-        // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 
     /**
@@ -206,8 +192,6 @@ public class NoticeRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         // 팝업공지 목록 조회
         searchParam.setPopupYn("Y");
         searchParam.setManagtStartDt(DateUtils.getCurrDateAddDay(-7));
@@ -215,17 +199,14 @@ public class NoticeRestController
         final List<NoticeDto.LIST> noticeList = noticeService.getListDto(searchParam, sort);
 
         final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        // 응답 결과 세팅
-        ajaxResponse.setRsltList(noticeList);
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
         // TODO: 반복적으로 호출되므로 실패(Exception)시 외에는 로그 적재하지 않아야 함
 
-        return ResponseEntity.ok(ajaxResponse);
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(noticeList));
     }
 
     /**
@@ -255,9 +236,8 @@ public class NoticeRestController
             // 접근방식 2. ???
 
             isSuccess = true;
-            rsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS);
+            rsltMsg = MessageUtils.RSLT_SUCCESS;
         } catch (final Exception e) {
-            isSuccess = false;
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);
             MessageUtils.alertMessage(rsltMsg, Url.VCATN_SCHDUL_LIST);

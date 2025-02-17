@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.global.intrfc.model.BaseAtchDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.transaction.Transactional;
@@ -29,11 +30,11 @@ public interface BaseMultiCrudService<Dto extends BaseAtchDto & Identifiable<Key
      *
      * @param registDto 등록할 DTO 객체
      * @param request Multipart 요청
-     * @return {@link Dto} -- 처리된 DTO 객체
+     * @return {@link ServiceResponse} -- 처리된 DTO 객체
      * @throws Exception 파일 업로드 또는 등록 중 예외 발생 시
      */
     @Transactional
-    default Dto regist(final Dto registDto, final MultipartHttpServletRequest request) throws Exception {
+    default ServiceResponse regist(final Dto registDto, final MultipartHttpServletRequest request) throws Exception {
         try {
             // 파일 영역 처리
             final Integer atchFileNo = registDto.getAtchFileNo();
@@ -50,11 +51,11 @@ public interface BaseMultiCrudService<Dto extends BaseAtchDto & Identifiable<Key
      *
      * @param modifyDto 수정할 DTO 객체
      * @param request Multipart 요청
-     * @return {@link Dto} -- 처리된 DTO 객체
+     * @return {@link ServiceResponse} -- 처리된 DTO 객체
      * @throws Exception 파일 업로드 또는 수정 중 예외 발생 시
      */
     @Transactional
-    default Dto modify(final Dto modifyDto, final MultipartHttpServletRequest request) throws Exception {
+    default ServiceResponse modify(final Dto modifyDto, final MultipartHttpServletRequest request) throws Exception {
         try {
             // 파일 영역 처리
             final Integer atchFileNo = modifyDto.getAtchFileNo();
