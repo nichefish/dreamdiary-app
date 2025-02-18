@@ -25,7 +25,7 @@ public interface UserService
      * 사용자 관리 > 사용자 단일 조회 (Dto Level) (Long userNo와 별도로 String userId)
      *
      * @param userId 조회할 사용자의 ID (문자열)
-     * @return {@link UserDto.DTL} -- 사용자 정보가 담긴 DTO 객체
+     * @return {@link UserDto.DTL} -- 사용자 정보가 담긴 Dto 객체
      * @throws Exception 조회 중 발생할 수 있는 예외
      */
     UserDto.DTL getDtlDto(final String userId) throws Exception;

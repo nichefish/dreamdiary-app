@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
 /**
@@ -87,9 +88,8 @@ public class ApplicationEventPublisherWrapper {
      * 이벤트를 비동기적으로 발행하고 완료될 때까지 기다립니다.
      *
      * @param event 비동기적으로 발행할 {@link ApplicationEvent}
-     * @return 이벤트 처리 완료 여부를 나타내는 {@link CompletableFuture}
      */
-    public CompletableFuture<Void> publishAsyncEventAndWait(ApplicationEvent event) {
+    public void publishAsyncEventAndWait(ApplicationEvent event) {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         CompletableFuture<Void> future = new CompletableFuture<>();
 
@@ -105,6 +105,12 @@ public class ApplicationEventPublisherWrapper {
             }
         });
 
-        return future;
+        // 이벤트 실행이 완료될 때까지 대기
+        try {
+            future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            Thread.currentThread().interrupt(); // 인터럽트 상태 복구
+            throw new RuntimeException("이벤트 처리 중 오류 발생", e);
+        }
     }
 }

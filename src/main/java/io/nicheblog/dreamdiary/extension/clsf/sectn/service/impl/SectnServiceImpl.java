@@ -40,11 +40,44 @@ public class SectnServiceImpl
     /**
      * 등록 전처리. (override)
      *
-     * @param dto 등록할 객체
+     * @param registDto 등록할 객체
      */
     @Override
-    public void preRegist(final SectnDto dto) {
-        if (dto.getState() == null) dto.setState(new StateCmpstn());
+    public void preRegist(final SectnDto registDto) {
+        if (registDto.getState() == null) registDto.setState(new StateCmpstn());
+    }
+
+    /**
+     * 등록 후처리. (override)
+     *
+     * @param updatedDto - 등록된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void postRegist(final SectnDto updatedDto) throws Exception {
+        this.evictCache(updatedDto);
+    }
+
+    /**
+     * 수정 후처리. (override)
+     *
+     * @param updatedDto - 등록된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void postModify(final SectnDto updatedDto) throws Exception {
+        this.evictCache(updatedDto);
+    }
+
+    /**
+     * 삭제 후처리. (override)
+     *
+     * @param deletedDto - 삭제된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void postDelete(final SectnDto deletedDto) throws Exception {
+        this.evictCache(deletedDto);
     }
 
     /**
@@ -53,8 +86,7 @@ public class SectnServiceImpl
      * @param rslt 캐시 처리할 엔티티
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
-    @Override
-    public void evictCache(final SectnEntity rslt) throws Exception {
+    public void evictCache(final SectnDto rslt) throws Exception {
         final String refContentType = rslt.getRefContentType();
         final Integer refPostNo = rslt.getRefPostNo();
         ehCacheEvictService.evictClsfCache(refContentType, refPostNo);

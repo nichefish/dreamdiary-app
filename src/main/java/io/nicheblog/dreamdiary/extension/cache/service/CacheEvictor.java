@@ -2,9 +2,6 @@ package io.nicheblog.dreamdiary.extension.cache.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
-import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
-
-import java.io.Serializable;
 
 /**
  * CacheEvictor
@@ -14,24 +11,15 @@ import java.io.Serializable;
  *
  * @author nichefish
  */
-public interface CacheEvictor<Key extends Serializable> {
+public interface CacheEvictor<T> {
 
     /**
      * 캐시 삭제
      *
-     * @param key 캐시에서 삭제할 대상 키
+     * @param object 캐시에서 삭제할 정보를 담은 파라미터
      * @throws Exception 캐시 삭제 과정에서 발생할 수 있는 예외
      */
-    void evict(Key key) throws Exception;
-
-    /**
-     * 캐시에서 (부재시 실제) 객체를 조회하여 반환한다.
-     *
-     * @param key 조회할 객체의 키 (Integer)
-     * @return {@link Identifiable<Key>} 조회된 객체, 조회 실패 시 {@code null}
-     * @throws Exception 조회 과정에서 발생한 예외
-     */
-    Identifiable<Key> getDataByKey(final Key key) throws Exception;
+    void evict(T object) throws Exception;
 
     /**
      * 캐시 이름에 대해서 기간 캐시 삭제

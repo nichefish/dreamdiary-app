@@ -17,5 +17,10 @@ public interface TagCmpstnModule {
 
     /** Setter */
     void setTag(TagCmpstn cmpstn);
+
+    /** Set Tag */
+    default void setTagFrom(TagCmpstnModule cmpstnModule) {
+        setTag(cmpstnModule.getTag());
+    }
 }
 

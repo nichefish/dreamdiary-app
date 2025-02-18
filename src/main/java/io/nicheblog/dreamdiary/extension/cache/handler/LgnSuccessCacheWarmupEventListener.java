@@ -9,8 +9,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * LgnSuccessCacheWarmupEventListener
@@ -28,16 +26,14 @@ public class LgnSuccessCacheWarmupEventListener {
     private final CacheWarmupService cacheWarmupService;
 
     /**
-     * 캐시 제거 이벤트를 처리한다.
-     * 삭제된 엔티티 재조회와 관련될 수 있으므로 별도 트랜잭션으로 처리.
+     * 캐시 웜업 이벤트를 처리한다.
      *
      * @param event 처리할 이벤트 객체
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @EventListener
     @Async
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void handleEhCacheEvictvent(final EhCacheEvictEvent event) throws Exception {
+    public void handleCacheWarmupEvent(final EhCacheEvictEvent event) throws Exception {
         SecurityContextHolder.setContext(event.getSecurityContext());
         final String userId = AuthUtils.getLgnUserId();
 

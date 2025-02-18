@@ -6,6 +6,8 @@ import io.nicheblog.dreamdiary.domain.user.reqst.service.UserReqstService;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.extension.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.global.intrfc.controller.BaseControllerTestHelper;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +53,7 @@ class UserReqstPageControllerTest {
     private DtlCdService dtlCdService;
 
     @BeforeEach
-    public void setup(WebApplicationContext webApplicationContext) {
+    public void setup(final WebApplicationContext webApplicationContext) {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
@@ -63,14 +65,14 @@ class UserReqstPageControllerTest {
         // given::
 
         // when::
-        MvcResult result = mockMvc.perform(get(Url.USER_REQST_REG_FORM))
+        final MvcResult result = mockMvc.perform(get(Url.USER_REQST_REG_FORM))
                 .andExpect(status().isOk())
                 .andReturn();
 
         verify(dtlCdService, times(5)).setCdListToModel(anyString(), any());
 
         // then::
-        String viewName = Objects.requireNonNull(result.getModelAndView()).getViewName();
+        final String viewName = Objects.requireNonNull(result.getModelAndView()).getViewName();
         assertNotNull(viewName, "View name is null");
         assertTrue(BaseControllerTestHelper.viewFileExists(viewName), "View template file does not exist: " + viewName);
     }
@@ -82,14 +84,15 @@ class UserReqstPageControllerTest {
     public void testUserReqstRegAjax() throws Exception {
         // given::
         // 요청 객체 생성
-        UserReqstDto userReqstDto = UserReqstDtoTestFactory.create();
-        String userReqstJsonContent = UserReqstDtoTestFactory.createJson();
+        final UserReqstDto userReqstDto = UserReqstDtoTestFactory.create();
+        final String userReqstJsonContent = UserReqstDtoTestFactory.createJson();
         // Multipart 요청을 위한 MockMultipartFile 객체 생성
-        MockMultipartFile jsonFile = new MockMultipartFile("userReqst", "", "application/json", userReqstJsonContent.getBytes());
+        final MockMultipartFile jsonFile = new MockMultipartFile("userReqst", "", "application/json", userReqstJsonContent.getBytes());
         // 응답 객체 설정
-        UserReqstDto rsltDto = UserReqstDtoTestFactory.create();
+        final UserReqstDto rsltDto = UserReqstDtoTestFactory.create();
         rsltDto.setUserNo(0);
-        when(userReqstService.regist(any(UserReqstDto.class))).thenReturn(rsltDto);
+        final ServiceResponse result = ServiceResponse.builder().rsltObj(rsltDto).rslt(true).message("신규계정이 성공적으로 신청되었습니다.").build();
+        when(userReqstService.regist(any(UserReqstDto.class))).thenReturn(result);
 
         // when::
         mockMvc.perform(MockMvcRequestBuilders.multipart(Url.USER_REQST_REG_AJAX)
@@ -104,7 +107,8 @@ class UserReqstPageControllerTest {
 
     @Test
     public void testUserCfAjax() throws Exception {
-        when(userReqstService.cf(anyInt())).thenReturn(true);
+        final ServiceResponse result = ServiceResponse.builder().rslt(true).message(MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS)).build();
+        when(userReqstService.cf(anyInt())).thenReturn(result);
 
         mockMvc.perform(post(Url.USER_REQST_CF_AJAX)
                 .param("userNo", "123"))
@@ -114,7 +118,8 @@ class UserReqstPageControllerTest {
 
     @Test
     public void testUserUncfAjax() throws Exception {
-        when(userReqstService.uncf(anyInt())).thenReturn(true);
+        final ServiceResponse result = ServiceResponse.builder().rslt(true).message(MessageUtils.getMessage(MessageUtils.RSLT_SUCCESS)).build();
+        when(userReqstService.uncf(anyInt())).thenReturn(result);
 
         mockMvc.perform(post(Url.USER_REQST_UNCF_AJAX)
                         .param("userNo", "123"))

@@ -7,6 +7,10 @@ import io.nicheblog.dreamdiary.domain.board.post.repository.jpa.BoardPostReposit
 import io.nicheblog.dreamdiary.domain.board.post.service.BoardPostService;
 import io.nicheblog.dreamdiary.domain.board.post.spec.BoardPostSpec;
 import io.nicheblog.dreamdiary.extension.cd.service.DtlCdService;
+import io.nicheblog.dreamdiary.extension.clsf.managt.event.ManagtrAddEvent;
+import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
+import io.nicheblog.dreamdiary.extension.clsf.viewer.event.ViewerAddEvent;
+import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +47,7 @@ public class BoardPostServiceImpl
     private final BoardPostMapstruct mapstruct = BoardPostMapstruct.INSTANCE;
 
     private final DtlCdService dtlCdService;
+    private final ApplicationEventPublisherWrapper publisher;
 
     /**
      * 목록 Page<Entity> -> Page<Dto> 변환 (override)
@@ -91,6 +96,68 @@ public class BoardPostServiceImpl
         }
 
         return dtoList;
+    }
+
+    /**
+     * 등록 후처리. (override)
+     *
+     * @param updatedDto - 등록된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void postRegist(final BoardPostDto.DTL updatedDto) throws Exception {
+        // 조치자 추가 :: 메인 로직과 분리
+        publisher.publishAsyncEvent(new ManagtrAddEvent(this, updatedDto.getClsfKey()));
+        // 태그 처리 :: 메인 로직과 분리
+        publisher.publishAsyncEventAndWait(new TagProcEvent(this, updatedDto.getClsfKey(), updatedDto.tag));
+        // 잔디 메세지 발송 :: 메인 로직과 분리
+        // if ("Y".equals(jandiYn)) {
+        //     String jandiRsltMsg = notifyService.notifyNoticeReg(trgetTopic, result, logParam);
+        //     rsltMsg = rsltMsg + "\n" + jandiRsltMsg;
+        // }
+    }
+
+    /**
+     * 상세 페이지 조회 후처리 (dto level)
+     *
+     * @param retrievedDto - 조회된 Dto 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void postViewDtlPage(final BoardPostDto.DTL retrievedDto) throws Exception {
+        // 열람자 추가 :: 메인 로직과 분리
+        publisher.publishAsyncEvent(new ViewerAddEvent(this, retrievedDto.getClsfKey()));
+    }
+
+    /**
+     * 수정 후처리. (override)
+     *
+     * @param updatedDto - 등록된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void postModify(final BoardPostDto.DTL updatedDto) throws Exception {
+        // 조치자 추가 :: 메인 로직과 분리
+        publisher.publishAsyncEvent(new ManagtrAddEvent(this, updatedDto.getClsfKey()));
+        // 태그 처리 :: 메인 로직과 분리
+        publisher.publishAsyncEventAndWait(new TagProcEvent(this, updatedDto.getClsfKey(), updatedDto.tag));
+        // 잔디 메세지 발송 :: 메인 로직과 분리
+        // if ("Y".equals(jandiYn)) {
+        //     String jandiRsltMsg = notifyService.notifyNoticeReg(trgetTopic, result, logParam);
+        //     rsltMsg = rsltMsg + "\n" + jandiRsltMsg;
+        // }
+    }
+
+    /**
+     * 삭제 후처리. (override)
+     *
+     * @param deletedDto - 삭제된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void postDelete(final BoardPostDto.DTL deletedDto) throws Exception {
+        // 태그 처리 :: 메인 로직과 분리
+        publisher.publishAsyncEventAndWait(new TagProcEvent(this, deletedDto.getClsfKey()));
     }
 
     /**

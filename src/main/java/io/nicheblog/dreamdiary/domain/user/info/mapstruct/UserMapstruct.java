@@ -39,7 +39,7 @@ public interface UserMapstruct
      */
     @Override
     @Named("toDto")
-    @Mapping(target = "password", expression = "java(null)")      // DTO로 패스워드 전달하지 않음
+    @Mapping(target = "password", expression = "java(null)")      // Dto로 패스워드 전달하지 않음
     @Mapping(target = "emailId", expression = "java(StringUtils.isNotEmpty(entity.getEmail()) ? entity.getEmail().substring(0, entity.getEmail().indexOf('@')) : \"\")")
     @Mapping(target = "emailDomain", expression = "java(StringUtils.isNotEmpty(entity.getEmail()) ? entity.getEmail().substring(entity.getEmail().indexOf('@')+1) : \"\")")
     @Mapping(target = "authStrList", expression = "java(entity.getAuthList().stream().map(UserAuthRoleEntity::getAuthCd).collect(Collectors.toList()))")      // 접속IP tagify 문자열 세팅
@@ -92,7 +92,7 @@ public interface UserMapstruct
     /**
      * UserDto.DTL 객체에서 UserEntity로 매핑할 때 추가 필드를 설정합니다.
      *
-     * @param dto 매핑할 원본 DTO
+     * @param dto 매핑할 원본 Dto
      * @param entity 매핑 대상 엔티티
      * @throws Exception 매핑 중 발생할 수 있는 예외
      */
@@ -110,8 +110,8 @@ public interface UserMapstruct
     /**
      * update Entity from Dto (Dto에서 null이 아닌 값만 Entity로 매핑)
      *
-     * @param dto 업데이트할 DTO 객체
-     * @param entity 업데이트할 대상 엔티티 객체
+     * @param dto 업데이트할 Dto 객체
+     * @param entity 업데이트할 대상 Entity 객체
      * @throws Exception 매핑 중 발생할 수 있는 예외
      */
     @Override

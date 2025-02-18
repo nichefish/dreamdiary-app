@@ -1,7 +1,6 @@
 package io.nicheblog.dreamdiary.domain.admin.menu.service.impl;
 
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
-import io.nicheblog.dreamdiary.domain.admin.menu.entity.MenuEntity;
 import io.nicheblog.dreamdiary.domain.admin.menu.exception.MenuNotExistsException;
 import io.nicheblog.dreamdiary.domain.admin.menu.mapstruct.MenuMapstruct;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuDto;
@@ -57,7 +56,7 @@ public class MenuServiceImpl
     private final MenuMapper menuMapper;
 
     private final ApplicationContext context;
-    private MenuServiceImpl getSelf() {
+    private MenuService getSelf() {
         return context.getBean(this.getClass());
     }
 
@@ -167,27 +166,42 @@ public class MenuServiceImpl
     }
 
     /**
-     * 정렬 후 관련 캐시 삭제
+     * 등록 후처리. (override)
      *
-     * @param menuDto 캐시 삭제 판단에 필요한 객체
-     * @throws Exception 발생 가능한 예외
+     * @param updatedDto - 등록된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
-    public void evictCache(final MenuDto menuDto) throws Exception {
+    public void postRegist(final MenuDto updatedDto) throws Exception {
         EhCacheUtils.evictCacheAll("userMenuList");
         EhCacheUtils.evictCacheAll("mngrMenuList");
     }
 
     /**
-     * 관련된 캐시 삭제
+     * 수정 후처리. (override)
      *
-     * @param rslt 캐시 삭제 판단에 필요한 객체
+     * @param updatedDto - 등록된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
-    public void evictCache(final MenuEntity rslt) {
+    public void postModify(final MenuDto updatedDto) throws Exception {
         EhCacheUtils.evictCacheAll("userMenuList");
         EhCacheUtils.evictCacheAll("mngrMenuList");
         EhCacheUtils.evictCacheAll("isMngrMenu");
-        EhCacheUtils.evictCache("menuByLabel", rslt.getMenuLabel());
+        EhCacheUtils.evictCache("menuByLabel", updatedDto.getMenuLabel());
+    }
+
+    /**
+     * 삭제 후처리. (override)
+     *
+     * @param deletedDto - 삭제된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void postDelete(final MenuDto deletedDto) throws Exception {
+        EhCacheUtils.evictCacheAll("userMenuList");
+        EhCacheUtils.evictCacheAll("mngrMenuList");
+        EhCacheUtils.evictCacheAll("isMngrMenu");
+        EhCacheUtils.evictCache("menuByLabel", deletedDto.getMenuLabel());
     }
 }

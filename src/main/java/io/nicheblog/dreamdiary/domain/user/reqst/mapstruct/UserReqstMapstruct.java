@@ -39,7 +39,7 @@ public interface UserReqstMapstruct
      * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
-    @Mapping(target = "password", expression = "java(null)")      // DTO로 패스워드 전달하지 않음
+    @Mapping(target = "password", expression = "java(null)")      // Dto로 패스워드 전달하지 않음
     @Mapping(target = "emailId", expression = "java(StringUtils.isNotEmpty(entity.getEmail()) ? entity.getEmail().substring(0, entity.getEmail().indexOf('@')) : \"\")")
     @Mapping(target = "emailDomain", expression = "java(StringUtils.isNotEmpty(entity.getEmail()) ? entity.getEmail().substring(entity.getEmail().indexOf('@')+1) : \"\")")
     @Mapping(target = "authStrList", expression = "java(entity.getAuthList().stream().map(UserAuthRoleEntity::getAuthCd).collect(Collectors.toList()))")      // 접속IP tagify 문자열 세팅

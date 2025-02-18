@@ -77,20 +77,4 @@ public interface ContentTagService
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     List<ContentTagEntity> addContentTags(final BaseClsfKey clsfKey, final List<TagEntity> rsList) throws Exception;
-
-    /**
-     * 콘텐츠 타입에 따른 캐시 이름 반환 :: 메소드 분리
-     *
-     * @param contentType 콘텐츠 유형 (String)
-     * @return {@link String} -- 해당 콘텐츠 유형에 맞는 캐시 이름.
-     */
-    String getCacheNameByContentType(final String contentType);
-
-    /**
-     * 기간에 따른 컨텐츠 태그 캐시 삭제 :: 메소드 분리
-     *
-     * @param cacheName 캐시 이름
-     * @param tagNo 태그 번호 (key)
-     */
-    void evictMyCacheForPeriod(final String cacheName, final Integer tagNo);
 }

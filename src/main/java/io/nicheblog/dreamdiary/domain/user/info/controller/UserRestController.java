@@ -6,7 +6,6 @@ import io.nicheblog.dreamdiary.domain.user.info.model.UserSearchParam;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.extension.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -221,7 +220,7 @@ public class UserRestController
         } finally {
             // 로그 관련 세팅
             logParam.setResult(isSuccess, rsltMsg);
-            publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
+            // publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
         }
 
         return ResponseEntity.ok(ajaxResponse);

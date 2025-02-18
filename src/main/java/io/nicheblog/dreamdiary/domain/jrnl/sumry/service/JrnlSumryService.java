@@ -25,7 +25,7 @@ public interface JrnlSumryService
      * 저널 결산 내 정뵤 목록 조회
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @return {@link List<JrnlSumryDto.LIST>} -- 검색 조건에 맞는 결산 목록 DTO 리스트
+     * @return {@link List<JrnlSumryDto.LIST>} -- 검색 조건에 맞는 결산 목록 Dto 리스트
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     List<JrnlSumryDto.LIST> getMyListDto(final BaseSearchParam searchParam) throws Exception;
@@ -49,7 +49,7 @@ public interface JrnlSumryService
     /**
      * 관련 정보를 취합하여 총 저널 결산 정보를 생성합니다. (캐시 처리)
      * 
-     * @return {@link JrnlSumryDto} -- 총 결산 정보가 담긴 DTO 객체
+     * @return {@link JrnlSumryDto} -- 총 결산 정보가 담긴 Dto 객체
      */
     JrnlSumryDto getTotalSumry();
 
@@ -57,7 +57,7 @@ public interface JrnlSumryService
      * 저널 결산 상세 정보 조회 (캐시 처리)
      *
      * @param key 식별자
-     * @return {@link JrnlSumryDto.DTL} -- 조회된 결산 정보가 담긴 DTO 객체
+     * @return {@link JrnlSumryDto.DTL} -- 조회된 결산 정보가 담긴 Dto 객체
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     JrnlSumryDto.DTL getSumryDtl(final Integer key) throws Exception;
@@ -66,7 +66,7 @@ public interface JrnlSumryService
      * 년도별 저널 결산 정보 조회 (캐시 처리)
      *
      * @param yy 조회할 년도
-     * @return {@link JrnlSumryDto} -- 조회된 결산 정보가 담긴 DTO 객체, 없을 경우 null 반환
+     * @return {@link JrnlSumryDto} -- 조회된 결산 정보가 담긴 Dto 객체, 없을 경우 null 반환
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     JrnlSumryDto getDtlDtoByYy(final Integer yy) throws Exception;

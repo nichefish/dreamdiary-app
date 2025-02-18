@@ -57,7 +57,7 @@ class JrnlDayToDtoMapstructTest {
         // Given::
 
         // When::
-        JrnlDayDto jrnlDayDto = jrnlDayMapstruct.toDto(jrnlDayEntity);
+        final JrnlDayDto jrnlDayDto = jrnlDayMapstruct.toDto(jrnlDayEntity);
 
         // Then::
         assertNotNull(jrnlDayDto, "변환된 저널 일자 Dto는 null일 수 없습니다.");
@@ -80,7 +80,7 @@ class JrnlDayToDtoMapstructTest {
         BaseEntityTestFactoryHelper.setMdfusrInfo(jrnlDayEntity);
 
         // When::
-        JrnlDayDto jrnlDayDto = jrnlDayMapstruct.toDto(jrnlDayEntity);
+        final JrnlDayDto jrnlDayDto = jrnlDayMapstruct.toDto(jrnlDayEntity);
 
         // Then::
         assertNotNull(jrnlDayDto, "변환된 저널 일자 Dto는 null일 수 없습니다.");
@@ -106,7 +106,7 @@ class JrnlDayToDtoMapstructTest {
         jrnlDayEntity.setJrnlDt(null);
 
         // When::
-        JrnlDayDto jrnlDayDto = jrnlDayMapstruct.toDto(jrnlDayEntity);
+        final JrnlDayDto jrnlDayDto = jrnlDayMapstruct.toDto(jrnlDayEntity);
 
         // Then::
         assertNotNull(jrnlDayDto, "변환된 저널 일자 Dto는 null일 수 없습니다.");

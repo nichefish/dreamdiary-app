@@ -72,8 +72,8 @@ public interface VcatnStatsMapstruct
 
     /**
      * update Entity from Dto (Dto에서 null이 아닌 값만 Entity로 매핑)
-     * @param dto 업데이트할 DTO 객체
-     * @param entity 업데이트할 대상 엔티티 객체
+     * @param dto 업데이트할 Dto 객체
+     * @param entity 업데이트할 대상 Entity 객체
      * @throws Exception 매핑 중 발생할 수 있는 예외
      */
     @Override

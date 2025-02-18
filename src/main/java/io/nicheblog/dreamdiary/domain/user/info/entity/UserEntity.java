@@ -206,7 +206,7 @@ public class UserEntity
     /**
      * 사용자 프로필 정보를 업데이트하여 반환합니다.
      *
-     * @param dto 업데이트할 사용자 프로필 정보가 담긴 DTO
+     * @param dto 업데이트할 사용자 프로필 정보가 담긴 Dto
      * @return {@link UserProflEntity} -- 업데이트된 사용자 프로필 엔티티
      * @throws Exception 업데이트 과정에서 발생할 수 있는 예외
      */
@@ -218,7 +218,7 @@ public class UserEntity
     /**
      * 사용자 직원정보를 업데이트하여 반환합니다.
      *
-     * @param dto 업데이트할 사용자 고용 정보가 담긴 DTO
+     * @param dto 업데이트할 사용자 고용 정보가 담긴 Dto
      * @return {@link UserEmplymEntity} -- 업데이트된 사용자 고용 엔티티
      * @throws Exception 업데이트 과정에서 발생할 수 있는 예외
      */

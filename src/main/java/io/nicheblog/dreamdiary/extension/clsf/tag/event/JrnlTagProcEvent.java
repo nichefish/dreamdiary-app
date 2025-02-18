@@ -1,6 +1,6 @@
-package io.nicheblog.dreamdiary.domain.jrnl.day.event;
+package io.nicheblog.dreamdiary.extension.clsf.tag.event;
 
-import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
+import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
@@ -48,5 +48,15 @@ public class JrnlTagProcEvent
         super(source, clsfKey, null);
         this.yy = yy;
         this.mnth = mnth;
+    }
+
+    /**
+     * 컨텐츠 타입 반환.
+     *
+     * @return {@link ContentType} -- 컨텐츠 타입
+     */
+    public ContentType getContentType() {
+        if (this.getClsfKey() == null) return ContentType.DEFAULT;
+        return this.getClsfKey().getContentTypeEnum();
     }
 }

@@ -21,7 +21,7 @@ public class JrnlDayEntityTestFactory {
      * 테스트용 저널 일자 Entity 생성
      * @param jrnlDtStr 저널 일자 문자열
      */
-    public static JrnlDayEntity createWithJrnlDt(String jrnlDtStr) throws Exception {
+    public static JrnlDayEntity createWithJrnlDt(final String jrnlDtStr) throws Exception {
         return JrnlDayEntity.builder()
                 .contentType(ContentType.JRNL_DAY.key)
                 .jrnlDt(DateUtils.asDate(jrnlDtStr))

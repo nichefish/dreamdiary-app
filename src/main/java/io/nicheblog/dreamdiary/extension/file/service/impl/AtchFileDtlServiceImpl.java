@@ -48,7 +48,7 @@ public class AtchFileDtlServiceImpl
     private final AtchFileDtlMapstruct mapstruct = AtchFileDtlMapstruct.INSTANCE;
 
     private final ApplicationContext context;
-    private AtchFileDtlServiceImpl getSelf() {
+    private AtchFileDtlService getSelf() {
         return context.getBean(this.getClass());
     }
 

@@ -39,11 +39,15 @@ public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule &
         final Entity e = this.getDtlEntity(key);
         e.getState().setUseYn("Y");
         this.updt(e);
+
+        final Mapstruct mapstruct = this.getMapstruct();
+        final Dto updatedDto = mapstruct.toDto(e);
         // 변경 후처리
-        this.postSetState(key);
+        this.postSetState(updatedDto);
 
         return ServiceResponse.builder()
                 .rslt(true)
+                .rsltObj(updatedDto)
                 .build();
     }
 
@@ -59,11 +63,16 @@ public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule &
         final Entity e = this.getDtlEntity(key);
         e.getState().setUseYn("N");
         this.updt(e);
+
+        final Mapstruct mapstruct = this.getMapstruct();
+        final Dto updatedDto = mapstruct.toDto(e);
+
         // 변경 후처리
-        this.postSetState(key);
+        this.postSetState(updatedDto);
 
         return ServiceResponse.builder()
                 .rslt(true)
+                .rsltObj(updatedDto)
                 .build();
     }
 
@@ -72,7 +81,7 @@ public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule &
      *
      * @throws Exception 후처리 중 발생할 수 있는 예외
      */
-    default void postSetState(final Key key) throws Exception {
+    default void postSetState(final Dto dto) throws Exception {
         // 변경 후처리:: 기본 공백, 필요시 각 함수에서 Override
     }
 
@@ -105,9 +114,6 @@ public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule &
         // 변경 후처리
         this.postSortOrdr(sortOrdr);
 
-        // 캐시 처리
-        this.evictCache(sortOrdr.get(0));
-
         return ServiceResponse.builder()
                 .rslt(true)
                 .build();
@@ -120,14 +126,5 @@ public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule &
      */
     default void postSortOrdr(final List<Dto> sortOrdr) throws Exception {
         // 변경 후처리:: 기본 공백, 필요시 각 함수에서 Override
-    }
-
-    /**
-     * default: 관련된 캐시 삭제 (존재시)
-     *
-     * @param dto 캐시 삭제 판단에 필요한 객체
-     */
-    default void evictCache(final Dto dto) throws Exception {
-        // 기본 공백, 필요시 각 함수에서 Override
     }
 }

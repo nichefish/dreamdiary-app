@@ -8,7 +8,6 @@ import io.nicheblog.dreamdiary.domain.jrnl.sbjct.service.JrnlSbjctService;
 import io.nicheblog.dreamdiary.extension.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.tag.service.TagService;
-import io.nicheblog.dreamdiary.extension.clsf.viewer.event.ViewerAddEvent;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyPageControllerAspect;
@@ -109,6 +108,7 @@ public class JrnlSbjctPageController
     /**
      * 저널 주제 등록 화면 조회
      * (사용자USER, 관리자MNGR만 접근 가능.)
+     *
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
@@ -202,18 +202,11 @@ public class JrnlSbjctPageController
         model.addAttribute("pageNm", PageNm.DTL);
 
         // 객체 조회 및 모델에 추가
-        final JrnlSbjctDto retrievedDto = jrnlSbjctService.getDtlDto(key);
+        final JrnlSbjctDto retrievedDto = jrnlSbjctService.viewDtlPage(key);
         model.addAttribute("post", retrievedDto);
 
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 조회수 카운트 추가
-        // TODO: AOP로 분리
-        jrnlSbjctService.hitCntUp(key);
-        // 열람자 추가 :: 메인 로직과 분리
-        // TODO: AOP로 분리
-        publisher.publishAsyncEvent(new ViewerAddEvent(this, retrievedDto.getClsfKey()));
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);

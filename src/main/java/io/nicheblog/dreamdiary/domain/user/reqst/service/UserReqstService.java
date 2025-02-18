@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.domain.user.reqst.service;
 
+import io.nicheblog.dreamdiary.domain.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.domain.user.reqst.model.UserReqstDto;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,12 +16,19 @@ import org.springframework.transaction.annotation.Transactional;
 public interface UserReqstService {
 
     /**
-     * 신청 전처리.
+     * 신청 전처리. (Dto level)
      * 
      * @param registDto 등록할 객체
      */
     void preRegist(final UserReqstDto registDto) throws Exception;
-    
+
+    /**
+     * 신청 전처리. (Entity level)
+     *
+     * @param registEntity 등록할 객체
+     */
+    void preRegist(final UserEntity registEntity) throws Exception;
+
     /**
      * 사용자 관리 > 사용자 신규계정 신청
      * 계정 기본정보만 입력, 세부정보는 가입 승인 후 수정

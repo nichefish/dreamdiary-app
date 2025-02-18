@@ -28,8 +28,8 @@ public interface BasePostService<Dto extends BasePostDto & Identifiable<Key>, Li
 
     /**
      * default: 상단 고정 항목 목록을 조회한다.
-     *
      * TODO: 조회조건 좀 더 세분화?
+     *
      * @return List<ListDto> - 상단 고정 항목 목록
      * @throws Exception - 조회 중 발생할 수 있는 예외
      */
@@ -42,6 +42,36 @@ public interface BasePostService<Dto extends BasePostDto & Identifiable<Key>, Li
     }
 
     /**
+     * default: 상세 페이지 조회 후처리 (dto level)
+     *
+     * @param retrievedDto - 조회된 Dto 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
+     */
+    default void postViewDtlPage(final Dto retrievedDto) throws Exception {
+        // 상세 페이지 조회 후처리:: 기본 공백, 필요시 각 함수에서 Override
+    }
+
+    /**
+     * default: 상세 페이지 조회
+     *
+     * @param key 조회수를 증가시킬 항목의 키
+     * @return Dto -- 조회된 객체
+     * @throws Exception 조회수 증가 중 발생할 수 있는 예외
+     */
+    @Transactional
+    default Dto viewDtlPage(final Key key) throws Exception {
+        final Dto retrievedDto = this.getDtlDto(key);
+
+        // 조회수 증가
+        this.hitCntUp(key);
+
+        // optional: 상세 페이지 조회 후처리 (dto)
+        this.postViewDtlPage(retrievedDto);
+
+        return retrievedDto;
+    }
+
+    /**
      * default: 항목 조회수를 1 증가시킨다.
      *
      * @param key 조회수를 증가시킬 항목의 키
@@ -49,12 +79,12 @@ public interface BasePostService<Dto extends BasePostDto & Identifiable<Key>, Li
      */
     @Transactional
     default void hitCntUp(final Key key) throws Exception {
-        Entity e = this.getDtlEntity(key);
-        String lgnUserId = AuthUtils.getLgnUserId();
+        final Entity e = this.getDtlEntity(key);
+        final String lgnUserId = AuthUtils.getLgnUserId();
         if (StringUtils.isEmpty(lgnUserId)) return;
         if (lgnUserId.equals(e.getRegstrId())) return;      // 본인이 쓴 글은 조회수 증가하지 않음
 
-        Integer currentHitCnt = e.getHitCnt();
+        final Integer currentHitCnt = e.getHitCnt();
         e.setHitCnt(currentHitCnt + 1);
         this.updt(e);
     }

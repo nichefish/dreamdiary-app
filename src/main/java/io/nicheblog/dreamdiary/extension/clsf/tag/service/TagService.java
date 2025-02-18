@@ -93,7 +93,7 @@ public interface TagService
     /**
      * 마스터 태그 추가:: 메소드 분리
      *
-     * @param tagList 처리할 태그 DTO 목록
+     * @param tagList 처리할 태그 Dto 목록
      * @return {@link List<TagEntity>} -- 저장된 태그 엔티티 목록
      */
     List<TagEntity> addMasterTag(final List<TagDto> tagList);

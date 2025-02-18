@@ -92,25 +92,37 @@ public class BoardDefServiceImpl
     }
 
     /**
-     * 정렬 후 관련 캐시 삭제
+     * 등록 후처리. (override)
      *
-     * @param menuDto 캐시 삭제 판단에 필요한 객체
-     * @throws Exception 발생 가능한 예외
+     * @param updatedDto - 등록된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
-    public void evictCache(final BoardDefDto menuDto) throws Exception {
+    public void postRegist(final BoardDefDto updatedDto) throws Exception {
         EhCacheUtils.evictCacheAll("boardDefMenuList");
     }
 
     /**
-     * 관련된 캐시 삭제
+     * 수정 후처리. (override)
      *
-     * @param rslt 캐시 삭제 판단에 필요한 객체
+     * @param updatedDto - 등록된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
-    public void evictCache(final BoardDefEntity rslt) {
+    public void postModify(final BoardDefDto updatedDto) throws Exception {
         EhCacheUtils.evictCacheAll("boardDefMenuList");
-        EhCacheUtils.evictCacheAll("boardMenu");
+        EhCacheUtils.evictCache("boardMenu", updatedDto.getBoardDef());
     }
 
+    /**
+     * 삭제 후처리. (override)
+     *
+     * @param deletedDto - 삭제된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void postDelete(final BoardDefDto deletedDto) throws Exception {
+        EhCacheUtils.evictCacheAll("boardDefMenuList");
+        EhCacheUtils.evictCache("boardMenu", deletedDto.getBoardDef());
+    }
 }

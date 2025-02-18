@@ -47,7 +47,7 @@ public class JrnlDayCalServiceImpl
     private final JrnlDreamCalMapstruct dreamCalMapstruct = JrnlDreamCalMapstruct.INSTANCE;
 
     private final ApplicationContext context;
-    private JrnlDayCalServiceImpl getSelf() {
+    private JrnlDayCalService getSelf() {
         return context.getBean(this.getClass());
     }
 

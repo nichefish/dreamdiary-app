@@ -9,12 +9,12 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDaySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.day.repository.jpa.JrnlDayRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.day.repository.mybatis.JrnlDayMapper;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayService;
-import io.nicheblog.dreamdiary.domain.jrnl.day.service.strategy.JrnlDayCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.day.spec.JrnlDaySpec;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
-import io.nicheblog.dreamdiary.extension.cache.event.EhCacheEvictEvent;
-import io.nicheblog.dreamdiary.extension.cache.handler.EhCacheEvictEventListner;
+import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
+import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
+import io.nicheblog.dreamdiary.extension.clsf.tag.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -53,10 +53,8 @@ public class JrnlDayServiceImpl
     private final JrnlDayMapper jrnlDayMapper;
     private final ApplicationEventPublisherWrapper publisher;
 
-    private final String JRNL_DAY = ContentType.JRNL_DAY.key;
-
     private final ApplicationContext context;
-    private JrnlDayServiceImpl getSelf() {
+    private JrnlDayService getSelf() {
         return context.getBean(this.getClass());
     }
 
@@ -133,11 +131,26 @@ public class JrnlDayServiceImpl
      * 등록 전처리. (override)
      *
      * @param registDto 등록할 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void preRegist(final JrnlDayDto registDto) throws Exception {
         // 년도/월 세팅:: 메소드 분리
         this.setYyMnth(registDto);
+    }
+
+    /**
+     * 등록 후처리. (override)
+     *
+     * @param updatedDto - 등록된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void postRegist(final JrnlDayDto updatedDto) throws Exception {
+        // 관련 캐시 삭제
+        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DAY));
+        // 태그 처리 :: 메인 로직과 분리
+        publisher.publishEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
     }
 
     /**
@@ -159,12 +172,27 @@ public class JrnlDayServiceImpl
     /**
      * 수정 전처리. (override)
      *
-     * @param modifyDto 수정할 객체
+     * @param modifyDto 등록할 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void preModify(final JrnlDayDto modifyDto) throws Exception {
         // 년도/월 세팅:: 메소드 분리
         this.setYyMnth(modifyDto);
+    }
+
+    /**
+     * 수정 후처리. (override)
+     *
+     * @param updatedDto - 등록된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void postModify(final JrnlDayDto updatedDto) throws Exception {
+        // 관련 캐시 삭제
+        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DAY));
+        // 태그 처리 :: 메인 로직과 분리
+        publisher.publishEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
     }
 
     /**
@@ -189,29 +217,29 @@ public class JrnlDayServiceImpl
     }
 
     /**
+     * 삭제 후처리. (override)
+     *
+     * @param deletedDto - 삭제된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void postDelete(final JrnlDayDto deletedDto) throws Exception {
+        // 관련 캐시 삭제
+        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DAY));
+        // 태그 처리 :: 메인 로직과 분리
+        publisher.publishEvent(new JrnlTagProcEvent(this, deletedDto.getClsfKey(), deletedDto.getYy(), deletedDto.getMnth()));
+    }
+
+    /**
      * 삭제 데이터 조회
      *
      * @param key 삭제된 데이터의 키
-     * @return {@link JrnlDayDto} -- 삭제된 데이터 DTO
+     * @return {@link JrnlDayDto} -- 삭제된 데이터 Dto
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Transactional(readOnly = true)
     public JrnlDayDto getDeletedDtlDto(final Integer key) throws Exception {
         return jrnlDayMapper.getDeletedByPostNo(key);
-    }
-
-    /**
-     * 주요 처리 후 캐시 삭제
-     *
-     * @param jrnlDayEntity 캐시 삭제 판단에 필요한 객체
-     * @throws Exception 처리 중 발생 가능한 예외
-     * @see EhCacheEvictEventListner
-     * @see JrnlDayCacheEvictor
-     */
-    @Override
-    public void evictCache(final JrnlDayEntity jrnlDayEntity) throws Exception {
-        // 관련 캐시 삭제
-        publisher.publishAsyncEvent(new EhCacheEvictEvent(this, jrnlDayEntity.getPostNo(), JRNL_DAY));
     }
 }

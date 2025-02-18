@@ -1,12 +1,7 @@
 package io.nicheblog.dreamdiary.extension.cache.service.impl;
 
-import io.nicheblog.dreamdiary.domain.jrnl.day.service.strategy.JrnlDayCacheEvictor;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.service.strategy.JrnlDiaryCacheEvictor;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.service.strategy.JrnlDreamCacheEvictor;
-import io.nicheblog.dreamdiary.domain.jrnl.sumry.service.strategy.JrnlSumryCacheEvictor;
 import io.nicheblog.dreamdiary.extension.cache.service.CacheEvictService;
 import io.nicheblog.dreamdiary.extension.cache.service.CacheEvictor;
-import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -30,20 +25,20 @@ import java.util.Map;
 public class EhCacheEvictServiceImpl
         implements CacheEvictService {
 
-    private final JrnlDayCacheEvictor jrnlDayCacheEvictor;
-    private final JrnlDiaryCacheEvictor jrnlDiaryCacheEvictor;
-    private final JrnlDreamCacheEvictor jrnlDreamCacheEvictor;
-    private final JrnlSumryCacheEvictor jrnlSumryCacheEvictor;
+    // private final JrnlDayCacheEvictor jrnlDayCacheEvictor;
+    // private final JrnlDiaryCacheEvictor jrnlDiaryCacheEvictor;
+    // private final JrnlDreamCacheEvictor jrnlDreamCacheEvictor;
+    // private final JrnlSumryCacheEvictor jrnlSumryCacheEvictor;
 
     // CacheEvictor를 매핑하는 Map
     private final Map<String, CacheEvictor<Integer>> evictorMap = new HashMap<>();
 
     @PostConstruct
     private void initEvictorMap() {
-        evictorMap.put(ContentType.JRNL_DAY.key, jrnlDayCacheEvictor);
-        evictorMap.put(ContentType.JRNL_DIARY.key, jrnlDiaryCacheEvictor);
-        evictorMap.put(ContentType.JRNL_DREAM.key, jrnlDreamCacheEvictor);
-        evictorMap.put(ContentType.JRNL_SUMRY.key, jrnlSumryCacheEvictor);
+        // evictorMap.put(ContentType.JRNL_DAY.key, jrnlDayCacheEvictor);
+        // evictorMap.put(ContentType.JRNL_DIARY.key, jrnlDiaryCacheEvictor);
+        // evictorMap.put(ContentType.JRNL_DREAM.key, jrnlDreamCacheEvictor);
+        // evictorMap.put(ContentType.JRNL_SUMRY.key, jrnlSumryCacheEvictor);
     }
 
     /**
@@ -55,7 +50,7 @@ public class EhCacheEvictServiceImpl
      */
     @Override
     public void evictClsfCache(final String refContentType, final Integer refPostNo) throws Exception {
-        CacheEvictor<Integer> evictor = evictorMap.get(refContentType);
+        final CacheEvictor<Integer> evictor = evictorMap.get(refContentType);
         if (evictor == null) {
             log.warn("No CacheEvictor found for ContentType: {}", refContentType);
             return;

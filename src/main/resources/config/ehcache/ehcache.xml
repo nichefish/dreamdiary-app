@@ -66,7 +66,6 @@
     <cache alias="myJrnlDayTagList" uses-template="defaultTemplate" />
     <cache alias="myJrnlDaySizedTagList" uses-template="defaultTemplate" />
     <cache alias="myJrnlDayTagCtgrMap" uses-template="defaultTemplate" />
-    <cache alias="myCountDaySize" uses-template="defaultTemplate" />
     <cache alias="myCountDaySizeMap" uses-template="defaultTemplate" />
     <cache alias="myJrnlDayTagDtl" uses-template="defaultTemplate" />
 
@@ -76,7 +75,6 @@
     <cache alias="myJrnlDiaryTagList" uses-template="defaultTemplate" />
     <cache alias="myJrnlDiarySizedTagList" uses-template="defaultTemplate" />
     <cache alias="myJrnlDiaryTagCtgrMap" uses-template="defaultTemplate" />
-    <cache alias="myCountDiarySize" uses-template="defaultTemplate" />
     <cache alias="myCountDiarySizeMap" uses-template="defaultTemplate" />
     <cache alias="myJrnlDiaryTagDtl" uses-template="defaultTemplate" />
     <cache alias="myImprtcDiaryList" uses-template="defaultTemplate" />
@@ -87,7 +85,6 @@
     <cache alias="myJrnlDreamTagList" uses-template="defaultTemplate" />
     <cache alias="myJrnlDreamSizedTagList" uses-template="defaultTemplate" />
     <cache alias="myJrnlDreamTagCtgrMap" uses-template="defaultTemplate" />
-    <cache alias="myCountDreamSize" uses-template="defaultTemplate" />
     <cache alias="myCountDreamSizeMap" uses-template="defaultTemplate" />
     <cache alias="myJrnlDreamTagDtl" uses-template="defaultTemplate" />
     <cache alias="myImprtcDreamList" uses-template="defaultTemplate" />

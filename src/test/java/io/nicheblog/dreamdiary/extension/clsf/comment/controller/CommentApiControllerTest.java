@@ -1,11 +1,10 @@
 package io.nicheblog.dreamdiary.extension.clsf.comment.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.nicheblog.dreamdiary.extension.clsf.comment.controller.CommentRestController;
-import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.extension.clsf.comment.model.CommentDto;
 import io.nicheblog.dreamdiary.extension.clsf.comment.model.CommentSearchParam;
 import io.nicheblog.dreamdiary.extension.clsf.comment.service.CommentService;
+import io.nicheblog.dreamdiary.global.Url;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -99,14 +98,11 @@ public class CommentApiControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-
-
-
     @Test
     public void testCommentRegAjax() throws Exception {
         // Arrange
         CommentDto boardCommentDto = new CommentDto();
-        // Initialize the DTO as needed
+        // Initialize the Dto as needed
         // when(boardCommentService.regist(...)).thenReturn(...);
 
         // Act & Assert
@@ -121,7 +117,7 @@ public class CommentApiControllerTest {
     public void testCommentMdfAjax() throws Exception {
         // Arrange
         CommentDto boardCommentDto = new CommentDto();
-        // Initialize the DTO as needed
+        // Initialize the Dto as needed
         // when(boardCommentService.regist(...)).thenReturn(...);
 
         // Act & Assert

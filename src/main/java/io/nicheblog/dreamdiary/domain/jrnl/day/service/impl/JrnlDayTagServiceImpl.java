@@ -47,7 +47,7 @@ public class JrnlDayTagServiceImpl
     private final JrnlDayTagMapstruct mapstruct = JrnlDayTagMapstruct.INSTANCE;
 
     private final ApplicationContext context;
-    private JrnlDayTagServiceImpl getSelf() {
+    private JrnlDayTagService getSelf() {
         return context.getBean(this.getClass());
     }
 
@@ -79,7 +79,7 @@ public class JrnlDayTagServiceImpl
     @Override
     @Cacheable(value="myJrnlDaySizedTagList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
     public List<TagDto> getDaySizedListDto(final Integer yy, final Integer mnth) throws Exception {
-        // 저널 꿈 태그 DTO 목록 조회
+        // 저널 꿈 태그 Dto 목록 조회
         final List<TagDto> tagList = this.getSelf().getListDtoWithCache(yy, mnth);
 
         final int maxSize = this.calcMaxSize(tagList, yy, mnth);
@@ -127,17 +127,6 @@ public class JrnlDayTagServiceImpl
         }
 
         return maxFrequency;
-    }
-
-    /**
-     * 일자 태그별 크기 조회
-     *
-     * @return {@link Map} -- 카테고리별 태그 목록을 담은 Map
-     */
-    @Override
-    @Cacheable(value="myCountDaySize", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #param.tagNo + \"_\" + #param.yy + \"_\" + #param.mnth")
-    public Integer countDaySize(final JrnlDayContentTagParam param) {
-        return repository.countDaySize(param);
     }
 
     /**
