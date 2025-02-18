@@ -117,7 +117,7 @@ public class JrnlDayRestController
 
         // TODO: AOP로 분리
         if (isSuccess) {
-            final JrnlDreamDto rsltObj = (JrnlDreamDto) result.getRsltObj();
+            final JrnlDayDto rsltObj = (JrnlDayDto) result.getRsltObj();
             // 태그 처리 :: 메인 로직과 분리
             publisher.publishAsyncEventAndWait(new JrnlTagProcEvent(this, rsltObj.getClsfKey(), rsltObj.getYy(), rsltObj.getMnth(), jrnlDay.tag));
         }

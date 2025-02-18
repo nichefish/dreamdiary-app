@@ -72,9 +72,9 @@ public class JrnlDayDto
     private String stdrdDt;
 
     /** 년도 */
-    private String yy;
+    private Integer yy;
     /** 월 */
-    private String mnth;
+    private Integer mnth;
 
     /** 날씨 */
     @Size(max = 100, message = "날씨 정보는 100자 이하로 입력해야 합니다.")

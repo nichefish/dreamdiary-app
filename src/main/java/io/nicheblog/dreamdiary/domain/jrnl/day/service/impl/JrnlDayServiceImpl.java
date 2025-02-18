@@ -178,13 +178,13 @@ public class JrnlDayServiceImpl
         // 날짜미상여부 N시 대략일자 무효화
         if ("Y".equals(jrnlDay.getDtUnknownYn())) {
             jrnlDay.setJrnlDt("");
-            jrnlDay.setYy(jrnlDay.getAprxmtDt().substring(0, 4));
-            jrnlDay.setMnth(jrnlDay.getAprxmtDt().substring(5, 7));
+            jrnlDay.setYy(Integer.valueOf(jrnlDay.getAprxmtDt().substring(0, 4)));
+            jrnlDay.setMnth(Integer.valueOf(jrnlDay.getAprxmtDt().substring(5, 7)));
         }
         if ("N".equals(jrnlDay.getDtUnknownYn())) {
             jrnlDay.setAprxmtDt("");
-            jrnlDay.setYy(jrnlDay.getJrnlDt().substring(0, 4));
-            jrnlDay.setMnth(jrnlDay.getJrnlDt().substring(5, 7));
+            jrnlDay.setYy(Integer.valueOf(jrnlDay.getJrnlDt().substring(0, 4)));
+            jrnlDay.setMnth(Integer.valueOf(jrnlDay.getJrnlDt().substring(5, 7)));
         }
     }
 

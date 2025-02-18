@@ -37,8 +37,8 @@ public class JrnlDayCacheEvictor
         final JrnlDayDto jrnlDay = this.getDataByKey(key);
         if (jrnlDay == null) return;
         // 년도-월에 따른 캐시 삭제
-        final String yy = jrnlDay.getYy();
-        final String mnth = jrnlDay.getMnth();
+        final Integer yy = jrnlDay.getYy();
+        final Integer mnth = jrnlDay.getMnth();
         // jrnl_day
         EhCacheUtils.evictMyCache("myJrnlDayDtlDto", key);
         EhCacheUtils.evictMyCacheAll("myJrnlDayList");
