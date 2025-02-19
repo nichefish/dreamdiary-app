@@ -25,6 +25,7 @@
     </div>
 
 <#--include::script modules-->
-    <script type="text/javascript" src="/js/view/global/_common/error/error_page.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/auth/oauth2/oauth2.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/global/_common/error/error_page.js?${releaseDate!}"></script>
 
 </@layout.layout>

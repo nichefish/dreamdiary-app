@@ -48,7 +48,7 @@ class JrnlDiaryMapstructTest {
         // Given::
 
         // When::
-        JrnlDiaryDto jrnlDiaryDto = jrnlDiaryMapstruct.toDto(jrnlDiaryEntity);
+        final JrnlDiaryDto jrnlDiaryDto = jrnlDiaryMapstruct.toDto(jrnlDiaryEntity);
 
         // Then::
         assertNotNull(jrnlDiaryDto, "변환된 저널 일기 Dto는 null일 수 없습니다.");
@@ -66,7 +66,7 @@ class JrnlDiaryMapstructTest {
         BaseEntityTestFactoryHelper.setMdfusrInfo(jrnlDiaryEntity);
 
         // When::
-        JrnlDiaryDto jrnlDiaryDto = jrnlDiaryMapstruct.toDto(jrnlDiaryEntity);
+        final JrnlDiaryDto jrnlDiaryDto = jrnlDiaryMapstruct.toDto(jrnlDiaryEntity);
 
         // Then::
         assertNotNull(jrnlDiaryDto, "변환된 저널 일기 Dto는 null일 수 없습니다.");

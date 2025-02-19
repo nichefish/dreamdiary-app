@@ -54,7 +54,7 @@ class UserReqstMapstructTest {
         // Given::
 
         // When::
-        UserEntity entity = userReqstMapstruct.toEntity(userReqstDto);
+        final UserEntity entity = userReqstMapstruct.toEntity(userReqstDto);
 
         // Then::
         assertNotNull(entity, "변환된 사용자 계정 신청 Entity는 null일 수 없습니다.");
@@ -73,7 +73,7 @@ class UserReqstMapstructTest {
         userReqstDto.setAcsIpListStr("[{\"value\":\"1.1.1.1\"},{\"value\":\"2.2.2.2\"}]");
 
         // When::
-        UserEntity entity = userReqstMapstruct.toEntity(userReqstDto);
+        final UserEntity entity = userReqstMapstruct.toEntity(userReqstDto);
 
         // Then::
         assertNotNull(entity, "변환된 사용자 계정 신청 Entity는 null일 수 없습니다.");
@@ -92,11 +92,11 @@ class UserReqstMapstructTest {
     @Test
     void testToEntity_checkProfl() throws Exception {
         // Given::
-        UserProflDto userProflDto = UserProflDtoTestFactory.create();
+        final UserProflDto userProflDto = UserProflDtoTestFactory.create();
         userReqstDto.setProfl(userProflDto);
 
         // When::
-        UserEntity entity = userReqstMapstruct.toEntity(userReqstDto);
+        final UserEntity entity = userReqstMapstruct.toEntity(userReqstDto);
 
         // Then::
         assertNotNull(entity, "변환된 사용자 계정 신청 Entity는 null일 수 없습니다.");
@@ -112,11 +112,11 @@ class UserReqstMapstructTest {
     @Test
     void testToEntity_checkEmplym() throws Exception {
         // Given::
-        UserEmplymDto userEmplymDto = UserEmplymDtoTestFactory.create();
+        final UserEmplymDto userEmplymDto = UserEmplymDtoTestFactory.create();
         userReqstDto.setEmplym(userEmplymDto);
 
         // When::
-        UserEntity entity = userReqstMapstruct.toEntity(userReqstDto);
+        final UserEntity entity = userReqstMapstruct.toEntity(userReqstDto);
 
         // Then::
         assertNotNull(entity, "변환된 사용자 계정 신청 Entity는 null일 수 없습니다.");

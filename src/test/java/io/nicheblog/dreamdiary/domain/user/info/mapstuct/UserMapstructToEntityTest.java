@@ -61,7 +61,7 @@ class UserMapstructToEntityTest {
         // Given::
 
         // When::
-        UserEntity entity = userMapstruct.toEntity(userDto);
+        final UserEntity entity = userMapstruct.toEntity(userDto);
 
         // Then::
         assertNotNull(entity, "변환된 사용자 Entity는 null일 수 없습니다.");
@@ -76,12 +76,12 @@ class UserMapstructToEntityTest {
     void testToEntity_checkAuth() throws Exception {
         // Given::
         // AUTH
-        UserAuthRoleDto aa = UserAuthRoleDtoTestFactory.create(Auth.USER);
-        UserAuthRoleDto bb = UserAuthRoleDtoTestFactory.create(Auth.MNGR);
+        final UserAuthRoleDto aa = UserAuthRoleDtoTestFactory.create(Auth.USER);
+        final UserAuthRoleDto bb = UserAuthRoleDtoTestFactory.create(Auth.MNGR);
         userDto.setAuthList(List.of(aa, bb));
 
         // When::
-        UserEntity entity = userMapstruct.toEntity(userDto);
+        final UserEntity entity = userMapstruct.toEntity(userDto);
 
         // Then::
         assertNotNull(entity, "변환된 사용자 Entity는 null일 수 없습니다.");
@@ -103,13 +103,13 @@ class UserMapstructToEntityTest {
         userDto.setAcsIpListStr("[{\"value\":\"1.1.1.1\"},{\"value\":\"2.2.2.2\"}]");
 
         // When::
-        UserEntity entity = userMapstruct.toEntity(userDto);
+        final UserEntity entity = userMapstruct.toEntity(userDto);
 
         // Then::
         assertNotNull(entity, "변환된 사용자 Entity는 null일 수 없습니다.");
         // 접속 IP 관련
         assertEquals(userDto.getUseAcsIpYn(), entity.getUseAcsIpYn(), "접속 IP 사용여부가 제대로 매핑되지 않았습니다.");
-        List<UserAcsIpEntity> acsIpEntityList = entity.getAcsIpList();
+        final List<UserAcsIpEntity> acsIpEntityList = entity.getAcsIpList();
         assertNotNull(acsIpEntityList, "변환된 접속 가능 IP 목록 Dto는 null일 수 없습니다.");
         assertEquals(2, acsIpEntityList.size(), "접속 가능 IP 목록 크기가 일치하지 않습니다.");
         assertEquals("1.1.1.1", acsIpEntityList.get(0).getAcsIp(), "접속 가능 IP 목록에서 IP 정보가 제대로 매핑되지 않았습니다.");
@@ -122,15 +122,15 @@ class UserMapstructToEntityTest {
     @Test
     void testToEntity_checkProfl() throws Exception {
         // Given::
-        UserProflDto userProflDto = UserProflDtoTestFactory.create();
+        final UserProflDto userProflDto = UserProflDtoTestFactory.create();
         userDto.setProfl(userProflDto);
 
         // When::
-        UserEntity entity = userMapstruct.toEntity(userDto);
+        final UserEntity entity = userMapstruct.toEntity(userDto);
 
         // Then::
         assertNotNull(entity, "변환된 사용자 Entity는 null일 수 없습니다.");
-        UserProflEntity userProflEntity = entity.getProfl();
+        final UserProflEntity userProflEntity = entity.getProfl();
         assertNotNull(userProflEntity, "변환된 사용자 프로필 정보 Entity는 null일 수 없습니다.");
         // 날짜 변환 체크
         assertEquals(DateUtils.asDate("2000-01-01"), userProflEntity.getBrthdy(), "사용자 프로필 정보 생일 정보가 제대로 매핑되지 않았습니다.");
@@ -142,11 +142,11 @@ class UserMapstructToEntityTest {
     @Test
     void testToEntity_checkEmplym() throws Exception {
         // Given::
-        UserEmplymDto userEmplymDto = UserEmplymDtoTestFactory.create();
+        final UserEmplymDto userEmplymDto = UserEmplymDtoTestFactory.create();
         userDto.setEmplym(userEmplymDto);
 
         // When::
-        UserEntity entity = userMapstruct.toEntity(userDto);
+        final UserEntity entity = userMapstruct.toEntity(userDto);
 
         // Then::
         assertNotNull(entity, "변환된 사용자 Entity는 null일 수 없습니다.");

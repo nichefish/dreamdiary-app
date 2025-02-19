@@ -32,10 +32,10 @@ class UserProflMapstructTest {
     void testToDto_checkProfl() throws Exception {
 
         // Given::
-        UserProflEntity userProflEntity = UserProflEntityTestFactory.create();
+        final UserProflEntity userProflEntity = UserProflEntityTestFactory.create();
 
         // When::
-        UserProflDto userProflDto = userProflMapstruct.toDto(userProflEntity);
+        final UserProflDto userProflDto = userProflMapstruct.toDto(userProflEntity);
 
         // Then::
         assertNotNull(userProflDto, "변환된 프로필 정보 Dto는 null일 수 없습니다.");
@@ -51,10 +51,10 @@ class UserProflMapstructTest {
     @Test
     void testToEntity_checkBasic() throws Exception {
         // Given::
-        UserProflDto userProflDto = UserProflDtoTestFactory.create();
+        final UserProflDto userProflDto = UserProflDtoTestFactory.create();
 
         // When::
-        UserProflEntity userProflEntity = userProflMapstruct.toEntity(userProflDto);
+        final UserProflEntity userProflEntity = userProflMapstruct.toEntity(userProflDto);
 
         // Then::
         assertNotNull(userProflEntity, "변환된 프로필 정보 Entity는 null일 수 없습니다.");

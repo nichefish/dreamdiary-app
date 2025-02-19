@@ -58,17 +58,17 @@ class UserMapstructToDtoTest {
         // Given::
 
         // When::
-        UserDto.DTL userDto = userMapstruct.toDto(userEntity);
+        final UserDto.DTL userDto = userMapstruct.toDto(userEntity);
 
         // Then::
         assertNotNull(userDto, "변환된 사용자 상세 Dto는 null일 수 없습니다.");
         // 이메일 변환 로직 검증
-        String email = userEntity.getEmail();
+        final String email = userEntity.getEmail();
         if (StringUtils.isNotEmpty(email)) {
             assertTrue(email.contains("@"), "이메일 형식이 올바르지 않습니다.");
-            String[] emailParts = email.split("@");
-            String expectedEmailId = emailParts[0];
-            String expectedEmailDomain = emailParts.length > 1 ? emailParts[1] : null;
+            final String[] emailParts = email.split("@");
+            final String expectedEmailId = emailParts[0];
+            final String expectedEmailDomain = emailParts.length > 1 ? emailParts[1] : null;
             assertEquals(expectedEmailId, userDto.getEmailId(), "이메일 정보가 제대로 매핑되지 않았습니다.");
             assertEquals(expectedEmailDomain, userDto.getEmailDomain(), "이메일 정보가 제대로 매핑되지 않았습니다.");
         } else {
@@ -88,7 +88,7 @@ class UserMapstructToDtoTest {
         BaseEntityTestFactoryHelper.setMdfusrInfo(userEntity);
 
         // When::
-        UserDto.DTL userDto = userMapstruct.toDto(userEntity);
+        final UserDto.DTL userDto = userMapstruct.toDto(userEntity);
 
         // Then::
         assertNotNull(userDto, "변환된 사용자 상세 Dto는 null일 수 없습니다.");
@@ -108,12 +108,12 @@ class UserMapstructToDtoTest {
     void testToDto_checkAuth() throws Exception {
         // Given::
         // AUTH
-        UserAuthRoleEntity aa = UserAuthRoleEntityTestFactory.create(Auth.USER);
-        UserAuthRoleEntity bb = UserAuthRoleEntityTestFactory.create(Auth.MNGR);
+        final UserAuthRoleEntity aa = UserAuthRoleEntityTestFactory.create(Auth.USER);
+        final UserAuthRoleEntity bb = UserAuthRoleEntityTestFactory.create(Auth.MNGR);
         userEntity.setAuthList(List.of(aa, bb));
 
         // When::
-        UserDto.DTL userDto = userMapstruct.toDto(userEntity);
+        final UserDto.DTL userDto = userMapstruct.toDto(userEntity);
 
         // Then::
         assertNotNull(userDto, "변환된 사용자 상세 Dto는 null일 수 없습니다.");
@@ -131,12 +131,12 @@ class UserMapstructToDtoTest {
     void testToDto_checkAcsIp() throws Exception {
         // Given::
         userEntity.setUseAcsIpYn("Y");
-        UserAcsIpEntity aa = UserAcsIpEntityTestFactory.create("1.1.1.1");
-        UserAcsIpEntity bb = UserAcsIpEntityTestFactory.create("2.2.2.2");
+        final UserAcsIpEntity aa = UserAcsIpEntityTestFactory.create("1.1.1.1");
+        final UserAcsIpEntity bb = UserAcsIpEntityTestFactory.create("2.2.2.2");
         userEntity.setAcsIpList(List.of(aa, bb));
 
         // When::
-        UserDto.DTL userDto = userMapstruct.toDto(userEntity);
+        final UserDto.DTL userDto = userMapstruct.toDto(userEntity);
 
         // Then::
         assertNotNull(userDto, "변환된 사용자 상세 Dto는 null일 수 없습니다.");
@@ -155,11 +155,11 @@ class UserMapstructToDtoTest {
     @Test
     void testToDto_checkProfl() throws Exception {
         // Given::
-        UserProflEntity userProflEntity = UserProflEntityTestFactory.create();
+        final UserProflEntity userProflEntity = UserProflEntityTestFactory.create();
         userEntity.setProfl(userProflEntity);
 
         // When::
-        UserDto userDto = userMapstruct.toDto(userEntity);
+        final UserDto userDto = userMapstruct.toDto(userEntity);
 
         // Then::
         assertNotNull(userDto, "변환된 사용자 상세 Dto는 null일 수 없습니다.");
@@ -174,11 +174,11 @@ class UserMapstructToDtoTest {
     @Test
     void testToDto_checkEmplym() throws Exception {
         // Given::
-        UserEmplymEntity userEmplymEntity = UserEmplymEntityTestFactory.create();
+        final UserEmplymEntity userEmplymEntity = UserEmplymEntityTestFactory.create();
         userEntity.setEmplym(userEmplymEntity);
 
         // When::
-        UserDto userDto = userMapstruct.toDto(userEntity);
+        final UserDto userDto = userMapstruct.toDto(userEntity);
 
         // Then::
         assertNotNull(userDto, "변환된 사용자 상세 Dto는 null일 수 없습니다.");
@@ -187,12 +187,12 @@ class UserMapstructToDtoTest {
         assertEquals("2000-01-01", userDto.getEmplym().getEcnyDt(), "사용자 직원정보 입사일 정보가 제대로 매핑되지 않았습니다.");
         assertEquals("2000-01-01", userDto.getEmplym().getRetireDt(), "사용자 직원정보 퇴사일 정보가 제대로 매핑되지 않았습니다.");
         // 이메일 변환 로직
-        String email = userEmplymEntity.getEmplymEmail();
+        final String email = userEmplymEntity.getEmplymEmail();
         if (StringUtils.isNotEmpty(email)) {
             assertTrue(email.contains("@"), "이메일 형식이 올바르지 않습니다.");
-            String[] emailParts = email.split("@");
-            String expectedEmailId = emailParts[0];
-            String expectedEmailDomain = emailParts.length > 1 ? emailParts[1] : null;
+            final String[] emailParts = email.split("@");
+            final String expectedEmailId = emailParts[0];
+            final String expectedEmailDomain = emailParts.length > 1 ? emailParts[1] : null;
             assertEquals(expectedEmailId, userDto.getEmplym().getEmplymEmailId(), "이메일 정보가 제대로 매핑되지 않았습니다.");
             assertEquals(expectedEmailDomain, userDto.getEmplym().getEmplymEmailDomain(), "이메일 정보가 제대로 매핑되지 않았습니다.");
         } else {
@@ -211,18 +211,18 @@ class UserMapstructToDtoTest {
         // Given::
 
         // When::
-        UserDto.LIST userDto = userMapstruct.toListDto(userEntity);
+        final UserDto.LIST userDto = userMapstruct.toListDto(userEntity);
 
         // Then::
         assertNotNull(userDto, "변환된 사용자 목록 Dto는 null일 수 없습니다.");
         // 이메일 변환 로직 검증
         // 이메일 변환 로직 검증
-        String email = userEntity.getEmail();
+        final String email = userEntity.getEmail();
         if (StringUtils.isNotEmpty(email)) {
             assertTrue(email.contains("@"), "이메일 형식이 올바르지 않습니다.");
-            String[] emailParts = email.split("@");
-            String expectedEmailId = emailParts[0];
-            String expectedEmailDomain = emailParts.length > 1 ? emailParts[1] : null;
+            final String[] emailParts = email.split("@");
+            final String expectedEmailId = emailParts[0];
+            final String expectedEmailDomain = emailParts.length > 1 ? emailParts[1] : null;
             assertEquals(expectedEmailId, userDto.getEmailId(), "이메일 정보가 제대로 매핑되지 않았습니다.");
             assertEquals(expectedEmailDomain, userDto.getEmailDomain(), "이메일 정보가 제대로 매핑되지 않았습니다.");
         } else {
@@ -244,7 +244,7 @@ class UserMapstructToDtoTest {
         BaseEntityTestFactoryHelper.setMdfusrInfo(userEntity);
 
         // When::
-        UserDto.LIST userListDto = userMapstruct.toListDto(userEntity);
+        final UserDto.LIST userListDto = userMapstruct.toListDto(userEntity);
 
         // Then::
         assertNotNull(userListDto, "변환된 사용자 목록 Dto는 null일 수 없습니다.");

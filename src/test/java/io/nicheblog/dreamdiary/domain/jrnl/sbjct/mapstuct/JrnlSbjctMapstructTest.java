@@ -46,7 +46,7 @@ class JrnlSbjctMapstructTest {
         // Given::
 
         // When::
-        JrnlSbjctDto jrnlSbjctDto = jrnlSbjctMapstruct.toDto(jrnlSbjctEntity);
+        final JrnlSbjctDto jrnlSbjctDto = jrnlSbjctMapstruct.toDto(jrnlSbjctEntity);
 
         // Then::
         assertNotNull(jrnlSbjctDto, "변환된 저널 주제 Dto는 null일 수 없습니다.");
@@ -63,7 +63,7 @@ class JrnlSbjctMapstructTest {
         BaseEntityTestFactoryHelper.setMdfusrInfo(jrnlSbjctEntity);
 
         // When::
-        JrnlSbjctDto jrnlSbjctDto = jrnlSbjctMapstruct.toDto(jrnlSbjctEntity);
+        final JrnlSbjctDto jrnlSbjctDto = jrnlSbjctMapstruct.toDto(jrnlSbjctEntity);
 
         // Then::
         assertNotNull(jrnlSbjctDto, "변환된 저널 일기 Dto는 null일 수 없습니다.");
