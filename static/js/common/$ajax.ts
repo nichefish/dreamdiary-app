@@ -94,12 +94,12 @@ cF.$ajax = (function(): Module {
     $.ajaxSetup({
         error: function(xhr): void {
             const statusCode: number = xhr.status;
-            const msg = xhr.responseJSON ? xhr.responseJSON.message : "접근이 거부되었습니다. (ACCESS DENIED)";
+            const msg = xhr.responseJSON?.message || Message.get("view.error.access-denied");
             const lgnFormUrl: string =  "/auth/lgnForm.do";
 
             switch(statusCode) {
                 case 401: {
-                    cF.ui.swalOrConfirm(msg + "\n로그인 화면으로 돌아갑니다.", function(): void {
+                    cF.ui.swalOrConfirm(msg + "\n" + Message.get("view.auth.redirect-to-lgn-form"), function(): void {
                         window.location.href = lgnFormUrl;
                     }, function(): void {
                         // do nothing... ui에 세션 만료 표시

@@ -32,7 +32,7 @@
                 <div class="card-toolbar">
                     <a href="javascript:void(0);" class="btn btn-sm btn-icon btn-color-gray-500 btn-light"
                        onclick="dF.JrnlDayAside.sort();"
-                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="날짜 정렬을 변경합니다.">
+                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.aside-sort'/>">
                         <i class="bi bi-sort-numeric-up-alt fs-2 pe-0" id="sortIcon"></i>
                     </a>
                 </div>
@@ -45,11 +45,11 @@
                 <#--begin::row-->
                 <div class="mb-4 d-flex-between gap-4">
                     <div class="col">
-                        <span class="text-gray-900 fs-h6 fw-bold d-inline-block ms-6 mb-1">년도</span>
+                        <span class="text-gray-900 fs-h6 fw-bold d-inline-block ms-6 mb-1"><@spring.message 'yy'/></span>
                         <div class="d-flex">
                             <div class="d-flex align-items-center me-2">
                                 <i id="left" class="bi bi-caret-left fs-2 cursor-pointer"
-                                   data-bs-toggle="tooltip" data-bs-placement="left" data-bs-dismiss="click" title="이전 월로 이동합니다."></i>
+                                   data-bs-toggle="tooltip" data-bs-placement="left" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.aside-prev'/>"></i>
                             </div>
                             <select name="yy" id="yy" class="form-select" aria-label="Select example"
                                     onchange="dF.JrnlDayAside.yy();">
@@ -66,7 +66,7 @@
                         <span class="text-gray-900 fs-h6 fw-bold d-inline-block ms-2 mb-1">월</span>
                         <button type="button" class="btn btn-sm btn-outline btn-light-info blink-slow ms-6 ps-2 pe-1 py-0"
                                 onclick="dF.JrnlDayAside.today();"
-                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="오늘 일자를 조회합니다.">
+                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.aside-today'/>">
                             TODAY
                             <i class="bi bi-box-arrow-in-up-right"></i>
                         </button>
@@ -77,11 +77,11 @@
                                 <#list 1..12 as mnth>
                                     <option value="${mnth}">${mnth}</option>
                                 </#list>
-                                <option value="99">전체 월</option>
+                                <option value="99"><@spring.message 'mmth-all'/></option>
                             </select>
                             <div class="d-flex align-items-center ms-2">
                                 <i id="right" class="bi bi-caret-right fs-2 cursor-pointer"
-                                   data-bs-toggle="tooltip" data-bs-placement="left" data-bs-dismiss="click" title="다음 월로 이동합니다."></i>
+                                   data-bs-toggle="tooltip" data-bs-placement="left" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.aside-next'/>"></i>
                             </div>
                         </div>
                     </div>
@@ -90,7 +90,7 @@
                 <div class="px-8 mb-4 gap-1">
                     <button type="button" class="btn btn-sm btn-outline btn-light-primary px-2 pt-1"
                             onclick="dF.JrnlDayAside.pinpoint();"
-                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="나중에 돌아올 수 있도록.&#10;현재 년월을 저장합니다.">
+                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.aside-pin'/>">
                         <i class="bi bi-bookmarks pe-0"></i>
                     </button>
                     <span class="mx-2">|</span>
@@ -102,33 +102,37 @@
                     </span>
                     <button type="button" class="btn btn-sm btn-outline btn-light-primary px-2 pt-1"
                             onclick="dF.JrnlDayAside.turnback();"
-                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="저장된 년월로 이동합니다.">
+                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.aside-turnback'/>">
                         <i class="bi bi-reply-all pe-0"></i>
                     </button>
                 </div>
                 <div class="separator my-6"></div>
                 <#--begin::row-->
                 <div class="mb-5">
-                    <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">일기 키워드 검색</span>
+                    <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">
+                        <@spring.message 'jrnl.diary.keyword.search'/>
+                    </span>
                     <div class="d-flex gap-1">
                         <input type="text" name="diaryKeyword" id="diaryKeyword" class="form-control"
-                               value="" placeholder="일기 키워드 검색" maxlength="200"/>
+                               value="" placeholder="<@spring.message 'jrnl.diary.keyword.search'/>" maxlength="200"/>
                         <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
                                 onclick="dF.JrnlDiary.keywordListAjax();"
-                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="일기를 키워드로 검색합니다.">
+                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.diary.keyword.search'/>">
                             <i class="bi bi-search pe-0"></i>
                         </button>
                     </div>
                 </div>
                 <#--begin::row-->
                 <div class="mb-5">
-                    <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">꿈 키워드 검색</span>
+                    <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">
+                        <@spring.message 'jrnl.dream.keyword.search'/>
+                    </span>
                     <div class="d-flex gap-1">
                         <input type="text" name="dreamKeyword" id="dreamKeyword" class="form-control"
-                               value="" placeholder="꿈 키워드 검색" maxlength="200"/>
+                               value="" placeholder="<@spring.message 'jrnl.dream.keyword.search'/>" maxlength="200"/>
                         <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
                                 onclick="dF.JrnlDream.keywordListAjax();"
-                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="꿈을 키워드로 검색합니다.">
+                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.dream.keyword.search'/>">
                             <i class="bi bi-search pe-0"></i>
                         </button>
                     </div>
