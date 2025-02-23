@@ -94,7 +94,7 @@ cF.$ajax = (function(): Module {
     $.ajaxSetup({
         error: function(xhr): void {
             const statusCode: number = xhr.status;
-            const msg = xhr.responseJSON?.message || Message.get("view.error.access-denied");
+            const msg: string = xhr.responseJSON?.message || Message.get("view.error.access-denied");
             const lgnFormUrl: string =  "/auth/lgnForm.do";
 
             switch(statusCode) {

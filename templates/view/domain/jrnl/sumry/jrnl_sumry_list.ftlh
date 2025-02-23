@@ -62,6 +62,7 @@
                             <span class="fs-5 fw-bolder me-0">${jrnlSumry.yy!}</span>
                             년 결산
                         </#if>
+                        <i class="bi bi-pencil-square fs-4 ms-1"></i>
                     </a>
                     <#--TODO: 새 창으로 열기 -->
                     <#--

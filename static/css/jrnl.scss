@@ -22,7 +22,15 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     flex-direction: row !important;
     justify-content: start;
     align-items: center;
-    margin-bottom: 0.75rem !important;
+    margin-bottom: 0.25rem !important;
+}
+
+.jrnl-diary-item {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: start;
+    align-items: center;
+    margin-bottom: 1.5rem !important;
 }
 
 .jrnl-diary-cn, .jrnl-dream-cn, .jrnl-sumry-cn {

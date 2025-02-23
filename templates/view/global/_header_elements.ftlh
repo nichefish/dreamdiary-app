@@ -130,6 +130,17 @@
 </#macro>
 
 <!--
+ * 버튼 : 수정 모달 호출
+ -->
+<#macro header_btn_mdf_modal func>
+    <button type="button" class="btn btn-sm btn-primary"
+            onclick="${func}"
+            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="수정 모달을 호출합니다.">
+        <i class="fas fa-plus"></i>등록
+    </button>
+</#macro>
+
+<!--
  * 버튼 : 엑셀 다운로드
  -->
 <#macro header_btn_xlsx_download func>

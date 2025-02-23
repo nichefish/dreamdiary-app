@@ -5,7 +5,7 @@
 
 <script type="text/x-handlebars-template" id="jrnl_dream_cn_partial">
     {{#ifYn imprtcYn}}<div class="ctgr-span ctgr-imprtc w-auto">!<@spring.message 'imprtc'/></div>{{/ifYn}}
-    {{#ifYn nhtmrYn}}<div class="ctgr-span ctgr-info w-auto d-flex-center">!<@spring.message 'dream.nhtmr'/></div>{{/ifYn}}
+    {{#ifYn nhtmrYn}}<div class="ctgr-span ctgr-info w-auto">!<@spring.message 'dream.nhtmr'/></div>{{/ifYn}}
     {{#ifYn hallucYn}}<div class="ctgr-span ctgr-gray w-auto">!<@spring.message 'dream.halluc'/></div>{{/ifYn}}
     {{#ifYn elseDreamYn}}<div class="ctgr-span ctgr-gray w-70px d-flex-center">({{elseDreamerNm}} <@spring.message 'dream'/>)</div>{{/ifYn}}
     {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}

@@ -94,7 +94,7 @@
                         <i class="bi bi-bookmarks pe-0"></i>
                     </button>
                     <span class="mx-2">|</span>
-                    <span class="px-1 me-1">
+                    <span id="jrnl_aside_pinText" class="px-1 me-1">
                         <span id="pinYy" class="text-muted text-underline-dotted">----</span>
                         <span> / </span>
                         <span id="pinMnth" class="text-muted text-underline-dotted">--</span>

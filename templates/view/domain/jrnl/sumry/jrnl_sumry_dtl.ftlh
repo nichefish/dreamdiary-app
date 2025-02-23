@@ -77,7 +77,7 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-end gap-3">
             <#--페이지:: 버튼: 목록으로 가기-->
-            <@component.header_btn_reg_modal "dF.JrnlSumry.regModal(${post.postNo!})" />
+            <@component.header_btn_mdf_modal "dF.JrnlSumry.regModal(${post.postNo!})" />
             <form name="yyForm" id="yyForm" class="d-flex align-items-center flex-nowrap" method="get">
                 <#--페이지:: 버튼: 조회년도 변경-->
                 <div class="col-1 w-auto">
@@ -174,7 +174,7 @@
 
 <#--include::comment-->
 <#include "/view/extension/clsf/comment/_modal/_comment_reg_modal.ftlh">
-<#include "/view/extension/clsf/comment/_comment_list_partial.hbs">
+<#include "/view/extension/clsf/comment/_partial/_comment_list_partial.hbs">
 <script type="text/javascript" src="/js/view/extension/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
 
 <!--include::page scripts-->

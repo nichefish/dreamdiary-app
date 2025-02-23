@@ -30,7 +30,7 @@ public class EhCacheEvictEventListner {
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @EventListener
-    public void handleEhCacheEvictvent(final EhCacheEvictEvent event) throws Exception {
+    public void handleEhCacheEvictEvent(final EhCacheEvictEvent event) throws Exception {
         // 컨텐츠 타입별 캐시 evict
         ehCacheEvictService.evictClsfCache(event.getContentType(), event.getPostNo());
     }

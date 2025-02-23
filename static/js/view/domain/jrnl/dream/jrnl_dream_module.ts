@@ -122,7 +122,8 @@ dF.JrnlDream = (function(): dfModule {
          * 등록 (Ajax)
          */
         regAjax: function(): void {
-            const isReg: boolean = $("#jrnlDreamRegForm #postNo").val() === "";
+            const postNoElmt: HTMLInputElement = document.querySelector("#jrnlDreamRegForm [name='postNo']") as HTMLInputElement;
+            const isReg: boolean = postNoElmt?.value === "";
             Swal.fire({
                 text: Message.get(isReg ? "view.cnfm.reg" : "view.cnfm.mdf"),
                 showCancelButton: true,

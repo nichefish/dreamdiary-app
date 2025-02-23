@@ -91,13 +91,14 @@ dF.JrnlDay = (function(): dfModule {
                 }
                 const { rsltList } = res;
                 // 정렬 처리
-                const sortStr = $("#jrnl_aside #sort").val();
+                const sortStr: string = $("#jrnl_aside #sort").val() as string;
                 if (sortStr === "ASC") {
                     $("#jrnl_aside #sortIcon").removeClass("bi-sort-numeric-up-alt").addClass("bi-sort-numeric-down");
                 } else {
                     $("#jrnl_aside #sortIcon").removeClass("bi-sort-numeric-down").addClass("bi-sort-numeric-up-alt");
                     if (cF.util.isNotEmpty(rsltList)) rsltList.reverse();
                 }
+                $("#jrnl_diary_list_div").empty();
                 $("#jrnl_dream_list_div").empty();
                 cF.ui.closeModal();
                 cF.handlebars.template(rsltList, "jrnl_day_list");
@@ -120,8 +121,8 @@ dF.JrnlDay = (function(): dfModule {
          * 사이드바 기준으로 등록 모달 날짜 계산:: 메소드 분리
          */
         validDt: function(): string {
-            const yyElement = document.querySelector<HTMLInputElement>("#jrnl_aside #yy");
-            const mnthElement = document.querySelector<HTMLInputElement>("#jrnl_aside #mnth");
+            const yyElement: HTMLInputElement = document.querySelector<HTMLInputElement>("#jrnl_aside #yy");
+            const mnthElement: HTMLInputElement = document.querySelector<HTMLInputElement>("#jrnl_aside #mnth");
             if (!yyElement || !mnthElement) return "";
 
             const year: number = parseInt(yyElement.value, 10);
@@ -169,7 +170,6 @@ dF.JrnlDay = (function(): dfModule {
         regAjax: function(): void {
             const postNoElmt: HTMLInputElement = document.querySelector("#jrnlDayRegForm [name='postNo']") as HTMLInputElement;
             const isReg: boolean = postNoElmt?.value === "";
-
             Swal.fire({
                 text: Message.get(isReg ? "view.cnfm.reg" : "view.cnfm.mdf"),
                 showCancelButton: true,

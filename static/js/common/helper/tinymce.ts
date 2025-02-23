@@ -130,29 +130,32 @@ cF.tinymce = (function(): Module {
 
                 const url: string = "/file/fileUploadAjax.do";
                 const ajaxData: FormData = new FormData(document.getElementById("tinymceImageForm") as HTMLFormElement);
-                cF.$ajax.multipart(url, ajaxData, function(res): void {
+                cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                     if (cF.util.isNotEmpty(res.message)) cF.ui.swalOrAlert(res.message);
                     if (!res.rslt) return;
 
-                    const fileInfo = res.rsltObj;
+                    const fileInfo: Record<string, any> = res.rsltObj;
                     const imgTag: string = "<img src='" + fileInfo.url + "' data-mce-src='" + fileInfo.url + "' data-originalFileName='" + fileInfo.orgnFileNm + "' >";
                     tinymce.execCommand('mceInsertContent', true, imgTag);
 
                     // file input 초기화
                     fileInput.value = "";
-                    const templateDiv = document.getElementById("tinymceImageTemplate");
-                    const originalTemplate = templateDiv.innerHTML;
+                    const templateDiv: HTMLElement = document.getElementById("tinymceImageTemplate");
+                    const originalTemplate: string = templateDiv.innerHTML;
                     templateDiv.innerHTML = "";
                     templateDiv.innerHTML = originalTemplate;
                 });
             });
         },
 
+        /**
+         * tinymce 에디터 글접기/펼치기
+         */
         morelessFunc: function(): void {
             if (typeof cF.tinymce.sectionCount === "undefined") cF.tinymce.sectionCount = 0;
-            const sectionId = "tinymce_section_" + cF.tinymce.sectionCount;
-            const sectionContentId = `tinymce_section_content_` + cF.tinymce.sectionCount;
-            const toggleId = `tinymce_toggle_` + cF.tinymce.sectionCount;
+            const sectionId: string = "tinymce_section_" + cF.tinymce.sectionCount;
+            const sectionContentId: string = `tinymce_section_content_` + cF.tinymce.sectionCount;
+            const toggleId: string = `tinymce_toggle_` + cF.tinymce.sectionCount;
 
             const newSection: string = `
                 <div class="tinymce-section" id="${sectionId}">
@@ -168,15 +171,15 @@ cF.tinymce = (function(): Module {
 
             cF.tinymce.sectionCount++;
             console.log("sectionCount: " + cF.tinymce.sectionCount);
-            // const toggleElement = document.getElementById(toggleId);
-            // toggleElement.addEventListener('click', () => toggleCollapse(toggleId, sectionContentId));
+            const toggleElement = document.getElementById(toggleId);
+            toggleElement.addEventListener('click', (): void => toggleCollapse(toggleId, sectionContentId));
 
-            // function toggleCollapse(toggleId, sectionContentId) {
-            //     const contentElement = document.getElementById(sectionContentId);
-            //     if (contentElement) {
-            //         contentElement.classList.toggle('collapsed');
-            //     }
-            // }
+           function toggleCollapse(toggleId: string, sectionContentId: string): void {
+               const contentElement: HTMLElement = document.getElementById(sectionContentId);
+               if (contentElement) {
+                   contentElement.classList.toggle('collapsed');
+               }
+           }
         }
     }
 })();

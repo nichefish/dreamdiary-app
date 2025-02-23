@@ -62,7 +62,7 @@
                             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="꿈을 키워드로 검색합니다.">
                         현재 년월 저장<i class="bi bi-pin-map ps-1 pe-0"></i>
                     </button>
-                    <span class="px-2">
+                    <span id="jrnl_aside_pinText" class="px-2">
                         <span id="pinYy" class="text-muted text-underline-dotted">----</span>
                         <span> / </span>
                         <span id="pinMnth" class="text-muted text-underline-dotted">--</span>
