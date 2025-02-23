@@ -100,11 +100,12 @@ dF.JrnlDream = (function(): dfModule {
          * 등록 모달 호출
          * @param {string|number} jrnlDayNo - 저널 일자 번호.
          * @param {string} stdrdDt - 기준 날짜.
+         * @param {string} jrnlDtWeekDay - 기준 날짜 요일.
          */
-        regModal: function(jrnlDayNo, stdrdDt): void {
-            if (isNaN(jrnlDayNo)) return;
+        regModal: function(jrnlDayNo: string|number, stdrdDt: string, jrnlDtWeekDay: string): void {
+            if (isNaN(Number(jrnlDayNo))) return;
 
-            const obj = { "jrnlDayNo": jrnlDayNo, "stdrdDt": stdrdDt };
+            const obj = { jrnlDayNo: jrnlDayNo, stdrdDt: stdrdDt, jrnlDtWeekDay: jrnlDtWeekDay };
             /* initialize form. */
             dF.JrnlDream.initForm(obj);
         },

@@ -6,7 +6,7 @@
 <script type="text/x-handlebars-template" id="jrnl_diary_list_template">
     {{#each this}}
         <div class="row jrnl-item">
-            <div class="col-1 d-flex-align-center flex-column py-3 border-2 border-gray-300 border-end ps-10 me-4 w-130px h-75 gap-2">
+            <div class="col-1 d-flex-align-center flex-column py-3 border-2 border-gray-300 border-end ps-6 me-4 w-130px h-75 gap-2">
                 {{> jrnl_day_mdf_btn_partial this postNo=this.jrnlDayNo}}
             </div>
             <div class="col py-3 jrnl-diary-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
