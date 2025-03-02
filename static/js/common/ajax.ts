@@ -152,7 +152,7 @@ cF.ajax = (function(): Module {
 
         switch(statusCode) {
             case 401: {
-                cF.ui.swalOrConfirm(msg + "\n로그인 화면으로 돌아갑니다.", function(): void {
+                cF.ui.swalOrConfirm(msg + "\n" + Message.get("view.auth.redirect-to-lgn-form"), function(): void {
                     window.location.href = lgnFormUrl;
                 }, function(): void {
                     if (!document.querySelector(".session-expired-message")) {

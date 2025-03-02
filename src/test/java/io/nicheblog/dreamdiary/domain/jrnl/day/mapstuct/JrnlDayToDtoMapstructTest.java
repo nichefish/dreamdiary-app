@@ -57,7 +57,7 @@ class JrnlDayToDtoMapstructTest {
         // Given::
 
         // When::
-        JrnlDayDto jrnlDayDto = jrnlDayMapstruct.toDto(jrnlDayEntity);
+        final JrnlDayDto jrnlDayDto = jrnlDayMapstruct.toDto(jrnlDayEntity);
 
         // Then::
         assertNotNull(jrnlDayDto, "변환된 저널 일자 Dto는 null일 수 없습니다.");
@@ -80,7 +80,7 @@ class JrnlDayToDtoMapstructTest {
         BaseEntityTestFactoryHelper.setMdfusrInfo(jrnlDayEntity);
 
         // When::
-        JrnlDayDto jrnlDayDto = jrnlDayMapstruct.toDto(jrnlDayEntity);
+        final JrnlDayDto jrnlDayDto = jrnlDayMapstruct.toDto(jrnlDayEntity);
 
         // Then::
         assertNotNull(jrnlDayDto, "변환된 저널 일자 Dto는 null일 수 없습니다.");
@@ -106,7 +106,7 @@ class JrnlDayToDtoMapstructTest {
         jrnlDayEntity.setJrnlDt(null);
 
         // When::
-        JrnlDayDto jrnlDayDto = jrnlDayMapstruct.toDto(jrnlDayEntity);
+        final JrnlDayDto jrnlDayDto = jrnlDayMapstruct.toDto(jrnlDayEntity);
 
         // Then::
         assertNotNull(jrnlDayDto, "변환된 저널 일자 Dto는 null일 수 없습니다.");
@@ -121,12 +121,12 @@ class JrnlDayToDtoMapstructTest {
     @Test
     void testToDto_checkDiaryList() throws Exception {
         // Given::
-        JrnlDiaryEntity aa = JrnlDiaryEntityTestFactory.createWithJrnlDay(jrnlDayEntity);
-        JrnlDiaryEntity bb = JrnlDiaryEntityTestFactory.createWithJrnlDay(jrnlDayEntity);
+        final JrnlDiaryEntity aa = JrnlDiaryEntityTestFactory.createWithJrnlDay(jrnlDayEntity);
+        final JrnlDiaryEntity bb = JrnlDiaryEntityTestFactory.createWithJrnlDay(jrnlDayEntity);
         jrnlDayEntity.setJrnlDiaryList(List.of(aa, bb));
 
         // When::
-        JrnlDayDto jrnlDayDto = jrnlDayMapstruct.toDto(jrnlDayEntity);
+        final JrnlDayDto jrnlDayDto = jrnlDayMapstruct.toDto(jrnlDayEntity);
 
         // Then::
         assertNotNull(jrnlDayDto, "변환된 저널 일자 Dto는 null일 수 없습니다.");
@@ -139,12 +139,12 @@ class JrnlDayToDtoMapstructTest {
     @Test
     void testToDto_checkDreamList() throws Exception {
         // Given::
-        JrnlDreamEntity aa = JrnlDreamEntityTestFactory.createWithJrnlDay(jrnlDayEntity);
-        JrnlDreamEntity bb = JrnlDreamEntityTestFactory.createWithJrnlDay(jrnlDayEntity);
+        final JrnlDreamEntity aa = JrnlDreamEntityTestFactory.createWithJrnlDay(jrnlDayEntity);
+        final JrnlDreamEntity bb = JrnlDreamEntityTestFactory.createWithJrnlDay(jrnlDayEntity);
         jrnlDayEntity.setJrnlDreamList(List.of(aa, bb));
 
         // When::
-        JrnlDayDto jrnlDayDto = jrnlDayMapstruct.toDto(jrnlDayEntity);
+        final JrnlDayDto jrnlDayDto = jrnlDayMapstruct.toDto(jrnlDayEntity);
 
         // Then::
         assertNotNull(jrnlDayDto, "변환된 저널 일자 Dto는 null일 수 없습니다.");
@@ -157,12 +157,12 @@ class JrnlDayToDtoMapstructTest {
     @Test
     void testToDto_checkElseDreamList() throws Exception {
         // Given::
-        JrnlDreamEntity aa = JrnlDreamEntityTestFactory.createWithJrnlDay(jrnlDayEntity);
-        JrnlDreamEntity bb = JrnlDreamEntityTestFactory.createWithJrnlDay(jrnlDayEntity);
+        final JrnlDreamEntity aa = JrnlDreamEntityTestFactory.createWithJrnlDay(jrnlDayEntity);
+        final JrnlDreamEntity bb = JrnlDreamEntityTestFactory.createWithJrnlDay(jrnlDayEntity);
         jrnlDayEntity.setJrnlElseDreamList(List.of(aa, bb));
 
         // When::
-        JrnlDayDto jrnlDayDto = jrnlDayMapstruct.toDto(jrnlDayEntity);
+        final JrnlDayDto jrnlDayDto = jrnlDayMapstruct.toDto(jrnlDayEntity);
 
         // Then::
         assertNotNull(jrnlDayDto, "변환된 저널 일자 Dto는 null일 수 없습니다.");
@@ -175,11 +175,11 @@ class JrnlDayToDtoMapstructTest {
     @Test
     void testToDto_checkTagModule() throws Exception {
         // Given::
-        TagEmbed tag = new TagEmbed();
+        final TagEmbed tag = new TagEmbed();
         jrnlDayEntity.setTag(tag);
 
         // When::
-        JrnlDayDto jrnlDayDto = jrnlDayMapstruct.toDto(jrnlDayEntity);
+        final JrnlDayDto jrnlDayDto = jrnlDayMapstruct.toDto(jrnlDayEntity);
 
         // Then::
         assertNotNull(jrnlDayDto, "변환된 저널 일자 Dto는 null일 수 없습니다.");

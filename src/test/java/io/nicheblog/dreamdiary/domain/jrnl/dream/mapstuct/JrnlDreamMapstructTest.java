@@ -48,7 +48,7 @@ class JrnlDreamMapstructTest {
         // Given::
 
         // When::
-        JrnlDreamDto jrnlDreamDto = jrnlDreamMapstruct.toDto(jrnlDreamEntity);
+        final JrnlDreamDto jrnlDreamDto = jrnlDreamMapstruct.toDto(jrnlDreamEntity);
 
         // Then::
         assertNotNull(jrnlDreamDto, "변환된 저널 꿈 Dto는 null일 수 없습니다.");
@@ -66,7 +66,7 @@ class JrnlDreamMapstructTest {
         BaseEntityTestFactoryHelper.setMdfusrInfo(jrnlDreamEntity);
 
         // When::
-        JrnlDreamDto jrnlDreamDto = jrnlDreamMapstruct.toDto(jrnlDreamEntity);
+        final JrnlDreamDto jrnlDreamDto = jrnlDreamMapstruct.toDto(jrnlDreamEntity);
 
         // Then::
         assertNotNull(jrnlDreamDto, "변환된 저널 꿈 Dto는 null일 수 없습니다.");

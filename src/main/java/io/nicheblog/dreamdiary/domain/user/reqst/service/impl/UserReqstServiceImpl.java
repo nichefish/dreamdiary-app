@@ -39,7 +39,7 @@ public class UserReqstServiceImpl
     private final PasswordEncoder passwordEncoder;
 
     /**
-     * 신청 전처리.
+     * 신청 전처리. (dto level)
      *
      * @param registDto 등록할 객체
      */
@@ -50,6 +50,20 @@ public class UserReqstServiceImpl
             registDto.setUseAcsIpYn("N");
             registDto.setAcsIpListStr(null);
         }
+    }
+
+    /**
+     * 신청 전처리. (Entity level)
+     *
+     * @param registEntity 등록할 객체
+     */
+    @Override
+    public void preRegist(final UserEntity registEntity) throws Exception {
+        // userReqstEntity.setUserProflNo(this.userInfoReg(userReqstEntity, userReqst));
+        registEntity.setAuthList(List.of(new UserAuthRoleEntity(Constant.AUTH_USER)));
+        registEntity.setPassword(passwordEncoder.encode(registEntity.getPassword()));
+        registEntity.setAcntStus(UserStusEmbed.getReqstStus());
+        registEntity.cascade();
     }
 
     /**
@@ -69,11 +83,10 @@ public class UserReqstServiceImpl
 
         // Dto -> Entity 변환
         UserEntity registEntity = userReqstMapstruct.toEntity(registDto);
-        // userReqstEntity.setUserProflNo(this.userInfoReg(userReqstEntity, userReqst));
-        registEntity.setAuthList(List.of(new UserAuthRoleEntity(Constant.AUTH_USER)));
-        registEntity.setPassword(passwordEncoder.encode(registDto.getPassword()));
-        registEntity.setAcntStus(UserStusEmbed.getReqstStus());
-        registEntity.cascade();
+
+        // 전처리 (메소드 분리)
+        this.preRegist(registEntity);
+
         // insert
         UserEntity updatedEntity = userRepository.save(registEntity);
 

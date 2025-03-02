@@ -12,7 +12,7 @@ public interface Identifiable<KeyType> {
 
     /**
      * 키 반환 메소드 (각 dto에서 구현)
-     * @return KeyType - 해당 DTO의 고유 키를 나타내는 KeyType 객체
+     * @return KeyType - 해당 Dto의 고유 키를 나타내는 KeyType 객체
      */
     KeyType getKey();
 }

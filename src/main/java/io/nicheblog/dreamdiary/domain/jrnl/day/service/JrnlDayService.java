@@ -7,7 +7,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDaySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.day.repository.jpa.JrnlDayRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.day.spec.JrnlDaySpec;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultiCrudService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ import java.util.List;
  * @author nichefish
  */
 public interface JrnlDayService
-        extends BaseMultiCrudService<JrnlDayDto, JrnlDayDto, Integer, JrnlDayEntity, JrnlDayRepository, JrnlDaySpec, JrnlDayMapstruct> {
+        extends BaseClsfService<JrnlDayDto, JrnlDayDto, Integer, JrnlDayEntity, JrnlDayRepository, JrnlDaySpec, JrnlDayMapstruct> {
 
     /**
      * 내 목록 조회 (dto level) :: 캐시 처리
@@ -51,6 +51,14 @@ public interface JrnlDayService
     Integer getDupKey(final JrnlDayDto jrnlDay) throws Exception;
 
     /**
+     * 날짜 기반으로 년도/월 항목 세팅 :: 메소드 분리
+     *
+     * @param jrnlDay 날짜 기반으로 년도와 월을 설정할 {@link JrnlDayDto} 객체
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    void setYyMnth(final JrnlDayDto jrnlDay) throws Exception;
+
+    /**
      * 특정 태그의 관련 일자 목록 조회
      *
      * @param searchParam 검색 조건이 담긴 파라미터 객체
@@ -69,18 +77,10 @@ public interface JrnlDayService
     JrnlDayDto getDtlDtoWithCache(final Integer key) throws Exception;
 
     /**
-     * 날짜 기반으로 년도/월 항목 세팅 :: 메소드 분리
-     *
-     * @param jrnlDay 날짜 기반으로 년도와 월을 설정할 {@link JrnlDayDto} 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    void setYyMnth(final JrnlDayDto jrnlDay) throws Exception;
-
-    /**
      * 삭제 데이터 조회
      *
      * @param key 삭제된 데이터의 키
-     * @return {@link JrnlDayDto} -- 삭제된 데이터 DTO
+     * @return {@link JrnlDayDto} -- 삭제된 데이터 Dto
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     JrnlDayDto getDeletedDtlDto(final Integer key) throws Exception;

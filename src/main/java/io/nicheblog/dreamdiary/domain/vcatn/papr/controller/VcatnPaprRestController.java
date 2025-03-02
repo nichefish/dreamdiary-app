@@ -2,7 +2,6 @@ package io.nicheblog.dreamdiary.domain.vcatn.papr.controller;
 
 import io.nicheblog.dreamdiary.domain.vcatn.papr.model.VcatnPaprDto;
 import io.nicheblog.dreamdiary.domain.vcatn.papr.service.VcatnPaprService;
-import io.nicheblog.dreamdiary.extension.clsf.viewer.event.ViewerAddEvent;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
@@ -69,18 +68,6 @@ public class VcatnPaprRestController
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
-        // TODO: AOP로 빼기
-        if (isSuccess) {
-            final VcatnPaprDto rsltObj = (VcatnPaprDto) result.getRsltObj();
-            // 조치자 추가 :: 메인 로직과 분리
-            publisher.publishAsyncEvent(new ViewerAddEvent(this, rsltObj.getClsfKey()));
-            // 잔디 메세지 발송 :: 메인 로직과 분리
-            // if (isSuccess && "Y".equals(jandiYn)) {
-            //     String jandiRsltMsg = notifyService.notifyVcatnPaprReg(trgetTopic, result, logParam);
-            //     rsltMsg = rsltMsg + "\n" + jandiRsltMsg;
-            // }
-        }
-
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
@@ -132,16 +119,9 @@ public class VcatnPaprRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final VcatnPaprDto rsDto = vcatnPaprService.getDtlDto(key);
+        final VcatnPaprDto rsDto = vcatnPaprService.viewDtlPage(key);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 조회수 카운트 추가 :: 메인 로직과 분리
-        // TODO: AOP로 빼기
-        vcatnPaprService.hitCntUp(key);
-        // 열람자 추가 :: 메인 로직과 분리
-        // TODO: AOP로 빼기
-        publisher.publishAsyncEvent(new ViewerAddEvent(this, rsDto.getClsfKey()));
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);

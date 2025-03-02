@@ -4,7 +4,6 @@ import io.nicheblog.dreamdiary.extension.cache.config.CacheableConfig;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.extension.cache.util.RedisUtils;
 import io.nicheblog.dreamdiary.extension.cd.entity.DtlCdEntity;
-import io.nicheblog.dreamdiary.extension.cd.entity.DtlCdKey;
 import io.nicheblog.dreamdiary.extension.cd.mapstruct.DtlCdMapstruct;
 import io.nicheblog.dreamdiary.extension.cd.model.DtlCdDto;
 import io.nicheblog.dreamdiary.extension.cd.repository.jpa.DtlCdRepository;
@@ -48,7 +47,7 @@ public class DtlCdServiceImpl
     private final DtlCdMapstruct mapstruct = DtlCdMapstruct.INSTANCE;
 
     private final ApplicationContext context;
-    private DtlCdServiceImpl getSelf() {
+    private DtlCdService getSelf() {
         return context.getBean(this.getClass());
     }
 
@@ -123,34 +122,59 @@ public class DtlCdServiceImpl
     /**
      * 등록 전처리. (override)
      *
-     * @param dto 등록할 객체
+     * @param registDto 등록할 객체
      */
     @Override
-    public void preRegist(final DtlCdDto dto) {
-        if (dto.getState() == null) dto.setState(new StateCmpstn());
+    public void preRegist(final DtlCdDto registDto) {
+        if (registDto.getState() == null) registDto.setState(new StateCmpstn());
     }
 
     /**
-     * 등록 후처리. (override)
+     * 등록 후처리 (override)
      *
-     * @param key - 등록된 엔티티의 키
-     * @throws Exception 처리 중 발생할 수 있는 예외
+     * @param updatedDto - 등록된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
-    public void postSetState(final DtlCdKey key) throws Exception {
+    public void postRegist(final DtlCdDto updatedDto) throws Exception {
         // 관련 캐시 삭제
-        this.evictRelatedCache(key.getClCd());
+        this.evictCache(updatedDto);
     }
 
     /**
-     * 등록 후처리. (override)
+     * 수정 후처리 (override)
      *
+     * @param updatedDto - 등록된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void postModify(final DtlCdDto updatedDto) throws Exception {
+        // 관련 캐시 삭제
+        this.evictCache(updatedDto);
+    }
+
+    /**
+     * 상태변경 후처리. (override)
+     *
+     * @param updatedDto - 상태 변경된 dto
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
-    public void evictCache(final DtlCdDto dtlCd) throws Exception {
+    public void postSetState(final DtlCdDto updatedDto) throws Exception {
         // 관련 캐시 삭제
-        this.evictRelatedCache(dtlCd.getClCd());
+        this.evictCache(updatedDto);
+    }
+
+    /**
+     * 삭제 후처리. (override)
+     *
+     * @param deletedDto - 삭제된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void postDelete(final DtlCdDto deletedDto) throws Exception {
+        // 관련 캐시 삭제
+        this.evictCache(deletedDto);
     }
 
     /**
@@ -158,22 +182,10 @@ public class DtlCdServiceImpl
      *
      * @param rslt 캐시 처리할 엔티티
      */
-    @Override
-    public void evictCache(final DtlCdEntity rslt) {
-        this.evictRelatedCache("cdEntityListByClCd::clCd:" + rslt.getClCd());
-        this.evictRelatedCache("cdDtoListByClCd::clCd:" + rslt.getClCd());
+    public void evictCache(final DtlCdDto rslt) {
+        RedisUtils.deleteData("cdEntityListByClCd::clCd:" + rslt.getClCd());
+        RedisUtils.deleteData("cdDtoListByClCd::clCd:" + rslt.getClCd());
         EhCacheUtils.evictCache("dtlCdNm", "clCd:"+ rslt.getClCd() +",dtlCd:"+ rslt.getDtlCd());
-        // 연관된 모든 엔티티의 캐시 클리어
-        EhCacheUtils.clearL2Cache();
-    }
-    /**
-     * 관련 캐시 삭제.
-     *
-     * @param cackeKey 캐시 처리할 키
-     */
-    public void evictRelatedCache(final String cackeKey) {
-        RedisUtils.deleteData(cackeKey);
-        RedisUtils.deleteData(cackeKey);
         // 연관된 모든 엔티티의 캐시 클리어
         EhCacheUtils.clearL2Cache();
     }

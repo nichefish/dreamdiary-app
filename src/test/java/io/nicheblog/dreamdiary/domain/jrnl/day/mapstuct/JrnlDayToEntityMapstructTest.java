@@ -50,7 +50,7 @@ class JrnlDayToEntityMapstructTest {
         jrnlDayDto.setJrnlDt("2000-01-01");
 
         // When::
-        JrnlDayEntity jrnlDayEntity = jrnlDayMapstruct.toEntity(jrnlDayDto);
+        final JrnlDayEntity jrnlDayEntity = jrnlDayMapstruct.toEntity(jrnlDayDto);
 
         // Then::
         assertNotNull(jrnlDayEntity, "변환된 저널 일자 Entity는 null일 수 없습니다.");
@@ -69,7 +69,7 @@ class JrnlDayToEntityMapstructTest {
         jrnlDayDto.setAprxmtDt("2000-01-01");
 
         // When::
-        JrnlDayEntity jrnlDayEntity = jrnlDayMapstruct.toEntity(jrnlDayDto);
+        final JrnlDayEntity jrnlDayEntity = jrnlDayMapstruct.toEntity(jrnlDayDto);
 
         // Then::
         assertNotNull(jrnlDayEntity, "변환된 저널 일자 Entity는 null일 수 없습니다.");
@@ -85,11 +85,11 @@ class JrnlDayToEntityMapstructTest {
     @Test
     void testToDto_checkTagModule() throws Exception {
         // Given::
-        TagCmpstn tag = new TagCmpstn();
+        final TagCmpstn tag = new TagCmpstn();
         jrnlDayDto.setTag(tag);
 
         // When::
-        JrnlDayEntity jrnlDayEntity = jrnlDayMapstruct.toEntity(jrnlDayDto);
+        final JrnlDayEntity jrnlDayEntity = jrnlDayMapstruct.toEntity(jrnlDayDto);
 
         // Then::
         assertNotNull(jrnlDayEntity, "변환된 저널 일자 Entity는 null일 수 없습니다.");
@@ -108,7 +108,7 @@ class JrnlDayToEntityMapstructTest {
         jrnlDayDto.setJrnlDt("2000-01-01");
 
         // When::
-        JrnlDayEntity jrnlDayEntity = new JrnlDayEntity();
+        final JrnlDayEntity jrnlDayEntity = new JrnlDayEntity();
         jrnlDayMapstruct.updateFromDto(jrnlDayDto, jrnlDayEntity);
 
         // Then::

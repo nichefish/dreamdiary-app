@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.domain.user.reqst.model.UserReqstDto;
 import io.nicheblog.dreamdiary.domain.user.reqst.model.UserReqstDtoTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -49,13 +50,14 @@ class UserReqstServiceTest {
     @Test
     void testRegist() throws Exception {
         // Given:: 등록할 사용자 계정 신청 정보를 준비한다.
-        UserProflDto profl = UserProflDtoTestFactory.create();
-        UserEmplymDto emplym = UserEmplymDtoTestFactory.create();
-        UserReqstDto registDto = UserReqstDtoTestFactory.create(profl, emplym);
+        final UserProflDto profl = UserProflDtoTestFactory.create();
+        final UserEmplymDto emplym = UserEmplymDtoTestFactory.create();
+        final UserReqstDto registDto = UserReqstDtoTestFactory.create(profl, emplym);
 
         // When::
         when(passwordEncoder.encode(anyString())).thenReturn("encoded_password");       // 패스워드 인코딩 Mock
-        UserReqstDto registered = userReqstService.regist(registDto);
+        final ServiceResponse result = userReqstService.regist(registDto);
+        final UserReqstDto registered = (UserReqstDto) result.getRsltObj();
 
         // Then::
         assertNotNull(registered, "사용자 계정 신청이 제대로 이루어지지 않았습니다.");

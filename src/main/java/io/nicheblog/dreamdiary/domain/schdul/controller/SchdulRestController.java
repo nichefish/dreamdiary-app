@@ -2,7 +2,6 @@ package io.nicheblog.dreamdiary.domain.schdul.controller;
 
 import io.nicheblog.dreamdiary.domain.schdul.model.SchdulDto;
 import io.nicheblog.dreamdiary.domain.schdul.service.SchdulService;
-import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
@@ -66,18 +65,6 @@ public class SchdulRestController
         final ServiceResponse result = isReg ? schdulService.regist(schdul) : schdulService.modify(schdul);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
-
-        // TODO: AOP로 분리
-        if (isSuccess) {
-            final SchdulDto rsltObj = (SchdulDto) result.getRsltObj();
-            // 태그 처리 :: 메인 로직과 분리
-            publisher.publishAsyncEventAndWait(new TagProcEvent(this, rsltObj.getClsfKey(), schdul.tag));
-            // 잔디 메세지 발송 :: 메인 로직과 분리
-            // if (isSuccess && "Y".equals(jandiYn)) {
-            //     String jandiRsltMsg = notifyService.notifySchdulReg(trgetTopic, result, logParam);
-            //     rsltMsg = rsltMsg + "\n" + jandiRsltMsg;
-            // }
-        }
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);

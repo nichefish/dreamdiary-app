@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.global.intrfc.service;
 import io.nicheblog.dreamdiary.extension.clsf.managt.entity.embed.ManagtEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.managt.entity.embed.ManagtEmbedModule;
 import io.nicheblog.dreamdiary.extension.clsf.managt.model.cmpstn.ManagtCmpstnModule;
+import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseClsfMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
@@ -13,8 +14,6 @@ import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * BaseClsfService
@@ -30,8 +29,8 @@ public interface BaseClsfService<Dto extends BaseClsfDto & Identifiable<Key>, Li
     /**
      * default: 게시물 등록 (dto level)
      *
-     * @param registDto 등록할 DTO 객체
-     * @return {@link Dto} -- 등록 결과를 DTO로 변환한 객체
+     * @param registDto 등록할 Dto 객체
+     * @return {@link Dto} -- 등록 결과를 Dto로 변환한 객체
      * @throws Exception 등록 중 발생할 수 있는 예외
      */
     @Override
@@ -57,28 +56,26 @@ public interface BaseClsfService<Dto extends BaseClsfDto & Identifiable<Key>, Li
         // insert
         final Entity updatedEntity = this.updt(registEntity);
 
-        // optional: 등록 후처리
-        this.postRegist(updatedEntity);
+        final Dto updatedDto = mapstruct.toDto(updatedEntity);
 
-        // 연관 캐시 삭제
-        Map<EntityKey, ?> entities = new HashMap<>() {{
-            put(EntityKey.REGIST_ENTITY, registEntity);
-            put(EntityKey.UPDATED_ENTITY, updatedEntity);
-        }};
-        this.evictRelCaches(entities);
+        if (registDto instanceof TagCmpstnModule && updatedDto instanceof TagCmpstnModule) {
+            // 후처리를 위해 화면에서 넘어온 tagify 문자열 전달
+            ((TagCmpstnModule) updatedDto).setTagFrom((TagCmpstnModule) registDto);
+        }
 
-        final Dto dto = mapstruct.toDto(updatedEntity);
+        // optional: 등록 후처리 (dto)
+        this.postRegist(updatedDto);
 
-        response.setRslt(dto.getKey() != null);
-        response.setRsltObj(dto);
+        response.setRslt(updatedDto.getKey() != null);
+        response.setRsltObj(updatedDto);
         return response;
     }
 
     /**
      * default: 게시물 수정 (dto level)
      *
-     * @param modifyDto 수정할 DTO 객체
-     * @return {@link Dto} -- 수정 결과를 DTO로 변환한 객체
+     * @param modifyDto 수정할 Dto 객체
+     * @return {@link Dto} -- 수정 결과를 Dto로 변환한 객체
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
@@ -92,8 +89,8 @@ public interface BaseClsfService<Dto extends BaseClsfDto & Identifiable<Key>, Li
         // Entity 레벨 조회
         final Entity modifyEntity = this.getDtlEntity(modifyDto);
 
-        // optional: 수정 전 상태 저장 (기존 데이터 처리 관련)
-        this.strePrevStus(response, modifyEntity);
+        // optional: 수정 전처리 (entity, 기존 데이터 처리 관련)
+        this.preModify(modifyEntity);
 
         final Mapstruct mapstruct = this.getMapstruct();
         mapstruct.updateFromDto(modifyDto, modifyEntity);
@@ -113,31 +110,39 @@ public interface BaseClsfService<Dto extends BaseClsfDto & Identifiable<Key>, Li
         final Repository repository = this.getRepository();
         final Entity updatedEntity = repository.saveAndFlush(modifyEntity);
 
-        // 수정 후처리
-        this.postModify(updatedEntity);
+        final Dto updatedDto = mapstruct.toDto(updatedEntity);
 
-        // 연관 캐시 삭제
-        Map<EntityKey, ?> entities = new HashMap<>() {{
-            put(EntityKey.REGIST_ENTITY, modifyEntity);
-            put(EntityKey.UPDATED_ENTITY, updatedEntity);
-        }};
-        this.evictRelCaches(entities);
+        if (modifyDto instanceof TagCmpstnModule && updatedDto instanceof TagCmpstnModule) {
+            // 후처리를 위해 화면에서 넘어온 tagify 문자열 전달
+            ((TagCmpstnModule) updatedDto).setTagFrom((TagCmpstnModule) modifyDto);
+        }
 
-        final Dto dto = mapstruct.toDto(updatedEntity);
+        // optional: 수정 후처리 (dto)
+        this.postModify(updatedDto);
 
-        response.setRslt(dto.getKey() != null);
-        response.setRsltObj(dto);
+        response.setRslt(updatedDto.getKey() != null);
+        response.setRsltObj(updatedDto);
         return response;
     }
 
     /**
-     * DTO와 엔티티가 각각 ManagtCmpstnModule 및 ManagtEmbedModule의 인스턴스인지 확인합니다.
+     * Dto와 엔티티가 각각 ManagtCmpstnModule 및 ManagtEmbedModule의 인스턴스인지 확인합니다.
      *
-     * @param dto 확인할 DTO 객체
+     * @param dto 확인할 Dto 객체
      * @param entity 확인할 엔티티 객체
      * @return {@link Boolean} -- 두 객체가 해당 모듈의 인스턴스일 경우 true, 그렇지 않으면 false
      */
     default boolean isManagtModule(final Dto dto, final Entity entity) {
         return dto instanceof ManagtCmpstnModule && entity instanceof ManagtEmbedModule;
+    }
+
+    /**
+     * Dto와 엔티티가 각각 TagCmpstnModule 및 TagEmbedModule의 인스턴스인지 확인합니다.
+     *
+     * @param dto 확인할 Dto 객체
+     * @return {@link Boolean} -- 두 객체가 해당 모듈의 인스턴스일 경우 true, 그렇지 않으면 false
+     */
+    default boolean isTagModule(final Dto dto) {
+        return dto instanceof TagCmpstnModule;
     }
 }

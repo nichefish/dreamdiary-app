@@ -1,10 +1,11 @@
 package io.nicheblog.dreamdiary.domain.jrnl.sbjct.service;
 
+import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.sbjct.model.JrnlSbjctDto;
 import io.nicheblog.dreamdiary.domain.jrnl.sbjct.model.JrnlSbjctDtoTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;
-import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -54,7 +55,7 @@ class JrnlSbjctServiceTest {
         jrnlSbjct = JrnlSbjctDtoTestFactory.create();
 
         // AuthUtils Mock
-        try (MockedStatic<AuthUtils> mockedStatic = mockStatic(AuthUtils.class)) {
+        try (final MockedStatic<AuthUtils> mockedStatic = mockStatic(AuthUtils.class)) {
             mockedStatic.when(AuthUtils::isAuthenticated).thenReturn(true);
             mockedStatic.when(AuthUtils::getLgnUserId).thenReturn(TestConstant.TEST_AUDITOR);
         }
@@ -69,10 +70,11 @@ class JrnlSbjctServiceTest {
         // Given::
 
         // When::
-        JrnlSbjctDto result = jrnlSbjctService.regist(jrnlSbjct);
+        final ServiceResponse registResult = jrnlSbjctService.regist(jrnlSbjct);
+        final JrnlSbjctDto registered = (JrnlSbjctDto) registResult.getRsltObj();
 
         // Then::
-        assertNotNull(result.getPostNo(), "등록이 정상적으로 이루어지지 않았습니다.");
+        assertNotNull(registered.getPostNo(), "등록이 정상적으로 이루어지지 않았습니다.");
     }
 
     /**
@@ -82,17 +84,19 @@ class JrnlSbjctServiceTest {
     @Test
     void modify() throws Exception {
         // Given::
-        JrnlSbjctDto base = jrnlSbjctService.regist(jrnlSbjct);
-        Integer key = base.getKey();
+        final ServiceResponse registResult = jrnlSbjctService.regist(jrnlSbjct);
+        final JrnlSbjctDto registered = (JrnlSbjctDto) registResult.getRsltObj();
+        final Integer key = registered.getKey();
 
         // When::
-        JrnlSbjctDto.DTL toModify = JrnlSbjctDtoTestFactory.createWithKey(key);
+        final JrnlSbjctDto.DTL toModify = JrnlSbjctDtoTestFactory.createWithKey(key);
         toModify.setCn("test");
-        JrnlSbjctDto.DTL result = jrnlSbjctService.modify(toModify);
+        final ServiceResponse modifyResult = jrnlSbjctService.modify(toModify);
+        final JrnlSbjctDto.DTL modified = (JrnlSbjctDto.DTL) modifyResult.getRsltObj();
 
         // Then::
-        assertNotNull(result.getPostNo(), "수정이 정상적으로 이루어지지 않았습니다.");
-        assertEquals("test", result.getCn(), "수정이 정상적으로 이루어지지 않았습니다.");
+        assertNotNull(modified.getPostNo(), "수정이 정상적으로 이루어지지 않았습니다.");
+        assertEquals("test", modified.getCn(), "수정이 정상적으로 이루어지지 않았습니다.");
     }
 
     /**
@@ -102,11 +106,13 @@ class JrnlSbjctServiceTest {
     @Test
     void delete() throws Exception {
         // Given::
-        JrnlSbjctDto base = jrnlSbjctService.regist(jrnlSbjct);
-        Integer key = base.getKey();
+        final ServiceResponse registResult = jrnlSbjctService.regist(jrnlSbjct);
+        final JrnlSbjctDto registered = (JrnlSbjctDto) registResult.getRsltObj();
+        final Integer key = registered.getKey();
 
         // When::
-        Boolean isDeleted = jrnlSbjctService.delete(key);
+        final ServiceResponse deleteResult = jrnlSbjctService.delete(key);
+        final Boolean isDeleted = deleteResult.getRslt();
 
         // Then::
         assertTrue(isDeleted, "삭제가 정상적으로 이루어지지 않았습니다.");

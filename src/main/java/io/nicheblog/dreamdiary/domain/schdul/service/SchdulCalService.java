@@ -239,7 +239,7 @@ public class SchdulCalService {
      * 개인 일정 달력 목록 검색
      *
      * @param searchParam 일정 검색 파라미터
-     * @return {@link List} -- 개인 일정 달력 목록 DTO 리스트
+     * @return {@link List} -- 개인 일정 달력 목록 Dto 리스트
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     public List<SchdulCalDto> getPrvtCalList(final SchdulSearchParam searchParam) throws Exception {

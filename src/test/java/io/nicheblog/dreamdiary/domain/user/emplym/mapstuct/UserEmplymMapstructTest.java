@@ -35,10 +35,10 @@ class UserEmplymMapstructTest {
     void testToDto_checkEmplym() throws Exception {
 
         // Given::
-        UserEmplymEntity userEmplymEntity = UserEmplymEntityTestFactory.create();
+        final UserEmplymEntity userEmplymEntity = UserEmplymEntityTestFactory.create();
 
         // When::
-        UserEmplymDto userEmplymDto = userEmplymMapstruct.toDto(userEmplymEntity);
+        final UserEmplymDto userEmplymDto = userEmplymMapstruct.toDto(userEmplymEntity);
 
         // Then::
         assertNotNull(userEmplymDto, "변환된 인사정보 Dto는 null일 수 없습니다.");
@@ -46,12 +46,12 @@ class UserEmplymMapstructTest {
         assertEquals("2000-01-01", userEmplymDto.getEcnyDt(), "직원정보 입사일이 제대로 매핑되지 않았습니다.");
         assertEquals("2000-01-01", userEmplymDto.getRetireDt(), "직원정보 퇴사일이 제대로 매핑되지 않았습니다.");
         // 이메일 변환 로직
-        String email = userEmplymEntity.getEmplymEmail();
+        final String email = userEmplymEntity.getEmplymEmail();
         if (StringUtils.isNotEmpty(email)) {
             assertTrue(email.contains("@"), "이메일 형식이 올바르지 않습니다.");
-            String[] emailParts = email.split("@");
-            String expectedEmailId = emailParts[0];
-            String expectedEmailDomain = emailParts.length > 1 ? emailParts[1] : null;
+            final String[] emailParts = email.split("@");
+            final String expectedEmailId = emailParts[0];
+            final String expectedEmailDomain = emailParts.length > 1 ? emailParts[1] : null;
             assertEquals(expectedEmailId, userEmplymDto.getEmplymEmailId(), "이메일 정보가 제대로 매핑되지 않았습니다.");
             assertEquals(expectedEmailDomain, userEmplymDto.getEmplymEmailDomain(), "이메일 정보가 제대로 매핑되지 않았습니다.");
         } else {
@@ -69,10 +69,10 @@ class UserEmplymMapstructTest {
     @Test
     void testToEntity_checkBasic() throws Exception {
         // Given::
-        UserEmplymDto userEmplymDto = UserEmplymDtoTestFactory.create();
+        final UserEmplymDto userEmplymDto = UserEmplymDtoTestFactory.create();
 
         // When::
-        UserEmplymEntity userEmplymEntity = userEmplymMapstruct.toEntity(userEmplymDto);
+        final UserEmplymEntity userEmplymEntity = userEmplymMapstruct.toEntity(userEmplymDto);
 
         // Then::
         assertNotNull(userEmplymEntity, "변환된 인사정보 Entity는 null일 수 없습니다.");

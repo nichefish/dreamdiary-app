@@ -105,13 +105,13 @@ class JrnlDayRepositoryTest {
     @Test
     public void testModify() throws Exception {
         // Given:: 수정할 데이터를 등록한다.
-        JrnlDayEntity registered = jrnlDayRepository.save(jrnlDayEntity);
-        Integer key = registered.getPostNo();
+        final JrnlDayEntity registered = jrnlDayRepository.save(jrnlDayEntity);
+        final Integer key = registered.getPostNo();
 
         // When:: 등록된 데이터를 조회해서, 값을 변경하여 저장한다.
-        JrnlDayEntity toModify = jrnlDayRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
+        final JrnlDayEntity toModify = jrnlDayRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
         toModify.setJrnlDt(DateUtils.asDate("2020-12-31"));
-        JrnlDayEntity modified = jrnlDayRepository.save(toModify);
+        final JrnlDayEntity modified = jrnlDayRepository.save(toModify);
 
         // Then::
         assertNotNull(modified, "저장한 데이터를 조회할 수 없습니다.");
@@ -152,7 +152,7 @@ class JrnlDayRepositoryTest {
         jrnlDayRepository.save(jrnlDayEntity);
 
         // When:: 해당 날짜로 데이터를 조회한다.
-        Integer count = jrnlDayRepository.countByJrnlDt(DateUtils.asDate("2000-01-01"), TestConstant.TEST_AUDITOR);
+        final Integer count = jrnlDayRepository.countByJrnlDt(DateUtils.asDate("2000-01-01"), TestConstant.TEST_AUDITOR);
 
         // Then::
         assertNotNull(count, "중복 체크 메소드가 제대로 실행되지 않았습니다.");

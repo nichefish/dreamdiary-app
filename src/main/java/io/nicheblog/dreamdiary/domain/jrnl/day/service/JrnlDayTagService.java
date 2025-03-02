@@ -54,13 +54,6 @@ public interface JrnlDayTagService
     Integer calcMaxSize(final List<TagDto> tagList, Integer yy, Integer mnth);
 
     /**
-     * 일자 태그별 크기 조회
-     *
-     * @return {@link Map} -- 카테고리별 태그 목록을 담은 Map
-     */
-    Integer countDaySize(final JrnlDayContentTagParam param);
-
-    /**
      * 일자 태그별 크기 맵 조회
      *
      * @return {@link Map} -- 카테고리별 태그 목록을 담은 Map

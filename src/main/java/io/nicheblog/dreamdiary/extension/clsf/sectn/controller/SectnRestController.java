@@ -176,14 +176,10 @@ public class SectnRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final AjaxResponse ajaxResponse = new AjaxResponse();
-
         final ServiceResponse result = sectnService.sortOrdr(sectnParam.getSortOrdr());
         final boolean isSuccess = result.getRslt();
         String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
-        // 응답 결과 세팅
-        ajaxResponse.setAjaxResult(isSuccess, rsltMsg);
         // logParam.setCn("key: " + menuNo);
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 

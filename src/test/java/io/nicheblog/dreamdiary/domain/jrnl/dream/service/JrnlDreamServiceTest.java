@@ -1,10 +1,11 @@
 package io.nicheblog.dreamdiary.domain.jrnl.dream.service;
 
+import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDtoTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;
-import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -54,7 +55,7 @@ class JrnlDreamServiceTest {
         jrnlDream = JrnlDreamDtoTestFactory.create();
 
         // AuthUtils Mock
-        try (MockedStatic<AuthUtils> mockedStatic = mockStatic(AuthUtils.class)) {
+        try (final MockedStatic<AuthUtils> mockedStatic = mockStatic(AuthUtils.class)) {
             mockedStatic.when(AuthUtils::isAuthenticated).thenReturn(true);
             mockedStatic.when(AuthUtils::getLgnUserId).thenReturn(TestConstant.TEST_AUDITOR);
         }
@@ -69,9 +70,10 @@ class JrnlDreamServiceTest {
         // Given::
 
         // When::
-        JrnlDreamDto result = jrnlDreamService.regist(jrnlDream);
+        final ServiceResponse registResult = jrnlDreamService.regist(jrnlDream);
+        final JrnlDreamDto result = (JrnlDreamDto) registResult.getRsltObj();
 
-        // Then::
+                // Then::
         assertNotNull(result.getPostNo(), "등록이 정상적으로 이루어지지 않았습니다.");
     }
 
@@ -82,17 +84,19 @@ class JrnlDreamServiceTest {
     @Test
     void modify() throws Exception {
         // Given::
-        JrnlDreamDto base = jrnlDreamService.regist(jrnlDream);
-        Integer key = base.getKey();
+        final ServiceResponse registResult = jrnlDreamService.regist(jrnlDream);
+        final JrnlDreamDto registered = (JrnlDreamDto) registResult.getRsltObj();
+        final Integer key = registered.getKey();
 
         // When::
-        JrnlDreamDto toModify = JrnlDreamDtoTestFactory.createWithKey(key);
+        final JrnlDreamDto toModify = JrnlDreamDtoTestFactory.createWithKey(key);
         toModify.setCn("test");
-        JrnlDreamDto result = jrnlDreamService.modify(toModify);
+        final ServiceResponse modifyResult = jrnlDreamService.modify(jrnlDream);
+        final JrnlDreamDto modified = (JrnlDreamDto) modifyResult.getRsltObj();
 
         // Then::
-        assertNotNull(result.getPostNo(), "수정이 정상적으로 이루어지지 않았습니다.");
-        assertEquals("test", result.getCn(), "수정이 정상적으로 이루어지지 않았습니다.");
+        assertNotNull(modified.getPostNo(), "수정이 정상적으로 이루어지지 않았습니다.");
+        assertEquals("test", modified.getCn(), "수정이 정상적으로 이루어지지 않았습니다.");
     }
 
     /**
@@ -102,11 +106,13 @@ class JrnlDreamServiceTest {
     @Test
     void delete() throws Exception {
         // Given::
-        JrnlDreamDto base = jrnlDreamService.regist(jrnlDream);
-        Integer key = base.getKey();
+        final ServiceResponse registResult = jrnlDreamService.regist(jrnlDream);
+        final JrnlDreamDto registered = (JrnlDreamDto) registResult.getRsltObj();
+        final Integer key = registered.getKey();
 
         // When::
-        Boolean isDeleted = jrnlDreamService.delete(key);
+        final ServiceResponse deleteResult = jrnlDreamService.delete(key);
+        final Boolean isDeleted = (Boolean) deleteResult.getRsltObj();
 
         // Then::
         assertTrue(isDeleted, "삭제가 정상적으로 이루어지지 않았습니다.");

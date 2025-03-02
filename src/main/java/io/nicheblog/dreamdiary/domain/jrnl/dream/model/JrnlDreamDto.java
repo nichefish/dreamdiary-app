@@ -51,6 +51,8 @@ public class JrnlDreamDto
     private Integer jrnlDayNo;
     /** 저널 기준일자 */
     private String stdrdDt;
+    /** 저널 일자 요일 */
+    private String jrnlDtWeekDay;
     /** 저널 기준일자 */
     private Integer yy;
     /** 저널 기준일자 */

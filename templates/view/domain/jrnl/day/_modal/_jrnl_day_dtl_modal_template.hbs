@@ -8,13 +8,11 @@
 
     <#--begin::Row-->
     <div class="row row-cols-lg-2 mb-3 d-flex flex-column">
-        <div class="d-flex align-items-center mt-1">
-            <span class="menu-icon me-md-2 vertical-middle">
-                <i class="bi bi-calendar3 fs-6 me-2"></i>
-            </span>
+        <div class="d-flex align-items-center mt-1 gap-1">
+            <i class="bi bi-calendar3 fs-6 me-1"></i>
             {{stdrdDt}}
             {{#if (exists jrnlDt)}}
-                <span class="fs-7 text-gray-600 ms-1">({{jrnlDtWeekDay}})</span>
+                <span class="fs-8 text-gray-600">({{jrnlDtWeekDay}})</span>
             {{else}}
                 <i class='bi bi-exclamation-circle cursor-pointer text-noti blink fs-7 ms-2'
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="불확실한 일자입니다."></i>

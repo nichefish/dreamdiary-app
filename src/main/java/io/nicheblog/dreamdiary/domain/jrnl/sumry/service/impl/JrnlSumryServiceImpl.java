@@ -10,6 +10,8 @@ import io.nicheblog.dreamdiary.domain.jrnl.sumry.spec.JrnlSumrySpec;
 import io.nicheblog.dreamdiary.extension.cache.event.EhCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.handler.EhCacheEvictEventListner;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
+import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
+import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
@@ -19,7 +21,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,12 +48,12 @@ public class JrnlSumryServiceImpl
     @Getter
     private final JrnlSumryMapstruct mapstruct = JrnlSumryMapstruct.INSTANCE;
 
-    private final ApplicationEventPublisher publisher;
+    private final ApplicationEventPublisherWrapper publisher;
 
     private final String JRNL_SUMRY = ContentType.JRNL_SUMRY.key;
 
     private final ApplicationContext context;
-    private JrnlSumryServiceImpl getSelf() {
+    private JrnlSumryService getSelf() {
         return context.getBean(this.getClass());
     }
 
@@ -60,7 +61,7 @@ public class JrnlSumryServiceImpl
      * 저널 결산 정뵤 목록 조회 :: 캐시 사용 위해 구현체로 pullUp
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @return {@link List<JrnlSumryDto.LIST>} -- 검색 조건에 맞는 결산 목록 DTO 리스트
+     * @return {@link List<JrnlSumryDto.LIST>} -- 검색 조건에 맞는 결산 목록 Dto 리스트
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
@@ -129,7 +130,7 @@ public class JrnlSumryServiceImpl
     /**
      * 관련 정보를 취합하여 총 저널 결산 정보를 생성합니다. (캐시 처리)
      * 
-     * @return {@link JrnlSumryDto} -- 총 결산 정보가 담긴 DTO 객체
+     * @return {@link JrnlSumryDto} -- 총 결산 정보가 담긴 Dto 객체
      */
     @Override
     @Cacheable(value="myJrnlTotalSumry", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId()")
@@ -150,10 +151,23 @@ public class JrnlSumryServiceImpl
     }
 
     /**
+     * 수정 후처리. (override)
+     *
+     * @param updatedDto - 등록된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void postModify(final JrnlSumryDto.DTL updatedDto) throws Exception {
+        // 태그 처리
+        // TODO: AOP로 분리
+        publisher.publishAsyncEventAndWait(new TagProcEvent(this, updatedDto.getClsfKey(), updatedDto.tag));
+    }
+
+    /**
      * 저널 결산 상세 정보 조회 (캐시 처리)
      *
      * @param key 식별자
-     * @return {@link JrnlSumryDto.DTL} -- 조회된 결산 정보가 담긴 DTO 객체
+     * @return {@link JrnlSumryDto.DTL} -- 조회된 결산 정보가 담긴 Dto 객체
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
@@ -166,7 +180,7 @@ public class JrnlSumryServiceImpl
      * 년도별 저널 결산 정보 조회 (캐시 처리)
      *
      * @param yy 조회할 년도
-     * @return {@link JrnlSumryDto} -- 조회된 결산 정보가 담긴 DTO 객체, 없을 경우 null 반환
+     * @return {@link JrnlSumryDto} -- 조회된 결산 정보가 담긴 Dto 객체, 없을 경우 null 반환
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override

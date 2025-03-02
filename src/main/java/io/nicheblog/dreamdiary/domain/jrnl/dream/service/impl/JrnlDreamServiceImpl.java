@@ -2,18 +2,17 @@ package io.nicheblog.dreamdiary.domain.jrnl.dream.service.impl;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.mapstruct.JrnlDreamMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.repository.jpa.JrnlDreamRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.repository.mybatis.JrnlDreamMapper;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamService;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.service.strategy.JrnlDreamCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.spec.JrnlDreamSpec;
-import io.nicheblog.dreamdiary.extension.cache.event.EhCacheEvictEvent;
-import io.nicheblog.dreamdiary.extension.cache.handler.EhCacheEvictEventListner;
+import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
+import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
+import io.nicheblog.dreamdiary.extension.clsf.tag.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -53,11 +52,9 @@ public class JrnlDreamServiceImpl
     private final ApplicationEventPublisherWrapper publisher;
 
     private final ApplicationContext context;
-    private JrnlDreamServiceImpl getSelf() {
+    private JrnlDreamService getSelf() {
         return context.getBean(this.getClass());
     }
-
-    private final String JRNL_DREAM = ContentType.JRNL_DREAM.key;
 
     /**
      * 목록 조회 (dto level) :: 캐시 처리
@@ -107,14 +104,27 @@ public class JrnlDreamServiceImpl
      * 등록 전처리. (override)
      *
      * @param registDto 등록할 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
-    public void preRegist(final JrnlDreamDto registDto) {
-        if (!"Y".equals(registDto.getElseDreamYn())) {
-            // 인덱스(정렬순서) 처리
-            final Integer lastIndex = repository.findLastIndexByJrnlDay(registDto.getJrnlDayNo()).orElse(0);
-            registDto.setIdx(lastIndex + 1);
-        }
+    public void preRegist(final JrnlDreamDto registDto) throws Exception {
+        // 인덱스(정렬순서) 처리
+        final Integer lastIndex = repository.findLastIndexByJrnlDay(registDto.getJrnlDayNo()).orElse(0);
+        registDto.setIdx(lastIndex + 1);
+    }
+
+    /**
+     * 등록 후처리. (override)
+     *
+     * @param updatedDto - 등록된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void postRegist(final JrnlDreamDto updatedDto) throws Exception {
+        // 관련 캐시 삭제
+        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DREAM));
+        // 태그 처리 :: 메인 로직과 분리
+        publisher.publishEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
     }
 
     /**
@@ -134,29 +144,43 @@ public class JrnlDreamServiceImpl
     }
 
     /**
+     * 수정 후처리. (override)
+     *
+     * @param updatedDto - 등록된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void postModify(final JrnlDreamDto updatedDto) throws Exception {
+        // 관련 캐시 삭제
+        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DREAM));
+        // 태그 처리 :: 메인 로직과 분리
+        publisher.publishEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
+    }
+
+    /**
+     * 삭제 후처리. (override)
+     *
+     * @param deletedDto - 삭제된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void postDelete(final JrnlDreamDto deletedDto) throws Exception {
+        // 관련 캐시 삭제
+        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DREAM));
+        // 태그 처리 :: 메인 로직과 분리
+        publisher.publishEvent(new JrnlTagProcEvent(this, deletedDto.getClsfKey(), deletedDto.getYy(), deletedDto.getMnth()));
+    }
+
+    /**
      * 삭제 데이터 조회
      *
      * @param key 삭제된 데이터의 키
-     * @return {@link JrnlDreamDto} -- 삭제된 데이터 DTO
+     * @return {@link JrnlDreamDto} -- 삭제된 데이터 Dto
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Transactional(readOnly = true)
     public JrnlDreamDto getDeletedDtlDto(final Integer key) throws Exception {
         return jrnlDreamMapper.getDeletedByPostNo(key);
-    }
-
-    /**
-     * 주요 처리 후 캐시 삭제
-     *
-     * @param jrnlDreamEntity 캐시 삭제 판단에 필요한 객체
-     * @throws Exception 처리 중 발생 가능한 예외
-     * @see EhCacheEvictEventListner
-     * @see JrnlDreamCacheEvictor
-     */
-    @Override
-    public void evictCache(final JrnlDreamEntity jrnlDreamEntity) throws Exception {
-        // 관련 캐시 삭제
-        publisher.publishAsyncEvent(new EhCacheEvictEvent(this, jrnlDreamEntity.getPostNo(), JRNL_DREAM));
     }
 }

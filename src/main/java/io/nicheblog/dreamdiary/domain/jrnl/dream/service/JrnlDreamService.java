@@ -62,7 +62,7 @@ public interface JrnlDreamService
      * 삭제 데이터 조회
      *
      * @param key 삭제된 데이터의 키
-     * @return {@link JrnlDreamDto} -- 삭제된 데이터 DTO
+     * @return {@link JrnlDreamDto} -- 삭제된 데이터 Dto
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     JrnlDreamDto getDeletedDtlDto(final Integer key) throws Exception;

@@ -1,20 +1,15 @@
 package io.nicheblog.dreamdiary.domain.jrnl.diary.controller;
 
-import io.nicheblog.dreamdiary.domain.jrnl.day.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiarySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryService;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
-import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
 import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -49,7 +44,6 @@ public class JrnlDiaryRestController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
     private final JrnlDiaryService jrnlDiaryService;
-    private final ApplicationEventPublisherWrapper publisher;
 
     /**
      * 저널 일기 목록 조회 (Ajax)
@@ -107,13 +101,6 @@ public class JrnlDiaryRestController
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
-        // TODO: AOP로 분리
-        if (isSuccess) {
-            final JrnlDiaryDto rsltObj = (JrnlDiaryDto) result.getRsltObj();
-            // 태그 처리 :: 메인 로직과 분리
-            publisher.publishAsyncEventAndWait(new JrnlTagProcEvent(this, rsltObj.getClsfKey(), rsltObj.getYy(), rsltObj.getMnth(), jrnlDiary.tag));
-        }
-
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
@@ -168,13 +155,6 @@ public class JrnlDiaryRestController
         final ServiceResponse result = jrnlDiaryService.delete(postNo);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // TODO: AOP로 분리
-        if (isSuccess) {
-            final JrnlDreamDto rsltObj = (JrnlDreamDto) result.getRsltObj();
-            // 태그 처리 :: 메인 로직과 분리
-            publisher.publishAsyncEventAndWait(new JrnlTagProcEvent(this, new BaseClsfKey(postNo, ContentType.JRNL_DIARY), rsltObj.getYy(), rsltObj.getMnth()));
-        }
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);

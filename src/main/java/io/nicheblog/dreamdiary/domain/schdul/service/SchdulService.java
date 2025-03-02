@@ -8,7 +8,9 @@ import io.nicheblog.dreamdiary.domain.schdul.model.SchdulPrtcpntDto;
 import io.nicheblog.dreamdiary.domain.schdul.repository.jpa.SchdulRepository;
 import io.nicheblog.dreamdiary.domain.schdul.spec.SchdulSpec;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
+import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -45,6 +47,8 @@ public class SchdulService
     @Getter
     private final SchdulMapstruct mapstruct = SchdulMapstruct.INSTANCE;
 
+    private final ApplicationEventPublisherWrapper publisher;
+
     private final ApplicationContext context;
     private SchdulService getSelf() {
         return context.getBean(this.getClass());
@@ -65,6 +69,23 @@ public class SchdulService
     }
 
     /**
+     * 등록 후처리. (override)
+     *
+     * @param updatedDto - 등록된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void postRegist(final SchdulDto updatedDto) throws Exception {
+        // 태그 처리 :: 메인 로직과 분리
+        publisher.publishAsyncEventAndWait(new TagProcEvent(this, updatedDto.getClsfKey(), updatedDto.tag));
+        // 잔디 메세지 발송 :: 메인 로직과 분리
+        // if (isSuccess && "Y".equals(jandiYn)) {
+        //     String jandiRsltMsg = notifyService.notifySchdulReg(trgetTopic, result, logParam);
+        //     rsltMsg = rsltMsg + "\n" + jandiRsltMsg;
+        // }
+    }
+
+    /**
      * 수정 전처리. (override)
      *
      * @param modifyDto 수정할 객체
@@ -76,6 +97,23 @@ public class SchdulService
 
         // 개인 일정시 = '나' 자동으로 넣어줌 :: 메소드 분리
         if (modifyDto.getIsPrvt()) this.setMeToSchdul(modifyDto);
+    }
+
+    /**
+     * 수정 후처리. (override)
+     *
+     * @param updatedDto - 등록된 객체
+     * @throws Exception 후처리 중 발생할 수 있는 예외
+     */
+    @Override
+    public void postModify(final SchdulDto updatedDto) throws Exception {
+        // 태그 처리 :: 메인 로직과 분리
+        publisher.publishAsyncEventAndWait(new TagProcEvent(this, updatedDto.getClsfKey(), updatedDto.tag));
+        // 잔디 메세지 발송 :: 메인 로직과 분리
+        // if (isSuccess && "Y".equals(jandiYn)) {
+        //     String jandiRsltMsg = notifyService.notifySchdulReg(trgetTopic, result, logParam);
+        //     rsltMsg = rsltMsg + "\n" + jandiRsltMsg;
+        // }
     }
 
     /**
@@ -179,7 +217,6 @@ public class SchdulService
      * @param rslt 캐시 처리할 엔티티
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
-    @Override
     public void evictCache(final SchdulEntity rslt) throws Exception {
         EhCacheUtils.evictCacheAll("hldyEntityList");
         EhCacheUtils.evictCacheAll("isHldy");

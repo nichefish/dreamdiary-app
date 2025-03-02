@@ -9,7 +9,6 @@ import io.nicheblog.dreamdiary.domain.board.post.model.BoardPostSearchParam;
 import io.nicheblog.dreamdiary.domain.board.post.service.BoardPostService;
 import io.nicheblog.dreamdiary.extension.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.service.TagService;
-import io.nicheblog.dreamdiary.extension.clsf.viewer.event.ViewerAddEvent;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyPageControllerAspect;
@@ -212,18 +211,11 @@ public class BoardPostPageController
         model.addAttribute("pageNm", PageNm.DTL);
 
         // 객체 조회 및 모델에 추가
-        final BoardPostDto rsDto = boardPostService.getDtlDto(postNo);
+        final BoardPostDto rsDto = boardPostService.viewDtlPage(postNo);
         model.addAttribute("post", rsDto);
 
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 조회수 카운트 추가
-        // TODO: AOP로 분리
-        boardPostService.hitCntUp(postNo);
-        // 열람자 추가 :: 메인 로직과 분리
-        // TODO: AOP로 분리
-        publisher.publishAsyncEvent(new ViewerAddEvent(this, rsDto.getClsfKey()));
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);

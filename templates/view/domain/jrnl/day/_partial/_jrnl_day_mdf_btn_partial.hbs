@@ -5,8 +5,11 @@
 
 <script type="text/x-handlebars-template" id="jrnl_day_mdf_btn_partial">
     <div class="d-flex-center gap-2">
-    <i class="bi bi-calendar3"></i>
+        <i class="bi bi-calendar3"></i>
         {{stdrdDt}}
+        {{#if (exists jrnlDtWeekDay)}}
+            <span class="fs-8 text-gray-600">({{jrnlDtWeekDay}})</span>
+        {{/if}}
     </div>
     <button type="button" class="btn btn-sm btn-light-primary btn-outlined py-1 px-2 cursor-pointer"
             onclick="dF.JrnlDay.mdfModal({{postNo}});"
