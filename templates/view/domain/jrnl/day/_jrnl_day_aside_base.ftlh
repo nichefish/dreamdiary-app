@@ -39,7 +39,7 @@
             </div>
             <!--end::Header-->
             <#--begin::Body-->
-            <div class="card-body" id="jrnl_aside">
+            <div id="jrnl_aside" class="card-body">
                 <input type="hidden" name="sort" id="sort">
 
                 <#--begin::row-->
@@ -115,7 +115,7 @@
                     <div class="d-flex gap-1">
                         <input type="text" name="diaryKeyword" id="diaryKeyword" class="form-control"
                                value="" placeholder="<@spring.message 'jrnl.diary.keyword.search'/>" maxlength="200"/>
-                        <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
+                        <button type="button" id="jrnl_diary_search_btn" class="btn btn-sm btn-outline btn-light-primary px-4"
                                 onclick="dF.JrnlDiary.keywordListAjax();"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.diary.keyword.search'/>">
                             <i class="bi bi-search pe-0"></i>
@@ -130,7 +130,7 @@
                     <div class="d-flex gap-1">
                         <input type="text" name="dreamKeyword" id="dreamKeyword" class="form-control"
                                value="" placeholder="<@spring.message 'jrnl.dream.keyword.search'/>" maxlength="200"/>
-                        <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
+                        <button type="button" id="jrnl_dream_search_btn" class="btn btn-sm btn-outline btn-light-primary px-4"
                                 onclick="dF.JrnlDream.keywordListAjax();"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.dream.keyword.search'/>">
                             <i class="bi bi-search pe-0"></i>
