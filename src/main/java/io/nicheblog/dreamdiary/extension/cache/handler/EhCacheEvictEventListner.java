@@ -3,8 +3,10 @@ package io.nicheblog.dreamdiary.extension.cache.handler;
 import io.nicheblog.dreamdiary.extension.cache.event.EhCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.service.CacheEvictService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 /**
  * EhCacheEvictEventListner
@@ -27,7 +29,8 @@ public class EhCacheEvictEventListner {
      * @param event 처리할 이벤트 객체
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
-    @EventListener
+    @Transactional
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleEhCacheEvictEvent(final EhCacheEvictEvent event) throws Exception {
         // 컨텐츠 타입별 캐시 evict
         ehCacheEvictService.evictClsfCache(event.getContentType(), event.getPostNo());

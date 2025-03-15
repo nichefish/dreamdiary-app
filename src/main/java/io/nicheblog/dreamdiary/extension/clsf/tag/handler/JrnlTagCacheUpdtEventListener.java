@@ -12,8 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,8 +45,9 @@ public class JrnlTagCacheUpdtEventListener {
      * @throws Exception 처리 중 발생할 수 있는 예외
      * @see EhCacheEvictEventListner
      */
-    @EventListener
-    public void handleTagCacheUpdtEvent(final JrnlTagCacheUpdtEvent event) throws Exception {
+    @Transactional
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleJrnlTagCacheUpdtEvent(final JrnlTagCacheUpdtEvent event) throws Exception {
         final Map<Integer, Integer> tagCntChangeMap = event.getTagCntChangeMap();
         if (MapUtils.isEmpty(tagCntChangeMap)) return;
 

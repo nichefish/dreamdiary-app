@@ -121,10 +121,10 @@ public class JrnlDreamServiceImpl
      */
     @Override
     public void postRegist(final JrnlDreamDto updatedDto) throws Exception {
-        // 관련 캐시 삭제
-        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DREAM));
         // 태그 처리 :: 메인 로직과 분리
         publisher.publishEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
+        // 관련 캐시 삭제
+        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DREAM));
     }
 
     /**
@@ -151,10 +151,10 @@ public class JrnlDreamServiceImpl
      */
     @Override
     public void postModify(final JrnlDreamDto updatedDto) throws Exception {
-        // 관련 캐시 삭제
-        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DREAM));
         // 태그 처리 :: 메인 로직과 분리
         publisher.publishEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
+        // 관련 캐시 삭제
+        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DREAM));
     }
 
     /**
@@ -165,10 +165,10 @@ public class JrnlDreamServiceImpl
      */
     @Override
     public void postDelete(final JrnlDreamDto deletedDto) throws Exception {
-        // 관련 캐시 삭제
-        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DREAM));
         // 태그 처리 :: 메인 로직과 분리
         publisher.publishEvent(new JrnlTagProcEvent(this, deletedDto.getClsfKey(), deletedDto.getYy(), deletedDto.getMnth()));
+        // 관련 캐시 삭제
+        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DREAM));
     }
 
     /**

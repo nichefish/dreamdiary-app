@@ -160,7 +160,7 @@ public class JrnlSumryServiceImpl
     public void postModify(final JrnlSumryDto.DTL updatedDto) throws Exception {
         // 태그 처리
         // TODO: AOP로 분리
-        publisher.publishAsyncEventAndWait(new TagProcEvent(this, updatedDto.getClsfKey(), updatedDto.tag));
+        publisher.publishEvent(new TagProcEvent(this, updatedDto.getClsfKey(), updatedDto.tag));
     }
 
     /**

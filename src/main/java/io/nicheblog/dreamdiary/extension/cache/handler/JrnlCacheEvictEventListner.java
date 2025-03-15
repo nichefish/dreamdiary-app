@@ -9,8 +9,10 @@ import io.nicheblog.dreamdiary.extension.cache.service.CacheEvictor;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
@@ -52,8 +54,9 @@ public class JrnlCacheEvictEventListner {
      * @param event 처리할 이벤트 객체
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
-    @EventListener
-    public void handleEhCacheEvictvent(final JrnlCacheEvictEvent event) throws Exception {
+    @Transactional
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleJrnlCacheEvictEvent(final JrnlCacheEvictEvent event) throws Exception {
         final String refContentType = event.getContentType().key;
         final CacheEvictor<JrnlCacheEvictEvent> evictor = evictorMap.get(refContentType);
         if (evictor == null) {

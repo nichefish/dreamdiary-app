@@ -106,10 +106,10 @@ public class BoardPostServiceImpl
      */
     @Override
     public void postRegist(final BoardPostDto.DTL updatedDto) throws Exception {
-        // 조치자 추가 :: 메인 로직과 분리
-        publisher.publishAsyncEvent(new ManagtrAddEvent(this, updatedDto.getClsfKey()));
         // 태그 처리 :: 메인 로직과 분리
-        publisher.publishAsyncEventAndWait(new TagProcEvent(this, updatedDto.getClsfKey(), updatedDto.tag));
+        publisher.publishEvent(new TagProcEvent(this, updatedDto.getClsfKey(), updatedDto.tag));
+        // 조치자 추가 :: 메인 로직과 분리
+        publisher.publishEvent(new ManagtrAddEvent(this, updatedDto.getClsfKey()));
         // 잔디 메세지 발송 :: 메인 로직과 분리
         // if ("Y".equals(jandiYn)) {
         //     String jandiRsltMsg = notifyService.notifyNoticeReg(trgetTopic, result, logParam);
@@ -126,7 +126,7 @@ public class BoardPostServiceImpl
     @Override
     public void postViewDtlPage(final BoardPostDto.DTL retrievedDto) throws Exception {
         // 열람자 추가 :: 메인 로직과 분리
-        publisher.publishAsyncEvent(new ViewerAddEvent(this, retrievedDto.getClsfKey()));
+        publisher.publishEvent(new ViewerAddEvent(this, retrievedDto.getClsfKey()));
     }
 
     /**
@@ -137,10 +137,10 @@ public class BoardPostServiceImpl
      */
     @Override
     public void postModify(final BoardPostDto.DTL updatedDto) throws Exception {
-        // 조치자 추가 :: 메인 로직과 분리
-        publisher.publishAsyncEvent(new ManagtrAddEvent(this, updatedDto.getClsfKey()));
         // 태그 처리 :: 메인 로직과 분리
-        publisher.publishAsyncEventAndWait(new TagProcEvent(this, updatedDto.getClsfKey(), updatedDto.tag));
+        publisher.publishEvent(new TagProcEvent(this, updatedDto.getClsfKey(), updatedDto.tag));
+        // 조치자 추가 :: 메인 로직과 분리
+        publisher.publishEvent(new ManagtrAddEvent(this, updatedDto.getClsfKey()));
         // 잔디 메세지 발송 :: 메인 로직과 분리
         // if ("Y".equals(jandiYn)) {
         //     String jandiRsltMsg = notifyService.notifyNoticeReg(trgetTopic, result, logParam);
@@ -157,7 +157,7 @@ public class BoardPostServiceImpl
     @Override
     public void postDelete(final BoardPostDto.DTL deletedDto) throws Exception {
         // 태그 처리 :: 메인 로직과 분리
-        publisher.publishAsyncEventAndWait(new TagProcEvent(this, deletedDto.getClsfKey()));
+        publisher.publishEvent(new TagProcEvent(this, deletedDto.getClsfKey()));
     }
 
     /**

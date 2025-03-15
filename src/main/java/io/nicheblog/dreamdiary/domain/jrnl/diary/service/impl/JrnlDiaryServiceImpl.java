@@ -121,10 +121,10 @@ public class JrnlDiaryServiceImpl
      */
     @Override
     public void postRegist(final JrnlDiaryDto updatedDto) throws Exception {
-        // 관련 캐시 삭제
-        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DIARY));
         // 태그 처리 :: 메인 로직과 분리
         publisher.publishEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
+        // 관련 캐시 삭제
+        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DIARY));
     }
 
     /**
@@ -135,10 +135,10 @@ public class JrnlDiaryServiceImpl
      */
     @Override
     public void postModify(final JrnlDiaryDto updatedDto) throws Exception {
-        // 관련 캐시 삭제
-        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DIARY));
         // 태그 처리 :: 메인 로직과 분리
         publisher.publishEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
+        // 관련 캐시 삭제
+        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DIARY));
     }
 
     /**
@@ -165,10 +165,10 @@ public class JrnlDiaryServiceImpl
      */
     @Override
     public void postDelete(final JrnlDiaryDto deletedDto) throws Exception {
-        // 관련 캐시 삭제
-        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DIARY));
         // 태그 처리 :: 메인 로직과 분리
         publisher.publishEvent(new JrnlTagProcEvent(this, deletedDto.getClsfKey(), deletedDto.getYy(), deletedDto.getMnth()));
+        // 관련 캐시 삭제
+        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DIARY));
     }
 
     /**
