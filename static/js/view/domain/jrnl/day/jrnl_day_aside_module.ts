@@ -21,14 +21,8 @@ dF.JrnlDayAside = (function(): dfModule {
         init: function(): void {
             if (dF.JrnlDayAside.initialized) return;
 
-            const pinYyCookie = $.cookie("pin_yy");
-            if (pinYyCookie !== undefined) {
-                document.querySelector("#jrnl_aside #pinYy")!.textContent = pinYyCookie;
-            }
-            const pinMnthCookie = $.cookie("pin_mnth");
-            if (pinMnthCookie !== undefined) {
-                document.querySelector("#jrnl_aside #pinMnth")!.textContent = pinMnthCookie;
-            }
+            dF.JrnlDayAside.setYyMnthCookie();
+            dF.JrnlDayAside.setPinCookie();
 
             document.querySelector("#jrnl_aside #left")?.addEventListener("click", dF.JrnlDayAside.left);
             document.querySelector("#jrnl_aside #right")?.addEventListener("click", dF.JrnlDayAside.right);
@@ -245,6 +239,20 @@ dF.JrnlDayAside = (function(): dfModule {
             // 아무 쿠키도 없을경우 전체 데이터 로딩을 막기 위해 올해 년도 세팅
             if (yyCookie === undefined && mnthCookie === undefined) {
                 $("#jrnl_aside #yy").val(cF.date.getCurrYyStr());
+            }
+        },
+
+        /**
+         * 페이지에 핀 쿠키 세팅
+         */
+        setPinCookie: function(): void {
+            const pinYyCookie: string = $.cookie("pin_yy");
+            if (pinYyCookie !== undefined) {
+                document.querySelector("#jrnl_aside #pinYy")!.textContent = pinYyCookie;
+            }
+            const pinMnthCookie: string = $.cookie("pin_mnth");
+            if (pinMnthCookie !== undefined) {
+                document.querySelector("#jrnl_aside #pinMnth")!.textContent = pinMnthCookie;
             }
         },
     }

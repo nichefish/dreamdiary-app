@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.service.strategy.JrnlDayCacheEvic
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.strategy.JrnlDiaryCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.service.strategy.JrnlDreamCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.service.strategy.JrnlSumryCacheEvictor;
+import io.nicheblog.dreamdiary.domain.jrnl.todo.service.strategy.JrnlTodoCacheEvictor;
 import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.service.CacheEvictor;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
@@ -35,6 +36,7 @@ public class JrnlCacheEvictEventListner {
     private final JrnlDayCacheEvictor jrnlDayCacheEvictor;
     private final JrnlDiaryCacheEvictor jrnlDiaryCacheEvictor;
     private final JrnlDreamCacheEvictor jrnlDreamCacheEvictor;
+    private final JrnlTodoCacheEvictor jrnlTodoCacheEvictor;
     private final JrnlSumryCacheEvictor jrnlSumryCacheEvictor;
 
     // CacheEvictor를 매핑하는 Map
@@ -45,6 +47,7 @@ public class JrnlCacheEvictEventListner {
         evictorMap.put(ContentType.JRNL_DAY.key, jrnlDayCacheEvictor);
         evictorMap.put(ContentType.JRNL_DIARY.key, jrnlDiaryCacheEvictor);
         evictorMap.put(ContentType.JRNL_DREAM.key, jrnlDreamCacheEvictor);
+        evictorMap.put(ContentType.JRNL_TODO.key, jrnlTodoCacheEvictor);
         evictorMap.put(ContentType.JRNL_SUMRY.key, jrnlSumryCacheEvictor);
     }
 

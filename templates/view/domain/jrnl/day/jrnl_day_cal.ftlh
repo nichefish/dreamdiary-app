@@ -112,7 +112,7 @@
 <!--end::Card-->
 
 <#--include::aside-->
-<#include "/view/domain/jrnl/day/_jrnl_day_aside_base.ftlh">
+<#include "/view/domain/jrnl/day/_aside/_jrnl_day_aside_base.ftlh">
 
 <#--include::tinymce-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
@@ -146,6 +146,10 @@
 <#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_mdf_btn_partial.hbs">
 <#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_cn_partial.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/dream/jrnl_dream_module.js?${releaseDate!}"></script>
+
+<#--include::jrnl_todo_module-->
+<#include "/view/domain/jrnl/todo/_jrnl_todo_list_template.hbs">
+<script type="text/javascript" src="/js/view/domain/jrnl/todo/jrnl_todo_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_day_tag_module-->
 <#include "/view/domain/jrnl/diary/tag/_modal/_jrnl_diary_tag_dtl_modal.ftlh">

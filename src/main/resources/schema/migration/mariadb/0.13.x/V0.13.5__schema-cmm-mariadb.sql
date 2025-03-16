@@ -7,4 +7,4 @@
 -- -------------------
 
 -- 파일 컬럼에 '컨텐츠 타입' 추가
-ALTER TABLE atch_file_dtl ADD content_type VARCHAR(50) COMMENT '컨텐츠 타입(MimeType)';
+ALTER TABLE atch_file_dtl ADD COLUMN IF NOT EXISTS content_type VARCHAR(50) COMMENT '컨텐츠 타입(MimeType)';

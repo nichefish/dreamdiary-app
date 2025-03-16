@@ -15,11 +15,11 @@ const Page: Page = (function(): Page {
             dF.JrnlDay.init();
             dF.JrnlDiary.init();
             dF.JrnlDream.init();
+            dF.JrnlTodo.init();
             dF.Comment.modal.init({
                 "refreshFunc": dF.JrnlDay.yyMnthListAjax
             });
 
-            dF.JrnlDayAside.setYyMnthCookie();
             dF.JrnlDayAside.init();
             // 목록 조회
             dF.JrnlDay.yyMnthListAjax();
