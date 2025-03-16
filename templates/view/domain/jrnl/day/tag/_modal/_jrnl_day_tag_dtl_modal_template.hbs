@@ -5,6 +5,10 @@
 
 <script type="text/x-handlebars-template" id="jrnl_day_tag_dtl_modal_template">
     {{#each this}}
+        {{^if (equals this.mnth (lookup @root._locals "prevMnth"))}}
+            <div class="d-flex-center mt-6 mb-4 fs-5 text-dark">{{yy}}년 {{mnth}}월</div>
+        {{/if}}
+
         <div class="row jrnl-item">
             <div class="col-1 d-flex-align-center flex-column py-3 border-2 border-gray-300 border-end ps-8 me-4 w-130px h-75">
                 {{> jrnl_day_mdf_btn_partial this}}
@@ -104,6 +108,9 @@
             </div>
             <div class="col-1 w-50px"></div>
         </div>
+
+        {{!-- 현재 월을 previousMnth 변수로 저장 --}}
+        {{set "prevMnth" this.mnth}}
     </div>
     {{/each}}
 </script>
