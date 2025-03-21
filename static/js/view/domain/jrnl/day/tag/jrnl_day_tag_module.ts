@@ -93,6 +93,7 @@ dF.JrnlDayTag = (function(): dfModule {
                 }
                 cF.handlebars.modal(res.rsltList, "jrnl_day_tag_dtl");
                 document.querySelector("#jrnl_day_tag_dtl_modal .header_tag_nm").innerHTML = tagNm;
+                document.querySelector("#jrnl_day_tag_dtl_modal .header_tag_cnt").innerHTML = (res.rsltList?.length ?? 0).toString();
 
                 /* modal history push */
                 ModalHistory.push(self, func, args);

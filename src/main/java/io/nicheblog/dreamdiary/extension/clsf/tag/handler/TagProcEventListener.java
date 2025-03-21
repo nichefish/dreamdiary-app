@@ -17,12 +17,12 @@ import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.event.EventListener;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,8 +44,6 @@ public class TagProcEventListener {
     private final ContentTagService contentTagService;
     private final ApplicationEventPublisherWrapper publisher;
 
-    private final CacheManager cacheManager;
-
     private final ApplicationContext context;
     private TagProcEventListener getSelf() {
         return context.getBean(this.getClass());
@@ -58,7 +56,8 @@ public class TagProcEventListener {
      * @throws Exception 처리 중 발생할 수 있는 예외
      * @see EhCacheEvictEventListner
      */
-    @EventListener
+    @Transactional
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void handleTagProcEvent(final TagProcEvent event) throws Exception {
         // 🔥 이벤트 발생 당시의 SecurityContext 복원
         SecurityContextHolder.setContext(event.getSecurityContext());
@@ -73,8 +72,11 @@ public class TagProcEventListener {
             // 태그 처리
             this.getSelf().procTags(event);
         }
-        // 관련 캐시 클리어
-        publisher.publishAsyncEvent(new EhCacheEvictEvent(this, clsfKey.getPostNo(), clsfKey.getContentType()));
+        // 관련 캐시 클리어 (저널 캐시는 따로 처리)
+        if (!(event instanceof JrnlTagProcEvent)) {
+            publisher.publishEvent(new EhCacheEvictEvent(this, clsfKey.getPostNo(), clsfKey.getContentType()));
+        }
+
         // 태그 테이블 refresh (연관관계 없는 메인 태그 삭제)
         tagService.deleteNoRefTags();
     }

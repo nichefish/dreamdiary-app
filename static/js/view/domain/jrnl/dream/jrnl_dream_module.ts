@@ -11,6 +11,9 @@ dF.JrnlDream = (function(): dfModule {
         inKeywordSearchMode: false,
         tagify: null,
 
+        savedYy: null,
+        savedMnth: null,
+
         /**
          * initializes module.
          */
@@ -44,7 +47,7 @@ dF.JrnlDream = (function(): dfModule {
                 ignore: undefined
             });
             // 체크박스 상태 변경시 필드 재검증
-            $("#elseDreamYn").change(function() {
+            $("#elseDreamYn").change(function(): void {
                 $("#elseDreamerNm").valid();
             });
             // checkbox init
@@ -70,10 +73,14 @@ dF.JrnlDream = (function(): dfModule {
          * 목록 조회 (Ajax)
          */
         keywordListAjax: function(): void {
-            const keyword = $("#jrnl_aside #dreamKeyword").val();
+            const keyword: string = $("#jrnl_aside #dreamKeyword").val() as string;
             if (cF.util.isEmpty(keyword)) return;
 
-            const url = Url.JRNL_DREAM_LIST_AJAX;
+            // 검색 시 기존 년월 저장
+            dF.JrnlDream.savedYy = $("#jrnl_aside #yy").val() as string;
+            dF.JrnlDream.savedMnth = $("#jrnl_aside #mnth").val() as string;
+
+            const url: string = Url.JRNL_DREAM_LIST_AJAX;
             const ajaxData = { "dreamKeyword": $("#jrnl_aside #dreamKeyword").val() };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
@@ -93,7 +100,27 @@ dF.JrnlDream = (function(): dfModule {
                 cF.ui.closeModal();
                 cF.handlebars.template(res.rsltList, "jrnl_dream_list");
                 dF.JrnlDream.inKeywordSearchMode = true;
+                // 버튼 추가
+                $("#jrnl_aside #jrnl_diary_reset_btn").remove();
+                const resetBtn = $(`<button type="button" id="jrnl_dream_reset_btn" class="btn btn-sm btn-outline btn-light-danger px-4" 
+                                          onclick="dF.JrnlDream.resetKeyword();" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
+                                          aria-label="꿈 키워드 검색을 리셋합니다." 
+                                          data-bs-original-title="꿈 키워드 검색을 리셋합니다." data-kt-initialized="1">
+                                     <i class="bi bi-x pe-0"></i>
+                                  </button>`);
+                $("#jrnl_aside #jrnl_dream_search_btn").after(resetBtn);
+                resetBtn.tooltip();
             }, "block");
+        },
+
+        /**
+         * 키워드 검색 종료
+         */
+        resetKeyword: function(): void {
+            $("#jrnl_aside #jrnl_dream_reset_btn").remove();
+            $("#jrnl_aside #yy").val(dF.JrnlDream.savedYy);
+            $("#jrnl_aside #mnth").val(dF.JrnlDream.savedMnth);
+            dF.JrnlDayAside.mnth();
         },
 
         /**
@@ -122,7 +149,8 @@ dF.JrnlDream = (function(): dfModule {
          * 등록 (Ajax)
          */
         regAjax: function(): void {
-            const isReg: boolean = $("#jrnlDreamRegForm #postNo").val() === "";
+            const postNoElmt: HTMLInputElement = document.querySelector("#jrnlDreamRegForm [name='postNo']") as HTMLInputElement;
+            const isReg: boolean = postNoElmt?.value === "";
             Swal.fire({
                 text: Message.get(isReg ? "view.cnfm.reg" : "view.cnfm.mdf"),
                 showCancelButton: true,

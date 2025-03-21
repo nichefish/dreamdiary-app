@@ -7,9 +7,11 @@ import io.nicheblog.dreamdiary.extension.file.service.AtchFileDtlService;
 import io.nicheblog.dreamdiary.extension.file.service.AtchFileService;
 import io.nicheblog.dreamdiary.global.util.CookieUtils;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.nicheblog.dreamdiary.global.util.UUIDUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -26,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -40,7 +43,8 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 @Log4j2
-public class FileUtils {
+public class FileUtils
+        extends org.apache.commons.io.FileUtils {
 
     private final AtchFileService autowiredFileService;
     private final AtchFileDtlService autowiredFileDtlService;
@@ -49,6 +53,8 @@ public class FileUtils {
     private static AtchFileService atchFileService;
     private static AtchFileDtlService atchFileDtlService;
     private static HttpServletResponse response;
+
+    private static final String ILLEGAL_EXP = "[:\\\\/%*?|;\"<>]";
 
     /** static 맥락에서 사용할 수 있도록 bean 주입 */
     @PostConstruct
@@ -83,6 +89,48 @@ public class FileUtils {
     }
 
     /**
+     * 파일 이름이 유효한지 확인한다.
+     *
+     * @param fileName 파일의 이름, Path를 제외한 순수한 파일의 이름
+     * @return boolean -- 유효한 파일 이름이면 true, 그렇지 않으면 false를 반환
+     */
+    public static boolean isValidFileName(final String fileName) {
+        if (StringUtils.isEmpty(fileName)) return false;
+
+        return !Pattern.compile(ILLEGAL_EXP).matcher(fileName).find();
+    }
+
+    /**
+     * 파일 이름에 사용할 수 없는 캐릭터를 바꿔서 유효한 파일로 만든다.
+     *
+     * @param fileName 파일 이름, Path를 제외한 순수한 파일의 이름.
+     * @return String -- 유효한 파일 이름
+     */
+    public static String sanitizeFileName(final String fileName) {
+        return sanitizeFileName(fileName, "_");
+    }
+
+    /**
+     * 파일 이름에 사용할 수 없는 캐릭터를 바꿔서 유효한 파일로 만든다.
+     *
+     * @param fileName 파일 이름, Path를 제외한 순수한 파일의 이름.
+     * @param replaceStr 파일 이름에 사용할 수 없는 캐릭터의 교체 문자
+     * @return String -- 유효한 파일 이름
+     */
+    public static String sanitizeFileName(final String fileName, final String replaceStr) {
+        if (StringUtils.isEmpty(fileName)) return UUIDUtils.getUUID();
+
+        // 1. 기본 특수문자 치환
+        String sanitized = fileName.replaceAll(ILLEGAL_EXP, Objects.requireNonNullElse(replaceStr, "_"));
+        // 2. 디렉터리 트래버설 방어 (.. -> _)
+        sanitized = sanitized.replaceAll("\\.+", "_");
+        // 3. 파일명이 . 또는 _ 같은 특수문자로만 이루어졌다면 랜덤 UUID 적용
+        if (sanitized.matches("^[._]+$")) return UUIDUtils.getUUID();
+
+        return sanitized.trim();
+    }
+
+    /**
      * 업로드된 파일을 처리하여 반환합니다. (새 파일 처리)
      *
      * @param multiRequest Multipart 요청
@@ -105,11 +153,10 @@ public class FileUtils {
             final MultipartHttpServletRequest multiRequest,
             final Integer atchFileNo
     ) throws Exception {
+
         // 첨부파일 ID 세팅
-        AtchFileEntity atchFile = (atchFileNo != null) ? atchFileService.getDtlEntity(atchFileNo) : null;
-        if (atchFile == null) atchFile = AtchFileEntity.builder().build();
+        final AtchFileEntity atchFile = (atchFileNo != null) ? atchFileService.getDtlEntity(atchFileNo) : AtchFileEntity.builder().build();
         final List<AtchFileDtlEntity> atchFileList = atchFile.getAtchFileList();
-        final boolean isAtchFileListEmpty = CollectionUtils.isEmpty(atchFileList);
 
         // 파일 처리
         // input file이 안 넘어오는 경우
@@ -117,14 +164,14 @@ public class FileUtils {
         final boolean isMultipartFileEmpty = MapUtils.isEmpty(fileMap);
         if (isMultipartFileEmpty) {
             // 추가된(multipart로 요청된) 파일도 없고 기존 파일도 없으면 리턴
+            final boolean isAtchFileListEmpty = CollectionUtils.isEmpty(atchFileList);
             if (isAtchFileListEmpty) return null;
+
             // 삭제된(del 플래그가 전달된) 파일에 대하여 DB삭제 플래그 세팅(atchCtrl="D") (메소드 분리)
             atchFileDtlService.delFile(multiRequest, atchFileList);
         }
         // 추가된(multipart로 요청된) 파일에 대하여 업로드+DB추가
-        atchFileDtlService.addFiles(multiRequest, atchFileList);
-        atchFile.cascade();
-        return atchFileService.updt(atchFile);
+        return atchFileService.procFiles(multiRequest, atchFile, atchFileList);
     }
 
     /**
@@ -154,6 +201,7 @@ public class FileUtils {
         try {
             final AtchFileEntity rslt = getUploadedFile(multiRequest, atchFileNo);
             if (rslt == null) return null;
+
             return rslt.getAtchFileNo();
         } catch (final Exception e) {
             MessageUtils.alertMessage("파일 업로드에 실패했습니다.");
@@ -171,6 +219,7 @@ public class FileUtils {
     public static AtchFileDtlDto uploadDtlFile(final MultipartHttpServletRequest multiRequest) throws Exception {
         final AtchFileEntity rslt = getUploadedFile(multiRequest);
         if (rslt == null || CollectionUtils.isEmpty(rslt.getAtchFileList())) return null;
+
         return rslt.getAtchFileList().get(0).asDto();
     }
 
@@ -185,6 +234,7 @@ public class FileUtils {
             final List<AtchFileDtlEntity> atchFileList
     ) {
         if (CollectionUtils.isEmpty(atchFileList)) return null;
+
         return atchFileList.stream()
                 .peek(atchFileDtl -> {
                     String atchCtrl = multiRequest.getParameter("atchCtrl" + atchFileDtl.getAtchFileDtlNo());

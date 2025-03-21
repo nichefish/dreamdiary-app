@@ -38,6 +38,7 @@ public interface TagRepository
      * @param ctgr - 조회할 카테고리명
      * @return Optional<TagEntity> - 태그명과 카테고리명에 해당하는 TagEntity를 포함하는 Optional 객체
      */
+    @Query(value = "SELECT * FROM tag t WHERE t.tag_nm = :tagNm AND t.ctgr = :ctgr", nativeQuery = true)
     Optional<TagEntity> findByTagNmAndCtgr(final String tagNm, final String ctgr);
 
     /**

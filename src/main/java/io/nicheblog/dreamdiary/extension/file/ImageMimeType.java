@@ -52,22 +52,22 @@ public enum ImageMimeType {
     /**
      * MimeType 로부터 파일 확장자를 반환한다
      * 
-     * @param mimeType
+     * @param mimeType MimeType 문자열
      * @return ImageMimeType
      */
-    public static ImageMimeType findExtn(String mimeType) {
-        Optional<ImageMimeType> optional = Arrays.stream(ImageMimeType.values()).filter(x -> x.getMimeType().equals(mimeType)).findAny();
+    public static ImageMimeType findExtn(final String mimeType) {
+        final Optional<ImageMimeType> optional = Arrays.stream(ImageMimeType.values()).filter(x -> x.getMimeType().equals(mimeType)).findAny();
         return optional.orElse(null);
     }
 
     /**
      * 파일 확장자로부터 MimeType을 반환한다
      * 
-     * @param extn
+     * @param extn 확장자
      * @return ImageMimeType
      */
-    public static ImageMimeType findMimeType(String extn) {
-        Optional<ImageMimeType> optional = Arrays.stream(ImageMimeType.values()).filter(x -> x.getExtn().equals(extn)).findAny();
+    public static ImageMimeType findMimeType(final String extn) {
+        final Optional<ImageMimeType> optional = Arrays.stream(ImageMimeType.values()).filter(x -> x.getExtn().equals(extn)).findAny();
         return optional.orElse(null);
     }
 

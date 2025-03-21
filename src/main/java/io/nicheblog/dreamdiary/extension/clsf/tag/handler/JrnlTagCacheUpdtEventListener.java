@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.extension.clsf.tag.handler;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.extension.cache.handler.EhCacheEvictEventListner;
+import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.JrnlTagCacheUpdtEvent;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
@@ -11,8 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,8 +45,9 @@ public class JrnlTagCacheUpdtEventListener {
      * @throws Exception 처리 중 발생할 수 있는 예외
      * @see EhCacheEvictEventListner
      */
-    @EventListener
-    public void handleTagCacheUpdtEvent(final JrnlTagCacheUpdtEvent event) throws Exception {
+    @Transactional
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleJrnlTagCacheUpdtEvent(final JrnlTagCacheUpdtEvent event) throws Exception {
         final Map<Integer, Integer> tagCntChangeMap = event.getTagCntChangeMap();
         if (MapUtils.isEmpty(tagCntChangeMap)) return;
 
@@ -101,15 +105,15 @@ public class JrnlTagCacheUpdtEventListener {
             final TagDto tag = iterator.next();
             final Integer changeValue = tagCntChangeMap.get(tag.getTagNo());
 
-            if (changeValue != null) {
-                final int newSize = tag.getContentSize() + changeValue;
-                if (newSize <= 0) {
-                    iterator.remove(); // 안전한 삭제
-                } else {
-                    tag.setContentSize(newSize);
-                }
-                processedTags.add(tag.getTagNo());
+            if (changeValue == null) continue;
+
+            final int newSize = tag.getContentSize() + changeValue;
+            if (newSize <= 0) {
+                iterator.remove(); // 안전한 삭제
+            } else {
+                tag.setContentSize(newSize);
             }
+            processedTags.add(tag.getTagNo());
         }
         // 이미 처리한 태그는 제거
         tagCntChangeMap.keySet().removeAll(processedTags);
@@ -129,11 +133,11 @@ public class JrnlTagCacheUpdtEventListener {
         }
 
         // 변경된 태그 목록 캐시 저장
-        cache.put(cacheKey, sizedTagList);
-        // Sized 정보 없는 기반 목록도 동일한 데이터로 덮어씌움
         final String listCacheNm = this.getTagListCacheNmByContentType(contentType);
         final Cache listCache = cacheManager.getCache(listCacheNm);
         listCache.put(cacheKey, sizedTagList);
+        // 기존 sizedList 캐시 초기화 (size에 따른 tagClass를 재계산해야 하므로)
+        EhCacheUtils.evictCache(sizedListCacheNm, cacheKey);
     }
 
     /**

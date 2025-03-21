@@ -31,7 +31,7 @@ public class CacheWarmupEventListner {
      */
     @EventListener
     @Async
-    public void handleEhCacheEvictvent(final CacheWarmupEvent event) throws Exception {
+    public void handleCacheWarmupEvent(final CacheWarmupEvent event) throws Exception {
         // 캐시 웜업 처리
         cacheWarmupService.warmup();
     }

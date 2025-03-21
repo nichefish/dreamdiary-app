@@ -122,6 +122,10 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation group: 'commons-io', name: 'commons-io', version: '2.14.0'
     implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
+    /* ↓ Scalr: 이미지 리사이징 라이브러리 */
+    implementation 'org.imgscalr:imgscalr-lib:4.2'
+    /* ↓ Tika: 파일 타입 검증 라이브러리 */
+    implementation 'org.apache.tika:tika-core:2.9.1'
 
     /* ↓ Microsoft(excel, pdf) api */
     implementation 'org.apache.poi:poi-ooxml:5.2.2'

@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.extension.file.spec.AtchFileDtlSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -46,4 +47,12 @@ public interface AtchFileDtlService
      * @param atchFileList 업로드된 파일 정보 목록
      */
     void delFile(final MultipartHttpServletRequest multiRequest, final List<AtchFileDtlEntity> atchFileList);
+
+    /**
+     * 이미지 파일에 대하여 썸네일 생성
+     * @param orgImagePath 원본 이미지 경로
+     * @param contentType 컨텐츠 타입
+     * @param thumbPath 썸네일 경로
+     */
+    void makeThumbnail(final Path orgImagePath, final String contentType, final Path thumbPath);
 }

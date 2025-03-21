@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -196,8 +197,16 @@ public class TagServiceImpl
 
         final List<TagEntity> tagEntityList = tagList.stream()
                 .distinct() // 중복된 태그 문자열 제거
-                .map(tag -> repository.findByTagNmAndCtgr(tag.getTagNm(), tag.getCtgr())
-                        .orElseGet(() -> new TagEntity(tag.getTagNm(), tag.getCtgr()))) // 데이터베이스에서 태그 조회, 없으면 새 객체 생성
+                .map(tag -> {
+                    Optional<TagEntity> existingTag = repository.findByTagNmAndCtgr(tag.getTagNm(), tag.getCtgr());
+                    if (existingTag.isPresent()) {
+                        TagEntity tagEntity = existingTag.get();
+                        tagEntity.setDelYn("N");
+                        return tagEntity;
+                    }
+                    // 기존 데이터가 없으면 새 객체 생성
+                    return new TagEntity(tag.getTagNm(), tag.getCtgr());
+                })
                 .collect(Collectors.toList());
 
         return repository.saveAllAndFlush(tagEntityList);

@@ -126,6 +126,37 @@ cF.handlebars = (function(): Module {
     if(!Handlebars) { return; }
 
     /**
+     * and : 여러 개의 조건을 병합
+     * @param {...any} args - 여러 개의 조건을 받음
+     * @returns {boolean} 모든 조건이 true이면 true 반환
+     */
+    Handlebars.registerHelper('and', function (): boolean  {
+        return Array.prototype.every.call(arguments, Boolean);
+    });
+
+    /**
+     * not : 역을 반환
+     * @param {any} value - 인자
+     * @returns {boolean} - value의 역
+     */
+    Handlebars.registerHelper('not', function (value: any): boolean {
+        return !value;
+    });
+
+    /**
+     * set : 변수 저장
+     * 템플릿 내에서 변수를 저장하여 이후에 사용할 수 있도록 한다.
+     *
+     * @param {string} name - 저장할 변수의 이름
+     * @param {any} value - 저장할 값
+     * @param {Record<string, any>} options - Handlebars에서 제공하는 헬퍼 옵션 객체
+     */
+    Handlebars.registerHelper("set", function (name: string, value: any, options: Record<string, any>): void {
+        options.data.root._locals = options.data.root._locals || {}; // _locals 객체가 없으면 생성
+        options.data.root._locals[name] = value;
+    });
+
+    /**
      * exists : 값 존재 여부 체크.
      * @param {any} value - 체크할 값.
      * @returns {boolean} - `value`가 비어 있지 않으면 `true`, 비어 있으면 `false`.

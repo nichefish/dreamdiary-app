@@ -65,6 +65,10 @@ public class AtchFileDtlEntity
     @Column(name = "file_extn", length = 20)
     private String fileExtn;
 
+    /** 컨텐츠 타입 */
+    @Column(name = "content_type", length = 20)
+    private String contentType;
+
     /** 파일 크기 */
     @Column(name = "file_size")
     private Long fileSize;

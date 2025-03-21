@@ -11,6 +11,9 @@ dF.JrnlDiary = (function(): dfModule {
         inKeywordSearchMode: false,
         tagify: null,
 
+        savedYy: null,
+        savedMnth: null,
+
         /**
          * initializes module.
          */
@@ -28,7 +31,7 @@ dF.JrnlDiary = (function(): dfModule {
          * form init
          * @param {Record<string, any>} obj - 폼에 바인딩할 데이터
          */
-        initForm: function(obj: Record<string, any> = {}) {
+        initForm: function(obj: Record<string, any> = {}): void {
             /* show modal */
             cF.handlebars.modal(obj, "jrnl_diary_reg", ["header"]);
 
@@ -50,6 +53,10 @@ dF.JrnlDiary = (function(): dfModule {
             const keyword: string = (document.querySelector("#jrnl_aside #diaryKeyword") as HTMLInputElement)?.value;
             if (cF.util.isEmpty(keyword)) return;
 
+            // 검색 시 기존 년월 저장
+            dF.JrnlDiary.savedYy = $("#jrnl_aside #yy").val() as string;
+            dF.JrnlDiary.savedMnth = $("#jrnl_aside #mnth").val() as string;
+
             const url: string =Url.JRNL_DIARY_LIST_AJAX;
             const ajaxData: Record<string, any> = { "diaryKeyword": keyword };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
@@ -70,7 +77,27 @@ dF.JrnlDiary = (function(): dfModule {
                 cF.ui.closeModal();
                 cF.handlebars.template(res.rsltList, "jrnl_diary_list");
                 dF.JrnlDiary.inKeywordSearchMode = true;
+                // 버튼 추가
+                $("#jrnl_aside #jrnl_diary_reset_btn").remove();
+                const resetBtn = $(`<button type="button" id="jrnl_diary_reset_btn" class="btn btn-sm btn-outline btn-light-danger px-4" 
+                                          onclick="dF.JrnlDiary.resetKeyword();" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
+                                          aria-label="일기 키워드 검색을 리셋합니다." 
+                                          data-bs-original-title="일기 키워드 검색을 리셋합니다." data-kt-initialized="1">
+                                     <i class="bi bi-x pe-0"></i>
+                                  </button>`);
+                $("#jrnl_aside #jrnl_diary_search_btn").after(resetBtn);
+                resetBtn.tooltip();
             }, "block");
+        },
+
+        /**
+         * 키워드 검색 종료
+         */
+        resetKeyword: function(): void {
+            $("#jrnl_aside #jrnl_diary_reset_btn").remove();
+            $("#jrnl_aside #yy").val(dF.JrnlDiary.savedYy);
+            $("#jrnl_aside #mnth").val(dF.JrnlDiary.savedMnth);
+            dF.JrnlDayAside.mnth();
         },
 
         /**
@@ -99,7 +126,8 @@ dF.JrnlDiary = (function(): dfModule {
          * 등록 (Ajax)
          */
         regAjax: function(): void {
-            const isReg = $("#jrnlDiaryRegForm #postNo").val() === "";
+            const postNoElmt: HTMLInputElement = document.querySelector("#jrnlDiaryRegForm [name='postNo']") as HTMLInputElement;
+            const isReg: boolean = postNoElmt?.value === "";
             Swal.fire({
                 text: Message.get(isReg ? "view.cnfm.reg" : "view.cnfm.mdf"),
                 showCancelButton: true,

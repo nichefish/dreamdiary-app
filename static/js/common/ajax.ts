@@ -24,26 +24,21 @@ cF.ajax = (function(): Module {
          * @param {boolean} [continueBlock] - 추가적인 블록 UI 동작 여부 (선택적).
          */
         request: async function(url: string, options: RequestInit, callback?: (response: any) => any, continueBlock: string = 'none'): Promise<void> {
-            try {
-                cF.ui.blockUI();  // UI 차단
+            cF.ui.blockUI();  // UI 차단
 
-                // fetch 요청
-                const response: Response = await fetch(url, options);
+            // fetch 요청
+            const response: Response = await fetch(url, options);
 
-                // 응답이 성공적이지 않으면 에러 처리
-                if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+            // 응답이 성공적이지 않으면 에러 처리
+            if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
 
-                // 응답 데이터 파싱
-                const res: JSON = await response.json();
+            // 응답 데이터 파싱
+            const res: JSON = await response.json();
 
-                // 성공 콜백 함수 호출
-                if (typeof callback === 'function') callback(res);
-            } catch (error: any) {
-                console.error('Ajax request failed:', error);
-                if (cF.util.isNotEmpty(error.message)) cF.ui.swalOrAlert(error.message);
-            } finally {
-                if (continueBlock !== 'block') cF.ui.unblockUI();  // UI 차단 해제
-            }
+            // 성공 콜백 함수 호출
+            if (typeof callback === 'function') callback(res);
+
+            if (continueBlock !== 'block') cF.ui.unblockUI();  // UI 차단 해제
         },
 
         /**

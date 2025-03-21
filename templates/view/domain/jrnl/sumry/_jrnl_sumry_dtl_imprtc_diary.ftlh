@@ -37,7 +37,7 @@
             </span>
             </label>
             <#list imprtcDiaryList![] as diary>
-                <div class="row jrnl-item my-2">
+                <div class="row jrnl-diary-item my-2">
                     <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end ps-10 me-4 w-130px h-75">
                         <div>
                             <i class="bi bi-calendar3"></i> ${diary.stdrdDt!}

@@ -93,7 +93,7 @@ public class VcatnPaprServiceImpl
     @Override
     public void postRegist(final VcatnPaprDto.DTL updatedDto) throws Exception {
         // 조치자 추가 :: 메인 로직과 분리
-        publisher.publishAsyncEvent(new ViewerAddEvent(this, updatedDto.getClsfKey()));
+        publisher.publishEvent(new ViewerAddEvent(this, updatedDto.getClsfKey()));
     }
 
     /**
@@ -105,7 +105,7 @@ public class VcatnPaprServiceImpl
     @Override
     public void postViewDtlPage(final VcatnPaprDto.DTL retrievedDto) throws Exception {
         // 열람자 추가 :: 메인 로직과 분리
-        publisher.publishAsyncEvent(new ViewerAddEvent(this, retrievedDto.getClsfKey()));
+        publisher.publishEvent(new ViewerAddEvent(this, retrievedDto.getClsfKey()));
     }
 
     /**
@@ -128,7 +128,7 @@ public class VcatnPaprServiceImpl
     @Override
     public void postModify(final VcatnPaprDto.DTL updatedDto) throws Exception {
         // 조치자 추가 :: 메인 로직과 분리
-        publisher.publishAsyncEvent(new ViewerAddEvent(this, updatedDto.getClsfKey()));
+        publisher.publishEvent(new ViewerAddEvent(this, updatedDto.getClsfKey()));
     }
 
     /**

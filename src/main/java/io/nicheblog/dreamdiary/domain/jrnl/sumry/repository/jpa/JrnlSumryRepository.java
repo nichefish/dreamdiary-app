@@ -108,7 +108,7 @@ public interface JrnlSumryRepository
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    @Query("SELECT COALESCE(SUM(sumry.postNo), 0) " +
+    @Query("SELECT COALESCE(SUM(sumry.diaryDayCnt), 0) " +
             "FROM JrnlSumryEntity sumry " +
             "WHERE sumry.regstrId = :regstrId")
     Integer getTotalDiaryDayCnt(final @Param("regstrId") String regstrId);

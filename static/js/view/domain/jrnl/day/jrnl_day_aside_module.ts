@@ -165,8 +165,8 @@ dF.JrnlDayAside = (function(): dfModule {
             const pinMnth: string = $("#jrnl_aside #mnth").val().toString();
             $.cookie("pin_yy", pinYy, cookieOptions);
             $.cookie("pin_mnth", pinMnth, cookieOptions);
-            $("#jrnl_aside_header #pinYy").text(pinYy);
-            $("#jrnl_aside_header #pinMnth").text(pinMnth);
+            $("#jrnl_aside_pinText #pinYy").text(pinYy);
+            $("#jrnl_aside_pinText #pinMnth").text(pinMnth);
         },
 
         /**

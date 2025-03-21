@@ -21,12 +21,10 @@ import org.springframework.stereotype.Component;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * CmmUtils
@@ -316,6 +314,21 @@ public class CmmUtils {
         }
 
         return result.toString();
+    }
+
+    /**
+     * 문자열을 Set<String>으로 변환하는 유틸 함수
+     *
+     * @param valueStr String
+     * @param delimiter String
+     * @return Set<String>
+     */
+    public static Set<String> parseToSet(final String valueStr, final String delimiter) {
+        if (StringUtils.isEmpty(delimiter)) return parseToSet(valueStr, ",");
+
+        return Arrays.stream(valueStr.split(delimiter))
+                .map(String::trim)
+                .collect(Collectors.toSet());
     }
 }
 

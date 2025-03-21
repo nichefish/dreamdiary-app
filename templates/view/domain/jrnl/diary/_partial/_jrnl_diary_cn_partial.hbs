@@ -4,8 +4,10 @@
  -->
 
 <script type="text/x-handlebars-template" id="jrnl_diary_cn_partial">
-    {{#ifYn imprtcYn}}<div class="ctgr-span ctgr-imprtc w-auto d-flex-center">!<@spring.message 'imprtc'/></div>{{/ifYn}}
-    {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}
+    <div class="d-flex-align-center">
+        {{#ifYn imprtcYn}}<div class="ctgr-span ctgr-imprtc w-60px d-flex-center">!<@spring.message 'imprtc'/></div>{{/ifYn}}
+        {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}
+    </div>
     <div class="cn {{collapse}}">
         {{{markdownCn}}}
     </div>
