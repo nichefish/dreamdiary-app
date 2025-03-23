@@ -119,7 +119,7 @@ dF.Comment.modal = (function(): dfModule {
                 if (!result.value) return;
 
                 const url: string = Url.COMMENT_DEL_AJAX;
-                const ajaxData: Record<string, any> = { "postNo": postNo, "actvtyCtgrCd": "${actvtyCtgrCd!}" };
+                const ajaxData: Record<string, any> = { "postNo": postNo };         // TODO: actvtyCtgrCd 다시 추가하기.
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {

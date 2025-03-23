@@ -148,7 +148,7 @@ public class CommentRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> commentDelAjax(
-            final @RequestBody Integer postNo,
+            final Integer postNo,
             final LogActvtyParam logParam
     ) throws Exception {
 
