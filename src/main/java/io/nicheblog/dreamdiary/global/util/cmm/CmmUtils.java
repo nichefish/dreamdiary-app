@@ -297,6 +297,15 @@ public class CmmUtils {
                     part = part.replace("||" + group + "||", "<span class='text-muted fw-bold border-end border-2 border-gray-400 pe-5 me-3'>" + group + "</span>");
                 }
 
+                // (( )) 로 묶인 부분을 밑줄 처리하되, (( )) 제거
+                final Pattern parenthesisPattern = Pattern.compile("\\(\\((.*?)\\)\\)");
+                final Matcher parenthesisMatcher = parenthesisPattern.matcher(part);
+                while (parenthesisMatcher.find()) {
+                    final String group = parenthesisMatcher.group(1);
+                    if (group == null || group.length() > MAX_GROUP_LENGTH) continue;
+                    part = part.replace("((" + group + "))", "<span class='text-noti'>" + group + "</span>");
+                }
+
                 // <@> .로 묶인 부분을 강조 처리
                 final Pattern atPattern = Pattern.compile("<@>(.*?\\.)");
                 final Matcher atMatcher = atPattern.matcher(part);
