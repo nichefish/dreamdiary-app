@@ -73,8 +73,9 @@ public class TagCmpstn
         return IntStream.range(0, jArray.length())
                 .mapToObj(jArray::getJSONObject)
                 .map(json -> {
-                    if (!json.has("data") || json.getJSONObject("data") == null) return new TagDto(json.getString("value"));
-                    return new TagDto(json.getString("value"), json.getJSONObject("data").getString("ctgr"));
+                    final String tagNm = json.getString("value").trim().replaceAll("\\s+", "_");
+                    if (!json.has("data") || json.optJSONObject("data") == null) return new TagDto(tagNm);
+                    return new TagDto(tagNm, json.getJSONObject("data").getString("ctgr"));
                 })
                 .collect(Collectors.toList());
     }
