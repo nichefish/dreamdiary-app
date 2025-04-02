@@ -59,6 +59,13 @@ public interface SiteUrl {
     String JRNL_DIARY_TAG_DTL_AJAX = Prefix.JRNL_DIARY + "/jrnlDiaryTagDtlAjax.do";
     String JRNL_DIARY_TAG_CTGR_MAP_AJAX = Prefix.JRNL_DIARY + "/jrnlDiaryTagCtgrMapAjax.do";
 
+    /** 저널 할일 */
+    String JRNL_TODO_LIST_AJAX = Prefix.JRNL_TODO + "/jrnlTodoListAjax.do";
+    String JRNL_TODO_REG_AJAX = Prefix.JRNL_TODO + "/jrnlTodoRegAjax.do";
+    String JRNL_TODO_DTL_AJAX = Prefix.JRNL_TODO + "/jrnlTodoDtlAjax.do";
+    String JRNL_TODO_MDF_AJAX = Prefix.JRNL_TODO + "/jrnlTodoMdfAjax.do";
+    String JRNL_TODO_DEL_AJAX = Prefix.JRNL_TODO + "/jrnlTodoDelAjax.do";
+
     /** 저널 주제 */
     String JRNL_SBJCT_LIST = Prefix.JRNL_SBJCT + "/jrnlSbjctList.do";
     String JRNL_SBJCT_REG_FORM = Prefix.JRNL_SBJCT + "/jrnlSbjctRegForm.do";
@@ -313,6 +320,9 @@ public interface SiteUrl {
         // 저널 일기
         String DIARY = "/diary";
         String JRNL_DIARY = JRNL + DIARY;
+        // 저널 할일
+        String TODO = "/todo";
+        String JRNL_TODO = JRNL + TODO;
         // 저널 주제
         String SBJCT = "/sbjct";
         String JRNL_SBJCT = JRNL + SBJCT;

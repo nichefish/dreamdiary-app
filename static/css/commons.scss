@@ -238,3 +238,9 @@
     max-width: 75%;
     width: auto;
 }
+
+.li::before {
+    content: "- ";
+    position: absolute;
+    left: 0;
+}

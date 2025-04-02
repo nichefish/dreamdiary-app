@@ -89,6 +89,9 @@
     <cache alias="myJrnlDreamTagDtl" uses-template="defaultTemplate" />
     <cache alias="myImprtcDreamList" uses-template="defaultTemplate" />
 
+    <!-- 저널 할일 -->
+    <cache alias="myJrnlTodoList" uses-template="defaultTemplate" />
+
     <!-- 저널 결산 -->
     <cache alias="myJrnlTotalSumry" uses-template="defaultTemplate" />
     <cache alias="myJrnlSumryList" uses-template="defaultTemplate" />

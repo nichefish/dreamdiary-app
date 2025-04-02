@@ -27,7 +27,9 @@
         <div class="card card-reset card-p-0">
             <#--begin::Card header-->
             <div id="jrnl_aside_header" class="card-header min-h-auto mb-5">
-                <h3 class="card-title text-gray-900 fw-bold fs-3">Filters</h3>
+                <h3 class="card-title text-gray-900 fw-bold fs-3">
+                    <i class="bi bi-filter fs-2 me-1"></i> Filters
+                </h3>
                 <#--begin::Toolbar-->
                 <div class="card-toolbar">
                     <a href="javascript:void(0);" class="btn btn-sm btn-icon btn-color-gray-500 btn-light"
@@ -140,6 +142,30 @@
             </div>
         </div>
         <!--end::Aside-->
+
+        <div class="separator my-8"></div>
+
+        <#--begin::Aside-->
+        <div class="card card-reset card-p-0">
+            <#--begin::Card header-->
+            <div id="jrnl_aside_header" class="card-header min-h-auto mb-5">
+                <h3 class="card-title text-gray-900 fw-bold fs-3">
+                    <i class="bi bi-list-task fs-2 me-1"></i> TODO List
+                </h3>
+                <#--begin::Toolbar-->
+                <div class="card-toolbar">
+                    <a href="javascript:void(0);" class="btn btn-sm btn-icon btn-primary"
+                       onclick="dF.JrnlTodo.regModal();"
+                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.aside-sort'/>">
+                        <i class="bi bi-plus fs-2 pe-0" id="sortIcon"></i>
+                    </a>
+                </div>
+            </div>
+            <!--end::Header-->
+            <div id="jrnl_todo_list_div">
+                <!-- Handlebars templaate goes in here -->
+            </div>
+        </div>
     </div>
     <!--end::Aside wrapper-->
 </div>
@@ -147,3 +173,8 @@
 
 <#--include::script modules-->
 <script type="text/javascript" src="/js/view/domain/jrnl/day/jrnl_day_aside_module.js?${releaseDate!}"></script>
+
+<#--include::jrnl_todo_module-->
+<#include "/view/domain/jrnl/todo/_modal/_jrnl_todo_reg_modal.ftlh">
+<#include "/view/domain/jrnl/todo/_jrnl_todo_list_template.hbs">
+<script type="text/javascript" src="/js/view/domain/jrnl/todo/jrnl_todo_module.js?${releaseDate!}"></script>

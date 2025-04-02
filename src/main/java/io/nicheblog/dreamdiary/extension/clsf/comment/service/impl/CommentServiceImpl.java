@@ -1,13 +1,12 @@
 package io.nicheblog.dreamdiary.extension.clsf.comment.service.impl;
 
-import io.nicheblog.dreamdiary.extension.cache.service.CacheEvictService;
-import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
-import io.nicheblog.dreamdiary.extension.clsf.comment.entity.CommentEntity;
+import io.nicheblog.dreamdiary.extension.cache.event.CommentCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.clsf.comment.mapstruct.CommentMapstruct;
 import io.nicheblog.dreamdiary.extension.clsf.comment.model.CommentDto;
 import io.nicheblog.dreamdiary.extension.clsf.comment.repository.jpa.CommentRepository;
 import io.nicheblog.dreamdiary.extension.clsf.comment.service.CommentService;
 import io.nicheblog.dreamdiary.extension.clsf.comment.spec.CommentSpec;
+import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,8 +30,7 @@ public class CommentServiceImpl
     private final CommentSpec spec;
     @Getter
     private final CommentMapstruct mapstruct = CommentMapstruct.INSTANCE;
-
-    private final CacheEvictService ehCacheEvictService;
+    private final ApplicationEventPublisherWrapper publisher;
 
     /**
      * 등록 후처리. (override)
@@ -42,7 +40,7 @@ public class CommentServiceImpl
      */
     @Override
     public void postRegist(final CommentDto updatedDto) throws Exception {
-        this.evictCache(updatedDto);
+        publisher.publishEvent(new CommentCacheEvictEvent(this, updatedDto.getRefPostNo(), updatedDto.getRefContentType()));
     }
 
     /**
@@ -53,7 +51,7 @@ public class CommentServiceImpl
      */
     @Override
     public void postModify(final CommentDto updatedDto) throws Exception {
-        this.evictCache(updatedDto);
+        publisher.publishEvent(new CommentCacheEvictEvent(this, updatedDto.getRefPostNo(), updatedDto.getRefContentType()));
     }
 
     /**
@@ -64,19 +62,6 @@ public class CommentServiceImpl
      */
     @Override
     public void postDelete(final CommentDto deletedDto) throws Exception {
-        this.evictCache(deletedDto);
-    }
-
-    /**
-     * 관련 캐시 삭제.
-     *
-     * @param rslt 캐시 처리할 엔티티
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     */
-    public void evictCache(final CommentDto rslt) throws Exception {
-        final String refContentType = rslt.getRefContentType();
-        final Integer refPostNo = rslt.getRefPostNo();
-        ehCacheEvictService.evictClsfCache(refContentType, refPostNo);
-        EhCacheUtils.clearL2Cache(CommentEntity.class);
+        publisher.publishEvent(new CommentCacheEvictEvent(this, deletedDto.getRefPostNo(), deletedDto.getRefContentType()));
     }
 }

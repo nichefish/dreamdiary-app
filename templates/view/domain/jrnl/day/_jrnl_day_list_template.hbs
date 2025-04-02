@@ -62,11 +62,10 @@
                             <div class="col jrnl-diary-cn">
                                 {{> jrnl_diary_cn_partial this}}
                             </div>
-                            <div class="col-1 py-3 d-flex-between w-50px gap-1">
-                                {{> comment_reg_btn_partial this contentType="JRNL_DIARY"}}
-                            </div>
                             <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                            <div class="col-1 py-3 d-flex-between w-50px gap-1">
+                            <div class="col-1 py-3 d-flex-between w-75px gap-1">
+                                {{> comment_reg_btn_partial this contentType="JRNL_DIARY"}}
+                                <div class="col-1 border-2 border-gray-300 border-end w-10px">&nbsp;</div>
                                 {{> jrnl_diary_mdf_btn_partial this}}
                             </div>
                         </div>
@@ -87,11 +86,10 @@
                             <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
                                 {{> jrnl_dream_cn_partial this}}
                             </div>
-                            <div class="col-1 py-3 d-flex-between w-50px gap-1">
+                            <div class="col-1 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                            <div class="col-1 py-3 d-flex-between w-75px gap-1">
                                 {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
-                            </div>
-                            <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                            <div class="col-1 py-3 d-flex-between w-50px gap-1">
+                                <div class="col-1 border-2 border-gray-300 border-end w-10px">&nbsp;</div>
                                 {{> jrnl_dream_mdf_btn_partial this}}
                             </div>
                         </div>
@@ -105,10 +103,11 @@
                                 {{> jrnl_dream_cn_partial this elseDreamYn="Y"}}
                             </div>
                             <div class="col-1 py-3 d-flex-between w-50px gap-1">
-                                {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
                             </div>
-                            <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                            <div class="col-1 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                             <div class="col-1 py-3 d-flex-between w-50px gap-1">
+                                {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
+                                <div class="col-1 border-2 border-gray-300 border-end w-10px">&nbsp;</div>
                                 {{> jrnl_dream_mdf_btn_partial this}}
                             </div>
                         </div>

@@ -21,6 +21,11 @@ cF.tagify = (function(): Module {
             // if after editing, tag is invalid, auto-revert
             keepInvalid: false
         },
+        // 공백 제거
+        transformTag(tagData: any): any {
+            tagData.value = tagData.value.replace(/\s+/g, '_');
+            return tagData;
+        },
         templates: {
             tag: function (tagData: any): string {
                 // 태그 메타데이터 (data)를 문자열로 변환하여 표시

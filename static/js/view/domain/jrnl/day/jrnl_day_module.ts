@@ -78,12 +78,16 @@ dF.JrnlDay = (function(): dfModule {
          * 년도-월 목록 조회 (Ajax)
          */
         yyMnthListAjax: function(): void {
+            const yyElmt: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
+            const yy: string = yyElmt.value;
+            if (cF.util.isEmpty(yy)) return;
+
             const mnthElmt: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
             const mnth: string = mnthElmt.value;
             if (cF.util.isEmpty(mnth)) return;
 
             const url: string = Url.JRNL_DAY_LIST_AJAX;
-            const ajaxData: Record<string, any> = { "yy": $("#jrnl_aside #yy").val(), "mnth": mnth };
+            const ajaxData: Record<string, any> = { yy, mnth };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });

@@ -114,8 +114,14 @@ public class JwtTokenProvider {
         final String username = this.getUsernameFromToken(token);
         final AuthInfo authInfo = authService.loadUserByUsername(username);
 
-        final Boolean isValidated = authenticationHelper.validateAuth(authInfo);
-        if (!isValidated) throw new SecurityException(MessageUtils.getMessage("common.status.authentication-failed"));
+        try {
+            final Boolean isValidated = authenticationHelper.validateAuth(authInfo);
+            if (!isValidated) throw new SecurityException(MessageUtils.getMessage("common.status.authentication-failed"));
+        } catch (final Exception e) {
+            log.error(e);
+            // TODO: 더 정밀한 예외 처리 필요
+            // throw new SecurityException(MessageUtils.getMessage("common.status.authentication-failed"));
+        }
 
         return authInfo.getAuthToken();
     }

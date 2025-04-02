@@ -1,0 +1,27 @@
+<#--
+ * 저널 일기(jrnl_diary) 목록 조회 Template
+ * @included_in : jrnl_day_page.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="jrnl_todo_list_template">
+    {{#each this}}
+        <div class="row d-flex-align-center justify-content-between">
+            <div class="col text-truncate cursor-pointer"
+'                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
+                 title="{{title}}">
+                {{title}}
+            </div>
+            <div class="col-3 d-flex justify-content-end">
+                <button type="button" class="btn btn-sm btn-light-danger btn-outlined py-2 px-3 cursor-pointer"
+                        onclick="dF.JrnlTodo.delAjax({{postNo}});"
+                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'jrnl.day'/> <@spring.message 'bs.tooltip.modal.mdf'/>">
+                    <i class="bi bi-trash p-0"></i>
+                </button>
+            </div>
+        </div>
+    {{else}}
+        <div class="row jrnl-day d-flex-center">
+            할일이 없습니다.
+        </div>
+    {{/each}}
+</script>

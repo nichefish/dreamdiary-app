@@ -9,8 +9,9 @@ spring:
     #release. should be changed manually for each deployment
     flyway:
         enabled: true   # Flyway 활성화
-        target: 0.12.0_6  # V0.12.1까지만 적용하고 이후 버전은 실행 안 함
-        release-date: 20250131
+        baseline-version: 0.14.0   # 해당 버전 이전의 마이그레이션은 실행하지 않음
+        target: 0.14.0  # 해당 버전까지만 적용하고 이후 버전은 실행 안 함
+        release-date: 20250322
 
 logging:
     level:

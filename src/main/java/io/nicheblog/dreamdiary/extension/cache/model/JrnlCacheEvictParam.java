@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.extension.cache.model;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
+import io.nicheblog.dreamdiary.domain.jrnl.todo.model.JrnlTodoDto;
 import lombok.*;
 
 /**
@@ -67,6 +68,20 @@ public class JrnlCacheEvictParam {
         return JrnlCacheEvictParam.builder()
                 .postNo(dto.getPostNo())
                 .jrnlDayNo(dto.getJrnlDayNo())
+                .yy(dto.getYy())
+                .mnth(dto.getMnth())
+                .build();
+    }
+
+    /**
+     * 팩토리 메서드 패턴
+     *
+     * @param dto {@link JrnlTodoDto}
+     * @return {@link JrnlCacheEvictParam}
+     */
+    public static JrnlCacheEvictParam of(final JrnlTodoDto dto) {
+        return JrnlCacheEvictParam.builder()
+                .postNo(dto.getPostNo())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
                 .build();

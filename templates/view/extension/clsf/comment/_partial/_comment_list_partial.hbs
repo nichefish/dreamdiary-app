@@ -4,9 +4,9 @@
 -->
 
 <script type="text/x-handlebars-template" id="comment_list_partial">
-    <div class="row ms-1 {{#if @first}}mt-1{{/if}} {{#if @last}}mb-1{{/if}} d-flex-align-center text-noti">
-        <div class="col me-10">
-            - {{cn}}
+    <div class="row {{#if @first}}mt-1{{/if}} {{#if @last}}mb-1{{/if}} d-flex-align-center text-noti">
+        <div class="col d-flex-align-center position-relative ms-4">
+            <div class="li div-textarea-smp">{{{cn}}}</div>
         </div>
         <div class="col-1">
             <button type="button" class="btn btn-sm btn-light-primary btn-outlined py-1 px-2 cursor-pointer"

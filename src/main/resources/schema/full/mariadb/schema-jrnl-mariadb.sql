@@ -100,6 +100,35 @@ CREATE TABLE IF NOT EXISTS jrnl_diary (
     INDEX (jrnl_day_no)
 ) COMMENT = '저널 일기';
 
+-- 저널 할일 (jrnl_todo)
+-- @extends: BasePostEntity
+-- @uses: CommentEmbed
+CREATE TABLE IF NOT EXISTS jrnl_todo (
+    -- CLSF
+    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 결산 번호 (PK)',
+    content_type VARCHAR(32) DEFAULT 'JRNL_SUMRY' COMMENT '컨텐츠 타입',
+    --
+    idx INT DEFAULT 1 COMMENT '저널 일기 인덱스',
+    yy INT UNIQUE COMMENT '결산 년도',
+    mnth INT COMMENT '월',
+    -- POST
+    title VARCHAR(200) COMMENT '제목',
+    cn LONGTEXT COMMENT '내용',
+    ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
+    fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
+    hit_cnt INT DEFAULT 0 COMMENT '조회수',
+    imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
+    mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
+    -- ATCH_FILE
+    atch_file_no INT COMMENT '첨부파일 번호',
+    -- AUDIT
+    regstr_id VARCHAR(20) COMMENT '등록자 ID',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
+    mdf_dt DATETIME COMMENT '수정일시',
+    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)'
+) COMMENT = '저널 할일';
+
 -- 저널 주제 (jrnl_sbjct)
 -- @extends: BasePostEntity
 -- @implements: TagEmbed, CommentEmbed

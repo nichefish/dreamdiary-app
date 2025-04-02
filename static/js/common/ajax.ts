@@ -151,10 +151,12 @@ cF.ajax = (function(): Module {
                     window.location.href = lgnFormUrl;
                 }, function(): void {
                     if (!document.querySelector(".session-expired-message")) {
-                        // do nothing... ui에 세션 만료 표시
+                        // ui에 세션 만료 표시
+                        if ($(".session-expired-message").length > 0) return;
+
                         const navbar: HTMLElement = document.querySelector("#kt_app_header_wrapper .app-navbar");
                         const sessionExpiredText: HTMLDivElement = document.createElement("div");
-                        sessionExpiredText.className = "d-flex align-items-center fs-4 fw-bold text-danger blink me-5";
+                        sessionExpiredText.className = "session-expired-message d-flex align-items-center fs-4 fw-bold text-danger blink me-5";
                         sessionExpiredText.textContent = Message.get("view.auth.expired");     // "로그인 세션이 만료되었습니다."
                         navbar?.insertAdjacentElement('beforebegin', sessionExpiredText);
                     }
