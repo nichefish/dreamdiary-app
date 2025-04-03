@@ -285,7 +285,7 @@ public class CmmUtils {
                 while (underlineMatcher.find()) {
                     final String group = underlineMatcher.group(1);
                     if (group == null || group.length() > MAX_GROUP_LENGTH) continue;
-                    part = part.replace("__" + group + "__", "<span style='text-decoration: underline;'>" + group + "</span>");
+                    part = part.replace("__" + group + "__", "<u>" + group + "</u>");
                 }
 
                 // || || 로 묶인 부분을 강조 처리하되, || || 제거 및 우측 구분바 추가
