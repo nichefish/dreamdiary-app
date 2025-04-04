@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.domain.chat.mapstruct;
 import io.nicheblog.dreamdiary.domain.chat.entity.ChatMsgEntity;
 import io.nicheblog.dreamdiary.domain.chat.model.ChatMsgDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BasePostMapstruct;
-import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
+import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
@@ -17,7 +17,7 @@ import org.mapstruct.factory.Mappers;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, CmmUtils.class}, builder = @Builder(disableBuilder = true))
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, MarkdownUtils.class}, builder = @Builder(disableBuilder = true))
 public interface ChatMsgMapstruct
         extends BasePostMapstruct<ChatMsgDto, ChatMsgDto, ChatMsgEntity> {
 
@@ -32,7 +32,7 @@ public interface ChatMsgMapstruct
      */
     @Override
     @Named("toDto")
-    @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : CmmUtils.markdown(entity.getCn()))")
+    @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
     ChatMsgDto toDto(final ChatMsgEntity entity) throws Exception;
 
     /**
@@ -44,7 +44,7 @@ public interface ChatMsgMapstruct
      */
     @Override
     @Named("toListDto")
-    @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : CmmUtils.markdown(entity.getCn()))")
+    @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
     ChatMsgDto toListDto(final ChatMsgEntity entity) throws Exception;
 
     /**
