@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.adapter.jandi.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.nicheblog.dreamdiary.adapter.jandi.JandiProperty;
+import io.nicheblog.dreamdiary.adapter.jandi.JandiProperties;
 import io.nicheblog.dreamdiary.adapter.jandi.JandiTopic;
 import io.nicheblog.dreamdiary.adapter.jandi.model.JandiApiRespnsDto;
 import io.nicheblog.dreamdiary.adapter.jandi.model.JandiApiSndMsgConnectInfoDto;
@@ -34,7 +34,7 @@ import org.springframework.stereotype.Service;
 public class JandiApiServiceImpl
         implements JandiApiService {
 
-    private final JandiProperty jandiProperty;
+    private final JandiProperties jandiProperties;
 
     /**
      * API:: JANDI:: 잔디로 incoming webhook 전송
@@ -117,7 +117,7 @@ public class JandiApiServiceImpl
     @Override
     public String setRequestUrlParam(final JandiTopic trgetTopic) {
         final String trgetTopicNm = trgetTopic.name();
-        return Url.JANDI_CONNECT_WH + "/" + jandiProperty.getTeamId() + "/" + jandiProperty.getId(trgetTopicNm);
+        return Url.JANDI_CONNECT_WH + "/" + jandiProperties.getTeamId() + "/" + jandiProperties.getId(trgetTopicNm);
     }
 
     /**

@@ -8,7 +8,7 @@
 #   $env:KAFKA_HOST="localhost"
 #   $env:REDIS_PORT=6379
 #   $env:REDIS_PASSWORD="your_redis_password"
-#   docker-compose --env-file .env.local up -d
+#   docker-compose --env-file config/env/.env.local up -d
 #
 # @author nichefish
 ##

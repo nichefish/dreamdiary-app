@@ -140,10 +140,16 @@ cF.ajax = (function(): Module {
         }
     };
 
+    /**
+     * 에러 처리
+     * @param response
+     */
     const handleError = async (response: Response): Promise<void> => {
         const statusCode: number = response.status;
-        const msg: string = await response.json().catch(() => Message.get("view.error.access-denied"));      // "접근이 거부되었습니다. (ACCESS DENIED)"
+        const msgObject: Record<string, string> = await response.json().catch(() => Message.get("view.error.access-denied"));      // "접근이 거부되었습니다. (ACCESS DENIED)"
+        const msg:string = msgObject.message;
         const lgnFormUrl: string = "/auth/lgnForm.do";
+
 
         switch(statusCode) {
             case 401: {

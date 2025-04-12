@@ -30,7 +30,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @RequiredArgsConstructor
 public class RedisConfig {
 
-    private final RedisProperty redisProperty;
+    private final RedisProperties redisProperties;
 
     /**
      * 빈 등록:: redisConnectionFactory
@@ -40,9 +40,9 @@ public class RedisConfig {
     @SneakyThrows
     public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
-        redisStandaloneConfiguration.setHostName(redisProperty.getHost());
-        redisStandaloneConfiguration.setPort(redisProperty.getPort());
-        redisStandaloneConfiguration.setPassword(redisProperty.getPassword());
+        redisStandaloneConfiguration.setHostName(redisProperties.getHost());
+        redisStandaloneConfiguration.setPort(redisProperties.getPort());
+        redisStandaloneConfiguration.setPassword(redisProperties.getPassword());
         return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
 

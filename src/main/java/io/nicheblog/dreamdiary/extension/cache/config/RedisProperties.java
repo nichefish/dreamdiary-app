@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "spring.redis")
 @Getter
 @Setter
-public class RedisProperty {
+public class RedisProperties {
 
     /** Redis 호스트 */
     private String host;

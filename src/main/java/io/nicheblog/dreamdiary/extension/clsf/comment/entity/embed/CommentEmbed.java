@@ -5,8 +5,8 @@ import lombok.*;
 import org.hibernate.annotations.*;
 import org.springframework.util.CollectionUtils;
 
-import javax.persistence.OrderBy;
 import javax.persistence.*;
+import javax.persistence.OrderBy;
 import java.io.Serializable;
 import java.util.List;
 

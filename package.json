@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build:ts": "tsc",
+    "build:ts": "npx tsc",
     "build:scss": "sass src/main/resources/static/css:src/main/resources/static/css && sass static:static",
     "build": "npm run build:ts && npm run build:scss"
   },
@@ -17,6 +17,7 @@
     "@types/stompjs": "^2.3.9",
     "@types/tinymce": "^4.6.9",
     "moment": "^2.30.1",
-    "sass": "^1.83.4"
+    "sass": "^1.83.4",
+    "typescript": "^5.8.3"
   }
 }

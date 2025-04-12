@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "spring.elasticsearch")
 @Getter
 @Setter
-public class ElasticProperty {
+public class ElasticProperties {
 
     /** ElasticSearch 사용자 */
     private String username;
