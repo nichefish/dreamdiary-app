@@ -31,11 +31,21 @@ public interface SchdulMapstruct
      * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
-    // @Mapping(target = "prtcpnt", expression = "java(entity.getPrtcpntStr())")
     @Mapping(target = "bgnDt", expression = "java(DateUtils.asStr(entity.getBgnDt(), DatePtn.DATE))")
     @Mapping(target = "endDt", expression = "java(DateUtils.asStr(entity.getEndDt(), DatePtn.DATE))")
-    // @Mapping(target = "prtcpntList", expression = "java(entity.getPrtcpntDtoList())")
     SchdulDto toDto(final SchdulEntity entity) throws Exception;
+
+    /**
+     * Entity -> ListDto 변환
+     *
+     * @param entity 변환할 Entity 객체
+     * @return Dto -- 변환된 Dto 객체
+     * @throws Exception 변환 중 발생할 수 있는 예외
+     */
+    @Override
+    @Mapping(target = "bgnDt", expression = "java(DateUtils.asStr(entity.getBgnDt(), DatePtn.DATE))")
+    @Mapping(target = "endDt", expression = "java(DateUtils.asStr(entity.getEndDt(), DatePtn.DATE))")
+    SchdulDto toListDto(final SchdulEntity entity) throws Exception;
 
     /**
      * Dto -> Entity 변환

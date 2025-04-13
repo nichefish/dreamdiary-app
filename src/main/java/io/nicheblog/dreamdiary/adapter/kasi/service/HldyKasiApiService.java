@@ -53,4 +53,12 @@ public interface HldyKasiApiService {
      * @throws Exception 삭제 중 발생할 수 있는 예외
      */
     void delHldyList(final String yyStr) throws Exception;
+
+    /**
+     * API:: 한국천문연구원(KASI):: API 조회 휴일 정보 DB 삭제 및 재등록
+     *
+     * @param yyStr 삭제할 연도 (String)
+     * @throws Exception 삭제 중 발생할 수 있는 예외
+     */
+    boolean resyncHldy(final String yyStr) throws Exception;
 }

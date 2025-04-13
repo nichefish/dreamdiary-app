@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.domain.schdul.entity.SchdulEntity;
 import io.nicheblog.dreamdiary.domain.schdul.mapstruct.SchdulMapstruct;
 import io.nicheblog.dreamdiary.domain.schdul.model.SchdulDto;
 import io.nicheblog.dreamdiary.domain.schdul.model.SchdulPrtcpntDto;
+import io.nicheblog.dreamdiary.domain.schdul.model.SchdulSearchParam;
 import io.nicheblog.dreamdiary.domain.schdul.repository.jpa.SchdulRepository;
 import io.nicheblog.dreamdiary.domain.schdul.spec.SchdulSpec;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
@@ -19,12 +20,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.interceptor.SimpleKey;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * SchdulService
@@ -48,6 +54,9 @@ public class SchdulService
     private final SchdulMapstruct mapstruct = SchdulMapstruct.INSTANCE;
 
     private final ApplicationEventPublisherWrapper publisher;
+
+    @Resource(name="jCacheManager")
+    private CacheManager cacheManager;
 
     private final ApplicationContext context;
     private SchdulService getSelf() {
@@ -221,5 +230,25 @@ public class SchdulService
         EhCacheUtils.evictCacheAll("hldyEntityList");
         EhCacheUtils.evictCacheAll("isHldy");
         EhCacheUtils.evictCacheAll("isHldyOrWeekend");
+    }
+
+    /**
+     * 공휴일 정보를 다시 동기화하여 캐시에 갱신한다.
+     *
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    public void resyncHldyMap() throws Exception {
+        final SchdulSearchParam param = SchdulSearchParam.builder().schdulCd(Constant.SCHDUL_HLDY).build();
+        final List<SchdulDto> hldyList = this.getSelf().getListDto(param);
+
+        final Map<String, List<String>> hldyMap = hldyList.stream()
+                .filter(dto -> StringUtils.isNotEmpty(dto.getBgnDt()))
+                .collect(Collectors.groupingBy(
+                        SchdulDto::getBgnDt,
+                        Collectors.mapping(SchdulDto::getSchdulNm, Collectors.toList())
+                ));
+
+        final Cache cache = cacheManager.getCache("hldyMap");
+        if (cache != null) cache.put(SimpleKey.EMPTY, hldyMap);
     }
 }

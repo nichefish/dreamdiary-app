@@ -1,17 +1,17 @@
 package io.nicheblog.dreamdiary.extension.cache.event;
 
-import io.nicheblog.dreamdiary.extension.cache.handler.EhCacheEvictEventListner;
+import io.nicheblog.dreamdiary.extension.cache.handler.CacheWarmupEventListner;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
 /**
  * CacheWarmupEvent
  * <pre>
- *  EhCache 캐시 evict 이벤트 :: 메인 로직과 분리
+ *  캐시 웜업 이벤트 :: 메인 로직과 분리
  * </pre>
  *
  * @author nichefish
- * @see EhCacheEvictEventListner
+ * @see CacheWarmupEventListner
  */
 @Getter
 public class CacheWarmupEvent

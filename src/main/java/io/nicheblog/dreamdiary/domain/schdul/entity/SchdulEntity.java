@@ -11,10 +11,10 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
 import org.springframework.util.CollectionUtils;
 
+import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,6 +42,7 @@ public class SchdulEntity
 
     @PostLoad
     private void onLoad() {
+        this.schdulNm = this.title;
         // 코드 이름 세팅
         if (!CollectionUtils.isEmpty(this.prtcpntList)) {
             this.prtcpntStr = this.prtcpntList.stream()

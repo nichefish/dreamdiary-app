@@ -63,7 +63,7 @@ public class JrnlDayRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final List<JrnlDayDto> jrnlDayList = jrnlDayService.getMyListDto(AuthUtils.getLgnUserId(), searchParam);
+        final List<JrnlDayDto> jrnlDayList = jrnlDayService.getMyListDtoWithHldy(AuthUtils.getLgnUserId(), searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -132,7 +132,7 @@ public class JrnlDayRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final JrnlDayDto retrievedDto = jrnlDayService.getDtlDtoWithCache(key);
+        final JrnlDayDto retrievedDto = jrnlDayService.getDtlDtoWithCacheWithHldy(key);
         final boolean isSuccess = (retrievedDto.getPostNo() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

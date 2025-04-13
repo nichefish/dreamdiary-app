@@ -12,12 +12,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.Resource;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +44,14 @@ public class HldyKasiApiServiceImpl
 
     private final HldyKasiApiMapstruct hldyApiMapstruct = HldyKasiApiMapstruct.INSTANCE;
     private final SchdulService schdulService;
+
+    @Resource(name="jCacheManager")
+    private CacheManager cacheManager;
+
+    private final ApplicationContext context;
+    private HldyKasiApiService getSelf() {
+        return context.getBean(this.getClass());
+    }
 
     @Value("${api.kasi.serviceKey}")
     private String serviceKey;
@@ -136,5 +147,24 @@ public class HldyKasiApiServiceImpl
             put("src", "KASI");
         }};
         schdulService.deleteAll(searchParamMap);
+    }
+
+    /**
+     * API:: 한국천문연구원(KASI):: API 조회 휴일 정보 DB 삭제 및 재등록
+     *
+     * @param yyStr 삭제할 연도 (String)
+     * @throws Exception 삭제 중 발생할 수 있는 예외
+     */
+    @Override
+    @Transactional
+    public boolean resyncHldy(final String yyStr) throws Exception {
+        this.delHldyList(yyStr);
+
+        final List<HldyKasiApiItemDto> hldyApiList = this.getSelf().getHldyList(yyStr);
+        final boolean isSuccess = this.getSelf().regHldyList(hldyApiList);
+
+        if (isSuccess) schdulService.resyncHldyMap();
+
+        return isSuccess;
     }
 }

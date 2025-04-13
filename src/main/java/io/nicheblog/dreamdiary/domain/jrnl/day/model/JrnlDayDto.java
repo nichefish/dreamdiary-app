@@ -76,6 +76,11 @@ public class JrnlDayDto
     /** 월 */
     private Integer mnth;
 
+    /** 공휴일 여부 */
+    private Boolean isHldy;
+    /** 공휴일 이름 */
+    private String hldyNm;
+
     /** 날씨 */
     @Size(max = 100, message = "날씨 정보는 100자 이하로 입력해야 합니다.")
     private String weather;
