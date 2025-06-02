@@ -87,13 +87,34 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     p {
         color: rgba(75, 75, 75, 0.9);
     }
+    .text-comment p {
+        color: initial;
+    }
 }
 .jrnl-dream-cn {
     p {
         color: rgba(95, 0, 130, 0.8);
     }
+    .text-comment {
+        p {
+            color: #ed7000 !important;
+        }
+    }
 }
 
+.text-comment {
+    .md-text-dialo32g {
+        color: #8b7f91 !important;
+    }
+    .md-text-muted {
+        color: #a67850 !important;
+    }
+    .md-text-dan2ger {
+        color: #a04435 !important;
+    }
+}
+
+/* 글접기 처리 */
 .modal-body {
     .jrnl-dream-cn, .jrnl-diary-cn {
 
