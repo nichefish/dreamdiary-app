@@ -19,6 +19,8 @@ public interface SiteUrl {
     String ADMIN_MAIN = Prefix.ADMIN + MAIN;
     String TEST_PAGE = Prefix.ADMIN + "/testPage.do";
 
+    String ALIVE_CHECK_AJAX = "/aliveCheckAjax.do";
+
     /** 저널 일자 */
     String JRNL_DAY_PAGE = Prefix.JRNL_DAY + "/jrnlDayPage.do";
     String JRNL_DAY_LIST_AJAX = Prefix.JRNL_DAY + "/jrnlDayListAjax.do";

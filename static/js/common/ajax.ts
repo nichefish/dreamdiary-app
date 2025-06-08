@@ -150,7 +150,6 @@ cF.ajax = (function(): Module {
         const msg:string = msgObject.message;
         const lgnFormUrl: string = "/auth/lgnForm.do";
 
-
         switch(statusCode) {
             case 401: {
                 cF.ui.swalOrConfirm(msg + "\n" + Message.get("view.auth.redirect-to-lgn-form"), function(): void {

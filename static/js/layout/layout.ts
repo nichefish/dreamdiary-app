@@ -15,8 +15,22 @@ const Layout: Page = (function(): Page {
             // 개별 input 유효성검사
             cF.validate.onlyNum(".number");
 
+            Layout.aliveCheck(60);
+
             Layout.setBtnDelay();
             Layout.modalBtnCloseSafe();
+        },
+
+        /**
+         * alive-check
+         * 주기적으로 alive check
+         * @param seconds 주기(초), 기본값 = 60
+         */
+        aliveCheck: function(seconds: number = 60): void {
+            const aliveCheckUrl: string = Url.ALIVE_CHECK_AJAX;
+            setInterval(() => {
+                // fetch(aliveCheckUrl);
+            }, seconds * 1000);
         },
 
         /**
