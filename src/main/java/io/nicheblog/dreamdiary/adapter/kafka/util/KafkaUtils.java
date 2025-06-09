@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.adapter.kafka.util;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 @Log4j2
+@Profile({"dev", "prod"})
 public class KafkaUtils {
 
     private static final String TOPIC = "dreamdiary";
