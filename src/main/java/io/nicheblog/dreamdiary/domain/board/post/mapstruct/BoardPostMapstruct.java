@@ -71,6 +71,7 @@ public interface BoardPostMapstruct
      * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
+    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
     BoardPostEntity toEntity(final BoardPostDto.DTL dto) throws Exception;
 
     /**
@@ -82,5 +83,6 @@ public interface BoardPostMapstruct
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
     void updateFromDto(final BoardPostDto.DTL dto, final @MappingTarget BoardPostEntity entity) throws Exception;
 }

@@ -67,6 +67,7 @@ public interface JrnlDiaryMapstruct
      * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
+    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
     JrnlDiaryEntity toEntity(final JrnlDiaryDto dto) throws Exception;
 
     /**
@@ -78,5 +79,6 @@ public interface JrnlDiaryMapstruct
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
     void updateFromDto(final JrnlDiaryDto dto, final @MappingTarget JrnlDiaryEntity entity) throws Exception;
 }

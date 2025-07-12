@@ -59,6 +59,7 @@ public interface SectnMapstruct
      * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
+    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
     SectnEntity toEntity(final SectnDto dto) throws Exception;
 
     /**
@@ -70,5 +71,6 @@ public interface SectnMapstruct
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
     void updateFromDto(final SectnDto dto, final @MappingTarget SectnEntity entity) throws Exception;
 }

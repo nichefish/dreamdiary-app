@@ -58,6 +58,7 @@ public interface JrnlSbjctMapstruct
      * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
+    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
     JrnlSbjctEntity toEntity(final JrnlSbjctDto.DTL dto) throws Exception;
 
     /**
@@ -69,5 +70,6 @@ public interface JrnlSbjctMapstruct
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
     void updateFromDto(final JrnlSbjctDto.DTL dto, final @MappingTarget JrnlSbjctEntity entity) throws Exception;
 }

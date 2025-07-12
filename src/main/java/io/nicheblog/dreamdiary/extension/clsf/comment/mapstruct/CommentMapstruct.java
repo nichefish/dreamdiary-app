@@ -60,6 +60,7 @@ public interface CommentMapstruct
      */
     @Override
     @Named("toEntity")
+    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
     CommentEntity toEntity(final CommentDto dto) throws Exception;
 
     /**
@@ -71,5 +72,6 @@ public interface CommentMapstruct
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
     void updateFromDto(final CommentDto dto, final @MappingTarget CommentEntity entity) throws Exception;
 }

@@ -60,6 +60,7 @@ public interface JrnlSumryMapstruct
      * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
+    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
     JrnlSumryEntity toEntity(final JrnlSumryDto.DTL dto) throws Exception;
 
     /**
@@ -71,5 +72,6 @@ public interface JrnlSumryMapstruct
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
     void updateFromDto(final JrnlSumryDto.DTL dto, final @MappingTarget JrnlSumryEntity entity) throws Exception;
 }

@@ -1,6 +1,8 @@
 package io.nicheblog.dreamdiary.global.util;
 
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.tika.utils.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -27,6 +29,8 @@ public class MarkdownUtils {
 
     /**
      * 공통 > 마크다운 처리
+     *
+     * @param htmlContent Elements
      */
     public static String markdown(final String htmlContent) {
         final Document document = Jsoup.parseBodyFragment(htmlContent);
@@ -39,6 +43,11 @@ public class MarkdownUtils {
         return document.body().html(); // 변경된 HTML 반환
     }
 
+    /**
+     * 텍스트 마크다운 처리 :: 메소드 분리
+     *
+     * @param elements Elements
+     **/
     public static void procNodes(final Elements elements) {
         for (final Element elmt : elements) {
             // <pre> 태그는 처리하지 않음
@@ -67,6 +76,9 @@ public class MarkdownUtils {
 
     /**
      * 텍스트 마크다운 처리 :: 메소드 분리
+     *
+     * @param text String
+     * @return String
      **/
     public static String procText(final String text) {
         final int MAX_GROUP_LENGTH = 3000;
@@ -153,5 +165,26 @@ public class MarkdownUtils {
         }
 
         return result.toString();
+    }
+
+    /**
+     * 텍스트에디터 컨텐츠 저장 전 정규화
+     *
+     * @param originalText String
+     * @return String
+     **/
+    public static String normalize(final String originalText) {
+        if (StringUtils.isEmpty(originalText)) return null;
+
+        // 1. HTML entity decode
+        String unescapedText = StringEscapeUtils.unescapeHtml4(originalText);
+
+        // 2. 특수문자 정규화
+        return unescapedText
+                .replace("‘", "'")
+                .replace("’", "'")
+                .replace("“", "\"")
+                .replace("”", "\"")
+                .replace("…", "...");
     }
 }
