@@ -82,6 +82,7 @@ spring:
                 default_batch_fetch_size: 1000
                 enable_lazy_load_no_trans: true
         open-in-view: true
+        defer-datasource-initialization: true # 중요
 
     flyway:
         url: ${JDBC_URL}

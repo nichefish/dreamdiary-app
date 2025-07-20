@@ -50,9 +50,17 @@
             <div class="row p-5">
                 {{#if (exists jrnlDiaryList)}}
                     <label class="d-flex align-items-center mt-2">
-                        <span class="text-gray-700 fs-6 ps-5 fw-bolder">
-                            <@spring.message 'diary'/>
-                            <i class="bi bi-book fs-4 pe-1"></i>
+                        <span class="text-gray-700 fs-6 ps-5 fw-bolder ">
+                            {{#if (equals diaryResolvedYn 'Y')}}
+                                <span class="text-success"><@spring.message 'diary'/></span>
+                                <span class="position-relative d-inline-block">
+                                  <i class="bi bi-book fs-4 text-success"></i>
+                                  <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
+                                </span>
+                            {{else}}
+                                <@spring.message 'diary'/>
+                                <i class="bi bi-book fs-4 pe-1"></i>
+                            {{/if}}
                         </span>
                     </label>
                     {{#each jrnlDiaryList}}

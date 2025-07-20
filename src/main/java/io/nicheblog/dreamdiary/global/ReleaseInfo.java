@@ -20,7 +20,6 @@ import java.util.List;
  * @author nichefish
  */
 @Component
-@ConfigurationProperties(prefix = "spring.flyway")
 @Getter
 @Setter
 public class ReleaseInfo {

@@ -75,6 +75,25 @@
             </div>
         </div>
     </div>
+    <#--begin::Row-->
+    <div class="row d-flex mb-8">
+        <div class="col-lg-12 col-3 d-flex align-items-center">
+            <label class="text-gray-700 fs-6 fw-bolder cursor-help"
+                   data-bs-toggle="tooltip" data-bs-placement="top" title="일기 정리완료 여부">
+                일기 정리완료 여부
+                <i class="bi bi-question-circle"></i>
+            </label>
+        </div>
+        <div class="col-lg-2 col-9 d-flex align-items-center">
+            <div class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
+                <input type="checkbox" name="diaryResolvedYn" id="diaryResolvedYn" class="form-check-input"
+                       value="Y" {{checkedYn diaryResolvedYn}} />
+                <label class="form-check-label fw-bold fs-6 ms-3" for="imprtcYn" id="imprtcYnLabel" {{{checkedYnStyle diaryResolvedYn "color" "red//gray"}}}>
+                    {{#ifYn diaryResolvedYn}}완료{{else}}미완료{{/ifYn}}
+                </label>
+            </div>
+        </div>
+    </div>
 
     <!--begin::tagify partial-->
     <#include "/view/extension/clsf/tag/_tag_tagify_partial.hbs">
