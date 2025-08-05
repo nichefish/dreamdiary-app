@@ -64,9 +64,17 @@
                         </span>
                     </label>
                     {{#each jrnlDiaryList}}
-                        <div class="row jrnl-diary-item">
-                            <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
-                                <div># {{idx}}</div>
+                        <div class="row jrnl-diary-item" data-id="{{postNo}}">
+                            <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
+                                <div class="d-flex flex-column align-items-center">
+                                    <span># {{idx}}</span>
+                                    <!-- 토글 버튼 추가 -->
+                                    <button type="button"
+                                            class="btn btn-sm btn-light-secondary ms-2 toggle-diary-btn"
+                                            onclick="dF.JrnlDiary.toggle({{postNo}})">
+                                        <i class="bi bi-chevron-up pe-0" id="toggle-icon-{{postNo}}"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="col jrnl-diary-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
                                 {{> jrnl_diary_cn_partial this}}
@@ -89,8 +97,16 @@
                     </label>
                     {{#each jrnlDreamList}}
                         <div class="row jrnl-item">
-                            <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
-                                <div># {{idx}}</div>
+                            <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
+                                <div class="d-flex flex-column align-items-center">
+                                    <span># {{idx}}</span>
+                                    <!-- 토글 버튼 추가 -->
+                                    <button type="button"
+                                            class="btn btn-sm btn-light-secondary ms-2 toggle-dream-btn"
+                                            onclick="dF.JrnlDream.toggle({{postNo}})">
+                                        <i class="bi bi-chevron-up pe-0" id="toggle-icon-{{postNo}}"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
                                 {{> jrnl_dream_cn_partial this}}
@@ -105,8 +121,16 @@
                     {{/each}}
                     {{#each jrnlElseDreamList}}
                         <div class="row jrnl-item">
-                            <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
-                                <div>-</div>
+                            <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
+                                <div class="d-flex flex-column align-items-center">
+                                    <span>-</span>
+                                    <!-- 토글 버튼 추가 -->
+                                    <button type="button"
+                                            class="btn btn-sm btn-light-secondary ms-2 toggle-dream-btn"
+                                            onclick="dF.JrnlDream.toggle({{postNo}})">
+                                        <i class="bi bi-chevron-up pe-0" id="toggle-icon-{{postNo}}"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="col py-3 jrnl-dream-cn bg-secondary">
                                 {{> jrnl_dream_cn_partial this elseDreamYn="Y"}}
