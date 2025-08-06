@@ -136,7 +136,7 @@ cF.util = (function(): Module {
             const inputs: string = "<input type='hidden' name='atchFileNo' value='" + atchFileNo + "'>" +
                            "<input type='hidden' name='atchFileDtlNo' value='" + atchFileDtlNo + "'>";
             const form: HTMLFormElement = document.createElement("form");
-            form.action = "/file/fileDownload.do";
+            form.action = "/file/file-download.do";
             form.method = "POST"; // POST 방식으로 설정
             form.innerHTML = inputs;
             document.body.appendChild(form);    // 폼 추가

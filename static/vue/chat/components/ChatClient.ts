@@ -19,7 +19,7 @@ export default {
         // 서버 정보 조회
         async fetchServerInfo(): Promise<void> {
             try {
-                const response: Response = await fetch('/cmm/getServerInfo.do');
+                const response: Response = await fetch('/cmm/get-server-info.do');
                 const data: Record<string, any> = await response.json();
                 const rsltObj: Record<string, any> = data.rsltObj;
                 this.serverInfo.domain = rsltObj.domain;

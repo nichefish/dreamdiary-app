@@ -11,13 +11,13 @@ package io.nicheblog.dreamdiary.auth;
 public interface AuthUrl {
 
     /** 로그인 관련 */
-    String AUTH_LGN_FORM = AuthUrl.Prefix.AUTH + "/lgnForm.do";
-    String AUTH_LGN_PROC = AuthUrl.Prefix.AUTH + "/lgnProc.do";
-    String AUTH_LGN_PW_CHG_AJAX = AuthUrl.Prefix.AUTH + "/lgnPwChgAjax.do";
+    String AUTH_LGN_FORM = AuthUrl.Prefix.AUTH + "/lgn-form.do";
+    String AUTH_LGN_PROC = AuthUrl.Prefix.AUTH + "/lgn-proc.do";
+    String AUTH_LGN_PW_CHG_AJAX = AuthUrl.Prefix.AUTH + "/lgn-pw-chg-ajax.do";
     String AUTH_LGOUT = AuthUrl.Prefix.AUTH + "/lgout.do";
-    String AUTH_EXPIRE_SESSION_AJAX = AuthUrl.Prefix.AUTH + "/expireSession.do";
+    String AUTH_EXPIRE_SESSION_AJAX = AuthUrl.Prefix.AUTH + "/expire-session.do";
     String AUTH_VERIFY = AuthUrl.Prefix.AUTH + "/verify.do";
-    String AUTH_INFO = "/api/auth/getAuthInfo.do";
+    String AUTH_INFO = "/api/auth/get-auth-info.do";
 
     // 구글 소셜 로그인 팝업
     String OAUTH2_GOOGLE = "/oauth2/authorization/google";

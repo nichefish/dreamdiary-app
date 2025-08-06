@@ -95,7 +95,7 @@ cF.$ajax = (function(): Module {
         error: function(xhr): void {
             const statusCode: number = xhr.status;
             const msg: string = xhr.responseJSON?.message || Message.get("view.error.access-denied");
-            const lgnFormUrl: string =  "/auth/lgnForm.do";
+            const lgnFormUrl: string = "/auth/lgn-form.do";
 
             switch(statusCode) {
                 case 401: {

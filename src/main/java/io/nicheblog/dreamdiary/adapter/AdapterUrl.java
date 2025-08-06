@@ -15,19 +15,19 @@ public interface AdapterUrl {
     /**
      * (API) 저널 일자
      */
-    String API_JRNL_DAY_LIST_AJAX = Prefix.API_JRNL_DAY + "/jrnlDayListAjax.do";
-    String API_JRNL_DAY_DTL_AJAX = Prefix.API_JRNL_DAY + "/jrnlDayDtlAjax.do";
+    String API_JRNL_DAY_LIST_AJAX = Prefix.API_JRNL_DAY + "/jrnl-day-list-ajax.do";
+    String API_JRNL_DAY_DTL_AJAX = Prefix.API_JRNL_DAY + "/jrnl-day-dtl-ajax.do";
 
     /**
      * (API) 한국천문연구원 : 특일 정보 조회
      */
-    String API_HLDY_GET = Prefix.API_HLDY + "/getHldyInfo.do";
+    String API_HLDY_GET = Prefix.API_HLDY + "/get-hldy-info.do";
 
     /**
      * (API) JANDI : 메세지 송수신
      */
-    String API_JANDI_SND_MSG = Prefix.API_JANDI + "/sendMsg.do";
-    String API_JANDI_RCV_MSG = Prefix.API_JANDI + "/receiveMsg.do";
+    String API_JANDI_SND_MSG = Prefix.API_JANDI + "/send-msg.do";
+    String API_JANDI_RCV_MSG = Prefix.API_JANDI + "/receive-msg.do";
 
 
     String API_NOTION_GET = Prefix.API_NOTION + "/notion.do";
@@ -35,7 +35,7 @@ public interface AdapterUrl {
     /**
      * (API) SNMP : 메세지 발신
      */
-    String URL_API_SNMP_SEND_AJAX = "/snmpSendAjax.do";
+    String URL_API_SNMP_SEND_AJAX = "/snmp-dend-ajax.do";
 
     /**
      * PREFIX 정보
