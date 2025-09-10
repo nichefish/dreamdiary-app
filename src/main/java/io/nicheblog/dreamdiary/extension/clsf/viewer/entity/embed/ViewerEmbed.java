@@ -7,8 +7,8 @@ import lombok.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.annotations.*;
 
-import javax.persistence.OrderBy;
 import javax.persistence.*;
+import javax.persistence.OrderBy;
 import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;

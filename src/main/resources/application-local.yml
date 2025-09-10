@@ -40,17 +40,6 @@ spring:
         port: ${REDIS_PORT}
         password: ${REDIS_PASSWORD}
 
-    kafka:
-        bootstrap-servers: ${KAFKA_HOST}:${KAFKA_PORT}
-        consumer:
-            group-id: dreamdiary
-            auto-offset-reset: earliest
-            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-            value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-        producer:
-            key-serializer: org.apache.kafka.common.serialization.StringSerializer
-            value-serializer: org.apache.kafka.common.serialization.StringSerializer
-
     elasticsearch:
         username: ${ELASTIC_USERNAME}
         password: ${ELASTIC_PASSWORD}

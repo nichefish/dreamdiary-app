@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayService;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayTagService;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryTagService;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamTagService;
+import io.nicheblog.dreamdiary.domain.schdul.service.SchdulService;
 import io.nicheblog.dreamdiary.extension.cache.service.CacheWarmupService;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;
@@ -31,29 +32,42 @@ public class CacheWarmupServiceImpl
         implements CacheWarmupService {
 
     @Resource(name="jCacheManager")
+    @SuppressWarnings("unused")
     private CacheManager cacheManager;
 
     private final JrnlDayService jrnlDayService;
     private final JrnlDayTagService jrnlDayTagService;
     private final JrnlDiaryTagService jrnlDiaryTagService;
     private final JrnlDreamTagService jrnlDreamTagService;
-    
+    private final SchdulService schdulService;
+
     /**
      * 캐시 웜업
      */
     public void warmup() throws Exception {
-        // 태그 카테고리 맵 웜업
+        // 태그 카테고리 맵 캐시 웜업
         this.warmupTagCtgrMap();
+        // 공휴일 맵 캐시 웜업
+        this.warmupHldyMap();
     }
 
     /**
-     * 태그 카테고리 맵 캐시 팝업
+     * 태그 카테고리 맵 캐시 웜업
      */
     @Override
     public void warmupTagCtgrMap() throws Exception {
+        // TODO: 사용자별 캐시 웜업
         jrnlDayTagService.getTagCtgrMap("nichefish");
         jrnlDiaryTagService.getTagCtgrMap("nichefish");
         jrnlDreamTagService.getTagCtgrMap("nichefish");
+    }
+
+    /**
+     * 공휴일 맵 캐시 웜업
+     */
+    @Override
+    public void warmupHldyMap() throws Exception {
+        schdulService.resyncHldyMap();
     }
 
     /**

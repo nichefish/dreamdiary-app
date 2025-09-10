@@ -18,9 +18,9 @@
     <#--begin::Header container-->
     <div class="app-container container-fluid d-flex align-items-stretch justify-content-between" id="kt_app_header_container">
 
-        <#--begin::Mobile logo-->
+        <#--begin::Web&Mobile logo-->
         <#include "/layout/header/_header_logo.ftlh">
-        <#--end::Mobile logo-->
+        <#--end::Web&Mobile logo-->
 
         <#--begin::Header wrapper-->
         <div class="d-flex align-items-stretch justify-content-between flex-lg-grow-1" id="kt_app_header_wrapper">

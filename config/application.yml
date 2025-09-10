@@ -4,13 +4,13 @@
 spring:
     #( local // dev // stg // prod // test )
     profiles:
-        active: dev
+        active: local
 
     #release. should be changed manually for each deployment
     flyway:
-        enabled: true   # Flyway 활성화
+        enabled: false   # Flyway 비활성화 및 수동구성. (의존성 충돌 관리 위함)
         baseline-version: 0.14.0   # 해당 버전 이전의 마이그레이션은 실행하지 않음
-        target: 0.14.0  # 해당 버전까지만 적용하고 이후 버전은 실행 안 함
+        target: 0.14.2  # 해당 버전까지만 적용하고 이후 버전은 실행 안 함
         release-date: 20250322
 
 logging:

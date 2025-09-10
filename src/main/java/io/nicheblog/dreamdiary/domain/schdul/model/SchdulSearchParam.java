@@ -30,6 +30,9 @@ public class SchdulSearchParam
     /** 조회종료일자 */
     private String endDt;
 
+    /** 스케쥴 코드 */
+    private String schdulCd;
+
     /** 내 정보 표시 여부 (Y/N) */
     @Size(min = 1, max = 1)
     @Pattern(regexp = "^[YN]$")

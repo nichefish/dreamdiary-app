@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.global.util.YmlLoader;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -26,7 +27,12 @@ import java.util.TimeZone;
  * @author nichefish
  * @see DreamdiaryInitializer
  */
-@SpringBootApplication(scanBasePackageClasses = { NicheblogBasePackage.class })
+@SpringBootApplication(
+    scanBasePackageClasses = { NicheblogBasePackage.class },
+    exclude = {
+        FlywayAutoConfiguration.class
+    }
+)
 @EnableCaching
 @EnableScheduling
 @Log4j2

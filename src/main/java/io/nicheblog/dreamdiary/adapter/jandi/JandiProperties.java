@@ -22,7 +22,7 @@ import java.util.List;
 @ConfigurationProperties(prefix = "api.jandi")
 @Getter
 @Setter
-public class JandiProperty {
+public class JandiProperties {
 
     /** 팀 고유 id */
     private String teamId;

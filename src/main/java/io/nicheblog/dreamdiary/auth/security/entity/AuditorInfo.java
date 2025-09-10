@@ -4,13 +4,13 @@ import io.nicheblog.dreamdiary.domain.user.info.entity.UserAuthRoleEntity;
 import io.nicheblog.dreamdiary.global.Constant;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cache;
 
+import javax.persistence.*;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 

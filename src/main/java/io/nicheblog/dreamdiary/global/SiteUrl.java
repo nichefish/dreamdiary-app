@@ -17,287 +17,289 @@ public interface SiteUrl {
     String REACT_MAIN = "/react/main.do";
 
     String ADMIN_MAIN = Prefix.ADMIN + MAIN;
-    String TEST_PAGE = Prefix.ADMIN + "/testPage.do";
+    String TEST_PAGE = Prefix.ADMIN + "/test-page.do";
+
+    String ALIVE_CHECK_AJAX = "/alive-check-ajax.do";
 
     /** 저널 일자 */
-    String JRNL_DAY_PAGE = Prefix.JRNL_DAY + "/jrnlDayPage.do";
-    String JRNL_DAY_LIST_AJAX = Prefix.JRNL_DAY + "/jrnlDayListAjax.do";
-    String JRNL_DAY_CAL_LIST_AJAX = Prefix.JRNL_DAY + "/jrnlDayCalListAjax.do";
-    String JRNL_DAY_REG_AJAX = Prefix.JRNL_DAY + "/jrnlDayRegAjax.do";
-    String JRNL_DAY_DTL_AJAX = Prefix.JRNL_DAY + "/jrnlDayDtlAjax.do";
-    String JRNL_DAY_MDF_AJAX = Prefix.JRNL_DAY + "/jrnlDayMdfAjax.do";
-    String JRNL_DAY_DEL_AJAX = Prefix.JRNL_DAY + "/jrnlDayDelAjax.do";
+    String JRNL_DAY_PAGE = Prefix.JRNL_DAY + "/jrnl-day-page.do";
+    String JRNL_DAY_LIST_AJAX = Prefix.JRNL_DAY + "/jrnl-day-list-ajax.do";
+    String JRNL_DAY_CAL_LIST_AJAX = Prefix.JRNL_DAY + "/jrnl-day-cal-list-ajax.do";
+    String JRNL_DAY_REG_AJAX = Prefix.JRNL_DAY + "/jrnl-day-reg-ajax.do";
+    String JRNL_DAY_DTL_AJAX = Prefix.JRNL_DAY + "/jrnl-day-dtl-ajax.do";
+    String JRNL_DAY_MDF_AJAX = Prefix.JRNL_DAY + "/jrnl-day-mdf-ajax.do";
+    String JRNL_DAY_DEL_AJAX = Prefix.JRNL_DAY + "/jrnl-day-del-ajax.do";
     /** 저널 일자 달력 */
-    String JRNL_DAY_CAL = Prefix.JRNL_DAY + "/jrnlDayCal.do";
+    String JRNL_DAY_CAL = Prefix.JRNL_DAY + "/jrnl-day-cal.do";
     /** 저널 일자 태그 */
-    String JRNL_DAY_TAG_LIST_AJAX = Prefix.JRNL_DAY + "/jrnlDayTagListAjax.do";
-    String JRNL_DAY_TAG_GROUP_LIST_AJAX = Prefix.JRNL_DAY + "/jrnlDayTagGroupListAjax.do";
-    String JRNL_DAY_TAG_DTL_AJAX = Prefix.JRNL_DAY + "/jrnlDayTagDtlAjax.do";
-    String JRNL_DAY_TAG_CTGR_MAP_AJAX = Prefix.JRNL_DAY + "/jrnlDayTagCtgrMapAjax.do";
+    String JRNL_DAY_TAG_LIST_AJAX = Prefix.JRNL_DAY + "/jrnl-day-tag-list-ajax.do";
+    String JRNL_DAY_TAG_GROUP_LIST_AJAX = Prefix.JRNL_DAY + "/jrnl-day-tag-group-list-ajax.do";
+    String JRNL_DAY_TAG_DTL_AJAX = Prefix.JRNL_DAY + "/jrnl-day-tag-dtl-ajax.do";
+    String JRNL_DAY_TAG_CTGR_MAP_AJAX = Prefix.JRNL_DAY + "/jrnl-day-tag-ctgr-map-ajax.do";
 
     /** 저널 꿈 */
-    String JRNL_DREAM_LIST_AJAX = Prefix.JRNL_DREAM + "/jrnlDreamListAjax.do";
-    String JRNL_DREAM_REG_AJAX = Prefix.JRNL_DREAM + "/jrnlDreamRegAjax.do";
-    String JRNL_DREAM_DTL_AJAX = Prefix.JRNL_DREAM + "/jrnlDreamDtlAjax.do";
-    String JRNL_DREAM_MDF_AJAX = Prefix.JRNL_DREAM + "/jrnlDreamMdfAjax.do";
-    String JRNL_DREAM_DEL_AJAX = Prefix.JRNL_DREAM + "/jrnlDreamDelAjax.do";
+    String JRNL_DREAM_LIST_AJAX = Prefix.JRNL_DREAM + "/jrnl-dream-list-ajax.do";
+    String JRNL_DREAM_REG_AJAX = Prefix.JRNL_DREAM + "/jrnl-dream-reg-ajax.do";
+    String JRNL_DREAM_DTL_AJAX = Prefix.JRNL_DREAM + "/jrnl-dream-dtl-ajax.do";
+    String JRNL_DREAM_MDF_AJAX = Prefix.JRNL_DREAM + "/jrnl-dream-mdf-ajax.do";
+    String JRNL_DREAM_DEL_AJAX = Prefix.JRNL_DREAM + "/jrnl-dream-del-ajax.do";
     /** 저널 꿈 태그 */
-    String JRNL_DREAM_TAG_LIST_AJAX = Prefix.JRNL_DREAM + "/jrnlDreamTagListAjax.do";
-    String JRNL_DREAM_TAG_GROUP_LIST_AJAX = Prefix.JRNL_DREAM + "/jrnlDreamTagGroupListAjax.do";
-    String JRNL_DREAM_TAG_DTL_AJAX = Prefix.JRNL_DREAM + "/jrnlDreamTagDtlAjax.do";
-    String JRNL_DREAM_TAG_CTGR_MAP_AJAX = Prefix.JRNL_DREAM + "/jrnlDreamTagCtgrMapAjax.do";
+    String JRNL_DREAM_TAG_LIST_AJAX = Prefix.JRNL_DREAM + "/jrnl-dream-tag-list-ajax.do";
+    String JRNL_DREAM_TAG_GROUP_LIST_AJAX = Prefix.JRNL_DREAM + "/jrnl-dream-tag-group-list-ajax.do";
+    String JRNL_DREAM_TAG_DTL_AJAX = Prefix.JRNL_DREAM + "/jrnl-dream-tag-dtl-ajax.do";
+    String JRNL_DREAM_TAG_CTGR_MAP_AJAX = Prefix.JRNL_DREAM + "/jrnl-dream-tag-ctgr-map-ajax.do";
 
     /** 저널 일기 */
-    String JRNL_DIARY_LIST_AJAX = Prefix.JRNL_DIARY + "/jrnlDiaryListAjax.do";
-    String JRNL_DIARY_REG_AJAX = Prefix.JRNL_DIARY + "/jrnlDiaryRegAjax.do";
-    String JRNL_DIARY_DTL_AJAX = Prefix.JRNL_DIARY + "/jrnlDiaryDtlAjax.do";
-    String JRNL_DIARY_MDF_AJAX = Prefix.JRNL_DIARY + "/jrnlDiaryMdfAjax.do";
-    String JRNL_DIARY_DEL_AJAX = Prefix.JRNL_DIARY + "/jrnlDiaryDelAjax.do";
+    String JRNL_DIARY_LIST_AJAX = Prefix.JRNL_DIARY + "/jrnl-diary-list-ajax.do";
+    String JRNL_DIARY_REG_AJAX = Prefix.JRNL_DIARY + "/jrnl-diary-reg-ajax.do";
+    String JRNL_DIARY_DTL_AJAX = Prefix.JRNL_DIARY + "/jrnl-diary-dtl-ajax.do";
+    String JRNL_DIARY_MDF_AJAX = Prefix.JRNL_DIARY + "/jrnl-diary-mdf-ajax.do";
+    String JRNL_DIARY_DEL_AJAX = Prefix.JRNL_DIARY + "/jrnl-diary-del-ajax.do";
     /** 저널 일기 태그 */
-    String JRNL_DIARY_TAG_LIST_AJAX = Prefix.JRNL_DIARY + "/jrnlDiaryTagListAjax.do";
-    String JRNL_DIARY_TAG_GROUP_LIST_AJAX = Prefix.JRNL_DIARY + "/jrnlDiaryTagGroupListAjax.do";
-    String JRNL_DIARY_TAG_DTL_AJAX = Prefix.JRNL_DIARY + "/jrnlDiaryTagDtlAjax.do";
-    String JRNL_DIARY_TAG_CTGR_MAP_AJAX = Prefix.JRNL_DIARY + "/jrnlDiaryTagCtgrMapAjax.do";
+    String JRNL_DIARY_TAG_LIST_AJAX = Prefix.JRNL_DIARY + "/jrnl-diary-tag-list-ajax.do";
+    String JRNL_DIARY_TAG_GROUP_LIST_AJAX = Prefix.JRNL_DIARY + "/jrnl-diary-tag-group-list-ajax.do";
+    String JRNL_DIARY_TAG_DTL_AJAX = Prefix.JRNL_DIARY + "/jrnl-diary-tag-dtl-ajax.do";
+    String JRNL_DIARY_TAG_CTGR_MAP_AJAX = Prefix.JRNL_DIARY + "/jrnl-diary-tag-ctgr-map-ajax.do";
 
     /** 저널 할일 */
-    String JRNL_TODO_LIST_AJAX = Prefix.JRNL_TODO + "/jrnlTodoListAjax.do";
-    String JRNL_TODO_REG_AJAX = Prefix.JRNL_TODO + "/jrnlTodoRegAjax.do";
-    String JRNL_TODO_DTL_AJAX = Prefix.JRNL_TODO + "/jrnlTodoDtlAjax.do";
-    String JRNL_TODO_MDF_AJAX = Prefix.JRNL_TODO + "/jrnlTodoMdfAjax.do";
-    String JRNL_TODO_DEL_AJAX = Prefix.JRNL_TODO + "/jrnlTodoDelAjax.do";
+    String JRNL_TODO_LIST_AJAX = Prefix.JRNL_TODO + "/jrnl-todo-list-ajax.do";
+    String JRNL_TODO_REG_AJAX = Prefix.JRNL_TODO + "/jrnl-todo-reg-ajax.do";
+    String JRNL_TODO_DTL_AJAX = Prefix.JRNL_TODO + "/jrnl-todo-dtl-ajax.do";
+    String JRNL_TODO_MDF_AJAX = Prefix.JRNL_TODO + "/jrnl-todo-mdf-ajax.do";
+    String JRNL_TODO_DEL_AJAX = Prefix.JRNL_TODO + "/jrnl-todo-del-ajax.do";
 
     /** 저널 주제 */
-    String JRNL_SBJCT_LIST = Prefix.JRNL_SBJCT + "/jrnlSbjctList.do";
-    String JRNL_SBJCT_REG_FORM = Prefix.JRNL_SBJCT + "/jrnlSbjctRegForm.do";
-    String JRNL_SBJCT_REG_AJAX = Prefix.JRNL_SBJCT + "/jrnlSbjctRegAjax.do";
-    String JRNL_SBJCT_REG_PREVIEW_POP = Prefix.JRNL_SBJCT + "/jrnlSbjctPreviewPop.do";
+    String JRNL_SBJCT_LIST = Prefix.JRNL_SBJCT + "/jrnl-sbjct-list.do";
+    String JRNL_SBJCT_REG_FORM = Prefix.JRNL_SBJCT + "/jrnl-sbjct-reg-form.do";
+    String JRNL_SBJCT_REG_AJAX = Prefix.JRNL_SBJCT + "/jrnl-sbjct-reg-ajax.do";
+    String JRNL_SBJCT_REG_PREVIEW_POP = Prefix.JRNL_SBJCT + "/jrnl-sbjct-preview-pop.do";
 
-    String JRNL_SBJCT_DTL = Prefix.JRNL_SBJCT + "/jrnlSbjctDtl.do";
-    String JRNL_SBJCT_DTL_AJAX = Prefix.JRNL_SBJCT + "/jrnlSbjctDtlAjax.do";
-    String JRNL_SBJCT_MDF_FORM = Prefix.JRNL_SBJCT + "/jrnlSbjctMdfForm.do";
-    String JRNL_SBJCT_MDF_AJAX = Prefix.JRNL_SBJCT + "/jrnlSbjctMdfAjax.do";
-    String JRNL_SBJCT_DEL_AJAX = Prefix.JRNL_SBJCT + "/jrnlSbjctDelAjax.do";
+    String JRNL_SBJCT_DTL = Prefix.JRNL_SBJCT + "/jrnl-sbjct-dtl.do";
+    String JRNL_SBJCT_DTL_AJAX = Prefix.JRNL_SBJCT + "/jrnl-sbjct-dtl-ajax.do";
+    String JRNL_SBJCT_MDF_FORM = Prefix.JRNL_SBJCT + "/jrnl-sbjct-mdf-form.do";
+    String JRNL_SBJCT_MDF_AJAX = Prefix.JRNL_SBJCT + "/jrnl-sbjct-mdf-ajax.do";
+    String JRNL_SBJCT_DEL_AJAX = Prefix.JRNL_SBJCT + "/jrnl-sbjct-del-ajax.do";
 
     /** 저널 결산 */
-    String JRNL_SUMRY_LIST = Prefix.JRNL_SUMRY + "/jrnlSumryList.do";
-    String JRNL_SUMRY_LIST_AJAX = Prefix.JRNL_SUMRY + "/jrnlSumryListAjax.do";
-    String JRNL_SUMRY_DTL = Prefix.JRNL_SUMRY + "/jrnlSumryDtl.do";
-    String JRNL_SUMRY_DTL_AJAX = Prefix.JRNL_SUMRY + "/jrnlSumryDtlAjax.do";
-    String JRNL_SUMRY_MAKE_AJAX = Prefix.JRNL_SUMRY + "/jrnlSumryMakeAjax.do";
-    String JRNL_SUMRY_MAKE_TOTAL_AJAX = Prefix.JRNL_SUMRY + "/jrnlSumryMakeTotalAjax.do";
-    String JRNL_SUMRY_DREAM_COMPT_AJAX = Prefix.JRNL_SUMRY + "/jrnlSumryDreamComptAjax.do";
-    String JRNL_SUMRY_REG_AJAX = Prefix.JRNL_SUMRY + "/jrnlSumryRegAjax.do";
+    String JRNL_SUMRY_LIST = Prefix.JRNL_SUMRY + "/jrnl-sumry-list.do";
+    String JRNL_SUMRY_LIST_AJAX = Prefix.JRNL_SUMRY + "/jrnl-sumry-list-ajax.do";
+    String JRNL_SUMRY_DTL = Prefix.JRNL_SUMRY + "/jrnl-sumry-dtl.do";
+    String JRNL_SUMRY_DTL_AJAX = Prefix.JRNL_SUMRY + "/jrnl-sumry-dtl-ajax.do";
+    String JRNL_SUMRY_MAKE_AJAX = Prefix.JRNL_SUMRY + "/jrnl-sumry-make-ajax.do";
+    String JRNL_SUMRY_MAKE_TOTAL_AJAX = Prefix.JRNL_SUMRY + "/jrnl-sumry-make-total-ajax.do";
+    String JRNL_SUMRY_DREAM_COMPT_AJAX = Prefix.JRNL_SUMRY + "/jrnl-sumry-dream-compt-ajax.do";
+    String JRNL_SUMRY_REG_AJAX = Prefix.JRNL_SUMRY + "/jrnl-sumry-reg-ajax.do";
 
     /** 공지사항 */
-    String NOTICE_LIST = Prefix.NOTICE + "/noticeList.do";
-    String NOTICE_REG_FORM = Prefix.NOTICE + "/noticeRegForm.do";
-    String NOTICE_REG_AJAX = Prefix.NOTICE + "/noticeRegAjax.do";
-    String NOTICE_DTL = Prefix.NOTICE + "/noticeDtl.do";
-    String NOTICE_DTL_AJAX = Prefix.NOTICE + "/noticeDtlAjax.do";
-    String NOTICE_MDF_FORM = Prefix.NOTICE + "/noticeMdfForm.do";
-    String NOTICE_MDF_AJAX = Prefix.NOTICE + "/noticeMdfAjax.do";
-    String NOTICE_DEL_AJAX = Prefix.NOTICE + "/noticeDelAjax.do";
-    String NOTICE_REG_PREVIEW_POP = Prefix.NOTICE + "/noticeRegPreviewPop.do";
-    String NOTICE_POPUP_LIST_AJAX = Prefix.NOTICE + "/noticePopupListAjax.do";
-    String NOTICE_LIST_XLSX_DOWNLOAD = Prefix.NOTICE + "/noticeListXlsxDownload.do";
+    String NOTICE_LIST = Prefix.NOTICE + "/notice-list.do";
+    String NOTICE_REG_FORM = Prefix.NOTICE + "/notice-reg-form.do";
+    String NOTICE_REG_AJAX = Prefix.NOTICE + "/notice-reg-ajax.do";
+    String NOTICE_DTL = Prefix.NOTICE + "/notice-dtl.do";
+    String NOTICE_DTL_AJAX = Prefix.NOTICE + "/notice-dtl-ajax.do";
+    String NOTICE_MDF_FORM = Prefix.NOTICE + "/notice-mdf-form.do";
+    String NOTICE_MDF_AJAX = Prefix.NOTICE + "/notice-mdf-ajax.do";
+    String NOTICE_DEL_AJAX = Prefix.NOTICE + "/notice-del-ajax.do";
+    String NOTICE_REG_PREVIEW_POP = Prefix.NOTICE + "/notice-reg-preview-pop.do";
+    String NOTICE_POPUP_LIST_AJAX = Prefix.NOTICE + "/notice-popup-list-ajax.do";
+    String NOTICE_LIST_XLSX_DOWNLOAD = Prefix.NOTICE + "/notice-list-xlsx-download.do";
 
     /** 게시판 */
-    String BOARD_POST_LIST = Prefix.BOARD_POST + "/boardPostList.do";
-    String BOARD_POST_REG_FORM = Prefix.BOARD_POST + "/boardPostRegForm.do";
-    String BOARD_POST_REG_AJAX = Prefix.BOARD_POST + "/boardPostRegAjax.do";
-    String BOARD_POST_DTL = Prefix.BOARD_POST + "/boardPostDtl.do";
-    String BOARD_POST_DTL_AJAX = Prefix.BOARD_POST + "/boardPostDtlAjax.do";
-    String BOARD_POST_MDF_FORM = Prefix.BOARD_POST + "/boardPostMdfForm.do";
-    String BOARD_POST_MDF_AJAX = Prefix.BOARD_POST + "/boardPostMdfAjax.do";
-    String BOARD_POST_DEL_AJAX = Prefix.BOARD_POST + "/boardPostDelAjax.do";
-    String BOARD_POST_REG_PREVIEW_POP = Prefix.BOARD_POST + "/boardPostRegPreviewPop.do";
+    String BOARD_POST_LIST = Prefix.BOARD_POST + "/board-post-list.do";
+    String BOARD_POST_REG_FORM = Prefix.BOARD_POST + "/board-post-reg-form.do";
+    String BOARD_POST_REG_AJAX = Prefix.BOARD_POST + "/board-post-reg-ajax.do";
+    String BOARD_POST_DTL = Prefix.BOARD_POST + "/board-post-dtl.do";
+    String BOARD_POST_DTL_AJAX = Prefix.BOARD_POST + "/board-post-dtl-ajax.do";
+    String BOARD_POST_MDF_FORM = Prefix.BOARD_POST + "/board-post-mdf-form.do";
+    String BOARD_POST_MDF_AJAX = Prefix.BOARD_POST + "/board-post-mdf-ajax.do";
+    String BOARD_POST_DEL_AJAX = Prefix.BOARD_POST + "/board-post-del-ajax.do";
+    String BOARD_POST_REG_PREVIEW_POP = Prefix.BOARD_POST + "/board-post-reg-preview-pop.do";
 
     /** 사용자 관리 */
-    String USER_LIST = Prefix.USER + "/userList.do";
-    String USER_REG_FORM = Prefix.USER + "/userRegForm.do";
-    String USER_REG_AJAX = Prefix.USER + "/userRegAjax.do";
-    String USER_DTL = Prefix.USER + "/userDtl.do";
-    String USER_MDF_FORM = Prefix.USER + "/userMdfForm.do";
-    String USER_MDF_AJAX = Prefix.USER + "/userMdfAjax.do";
-    String USER_PW_RESET_AJAX = Prefix.USER + "/passwordResetAjax.do";
-    String USER_DEL_AJAX = Prefix.USER + "/userDelAjax.do";
-    String USER_LIST_XLSX_DOWNLOAD = Prefix.USER + "/userListXlsxDownload.do";
-    String USER_ID_DUP_CHK_AJAX = Prefix.USER + "/userIdDupChkAjax.do";
-    String USER_EMAIL_DUP_CHK_AJAX = Prefix.USER + "/userEmailDupChkAjax.do";
+    String USER_LIST = Prefix.USER + "/user-list.do";
+    String USER_REG_FORM = Prefix.USER + "/user-reg-form.do";
+    String USER_REG_AJAX = Prefix.USER + "/user-reg-ajax.do";
+    String USER_DTL = Prefix.USER + "/user-dtl.do";
+    String USER_MDF_FORM = Prefix.USER + "/user-mdf-form.do";
+    String USER_MDF_AJAX = Prefix.USER + "/user-mdf-ajax.do";
+    String USER_PW_RESET_AJAX = Prefix.USER + "/user-password-reset-ajax.do";
+    String USER_DEL_AJAX = Prefix.USER + "/user-del-ajax.do";
+    String USER_LIST_XLSX_DOWNLOAD = Prefix.USER + "/user-list-xlsx-download.do";
+    String USER_ID_DUP_CHK_AJAX = Prefix.USER + "/user-id-dup-chk-ajax.do";
+    String USER_EMAIL_DUP_CHK_AJAX = Prefix.USER + "/user-email-dup-chk-ajax.do";
 
     /** 내 정보 관리 */
-    String USER_MY_DTL = Prefix.USER_MY + "/userMyDtl.do";
-    String USER_MY_UPLOAD_PROFL_IMG_AJAX = Prefix.USER_MY + "/userMyUploadProflImgAjax.do";
-    String USER_MY_REMOVE_PROFL_IMG_AJAX = Prefix.USER_MY + "/userMyRemoveProflImgAjax.do";
-    String USER_MY_PW_CF_AJAX = Prefix.USER_MY + "/userMyPwCfAjax.do";
-    String USER_MY_PW_CHG_AJAX = Prefix.USER_MY + "/userMyPwChgAjax.do";
+    String USER_MY_DTL = Prefix.USER_MY + "/user-my-dtl.do";
+    String USER_MY_UPLOAD_PROFL_IMG_AJAX = Prefix.USER_MY + "/user-my-upload-profl-img-ajax.do";
+    String USER_MY_REMOVE_PROFL_IMG_AJAX = Prefix.USER_MY + "/user-my-remove-profl-img-ajax.do";
+    String USER_MY_PW_CF_AJAX = Prefix.USER_MY + "/user-my-pw-cf-ajax.do";
+    String USER_MY_PW_CHG_AJAX = Prefix.USER_MY + "/user-my-pw-chg-ajax.do";
 
     /** 댓글 */
-    String COMMENT_LIST_AJAX = Prefix.COMMENT + "/commentListAjax.do";
-    String COMMENT_REG_AJAX = Prefix.COMMENT + "/commentRegAjax.do";
-    String COMMENT_DTL_AJAX = Prefix.COMMENT + "/commentDtlAjax.do";
-    String COMMENT_MDF_AJAX = Prefix.COMMENT + "/commentMdfAjax.do";
-    String COMMENT_DEL_AJAX = Prefix.COMMENT + "/commentDelAjax.do";
+    String COMMENT_LIST_AJAX = Prefix.COMMENT + "/comment-list-ajax.do";
+    String COMMENT_REG_AJAX = Prefix.COMMENT + "/comment-reg-ajax.do";
+    String COMMENT_DTL_AJAX = Prefix.COMMENT + "/comment-dtl-ajax.do";
+    String COMMENT_MDF_AJAX = Prefix.COMMENT + "/comment-mdf-ajax.do";
+    String COMMENT_DEL_AJAX = Prefix.COMMENT + "/comment-del-ajax.do";
 
     /** 단락 */
-    String SECTN_LIST_AJAX = Prefix.SECTN + "/sectnListAjax.do";
-    String SECTN_REG_AJAX = Prefix.SECTN + "/sectnRegAjax.do";
-    String SECTN_MDF_AJAX = Prefix.SECTN + "/sectnMdfAjax.do";
-    String SECTN_DTL_AJAX = Prefix.SECTN + "/sectnDtlAjax.do";
-    String SECTN_DEL_AJAX = Prefix.SECTN + "/sectnDelAjax.do";
-    String SECTN_SORT_ORDR_AJAX = Prefix.SECTN + "/sectnSortOrdrAjax.do";
+    String SECTN_LIST_AJAX = Prefix.SECTN + "/sectn-list-ajax.do";
+    String SECTN_REG_AJAX = Prefix.SECTN + "/sectn-reg-ajax.do";
+    String SECTN_MDF_AJAX = Prefix.SECTN + "/sectn-mdf-ajax.do";
+    String SECTN_DTL_AJAX = Prefix.SECTN + "/sectn-dtl-ajax.do";
+    String SECTN_DEL_AJAX = Prefix.SECTN + "/sectn-del-ajax.do";
+    String SECTN_SORT_ORDR_AJAX = Prefix.SECTN + "/sectn-sort-ordr-ajax.do";
 
     /** 태그 */
-    String TAG_LIST = Prefix.TAG + "/tagList.do";
-    String TAG_CLOUD_PAGE = Prefix.TAG + "/tagCloudPage.do";
-    String TAG_LIST_AJAX = Prefix.TAG + "/tagListAjax.do";
-    String TAG_DTL_AJAX = Prefix.TAG + "/tagDtlAjax.do";
+    String TAG_LIST = Prefix.TAG + "/tag-list.do";
+    String TAG_CLOUD_PAGE = Prefix.TAG + "/tag-cloud-page.do";
+    String TAG_LIST_AJAX = Prefix.TAG + "/tag-list-ajax.do";
+    String TAG_DTL_AJAX = Prefix.TAG + "/tag-dtl-ajax.do";
 
     /** 태그 속성 */
-    String TAG_PROPERTY_REG_AJAX = Prefix.TAG_PROPERTY + "/tagPropertyRegAjax.do";
-    String TAG_PROPERTY_DTL_AJAX = Prefix.TAG_PROPERTY + "/tagPropertyDtlAjax.do";
-    String TAG_PROPERTY_MDF_AJAX = Prefix.TAG_PROPERTY + "/tagPropertyMdfAjax.do";
-    String TAG_PROPERTY_DEL_AJAX = Prefix.TAG_PROPERTY + "/tagPropertyDelAjax.do";
+    String TAG_PROPERTY_REG_AJAX = Prefix.TAG_PROPERTY + "/tag-property-reg-ajax.do";
+    String TAG_PROPERTY_DTL_AJAX = Prefix.TAG_PROPERTY + "/tag-property-dtl-ajax.do";
+    String TAG_PROPERTY_MDF_AJAX = Prefix.TAG_PROPERTY + "/tag-property-mdf-ajax.do";
+    String TAG_PROPERTY_DEL_AJAX = Prefix.TAG_PROPERTY + "/tag-property-del-ajax.do";
 
     /** 로그인 정책 관리 */
-    String LGN_POLICY_FORM = Prefix.LGN_POLICY + "/lgnPolicyForm.do";
-    String LGN_POLICY_REG_AJAX = Prefix.LGN_POLICY + "/lgnPolicyRegAjax.do";
+    String LGN_POLICY_FORM = Prefix.LGN_POLICY + "/lgn-policy-form.do";
+    String LGN_POLICY_REG_AJAX = Prefix.LGN_POLICY + "/lgn-policy-reg-ajax.do";
 
     /** 메뉴 관리 */
-    String MENU_PAGE = Prefix.MENU + "/menuPage.do";
-    String MENU_MAIN_LIST_AJAX = Prefix.MENU + "/menuMainListAjax.do";
-    String MENU_REG_AJAX = Prefix.MENU + "/menuList.do";
-    String MENU_DTL_AJAX = Prefix.MENU + "/menuDtlAjax.do";
-    String MENU_MDF_AJAX = Prefix.MENU + "/menuMdfAjax.do";
-    String MENU_DEL_AJAX = Prefix.MENU + "/menuDelAjax.do";
-    String MENU_SORT_ORDR_AJAX = Prefix.MENU + "/menuSortOrdrAjax.do";
+    String MENU_PAGE = Prefix.MENU + "/menu-page.do";
+    String MENU_MAIN_LIST_AJAX = Prefix.MENU + "/menu-main-list-ajax.do";
+    String MENU_REG_AJAX = Prefix.MENU + "/menu-list.do";
+    String MENU_DTL_AJAX = Prefix.MENU + "/menu-dtl-ajax.do";
+    String MENU_MDF_AJAX = Prefix.MENU + "/menu-mdf-ajax.do";
+    String MENU_DEL_AJAX = Prefix.MENU + "/menu-del-ajax.do";
+    String MENU_SORT_ORDR_AJAX = Prefix.MENU + "/menu-sort-ordr-ajax.do";
 
     /** 게시판 관리 */
-    String BOARD_DEF_LIST = Prefix.BOARD_DEF + "/boardDefList.do";
-    String BOARD_DEF_REG_AJAX = Prefix.BOARD_DEF + "/boardDefRegAjax.do";
-    String BOARD_DEF_DTL_AJAX = Prefix.BOARD_DEF + "/boardDefDtlAjax.do";
-    String BOARD_DEF_MDF_ITEM_AJAX = Prefix.BOARD_DEF + "/boardDefMdfItemAjax.do";
-    String BOARD_DEF_DEL_AJAX = Prefix.BOARD_DEF + "/boardDefDelAjax.do";
-    String BOARD_DEF_USE_AJAX = Prefix.BOARD_DEF + "/boardDefUseAjax.do";
-    String BOARD_DEF_UNUSE_AJAX = Prefix.BOARD_DEF + "/boardDefUnuseAjax.do";
-    String BOARD_DEF_SORT_ORDR_AJAX = Prefix.MENU + "/boardDefSortOrdrAjax.do";
+    String BOARD_DEF_LIST = Prefix.BOARD_DEF + "/board-def-list.do";
+    String BOARD_DEF_REG_AJAX = Prefix.BOARD_DEF + "/board-def-reg-ajax.do";
+    String BOARD_DEF_DTL_AJAX = Prefix.BOARD_DEF + "/board-def-dtl-ajax.do";
+    String BOARD_DEF_MDF_ITEM_AJAX = Prefix.BOARD_DEF + "/board-def-mdf-item-ajax.do";
+    String BOARD_DEF_DEL_AJAX = Prefix.BOARD_DEF + "/board-def-del-ajax.do";
+    String BOARD_DEF_USE_AJAX = Prefix.BOARD_DEF + "/board-def-use-ajax.do";
+    String BOARD_DEF_UNUSE_AJAX = Prefix.BOARD_DEF + "/board-def-unuse-ajax.do";
+    String BOARD_DEF_SORT_ORDR_AJAX = Prefix.MENU + "/board-def-sort-ordr-ajax.do";
 
     /** 템플릿 관리 (TODO) */
-    String TMPLAT_DEF_LIST = Prefix.TMPLAT + "/tmplatDefList.do";
-    String TMPLAT_DEF_REG_AJAX = Prefix.TMPLAT + "/tmplatDefRegAjaxdo";
-    String TMPLAT_DEF_DTL = Prefix.TMPLAT + "/tmplatDefDtl.do";
-    String TMPLAT_DEF_DTL_AJAX = Prefix.TMPLAT + "/tmplatDefDtlAjax.do";
-    String TMPLAT_DEF_MDF_AJAX = Prefix.TMPLAT + "/tmplatDefMdfAjax.do";
-    String TMPLAT_DEF_DEL_AJAX = Prefix.TMPLAT + "/tmplatDefDelAjax.do";
+    String TMPLAT_DEF_LIST = Prefix.TMPLAT + "/tmplat-def-list.do";
+    String TMPLAT_DEF_REG_AJAX = Prefix.TMPLAT + "/tmplat-def-reg-ajax.do";
+    String TMPLAT_DEF_DTL = Prefix.TMPLAT + "/tmplat-def-dtl.do";
+    String TMPLAT_DEF_DTL_AJAX = Prefix.TMPLAT + "/tmplat-def-dtl-ajax.do";
+    String TMPLAT_DEF_MDF_AJAX = Prefix.TMPLAT + "/tmplat-def-mdf-ajax.do";
+    String TMPLAT_DEF_DEL_AJAX = Prefix.TMPLAT + "/tmplat-def-del-ajax.do";
 
-    String TMPLAT_TXT_REG_AJAX = Prefix.TMPLAT + "/tmplatTxtRegAjax.do";
-    String TMPLAT_TXT_MDF_AJAX = Prefix.TMPLAT + "/tmplatTxtMdfAjax.do";
+    String TMPLAT_TXT_REG_AJAX = Prefix.TMPLAT + "/tmplat-txt-reg-ajax.do";
+    String TMPLAT_TXT_MDF_AJAX = Prefix.TMPLAT + "/tmplat-txt-mdf-ajax.do";
 
     /** 팝업 관리 (TODO) */
     String POPUP_LIST = "";
 
     /** 코드 관리 */
-    String CL_CD_LIST = Prefix.CD + "/clCdList.do";
-    String CL_CD_DTL = Prefix.CD + "/clCdDtl.do";
-    String CL_CD_REG_AJAX = Prefix.CD + "/clCdRegAjax.do";
-    String CL_CD_DTL_AJAX = Prefix.CD + "/clCdDtlAjax.do";
-    String CL_CD_MDF_AJAX = Prefix.CD + "/clCdMdfAjax.do";
-    String CL_CD_DEL_AJAX = Prefix.CD + "/clCdDelAjax.do";
-    String CL_CD_USE_AJAX = Prefix.CD + "/clCdUseAjax.do";
-    String CL_CD_UNUSE_AJAX = Prefix.CD + "/clCdUnuseAjax.do";
-    String CL_CD_SORT_ORDR_AJAX = Prefix.CD + "/clCdSortOrdrAjax.do";
+    String CL_CD_LIST = Prefix.CD + "/cl-cd-list.do";
+    String CL_CD_DTL = Prefix.CD + "/cl-cd-dtl.do";
+    String CL_CD_REG_AJAX = Prefix.CD + "/cl-cd-reg-ajax.do";
+    String CL_CD_DTL_AJAX = Prefix.CD + "/cl-cd-dtl-ajax.do";
+    String CL_CD_MDF_AJAX = Prefix.CD + "/cl-cd-mdf-ajax.do";
+    String CL_CD_DEL_AJAX = Prefix.CD + "/cl-cd-del-ajax.do";
+    String CL_CD_USE_AJAX = Prefix.CD + "/cl-cd-use-ajax.do";
+    String CL_CD_UNUSE_AJAX = Prefix.CD + "/cl-cd-unuse-ajax.do";
+    String CL_CD_SORT_ORDR_AJAX = Prefix.CD + "/cl-cd-sort-ordr-ajax.do";
 
-    String DTL_CD_REG_AJAX = Prefix.CD + "/dtlCdRegAjax.do";
-    String DTL_CD_DTL_AJAX = Prefix.CD + "/dtlCdDtlAjax.do";
-    String DTL_CD_MDF_AJAX = Prefix.CD + "/dtlCdMdfAjax.do";
-    String DTL_CD_LIST_AJAX = Prefix.CD + "/dtlCdListAjax.do";
-    String DTL_CD_USE_AJAX = Prefix.CD + "/dtlCdUseAjax.do";
-    String DTL_CD_UNUSE_AJAX = Prefix.CD + "/dtlCdUnuseAjax.do";
-    String DTL_CD_DEL_AJAX = Prefix.CD + "/dtlCdDelAjax.do";
-    String DTL_CD_SORT_ORDR_AJAX = Prefix.CD + "/dtlCdSortOrdrAjax.do";
+    String DTL_CD_REG_AJAX = Prefix.CD + "/dtl-cd-reg-ajax.do";
+    String DTL_CD_DTL_AJAX = Prefix.CD + "/dtl-cd-dtl-ajax.do";
+    String DTL_CD_MDF_AJAX = Prefix.CD + "/dtl-cd-mdf-ajax.do";
+    String DTL_CD_LIST_AJAX = Prefix.CD + "/dtl-cd-list-ajax.do";
+    String DTL_CD_USE_AJAX = Prefix.CD + "/dtl-cd-use-ajax.do";
+    String DTL_CD_UNUSE_AJAX = Prefix.CD + "/dtl-cd-unuse-ajax.do";
+    String DTL_CD_DEL_AJAX = Prefix.CD + "/dtl-cd-del-ajax.do";
+    String DTL_CD_SORT_ORDR_AJAX = Prefix.CD + "/dtl-cd-sort-ordr-ajax.do";
     
     /** 활동 로그 조회 */
-    String LOG_ACTVTY_LIST = Prefix.LOG_ACTVTY + "/logActvtyList.do";
-    String LOG_ACTVTY_DTL_AJAX = Prefix.LOG_ACTVTY + "/logActvtyDtlAjax.do";
-    String LOG_ACTVTY_LIST_XLSX_DOWNLOAD = Prefix.LOG_ACTVTY + "";
+    String LOG_ACTVTY_LIST = Prefix.LOG_ACTVTY + "/log-actvty-list.do";
+    String LOG_ACTVTY_DTL_AJAX = Prefix.LOG_ACTVTY + "/log-actvty-dtl-ajax.do";
+    String LOG_ACTVTY_LIST_XLSX_DOWNLOAD = Prefix.LOG_ACTVTY;
 
     /** 시스템 로그 조회 */
-    String LOG_SYS_LIST = Prefix.LOG_SYS + "/logSysList.do";
-    String LOG_SYS_DTL_AJAX = Prefix.LOG_SYS + "/logSysDtlAjax.do";
+    String LOG_SYS_LIST = Prefix.LOG_SYS + "/log-sys-list.do";
+    String LOG_SYS_DTL_AJAX = Prefix.LOG_SYS + "/log-sys-dtl-ajax.do";
 
     /** 로그 통계 조회 (TODO) */
-    String LOG_STATS_USER_LIST = Prefix.LOG_STATS + "/logStatsUserList.do";
+    String LOG_STATS_USER_LIST = Prefix.LOG_STATS + "/log-stats-user-list.do";
 
     /** 파일시스템 */
-    String FLSYS_HOME = Prefix.FLSYS + "/flsysHome.do";
-    String FLSYS_LIST_AJAX = Prefix.FLSYS + "/flsysListAjax.do";
-    String FLSYS_FILE_DOWNLOAD = Prefix.FLSYS + "/flsysFileDownload.do";
-    String FLSYS_OPEN_IN_EXPLORER_AJAX = Prefix.FLSYS + "/flsysOpenInExplorerAjax.do";
-    String FLSYS_FILE_EXEC_AJAX = Prefix.FLSYS + "/flsysFileExecAjax.do";
+    String FLSYS_HOME = Prefix.FLSYS + "/flsys-home.do";
+    String FLSYS_LIST_AJAX = Prefix.FLSYS + "/flsys-list-ajax.do";
+    String FLSYS_FILE_DOWNLOAD = Prefix.FLSYS + "/flsys-file-download.do";
+    String FLSYS_OPEN_IN_EXPLORER_AJAX = Prefix.FLSYS + "/flsys-open-in-explorer-ajax.do";
+    String FLSYS_FILE_EXEC_AJAX = Prefix.FLSYS + "/flsys-file-exec-ajax.do";
 
-    String FLSYS_META_REG_AJAX = Prefix.FLSYS + "/flsysMetaRegAjax.do";
-    String FLSYS_META_DTL_AJAX = Prefix.FLSYS + "/flsysMetaDtlAjax.do";
-    String FLSYS_META_MDF_AJAX = Prefix.FLSYS + "/flsysMetaMdfAjax.do";
-    String FLSYS_META_DEL_AJAX = Prefix.FLSYS + "/flsysMetaDelAjax.do";
+    String FLSYS_META_REG_AJAX = Prefix.FLSYS + "/flsys-meta-reg-ajax.do";
+    String FLSYS_META_DTL_AJAX = Prefix.FLSYS + "/flsys-meta-dtl-ajax.do";
+    String FLSYS_META_MDF_AJAX = Prefix.FLSYS + "/flsys-meta-mdf-ajax.do";
+    String FLSYS_META_DEL_AJAX = Prefix.FLSYS + "/flsys-meta-del-ajax.do";
 
     /** (공통) 파일 */
-    String FILE_DOWNLOAD_CHK_AJAX = Prefix.FILE + "/fileDownloadChkAjax.do";
-    String FILE_INFO_LIST_AJAX = Prefix.FILE + "/fileInfoListAjax.do";
-    String FILE_DOWNLOAD = Prefix.FILE + "/fileDownload.do";
-    String FILE_UPLOAD_AJAX = Prefix.FILE + "/fileUploadAjax.do";
+    String FILE_DOWNLOAD_CHK_AJAX = Prefix.FILE + "/file-download-chk-ajax.do";
+    String FILE_INFO_LIST_AJAX = Prefix.FILE + "/file-info-list-ajax.do";
+    String FILE_DOWNLOAD = Prefix.FILE + "/file-download.do";
+    String FILE_UPLOAD_AJAX = Prefix.FILE + "/file-upload-ajax.do";
 
     /** (공통) 캐시 관리 */
-    String CACHE_ACTIVE_MAP_AJAX = Prefix.CACHE + "/cacheActiveMapAjax.do";
-    String CACHE_ACTIVE_DTL_AJAX = Prefix.CACHE + "/cacheActiveDtlAjax.do";
-    String CACHE_EVICT_AJAX = Prefix.CACHE + "/cacheEvictAjax.do";
-    String CACHE_CLEAR_BY_NM_AJAX = Prefix.CACHE + "/cacheClearByNmAjax.do";
-    String CACHE_CLEAR_AJAX = Prefix.CACHE + "/cacheClearAjax.do";
+    String CACHE_ACTIVE_MAP_AJAX = Prefix.CACHE + "/cache-active-map-ajax.do";
+    String CACHE_ACTIVE_DTL_AJAX = Prefix.CACHE + "/cache-active-dtl-ajax.do";
+    String CACHE_EVICT_AJAX = Prefix.CACHE + "/cache-evict-ajax.do";
+    String CACHE_CLEAR_BY_NM_AJAX = Prefix.CACHE + "/cache-clear-by-nm-ajax.do";
+    String CACHE_CLEAR_AJAX = Prefix.CACHE + "/cache-clear-ajax.do";
 
     /** ERROR */
     // URL
     String ERROR = "/error";
-    String ERROR_PAGE = Prefix.ERROR + "/errorPage.do";
-    String ERROR_NOT_FOUND = Prefix.ERROR + "/notFound.do";
-    String ERROR_ACCESS_DENIED = Prefix.ERROR + "/accessDenied.do";
+    String ERROR_PAGE = Prefix.ERROR + "/error-page.do";
+    String ERROR_NOT_FOUND = Prefix.ERROR + "/not-found.do";
+    String ERROR_ACCESS_DENIED = Prefix.ERROR + "/access-denied.do";
 
     /* ---------- */
 
-    String SCHDUL_CAL = Prefix.SCHDUL + "/schdulCal.do";
-    String SCHDUL_CAL_LIST_AJAX = Prefix.SCHDUL + "/schdulCalListAjax.do";
-    String SCHDUL_REG_AJAX = Prefix.SCHDUL + "/schdulCalRegAjax.do";
-    String SCHDUL_DTL_AJAX = Prefix.SCHDUL + "/schdulCalDtlAjax.do";
-    String SCHDUL_MDF_AJAX = Prefix.SCHDUL + "/schdulCalMdfAjax.do";
-    String SCHDUL_DEL_AJAX = Prefix.SCHDUL + "/schdulCalDelAjax.do";
+    String SCHDUL_CAL = Prefix.SCHDUL + "/schdul-cal.do";
+    String SCHDUL_CAL_LIST_AJAX = Prefix.SCHDUL + "/schdul-cal-list-ajax.do";
+    String SCHDUL_REG_AJAX = Prefix.SCHDUL + "/schdul-cal-reg-ajax.do";
+    String SCHDUL_DTL_AJAX = Prefix.SCHDUL + "/schdul-cal-dtl-ajax.do";
+    String SCHDUL_MDF_AJAX = Prefix.SCHDUL + "/schdul-cal-mdf-ajax.do";
+    String SCHDUL_DEL_AJAX = Prefix.SCHDUL + "/schdul-cal-del-ajax.do";
 
-    String VCATN_PAPR_LIST = Prefix.VCATN_PAPR + "/vcatnPaprList.do";
-    String VCATN_PAPR_REG_FORM = Prefix.VCATN_PAPR + "/vcatnPaprRegForm.do";
-    String VCATN_PAPR_REG_AJAX = Prefix.VCATN_PAPR + "/vcatnPaprRegAjax.do";
-    String VCATN_PAPR_DTL = Prefix.VCATN_PAPR + "/vcatnPaprDtl.do";
-    String VCATN_PAPR_DTL_AJAX = Prefix.VCATN_PAPR + "/vcatnPaprDtlAjax.do";
-    String VCATN_PAPR_MDF_FORM = Prefix.VCATN_PAPR + "/vcatnPaprMdfForm.do";
-    String VCATN_PAPR_MDF_AJAX = Prefix.VCATN_PAPR + "/vcatnPaprMdfAjax.do";
-    String VCATN_PAPR_CF_AJAX = Prefix.VCATN_PAPR + "/vcatnPaprCfAjax.do";
-    String VCATN_PAPR_DEL_AJAX = Prefix.VCATN_PAPR + "/vcatnPaprDelAjax.do";
+    String VCATN_PAPR_LIST = Prefix.VCATN_PAPR + "/vcatn-papr-list.do";
+    String VCATN_PAPR_REG_FORM = Prefix.VCATN_PAPR + "/vcatn-papr-reg-form.do";
+    String VCATN_PAPR_REG_AJAX = Prefix.VCATN_PAPR + "/vcatn-papr-reg-ajax.do";
+    String VCATN_PAPR_DTL = Prefix.VCATN_PAPR + "/vcatn-papr-dtl.do";
+    String VCATN_PAPR_DTL_AJAX = Prefix.VCATN_PAPR + "/vcatn-papr-dtl-ajax.do";
+    String VCATN_PAPR_MDF_FORM = Prefix.VCATN_PAPR + "/vcatn-papr-mdf-form.do";
+    String VCATN_PAPR_MDF_AJAX = Prefix.VCATN_PAPR + "/vcatn-papr-mdf-ajax.do";
+    String VCATN_PAPR_CF_AJAX = Prefix.VCATN_PAPR + "/vcatn-papr-cf-ajax.do";
+    String VCATN_PAPR_DEL_AJAX = Prefix.VCATN_PAPR + "/vcatn-papr-del-ajax.do";
 
-    String VCATN_SCHDUL_LIST = "/vcatnSchdulList.do";
-    String VCATN_SCHDUL_REG_AJAX = "/vcatnSchdulRegAjax.do";
-    String VCATN_SCHDUL_DTL_AJAX = "/vcatnSchdulDtlAjax.do";
-    String VCATN_SCHDUL_MDF_AJAX = "/vcatnSchdulMdfAjax.do";
-    String VCATN_SCHDUL_DEL_AJAX = "/vcatnSchdulDelAjax.do";
-    String VCATN_SCHDUL_XLSX_DOWNLOAD = "/vcatnSchdulXlsxDownload.do";
+    String VCATN_SCHDUL_LIST = "/vcatn-schdul-list.do";
+    String VCATN_SCHDUL_REG_AJAX = "/vcatn-schdul-reg-ajax.do";
+    String VCATN_SCHDUL_DTL_AJAX = "/vcatn-schdul-dtl-ajax.do";
+    String VCATN_SCHDUL_MDF_AJAX = "/vcatn-schdul-mdf-ajax.do";
+    String VCATN_SCHDUL_DEL_AJAX = "/vcatn-schdul-del-ajax.do";
+    String VCATN_SCHDUL_XLSX_DOWNLOAD = "/vcatn-schdul-xlsx-download.do";
 
-    String VCATN_STATS_YY = "/vcatnStatsYy.do";
-    String VCATN_STATS_YY_UPDT_AJAX = "/vcatnStatsYyUpdtAjax.do";
-    String VCATN_STATS_YY_XLSX_DOWNLOAD = "/vcatnStatsXlsxDownload.do";
+    String VCATN_STATS_YY = "/vcatn-stats-yy.do";
+    String VCATN_STATS_YY_UPDT_AJAX = "/vcatn-stats-yy-updt-ajax.do";
+    String VCATN_STATS_YY_XLSX_DOWNLOAD = "/vcatn-stats-xlsx-download.do";
 
-    String ADMIN_PAGE = "/admin/adminPage.do";
-    String ADMIN_TEST = "/admin/testPage.do";
-    String NOTION_HOME = "/notionHome.do";
+    String ADMIN_PAGE = "/admin/admin-page.do";
+    String ADMIN_TEST = "/admin/test-page.do";
+    String NOTION_HOME = "/notion-home.do";
 
-    String USER_REQST_REG_FORM = Prefix.USER_REQST + "/userReqstRegForm.do";
-    String USER_REQST_REG_AJAX = Prefix.USER_REQST + "/userReqstRegAjax.do";
-    String USER_REQST_CF_AJAX = Prefix.USER_REQST + "/userReqstCfAjax.do";
-    String USER_REQST_UNCF_AJAX = Prefix.USER_REQST + "/userReqstUncfAjax.do";
+    String USER_REQST_REG_FORM = Prefix.USER_REQST + "/user-reqst-reg-form.do";
+    String USER_REQST_REG_AJAX = Prefix.USER_REQST + "/user-reqst-reg-ajax.do";
+    String USER_REQST_CF_AJAX = Prefix.USER_REQST + "/user-reqst-cf-ajax.do";
+    String USER_REQST_UNCF_AJAX = Prefix.USER_REQST + "/user-reqst-uncf-ajax.do";
 
     /**
      * PREFIX 정의 정보
@@ -332,7 +334,7 @@ public interface SiteUrl {
 
         /* 게시판 (board) */
         String BOARD = "/board";
-        String POST = "/board";
+        String POST = "/post";
         String BOARD_POST = BOARD + POST;
         String BOARD_DEF = BOARD + "/def";
 
@@ -347,9 +349,9 @@ public interface SiteUrl {
         String COMMENT = "/comment";
         String SECTN = "/sectn";
         String TAG = "/tag";
-        String TAG_PROPERTY = "/tagProperty";
+        String TAG_PROPERTY = "/tag-property";
 
-        String LGN_POLICY = "/lgnPolicy";
+        String LGN_POLICY = "/lgn-policy";
 
         String MENU = "/menu";
         String TMPLAT = "/tmplat";

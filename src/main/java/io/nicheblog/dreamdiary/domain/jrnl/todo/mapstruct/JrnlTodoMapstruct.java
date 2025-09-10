@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.todo.entity.JrnlTodoEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.todo.model.JrnlTodoDto;
 import io.nicheblog.dreamdiary.extension.cd.utils.CdUtils;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BasePostMapstruct;
-import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
+import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +19,7 @@ import org.mapstruct.factory.Mappers;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, DatePtn.class, CmmUtils.class, CdUtils.class}, builder = @Builder(disableBuilder = true))
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CdUtils.class}, builder = @Builder(disableBuilder = true))
 public interface JrnlTodoMapstruct
         extends BasePostMapstruct<JrnlTodoDto, JrnlTodoDto, JrnlTodoEntity> {
 
@@ -35,7 +35,7 @@ public interface JrnlTodoMapstruct
     @Override
     @Named("toDto")
     @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"JRNL_TODO_CTGR_CD\", entity.getCtgrCd()))")
-    @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : CmmUtils.markdown(entity.getCn()))")
+    @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
     JrnlTodoDto toDto(final JrnlTodoEntity entity) throws Exception;
 
     /**
@@ -48,7 +48,7 @@ public interface JrnlTodoMapstruct
     @Override
     @Named("toListDto")
     @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"JRNL_DREAM_CTGR_CD\", entity.getCtgrCd()))")
-    @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : CmmUtils.markdown(entity.getCn()))")
+    @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
     JrnlTodoDto toListDto(final JrnlTodoEntity entity) throws Exception;
 
     /**
@@ -59,6 +59,7 @@ public interface JrnlTodoMapstruct
      * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
+    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
     JrnlTodoEntity toEntity(final JrnlTodoDto dto) throws Exception;
 
     /**
@@ -70,5 +71,6 @@ public interface JrnlTodoMapstruct
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
     void updateFromDto(final JrnlTodoDto dto, final @MappingTarget JrnlTodoEntity entity) throws Exception;
 }

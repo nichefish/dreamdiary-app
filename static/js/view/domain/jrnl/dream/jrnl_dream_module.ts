@@ -7,6 +7,8 @@
 if (typeof dF === 'undefined') { var dF = {} as any; }
 dF.JrnlDream = (function(): dfModule {
     return {
+        STORAGE_KEY: "collapsedJrnlDreamIds",
+
         initialized: false,
         inKeywordSearchMode: false,
         tagify: null,
@@ -292,5 +294,53 @@ dF.JrnlDream = (function(): dfModule {
                 }, "block");
             });
         },
+
+        /**
+         * toggle
+         * @param {string|number} postNo - 글 번호.
+         */
+        toggle: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            const id = String(postNo);
+            const item = document.querySelector(`.jrnl-diary-item[data-id='${id}']`);
+            if (!item) return console.log("item not found.");
+
+            const content = item.querySelector(".jrnl-diary-cn .cn") as HTMLElement;
+            if (!content) return console.log("content not found.");
+
+            const icon = item.querySelector(`#toggle-icon-${id}`) as HTMLElement;
+            const collapsedIds = new Set(JSON.parse(localStorage.getItem(dF.JrnlDream.STORAGE_KEY) || "[]"));
+
+            const isCollapsed = content.classList.contains("collapsed");
+            if (isCollapsed) {
+                content.classList.remove("collapsed");
+                icon?.classList.replace("bi-chevron-down", "bi-chevron-up");
+                collapsedIds.delete(id);
+            } else {
+                content.classList.add("collapsed");
+                icon?.classList.replace("bi-chevron-up", "bi-chevron-down");
+                collapsedIds.add(id);
+            }
+
+            localStorage.setItem(dF.JrnlDream.STORAGE_KEY, JSON.stringify(Array.from(collapsedIds)));
+        },
+
+        /**
+         * 접힌 꿈 초기화
+         */
+        initCollapseState: function(): void {
+            const collapsedIds = new Set(JSON.parse(localStorage.getItem(dF.JrnlDream.STORAGE_KEY) || "[]"));
+            document.querySelectorAll(".jrnl-diary-item .cn").forEach(item => {
+                const el = item as HTMLElement;
+                const id = el.dataset.id;
+                const content = el.querySelector(".jrnl-diary-cn");
+                const icon = el.querySelector(`#toggle-icon-${id}`);
+                if (id && collapsedIds.has(id)) {
+                    content?.classList.add("collapsed");
+                    icon?.classList.replace("bi-chevron-up", "bi-chevron-down");
+                }
+            });
+        }
     }
 })();

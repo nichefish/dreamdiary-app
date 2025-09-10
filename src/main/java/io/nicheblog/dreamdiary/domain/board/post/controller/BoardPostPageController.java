@@ -17,6 +17,7 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.PaginationInfo;
+import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.Getter;
@@ -174,7 +175,7 @@ public class BoardPostPageController
         model.addAttribute("pageNm", PageNm.PREVIEW);
 
         // 객체 정보 모델에 추가
-        boardPost.setMarkdownCn(CmmUtils.markdown(boardPost.getCn()));
+        boardPost.setMarkdownCn(MarkdownUtils.markdown(boardPost.getCn()));
         model.addAttribute("post", boardPost);
 
         final boolean isSuccess = true;

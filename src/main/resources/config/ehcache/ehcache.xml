@@ -103,5 +103,8 @@
     <cache alias="contentTagEntityListByRef" uses-template="defaultTemplate" />
     <cache alias="tagSmpDtlEntity" uses-template="defaultTemplate" />
 
+    <!-- 공휴일 정보 -->
+    <cache alias="hldyMap" uses-template="defaultTemplate" />
+
 </config>
 

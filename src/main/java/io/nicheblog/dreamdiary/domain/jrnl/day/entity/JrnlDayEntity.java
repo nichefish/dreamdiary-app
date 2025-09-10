@@ -12,10 +12,10 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
-import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
@@ -85,7 +85,7 @@ public class JrnlDayEntity
     /** 날짜미상 여부 (Y/N) */
     @Builder.Default
     @Column(name = "dt_unknown_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("날짜미상여부")
+    @Comment("날짜미상 여부 (Y/N)")
     private String dtUnknownYn = "N";
 
     /** 년도 */
@@ -109,6 +109,12 @@ public class JrnlDayEntity
     @Column(name = "weather")
     @Comment("날씨")
     private String weather;
+
+    /** 일기 정리완료 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "diary_resolved_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Comment("일기 정리완료 여부 (Y/N)")
+    private String diaryResolvedYn = "N";
 
     /** 저널 일기 목록 */
     @OneToMany(fetch = FetchType.LAZY)

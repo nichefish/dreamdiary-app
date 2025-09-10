@@ -33,6 +33,16 @@ public interface JrnlDayService
     List<JrnlDayDto> getMyListDto(final String lgnUserId, final JrnlDaySearchParam searchParam) throws Exception;
 
     /**
+     * 내 목록 조회 (dto level) + 공휴일 처리
+     *
+     * @param lgnUserId 사용자 ID
+     * @param searchParam 검색 조건이 담긴 파라미터 객체
+     * @return {@link List} -- 조회된 목록
+     * @throws Exception 조회 중 발생할 수 있는 예외
+     */
+    List<JrnlDayDto> getMyListDtoWithHldy(final String lgnUserId, final JrnlDaySearchParam searchParam) throws Exception;
+
+    /**
      * 중복 체크 (정상시 true / 중복시 false)
      *
      * @param jrnlDay {@link JrnlDayDto} -- 중복 여부를 확인할 {@link JrnlDayDto} 객체
@@ -75,6 +85,15 @@ public interface JrnlDayService
      * @throws Exception 처리 중 발생할 수 있는 예외
      */
     JrnlDayDto getDtlDtoWithCache(final Integer key) throws Exception;
+
+    /**
+     * 상세 조회 (dto level) :: 공휴일 정보 추가
+     *
+     * @param key 식별자
+     * @return {@link JrnlDiaryDto} -- 조회된 객체
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    JrnlDayDto getDtlDtoWithCacheWithHldy(final Integer key) throws Exception;
 
     /**
      * 삭제 데이터 조회

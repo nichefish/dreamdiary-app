@@ -31,10 +31,13 @@ dF.Comment.modal = (function(): dfModule {
          */
         initForm: function(obj: Record<string, any> = {}): void {
             /* show modal */
-            cF.handlebars.modal(obj, "comment_reg");
+            cF.handlebars.modal(obj, "comment_reg", ["header"]);
 
             /* jquery validation */
             cF.validate.validateForm("#commentRegForm", dF.Comment.modal.regAjax);
+            /* tinymce editor reset */
+            cF.tinymce.init('#tinymce_commentCn');
+            cF.tinymce.setContentWhenReady("tinymce_commentCn", obj.cn || "");
         },
 
         /**
@@ -54,6 +57,7 @@ dF.Comment.modal = (function(): dfModule {
          * form submit
          */
         submit: function(): void {
+            tinymce?.get("tinymce_commentCn")?.save();
             $("#commentRegForm").submit();
         },
 

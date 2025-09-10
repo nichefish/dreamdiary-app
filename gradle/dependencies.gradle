@@ -120,6 +120,7 @@ dependencies {
 
     /* ↓ File */
     implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'org.apache.commons:commons-text:1.10.0' // 또는 최신 안정 버전
     implementation group: 'commons-io', name: 'commons-io', version: '2.14.0'
     implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
     /* ↓ Scalr: 이미지 리사이징 라이브러리 */

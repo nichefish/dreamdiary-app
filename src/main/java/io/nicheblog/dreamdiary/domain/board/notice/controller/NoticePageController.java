@@ -16,6 +16,7 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.PaginationInfo;
+import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.Getter;
@@ -164,7 +165,7 @@ public class NoticePageController
         model.addAttribute("pageNm", PageNm.PREVIEW);
 
         // 객체 정보 모델에 추가
-        notice.setMarkdownCn(CmmUtils.markdown(notice.getCn()));
+        notice.setMarkdownCn(MarkdownUtils.markdown(notice.getCn()));
         model.addAttribute("post", notice);
 
         final boolean isSuccess = true;

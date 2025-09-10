@@ -1,5 +1,6 @@
 /**
  * 사이트 공통 css 내용을 정의한다.
+ *
  * @auther : nichefish
  */
 
@@ -11,6 +12,7 @@
 @use 'components/icon';
 @use 'components/tag';
 
+@use 'markdown';
 @use 'commons-respns';
 
 /** ----------------------- */

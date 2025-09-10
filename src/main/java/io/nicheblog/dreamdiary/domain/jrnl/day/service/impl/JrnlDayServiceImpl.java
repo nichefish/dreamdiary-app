@@ -13,6 +13,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.spec.JrnlDaySpec;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
+import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
@@ -25,9 +26,11 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * JrnlDayService
@@ -72,7 +75,27 @@ public class JrnlDayServiceImpl
         searchParam.setRegstrId(lgnUserId);
 
         final List<JrnlDayEntity> myJrnlDayListEntity = this.getSelf().getListEntity(searchParam);
-        return this.listEntityToDto(myJrnlDayListEntity);
+        return this.getSelf().listEntityToDto(myJrnlDayListEntity);
+    }
+
+    /**
+     * 내 목록 조회 (dto level) + 공휴일 정보 추가
+     *
+     * @param lgnUserId 사용자 ID
+     * @param searchParam 검색 조건이 담긴 파라미터 객체
+     * @return {@link List} -- 조회된 목록
+     * @throws Exception 조회 중 발생할 수 있는 예외
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<JrnlDayDto> getMyListDtoWithHldy(final String lgnUserId, final JrnlDaySearchParam searchParam) throws Exception {
+        final List<JrnlDayDto> listDto = this.getSelf().getMyListDto(lgnUserId, searchParam);
+
+        // 공휴일 정보 세팅
+        final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
+        this.setHldyInfo(listDto, hldyMap);
+
+        return listDto;
     }
 
     /**
@@ -166,6 +189,26 @@ public class JrnlDayServiceImpl
         final JrnlDayDto retrieved = this.getSelf().getDtlDto(key);
         // 권한 체크
         if (!retrieved.getIsRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("common.rslt.access-not-authorized"));
+
+        return retrieved;
+    }
+
+    /**
+     * 상세 조회 (dto level) :: 공휴일 정보 추가
+     *
+     * @param key 식별자
+     * @return {@link JrnlDiaryDto} -- 조회된 객체
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public JrnlDayDto getDtlDtoWithCacheWithHldy(final Integer key) throws Exception {
+        final JrnlDayDto retrieved = this.getSelf().getDtlDtoWithCache(key);
+
+        // 공휴일 정보 세팅
+        final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
+        this.setHldyInfo(retrieved, hldyMap);
+
         return retrieved;
     }
 
@@ -241,5 +284,40 @@ public class JrnlDayServiceImpl
     @Transactional(readOnly = true)
     public JrnlDayDto getDeletedDtlDto(final Integer key) throws Exception {
         return jrnlDayMapper.getDeletedByPostNo(key);
+    }
+
+    /**
+     * 주어진 {@link JrnlDayDto} 객체에 공휴일 및 주말 여부 정보를 설정한다.
+     *
+     * @param jrnlDayList 공휴일 및 주말 정보를 설정할 대상 DTO
+     * @param hldyMap 날짜(String: yyyy-MM-dd) → 공휴일 이름 목록 매핑 정보
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    private void setHldyInfo(final List<JrnlDayDto> jrnlDayList, final Map<String, List<String>> hldyMap) throws Exception {
+        if (CollectionUtils.isEmpty(jrnlDayList) || hldyMap == null) return;
+
+        for (JrnlDayDto jrnlDay : jrnlDayList) {
+            setHldyInfo(jrnlDay, hldyMap);
+        }
+    }
+
+    /**
+     * 주어진 {@link JrnlDayDto} 객체에 공휴일 및 주말 여부 정보를 설정한다.
+     *
+     * @param jrnlDay 공휴일 및 주말 정보를 설정할 대상 DTO
+     * @param hldyMap 날짜(String: yyyy-MM-dd) → 공휴일 이름 목록 매핑 정보
+     * @throws Exception 처리 중 발생할 수 있는 예외
+     */
+    private void setHldyInfo(final JrnlDayDto jrnlDay, final Map<String, List<String>> hldyMap) throws Exception {
+        if (jrnlDay == null || hldyMap == null) return;
+
+        final String stdrdDt = jrnlDay.getStdrdDt();
+        final boolean isHldy = hldyMap.containsKey(stdrdDt);
+        final boolean isWeekend = DateUtils.isWeekend(stdrdDt);
+        jrnlDay.setIsHldy(isHldy || isWeekend);
+        if (isHldy) {
+            final String concatHldyNm = String.join(", ", hldyMap.get(stdrdDt));
+            jrnlDay.setHldyNm(concatHldyNm);
+        }
     }
 }

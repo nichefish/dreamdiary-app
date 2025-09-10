@@ -102,6 +102,16 @@ public class EhCacheUtils {
     }
 
     /**
+     * 캐시에서 기본 키 오브젝트를 가져오는 메서드
+     *
+     * @param cacheName 캐시 이름
+     * @return 캐시에서 가져온 오브젝트
+     */
+    public static Object getObjectFromCache(final String cacheName) {
+        return getObjectFromCache(cacheName, SimpleKey.EMPTY);
+    }
+
+    /**
      * 캐시에서 키를 기반으로 오브젝트를 가져오는 메서드
      *
      * @param cacheName 캐시 이름
