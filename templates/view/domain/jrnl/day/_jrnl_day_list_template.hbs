@@ -7,7 +7,7 @@
     {{#each this}}
         <div class="row jrnl-day">
             <div class="row jrnl-day-header">
-                <div class="col-1 d-flex flex-wrap align-items-center fs-5 fw-bold {{#if isHldy}}text-danger{{/if}}" style="column-gap: .25rem">
+                <div class="col-12 col-md-1 d-flex flex-wrap align-items-center fs-5 fw-bold {{#if isHldy}}text-danger{{/if}}" style="column-gap: .25rem">
                     <i class="bi bi-calendar3 fs-6 me-1 {{#if isHldy}}text-danger{{/if}}"></i>
                     {{stdrdDt}}
                     {{#if (exists jrnlDt)}}
@@ -19,7 +19,7 @@
                     <span class="fs-7 ms-4 text-muted">{{{weather}}}</span>
                     {{#if (exists hldyNm)}}<div class="w-100 ps-5 fs-6 fw-normal text-truncate">{{hldyNm}}</div>{{/if}}
                 </div>
-                <div class="col-3 d-flex align-items-center gap-2">
+                <div class="col-3 d-none d-md-flex align-items-center gap-2">
                     {{> jrnl_diary_reg_btn_partial this}}
                     {{> jrnl_dream_reg_btn_partial this}}
                     <button type="button" class="btn btn-sm btn-light-primary btn-outlined py-2 px-3 cursor-pointer"
@@ -35,7 +35,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-1"></div>
+                <div class="col-1 d-none d-md-flex"></div>
                 <div class="col">
                     {{#if (exists tag.list)}}
                         <div class="ms-5 mt-3">
@@ -50,7 +50,7 @@
             <div class="row p-5">
                 {{#if (exists jrnlDiaryList)}}
                     <label class="d-flex align-items-center mt-2">
-                        <span class="text-gray-700 fs-6 ps-5 fw-bolder ">
+                        <span class="text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder ">
                             {{#if (equals diaryResolvedYn 'Y')}}
                                 <span class="text-success"><@spring.message 'diary'/></span>
                                 <span class="position-relative d-inline-block">
@@ -65,7 +65,7 @@
                     </label>
                     {{#each jrnlDiaryList}}
                         <div class="row jrnl-diary-item" data-id="{{postNo}}">
-                            <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
+                            <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                                 <div class="d-flex flex-column align-items-center">
                                     <span># {{idx}}</span>
                                     <!-- 토글 버튼 추가 -->
@@ -79,8 +79,8 @@
                             <div class="col jrnl-diary-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
                                 {{> jrnl_diary_cn_partial this}}
                             </div>
-                            <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                            <div class="col-1 py-3 d-flex-between w-75px gap-1">
+                            <div class="col-1 ms-4 dpe-0 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                            <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
                                 {{> comment_reg_btn_partial this contentType="JRNL_DIARY"}}
                                 <div class="col-1 border-2 border-gray-300 border-end w-10px">&nbsp;</div>
                                 {{> jrnl_diary_mdf_btn_partial this}}
@@ -90,14 +90,14 @@
                 {{/if}}
                 {{#if hasDream}}
                     <label class="d-flex align-items-center mt-2">
-                        <span class="text-gray-700 fs-6 ps-5 fw-bolder">
+                        <span class="text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder">
                             <@spring.message 'dream'/>
                             <i class="bi bi-moon-stars fs-4 pe-1"></i>
                         </span>
                     </label>
                     {{#each jrnlDreamList}}
                         <div class="row jrnl-item">
-                            <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
+                            <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                                 <div class="d-flex flex-column align-items-center">
                                     <span># {{idx}}</span>
                                     <!-- 토글 버튼 추가 -->
@@ -111,8 +111,8 @@
                             <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
                                 {{> jrnl_dream_cn_partial this}}
                             </div>
-                            <div class="col-1 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                            <div class="col-1 py-3 d-flex-between w-75px gap-1">
+                            <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                            <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
                                 {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
                                 <div class="col-1 border-2 border-gray-300 border-end w-10px">&nbsp;</div>
                                 {{> jrnl_dream_mdf_btn_partial this}}
@@ -121,7 +121,7 @@
                     {{/each}}
                     {{#each jrnlElseDreamList}}
                         <div class="row jrnl-item">
-                            <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
+                            <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                                 <div class="d-flex flex-column align-items-center">
                                     <span>-</span>
                                     <!-- 토글 버튼 추가 -->
@@ -135,10 +135,10 @@
                             <div class="col py-3 jrnl-dream-cn bg-secondary">
                                 {{> jrnl_dream_cn_partial this elseDreamYn="Y"}}
                             </div>
-                            <div class="col-1 py-3 d-flex-between w-50px gap-1">
+                            <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
                             </div>
-                            <div class="col-1 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                            <div class="col-1 py-3 d-flex-between w-50px gap-1">
+                            <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                            <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
                                 {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
                                 <div class="col-1 border-2 border-gray-300 border-end w-10px">&nbsp;</div>
                                 {{> jrnl_dream_mdf_btn_partial this}}

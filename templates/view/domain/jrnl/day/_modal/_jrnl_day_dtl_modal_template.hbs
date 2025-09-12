@@ -29,21 +29,21 @@
     <div class="row p-5">
         {{#if (exists jrnlDiaryList)}}
             <label class="d-flex align-items-center mt-2">
-                <span class="text-gray-700 fs-6 ps-5 fw-bolder">
+                <span class="text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder">
                     <@spring.message 'diary'/>
                     <i class="bi bi-book fs-4 pe-1"></i>
                 </span>
             </label>
             {{#each jrnlDiaryList}}
                 <div class="row jrnl-diary-item">
-                    <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
+                    <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
                         <div># {{idx}}</div>
                     </div>
                     <div class="col jrnl-diary-cn">
                         {{> jrnl_diary_cn_partial this collapse="collapse-4"}}
                     </div>
-                    <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                    <div class="col-1 py-3 d-flex-between w-50px gap-1">
+                    <div class="col-1 d-none d-md-flex ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                    <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
                         {{> comment_reg_btn_partial this contentType="JRNL_DIARY"}}
                         {{> jrnl_diary_mdf_btn_partial this}}
                     </div>
@@ -52,21 +52,21 @@
         {{/if}}
         {{#if hasDream}}
             <label class="d-flex align-items-center mt-2">
-                <span class="text-gray-700 fs-6 ps-5 fw-bolder">
+                <span class="text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder">
                     <@spring.message 'dream'/>
                     <i class="bi bi-moon-stars fs-4 pe-1"></i>
                 </span>
             </label>
             {{#each jrnlDreamList}}
                 <div class="row jrnl-item">
-                    <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
+                    <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
                         <div># {{idx}}</div>
                     </div>
                     <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
                         {{> jrnl_dream_cn_partial this collapse="collapse-4"}}
                     </div>
-                    <div class="col-1 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                    <div class="col-1 py-3 d-flex-between w-75px gap-1">
+                    <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                    <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
                         {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
                         <div class="col-1 border-2 border-gray-300 border-end w-10px">&nbsp;</div>
                         {{> jrnl_dream_mdf_btn_partial this}}
@@ -75,7 +75,7 @@
             {{/each}}
             {{#each jrnlElseDreamList}}
                 <div class="row jrnl-item">
-                    <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
+                    <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
                         <div>
                             -
                         </div>
@@ -83,11 +83,11 @@
                     <div class="col py-3 jrnl-dream-cn bg-secondary">
                         {{> jrnl_diary_cn_partial this  collapse="collapse-4" elseDreamYn="Y"}}
                     </div>
-                    <div class="col-1 py-3 d-flex-between w-50px gap-1">
+                    <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
                         {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
                     </div>
-                    <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                    <div class="col-1 py-3 d-flex-between w-50px gap-1">
+                    <div class="col-1 ms-4 pe-0 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                    <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
                         {{> jrnl_dream_mdf_btn_partial this}}
                     </div>
                 </div>

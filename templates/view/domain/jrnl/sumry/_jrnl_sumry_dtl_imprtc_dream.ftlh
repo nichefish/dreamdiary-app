@@ -31,7 +31,7 @@
     <div class="card-body">
         <div class="row p-5">
             <label class="d-flex align-items-center my-2" for="title">
-                <span class="text-gray-700 fs-6 ps-5 fw-bolder">
+                <span class="text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder">
                     중요 꿈
                     <i class="bi bi-moon-stars fs-4 pe-1"></i>
                 </span>
