@@ -54,7 +54,7 @@
                                    data-bs-toggle="tooltip" data-bs-placement="left" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.aside-prev'/>"></i>
                             </div>
                             <select name="yy" id="yy" class="form-select" aria-label="Select example"
-                                    onchange="dF.JrnlDayAside.yy();">
+                                    onchange="dF.JrnlDayAside.changeYy();">
                                 <option value="">----</option>
                                 <#assign currYy = DateUtils.getCurrYy()?number />
                                 <#assign startYy = 2010 />
@@ -74,7 +74,7 @@
                         </button>
                         <div class="d-flex">
                             <select name="mnth" id="mnth" class="form-select" aria-label="Select example"
-                                    onchange="dF.JrnlDayAside.mnth();">
+                                    onchange="dF.JrnlDayAside.changeMnth();">
                                 <option value="">--</option>
                                 <#list 1..12 as mnth>
                                     <option value="${mnth}">${mnth}</option>
@@ -97,9 +97,9 @@
                     </button>
                     <span class="mx-2">|</span>
                     <span id="jrnl_aside_pinText" class="px-1 me-1">
-                        <span id="pinYy" class="text-muted text-underline-dotted">----</span>
+                        <span id="pinnedYy" class="text-muted text-underline-dotted">----</span>
                         <span> / </span>
-                        <span id="pinMnth" class="text-muted text-underline-dotted">--</span>
+                        <span id="pinnedMnth" class="text-muted text-underline-dotted">--</span>
                         <i class="bi bi-pin-map fs-7"></i>
                     </span>
                     <button type="button" class="btn btn-sm btn-outline btn-light-primary px-2 pt-1"

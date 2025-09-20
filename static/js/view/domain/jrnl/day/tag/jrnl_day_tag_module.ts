@@ -37,7 +37,7 @@ dF.JrnlDayTag = (function(): dfModule {
          */
         listAjax: function(): void {
             const url: string = Url.JRNL_DAY_TAG_LIST_AJAX;
-            const ajaxData: Record<string, any> = { "yy": $("#jrnl_aside #yy").val(), "mnth": $("#jrnl_aside #mnth").val() };
+            const ajaxData: Record<string, any> = { "yy": localStorage.getItem("jrnl_yy"), "mnth": localStorage.getItem("jrnl_mnth") };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });

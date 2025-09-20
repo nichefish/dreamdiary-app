@@ -13,9 +13,6 @@ dF.JrnlDream = (function(): dfModule {
         inKeywordSearchMode: false,
         tagify: null,
 
-        savedYy: null,
-        savedMnth: null,
-
         /**
          * initializes module.
          */
@@ -78,10 +75,6 @@ dF.JrnlDream = (function(): dfModule {
             const keyword: string = $("#jrnl_aside #dreamKeyword").val() as string;
             if (cF.util.isEmpty(keyword)) return;
 
-            // 검색 시 기존 년월 저장
-            dF.JrnlDream.savedYy = $("#jrnl_aside #yy").val() as string;
-            dF.JrnlDream.savedMnth = $("#jrnl_aside #mnth").val() as string;
-
             const url: string = Url.JRNL_DREAM_LIST_AJAX;
             const ajaxData = { "dreamKeyword": $("#jrnl_aside #dreamKeyword").val() };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
@@ -120,8 +113,6 @@ dF.JrnlDream = (function(): dfModule {
          */
         resetKeyword: function(): void {
             $("#jrnl_aside #jrnl_dream_reset_btn").remove();
-            $("#jrnl_aside #yy").val(dF.JrnlDream.savedYy);
-            $("#jrnl_aside #mnth").val(dF.JrnlDream.savedMnth);
             dF.JrnlDayAside.mnth();
         },
 

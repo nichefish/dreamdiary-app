@@ -13,9 +13,6 @@ dF.JrnlEntry = (function(): dfModule {
         inKeywordSearchMode: false,
         tagify: null,
 
-        savedYy: null,
-        savedMnth: null,
-
         /**
          * initializes module.
          */
@@ -43,60 +40,6 @@ dF.JrnlEntry = (function(): dfModule {
             cF.ui.chckboxLabel("imprtcYn", "중요//해당없음", "red//gray");
             /* tagify */
             // dF.JrnlEntry.tagify = cF.tagify.initWithCtgr("#jrnlEntryRegForm #tagListStr", dF.JrnlEntryTag.ctgrMap);
-        },
-
-        /**
-         * 목록 조회 (Ajax)
-         */
-        keywordListAjax: function(): void {
-            const keyword: string = (document.querySelector("#jrnl_aside #entryKeyword") as HTMLInputElement)?.value;
-            if (cF.util.isEmpty(keyword)) return;
-
-            // 검색 시 기존 년월 저장
-            dF.JrnlEntry.savedYy = $("#jrnl_aside #yy").val() as string;
-            dF.JrnlEntry.savedMnth = $("#jrnl_aside #mnth").val() as string;
-
-            const url: string =Url.JRNL_ENTRY_LIST_AJAX;
-            const ajaxData: Record<string, any> = { "entryKeyword": keyword };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
-                if (!res.rslt) {
-                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
-                    return;
-                }
-                $("#jrnl_aside #yy").val("");
-                $("#jrnl_aside #mnth").val("");
-                // 목록 영역 클리어
-                $("#jrnl_aside #dreamKeyword").val("");
-                $("#jrnl_day_list_div").empty();
-                $("#jrnl_dream_list_div").empty();
-                // 태그 헤더 클리어
-                $("#jrnl_day_tag_list_div").empty();
-                $("#jrnl_entry_tag_list_div").empty();
-                $("#jrnl_dream_tag_list_div").empty();
-                cF.ui.closeModal();
-                cF.handlebars.template(res.rsltList, "jrnl_entry_list");
-                dF.JrnlEntry.inKeywordSearchMode = true;
-                // 버튼 추가
-                $("#jrnl_aside #jrnl_entry_reset_btn").remove();
-                const resetBtn = $(`<button type="button" id="jrnl_entry_reset_btn" class="btn btn-sm btn-outline btn-light-danger px-4" 
-                                          onclick="dF.JrnlEntry.resetKeyword();" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
-                                          aria-label="항목 키워드 검색을 리셋합니다." 
-                                          data-bs-original-title="항목 키워드 검색을 리셋합니다." data-kt-initialized="1">
-                                     <i class="bi bi-x pe-0"></i>
-                                  </button>`);
-                $("#jrnl_aside #jrnl_entry_search_btn").after(resetBtn);
-                resetBtn.tooltip();
-            }, "block");
-        },
-
-        /**
-         * 키워드 검색 종료
-         */
-        resetKeyword: function(): void {
-            $("#jrnl_aside #jrnl_entry_reset_btn").remove();
-            $("#jrnl_aside #yy").val(dF.JrnlEntry.savedYy);
-            $("#jrnl_aside #mnth").val(dF.JrnlEntry.savedMnth);
-            dF.JrnlDayAside.mnth();
         },
 
         /**

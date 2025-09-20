@@ -13,9 +13,6 @@ dF.JrnlDiary = (function(): dfModule {
         inKeywordSearchMode: false,
         tagify: null,
 
-        savedYy: null,
-        savedMnth: null,
-
         /**
          * initializes module.
          */
@@ -55,11 +52,7 @@ dF.JrnlDiary = (function(): dfModule {
             const keyword: string = (document.querySelector("#jrnl_aside #diaryKeyword") as HTMLInputElement)?.value;
             if (cF.util.isEmpty(keyword)) return;
 
-            // 검색 시 기존 년월 저장
-            dF.JrnlDiary.savedYy = $("#jrnl_aside #yy").val() as string;
-            dF.JrnlDiary.savedMnth = $("#jrnl_aside #mnth").val() as string;
-
-            const url: string =Url.JRNL_DIARY_LIST_AJAX;
+            const url: string = Url.JRNL_DIARY_LIST_AJAX;
             const ajaxData: Record<string, any> = { "diaryKeyword": keyword };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
@@ -97,8 +90,6 @@ dF.JrnlDiary = (function(): dfModule {
          */
         resetKeyword: function(): void {
             $("#jrnl_aside #jrnl_diary_reset_btn").remove();
-            $("#jrnl_aside #yy").val(dF.JrnlDiary.savedYy);
-            $("#jrnl_aside #mnth").val(dF.JrnlDiary.savedMnth);
             dF.JrnlDayAside.mnth();
         },
 
