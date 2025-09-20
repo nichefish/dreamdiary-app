@@ -46,11 +46,11 @@ dF.JrnlTodo = (function(): dfModule {
          * 목록 조회
          */
         yyMnthListAjax: function(): void {
-            const yyElmt: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
+            const yyElmt: HTMLSelectElement = document.querySelector("#jrnl_aside #yy");
             const yy: string = yyElmt.value;
             if (cF.util.isEmpty(yy)) return;
 
-            const mnthElmt: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
+            const mnthElmt: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth");
             const mnth: string = mnthElmt.value;
             if (cF.util.isEmpty(mnth)) return;
 
@@ -70,11 +70,11 @@ dF.JrnlTodo = (function(): dfModule {
          * 등록 모달 호출
          */
         regModal: function(): void {
-            const yyElmt: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
+            const yyElmt: HTMLSelectElement = document.querySelector("#jrnl_aside #yy");
             const yy: string = yyElmt.value;
             if (cF.util.isEmpty(yy)) return;
 
-            const mnthElmt: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
+            const mnthElmt: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth");
             const mnth: string = mnthElmt.value;
             if (cF.util.isEmpty(mnth)) return;
 

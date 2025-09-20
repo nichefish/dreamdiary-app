@@ -5,8 +5,8 @@
 
 <script type="text/x-handlebars-template" id="jrnl_day_list_template">
     {{#each this}}
-        <div class="row jrnl-day">
-            <div class="row jrnl-day-header">
+        <div class="jrnl-day">
+            <div class="jrnl-day-header">
                 <div class="col-12 col-md-1 d-flex flex-wrap align-items-center fs-5 fw-bold {{#if isHldy}}text-danger{{/if}}" style="column-gap: .25rem">
                     <i class="bi bi-calendar3 fs-6 me-1 {{#if isHldy}}text-danger{{/if}}"></i>
                     {{stdrdDt}}
@@ -76,9 +76,9 @@
                             </button>
                         </div>
                     </label>
-                    <div class="row jrnl-item" data-id="{{postNo}}">
+                    <div class="jrnl-item">
                         {{#each jrnlDiaryList}}
-                            <div class="row jrnl-diary-item" data-id="{{postNo}}">
+                            <div class="jrnl-diary-item">
                                 <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                                     <div class="d-flex flex-column align-items-center">
                                         <span>
@@ -95,10 +95,10 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="col jrnl-diary-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
+                                <div class="col jrnl-diary-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-id="{{postNo}}">
                                     {{> jrnl_diary_cn_partial this}}
                                 </div>
-                                <div class="col-1 ms-4 dpe-0 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                                <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                                 <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
                                     {{> comment_reg_btn_partial this contentType="JRNL_DIARY"}}
                                     <div class="col-1 border-2 border-gray-300 border-end w-10px">&nbsp;</div>
@@ -125,7 +125,7 @@
                         </span>
                     </label>
                     {{#each jrnlDiaryList}}
-                        <div class="row jrnl-diary-item" data-id="{{postNo}}">
+                        <div class="jrnl-diary-item">
                             <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                                 <div class="d-flex flex-column align-items-center">
                                     <span># {{idx}}</span>
@@ -137,10 +137,10 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="col jrnl-diary-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
+                            <div class="col jrnl-diary-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-id="{{postNo}}">
                                 {{> jrnl_diary_cn_partial this}}
                             </div>
-                            <div class="col-1 ms-4 dpe-0 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                            <div class="col-1 ms-4 pe-0 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                             <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
                                 {{> comment_reg_btn_partial this contentType="JRNL_DIARY"}}
                                 <div class="col-1 border-2 border-gray-300 border-end w-10px">&nbsp;</div>
@@ -157,7 +157,7 @@
                         </span>
                     </label>
                     {{#each jrnlDreamList}}
-                        <div class="row jrnl-item">
+                        <div class="jrnl-item">
                             <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                                 <div class="d-flex flex-column align-items-center">
                                     <span># {{idx}}</span>
@@ -181,7 +181,7 @@
                         </div>
                     {{/each}}
                     {{#each jrnlElseDreamList}}
-                        <div class="row jrnl-item">
+                        <div class="jrnl-item">
                             <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                                 <div class="d-flex flex-column align-items-center">
                                     <span>-</span>
@@ -210,7 +210,7 @@
             </div>
         </div>
     {{else}}
-        <div class="row jrnl-day d-flex-center">
+        <div class="jrnl-day d-flex-center">
             저널 일자 정보가 없습니다.
         </div>
     {{/each}}

@@ -34,6 +34,8 @@ dF.JrnlDayAside = (function(): dfModule {
             localStorage.setItem("jrnl_yy", todayYy);
             localStorage.setItem("jrnl_mnth", todayMnth);
 
+            dF.JrnlDayAside.setYyMnth(todayYy, todayMnth);
+
             dF.JrnlDayAside.mnth();
             // 오늘이 제일 위에 오게 하기 위해 내림차순 정렬로 변경
             dF.JrnlDayAside.sort("DESC");
@@ -50,8 +52,8 @@ dF.JrnlDayAside = (function(): dfModule {
             dF.JrnlDream.inKeywordSearchMode = false;
 
             // #yy 요소와 #mnth 요소 가져오기
-            const yyElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
-            const mnthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
+            const yyElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy");
+            const mnthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth");
 
             if (yyElement && mnthElement) {
                 // #yy 값이 2010일 경우
@@ -69,11 +71,11 @@ dF.JrnlDayAside = (function(): dfModule {
          */
         changeYyAtMobile: function(): void {
             // #yy 요소와 #mnth 요소 가져오기
-            const yyMobileElement: HTMLSelectElement = document.querySelector("#jrnl_navbar #yy") as HTMLSelectElement;
-            const yyElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
+            const yyMobileElement: HTMLSelectElement = document.querySelector("#jrnl_navbar #yy");
+            const yyElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy");
             yyElement.value = yyMobileElement.value;
-            const mnthMobileElement: HTMLSelectElement = document.querySelector("#jrnl_navbar #mnth") as HTMLSelectElement;
-            const mnthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
+            const mnthMobileElement: HTMLSelectElement = document.querySelector("#jrnl_navbar #mnth");
+            const mnthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth");
             mnthElement.value = mnthMobileElement.value;
 
             dF.JrnlDayAside.changeYy();
@@ -84,11 +86,11 @@ dF.JrnlDayAside = (function(): dfModule {
          */
         changeMnthAtMobile: function(): void {
             // #yy 요소와 #mnth 요소 가져오기
-            const yyMobileElement: HTMLSelectElement = document.querySelector("#jrnl_navbar #yy") as HTMLSelectElement;
-            const yyElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
+            const yyMobileElement: HTMLSelectElement = document.querySelector("#jrnl_navbar #yy");
+            const yyElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy");
             yyElement.value = yyMobileElement.value;
-            const mnthMobileElement: HTMLSelectElement = document.querySelector("#jrnl_navbar #mnth") as HTMLSelectElement;
-            const mnthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
+            const mnthMobileElement: HTMLSelectElement = document.querySelector("#jrnl_navbar #mnth");
+            const mnthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth");
             mnthElement.value = mnthMobileElement.value;
 
             dF.JrnlDayAside.changeMnth();
@@ -98,8 +100,8 @@ dF.JrnlDayAside = (function(): dfModule {
          * 월 바꾸기
          */
         changeMnth: function(): void {
-            const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
-            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
+            const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy");
+            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth");
             const selectedYear: string = yearElement.value;
             const selectedMnth: string = monthElement.value;
 
@@ -114,12 +116,11 @@ dF.JrnlDayAside = (function(): dfModule {
          * 월 바꾸기
          */
         mnth: function(): void {
-            const yy:string = localStorage.getItem("jrnl_yy") ?? "9999";
+            const yy: string = localStorage.getItem("jrnl_yy") ?? "9999";
             if (cF.util.isEmpty(yy)) return;
-            const mnth = localStorage.getItem("jrnl_mnth") ?? "99";
+            const mnth: string = localStorage.getItem("jrnl_mnth") ?? "99";
             if (cF.util.isEmpty(mnth)) return;
 
-            // 쿠키 설정하기
             // 목록 조회
             $("#jrnl_aside #dreamKeyword").val("");
             $("#jrnl_aside #diaryKeyword").val("");
@@ -144,8 +145,8 @@ dF.JrnlDayAside = (function(): dfModule {
          * left
          */
         left: function(): void {
-            const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
-            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
+            const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy");
+            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth");
             const selecetdYear: string = yearElement.value;
             const selectedMonth: string = monthElement.value;
 
@@ -167,8 +168,8 @@ dF.JrnlDayAside = (function(): dfModule {
          * right
          */
         right: function(): void {
-            const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
-            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
+            const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy");
+            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth");
             const selecetdYear: string = yearElement.value;
             const selectedMonth: string = monthElement.value;
 
@@ -201,9 +202,23 @@ dF.JrnlDayAside = (function(): dfModule {
          * 저장된 저널 년/월로 돌아가기
          */
         turnback: function(): void {
-            localStorage.setItem("jrnl_yy", localStorage.getItem("jrnl_pinned_yy"));
-            localStorage.setItem("jrnl_mnth", localStorage.getItem("jrnl_pinned_mnth"));
+            const pinnedYy: string = localStorage.getItem("jrnl_pinned_yy");
+            const pinnedMnth: string = localStorage.getItem("jrnl_pinned_mnth");
+            localStorage.setItem("jrnl_yy", pinnedYy);
+            localStorage.setItem("jrnl_mnth", pinnedMnth);
+            dF.JrnlDayAside.setYyMnth(pinnedYy, pinnedMnth);
+
             dF.JrnlDayAside.mnth();
+        },
+
+        /**
+         * 사이드바에 년도/월 세팅
+         */
+        setYyMnth: function(yy: string, mnth: string): void {
+            const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy");
+            yearElement.value = yy == null ? cF.date.getCurrYyStr() : yy;       // 아무 정보도 없을경우 전체 데이터 로딩을 막기 위해 올해 년도 세팅
+            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth");
+            monthElement.value = mnth;
         },
 
         /**
@@ -212,7 +227,7 @@ dF.JrnlDayAside = (function(): dfModule {
          */
         sort: function(toBe: string): void {
             const sortElement: HTMLInputElement = document.querySelector("#jrnl_aside #sort");
-            const asIs = sortElement.value;
+            const asIs: string = sortElement.value;
             if (toBe == null) toBe = (asIs !== "ASC") ? "ASC" : "DESC";
             // 쿠키에 정렬 정보 저장
             localStorage.setItem("jrnl_day_sort", toBe);
@@ -250,22 +265,15 @@ dF.JrnlDayAside = (function(): dfModule {
          * 페이지에 조회년월 세팅
          */
         initYyMnth: function(): void {
-            // 년도 설정
-            const yy = localStorage.getItem("jrnl_yy");
-            const yyElement: HTMLInputElement = document.querySelector("#jrnl_aside #yy") as HTMLInputElement | null;
-            if (yy != null && yyElement != null) yyElement.value = yy;
-            // 월 설정
-            const mnth = localStorage.getItem("jrnl_mnth");
-            const mnthElement: HTMLInputElement = document.querySelector("#jrnl_aside #mnth") as HTMLInputElement | null;
-            if (mnth != null && mnthElement != null) mnthElement.value = mnth;
+            // 년도, 월 설정
+            const yy: string = localStorage.getItem("jrnl_yy");
+            const mnth: string = localStorage.getItem("jrnl_mnth");
+            const sort: string = localStorage.getItem("jrnl_day_sort");
+            dF.JrnlDayAside.setYyMnth(yy, mnth);
             // 정렬 설정
-            const sort = localStorage.getItem("jrnl_day_sort");
             const sortElement: HTMLInputElement = document.querySelector("#jrnl_aside #sort") as HTMLInputElement | null;
             if (sort != null && sortElement != null) sortElement.value = sort;
-            // 아무 정보도 없을경우 전체 데이터 로딩을 막기 위해 올해 년도 세팅
-            if (yy == null && mnth == null) {
-                yyElement.value = cF.date.getCurrYyStr();
-            }
+
         },
 
         /**

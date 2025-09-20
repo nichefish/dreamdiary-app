@@ -37,7 +37,7 @@
                 </span>
             </label>
             <#list imprtcDreamList![] as dream>
-                <div class="row jrnl-item my-2">
+                <div class="jrnl-item my-2">
                     <div class="col-1 py-3 d-flex-between border-2 border-gray-300 border-end ps-10 me-4 w-130px h-75">
                         <div>
                             <i class="bi bi-calendar3"></i> ${dream.stdrdDt!}

@@ -142,7 +142,7 @@ dF.JrnlDream = (function(): dfModule {
          * 등록 (Ajax)
          */
         regAjax: function(): void {
-            const postNoElmt: HTMLInputElement = document.querySelector("#jrnlDreamRegForm [name='postNo']") as HTMLInputElement;
+            const postNoElmt: HTMLInputElement = document.querySelector("#jrnlDreamRegForm [name='postNo']");
             const isReg: boolean = postNoElmt?.value === "";
             Swal.fire({
                 text: Message.get(isReg ? "view.cnfm.reg" : "view.cnfm.mdf"),
@@ -293,17 +293,17 @@ dF.JrnlDream = (function(): dfModule {
         toggle: function(postNo: string|number): void {
             if (isNaN(Number(postNo))) return;
 
-            const id = String(postNo);
-            const item = document.querySelector(`.jrnl-diary-item[data-id='${id}']`);
+            const id: string = String(postNo);
+            const item: HTMLElement = document.querySelector(`.jrnl-diary-cn[data-id='${id}']`);
             if (!item) return console.log("item not found.");
 
-            const content = item.querySelector(".jrnl-diary-cn .cn") as HTMLElement;
+            const content: HTMLElement = item.querySelector(".jrnl-diary-cn .cn");
             if (!content) return console.log("content not found.");
 
-            const icon = item.querySelector(`#toggle-icon-${id}`) as HTMLElement;
+            const icon: HTMLElement = item.querySelector(`#toggle-icon-${id}`);
             const collapsedIds = new Set(JSON.parse(localStorage.getItem(dF.JrnlDream.STORAGE_KEY) || "[]"));
 
-            const isCollapsed = content.classList.contains("collapsed");
+            const isCollapsed: boolean = content.classList.contains("collapsed");
             if (isCollapsed) {
                 content.classList.remove("collapsed");
                 icon?.classList.replace("bi-chevron-down", "bi-chevron-up");
@@ -322,11 +322,10 @@ dF.JrnlDream = (function(): dfModule {
          */
         initCollapseState: function(): void {
             const collapsedIds = new Set(JSON.parse(localStorage.getItem(dF.JrnlDream.STORAGE_KEY) || "[]"));
-            document.querySelectorAll(".jrnl-diary-item .cn").forEach(item => {
-                const el = item as HTMLElement;
-                const id = el.dataset.id;
-                const content = el.querySelector(".jrnl-diary-cn");
-                const icon = el.querySelector(`#toggle-icon-${id}`);
+            document.querySelectorAll(".jrnl-diary-item .jrnl-dream-cn").forEach((item: HTMLElement): void => {
+                const id: string = item.dataset.id;
+                const content: HTMLElement = item.querySelector(".cn");
+                const icon: HTMLElement = item.querySelector(`#toggle-icon-${id}`);
                 if (id && collapsedIds.has(id)) {
                     content?.classList.add("collapsed");
                     icon?.classList.replace("bi-chevron-up", "bi-chevron-down");

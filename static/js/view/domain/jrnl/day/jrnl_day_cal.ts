@@ -30,8 +30,8 @@ const Page: Page = (function(): Page {
             cF.util.enterKey("#dreamKeyword", dF.JrnlDream.keywordListAjax);
 
             // 초기 일자 설정
-            const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
-            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
+            const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy");
+            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth");
             const selectedMonth: number = Number(monthElement.value);
             const selectedYear: number = Number(yearElement.value);
             Page.calDt = new Date(selectedYear, selectedMonth - 1, 1);
