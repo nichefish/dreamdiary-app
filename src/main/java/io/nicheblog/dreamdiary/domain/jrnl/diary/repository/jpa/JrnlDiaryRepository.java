@@ -33,7 +33,7 @@ public interface JrnlDiaryRepository
     List<JrnlDiaryEntity> findAll(Specification<JrnlDiaryEntity> spec);
 
     /**
-     * 해당 일자에서 일기 마지막 인덱스 조회
+     * 해당 항목에서 일기 마지막 인덱스 조회
      *
      * @param jrnlEntryNo 조회할 항목 번호
      * @return {@link Optional} -- 해당 일자에서 일기의 마지막 인덱스

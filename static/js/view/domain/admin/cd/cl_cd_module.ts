@@ -52,7 +52,7 @@ dF.ClCd = (function(): dfModule {
             event.stopPropagation();
 
             // pageNo를 1로 설정
-            const pageNoElmt: HTMLInputElement = document.querySelector("#listForm #pageNo") as HTMLInputElement;
+            const pageNoElmt: HTMLInputElement = document.querySelector("#listForm #pageNo");
             if (pageNoElmt) pageNoElmt.value = '1';
             // submit
             cF.form.blockUISubmit("#listForm", Url.CL_CD_LIST + "?actionTyCd=SEARCH");

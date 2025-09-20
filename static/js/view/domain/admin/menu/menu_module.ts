@@ -59,7 +59,7 @@ dF.Menu = (function(): dfModule {
          * 아이콘 새로고침
          */
         refreshIcon: function(): void {
-            const iconElmt: HTMLInputElement = document.querySelector("#menuRegForm #icon") as HTMLInputElement;
+            const iconElmt: HTMLInputElement = document.querySelector("#menuRegForm #icon");
             if (!iconElmt) return;
 
             const menuIconDiv: HTMLElement = document.querySelector("#menuRegForm #menu_icon_div");

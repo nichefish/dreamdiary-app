@@ -124,8 +124,8 @@ public class WebLgnFailureHandler
      * @return {@link String} -- 예외에 해당하는 에러 메시지
      */
     public String getLgnFailureMsg(final Exception e) {
-        String exceptionNm = e.getClass().toString();
-        exceptionNm = exceptionNm.substring(exceptionNm.lastIndexOf('.') + 1);
+        final String fullExceptionNm = e.getClass().toString();
+        final String exceptionNm = fullExceptionNm.substring(fullExceptionNm.lastIndexOf('.') + 1);
         return MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider." + exceptionNm);
     }
 }

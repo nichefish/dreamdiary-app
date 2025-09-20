@@ -51,8 +51,8 @@ public class MainPageController
 
         // TODO: 접근 권한 통제
 
-        // 메인 화면 꾸밀때까지 공지사항 목록 화면으로 리다이렉트
-        return "redirect:" + Url.NOTICE_LIST;
+        // 메인 화면 꾸밀때까지 저널 일자 화면으로 리다이렉트
+        return "redirect:" + Url.JRNL_DAY_PAGE;
     }
 
     /**

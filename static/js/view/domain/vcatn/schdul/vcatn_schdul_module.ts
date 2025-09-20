@@ -49,7 +49,7 @@ dF.VcatnSchdul = (function(): dfModule {
         isHalf: function(idx?: number) : boolean {
             const validIdx: string = cF.util.isNotEmpty(idx) ? String(idx) : "";
 
-            const vcatnCdElement: HTMLSelectElement = document.querySelector("#vcatnCd" + validIdx) as HTMLSelectElement;
+            const vcatnCdElement: HTMLSelectElement = document.querySelector("#vcatnCd" + validIdx);
             const vcatnCd: string = vcatnCdElement?.value;
             return vcatnCd === "AM_HALF" || vcatnCd === "PM_HALF";
         },
@@ -58,7 +58,7 @@ dF.VcatnSchdul = (function(): dfModule {
          * 시작일 이전 날짜 선택 불가
          */
         noBefore: function(beginSelectorStr: string, endSelectorStr: string, idx: number): void {
-            const endElmt: HTMLInputElement = document.querySelector(endSelectorStr) as HTMLInputElement;
+            const endElmt: HTMLInputElement = document.querySelector(endSelectorStr);
             if (dF.VcatnSchdul.isHalf(idx)) {
                 const beginElmt: HTMLInputElement = document.querySelector(beginSelectorStr) as HTMLInputElement;
                 if (beginElmt && endElmt) endElmt.value = beginElmt.value;

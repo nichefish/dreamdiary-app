@@ -140,7 +140,7 @@ public class JrnlDiaryTagRestController
     @GetMapping(value = {Url.JRNL_DIARY_TAG_DTL_AJAX})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> jrnlDayListAjax(
+    public ResponseEntity<AjaxResponse> jrnlDiaryTagDtlAjax(
             final JrnlDiarySearchParam searchParam,
             final LogActvtyParam logParam
     ) throws Exception {

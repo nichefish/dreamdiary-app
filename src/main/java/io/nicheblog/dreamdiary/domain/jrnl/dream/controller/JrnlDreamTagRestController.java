@@ -140,8 +140,8 @@ public class JrnlDreamTagRestController
     @GetMapping(value = {Url.JRNL_DREAM_TAG_DTL_AJAX})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> jrnlDayListAjax(
-            JrnlDreamSearchParam searchParam,
+    public ResponseEntity<AjaxResponse> jrnlDreamTagDtlAjax(
+            final JrnlDreamSearchParam searchParam,
             final LogActvtyParam logParam
     ) throws Exception {
 

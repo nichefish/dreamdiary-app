@@ -50,6 +50,7 @@ public class FlywayRunner
                 .validateOnMigrate(flywayProperties.isValidateOnMigrate())
                 .load();
         flyway.migrate();
+        log.info("FlywayRunner run... migrate success. version: {}", version);
     }
 
     private String extractVersionPrefix(final String targetVersion) {
