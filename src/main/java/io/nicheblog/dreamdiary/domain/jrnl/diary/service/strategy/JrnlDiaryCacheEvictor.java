@@ -1,8 +1,12 @@
 package io.nicheblog.dreamdiary.domain.jrnl.diary.service.strategy;
 
+import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayService;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryContentTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryTagEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntryEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.entry.service.JrnlEntryService;
 import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.extension.cache.service.CacheEvictor;
@@ -23,6 +27,9 @@ import org.springframework.stereotype.Component;
 public class JrnlDiaryCacheEvictor
         implements CacheEvictor<JrnlCacheEvictEvent> {
 
+    private final JrnlDayService jrnlDayService;
+    private final JrnlEntryService jrnlEntryService;
+
     /**
      * 해당 컨텐츠 타입 관련 캐시를 제거한다.
      *
@@ -33,10 +40,13 @@ public class JrnlDiaryCacheEvictor
     public void evict(final JrnlCacheEvictEvent event) throws Exception {
         final JrnlCacheEvictParam param = event.getCacheEvictParam();
         final Integer postNo = param.getPostNo();
-        final Integer jrnlDayNo = param.getJrnlDayNo();
-        final Integer yy = param.getYy();
-        final Integer mnth = param.getMnth();
-        // jrnl_dream
+        final Integer jrnlEntryNo = param.getJrnlEntryNo();
+        final JrnlEntryEntity jrnlEntry = jrnlEntryService.getDtlEntity(jrnlEntryNo);
+        final Integer jrnlDayNo = jrnlEntry.getJrnlDayNo();
+        final JrnlDayEntity jrnlDay = jrnlDayService.getDtlEntity(jrnlDayNo);
+        final Integer yy = jrnlDay.getYy();
+        final Integer mnth = jrnlDay.getMnth();
+        // jrnl_diary
         EhCacheUtils.evictMyCacheAll("myJrnlDiaryList");
         EhCacheUtils.evictMyCache("myJrnlDiaryDtlDto", postNo);
         // jrnl_day

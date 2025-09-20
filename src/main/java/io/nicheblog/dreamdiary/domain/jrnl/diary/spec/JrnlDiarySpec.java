@@ -3,7 +3,9 @@ package io.nicheblog.dreamdiary.domain.jrnl.diary.spec;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiarySmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntrySmpEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.ContentTagEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BasePostSpec;
@@ -45,7 +47,8 @@ public class JrnlDiarySpec
     ) {
         // 정렬 순서 변경
         final List<Order> order = new ArrayList<>();
-        final Join<JrnlDreamEntity, JrnlDaySmpEntity> jrnlDayJoin = root.join("jrnlDay", JoinType.INNER);
+        final Join<JrnlDiaryEntity, JrnlEntrySmpEntity> jrnlEntryJoin = root.join("jrnlEntry", JoinType.INNER);
+        final Join<JrnlEntrySmpEntity, JrnlDaySmpEntity> jrnlDayJoin = jrnlEntryJoin.join("jrnlDay", JoinType.INNER);
         order.add(builder.desc(builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"))));
         order.add(builder.asc(root.get("idx")));
         query.orderBy(order);
@@ -72,7 +75,8 @@ public class JrnlDiarySpec
         final List<Predicate> predicate = new ArrayList<>();
 
         // expressions
-        final Join<JrnlDreamEntity, JrnlDaySmpEntity> jrnlDayJoin = root.join("jrnlDay", JoinType.INNER);
+        final Join<JrnlDiarySmpEntity, JrnlEntrySmpEntity> jrnlEntryJoin = root.join("jrnlEntry", JoinType.INNER);
+        final Join<JrnlEntrySmpEntity, JrnlDaySmpEntity> jrnlDayJoin = jrnlEntryJoin.join("jrnlDay", JoinType.INNER);
         final Expression<Date> effectiveDtExp = builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"));
 
         // 파라미터 비교

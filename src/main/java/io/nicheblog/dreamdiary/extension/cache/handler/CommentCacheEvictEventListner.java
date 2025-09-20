@@ -6,6 +6,8 @@ import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryService;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamService;
+import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntryDto;
+import io.nicheblog.dreamdiary.domain.jrnl.entry.service.JrnlEntryService;
 import io.nicheblog.dreamdiary.extension.cache.event.CommentCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
@@ -30,6 +32,7 @@ import org.springframework.stereotype.Component;
 public class CommentCacheEvictEventListner {
 
     private final JrnlDayService jrnlDayService;
+    private final JrnlEntryService jrnlEntryService;
     private final JrnlDiaryService jrnlDiaryService;
     private final JrnlDreamService jrnlDreamService;
     private final ApplicationEventPublisherWrapper publisher;
@@ -49,6 +52,12 @@ public class CommentCacheEvictEventListner {
                 JrnlDayDto jrnlDayDto = jrnlDayService.getDtlDto(event.getRefPostNo());
                 JrnlCacheEvictParam param = JrnlCacheEvictParam.of(jrnlDayDto);
                 publisher.publishEvent(new JrnlCacheEvictEvent(this, param, ContentType.JRNL_DAY));
+                break;
+            }
+            case JRNL_ENTRY: {
+                JrnlEntryDto jrnlEntryDto = jrnlEntryService.getDtlDto(event.getRefPostNo());
+                JrnlCacheEvictParam param = JrnlCacheEvictParam.of(jrnlEntryDto);
+                publisher.publishEvent(new JrnlCacheEvictEvent(this, param, ContentType.JRNL_ENTRY));
                 break;
             }
             case JRNL_DIARY:  {

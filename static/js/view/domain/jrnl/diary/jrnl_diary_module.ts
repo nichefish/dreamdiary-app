@@ -105,15 +105,21 @@ dF.JrnlDiary = (function(): dfModule {
         /**
          * 등록 모달 호출
          * @param {string|number} jrnlDayNo - 저널 일자 번호.
+         * @param {string|number} jrnlEntryNo - 저널 항목 번호.
          * @param {string} stdrdDt - 기준 날짜.
          * @param {string} jrnlDtWeekDay - 기준 날짜 요일.
          */
-        regModal: function(jrnlDayNo: string|number, stdrdDt: string, jrnlDtWeekDay: string): void {
-            if (isNaN(Number(jrnlDayNo))) return;
+        regModal: function(jrnlDayNo: string|number, jrnlEntryNo: string|number, stdrdDt: string, jrnlDtWeekDay: string): void {
+            if (isNaN(Number(jrnlEntryNo))) return;
 
-            const obj: Record<string, any> = { jrnlDayNo: jrnlDayNo, stdrdDt: stdrdDt, jrnlDtWeekDay: jrnlDtWeekDay };
-            /* initialize form. */
-            dF.JrnlDiary.initForm(obj);
+            const url: string = Url.JRNL_DAY_DTL_AJAX;
+            cF.ajax.get(url, { "postNo": jrnlDayNo }, function(res: AjaxResponse): void {
+                if (!res.rslt) return;
+                const entryList = res.rsltObj.entryList;
+                const obj: Record<string, any> = { jrnlDayNo: jrnlDayNo, jrnlEntryNo: jrnlEntryNo, stdrdDt: stdrdDt, jrnlDtWeekDay: jrnlDtWeekDay, entryList: entryList };
+                /* initialize form. */
+                dF.JrnlDiary.initForm(obj);
+            });
         },
 
         /**
@@ -223,11 +229,17 @@ dF.JrnlDiary = (function(): dfModule {
                     return;
                 }
                 const { rsltObj } = res;
-                /* initialize form. */
-                dF.JrnlDiary.initForm(rsltObj);
+                const url: string = Url.JRNL_DAY_DTL_AJAX;
+                cF.ajax.get(url, { "postNo": rsltObj.jrnlDayNo }, function(res: AjaxResponse): void {
+                    if (!res.rslt) return;
+                    const entryList = res.rsltObj.entryList;
+                    const obj: Record<string, any> = { ...rsltObj, entryList: entryList };
+                    /* initialize form. */
+                    dF.JrnlDiary.initForm(obj);
 
-                /* modal history push */
-                ModalHistory.push(self, func, args);
+                    /* modal history push */
+                    ModalHistory.push(self, func, args);
+                });
             });
         },
 

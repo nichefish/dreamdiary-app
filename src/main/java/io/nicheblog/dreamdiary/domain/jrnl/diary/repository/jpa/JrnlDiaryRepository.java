@@ -35,12 +35,12 @@ public interface JrnlDiaryRepository
     /**
      * 해당 일자에서 일기 마지막 인덱스 조회
      *
-     * @param jrnlDayNo 조회할 일자 번호
+     * @param jrnlEntryNo 조회할 항목 번호
      * @return {@link Optional} -- 해당 일자에서 일기의 마지막 인덱스
      */
     @Query("SELECT MAX(diary.idx) " +
             "FROM JrnlDiaryEntity diary " +
-            "INNER JOIN FETCH JrnlDayEntity day ON diary.jrnlDayNo = day.postNo " +
-            "WHERE diary.jrnlDayNo = :jrnlDayNo")
-    Optional<Integer> findLastIndexByJrnlDay(final @Param("jrnlDayNo") Integer jrnlDayNo);
+            "INNER JOIN FETCH JrnlEntryEntity entry ON diary.jrnlEntryNo = entry.postNo " +
+            "WHERE diary.jrnlEntryNo = :jrnlEntryNo")
+    Optional<Integer> findLastIndexByJrnlDay(final @Param("jrnlEntryNo") Integer jrnlEntryNo);
 }

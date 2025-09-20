@@ -20,7 +20,7 @@
                     {{#if (exists hldyNm)}}<div class="w-100 ps-5 fs-6 fw-normal text-truncate">{{hldyNm}}</div>{{/if}}
                 </div>
                 <div class="col-3 d-none d-md-flex align-items-center gap-2">
-                    {{> jrnl_diary_reg_btn_partial this}}
+                    {{> jrnl_entry_reg_btn_partial this}}
                     {{> jrnl_dream_reg_btn_partial this}}
                     <button type="button" class="btn btn-sm btn-light-primary btn-outlined py-2 px-3 cursor-pointer"
                             onclick="dF.JrnlDay.mdfModal({{postNo}});"
@@ -48,6 +48,67 @@
                 </div>
             </div>
             <div class="row p-5">
+                {{#each jrnlEntryList}}
+                    <label class="d-flex align-items-center mt-2">
+                        <div class="col-1 w-5 text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder ">
+                            {{#if (equals entryResolvedYn 'Y')}}
+                                <span class="text-success"><@spring.message 'entry'/></span>
+                                <span class="position-relative d-inline-block">
+                                  <i class="bi bi-book fs-4 text-success"></i>
+                                  <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
+                                </span>
+                            {{else}}
+                                <@spring.message 'entry'/>
+                                <i class="bi bi-book fs-4 pe-1"></i>
+                            {{/if}}
+                        </div>
+                        <div class="col-3 d-none d-md-flex align-items-center gap-2">
+                           {{> jrnl_diary_reg_btn_partial this}}
+                            <button type="button" class="btn btn-sm btn-light-primary btn-outlined py-2 px-3 cursor-pointer"
+                                    onclick="dF.JrnlEntry.mdfModal({{postNo}});"
+                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'jrnl.entry'/> <@spring.message 'bs.tooltip.modal.mdf'/>">
+                                <i class="bi bi-pencil-square p-0"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-light-danger btn-outlined py-2 px-3 cursor-pointer"
+                                    onclick="dF.JrnlEntry.delAjax({{postNo}});"
+                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'jrnl.entry'/> <@spring.message 'bs.tooltip.modal.mdf'/>">
+                                <i class="bi bi-trash p-0"></i>
+                            </button>
+                        </div>
+                    </label>
+                    <div class="row jrnl-item" data-id="{{postNo}}">
+                        {{#each jrnlDiaryList}}
+                            <div class="row jrnl-diary-item" data-id="{{postNo}}">
+                                <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <span>
+                                            # {{idx}}
+                                            {{#if (equals diaryResolvedYn 'Y')}}
+                                                <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
+                                            {{/if}}
+                                        </span>
+                                        <!-- 토글 버튼 추가 -->
+                                        <button type="button"
+                                                class="btn btn-sm btn-light-secondary ms-2 toggle-diary-btn"
+                                                onclick="dF.JrnlDiary.toggle({{postNo}})">
+                                            <i class="bi bi-chevron-up pe-0" id="toggle-icon-{{postNo}}"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col jrnl-diary-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
+                                    {{> jrnl_diary_cn_partial this}}
+                                </div>
+                                <div class="col-1 ms-4 dpe-0 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                                <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
+                                    {{> comment_reg_btn_partial this contentType="JRNL_DIARY"}}
+                                    <div class="col-1 border-2 border-gray-300 border-end w-10px">&nbsp;</div>
+                                    {{> jrnl_diary_mdf_btn_partial this}}
+                                </div>
+                            </div>
+                        {{/each}}
+                    </div>
+                {{/each}}
+
                 {{#if (exists jrnlDiaryList)}}
                     <label class="d-flex align-items-center mt-2">
                         <span class="text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder ">

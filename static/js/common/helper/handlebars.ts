@@ -459,6 +459,11 @@ document.addEventListener("DOMContentLoaded", function(): void {
     const jrnlDayMdfBtnPartial: string = document.getElementById("jrnl_day_mdf_btn_partial")?.innerHTML;
     if (jrnlDayMdfBtnPartial) Handlebars.registerPartial("jrnl_day_mdf_btn_partial", jrnlDayMdfBtnPartial);
 
+    const jrnlEntryRegBtnPartial: string = document.getElementById("jrnl_entry_reg_btn_partial")?.innerHTML;
+    if (jrnlEntryRegBtnPartial) Handlebars.registerPartial("jrnl_entry_reg_btn_partial", jrnlEntryRegBtnPartial);
+    const jrnlEntryMdfBtnPartial: string = document.getElementById("jrnl_entry_mdf_btn_partial")?.innerHTML;
+    if (jrnlEntryMdfBtnPartial) Handlebars.registerPartial("jrnl_entry_mdf_btn_partial", jrnlEntryMdfBtnPartial);
+
     const jrnlDiaryCnPartial: string = document.getElementById("jrnl_diary_cn_partial")?.innerHTML;
     if (jrnlDiaryCnPartial) Handlebars.registerPartial("jrnl_diary_cn_partial", jrnlDiaryCnPartial);
 

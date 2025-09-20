@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.extension.cache.handler;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.strategy.JrnlDayCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.strategy.JrnlDiaryCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.service.strategy.JrnlDreamCacheEvictor;
+import io.nicheblog.dreamdiary.domain.jrnl.entry.service.strategy.JrnlEntryCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.service.strategy.JrnlSumryCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.todo.service.strategy.JrnlTodoCacheEvictor;
 import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
@@ -34,6 +35,7 @@ import java.util.Map;
 public class JrnlCacheEvictEventListner {
 
     private final JrnlDayCacheEvictor jrnlDayCacheEvictor;
+    private final JrnlEntryCacheEvictor jrnlEntryCacheEvictor;
     private final JrnlDiaryCacheEvictor jrnlDiaryCacheEvictor;
     private final JrnlDreamCacheEvictor jrnlDreamCacheEvictor;
     private final JrnlTodoCacheEvictor jrnlTodoCacheEvictor;
@@ -45,6 +47,7 @@ public class JrnlCacheEvictEventListner {
     @PostConstruct
     private void initEvictorMap() {
         evictorMap.put(ContentType.JRNL_DAY.key, jrnlDayCacheEvictor);
+        evictorMap.put(ContentType.JRNL_ENTRY.key, jrnlEntryCacheEvictor);
         evictorMap.put(ContentType.JRNL_DIARY.key, jrnlDiaryCacheEvictor);
         evictorMap.put(ContentType.JRNL_DREAM.key, jrnlDreamCacheEvictor);
         evictorMap.put(ContentType.JRNL_TODO.key, jrnlTodoCacheEvictor);
