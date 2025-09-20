@@ -110,7 +110,7 @@ dF.Notice = (function(): dfModule {
          * form submit
          */
         submit: function(): void {
-            if (tinymce !== undefined) tinymce.activeEditor.save();
+            if (tinymce != null) tinymce.activeEditor.save();
             dF.Notice.submitMode = "submit";
             $("#noticeRegForm").submit();
         },
@@ -119,7 +119,7 @@ dF.Notice = (function(): dfModule {
          * 미리보기 팝업 호출
          */
         preview: function(): void {
-            if (tinymce !== undefined) tinymce.activeEditor.save();
+            if (tinymce != null) tinymce.activeEditor.save();
             dF.Notice.submitMode = "preview";
             $("#noticeRegForm").submit();
         },

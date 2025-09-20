@@ -93,7 +93,7 @@ dF.JrnlDayAside = (function(): dfModule {
             // 목록 조회
             $("#jrnl_aside #dreamKeyword").val("");
             $("#jrnl_aside #diaryKeyword").val("");
-            const isCalendar: boolean = Page?.calendar !== undefined;
+            const isCalendar: boolean = Page?.calendar != null;
             if (isCalendar) {
                 Page.calDt = new Date(Number(yy), Number(mnth) - 1, 1);
                 Page.calendar.gotoDate(Page.calDt);
@@ -183,7 +183,7 @@ dF.JrnlDayAside = (function(): dfModule {
         sort: function(toBe: string): void {
             const sortElement: HTMLInputElement = document.querySelector("#jrnl_aside #sort");
             const asIs = sortElement.value;
-            if (toBe === undefined) toBe = (asIs !== "ASC") ? "ASC" : "DESC";
+            if (toBe == null) toBe = (asIs !== "ASC") ? "ASC" : "DESC";
             // 쿠키에 정렬 정보 저장
             localStorage.setItem("jrnl_day_sort", toBe);
             // 정렬 값 설정

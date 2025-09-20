@@ -19,7 +19,7 @@ dF.Comment.modal = (function(): dfModule {
         init: function({ refreshFunc }: { refreshFunc?: Function } = {}): void {
             if (dF.Comment.modal.initialized) return;
 
-            if (refreshFunc !== undefined) dF.Comment.modal.refreshFunc = refreshFunc;
+            if (refreshFunc != null) dF.Comment.modal.refreshFunc = refreshFunc;
 
             dF.Comment.modal.initialized = true;
             console.log("'dF.Comment.modal' module initialized.");
@@ -79,7 +79,7 @@ dF.Comment.modal = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            if (dF.Comment.modal.refreshFunc !== undefined) {
+                            if (dF.Comment.modal.refreshFunc != null) {
                                 dF.Comment.modal.refreshFunc();
                             } else {
                                 cF.ui.blockUIReload();
@@ -129,7 +129,7 @@ dF.Comment.modal = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            if (dF.Comment.modal.refreshFunc !== undefined) {
+                            if (dF.Comment.modal.refreshFunc != null) {
                                 dF.Comment.modal.refreshFunc();
                             } else {
                                 cF.ui.blockUIReload();

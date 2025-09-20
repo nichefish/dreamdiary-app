@@ -161,7 +161,7 @@ dF.Schdul = (function(): dfModule {
                 cF.handlebars.modal(res.rsltObj, "schdul_reg");
                 const rsltObj: Record<string, any> = res.rsltObj;
                 const { prtcpntList: prtcpnt } = rsltObj;
-                dF.Schdul.prtcpntCnt = prtcpnt !== undefined ? prtcpnt.length : 0;
+                dF.Schdul.prtcpntCnt = prtcpnt != null ? prtcpnt.length : 0;
 
                 cF.datepicker.singleDatePicker("#bgnDt", "yyyy-MM-DD", rsltObj.bgnDt);
                 cF.datepicker.singleDatePicker("#endDt", "yyyy-MM-DD", rsltObj.endDt);

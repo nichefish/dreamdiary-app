@@ -127,8 +127,8 @@ const Page: Page = (function(): Page {
          */
         getChkedCookie: function(key): string {
             const cookie: string = $.cookie(key);
-            if (key === "schdul_chk_myPaprChk") return (cookie === undefined) ? "N" : cookie;
-            return (cookie === undefined) ? "Y" : cookie;
+            if (key === "schdul_chk_myPaprChk") return (cookie == null) ? "N" : cookie;
+            return (cookie == null) ? "Y" : cookie;
         },
 
         /**

@@ -65,10 +65,10 @@ dF.NoticePopup = (function(): Module {
          */
         hasNoticeCookie: function(): boolean {
             const obj: Record<string, any> = dF.NoticePopup.popupList[dF.NoticePopup.popupIdx];
-            if (obj === undefined) return false;
+            if (obj == null) return false;
 
             const popupCookie: string = $.cookie("notice_popup__postno_" + obj.postNo);
-            return (popupCookie !== undefined);
+            return (popupCookie != null);
         },
 
         /**

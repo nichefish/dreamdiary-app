@@ -92,7 +92,7 @@ dF.JrnlSbjct = (function(): dfModule {
          * form submit
          */
         submit: function(): void {
-            if (tinymce !== undefined) tinymce.activeEditor.save();
+            if (tinymce != null) tinymce.activeEditor.save();
             dF.JrnlSbjct.submitMode = "submit";
             $("#jrnlSbjctRegForm").submit();
         },
@@ -101,7 +101,7 @@ dF.JrnlSbjct = (function(): dfModule {
          * 미리보기 팝업 호출
          */
         preview: function(): void {
-            if (tinymce !== undefined) tinymce.activeEditor.save();
+            if (tinymce != null) tinymce.activeEditor.save();
             dF.JrnlSbjct.submitMode = "preview";
             $("#jrnlSbjctRegForm").submit();
         },
@@ -117,7 +117,7 @@ dF.JrnlSbjct = (function(): dfModule {
                     .then(function(): void {
                         if (!res.rslt) return;
 
-                        if (res.rsltObj === undefined) dF.JrnlSbjct.list();
+                        if (res.rsltObj == null) dF.JrnlSbjct.list();
                         const postNo: number = res.rsltObj.postNo;
                         cF.ui.blockUIReplace(`${Url.JRNL_SBJCT_DTL!}?postNo=${postNo}`);
                     });

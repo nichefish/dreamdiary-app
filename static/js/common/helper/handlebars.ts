@@ -35,7 +35,7 @@ cF.handlebars = (function(): Module {
             const isModal: boolean = mode === "modal";
 
             const actual: string = cF.handlebars.compile(data, isModal ? `${templateStr}_modal` : templateStr);
-            if (actual === null) {
+            if (actual == null) {
                 console.error(`template compile error: ${templateStr}`);
                 return;
             }
@@ -98,7 +98,7 @@ cF.handlebars = (function(): Module {
          */
         appendTo: function(data: Record<string, any> = {}, templateStr: string, trgetElmtId: string): void {
             const actual: string = cF.handlebars.compile(data, templateStr);
-            if (actual === null) {
+            if (actual == null) {
                 console.error(`template compile error: ${templateStr}`);
                 return;
             }
@@ -416,7 +416,7 @@ cF.handlebars = (function(): Module {
      * @returns {string} - 객체일 경우 JSON 문자열, 그렇지 않으면 문자열. 값이 없으면 'null' 문자열.
      */
     const isObjectFunc: Function = function(value: any): boolean {
-        return value !== null && typeof value === 'object' && !Array.isArray(value);
+        return value != null && typeof value === 'object' && !Array.isArray(value);
     }
 
     Handlebars.registerHelper('isObject', isObjectFunc);

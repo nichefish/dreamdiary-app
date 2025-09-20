@@ -18,7 +18,7 @@ dF.Sectn = (function(): dfModule {
         init: function({ refreshFunc }: { refreshFunc?: Function } = {}): void {
             if (dF.Sectn.initialized) return;
 
-            if (refreshFunc !== undefined) dF.Sectn.refreshFunc = refreshFunc;
+            if (refreshFunc != null) dF.Sectn.refreshFunc = refreshFunc;
 
             dF.Sectn.initialized = true;
             console.log("'dF.Sectn' module initialized.");
@@ -90,7 +90,7 @@ dF.Sectn = (function(): dfModule {
          * form submit
          */
         submit: function(): void {
-            if (tinymce !== undefined) tinymce.activeEditor.save();
+            if (tinymce != null) tinymce.activeEditor.save();
             $("#sectnRegForm").submit();
         },
 
@@ -112,7 +112,7 @@ dF.Sectn = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            if (dF.Sectn.refreshFunc !== undefined) {
+                            if (dF.Sectn.refreshFunc != null) {
                                 dF.Sectn.refreshFunc();
                             } else {
                                 cF.ui.blockUIReload();
@@ -162,7 +162,7 @@ dF.Sectn = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            if (dF.Sectn.refreshFunc !== undefined) {
+                            if (dF.Sectn.refreshFunc != null) {
                                 dF.Sectn.refreshFunc();
                             } else {
                                 cF.ui.blockUIReload();

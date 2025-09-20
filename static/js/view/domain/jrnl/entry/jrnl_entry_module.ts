@@ -82,7 +82,7 @@ dF.JrnlEntry = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            const isCalendar: boolean = Page?.calendar !== undefined;
+                            const isCalendar: boolean = Page?.calendar != null;
                             if (isCalendar) {
                                 Page.refreshEventList();
                                 dF.JrnlEntryTag.listAjax();     // 태그 refresh
@@ -190,7 +190,7 @@ dF.JrnlEntry = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            const isCalendar: boolean = Page?.calendar !== undefined;
+                            const isCalendar: boolean = Page?.calendar != null;
                             if (isCalendar) {
                                 Page.refreshEventList();
                                 dF.JrnlEntryTag.listAjax();     // 태그 refresh

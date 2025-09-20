@@ -264,7 +264,7 @@ cF.validate = (function(): Module {
             const filename: string = file.name;
             let extn: string|undefined = filename.split('.').pop();
             // 확장가가 없는 경우 처리
-            if (extn === filename || extn === undefined) extn = "";
+            if (extn === filename || extn == null) extn = "";
 
             // 기본 확장자 필터
             const basicExtnFiltered = cF.validate.basicExtnFilter.split('|').includes(extn.toLowerCase());

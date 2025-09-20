@@ -96,7 +96,7 @@ dF.BoardPost = (function(): dfModule {
          * form submit
          */
         submit: function(): void {
-            if (tinymce !== undefined) tinymce.activeEditor.save();
+            if (tinymce != null) tinymce.activeEditor.save();
             Page.submitMode = "submit";
             $("#postRegForm").submit();
         },
@@ -105,7 +105,7 @@ dF.BoardPost = (function(): dfModule {
          * 미리보기 팝업 호출
          */
         preview: function(): void {
-            if (tinymce !== undefined) tinymce.activeEditor.save();
+            if (tinymce != null) tinymce.activeEditor.save();
             Page.submitMode = "preview";
             $("#postRegForm").submit();
         },
