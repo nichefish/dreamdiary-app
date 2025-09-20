@@ -29,6 +29,8 @@
 
             <#include "/layout/header/navbar/_navbar_base.ftlh">
 
+            <!-- 모바일 저널 -->
+            <#include "/layout/header/jrnl/_jrnl_navbar_base.ftlh">
         </div>
         <#--end::Header wrapper-->
 

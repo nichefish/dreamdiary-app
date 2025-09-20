@@ -65,6 +65,36 @@ dF.JrnlDayAside = (function(): dfModule {
         },
 
         /**
+         * 년도 바꾸기 (모바일)
+         */
+        changeYyAtMobile: function(): void {
+            // #yy 요소와 #mnth 요소 가져오기
+            const yyMobileElement: HTMLSelectElement = document.querySelector("#jrnl_navbar #yy") as HTMLSelectElement;
+            const yyElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
+            yyElement.value = yyMobileElement.value;
+            const mnthMobileElement: HTMLSelectElement = document.querySelector("#jrnl_navbar #mnth") as HTMLSelectElement;
+            const mnthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
+            mnthElement.value = mnthMobileElement.value;
+
+            dF.JrnlDayAside.changeYy();
+        },
+
+        /**
+         * 월 바꾸기 (모바일)
+         */
+        changeMnthAtMobile: function(): void {
+            // #yy 요소와 #mnth 요소 가져오기
+            const yyMobileElement: HTMLSelectElement = document.querySelector("#jrnl_navbar #yy") as HTMLSelectElement;
+            const yyElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
+            yyElement.value = yyMobileElement.value;
+            const mnthMobileElement: HTMLSelectElement = document.querySelector("#jrnl_navbar #mnth") as HTMLSelectElement;
+            const mnthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
+            mnthElement.value = mnthMobileElement.value;
+
+            dF.JrnlDayAside.changeMnth();
+        },
+
+        /**
          * 월 바꾸기
          */
         changeMnth: function(): void {
