@@ -28,7 +28,7 @@ import javax.annotation.Resource;
 @Service("cacheWarmupService")
 @RequiredArgsConstructor
 @Log4j2
-public class CacheWarmupServiceImpl
+public class EhCacheWarmupServiceImpl
         implements CacheWarmupService {
 
     @Resource(name="jCacheManager")

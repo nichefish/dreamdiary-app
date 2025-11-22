@@ -7,6 +7,11 @@ import io.nicheblog.dreamdiary.extension.file.model.AtchFileDto;
 import io.nicheblog.dreamdiary.extension.file.repository.jpa.AtchFileRepository;
 import io.nicheblog.dreamdiary.extension.file.spec.AtchFileSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.util.List;
@@ -19,8 +24,24 @@ import java.util.List;
  *
  * @author nichefish
  */
-public interface AtchFileService
-        extends BaseCrudService<AtchFileDto, AtchFileDto, Integer, AtchFileEntity, AtchFileRepository, AtchFileSpec, AtchFileMapstruct> {
+@Service("atchFileService")
+@RequiredArgsConstructor
+public class AtchFileService
+        implements BaseCrudService<AtchFileDto, AtchFileDto, Integer, AtchFileEntity, AtchFileRepository, AtchFileSpec, AtchFileMapstruct> {
+
+    @Getter
+    private final AtchFileRepository repository;
+    @Getter
+    private final AtchFileSpec spec;
+    @Getter
+    private final AtchFileMapstruct mapstruct = AtchFileMapstruct.INSTANCE;
+
+    private final AtchFileDtlService atchFileDtlService;
+
+    private final ApplicationContext context;
+    private AtchFileService getSelf() {
+        return context.getBean(this.getClass());
+    }
 
     /**
      * 파일 처리.
@@ -29,5 +50,10 @@ public interface AtchFileService
      * @param atchFileList 파일 목록
      * @return {@link AtchFileEntity} -- 업로드된 파일 정보
      */
-    AtchFileEntity procFiles(MultipartHttpServletRequest multiRequest, AtchFileEntity atchFile, List<AtchFileDtlEntity> atchFileList) throws Exception;
+    @Transactional
+    public AtchFileEntity procFiles(MultipartHttpServletRequest multiRequest, AtchFileEntity atchFile, List<AtchFileDtlEntity> atchFileList) throws Exception {
+        atchFileDtlService.addFiles(multiRequest, atchFileList);
+        atchFile.cascade();
+        return this.getSelf().updt(atchFile);
+    }
 }

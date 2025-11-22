@@ -2,20 +2,41 @@ package io.nicheblog.dreamdiary.auth.security.service;
 
 import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.auth.security.entity.AuthRoleEntity;
+import io.nicheblog.dreamdiary.auth.security.mapstruct.AuthInfoMapstruct;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
+import io.nicheblog.dreamdiary.auth.security.repository.jpa.AuthRoleRepository;
+import io.nicheblog.dreamdiary.domain.user.info.entity.UserEntity;
+import io.nicheblog.dreamdiary.domain.user.info.repository.jpa.UserRepository;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.Optional;
 
 /**
  * AuthService
  * <pre>
- *  Spring Security:: 인증 및 권한 처리 관련 서비스 인터페이스.
+ *  Spring Security:: 인증 및 권한 처리 관련 서비스 모듈.
  * </pre>
  *
  * @author nichefish
  */
-public interface AuthService
-        extends UserDetailsService {
+@Service("authService")
+@RequiredArgsConstructor
+@Log4j2
+public class AuthService
+        implements UserDetailsService {
+
+    private final UserRepository userRepository;
+    private final AuthRoleRepository authRoleRepository;
+    private final AuthInfoMapstruct mapstruct = AuthInfoMapstruct.INSTANCE;
 
     /**
      * userId로 계정 + 사용자 정보 조회
@@ -25,7 +46,23 @@ public interface AuthService
      * @return {@link AuthInfo} -- Spring Security용 사용자 인증정보 객체
      * @throws UsernameNotFoundException 사용자 정보를 찾을 수 없는 경우
      */
-    AuthInfo loadUserByUsername(final String userId) throws UsernameNotFoundException;
+    @Override
+    @SneakyThrows
+    @Transactional(readOnly = true)
+    public AuthInfo loadUserByUsername(final String userId) throws UsernameNotFoundException {
+        final Optional<UserEntity> rsWrapper = userRepository.findByUserId(userId);
+        if (rsWrapper.isEmpty()) throw new UsernameNotFoundException(MessageUtils.getExceptionMsg("UsernameNotFoundException"));
+        final UserEntity rsUser = rsWrapper.get();
+
+        // TODO: 사용자 프로필 정보 존재여부 체크
+        // Integer userProflNo = rsUserEntity.getUserProflNo();
+        // if (userProflNo != null) {
+        //     UserProflEntity rsUserInfo = userProflRepository.findById(userProflNo).orElse(null);
+        //     rsUserEntity.setUserProfl(rsUserInfo);
+        // }
+
+        return AuthInfoMapstruct.INSTANCE.toDto(rsUser);
+    }
 
     /**
      * OAuth2AuthenticationToken을 사용하여 사용자 정보를 로드합니다.
@@ -33,7 +70,13 @@ public interface AuthService
      * @param email OAuth2AuthenticationToken 으로부터 추출한 사용자 이메일
      * @return {@link AuthInfo}
      */
-    AuthInfo loadUserByEmail(final String email) throws Exception;
+    public AuthInfo loadUserByEmail(final String email) throws Exception {
+        final Optional<UserEntity> rsWrapper = userRepository.findByEmail(email);
+        if (rsWrapper.isEmpty()) throw new UsernameNotFoundException(MessageUtils.getExceptionMsg("UsernameNotFoundException"));
+        final UserEntity rsUser = rsWrapper.get();
+
+        return AuthInfoMapstruct.INSTANCE.toDto(rsUser);
+    }
 
     /**
      * 로그인 실패시 실패 카운트를 증가시킨다.
@@ -41,21 +84,52 @@ public interface AuthService
      * @param userId 로그인 실패한 사용자 ID
      * @return {@link Integer} -- 업데이트된 로그인 실패 횟수
      */
-    Integer applyLgnFailCnt(final String userId);
+    @Transactional
+    public Integer applyLgnFailCnt(final String userId) {
+        // ID로 사용자 정보 조회
+        final Optional<UserEntity> userEntityWrapper = userRepository.findByUserId(userId);
+        if (userEntityWrapper.isEmpty()) return 0;
+        final UserEntity userEntity = userEntityWrapper.get();
+        // 로그인 실패횟수 조회해서 세팅
+        final Integer currLgnFailCnt = userEntity.acntStus.getLgnFailCnt();
+        final Integer newLgnFailCnt = (currLgnFailCnt == null) ? 1 : currLgnFailCnt + 1;
+        userEntity.acntStus.setLgnFailCnt(newLgnFailCnt);
+        // 저장 후 반환된 값 반환
+        final UserEntity rsltEntity = userRepository.save(userEntity);
+        return rsltEntity.acntStus.getLgnFailCnt();
+    }
 
     /**
      * 계정 잠금 처리
      *
      * @param userId 계정을 잠글 사용자 ID
      */
-    void lockAccount(final String userId);
+    @Transactional
+    public void lockAccount(final String userId) {
+        // ID로 사용자 정보 조회
+        final Optional<UserEntity> userEntityWrapper = userRepository.findByUserId(userId);
+        final UserEntity userEntity = userEntityWrapper.orElseThrow(NullPointerException::new);
+        // 계정 잠금 처리
+        userEntity.acntStus.setLockedYn("Y");
+        userEntity.acntStus.setLgnFailCnt(0);
+        userRepository.save(userEntity);
+    }
 
     /**
      * 로그인 성공시 최종 로그인일자 세팅 및 실패 카운트 초기화
      *
      * @param userId 처리할 사용자 ID
      */
-    void setLstLgnDt(final String userId);
+    @Transactional
+    public void setLstLgnDt(final String userId) {
+        // ID로 사용자 정보 조회
+        final Optional<UserEntity> userEntityWrapper = userRepository.findByUserId(userId);
+        final UserEntity userEntity = userEntityWrapper.orElseThrow(NullPointerException::new);
+        // 최종 로그인 날짜 세팅 및 실패 카운터 0으로 세팅
+        userEntity.acntStus.setLstLgnDt(new Date());
+        userEntity.acntStus.setLgnFailCnt(0);
+        userRepository.save(userEntity);
+    }
 
     /**
      * 권한 정보 조회
@@ -64,7 +138,9 @@ public interface AuthService
      * @param authCd 조회할 권한 코드
      * @return {@link AuthRoleEntity} -- 권한 정보 객체
      */
-    AuthRoleEntity getAuthRole(final String authCd);
+    public AuthRoleEntity getAuthRole(final String authCd) {
+        return authRoleRepository.findById(authCd).orElse(null);
+    }
 
     /**
      * getAuditorInfo
@@ -72,5 +148,13 @@ public interface AuthService
      * @param userId 사용자 ID
      * @return AuditorInfo
      */
-    AuditorInfo getAuditorInfo(final String userId);
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "auditorInfo", key = "'userId:' + #userId", condition = "#userId!=null")
+    public AuditorInfo getAuditorInfo(final String userId) {
+        final Optional<UserEntity> userEntityWrapper = userRepository.findByUserId(userId);
+        if (userEntityWrapper.isEmpty()) return null;
+
+        final UserEntity userEntity = userEntityWrapper.get();
+        return mapstruct.toAuditorInfo(userEntity);
+    }
 }

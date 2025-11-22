@@ -6,18 +6,35 @@ import io.nicheblog.dreamdiary.extension.log.sys.mapstruct.LogSysMapstruct;
 import io.nicheblog.dreamdiary.extension.log.sys.model.LogSysDto;
 import io.nicheblog.dreamdiary.extension.log.sys.model.LogSysParam;
 import io.nicheblog.dreamdiary.extension.log.sys.repository.jpa.LogSysRepository;
+import io.nicheblog.dreamdiary.global.ActiveProfile;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseReadonlyService;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Service;
 
 /**
  * LogSysService
  * <pre>
- *  시스템 로그 관리 서비스 인터페이스.
+ *  시스템 로그 관리 서비스 모듈.
  * </pre>
  *
  * @author nichefish
  */
-public interface LogSysService
-        extends BaseReadonlyService<LogSysDto.DTL, LogSysDto.LIST, Integer, LogSysEntity, LogSysRepository, LogSysSpec, LogSysMapstruct> {
+@Service("logSysService")
+@RequiredArgsConstructor
+@Log4j2
+public class LogSysService
+        implements BaseReadonlyService<LogSysDto.DTL, LogSysDto.LIST, Integer, LogSysEntity, LogSysRepository, LogSysSpec, LogSysMapstruct> {
+
+    @Getter
+    private final LogSysRepository repository;
+    @Getter
+    private final LogSysSpec spec;
+    @Getter
+    private final LogSysMapstruct mapstruct = LogSysMapstruct.INSTANCE;
+
+    private final ActiveProfile activeProfile;
 
     /**
      * 시스템 로그 등록
@@ -25,5 +42,15 @@ public interface LogSysService
      * @param logParam 시스템 로그 파라미터
      * @return {@link Boolean} -- 로그 등록 성공 여부
      */
-    Boolean regSysActvty(final LogSysParam logParam) throws Exception;
+    public Boolean regSysActvty(final LogSysParam logParam) throws Exception {
+        // 로컬 또는 개발 접속은 시스템 로그 남기지 않음
+        if (!activeProfile.isProd()) return true;
+
+        final LogSysEntity logActvty = mapstruct.paramToEntity(logParam);
+
+        log.info("isSuccess: {}, rsltMsg: {}", logParam.getRslt(), logParam.getRsltMsg());
+        final LogSysEntity rslt = repository.save(logActvty);
+
+        return rslt.getLogSysNo() != null;
+    }
 }
