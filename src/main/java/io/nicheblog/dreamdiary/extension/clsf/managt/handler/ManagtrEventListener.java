@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.extension.clsf.managt.event.ManagtrAddEvent;
 import io.nicheblog.dreamdiary.extension.clsf.managt.service.ManagtrService;
 import io.nicheblog.dreamdiary.global.config.AsyncConfig;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
+@Log4j2
 public class ManagtrEventListener {
 
     private final ManagtrService managtrService;
@@ -31,6 +33,8 @@ public class ManagtrEventListener {
     @EventListener
     @Async
     public void handleManagtrAddEvent(final ManagtrAddEvent event) {
+        log.debug("ManagtrEventListener.handleManagtrAddEvent() - event : {}", event.toString());
+
         // 조치자 추가
         managtrService.addManagtr(event.getClsfKey());
     }

@@ -47,7 +47,8 @@ public class UserReqstVerificationEmailEventListener {
     @EventListener
     @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void handleUserReqstEvent(final UserReqstVerificationEmailSendEvent event) throws Exception {
+    public void handleUserReqstVerificationEmailEvent(final UserReqstVerificationEmailSendEvent event) {
+        log.debug("UserReqstVerificationEmailEventListener.handleUserReqstVerificationEmailEvent() - event : {}", event.toString());
 
         try {
             final UserReqstDto userReqst = event.getUserReqst();
