@@ -36,7 +36,6 @@ public interface UserReqstService {
      *
      * @param registDto 등록할 객체
      * @return {@link UserReqstDto} -- 성공 결과 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     ServiceResponse regist(final UserReqstDto registDto) throws Exception;
 
@@ -45,7 +44,6 @@ public interface UserReqstService {
      *
      * @param key 사용자 번호
      * @return {@link Boolean} 처리 성공 여부
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Transactional
     ServiceResponse cf(final Integer key) throws Exception;
@@ -55,7 +53,6 @@ public interface UserReqstService {
      *
      * @param key 사용자 번호
      * @return {@link Boolean} 처리 성공 여부
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Transactional
     ServiceResponse uncf(final Integer key) throws Exception;

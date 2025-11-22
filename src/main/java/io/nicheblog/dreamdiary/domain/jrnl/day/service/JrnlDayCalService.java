@@ -20,7 +20,6 @@ public interface JrnlDayCalService {
      *
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 일정 및 휴가 목록
-     * @throws Exception 조회 및 처리 중 발생할 수 있는 예외
      */
     List<BaseCalDto> getSchdulTotalCalList(final JrnlDaySearchParam searchParam) throws Exception;
 
@@ -29,7 +28,6 @@ public interface JrnlDayCalService {
      *
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     List<BaseCalDto> getMyCalListDto(final JrnlDaySearchParam searchParam) throws Exception;
 }

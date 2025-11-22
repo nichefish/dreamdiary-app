@@ -57,7 +57,6 @@ public class JrnlTodoServiceImpl
      *
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
     @Cacheable(value="myJrnlTodoList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getYy() + \"_\" + #searchParam.getMnth()")
@@ -71,7 +70,6 @@ public class JrnlTodoServiceImpl
      *
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 검색 결과 목록
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
     @Cacheable(value="myJrnlTodoTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
@@ -83,7 +81,6 @@ public class JrnlTodoServiceImpl
      * 등록 전처리. (override)
      *
      * @param registDto 등록할 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void preRegist(final JrnlTodoDto registDto) throws Exception {
@@ -96,7 +93,6 @@ public class JrnlTodoServiceImpl
      * 등록 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postRegist(final JrnlTodoDto updatedDto) throws Exception {
@@ -110,7 +106,6 @@ public class JrnlTodoServiceImpl
      * 수정 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postModify(final JrnlTodoDto updatedDto) throws Exception {
@@ -125,7 +120,6 @@ public class JrnlTodoServiceImpl
      *
      * @param key 식별자
      * @return {@link JrnlTodoDto} -- 조회된 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Cacheable(value="myJrnlTodoDtlDto", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #key")
@@ -140,7 +134,6 @@ public class JrnlTodoServiceImpl
      * 삭제 후처리. (override)
      *
      * @param deletedDto - 삭제된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postDelete(final JrnlTodoDto deletedDto) throws Exception {

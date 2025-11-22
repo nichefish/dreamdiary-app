@@ -56,7 +56,6 @@ public class DtlCdServiceImpl
      *
      * @param clCd 분류 코드
      * @param model ModelMap 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     public void setCdListToModel(final String clCd, final ModelMap model) throws Exception {
@@ -83,7 +82,6 @@ public class DtlCdServiceImpl
      *
      * @param clCd 분류 코드
      * @return {@link List} -- 상세 코드 목록 (dto level)
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Transactional(readOnly = true)
@@ -133,7 +131,6 @@ public class DtlCdServiceImpl
      * 등록 후처리 (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postRegist(final DtlCdDto updatedDto) throws Exception {
@@ -145,7 +142,6 @@ public class DtlCdServiceImpl
      * 수정 후처리 (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postModify(final DtlCdDto updatedDto) throws Exception {
@@ -157,7 +153,6 @@ public class DtlCdServiceImpl
      * 상태변경 후처리. (override)
      *
      * @param updatedDto - 상태 변경된 dto
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     public void postSetState(final DtlCdDto updatedDto) throws Exception {
@@ -169,7 +164,6 @@ public class DtlCdServiceImpl
      * 삭제 후처리. (override)
      *
      * @param deletedDto - 삭제된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postDelete(final DtlCdDto deletedDto) throws Exception {

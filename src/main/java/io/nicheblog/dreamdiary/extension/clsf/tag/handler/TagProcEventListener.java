@@ -28,7 +28,6 @@ public class TagProcEventListener {
      * 태그 이벤트를 처리한다.
      *
      * @param event 처리할 이벤트 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      * @see EhCacheEvictEventListner
      */
     @EventListener

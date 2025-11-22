@@ -68,7 +68,6 @@ public class AtchFileDtlServiceImpl
      *
      * @param atchFileNo 조회할 첨부파일 묶음 번호
      * @return {@link List} -- 첨부파일 상세 정보 목록
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     public List<AtchFileDtlDto> getPageDto(final Integer atchFileNo) throws Exception {
         final Map<String, Object> paramMap = new HashMap<>() {{
@@ -82,7 +81,6 @@ public class AtchFileDtlServiceImpl
      *
      * @param multiRequest 요청 정보
      * @param atchFileList 업로드된 파일 정보 목록
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Transactional
     public void addFiles(final MultipartHttpServletRequest multiRequest, final List<AtchFileDtlEntity> atchFileList) throws Exception {

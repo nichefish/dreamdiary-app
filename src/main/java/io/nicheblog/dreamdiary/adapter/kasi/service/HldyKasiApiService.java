@@ -24,7 +24,6 @@ public interface HldyKasiApiService {
      *
      * @param yyStr 조회 및 처리할 연도 (String) - 없으면 현재 연도를 사용
      * @return {@link Boolean} -- 성공적으로 처리된 경우 true
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     Boolean procHldyList(final String yyStr) throws Exception;
 
@@ -33,7 +32,6 @@ public interface HldyKasiApiService {
      *
      * @param yyParam 조회할 연도 (String), 비어 있을 경우 현재 연도로 설정
      * @return {@link List} -- 휴일 정보 리스트
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     List<HldyKasiApiItemDto> getHldyList(final String yyParam) throws Exception;
 
@@ -42,7 +40,6 @@ public interface HldyKasiApiService {
      *
      * @param hldyApiList 휴일 정보 리스트
      * @return {@link Boolean} -- 성공적으로 저장된 경우 true
-     * @throws Exception 저장 중 발생할 수 있는 예외
      */
     Boolean regHldyList(final List<HldyKasiApiItemDto> hldyApiList) throws Exception;
 
@@ -50,7 +47,6 @@ public interface HldyKasiApiService {
      * API:: 한국천문연구원(KASI):: API 조회 휴일 정보 DB 삭제
      *
      * @param yyStr 삭제할 연도 (String)
-     * @throws Exception 삭제 중 발생할 수 있는 예외
      */
     void delHldyList(final String yyStr) throws Exception;
 
@@ -58,7 +54,6 @@ public interface HldyKasiApiService {
      * API:: 한국천문연구원(KASI):: API 조회 휴일 정보 DB 삭제 및 재등록
      *
      * @param yyStr 삭제할 연도 (String)
-     * @throws Exception 삭제 중 발생할 수 있는 예외
      */
     boolean resyncHldy(final String yyStr) throws Exception;
 }

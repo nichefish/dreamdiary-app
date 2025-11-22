@@ -17,7 +17,6 @@ public interface CacheEvictor<T> {
      * 캐시 삭제
      *
      * @param object 캐시에서 삭제할 정보를 담은 파라미터
-     * @throws Exception 캐시 삭제 과정에서 발생할 수 있는 예외
      */
     void evict(T object) throws Exception;
 

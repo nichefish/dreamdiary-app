@@ -62,7 +62,6 @@ public class JrnlSumryServiceImpl
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
      * @return {@link List<JrnlSumryDto.LIST>} -- 검색 조건에 맞는 결산 목록 Dto 리스트
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Cacheable(value="myJrnlSumryList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId()")
@@ -76,7 +75,6 @@ public class JrnlSumryServiceImpl
      * 년도를 받아서 해당 년도 저널 결산 정보 생성
      *
      * @return {@link Boolean} -- 결산 생성 성공 여부 (항상 true 반환)
-     * @throws Exception 결산 생성 중 발생할 수 있는 예외
      */
     @Override
     @Transactional
@@ -108,7 +106,6 @@ public class JrnlSumryServiceImpl
      * 2011년부터 현재 년도까지의 저널 결산 정보 생성
      *
      * @return {@link Boolean} -- 결산 생성 성공 여부 (항상 true 반환)
-     * @throws Exception 결산 생성 중 발생할 수 있는 예외
      */
     @Override
     @Transactional
@@ -154,7 +151,6 @@ public class JrnlSumryServiceImpl
      * 수정 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postModify(final JrnlSumryDto.DTL updatedDto) throws Exception {
@@ -168,7 +164,6 @@ public class JrnlSumryServiceImpl
      *
      * @param key 식별자
      * @return {@link JrnlSumryDto.DTL} -- 조회된 결산 정보가 담긴 Dto 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Cacheable(value="myJrnlSumryDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #key")
@@ -181,7 +176,6 @@ public class JrnlSumryServiceImpl
      *
      * @param yy 조회할 년도
      * @return {@link JrnlSumryDto} -- 조회된 결산 정보가 담긴 Dto 객체, 없을 경우 null 반환
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Cacheable(value="myJrnlSumryDtlByYy", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy")
@@ -197,7 +191,6 @@ public class JrnlSumryServiceImpl
      *
      * @param key 식별자
      * @return {@link boolean} -- 처리 성공 여부
-     * @throws Exception 처리 중 발생할 수 있는 예외
      * @see EhCacheEvictEventListner
      */
     @Override

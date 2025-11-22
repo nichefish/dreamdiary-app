@@ -47,7 +47,6 @@ public class SchdulCalService {
      *
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 일정 및 휴가 목록
-     * @throws Exception 조회 및 처리 중 발생할 수 있는 예외
      */
     public List<BaseCalDto> getSchdulTotalCalList(final SchdulSearchParam searchParam) throws Exception {
         final List<BaseCalDto> totalSchdulCalList = new ArrayList<>();
@@ -88,7 +87,6 @@ public class SchdulCalService {
      * 
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List<SchdulCalDto>} -- 휴가 일정 목록
-     * @throws Exception 조회 및 처리 중 발생할 수 있는 예외
      */
     public List<SchdulCalDto> getVcatnCalList(final SchdulSearchParam searchParam) throws Exception {
         // 시작일, 종료일만 파라미터 추출
@@ -115,7 +113,6 @@ public class SchdulCalService {
      *
      * @param vcatn 휴가 정보
      * @param vcatnCalList 산정 정보를 누적한 휴가달력일정
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     private void procVcatnCal(VcatnSchdulEntity vcatn, List<SchdulCalDto> vcatnCalList) throws Exception {
         final Date vcatnEndDt = DateUtils.Parser.sDateParse(vcatn.getEndDt());
@@ -164,7 +161,6 @@ public class SchdulCalService {
      * @param vcatn 일정 정보가 담긴 VcatnSchdulEntity 객체
      * @param keyDt 일정의 키 날짜
      * @return 생성된 SchdulCalDto 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     private SchdulCalDto initNewCalDto(final VcatnSchdulEntity vcatn, final Date keyDt) throws Exception {
         final SchdulCalDto calDto = schdulCalMapstruct.toCalDto(vcatn);
@@ -179,7 +175,6 @@ public class SchdulCalService {
      *
      * @param calDto 일정 정보를 담고 있는 SchdulCalDto 객체
      * @param keyDt 일정의 키 날짜
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     private void finNewCalDto(final SchdulCalDto calDto, final Date keyDt) throws Exception {
         calDto.setEndDt(DateUtils.Parser.eDateParseStr(keyDt));
@@ -193,7 +188,6 @@ public class SchdulCalService {
      *
      * @param searchParam 일정 검색 파라미터
      * @return {@link List} 공휴일 및 행사 일정 목록을 반환
-     * @throws Exception 검색 중 발생할 수 있는 예외
      */
     public List<BaseCalDto> getHldyCalList(final BaseSearchParam searchParam) throws Exception {
         final Map<String, Object> searchParamMap = new HashMap<>() {{
@@ -223,7 +217,6 @@ public class SchdulCalService {
      *
      * @param searchParam 일정 검색 파라미터
      * @return {@link List} 일정 목록 반환
-     * @throws Exception 검색 중 발생할 수 있는 예외
      */
     public List<SchdulCalDto> getSchdulCalList(final SchdulSearchParam searchParam) throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
@@ -240,7 +233,6 @@ public class SchdulCalService {
      *
      * @param searchParam 일정 검색 파라미터
      * @return {@link List} -- 개인 일정 달력 목록 Dto 리스트
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     public List<SchdulCalDto> getPrvtCalList(final SchdulSearchParam searchParam) throws Exception {
         searchParam.setPrevOnly(true);

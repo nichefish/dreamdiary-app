@@ -75,7 +75,6 @@ public class AtchFileRestController
      * @param atchFileNo - 파일 번호. 조회할 파일의 고유 식별자
      * @param logParam 로그 관련 파라미터. 처리 과정에서 필요한 로그 정보를 포함
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 다운로드 중 발생할 수 있는 예외
      */
     @GetMapping(Url.FILE_INFO_LIST_AJAX)
     @ResponseBody
@@ -102,7 +101,6 @@ public class AtchFileRestController
      * @param atchFileDtlNo 파일 상세 번호. 다운로드할 파일의 고유 식별자
      * @param logParam 로그 관련 파라미터. 처리 과정에서 필요한 로그 정보를 포함
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 다운로드 중 발생할 수 있는 예외
      */
     @GetMapping(Url.FILE_DOWNLOAD)
     @PreAuthorize("isAuthenticated()")
@@ -135,7 +133,6 @@ public class AtchFileRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @param request Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 파일 업로드 중 발생할 수 있는 예외
      */
     @PostMapping(Url.FILE_UPLOAD_AJAX)
     @ResponseBody

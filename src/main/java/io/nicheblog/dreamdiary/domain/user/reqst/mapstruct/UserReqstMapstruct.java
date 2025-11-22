@@ -36,7 +36,6 @@ public interface UserReqstMapstruct
      *
      * @param entity 변환할 Entity 객체
      * @return Dto -- 변환된 Dto 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
     @Mapping(target = "password", expression = "java(null)")      // Dto로 패스워드 전달하지 않음
@@ -51,7 +50,6 @@ public interface UserReqstMapstruct
      *
      * @param dto 변환할 Dto 객체
      * @return Entity -- 변환된 Entity 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Mapping(target = "email", expression = "java(dto.getEmailId() + \"@\" + dto.getEmailDomain())")
     @Mapping(target = "acsIpList", expression = "java(dto.getAcsIpListStr())")      // tagify 문자열 파싱

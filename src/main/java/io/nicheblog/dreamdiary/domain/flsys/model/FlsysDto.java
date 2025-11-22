@@ -57,7 +57,6 @@ public class FlsysDto
      * 생성자.
      *
      * @param file 파일 객체 (File)
-     * @throws Exception 파일 정보를 처리하는 중 발생할 수 있는 예외
      */
     public FlsysDto(final File file) throws Exception {
         this.file = file;

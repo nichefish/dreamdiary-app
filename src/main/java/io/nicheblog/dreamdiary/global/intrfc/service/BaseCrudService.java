@@ -30,7 +30,6 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      * default: 등록 전처리 (dto level)
      *
      * @param registDto 등록할 Dto 객체
-     * @throws Exception 전처리 중 발생할 수 있는 예외
      */
     default void preRegist(final Dto registDto) throws Exception {
         // 등록 전처리:: 기본 공백, 필요시 각 함수에서 Override
@@ -40,7 +39,6 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      * default: 등록 전처리 (entity level)
      *
      * @param registEntity 등록할 Entity 객체
-     * @throws Exception 전처리 중 발생할 수 있는 예외
      */
     default void preRegist(final Entity registEntity) throws Exception {
         // 등록 전처리:: 기본 공백, 필요시 각 함수에서 Override
@@ -50,7 +48,6 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      * default: 등록 후처리 (dto level)
      *
      * @param updatedDto - 등록된 Dto 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     default void postRegist(final Dto updatedDto) throws Exception {
         // 등록 후처리:: 기본 공백, 필요시 각 함수에서 Override
@@ -61,7 +58,6 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      *
      * @param registDto 등록할 Dto 객체
      * @return {@link Dto} -- 등록 결과를 Dto로 변환한 객체
-     * @throws Exception 등록 중 발생할 수 있는 예외
      */
     @Transactional
     default ServiceResponse regist(final Dto registDto) throws Exception {
@@ -132,7 +128,6 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      * default: 수정 전처리 (dto level)
      *
      * @param modifyDto 수정할 Dto 객체
-     * @throws Exception 수정 전처리 중 발생할 수 있는 예외
      */
     default void preModify(final Dto modifyDto) throws Exception {
         // 수정 전처리:: 기본 공백, 필요시 각 함수에서 Override
@@ -151,7 +146,6 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      * default: 수정 후처리 (dto level)
      *
      * @param updatedDto 수정된 dto 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     default void postModify(final Dto updatedDto) throws Exception {
         // 수정 후처리:: 기본 공백, 필요시 각 함수에서 Override
@@ -162,7 +156,6 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      *
      * @param modifyDto 수정할 Dto 객체
      * @return Dto - 수정된 결과를 Dto로 변환한 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Transactional
     default ServiceResponse modify(final Dto modifyDto) throws Exception {
@@ -218,7 +211,6 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      * default: 삭제 전처리 (dto level)
      *
      * @param deletedDto - 삭제할 dto 객체
-     * @throws Exception 삭제 전처리 중 발생할 수 있는 예외
      */
     default void preDelete(final Dto deletedDto) throws Exception {
         // 기본 공백, 필요시 각 함수에서 Override
@@ -228,7 +220,6 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      * default: 삭제 전처리 (entity level)
      *
      * @param deleteEntity - 삭제할 엔티티 객체
-     * @throws Exception 삭제 전처리 중 발생할 수 있는 예외
      */
     default void preDelete(final Entity deleteEntity) throws Exception {
         // 기본 공백, 필요시 각 함수에서 Override
@@ -238,7 +229,6 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      * default: 삭제 후처리 (dto level)
      *
      * @param deletedDto 삭제된 Dto 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     default void postDelete(final Dto deletedDto) throws Exception {
         // 기본 공백, 필요시 각 함수에서 Override
@@ -249,7 +239,6 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      *
      * @param deleteDto 삭제할 Dto 객체
      * @return Boolean 삭제 성공시 true, 실패 시 false
-     * @throws Exception 삭제 중 발생할 수 있는 예외
      */
     @Transactional
     default ServiceResponse delete(final Dto deleteDto) throws Exception {
@@ -261,7 +250,6 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      *
      * @param key 삭제할 엔티티의 키
      * @return Boolean 삭제 성공시 true, 실패 시 false
-     * @throws Exception 삭제 중 발생할 수 있는 예외
      */
     @Transactional
     default ServiceResponse delete(final Key key) throws Exception {
@@ -313,7 +301,6 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      *
      * @param searchParamMap 엔티티 리스트를 조회할 검색 파라미터 맵
      * @return Boolean 삭제 성공시 true
-     * @throws Exception 삭제 중 발생할 수 있는 예외
      */
     @Transactional
     default boolean deleteAll(final Map<String, Object> searchParamMap) throws Exception {

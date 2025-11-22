@@ -67,7 +67,6 @@ public class JrnlDayServiceImpl
      * @param lgnUserId 사용자 ID
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
     @Cacheable(value="myJrnlDayList", key="#lgnUserId + \"_\" + #searchParam.getYy() + \"_\" + #searchParam.getMnth()")
@@ -84,7 +83,6 @@ public class JrnlDayServiceImpl
      * @param lgnUserId 사용자 ID
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -103,7 +101,6 @@ public class JrnlDayServiceImpl
      *
      * @param jrnlDay {@link JrnlDayDto} -- 중복 여부를 확인할 {@link JrnlDayDto} 객체
      * @return {@link boolean} -- 정상 시 true, 중복 시 false 반환
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Transactional(readOnly = true)
@@ -123,7 +120,6 @@ public class JrnlDayServiceImpl
      *
      * @param jrnlDay {@link JrnlDayDto} -- 중복 여부를 확인할 {@link JrnlDayDto} 객체
      * @return {@link Integer} -- 중복되는 경우 해당하는 키값 (게시글 번호)
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Transactional(readOnly = true)
@@ -140,7 +136,6 @@ public class JrnlDayServiceImpl
      *
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 검색 결과 목록
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
     @Cacheable(value="myJrnlDayTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
@@ -154,7 +149,6 @@ public class JrnlDayServiceImpl
      * 등록 전처리. (override)
      *
      * @param registDto 등록할 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void preRegist(final JrnlDayDto registDto) throws Exception {
@@ -166,7 +160,6 @@ public class JrnlDayServiceImpl
      * 등록 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postRegist(final JrnlDayDto updatedDto) throws Exception {
@@ -181,7 +174,6 @@ public class JrnlDayServiceImpl
      *
      * @param key 식별자
      * @return {@link JrnlDiaryDto} -- 조회된 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Cacheable(value="myJrnlDayDtlDto", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #key")
@@ -198,7 +190,6 @@ public class JrnlDayServiceImpl
      *
      * @param key 식별자
      * @return {@link JrnlDiaryDto} -- 조회된 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -216,7 +207,6 @@ public class JrnlDayServiceImpl
      * 수정 전처리. (override)
      *
      * @param modifyDto 등록할 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void preModify(final JrnlDayDto modifyDto) throws Exception {
@@ -228,7 +218,6 @@ public class JrnlDayServiceImpl
      * 수정 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postModify(final JrnlDayDto updatedDto) throws Exception {
@@ -242,7 +231,6 @@ public class JrnlDayServiceImpl
      * 날짜 기반으로 년도/월 항목 세팅 :: 메소드 분리
      *
      * @param jrnlDay 날짜 기반으로 년도와 월을 설정할 {@link JrnlDayDto} 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     public void setYyMnth(final JrnlDayDto jrnlDay) throws Exception {
@@ -263,7 +251,6 @@ public class JrnlDayServiceImpl
      * 삭제 후처리. (override)
      *
      * @param deletedDto - 삭제된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postDelete(final JrnlDayDto deletedDto) throws Exception {
@@ -278,7 +265,6 @@ public class JrnlDayServiceImpl
      *
      * @param key 삭제된 데이터의 키
      * @return {@link JrnlDayDto} -- 삭제된 데이터 Dto
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Transactional(readOnly = true)
@@ -291,7 +277,6 @@ public class JrnlDayServiceImpl
      *
      * @param jrnlDayList 공휴일 및 주말 정보를 설정할 대상 DTO
      * @param hldyMap 날짜(String: yyyy-MM-dd) → 공휴일 이름 목록 매핑 정보
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     private void setHldyInfo(final List<JrnlDayDto> jrnlDayList, final Map<String, List<String>> hldyMap) throws Exception {
         if (CollectionUtils.isEmpty(jrnlDayList) || hldyMap == null) return;
@@ -306,7 +291,6 @@ public class JrnlDayServiceImpl
      *
      * @param jrnlDay 공휴일 및 주말 정보를 설정할 대상 DTO
      * @param hldyMap 날짜(String: yyyy-MM-dd) → 공휴일 이름 목록 매핑 정보
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     private void setHldyInfo(final JrnlDayDto jrnlDay, final Map<String, List<String>> hldyMap) throws Exception {
         if (jrnlDay == null || hldyMap == null) return;

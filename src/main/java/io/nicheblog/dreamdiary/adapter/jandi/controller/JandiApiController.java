@@ -47,7 +47,6 @@ public class JandiApiController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @param jandiParam 잔디 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Operation(
             summary = "잔디 메신저로 웹훅 메세지 전송",

@@ -28,7 +28,6 @@ public interface BoardDefMapstruct
      *
      * @param entity 변환할 Entity 객체
      * @return Dto -- 변환된 Dto 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
     @Named("toDto")
@@ -40,7 +39,6 @@ public interface BoardDefMapstruct
      *
      * @param entity 변환할 Entity 객체
      * @return ListDto -- 변환된 ListDto 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
     @Named("toListDto")
@@ -51,7 +49,6 @@ public interface BoardDefMapstruct
      *
      * @param dto 변환할 Dto 객체
      * @return Entity -- 변환된 Entity 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
     BoardDefEntity toEntity(final BoardDefDto dto) throws Exception;
@@ -61,7 +58,6 @@ public interface BoardDefMapstruct
      *
      * @param entity 게시판 정의 엔티티 객체
      * @return SiteAcsInfo -- 변환된 SiteAcsInfo 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Mapping(target = "menuNm", expression = "java(entity.getBoardNm())")
     SiteAcsInfo toMenu(final BoardDefEntity entity) throws Exception;
@@ -71,7 +67,6 @@ public interface BoardDefMapstruct
      *
      * @param dto 업데이트할 Dto 객체
      * @param entity 업데이트할 대상 Entity 객체
-     * @throws Exception 매핑 중 발생할 수 있는 예외
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

@@ -38,7 +38,6 @@ public interface NoticeService
      *
      * @param searchParam 검색 파라미터 객체
      * @return {@link Stream} -- 변환된 Dto 스트림
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     Stream<NoticeXlsxDto> getStreamXlsxDto(NoticeSearchParam searchParam) throws Exception;
 }

@@ -46,7 +46,6 @@ public class BoardDefServiceImpl
      * boardDef 목록 메뉴 조회 (SiteAcsInfo 목록 반환)
      *
      * @return {@link List} -- 게시판 정의 목록을 메뉴 정보로 변환한 리스트
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Cacheable(value="boardDefMenuList")
@@ -71,7 +70,6 @@ public class BoardDefServiceImpl
      * boardDef로 단일 메뉴 조회 (SiteAcsInfo 반환)
      *
      * @return {@link SiteAcsInfo} -- 게시판 정의를 메뉴 정보로 변환하여 반환
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Cacheable(value="boardMenu", key="#boardDef")
@@ -95,7 +93,6 @@ public class BoardDefServiceImpl
      * 등록 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postRegist(final BoardDefDto updatedDto) throws Exception {
@@ -106,7 +103,6 @@ public class BoardDefServiceImpl
      * 수정 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postModify(final BoardDefDto updatedDto) throws Exception {
@@ -118,7 +114,6 @@ public class BoardDefServiceImpl
      * 삭제 후처리. (override)
      *
      * @param deletedDto - 삭제된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postDelete(final BoardDefDto deletedDto) throws Exception {

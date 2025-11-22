@@ -27,7 +27,6 @@ public interface AtchFileDtlService
      *
      * @param atchFileNo 조회할 첨부파일 묶음 번호
      * @return {@link List} -- 첨부파일 상세 정보 목록
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     List<AtchFileDtlDto> getPageDto(final Integer atchFileNo) throws Exception;
 
@@ -36,7 +35,6 @@ public interface AtchFileDtlService
      *
      * @param multiRequest 요청 정보
      * @param atchFileList 업로드된 파일 정보 목록
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     void addFiles(final MultipartHttpServletRequest multiRequest, final List<AtchFileDtlEntity> atchFileList) throws Exception;
 

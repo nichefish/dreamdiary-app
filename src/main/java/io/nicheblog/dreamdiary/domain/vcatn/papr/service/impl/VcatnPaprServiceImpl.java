@@ -58,7 +58,6 @@ public class VcatnPaprServiceImpl
      * 휴가계획서 중 가장 오래된 등록 년도부터 현재 년도까지의 년도 목록을 생성하여 반환합니다.
      *
      * @return {@link List} -- 휴가계획서 년도 목록
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     public List<VcatnStatsYyDto> getVcatnYyList() throws Exception {
@@ -88,7 +87,6 @@ public class VcatnPaprServiceImpl
      * 등록 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postRegist(final VcatnPaprDto.DTL updatedDto) throws Exception {
@@ -100,7 +98,6 @@ public class VcatnPaprServiceImpl
      * 상세 페이지 조회 후처리 (dto level)
      *
      * @param retrievedDto - 조회된 Dto 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postViewDtlPage(final VcatnPaprDto.DTL retrievedDto) throws Exception {
@@ -123,7 +120,6 @@ public class VcatnPaprServiceImpl
      * 수정 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postModify(final VcatnPaprDto.DTL updatedDto) throws Exception {

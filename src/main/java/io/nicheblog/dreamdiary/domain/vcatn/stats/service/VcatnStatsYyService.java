@@ -38,7 +38,6 @@ public class VcatnStatsYyService {
      * 매년 1월 1일에 등록함 (0301~0228)
      *
      * @return {@link Boolean} -- 등록 성공 여부
-     * @throws Exception 등록 중 발생할 수 있는 예외
      */
     @Transactional
     public Boolean regVcatnYyDt() throws Exception {
@@ -59,7 +58,6 @@ public class VcatnStatsYyService {
      *
      * @param yyStr 조회할 기준 년도 문자열
      * @return {@link VcatnStatsYyEntity} -- 휴가 기준 년도 정보
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     public VcatnStatsYyEntity getVcatnYyDtEntity(final String yyStr) throws Exception {
         final Optional<VcatnStatsYyEntity> statsYyWrapper = vcatnStatsYyRepository.findById(yyStr);
@@ -73,7 +71,6 @@ public class VcatnStatsYyService {
      *
      * @param yyStr 조회할 기준 년도 문자열. 부재시 현재 기준 년도를 조회합니다.
      * @return {@link VcatnStatsYyDto} -- 휴가 기준 년도 객체
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Transactional(readOnly = true)
     public VcatnStatsYyDto getVcatnYyDtDto(final String yyStr) throws Exception {
@@ -86,8 +83,7 @@ public class VcatnStatsYyService {
      * 휴가관리 > 휴가 기준 년도 시작/종료일자가 담긴 Map 반환
      *
      * @param statsYy 휴가 기준 년도 정보
-     * @return {@link Map} -- 시작일자와 종료일자가 담긴 Ma=
-     * @throws Exception 메소드 실행 중 발생할 수 있는 예외
+     * @return {@link Map} -- 시작일자와 종료일자가 담긴 Map
      */
     public Map<String, Object> getVcatnYyDtMap(final VcatnStatsYyDto statsYy) throws Exception {
         if (statsYy == null) return null;
@@ -102,7 +98,6 @@ public class VcatnStatsYyService {
      * 휴가관리 > 오늘 날짜가 속한 휴가 기준 정보 반환
      *
      * @return {@link VcatnStatsYyDto} -- 오늘 날짜가 속한 VcatnStatsYyDto 객체
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Transactional(readOnly = true)
     public VcatnStatsYyDto getCurrVcatnYyDt() throws Exception {

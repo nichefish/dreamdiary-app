@@ -25,7 +25,6 @@ public interface BoardPostService
      *
      * @param contentType 조회할 컨텐츠 타입
      * @return {@link List} -- 상단 고정 게시물 목록
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     List<BoardPostDto.LIST> getFxdList(final String contentType) throws Exception;
 }

@@ -40,7 +40,6 @@ public class ReleaseInfo {
      * 배포일자 (Date) 조회
      *
      * @return {@link Date}
-     * @throws Exception 발생 가능한 예외
      */
     public Date getReleaseDate() throws Exception {
         return DateUtils.asDate(this.releaseDate);
@@ -50,7 +49,6 @@ public class ReleaseInfo {
      * 배포일자 (문자열) 조회
      *
      * @return {@link String}
-     * @throws Exception 발생 가능한 예외
      */
     public String getReleaseDateStr() throws Exception {
         if (StringUtils.isEmpty(this.releaseDate)) return "20010101";

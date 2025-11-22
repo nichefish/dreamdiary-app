@@ -34,7 +34,6 @@ public class PdfBoxUtils {
      *
      * @param fileNm 생성될 PDF 파일의 이름
      * @param fileList 변환할 이미지 파일들의 정보 리스트
-     * @throws Exception 처리 중 발생한 예외
      */
     public static void imgCmbnPdfDownload(final String fileNm, final List<AtchFileDtlDto> fileList) throws Exception {
         try (final PDDocument doc = new PDDocument()) {
@@ -78,7 +77,6 @@ public class PdfBoxUtils {
      *
      * @param atchFile 이미지 파일 정보 객체
      * @return {@link BufferedImage} -- 로드된 이미지 객체
-     * @throws Exception 이미지 로드 중 발생할 수 있는 예외
      */
     private static BufferedImage validateAndLoadImage(final AtchFileDtlDto atchFile) throws Exception {
         final File imageFile = new File(atchFile.getFileStrePath(), atchFile.getStreFileNm());
@@ -93,7 +91,6 @@ public class PdfBoxUtils {
      * @param doc PDF 문서 객체
      * @param awtImage BufferedImage 객체
      * @param imagePath 이미지 경로
-     * @throws Exception 이미지 추가 중 발생할 수 있는 예외
      */
     private static void addImageToPdf(
             final PDDocument doc,

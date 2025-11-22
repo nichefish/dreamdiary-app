@@ -57,7 +57,6 @@ public class JrnlDayTagServiceImpl
      * @param yy 조회할 연도
      * @param mnth 조회할 월
      * @return {@link List} -- 태그 목록
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
     @Cacheable(value="myJrnlDayTagList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
@@ -74,7 +73,6 @@ public class JrnlDayTagServiceImpl
      * @param yy 조회할 연도
      * @param mnth 조회할 월
      * @return {@link List} -- CSS 사이즈가 적용된 태그 목록
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
     @Cacheable(value="myJrnlDaySizedTagList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
@@ -154,7 +152,6 @@ public class JrnlDayTagServiceImpl
      * @param yy 조회할 연도
      * @param mnth 조회할 월
      * @return {@link Map} -- 카테고리별로 그룹화된 태그 목록을 담은 Map
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
     public Map<String, List<TagDto>> getDaySizedGroupListDto(final Integer yy, final Integer mnth) throws Exception {
@@ -170,7 +167,6 @@ public class JrnlDayTagServiceImpl
      *
      * @param userId 사용자 아이디
      * @return {@link Map} -- 태그 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
     @Cacheable(value="myJrnlDayTagCtgrMap", key="#userId")

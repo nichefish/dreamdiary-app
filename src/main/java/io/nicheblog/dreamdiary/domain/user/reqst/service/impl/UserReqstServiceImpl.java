@@ -73,7 +73,6 @@ public class UserReqstServiceImpl
      *
      * @param registDto 등록할 객체
      * @return {@link UserReqstDto} -- 성공 결과 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Transactional
@@ -101,7 +100,6 @@ public class UserReqstServiceImpl
      *
      * @param key 사용자 번호
      * @return {@link Boolean} 처리 성공 여부
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Transactional
@@ -126,7 +124,6 @@ public class UserReqstServiceImpl
      *
      * @param key 사용자 번호
      * @return {@link Boolean} 처리 성공 여부
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Transactional

@@ -53,7 +53,6 @@ public class UserReqstRestController
      * @param userReqst 등록/수정할 객체
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @PostMapping(value = {Url.USER_REQST_REG_AJAX})
     @ResponseBody
@@ -79,7 +78,6 @@ public class UserReqstRestController
      * @param userNo 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @PostMapping(Url.USER_REQST_CF_AJAX)
     @Secured(Constant.ROLE_MNGR)
@@ -106,7 +104,6 @@ public class UserReqstRestController
      * @param userNo 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @PostMapping(Url.USER_REQST_UNCF_AJAX)
     @Secured(Constant.ROLE_MNGR)

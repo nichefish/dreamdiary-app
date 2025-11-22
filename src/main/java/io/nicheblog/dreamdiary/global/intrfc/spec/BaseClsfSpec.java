@@ -61,7 +61,6 @@ public interface BaseClsfSpec<Entity extends BaseClsfEntity>
      * @param root 엔티티의 루트 객체
      * @param builder CriteriaBuilder 객체
      * @return {@link List} -- 생성된 검색 조건의 리스트
-     * @throws Exception 검색 조건 생성 중 발생할 수 있는 예외
      */
     default List<Predicate> getClsfPredicate(
             final Map<String, Object> searchParamMap,

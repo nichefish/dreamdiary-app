@@ -51,7 +51,6 @@ public class SectnServiceImpl
      * 등록 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postRegist(final SectnDto updatedDto) throws Exception {
@@ -62,7 +61,6 @@ public class SectnServiceImpl
      * 수정 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postModify(final SectnDto updatedDto) throws Exception {
@@ -73,7 +71,6 @@ public class SectnServiceImpl
      * 삭제 후처리. (override)
      *
      * @param deletedDto - 삭제된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postDelete(final SectnDto deletedDto) throws Exception {
@@ -84,7 +81,6 @@ public class SectnServiceImpl
      * 관련 캐시 삭제.
      *
      * @param rslt 캐시 처리할 엔티티
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     public void evictCache(final SectnDto rslt) throws Exception {
         final String refContentType = rslt.getRefContentType();

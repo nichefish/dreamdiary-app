@@ -51,7 +51,6 @@ public class LgnPageController
      * @param dupLgnAt 중복 로그인 여부를 나타내는 파라미터 (nullable)
      * @param model 뷰에 데이터를 전달하는 ModelMap 객체
      * @return {@link String} -- 로그인 화면 뷰 경로
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @RequestMapping(Url.AUTH_LGN_FORM)
     @PermitAll

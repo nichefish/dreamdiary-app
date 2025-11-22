@@ -95,7 +95,6 @@ public class BaseCalDto
      * 날짜 지났는지 여부 체크
      *
      * @return {@link Boolean} -- 날짜가 지났다면 true, 그렇지 않다면 false를 반환합니다.
-     * @throws Exception 날짜 비교 중 발생할 수 있는 예외를 던질 수 있습니다.
      */
     @JsonIgnore
     public Boolean hasPassed() throws Exception {

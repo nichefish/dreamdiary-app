@@ -28,7 +28,6 @@ public interface JrnlDayService
      * @param lgnUserId 사용자 ID
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     List<JrnlDayDto> getMyListDto(final String lgnUserId, final JrnlDaySearchParam searchParam) throws Exception;
 
@@ -38,7 +37,6 @@ public interface JrnlDayService
      * @param lgnUserId 사용자 ID
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     List<JrnlDayDto> getMyListDtoWithHldy(final String lgnUserId, final JrnlDaySearchParam searchParam) throws Exception;
 
@@ -47,7 +45,6 @@ public interface JrnlDayService
      *
      * @param jrnlDay {@link JrnlDayDto} -- 중복 여부를 확인할 {@link JrnlDayDto} 객체
      * @return {@link boolean} -- 정상 시 true, 중복 시 false 반환
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     boolean dupChck(final JrnlDayDto jrnlDay) throws Exception;
 
@@ -56,7 +53,6 @@ public interface JrnlDayService
      *
      * @param jrnlDay {@link JrnlDayDto} -- 중복 여부를 확인할 {@link JrnlDayDto} 객체
      * @return {@link Integer} -- 중복되는 경우 해당하는 키값 (게시글 번호)
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     Integer getDupKey(final JrnlDayDto jrnlDay) throws Exception;
 
@@ -64,7 +60,6 @@ public interface JrnlDayService
      * 날짜 기반으로 년도/월 항목 세팅 :: 메소드 분리
      *
      * @param jrnlDay 날짜 기반으로 년도와 월을 설정할 {@link JrnlDayDto} 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     void setYyMnth(final JrnlDayDto jrnlDay) throws Exception;
 
@@ -73,7 +68,6 @@ public interface JrnlDayService
      *
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 검색 결과 목록
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     List<JrnlDayDto> jrnlDayTagDtl(final JrnlDaySearchParam searchParam) throws Exception;
 
@@ -82,7 +76,6 @@ public interface JrnlDayService
      *
      * @param key 식별자
      * @return {@link JrnlDiaryDto} -- 조회된 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     JrnlDayDto getDtlDtoWithCache(final Integer key) throws Exception;
 
@@ -91,7 +84,6 @@ public interface JrnlDayService
      *
      * @param key 식별자
      * @return {@link JrnlDiaryDto} -- 조회된 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     JrnlDayDto getDtlDtoWithCacheWithHldy(final Integer key) throws Exception;
 
@@ -100,7 +92,6 @@ public interface JrnlDayService
      *
      * @param key 삭제된 데이터의 키
      * @return {@link JrnlDayDto} -- 삭제된 데이터 Dto
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     JrnlDayDto getDeletedDtlDto(final Integer key) throws Exception;
 }

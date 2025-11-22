@@ -39,7 +39,6 @@ public class JrnlSbjctServiceImpl
      * 등록 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postRegist(final JrnlSbjctDto.DTL updatedDto) throws Exception {
@@ -58,7 +57,6 @@ public class JrnlSbjctServiceImpl
      * 상세 페이지 조회 후처리 (dto level)
      *
      * @param retrievedDto - 조회된 Dto 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postViewDtlPage(final JrnlSbjctDto.DTL retrievedDto) throws Exception {
@@ -70,7 +68,6 @@ public class JrnlSbjctServiceImpl
      * 수정 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postModify(final JrnlSbjctDto.DTL updatedDto) throws Exception {
@@ -89,7 +86,6 @@ public class JrnlSbjctServiceImpl
      * 삭제 후처리. (override)
      *
      * @param deletedDto - 삭제된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postDelete(final JrnlSbjctDto.DTL deletedDto) throws Exception {

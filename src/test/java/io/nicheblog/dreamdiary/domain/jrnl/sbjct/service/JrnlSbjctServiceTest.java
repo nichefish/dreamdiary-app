@@ -47,7 +47,6 @@ class JrnlSbjctServiceTest {
 
     /**
      * 각 테스트 시작 전 세팅 초기화.
-     * @throws Exception 발생할 수 있는 예외.
      */
     @BeforeEach
     void setUp() throws Exception {
@@ -63,7 +62,6 @@ class JrnlSbjctServiceTest {
 
     /**
      * 저널 꿈 등록
-     * @throws Exception 등록 중 발생할 수 있는 예외
      */
     @Test
     void regist() throws Exception {
@@ -79,7 +77,6 @@ class JrnlSbjctServiceTest {
 
     /**
      * 저널 꿈 수정
-     * @throws Exception 등록 중 발생할 수 있는 예외
      */
     @Test
     void modify() throws Exception {
@@ -101,7 +98,6 @@ class JrnlSbjctServiceTest {
 
     /**
      * 저널 꿈 삭제
-     * @throws Exception 등록 중 발생할 수 있는 예외
      */
     @Test
     void delete() throws Exception {

@@ -29,7 +29,6 @@ public interface LogActvtyMapstruct
      *
      * @param entity 변환할 Entity 객체
      * @return Dto -- 변환된 Dto 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
     @Named("toDto")
@@ -41,7 +40,6 @@ public interface LogActvtyMapstruct
      *
      * @param entity 변환할 Entity 객체
      * @return ListDto -- 변환된 ListDto 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
     @Named("toListDto")
@@ -53,7 +51,6 @@ public interface LogActvtyMapstruct
      *
      * @param param 변환할 LogActvtyParam 객체
      * @return {@link LogActvtyEntity} -- 변환된 LogActvtyEntity 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Mapping(target = "actvtyCtgrCd", expression = "java(param.getActvtyCtgr() != null ? param.getActvtyCtgr().name() : null)")
     LogActvtyEntity paramToEntity(final LogActvtyParam param) throws Exception;

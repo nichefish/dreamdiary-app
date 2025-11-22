@@ -61,7 +61,6 @@ public class JrnlDreamServiceImpl
      *
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
     @Cacheable(value="myJrnlDreamList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.hashCode()")
@@ -75,7 +74,6 @@ public class JrnlDreamServiceImpl
      *
      * @param yy 조회할 년도
      * @return {@link List} -- 해당 년도의 중요 목록
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
     @Cacheable(value="myImprtcDreamList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy")
@@ -92,7 +90,6 @@ public class JrnlDreamServiceImpl
      *
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 검색 결과 목록
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
     @Cacheable(value="myJrnlDreamTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
@@ -104,7 +101,6 @@ public class JrnlDreamServiceImpl
      * 등록 전처리. (override)
      *
      * @param registDto 등록할 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void preRegist(final JrnlDreamDto registDto) throws Exception {
@@ -117,7 +113,6 @@ public class JrnlDreamServiceImpl
      * 등록 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postRegist(final JrnlDreamDto updatedDto) throws Exception {
@@ -132,7 +127,6 @@ public class JrnlDreamServiceImpl
      *
      * @param key 식별자
      * @return {@link JrnlDreamDto} -- 조회된 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Cacheable(value="myJrnlDreamDtlDto", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #key")
@@ -147,7 +141,6 @@ public class JrnlDreamServiceImpl
      * 수정 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postModify(final JrnlDreamDto updatedDto) throws Exception {
@@ -161,7 +154,6 @@ public class JrnlDreamServiceImpl
      * 삭제 후처리. (override)
      *
      * @param deletedDto - 삭제된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postDelete(final JrnlDreamDto deletedDto) throws Exception {
@@ -176,7 +168,6 @@ public class JrnlDreamServiceImpl
      *
      * @param key 삭제된 데이터의 키
      * @return {@link JrnlDreamDto} -- 삭제된 데이터 Dto
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Transactional(readOnly = true)

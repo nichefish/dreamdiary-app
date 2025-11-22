@@ -28,7 +28,6 @@ public interface BoardDefService
      * boardDef 목록 메뉴 조회 (SiteAcsInfo 목록 반환)
      *
      * @return {@link List} -- 게시판 정의 목록을 메뉴 정보로 변환한 리스트
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     List<SiteAcsInfo> boardDefMenuList() throws Exception;
 
@@ -36,7 +35,6 @@ public interface BoardDefService
      * boardDef로 단일 메뉴 조회 (SiteAcsInfo 반환)
      *
      * @return {@link SiteAcsInfo} -- 게시판 정의를 메뉴 정보로 변환하여 반환
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     SiteAcsInfo getMenuByBoardDef(final String boardDef) throws Exception;
 }

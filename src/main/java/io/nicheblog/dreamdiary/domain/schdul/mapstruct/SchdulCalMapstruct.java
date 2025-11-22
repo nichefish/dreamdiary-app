@@ -30,7 +30,6 @@ public interface SchdulCalMapstruct
      *
      * @param entity 변환할 Entity 객체
      * @return Dto -- 변환된 Dto 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     // 달력에선 종료일자에 시간 데이터(23:59:59)를 붙여줘야 한다.
     // 하루짜리 이벤트일 때만 allDay=true를 붙여준다.
@@ -49,7 +48,6 @@ public interface SchdulCalMapstruct
      *
      * @param entity 변환할 Entity 객체
      * @return Dto -- 변환된 Dto 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     // 달력에선 종료일자에 시간 데이터(23:59:59)를 붙여줘야 한다.
     // 하루짜리 이벤트일 때만 allDay=true를 붙여준다.
@@ -66,7 +64,6 @@ public interface SchdulCalMapstruct
      *
      * @param entity 일정 엔티티 (SchdulEntity)
      * @param dto FullCalendar에 표시할 일정 데이터 (SchdulCalDto)
-     * @throws Exception 매핑 중 발생할 수 있는 예외
      */
     @AfterMapping
     default void mapCalFields(final SchdulEntity entity, @MappingTarget SchdulCalDto dto) throws Exception {

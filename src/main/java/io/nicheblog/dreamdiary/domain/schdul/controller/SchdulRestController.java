@@ -50,7 +50,6 @@ public class SchdulRestController
      * @param schdul 등록 처리할 객체
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      * @see TagProcEventListener
      */
     @PostMapping(value = {Url.SCHDUL_REG_AJAX, Url.SCHDUL_MDF_AJAX})
@@ -78,7 +77,6 @@ public class SchdulRestController
      *
      * @param key 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @GetMapping(Url.SCHDUL_DTL_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -105,7 +103,6 @@ public class SchdulRestController
      * @param postNo 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @PostMapping(Url.SCHDUL_DEL_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})

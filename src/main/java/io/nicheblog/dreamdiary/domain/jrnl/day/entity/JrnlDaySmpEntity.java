@@ -96,7 +96,6 @@ public class JrnlDaySmpEntity {
      * 간소화 생성자
      * @param day JrnlDayEntity 객체
      * @return JrnlDaySmpEntity -- 변환한 간소화 객체
-     * @throws Exception 발생 가능한 예외
      */
     public static JrnlDaySmpEntity from(JrnlDayEntity day) throws Exception {
         return JrnlDayMapstruct.INSTANCE.asSmp(day);

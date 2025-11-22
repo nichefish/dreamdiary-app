@@ -26,7 +26,6 @@ public interface JrnlSumryService
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
      * @return {@link List<JrnlSumryDto.LIST>} -- 검색 조건에 맞는 결산 목록 Dto 리스트
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     List<JrnlSumryDto.LIST> getMyListDto(final BaseSearchParam searchParam) throws Exception;
 
@@ -34,7 +33,6 @@ public interface JrnlSumryService
      * 년도를 받아서 해당 년도 저널 결산 정보 생성
      *
      * @return {@link Boolean} -- 결산 생성 성공 여부 (항상 true 반환)
-     * @throws Exception 결산 생성 중 발생할 수 있는 예외
      */
     Boolean makeYySumry(final Integer yy) throws Exception;
 
@@ -42,7 +40,6 @@ public interface JrnlSumryService
      * 2011년부터 현재 년도까지의 저널 결산 정보 생성
      *
      * @return {@link Boolean} -- 결산 생성 성공 여부 (항상 true 반환)
-     * @throws Exception 결산 생성 중 발생할 수 있는 예외
      */
     Boolean makeTotalYySumry() throws Exception;
 
@@ -58,7 +55,6 @@ public interface JrnlSumryService
      *
      * @param key 식별자
      * @return {@link JrnlSumryDto.DTL} -- 조회된 결산 정보가 담긴 Dto 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     JrnlSumryDto.DTL getSumryDtl(final Integer key) throws Exception;
 
@@ -67,7 +63,6 @@ public interface JrnlSumryService
      *
      * @param yy 조회할 년도
      * @return {@link JrnlSumryDto} -- 조회된 결산 정보가 담긴 Dto 객체, 없을 경우 null 반환
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     JrnlSumryDto getDtlDtoByYy(final Integer yy) throws Exception;
 
@@ -76,7 +71,6 @@ public interface JrnlSumryService
      *
      * @param key 식별자
      * @return {@link boolean} -- 처리 성공 여부
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     boolean dreamCompt(final Integer key) throws Exception;
 }

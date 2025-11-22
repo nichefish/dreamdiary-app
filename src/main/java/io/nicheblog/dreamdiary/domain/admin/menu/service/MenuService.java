@@ -33,7 +33,6 @@ public interface MenuService
      * @param searchParam 검색 파라미터
      * @param pageRequest 페이징 요청 정보를 담고 있는 PageRequest 객체
      * @return {@link Page} 메인 메뉴 목록
-     * @throws Exception 목록 조회 중 발생할 수 있는 예외
      */
     Page<MenuDto> getMainMenuList(final BaseSearchParam searchParam, final PageRequest pageRequest) throws Exception;
 
@@ -41,7 +40,6 @@ public interface MenuService
      * 사이드바 메뉴 (useYn=Y) 조회
      *
      * @return {@link List} 사용 가능한 포털 사이드바 메뉴 목록
-     * @throws Exception 목록 조회 중 발생할 수 있는 예외
      */
     List<MenuDto> getUserMenuList() throws Exception;
 
@@ -49,7 +47,6 @@ public interface MenuService
      * 메인메뉴(관리자) 조회
      *
      * @return {@link Page} 관리자 메인 메뉴 목록을 담고 있는 페이지 객체
-     * @throws Exception 목록 조회 중 발생할 수 있는 예외
      */
     List<MenuDto> getMngrMenuList() throws Exception;
 

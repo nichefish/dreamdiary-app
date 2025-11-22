@@ -77,7 +77,6 @@ public class EmailServiceImpl
      *
      * @param mailSendParam 메일 발송에 필요한 정보가 담긴 MailSendParam 객체
      * @return 생성된 MimeMessage 객체
-     * @throws Exception 메시지 생성 중 발생할 수 있는 예외
      */
     @Override
     public MimeMessage createMimeMessage(EmailSendParam mailSendParam) throws Exception {

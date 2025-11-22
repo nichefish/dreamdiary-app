@@ -51,7 +51,6 @@ public class VcatnPaprRestController
      * @param vcatnPapr 등록/수정 처리할 객체
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      * @see ViewerEventListener
      */
     @PostMapping(value = {Url.VCATN_PAPR_REG_AJAX, Url.VCATN_PAPR_MDF_AJAX})
@@ -81,7 +80,6 @@ public class VcatnPaprRestController
      * @param postNo 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @PostMapping(Url.VCATN_PAPR_CF_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -108,7 +106,6 @@ public class VcatnPaprRestController
      * @param key 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      * @see ViewerEventListener
      */
     @GetMapping(Url.VCATN_PAPR_DTL_AJAX)
@@ -136,7 +133,6 @@ public class VcatnPaprRestController
      * @param postNo 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @PostMapping(Url.VCATN_PAPR_DEL_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})

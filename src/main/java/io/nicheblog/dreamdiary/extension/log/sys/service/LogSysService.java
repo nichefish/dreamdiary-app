@@ -24,7 +24,6 @@ public interface LogSysService
      *
      * @param logParam 시스템 로그 파라미터
      * @return {@link Boolean} -- 로그 등록 성공 여부
-     * @throws Exception 로그 등록 중 발생할 수 있는 예외
      */
     Boolean regSysActvty(final LogSysParam logParam) throws Exception;
 }

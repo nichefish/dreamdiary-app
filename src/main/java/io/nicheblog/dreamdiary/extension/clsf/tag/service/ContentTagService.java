@@ -64,7 +64,6 @@ public interface ContentTagService
      *
      * @param clsfKey 참조 복합키 정보 (BaseClsfKey)
      * @param obsoleteTagList 삭제할 태그 목록
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     void delObsoleteContentTags(final BaseClsfKey clsfKey, final List<TagDto> obsoleteTagList) throws Exception;
 
@@ -74,7 +73,6 @@ public interface ContentTagService
      * @param clsfKey 참조 복합키 정보 (BaseClsfKey)
      * @param rsList  처리할 태그 엔티티 목록 (List<TagEntity>)
      * @return {@link List} -- 등록된 컨텐츠 태그 엔티티 목록
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     List<ContentTagEntity> addContentTags(final BaseClsfKey clsfKey, final List<TagEntity> rsList) throws Exception;
 }

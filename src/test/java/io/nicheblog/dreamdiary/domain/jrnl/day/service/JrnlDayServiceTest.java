@@ -47,7 +47,6 @@ class JrnlDayServiceTest {
 
     /**
      * 각 테스트 시작 전 세팅 초기화.
-     * @throws Exception 발생할 수 있는 예외.
      */
     @BeforeEach
     void setUp() throws Exception {
@@ -63,7 +62,6 @@ class JrnlDayServiceTest {
 
     /**
      * 저널 일자 등록
-     * @throws Exception 등록 중 발생할 수 있는 예외
      */
     @Test
     void regist() throws Exception {
@@ -84,7 +82,6 @@ class JrnlDayServiceTest {
 
     /**
      * 저널 일자 수정
-     * @throws Exception 등록 중 발생할 수 있는 예외
      */
     @Test
     void modify() throws Exception {
@@ -110,7 +107,6 @@ class JrnlDayServiceTest {
 
     /**
      * 저널 일자 삭제
-     * @throws Exception 등록 중 발생할 수 있는 예외
      */
     @Test
     void delete() throws Exception {

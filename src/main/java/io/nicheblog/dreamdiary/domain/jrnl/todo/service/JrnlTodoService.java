@@ -27,7 +27,6 @@ public interface JrnlTodoService
      *
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     List<JrnlTodoDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception;
 
@@ -36,7 +35,6 @@ public interface JrnlTodoService
      *
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 검색 결과 목록
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     List<JrnlTodoDto> jrnlTodoTagDtl(final JrnlTodoSearchParam searchParam) throws Exception;
 
@@ -45,7 +43,6 @@ public interface JrnlTodoService
      *
      * @param key 식별자
      * @return {@link JrnlTodoDto} -- 조회된 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     JrnlTodoDto getDtlDtoWithCache(final Integer key) throws Exception;
 }

@@ -28,7 +28,6 @@ public interface VcatnStatsMapstruct
      *
      * @param entity 변환할 Entity 객체
      * @return Dto -- 변환된 Dto 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Mapping(target = "cnwkYy", expression = "java(entity.getCnwkYy() != null ? entity.getCnwkYy() : 0)")
     @Mapping(target = "bsYryc", expression = "java(entity.getBsYryc() != null ? entity.getBsYryc() : 0)")
@@ -42,7 +41,6 @@ public interface VcatnStatsMapstruct
      *
      * @param dto 변환할 Dto 객체
      * @return XlsxDto -- 변환된 XlsxDto 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Mapping(target = "userNm", expression = "java(dto.getUser() != null ? dto.getUser().getUserNm() : \"\")")
     @Mapping(target = "ecnyDt", expression = "java(dto.getUser() != null ? dto.getUser().getEcnyDt() : \"\")")
@@ -61,7 +59,6 @@ public interface VcatnStatsMapstruct
      *
      * @param dto 변환할 Dto 객체
      * @return Entity -- 변환된 Entity 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Mapping(target = "cnwkYy", expression = "java(dto.getCnwkYy() != null ? dto.getCnwkYy() : 0)")
     @Mapping(target = "bsYryc", expression = "java(dto.getBsYryc() != null ? dto.getBsYryc() : 0)")
@@ -74,7 +71,6 @@ public interface VcatnStatsMapstruct
      * update Entity from Dto (Dto에서 null이 아닌 값만 Entity로 매핑)
      * @param dto 업데이트할 Dto 객체
      * @param entity 업데이트할 대상 Entity 객체
-     * @throws Exception 매핑 중 발생할 수 있는 예외
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

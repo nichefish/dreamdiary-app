@@ -43,7 +43,6 @@ public class VcatnSchdulService
      *
      * @param statsYy 휴가 년도 정보를 담고 있는 객체
      * @return {@link List} 휴가 일정 목록
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     public List<VcatnSchdulDto> getListDto(VcatnStatsYyDto statsYy) throws Exception {
         final Map<String, Object> searchParamMap = new HashMap(){{
@@ -58,7 +57,6 @@ public class VcatnSchdulService
  *
  * @param entityPage 페이징 처리된 Entity 목록
  * @return {@link Page} -- 변환된 페이징 처리된 Dto 목록
- * @throws Exception 처리 중 발생할 수 있는 예외
  *//*
 
     public Page<VcatnSchdulDto> pageEntityToDto(

@@ -88,7 +88,6 @@ public class JrnlTagCacheUpdtWorker {
      * @param contentType 콘텐츠 유형
      * @param cacheKey 캐시 키 (사용자별 YY-MM 식별자)
      * @param tagCntChangeMap 변경된 태그 개수 정보 (태그 ID → 증가/감소 값)
-     * @throws Exception 태그 정보 조회 중 발생할 수 있는 예외
      */
     public void updtSizedListCache(final String contentType, final String cacheKey, final Map<Integer, Integer> tagCntChangeMap) throws Exception {
         final String sizedListCacheNm = this.getSizedTagListCacheNmByContentType(contentType);

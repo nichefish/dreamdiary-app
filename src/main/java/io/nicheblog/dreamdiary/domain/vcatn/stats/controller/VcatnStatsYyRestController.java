@@ -47,7 +47,6 @@ public class VcatnStatsYyRestController
      *
      * @param vcatnStatsTotal - 등록할 전체 휴가관리
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @PostMapping(Url.VCATN_STATS_YY_UPDT_AJAX)
     @Secured(Constant.ROLE_MNGR)

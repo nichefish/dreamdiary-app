@@ -36,7 +36,6 @@ public class CommentServiceImpl
      * 등록 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postRegist(final CommentDto updatedDto) throws Exception {
@@ -47,7 +46,6 @@ public class CommentServiceImpl
      * 수정 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postModify(final CommentDto updatedDto) throws Exception {
@@ -58,7 +56,6 @@ public class CommentServiceImpl
      * 삭제 후처리. (override)
      *
      * @param deletedDto - 삭제된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postDelete(final CommentDto deletedDto) throws Exception {

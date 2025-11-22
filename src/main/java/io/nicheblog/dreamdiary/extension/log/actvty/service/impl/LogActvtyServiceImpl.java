@@ -40,7 +40,6 @@ public class LogActvtyServiceImpl
      *
      * @param logParam 활동 로그 파라미터
      * @return {@link Boolean} -- 로그 등록 성공 여부
-     * @throws Exception 로그 등록 중 발생할 수 있는 예외
      */
     @Override
     public Boolean regLogActvty(final LogActvtyParam logParam) throws Exception {
@@ -59,7 +58,6 @@ public class LogActvtyServiceImpl
      *
      * @param logParam 활동 로그 파라미터
      * @return {@link Boolean} -- 로그 등록 성공 여부
-     * @throws Exception 로그 등록 중 발생할 수 있는 예외
      */
     @Override
     public Boolean regLogAnonActvty(final LogActvtyParam logParam) throws Exception {

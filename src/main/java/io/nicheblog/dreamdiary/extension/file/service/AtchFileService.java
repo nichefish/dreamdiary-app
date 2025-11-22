@@ -28,7 +28,6 @@ public interface AtchFileService
      * @param multiRequest 파일 업로드 요청 객체
      * @param atchFileList 파일 목록
      * @return {@link AtchFileEntity} -- 업로드된 파일 정보
-     * @throws Exception 업로드 처리 중 발생할 수 있는 예외
      */
     AtchFileEntity procFiles(MultipartHttpServletRequest multiRequest, AtchFileEntity atchFile, List<AtchFileDtlEntity> atchFileList) throws Exception;
 }

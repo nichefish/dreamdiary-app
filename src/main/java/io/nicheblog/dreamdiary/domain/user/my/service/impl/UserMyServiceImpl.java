@@ -40,7 +40,6 @@ public class UserMyServiceImpl
      * 비밀번호 만료시 비밀번호 변경 (미로그인 상태)
      *
      * @return 비밀번호 변경 성공 여부 (boolean)
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Transactional
@@ -68,7 +67,6 @@ public class UserMyServiceImpl
      * 사용자 관리 > 내 비밀번호 확인
      *
      * @return 내 비밀번호 확인 성공 여부 (boolean)
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     public Boolean myPwCf(final String lgnUserId, final String currPw) throws Exception {
@@ -94,7 +92,6 @@ public class UserMyServiceImpl
      * 사용자 관리 > 내 비밀번호 변경
      *
      * @return 내 비밀번호 변경 성공 여부 (boolean)
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Transactional
@@ -122,7 +119,6 @@ public class UserMyServiceImpl
      * 사용자 관리 > 내 프로필 이미지 업로드
      *
      * @return 프로필 이미지 업로드 성공 여부 (boolean)
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Transactional
@@ -149,7 +145,6 @@ public class UserMyServiceImpl
      * 사용자 관리 > 내 프로필 이미지 삭제
      *
      * @return 프로필 이미지 삭제 성공 여부 (boolean)
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     @Transactional

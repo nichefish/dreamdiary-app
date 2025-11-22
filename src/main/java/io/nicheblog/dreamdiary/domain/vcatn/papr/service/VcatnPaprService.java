@@ -26,7 +26,6 @@ public interface VcatnPaprService
      * 휴가계획서 중 가장 오래된 등록 년도부터 현재 년도까지의 년도 목록을 생성하여 반환합니다.
      *
      * @return {@link List} -- 휴가계획서 년도 목록ㅁ
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     List<VcatnStatsYyDto> getVcatnYyList() throws Exception;
     

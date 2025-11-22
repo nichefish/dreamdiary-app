@@ -58,7 +58,6 @@ public class JwtTokenProvider {
      *
      * @param token 인증 정보를 담고 있는 Authentication 객체
      * @return {@link AuthInfo} -- 인증된 사용자의 Authentication 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     public AuthInfo authenticate(final String token) throws Exception {
         final Authentication authentication = this.getAuthentication(token);
@@ -93,7 +92,6 @@ public class JwtTokenProvider {
      *
      * @param token JWT 토큰
      * @return {@link Authentication} -- 사용자 인증 정보
-     * @throws Exception 인증 과정에서 발생할 수 있는 예외
      */
     public Authentication getDirectAuthentication(final String token) throws Exception {
         final String username = this.getUsernameFromToken(token);
@@ -108,7 +106,6 @@ public class JwtTokenProvider {
      *
      * @param token JWT 토큰
      * @return {@link Authentication} -- 사용자 인증 정보
-     * @throws Exception 인증 과정에서 발생할 수 있는 예외
      */
     public Authentication getAuthentication(final String token) throws Exception {
         final String username = this.getUsernameFromToken(token);

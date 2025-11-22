@@ -51,7 +51,6 @@ class UserRepositoryTest {
 
     /**
      * 각 테스트 시작 전 세팅 초기화.
-     * @throws Exception 발생할 수 있는 예외.
      */
     @BeforeEach
     void setUp() throws Exception {

@@ -76,7 +76,6 @@ public class MenuServiceImpl
      * @param searchParam 검색 파라미터
      * @param pageRequest 페이징 요청 정보를 담고 있는 PageRequest 객체
      * @return {@link Page} 메인 메뉴 목록
-     * @throws Exception 목록 조회 중 발생할 수 있는 예외
      */
     @Override
     @Transactional(readOnly = true)
@@ -96,7 +95,6 @@ public class MenuServiceImpl
      * 사이드바 메뉴 (사용자, useYn=Y) 조회
      *
      * @return {@link List} 사용 가능한 포털 사이드바 메뉴 목록
-     * @throws Exception 목록 조회 중 발생할 수 있는 예외
      */
     @Override
     @Transactional(readOnly = true)
@@ -115,7 +113,6 @@ public class MenuServiceImpl
      * 사이드바 메뉴 (관리자, useYn=Y) 조회
      *
      * @return {@link Page} 관리자 메인 메뉴 목록을 담고 있는 페이지 객체
-     * @throws Exception 목록 조회 중 발생할 수 있는 예외
      */
     @Override
     @Transactional(readOnly = true)
@@ -169,7 +166,6 @@ public class MenuServiceImpl
      * 등록 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postRegist(final MenuDto updatedDto) throws Exception {
@@ -181,7 +177,6 @@ public class MenuServiceImpl
      * 수정 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postModify(final MenuDto updatedDto) throws Exception {
@@ -195,7 +190,6 @@ public class MenuServiceImpl
      * 삭제 후처리. (override)
      *
      * @param deletedDto - 삭제된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postDelete(final MenuDto deletedDto) throws Exception {

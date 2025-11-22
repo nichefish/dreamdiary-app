@@ -56,7 +56,6 @@ public class SchdulCalPageController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @GetMapping(Url.SCHDUL_CAL)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})

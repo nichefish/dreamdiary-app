@@ -54,8 +54,8 @@ public class BoardPostRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     * @see TagProcEventListener ,ViewerEventListener
+     * @see TagProcEventListener
+     * @see ViewerEventListener
      */
     @PostMapping(value = {Url.BOARD_POST_REG_AJAX, Url.BOARD_POST_MDF_AJAX})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -84,7 +84,6 @@ public class BoardPostRestController
      * @param postNo 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      * @see ViewerEventListener
      */
     @GetMapping(Url.BOARD_POST_DTL_AJAX)
@@ -112,7 +111,6 @@ public class BoardPostRestController
      * @param postNo 복합키 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      * @see TagProcEventListener
      */
     @PostMapping(Url.BOARD_POST_DEL_AJAX)

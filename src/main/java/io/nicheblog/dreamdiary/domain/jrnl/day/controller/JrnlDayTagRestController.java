@@ -57,7 +57,6 @@ public class JrnlDayTagRestController
      *
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @GetMapping(Url.JRNL_DAY_TAG_CTGR_MAP_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -83,7 +82,6 @@ public class JrnlDayTagRestController
      * @param searchParam 검색 조건을 담은 파라미터 객체
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @GetMapping(Url.JRNL_DAY_TAG_LIST_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -110,7 +108,6 @@ public class JrnlDayTagRestController
      * @param searchParam 검색 조건을 담은 파라미터 객체
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @GetMapping(Url.JRNL_DAY_TAG_GROUP_LIST_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -137,7 +134,6 @@ public class JrnlDayTagRestController
      * @param searchParam 검색 조건을 담은 파라미터 객체
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @GetMapping(value = {Url.JRNL_DAY_TAG_DTL_AJAX})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})

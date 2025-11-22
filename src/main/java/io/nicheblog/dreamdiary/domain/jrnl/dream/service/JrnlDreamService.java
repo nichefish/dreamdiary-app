@@ -27,7 +27,6 @@ public interface JrnlDreamService
      *
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     List<JrnlDreamDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception;
 
@@ -36,7 +35,6 @@ public interface JrnlDreamService
      *
      * @param yy 조회할 년도
      * @return {@link List} -- 해당 년도의 중요 목록
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     List<JrnlDreamDto> getImprtcDreamList(final Integer yy) throws Exception;
 
@@ -45,7 +43,6 @@ public interface JrnlDreamService
      *
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 검색 결과 목록
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     List<JrnlDreamDto> jrnlDreamTagDtl(final JrnlDreamSearchParam searchParam) throws Exception;
 
@@ -54,7 +51,6 @@ public interface JrnlDreamService
      *
      * @param key 식별자
      * @return {@link JrnlDreamDto} -- 조회된 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     JrnlDreamDto getDtlDtoWithCache(final Integer key) throws Exception;
 
@@ -63,7 +59,6 @@ public interface JrnlDreamService
      *
      * @param key 삭제된 데이터의 키
      * @return {@link JrnlDreamDto} -- 삭제된 데이터 Dto
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     JrnlDreamDto getDeletedDtlDto(final Integer key) throws Exception;
 }

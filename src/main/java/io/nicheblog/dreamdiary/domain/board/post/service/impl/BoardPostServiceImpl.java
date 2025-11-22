@@ -54,7 +54,6 @@ public class BoardPostServiceImpl
      *
      * @param entityPage 페이징 처리된 Entity 목록
      * @return {@link Page} -- 변환된 페이징 처리된 Dto 목록
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     public Page<BoardPostDto.LIST> pageEntityToDto(final Page<BoardPostEntity> entityPage) throws Exception {
@@ -77,7 +76,6 @@ public class BoardPostServiceImpl
      *
      * @param contentType 조회할 컨텐츠 타입
      * @return {@link List} -- 상단 고정 게시물 목록
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Override
     public List<BoardPostDto.LIST> getFxdList(final String contentType) throws Exception {
@@ -102,7 +100,6 @@ public class BoardPostServiceImpl
      * 등록 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postRegist(final BoardPostDto.DTL updatedDto) throws Exception {
@@ -121,7 +118,6 @@ public class BoardPostServiceImpl
      * 상세 페이지 조회 후처리 (dto level)
      *
      * @param retrievedDto - 조회된 Dto 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postViewDtlPage(final BoardPostDto.DTL retrievedDto) throws Exception {
@@ -133,7 +129,6 @@ public class BoardPostServiceImpl
      * 수정 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postModify(final BoardPostDto.DTL updatedDto) throws Exception {
@@ -152,7 +147,6 @@ public class BoardPostServiceImpl
      * 삭제 후처리. (override)
      *
      * @param deletedDto - 삭제된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postDelete(final BoardPostDto.DTL deletedDto) throws Exception {

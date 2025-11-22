@@ -56,7 +56,6 @@ public class UserServiceImpl
      *
      * @param userId 조회할 사용자의 ID (문자열)
      * @return {@link UserDto.DTL} -- 사용자 정보가 담긴 Dto 객체
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     @Override
     public UserDto.DTL getDtlDto(final String userId) throws Exception {
@@ -72,7 +71,6 @@ public class UserServiceImpl
      * @param userId 조회할 사용자의 ID (문자열 형식)
      * @return {@link UserEntity} -- 사용자 정보를
      * @throws NullPointerException 사용자 정보가 존재하지 않을 경우 발생
-     * @throws Exception 조회 중 발생할 수 있는 기타 예외
      */
     @Override
     public UserEntity getDtlEntity(final String userId) throws Exception {

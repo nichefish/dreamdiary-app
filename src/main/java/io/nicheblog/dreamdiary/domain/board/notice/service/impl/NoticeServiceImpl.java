@@ -62,7 +62,6 @@ public class NoticeServiceImpl
      * 등록 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postRegist(final NoticeDto.DTL updatedDto) throws Exception {
@@ -81,7 +80,6 @@ public class NoticeServiceImpl
      * 상세 페이지 조회 후처리 (dto level)
      *
      * @param retrievedDto - 조회된 Dto 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postViewDtlPage(final NoticeDto.DTL retrievedDto) throws Exception {
@@ -93,7 +91,6 @@ public class NoticeServiceImpl
      * 수정 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postModify(final NoticeDto.DTL updatedDto) throws Exception {
@@ -112,7 +109,6 @@ public class NoticeServiceImpl
      * 삭제 후처리. (override)
      *
      * @param deletedDto - 삭제된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postDelete(final NoticeDto.DTL deletedDto) throws Exception {
@@ -125,7 +121,6 @@ public class NoticeServiceImpl
      *
      * @param searchParam 검색 파라미터 객체
      * @return {@link Stream} -- 변환된 Dto 스트림
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
     @Transactional(readOnly = true)

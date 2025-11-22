@@ -47,7 +47,6 @@ public class ClCdServiceImpl
      * 등록 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postRegist(final ClCdDto updatedDto) throws Exception {
@@ -58,7 +57,6 @@ public class ClCdServiceImpl
      * 수정 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postModify(final ClCdDto updatedDto) throws Exception {
@@ -69,7 +67,6 @@ public class ClCdServiceImpl
      * 삭제 후처리. (override)
      *
      * @param deletedDto - 삭제된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postDelete(final ClCdDto deletedDto) throws Exception {
@@ -80,7 +77,6 @@ public class ClCdServiceImpl
      * 관련 캐시 삭제.
      *
      * @param dto 캐시 처리할 엔티티
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     public void evictCache(final ClCdDto dto) throws Exception {
         RedisUtils.deleteData("cdEntityListByClCd::clCd:" + dto.getClCd());

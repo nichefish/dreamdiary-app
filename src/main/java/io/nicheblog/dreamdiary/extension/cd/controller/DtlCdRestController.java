@@ -52,7 +52,6 @@ public class DtlCdRestController
      * @param clCd: 구분 코드 (대분류)
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @GetMapping(Url.DTL_CD_LIST_AJAX)
     @Secured({Constant.ROLE_MNGR})
@@ -80,7 +79,6 @@ public class DtlCdRestController
      * @param dtlCd 등록/수정 처리할 객체
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @PostMapping(value = {Url.DTL_CD_REG_AJAX})
     @Secured({Constant.ROLE_MNGR})
@@ -107,7 +105,6 @@ public class DtlCdRestController
      * @param dtlCd 등록/수정 처리할 객체
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @PostMapping(value = {Url.DTL_CD_MDF_AJAX})
     @Secured({Constant.ROLE_MNGR})
@@ -134,7 +131,6 @@ public class DtlCdRestController
      * @param key 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @GetMapping(Url.DTL_CD_DTL_AJAX)
     @Secured({Constant.ROLE_MNGR})
@@ -161,7 +157,6 @@ public class DtlCdRestController
      * @param key 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @PostMapping(Url.DTL_CD_USE_AJAX)
     @Secured({Constant.ROLE_MNGR})
@@ -188,7 +183,6 @@ public class DtlCdRestController
      * @param key 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @PostMapping(Url.DTL_CD_UNUSE_AJAX)
     @Secured({Constant.ROLE_MNGR})
@@ -215,7 +209,6 @@ public class DtlCdRestController
      * @param key 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @PostMapping(Url.DTL_CD_DEL_AJAX)
     @Secured({Constant.ROLE_MNGR})
@@ -242,7 +235,6 @@ public class DtlCdRestController
      * @param dtlCdParam 키+정렬 순서 목록을 담은 파라미터
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @PostMapping(Url.DTL_CD_SORT_ORDR_AJAX)
     @Secured({Constant.ROLE_MNGR})

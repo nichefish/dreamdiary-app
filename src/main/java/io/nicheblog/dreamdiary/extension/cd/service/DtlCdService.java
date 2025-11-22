@@ -30,7 +30,6 @@ public interface DtlCdService
      *
      * @param clCd 분류 코드
      * @param model ModelMap 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     void setCdListToModel(final String clCd, final ModelMap model) throws Exception;
 
@@ -47,7 +46,6 @@ public interface DtlCdService
      *
      * @param clCd 분류 코드
      * @return {@link List} -- 상세 코드 목록 (dto level)
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     List<DtlCdDto> getCdDtoListByClCd(final String clCd) throws Exception;
 

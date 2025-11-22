@@ -81,7 +81,6 @@ public class SchdulService
      * 등록 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postRegist(final SchdulDto updatedDto) throws Exception {
@@ -112,7 +111,6 @@ public class SchdulService
      * 수정 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     @Override
     public void postModify(final SchdulDto updatedDto) throws Exception {
@@ -224,7 +222,6 @@ public class SchdulService
      * 관련 캐시 삭제.
      *
      * @param rslt 캐시 처리할 엔티티
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     public void evictCache(final SchdulEntity rslt) throws Exception {
         EhCacheUtils.evictCacheAll("hldyEntityList");
@@ -235,7 +232,6 @@ public class SchdulService
     /**
      * 공휴일 정보를 다시 동기화하여 캐시에 갱신한다.
      *
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     public void resyncHldyMap() throws Exception {
         final SchdulSearchParam param = SchdulSearchParam.builder().schdulCd(Constant.SCHDUL_HLDY).build();
