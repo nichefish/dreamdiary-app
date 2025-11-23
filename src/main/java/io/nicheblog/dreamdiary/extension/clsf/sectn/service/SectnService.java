@@ -1,7 +1,6 @@
 package io.nicheblog.dreamdiary.extension.clsf.sectn.service;
 
 import io.nicheblog.dreamdiary.extension.cache.service.CacheEvictService;
-import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.entity.SectnEntity;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.mapstruct.SectnMapstruct;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.model.SectnDto;
@@ -88,6 +87,5 @@ public class SectnService
         final String refContentType = rslt.getRefContentType();
         final Integer refPostNo = rslt.getRefPostNo();
         ehCacheEvictService.evictClsfCache(refContentType, refPostNo);
-        EhCacheUtils.clearL2Cache(SectnEntity.class);
     }
 }

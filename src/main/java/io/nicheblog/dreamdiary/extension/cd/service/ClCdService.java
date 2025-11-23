@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.extension.cd.service;
 
-import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.extension.cache.util.RedisUtils;
 import io.nicheblog.dreamdiary.extension.cd.entity.ClCdEntity;
 import io.nicheblog.dreamdiary.extension.cd.mapstruct.ClCdMapstruct;
@@ -84,7 +83,5 @@ public class ClCdService
     public void evictCache(final ClCdDto dto) throws Exception {
         RedisUtils.deleteData("cdEntityListByClCd::clCd:" + dto.getClCd());
         RedisUtils.deleteData("cdDtoListByClCd::clCd:" + dto.getClCd());
-        // 연관된 모든 엔티티의 캐시 클리어
-        EhCacheUtils.clearL2Cache();
     }
 }

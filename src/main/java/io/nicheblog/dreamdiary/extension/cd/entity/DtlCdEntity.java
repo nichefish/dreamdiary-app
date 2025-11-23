@@ -5,7 +5,6 @@ import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbedModul
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.Where;
@@ -31,8 +30,6 @@ import javax.persistence.*;
 @AllArgsConstructor
 @ToString
 @Where(clause = "del_yn='N'")
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class DtlCdEntity
         extends BaseAuditEntity
         implements StateEmbedModule {

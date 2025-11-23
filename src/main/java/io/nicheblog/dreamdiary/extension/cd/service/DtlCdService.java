@@ -179,7 +179,5 @@ public class DtlCdService
         RedisUtils.deleteData("cdEntityListByClCd::clCd:" + rslt.getClCd());
         RedisUtils.deleteData("cdDtoListByClCd::clCd:" + rslt.getClCd());
         EhCacheUtils.evictCache("dtlCdNm", "clCd:"+ rslt.getClCd() +",dtlCd:"+ rslt.getDtlCd());
-        // 연관된 모든 엔티티의 캐시 클리어
-        EhCacheUtils.clearL2Cache();
     }
 }

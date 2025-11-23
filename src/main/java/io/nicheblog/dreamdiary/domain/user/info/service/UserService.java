@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.domain.user.info.service;
 
-import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.entity.LgnPolicyEntity;
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.service.LgnPolicyService;
 import io.nicheblog.dreamdiary.domain.user.info.entity.UserEntity;
@@ -277,6 +276,5 @@ public class UserService
      */
     public void evictCache(final UserEntity rslt) {
         EhCacheUtils.evictCache("auditorInfo", "userId:"+rslt.getUserId());
-        EhCacheUtils.clearL2Cache(AuditorInfo.class);
     }
 }

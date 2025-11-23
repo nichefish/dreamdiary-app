@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.domain.user.my.service;
 
-import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserPwChgParam;
@@ -141,7 +140,6 @@ public class UserMyService {
 
         // 관련 캐시 삭제
         EhCacheUtils.evictCache("auditorInfo", "userId:"+lgnUserId);
-        EhCacheUtils.clearL2Cache(AuditorInfo.class);
 
         return modified.getUserNo() != null;
     }
@@ -161,7 +159,6 @@ public class UserMyService {
 
         // 관련 캐시 삭제
         EhCacheUtils.evictCache("auditorInfo", "userId:"+lgnUserId);
-        EhCacheUtils.clearL2Cache(AuditorInfo.class);
 
         return updatedEntity.getUserNo() != null;
     }

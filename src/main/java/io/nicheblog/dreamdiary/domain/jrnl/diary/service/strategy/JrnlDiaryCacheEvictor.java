@@ -2,9 +2,6 @@ package io.nicheblog.dreamdiary.domain.jrnl.diary.service.strategy;
 
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayService;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryContentTagEntity;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.service.JrnlEntryService;
 import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
@@ -64,10 +61,6 @@ public class JrnlDiaryCacheEvictor
             EhCacheUtils.evictMyCacheAll("myJrnlDiaryTagDtl");
             // 태그 처리
             EhCacheUtils.evictCache("contentTagEntityListByRef", postNo + "_JRNL_DIARY");
-            // L2캐시 처리
-            EhCacheUtils.clearL2Cache(JrnlDiaryEntity.class);
-            EhCacheUtils.clearL2Cache(JrnlDiaryTagEntity.class);
-            EhCacheUtils.clearL2Cache(JrnlDiaryContentTagEntity.class);
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);
             throw e;

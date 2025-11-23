@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.domain.jrnl.sumry.service.strategy;
 
-import io.nicheblog.dreamdiary.domain.jrnl.sumry.entity.JrnlSumryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumryDto;
 import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
@@ -45,8 +44,6 @@ public class JrnlSumryCacheEvictor
             EhCacheUtils.evictMyCache("myJrnlSumryDtl", postNo);
             final JrnlSumryDto jrnlSumry = (JrnlSumryDto) EhCacheUtils.getObjectFromCache("myJrnlSumryDtl", postNo);
             if (jrnlSumry != null) EhCacheUtils.evictMyCache("myJrnlSumryDtlByYy", jrnlSumry.getYy());
-            // L2캐시 처리
-            EhCacheUtils.clearL2Cache(JrnlSumryEntity.class);
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);
             throw e;
