@@ -95,7 +95,7 @@ public class JrnlDiaryService
      * @return {@link List} -- 검색 결과 목록
      */
     @Cacheable(value="myJrnlDiaryTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
-        @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     public List<JrnlDiaryDto> jrnlDiaryTagDtl(final JrnlDiarySearchParam searchParam) throws Exception {
         List<JrnlDiaryDto> jrnlDiaryList = this.getSelf().getListDto(searchParam);
         // 공휴일 정보 세팅
@@ -127,9 +127,9 @@ public class JrnlDiaryService
     @Override
     public void postRegist(final JrnlDiaryDto updatedDto) throws Exception {
         // 태그 처리 :: 메인 로직과 분리
-        publisher.publishEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
+        publisher.publishCustomEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
         // 관련 캐시 삭제
-        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DIARY));
+        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DIARY));
     }
 
     /**
@@ -140,9 +140,9 @@ public class JrnlDiaryService
     @Override
     public void postModify(final JrnlDiaryDto updatedDto) throws Exception {
         // 태그 처리 :: 메인 로직과 분리
-        publisher.publishEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
+        publisher.publishCustomEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
         // 관련 캐시 삭제
-        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DIARY));
+        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DIARY));
     }
 
     /**
@@ -167,9 +167,9 @@ public class JrnlDiaryService
     @Override
     public void postDelete(final JrnlDiaryDto deletedDto) throws Exception {
         // 태그 처리 :: 메인 로직과 분리
-        publisher.publishEvent(new JrnlTagProcEvent(this, deletedDto.getClsfKey(), deletedDto.getYy(), deletedDto.getMnth()));
+        publisher.publishCustomEvent(new JrnlTagProcEvent(this, deletedDto.getClsfKey(), deletedDto.getYy(), deletedDto.getMnth()));
         // 관련 캐시 삭제
-        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DIARY));
+        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DIARY));
     }
 
     /**
