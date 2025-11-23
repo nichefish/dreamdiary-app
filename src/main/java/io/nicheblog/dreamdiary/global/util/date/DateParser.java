@@ -24,7 +24,6 @@ public class DateParser {
      *
      * @param paramDate 변환할 날짜 (`String`, `Date`, `LocalDate`, `LocalDateTime` 등 지원)
      * @return {@link Date} 변환된 날짜의 시작 시간 (`Date` 객체, 예: `2021-09-15 00:00:00`), 입력값이 `null`이면 `null` 반환
-     * @throws Exception 날짜 변환 중 오류가 발생할 경우
      */
     public static Date sDateParse(final Object paramDate) throws Exception {
         final Date searchDate = DateUtils.asDate(paramDate);

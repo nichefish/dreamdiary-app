@@ -61,7 +61,6 @@ public class XlsxUtils {
      *
      * @param xlsxType 엑셀 파일 타입 정보
      * @param dataStream 데이터 스트림
-     * @throws Exception 처리 과정에서 발생할 수 있는 예외
      */
     public static void listXlxsDownload(final XlsxType xlsxType, final Stream<?> dataStream) throws Exception {
 
@@ -77,7 +76,6 @@ public class XlsxUtils {
      *
      * @param xlsxType 엑셀 파일 타입 정보
      * @param dataMap 데이터 맵 (key-stream)
-     * @throws Exception 엑셀 파일 생성 중 발생할 수 있는 예외
      */
     public void multiListXlxsDownload(final XlsxType xlsxType, final Map<String, Stream<?>> dataMap) throws Exception {
 
@@ -94,7 +92,6 @@ public class XlsxUtils {
      * @param xlsxType 엑셀 파일 타입 정보
      * @param dataStream 엑셀 파일에 추가할 스트림 데이터
      * @return {@link SXSSFWorkbook} -- 생성된 엑셀 객체
-     * @throws Exception 엑셀 파일 생성 중 발생할 수 있는 예외
      */
     public static SXSSFWorkbook makeListXlsxFile(final XlsxType xlsxType, final Stream<?> dataStream) throws Exception {
 
@@ -123,7 +120,6 @@ public class XlsxUtils {
      * @param xlsxType 엑셀 파일 타입 정보
      * @param dataMap 키와 데이터 스트림으로 구성된 맵. 각 키는 데이터의 범주를 나타내며, 값은 해당 범주의 데이터 스트림입니다.
      * @return 생성된 엑셀 파일의 SXSSFWorkbook 객체
-     * @throws Exception 파일 생성 중 발생할 수 있는 예외
      */
     public static SXSSFWorkbook makeMultiListXlsxFile(final XlsxType xlsxType, Map<String, Stream<?>> dataMap) throws Exception {
 
@@ -197,7 +193,6 @@ public class XlsxUtils {
      * @param dataStream 엑셀 시트에 작성될 데이터 항목의 스트림
      * @param sheet 데이터 행이 생성될 SXSSFSheet
      * @param styleMap 셀의 형식을 지정하기 위한 XlsxCellStyle와 CellStyle의 맵
-     * @throws Exception 파일 생성 중 발생할 수 있는 예외
      */
     private static void createListDataRows(final Stream<?> dataStream, final SXSSFSheet sheet,  final Map<XlsxCellStyle, CellStyle> styleMap) {
         final ObjectMapper mapper = new ObjectMapper(); // jackson's objectmapper

@@ -2,6 +2,8 @@ package io.nicheblog.dreamdiary.domain.jrnl.day.model;
 
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
+import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntryDto;
+import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntrySmpDto;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstnModule;
@@ -90,6 +92,11 @@ public class JrnlDayDto
     @Size(min = 1, max = 1)
     @Pattern(regexp = "^[YN]$")
     private String diaryResolvedYn = "N";
+
+    /** 저널 항목 목록 */
+    private List<JrnlEntryDto> jrnlEntryList;
+    /** 저널 항목 목록 */
+    private List<JrnlEntrySmpDto> entryList;
 
     /** 저널 일기 목록 */
     private List<JrnlDiaryDto> jrnlDiaryList;

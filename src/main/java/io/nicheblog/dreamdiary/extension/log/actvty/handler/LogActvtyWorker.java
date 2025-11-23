@@ -20,6 +20,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * </pre>
  *
  * @author nichefish
+ * @see LogActvtyEventListener
  */
 @Component
 @RequiredArgsConstructor

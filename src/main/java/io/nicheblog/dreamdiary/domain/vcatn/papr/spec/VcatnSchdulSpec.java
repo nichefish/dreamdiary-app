@@ -33,7 +33,6 @@ public class VcatnSchdulSpec
      * @param root 검색할 엔티티의 Root 객체
      * @param builder 검색 조건을 생성하는 CriteriaBuilder 객체
      * @return {@link List} -- 설정된 검색 조건(Predicate) 리스트
-     * @throws Exception 검색 조건 생성 중 발생할 수 있는 예외
      */
     @Override
     public List<Predicate> getPredicateWithParams(

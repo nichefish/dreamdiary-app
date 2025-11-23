@@ -56,7 +56,6 @@ class ParamModule {
      * @param searchParam 페이징 정보를 포함한 파라미터
      * @param sortParam 정렬 기준
      * @return {@link PageRequest} -- 생성된 PageRequest 객체
-     * @throws Exception 페이징 요청 정보 생성 중 발생할 수 있는 예외
      */
     public static PageRequest getPageRequest(final BaseSearchParam searchParam, final String sortParam) throws Exception {
         return getPageRequest(searchParam, sortParam, null);
@@ -69,7 +68,6 @@ class ParamModule {
      * @param sortParam 정렬 기준
      * @param model ModelMap 객체
      * @return {@link PageRequest} -- 생성된 PageRequest 객체
-     * @throws Exception 페이징 요청 정보 생성 중 발생할 수 있는 예외
      */
     public static PageRequest getPageRequest(final BaseSearchParam searchParam, final String sortParam, final ModelMap model) throws Exception {
         final Sort sort = Sort.by(Sort.Direction.DESC, sortParam);
@@ -83,7 +81,6 @@ class ParamModule {
      * @param sort 정렬 기준
      * @param model ModelMap 객체
      * @return {@link PageRequest} -- 생성된 PageRequest 객체
-     * @throws Exception 페이징 요청 정보 생성 중 발생할 수 있는 예외
      */
     public static PageRequest getPageRequest(final BaseSearchParam searchParam, final Sort sort, final ModelMap model) throws Exception {
         final Integer pageSize = searchParam.getPageSize();
@@ -102,7 +99,6 @@ class ParamModule {
      * @param searchParam 페이징 정보를 포함한 파라미터
      * @param sort 정렬 기준
      * @return {@link PageRequest} -- 생성된 PageRequest 객체
-     * @throws Exception 페이징 요청 정보 생성 중 발생할 수 있는 예외
      */
     public static PageRequest getPageRequest(final BaseSearchParam searchParam, final Sort sort) throws Exception {
         return getPageRequest(searchParam, sort, null);
@@ -134,7 +130,6 @@ class ParamModule {
      *
      * @param searchParam 필터링할 BaseSearchParam 객체
      * @return {@link BaseSearchParam} -- 필터링된 BaseSearchParam 객체
-     * @throws Exception 파라미터 처리 중 발생할 수 있는 예외
      */
     public static BaseSearchParam filterParam(final BaseSearchParam searchParam) throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
@@ -159,7 +154,6 @@ class ParamModule {
      *
      * @param searchParamMap 필터링할 파라미터 맵
      * @return {@link Map} -- 필터링된 파라미터 맵
-     * @throws Exception 파라미터 처리 중 발생할 수 있는 예외
      */
     public static Map<String, Object> filterParamMap(final Map<String, Object> searchParamMap) throws Exception {
         final Map<String, Object> filteredSearchKey = new HashMap<>();

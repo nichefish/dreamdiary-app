@@ -52,7 +52,6 @@ public class TmplatDefRestController
      * @param tmplatDef 등록/수정 처리할 객체
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @PostMapping(value = {Url.TMPLAT_DEF_REG_AJAX, Url.TMPLAT_DEF_MDF_AJAX})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})

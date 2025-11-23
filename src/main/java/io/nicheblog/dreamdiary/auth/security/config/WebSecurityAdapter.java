@@ -94,7 +94,6 @@ public class WebSecurityAdapter
      * "HttpSecurity 앞단에 적용되며, 전체적으로 스프링 시큐리티의 영향권 밖에 있습니다."
      *
      * @param web WebSecurity 객체로, 웹 관련 보안 설정을 구성하는 데 사용됩니다
-     * @throws Exception 보안 구성 중 발생할 수 있는 예외
      */
     @Override
     public void configure(final WebSecurity web) throws Exception {
@@ -120,7 +119,6 @@ public class WebSecurityAdapter
      * HTTP 보안 설정을 구성합니다.
      *
      * @param http HttpSecurity 객체로, HTTP 보안 관련 설정을 구성하는 데 사용됩니다
-     * @throws Exception 보안 구성 중 발생할 수 있는 예외
      */
     @Override
     protected void configure(final HttpSecurity http) throws Exception {

@@ -13,9 +13,6 @@ dF.JrnlDream = (function(): dfModule {
         inKeywordSearchMode: false,
         tagify: null,
 
-        savedYy: null,
-        savedMnth: null,
-
         /**
          * initializes module.
          */
@@ -78,10 +75,6 @@ dF.JrnlDream = (function(): dfModule {
             const keyword: string = $("#jrnl_aside #dreamKeyword").val() as string;
             if (cF.util.isEmpty(keyword)) return;
 
-            // 검색 시 기존 년월 저장
-            dF.JrnlDream.savedYy = $("#jrnl_aside #yy").val() as string;
-            dF.JrnlDream.savedMnth = $("#jrnl_aside #mnth").val() as string;
-
             const url: string = Url.JRNL_DREAM_LIST_AJAX;
             const ajaxData = { "dreamKeyword": $("#jrnl_aside #dreamKeyword").val() };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
@@ -120,8 +113,6 @@ dF.JrnlDream = (function(): dfModule {
          */
         resetKeyword: function(): void {
             $("#jrnl_aside #jrnl_dream_reset_btn").remove();
-            $("#jrnl_aside #yy").val(dF.JrnlDream.savedYy);
-            $("#jrnl_aside #mnth").val(dF.JrnlDream.savedMnth);
             dF.JrnlDayAside.mnth();
         },
 
@@ -151,7 +142,7 @@ dF.JrnlDream = (function(): dfModule {
          * 등록 (Ajax)
          */
         regAjax: function(): void {
-            const postNoElmt: HTMLInputElement = document.querySelector("#jrnlDreamRegForm [name='postNo']") as HTMLInputElement;
+            const postNoElmt: HTMLInputElement = document.querySelector("#jrnlDreamRegForm [name='postNo']");
             const isReg: boolean = postNoElmt?.value === "";
             Swal.fire({
                 text: Message.get(isReg ? "view.cnfm.reg" : "view.cnfm.mdf"),
@@ -166,7 +157,7 @@ dF.JrnlDream = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            const isCalendar: boolean = Page?.calendar !== undefined;
+                            const isCalendar: boolean = Page?.calendar != null;
                             if (isCalendar) {
                                 Page.refreshEventList();
                                 dF.JrnlDreamTag.listAjax();     // 태그 refresh
@@ -275,7 +266,7 @@ dF.JrnlDream = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            const isCalendar: boolean = Page?.calendar !== undefined;
+                            const isCalendar: boolean = Page?.calendar != null;
                             if (isCalendar) {
                                 Page.refreshEventList();
                                 dF.JrnlDreamTag.listAjax();     // 태그 refresh
@@ -302,17 +293,17 @@ dF.JrnlDream = (function(): dfModule {
         toggle: function(postNo: string|number): void {
             if (isNaN(Number(postNo))) return;
 
-            const id = String(postNo);
-            const item = document.querySelector(`.jrnl-diary-item[data-id='${id}']`);
+            const id: string = String(postNo);
+            const item: HTMLElement = document.querySelector(`.jrnl-diary-cn[data-id='${id}']`);
             if (!item) return console.log("item not found.");
 
-            const content = item.querySelector(".jrnl-diary-cn .cn") as HTMLElement;
+            const content: HTMLElement = item.querySelector(".jrnl-diary-cn .cn");
             if (!content) return console.log("content not found.");
 
-            const icon = item.querySelector(`#toggle-icon-${id}`) as HTMLElement;
+            const icon: HTMLElement = item.querySelector(`#toggle-icon-${id}`);
             const collapsedIds = new Set(JSON.parse(localStorage.getItem(dF.JrnlDream.STORAGE_KEY) || "[]"));
 
-            const isCollapsed = content.classList.contains("collapsed");
+            const isCollapsed: boolean = content.classList.contains("collapsed");
             if (isCollapsed) {
                 content.classList.remove("collapsed");
                 icon?.classList.replace("bi-chevron-down", "bi-chevron-up");
@@ -331,11 +322,10 @@ dF.JrnlDream = (function(): dfModule {
          */
         initCollapseState: function(): void {
             const collapsedIds = new Set(JSON.parse(localStorage.getItem(dF.JrnlDream.STORAGE_KEY) || "[]"));
-            document.querySelectorAll(".jrnl-diary-item .cn").forEach(item => {
-                const el = item as HTMLElement;
-                const id = el.dataset.id;
-                const content = el.querySelector(".jrnl-diary-cn");
-                const icon = el.querySelector(`#toggle-icon-${id}`);
+            document.querySelectorAll(".jrnl-diary-item .jrnl-dream-cn").forEach((item: HTMLElement): void => {
+                const id: string = item.dataset.id;
+                const content: HTMLElement = item.querySelector(".cn");
+                const icon: HTMLElement = item.querySelector(`#toggle-icon-${id}`);
                 if (id && collapsedIds.has(id)) {
                     content?.classList.add("collapsed");
                     icon?.classList.replace("bi-chevron-up", "bi-chevron-down");

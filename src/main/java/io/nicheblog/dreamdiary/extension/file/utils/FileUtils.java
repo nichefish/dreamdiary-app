@@ -135,7 +135,6 @@ public class FileUtils
      *
      * @param multiRequest Multipart 요청
      * @return {@link AtchFileEntity} -- 업로드된 파일 정보
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     public static AtchFileEntity getUploadedFile(final MultipartHttpServletRequest multiRequest) throws Exception {
         return getUploadedFile(multiRequest, null);
@@ -147,7 +146,6 @@ public class FileUtils
      * @param multiRequest Multipart 요청
      * @param atchFileNo 기존에 첨부된 파일 번호 (Integer)
      * @return {@link AtchFileEntity} -- 업로드된 파일 정보
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     public static AtchFileEntity getUploadedFile(
             final MultipartHttpServletRequest multiRequest,
@@ -179,7 +177,6 @@ public class FileUtils
      *
      * @param multiRequest Multipart 요청
      * @return {@link Integer} -- 업로드된 파일의 첨부파일 번호
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     public static Integer uploadFile(final MultipartHttpServletRequest multiRequest) throws Exception {
         return uploadFile(multiRequest, null);
@@ -191,7 +188,6 @@ public class FileUtils
      * @param multiRequest Multipart 요청
      * @param atchFileNo 기존에 첨부된 파일 번호 (Integer), null일 경우 새로 첨부된 파일 처리
      * @return {@link Integer} -- 업로드된 파일의 첨부파일 번호
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     public static Integer uploadFile(
             final MultipartHttpServletRequest multiRequest,
@@ -214,7 +210,6 @@ public class FileUtils
      *
      * @param multiRequest Multipart 요청
      * @return {@link AtchFileDtlDto} -- 업로드된 파일 객체 (단일 파일로 간주, 첫 번째 파일 반환)
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     public static AtchFileDtlDto uploadDtlFile(final MultipartHttpServletRequest multiRequest) throws Exception {
         final AtchFileEntity rslt = getUploadedFile(multiRequest);
@@ -248,7 +243,6 @@ public class FileUtils
      * 메소드 분리 :: 파일 다운로드
      *
      * @param file 다운로드할 파일 객체
-     * @throws Exception 파일 처리 중 발생할 수 있는 예외
      */
     public static void downloadFile(final File file) throws Exception {
         downloadFile(file, file.getName());
@@ -259,7 +253,6 @@ public class FileUtils
      *
      * @param file 다운로드할 파일 객체
      * @param fileNm 클라이언트에게 전달할 파일 이름 (String)
-     * @throws Exception 파일 처리 중 발생할 수 있는 예외
      */
     public static void downloadFile(final File file, final String fileNm) throws Exception {
         FileUtils.setRespnsHeaderAndSuccessCookie(fileNm);       // 응답 헤더 설정 및 한글 파일명 처리 (메소드 분리)
@@ -297,7 +290,6 @@ public class FileUtils
      * 응답 헤더 설정 및 한글 파일명 처리 (메소드 분리)
      *
      * @param fileNm 다운로드 시 클라이언트에게 전달할 파일 이름
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     public static void setRespnsHeader(final String fileNm) throws Exception {
         final HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
@@ -319,7 +311,6 @@ public class FileUtils
      * 응답 헤더 설정 및 한글 파일명 처리 + 다운로드 성공 쿠키 추가 (메소드 분리)
      *
      * @param fileNm 다운로드 시 클라이언트에게 전달할 파일 이름
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     public static void setRespnsHeaderAndSuccessCookie(final String fileNm) throws Exception {
         setRespnsHeader(fileNm);

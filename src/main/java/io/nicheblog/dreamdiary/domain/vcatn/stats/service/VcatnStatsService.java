@@ -55,7 +55,6 @@ public class VcatnStatsService {
      *
      * @param statsYy 조회할 통계 기준 년도 정보를 담고 있는 VcatnStatsYyDto 객체
      * @return {@link List} -- 해당 연도에 대한 휴가 관리 통계 목록
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     public List<VcatnStatsDto> getVcatnStatsList(final VcatnStatsYyDto statsYy) throws Exception {
         final String yyStr = statsYy.getStatsYy();
@@ -78,7 +77,6 @@ public class VcatnStatsService {
      * @param statsYy 조회할 통계 기준 년도 정보를 담고 있는 VcatnStatsYyDto 객체
      * @param userId 조회할 사용자의 ID
      * @return 개인의 휴가 현황 정보를 담고 있는 VcatnStatsDto 객체
-     * @throws Exception 조회 중 발생할 수 있는 예외
      * @throws NullPointerException 입사일 정보가 존재하지 않는 경우
      */
     public VcatnStatsDto getVcatnStatsDtl(
@@ -98,7 +96,6 @@ public class VcatnStatsService {
      * @param user 조회할 사용자 정보
      * @param statsYy 조회할 통계 기준 년도 정보
      * @return {@link VcatnStatsDto} -- 개인별 휴가 현황 정보
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     private VcatnStatsDto getCalcVcatnStats(
             final UserDto.LIST user,
@@ -158,7 +155,6 @@ public class VcatnStatsService {
      * @param vcatnStats 휴가 현황 정보
      * @param userId 조회할 사용자의 ID
      * @return 총 소진 연차를 나타내는 double 값
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     private double getTotVcatnDy(VcatnStatsYyDto statsYy, VcatnStatsDto vcatnStats, @NotEmpty String userId) throws Exception {
         // 1. 전체 휴가 현황 조회
@@ -210,7 +206,6 @@ public class VcatnStatsService {
      * @param user 조회할 사용자 정보
      * @param statsYy 조회할 통계 기준 년도 정보
      * @return {@link VcatnStatsDto} -- 해당 사용자에 대한 휴가 현황 정보
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     private VcatnStatsDto getVcatnStats(UserDto.LIST user, VcatnStatsYyDto statsYy) throws Exception {
         // 사용자 ID로 검색한 휴가 일정을 불러온다.
@@ -229,7 +224,6 @@ public class VcatnStatsService {
      *
      * @param vcatnStatsTotal 저장할 통계 정보
      * @return {@link boolean} -- 저장 성공 여부
-     * @throws Exception 저장 중 발생할 수 있는 예외
      */
     public boolean regStatsTotal(final VcatnStatsTotalDto vcatnStatsTotal) throws Exception {
         final List<VcatnStatsDto> statsList = vcatnStatsTotal.getStatsList();
@@ -254,7 +248,6 @@ public class VcatnStatsService {
      *
      * @param statsYy 조회할 통계 기준 년도
      * @return {@link List} -- 엑셀 다운로드를 위한 통계 목록
-     * @throws Exception 조회 중 발생할 수 있는 예외
      */
     public List<Object> getVcatnStatsListXlsx(final VcatnStatsYyDto statsYy) throws Exception {
         final List<VcatnStatsDto> statsList = this.getVcatnStatsList(statsYy);

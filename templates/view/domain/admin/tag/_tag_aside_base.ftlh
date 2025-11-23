@@ -63,9 +63,9 @@
                         현재 년월 저장<i class="bi bi-pin-map ps-1 pe-0"></i>
                     </button>
                     <span id="jrnl_aside_pinText" class="px-2">
-                        <span id="pinYy" class="text-muted text-underline-dotted">----</span>
+                        <span id="pinnedYy" class="text-muted text-underline-dotted">----</span>
                         <span> / </span>
-                        <span id="pinMnth" class="text-muted text-underline-dotted">--</span>
+                        <span id="pinnedMnth" class="text-muted text-underline-dotted">--</span>
                     </span>
                     <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
                             onclick="dF.JrnlDayAside.turnback();"
@@ -78,7 +78,7 @@
                     <div class="col">
                         <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">년도</span>
                         <select name="yy" id="yy" class="form-select" aria-label="Select example"
-                                onchange="dF.JrnlDayAside.yy();">
+                                onchange="dF.JrnlDayAside.changeYy();">
                             <option value="">----</option>
                             <#assign currYy = DateUtils.getCurrYy()?number />
                             <#assign startYy = 2010 />
@@ -90,7 +90,7 @@
                     <div class="col">
                         <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">월</span>
                         <select name="mnth" id="mnth" class="form-select" aria-label="Select example"
-                                onchange="dF.JrnlDayAside.mnth();">
+                                onchange="dF.JrnlDayAside.changeMnth();">
                             <option value="">--</option>
                             <#list 1..12 as mnth>
                                 <option value="${mnth}">${mnth}</option>

@@ -31,7 +31,6 @@ public interface ViewerMapstruct
      *
      * @param entity 변환할 Entity 객체
      * @return 변환된 Dto 객체
-     * @throws Exception 변환 과정에서 발생할 수 있는 예외
      */
     @Override
     @Named("toDto")
@@ -44,7 +43,6 @@ public interface ViewerMapstruct
      *
      * @param dto 변환할 Dto 객체
      * @return 변환된 Entity 객체
-     * @throws Exception 변환 과정에서 발생할 수 있는 예외
      */
     @Override
     @Named("toEntity")

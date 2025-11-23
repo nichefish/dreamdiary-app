@@ -46,17 +46,14 @@ public class FlsysFileDto
      * 생성자.
      *
      * @param file 파일 객체 (File)
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     public FlsysFileDto(final File file) throws Exception {
         super(file);
         this.length = file.length();
         this.contentType = new MimetypesFileTypeMap().getContentType(file);
         this.isExcecutable = file.canExecute();
-        String fileExtn = file.getName()
-                .substring(file.getName()
-                        .lastIndexOf('.') + 1);
-        List<String> vodExtnList = List.of(new String[]{"mp3", "mp4", "mov", "avi", "webm", "webp", "wmv", "flv"});
+        final String fileExtn = file.getName().substring(file.getName().lastIndexOf('.') + 1);
+        final List<String> vodExtnList = List.of(new String[]{"mp3", "mp4", "mov", "avi", "webm", "webp", "wmv", "flv"});
         this.isVod = vodExtnList.contains(fileExtn);
     }
 }

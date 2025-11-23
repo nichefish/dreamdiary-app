@@ -42,12 +42,12 @@ public class UserReqstVerificationEmailEventListener {
      * 사용자 등록 이메일 발송 이벤트를 처리한다.
      *
      * @param event 처리할 이벤트 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @EventListener
     @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void handleUserReqstEvent(final UserReqstVerificationEmailSendEvent event) throws Exception {
+    public void handleUserReqstVerificationEmailEvent(final UserReqstVerificationEmailSendEvent event) {
+        log.debug("UserReqstVerificationEmailEventListener.handleUserReqstVerificationEmailEvent() - event : {}", event.toString());
 
         try {
             final UserReqstDto userReqst = event.getUserReqst();

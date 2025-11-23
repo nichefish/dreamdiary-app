@@ -258,7 +258,7 @@ cF.date = (function(): Module {
         getDateAddDayStr: function(date: Date|string, day: number, pattern: string): string|null {
             // 유효하지 않은 날짜인 경우 null 반환
             const newDate: Date = cF.date.getDateAddDay(date, day);
-            if (newDate === null) return null;
+            if (newDate == null) return null;
 
             pattern = pattern || cF.date.ptnDate;      // 패턴이 없을 경우 기본 패턴 설정
 
@@ -274,7 +274,7 @@ cF.date = (function(): Module {
         getDateStrAddDay: function(datestr: string, day: number): Date|null {
             // 유효한 날짜인지 확인
             const date: Date = cF.date.asDate(datestr);
-            if (date === null) return null;
+            if (date == null) return null;
 
             // 원본 날짜를 변경하지 않도록 새로운 날짜 객체 생성 후 일수 더하기
             const newDate: Date = new Date(date);
@@ -292,7 +292,7 @@ cF.date = (function(): Module {
         getDateStrAddDayStr: function(datestr: string, day: number, pattern: string): string|null {
             // 유효한 날짜인지 확인
             const newDate: Date = cF.date.getDateStrAddDay(datestr, day);
-            if (newDate === null) return null;
+            if (newDate == null) return null;
 
             pattern = pattern || cF.date.ptnDate;      // 패턴이 없을 경우 기본 패턴 설정
 
@@ -328,7 +328,7 @@ cF.date = (function(): Module {
         getDateStrStr: function(dateStr: string, pattern: string): string|null {
             // 날짜 형식이 8자리인 경우 `YYYY-MM-DD`로 변환
             const date: Date = cF.date.strToDate(dateStr);
-            if (date === null) return null;
+            if (date == null) return null;
 
             pattern = pattern || cF.date.ptnDate;      // 패턴이 없을 경우 기본 패턴 설정
 
@@ -411,7 +411,7 @@ cF.date = (function(): Module {
         getDayweekStr: function(date: Date|string, locale: string): string|null {
             // 날짜를 `Date` 객체로 변환
             const asDate: Date = cF.date.asDate(date);
-            if (asDate === null) return null; // 유효하지 않은 날짜 처리
+            if (asDate == null) return null; // 유효하지 않은 날짜 처리
 
             const dw: number = asDate.getDay(); // 요일 인덱스
             const dwStrArr = [["일", "SUN"], ["월", "MON"], ["화", "TUE"], ["수", "WED"], ["목", "THU"], ["금", "FRI"], ["토", "SAT"]];
@@ -439,7 +439,7 @@ cF.date = (function(): Module {
         getWeekdayDate: function(date: Date|string, paramWeekday: number): Date|null {
             // 입력된 날짜를 `Date` 객체로 변환
             const asDate: Date = cF.date.asDate(date);
-            if (asDate === null) return null;
+            if (asDate == null) return null;
 
             // 요일 인덱스를 받아서 빼고 해당 요일로 추가
             const currentDay: number = asDate.getDay(); // 현재 요일 인덱스
@@ -461,7 +461,7 @@ cF.date = (function(): Module {
 
             // 특정 요일의 날짜 객체를 가져오기
             const weekdayDate: Date = cF.date.getWeekdayDate(date, paramWeekday);
-            if (weekdayDate === null) return null; // 유효하지 않은 경우 null 반환
+            if (weekdayDate == null) return null; // 유효하지 않은 경우 null 반환
 
             // 날짜 객체를 지정된 패턴으로 변환하여 문자열 반환
             return cF.date.dateToStr(weekdayDate, pattern);
@@ -485,7 +485,7 @@ cF.date = (function(): Module {
             const endCompareDate: Date = cF.date.asDate(end);
 
             // 유효한 날짜인지 확인
-            if (beginCompareDate === null || endCompareDate === null) return false;
+            if (beginCompareDate == null || endCompareDate == null) return false;
 
             // 시작일이 종료일보다 앞서는지 비교
             return beginCompareDate.getTime() <= endCompareDate.getTime();
@@ -501,7 +501,7 @@ cF.date = (function(): Module {
         navigateDate: function(searchType: 'day'|'week'|'month'|'year', stdrdDate: Date|string, type: 'prev'|'next'): Date|null {
             // 기준일을 Date 객체로 변환
             const date: Date = cF.date.asDate(stdrdDate);
-            if (date === null) return null;
+            if (date == null) return null;
 
             switch(searchType) {
                 case "day":
@@ -540,7 +540,7 @@ cF.date = (function(): Module {
         navigateDateStr: function(searchType: 'day'|'week'|'month'|'year', stdrdDate: Date|string, type: 'prev'|'next', pattern: string): string|null {
             // 기준일을 바탕으로 좌우 이동한 날짜 계산
             const newDate: Date = cF.date.navigateDate(searchType, stdrdDate, type);
-            if (newDate === null) return null;
+            if (newDate == null) return null;
 
             pattern = pattern || cF.date.ptnDate;      // 패턴이 없을 경우 기본 패턴 설정
 

@@ -35,7 +35,6 @@ public interface UserMapstruct
      *
      * @param entity 변환할 Entity 객체
      * @return Dto -- 변환된 Dto 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
     @Named("toDto")
@@ -55,7 +54,6 @@ public interface UserMapstruct
      *
      * @param entity 변환할 Entity 객체
      * @return ListDto -- 변환된 ListDto 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
     @Mapping(target = "emailId", expression = "java(StringUtils.isNotEmpty(entity.getEmail()) ? entity.getEmail().substring(0, entity.getEmail().indexOf('@')) : \"\")")
@@ -70,7 +68,6 @@ public interface UserMapstruct
      *
      * @param dtl 변환할 Dto 객체
      * @return ListDto -- 변환된 ListDto 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     UserDto.LIST dtlToList(final UserDto.DTL dtl) throws Exception;
 
@@ -79,7 +76,6 @@ public interface UserMapstruct
      *
      * @param dto 변환할 Dto 객체
      * @return Entity -- 변환된 Entity 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
     @Mapping(target = "email", expression = "java(dto.getEmailId() + \"@\" + dto.getEmailDomain())")
@@ -94,7 +90,6 @@ public interface UserMapstruct
      *
      * @param dto 매핑할 원본 Dto
      * @param entity 매핑 대상 엔티티
-     * @throws Exception 매핑 중 발생할 수 있는 예외
      */
     @AfterMapping
     private void mapToEntityFields(final UserDto.DTL dto, final @MappingTarget UserEntity entity) throws Exception {
@@ -112,7 +107,6 @@ public interface UserMapstruct
      *
      * @param dto 업데이트할 Dto 객체
      * @param entity 업데이트할 대상 Entity 객체
-     * @throws Exception 매핑 중 발생할 수 있는 예외
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

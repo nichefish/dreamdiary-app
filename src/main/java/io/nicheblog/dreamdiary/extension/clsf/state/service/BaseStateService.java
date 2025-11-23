@@ -32,7 +32,6 @@ public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule &
      * 
      * @param key 상태를 변경할 엔티티의 키
      * @return Boolean - 상태 변경 성공시 true
-     * @throws Exception 상태 변경 중 발생할 수 있는 예외
      */
     @Transactional
     default ServiceResponse setStateUse(final Key key) throws Exception {
@@ -56,7 +55,6 @@ public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule &
      * 
      * @param key 상태를 변경할 엔티티의 키
      * @return Boolean - 상태 변경 성공시 true
-     * @throws Exception 상태 변경 중 발생할 수 있는 예외
      */
     @Transactional
     default ServiceResponse setStateUnuse(final Key key) throws Exception {
@@ -79,7 +77,6 @@ public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule &
     /**
      * default: 상태 변경 후 해당 로직을 수행한다.
      *
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     default void postSetState(final Dto dto) throws Exception {
         // 변경 후처리:: 기본 공백, 필요시 각 함수에서 Override
@@ -90,7 +87,6 @@ public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule &
      *
      * @param sortOrdr 키 + 정렬 순서로 이루어진 목록
      * @return {@link Boolean} -- 성공시 true 반환
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Transactional
     default ServiceResponse sortOrdr(final List<Dto> sortOrdr) throws Exception {
@@ -122,7 +118,6 @@ public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule &
     /**
      * default: 정렬 순서 업데이트 후 해당 로직을 수행한다.
      *
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     default void postSortOrdr(final List<Dto> sortOrdr) throws Exception {
         // 변경 후처리:: 기본 공백, 필요시 각 함수에서 Override

@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryContentTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiarySmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryTagEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntrySmpEntity;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -53,7 +54,6 @@ public class JrnlDiaryTagSpec
      * @param root 검색할 엔티티의 Root 객체
      * @param builder 검색 조건을 생성하는 CriteriaBuilder 객체
      * @return {@link List} -- 설정된 검색 조건(Predicate) 리스트
-     * @throws Exception 검색 조건 생성 중 발생할 수 있는 예외
      */
     @Override
     public List<Predicate> getPredicateWithParams(
@@ -67,7 +67,8 @@ public class JrnlDiaryTagSpec
         // 태그 조인
         final Join<JrnlDiaryTagEntity, JrnlDiaryContentTagEntity> JrnlDiaryTagJoin = root.join("jrnlDiaryTagList", JoinType.INNER);
         final Join<JrnlDiaryContentTagEntity, JrnlDiarySmpEntity> JrnlDiaryJoin = JrnlDiaryTagJoin.join("jrnlDiary", JoinType.INNER);
-        final Join<JrnlDiarySmpEntity, JrnlDaySmpEntity> jrnlDayJoin = JrnlDiaryJoin.join("jrnlDay", JoinType.INNER);
+        final Join<JrnlDiarySmpEntity, JrnlEntrySmpEntity> jrnlEntryJoin = JrnlDiaryJoin.join("jrnlEntry", JoinType.INNER);
+        final Join<JrnlEntrySmpEntity, JrnlDaySmpEntity> jrnlDayJoin = jrnlEntryJoin.join("jrnlDay", JoinType.INNER);
         final Expression<Date> effectiveDtExp = builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"));
 
         predicate.add(builder.equal(JrnlDiaryTagJoin.get("refContentType"), ContentType.JRNL_DIARY.key));

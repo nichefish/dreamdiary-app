@@ -71,7 +71,7 @@ dF.JrnlSumry = (function(): dfModule {
          */
         makeYySumryAjax: function(yy: string|number): void {
             const yYElmt: HTMLSelectElement = document.querySelector("#listForm #yy");
-            if (yy === undefined) yy = yYElmt.value;
+            if (yy == null) yy = yYElmt.value;
             if (cF.util.isEmpty(yy)) {
                 cF.ui.swalOrAlert("yy는 필수 항목입니다.");
                 return;

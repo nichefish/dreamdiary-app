@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.domain.jrnl.day.entity;
 
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntryEntity;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbedModule;
@@ -116,6 +117,16 @@ public class JrnlDayEntity
     @Comment("일기 정리완료 여부 (Y/N)")
     private String diaryResolvedYn = "N";
 
+    /** 저널 항목 목록 */
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "jrnl_day_no", referencedColumnName = "post_no", insertable = false, updatable = false)
+    @Fetch(FetchMode.SUBSELECT)
+    @BatchSize(size = 10)
+    @OrderBy("idx ASC")
+    @NotFound(action = NotFoundAction.IGNORE)
+    @Comment("저널 항목 목록")
+    private List<JrnlEntryEntity> jrnlEntryList;
+
     /** 저널 일기 목록 */
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "jrnl_day_no", referencedColumnName = "post_no", insertable = false, updatable = false)
@@ -123,7 +134,7 @@ public class JrnlDayEntity
     @BatchSize(size = 10)
     @OrderBy("idx ASC")
     @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("댓글 목록")
+    @Comment("저널 일기 목록")
     private List<JrnlDiaryEntity> jrnlDiaryList;
 
     /** 저널 꿈 목록 */
@@ -134,7 +145,7 @@ public class JrnlDayEntity
     @Where(clause = "else_dream_yn = 'N'")
     @OrderBy("idx ASC")
     @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("댓글 목록")
+    @Comment("저널 꿈 목록")
     private List<JrnlDreamEntity> jrnlDreamList;
 
     /** 저널 꿈 (타인) 목록 */
@@ -145,7 +156,7 @@ public class JrnlDayEntity
     @Where(clause = "else_dream_yn = 'Y'")
     @OrderBy("idx ASC")
     @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("댓글 목록")
+    @Comment("저널 꿈 (타인) 목록")
     private List<JrnlDreamEntity> jrnlElseDreamList;
 
     /* ----- */

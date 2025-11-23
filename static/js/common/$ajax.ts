@@ -106,8 +106,9 @@ cF.$ajax = (function(): Module {
                         if ($(".session-expired-message").length > 0) return;
 
                         const $navbar: JQuery<HTMLElement> = $("#kt_app_header_wrapper .app-navbar");
+                        const className: string = "session-expired-message d-flex align-items-center fs-4 fw-bold text-danger blink me-5";
                         const errorMsg: string = Message.get("view.auth.expired");       // "로그인 세션이 만료되었습니다."
-                        const sessionExpiredText: JQuery<HTMLElement> = $(`<div class='session-expired-message d-flex align-items-center fs-4 fw-bold text-danger blink me-5'>${errorMsg}</div>`);
+                        const sessionExpiredText: JQuery<HTMLElement> = $(`<div class='${className}'>${errorMsg}</div>`);
                         $navbar.before(sessionExpiredText);
                     });
                     return;

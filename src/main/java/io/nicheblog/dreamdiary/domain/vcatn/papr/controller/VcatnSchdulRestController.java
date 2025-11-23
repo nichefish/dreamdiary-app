@@ -49,7 +49,6 @@ public class VcatnSchdulRestController
      * @param vcatnSchdul 등록/수정할 객체
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link String} -- 뷰 이름을 나타내는 문자열
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @PostMapping(value = {Url.VCATN_SCHDUL_REG_AJAX, Url.VCATN_SCHDUL_MDF_AJAX})
     @Secured(Constant.ROLE_MNGR)
@@ -77,7 +76,6 @@ public class VcatnSchdulRestController
      * @param key 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @GetMapping(value = Url.VCATN_SCHDUL_DTL_AJAX)
     @Secured(Constant.ROLE_MNGR)
@@ -104,7 +102,6 @@ public class VcatnSchdulRestController
      * @param vcatnSchdulNo 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @PostMapping(Url.VCATN_SCHDUL_DEL_AJAX)
     @Secured(Constant.ROLE_MNGR)

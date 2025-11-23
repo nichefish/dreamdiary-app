@@ -51,7 +51,6 @@ public class TmplatTxtService
      * @param tmplatDefCd 템플릿 정의 코드
      * @param ctgrCd 카테고리 코드
      * @return {@link TmplatTxtDto} -- 템플릿 텍스트 정보
-     * @throws Exception 조회 중 발생 가능한 예외
      */
     public TmplatTxtDto getTmplatTxtByTmplatDef(
             final String tmplatDefCd,

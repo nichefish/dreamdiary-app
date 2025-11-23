@@ -57,7 +57,6 @@ public class BoardDefPageController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면의 뷰 이름
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @GetMapping(Url.BOARD_DEF_LIST)
     @Secured({Constant.ROLE_MNGR})

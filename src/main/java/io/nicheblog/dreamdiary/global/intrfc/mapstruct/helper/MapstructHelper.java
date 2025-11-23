@@ -61,7 +61,6 @@ public class MapstructHelper {
      *
      * @param entity 매핑할 Entity
      * @param dto 매핑 대상 Dto
-     * @throws Exception 매핑 중 발생할 수 있는 예외
      */
     public static <Entity extends BaseCrudEntity, Dto extends BaseCrudDto> void mapBaseFields(final Entity entity, final @MappingTarget Dto dto) throws Exception {
 
@@ -162,7 +161,6 @@ public class MapstructHelper {
      *
      * @param entity 매핑할 Dto
      * @param dto 매핑 대상 Entity
-     * @throws Exception 매핑 중 발생할 수 있는 예외
      */
     public static <Entity, Dto> void mapStateFields(final Dto dto, final @MappingTarget Entity entity) throws Exception {
         // 댓글 :: 공통 필드 매핑 로직
@@ -181,7 +179,6 @@ public class MapstructHelper {
      *
      * @param entity 새 글 여부를 판단할 BaseClsfEntity 객체
      * @return 새 글이면 true, 그렇지 않으면 false
-     * @throws Exception 판단 중 발생할 수 있는 예외
      */
     public static <Entity extends BaseClsfEntity, Dto extends BaseClsfDto> Boolean determineIfNew(Entity entity) throws Exception {
 

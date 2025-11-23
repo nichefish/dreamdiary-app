@@ -31,7 +31,6 @@ public interface BasePostService<Dto extends BasePostDto & Identifiable<Key>, Li
      * TODO: 조회조건 좀 더 세분화?
      *
      * @return List<ListDto> - 상단 고정 항목 목록
-     * @throws Exception - 조회 중 발생할 수 있는 예외
      */
     @Transactional(readOnly = true)
     default List<ListDto> getFxdList() throws Exception {
@@ -45,7 +44,6 @@ public interface BasePostService<Dto extends BasePostDto & Identifiable<Key>, Li
      * default: 상세 페이지 조회 후처리 (dto level)
      *
      * @param retrievedDto - 조회된 Dto 객체
-     * @throws Exception 후처리 중 발생할 수 있는 예외
      */
     default void postViewDtlPage(final Dto retrievedDto) throws Exception {
         // 상세 페이지 조회 후처리:: 기본 공백, 필요시 각 함수에서 Override
@@ -56,7 +54,6 @@ public interface BasePostService<Dto extends BasePostDto & Identifiable<Key>, Li
      *
      * @param key 조회수를 증가시킬 항목의 키
      * @return Dto -- 조회된 객체
-     * @throws Exception 조회수 증가 중 발생할 수 있는 예외
      */
     @Transactional
     default Dto viewDtlPage(final Key key) throws Exception {
@@ -75,7 +72,6 @@ public interface BasePostService<Dto extends BasePostDto & Identifiable<Key>, Li
      * default: 항목 조회수를 1 증가시킨다.
      *
      * @param key 조회수를 증가시킬 항목의 키
-     * @throws Exception 조회수 증가 중 발생할 수 있는 예외
      */
     @Transactional
     default void hitCntUp(final Key key) throws Exception {

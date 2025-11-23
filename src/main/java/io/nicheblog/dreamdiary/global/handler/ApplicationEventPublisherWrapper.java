@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.global.handler;
 
+import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
@@ -21,6 +22,7 @@ import java.util.concurrent.Executor;
  * @author nichefish
  */
 @Component
+@Log4j2
 public class ApplicationEventPublisherWrapper {
 
     @Resource
@@ -34,6 +36,7 @@ public class ApplicationEventPublisherWrapper {
      * @param event 발행할 {@link ApplicationEvent}
      */
     public void publishEvent(@NotNull ApplicationEvent event) {
+        log.debug("ApplicationEventPublisherWrapper.publishEvent : {}", event);
         delegate.publishEvent(event);
     }
 
@@ -43,6 +46,7 @@ public class ApplicationEventPublisherWrapper {
      * @param event 발행할 {@link ApplicationEvent}
      */
     public void publishEvent(@NotNull Object event) {
+        log.debug("ApplicationEventPublisherWrapper.publishEvent : {}", event);
         delegate.publishEvent(event);
     }
 
@@ -53,6 +57,7 @@ public class ApplicationEventPublisherWrapper {
      * @param event 발행할 {@link ApplicationEvent}
      */
     public void publishAsyncEvent(final @NotNull ApplicationEvent event) {
+        log.debug("ApplicationEventPublisherWrapper.publishAsyncEvent : {}", event);
         SecurityContext securityContext = SecurityContextHolder.getContext(); // 현재 SecurityContext 저장
 
         asyncExecutor.execute(() -> {
@@ -72,6 +77,7 @@ public class ApplicationEventPublisherWrapper {
      * @param event 발행할 이벤트 객체
      */
     public void publishAsyncEvent(final @NotNull Object event) {
+        log.debug("ApplicationEventPublisherWrapper.publishAsyncEvent : {}", event);
         SecurityContext securityContext = SecurityContextHolder.getContext();
 
         asyncExecutor.execute(() -> {
@@ -90,6 +96,7 @@ public class ApplicationEventPublisherWrapper {
      * @param event 비동기적으로 발행할 {@link ApplicationEvent}
      */
     public void publishAsyncEventAndWait(ApplicationEvent event) {
+        log.debug("ApplicationEventPublisherWrapper.publishAsyncEventAndWait : {}", event);
         SecurityContext securityContext = SecurityContextHolder.getContext();
         CompletableFuture<Void> future = new CompletableFuture<>();
 

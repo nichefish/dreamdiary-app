@@ -36,7 +36,6 @@ public class LogStatsUserService {
      * @param searchParamMap 검색 조건이 담긴 파라미터 맵
      * @param pageable 페이지 정보 (페이징 처리)
      * @return {@link List} -- 조회된 로그 통계 목록
-     * @throws Exception 검색 및 조회 중 발생할 수 있는 예외
      */
     @Transactional(readOnly = true)
     public List<LogStatsUserIntrfc> getStatsUserIntrfcList(
@@ -56,7 +55,6 @@ public class LogStatsUserService {
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @param pageable 페이지 정보 (페이징 처리)
      * @return {@link List} -- 조회된 활동 로그 목록
-     * @throws Exception 검색 및 조회 중 발생할 수 있는 예외
      */
     @Transactional(readOnly = true)
     public List<LogStatsUserDto> logStatsUserDtoList(
@@ -84,7 +82,6 @@ public class LogStatsUserService {
      *
      * @param searchParamMap 검색 파라미터 맵
      * @return {@link List<LogStatsUserIntrfc>} 검색된 통계 목록
-     * @throws Exception 검색 중 발생할 수 있는 예외
      */
     @Transactional(readOnly = true)
     public List<LogStatsUserIntrfc> getStatsNotUserIntrfcList(final Map<String, Object> searchParamMap, final Pageable pageable) throws Exception {
@@ -101,7 +98,6 @@ public class LogStatsUserService {
      * @param searchParam 검색 파라미터
      * @param pageable 페이지 정보 (페이징 처리)
      * @return {@link List<LogStatsUserIntrfc>} 검색된 통계 목록
-     * @throws Exception 검색 중 발생할 수 있는 예외
      */
     @Transactional(readOnly = true)
     public List<LogStatsUserDto> logStatsNotUserDtoList(final BaseSearchParam searchParam, final Pageable pageable) throws Exception {

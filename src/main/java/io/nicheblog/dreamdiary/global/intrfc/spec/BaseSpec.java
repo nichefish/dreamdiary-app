@@ -66,7 +66,6 @@ public interface BaseSpec<Entity> {
      * @param root 검색할 엔티티의 Root 객체
      * @param builder 검색 조건을 생성하는 CriteriaBuilder 객체
      * @return {@link List} -- 설정된 검색 조건(Predicate) 리스트
-     * @throws Exception 검색 조건 생성 중 발생할 수 있는 예외
      */
     default List<Predicate> getPredicateWithParams(
             final Map<String, Object> searchParamMap,
@@ -129,7 +128,6 @@ public interface BaseSpec<Entity> {
      * @param root 검색 대상 엔티티의 Root 객체
      * @param builder CriteriaBuilder 객체로, 쿼리 조건을 설정하는 데 사용됩니다.
      * @return {@link Predicate} -- IP 주소에 대한 검색 조건을 나타내는 Predicate 객체
-     * @throws Exception 서브넷 계산 중 발생할 수 있는 예외
      */
     private Predicate getIpPredicate(
             final String key,

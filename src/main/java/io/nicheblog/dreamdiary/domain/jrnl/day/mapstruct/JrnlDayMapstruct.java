@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.mapstruct.JrnlDiaryMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.mapstruct.JrnlDreamMapstruct;
+import io.nicheblog.dreamdiary.domain.jrnl.entry.mapstruct.JrnlEntryMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseClsfMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -25,6 +26,7 @@ public interface JrnlDayMapstruct
         extends BaseClsfMapstruct<JrnlDayDto, JrnlDayDto, JrnlDayEntity> {
 
     JrnlDayMapstruct INSTANCE = Mappers.getMapper(JrnlDayMapstruct.class);
+    JrnlEntryMapstruct jrnlEntryMapstruct = JrnlEntryMapstruct.INSTANCE;
     JrnlDiaryMapstruct jrnlDiaryMapstruct = JrnlDiaryMapstruct.INSTANCE;
     JrnlDreamMapstruct jrnlDreamMapstruct = JrnlDreamMapstruct.INSTANCE;
 
@@ -33,7 +35,6 @@ public interface JrnlDayMapstruct
      *
      * @param entity 변환할 Entity 객체
      * @return Dto -- 변환된 Dto 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
     @Named("toDto")
@@ -41,6 +42,8 @@ public interface JrnlDayMapstruct
     @Mapping(target = "jrnlDtWeekDay", expression = "java(entity.getJrnlDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJrnlDt()) : null)")
     @Mapping(target = "aprxmtDt", expression = "java(DateUtils.asStr(entity.getAprxmtDt(), DatePtn.DATE))")
     @Mapping(target = "stdrdDt", expression = "java(DateUtils.asStr(\"Y\".equals(entity.getDtUnknownYn()) ? entity.getAprxmtDt() : entity.getJrnlDt(), DatePtn.DATE))")
+    @Mapping(target = "jrnlEntryList", expression = "java(jrnlEntryMapstruct.toDtoList(entity.getJrnlEntryList()))")
+    @Mapping(target = "entryList", expression = "java(jrnlEntryMapstruct.toSmpDtoList(entity.getJrnlEntryList()))")
     @Mapping(target = "jrnlDiaryList", expression = "java(jrnlDiaryMapstruct.toDtoList(entity.getJrnlDiaryList()))")
     @Mapping(target = "jrnlDreamList", expression = "java(jrnlDreamMapstruct.toDtoList(entity.getJrnlDreamList()))")
     @Mapping(target = "jrnlElseDreamList", expression = "java(jrnlDreamMapstruct.toDtoList(entity.getJrnlElseDreamList()))")
@@ -51,7 +54,6 @@ public interface JrnlDayMapstruct
      *
      * @param entity 변환할 Entity 객체
      * @return ListDto -- 변환된 ListDto 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
     @Named("toListDto")
@@ -59,6 +61,8 @@ public interface JrnlDayMapstruct
     @Mapping(target = "jrnlDtWeekDay", expression = "java(entity.getJrnlDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJrnlDt()) : null)")
     @Mapping(target = "aprxmtDt", expression = "java(DateUtils.asStr(entity.getAprxmtDt(), DatePtn.DATE))")
     @Mapping(target = "stdrdDt", expression = "java(DateUtils.asStr(\"Y\".equals(entity.getDtUnknownYn()) ? entity.getAprxmtDt() : entity.getJrnlDt(), DatePtn.DATE))")
+    @Mapping(target = "jrnlEntryList", expression = "java(jrnlEntryMapstruct.toDtoList(entity.getJrnlEntryList()))")
+    @Mapping(target = "entryList", expression = "java(jrnlEntryMapstruct.toSmpDtoList(entity.getJrnlEntryList()))")
     @Mapping(target = "jrnlDiaryList", expression = "java(jrnlDiaryMapstruct.toDtoList(entity.getJrnlDiaryList()))")
     @Mapping(target = "jrnlDreamList", expression = "java(jrnlDreamMapstruct.toDtoList(entity.getJrnlDreamList()))")
     @Mapping(target = "jrnlElseDreamList", expression = "java(jrnlDreamMapstruct.toDtoList(entity.getJrnlElseDreamList()))")
@@ -69,7 +73,6 @@ public interface JrnlDayMapstruct
      *
      * @param dto 변환할 Dto 객체
      * @return Entity -- 변환된 Entity 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
     @Named("toEntity")
@@ -81,7 +84,6 @@ public interface JrnlDayMapstruct
      * 일반 엔티티를 간소화 엔티티로 변환
      * @param entity 변환할 entity 객체
      * @return SmpEntity -- 변환된 간소화 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     JrnlDaySmpEntity asSmp(final JrnlDayEntity entity) throws Exception;
 
@@ -90,7 +92,6 @@ public interface JrnlDayMapstruct
      *
      * @param dto 업데이트할 Dto 객체
      * @param entity 업데이트할 대상 Entity 객체
-     * @throws Exception 매핑 중 발생할 수 있는 예외
      */
     @Override
     @Mapping(target = "jrnlDt", expression = "java(DateUtils.asDate(dto.getJrnlDt()))")

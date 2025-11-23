@@ -54,10 +54,10 @@ dF.TmplatDef = (function(): dfModule {
          */
         refreshIcon: function(): void {
             // #menuRegForm #icon 요소 선택
-            const iconClassElmt: HTMLInputElement = document.querySelector("#menuRegForm #icon") as HTMLInputElement;
+            const iconClassElmt: HTMLInputElement = document.querySelector("#menuRegForm #icon");
             if (!iconClassElmt) return;
 
-            const menuIconDiv: HTMLElement = document.querySelector("#menuRegForm #menu_icon_div") as HTMLElement;
+            const menuIconDiv: HTMLElement = document.querySelector("#menuRegForm #menu_icon_div");
             if (menuIconDiv)  menuIconDiv.innerHTML = iconClassElmt.value;
         },
 

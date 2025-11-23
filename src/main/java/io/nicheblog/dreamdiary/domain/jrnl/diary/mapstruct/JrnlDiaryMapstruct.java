@@ -30,15 +30,15 @@ public interface JrnlDiaryMapstruct
      *
      * @param entity 변환할 Entity 객체
      * @return Dto -- 변환된 Dto 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
     @Named("toDto")
+    @Mapping(target = "jrnlDayNo", expression = "java(entity.getJrnlEntry() != null ? entity.getJrnlEntry().getJrnlDayNo() : null)")
     @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"JRNL_DIARY_CTGR_CD\", entity.getCtgrCd()))")
-    @Mapping(target = "stdrdDt", expression = "java(entity.getJrnlDay() != null ? DateUtils.asStr(\"Y\".equals(entity.getJrnlDay().getDtUnknownYn()) ? entity.getJrnlDay().getAprxmtDt() : entity.getJrnlDay().getJrnlDt(), DatePtn.DATE) : null)")
-    @Mapping(target = "jrnlDtWeekDay", expression = "java(entity.getJrnlDay() != null && entity.getJrnlDay().getJrnlDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJrnlDay().getJrnlDt()) : null)")
-    @Mapping(target = "yy", expression = "java(entity.getJrnlDay() != null ? entity.getJrnlDay().getYy() : null)")
-    @Mapping(target = "mnth", expression = "java(entity.getJrnlDay() != null ? entity.getJrnlDay().getMnth() : null)")
+    @Mapping(target = "stdrdDt", expression = "java(entity.getJrnlEntry().getJrnlDay() != null ? DateUtils.asStr(\"Y\".equals(entity.getJrnlEntry().getJrnlDay().getDtUnknownYn()) ? entity.getJrnlEntry().getJrnlDay().getAprxmtDt() : entity.getJrnlEntry().getJrnlDay().getJrnlDt(), DatePtn.DATE) : null)")
+    @Mapping(target = "jrnlDtWeekDay", expression = "java(entity.getJrnlEntry().getJrnlDay() != null && entity.getJrnlEntry().getJrnlDay().getJrnlDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJrnlEntry().getJrnlDay().getJrnlDt()) : null)")
+    @Mapping(target = "yy", expression = "java(entity.getJrnlEntry() != null ? entity.getJrnlEntry().getJrnlDay().getYy() : null)")
+    @Mapping(target = "mnth", expression = "java(entity.getJrnlEntry() != null ? entity.getJrnlEntry().getJrnlDay().getMnth() : null)")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
     JrnlDiaryDto toDto(final JrnlDiaryEntity entity) throws Exception;
 
@@ -47,15 +47,15 @@ public interface JrnlDiaryMapstruct
      *
      * @param entity 변환할 Entity 객체
      * @return ListDto -- 변환된 ListDto 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
     @Named("toListDto")
+    @Mapping(target = "jrnlDayNo", expression = "java(entity.getJrnlEntry() != null ? entity.getJrnlEntry().getJrnlDayNo() : null)")
     @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"JRNL_DIARY_CTGR_CD\", entity.getCtgrCd()))")
-    @Mapping(target = "stdrdDt", expression = "java(entity.getJrnlDay() != null ? DateUtils.asStr(\"Y\".equals(entity.getJrnlDay().getDtUnknownYn()) ? entity.getJrnlDay().getAprxmtDt() : entity.getJrnlDay().getJrnlDt(), DatePtn.DATE) : null)")
-    @Mapping(target = "jrnlDtWeekDay", expression = "java(entity.getJrnlDay() != null && entity.getJrnlDay().getJrnlDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJrnlDay().getJrnlDt()) : null)")
-    @Mapping(target = "yy", expression = "java(entity.getJrnlDay() != null ? entity.getJrnlDay().getYy() : null)")
-    @Mapping(target = "mnth", expression = "java(entity.getJrnlDay() != null ? entity.getJrnlDay().getMnth() : null)")
+    @Mapping(target = "stdrdDt", expression = "java(entity.getJrnlEntry().getJrnlDay() != null ? DateUtils.asStr(\"Y\".equals(entity.getJrnlEntry().getJrnlDay().getDtUnknownYn()) ? entity.getJrnlEntry().getJrnlDay().getAprxmtDt() : entity.getJrnlEntry().getJrnlDay().getJrnlDt(), DatePtn.DATE) : null)")
+    @Mapping(target = "jrnlDtWeekDay", expression = "java(entity.getJrnlEntry().getJrnlDay() != null && entity.getJrnlEntry().getJrnlDay().getJrnlDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJrnlEntry().getJrnlDay().getJrnlDt()) : null)")
+    @Mapping(target = "yy", expression = "java(entity.getJrnlEntry() != null ? entity.getJrnlEntry().getJrnlDay().getYy() : null)")
+    @Mapping(target = "mnth", expression = "java(entity.getJrnlEntry() != null ? entity.getJrnlEntry().getJrnlDay().getMnth() : null)")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
     JrnlDiaryDto toListDto(final JrnlDiaryEntity entity) throws Exception;
 
@@ -64,7 +64,6 @@ public interface JrnlDiaryMapstruct
      *
      * @param dto 변환할 Dto 객체
      * @return Entity -- 변환된 Entity 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Override
     @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
@@ -75,7 +74,6 @@ public interface JrnlDiaryMapstruct
      *
      * @param dto 업데이트할 Dto 객체
      * @param entity 업데이트할 대상 Entity 객체
-     * @throws Exception 매핑 중 발생할 수 있는 예외
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

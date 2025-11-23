@@ -23,7 +23,6 @@ public interface JrnlDayCalMapstruct {
      *
      * @param dto 변환할 Entity 객체
      * @return CalDto -- 변환된 달력 Dto 객체
-     * @throws Exception 변환 중 발생할 수 있는 예외
      */
     @Named("toCalDto")
     @Mapping(target = "id", source = "postNo")

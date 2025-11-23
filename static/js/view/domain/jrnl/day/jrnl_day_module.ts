@@ -38,13 +38,13 @@ dF.JrnlDay = (function(): dfModule {
                 rules: {
                     jrnlDt: {
                         required: function(): boolean {
-                            const dtUnknownYn: HTMLInputElement = document.querySelector("#jrnlDayRegForm #dtUnknownYn") as HTMLInputElement;
+                            const dtUnknownYn: HTMLInputElement = document.querySelector("#jrnlDayRegForm #dtUnknownYn");
                             return !dtUnknownYn?.checked;
                         }
                     },
                     aprxmtDt: {
                         required: function(): boolean {
-                            const dtUnknownYn: HTMLInputElement = document.querySelector("#jrnlDayRegForm #dtUnknownYn") as HTMLInputElement;
+                            const dtUnknownYn: HTMLInputElement = document.querySelector("#jrnlDayRegForm #dtUnknownYn");
                             return dtUnknownYn?.checked;
                         }
                     },
@@ -70,6 +70,8 @@ dF.JrnlDay = (function(): dfModule {
                 $("#jrnlDayRegForm #aprxmtDtDiv").addClass("d-none");
                 $("#jrnlDayRegForm #jrnlDt").val($("#jrnlDayRegForm #aprxmtDt").val());
             });
+            // checkbox init
+            cF.ui.chckboxLabel("diaryResolvedYn", "완료//미완료", "blue//gray");
             /* tagify */
             dF.JrnlDay.tagify = cF.tagify.initWithCtgr("#jrnlDayRegForm #tagListStr", dF.JrnlDayTag.ctgrMap);
         },
@@ -78,17 +80,13 @@ dF.JrnlDay = (function(): dfModule {
          * 년도-월 목록 조회 (Ajax)
          */
         yyMnthListAjax: function(): void {
-            const yyElmt: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
-            const yy: string = yyElmt.value;
+            const yy: string = localStorage.getItem("jrnl_yy") ?? "9999";
             if (cF.util.isEmpty(yy)) return;
-
-            const mnthElmt: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
-            const mnth: string = mnthElmt.value;
+            const mnth: string = localStorage.getItem("jrnl_mnth") ?? "99";
             if (cF.util.isEmpty(mnth)) return;
 
-            const url: string = Url.JRNL_DAY_LIST_AJAX;
-            const ajaxData: Record<string, any> = { yy, mnth };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+            const url: string = Url.JRNL_DAY_LIST_AJAX + "?yy=" + yy + "&mnth=" + mnth;
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
@@ -129,12 +127,11 @@ dF.JrnlDay = (function(): dfModule {
          * 사이드바 기준으로 등록 모달 날짜 계산:: 메소드 분리
          */
         validDt: function(): string {
-            const yyElement: HTMLInputElement = document.querySelector<HTMLInputElement>("#jrnl_aside #yy");
-            const mnthElement: HTMLInputElement = document.querySelector<HTMLInputElement>("#jrnl_aside #mnth");
-            if (!yyElement || !mnthElement) return "";
+            const yy: string = localStorage.getItem("jrnl_yy");
+            const mnth: string = localStorage.getItem("jrnl_mnth");
 
-            const year: number = parseInt(yyElement.value, 10);
-            let month: number = parseInt(mnthElement.value, 10);
+            const year: number = parseInt(yy, 10);
+            let month: number = parseInt(mnth, 10);
             if (month === 99) month = 1;
             let day: number = parseInt(cF.date.getCurrDayStr(2), 10);
 
@@ -176,7 +173,7 @@ dF.JrnlDay = (function(): dfModule {
          * 등록/수정 처리 (Ajax)
          */
         regAjax: function(): void {
-            const postNoElmt: HTMLInputElement = document.querySelector("#jrnlDayRegForm [name='postNo']") as HTMLInputElement;
+            const postNoElmt: HTMLInputElement = document.querySelector("#jrnlDayRegForm [name='postNo']");
             const isReg: boolean = postNoElmt?.value === "";
             Swal.fire({
                 text: Message.get(isReg ? "view.cnfm.reg" : "view.cnfm.mdf"),
@@ -191,7 +188,7 @@ dF.JrnlDay = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            const isCalendar: boolean = Page?.calendar !== undefined;
+                            const isCalendar: boolean = Page?.calendar != null;
                             if (isCalendar) {
                                 Page.refreshEventList();
                             } else {
@@ -292,7 +289,7 @@ dF.JrnlDay = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            const isCalendar: boolean = Page?.calendar !== undefined;
+                            const isCalendar: boolean = Page?.calendar != null;
                             if (isCalendar) {
                                 Page.refreshEventList();
                             } else {

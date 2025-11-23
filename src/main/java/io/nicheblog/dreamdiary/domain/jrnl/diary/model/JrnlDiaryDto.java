@@ -49,6 +49,8 @@ public class JrnlDiaryDto
 
     /** 저널 일자 번호 */
     private Integer jrnlDayNo;
+    /** 저널 항목 번호 */
+    private Integer jrnlEntryNo;
     /** 저널 기준일자 */
     private String stdrdDt;
     /** 저널 일자 요일 */

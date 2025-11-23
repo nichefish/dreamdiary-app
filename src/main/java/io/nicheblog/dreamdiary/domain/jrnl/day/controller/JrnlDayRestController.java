@@ -53,7 +53,6 @@ public class JrnlDayRestController
      * @param searchParam 검색 조건을 담은 파라미터 객체
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @GetMapping(value = {Url.JRNL_DAY_LIST_AJAX})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -81,7 +80,6 @@ public class JrnlDayRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      * @see TagProcEventListener
      */
     @Operation(
@@ -122,7 +120,6 @@ public class JrnlDayRestController
      * @param key 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @GetMapping(value = {Url.JRNL_DAY_DTL_AJAX})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -149,7 +146,6 @@ public class JrnlDayRestController
      * @param postNo 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      * @see TagProcEventListener
      */
     @PostMapping(value = {Url.JRNL_DAY_DEL_AJAX})

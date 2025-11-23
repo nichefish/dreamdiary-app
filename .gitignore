@@ -3,6 +3,7 @@
 /.idea/
 /build/
 /node_modules/
+/*.log
 # 테스트 리소스 제외
 /src/test/resources/*
 # Metronic 제외

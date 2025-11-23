@@ -53,7 +53,6 @@ public class UserMyRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @PostMapping(Url.USER_MY_UPLOAD_PROFL_IMG_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -78,7 +77,6 @@ public class UserMyRestController
      * 
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @PostMapping(Url.USER_MY_REMOVE_PROFL_IMG_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -103,7 +101,6 @@ public class UserMyRestController
      * @param currPw 현재 비밀번호
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @PostMapping(Url.USER_MY_PW_CF_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -130,7 +127,6 @@ public class UserMyRestController
      * @param pwChgParam 비밀번호 변경 파라미터
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @PostMapping(Url.USER_MY_PW_CHG_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})

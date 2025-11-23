@@ -4,9 +4,11 @@ import io.nicheblog.dreamdiary.extension.clsf.tag.entity.ContentTagEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
 import lombok.*;
 import org.hibernate.annotations.*;
+import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -49,4 +51,32 @@ public class TagEmbed
     /** 컨텐츠 태그 문자열 (','로 구분) */
     @Transient
     private String tagListStr;
+
+    /** 정렬된 태그 목록 캐시 */
+    @Transient
+    private List<ContentTagEntity> sortedListCache;
+
+    /**
+     * getter override (정렬된 태그 목록 캐시 및 반환)
+     */
+    public List<ContentTagEntity> getList() {
+        if (CollectionUtils.isEmpty(list)) return list;
+        if (!CollectionUtils.isEmpty(sortedListCache)) return sortedListCache;
+
+        sortedListCache = list.stream()
+            .sorted(Comparator.comparing(
+                (ContentTagEntity ct) -> ct.getTag().getTagNm(),
+                Comparator.nullsLast(String::compareTo)
+            ))
+            .toList();
+        return sortedListCache;
+    }
+
+    /**
+     * setter override (정렬된 태그 목록 캐시 초기화)
+     */
+    public void setList(final List<ContentTagEntity> list) {
+        this.list = list;
+        this.sortedListCache = null;
+    }
 }

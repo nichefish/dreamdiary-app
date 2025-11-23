@@ -4,7 +4,7 @@
  -->
 
 <#--begin::Navbar-->
-<div class="app-navbar flex-shrink-0">
+<div class="app-navbar d-none d-md-flex flex-shrink-0">
     <#--include::Notion-->
     <#include "/layout/header/navbar/_navbar_btn_notion.ftlh">
 

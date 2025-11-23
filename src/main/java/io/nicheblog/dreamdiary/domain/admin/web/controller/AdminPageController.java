@@ -51,7 +51,6 @@ public class AdminPageController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @param model 뷰에 전달할 데이터를 저장하는 ModelMap 객체
      * @return {@link String} -- 뷰 이름을 나타내는 문자열
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @GetMapping(Url.ADMIN_PAGE)
     @Secured(Constant.ROLE_MNGR)

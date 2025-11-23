@@ -162,7 +162,7 @@ cF.ui = (function(): Module {
          * @returns {boolean} - 체크박스가 정의되지 않은 경우 false를 반환.
          */
         chckboxLabel: function(attrId: string, ynCn: string, ynColor: string, yFunc: Function, nFunc: Function): void {
-            const checkboxElmt: HTMLInputElement = document.getElementById(attrId) as HTMLInputElement;
+            const checkboxElmt = document.getElementById(attrId) as HTMLInputElement;
             if (!checkboxElmt) {
                 console.log("체크박스가 정의되지 않았습니다.");
                 return;

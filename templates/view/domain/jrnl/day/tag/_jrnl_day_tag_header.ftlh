@@ -5,14 +5,14 @@
 <#--begin::Tags-->
 <div class="mb-6 ms-4">
     <div class="d-flex align-items-center mb-4 ms-4">
-        <div class="col-1 ms-4 me-6 text-center fs-6">
+        <div class="col-1 d-none d-md-flex ms-4 me-6 text-center fs-6">
             <b><@spring.message 'day.tag'/> : </b>
         </div>
         <div class="col" id="jrnl_day_tag_list_div">
             <#--handlebars template goes in here-->
         </div>
-        <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-        <div class="col-1 ms-4 me-20 text-center fs-6 w-auto gap-3">
+        <div class="col-1 d-none d-md-flex ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+        <div class="col-1 d-none d-md-flex ms-4 me-20 text-center fs-6 w-auto gap-3">
             <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
                     onclick="dF.Tag.hideSingleTag('#jrnl_day_tag_list_div');"
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="1개짜리 태그를 숨기고 보입니다.">
@@ -27,14 +27,14 @@
     </div>
     <div class="separator mx-20 mb-4"></div>
     <div class="d-flex align-items-center mb-4 ms-4">
-        <div class="col-1 ms-4 me-6 text-center fs-6">
+        <div class="col-1 d-none d-md-flex ms-4 me-6 text-center fs-6">
             <b><@spring.message 'diary.tag'/> : </b>
         </div>
         <div class="col" id="jrnl_diary_tag_list_div">
             <#--handlebars template goes in here-->
         </div>
-        <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-        <div class="col-1 ms-4 me-20 text-center fs-6 w-auto gap-3">
+        <div class="col-1 d-none d-md-flex ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+        <div class="col-1 d-none d-md-flex ms-4 me-20 text-center fs-6 w-auto gap-3">
             <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
                     onclick="dF.Tag.hideSingleTag('#jrnl_diary_tag_list_div');"
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="1개짜리 태그를 숨기고 보입니다.">
@@ -49,14 +49,14 @@
     </div>
     <div class="separator mx-20 mb-4"></div>
     <div class="d-flex align-items-center mb-6 ms-4">
-        <div class="col-1 ms-4 me-6 text-center fs-6">
+        <div class="col-1 d-none d-md-flex ms-4 me-6 text-center fs-6">
             <b><@spring.message 'dream.tag'/> : </b>
         </div>
         <div class="col" id="jrnl_dream_tag_list_div">
             <#--handlebars template goes in here-->
         </div>
-        <div class="col-1 ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-        <div class="col-1 ms-4 me-20 text-center fs-6 w-auto gap-3">
+        <div class="col-1 d-none d-md-flex ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+        <div class="col-1 d-none d-md-flex ms-4 me-20 text-center fs-6 w-auto gap-3">
             <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
                     onclick="dF.Tag.hideSingleTag('#jrnl_dream_tag_list_div');"
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="1개짜리 태그를 숨기고 보입니다.">

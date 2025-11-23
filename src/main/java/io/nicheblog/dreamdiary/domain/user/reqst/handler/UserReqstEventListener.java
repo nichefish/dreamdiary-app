@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.domain.user.reqst.handler;
 import io.nicheblog.dreamdiary.domain.user.reqst.event.UserReqstEvent;
 import io.nicheblog.dreamdiary.global.config.AsyncConfig;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @RequiredArgsConstructor
+@Log4j2
 public class UserReqstEventListener {
 
     private final UserReqstWorker userReqstWorker;
@@ -29,12 +31,13 @@ public class UserReqstEventListener {
      * 삭제된 엔티티 재조회와 관련될 수 있으므로 별도 트랜잭션으로 처리.
      * 
      * @param event 처리할 이벤트 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @EventListener
     @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void handleUserReqstEvent(final UserReqstEvent event) throws Exception {
+    public void handleUserReqstEvent(final UserReqstEvent event) {
+        log.debug("UserReqstEventListener.handleUserReqstEvent() - event : {}", event.toString());
+
         // 큐에 전달하기 전에 request 관련 속성들을 미리 바인딩해야 한다. (권장)
         userReqstWorker.offer(event);
     }

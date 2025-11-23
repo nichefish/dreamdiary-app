@@ -46,7 +46,6 @@ public class ChatController {
      * @param searchParam 검색 파라미터
      * @param logParam 로그 파라미터
      * @return AjaxResponse를 포함한 ResponseEntity 객체
-     * @throws Exception 예외 발생 시
      */
     @GetMapping("/chat/messages")
     @ResponseBody
@@ -70,7 +69,6 @@ public class ChatController {
      *
      * @param message 클라이언트로부터 받은 메시지
      * @return AjaxResponse 객체를 포함한 결과
-     * @throws Exception 예외 발생 시
      */
     @MessageMapping("/chat/send")
     @SendTo("/topic/chat")

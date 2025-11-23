@@ -110,7 +110,7 @@ cF.tinymce = (function(): Module {
             if (editors.length === 0) return;
 
             editors.forEach(editorElement => {
-                if (typeof tinymce !== 'undefined' && tinymce !== null) {
+                if (tinymce != null) {
                     tinymce.remove(editorElement); // 지정된 선택자를 가진 에디터를 제거
                 }
             });

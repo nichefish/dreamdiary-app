@@ -208,7 +208,6 @@ public class UserEntity
      *
      * @param dto 업데이트할 사용자 프로필 정보가 담긴 Dto
      * @return {@link UserProflEntity} -- 업데이트된 사용자 프로필 엔티티
-     * @throws Exception 업데이트 과정에서 발생할 수 있는 예외
      */
     public UserProflEntity getProflUpdt(UserProflDto dto) throws Exception {
         UserProflMapstruct.INSTANCE.updateFromDto(dto, this.profl);
@@ -220,7 +219,6 @@ public class UserEntity
      *
      * @param dto 업데이트할 사용자 고용 정보가 담긴 Dto
      * @return {@link UserEmplymEntity} -- 업데이트된 사용자 고용 엔티티
-     * @throws Exception 업데이트 과정에서 발생할 수 있는 예외
      */
     public UserEmplymEntity getEmplymUpdt(UserEmplymDto dto) throws Exception {
         UserEmplymMapstruct.INSTANCE.updateFromDto(dto, this.emplym);

@@ -48,7 +48,6 @@ public class SnmpUtils {
      * SNMP 메세지를 발송한다.
      *
      * @return {@link Boolean} -- SNMP 메시지 발송 성공 여부
-     * @throws Exception SNMP 메시지 발송 중 발생할 수 있는 예외
      */
     public static Boolean sendSnmpMessage() throws Exception {
         return sendSnmpMessage(getDefaultParam());
@@ -59,7 +58,6 @@ public class SnmpUtils {
      *
      * @param snmpApiParam : SNMP 전송 정보
      * @return {@link Boolean} -- SNMP 메시지 발송 성공 여부
-     * @throws Exception SNMP 메시지 발송 중 발생할 수 있는 예외
      */
     public static Boolean sendSnmpMessage(final SnmpApiParam snmpApiParam) throws Exception {
         SnmpApiParam snmpSend = (snmpApiParam != null) ? snmpApiParam : getDefaultParam();

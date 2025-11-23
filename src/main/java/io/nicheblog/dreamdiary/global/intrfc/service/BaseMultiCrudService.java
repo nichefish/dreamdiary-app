@@ -31,7 +31,6 @@ public interface BaseMultiCrudService<Dto extends BaseAtchDto & Identifiable<Key
      * @param registDto 등록할 Dto 객체
      * @param request Multipart 요청
      * @return {@link ServiceResponse} -- 처리된 Dto 객체
-     * @throws Exception 파일 업로드 또는 등록 중 예외 발생 시
      */
     @Transactional
     default ServiceResponse regist(final Dto registDto, final MultipartHttpServletRequest request) throws Exception {
@@ -52,7 +51,6 @@ public interface BaseMultiCrudService<Dto extends BaseAtchDto & Identifiable<Key
      * @param modifyDto 수정할 Dto 객체
      * @param request Multipart 요청
      * @return {@link ServiceResponse} -- 처리된 Dto 객체
-     * @throws Exception 파일 업로드 또는 수정 중 예외 발생 시
      */
     @Transactional
     default ServiceResponse modify(final Dto modifyDto, final MultipartHttpServletRequest request) throws Exception {

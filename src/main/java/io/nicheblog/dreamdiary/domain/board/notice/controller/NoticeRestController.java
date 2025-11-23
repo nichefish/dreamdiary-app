@@ -57,8 +57,6 @@ public class NoticeRestController
      * @param searchParam 검색 조건 파라미터
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @GetMapping(Url.NOTICE_POPUP_LIST_AJAX)
     @ResponseBody
@@ -93,7 +91,6 @@ public class NoticeRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      * @see TagProcEventListener ,ManagtrEventListener
      */
     @PostMapping(value = {Url.NOTICE_REG_AJAX, Url.NOTICE_MDF_AJAX})
@@ -123,7 +120,6 @@ public class NoticeRestController
      * @param key 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      * @see ViewerEventListener
      */
     @GetMapping(Url.NOTICE_DTL_AJAX)
@@ -151,7 +147,6 @@ public class NoticeRestController
      * @param postNo 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @throws Exception 처리 중 발생할 수 있는 예외
      * @see TagProcEventListener
      */
     @PostMapping(Url.NOTICE_DEL_AJAX)

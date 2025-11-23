@@ -19,6 +19,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * </pre>
  *
  * @author nichefish
+ * @see LogSysWorker
  */
 @Component
 @RequiredArgsConstructor

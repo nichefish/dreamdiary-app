@@ -13,9 +13,6 @@ dF.JrnlDiary = (function(): dfModule {
         inKeywordSearchMode: false,
         tagify: null,
 
-        savedYy: null,
-        savedMnth: null,
-
         /**
          * initializes module.
          */
@@ -55,11 +52,7 @@ dF.JrnlDiary = (function(): dfModule {
             const keyword: string = (document.querySelector("#jrnl_aside #diaryKeyword") as HTMLInputElement)?.value;
             if (cF.util.isEmpty(keyword)) return;
 
-            // 검색 시 기존 년월 저장
-            dF.JrnlDiary.savedYy = $("#jrnl_aside #yy").val() as string;
-            dF.JrnlDiary.savedMnth = $("#jrnl_aside #mnth").val() as string;
-
-            const url: string =Url.JRNL_DIARY_LIST_AJAX;
+            const url: string = Url.JRNL_DIARY_LIST_AJAX;
             const ajaxData: Record<string, any> = { "diaryKeyword": keyword };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
@@ -97,23 +90,27 @@ dF.JrnlDiary = (function(): dfModule {
          */
         resetKeyword: function(): void {
             $("#jrnl_aside #jrnl_diary_reset_btn").remove();
-            $("#jrnl_aside #yy").val(dF.JrnlDiary.savedYy);
-            $("#jrnl_aside #mnth").val(dF.JrnlDiary.savedMnth);
             dF.JrnlDayAside.mnth();
         },
 
         /**
          * 등록 모달 호출
          * @param {string|number} jrnlDayNo - 저널 일자 번호.
+         * @param {string|number} jrnlEntryNo - 저널 항목 번호.
          * @param {string} stdrdDt - 기준 날짜.
          * @param {string} jrnlDtWeekDay - 기준 날짜 요일.
          */
-        regModal: function(jrnlDayNo: string|number, stdrdDt: string, jrnlDtWeekDay: string): void {
-            if (isNaN(Number(jrnlDayNo))) return;
+        regModal: function(jrnlDayNo: string|number, jrnlEntryNo: string|number, stdrdDt: string, jrnlDtWeekDay: string): void {
+            if (isNaN(Number(jrnlEntryNo))) return;
 
-            const obj: Record<string, any> = { jrnlDayNo: jrnlDayNo, stdrdDt: stdrdDt, jrnlDtWeekDay: jrnlDtWeekDay };
-            /* initialize form. */
-            dF.JrnlDiary.initForm(obj);
+            const url: string = Url.JRNL_DAY_DTL_AJAX;
+            cF.ajax.get(url, { "postNo": jrnlDayNo }, function(res: AjaxResponse): void {
+                if (!res.rslt) return;
+                const entryList = res.rsltObj.entryList;
+                const obj: Record<string, any> = { jrnlDayNo: jrnlDayNo, jrnlEntryNo: jrnlEntryNo, stdrdDt: stdrdDt, jrnlDtWeekDay: jrnlDtWeekDay, entryList: entryList };
+                /* initialize form. */
+                dF.JrnlDiary.initForm(obj);
+            });
         },
 
         /**
@@ -128,7 +125,7 @@ dF.JrnlDiary = (function(): dfModule {
          * 등록 (Ajax)
          */
         regAjax: function(): void {
-            const postNoElmt: HTMLInputElement = document.querySelector("#jrnlDiaryRegForm [name='postNo']") as HTMLInputElement;
+            const postNoElmt: HTMLInputElement = document.querySelector("#jrnlDiaryRegForm [name='postNo']");
             const isReg: boolean = postNoElmt?.value === "";
             Swal.fire({
                 text: Message.get(isReg ? "view.cnfm.reg" : "view.cnfm.mdf"),
@@ -143,7 +140,7 @@ dF.JrnlDiary = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            const isCalendar: boolean = Page?.calendar !== undefined;
+                            const isCalendar: boolean = Page?.calendar != null;
                             if (isCalendar) {
                                 Page.refreshEventList();
                                 dF.JrnlDiaryTag.listAjax();     // 태그 refresh
@@ -223,11 +220,17 @@ dF.JrnlDiary = (function(): dfModule {
                     return;
                 }
                 const { rsltObj } = res;
-                /* initialize form. */
-                dF.JrnlDiary.initForm(rsltObj);
+                const url: string = Url.JRNL_DAY_DTL_AJAX;
+                cF.ajax.get(url, { "postNo": rsltObj.jrnlDayNo }, function(res: AjaxResponse): void {
+                    if (!res.rslt) return;
+                    const entryList = res.rsltObj.entryList;
+                    const obj: Record<string, any> = { ...rsltObj, entryList: entryList };
+                    /* initialize form. */
+                    dF.JrnlDiary.initForm(obj);
 
-                /* modal history push */
-                ModalHistory.push(self, func, args);
+                    /* modal history push */
+                    ModalHistory.push(self, func, args);
+                });
             });
         },
 
@@ -251,7 +254,7 @@ dF.JrnlDiary = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            const isCalendar: boolean = Page?.calendar !== undefined;
+                            const isCalendar: boolean = Page?.calendar != null;
                             if (isCalendar) {
                                 Page.refreshEventList();
                                 dF.JrnlDiaryTag.listAjax();     // 태그 refresh
@@ -278,17 +281,17 @@ dF.JrnlDiary = (function(): dfModule {
         toggle: function(postNo: string|number): void {
             if (isNaN(Number(postNo))) return;
 
-            const id = String(postNo);
-            const item = document.querySelector(`.jrnl-diary-item[data-id='${id}']`);
+            const id: string = String(postNo);
+            const item: HTMLElement = document.querySelector(`.jrnl-diary-cn[data-id='${id}']`);
             if (!item) return console.log("item not found.");
 
-            const content = item.querySelector(".jrnl-diary-cn .cn") as HTMLElement;
+            const content: HTMLElement = item.querySelector(".jrnl-diary-cn .cn");
             if (!content) return console.log("content not found.");
 
-            const icon = item.querySelector(`#toggle-icon-${id}`) as HTMLElement;
+            const icon: HTMLElement = item.querySelector(`#toggle-icon-${id}`);
             const collapsedIds = new Set(JSON.parse(localStorage.getItem(dF.JrnlDiary.STORAGE_KEY) || "[]"));
 
-            const isCollapsed = content.classList.contains("collapsed");
+            const isCollapsed: boolean = content.classList.contains("collapsed");
             if (isCollapsed) {
                 content.classList.remove("collapsed");
                 icon?.classList.replace("bi-chevron-down", "bi-chevron-up");
@@ -307,11 +310,10 @@ dF.JrnlDiary = (function(): dfModule {
          */
         initCollapseState: function(): void {
             const collapsedIds = new Set(JSON.parse(localStorage.getItem(dF.JrnlDiary.STORAGE_KEY) || "[]"));
-            document.querySelectorAll(".jrnl-diary-item .cn").forEach(item => {
-                const el = item as HTMLElement;
-                const id = el.dataset.id;
-                const content = el.querySelector(".jrnl-diary-cn");
-                const icon = el.querySelector(`#toggle-icon-${id}`);
+            document.querySelectorAll(".jrnl-diary-item .jrnl-diary-cn").forEach((item: HTMLElement): void => {
+                const id: string = item.dataset.id;
+                const content: HTMLElement = item.querySelector(".cn");
+                const icon: HTMLElement = item.querySelector(`#toggle-icon-${id}`);
                 if (id && collapsedIds.has(id)) {
                     content?.classList.add("collapsed");
                     icon?.classList.replace("bi-chevron-up", "bi-chevron-down");

@@ -30,8 +30,8 @@ const Page: Page = (function(): Page {
             cF.util.enterKey("#dreamKeyword", dF.JrnlDream.keywordListAjax);
 
             // 초기 일자 설정
-            const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
-            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
+            const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy");
+            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth");
             const selectedMonth: number = Number(monthElement.value);
             const selectedYear: number = Number(yearElement.value);
             Page.calDt = new Date(selectedYear, selectedMonth - 1, 1);
@@ -130,7 +130,7 @@ const Page: Page = (function(): Page {
         refreshEventList: function(calDt: Date): void {
             const url: string = Url.JRNL_DAY_CAL_LIST_AJAX;
             // 날짜 세팅
-            if (calDt !== undefined) Page.calDt = calDt;
+            if (calDt != null) Page.calDt = calDt;
             console.log("calDt: ", Page.calDt);
             const yy: number  = Page.calDt.getFullYear();
             const mnth: number  = Page.calDt.getMonth() + 1;
@@ -149,8 +149,8 @@ const Page: Page = (function(): Page {
         /** 팝업 쿠키 존재여부 체크 */
         getChkedCookie: function(key: string): string {
             const cookie = $.cookie(key);
-            if (key === "schdul_chk_myPaprChk") return (cookie === undefined) ? "N" : cookie;
-            return (cookie === undefined) ? "Y" : cookie;
+            if (key === "schdul_chk_myPaprChk") return (cookie == null) ? "N" : cookie;
+            return (cookie == null) ? "Y" : cookie;
         },
 
         /** 체크박스 쿠키 설정 */

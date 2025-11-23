@@ -79,6 +79,13 @@
 <#include "/view/domain/jrnl/day/_partial/_jrnl_day_mdf_btn_partial.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/day/jrnl_day_module.js?${releaseDate!}"></script>
 
+<#--include::jrnl_entry_module-->
+<#include "/view/domain/jrnl/entry/_modal/_jrnl_entry_reg_modal.ftlh">
+<#include "/view/domain/jrnl/entry/_jrnl_entry_list_template.hbs">
+<#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_reg_btn_partial.hbs">
+<#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_mdf_btn_partial.hbs">
+<script type="text/javascript" src="/js/view/domain/jrnl/entry/jrnl_entry_module.js?${releaseDate!}"></script>
+
 <#--include::jrnl_diary_module-->
 <#include "/view/domain/jrnl/diary/_modal/_jrnl_diary_reg_modal.ftlh">
 <#include "/view/domain/jrnl/diary/_jrnl_diary_list_template.hbs">

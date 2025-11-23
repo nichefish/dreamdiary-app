@@ -20,7 +20,7 @@ cF.cookie = (function(): Module {
         set: function(name: string, value: string, options: any): void {
             let cookieStr: string = encodeURIComponent(name) + '=' + encodeURIComponent(value) + ';path=/'; // 쿠키 이름과 값을 인코딩하여 설정
             if (options) {
-                if (options.maxAge !== undefined) {
+                if (options.maxAge != null) {
                     cookieStr = cookieStr + ";max-age=" + options.maxAge;
                 }
                 if (options.expires) {

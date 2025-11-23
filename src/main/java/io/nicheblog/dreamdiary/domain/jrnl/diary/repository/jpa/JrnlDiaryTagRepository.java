@@ -36,7 +36,8 @@ public interface JrnlDiaryTagRepository
     @Query("SELECT new io.nicheblog.dreamdiary.extension.clsf.tag.model.ContentTagCntDto(ct.refTagNo, COUNT(ct.contentTagNo)) " +
             "FROM JrnlDiaryContentTagEntity ct " +
             "INNER JOIN FETCH JrnlDiaryEntity diary ON ct.refPostNo = diary.postNo " +
-            "INNER JOIN FETCH JrnlDayEntity day ON diary.jrnlDayNo = day.postNo " +
+            "INNER JOIN FETCH JrnlEntryEntity entry ON diary.jrnlEntryNo = entry.postNo " +
+            "INNER JOIN FETCH JrnlDayEntity day ON entry.jrnlDayNo = day.postNo " +
             "WHERE ct.regstrId = :#{#param.regstrId} " +
             " AND (:#{#param.yy} IS NULL OR day.yy = :#{#param.yy} OR :#{#param.yy} = 9999) " +
             " AND (:#{#param.mnth} IS NULL OR day.mnth = :#{#param.mnth} OR :#{#param.mnth} = 99)" +

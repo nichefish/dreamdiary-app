@@ -5,7 +5,6 @@
 
 <script type="text/x-handlebars-template" id="jrnl_diary_reg_modal_header_template">
     <input type="hidden" name="postNo" value="{{postNo}}">
-    <input type="hidden" name="jrnlDayNo" value="{{jrnlDayNo}}">
 
     <#--begin::Row-->
     <div class="row d-flex mb-8">
@@ -29,6 +28,13 @@
                 <span class="text-gray-700 fs-6 fw-bolder">제목</span>
                 <span class="text-gray-500 fs-9">(최대 50자)</span>
             </label>
+        </div>
+        <div class="col-lg-2">
+            <select name="jrnlEntryNo" id="jrnlEntryNo" class="form-select form-select-solid">
+                {{#each entryList}}
+                    <option value="{{postNo}}" {{selectedIf (equals postNo ../jrnlEntryNo)}}>{{idx}} - {{title}}</option>
+                {{/each}}
+            </select>
         </div>
         <div class="col-lg-2">
             <select name="ctgrCd" id="ctgrCd" class="form-select form-select-solid">

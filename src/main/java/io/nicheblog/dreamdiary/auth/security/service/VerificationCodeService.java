@@ -1,5 +1,11 @@
 package io.nicheblog.dreamdiary.auth.security.service;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeUnit;
+
 /**
  * VerificationCodeService
  * <pre>
@@ -8,12 +14,26 @@ package io.nicheblog.dreamdiary.auth.security.service;
  *
  * @author nichefish
  */
-public interface VerificationCodeService {
-    void setVerificationCode(final String email, final String code);
+@Service("verificationCodeService")
+@RequiredArgsConstructor
+public class VerificationCodeService {
 
-    String getVerificationCode(final String email);
+    private final StringRedisTemplate redisTemplate;
+    private static final long EXPIRATION_TIME = 10 * 60; // 10분 만료
 
-    void deleteVerificationCode(final String email);
+    public void setVerificationCode(final String email, final String code) {
+        redisTemplate.opsForValue().set(getRedisKey(email), code, EXPIRATION_TIME, TimeUnit.SECONDS);
+    }
 
-    String getRedisKey(final String email);
+    public String getVerificationCode(final String email) {
+        return redisTemplate.opsForValue().get(getRedisKey(email));
+    }
+
+    public void deleteVerificationCode(final String email) {
+        redisTemplate.delete(getRedisKey(email));
+    }
+
+    public String getRedisKey(final String email) {
+        return "email_verification:" + email;
+    }
 }

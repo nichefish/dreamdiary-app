@@ -151,7 +151,6 @@ public class DataSourceConfig
      * @param dataSource 주 데이터 소스 (dataSource)
      * @param applicationContext 애플리케이션 컨텍스트 (ApplicationContext), MyBatis 매퍼 파일의 위치를 가져오기 위해 사용
      * @return {@link SqlSessionFactory} -- SqlSessionFactory 객체
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     @Bean(name = "sqlSessionFactory")
     @Primary

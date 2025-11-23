@@ -54,7 +54,6 @@ public class AuthenticationHelper {
      * @param authentication 인증 정보를 담고 있는 {@link Authentication} 객체
      * @param authInfo 인증된 사용자 정보
      * @return {@link Boolean} -- 인증 체크 성공 여부
-     * @throws Exception 인증 과정 중 발생할 수 있는 예외
      */
     public Boolean validateAuth(final Authentication authentication, final AuthInfo authInfo) throws Exception {
 
@@ -79,7 +78,6 @@ public class AuthenticationHelper {
      *
      * @param authInfo 인증된 사용자 정보
      * @return {@link Boolean} -- 인증 체크 성공 여부
-     * @throws Exception 인증 과정 중 발생할 수 있는 예외
      */
     public Boolean validateAuth(final AuthInfo authInfo) throws Exception {
         if (authInfo == null) throw new UsernameNotFoundException(MessageUtils.getExceptionMsg("UsernameNotFoundException"));
@@ -167,7 +165,6 @@ public class AuthenticationHelper {
      *
      * @param authInfo 사용자 인증 정보 (AuthInfo)
      * @return {@link Boolean} -- 비밀번호가 만료되지 않은 경우 true
-     * @throws Exception 처리 중 발생할 수 있는 예외
      */
     public Boolean isPwExpryValid(final AuthInfo authInfo) throws Exception {
         final LgnPolicyEntity lgnPolicy = lgnPolicyService.getDtlEntity();
