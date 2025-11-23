@@ -36,6 +36,9 @@ dF.JrnlDayAside = (function(): dfModule {
 
             dF.JrnlDayAside.setYyMnth(todayYy, todayMnth);
 
+            $("#jrnl_aside #jrnl_diary_reset_btn").remove();
+            $("#jrnl_aside #jrnl_dream_reset_btn").remove();
+
             dF.JrnlDayAside.mnth();
             // 오늘이 제일 위에 오게 하기 위해 내림차순 정렬로 변경
             dF.JrnlDayAside.sort("DESC");
@@ -120,6 +123,14 @@ dF.JrnlDayAside = (function(): dfModule {
             if (cF.util.isEmpty(yy)) return;
             const mnth: string = localStorage.getItem("jrnl_mnth") ?? "99";
             if (cF.util.isEmpty(mnth)) return;
+
+            const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy");
+            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth");
+            yearElement.value = yy;
+            monthElement.value = mnth;
+
+            $("#jrnl_aside #jrnl_diary_reset_btn").remove();
+            $("#jrnl_aside #jrnl_dream_reset_btn").remove();
 
             // 목록 조회
             $("#jrnl_aside #dreamKeyword").val("");

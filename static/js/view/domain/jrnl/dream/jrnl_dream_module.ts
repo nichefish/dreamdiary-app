@@ -96,7 +96,7 @@ dF.JrnlDream = (function(): dfModule {
                 cF.handlebars.template(res.rsltList, "jrnl_dream_list");
                 dF.JrnlDream.inKeywordSearchMode = true;
                 // 버튼 추가
-                $("#jrnl_aside #jrnl_diary_reset_btn").remove();
+                $("#jrnl_aside #jrnl_dream_reset_btn").remove();
                 const resetBtn = $(`<button type="button" id="jrnl_dream_reset_btn" class="btn btn-sm btn-outline btn-light-danger px-4" 
                                           onclick="dF.JrnlDream.resetKeyword();" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                                           aria-label="꿈 키워드 검색을 리셋합니다." 
