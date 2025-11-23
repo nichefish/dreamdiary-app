@@ -167,7 +167,10 @@ public class EhCacheUtils {
      */
     public static void evictCache(final String cacheName, final Object cacheKey) {
         final Cache cache = cacheManager.getCache(cacheName);
-        if (cache == null) return;
+        if (cache == null || cacheKey == null) {
+            log.debug("cache name {} does not exists.", cacheName);
+            return;
+        }
 
         cache.evict(cacheKey);
         log.debug("cache name {} (key: {}) evicted.", cacheName, cacheKey);
@@ -206,11 +209,18 @@ public class EhCacheUtils {
 
     /**
      * 캐시 이름으로 해당 캐시 evict
+     *
+     * @param cacheParam CacheParam
      */
     public static void evictCacheAll(final CacheParam cacheParam) {
         evictCacheAll(cacheParam.getCacheName());
     }
 
+    /**
+     * 캐시 이름으로 해당 캐시 evict
+     *
+     * @param cacheName 캐시의 이름
+     */
     public static void evictCacheAll(final String cacheName) {
         final Cache cache = cacheManager.getCache(cacheName);
         if (cache == null) return;
@@ -221,6 +231,8 @@ public class EhCacheUtils {
 
     /**
      * 캐시 이름으로 해당 캐시 evict
+     *
+     * @param cacheName String
      */
     public static void evictMyCacheAll(final String cacheName) {
         // TODO:

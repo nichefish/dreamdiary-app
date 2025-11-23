@@ -35,3 +35,4 @@ CREATE TABLE IF NOT EXISTS jrnl_entry (
 ) COMMENT = '저널 항목';
 
 ALTER TABLE jrnl_diary ADD COLUMN jrnl_entry_no BIGINT NULL COMMENT '저널 항목 번호';
+ALTER TABLE jrnl_diary DROP COLUMN jrnl_day_no;

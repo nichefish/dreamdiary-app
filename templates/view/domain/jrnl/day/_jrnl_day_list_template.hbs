@@ -169,7 +169,7 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
+                            <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-id="{{postNo}}">
                                 {{> jrnl_dream_cn_partial this}}
                             </div>
                             <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
@@ -193,7 +193,7 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="col py-3 jrnl-dream-cn bg-secondary">
+                            <div class="col py-3 jrnl-dream-cn bg-secondary" data-id="{{postNo}}">
                                 {{> jrnl_dream_cn_partial this elseDreamYn="Y"}}
                             </div>
                             <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">

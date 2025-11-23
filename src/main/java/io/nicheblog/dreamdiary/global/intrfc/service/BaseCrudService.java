@@ -125,7 +125,7 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
     }
 
     /**
-     * default: 수정 전처리 (dto level)
+     * default: 수정 전처리 (dto)
      *
      * @param modifyDto 수정할 Dto 객체
      */
@@ -140,6 +140,16 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      */
     default void preModify(final Entity modifyEntity) {
         // 수정 전 상태 저장 (기존 데이터 처리 관련):: 기본 공백, 필요시 각 함수에서 Override
+    }
+
+    /**
+     * default: 수정 전처리 (dto, entity)
+     *
+     * @param modifyDto 수정할 Dto 객체
+     * @param modifyEntity 수정 중간처리를 할 엔티티 객체
+     */
+    default void preModify(final Dto modifyDto, final Entity modifyEntity) throws Exception {
+        // 수정 전처리:: 기본 공백, 필요시 각 함수에서 Override
     }
 
     /**
@@ -161,14 +171,15 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
     default ServiceResponse modify(final Dto modifyDto) throws Exception {
         final ServiceResponse response = new ServiceResponse();
 
-        // optional: 수정 전처리 (dto)
-        this.preModify(modifyDto);
-
         // Entity 레벨 조회
         final Entity modifyEntity = this.getDtlEntity(modifyDto);
 
-        // optional: 수정 전처리 (entity, 기존 데이터 처리 관련)
+        // optional: 수정 전처리 (dto)
+        this.preModify(modifyDto);
+        // optional: 수정 전처리 (entity)
         this.preModify(modifyEntity);
+        // optional: 수정 전처리 (dto, entity)
+        this.preModify(modifyDto, modifyEntity);
 
         // Entity 레벨 조회
         final Mapstruct mapstruct = this.getMapstruct();

@@ -68,12 +68,15 @@ public class FreemarkerInterceptor
 
         // 컨트롤러가 아닌 정적 리소스 요청의 경우 처리하지 않음
         if (!(handler instanceof HandlerMethod)) return;
-        /* mav 정보 없을시 처리하지 않음 */
+        // mav 정보 없을시 처리하지 않음
         if (mav == null) return;
+        // viewName 없을시 + redirect시 처리하지 않음
+        final String viewName = mav.getViewName();
+        if (viewName == null) return;
 
         // 모든 페이지에 activeProfile, releaseDate, urlMap, messageMap 추가
         // @see "/templates/layout/head.ftlh"
-        mav.addObject("activeProfile", activeProfile.getActive());
+        mav.addObject("profile", activeProfile.getActive());
         mav.addObject("releaseDate", releaseInfo.getReleaseDateStr());
         mav.addObject("urlMap", Url.getUrlMap());
         mav.addObject("messageMap", MessageUtils.getMessageMap());

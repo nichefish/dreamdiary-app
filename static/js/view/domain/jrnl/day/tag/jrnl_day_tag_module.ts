@@ -110,6 +110,10 @@ dF.JrnlDayTag = (function(): dfModule {
 
         expand: function(obj: HTMLElement): void {
             $(obj).prev(".cn").toggleClass("expanded");
+        },
+
+        tagCtgrSyncAjax: function(): void {
+
         }
     }
 })();
