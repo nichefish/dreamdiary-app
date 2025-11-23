@@ -272,7 +272,7 @@ public class JrnlDayService
     private void setHldyInfo(final List<JrnlDayDto> jrnlDayList, final Map<String, List<String>> hldyMap) throws Exception {
         if (CollectionUtils.isEmpty(jrnlDayList) || hldyMap == null) return;
 
-        for (JrnlDayDto jrnlDay : jrnlDayList) {
+        for (final JrnlDayDto jrnlDay : jrnlDayList) {
             setHldyInfo(jrnlDay, hldyMap);
         }
     }

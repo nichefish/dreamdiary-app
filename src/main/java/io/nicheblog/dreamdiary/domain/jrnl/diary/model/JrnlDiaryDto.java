@@ -55,10 +55,17 @@ public class JrnlDiaryDto
     private String stdrdDt;
     /** 저널 일자 요일 */
     private String jrnlDtWeekDay;
+
     /** 저널 기준일자 */
     private Integer yy;
     /** 저널 기준일자 */
     private Integer mnth;
+
+    /** 공휴일 여부 */
+    private Boolean isHldy;
+    /** 공휴일 이름 */
+    private String hldyNm;
+
     /** 순번 */
     private Integer idx;
 

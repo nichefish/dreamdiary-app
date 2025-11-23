@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.domain.jrnl.diary.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.mapstruct.JrnlDiaryMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
@@ -11,12 +12,14 @@ import io.nicheblog.dreamdiary.domain.jrnl.diary.repository.mybatis.JrnlDiaryMap
 import io.nicheblog.dreamdiary.domain.jrnl.diary.spec.JrnlDiarySpec;
 import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
+import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -27,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * JrnlDiaryService
@@ -91,8 +95,16 @@ public class JrnlDiaryService
      * @return {@link List} -- 검색 결과 목록
      */
     @Cacheable(value="myJrnlDiaryTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
+        @SuppressWarnings("unchecked")
     public List<JrnlDiaryDto> jrnlDiaryTagDtl(final JrnlDiarySearchParam searchParam) throws Exception {
-        return this.getSelf().getListDto(searchParam);
+        List<JrnlDiaryDto> jrnlDiaryList = this.getSelf().getListDto(searchParam);
+        // 공휴일 정보 세팅
+        final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
+        for (JrnlDiaryDto jrnlDiary : jrnlDiaryList) {
+            setHldyInfo(jrnlDiary, hldyMap);
+        }
+
+        return jrnlDiaryList;
     }
 
     /**
@@ -169,5 +181,24 @@ public class JrnlDiaryService
     @Transactional(readOnly = true)
     public JrnlDiaryDto getDeletedDtlDto(final Integer key) throws Exception {
         return jrnlDiaryMapper.getDeletedByPostNo(key);
+    }
+
+    /**
+     * 주어진 {@link JrnlDayDto} 객체에 공휴일 및 주말 여부 정보를 설정한다.
+     *
+     * @param jrnlDiary 공휴일 및 주말 정보를 설정할 대상 DTO
+     * @param hldyMap 날짜(String: yyyy-MM-dd) → 공휴일 이름 목록 매핑 정보
+     */
+    private void setHldyInfo(final JrnlDiaryDto jrnlDiary, final Map<String, List<String>> hldyMap) throws Exception {
+        if (jrnlDiary == null || hldyMap == null) return;
+
+        final String stdrdDt = jrnlDiary.getStdrdDt();
+        final boolean isHldy = hldyMap.containsKey(stdrdDt);
+        final boolean isWeekend = DateUtils.isWeekend(stdrdDt);
+        jrnlDiary.setIsHldy(isHldy || isWeekend);
+        if (isHldy) {
+            final String concatHldyNm = String.join(", ", hldyMap.get(stdrdDt));
+            jrnlDiary.setHldyNm(concatHldyNm);
+        }
     }
 }
