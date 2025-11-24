@@ -23,7 +23,7 @@
         </div>
     {{else}}
         <div class="jrnl-day d-flex-center">
-            저널 일기 검색 결과가 없습니다.
+            <@spring.message 'jrnl.diary'/> <@spring.message 'view.list.empty'/>
         </div>
     {{/each}}
 </script>
