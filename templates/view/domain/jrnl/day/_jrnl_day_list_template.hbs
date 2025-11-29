@@ -74,9 +74,15 @@
                                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'jrnl.entry'/> <@spring.message 'bs.tooltip.modal.mdf'/>">
                                 <i class="bi bi-trash p-0"></i>
                             </button>
+                            <!-- 토글 버튼 추가 -->
+                            <button type="button"
+                                    class="btn btn-sm btn-secondary ms-2 toggle-entry-btn"
+                                    onclick="dF.JrnlEntry.toggle({{postNo}})">
+                                <i class="bi bi-arrows-collapse pe-0" id="entry-toggle-icon-{{postNo}}"></i>
+                            </button>
                         </div>
                     </label>
-                    <div class="jrnl-item">
+                    <div class="jrnl-entry jrnl-item" data-id={{postNo}}>
                         {{#each jrnlDiaryList}}
                             <div class="jrnl-diary-item">
                                 <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
@@ -89,9 +95,9 @@
                                         </span>
                                         <!-- 토글 버튼 추가 -->
                                         <button type="button"
-                                                class="btn btn-sm btn-light-secondary ms-2 toggle-diary-btn"
+                                                class="btn btn-sm btn-secondary ms-2 toggle-diary-btn"
                                                 onclick="dF.JrnlDiary.toggle({{postNo}})">
-                                            <i class="bi bi-chevron-up pe-0" id="toggle-icon-{{postNo}}"></i>
+                                            <i class="bi bi-chevron-up pe-0" id="diary-toggle-icon-{{postNo}}"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -133,7 +139,7 @@
                                     <button type="button"
                                             class="btn btn-sm btn-light-secondary ms-2 toggle-diary-btn"
                                             onclick="dF.JrnlDiary.toggle({{postNo}})">
-                                        <i class="bi bi-chevron-up pe-0" id="toggle-icon-{{postNo}}"></i>
+                                        <i class="bi bi-chevron-up pe-0" id="diary-toggle-icon-{{postNo}}"></i>
                                     </button>
                                 </div>
                             </div>
@@ -165,7 +171,7 @@
                                     <button type="button"
                                             class="btn btn-sm btn-light-secondary ms-2 toggle-dream-btn"
                                             onclick="dF.JrnlDream.toggle({{postNo}})">
-                                        <i class="bi bi-chevron-up pe-0" id="toggle-icon-{{postNo}}"></i>
+                                        <i class="bi bi-chevron-up pe-0" id="dream-toggle-icon-{{postNo}}"></i>
                                     </button>
                                 </div>
                             </div>
@@ -189,7 +195,7 @@
                                     <button type="button"
                                             class="btn btn-sm btn-light-secondary ms-2 toggle-dream-btn"
                                             onclick="dF.JrnlDream.toggle({{postNo}})">
-                                        <i class="bi bi-chevron-up pe-0" id="toggle-icon-{{postNo}}"></i>
+                                        <i class="bi bi-chevron-up pe-0" id="dream-toggle-icon-{{postNo}}"></i>
                                     </button>
                                 </div>
                             </div>

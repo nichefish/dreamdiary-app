@@ -300,7 +300,8 @@ dF.JrnlDream = (function(): dfModule {
             const content: HTMLElement = item.querySelector(".jrnl-dream-cn .cn");
             if (!content) return console.log("content not found.");
 
-            const icon: HTMLElement = item.querySelector(`#toggle-icon-${id}`);
+            const icon: HTMLElement = document.querySelector(`#dream-toggle-icon-${id}`);
+            if (!icon) console.log("icon not found.");
             const collapsedIds = new Set(JSON.parse(localStorage.getItem(dF.JrnlDream.STORAGE_KEY) || "[]"));
 
             const isCollapsed: boolean = content.classList.contains("collapsed");
@@ -325,7 +326,8 @@ dF.JrnlDream = (function(): dfModule {
             document.querySelectorAll(".jrnl-dream-item .jrnl-dream-cn").forEach((item: HTMLElement): void => {
                 const id: string = item.dataset.id;
                 const content: HTMLElement = item.querySelector(".cn");
-                const icon: HTMLElement = item.querySelector(`#toggle-icon-${id}`);
+                const icon: HTMLElement = document.querySelector(`#dream-toggle-icon-${id}`);
+                if (!icon) console.log("icon not found.");
                 if (id && collapsedIds.has(id)) {
                     content?.classList.add("collapsed");
                     icon?.classList.replace("bi-chevron-up", "bi-chevron-down");

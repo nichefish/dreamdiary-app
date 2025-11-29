@@ -107,6 +107,7 @@ dF.JrnlDay = (function(): dfModule {
 
                 /* 글접기 처리 (localStorage) */
                 dF.JrnlDiary.initCollapseState();
+                dF.JrnlEntry.initCollapseState();
                 dF.JrnlDream.initCollapseState();
             }, "block");
         },
