@@ -61,7 +61,7 @@
                     <i class="bi bi-question-circle"></i>
                 </label>
                 <div class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
-                    <input type="checkbox" name="imprtcYn" id="imprtcYn" class="form-check-input"
+                    <input type="checkbox" name="imprtcYn" id="imprtcYn" class="form-check-input cursor-pointer"
                            value="Y" {{checkedYn imprtcYn}} />
                     <label class="form-check-label fw-bold fs-6 ms-3" for="imprtcYn" id="imprtcYnLabel" {{{checkedYnStyle imprtcYn "color" "red//gray"}}}>
                         {{#ifYn imprtcYn}}중요{{else}}해당없음{{/ifYn}}
@@ -77,7 +77,7 @@
                     <i class="bi bi-question-circle"></i>
                 </label>
                 <div class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
-                    <input type="checkbox" name="nhtmrYn" id="nhtmrYn" class="form-check-input"
+                    <input type="checkbox" name="nhtmrYn" id="nhtmrYn" class="form-check-input cursor-pointer"
                            value="Y" {{checkedYn nhtmrYn}} />
                     <label class="form-check-label fw-bold fs-6 ms-3" for="nhtmrYn" id="nhtmrYnLabel" {{{checkedYnStyle nhtmrYn "color" "red//gray"}}}>
                         {{#ifYn hallucYn}}악몽{{else}}해당없음{{/ifYn}}
@@ -93,7 +93,7 @@
                     <i class="bi bi-question-circle"></i>
                 </label>
                 <div class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
-                    <input type="checkbox" name="hallucYn" id="hallucYn" class="form-check-input"
+                    <input type="checkbox" name="hallucYn" id="hallucYn" class="form-check-input cursor-pointer"
                            value="Y" {{checkedYn hallucYn}} />
                     <label class="form-check-label fw-bold fs-6 ms-3" for="hallucYn" id="hallucYnLabel" {{{checkedYnStyle hallucYn "color" "blue//gray"}}}>
                         {{#ifYn hallucYn}}<@spring.message 'dream.halluc'/>{{else}}해당없음{{/ifYn}}
@@ -109,7 +109,7 @@
                     <i class="bi bi-question-circle"></i>
                 </label>
                 <div class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
-                    <input type="checkbox" name="elseDreamYn" id="elseDreamYn" class="form-check-input"
+                    <input type="checkbox" name="elseDreamYn" id="elseDreamYn" class="form-check-input cursor-pointer"
                            value="Y" {{checkedYn elseDreamYn}} />
                     <label class="form-check-label fw-bold fs-6 ms-3" for="elseDreamYn" id="elseDreamYnLabel" {{{checkedYnStyle elseDreamYn "color" "purple//gray"}}}>
                         {{#ifYn elseDreamYn}}해당{{else}}해당없음{{/ifYn}}

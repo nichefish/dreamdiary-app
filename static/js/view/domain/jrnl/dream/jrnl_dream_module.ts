@@ -72,11 +72,11 @@ dF.JrnlDream = (function(): dfModule {
          * 목록 조회 (Ajax)
          */
         keywordListAjax: function(): void {
-            const keyword: string = $("#jrnl_aside #dreamKeyword").val() as string;
+            const keyword: string = (document.querySelector("#jrnl_aside #dreamKeyword") as HTMLInputElement)?.value;
             if (cF.util.isEmpty(keyword)) return;
 
             const url: string = Url.JRNL_DREAM_LIST_AJAX;
-            const ajaxData = { "dreamKeyword": $("#jrnl_aside #dreamKeyword").val() };
+            const ajaxData = { "dreamKeyword": keyword };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });

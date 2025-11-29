@@ -69,7 +69,7 @@
                 <span class="form-check-label text-secondary me-2">
                     로그인 상태 유지
                 </span>
-                <input type="checkbox" class="form-check-input" id="${REMEMBER_ME_PARAM!}" name="${REMEMBER_ME_PARAM!}">
+                <input type="checkbox" class="form-check-input cursor-pointer" id="${REMEMBER_ME_PARAM!}" name="${REMEMBER_ME_PARAM!}">
             </label>
         </div>
         <div class="d-flex flex-column text-center mb-4 mt-12 gap-2">

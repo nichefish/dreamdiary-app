@@ -28,7 +28,7 @@
                     날짜미상
                 </label>
                 <i class="bi bi-question-circle cursor-pointer ms-1 me-5"></i>
-                <input type="checkbox" name="dtUnknownYn" id="dtUnknownYn" class="form-check-input"
+                <input type="checkbox" name="dtUnknownYn" id="dtUnknownYn" class="form-check-input cursor-pointer"
                        value="Y" {{checkedYn dtUnknownYn}} />
             </div>
         </div>
@@ -86,7 +86,7 @@
         </div>
         <div class="col-lg-2 col-9 d-flex align-items-center">
             <div class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
-                <input type="checkbox" name="diaryResolvedYn" id="diaryResolvedYn" class="form-check-input"
+                <input type="checkbox" name="diaryResolvedYn" id="diaryResolvedYn" class="form-check-input cursor-pointer"
                        value="Y" {{checkedYn diaryResolvedYn}} />
                 <label class="form-check-label fw-bold fs-6 ms-3" for="diaryResolvedYn" id="diaryResolvedYnLabel" {{{checkedYnStyle diaryResolvedYn "color" "red//gray"}}}>
                     {{#ifYn diaryResolvedYn}}완료{{else}}미완료{{/ifYn}}

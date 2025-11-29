@@ -43,7 +43,7 @@
                     <i class="bi bi-question-circle"></i>
                 </label>
                 <div class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
-                    <input type="checkbox" name="deprcYn" id="deprcYn" class="form-check-input"
+                    <input type="checkbox" name="deprcYn" id="deprcYn" class="form-check-input cursor-pointer"
                            value="Y" {{checkedYn deprcYn}} />
                     <label class="form-check-label fw-bold fs-6 ms-3" for="deprcYn" id="deprcYnLabel" {{{checkedYnStyle deprcYn "color" "red//gray"}}}>
                         {{#ifYn deprcYn}}만료{{else}}해당없음{{/ifYn}}

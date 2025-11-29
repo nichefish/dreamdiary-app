@@ -136,7 +136,7 @@
         <div class="col-xl-2" id="apntcYnDiv" style="display:none;">
             <div class="form-check form-switch mt-2 form-check-custom form-check-solid">
                 수습여부 :
-                <input type="checkbox" name="emplym.apntcYn" id="apntcYn" class="form-check-input ms-3"
+                <input type="checkbox" name="emplym.apntcYn" id="apntcYn" class="form-check-input cursor-pointer ms-3"
                        value="Y" <#if (((user.emplym.apntcYn)!"N") == "Y")!false>checked="checked"</#if> />
                 <label class="form-check-label fw-bold ms-3" for="apntcYn" id="apntcYnLabel" style="color:<#if (((user.emplym.apntcYn)!"N") == "Y")!false>blue<#else>gray</#if>;"><#if ((user.emplym.apntcYn)! == "Y")!false>수습<#else>해당없음</#if></label>
             </div>
@@ -174,7 +174,7 @@
                     퇴사여부 :
                     <i class="bi bi-question-circle"></i>
                 </label>
-                <input type="checkbox" name="emplym.retireYn" id="retireYn" class="form-check-input ms-3"
+                <input type="checkbox" name="emplym.retireYn" id="retireYn" class="form-check-input cursor-pointer ms-3"
                        value="Y" <#if (((user.emplym.retireYn)!"N") == "Y")!false>checked="checked"</#if> />
                 <label class="form-check-label fw-bold ms-3" for="retireYn" id="retireYnLabel" style="color:<#if ((user.emplym.retireYn)!"N") == "Y">red<#else>gray</#if>;">
                     <#if ((user.emplym.retireYn)!"N") == "Y">퇴사<#else>해당없음</#if>
