@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.service.strategy.JrnlDayCacheEvic
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.strategy.JrnlDiaryCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.service.strategy.JrnlDreamCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.service.strategy.JrnlEntryCacheEvictor;
+import io.nicheblog.dreamdiary.domain.jrnl.intrpt.service.strategy.JrnlIntrptCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.service.strategy.JrnlSumryCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.todo.service.strategy.JrnlTodoCacheEvictor;
 import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
@@ -36,6 +37,7 @@ public class JrnlCacheEvictWorker {
     private final JrnlEntryCacheEvictor jrnlEntryCacheEvictor;
     private final JrnlDiaryCacheEvictor jrnlDiaryCacheEvictor;
     private final JrnlDreamCacheEvictor jrnlDreamCacheEvictor;
+    private final JrnlIntrptCacheEvictor jrnlIntrptCacheEvictor;
     private final JrnlTodoCacheEvictor jrnlTodoCacheEvictor;
     private final JrnlSumryCacheEvictor jrnlSumryCacheEvictor;
 
@@ -48,6 +50,7 @@ public class JrnlCacheEvictWorker {
         evictorMap.put(ContentType.JRNL_ENTRY, jrnlEntryCacheEvictor);
         evictorMap.put(ContentType.JRNL_DIARY, jrnlDiaryCacheEvictor);
         evictorMap.put(ContentType.JRNL_DREAM, jrnlDreamCacheEvictor);
+        evictorMap.put(ContentType.JRNL_INTRPT, jrnlIntrptCacheEvictor);
         evictorMap.put(ContentType.JRNL_TODO, jrnlTodoCacheEvictor);
         evictorMap.put(ContentType.JRNL_SUMRY, jrnlSumryCacheEvictor);
     }

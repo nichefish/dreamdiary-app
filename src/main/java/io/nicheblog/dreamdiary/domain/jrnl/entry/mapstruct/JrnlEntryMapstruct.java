@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 /**
  * JrnlEntryMapstruct
  * <pre>
- *  저널 꿈 MapStruct 기반 Mapper 인터페이스.
+ *  저널 항목 MapStruct 기반 Mapper 인터페이스.
  * </pre>
  *
  * @author nichefish

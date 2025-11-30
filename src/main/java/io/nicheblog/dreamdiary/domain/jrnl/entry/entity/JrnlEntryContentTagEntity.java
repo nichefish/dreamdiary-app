@@ -14,7 +14,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 /**
- * JrnlDreamTagEntity
+ * JrnlEntryContentTagEntity
  * <pre>
  *  저널 항목 태그 Entity.
  *  (사용 용이성을 위해 엔티티 분리)

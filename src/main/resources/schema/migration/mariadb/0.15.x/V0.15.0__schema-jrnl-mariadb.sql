@@ -6,16 +6,17 @@
 
 -- -------------------
 
--- 저널 항목 (jrnl_entry)
--- @extends: BaseClsfEntity
+-- 저널 해석 (jrnl_intrpt)
+-- @extends: BasePostEntity
 -- @uses: CommentEmbed
-CREATE TABLE IF NOT EXISTS jrnl_entry (
+CREATE TABLE IF NOT EXISTS jrnl_intrpt (
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 항목 번호 (PK)',
-    content_type VARCHAR(32) DEFAULT 'JRNL_ENTRY' COMMENT '컨텐츠 타입',
+    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 해석 번호 (PK)',
+    content_type VARCHAR(32) DEFAULT 'JRNL_INTRPT' COMMENT '컨텐츠 타입',
     --
-    jrnl_day_no INT COMMENT '저널 일자 번호',
-    idx INT DEFAULT 1 COMMENT '저널 항목 인덱스',
+    jrnl_dream_no INT COMMENT '저널 꿈 번호',
+    idx INT DEFAULT 1 COMMENT '저널 해석 인덱스',
+    edit_compt_yn CHAR(1) DEFAULT 'N' COMMENT '편집완료 여부 (Y/N)',
     -- POST
     title VARCHAR(200) COMMENT '제목',
     cn LONGTEXT COMMENT '내용',
@@ -31,8 +32,7 @@ CREATE TABLE IF NOT EXISTS jrnl_entry (
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
     mdf_dt DATETIME COMMENT '수정일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)'
-) COMMENT = '저널 항목';
-
-ALTER TABLE jrnl_diary ADD COLUMN jrnl_entry_no BIGINT NULL COMMENT '저널 항목 번호';
-ALTER TABLE jrnl_diary DROP COLUMN jrnl_day_no;
+    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    -- CONSTRAINT
+    INDEX (jrnl_dream_no)
+) COMMENT = '저널 해석';

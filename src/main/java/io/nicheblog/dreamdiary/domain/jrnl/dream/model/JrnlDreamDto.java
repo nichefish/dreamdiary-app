@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.domain.jrnl.dream.model;
 
+import io.nicheblog.dreamdiary.domain.jrnl.intrpt.model.JrnlIntrptDto;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.comment.model.cmpstn.CommentCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.comment.model.cmpstn.CommentCmpstnModule;
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 
 /**
  * JrnlDreamDto
@@ -65,6 +67,9 @@ public class JrnlDreamDto
 
     /** 순번 */
     private Integer idx;
+
+    /** 저널 일기 목록 */
+    private List<JrnlIntrptDto> jrnlIntrptList;
 
     /** 악몽 여부 (Y/N) */
     @Builder.Default

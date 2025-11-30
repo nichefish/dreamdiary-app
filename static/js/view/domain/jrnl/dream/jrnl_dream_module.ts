@@ -125,7 +125,7 @@ dF.JrnlDream = (function(): dfModule {
         regModal: function(jrnlDayNo: string|number, stdrdDt: string, jrnlDtWeekDay: string): void {
             if (isNaN(Number(jrnlDayNo))) return;
 
-            const obj = { jrnlDayNo: jrnlDayNo, stdrdDt: stdrdDt, jrnlDtWeekDay: jrnlDtWeekDay };
+            const obj: Record<string, any> = { jrnlDayNo: jrnlDayNo, stdrdDt: stdrdDt, jrnlDtWeekDay: jrnlDtWeekDay };
             /* initialize form. */
             dF.JrnlDream.initForm(obj);
         },

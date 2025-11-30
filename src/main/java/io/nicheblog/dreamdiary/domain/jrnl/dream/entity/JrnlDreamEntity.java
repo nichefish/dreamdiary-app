@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.domain.jrnl.dream.entity;
 
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.intrpt.entity.JrnlIntrptEntity;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbedModule;
@@ -13,7 +14,9 @@ import org.hibernate.annotations.*;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import java.util.List;
 
 /**
  * JrnlDreamEntity
@@ -115,6 +118,16 @@ public class JrnlDreamEntity
     /** 꿈꾼이(타인) 이름 */
     @Column(name = "else_dreamer_nm", length = 64)
     private String elseDreamerNm;
+
+    /** 저널 일기 목록 */
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "jrnl_dream_no", referencedColumnName = "post_no", insertable = false, updatable = false)
+    @Fetch(FetchMode.SUBSELECT)
+    @BatchSize(size = 10)
+    @OrderBy("idx ASC")
+    @NotFound(action = NotFoundAction.IGNORE)
+    @Comment("저널 해석 목록")
+    private List<JrnlIntrptEntity> jrnlIntrptList;
 
     /* ----- */
 

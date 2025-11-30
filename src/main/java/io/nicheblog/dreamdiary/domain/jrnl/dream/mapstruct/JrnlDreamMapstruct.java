@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.domain.jrnl.dream.mapstruct;
 
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
+import io.nicheblog.dreamdiary.domain.jrnl.intrpt.mapstruct.JrnlIntrptMapstruct;
 import io.nicheblog.dreamdiary.extension.cd.utils.CdUtils;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BasePostMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
@@ -24,6 +25,7 @@ public interface JrnlDreamMapstruct
         extends BasePostMapstruct<JrnlDreamDto, JrnlDreamDto, JrnlDreamEntity> {
 
     JrnlDreamMapstruct INSTANCE = Mappers.getMapper(JrnlDreamMapstruct.class);
+    JrnlIntrptMapstruct jrnlIntrptMapstruct = JrnlIntrptMapstruct.INSTANCE;
 
     /**
      * Entity -> Dto 변환
@@ -39,6 +41,7 @@ public interface JrnlDreamMapstruct
     @Mapping(target = "yy", expression = "java(entity.getJrnlDay() != null ? entity.getJrnlDay().getYy() : null)")
     @Mapping(target = "mnth", expression = "java(entity.getJrnlDay() != null ? entity.getJrnlDay().getMnth() : null)")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
+    @Mapping(target = "jrnlIntrptList", expression = "java(jrnlIntrptMapstruct.toDtoList(entity.getJrnlIntrptList()))")
     JrnlDreamDto toDto(final JrnlDreamEntity entity) throws Exception;
 
     /**
@@ -55,6 +58,7 @@ public interface JrnlDreamMapstruct
     @Mapping(target = "yy", expression = "java(entity.getJrnlDay() != null ? entity.getJrnlDay().getYy() : null)")
     @Mapping(target = "mnth", expression = "java(entity.getJrnlDay() != null ? entity.getJrnlDay().getMnth() : null)")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
+    @Mapping(target = "jrnlIntrptList", expression = "java(jrnlIntrptMapstruct.toDtoList(entity.getJrnlIntrptList()))")
     JrnlDreamDto toListDto(final JrnlDreamEntity entity) throws Exception;
 
     /**

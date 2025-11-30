@@ -102,24 +102,37 @@
 <#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_cn_partial.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/dream/jrnl_dream_module.js?${releaseDate!}"></script>
 
+<#--include::jrnl_intrpt_module-->
+<#include "/view/domain/jrnl/intrpt/_modal/_jrnl_intrpt_reg_modal.ftlh">
+<#include "/view/domain/jrnl/intrpt/_jrnl_intrpt_list_template.hbs">
+<#include "/view/domain/jrnl/intrpt/_partial/_jrnl_intrpt_reg_btn_partial.hbs">
+<#include "/view/domain/jrnl/intrpt/_partial/_jrnl_intrpt_mdf_btn_partial.hbs">
+<#include "/view/domain/jrnl/intrpt/_partial/_jrnl_intrpt_cn_partial.hbs">
+<script type="text/javascript" src="/js/view/domain/jrnl/intrpt/jrnl_intrpt_module.js?${releaseDate!}"></script>
+
 <#--include::jrnl_todo_module-->
 <#include "/view/domain/jrnl/todo/_jrnl_todo_list_template.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/todo/jrnl_todo_module.js?${releaseDate!}"></script>
-
-<#--include::jrnl_day_tag_module-->
-<#include "/view/domain/jrnl/diary/tag/_modal/_jrnl_diary_tag_dtl_modal.ftlh">
-<#include "/view/domain/jrnl/diary/tag/_jrnl_diary_tag_list_template.hbs">
-<script type="text/javascript" src="/js/view/domain/jrnl/diary/tag/jrnl_diary_tag_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_day_tag_module-->
 <#include "/view/domain/jrnl/day/tag/_modal/_jrnl_day_tag_dtl_modal.ftlh">
 <#include "/view/domain/jrnl/day/tag/_jrnl_day_tag_list_template.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/day/tag/jrnl_day_tag_module.js?${releaseDate!}"></script>
 
+<#--include::jrnl_diary_tag_module-->
+<#include "/view/domain/jrnl/diary/tag/_modal/_jrnl_diary_tag_dtl_modal.ftlh">
+<#include "/view/domain/jrnl/diary/tag/_jrnl_diary_tag_list_template.hbs">
+<script type="text/javascript" src="/js/view/domain/jrnl/diary/tag/jrnl_diary_tag_module.js?${releaseDate!}"></script>
+
 <#--include::jrnl_dream_tag_module-->
 <#include "/view/domain/jrnl/dream/tag/_modal/_jrnl_dream_tag_dtl_modal.ftlh">
 <#include "/view/domain/jrnl/dream/tag/_jrnl_dream_tag_list_template.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/dream/tag/jrnl_dream_tag_module.js?${releaseDate!}"></script>
+
+<#--include::jrnl_intrpt_tag_module-->
+<#include "/view/domain/jrnl/intrpt/tag/_modal/_jrnl_intrpt_tag_dtl_modal.ftlh">
+<#include "/view/domain/jrnl/intrpt/tag/_jrnl_intrpt_tag_list_template.hbs">
+<script type="text/javascript" src="/js/view/domain/jrnl/intrpt/tag/jrnl_intrpt_tag_module.js?${releaseDate!}"></script>
 
 <#--include::tags-->
 <#include "/view/domain/jrnl/tag/_jrnl_tag_list_modal.ftlh">

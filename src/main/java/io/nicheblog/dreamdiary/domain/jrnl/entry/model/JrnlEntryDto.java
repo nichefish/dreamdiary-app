@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * JrnlDreamDto
+ * JrnlEntryDto
  * <pre>
  *  저널 항목 Dto.
  * </pre>

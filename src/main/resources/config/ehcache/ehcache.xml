@@ -89,6 +89,15 @@
     <cache alias="myJrnlDreamTagDtl" uses-template="defaultTemplate" />
     <cache alias="myImprtcDreamList" uses-template="defaultTemplate" />
 
+    <cache alias="myJrnlIntrptList" uses-template="defaultTemplate" />
+    <cache alias="myJrnlIntrptDtlDto" uses-template="defaultTemplate" />
+    <cache alias="myJrnlIntrptTagList" uses-template="defaultTemplate" />
+    <cache alias="myJrnlIntrptSizedTagList" uses-template="defaultTemplate" />
+    <cache alias="myJrnlIntrptTagCtgrMap" uses-template="defaultTemplate" />
+    <cache alias="myCountIntrptSizeMap" uses-template="defaultTemplate" />
+    <cache alias="myJrnlIntrptTagDtl" uses-template="defaultTemplate" />
+    <cache alias="myImprtcIntrptList" uses-template="defaultTemplate" />
+
     <!-- 저널 할일 -->
     <cache alias="myJrnlTodoList" uses-template="defaultTemplate" />
 
