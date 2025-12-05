@@ -94,6 +94,12 @@ public class JrnlIntrptEntity
     @Column(name = "idx", columnDefinition = "INT DEFAULT 1")
     private Integer idx;
 
+    /**
+     * 인덱스 변경 여부
+     */
+    @Builder.Default
+    @Transient
+    private Boolean isIdxChanged = false;
 
     /* ----- */
 

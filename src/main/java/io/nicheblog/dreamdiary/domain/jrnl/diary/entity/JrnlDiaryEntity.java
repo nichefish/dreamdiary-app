@@ -101,6 +101,26 @@ public class JrnlDiaryEntity
     @Comment("편집완료 여부")
     private String editComptYn = "N";
 
+    /**
+     * 인덱스 변경 여부
+     */
+    @Builder.Default
+    @Transient
+    private Boolean isIdxChanged = false;
+
+    /**
+     * 저널 항목 변경 여부
+     */
+    @Builder.Default
+    @Transient
+    private Boolean isEntryChanged = false;
+
+    /**
+     * 이전 저널 항목 번호
+     */
+    @Transient
+    private Integer prevJrnlEntryNo;
+
     /* ----- */
 
     /** 위임 :: 댓글 정보 모듈 */

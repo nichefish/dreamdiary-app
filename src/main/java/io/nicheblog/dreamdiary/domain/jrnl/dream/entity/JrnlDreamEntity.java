@@ -129,6 +129,13 @@ public class JrnlDreamEntity
     @Comment("저널 해석 목록")
     private List<JrnlIntrptEntity> jrnlIntrptList;
 
+    /**
+     * 인덱스 변경 여부
+     */
+    @Builder.Default
+    @Transient
+    private Boolean isIdxChanged = false;
+
     /* ----- */
 
     /** 위임 :: 댓글 정보 모듈 */

@@ -325,11 +325,9 @@ public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>
      * @return {@link Entity} -- 조회된 객체
      */
     default Entity getDtlEntity(final Key key) throws Exception {
-        // 의존성 주입
         final Repository repository = this.getRepository();
-        final Optional<Entity> retrievedWrapper = repository.findById(key);
 
-        return Objects.requireNonNull(retrievedWrapper.orElseThrow(() -> new EntityNotFoundException("해당 정보가 존재하지 않습니다.")));
+        return repository.findById(key).orElseThrow(() -> new EntityNotFoundException("해당 정보가 존재하지 않습니다."));
     }
 
     /**
@@ -343,6 +341,29 @@ public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>
     }
 
     /**
+     * default: 단일 항목 조회 (entity level) = 부재시 null
+     *
+     * @param key 조회할 엔티티의 키
+     * @return {@link Entity} -- 조회된 객체
+     */
+    default Entity findDtlEntity(final Key key) throws Exception {
+        final Repository repository = this.getRepository();
+
+        return repository.findById(key).orElse(null);
+    }
+
+    /**
+     * default: 단일 항목 조회 (entity level) = 부재시 null
+     *
+     * @param dto 조회할 Key 정보가 담긴 Dto
+     * @return {@link Entity} -- 조회된 객체
+     */
+    default Entity findDtlEntity(final Dto dto) throws Exception {
+        return this.findDtlEntity(dto.getKey());
+    }
+
+
+    /**
      * default: 단일 항목 조회 (dto level)
      *
      * @param key 조회할 엔티티의 키
@@ -351,6 +372,22 @@ public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>
     @Transactional(readOnly = true)
     default Dto getDtlDto(final Key key) throws Exception {
         final Entity retrievedEntity = this.getDtlEntity(key);
+        final Mapstruct mapstruct = this.getMapstruct();
+
+        return mapstruct.toDto(retrievedEntity);
+    }
+
+    /**
+     * default: 단일 항목 조회 (dto level) = 부재시 null
+     *
+     * @param key 조회할 엔티티의 키
+     * @return {@link Dto} -- 조회 항목 반환
+     */
+    @Transactional(readOnly = true)
+    default Dto findDtlDto(final Key key) throws Exception {
+        final Entity retrievedEntity = this.findDtlEntity(key);
+        if (retrievedEntity == null) return null;
+
         final Mapstruct mapstruct = this.getMapstruct();
 
         return mapstruct.toDto(retrievedEntity);

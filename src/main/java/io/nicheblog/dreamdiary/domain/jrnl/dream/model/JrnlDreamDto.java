@@ -92,6 +92,12 @@ public class JrnlDreamDto
     /** 꿈꾼이(타인) 이름 */
     private String elseDreamerNm;
 
+    /**
+     * 인덱스 변경 여부
+     */
+    @Builder.Default
+    private Boolean isIdxChanged = false;
+
     /* ----- */
 
     /**

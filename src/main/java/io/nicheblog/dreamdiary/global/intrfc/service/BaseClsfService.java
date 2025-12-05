@@ -81,14 +81,16 @@ public interface BaseClsfService<Dto extends BaseClsfDto & Identifiable<Key>, Li
     default ServiceResponse modify(final Dto modifyDto) throws Exception {
         final ServiceResponse response = new ServiceResponse();
 
-        // optional: 수정 전처리 (dto)
-        this.preModify(modifyDto);
 
         // Entity 레벨 조회
         final Entity modifyEntity = this.getDtlEntity(modifyDto);
 
-        // optional: 수정 전처리 (entity, 기존 데이터 처리 관련)
+        // optional: 수정 전처리 (dto)
+        this.preModify(modifyDto);
+        // optional: 수정 전처리 (entity)
         this.preModify(modifyEntity);
+        // optional: 수정 전처리 (dto, entity)
+        this.preModify(modifyDto, modifyEntity);
 
         final Mapstruct mapstruct = this.getMapstruct();
         mapstruct.updateFromDto(modifyDto, modifyEntity);

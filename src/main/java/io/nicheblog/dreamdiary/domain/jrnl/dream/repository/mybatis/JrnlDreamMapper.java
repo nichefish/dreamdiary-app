@@ -4,6 +4,8 @@ import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * JrnlDreamMapper
  * <pre>
@@ -21,4 +23,19 @@ public interface JrnlDreamMapper {
      * @return {@link JrnlDreamDto} -- 삭제된 저널 꿈 데이터
      */
     JrnlDreamDto getDeletedByPostNo(final @Param("postNo") Integer postNo);
+    
+    /**
+     * 인덱스 갱신
+     * @param updatedDto 수정된 dto
+     * @return Integer -- 업데이트된 행 개수
+     */
+    Integer batchUpdateIdx(final List<JrnlDreamDto> updatedDto);
+
+    /**
+     * 인덱스 갱신용 전체 목록 조회
+     *
+     * @param jrnlDayNo 상위 키값
+     * @return Integer -- 업데이트된 행 개수
+     */
+    List<JrnlDreamDto> findAllForReorder(final @Param("jrnlDayNo") Integer jrnlDayNo);
 }

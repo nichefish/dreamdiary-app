@@ -4,8 +4,8 @@ import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.entity.JrnlIntrptEntity;
-import io.nicheblog.dreamdiary.domain.jrnl.intrpt.mapstruct.JrnlIntrptMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.model.JrnlIntrptDto;
+import io.nicheblog.dreamdiary.domain.jrnl.intrpt.mapstruct.JrnlIntrptMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.model.JrnlIntrptSearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.repository.jpa.JrnlIntrptRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.repository.mybatis.JrnlIntrptMapper;
@@ -27,10 +27,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * JrnlIntrptService
@@ -131,6 +130,18 @@ public class JrnlIntrptService
         // 관련 캐시 삭제
         publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_INTRPT));
     }
+    
+    /**
+     * 수정 전처리. (override)
+     *
+     * @param modifyDto - 수정할 객체
+     * @param modifyEntity - 수정할 객체
+     */
+    @Override
+    public void preModify(final JrnlIntrptDto modifyDto, final JrnlIntrptEntity modifyEntity) throws Exception {
+        boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
+        modifyDto.setIsIdxChanged(isIdxChanged);
+    }
 
     /**
      * 수정 후처리. (override)
@@ -139,6 +150,9 @@ public class JrnlIntrptService
      */
     @Override
     public void postModify(final JrnlIntrptDto updatedDto) throws Exception {
+        // 인덱스 재조정
+        if (updatedDto.getIsIdxChanged()) this.getSelf().reorderIdx(updatedDto);
+
         // 태그 처리 :: 메인 로직과 분리
         publisher.publishCustomEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
         // 관련 캐시 삭제
@@ -166,6 +180,9 @@ public class JrnlIntrptService
      */
     @Override
     public void postDelete(final JrnlIntrptDto deletedDto) throws Exception {
+        // 인덱스 재조정
+        this.getSelf().reorderIdx(deletedDto);
+
         // 태그 처리 :: 메인 로직과 분리
         publisher.publishCustomEvent(new JrnlTagProcEvent(this, deletedDto.getClsfKey(), deletedDto.getYy(), deletedDto.getMnth()));
         // 관련 캐시 삭제
@@ -181,6 +198,75 @@ public class JrnlIntrptService
     @Transactional(readOnly = true)
     public JrnlIntrptDto getDeletedDtlDto(final Integer key) throws Exception {
         return jrnlIntrptMapper.getDeletedByPostNo(key);
+    }
+    
+    /**
+     * 해당 그룹 전체를 idx = 1부터 다시 정렬한다.
+     */
+    @Transactional
+    public void normalize(final Integer jrnlDreamNo) {
+        final List<JrnlIntrptDto> list = jrnlIntrptMapper.findAllForReorder(jrnlDreamNo);
+        if (CollectionUtils.isEmpty(list) || list.size() == 1) return;
+
+        int idx = 1;
+        for (final JrnlIntrptDto e : list) {
+            e.setIdx(idx++);
+            EhCacheUtils.evictCache("myJrnlIntrptDtlDto", e.getPostNo());
+        }
+
+        jrnlIntrptMapper.batchUpdateIdx(list);
+    }
+    
+    /**
+     * 대상 상위 키에 엔티티를 특정 위치에 삽입 후 재정렬한다.
+     *
+     * @param jrnlDreamNo 정렬을 수행할 상위 키
+     * @param postNo 게시물 PK
+     * @param targetIdx 삽입할 목표 위치(1-based). null이면 맨 뒤에 삽입됨
+     */
+    @Transactional
+    public void insert(final Integer jrnlDreamNo, final Integer postNo, Integer targetIdx) throws Exception {
+        final List<JrnlIntrptDto> list = jrnlIntrptMapper.findAllForReorder(jrnlDreamNo);
+
+        // target 조회
+        final JrnlIntrptDto target = findDtlDto(postNo);
+        if (target == null) return;
+
+        // 혹시 이미 포함되어 있으면 제거
+        list.removeIf(e -> Objects.equals(e.getPostNo(), postNo));
+
+        // entryNo 변경
+        target.setJrnlDreamNo(jrnlDreamNo);
+
+        // targetIdx 보정 (upper bound)
+        final int maxIdx = list.size() + 1;
+        final int normalizedIdx = Math.min(targetIdx == null ? maxIdx : targetIdx, maxIdx);
+        // 삽입 위치 계산
+        int pos = normalizedIdx - 1;
+        pos = Math.min(pos, list.size());
+        list.add(pos, target);
+
+        // idx 재정렬
+        int idx = 1;
+        for (final JrnlIntrptDto e : list) {
+            e.setIdx(idx++);
+            EhCacheUtils.evictCache("myJrnlIntrptDtlDto", e.getPostNo());
+        }
+
+        jrnlIntrptMapper.batchUpdateIdx(list);
+    }
+
+    /**
+     * 인덱스 변경시 관련 인덱스 업데이트
+     *
+     * @param updatedDto 업데이트된 객체
+     */
+    @Transactional
+    public void reorderIdx(final JrnlIntrptDto updatedDto) throws Exception {
+        // 1단계: 현재 entry 그룹 정리 (기존 idx 값을 normalization하여 안정화)
+        normalize(updatedDto.getJrnlDreamNo());
+        // 2단계: 해당 group에 새 위치로 target 삽입
+        insert(updatedDto.getJrnlDreamNo(), updatedDto.getPostNo(), updatedDto.getIdx());
     }
 
     /**

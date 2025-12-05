@@ -75,6 +75,23 @@ public class JrnlDiaryDto
     @Pattern(regexp = "^[YN]$")
     private String editComptYn = "N";
 
+    /**
+     * 인덱스 변경 여부
+     */
+    @Builder.Default
+    private Boolean isIdxChanged = false;
+
+    /**
+     * 저널 항목 변경 여부
+     */
+    @Builder.Default
+    private Boolean isEntryChanged = false;
+
+    /**
+     * 이전 저널 항목 번호
+     */
+    private Integer prevJrnlEntryNo;
+
     /* ----- */
 
     /**

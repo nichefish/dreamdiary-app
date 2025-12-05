@@ -77,6 +77,12 @@ public class JrnlIntrptDto
     @Pattern(regexp = "^[YN]$")
     private String editComptYn = "N";
 
+    /**
+     * 인덱스 변경 여부
+     */
+    @Builder.Default
+    private Boolean isIdxChanged = false;
+
     /* ----- */
 
     /**

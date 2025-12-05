@@ -45,6 +45,12 @@ public class JrnlEntryDto
     @Builder.Default
     private String contentType = CONTENT_TYPE.key;
 
+    /**
+     * 인덱스 변경 여부
+     */
+    @Builder.Default
+    private Boolean isIdxChanged = false;
+
     /* ----- */
 
     /** 저널 일자 번호 */

@@ -27,10 +27,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * JrnlDreamService
@@ -147,12 +146,27 @@ public class JrnlDreamService
     }
 
     /**
+     * 수정 전처리. (override)
+     *
+     * @param modifyDto - 수정할 객체
+     * @param modifyEntity - 수정할 객체
+     */
+    @Override
+    public void preModify(final JrnlDreamDto modifyDto, final JrnlDreamEntity modifyEntity) throws Exception {
+        boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
+        modifyDto.setIsIdxChanged(isIdxChanged);
+    }
+    
+    /**
      * 수정 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
      */
     @Override
     public void postModify(final JrnlDreamDto updatedDto) throws Exception {
+        // 인덱스 재조정
+        if (updatedDto.getIsIdxChanged()) this.getSelf().reorderIdx(updatedDto);
+        
         // 태그 처리 :: 메인 로직과 분리
         publisher.publishCustomEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
         // 관련 캐시 삭제
@@ -166,6 +180,9 @@ public class JrnlDreamService
      */
     @Override
     public void postDelete(final JrnlDreamDto deletedDto) throws Exception {
+        // 인덱스 재조정
+        this.getSelf().reorderIdx(deletedDto);
+
         // 태그 처리 :: 메인 로직과 분리
         publisher.publishCustomEvent(new JrnlTagProcEvent(this, deletedDto.getClsfKey(), deletedDto.getYy(), deletedDto.getMnth()));
         // 관련 캐시 삭제
@@ -181,6 +198,77 @@ public class JrnlDreamService
     @Transactional(readOnly = true)
     public JrnlDreamDto getDeletedDtlDto(final Integer key) throws Exception {
         return jrnlDreamMapper.getDeletedByPostNo(key);
+    }
+
+    /**
+     * 해당 그룹 전체를 idx = 1부터 다시 정렬한다.
+     *
+     * @param jrnlDayNo 정렬을 수행할 상위 키
+     */
+    @Transactional
+    public void normalize(final Integer jrnlDayNo) {
+        final List<JrnlDreamDto> list = jrnlDreamMapper.findAllForReorder(jrnlDayNo);
+        if (CollectionUtils.isEmpty(list) || list.size() == 1) return;
+
+        int idx = 1;
+        for (final JrnlDreamDto e : list) {
+            e.setIdx(idx++);
+            EhCacheUtils.evictCache("myJrnlDreamDtlDto", e.getPostNo());
+        }
+
+        jrnlDreamMapper.batchUpdateIdx(list);
+    }
+
+    /**
+     * 대상 상위 키에 엔티티를 특정 위치에 삽입 후 재정렬한다.
+     *
+     * @param jrnlDayNo 정렬을 수행할 상위 키
+     * @param postNo 게시물 PK
+     * @param targetIdx 삽입할 목표 위치(1-based). null이면 맨 뒤에 삽입됨
+     */
+    @Transactional
+    public void insert(final Integer jrnlDayNo, final Integer postNo, Integer targetIdx) throws Exception {
+        final List<JrnlDreamDto> list = jrnlDreamMapper.findAllForReorder(jrnlDayNo);
+
+        // target 조회
+        final JrnlDreamDto target = findDtlDto(postNo);
+        if (target == null) return;
+
+        // 혹시 이미 포함되어 있으면 제거
+        list.removeIf(e -> Objects.equals(e.getPostNo(), postNo));
+
+        // entryNo 변경
+        target.setJrnlDayNo(jrnlDayNo);
+
+        // targetIdx 보정 (upper bound)
+        final int maxIdx = list.size() + 1;
+        final int normalizedIdx = Math.min(targetIdx == null ? maxIdx : targetIdx, maxIdx);
+        // 삽입 위치 계산
+        int pos = normalizedIdx - 1;
+        pos = Math.min(pos, list.size());
+        list.add(pos, target);
+
+        // idx 재정렬
+        int idx = 1;
+        for (final JrnlDreamDto e : list) {
+            e.setIdx(idx++);
+            EhCacheUtils.evictCache("myJrnlDreamDtlDto", e.getPostNo());
+        }
+
+        jrnlDreamMapper.batchUpdateIdx(list);
+    }
+
+    /**
+     * 인덱스 변경시 관련 인덱스 업데이트
+     *
+     * @param updatedDto 업데이트된 객체
+     */
+    @Transactional
+    public void reorderIdx(final JrnlDreamDto updatedDto) throws Exception {
+        // 1단계: 현재 entry 그룹 정리 (기존 idx 값을 normalization하여 안정화)
+        normalize(updatedDto.getJrnlDayNo());
+        // 2단계: 해당 group에 새 위치로 target 삽입
+        insert(updatedDto.getJrnlDayNo(), updatedDto.getPostNo(), updatedDto.getIdx());
     }
 
     /**
