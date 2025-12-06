@@ -119,6 +119,12 @@ public class JrnlDreamEntity
     @Column(name = "else_dreamer_nm", length = 64)
     private String elseDreamerNm;
 
+    /** 정리완료 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "resolved_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Comment("정리완료 여부")
+    private String resolvedYn = "N";
+
     /** 저널 일기 목록 */
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "jrnl_dream_no", referencedColumnName = "post_no", insertable = false, updatable = false)

@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS jrnl_diary (
     --
     jrnl_day_no INT COMMENT '저널 일자 번호',
     idx INT DEFAULT 1 COMMENT '저널 일기 인덱스',
-    edit_compt_yn CHAR(1) DEFAULT 'N' COMMENT '편집완료 여부 (Y/N)',
+    edit_compt_yn CHAR(1) DEFAULT 'N' COMMENT '정리완료 여부 (Y/N)',
     -- POST
     title VARCHAR(200) COMMENT '제목',
     cn LONGTEXT COMMENT '내용',

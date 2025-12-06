@@ -69,11 +69,11 @@ public class JrnlDiaryDto
     /** 순번 */
     private Integer idx;
 
-    /** 편집완료 여부 (Y/N) */
+    /** 정리완료 여부 (Y/N) */
     @Builder.Default
     @Size(min = 1, max = 1)
     @Pattern(regexp = "^[YN]$")
-    private String editComptYn = "N";
+    private String resolvedYn = "N";
 
     /**
      * 인덱스 변경 여부

@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS jrnl_dream (
     nhtmr_yn CHAR(1) DEFAULT  'N' COMMENT '악몽 여부 (Y/N)',
     else_dream_yn CHAR(1) DEFAULT 'N' COMMENT '타인 꿈 여부 (Y/N)',
     else_dreamer_nm VARCHAR(64) COMMENT '꿈꾼이 이름',
+    resolved_yn CHAR(1) DEFAULT 'N' COMMENT '정리완료 여부 (Y/N)',
     -- POST
     title VARCHAR(200) COMMENT '제목',
     cn LONGTEXT COMMENT '내용',
@@ -79,6 +80,7 @@ CREATE TABLE IF NOT EXISTS jrnl_intrpt (
     --
     jrnl_dream_no INT COMMENT '저널 꿈 번호',
     idx INT DEFAULT 1 COMMENT '저널 해석 인덱스',
+    resolved_yn CHAR(1) DEFAULT 'N' COMMENT '정리완료 여부 (Y/N)',
     -- POST
     title VARCHAR(200) COMMENT '제목',
     cn LONGTEXT COMMENT '내용',
@@ -137,6 +139,7 @@ CREATE TABLE IF NOT EXISTS jrnl_diary (
     jrnl_day_no INT COMMENT '저널 일자 번호',
     jrnl_entry_no INT COMMENT '저널 항목 번호',
     idx INT DEFAULT 1 COMMENT '저널 일기 인덱스',
+    resolved_yn CHAR(1) DEFAULT 'N' COMMENT '정리완료 여부 (Y/N)',
     -- POST
     title VARCHAR(200) COMMENT '제목',
     cn LONGTEXT COMMENT '내용',

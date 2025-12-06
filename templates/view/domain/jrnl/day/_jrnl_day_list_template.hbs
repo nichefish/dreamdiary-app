@@ -87,9 +87,9 @@
                             <div class="jrnl-diary-item">
                                 <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                                     <div class="d-flex flex-column align-items-center">
-                                        <span>
+                                        <span {{#if (equals resolvedYn 'Y')}}class="text-success"{{/if}}>
                                             # {{idx}}
-                                            {{#if (equals diaryResolvedYn 'Y')}}
+                                            {{#if (equals resolvedYn 'Y')}}
                                                 <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
                                             {{/if}}
                                         </span>
@@ -101,7 +101,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="col jrnl-diary-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-id="{{postNo}}">
+                                <div class="col jrnl-diary-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-id="{{postNo}}" data-resolved="{{resolvedYn}}">
                                     {{> jrnl_diary_cn_partial this}}
                                 </div>
                                 <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
@@ -134,7 +134,12 @@
                     <div class="jrnl-item">
                         <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                             <div class="d-flex flex-column align-items-center">
-                                <span># {{idx}}</span>
+                                <span {{#if (equals resolvedYn 'Y')}}class="text-success"{{/if}}>
+                                    # {{idx}}
+                                    {{#if (equals resolvedYn 'Y')}}
+                                        <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
+                                    {{/if}}
+                                </span>
                                 <!-- toggle button -->
                                 <button type="button"
                                         class="btn btn-sm btn-light-secondary ms-2 toggle-dream-btn"
@@ -143,7 +148,7 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-id="{{postNo}}">
+                        <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-id="{{postNo}}" data-resolved="{{resolvedYn}}">
                             {{> jrnl_dream_cn_partial this}}
                         </div>
                         <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
@@ -158,8 +163,11 @@
                             <div class="jrnl-intrpt-item ps-15">
                                 <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                                     <div class="d-flex flex-column align-items-center">
-                                        <span>
+                                        <span {{#if (equals resolvedYn 'Y')}}class="text-success"{{/if}}>
                                             # {{idx}}
+                                            {{#if (equals resolvedYn 'Y')}}
+                                                <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
+                                            {{/if}}
                                         </span>
                                         <!-- toggle button -->
                                         <button type="button"
@@ -169,7 +177,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="col jrnl-intrpt-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-id="{{postNo}}">
+                                <div class="col jrnl-intrpt-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-id="{{postNo}}" data-resolved="{{resolvedYn}}">
                                     {{> jrnl_intrpt_cn_partial this}}
                                 </div>
                                 <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
@@ -195,7 +203,7 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="col py-3 jrnl-dream-cn bg-secondary" data-id="{{postNo}}">
+                        <div class="col py-3 jrnl-dream-cn bg-secondary" data-id="{{postNo}}" data-resolved="{{resolvedYn}}">
                             {{> jrnl_dream_cn_partial this elseDreamYn="Y"}}
                         </div>
                         <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
@@ -211,9 +219,9 @@
                         <div class="jrnl-intrpt-item ps-15">
                             <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                                 <div class="d-flex flex-column align-items-center">
-                                    <span>
+                                    <span {{#if (equals resolvedYn 'Y')}}class="text-success"{{/if}}>
                                         # {{idx}}
-                                        {{#if (equals diaryResolvedYn 'Y')}}
+                                        {{#if (equals resolvedYn 'Y')}}
                                             <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
                                         {{/if}}
                                     </span>
@@ -225,7 +233,7 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="col jrnl-intrpt-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-id="{{postNo}}">
+                            <div class="col jrnl-intrpt-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-id="{{postNo}}" data-resolved="{{resolvedYn}}">
                                 {{> jrnl_intrpt_cn_partial this}}
                             </div>
                             <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>

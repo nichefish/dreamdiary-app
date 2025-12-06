@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS jrnl_intrpt (
     --
     jrnl_dream_no INT COMMENT '저널 꿈 번호',
     idx INT DEFAULT 1 COMMENT '저널 해석 인덱스',
-    edit_compt_yn CHAR(1) DEFAULT 'N' COMMENT '편집완료 여부 (Y/N)',
+    resolved_yn CHAR(1) DEFAULT 'N' COMMENT '정리완료 여부 (Y/N)',
     -- POST
     title VARCHAR(200) COMMENT '제목',
     cn LONGTEXT COMMENT '내용',
@@ -36,3 +36,8 @@ CREATE TABLE IF NOT EXISTS jrnl_intrpt (
     -- CONSTRAINT
     INDEX (jrnl_dream_no)
 ) COMMENT = '저널 해석';
+
+ALTER TABLE jrnl_diary CHANGE COLUMN edit_compt_yn resolved_yn CHAR(1) DEFAULT 'N' COMMENT '정리완료 여부 (Y/N)';
+ALTER TABLE jrnl_dream ADD resolved_yn CHAR(1) DEFAULT 'N' COMMENT '정리완료 여부 (Y/N)';
+ALTER TABLE jrnl_intrpt ADD resolved_yn CHAR(1) DEFAULT 'N' COMMENT '정리완료 여부 (Y/N)';
+ALTER TABLE jrnl_diary ADD resolved_yn CHAR(1) DEFAULT 'N' COMMENT '정리완료 여부 (Y/N)';

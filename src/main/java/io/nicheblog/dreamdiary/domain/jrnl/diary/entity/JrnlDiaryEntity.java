@@ -95,11 +95,11 @@ public class JrnlDiaryEntity
     @Column(name = "idx", columnDefinition = "INT DEFAULT 1")
     private Integer idx;
 
-    /** 편집완료 여부 (Y/N) */
+    /** 정리완료 여부 (Y/N) */
     @Builder.Default
-    @Column(name = "edit_compt_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("편집완료 여부")
-    private String editComptYn = "N";
+    @Column(name = "resolved_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Comment("정리완료 여부")
+    private String resolvedYn = "N";
 
     /**
      * 인덱스 변경 여부

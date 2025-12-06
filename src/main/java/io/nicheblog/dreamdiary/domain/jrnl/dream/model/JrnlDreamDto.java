@@ -68,6 +68,12 @@ public class JrnlDreamDto
     /** 순번 */
     private Integer idx;
 
+    /** 정리완료 여부 (Y/N) */
+    @Builder.Default
+    @Size(min = 1, max = 1)
+    @Pattern(regexp = "^[YN]$")
+    private String resolvedYn = "N";
+
     /** 저널 일기 목록 */
     private List<JrnlIntrptDto> jrnlIntrptList;
 
