@@ -18,6 +18,7 @@ import io.nicheblog.dreamdiary.extension.clsf.tag.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
@@ -51,8 +52,9 @@ public class JrnlIntrptService
     private final JrnlIntrptSpec spec;
     @Getter
     private final JrnlIntrptMapstruct mapstruct = JrnlIntrptMapstruct.INSTANCE;
-
-    private final JrnlIntrptMapper jrnlIntrptMapper;
+    @Getter
+    private final JrnlIntrptMapper mapper;
+    
     private final ApplicationEventPublisherWrapper publisher;
 
     private final ApplicationContext context;
@@ -197,7 +199,7 @@ public class JrnlIntrptService
      */
     @Transactional(readOnly = true)
     public JrnlIntrptDto getDeletedDtlDto(final Integer key) throws Exception {
-        return jrnlIntrptMapper.getDeletedByPostNo(key);
+        return mapper.getDeletedByPostNo(key);
     }
     
     /**
@@ -205,7 +207,7 @@ public class JrnlIntrptService
      */
     @Transactional
     public void normalize(final Integer jrnlDreamNo) {
-        final List<JrnlIntrptDto> list = jrnlIntrptMapper.findAllForReorder(jrnlDreamNo);
+        final List<JrnlIntrptDto> list = mapper.findAllForReorder(jrnlDreamNo);
         if (CollectionUtils.isEmpty(list) || list.size() == 1) return;
 
         int idx = 1;
@@ -214,7 +216,7 @@ public class JrnlIntrptService
             EhCacheUtils.evictCache("myJrnlIntrptDtlDto", e.getPostNo());
         }
 
-        jrnlIntrptMapper.batchUpdateIdx(list);
+        mapper.batchUpdateIdx(list);
     }
     
     /**
@@ -226,7 +228,7 @@ public class JrnlIntrptService
      */
     @Transactional
     public void insert(final Integer jrnlDreamNo, final Integer postNo, Integer targetIdx) throws Exception {
-        final List<JrnlIntrptDto> list = jrnlIntrptMapper.findAllForReorder(jrnlDreamNo);
+        final List<JrnlIntrptDto> list = mapper.findAllForReorder(jrnlDreamNo);
 
         // target 조회
         final JrnlIntrptDto target = findDtlDto(postNo);
@@ -253,7 +255,7 @@ public class JrnlIntrptService
             EhCacheUtils.evictCache("myJrnlIntrptDtlDto", e.getPostNo());
         }
 
-        jrnlIntrptMapper.batchUpdateIdx(list);
+        mapper.batchUpdateIdx(list);
     }
 
     /**
@@ -286,5 +288,21 @@ public class JrnlIntrptService
             final String concatHldyNm = String.join(", ", hldyMap.get(stdrdDt));
             jrnlIntrpt.setHldyNm(concatHldyNm);
         }
+    }
+    
+    /**
+     * collapse 상태를 설정한다.
+     *
+     * @param postNo 대상 게시물 PK
+     * @param collapseYn 접힘 상태(Y/N)
+     * @return collapseYn 반영 성공 여부를 담은 ServiceResponse
+     */
+    @Transactional
+    public ServiceResponse setCollapse(final Integer postNo, final String collapseYn) throws Exception {
+        mapper.setCollapse(postNo, collapseYn);
+
+        return ServiceResponse.builder()
+                .rslt(true)
+                .build();
     }
 }

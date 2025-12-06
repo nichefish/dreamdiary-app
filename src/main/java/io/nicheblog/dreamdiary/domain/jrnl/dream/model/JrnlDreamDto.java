@@ -74,6 +74,12 @@ public class JrnlDreamDto
     @Pattern(regexp = "^[YN]$")
     private String resolvedYn = "N";
 
+    /** 글접기 여부 (Y/N) */
+    @Builder.Default
+    @Size(min = 1, max = 1)
+    @Pattern(regexp = "^[YN]$")
+    private String collapseYn = "N";
+
     /** 저널 일기 목록 */
     private List<JrnlIntrptDto> jrnlIntrptList;
 

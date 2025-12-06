@@ -51,7 +51,7 @@
                 {{#each jrnlEntryList}}
                     <label class="d-flex align-items-center mt-2">
                         <div class="col col-md-1 w-5 text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder ">
-                            {{#if (equals entryResolvedYn 'Y')}}
+                            {{#ifYn entryResolvedYn}}
                                 <span class="text-success"><@spring.message 'entry'/></span>
                                 <span class="position-relative d-inline-block">
                                   <i class="bi bi-book fs-4 text-success"></i>
@@ -60,7 +60,7 @@
                             {{else}}
                                 <@spring.message 'entry'/>
                                 <i class="bi bi-book fs-4 pe-1"></i>
-                            {{/if}}
+                            {{/ifYn}}
                         </div>
                         <div class="col-3 d-none d-md-flex align-items-center gap-2">
                            {{> jrnl_diary_reg_btn_partial this}}
@@ -87,11 +87,11 @@
                             <div class="jrnl-diary-item">
                                 <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                                     <div class="d-flex flex-column align-items-center">
-                                        <span {{#if (equals resolvedYn 'Y')}}class="text-success"{{/if}}>
+                                        <span {{#ifYn resolvedYn}}class="text-success"{{/ifYn}}>
                                             # {{idx}}
-                                            {{#if (equals resolvedYn 'Y')}}
+                                            {{#ifYn resolvedYn}}
                                                 <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
-                                            {{/if}}
+                                            {{/ifYn}}
                                         </span>
                                         <!-- toggle button -->
                                         <button type="button"
@@ -134,11 +134,11 @@
                     <div class="jrnl-item">
                         <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                             <div class="d-flex flex-column align-items-center">
-                                <span {{#if (equals resolvedYn 'Y')}}class="text-success"{{/if}}>
+                                <span {{#ifYn resolvedYn}}class="text-success"{{/ifYn}}>
                                     # {{idx}}
-                                    {{#if (equals resolvedYn 'Y')}}
+                                    {{#ifYn resolvedYn}}
                                         <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
-                                    {{/if}}
+                                    {{/ifYn}}
                                 </span>
                                 <!-- toggle button -->
                                 <button type="button"
@@ -163,16 +163,16 @@
                             <div class="jrnl-intrpt-item ps-15">
                                 <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                                     <div class="d-flex flex-column align-items-center">
-                                        <span {{#if (equals resolvedYn 'Y')}}class="text-success"{{/if}}>
+                                        <span {{#ifYn resolvedYn}}class="text-success"{{/ifYn}}>
                                             # {{idx}}
-                                            {{#if (equals resolvedYn 'Y')}}
+                                            {{#ifYn resolvedYn}}
                                                 <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
-                                            {{/if}}
+                                            {{/ifYn}}
                                         </span>
                                         <!-- toggle button -->
                                         <button type="button"
                                                 class="btn btn-sm btn-secondary ms-2 toggle-intrpt-btn"
-                                                onclick="dF.JrnlIntrpt.toggle({{postNo}})">
+                                                onclick="dF.JrnlIntrpt.collapse({{postNo}}, {{#ifYn collapseYn}}'N'{{else}}'Y'{{/ifYn}})">
                                             <i class="bi bi-chevron-up pe-0" id="intrpt-toggle-icon-{{postNo}}"></i>
                                         </button>
                                     </div>
@@ -198,7 +198,7 @@
                                 <!-- toggle button -->
                                 <button type="button"
                                         class="btn btn-sm btn-light-secondary ms-2 toggle-dream-btn"
-                                        onclick="dF.JrnlDream.toggle({{postNo}})">
+                                        onclick="dF.JrnlDream.collapse({{postNo}}, {{#ifYn collapseYn}}'N'{{else}}'Y'{{/ifYn}})">
                                     <i class="bi bi-chevron-up pe-0" id="dream-toggle-icon-{{postNo}}"></i>
                                 </button>
                             </div>
@@ -219,16 +219,16 @@
                         <div class="jrnl-intrpt-item ps-15">
                             <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                                 <div class="d-flex flex-column align-items-center">
-                                    <span {{#if (equals resolvedYn 'Y')}}class="text-success"{{/if}}>
+                                    <span {{#ifYn resolvedYn}}class="text-success"{{/ifYn}}>
                                         # {{idx}}
-                                        {{#if (equals resolvedYn 'Y')}}
+                                        {{#ifYn resolvedYn}}
                                             <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
-                                        {{/if}}
+                                        {{/ifYn}}
                                     </span>
                                     <!-- toggle button -->
                                     <button type="button"
                                             class="btn btn-sm btn-secondary ms-2 toggle-intrpt-btn"
-                                            onclick="dF.JrnlDiary.toggle({{postNo}})">
+                                            onclick="dF.JrnlDiary.collapse({{postNo}}, {{#ifYn collapseYn}}'N'{{else}}'Y'{{/ifYn}})">
                                         <i class="bi bi-chevron-up pe-0" id="intrpt-toggle-icon-{{postNo}}"></i>
                                     </button>
                                 </div>

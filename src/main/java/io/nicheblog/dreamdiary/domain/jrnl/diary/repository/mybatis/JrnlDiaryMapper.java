@@ -38,4 +38,22 @@ public interface JrnlDiaryMapper {
      * @return Integer -- 업데이트된 행 개수
      */
     List<JrnlDiaryDto> findAllForReorder(final @Param("jrnlEntryNo") Integer jrnlEntryNo);
+
+    /**
+     * collapse 상태를 설정한다.
+     *
+     * @param postNo 대상 게시물 PK
+     * @param collapseYn 접힘 상태(Y/N)
+     * @return Integer -- 업데이트된 행 개수
+     */
+    Integer setCollapse(final @Param("postNo") Integer postNo, final @Param("collapseYn") String collapseYn);
+
+    /**
+     * collapse 상태를 설정한다. (상위 Entry 기반)
+     *
+     * @param postNo 대상 게시물 PK
+     * @param collapseYn 접힘 상태(Y/N)
+     * @return Integer -- 업데이트된 행 개수
+     */
+    Integer setCollapseByEntry(final @Param("postNo") Integer postNo, final @Param("collapseYn") String collapseYn);
 }

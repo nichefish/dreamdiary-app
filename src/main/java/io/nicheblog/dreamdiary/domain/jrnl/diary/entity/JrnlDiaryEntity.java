@@ -101,6 +101,12 @@ public class JrnlDiaryEntity
     @Comment("정리완료 여부")
     private String resolvedYn = "N";
 
+    /** 글접기 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "collapse_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Comment("글접기 여부")
+    private String collapseYn = "N";
+
     /**
      * 인덱스 변경 여부
      */

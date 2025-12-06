@@ -18,6 +18,7 @@ import io.nicheblog.dreamdiary.extension.clsf.tag.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
@@ -51,8 +52,9 @@ public class JrnlDreamService
     private final JrnlDreamSpec spec;
     @Getter
     private final JrnlDreamMapstruct mapstruct = JrnlDreamMapstruct.INSTANCE;
+    @Getter
+    private final JrnlDreamMapper mapper;
 
-    private final JrnlDreamMapper jrnlDreamMapper;
     private final ApplicationEventPublisherWrapper publisher;
 
     private final ApplicationContext context;
@@ -197,7 +199,7 @@ public class JrnlDreamService
      */
     @Transactional(readOnly = true)
     public JrnlDreamDto getDeletedDtlDto(final Integer key) throws Exception {
-        return jrnlDreamMapper.getDeletedByPostNo(key);
+        return mapper.getDeletedByPostNo(key);
     }
 
     /**
@@ -207,7 +209,7 @@ public class JrnlDreamService
      */
     @Transactional
     public void normalize(final Integer jrnlDayNo) {
-        final List<JrnlDreamDto> list = jrnlDreamMapper.findAllForReorder(jrnlDayNo);
+        final List<JrnlDreamDto> list = mapper.findAllForReorder(jrnlDayNo);
         if (CollectionUtils.isEmpty(list) || list.size() == 1) return;
 
         int idx = 1;
@@ -216,7 +218,7 @@ public class JrnlDreamService
             EhCacheUtils.evictCache("myJrnlDreamDtlDto", e.getPostNo());
         }
 
-        jrnlDreamMapper.batchUpdateIdx(list);
+        mapper.batchUpdateIdx(list);
     }
 
     /**
@@ -228,7 +230,7 @@ public class JrnlDreamService
      */
     @Transactional
     public void insert(final Integer jrnlDayNo, final Integer postNo, Integer targetIdx) throws Exception {
-        final List<JrnlDreamDto> list = jrnlDreamMapper.findAllForReorder(jrnlDayNo);
+        final List<JrnlDreamDto> list = mapper.findAllForReorder(jrnlDayNo);
 
         // target 조회
         final JrnlDreamDto target = findDtlDto(postNo);
@@ -255,7 +257,7 @@ public class JrnlDreamService
             EhCacheUtils.evictCache("myJrnlDreamDtlDto", e.getPostNo());
         }
 
-        jrnlDreamMapper.batchUpdateIdx(list);
+        mapper.batchUpdateIdx(list);
     }
 
     /**
@@ -288,5 +290,21 @@ public class JrnlDreamService
             final String concatHldyNm = String.join(", ", hldyMap.get(stdrdDt));
             jrnlDream.setHldyNm(concatHldyNm);
         }
+    }
+    
+    /**
+     * collapse 상태를 설정한다.
+     *
+     * @param postNo 대상 게시물 PK
+     * @param collapseYn 접힘 상태(Y/N)
+     * @return collapseYn 반영 성공 여부를 담은 ServiceResponse
+     */
+    @Transactional
+    public ServiceResponse setCollapse(final Integer postNo, final String collapseYn) throws Exception {
+        mapper.setCollapse(postNo, collapseYn);
+
+        return ServiceResponse.builder()
+                .rslt(true)
+                .build();
     }
 }

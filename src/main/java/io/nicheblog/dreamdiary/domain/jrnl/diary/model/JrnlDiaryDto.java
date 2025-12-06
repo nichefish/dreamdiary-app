@@ -75,6 +75,12 @@ public class JrnlDiaryDto
     @Pattern(regexp = "^[YN]$")
     private String resolvedYn = "N";
 
+    /** 글접기 여부 (Y/N) */
+    @Builder.Default
+    @Size(min = 1, max = 1)
+    @Pattern(regexp = "^[YN]$")
+    private String collapseYn = "N";
+
     /**
      * 인덱스 변경 여부
      */

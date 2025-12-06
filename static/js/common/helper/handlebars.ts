@@ -228,7 +228,7 @@ cF.handlebars = (function(): Module {
      * @returns {string} - `value`가 "Y"일 경우 `options.fn(this)`, 그렇지 않으면 `options.inverse(this)`.
      */
     Handlebars.registerHelper("ifYn", function(value: string, options: any) {
-        const trimmedValue = value && value.trim();
+        const trimmedValue: string = String(value ?? "N").trim().toUpperCase();
         return trimmedValue === "Y" ? options.fn(this) : options.inverse(this);
     });
 

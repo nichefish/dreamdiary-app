@@ -41,7 +41,7 @@
         <foreach collection="list" item="item" separator=";">
             UPDATE jrnl_entry
             SET idx = #{item.idx}
-            WHERE post_no = #{item.postNo}
+            WHERE post_no = #{item.postNo} AND del_yn = 'N'
         </foreach>
     </update>
 </mapper>

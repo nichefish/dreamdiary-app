@@ -43,7 +43,23 @@
         <foreach collection="list" item="item" separator=";">
             UPDATE jrnl_diary
             SET idx = #{item.idx}
-            WHERE post_no = #{item.postNo}
+            WHERE post_no = #{item.postNo} AND del_yn = 'N'
         </foreach>
+    </update>
+
+    <!-- 글접기 상태 갱신 -->
+    <update id="setCollapse">
+        /* JrnlDiaryMapper.setCollapse */
+        UPDATE jrnl_diary
+        SET collapse_yn = #{collapseYn}
+        WHERE post_no = #{postNo} AND del_yn = 'N'
+    </update>
+
+    <!-- 글접기 상태 갱신 (상위 Entry 기반) -->
+    <update id="setCollapseByEntry">
+        /* JrnlDiaryMapper.setCollapseByEntry */
+        UPDATE jrnl_diary
+        SET collapse_yn = #{collapseYn}
+        WHERE jrnl_entry_no = #{postNo} AND del_yn = 'N'
     </update>
 </mapper>
