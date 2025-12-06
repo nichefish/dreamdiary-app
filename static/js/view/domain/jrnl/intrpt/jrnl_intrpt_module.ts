@@ -48,12 +48,13 @@ dF.JrnlIntrpt = (function(): dfModule {
 
         /**
          * 등록 모달 호출
-         * @param {string|number} jrnlDayNo - 저널 일자 번호.
-         * @param {string|number} jrnlDreamNo - 저널 꿈 번호.
-         * @param {string} stdrdDt - 기준 날짜.
-         * @param {string} jrnlDtWeekDay - 기준 날짜 요일.
+         * @param {Object} param - 파라미터 객체
+         * @param {string|number} param.jrnlDayNo - 저널 일자 번호.
+         * @param {string|number} param.jrnlDreamNo - 저널 꿈 번호.
+         * @param {string} param.stdrdDt - 기준 날짜.
+         * @param {string} param.jrnlDtWeekDay - 기준 날짜 요일.
          */
-        regModal: function(jrnlDayNo: string|number, jrnlDreamNo: string|number, stdrdDt: string, jrnlDtWeekDay: string): void {
+        regModal: function({ jrnlDayNo, jrnlDreamNo, stdrdDt, jrnlDtWeekDay }: { jrnlDayNo: string | number; jrnlDreamNo: string | number; stdrdDt: string; jrnlDtWeekDay: string; }): void {
             if (isNaN(Number(jrnlDayNo))) return;
 
             const obj: Record<string, any> = { jrnlDayNo: jrnlDayNo, jrnlDreamNo: jrnlDreamNo, stdrdDt: stdrdDt, jrnlDtWeekDay: jrnlDtWeekDay };

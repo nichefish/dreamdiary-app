@@ -96,12 +96,13 @@ dF.JrnlDiary = (function(): dfModule {
 
         /**
          * 등록 모달 호출
-         * @param {string|number} jrnlDayNo - 저널 일자 번호.
-         * @param {string|number} jrnlEntryNo - 저널 항목 번호.
-         * @param {string} stdrdDt - 기준 날짜.
-         * @param {string} jrnlDtWeekDay - 기준 날짜 요일.
+         * @param {Object} param - 파라미터 객체
+         * @param {string|number} param.jrnlDayNo - 저널 일자 번호.
+         * @param {string|number} param.jrnlEntryNo - 저널 항목 번호.
+         * @param {string} param.stdrdDt - 기준 날짜.
+         * @param {string} param.jrnlDtWeekDay - 기준 날짜 요일.
          */
-        regModal: function(jrnlDayNo: string|number, jrnlEntryNo: string|number, stdrdDt: string, jrnlDtWeekDay: string): void {
+        regModal: function({ jrnlDayNo, jrnlEntryNo, stdrdDt, jrnlDtWeekDay }: { jrnlDayNo: string | number; jrnlEntryNo: string | number; stdrdDt: string; jrnlDtWeekDay: string; }): void {
             if (isNaN(Number(jrnlEntryNo))) return;
 
             const url: string = Url.JRNL_DAY_DTL_AJAX;
