@@ -30,7 +30,7 @@ dF.BoardDef = (function(): dfModule {
             /* jquery validation */
             cF.validate.validateForm("#boardDefRegForm", dF.BoardDef.regAjax);
             // checkbox init
-            cF.ui.chckboxLabel("useYn", "사용//미사용", "blue//gray");
+            cF.ui.chckboxLabel("#boardDefRegForm #useYn", "사용//미사용", "blue//gray");
             cF.validate.replaceBlankIfMatches("#boardDefRegForm .cddata", cF.regex.nonCd);
             cF.validate.onlyNum(".number");
         },

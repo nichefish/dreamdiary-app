@@ -50,11 +50,11 @@ dF.JrnlDream = (function(): dfModule {
                 $("#elseDreamerNm").valid();
             });
             // checkbox init
-            cF.ui.chckboxLabel("resolvedYn", "정리완료//정리중", "green//gray");
-            cF.ui.chckboxLabel("imprtcYn", "중요//해당없음", "red//gray");
-            cF.ui.chckboxLabel("nhtmrYn", "악몽//해당없음", "red//gray");
-            cF.ui.chckboxLabel("hallucYn", "입면환각//해당없음", "blue//gray");
-            cF.ui.chckboxLabel("elseDreamYn", "해당//미해당", "blue//gray", function(): void {
+            cF.ui.chckboxLabel("#jrnlDreamRegForm #resolvedYn", "정리완료//정리중", "green//gray");
+            cF.ui.chckboxLabel("#jrnlDreamRegForm #imprtcYn", "중요//해당없음", "red//gray");
+            cF.ui.chckboxLabel("#jrnlDreamRegForm #nhtmrYn", "악몽//해당없음", "red//gray");
+            cF.ui.chckboxLabel("#jrnlDreamRegForm #hallucYn", "입면환각//해당없음", "blue//gray");
+            cF.ui.chckboxLabel("#jrnlDreamRegForm #elseDreamYn", "해당//미해당", "blue//gray", function(): void {
                 $("#elseDreamerNmDiv").removeClass("d-none");
             }, function(): void {
                 $("#elseDreamerNmDiv").addClass("d-none");

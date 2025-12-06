@@ -37,7 +37,7 @@ dF.JrnlEntry = (function(): dfModule {
             /* jquery validation */
             cF.validate.validateForm("#jrnlEntryRegForm", dF.JrnlEntry.regAjax);
             // checkbox init
-            cF.ui.chckboxLabel("imprtcYn", "중요//해당없음", "red//gray");
+            cF.ui.chckboxLabel("#jrnlEntryRegForm #imprtcYn", "중요//해당없음", "red//gray");
             /* tagify */
             // dF.JrnlEntry.tagify = cF.tagify.initWithCtgr("#jrnlEntryRegForm #tagListStr", dF.JrnlEntryTag.ctgrMap);
         },

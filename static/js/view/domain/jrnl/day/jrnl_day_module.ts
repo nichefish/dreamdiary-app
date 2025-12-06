@@ -60,8 +60,9 @@ dF.JrnlDay = (function(): dfModule {
             cF.datepicker.singleDatePicker("#jrnlDt", "yyyy-MM-DD", obj.jrnlDt);
             // 날짜미상 datepicker 날짜 검색 init
             cF.datepicker.singleDatePicker("#aprxmtDt", "yyyy-MM-DD", obj.aprxmtDt);
-            // 날짜미상 checkbox init
-            cF.ui.chckboxLabel("dtUnknownYn", "날짜미상//날짜미상", "blue//gray", function(): void {
+            // checkbox init
+            cF.ui.chckboxLabel("#jrnlDayRegForm #diaryResolvedYn", "완료//미완료", "blue//gray");
+            cF.ui.chckboxLabel("#jrnlDayRegForm #dtUnknownYn", "날짜미상//날짜미상", "blue//gray", function(): void {
                 $("#jrnlDayRegForm #jrnlDtDiv").addClass("d-none");
                 $("#jrnlDayRegForm #aprxmtDtDiv").removeClass("d-none");
                 $("#jrnlDayRegForm #aprxmtDt").val($("#jrnlDayRegForm #jrnlDt").val());
@@ -70,8 +71,6 @@ dF.JrnlDay = (function(): dfModule {
                 $("#jrnlDayRegForm #aprxmtDtDiv").addClass("d-none");
                 $("#jrnlDayRegForm #jrnlDt").val($("#jrnlDayRegForm #aprxmtDt").val());
             });
-            // checkbox init
-            cF.ui.chckboxLabel("diaryResolvedYn", "완료//미완료", "blue//gray");
             /* tagify */
             dF.JrnlDay.tagify = cF.tagify.initWithCtgr("#jrnlDayRegForm #tagListStr", dF.JrnlDayTag.ctgrMap);
         },

@@ -34,7 +34,7 @@ dF.Notice = (function(): dfModule {
             /* tagify */
             dF.Notice.tagify = cF.tagify.initWithCtgr("#noticeRegForm #tagListStr");
             // 잔디발송여부 클릭시 글씨 변경
-            cF.ui.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function(): void {
+            cF.ui.chckboxLabel("#noticeRegForm #jandiYn", "발송//미발송", "blue//gray", function(): void {
                 $("#trgetTopicSpan").show();
             }, function(): void {
                 $("#trgetTopicSpan").hide();

@@ -45,10 +45,9 @@ dF.UserEmplym = (function(): dfModule {
                     $("#apntcYnDiv").hide();
                 }
             });
-            // 수습여부 클릭시 글씨 변경
-            cF.ui.chckboxLabel("apntcYn", "수습//해당없음", "blue//gray");
-            // 퇴사여부 클릭시 글씨 변경
-            cF.ui.chckboxLabel("retireYn", "퇴사//해당없음", "red//gray", function(): void {$(".retireDtDiv").show();}, function(): void {$(".retireDtDiv").hide();});
+            // checkbox init
+            cF.ui.chckboxLabel("#apntcYn", "수습//해당없음", "blue//gray");
+            cF.ui.chckboxLabel("#retireYn", "퇴사//해당없음", "red//gray", function(): void {$(".retireDtDiv").show();}, function(): void {$(".retireDtDiv").hide();});
 
             cF.datepicker.singleDatePicker("#ecnyDt", "yyyy-MM-DD", $("#ecnyDt").val());
             cF.datepicker.singleDatePicker("#retireDt", "yyyy-MM-DD", $("#retireDt").val());

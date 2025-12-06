@@ -80,7 +80,7 @@ dF.UserReqst = (function(): dfModule {
                 $("#emailDupChckBtn").addClass("blink").removeClass("btn-success").addClass("btn-secondary").removeAttr("disabled");
             });
             // 접속IP 사용 여부 클릭시 글씨 변경 + 입력창 토글 :: 메소드 분리
-            cF.ui.chckboxLabel("useAcsIpYn", "사용//미사용", "blue//gray", function(): void{
+            cF.ui.chckboxLabel("#useAcsIpYn", "사용//미사용", "blue//gray", function(): void{
                 $("#acsIpListSpan").show()
             }, function(){
                 $("#acsIpListSpan").hide()

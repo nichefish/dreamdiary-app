@@ -35,7 +35,7 @@ dF.Sectn = (function(): dfModule {
             /* jquery validation */
             cF.validate.validateForm("#sectnRegForm", dF.Sectn.regAjax);
             // checkbox init
-            cF.ui.chckboxLabel("deprcYn", "만료//해당없음", "red//gray");
+            cF.ui.chckboxLabel("#sectnRegForm #deprcYn", "만료//해당없음", "red//gray");
             /* tagify */
             cF.tagify.initWithCtgr("#sectnRegForm #tagListStr", undefined);
             // tinymce editor reset

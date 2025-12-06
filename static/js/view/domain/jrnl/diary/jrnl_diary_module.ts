@@ -37,8 +37,8 @@ dF.JrnlDiary = (function(): dfModule {
             /* jquery validation */
             cF.validate.validateForm("#jrnlDiaryRegForm", dF.JrnlDiary.regAjax);
             // checkbox init
-            cF.ui.chckboxLabel("resolvedYn", "정리완료//정리중", "green//gray");
-            cF.ui.chckboxLabel("imprtcYn", "중요//해당없음", "red//gray");
+            cF.ui.chckboxLabel("#jrnlDiaryRegForm #resolvedYn", "정리완료//정리중", "green//gray");
+            cF.ui.chckboxLabel("#jrnlDiaryRegForm #imprtcYn", "중요//해당없음", "red//gray");
             /* tinymce editor reset */
             cF.tinymce.init('#tinymce_jrnlDiaryCn');
             cF.tinymce.setContentWhenReady("tinymce_jrnlDiaryCn", obj.cn || "");
