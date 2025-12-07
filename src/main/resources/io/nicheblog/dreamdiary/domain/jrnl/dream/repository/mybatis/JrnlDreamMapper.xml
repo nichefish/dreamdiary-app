@@ -44,12 +44,4 @@
             WHERE post_no = #{item.postNo} AND del_yn = 'N'
         </foreach>
     </update>
-
-    <!-- 글접기 상태 갱신 -->
-    <update id="setCollapse">
-        /* JrnlDreamMapper.setCollapse */
-        UPDATE jrnl_dream
-        SET collapse_yn = #{collapseYn}
-        WHERE post_no = #{postNo}
-    </update>
 </mapper>

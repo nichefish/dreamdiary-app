@@ -227,23 +227,20 @@ dF.JrnlIntrpt = (function(): dfModule {
             const url: string = Url.JRNL_INTRPT_SET_COLLAPSE_AJAX;
             const ajaxData: Record<string, any> = { postNo, collapseYn };
             cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
-                Swal.fire({ text: res.message })
-                    .then(function(): void {
-                        if (!res.rslt) return;
+                if (!res.rslt) return;
 
-                        // 찾아서 해당 그것만 collapse 추가 제거.
-                        const item: HTMLElement = document.querySelector(`.jrnl-intrpt-cn[data-id='${postNo}']`);
-                        if (!item) return console.log("item not found.");
+                // 찾아서 해당 그것만 collapse 추가 제거.
+                const item: HTMLElement = document.querySelector(`.jrnl-intrpt-cn[data-id='${postNo}']`);
+                if (!item) return console.log("item not found.");
 
-                        const content: HTMLElement = item.querySelector(".cn");
-                        if (!content) return console.log("content not found.");
+                const content: HTMLElement = item.querySelector(".cn");
+                if (!content) return console.log("content not found.");
 
-                        if (collapseYn === "Y") {
-                            content.classList.add("collapsed");
-                        } else {
-                            content.classList.remove("collapsed");
-                        }
-                    });
+                if (collapseYn === "Y") {
+                    content.classList.add("collapsed");
+                } else {
+                    content.classList.remove("collapsed");
+                }
             }, "block");
         },
 

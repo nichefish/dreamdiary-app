@@ -97,9 +97,6 @@ public class JrnlDayDto
     /** 저널 항목 목록 */
     private List<JrnlEntrySmpDto> entryList;
 
-    /** 저널 일기 목록 */
-    private List<JrnlDiaryDto> jrnlDiaryList;
-
     /** 저널 꿈 목록 */
     private List<JrnlDreamDto> jrnlDreamList;
 

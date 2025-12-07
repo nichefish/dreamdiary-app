@@ -44,7 +44,6 @@ public interface JrnlDayMapstruct
     @Mapping(target = "stdrdDt", expression = "java(DateUtils.asStr(\"Y\".equals(entity.getDtUnknownYn()) ? entity.getAprxmtDt() : entity.getJrnlDt(), DatePtn.DATE))")
     @Mapping(target = "jrnlEntryList", expression = "java(jrnlEntryMapstruct.toDtoList(entity.getJrnlEntryList()))")
     @Mapping(target = "entryList", expression = "java(jrnlEntryMapstruct.toSmpDtoList(entity.getJrnlEntryList()))")
-    @Mapping(target = "jrnlDiaryList", expression = "java(jrnlDiaryMapstruct.toDtoList(entity.getJrnlDiaryList()))")
     @Mapping(target = "jrnlDreamList", expression = "java(jrnlDreamMapstruct.toDtoList(entity.getJrnlDreamList()))")
     @Mapping(target = "jrnlElseDreamList", expression = "java(jrnlDreamMapstruct.toDtoList(entity.getJrnlElseDreamList()))")
     JrnlDayDto toDto(final JrnlDayEntity entity) throws Exception;
@@ -63,7 +62,6 @@ public interface JrnlDayMapstruct
     @Mapping(target = "stdrdDt", expression = "java(DateUtils.asStr(\"Y\".equals(entity.getDtUnknownYn()) ? entity.getAprxmtDt() : entity.getJrnlDt(), DatePtn.DATE))")
     @Mapping(target = "jrnlEntryList", expression = "java(jrnlEntryMapstruct.toDtoList(entity.getJrnlEntryList()))")
     @Mapping(target = "entryList", expression = "java(jrnlEntryMapstruct.toSmpDtoList(entity.getJrnlEntryList()))")
-    @Mapping(target = "jrnlDiaryList", expression = "java(jrnlDiaryMapstruct.toDtoList(entity.getJrnlDiaryList()))")
     @Mapping(target = "jrnlDreamList", expression = "java(jrnlDreamMapstruct.toDtoList(entity.getJrnlDreamList()))")
     @Mapping(target = "jrnlElseDreamList", expression = "java(jrnlDreamMapstruct.toDtoList(entity.getJrnlElseDreamList()))")
     JrnlDayDto toListDto(final JrnlDayEntity entity) throws Exception;

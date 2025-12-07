@@ -38,13 +38,4 @@ public interface JrnlDreamMapper {
      * @return Integer -- 업데이트된 행 개수
      */
     List<JrnlDreamDto> findAllForReorder(final @Param("jrnlDayNo") Integer jrnlDayNo);
-
-    /**
-     * collapse 상태를 설정한다.
-     *
-     * @param postNo 대상 게시물 PK
-     * @param collapseYn 접힘 상태(Y/N)
-     * @return Integer -- 업데이트된 행 개수
-     */
-    Integer setCollapse(final @Param("postNo") Integer postNo, final @Param("collapseYn") String collapseYn);
 }

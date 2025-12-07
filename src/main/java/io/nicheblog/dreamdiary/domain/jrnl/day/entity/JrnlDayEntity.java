@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.domain.jrnl.day.entity;
 
-import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntryEntity;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
@@ -126,16 +125,6 @@ public class JrnlDayEntity
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("저널 항목 목록")
     private List<JrnlEntryEntity> jrnlEntryList;
-
-    /** 저널 일기 목록 */
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "jrnl_day_no", referencedColumnName = "post_no", insertable = false, updatable = false)
-    @Fetch(FetchMode.SUBSELECT)
-    @BatchSize(size = 10)
-    @OrderBy("idx ASC")
-    @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("저널 일기 목록")
-    private List<JrnlDiaryEntity> jrnlDiaryList;
 
     /** 저널 꿈 목록 */
     @OneToMany(fetch = FetchType.LAZY)

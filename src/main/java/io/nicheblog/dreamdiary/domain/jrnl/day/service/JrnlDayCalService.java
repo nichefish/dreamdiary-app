@@ -11,6 +11,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.mapstruct.JrnlDreamCalMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamCalDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
+import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntryDto;
 import io.nicheblog.dreamdiary.domain.schdul.service.SchdulCalService;
 import io.nicheblog.dreamdiary.global.intrfc.model.fullcalendar.BaseCalDto;
 import lombok.RequiredArgsConstructor;
@@ -85,11 +86,16 @@ public class JrnlDayCalService {
             final JrnlDayCalDto jrnlDayCalDto = dayCalMapstruct.toCalDto(jrnlDay);
             jrnlCalEventList.add(jrnlDayCalDto);
 
-            final List<JrnlDiaryDto> myDiaryList = jrnlDay.getJrnlDiaryList();
-            if (CollectionUtils.isNotEmpty(myDiaryList)) {
-                for (final JrnlDiaryDto jrnlDiaryDto : myDiaryList) {
-                    final JrnlDiaryCalDto diaryCalDto = diaryCalMapstruct.toCalDto(jrnlDiaryDto);
-                    jrnlCalEventList.add(diaryCalDto);
+            final List<JrnlEntryDto> myEntryList = jrnlDay.getJrnlEntryList();
+            if (CollectionUtils.isNotEmpty(myEntryList)) {
+                for (final JrnlEntryDto jrnlEntry : myEntryList) {
+                    final List<JrnlDiaryDto> myDiaryList = jrnlEntry.getJrnlDiaryList();
+                    if (CollectionUtils.isNotEmpty(myDiaryList)) {
+                        for (final JrnlDiaryDto jrnlDiaryDto : myDiaryList) {
+                            final JrnlDiaryCalDto diaryCalDto = diaryCalMapstruct.toCalDto(jrnlDiaryDto);
+                            jrnlCalEventList.add(diaryCalDto);
+                        }
+                    }
                 }
             }
 

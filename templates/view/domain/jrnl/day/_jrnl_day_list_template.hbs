@@ -96,7 +96,7 @@
                                         <!-- toggle button -->
                                         <button type="button"
                                                 class="btn btn-sm btn-secondary ms-2 toggle-diary-btn"
-                                                onclick="dF.JrnlDiary.toggle({{postNo}})">
+                                                onclick="dF.JrnlDiary.collapse({{postNo}}, '{{#ifYn collapseYn}}N{{else}}Y{{/ifYn}}')">
                                             <i class="bi bi-chevron-up pe-0" id="diary-toggle-icon-{{postNo}}"></i>
                                         </button>
                                     </div>

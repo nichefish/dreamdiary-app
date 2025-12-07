@@ -9,7 +9,7 @@
     {{#ifYn hallucYn}}<div class="ctgr-span ctgr-gray w-auto">!<@spring.message 'dream.halluc'/></div>{{/ifYn}}
     {{#ifYn elseDreamYn}}<div class="ctgr-span ctgr-gray w-70px d-flex-center">({{elseDreamerNm}} <@spring.message 'dream'/>)</div>{{/ifYn}}
     {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}
-    <div class="cn collapse-4">
+    <div class="cn {{#ifYn collapseYn}}collapsed collapse-4{{/ifYn}}">
         {{{markdownCn}}}
     </div>
     <!-- "더 보기" 버튼, <p> child 3개 이상일 때만 보임 (css) -->

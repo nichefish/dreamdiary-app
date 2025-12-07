@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.domain.jrnl.diary.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.domain.jrnl.JrnlState;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.mapstruct.JrnlDiaryMapstruct;
@@ -24,11 +25,11 @@ import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -325,8 +326,24 @@ public class JrnlDiaryService
      * @return collapseYn 반영 성공 여부를 담은 ServiceResponse
      */
     @Transactional
+    @SuppressWarnings("unchecked")
     public ServiceResponse setCollapse(final Integer postNo, final String collapseYn) throws Exception {
-        mapper.setCollapse(postNo, collapseYn);
+        final JrnlDiaryEntity entity = getDtlEntity(postNo);
+        entity.setCollapseYn(collapseYn);
+        final JrnlDiaryEntity updatedEntity = repository.save(entity);
+
+        final Integer yy = updatedEntity.getJrnlEntry().getJrnlDay().getYy();
+        final Integer mnth = updatedEntity.getJrnlEntry().getJrnlDay().getMnth();
+        final String cacheKey = AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth;
+
+        final Map<Integer, JrnlState> diaryMap = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myDiaryStateMap", cacheKey);
+        if (diaryMap != null) {
+            final JrnlState state = diaryMap.get(postNo);
+            if (state != null) {
+                state.setCollapseYn(collapseYn);
+                EhCacheUtils.put("myDiaryStateMap", cacheKey, diaryMap);
+            }
+        }
 
         return ServiceResponse.builder()
                 .rslt(true)
