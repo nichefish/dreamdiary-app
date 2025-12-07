@@ -117,9 +117,25 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     }
 }
 
-.jrnl-diary-cn[data-resolved="Y"], .jrnl-dream-cn[data-resolved="Y"], .jrnl-sumry-cn[data-resolved="Y"] {
-    .cn.collapsed::before {
-        color: #8ab89a;
+.jrnl-diary-item[data-resolved="Y"] {
+    .jrnl-diary-cn {
+        .cn.collapsed::before {
+            color: #8ab89a;
+        }
+    }
+}
+.jrnl-dream-item[data-resolved="Y"] {
+    .jrnl-dream-cn {
+        .cn.collapsed::before {
+            color: #8ab89a;
+        }
+    }
+}
+.jrnl-intrpt-item[data-resolved="Y"] {
+    .jrnl-intrpt-cn {
+        .cn.collapsed::before {
+            color: #8ab89a;
+        }
     }
 }
 

@@ -5,7 +5,6 @@
  */
 
 /* ----- */
-
 /**
  * cF : 공통 유틸리티 함수 모듈
  */
@@ -109,3 +108,8 @@ declare interface AjaxResponse {
     rsltStr?: string;
     url?: string;
 }
+
+/**
+ * metronic
+ */
+declare const KTMenu: any;

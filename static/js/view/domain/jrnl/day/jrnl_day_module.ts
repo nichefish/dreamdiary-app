@@ -103,9 +103,9 @@ dF.JrnlDay = (function(): dfModule {
                 $("#jrnl_dream_list_div").empty();
                 cF.ui.closeModal();
                 cF.handlebars.template(rsltList, "jrnl_day_list");
+                KTMenu.createInstances();
 
                 /* 글접기 처리 (localStorage) */
-                // dF.JrnlDiary.initCollapseState();
                 // dF.JrnlEntry.initCollapseState();
                 // dF.JrnlDream.initCollapseState();
             }, "block");

@@ -36,9 +36,6 @@ dF.JrnlDiary = (function(): dfModule {
 
             /* jquery validation */
             cF.validate.validateForm("#jrnlDiaryRegForm", dF.JrnlDiary.regAjax);
-            // checkbox init
-            cF.ui.chckboxLabel("#jrnlDiaryRegForm #resolvedYn", "정리완료//정리중", "green//gray");
-            cF.ui.chckboxLabel("#jrnlDiaryRegForm #imprtcYn", "중요//해당없음", "red//gray");
             /* tinymce editor reset */
             cF.tinymce.init('#tinymce_jrnlDiaryCn');
             cF.tinymce.setContentWhenReady("tinymce_jrnlDiaryCn", obj.cn || "");
@@ -277,29 +274,60 @@ dF.JrnlDiary = (function(): dfModule {
         },
 
         /**
+         * 정리완료 처리. (Ajax)
          * @param {string|number} postNo - 글 번호.
-         * @param {'Y'|'N'} collapseYn - 글접기 여부.
          */
-        collapse: function(postNo: string|number, collapseYn: 'Y'|'N'): void {
+        resolveAjax: function(postNo: string|number): void {
             if (isNaN(Number(postNo))) return;
 
-            const url: string = Url.JRNL_DIARY_SET_COLLAPSE_AJAX;
-            const ajaxData: Record<string, any> = { postNo, collapseYn };
+            const item: HTMLElement = document.querySelector(`.jrnl-diary-item[data-id='${postNo}']`);
+            if (!item) return;
+
+            const current: string = (item.dataset.resolved || "N").toUpperCase();
+            const next = current === "Y" ? "N" : "Y";
+
+            const url: string = Url.JRNL_DIARY_RESOLVE_AJAX;
+            const ajaxData: Record<string, any> = { postNo, resolvedYn: next };
             cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) return;
 
-                // 찾아서 해당 그것만 collapse 추가 제거.
-                const item: HTMLElement = document.querySelector(`.jrnl-diary-cn[data-id='${postNo}']`);
-                if (!item) return console.log("item not found.");
+                item.dataset.resolved = next;
+                item.dataset.collapse = next;
 
                 const content: HTMLElement = item.querySelector(".cn");
-                if (!content) return console.log("content not found.");
-
-                if (collapseYn === "Y") {
-                    content.classList.add("collapsed");
-                } else {
-                    content.classList.remove("collapsed");
+                if (content) {
+                    content.classList.toggle("collapsed", next === "Y");
                 }
+                const chk: HTMLInputElement = item.querySelector(".diary-context-collapse-check");
+                if (chk) chk.checked = (next === "Y");
+            }, "block");
+        },
+
+        /**
+         * 글 접기/펼치기 토글. (Ajax)
+         * @param {string|number} postNo - 글 번호.
+         */
+        collapseAjax: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            const item: HTMLElement = document.querySelector(`.jrnl-diary-item[data-id='${postNo}']`);
+            if (!item) return;
+
+            const current: string = (item.dataset.collapse || "N").toUpperCase();
+            const next = current === "Y" ? "N" : "Y";
+
+            const url: string = Url.JRNL_DIARY_SET_COLLAPSE_AJAX;
+            const ajaxData: Record<string, any> = { postNo, collapseYn: next };
+            cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                if (!res.rslt) return;
+
+                item.dataset.collapse = next;
+
+                const content: HTMLElement = item.querySelector(".cn");
+                if (content) content.classList.toggle("collapsed", next === "Y");
+
+                const idx: HTMLElement = item.querySelector(".jrnl-diary-idx");
+                idx.classList.toggle("text-success", next !== "Y");
             }, "block");
         },
 
@@ -312,45 +340,23 @@ dF.JrnlDiary = (function(): dfModule {
             if (isNaN(Number(postNo))) return;
 
             const id: string = String(postNo);
-            const item: HTMLElement = document.querySelector(`.jrnl-diary-cn[data-id='${id}']`);
+            const item: HTMLElement = document.querySelector(`.jrnl-diary-item[data-id='${id}']`);
             if (!item) return console.log("item not found.");
 
             const content: HTMLElement = item.querySelector(".jrnl-diary-cn .cn");
             if (!content) return console.log("content not found.");
 
-            const icon: HTMLElement = document.querySelector(`#diary-toggle-icon-${id}`);
+            const icon: HTMLElement = item.querySelector('#diary-toggle-icon');
             if (!icon) console.log("icon not found.");
-            const collapsedIds = new Set(JSON.parse(localStorage.getItem(dF.JrnlDiary.STORAGE_KEY) || "[]"));
 
             const isCollapsed: boolean = content.classList.contains("collapsed");
             if (isCollapsed) {
                 content.classList.remove("collapsed");
                 icon?.classList.replace("bi-chevron-down", "bi-chevron-up");
-                collapsedIds.delete(id);
             } else {
                 content.classList.add("collapsed");
                 icon?.classList.replace("bi-chevron-up", "bi-chevron-down");
-                collapsedIds.add(id);
             }
-
-            localStorage.setItem(dF.JrnlDiary.STORAGE_KEY, JSON.stringify(Array.from(collapsedIds)));
-        },
-
-        /**
-         * 접힌 일기 초기화
-         */
-        initCollapseState: function(): void {
-            const collapsedIds = new Set(JSON.parse(localStorage.getItem(dF.JrnlDiary.STORAGE_KEY) || "[]"));
-            document.querySelectorAll(".jrnl-diary-item .jrnl-diary-cn").forEach((item: HTMLElement): void => {
-                const id: string = item.dataset.id;
-                const content: HTMLElement = item.querySelector(".cn");
-                const icon: HTMLElement = document.querySelector(`#diary-toggle-icon-${id}`);
-                if (!icon) console.log("icon not found.");
-                if (id && collapsedIds.has(id)) {
-                    content?.classList.add("collapsed");
-                    icon?.classList.replace("bi-chevron-up", "bi-chevron-down");
-                }
-            });
         }
     }
 })();

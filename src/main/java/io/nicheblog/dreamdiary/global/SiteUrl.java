@@ -43,6 +43,7 @@ public interface SiteUrl {
     String JRNL_DREAM_DTL_AJAX = Prefix.JRNL_DREAM + "/jrnl-dream-dtl-ajax.do";
     String JRNL_DREAM_MDF_AJAX = Prefix.JRNL_DREAM + "/jrnl-dream-mdf-ajax.do";
     String JRNL_DREAM_DEL_AJAX = Prefix.JRNL_DREAM + "/jrnl-dream-del-ajax.do";
+    String JRNL_DREAM_RESOLVE_AJAX = Prefix.JRNL_DREAM + "/jrnl-dream-resolve-ajax.do";
     String JRNL_DREAM_SET_COLLAPSE_AJAX = Prefix.JRNL_DREAM + "/jrnl-dream-set-collapse-ajax.do";
     /** 저널 꿈 태그 */
     String JRNL_DREAM_TAG_LIST_AJAX = Prefix.JRNL_DREAM + "/jrnl-dream-tag-list-ajax.do";
@@ -55,6 +56,7 @@ public interface SiteUrl {
     String JRNL_INTRPT_DTL_AJAX = Prefix.JRNL_INTRPT + "/jrnl-intrpt-dtl-ajax.do";
     String JRNL_INTRPT_MDF_AJAX = Prefix.JRNL_INTRPT + "/jrnl-intrpt-mdf-ajax.do";
     String JRNL_INTRPT_DEL_AJAX = Prefix.JRNL_INTRPT + "/jrnl-intrpt-del-ajax.do";
+    String JRNL_INTRPT_RESOLVE_AJAX = Prefix.JRNL_INTRPT + "/jrnl-intrpt-resolve-ajax.do";
     String JRNL_INTRPT_SET_COLLAPSE_AJAX = Prefix.JRNL_DREAM + "/jrnl-intrpt-set-collapse-ajax.do";
     /** 저널 해석 태그 */
     String JRNL_INTRPT_TAG_LIST_AJAX = Prefix.JRNL_INTRPT + "/jrnl-intrpt-tag-list-ajax.do";
@@ -80,6 +82,8 @@ public interface SiteUrl {
     String JRNL_DIARY_DTL_AJAX = Prefix.JRNL_DIARY + "/jrnl-diary-dtl-ajax.do";
     String JRNL_DIARY_MDF_AJAX = Prefix.JRNL_DIARY + "/jrnl-diary-mdf-ajax.do";
     String JRNL_DIARY_DEL_AJAX = Prefix.JRNL_DIARY + "/jrnl-diary-del-ajax.do";
+    String JRNL_DIARY_IMPRTC_AJAX = Prefix.JRNL_DIARY + "/jrnl-diary-imprtc-ajax.do";
+    String JRNL_DIARY_RESOLVE_AJAX = Prefix.JRNL_DIARY + "/jrnl-diary-resolve-ajax.do";
     String JRNL_DIARY_SET_COLLAPSE_AJAX = Prefix.JRNL_DIARY + "/jrnl-diary-set-collapse-ajax.do";
     String JRNL_DIARY_SET_COLLAPSE_BY_ENTRY_AJAX = Prefix.JRNL_DIARY + "/jrnl-diary-set-collapse-by-entry-ajax.do";
     /** 저널 일기 태그 */

@@ -236,7 +236,7 @@ dF.JrnlEntry = (function(): dfModule {
             diaries.forEach((item: HTMLElement): void => {
                 const id: string = item.dataset.id;
                 const content: HTMLElement = item.querySelector(".cn");
-                const icon: HTMLElement = document.querySelector(`#diary-toggle-icon-${id}`);
+                const icon: HTMLElement = item.querySelector('#diary-toggle-icon');
                 if (!icon) console.log("icon not found.");
 
                 if (!id || !content) return;

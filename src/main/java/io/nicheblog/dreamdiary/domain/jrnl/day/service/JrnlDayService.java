@@ -2,8 +2,8 @@ package io.nicheblog.dreamdiary.domain.jrnl.day.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.domain.jrnl.JrnlState;
-import io.nicheblog.dreamdiary.domain.jrnl.JrnlStateMaps;
+import io.nicheblog.dreamdiary.domain.jrnl.state.JrnlState;
+import io.nicheblog.dreamdiary.domain.jrnl.state.JrnlStateMaps;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.day.mapstruct.JrnlDayMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
@@ -114,7 +114,7 @@ public class JrnlDayService
                     final List<JrnlDiaryEntity> myJrnlDiaryList = entry.getJrnlDiaryList();
                     if (CollectionUtils.isNotEmpty(myJrnlDiaryList)) {
                         for (final JrnlDiaryEntity diary : myJrnlDiaryList) {
-                            diaryMap.put(diary.getPostNo(), JrnlState.of(diary.getResolvedYn(), diary.getCollapseYn()));
+                            diaryMap.put(diary.getPostNo(), JrnlState.of(diary.getResolvedYn(), diary.getCollapseYn(), diary.getImprtcYn()));
                         }
                     }
                 }
@@ -123,12 +123,12 @@ public class JrnlDayService
             final List<JrnlDreamEntity> myJrnlDreamList = day.getJrnlDreamList();
             if (CollectionUtils.isNotEmpty(myJrnlDreamList)) {
                 for (final JrnlDreamEntity dream : myJrnlDreamList) {
-                    dreamMap.put(dream.getPostNo(), JrnlState.of(dream.getResolvedYn(), dream.getCollapseYn()));
+                    dreamMap.put(dream.getPostNo(), JrnlState.of(dream.getResolvedYn(), dream.getCollapseYn(), dream.getImprtcYn()));
 
                     final List<JrnlIntrptEntity> myJrnlIntrptList = dream.getJrnlIntrptList();
                     if (CollectionUtils.isNotEmpty(myJrnlIntrptList)) {
                         for (final JrnlIntrptEntity intrpt : myJrnlIntrptList) {
-                            intrptMap.put(intrpt.getPostNo(), JrnlState.of(intrpt.getResolvedYn(), intrpt.getCollapseYn()));
+                            intrptMap.put(intrpt.getPostNo(), JrnlState.of(intrpt.getResolvedYn(), intrpt.getCollapseYn(), intrpt.getImprtcYn()));
                         }
                     }
                 }
@@ -176,10 +176,10 @@ public class JrnlDayService
     }
 
     private void applyStates(
-        List<JrnlDayDto> listDto,
-        Map<Integer, JrnlState> diaryMap,
-        Map<Integer, JrnlState> dreamMap,
-        Map<Integer, JrnlState> intrptMap
+        final List<JrnlDayDto> listDto,
+        final Map<Integer, JrnlState> diaryMap,
+        final Map<Integer, JrnlState> dreamMap,
+        final Map<Integer, JrnlState> intrptMap
     ) {
         for (JrnlDayDto day : listDto) {
 
@@ -191,6 +191,7 @@ public class JrnlDayService
                             if (s != null) {
                                 diary.setCollapseYn(s.getCollapseYn());
                                 diary.setResolvedYn(s.getResolvedYn());
+                                diary.setImprtcYn(s.getImprtcYn());
                             }
                         }
                     }
@@ -204,6 +205,7 @@ public class JrnlDayService
                     if (s != null) {
                         dream.setCollapseYn(s.getCollapseYn());
                         dream.setResolvedYn(s.getResolvedYn());
+                        dream.setImprtcYn(s.getImprtcYn());
                     }
 
                     if (CollectionUtils.isNotEmpty(dream.getJrnlIntrptList())) {
@@ -212,6 +214,7 @@ public class JrnlDayService
                             if (d != null) {
                                 intrpt.setCollapseYn(d.getCollapseYn());
                                 intrpt.setResolvedYn(d.getResolvedYn());
+                                intrpt.setImprtcYn(d.getImprtcYn());
                             }
                         }
                     }

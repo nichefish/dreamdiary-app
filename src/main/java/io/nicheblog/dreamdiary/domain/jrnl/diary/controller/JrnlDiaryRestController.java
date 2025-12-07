@@ -159,6 +159,62 @@ public class JrnlDiaryRestController
     }
 
     /**
+     * 저널 일기 중요 상태 변경 (Ajax)
+     * (사용자USER, 관리자MNGR만 접근 가능.)
+     *
+     * @param postNo 식별자
+     * @param logParam 로그 기록을 위한 파라미터 객체
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     * @see TagProcEventListener
+     */
+    @PostMapping(value = {Url.JRNL_DIARY_IMPRTC_AJAX})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> jrnlDiaryImprtcAjax(
+            final @RequestParam("postNo") Integer postNo,
+            final @RequestParam("imprtcYn") String imprtcYn,
+            final LogActvtyParam logParam
+    ) throws Exception {
+
+        final ServiceResponse result = jrnlDiaryService.imprtc(postNo, imprtcYn);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+
+        // 로그 관련 세팅
+        logParam.setResult(isSuccess, rsltMsg);
+
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
+    }
+
+    /**
+     * 저널 일기 정리완료 상태 변경 (Ajax)
+     * (사용자USER, 관리자MNGR만 접근 가능.)
+     *
+     * @param postNo 식별자
+     * @param logParam 로그 기록을 위한 파라미터 객체
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     * @see TagProcEventListener
+     */
+    @PostMapping(value = {Url.JRNL_DIARY_RESOLVE_AJAX})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> jrnlDiaryResolveAjax(
+            final @RequestParam("postNo") Integer postNo,
+            final @RequestParam("resolvedYn") String resolvedYn,
+            final LogActvtyParam logParam
+    ) throws Exception {
+
+        final ServiceResponse result = jrnlDiaryService.resolve(postNo, resolvedYn);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+
+        // 로그 관련 세팅
+        logParam.setResult(isSuccess, rsltMsg);
+
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
+    }
+
+    /**
      * 저널 일기 토글 상태 변경 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
@@ -186,7 +242,7 @@ public class JrnlDiaryRestController
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 
-        /**
+    /**
      * 저널 일기 토글 상태 변경 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
