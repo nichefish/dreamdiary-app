@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.domain.jrnl.intrpt.entity;
 
-import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamSmpEntity;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import lombok.*;

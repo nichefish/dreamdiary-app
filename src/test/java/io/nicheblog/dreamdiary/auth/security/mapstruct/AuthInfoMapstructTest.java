@@ -1,7 +1,6 @@
 package io.nicheblog.dreamdiary.auth.security.mapstruct;
 
 import io.nicheblog.dreamdiary.auth.Auth;
-import io.nicheblog.dreamdiary.auth.security.mapstruct.AuthInfoMapstruct;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.domain.user.info.entity.*;
 import io.nicheblog.dreamdiary.domain.user.info.model.profl.UserProflDto;
@@ -11,9 +10,9 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -3,10 +3,10 @@ package io.nicheblog.dreamdiary.global.intrfc.mapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.helper.MapstructHelper;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
+import org.apache.commons.collections4.CollectionUtils;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;

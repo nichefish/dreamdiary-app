@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.domain.jrnl.intrpt.model;
 
-import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.comment.model.cmpstn.CommentCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.comment.model.cmpstn.CommentCmpstnModule;
@@ -16,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Date;
-import java.util.List;
 
 /**
  * JrnlIntrptDto

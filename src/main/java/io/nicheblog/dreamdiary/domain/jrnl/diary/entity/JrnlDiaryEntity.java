@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.domain.jrnl.diary.entity;
 
-import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntrySmpEntity;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbed;

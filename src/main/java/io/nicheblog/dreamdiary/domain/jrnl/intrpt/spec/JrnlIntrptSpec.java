@@ -2,9 +2,9 @@ package io.nicheblog.dreamdiary.domain.jrnl.intrpt.spec;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntrySmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.entity.JrnlIntrptEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.entity.JrnlIntrptSmpEntity;
-import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntrySmpEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.ContentTagEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BasePostSpec;

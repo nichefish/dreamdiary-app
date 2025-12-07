@@ -3,8 +3,8 @@ package io.nicheblog.dreamdiary.global.intrfc.spec;
 import io.nicheblog.dreamdiary.domain.board.notice.entity.NoticeEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.ContentTagEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.util.CollectionUtils;
 
 import javax.persistence.criteria.*;
 import java.util.ArrayList;

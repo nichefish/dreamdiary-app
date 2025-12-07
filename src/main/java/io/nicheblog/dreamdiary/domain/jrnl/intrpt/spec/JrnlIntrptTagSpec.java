@@ -5,7 +5,6 @@ import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamSmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.entity.JrnlIntrptContentTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.entity.JrnlIntrptSmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.entity.JrnlIntrptTagEntity;
-import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntrySmpEntity;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
