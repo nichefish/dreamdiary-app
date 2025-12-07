@@ -23,7 +23,6 @@ public class JrnlDaySearchParam
 
     /** 년도 */
     private Integer yy;
-
     /** 월 */
     private Integer mnth;
 

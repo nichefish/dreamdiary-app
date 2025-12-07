@@ -6,7 +6,7 @@
 <script type="text/x-handlebars-template" id="jrnl_day_list_template">
     {{#each this}}
         <div class="jrnl-day">
-            <div class="jrnl-day-header">
+            <div class="jrnl-day-header" data-date="{{stdrdDt}}">
                 <div class="col-12 col-md-1 d-flex flex-wrap align-items-center fs-5 fw-bold {{#if isHldy}}text-danger{{/if}}" style="column-gap: .25rem">
                     <i class="bi bi-calendar3 fs-6 me-1 {{#if isHldy}}text-danger{{/if}}"></i>
                     {{stdrdDt}}

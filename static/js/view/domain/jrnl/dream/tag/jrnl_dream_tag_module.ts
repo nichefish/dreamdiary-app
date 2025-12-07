@@ -33,8 +33,13 @@ dF.JrnlDreamTag = (function(): dfModule {
          * 목록에 따른 꿈 태그 조회 (Ajax)
          */
         listAjax: function(): void {
+            const yy: string = cF.util.getUrlParam("yy") ?? localStorage.getItem("jrnl_yy") ?? "9999";
+            if (cF.util.isEmpty(yy)) return;
+            const mnth: string = cF.util.getUrlParam("mnth") ?? localStorage.getItem("jrnl_mnth") ?? "99";
+            if (cF.util.isEmpty(mnth)) return;
+
             const url: string = Url.JRNL_DREAM_TAG_LIST_AJAX;
-            const ajaxData: Record<string, any> = { "yy": localStorage.getItem("jrnl_yy"), "mnth": localStorage.getItem("jrnl_mnth") };
+            const ajaxData: Record<string, any> = { yy, mnth };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });

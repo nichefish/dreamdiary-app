@@ -79,9 +79,9 @@ dF.JrnlDay = (function(): dfModule {
          * 년도-월 목록 조회 (Ajax)
          */
         yyMnthListAjax: function(): void {
-            const yy: string = localStorage.getItem("jrnl_yy") ?? "9999";
+            const yy: string = cF.util.getUrlParam("yy") ?? localStorage.getItem("jrnl_yy") ?? "9999";
             if (cF.util.isEmpty(yy)) return;
-            const mnth: string = localStorage.getItem("jrnl_mnth") ?? "99";
+            const mnth: string = cF.util.getUrlParam("mnth") ?? localStorage.getItem("jrnl_mnth") ?? "99";
             if (cF.util.isEmpty(mnth)) return;
 
             const url: string = Url.JRNL_DAY_LIST_AJAX + "?yy=" + yy + "&mnth=" + mnth;
@@ -105,9 +105,9 @@ dF.JrnlDay = (function(): dfModule {
                 cF.handlebars.template(rsltList, "jrnl_day_list");
 
                 /* 글접기 처리 (localStorage) */
-                dF.JrnlDiary.initCollapseState();
-                dF.JrnlEntry.initCollapseState();
-                dF.JrnlDream.initCollapseState();
+                // dF.JrnlDiary.initCollapseState();
+                // dF.JrnlEntry.initCollapseState();
+                // dF.JrnlDream.initCollapseState();
             }, "block");
         },
 
@@ -127,8 +127,8 @@ dF.JrnlDay = (function(): dfModule {
          * 사이드바 기준으로 등록 모달 날짜 계산:: 메소드 분리
          */
         validDt: function(): string {
-            const yy: string = localStorage.getItem("jrnl_yy");
-            const mnth: string = localStorage.getItem("jrnl_mnth");
+            const yy: string = cF.util.getUrlParam("yy") ?? localStorage.getItem("jrnl_yy");
+            const mnth: string = cF.util.getUrlParam("mnth") ?? localStorage.getItem("jrnl_mnth");
 
             const year: number = parseInt(yy, 10);
             let month: number = parseInt(mnth, 10);

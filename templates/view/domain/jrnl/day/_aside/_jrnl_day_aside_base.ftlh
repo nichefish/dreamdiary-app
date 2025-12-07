@@ -79,7 +79,6 @@
                                 <#list 1..12 as mnth>
                                     <option value="${mnth}">${mnth}</option>
                                 </#list>
-                                <option value="99"><@spring.message 'mmth-all'/></option>
                             </select>
                             <div class="d-flex align-items-center ms-2">
                                 <i id="right" class="bi bi-caret-right fs-2 cursor-pointer"

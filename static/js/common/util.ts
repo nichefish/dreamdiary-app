@@ -181,6 +181,16 @@ cF.util = (function(): Module {
         },
 
         /**
+         * 파라미터로부터 값을 가져온다.
+         * @param {string} name 파라미터 이름
+         * @param {string} defaultValue 부재시 기본으로 세팅할 값
+         */
+        getUrlParam: function(name: string, defaultValue: string = ""): string {
+            const url = new URL(window.location.href);
+            return url.searchParams.get(name) ?? defaultValue;
+        },
+
+        /**
          * 상대경로로부터 절대경로를 반환한다.
          * @param {string} url 상대경로
          * @return {string} 절대경로
