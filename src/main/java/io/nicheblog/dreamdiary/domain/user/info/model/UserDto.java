@@ -5,13 +5,13 @@ import io.nicheblog.dreamdiary.domain.user.info.model.emplym.UserEmplymDto;
 import io.nicheblog.dreamdiary.domain.user.info.model.profl.UserProflDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseAtchDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
+import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,14 +71,12 @@ public class UserDto
 
     /** 잠금 여부 (Y/N) */
     @Builder.Default
-    @Size(min = 1, max = 1)
-    @Pattern(regexp = "^[YN]$")
+    @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
     protected String lockedYn = "N";
 
     /** 퇴사 여부 (Y/N) */
     @Builder.Default
-    @Size(min = 1, max = 1)
-    @Pattern(regexp = "^[YN]$")
+    @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
     protected String retireYn = "N";
 
     /** 퇴사일 */
@@ -119,8 +117,7 @@ public class UserDto
 
         /** 접속 IP 사용 여부 (Y/N) */
         @Builder.Default
-        @Size(min = 1, max = 1)
-        @Pattern(regexp = "^[YN]$")
+        @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
         private String useAcsIpYn = "N";
 
         /** 접속 IP 정보 */

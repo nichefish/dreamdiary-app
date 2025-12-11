@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.domain.user.info.model.emplym;
 
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
+import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 /**
  * UserEmplymDto
@@ -67,8 +67,7 @@ public class UserEmplymDto
 
     /** 수습 여부 (Y/N) */
     @Builder.Default
-    @Size(min = 1, max = 1)
-    @Pattern(regexp = "^[YN]$")
+    @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
     private String apntcYn = "N";
 
     /** 입사일 */
@@ -76,8 +75,7 @@ public class UserEmplymDto
 
     /** 퇴사 여부 (Y/N) */
     @Builder.Default
-    @Size(min = 1, max = 1)
-    @Pattern(regexp = "^[YN]$")
+    @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
     private String retireYn = "N";
 
     /** 퇴사일 */
