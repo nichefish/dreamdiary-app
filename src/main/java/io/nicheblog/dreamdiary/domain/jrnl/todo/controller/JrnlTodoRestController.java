@@ -53,7 +53,7 @@ public class JrnlTodoRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(value = {Url.JRNL_TODO_LIST_AJAX})
+    @GetMapping(value = {Url.JRNL_TODOS})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlTodoListAjax(

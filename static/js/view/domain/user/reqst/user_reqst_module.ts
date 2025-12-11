@@ -144,7 +144,7 @@ dF.UserReqst = (function(): dfModule {
          * 로그인 화면으로 이동
          */
         main: function(): void {
-            cF.ui.blockUIReplace(Url.AUTH_LGN_FORM);
+            cF.ui.blockUIReplace(Url.APP_AUTH_LGN_FORM);
         }
     }
 })();

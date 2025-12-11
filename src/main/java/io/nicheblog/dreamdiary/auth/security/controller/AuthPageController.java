@@ -41,12 +41,12 @@ public class AuthPageController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.AUTH_VERIFY + "/{token}")
+    @GetMapping(Url.API_AUTH_VERIFY)
     public String verifySecurityCode(
             final @PathVariable("token") String token,
             final LogActvtyParam logParam,
             final ModelMap model
-    ) throws Exception {
+    ) {
 
         boolean isSuccess = false;
         String rsltMsg = null;

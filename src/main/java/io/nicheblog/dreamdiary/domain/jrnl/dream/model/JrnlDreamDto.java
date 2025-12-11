@@ -76,7 +76,7 @@ public class JrnlDreamDto
     /** 글접기 여부 (Y/N) */
     @Builder.Default
     @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
-    private String collapseYn = "N";
+    private String collapsedYn = "N";
 
     /** 저널 일기 목록 */
     private List<JrnlIntrptDto> jrnlIntrptList;

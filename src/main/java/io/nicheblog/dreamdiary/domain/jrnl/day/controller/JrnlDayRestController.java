@@ -1,8 +1,10 @@
 package io.nicheblog.dreamdiary.domain.jrnl.day.controller;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.domain.jrnl.day.JrnlDayViewType;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDaySearchParam;
+import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayCalService;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
@@ -45,6 +47,7 @@ public class JrnlDayRestController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
     private final JrnlDayService jrnlDayService;
+    private final JrnlDayCalService jrnlDayCalService;
 
     /**
      * 저널 일자 목록 조회 (Ajax)
@@ -54,22 +57,26 @@ public class JrnlDayRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(value = {Url.JRNL_DAY_LIST_AJAX})
+    @GetMapping(value = {Url.JRNL_DAYS})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayListAjax(
+            final @RequestParam("viewType") JrnlDayViewType viewType,
             final JrnlDaySearchParam searchParam,
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final List<JrnlDayDto> jrnlDayList = jrnlDayService.getMyListDtoWithHldy(AuthUtils.getLgnUserId(), searchParam);
+        final Object list = switch (viewType) {
+            case LIST -> jrnlDayService.getMyListDtoWithHldy(AuthUtils.getLgnUserId(), searchParam);
+            case CAL -> jrnlDayCalService.getSchdulTotalCalList(searchParam);
+        };
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(jrnlDayList));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList((List<?>) list));
     }
 
     /**
@@ -86,16 +93,17 @@ public class JrnlDayRestController
             summary = "저널 일자 등록/수정",
             description = "저널 일자 정보를 등록/수정한다."
     )
-    @PostMapping(value = {Url.JRNL_DAY_REG_AJAX, Url.JRNL_DAY_MDF_AJAX})
+    @PostMapping(value = {Url.JRNL_DAYS, Url.JRNL_DAY})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayRegAjax(
+            final @PathVariable(value = "postNo", required = false) Integer postNo,
             final @Valid JrnlDayDto jrnlDay,
             final LogActvtyParam logParam,
             final MultipartHttpServletRequest request
     ) throws Exception {
 
-        boolean isReg = jrnlDay.getKey() == null;
+        boolean isReg = postNo == null;
         if (isReg) {
             boolean isDup = jrnlDayService.dupChck(jrnlDay);
             if (isDup) {
@@ -121,11 +129,11 @@ public class JrnlDayRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(value = {Url.JRNL_DAY_DTL_AJAX})
+    @GetMapping(value = {Url.JRNL_DAY})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayDtlAjax(
-            final @RequestParam("postNo") Integer key,
+            final @PathVariable("postNo") Integer key,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -143,20 +151,20 @@ public class JrnlDayRestController
      * 저널 일자 삭제 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param postNo 식별자
+     * @param key 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @see TagProcEventListener
      */
-    @PostMapping(value = {Url.JRNL_DAY_DEL_AJAX})
+    @DeleteMapping(value = {Url.JRNL_DAY})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayDelAjax(
-            final @RequestParam("postNo") Integer postNo,
+            final @PathVariable("postNo") Integer key,
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final ServiceResponse result = jrnlDayService.delete(postNo);
+        final ServiceResponse result = jrnlDayService.delete(key);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

@@ -53,7 +53,7 @@ public class JrnlIntrptRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(value = {Url.JRNL_INTRPT_LIST_AJAX})
+    @GetMapping(value = {Url.JRNL_INTRPTS})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlIntrptListAjax(
@@ -85,17 +85,20 @@ public class JrnlIntrptRestController
             summary = "저널 해석 등록/수정",
             description = "저널 해석 정보를 등록/수정한다."
     )
-    @PostMapping(value = {Url.JRNL_INTRPT_REG_AJAX, Url.JRNL_INTRPT_MDF_AJAX})
+    @PostMapping(value = {Url.JRNL_INTRPTS, Url.JRNL_INTRPT})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlIntrptRegAjax(
+            final @PathVariable(value = "postNo", required = false) Integer postNo,
             final @Valid JrnlIntrptDto jrnlIntrpt,
             final LogActvtyParam logParam,
             final MultipartHttpServletRequest request
     ) throws Exception {
 
-        final boolean isReg = (jrnlIntrpt.getKey() == null);
-        final ServiceResponse result = isReg ? jrnlIntrptService.regist(jrnlIntrpt, request) : jrnlIntrptService.modify(jrnlIntrpt, request);
+        final boolean isMdf = postNo != null;
+        if (isMdf) jrnlIntrpt.setPostNo(postNo);
+
+        final ServiceResponse result = isMdf ? jrnlIntrptService.modify(jrnlIntrpt, request) : jrnlIntrptService.regist(jrnlIntrpt, request);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
@@ -113,11 +116,11 @@ public class JrnlIntrptRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(value = {Url.JRNL_INTRPT_DTL_AJAX})
+    @GetMapping(value = {Url.JRNL_INTRPT})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlIntrptDtlAjax(
-            final @RequestParam("postNo") Integer key,
+            final @PathVariable("postNo") Integer key,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -140,11 +143,11 @@ public class JrnlIntrptRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @see TagProcEventListener
      */
-    @PostMapping(value = {Url.JRNL_INTRPT_DEL_AJAX})
+    @DeleteMapping(value = {Url.JRNL_INTRPT})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlIntrptDelAjax(
-            final @RequestParam("postNo") Integer postNo,
+            final @PathVariable("postNo") Integer postNo,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -172,11 +175,11 @@ public class JrnlIntrptRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlIntrptSetCollapseAjax(
             final @RequestParam("postNo") Integer postNo,
-            final @RequestParam("collapseYn") String collapseYn,
+            final @RequestParam("collapsedYn") String collapsedYn,
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final ServiceResponse result = jrnlIntrptService.setCollapse(postNo, collapseYn);
+        final ServiceResponse result = jrnlIntrptService.setCollapse(postNo, collapsedYn);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

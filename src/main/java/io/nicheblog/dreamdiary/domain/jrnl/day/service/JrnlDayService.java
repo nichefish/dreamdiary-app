@@ -94,7 +94,7 @@ public class JrnlDayService
     }
 
     /**
-     * 각 게시물 타입(일기/꿈/해석)의 상태(resolvedYn, collapseYn)를 별도의 Map(postNo → JrnlState)으로 구성해 반환한다.
+     * 각 게시물 타입(일기/꿈/해석)의 상태(resolvedYn, collapsedYn)를 별도의 Map(postNo → JrnlState)으로 구성해 반환한다.
      * @param myJrnlDayEntityList 조회된 JrnlDayEntity 전체 목록
      * @param searchParam 조회 조건(연도/월 등). 캐시 키 생성은 호출부에서 수행하며, 본 메서드는 단순히 상태맵 생성만 담당한다.
      * @return {@link JrnlStateMaps}
@@ -114,7 +114,7 @@ public class JrnlDayService
                     final List<JrnlDiaryEntity> myJrnlDiaryList = entry.getJrnlDiaryList();
                     if (CollectionUtils.isNotEmpty(myJrnlDiaryList)) {
                         for (final JrnlDiaryEntity diary : myJrnlDiaryList) {
-                            diaryMap.put(diary.getPostNo(), JrnlState.of(diary.getResolvedYn(), diary.getCollapseYn(), diary.getImprtcYn()));
+                            diaryMap.put(diary.getPostNo(), JrnlState.of(diary.getResolvedYn(), diary.getCollapsedYn(), diary.getImprtcYn()));
                         }
                     }
                 }
@@ -123,12 +123,12 @@ public class JrnlDayService
             final List<JrnlDreamEntity> myJrnlDreamList = day.getJrnlDreamList();
             if (CollectionUtils.isNotEmpty(myJrnlDreamList)) {
                 for (final JrnlDreamEntity dream : myJrnlDreamList) {
-                    dreamMap.put(dream.getPostNo(), JrnlState.of(dream.getResolvedYn(), dream.getCollapseYn(), dream.getImprtcYn()));
+                    dreamMap.put(dream.getPostNo(), JrnlState.of(dream.getResolvedYn(), dream.getCollapsedYn(), dream.getImprtcYn()));
 
                     final List<JrnlIntrptEntity> myJrnlIntrptList = dream.getJrnlIntrptList();
                     if (CollectionUtils.isNotEmpty(myJrnlIntrptList)) {
                         for (final JrnlIntrptEntity intrpt : myJrnlIntrptList) {
-                            intrptMap.put(intrpt.getPostNo(), JrnlState.of(intrpt.getResolvedYn(), intrpt.getCollapseYn(), intrpt.getImprtcYn()));
+                            intrptMap.put(intrpt.getPostNo(), JrnlState.of(intrpt.getResolvedYn(), intrpt.getCollapsedYn(), intrpt.getImprtcYn()));
                         }
                     }
                 }
@@ -189,7 +189,7 @@ public class JrnlDayService
                         for (final JrnlDiaryDto diary : entry.getJrnlDiaryList()) {
                             final JrnlState s = diaryMap.get(diary.getPostNo());
                             if (s != null) {
-                                diary.setCollapseYn(s.getCollapseYn());
+                                diary.setCollapsedYn(s.getCollapsedYn());
                                 diary.setResolvedYn(s.getResolvedYn());
                                 diary.setImprtcYn(s.getImprtcYn());
                             }
@@ -203,7 +203,7 @@ public class JrnlDayService
 
                     final JrnlState s = dreamMap.get(dream.getPostNo());
                     if (s != null) {
-                        dream.setCollapseYn(s.getCollapseYn());
+                        dream.setCollapsedYn(s.getCollapsedYn());
                         dream.setResolvedYn(s.getResolvedYn());
                         dream.setImprtcYn(s.getImprtcYn());
                     }
@@ -212,7 +212,7 @@ public class JrnlDayService
                         for (final JrnlIntrptDto intrpt : dream.getJrnlIntrptList()) {
                             final JrnlState d = intrptMap.get(intrpt.getPostNo());
                             if (d != null) {
-                                intrpt.setCollapseYn(d.getCollapseYn());
+                                intrpt.setCollapsedYn(d.getCollapsedYn());
                                 intrpt.setResolvedYn(d.getResolvedYn());
                                 intrpt.setImprtcYn(d.getImprtcYn());
                             }

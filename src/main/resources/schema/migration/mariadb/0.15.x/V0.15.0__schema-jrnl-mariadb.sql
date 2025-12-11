@@ -41,6 +41,6 @@ ALTER TABLE jrnl_diary CHANGE COLUMN edit_compt_yn resolved_yn CHAR(1) DEFAULT '
 ALTER TABLE jrnl_dream ADD resolved_yn CHAR(1) DEFAULT 'N' COMMENT '정리완료 여부 (Y/N)';
 ALTER TABLE jrnl_intrpt ADD resolved_yn CHAR(1) DEFAULT 'N' COMMENT '정리완료 여부 (Y/N)';
 ALTER TABLE jrnl_diary ADD resolved_yn CHAR(1) DEFAULT 'N' COMMENT '정리완료 여부 (Y/N)';
-ALTER TABLE jrnl_dream ADD collapse_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)';
-ALTER TABLE jrnl_intrpt ADD collapse_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)';
-ALTER TABLE jrnl_diary ADD collapse_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)';
+ALTER TABLE jrnl_dream ADD collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)';
+ALTER TABLE jrnl_intrpt ADD collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)';
+ALTER TABLE jrnl_diary ADD collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)';

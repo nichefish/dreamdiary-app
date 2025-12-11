@@ -81,7 +81,7 @@ public class MainPageController
      *
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(value = Url.ALIVE_CHECK_AJAX)
+    @GetMapping(value = Url.API_ALIVE_CHECK)
     @ResponseBody
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public ResponseEntity<AjaxResponse> aliveCheck() {

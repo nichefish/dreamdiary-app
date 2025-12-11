@@ -4,11 +4,11 @@
  -->
 
 <script type="text/x-handlebars-template" id="jrnl_diary_cn_partial">
-    <div class="d-flex-align-center">
+    <div class="d-flex-align-center title-wrap">
         {{#ifYn imprtcYn}}<div class="ctgr-span ctgr-imprtc w-60px d-flex-center">!<@spring.message 'imprtc'/></div>{{/ifYn}}
         {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}
     </div>
-    <div class="cn {{#ifYn collapseYn}}collapsed{{/ifYn}}">
+    <div class="cn {{#ifYn collapsedYn}}collapsed{{/ifYn}}">
         {{{markdownCn}}}
     </div>
     <!-- "더 보기" 버튼, <p> child 3개 이상일 때만 보임 (css) -->

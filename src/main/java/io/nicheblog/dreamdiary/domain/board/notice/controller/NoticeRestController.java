@@ -122,11 +122,11 @@ public class NoticeRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @see ViewerEventListener
      */
-    @GetMapping(Url.NOTICE_DTL_AJAX)
+    @GetMapping(Url.NOTICE)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> noticeDtlAjax(
-            final @RequestParam("postNo") Integer key,
+            final @PathVariable("postNo") Integer key,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -149,11 +149,11 @@ public class NoticeRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @see TagProcEventListener
      */
-    @PostMapping(Url.NOTICE_DEL_AJAX)
+    @DeleteMapping(Url.NOTICE)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> noticeDelAjax(
-            final @RequestParam("postNo") Integer postNo,
+            final @PathVariable("postNo") Integer postNo,
             final LogActvtyParam logParam
     ) throws Exception {
 

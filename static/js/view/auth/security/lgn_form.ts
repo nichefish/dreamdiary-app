@@ -30,7 +30,7 @@ const Page: Page = (function(): Page {
         initForm: function(): void {
             /* jquery validation */
             cF.validate.validateForm("#lgnForm", function(): void {
-                cF.form.blockUISubmit("#lgnForm", Url.AUTH_LGN_PROC);
+                cF.form.blockUISubmit("#lgnForm", Url.API_AUTH_LGN_PROC);
             });
             // 엔터키 처리
             cF.util.enterKey("#userId, #password", Page.lgn);
@@ -69,9 +69,9 @@ const Page: Page = (function(): Page {
                     Page.lgn();
                 } else {
                     // 로그인하지 않음. 중복ID 세션 attribute 만료시킴
-                    const url: string = Url.AUTH_EXPIRE_SESSION_AJAX;
+                    const url: string = Url.API_AUTH_EXPIRE_SESSION;
                     cF.$ajax.post(url, null, function(): void {
-                        cF.ui.blockUIReplace(Url.AUTH_LGN_FORM);
+                        cF.ui.blockUIReplace(Url.APP_AUTH_LGN_FORM);
                     });
                 }
             });

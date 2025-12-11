@@ -53,7 +53,7 @@ class LgnPageControllerTest {
 
         AuthInfo authInfo = AuthInfoTestFactory.createAuthInfo();
 
-        MvcResult result = this.mockMvc.perform(get(Url.AUTH_LGN_FORM))
+        MvcResult result = this.mockMvc.perform(get(Url.APP_AUTH_LGN_FORM))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("main"))
@@ -74,7 +74,7 @@ class LgnPageControllerTest {
 
         AuthInfo authInfo = AuthInfoTestFactory.createAuthInfo();
 
-        MvcResult result = this.mockMvc.perform(get(Url.AUTH_LGN_FORM))
+        MvcResult result = this.mockMvc.perform(get(Url.APP_AUTH_LGN_FORM))
                 .andDo(print())
                 .andExpect(status().isFound())
                 .andDo(document("main"))

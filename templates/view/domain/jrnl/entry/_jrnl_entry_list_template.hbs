@@ -10,7 +10,7 @@
                 {{> jrnl_day_mdf_btn_partial this postNo=this.jrnlDayNo}}
             </div>
             <div class="col py-3 jrnl-entry-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
-                <div class="d-flex-align-center">
+                <div class="d-flex-align-center title-wrap">
                     {{#ifYn imprtcYn}}<div class="ctgr-span ctgr-imprtc w-60px d-flex-center">!<@spring.message 'imprtc'/></div>{{/ifYn}}
                     {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}
                 </div>

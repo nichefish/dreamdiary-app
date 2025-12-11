@@ -42,15 +42,14 @@ dF.NoticePopup = (function(): Module {
             if (cF.util.isEmpty(dF.NoticePopup.popupList)) return;
             if (dF.NoticePopup.popupIdx > dF.NoticePopup.popupMaxIdx) return;
 
-            const hasNoticeCookie = dF.NoticePopup.hasNoticeCookie();
+            const hasNoticeCookie: boolean = dF.NoticePopup.hasNoticeCookie();
             if (hasNoticeCookie) {
                 dF.NoticePopup.popupIdx++;
                 return dF.NoticePopup.showNoticePopup();
             }
-            const url: string = Url.NOTICE_DTL_AJAX;
             const obj: Record<string, any> = dF.NoticePopup.popupList[dF.NoticePopup.popupIdx];
-            const ajaxData: Record<string, any> = { "postNo": obj.postNo };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+            const url: string = cF.util.bindUrl(Url.NOTICE, { postNo: obj.postNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;

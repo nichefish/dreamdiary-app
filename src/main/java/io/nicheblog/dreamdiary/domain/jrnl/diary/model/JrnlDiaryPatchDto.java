@@ -1,0 +1,32 @@
+package io.nicheblog.dreamdiary.domain.jrnl.diary.model;
+
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+
+/**
+ * JrnlDiaryDto
+ * <pre>
+ *  저널 일기 Dto.
+ * </pre>
+ *
+ * @author nichefish
+ */
+@Getter
+@Setter
+@SuperBuilder(toBuilder = true)
+@NoArgsConstructor
+@ToString(callSuper = true)
+public class JrnlDiaryPatchDto {
+
+    private Boolean imprtc;
+    private Boolean resolved;
+    private Boolean collapsed;
+
+    /**
+     * 요청이 전부 공백인 경우 판별
+     * @return 전부 공백 여부
+     */
+    public boolean isAllNull() {
+        return imprtc == null && collapsed == null && resolved == null;
+    }
+}

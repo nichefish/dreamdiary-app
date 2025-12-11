@@ -50,7 +50,7 @@ dF.JrnlDiary = (function(): dfModule {
             const keyword: string = (document.querySelector("#jrnl_aside #diaryKeyword") as HTMLInputElement)?.value;
             if (cF.util.isEmpty(keyword)) return;
 
-            const url: string = Url.JRNL_DIARY_LIST_AJAX;
+            const url: string = Url.JRNL_DIARIES;
             const ajaxData: Record<string, any> = { "diaryKeyword": keyword };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
@@ -102,8 +102,8 @@ dF.JrnlDiary = (function(): dfModule {
         regModal: function({ jrnlDayNo, jrnlEntryNo, stdrdDt, jrnlDtWeekDay }: { jrnlDayNo: string | number; jrnlEntryNo: string | number; stdrdDt: string; jrnlDtWeekDay: string; }): void {
             if (isNaN(Number(jrnlEntryNo))) return;
 
-            const url: string = Url.JRNL_DAY_DTL_AJAX;
-            cF.ajax.get(url, { "postNo": jrnlDayNo }, function(res: AjaxResponse): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DIARY, { postNo: jrnlDayNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) return;
                 const entryList = res.rsltObj.entryList;
                 const obj: Record<string, any> = { jrnlDayNo: jrnlDayNo, jrnlEntryNo: jrnlEntryNo, stdrdDt: stdrdDt, jrnlDtWeekDay: jrnlDtWeekDay, entryList: entryList };
@@ -125,14 +125,15 @@ dF.JrnlDiary = (function(): dfModule {
          */
         regAjax: function(): void {
             const postNoElmt: HTMLInputElement = document.querySelector("#jrnlDiaryRegForm [name='postNo']");
-            const isReg: boolean = postNoElmt?.value === "";
+            const postNo: string = postNoElmt?.value;
+            const isMdf: boolean = !!postNo;
             Swal.fire({
-                text: Message.get(isReg ? "view.cnfm.reg" : "view.cnfm.mdf"),
+                text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = isReg ? Url.JRNL_DIARY_REG_AJAX : Url.JRNL_DIARY_MDF_AJAX;
+                const url: string = isMdf ? cF.util.bindUrl(Url.JRNL_DIARY, { postNo }) : Url.JRNL_DIARIES;
                 const ajaxData: FormData = new FormData(document.getElementById("jrnlDiaryRegForm") as HTMLFormElement);
                 cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
@@ -178,9 +179,8 @@ dF.JrnlDiary = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = Url.JRNL_DIARY_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "postNo" : postNo };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DIARY, { postNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
@@ -211,16 +211,15 @@ dF.JrnlDiary = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = Url.JRNL_DIARY_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "postNo" : postNo };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DIARY, { postNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
                 const { rsltObj } = res;
-                const url: string = Url.JRNL_DAY_DTL_AJAX;
-                cF.ajax.get(url, { "postNo": rsltObj.jrnlDayNo }, function(res: AjaxResponse): void {
+                const url: string = cF.util.bindUrl(Url.JRNL_DAY, { postNo: rsltObj.jrnlDayNo });
+                cF.ajax.get(url, null, function(res: AjaxResponse): void {
                     if (!res.rslt) return;
                     const entryList = res.rsltObj.entryList;
                     const obj: Record<string, any> = { ...rsltObj, entryList: entryList };
@@ -246,9 +245,8 @@ dF.JrnlDiary = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = Url.JRNL_DIARY_DEL_AJAX;
-                const ajaxData: Record<string, any> = { "postNo": postNo };
-                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                const url: string = cF.util.bindUrl(Url.JRNL_DIARY, { postNo });
+                cF.$ajax.delete(url, null, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (!res.rslt) return;
@@ -274,6 +272,25 @@ dF.JrnlDiary = (function(): dfModule {
         },
 
         /**
+         * 상태 변경 처리. (Ajax)
+         * @param {string|number} postNo - 글 번호.
+         * @param {object} payload
+         * @param {Function} [callback]
+         */
+        patchAjax: function(postNo: string|number, payload: object, callback: Function): void {
+            if (isNaN(Number(postNo))) return;
+
+            const url: string = cF.util.bindUrl(Url.JRNL_DIARY, { postNo });
+            cF.$ajax.patch(url, payload, function(res: AjaxResponse): void {
+                if (!res.rslt) return;
+
+                if (!callback || typeof callback != "function") return;
+
+                callback(res);
+            }, "block");
+        },
+
+        /**
          * 정리완료 처리. (Ajax)
          * @param {string|number} postNo - 글 번호.
          */
@@ -285,14 +302,12 @@ dF.JrnlDiary = (function(): dfModule {
 
             const current: string = (item.dataset.resolved || "N").toUpperCase();
             const next = current === "Y" ? "N" : "Y";
+            const nextBoolean = current !== "Y"
 
-            const url: string = Url.JRNL_DIARY_RESOLVE_AJAX;
-            const ajaxData: Record<string, any> = { postNo, resolvedYn: next };
-            cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
-                if (!res.rslt) return;
-
+            const payload: Record<string, any> = { resolved: nextBoolean, collapsed: nextBoolean };
+            dF.JrnlDiary.patchAjax(postNo, payload, function() {
                 item.dataset.resolved = next;
-                item.dataset.collapse = next;
+                item.dataset.collapsed = next;
 
                 const content: HTMLElement = item.querySelector(".cn");
                 if (content) {
@@ -300,7 +315,7 @@ dF.JrnlDiary = (function(): dfModule {
                 }
                 const chk: HTMLInputElement = item.querySelector(".diary-context-collapse-check");
                 if (chk) chk.checked = (next === "Y");
-            }, "block");
+            });
         },
 
         /**
@@ -313,22 +328,60 @@ dF.JrnlDiary = (function(): dfModule {
             const item: HTMLElement = document.querySelector(`.jrnl-diary-item[data-id='${postNo}']`);
             if (!item) return;
 
-            const current: string = (item.dataset.collapse || "N").toUpperCase();
+            const current: string = (item.dataset.collapsed || "N").toUpperCase();
             const next = current === "Y" ? "N" : "Y";
+            const nextBoolean = current !== "Y"
 
-            const url: string = Url.JRNL_DIARY_SET_COLLAPSE_AJAX;
-            const ajaxData: Record<string, any> = { postNo, collapseYn: next };
-            cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
-                if (!res.rslt) return;
-
-                item.dataset.collapse = next;
+            const payload: Record<string, any> = { collapsed: nextBoolean };
+            dF.JrnlDiary.patchAjax(postNo, payload, function() {
+                item.dataset.collapsed = next;
 
                 const content: HTMLElement = item.querySelector(".cn");
-                if (content) content.classList.toggle("collapsed", next === "Y");
+                if (content) {
+                    content.classList.toggle("collapsed", next === "Y");
+                }
+                const chk: HTMLInputElement = item.querySelector(".diary-context-collapse-check");
+                if (chk) chk.checked = (next === "Y");
+            });
+        },
 
-                const idx: HTMLElement = item.querySelector(".jrnl-diary-idx");
-                idx.classList.toggle("text-success", next !== "Y");
-            }, "block");
+        /**
+         * 중요여부 토글. (Ajax)
+         * @param {string|number} postNo - 글 번호.
+         */
+        imprtcAjax: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            const item: HTMLElement = document.querySelector(`.jrnl-diary-item[data-id='${postNo}']`);
+            if (!item) return;
+
+            const current: string = (item.dataset.imprtc || "N").toUpperCase();
+            const next = current === "Y" ? "N" : "Y";
+            const nextBoolean = next === "Y"
+
+            const payload: Record<string, any> = { imprtc: nextBoolean };
+            dF.JrnlDiary.patchAjax(postNo, payload, function() {
+                item.dataset.imprtc = next;
+
+                const cn = item.querySelector("div.jrnl-diary-cn");
+                if (!cn) return console.warn("cn not found.");
+                const titleWrap: HTMLElement = cn.querySelector("div.title-wrap");
+                if (!titleWrap) return console.warn("titleWrap not found.");
+                const existing = titleWrap.querySelector(".ctgr-imprtc");
+                if (nextBoolean) {
+                    if (existing) return;
+
+                    const imprtcWrap: HTMLDivElement = document.createElement("div");
+                    imprtcWrap.className = "ctgr-span ctgr-imprtc w-60px d-flex-center";
+                    imprtcWrap.innerText = "!중요";
+                    // 첫 번째 요소로 삽입
+                    titleWrap.prepend(imprtcWrap);
+                    cn.classList.add("bg-secondary");
+                } else {
+                    if (existing) existing.remove();
+                    cn.classList.remove("bg-secondary");
+                }
+            });
         },
 
         /**

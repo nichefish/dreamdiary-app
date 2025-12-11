@@ -54,7 +54,7 @@ dF.JrnlTodo = (function(): dfModule {
             const mnth: string = mnthElmt.value;
             if (cF.util.isEmpty(mnth)) return;
 
-            const url: string = Url.JRNL_TODO_LIST_AJAX;
+            const url: string = Url.JRNL_TODOS;
             const ajaxData: Record<string, any> = { yy, mnth };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {

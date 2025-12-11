@@ -19,7 +19,7 @@ import java.util.Date;
 /**
  * JrnlDiaryDto
  * <pre>
- *  저널 일기 Dto.
+ *  저널 일기 상태 변경 Dto.
  * </pre>
  *
  * @author nichefish
@@ -77,7 +77,7 @@ public class JrnlDiaryDto
     /** 글접기 여부 (Y/N) */
     @Builder.Default
     @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
-    private String collapseYn = "N";
+    private String collapsedYn = "N";
 
     /**
      * 인덱스 변경 여부

@@ -154,12 +154,12 @@ dF.Notice = (function(): dfModule {
          * @param {string|number} postNo - 조회할 글 번호.
          */
         dtlModal: function(postNo: string|number): void {
-            event.stopPropagation();
             if (isNaN(Number(postNo))) return;
 
-            const url: string = Url.NOTICE_DTL_AJAX;
-            const ajaxData: Record<string, any> = {"postNo": postNo};
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+            event.stopPropagation();
+
+            const url: string = cF.util.bindUrl(Url.NOTICE, { postNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({text: res.message});
                     return;
@@ -188,9 +188,8 @@ dF.Notice = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = Url.NOTICE_DEL_AJAX;
-                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#procForm");
-                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                const url: string = cF.util.bindUrl(Url.NOTICE, { postNo });
+                cF.$ajax.post(url, null, function(res: AjaxResponse): void {
                     Swal.fire({text: res.message})
                         .then(function(): void {
                             if (res.rslt) dF.Notice.list();

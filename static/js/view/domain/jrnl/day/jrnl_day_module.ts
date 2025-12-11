@@ -84,7 +84,7 @@ dF.JrnlDay = (function(): dfModule {
             const mnth: string = cF.util.getUrlParam("mnth") ?? localStorage.getItem("jrnl_mnth") ?? "99";
             if (cF.util.isEmpty(mnth)) return;
 
-            const url: string = Url.JRNL_DAY_LIST_AJAX + "?yy=" + yy + "&mnth=" + mnth;
+            const url: string = Url.JRNL_DAYS + `?viewType=list&yy=${yy}&mnth=${mnth}`;
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -174,14 +174,15 @@ dF.JrnlDay = (function(): dfModule {
          */
         regAjax: function(): void {
             const postNoElmt: HTMLInputElement = document.querySelector("#jrnlDayRegForm [name='postNo']");
-            const isReg: boolean = postNoElmt?.value === "";
+            const postNo: string = postNoElmt?.value;
+            const isMdf: boolean = !!postNo;
             Swal.fire({
-                text: Message.get(isReg ? "view.cnfm.reg" : "view.cnfm.mdf"),
+                text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = isReg ? Url.JRNL_DAY_REG_AJAX : Url.JRNL_DAY_MDF_AJAX;
+                const url: string = isMdf ? cF.util.bindUrl(Url.JRNL_DAY, { postNo }) : Url.JRNL_DAYS;
                 const ajaxData: FormData = new FormData(document.getElementById("jrnlDayRegForm") as HTMLFormElement);
                 cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
@@ -220,9 +221,8 @@ dF.JrnlDay = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = Url.JRNL_DAY_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "postNo" : postNo };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DAY, { postNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
@@ -253,9 +253,8 @@ dF.JrnlDay = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = Url.JRNL_DAY_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "postNo" : postNo };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DAY, { postNo })
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
@@ -282,9 +281,8 @@ dF.JrnlDay = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = Url.JRNL_DAY_DEL_AJAX;
-                const ajaxData: Record<string, any> = { "postNo": postNo };
-                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                const url: string = cF.util.bindUrl(Url.JRNL_DAY, { postNo });
+                cF.$ajax.delete(url, null, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (!res.rslt) return;

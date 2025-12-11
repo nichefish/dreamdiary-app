@@ -181,6 +181,19 @@ cF.util = (function(): Module {
         },
 
         /**
+         * url에 파라미터 변수를 바인딩한다.
+         * @param {string} urlTemplate URL 템플릿
+         * @param {Record<string, any>} params 부재시 기본으로 세팅할 값
+         */
+        bindUrl: function(urlTemplate: string, params: Record<string, any>): string {
+            let url = urlTemplate;
+            for (const key in params) {
+                url = url.replace(`{${key}}`, encodeURIComponent(params[key]));
+            }
+            return url;
+        },
+
+        /**
          * 파라미터로부터 값을 가져온다.
          * @param {string} name 파라미터 이름
          * @param {string} defaultValue 부재시 기본으로 세팅할 값

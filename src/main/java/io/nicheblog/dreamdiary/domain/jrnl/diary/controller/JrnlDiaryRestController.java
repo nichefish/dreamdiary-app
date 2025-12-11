@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.domain.jrnl.diary.controller;
 
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryPatchDto;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiarySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
@@ -53,7 +54,7 @@ public class JrnlDiaryRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(value = {Url.JRNL_DIARY_LIST_AJAX})
+    @GetMapping(value = {Url.JRNL_DIARIES})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDiaryListAjax(
@@ -72,40 +73,6 @@ public class JrnlDiaryRestController
     }
 
     /**
-     * 저널 일기 등록/수정 (Ajax)
-     * (사용자USER, 관리자MNGR만 접근 가능.)
-     *
-     * @param jrnlDiary 등록/수정 처리할 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
-     * @param request - Multipart 요청
-     * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
-     */
-    @Operation(
-            summary = "저널 꿈 등록/수정",
-            description = "저널 꿈 정보를 등록/수정한다."
-    )
-    @PostMapping(value = {Url.JRNL_DIARY_REG_AJAX, Url.JRNL_DIARY_MDF_AJAX})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    @ResponseBody
-    public ResponseEntity<AjaxResponse> jrnlDiaryRegAjax(
-            final @Valid JrnlDiaryDto jrnlDiary,
-            final LogActvtyParam logParam,
-            final MultipartHttpServletRequest request
-    ) throws Exception {
-
-        final boolean isReg = (jrnlDiary.getKey() == null);
-        final ServiceResponse result = isReg ? jrnlDiaryService.regist(jrnlDiary, request) : jrnlDiaryService.modify(jrnlDiary, request);
-        final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
-
-        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
-    }
-
-    /**
      * 저널 일기 상세 조회 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
@@ -113,11 +80,11 @@ public class JrnlDiaryRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(value = {Url.JRNL_DIARY_DTL_AJAX})
+    @GetMapping(value = {Url.JRNL_DIARY})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDiaryDtlAjax(
-            final @RequestParam("postNo") Integer key,
+            final @PathVariable("postNo") Integer key,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -132,6 +99,71 @@ public class JrnlDiaryRestController
     }
 
     /**
+     * 저널 일기 등록/수정 (Ajax)
+     * (사용자USER, 관리자MNGR만 접근 가능.)
+     *
+     * @param jrnlDiary 등록/수정 처리할 객체
+     * @param logParam 로그 기록을 위한 파라미터 객체
+     * @param request - Multipart 요청
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     * @see TagProcEventListener
+     */
+    @Operation(
+            summary = "저널 일기 등록/수정",
+            description = "저널 일기 정보를 등록/수정한다."
+    )
+    @PostMapping(value = {Url.JRNL_DIARIES, Url.JRNL_DIARY})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> jrnlDiaryRegAjax(
+            final @PathVariable(value = "postNo", required = false) Integer postNo,
+            final @Valid JrnlDiaryDto jrnlDiary,
+            final LogActvtyParam logParam,
+            final MultipartHttpServletRequest request
+    ) throws Exception {
+
+        final boolean isMdf = postNo != null;
+        if (isMdf) jrnlDiary.setPostNo(postNo);
+
+        final ServiceResponse result = isMdf ? jrnlDiaryService.modify(jrnlDiary, request) : jrnlDiaryService.regist(jrnlDiary, request);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+
+        // 로그 관련 세팅
+        logParam.setResult(isSuccess, rsltMsg);
+
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
+    }
+
+    /**
+     * 저널 일기 상태 변경 (Ajax)
+     * (사용자USER, 관리자MNGR만 접근 가능.)
+     *
+     * @param postNo 식별자
+     * @param logParam 로그 기록을 위한 파라미터 객체
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     * @see TagProcEventListener
+     */
+    @PatchMapping(value = {Url.JRNL_DIARY})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> jrnlDiaryPatchAjax(
+            final @PathVariable("postNo") Integer postNo,
+            final @RequestBody JrnlDiaryPatchDto patchDto,
+            final LogActvtyParam logParam
+    ) throws Exception {
+
+        final ServiceResponse result = jrnlDiaryService.patch(postNo, patchDto);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+
+        // 로그 관련 세팅
+        logParam.setResult(isSuccess, rsltMsg);
+
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
+    }
+
+    /**
      * 저널 일기 삭제 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
@@ -140,127 +172,15 @@ public class JrnlDiaryRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @see TagProcEventListener
      */
-    @PostMapping(value = {Url.JRNL_DIARY_DEL_AJAX})
+    @DeleteMapping(value = {Url.JRNL_DIARY})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDiaryDelAjax(
-            final @RequestParam("postNo") Integer postNo,
+            final @PathVariable("postNo") Integer postNo,
             final LogActvtyParam logParam
     ) throws Exception {
 
         final ServiceResponse result = jrnlDiaryService.delete(postNo);
-        final boolean isSuccess = result.getRslt();
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
-
-        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
-    }
-
-    /**
-     * 저널 일기 중요 상태 변경 (Ajax)
-     * (사용자USER, 관리자MNGR만 접근 가능.)
-     *
-     * @param postNo 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
-     * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
-     */
-    @PostMapping(value = {Url.JRNL_DIARY_IMPRTC_AJAX})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    @ResponseBody
-    public ResponseEntity<AjaxResponse> jrnlDiaryImprtcAjax(
-            final @RequestParam("postNo") Integer postNo,
-            final @RequestParam("imprtcYn") String imprtcYn,
-            final LogActvtyParam logParam
-    ) throws Exception {
-
-        final ServiceResponse result = jrnlDiaryService.imprtc(postNo, imprtcYn);
-        final boolean isSuccess = result.getRslt();
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
-
-        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
-    }
-
-    /**
-     * 저널 일기 정리완료 상태 변경 (Ajax)
-     * (사용자USER, 관리자MNGR만 접근 가능.)
-     *
-     * @param postNo 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
-     * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
-     */
-    @PostMapping(value = {Url.JRNL_DIARY_RESOLVE_AJAX})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    @ResponseBody
-    public ResponseEntity<AjaxResponse> jrnlDiaryResolveAjax(
-            final @RequestParam("postNo") Integer postNo,
-            final @RequestParam("resolvedYn") String resolvedYn,
-            final LogActvtyParam logParam
-    ) throws Exception {
-
-        final ServiceResponse result = jrnlDiaryService.resolve(postNo, resolvedYn);
-        final boolean isSuccess = result.getRslt();
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
-
-        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
-    }
-
-    /**
-     * 저널 일기 토글 상태 변경 (Ajax)
-     * (사용자USER, 관리자MNGR만 접근 가능.)
-     *
-     * @param postNo 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
-     * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
-     */
-    @PostMapping(value = {Url.JRNL_DIARY_SET_COLLAPSE_AJAX})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    @ResponseBody
-    public ResponseEntity<AjaxResponse> jrnlDiarySetCollapseAjax(
-            final @RequestParam("postNo") Integer postNo,
-            final @RequestParam("collapseYn") String collapseYn,
-            final LogActvtyParam logParam
-    ) throws Exception {
-
-        final ServiceResponse result = jrnlDiaryService.setCollapse(postNo, collapseYn);
-        final boolean isSuccess = result.getRslt();
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
-
-        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
-    }
-
-    /**
-     * 저널 일기 토글 상태 변경 (Ajax)
-     * (사용자USER, 관리자MNGR만 접근 가능.)
-     *
-     * @param postNo 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
-     * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
-     */
-    @PostMapping(value = {Url.JRNL_DIARY_SET_COLLAPSE_BY_ENTRY_AJAX})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    @ResponseBody
-    public ResponseEntity<AjaxResponse> jrnlDiarySetCollapseByEntryAjax(
-            final @RequestParam("postNo") Integer postNo,
-            final @RequestParam("collapseYn") String collapseYn,
-            final LogActvtyParam logParam
-    ) throws Exception {
-
-        final ServiceResponse result = jrnlDiaryService.setCollapse(postNo, collapseYn);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

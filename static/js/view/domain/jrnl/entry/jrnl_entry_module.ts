@@ -69,14 +69,15 @@ dF.JrnlEntry = (function(): dfModule {
          */
         regAjax: function(): void {
             const postNoElmt: HTMLInputElement = document.querySelector("#jrnlEntryRegForm [name='postNo']") as HTMLInputElement;
-            const isReg: boolean = postNoElmt?.value === "";
+            const postNo: string = postNoElmt?.value;
+            const isMdf: boolean = !!postNo;
             Swal.fire({
-                text: Message.get(isReg ? "view.cnfm.reg" : "view.cnfm.mdf"),
+                text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = isReg ? Url.JRNL_ENTRY_REG_AJAX : Url.JRNL_ENTRY_MDF_AJAX;
+                const url: string = isMdf ? cF.util.bindUrl(Url.JRNL_ENTRY, { postNo }) : Url.JRNL_ENTRIES;
                 const ajaxData: FormData = new FormData(document.getElementById("jrnlEntryRegForm") as HTMLFormElement);
                 cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
@@ -122,9 +123,8 @@ dF.JrnlEntry = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = Url.JRNL_ENTRY_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "postNo" : postNo };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_ENTRY, { postNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
@@ -155,9 +155,8 @@ dF.JrnlEntry = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = Url.JRNL_ENTRY_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "postNo" : postNo };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_ENTRY, { postNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
@@ -184,9 +183,8 @@ dF.JrnlEntry = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = Url.JRNL_ENTRY_DEL_AJAX;
-                const ajaxData: Record<string, any> = { "postNo": postNo };
-                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                const url: string = cF.util.bindUrl(Url.JRNL_ENTRY, { postNo });
+                cF.$ajax.delete(url, null, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (!res.rslt) return;

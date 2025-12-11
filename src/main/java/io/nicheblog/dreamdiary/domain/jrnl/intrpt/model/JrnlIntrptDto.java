@@ -77,7 +77,7 @@ public class JrnlIntrptDto
     /** 글접기 여부 (Y/N) */
     @Builder.Default
     @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
-    private String collapseYn = "N";
+    private String collapsedYn = "N";
     
     /**
      * 인덱스 변경 여부

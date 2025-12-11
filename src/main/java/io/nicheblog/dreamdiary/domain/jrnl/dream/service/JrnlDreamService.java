@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.mapstruct.JrnlDreamMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamPatchDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.repository.jpa.JrnlDreamRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.repository.mybatis.JrnlDreamMapper;
@@ -300,14 +301,14 @@ public class JrnlDreamService
      * collapse 상태를 설정한다.
      *
      * @param postNo 대상 게시물 PK
-     * @param collapseYn 접힘 상태(Y/N)
-     * @return collapseYn 반영 성공 여부를 담은 ServiceResponse
+     * @param collapsedYn 접힘 상태(Y/N)
+     * @return collapsedYn 반영 성공 여부를 담은 ServiceResponse
      */
     @Transactional
     @SuppressWarnings("unchecked")
-    public ServiceResponse setCollapse(final Integer postNo, final String collapseYn) throws Exception {
+    public ServiceResponse setCollapse(final Integer postNo, final String collapsedYn) throws Exception {
         final JrnlDreamEntity entity = getDtlEntity(postNo);
-        entity.setCollapseYn(collapseYn);
+        entity.setCollapsedYn(collapsedYn);
         final JrnlDreamEntity updatedEntity = repository.save(entity);
 
         final Integer yy = updatedEntity.getJrnlDay().getYy();
@@ -318,8 +319,51 @@ public class JrnlDreamService
         if (dreamMap != null) {
             final JrnlState state = dreamMap.get(postNo);
             if (state != null) {
-                state.setCollapseYn(collapseYn);
+                state.setCollapsedYn(collapsedYn);
                 EhCacheUtils.put("myDreamStateMap", cacheKey, dreamMap);
+            }
+        }
+
+        return ServiceResponse.builder()
+                .rslt(true)
+                .build();
+    }
+
+    /**
+     * 상태를 설정한다.
+     *
+     * @param postNo 대상 게시물 PK
+     * @param patchDto 상태 Dto
+     * @return collapsedYn 반영 성공 여부를 담은 ServiceResponse
+     */
+    @Transactional
+    @SuppressWarnings("unchecked")
+    public ServiceResponse patch(final Integer postNo, final JrnlDreamPatchDto patchDto) throws Exception {
+        if (patchDto.isAllNull()) {
+            return ServiceResponse.builder()
+                    .rslt(false)
+                    .message("변경할 항목이 없습니다.")
+                    .build();
+        }
+
+        final JrnlDreamEntity entity = getDtlEntity(postNo);
+        if (patchDto.getImprtc() != null) entity.setImprtcYn(patchDto.getImprtc() ? "Y" : "N");
+        if (patchDto.getCollapsed() != null) entity.setCollapsedYn(patchDto.getCollapsed() ? "Y" : "N");
+        if (patchDto.getResolved() != null) entity.setResolvedYn(patchDto.getResolved() ? "Y" : "N");
+
+        final JrnlDreamEntity updatedEntity = repository.save(entity);
+
+        final Integer yy = updatedEntity.getJrnlDay().getYy();
+        final Integer mnth = updatedEntity.getJrnlDay().getMnth();
+        final String cacheKey = AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth;
+        final Map<Integer, JrnlState> diaryMap = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myDreamStateMap", cacheKey);
+        if (diaryMap != null) {
+            final JrnlState state = diaryMap.get(postNo);
+            if (state != null) {
+                if (patchDto.getImprtc() != null) state.setImprtcYn(patchDto.getImprtc() ? "Y" : "N");
+                if (patchDto.getCollapsed() != null) state.setCollapsedYn(patchDto.getCollapsed() ? "Y" : "N");
+                if (patchDto.getResolved() != null) state.setResolvedYn(patchDto.getResolved() ? "Y" : "N");
+                EhCacheUtils.put("myDreamStateMap", cacheKey, diaryMap);
             }
         }
 

@@ -298,14 +298,14 @@ public class JrnlIntrptService
      * collapse 상태를 설정한다.
      *
      * @param postNo 대상 게시물 PK
-     * @param collapseYn 접힘 상태(Y/N)
-     * @return collapseYn 반영 성공 여부를 담은 ServiceResponse
+     * @param collapsedYn 접힘 상태(Y/N)
+     * @return collapsedYn 반영 성공 여부를 담은 ServiceResponse
      */
     @Transactional
     @SuppressWarnings("unchecked")
-    public ServiceResponse setCollapse(final Integer postNo, final String collapseYn) throws Exception {
+    public ServiceResponse setCollapse(final Integer postNo, final String collapsedYn) throws Exception {
         final JrnlIntrptEntity entity = getDtlEntity(postNo);
-        entity.setCollapseYn(collapseYn);
+        entity.setCollapsedYn(collapsedYn);
         final JrnlIntrptEntity updatedEntity = repository.save(entity);
 
         final Integer yy = updatedEntity.getJrnlDream().getJrnlDay().getYy();
@@ -316,7 +316,7 @@ public class JrnlIntrptService
         if (intrptMap != null) {
             final JrnlState state = intrptMap.get(postNo);
             if (state != null) {
-                state.setCollapseYn(collapseYn);
+                state.setCollapsedYn(collapsedYn);
                 EhCacheUtils.put("myIntrptStateMap", cacheKey, intrptMap);
             }
         }

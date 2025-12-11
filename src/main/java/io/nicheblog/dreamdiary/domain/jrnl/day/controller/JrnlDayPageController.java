@@ -60,7 +60,7 @@ public class JrnlDayPageController
         model.addAttribute("pageNm", PageNm.LIST);
 
         // URL 파라미터가 전부 존재한다면 그대로 페이지 렌더링
-         if (searchParam.getYy() != null && searchParam.getMnth() != null) {
+        if (searchParam.getYy() != null && searchParam.getMnth() != null) {
             final boolean isSuccess = true;
             final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -71,8 +71,8 @@ public class JrnlDayPageController
         }
 
         // 요건 기본값 생성 (오늘 날짜 기반)
-        String defaultYy = searchParam.getYy() == null ? DateUtils.getCurrYyStr() : searchParam.getYy().toString() ;
-        String defaultMnth = searchParam.getMnth() == null ? DateUtils.getCurrMnthStr() : searchParam.getMnth().toString() ;
+        String defaultYy = searchParam.getYy() == null ? DateUtils.getCurrYyStr() : searchParam.getYy().toString();
+        String defaultMnth = searchParam.getMnth() == null ? DateUtils.getCurrMnthStr() : searchParam.getMnth().toString();
 
         // 없으면 redirect 로 URL 보정
         return "redirect:" + Url.JRNL_DAY_PAGE + "?yy=" + defaultYy + "&mnth=" + defaultMnth;

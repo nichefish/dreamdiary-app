@@ -128,14 +128,14 @@ const Page: Page = (function(): Page {
 
         /** 일정 목록 조회 호출 */
         refreshEventList: function(calDt: Date): void {
-            const url: string = Url.JRNL_DAY_CAL_LIST_AJAX;
             // 날짜 세팅
             if (calDt != null) Page.calDt = calDt;
             console.log("calDt: ", Page.calDt);
-            const yy: number  = Page.calDt.getFullYear();
-            const mnth: number  = Page.calDt.getMonth() + 1;
+            const yy: number = Page.calDt.getFullYear();
+            const mnth: number = Page.calDt.getMonth() + 1;
             const bgnDt: string = cF.date.getDateAddDayStr(Page.calDt, -15, "yyyy-MM-dd");
             const endDt: string = cF.date.getDateAddDayStr(Page.calDt, 45, "yyyy-MM-dd");
+            const url: string = Url.JRNL_DAYS + `?viewType=cal&yy=${yy}&mnth=${mnth}`;
             // 체크박스 값을 읽어와서 필터 요소를 만듬
             const ajaxData: Record<string, any> = { 'yy': yy, mnth: mnth, 'searchStartDt': bgnDt, 'searchEndDt': endDt };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {

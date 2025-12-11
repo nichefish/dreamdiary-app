@@ -18,7 +18,7 @@ public class JrnlState {
     /** 정리완료 여부(Y/N) */
     private String resolvedYn;
     /** 글접기 여부(Y/N) */
-    private String collapseYn;
+    private String collapsedYn;
     /** 중요 여부(Y/N) */
     private String imprtcYn;
 
@@ -26,14 +26,14 @@ public class JrnlState {
      * JrnlState 생성 팩토리 메서드
      *
      * @param resolvedYn resolved 여부(DB 값, 문자열 or null)
-     * @param collapseYn collapse 여부(DB 값, 문자열 or null)
+     * @param collapsedYn collapse 여부(DB 값, 문자열 or null)
      * @param imprtcYn imprtc 여부(DB 값, 문자열 or null)
      * @return 인스턴스
      */
-    public static JrnlState of(final String resolvedYn, final String collapseYn, final String imprtcYn) {
+    public static JrnlState of(final String resolvedYn, final String collapsedYn, final String imprtcYn) {
         return JrnlState.builder()
                 .resolvedYn(resolvedYn)
-                .collapseYn(collapseYn)
+                .collapsedYn(collapsedYn)
                 .imprtcYn(imprtcYn)
                 .build();
     }

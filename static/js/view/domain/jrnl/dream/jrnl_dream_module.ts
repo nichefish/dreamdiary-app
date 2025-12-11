@@ -73,8 +73,8 @@ dF.JrnlDream = (function(): dfModule {
             const keyword: string = (document.querySelector("#jrnl_aside #dreamKeyword") as HTMLInputElement)?.value;
             if (cF.util.isEmpty(keyword)) return;
 
-            const url: string = Url.JRNL_DREAM_LIST_AJAX;
-            const ajaxData = { "dreamKeyword": keyword };
+            const url: string = Url.JRNL_DREAMS;
+            const ajaxData: Record<string, any> = { "dreamKeyword": keyword };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -142,14 +142,15 @@ dF.JrnlDream = (function(): dfModule {
          */
         regAjax: function(): void {
             const postNoElmt: HTMLInputElement = document.querySelector("#jrnlDreamRegForm [name='postNo']");
-            const isReg: boolean = postNoElmt?.value === "";
+            const postNo: string = postNoElmt?.value;
+            const isMdf: boolean = !!postNo;
             Swal.fire({
-                text: Message.get(isReg ? "view.cnfm.reg" : "view.cnfm.mdf"),
+                text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = isReg ? Url.JRNL_DREAM_REG_AJAX : Url.JRNL_DREAM_MDF_AJAX;
+                const url: string = isMdf ? cF.util.bindUrl(Url.JRNL_DREAM, { postNo }) : Url.JRNL_DREAMS;
                 const ajaxData: FormData = new FormData(document.getElementById("jrnlDreamRegForm") as HTMLFormElement);
                 cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
@@ -196,9 +197,8 @@ dF.JrnlDream = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = Url.JRNL_DREAM_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "postNo" : postNo };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DREAM, { postNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
@@ -229,9 +229,8 @@ dF.JrnlDream = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = Url.JRNL_DREAM_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "postNo" : postNo };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DREAM, { postNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
@@ -242,6 +241,105 @@ dF.JrnlDream = (function(): dfModule {
 
                 /* modal history push */
                 ModalHistory.push(self, func, args);
+            });
+        },
+
+        /**
+         * 상태 변경 처리. (Ajax)
+         * @param {string|number} postNo - 글 번호.
+         * @param {object} payload
+         * @param {Function} [callback]
+         */
+        patchAjax: function(postNo: string|number, payload: object, callback: Function): void {
+            if (isNaN(Number(postNo))) return;
+
+            const url: string = cF.util.bindUrl(Url.JRNL_DREAM, { postNo });
+            cF.$ajax.patch(url, payload, function(res: AjaxResponse): void {
+                if (!res.rslt) return;
+
+                if (!callback || typeof callback != "function") return;
+
+                callback(res);
+            }, "block");
+        },
+
+        /**
+         * 정리완료 처리. (Ajax)
+         * @param {string|number} postNo - 글 번호.
+         */
+        resolveAjax: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            const item: HTMLElement = document.querySelector(`.jrnl-dream-item[data-id='${postNo}']`);
+            if (!item) return;
+
+            const current: string = (item.dataset.resolved || "N").toUpperCase();
+            const next = current === "Y" ? "N" : "Y";
+            const nextBoolean = current !== "Y"
+
+            const payload: Record<string, any> = { resolved: nextBoolean, collapsed: nextBoolean };
+            dF.JrnlDream.patchAjax(postNo, payload, function() {
+                item.dataset.resolved = next;
+                item.dataset.collapsed = next;
+
+                const content: HTMLElement = item.querySelector(".cn");
+                if (content) {
+                    content.classList.toggle("collapsed", next === "Y");
+                }
+                const chk: HTMLInputElement = item.querySelector(".dream-context-collapse-check");
+                if (chk) chk.checked = (next === "Y");
+            });
+        },
+
+        /**
+         * 글 접기/펼치기 토글. (Ajax)
+         * @param {string|number} postNo - 글 번호.
+         */
+        collapseAjax: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            const item: HTMLElement = document.querySelector(`.jrnl-dream-item[data-id='${postNo}']`);
+            if (!item) return;
+
+            const current: string = (item.dataset.collapsed || "N").toUpperCase();
+            const next = current === "Y" ? "N" : "Y";
+            const nextBoolean = current !== "Y"
+
+            const payload: Record<string, any> = { collapsed: nextBoolean };
+            dF.JrnlDream.patchAjax(postNo, payload, function() {
+                item.dataset.collapsed = next;
+
+                const content: HTMLElement = item.querySelector(".cn");
+                if (content) {
+                    content.classList.toggle("collapsed", next === "Y");
+                }
+                const chk: HTMLInputElement = item.querySelector(".dream-context-collapse-check");
+                if (chk) chk.checked = (next === "Y");
+            });
+        },
+
+        /**
+         * 중요여부 토글. (Ajax)
+         * @param {string|number} postNo - 글 번호.
+         */
+        imprtcAjax: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            const item: HTMLElement = document.querySelector(`.jrnl-dream-item[data-id='${postNo}']`);
+            if (!item) return;
+
+            const current: string = (item.dataset.imprtc || "N").toUpperCase();
+            const next = current === "Y" ? "N" : "Y";
+            const nextBoolean = current !== "Y"
+
+            const payload: Record<string, any> = { imprtc: nextBoolean };
+            dF.JrnlDream.patchAjax(postNo, payload, function() {
+                item.dataset.imprtc = next;
+
+                const content: HTMLElement = item.querySelector(".cn");
+                if (content) {
+                    content.classList.toggle("collapsed", next === "Y");
+                }
             });
         },
 
@@ -258,9 +356,8 @@ dF.JrnlDream = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = Url.JRNL_DREAM_DEL_AJAX;
-                const ajaxData: Record<string, any> = { "postNo": postNo };
-                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                const url: string = cF.util.bindUrl(Url.JRNL_DREAM, { postNo });
+                cF.$ajax.delete(url, null, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (!res.rslt) return;
@@ -287,13 +384,13 @@ dF.JrnlDream = (function(): dfModule {
 
         /**
          * @param {string|number} postNo - 글 번호.
-         * @param {'Y'|'N'} collapseYn - 글접기 여부.
+         * @param {'Y'|'N'} collapsedYn - 글접기 여부.
          */
-        collapse: function(postNo: string|number, collapseYn: 'Y'|'N'): void {
+        collapse: function(postNo: string|number, collapsedYn: 'Y'|'N'): void {
             if (isNaN(Number(postNo))) return;
 
             const url: string = Url.JRNL_DREAM_SET_COLLAPSE_AJAX;
-            const ajaxData: Record<string, any> = { postNo, collapseYn };
+            const ajaxData: Record<string, any> = { postNo, collapsedYn };
             cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) return;
 
@@ -304,7 +401,7 @@ dF.JrnlDream = (function(): dfModule {
                 const content: HTMLElement = item.querySelector(".cn");
                 if (!content) return console.log("content not found.");
 
-                if (collapseYn === "Y") {
+                if (collapsedYn === "Y") {
                     content.classList.add("collapsed");
                 } else {
                     content.classList.remove("collapsed");

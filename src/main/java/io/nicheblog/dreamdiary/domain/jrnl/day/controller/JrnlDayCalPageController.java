@@ -10,6 +10,7 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
@@ -58,15 +59,22 @@ public class JrnlDayCalPageController
         model.addAttribute("menuLabel", SiteMenu.JRNL_DAY);
         model.addAttribute("pageNm", PageNm.CAL);
 
-        // 년도 추가
-        model.addAttribute("yy", null);
+        // URL 파라미터가 전부 존재한다면 그대로 페이지 렌더링
+        if (searchParam.getYy() != null && searchParam.getMnth() != null) {
+            final boolean isSuccess = true;
+            final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+            // 로그 관련 세팅
+            logParam.setResult(isSuccess, rsltMsg);
 
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
+            return "/view/domain/jrnl/day/jrnl_day_cal";
+        }
 
-        return "/view/domain/jrnl/day/jrnl_day_cal";
+        // 요건 기본값 생성 (오늘 날짜 기반)
+        String defaultYy = searchParam.getYy() == null ? DateUtils.getCurrYyStr() : searchParam.getYy().toString();
+        String defaultMnth = searchParam.getMnth() == null ? DateUtils.getCurrMnthStr() : searchParam.getMnth().toString();
+
+        // 없으면 redirect 로 URL 보정
+        return "redirect:" + Url.JRNL_DAY_CAL + "?yy=" + defaultYy + "&mnth=" + defaultMnth;
     }
 }
