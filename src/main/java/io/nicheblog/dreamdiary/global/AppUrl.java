@@ -22,7 +22,9 @@ public interface AppUrl {
     String NOTION_HOME = Prefix.APP + "/notion-home.do";
 
     /** 저널 일자 (리스트) */
-    String JRNL_DAY_PAGE = Prefix.APP + "/jrnl/day/page.do";
+    String JRNL_DAY_MONTHLY = Prefix.APP + "/jrnl/day/monthly.do";
+    String JRNL_DAY_VIEW_TODAY = Prefix.APP + "/jrnl/day.do";
+    String JRNL_DAY_VIEW = Prefix.APP + "/jrnl/day/{stdrdDt}.do";
     /** 저널 일자 (달력) */
     String JRNL_DAY_CAL = Prefix.APP + "/jrnl/day/cal.do";
 

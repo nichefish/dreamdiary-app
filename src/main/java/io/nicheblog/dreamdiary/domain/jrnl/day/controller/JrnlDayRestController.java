@@ -42,7 +42,7 @@ public class JrnlDayRestController
         extends BaseControllerImpl {
 
     @Getter
-    private final String baseUrl = Url.JRNL_DAY_PAGE;             // 기본 URL
+    private final String baseUrl = Url.JRNL_DAY_MONTHLY;             // 기본 URL
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
@@ -69,6 +69,7 @@ public class JrnlDayRestController
         final Object list = switch (viewType) {
             case LIST -> jrnlDayService.getMyListDtoWithHldy(AuthUtils.getLgnUserId(), searchParam);
             case CAL -> jrnlDayCalService.getSchdulTotalCalList(searchParam);
+            case DAILY -> jrnlDayService.getMyStdrdDtoWithHldy(AuthUtils.getLgnUserId(), searchParam);
         };
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;

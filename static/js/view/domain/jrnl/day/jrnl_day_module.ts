@@ -8,20 +8,43 @@ if (typeof dF === 'undefined') { var dF = {} as any; }
 dF.JrnlDay = (function(): dfModule {
     return {
         initialized: false,
+        viewType: null,
         tagify: null,
 
         /**
          * initializes module.
+         * @param {"LIST"|"CAL"|"DAILY"} viewType
          */
-        init: function(): void {
+        init: function(viewType: "LIST"|"CAL"|"DAILY"): void {
             if (dF.JrnlDay.initialized) return;
+
+            dF.JrnlDay.viewType = viewType;
 
             /* initialize submodules. */
             dF.JrnlDayTag.init();
-            dF.JrnlDayAside.init();
 
             dF.JrnlDay.initialized = true;
             console.log("'dF.JrnlDay' module initialized.");
+        },
+
+        /**
+         * refresh
+         */
+        refresh: function(): void {
+            switch (dF.JrnlDay.viewType) {
+                case "LIST":
+                    dF.JrnlDay.yyMnthListAjax();
+                    break;
+                case "CAL":
+                    Page.refreshEventList();
+                    break;
+                case "DAILY":
+                    location.reload();
+                    break;
+            }
+            cF.ui.unblockUI();
+            /* modal history pop */
+            ModalHistory.reset();
         },
 
         /**
@@ -104,10 +127,32 @@ dF.JrnlDay = (function(): dfModule {
                 cF.ui.closeModal();
                 cF.handlebars.template(rsltList, "jrnl_day_list");
                 KTMenu.createInstances();
+            }, "block");
+        },
 
-                /* 글접기 처리 (localStorage) */
-                // dF.JrnlEntry.initCollapseState();
-                // dF.JrnlDream.initCollapseState();
+        /**
+         * 일자 조회 새 창 열기
+         * @param {string} stdrdDt 기준 일자
+         */
+        openDetatched: function(stdrdDt: string): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DAY_VIEW, { stdrdDt });
+            window.open(url, '_blank', 'noopener,noreferrer');
+        },
+
+        /**
+         * 상세 일자 데이터 조회 (Ajax)
+         * @param {string} stdrdDt 기준 일자
+         */
+        getStdrdData: function(stdrdDt: string): void {
+            const url: string = Url.JRNL_DAYS + `?viewType=daily&stdrdDt=${stdrdDt}`;
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    return;
+                }
+                const { rsltList } = res;
+                cF.handlebars.template(rsltList, "jrnl_day_list");
+                KTMenu.createInstances();
             }, "block");
         },
 
@@ -189,16 +234,8 @@ dF.JrnlDay = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            const isCalendar: boolean = Page?.calendar != null;
-                            if (isCalendar) {
-                                Page.refreshEventList();
-                            } else {
-                                dF.JrnlDay.yyMnthListAjax();
-                            }
+                            dF.JrnlDay.refresh();
                             dF.JrnlDayTag.listAjax();     // 태그 refresh
-
-                            /* modal history pop */
-                            ModalHistory.reset();
                         });
                 }, "block");
             });
@@ -287,16 +324,8 @@ dF.JrnlDay = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            const isCalendar: boolean = Page?.calendar != null;
-                            if (isCalendar) {
-                                Page.refreshEventList();
-                            } else {
-                                dF.JrnlDay.yyMnthListAjax();
-                            }
+                            dF.JrnlDay.refresh();
                             dF.JrnlDayTag.listAjax();     // 태그 refresh
-
-                            /* modal history pop */
-                            ModalHistory.reset();
                         });
                 }, "block");
             });

@@ -40,12 +40,12 @@
 
                 <div class="flex-row">
                     {{#if (exists jrnlDiaryList)}}
-                        <label class="d-flex align-items-center mt-2">
+                        <div class="d-flex align-items-center mt-2">
                             <span class="text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder">
                                 <@spring.message 'diary'/>
                                 <i class="bi bi-book fs-4 pe-1"></i>
                             </span>
-                        </label>
+                        </div>
                         {{#each jrnlDiaryList}}
                             <div class="jrnl-diary-item">
                                 <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
@@ -64,12 +64,12 @@
                         {{/each}}
                     {{/if}}
                     {{#if hasDream}}
-                        <label class="d-flex align-items-center mt-2">
+                        <div class="d-flex align-items-center mt-2">
                             <span class="text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder">
                                 <@spring.message 'dream'/>
                                 <i class="bi bi-moon-stars fs-4 pe-1"></i>
                             </span>
-                        </label>
+                        </div>
                         {{#each jrnlDreamList}}
                             <div class="jrnl-item">
                                 <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">

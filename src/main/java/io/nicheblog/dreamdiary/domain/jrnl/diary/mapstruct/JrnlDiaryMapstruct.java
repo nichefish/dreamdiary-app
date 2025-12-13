@@ -48,7 +48,6 @@ public interface JrnlDiaryMapstruct
     @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
     void updateFromDto(final JrnlDiaryPostDto dto, final @MappingTarget JrnlDiaryEntity entity) throws Exception;
 
-
     /**
      * Entity -> Dto 변환
      *
@@ -59,6 +58,7 @@ public interface JrnlDiaryMapstruct
     @Mapping(target = "jrnlDayNo", expression = "java(entity.getJrnlEntry() != null ? entity.getJrnlEntry().getJrnlDayNo() : null)")
     @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"JRNL_DIARY_CTGR_CD\", entity.getCtgrCd()))")
     @Mapping(target = "stdrdDt", expression = "java(entity.getJrnlEntry().getJrnlDay() != null ? DateUtils.asStr(\"Y\".equals(entity.getJrnlEntry().getJrnlDay().getDtUnknownYn()) ? entity.getJrnlEntry().getJrnlDay().getAprxmtDt() : entity.getJrnlEntry().getJrnlDay().getJrnlDt(), DatePtn.DATE) : null)")
+    @Mapping(target = "dtUnknownYn", expression = "java(entity.getJrnlEntry().getJrnlDay() != null ? entity.getJrnlEntry().getJrnlDay().getDtUnknownYn() : \"N\")")
     @Mapping(target = "jrnlDtWeekDay", expression = "java(entity.getJrnlEntry().getJrnlDay() != null && entity.getJrnlEntry().getJrnlDay().getJrnlDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJrnlEntry().getJrnlDay().getJrnlDt()) : null)")
     @Mapping(target = "yy", expression = "java(entity.getJrnlEntry() != null ? entity.getJrnlEntry().getJrnlDay().getYy() : null)")
     @Mapping(target = "mnth", expression = "java(entity.getJrnlEntry() != null ? entity.getJrnlEntry().getJrnlDay().getMnth() : null)")

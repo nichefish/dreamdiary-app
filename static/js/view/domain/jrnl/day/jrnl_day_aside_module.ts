@@ -34,7 +34,7 @@ dF.JrnlDayAside = (function(): dfModule {
             localStorage.setItem("jrnl_yy", todayYy);
             localStorage.setItem("jrnl_mnth", todayMnth);
 
-            window.location.href = `${Url.JRNL_DAY_PAGE}?yy=${todayYy}&mnth=${todayMnth}&sort=DESC`;
+            window.location.href = `${Url.JRNL_DAY_MONTHLY}?yy=${todayYy}&mnth=${todayMnth}&sort=DESC`;
         },
 
         /**
@@ -54,7 +54,7 @@ dF.JrnlDayAside = (function(): dfModule {
 
             // 2010년은 바로 조회처리
             if (selectedYear === "2010") {
-                window.location.href = `${Url.JRNL_DAY_PAGE}?yy=${selectedYear}&mnth=99&sort=${sort}`;
+                window.location.href = `${Url.JRNL_DAY_MONTHLY}?yy=${selectedYear}&mnth=99&sort=${sort}`;
             }
 
             const mnthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth");
@@ -88,7 +88,7 @@ dF.JrnlDayAside = (function(): dfModule {
             if (selectedMnth === "") return;
             const sort: string = cF.util.getUrlParam("sort") ?? localStorage.getItem("jrnl_day_sort") ?? "DESC";
 
-            window.location.href = `${Url.JRNL_DAY_PAGE}?yy=${selectedYear}&mnth=${selectedMnth}&sort=${sort}`;
+            window.location.href = `${Url.JRNL_DAY_MONTHLY}?yy=${selectedYear}&mnth=${selectedMnth}&sort=${sort}`;
         },
 
         /**
@@ -102,7 +102,7 @@ dF.JrnlDayAside = (function(): dfModule {
             if (selectedMnth === "") return;
             const sort: string = cF.util.getUrlParam("sort") ?? localStorage.getItem("jrnl_day_sort") ?? "DESC";
 
-            window.location.href = `${Url.JRNL_DAY_PAGE}?yy=${selectedYear}&mnth=${selectedMnth}&sort=${sort}`;
+            window.location.href = `${Url.JRNL_DAY_MONTHLY}?yy=${selectedYear}&mnth=${selectedMnth}&sort=${sort}`;
         },
 
         /**
@@ -162,7 +162,7 @@ dF.JrnlDayAside = (function(): dfModule {
                 toBeMnth = (parseInt(mnth) - 1).toString(); // 월을 하나 감소시킴
             }
 
-            window.location.href = `${Url.JRNL_DAY_PAGE}?yy=${toBeYy}&mnth=${toBeMnth}&sort=${sort}`;
+            window.location.href = `${Url.JRNL_DAY_MONTHLY}?yy=${toBeYy}&mnth=${toBeMnth}&sort=${sort}`;
         },
 
         /**
@@ -185,7 +185,7 @@ dF.JrnlDayAside = (function(): dfModule {
                 toBeMnth = (parseInt(mnth) + 1).toString(); // 월을 하나 증기시킴
             }
 
-            window.location.href = `${Url.JRNL_DAY_PAGE}?yy=${toBeYy}&mnth=${toBeMnth}&sort=${sort}`;
+            window.location.href = `${Url.JRNL_DAY_MONTHLY}?yy=${toBeYy}&mnth=${toBeMnth}&sort=${sort}`;
         },
 
         /**
@@ -209,7 +209,7 @@ dF.JrnlDayAside = (function(): dfModule {
             const pinnedMnth: string = localStorage.getItem("jrnl_pinned_mnth");
 
             const sort: string = cF.util.getUrlParam("sort") ?? localStorage.getItem("jrnl_day_sort") ?? "DESC";
-            window.location.href = `${Url.JRNL_DAY_PAGE}?yy=${pinnedYy}&mnth=${pinnedMnth}&sort=${sort}`;
+            window.location.href = `${Url.JRNL_DAY_MONTHLY}?yy=${pinnedYy}&mnth=${pinnedMnth}&sort=${sort}`;
         },
 
         /**

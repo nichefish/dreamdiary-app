@@ -72,7 +72,7 @@ class JrnlDayPageControllerTest {
 
         AuthInfo authInfo = AuthInfoTestFactory.createAuthInfo();
 
-        MvcResult result = this.mockMvc.perform(get(Url.JRNL_DAY_PAGE)
+        MvcResult result = this.mockMvc.perform(get(Url.JRNL_DAY_MONTHLY)
                 .sessionAttr("authInfo", authInfo))  // 세션 어트리뷰트 추가
                 .andExpect(status().isOk())
                 .andReturn();
@@ -83,7 +83,7 @@ class JrnlDayPageControllerTest {
         assertTrue(BaseControllerTestHelper.viewFileExists(viewName), "View template file does not exist: " + viewName);
     }
 
-    // mockMvc.perform(get(Url.JRNL_DAY_PAGE)
+    // mockMvc.perform(get(Url.JRNL_DAY_MONTHLY)
     // .sessionAttr("someAttribute", "value") // 세션 어트리뷰트 추가
     // .param("paramName", "paramValue")     // 요청 파라미터 추가
     // .header("headerName", "headerValue")) // 헤더 추가

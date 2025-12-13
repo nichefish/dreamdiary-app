@@ -25,6 +25,8 @@ public class JrnlDaySearchParam
     private Integer yy;
     /** 월 */
     private Integer mnth;
+    /** 기준일자 */
+    private String stdrdDt;
 
     /** 컨텐츠 타입 */
     private String contentType;

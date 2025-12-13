@@ -140,23 +140,8 @@ dF.JrnlDiary = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            const isCalendar: boolean = Page?.calendar != null;
-                            if (isCalendar) {
-                                Page.refreshEventList();
-                                dF.JrnlDiaryTag.listAjax();     // 태그 refresh
-                            } else {
-                                if (dF.JrnlDiary.inKeywordSearchMode) {
-                                    dF.JrnlDiary.keywordListAjax();
-                                } else {
-                                    dF.JrnlDay.yyMnthListAjax();
-                                    dF.JrnlDiaryTag.listAjax();     // 태그 refresh
-                                }
-                            }
-                            // TODO: 결산 페이지에서 처리시도 처리해 줘야 한다.
-                            cF.ui.unblockUI();
-
-                            /* modal history pop */
-                            ModalHistory.reset();
+                    dF.JrnlDay.refresh();
+                            dF.JrnlDiaryTag.listAjax();     // 태그 refresh
                         });
                 }, "block");
             });
@@ -251,21 +236,8 @@ dF.JrnlDiary = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            const isCalendar: boolean = Page?.calendar != null;
-                            if (isCalendar) {
-                                Page.refreshEventList();
-                                dF.JrnlDiaryTag.listAjax();     // 태그 refresh
-                            } else {
-                                if (dF.JrnlDiary.inKeywordSearchMode) {
-                                    dF.JrnlDiary.keywordListAjax();
-                                } else {
-                                    dF.JrnlDay.yyMnthListAjax();
-                                    dF.JrnlDiaryTag.listAjax();     // 태그 refresh
-                                }
-                            }
-
-                            /* modal history pop */
-                            ModalHistory.reset();
+                            dF.JrnlDay.refresh();
+                            dF.JrnlDiaryTag.listAjax();     // 태그 refresh
                         });
                 }, "block");
             });

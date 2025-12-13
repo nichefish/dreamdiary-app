@@ -101,6 +101,21 @@ public class JrnlDayService
     }
 
     /**
+     * 내 기준일자 조회 (dto level) :: 캐시 처리
+     *
+     * @param lgnUserId 사용자 ID
+     * @param searchParam 검색 조건이 담긴 파라미터 객체
+     * @return {@link List} -- 조회된 목록
+     */
+    public List<JrnlDayDto> getMyJrnlStdrdDays(final String lgnUserId, final JrnlDaySearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(lgnUserId);
+
+        final List<JrnlDayEntity> myJrnlDayEntityList = this.getSelf().getListEntity(searchParam);
+
+        return mapstruct.toDtoList(myJrnlDayEntityList);
+    }
+
+    /**
      * 각 게시물 타입(일기/꿈/해석)의 상태(resolvedYn, collapsedYn)를 별도의 Map(postNo → JrnlState)으로 구성해 반환한다.
      * @param myJrnlDayEntityList 조회된 JrnlDayEntity 전체 목록
      * @param searchParam 조회 조건(연도/월 등). 캐시 키 생성은 호출부에서 수행하며, 본 메서드는 단순히 상태맵 생성만 담당한다.
@@ -161,6 +176,24 @@ public class JrnlDayService
 
         // resolved/collapse 상태 merge
         this.mergeStates(listDto, searchParam);
+
+        return listDto;
+    }
+
+    /**
+     * 내 기준일자 조회 (dto level) + 공휴일 정보 추가
+     *
+     * @param lgnUserId 사용자 ID
+     * @param searchParam 검색 조건이 담긴 파라미터 객체
+     * @return {@link List} -- 조회된 목록
+     */
+    @SuppressWarnings("unchecked")
+    public List<JrnlDayDto> getMyStdrdDtoWithHldy(final String lgnUserId, final JrnlDaySearchParam searchParam) throws Exception {
+        final List<JrnlDayDto> listDto = this.getSelf().getMyJrnlStdrdDays(lgnUserId, searchParam);
+
+        // 공휴일 정보 세팅
+        final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
+        this.setHldyInfo(listDto, hldyMap);
 
         return listDto;
     }

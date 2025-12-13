@@ -103,8 +103,7 @@ public class MenuService
                 .useYn("Y")
                 .build());
         final Sort sort = Sort.by(Sort.Direction.ASC, "state.sortOrdr");
-        final List<MenuEntity> listEntity = this.getSelf().getListEntity(searchParamMap, sort);
-        return mapstruct.toDtoList(listEntity);
+        return this.getListDto(searchParamMap, sort);
     }
 
     /**
@@ -121,8 +120,7 @@ public class MenuService
                 .useYn("Y")
                 .build());
         final Sort sort = Sort.by(Sort.Direction.ASC, "state.sortOrdr");
-        final List<MenuEntity> entityList = this.getSelf().getListEntity(searchParamMap, sort);
-        return mapstruct.toDtoList(entityList);
+        return this.getListDto(searchParamMap, sort);
     }
 
     /**
@@ -135,9 +133,7 @@ public class MenuService
     public MenuDto getMenuByLabel(final SiteMenu label) throws Exception {
         final Map<String, Object> searchParamMap = new HashMap<>();
         searchParamMap.put("menuLabel", label.name());
-
-        final List<MenuEntity> entityList = this.getSelf().getListEntity(searchParamMap);
-        final List<MenuDto> rsMenuList = mapstruct.toDtoList(entityList);
+        final List<MenuDto> rsMenuList = this.getSelf().getListDto(searchParamMap);
         if (CollectionUtils.isEmpty(rsMenuList)) throw new MenuNotExistsException(MessageUtils.getExceptionMsg("MenuNotExistsException"));
         return rsMenuList.get(0);
     }
@@ -207,10 +203,5 @@ public class MenuService
         EhCacheUtils.evictCacheAll("mngrMenuList");
         EhCacheUtils.evictCacheAll("isMngrMenu");
         EhCacheUtils.evictCache("menuByLabel", deletedDto.getMenuLabel());
-    }
-
-    public MenuDto getDtlDto(Integer key) throws Exception {
-        final MenuEntity retrievedEntity = this.getSelf().getDtlEntity(key);
-        return mapstruct.toDto(retrievedEntity);
     }
 }

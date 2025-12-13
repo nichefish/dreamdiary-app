@@ -146,6 +146,6 @@
 <script type="text/javascript" src="/js/view/extension/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
 
 <!--include::page scripts-->
-<script type="text/javascript" src="/js/view/domain/jrnl/day/jrnl_day_page.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/jrnl/day/jrnl_day_monthly.js?${releaseDate!}"></script>
 
 </@layout.layout>

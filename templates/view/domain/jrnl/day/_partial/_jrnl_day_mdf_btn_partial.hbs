@@ -21,6 +21,14 @@
             <!--begin::Menu item-->
             <div class="menu-item px-3 my-1 cursor-pointer"
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "jrnl.day"/> <@spring.message 'bs.tooltip.modal.mdf'/>">
+                <div class="menu-link flex-stack px-3" onclick="dF.JrnlDay.openDetatched('{{stdrdDt}}');">
+                    새 창 보기
+                    <i class="bi bi-window-stack fs-8"></i>
+                </div>
+            </div>
+            <!--begin::Menu item-->
+            <div class="menu-item px-3 my-1 cursor-pointer"
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "jrnl.day"/> <@spring.message 'bs.tooltip.modal.mdf'/>">
                 <div class="menu-link flex-stack px-3" onclick="dF.JrnlDay.mdfModal({{postNo}}, '{{stdrdDt}}');">
                     <@spring.message 'comm.txt.edit'/>
                     <i class="bi bi-pencil-square fs-8"></i>
