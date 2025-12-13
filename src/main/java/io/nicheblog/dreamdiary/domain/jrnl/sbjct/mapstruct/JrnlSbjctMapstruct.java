@@ -3,7 +3,8 @@ package io.nicheblog.dreamdiary.domain.jrnl.sbjct.mapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.sbjct.entity.JrnlSbjctEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.sbjct.model.JrnlSbjctDto;
 import io.nicheblog.dreamdiary.extension.cd.utils.CdUtils;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BasePostMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseClsfMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +21,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, MarkdownUtils.class, CdUtils.class}, builder = @Builder(disableBuilder = true))
 public interface JrnlSbjctMapstruct
-        extends BasePostMapstruct<JrnlSbjctDto.DTL, JrnlSbjctDto.LIST, JrnlSbjctEntity> {
+        extends BaseWriteMapstruct<JrnlSbjctDto, JrnlSbjctEntity>, BaseClsfMapstruct<JrnlSbjctDto, JrnlSbjctEntity> {
 
     JrnlSbjctMapstruct INSTANCE = Mappers.getMapper(JrnlSbjctMapstruct.class);
 
@@ -34,19 +35,7 @@ public interface JrnlSbjctMapstruct
     @Named("toDto")
     @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"JRNL_SBJCT_CTGR_CD\", entity.getCtgrCd()))")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
-    JrnlSbjctDto.DTL toDto(final JrnlSbjctEntity entity) throws Exception;
-
-    /**
-     * Entity -> ListDto 변환
-     *
-     * @param entity 변환할 Entity 객체
-     * @return ListDto -- 변환된 ListDto 객체
-     */
-    @Override
-    @Named("toListDto")
-    @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"JRNL_SBJCT_CTGR_CD\", entity.getCtgrCd()))")
-    @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
-    JrnlSbjctDto.LIST toListDto(final JrnlSbjctEntity entity) throws Exception;
+    JrnlSbjctDto toDto(final JrnlSbjctEntity entity) throws Exception;
 
     /**
      * Dto -> Entity 변환
@@ -56,7 +45,7 @@ public interface JrnlSbjctMapstruct
      */
     @Override
     @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
-    JrnlSbjctEntity toEntity(final JrnlSbjctDto.DTL dto) throws Exception;
+    JrnlSbjctEntity toEntity(final JrnlSbjctDto dto) throws Exception;
 
     /**
      * update Entity from Dto (Dto에서 null이 아닌 값만 Entity로 매핑)
@@ -67,5 +56,5 @@ public interface JrnlSbjctMapstruct
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
-    void updateFromDto(final JrnlSbjctDto.DTL dto, final @MappingTarget JrnlSbjctEntity entity) throws Exception;
+    void updateFromDto(final JrnlSbjctDto dto, final @MappingTarget JrnlSbjctEntity entity) throws Exception;
 }

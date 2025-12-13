@@ -2,7 +2,8 @@ package io.nicheblog.dreamdiary.extension.clsf.managt.mapstruct;
 
 import io.nicheblog.dreamdiary.extension.clsf.managt.entity.ManagtrEntity;
 import io.nicheblog.dreamdiary.extension.clsf.managt.model.ManagtrDto;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseCrudMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,7 +24,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, DatePtn.class, StringUtils.class})
 public interface ManagtrMapstruct
-        extends BaseCrudMapstruct<ManagtrDto, ManagtrDto, ManagtrEntity> {
+        extends BaseWriteMapstruct<ManagtrDto, ManagtrEntity>, BaseReadMapstruct<ManagtrDto, ManagtrEntity> {
 
     ManagtrMapstruct INSTANCE = Mappers.getMapper(ManagtrMapstruct.class);
 

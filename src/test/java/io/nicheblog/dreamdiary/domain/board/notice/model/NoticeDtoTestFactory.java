@@ -20,8 +20,8 @@ public class NoticeDtoTestFactory {
     /**
      * 테스트용 공지사항 상세 Dto 생성
      */
-    public static NoticeDto.DTL create() throws Exception {
-        return NoticeDto.DTL.builder()
+    public static NoticeDto create() throws Exception {
+        return NoticeDto.builder()
                 .postNo(0)
                 .contentType(ContentType.NOTICE.key)
                 .popupYn("Y")

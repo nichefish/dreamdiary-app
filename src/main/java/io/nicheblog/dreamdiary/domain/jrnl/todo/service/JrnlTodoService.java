@@ -37,7 +37,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Log4j2
 public class JrnlTodoService
-        implements BaseClsfService<JrnlTodoDto, JrnlTodoDto, Integer, JrnlTodoEntity, JrnlTodoRepository, JrnlTodoSpec, JrnlTodoMapstruct> {
+        implements BaseClsfService<JrnlTodoDto, JrnlTodoDto, Integer, JrnlTodoEntity> {
 
     @Getter
     private final JrnlTodoRepository repository;
@@ -45,6 +45,13 @@ public class JrnlTodoService
     private final JrnlTodoSpec spec;
     @Getter
     private final JrnlTodoMapstruct mapstruct = JrnlTodoMapstruct.INSTANCE;
+
+    public JrnlTodoMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public JrnlTodoMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     private final ApplicationEventPublisherWrapper publisher;
 
@@ -62,7 +69,8 @@ public class JrnlTodoService
     @Cacheable(value="myJrnlTodoList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getYy() + \"_\" + #searchParam.getMnth()")
     public List<JrnlTodoDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
-        return this.getSelf().getListDto(searchParam);
+        final List<JrnlTodoEntity> listEntity = this.getSelf().getListEntity(searchParam);
+        return mapstruct.toDtoList(listEntity);
     }
 
     /**
@@ -73,7 +81,8 @@ public class JrnlTodoService
      */
     @Cacheable(value="myJrnlTodoTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
     public List<JrnlTodoDto> jrnlTodoTagDtl(final JrnlTodoSearchParam searchParam) throws Exception {
-        return this.getSelf().getListDto(searchParam);
+        final List<JrnlTodoEntity> listEntity = this.getSelf().getListEntity(searchParam);
+        return mapstruct.toDtoList(listEntity);
     }
 
     /**
@@ -107,7 +116,7 @@ public class JrnlTodoService
      * @param updatedDto - 등록된 객체
      */
     @Override
-    public void postModify(final JrnlTodoDto updatedDto) throws Exception {
+    public void postModify(final JrnlTodoDto postDto, final JrnlTodoDto updatedDto) throws Exception {
         // 태그 처리 :: 메인 로직과 분리
         publisher.publishEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
         // 관련 캐시 삭제
@@ -122,7 +131,8 @@ public class JrnlTodoService
      */
     @Cacheable(value="myJrnlTodoDtlDto", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #key")
     public JrnlTodoDto getDtlDtoWithCache(final Integer key) throws Exception {
-        final JrnlTodoDto retrieved = this.getSelf().getDtlDto(key);
+        final JrnlTodoEntity retrievedEntity = this.getSelf().getDtlEntity(key);
+        final JrnlTodoDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
         if (!retrieved.getIsRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("common.rslt.access-not-authorized"));
         return retrieved;

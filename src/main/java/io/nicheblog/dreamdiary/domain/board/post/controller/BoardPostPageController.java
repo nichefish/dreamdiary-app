@@ -88,7 +88,7 @@ public class BoardPostPageController
         // 페이징 정보 생성:: 공백시 pageSize=10, pageNo=1
         final PageRequest pageRequest = CmmUtils.Param.getPageRequest(searchParam, "managt.managtDt", model);
         // 목록 조회
-        final Page<BoardPostDto.LIST> postList = boardPostService.getPageDto(searchParam, pageRequest);
+        final Page<BoardPostDto> postList = boardPostService.getPageDto(searchParam, pageRequest);
         model.addAttribute("postList", postList.getContent());
         model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(postList));
         // 컨텐츠 타입에 맞는 태그 목록 조회

@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.domain.jrnl.diary.controller;
 
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryPatchDto;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryPostDto;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiarySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
@@ -117,7 +118,7 @@ public class JrnlDiaryRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDiaryRegAjax(
             final @PathVariable(value = "postNo", required = false) Integer postNo,
-            final @Valid JrnlDiaryDto jrnlDiary,
+            final @Valid JrnlDiaryPostDto jrnlDiary,
             final LogActvtyParam logParam,
             final MultipartHttpServletRequest request
     ) throws Exception {

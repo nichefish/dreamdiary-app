@@ -7,17 +7,13 @@ import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.BasePostDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
-import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Date;
 
 /**
- * JrnlDiaryDto
+ * JrnlDiaryPostDto
  * <pre>
- *  저널 일기 조회용 Dto.
+ *  저널 일기 등록/수정용 Dto.
  * </pre>
  *
  * @author nichefish
@@ -28,9 +24,9 @@ import java.util.Date;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class JrnlDiaryDto
+public class JrnlDiaryPostDto
         extends BasePostDto
-        implements Identifiable<Integer>, CommentCmpstnModule, TagCmpstnModule, Comparable<JrnlDiaryDto>  {
+        implements Identifiable<Integer>, CommentCmpstnModule, TagCmpstnModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -67,16 +63,6 @@ public class JrnlDiaryDto
     /** 순번 */
     private Integer idx;
 
-    /** 정리완료 여부 (Y/N) */
-    @Builder.Default
-    private String resolvedYn = "N";
-
-    /** 글접기 여부 (Y/N) */
-    @Builder.Default
-    private String collapsedYn = "N";
-
-    /* ----- */
-
     /** 인덱스 변경 여부 */
     @Builder.Default
     private Boolean isIdxChanged = false;
@@ -89,22 +75,6 @@ public class JrnlDiaryDto
     private Integer prevJrnlEntryNo;
 
     /* ----- */
-
-    /**
-     * 날짜 오름차순 정렬
-     *
-     * @param other - 비교할 객체
-     * @return 양수: 현재 객체가 더 큼, 음수: 현재 객체가 더 작음, 0: 두 객체가 같음
-     */
-    @SneakyThrows
-    @Override
-    public int compareTo(final @NotNull JrnlDiaryDto other) {
-        Date thisDate = DateUtils.asDate(this.getStdrdDt());
-        if (thisDate == null) return -1;
-
-        Date otherDate = DateUtils.asDate(other.getStdrdDt());
-        return thisDate.compareTo(otherDate);
-    }
 
     @Override
     public Integer getKey() {

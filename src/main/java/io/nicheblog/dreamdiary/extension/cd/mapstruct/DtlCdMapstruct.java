@@ -2,7 +2,8 @@ package io.nicheblog.dreamdiary.extension.cd.mapstruct;
 
 import io.nicheblog.dreamdiary.extension.cd.entity.DtlCdEntity;
 import io.nicheblog.dreamdiary.extension.cd.model.DtlCdDto;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseCrudMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -17,7 +18,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface DtlCdMapstruct
-        extends BaseCrudMapstruct<DtlCdDto, DtlCdDto, DtlCdEntity> {
+        extends BaseReadMapstruct<DtlCdDto, DtlCdEntity>, BaseWriteMapstruct<DtlCdDto, DtlCdEntity> {
 
     DtlCdMapstruct INSTANCE = Mappers.getMapper(DtlCdMapstruct.class);
 
@@ -30,16 +31,6 @@ public interface DtlCdMapstruct
     @Override
     @Named("toDto")
     DtlCdDto toDto(final DtlCdEntity entity) throws Exception;
-
-    /**
-     * Entity -> ListDto 변환
-     *
-     * @param entity 변환할 Entity 객체
-     * @return ListDto -- 변환된 ListDto 객체
-     */
-    @Override
-    @Named("toListDto")
-    DtlCdDto toListDto(final DtlCdEntity entity) throws Exception;
 
     /**
      * Dto -> Entity 변환

@@ -61,7 +61,7 @@ public class JrnlSbjctRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSbjctRegAjax(
-            final @Valid JrnlSbjctDto.DTL jrnlSbjct,
+            final @Valid JrnlSbjctDto jrnlSbjct,
             final LogActvtyParam logParam,
             final MultipartHttpServletRequest request
     ) throws Exception {

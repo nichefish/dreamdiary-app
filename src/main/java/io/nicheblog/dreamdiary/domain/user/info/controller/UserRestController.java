@@ -108,7 +108,7 @@ public class UserRestController
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> userRegAjax(
-            final @Valid UserDto.DTL user,
+            final @Valid UserDto user,
             final LogActvtyParam logParam,
             final MultipartHttpServletRequest request
     ) throws Exception {

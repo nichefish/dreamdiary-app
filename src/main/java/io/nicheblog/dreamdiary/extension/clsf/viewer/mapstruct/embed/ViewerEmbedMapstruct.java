@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.extension.clsf.viewer.entity.embed.ViewerEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.mapstruct.ViewerMapstruct;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.model.cmpstn.ViewerCmpstn;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
@@ -19,7 +20,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, ViewerMapstruct.class}, builder = @Builder(disableBuilder = true))
 public interface ViewerEmbedMapstruct
-        extends BaseMapstruct<ViewerCmpstn, ViewerEmbed> {
+        extends BaseWriteMapstruct<ViewerCmpstn, ViewerEmbed>, BaseMapstruct<ViewerCmpstn, ViewerEmbed> {
 
     ViewerEmbedMapstruct INSTANCE = Mappers.getMapper(ViewerEmbedMapstruct.class);
 

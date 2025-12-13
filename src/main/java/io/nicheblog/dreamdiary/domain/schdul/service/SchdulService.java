@@ -14,6 +14,7 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
+import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +45,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class SchdulService
-        implements BaseClsfService<SchdulDto, SchdulDto, Integer, SchdulEntity, SchdulRepository, SchdulSpec, SchdulMapstruct> {
+        implements BaseClsfService<SchdulDto, SchdulDto, Integer, SchdulEntity> {
 
     @Getter
     private final SchdulRepository repository;
@@ -52,6 +53,13 @@ public class SchdulService
     private final SchdulSpec spec;
     @Getter
     private final SchdulMapstruct mapstruct = SchdulMapstruct.INSTANCE;
+
+    public SchdulMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public SchdulMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     private final ApplicationEventPublisherWrapper publisher;
 
@@ -61,6 +69,19 @@ public class SchdulService
     private final ApplicationContext context;
     private SchdulService getSelf() {
         return context.getBean(this.getClass());
+    }
+
+    /**
+     * 단일 항목 조회 (dto level)
+     *
+     * @param key 조회할 엔티티의 키
+     * @return {@link SchdulDto} -- 조회 항목 반환
+     */
+    @Transactional(readOnly = true)
+    public SchdulDto getDtlDto(final Integer key) throws Exception {
+        final SchdulEntity retrievedEntity = this.getDtlEntity(key);
+
+        return mapstruct.toDto(retrievedEntity);
     }
 
     /**
@@ -113,7 +134,7 @@ public class SchdulService
      * @param updatedDto - 등록된 객체
      */
     @Override
-    public void postModify(final SchdulDto updatedDto) throws Exception {
+    public void postModify(final SchdulDto postDto, final SchdulDto updatedDto) throws Exception {
         // 태그 처리 :: 메인 로직과 분리
         publisher.publishEvent(new TagProcEvent(this, updatedDto.getClsfKey(), updatedDto.tag));
         // 잔디 메세지 발송 :: 메인 로직과 분리
@@ -147,7 +168,7 @@ public class SchdulService
         // 수정 전처리
         this.preModify(modifyDto);
 
-        final SchdulEntity modifyEntity = this.getDtlEntity(modifyDto);       // Entity 레벨 조회
+        final SchdulEntity modifyEntity = this.getDtlEntity(modifyDto.getKey());       // Entity 레벨 조회
         final boolean wasSingleDate = DateUtils.isSameDay(modifyEntity.getBgnDt(), modifyEntity.getEndDt());
         final boolean isInvalidEndDate = modifyDto.getBgnDt()
                                             .compareTo(modifyDto.getEndDt()) > 0;
@@ -235,13 +256,22 @@ public class SchdulService
      */
     public void resyncHldyMap() throws Exception {
         final SchdulSearchParam param = SchdulSearchParam.builder().schdulCd(Constant.SCHDUL_HLDY).build();
-        final List<SchdulDto> hldyList = this.getSelf().getListDto(param);
+        final List<SchdulEntity> hldyList = this.getSelf().getListEntity(param);
 
         final Map<String, List<String>> hldyMap = hldyList.stream()
-                .filter(dto -> StringUtils.isNotEmpty(dto.getBgnDt()))
+                .filter(entity -> entity.getBgnDt() != null)
                 .collect(Collectors.groupingBy(
-                        SchdulDto::getBgnDt,
-                        Collectors.mapping(SchdulDto::getSchdulNm, Collectors.toList())
+                        entity -> {
+                            try {
+                                return DateUtils.asStr(entity.getBgnDt(), DatePtn.DATE);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        },
+                        Collectors.mapping(
+                                SchdulEntity::getSchdulNm,
+                                Collectors.toList()
+                        )
                 ));
 
         final Cache cache = cacheManager.getCache("hldyMap");

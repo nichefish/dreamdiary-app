@@ -3,7 +3,8 @@ package io.nicheblog.dreamdiary.extension.clsf.tag.mapstruct;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagSmpEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseCrudMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -17,7 +18,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {})
 public interface TagMapstruct
-        extends BaseCrudMapstruct<TagDto, TagDto, TagEntity> {
+        extends BaseWriteMapstruct<TagDto, TagEntity>, BaseReadMapstruct<TagDto, TagEntity> {
 
     TagMapstruct INSTANCE = Mappers.getMapper(TagMapstruct.class);
 
@@ -39,17 +40,6 @@ public interface TagMapstruct
      * @return Dto -- 변환된 Dto 객체
      */
     TagDto toDto(final TagSmpEntity entity) throws Exception;
-
-    /**
-     * Entity -> ListDto 변환
-     *
-     * @param entity 변환할 Entity 객체
-     * @return ListDto -- 변환된 ListDto 객체
-     */
-    @Override
-    @Named("toListDto")
-    @Mapping(target = "contentTagList", expression = "java(ContentTagMapstruct.INSTANCE.toDtoList(entity.getContentTagList()))")
-    TagDto toListDto(final TagEntity entity) throws Exception;
 
     /**
      * Dto -> Entity 변환

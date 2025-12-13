@@ -4,7 +4,8 @@ import io.nicheblog.dreamdiary.domain.schdul.entity.SchdulEntity;
 import io.nicheblog.dreamdiary.domain.schdul.model.SchdulCalDto;
 import io.nicheblog.dreamdiary.domain.vcatn.papr.entity.VcatnSchdulEntity;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseCrudMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +22,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {Constant.class, DateUtils.class, StringUtils.class, DatePtn.class}, builder = @Builder(disableBuilder = true))
 public interface SchdulCalMapstruct
-        extends BaseCrudMapstruct<SchdulCalDto, SchdulCalDto, SchdulEntity> {
+        extends BaseWriteMapstruct<SchdulCalDto, SchdulEntity>, BaseReadMapstruct<SchdulCalDto, SchdulEntity> {
 
     SchdulCalMapstruct INSTANCE = Mappers.getMapper(SchdulCalMapstruct.class);
 

@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.extension.clsf.managt.mapstruct.embed.ManagtEmbed
 import io.nicheblog.dreamdiary.extension.clsf.tag.mapstruct.embed.TagEmbedMapstruct;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.mapstruct.embed.ViewerEmbedMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseClsfMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +25,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, MarkdownUtils.class, CommentEmbedMapstruct.class, ViewerEmbedMapstruct.class, ManagtEmbedMapstruct.class, TagEmbedMapstruct.class}, builder = @Builder(disableBuilder = true))
 public interface BoardPostMapstruct
-        extends BaseClsfMapstruct<BoardPostDto.DTL, BoardPostDto.LIST, BoardPostEntity> {
+        extends BaseWriteMapstruct<BoardPostDto, BoardPostEntity>, BaseClsfMapstruct<BoardPostDto, BoardPostEntity> {
 
     BoardPostMapstruct INSTANCE = Mappers.getMapper(BoardPostMapstruct.class);
 
@@ -37,7 +38,7 @@ public interface BoardPostMapstruct
     @Override
     @Mapping(target = "ctgrClCd", expression = "java((entity.getBoardDefInfo() != null) ? entity.getBoardDefInfo().getCtgrClCd() : null)")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
-    BoardPostDto.DTL toDto(final BoardPostEntity entity) throws Exception;
+    BoardPostDto toDto(final BoardPostEntity entity) throws Exception;
 
     /**
      * SmpEntity -> Dto 변환
@@ -47,18 +48,7 @@ public interface BoardPostMapstruct
      */
     @Mapping(target = "ctgrClCd", expression = "java((entity.getBoardDefInfo() != null) ? entity.getBoardDefInfo().getCtgrClCd() : null)")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
-    BoardPostDto.DTL toDto(final BoardPostSmpEntity entity) throws Exception;
-
-    /**
-     * Entity -> ListDto 변환
-     *
-     * @param entity 변환할 Entity 객체
-     * @return ListDto -- 변환된 ListDto 객체
-     */
-    @Override
-    @Mapping(target = "ctgrClCd", expression = "java((entity.getBoardDefInfo() != null) ? entity.getBoardDefInfo().getCtgrClCd() : null)")
-    @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
-    BoardPostDto.LIST toListDto(final BoardPostEntity entity) throws Exception;
+    BoardPostDto toDto(final BoardPostSmpEntity entity) throws Exception;
 
     /**
      * Dto -> Entity 변환
@@ -68,7 +58,7 @@ public interface BoardPostMapstruct
      */
     @Override
     @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
-    BoardPostEntity toEntity(final BoardPostDto.DTL dto) throws Exception;
+    BoardPostEntity toEntity(final BoardPostDto dto) throws Exception;
 
     /**
      * update Entity from Dto (Dto에서 null이 아닌 값만 Entity로 매핑)
@@ -79,5 +69,5 @@ public interface BoardPostMapstruct
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
-    void updateFromDto(final BoardPostDto.DTL dto, final @MappingTarget BoardPostEntity entity) throws Exception;
+    void updateFromDto(final BoardPostDto dto, final @MappingTarget BoardPostEntity entity) throws Exception;
 }

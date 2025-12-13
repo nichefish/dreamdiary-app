@@ -2,7 +2,8 @@ package io.nicheblog.dreamdiary.extension.clsf.tag.mapstruct;
 
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagSmpEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseCrudMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -16,7 +17,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {})
 public interface TagSmpMapstruct
-        extends BaseCrudMapstruct<TagDto, TagDto, TagSmpEntity> {
+        extends BaseWriteMapstruct<TagDto, TagSmpEntity>, BaseReadMapstruct<TagDto, TagSmpEntity> {
 
     TagSmpMapstruct INSTANCE = Mappers.getMapper(TagSmpMapstruct.class);
 
@@ -28,15 +29,6 @@ public interface TagSmpMapstruct
      */
     @Override
     TagDto toDto(final TagSmpEntity entity) throws Exception;
-
-    /**
-     * Entity -> ListDto 변환
-     *
-     * @param entity 변환할 Entity 객체
-     * @return ListDto -- 변환된 ListDto 객체
-     */
-    @Override
-    TagDto toListDto(final TagSmpEntity entity) throws Exception;
 
     /**
      * Dto -> Entity 변환

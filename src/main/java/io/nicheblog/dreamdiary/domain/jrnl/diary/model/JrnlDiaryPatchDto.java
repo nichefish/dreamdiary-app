@@ -1,12 +1,15 @@
 package io.nicheblog.dreamdiary.domain.jrnl.diary.model;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 /**
  * JrnlDiaryDto
  * <pre>
- *  저널 일기 Dto.
+ *  저널 일기 상태 변경 Dto.
  * </pre>
  *
  * @author nichefish
@@ -18,8 +21,11 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 public class JrnlDiaryPatchDto {
 
+    /** 중요 여부 */
     private Boolean imprtc;
+    /** 정리완료 여부 */
     private Boolean resolved;
+    /** 글접기 여부 */
     private Boolean collapsed;
 
     /**

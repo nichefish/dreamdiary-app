@@ -1,7 +1,6 @@
 package io.nicheblog.dreamdiary.global.intrfc.mapstruct;
 
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.helper.MapstructHelper;
-import org.mapstruct.*;
+import org.mapstruct.Named;
 
 /**
  * BaseMapstruct
@@ -21,34 +20,4 @@ public interface BaseMapstruct<Dto, Entity> {
      */
     @Named("toDto")
     Dto toDto(final Entity entity) throws Exception;
-
-    /**
-     * Dto -> Entity 변환
-     *
-     * @param dto 변환할 Dto 객체
-     * @return {@link Entity} -- 변환된 Entity 객체
-     */
-    @Named("toEntity")
-    Entity toEntity(final Dto dto) throws Exception;
-
-    /**
-     * Update Entity from Dto (Dto에서 null이 아닌 값만 Entity로 매핑)
-     *
-     * @param dto 업데이트할 Dto 객체
-     * @param entity 업데이트할 대상 Entity 객체
-     */
-    @Named("updateFromDto")
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateFromDto(final Dto dto, final @MappingTarget Entity entity) throws Exception;
-
-    /**
-     * default : State 관련 기본 요소들 매핑
-     *
-     * @param dto 업데이트할 Dto 객체
-     * @param entity 업데이트할 대상 Entity 객체
-     */
-    @AfterMapping
-    default void mapBaseListFields(final Dto dto, final @MappingTarget Entity entity) throws Exception {
-        MapstructHelper.mapStateFields(dto, entity);
-    }
 }

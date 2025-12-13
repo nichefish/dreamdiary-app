@@ -60,7 +60,7 @@ public class JrnlSumryRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final List<JrnlSumryDto.LIST> jrnlSumryList = jrnlSumryService.getListDto(searchParam);
+        final List<JrnlSumryDto> jrnlSumryList = jrnlSumryService.getListDto(searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -86,7 +86,7 @@ public class JrnlSumryRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final JrnlSumryDto.DTL retrievedDto = jrnlSumryService.getSumryDtl(key);
+        final JrnlSumryDto retrievedDto = jrnlSumryService.getSumryDtl(key);
 
         final boolean isSuccess = (retrievedDto.getPostNo() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
@@ -183,7 +183,7 @@ public class JrnlSumryRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSumryRegAjax(
-            final @Valid JrnlSumryDto.DTL jrnlSumry,
+            final @Valid JrnlSumryDto jrnlSumry,
             final LogActvtyParam logParam,
             final MultipartHttpServletRequest request
     ) throws Exception {

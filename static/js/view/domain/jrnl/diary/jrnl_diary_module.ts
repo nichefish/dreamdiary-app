@@ -102,7 +102,7 @@ dF.JrnlDiary = (function(): dfModule {
         regModal: function({ jrnlDayNo, jrnlEntryNo, stdrdDt, jrnlDtWeekDay }: { jrnlDayNo: string | number; jrnlEntryNo: string | number; stdrdDt: string; jrnlDtWeekDay: string; }): void {
             if (isNaN(Number(jrnlEntryNo))) return;
 
-            const url: string = cF.util.bindUrl(Url.JRNL_DIARY, { postNo: jrnlDayNo });
+            const url: string = cF.util.bindUrl(Url.JRNL_DAY, { postNo: jrnlDayNo });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) return;
                 const entryList = res.rsltObj.entryList;

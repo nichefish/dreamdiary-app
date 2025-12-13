@@ -3,7 +3,8 @@ package io.nicheblog.dreamdiary.domain.jrnl.intrpt.mapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.entity.JrnlIntrptEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.model.JrnlIntrptDto;
 import io.nicheblog.dreamdiary.extension.cd.utils.CdUtils;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BasePostMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseClsfMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -21,7 +22,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CdUtils.class}, builder = @Builder(disableBuilder = true))
 public interface JrnlIntrptMapstruct
-        extends BasePostMapstruct<JrnlIntrptDto, JrnlIntrptDto, JrnlIntrptEntity> {
+        extends BaseWriteMapstruct<JrnlIntrptDto, JrnlIntrptEntity>, BaseClsfMapstruct<JrnlIntrptDto, JrnlIntrptEntity> {
 
     JrnlIntrptMapstruct INSTANCE = Mappers.getMapper(JrnlIntrptMapstruct.class);
 
@@ -41,23 +42,6 @@ public interface JrnlIntrptMapstruct
     @Mapping(target = "mnth", expression = "java(entity.getJrnlDream() != null ? entity.getJrnlDream().getJrnlDay().getMnth() : null)")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
     JrnlIntrptDto toDto(final JrnlIntrptEntity entity) throws Exception;
-
-    /**
-     * Entity -> ListDto 변환
-     *
-     * @param entity 변환할 Entity 객체
-     * @return ListDto -- 변환된 ListDto 객체
-     */
-    @Override
-    @Named("toListDto")
-    @Mapping(target = "jrnlDayNo", expression = "java(entity.getJrnlDream() != null ? entity.getJrnlDream().getJrnlDayNo() : null)")
-    @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"JRNL_DIARY_CTGR_CD\", entity.getCtgrCd()))")
-    @Mapping(target = "stdrdDt", expression = "java(entity.getJrnlDream().getJrnlDay() != null ? DateUtils.asStr(\"Y\".equals(entity.getJrnlDream().getJrnlDay().getDtUnknownYn()) ? entity.getJrnlDream().getJrnlDay().getAprxmtDt() : entity.getJrnlDream().getJrnlDay().getJrnlDt(), DatePtn.DATE) : null)")
-    @Mapping(target = "jrnlDtWeekDay", expression = "java(entity.getJrnlDream().getJrnlDay() != null && entity.getJrnlDream().getJrnlDay().getJrnlDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJrnlDream().getJrnlDay().getJrnlDt()) : null)")
-    @Mapping(target = "yy", expression = "java(entity.getJrnlDream() != null ? entity.getJrnlDream().getJrnlDay().getYy() : null)")
-    @Mapping(target = "mnth", expression = "java(entity.getJrnlDream() != null ? entity.getJrnlDream().getJrnlDay().getMnth() : null)")
-    @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
-    JrnlIntrptDto toListDto(final JrnlIntrptEntity entity) throws Exception;
 
     /**
      * Dto -> Entity 변환

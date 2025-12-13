@@ -62,6 +62,7 @@ public class JrnlEntryRestController
     ) throws Exception {
 
         final List<JrnlEntryDto> jrnlEntryList = jrnlEntryService.getListDto(searchParam);
+
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

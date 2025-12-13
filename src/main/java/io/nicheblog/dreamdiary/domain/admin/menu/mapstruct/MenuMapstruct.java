@@ -2,7 +2,8 @@ package io.nicheblog.dreamdiary.domain.admin.menu.mapstruct;
 
 import io.nicheblog.dreamdiary.domain.admin.menu.entity.MenuEntity;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuDto;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseCrudMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +20,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class}, builder = @Builder(disableBuilder = true))
 public interface MenuMapstruct
-        extends BaseCrudMapstruct<MenuDto, MenuDto, MenuEntity> {
+        extends BaseWriteMapstruct<MenuDto, MenuEntity>, BaseReadMapstruct<MenuDto, MenuEntity> {
 
     MenuMapstruct INSTANCE = Mappers.getMapper(MenuMapstruct.class);
 
@@ -35,19 +36,6 @@ public interface MenuMapstruct
     @Mapping(target = "upperMenuNm", expression = "java(entity.getUpperMenu() != null ? entity.getUpperMenu().getMenuNm() : null)")
     @Mapping(target = "upperMenuTyCd", expression = "java(entity.getUpperMenu() != null ? entity.getUpperMenu().getMenuTyCd() : null)")
     MenuDto toDto(final MenuEntity entity) throws Exception;
-
-    /**
-     * Entity -> ListDto 변환
-     *
-     * @param entity 변환할 Entity 객체
-     * @return ListDto -- 변환된 ListDto 객체
-     */
-    @Override
-    @Named("toListDto")
-    @Mapping(target = "subMenuList", expression = "java(toDtoList(entity.getSubMenuList()))")
-    @Mapping(target = "upperMenuNm", expression = "java(entity.getUpperMenu() != null ? entity.getUpperMenu().getMenuNm() : null)")
-    @Mapping(target = "upperMenuTyCd", expression = "java(entity.getUpperMenu() != null ? entity.getUpperMenu().getMenuTyCd() : null)")
-    MenuDto toListDto(final MenuEntity entity) throws Exception;
 
     /**
      * Dto -> Entity 변환

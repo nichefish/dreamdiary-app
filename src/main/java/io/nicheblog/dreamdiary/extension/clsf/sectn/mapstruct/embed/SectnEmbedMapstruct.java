@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.extension.clsf.sectn.entity.embed.SectnEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.mapstruct.SectnMapstruct;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.model.cmpstn.SectnCmpstn;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -17,7 +18,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {SectnMapstruct.class}, builder = @Builder(disableBuilder = true))
 public interface SectnEmbedMapstruct
-        extends BaseMapstruct<SectnCmpstn, SectnEmbed> {
+        extends BaseWriteMapstruct<SectnCmpstn, SectnEmbed>, BaseMapstruct<SectnCmpstn, SectnEmbed> {
 
     SectnEmbedMapstruct INSTANCE = Mappers.getMapper(SectnEmbedMapstruct.class);
 

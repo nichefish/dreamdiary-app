@@ -51,7 +51,7 @@ import java.util.*;
 @RequiredArgsConstructor
 @Log4j2
 public class JrnlDayService
-        implements BaseClsfService<JrnlDayDto, JrnlDayDto, Integer, JrnlDayEntity, JrnlDayRepository, JrnlDaySpec, JrnlDayMapstruct> {
+        implements BaseClsfService<JrnlDayDto, JrnlDayDto, Integer, JrnlDayEntity> {
 
     @Getter
     private final JrnlDayRepository repository;
@@ -59,6 +59,13 @@ public class JrnlDayService
     private final JrnlDaySpec spec;
     @Getter
     private final JrnlDayMapstruct mapstruct = JrnlDayMapstruct.INSTANCE;
+
+    public JrnlDayMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public JrnlDayMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     private final JrnlDayMapper jrnlDayMapper;
     private final ApplicationEventPublisherWrapper publisher;
@@ -90,7 +97,7 @@ public class JrnlDayService
         EhCacheUtils.put("myDreamStateMap", cacheKey, maps.getDreamMap());
         EhCacheUtils.put("myIntrptStateMap", cacheKey, maps.getIntrptMap());
 
-        return this.getSelf().listEntityToDto(myJrnlDayEntityList);
+        return mapstruct.toDtoList(myJrnlDayEntityList);
     }
 
     /**
@@ -224,6 +231,19 @@ public class JrnlDayService
     }
 
     /**
+     * 단일 항목 조회 (dto level)
+     *
+     * @param key 조회할 엔티티의 키
+     * @return {@link JrnlDayDto} -- 조회 항목 반환
+     */
+    @Transactional(readOnly = true)
+    public JrnlDayDto getDtlDto(final Integer key) throws Exception {
+        final JrnlDayEntity retrievedEntity = this.getDtlEntity(key);
+
+        return mapstruct.toDto(retrievedEntity);
+    }
+
+    /**
      * 중복 체크 (정상시 true / 중복시 false)
      *
      * @param jrnlDay {@link JrnlDayDto} -- 중복 여부를 확인할 {@link JrnlDayDto} 객체
@@ -256,6 +276,7 @@ public class JrnlDayService
         return existingEntity.getPostNo();
     }
 
+
     /**
      * 특정 태그의 관련 일자 목록 조회
      *
@@ -266,7 +287,8 @@ public class JrnlDayService
     public List<JrnlDayDto> jrnlDayTagDtl(final JrnlDaySearchParam searchParam) throws Exception {
         searchParam.setSort("DESC");
 
-        return this.getSelf().getListDto(searchParam);
+        final List<JrnlDayEntity> listEntity = this.getSelf().getListEntity(searchParam);
+        return mapstruct.toDtoList(listEntity);
     }
 
     /**
@@ -301,7 +323,8 @@ public class JrnlDayService
      */
     @Cacheable(value="myJrnlDayDtlDto", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #key")
     public JrnlDayDto getDtlDtoWithCache(final Integer key) throws Exception {
-        final JrnlDayDto retrieved = this.getSelf().getDtlDto(key);
+        final JrnlDayEntity retrievedEntity = this.getSelf().getDtlEntity(key);
+        final JrnlDayDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
         if (!retrieved.getIsRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("common.rslt.access-not-authorized"));
 
@@ -342,7 +365,7 @@ public class JrnlDayService
      * @param updatedDto - 등록된 객체
      */
     @Override
-    public void postModify(final JrnlDayDto updatedDto) throws Exception {
+    public void postModify(final JrnlDayDto postDto, final JrnlDayDto updatedDto) throws Exception {
         // 태그 처리 :: 메인 로직과 분리
         publisher.publishCustomEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
         // 관련 캐시 삭제

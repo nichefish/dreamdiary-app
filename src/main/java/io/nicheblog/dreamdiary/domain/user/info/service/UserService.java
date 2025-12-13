@@ -38,7 +38,7 @@ import java.util.Optional;
 @Service("userService")
 @RequiredArgsConstructor
 public class UserService
-        implements BaseMultiCrudService<UserDto.DTL, UserDto.LIST, Integer, UserEntity, UserRepository, UserSpec, UserMapstruct> {
+        implements BaseMultiCrudService<UserDto, UserDto, Integer, UserEntity> {
 
     @Getter
     private final UserRepository repository;
@@ -47,6 +47,13 @@ public class UserService
     @Getter
     private final UserMapstruct mapstruct = UserMapstruct.INSTANCE;
 
+    public UserMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public UserMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
+
     private final LgnPolicyService lgnPolicyService;
     private final PasswordEncoder passwordEncoder;
 
@@ -54,9 +61,9 @@ public class UserService
      * 사용자 관리 > 사용자 단일 조회 (Dto Level) (Long userNo와 별도로 String userId)
      *
      * @param userId 조회할 사용자의 ID (문자열)
-     * @return {@link UserDto.DTL} -- 사용자 정보가 담긴 Dto 객체
+     * @return {@link UserDto} -- 사용자 정보가 담긴 Dto 객체
      */
-    public UserDto.DTL getDtlDto(final String userId) throws Exception {
+    public UserDto getDtlDto(final String userId) throws Exception {
         // Entity 레벨 조회
         final UserEntity rsUserEntity = this.getDtlEntity(userId);
 
@@ -104,7 +111,7 @@ public class UserService
      * @param registDto 등록할 객체
      */
     @Override
-    public void preRegist(final UserDto.DTL registDto) throws Exception {
+    public void preRegist(final UserDto registDto) throws Exception {
         // 접속 IP 정보 없을시 사용으로 찍었더라도 미사용으로 변경
         if (StringUtils.isEmpty(registDto.getAcsIpListStr())) {
             registDto.setUseAcsIpYn("N");
@@ -155,7 +162,7 @@ public class UserService
      * @param modifyDto 수정할 객체
      */
     @Override
-    public void preModify(final UserDto.DTL modifyDto) throws Exception {
+    public void preModify(final UserDto modifyDto) throws Exception {
         // 접속 IP 정보 없을시 사용으로 찍었더라도 미사용으로 변경
         if (StringUtils.isEmpty(modifyDto.getAcsIpListStr())) {
             modifyDto.setUseAcsIpYn("N");
@@ -170,13 +177,13 @@ public class UserService
      */
     @Override
     @Transactional
-    public ServiceResponse modify(final UserDto.DTL modifyDto) throws Exception {
-        final UserEntity modifyEntity = this.getDtlEntity(modifyDto);
+    public ServiceResponse modify(final UserDto modifyDto) throws Exception {
+        final UserEntity modifyEntity = this.getDtlEntity(modifyDto.getKey());
         mapstruct.updateFromDto(modifyDto, modifyEntity);
 
         // update
         final UserEntity updatedEntity = this.updt(modifyEntity);
-        final UserDto.DTL updatedDto = mapstruct.toDto(updatedEntity);
+        final UserDto updatedDto = mapstruct.toDto(updatedEntity);
 
         return ServiceResponse.builder()
                 .rslt(updatedEntity.getUserNo() != null)
@@ -246,7 +253,7 @@ public class UserService
      *
      * @param yyStr (년도)
      */
-    public List<UserDto.LIST> getCrdtUserList(final String yyStr) throws Exception {
+    public List<UserDto> getCrdtUserList(final String yyStr) throws Exception {
         if (StringUtils.isEmpty(yyStr)) return null;
         // 목록 검색
         String startDtStr = yyStr + "-01-01";
@@ -261,12 +268,10 @@ public class UserService
      * @param startDtStr : 시작일자yyyy-MM-dd
      * @param endDtStr : 종료일자yyyy-MM-dd
      */
-    public List<UserDto.LIST> getCrdtUserList(final String startDtStr, final String endDtStr) throws Exception {
+    public List<UserDto> getCrdtUserList(final String startDtStr, final String endDtStr) throws Exception {
         // 목록 검색
-        List<UserEntity> userEntityList = repository.findAll(spec.searchCrdtUser(startDtStr, endDtStr));
-
-        // List<Entity> -> List<ListDto>
-        return this.listEntityToDto(userEntityList);
+        final List<UserEntity> entityList = repository.findAll(spec.searchCrdtUser(startDtStr, endDtStr));
+        return mapstruct.toDtoList(entityList);
     }
 
     /**

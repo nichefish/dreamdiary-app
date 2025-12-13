@@ -49,7 +49,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Log4j2
 public class JrnlDreamService
-        implements BaseClsfService<JrnlDreamDto, JrnlDreamDto, Integer, JrnlDreamEntity, JrnlDreamRepository, JrnlDreamSpec, JrnlDreamMapstruct> {
+        implements BaseClsfService<JrnlDreamDto, JrnlDreamDto, Integer, JrnlDreamEntity> {
 
     @Getter
     private final JrnlDreamRepository repository;
@@ -59,6 +59,13 @@ public class JrnlDreamService
     private final JrnlDreamMapstruct mapstruct = JrnlDreamMapstruct.INSTANCE;
     @Getter
     private final JrnlDreamMapper mapper;
+
+    public JrnlDreamMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public JrnlDreamMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     private final ApplicationEventPublisherWrapper publisher;
 
@@ -76,7 +83,8 @@ public class JrnlDreamService
     @Cacheable(value="myJrnlDreamList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.hashCode()")
     public List<JrnlDreamDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
-        return this.getSelf().getListDto(searchParam);
+        final List<JrnlDreamEntity> entityList = this.getSelf().getListEntity(searchParam);
+        return mapstruct.toDtoList(entityList);
     }
 
     /**
@@ -88,7 +96,8 @@ public class JrnlDreamService
     @Cacheable(value="myImprtcDreamList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy")
     public List<JrnlDreamDto> getImprtcDreamList(final Integer yy) throws Exception {
         final JrnlDreamSearchParam searchParam = JrnlDreamSearchParam.builder().yy(yy).imprtcYn("Y").build();
-        final List<JrnlDreamDto> imprtcDreamList = this.getSelf().getListDto(searchParam);
+        final List<JrnlDreamEntity> entityList = this.getSelf().getListEntity(searchParam);
+        final List<JrnlDreamDto> imprtcDreamList = mapstruct.toDtoList(entityList);
         Collections.sort(imprtcDreamList);
 
         return imprtcDreamList;
@@ -103,14 +112,28 @@ public class JrnlDreamService
     @Cacheable(value="myJrnlDreamTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
     @SuppressWarnings("unchecked")
     public List<JrnlDreamDto> jrnlDreamTagDtl(final JrnlDreamSearchParam searchParam) throws Exception {
-        List<JrnlDreamDto> jrnlDreamList = this.getSelf().getListDto(searchParam);
+        final List<JrnlDreamEntity> entityList = this.getSelf().getListEntity(searchParam);
+        List<JrnlDreamDto> jrnlDreamList = mapstruct.toDtoList(entityList);
         // 공휴일 정보 세팅
         final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
-        for (JrnlDreamDto jrnlDream : jrnlDreamList) {
+        for (final JrnlDreamDto jrnlDream : jrnlDreamList) {
             setHldyInfo(jrnlDream, hldyMap);
         }
 
         return jrnlDreamList;
+    }
+
+    /**
+     * 단일 항목 조회 (dto level)
+     *
+     * @param key 조회할 엔티티의 키
+     * @return {@link JrnlDreamDto} -- 조회 항목 반환
+     */
+    @Transactional(readOnly = true)
+    public JrnlDreamDto getDtlDto(final Integer key) throws Exception {
+        final JrnlDreamEntity retrievedEntity = this.getDtlEntity(key);
+
+        return mapstruct.toDto(retrievedEntity);
     }
 
     /**
@@ -146,7 +169,8 @@ public class JrnlDreamService
      */
     @Cacheable(value="myJrnlDreamDtlDto", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #key")
     public JrnlDreamDto getDtlDtoWithCache(final Integer key) throws Exception {
-        final JrnlDreamDto retrieved = this.getSelf().getDtlDto(key);
+        final JrnlDreamEntity retrievedEntity = this.getSelf().getDtlEntity(key);
+        final JrnlDreamDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
         if (!retrieved.getIsRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("common.rslt.access-not-authorized"));
         return retrieved;
@@ -170,7 +194,7 @@ public class JrnlDreamService
      * @param updatedDto - 등록된 객체
      */
     @Override
-    public void postModify(final JrnlDreamDto updatedDto) throws Exception {
+    public void postModify(final JrnlDreamDto postDto, final JrnlDreamDto updatedDto) throws Exception {
         // 인덱스 재조정
         if (updatedDto.getIsIdxChanged()) this.getSelf().reorderIdx(updatedDto);
         
@@ -238,7 +262,8 @@ public class JrnlDreamService
         final List<JrnlDreamDto> list = mapper.findAllForReorder(jrnlDayNo);
 
         // target 조회
-        final JrnlDreamDto target = findDtlDto(postNo);
+        final JrnlDreamEntity targetEntity = findDtlEntity(postNo);
+        final JrnlDreamDto target = mapstruct.toDto(targetEntity);
         if (target == null) return;
 
         // 혹시 이미 포함되어 있으면 제거

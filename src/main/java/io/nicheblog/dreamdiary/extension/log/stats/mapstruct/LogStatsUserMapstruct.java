@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.extension.log.stats.entity.LogStatsUserEntity;
 import io.nicheblog.dreamdiary.extension.log.stats.model.LogStatsUserDto;
 import io.nicheblog.dreamdiary.extension.log.stats.model.LogStatsUserIntrfc;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.Mapper;
@@ -21,7 +22,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class})
 public interface LogStatsUserMapstruct
-        extends BaseMapstruct<LogStatsUserDto, LogStatsUserEntity> {
+        extends BaseWriteMapstruct<LogStatsUserDto, LogStatsUserEntity>, BaseMapstruct<LogStatsUserDto, LogStatsUserEntity> {
 
     LogStatsUserMapstruct INSTANCE = Mappers.getMapper(LogStatsUserMapstruct.class);
 

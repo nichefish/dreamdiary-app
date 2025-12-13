@@ -8,9 +8,8 @@ import io.nicheblog.dreamdiary.domain.board.post.spec.BoardPostSpec;
 import io.nicheblog.dreamdiary.extension.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.extension.clsf.managt.event.ManagtrAddEvent;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
-import io.nicheblog.dreamdiary.extension.clsf.viewer.event.ViewerAddEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
-import io.nicheblog.dreamdiary.global.intrfc.service.BasePostService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +36,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Log4j2
 public class BoardPostService
-        implements BasePostService<BoardPostDto.DTL, BoardPostDto.LIST, Integer, BoardPostEntity, BoardPostRepository, BoardPostSpec, BoardPostMapstruct> {
+        implements BaseClsfService<BoardPostDto, BoardPostDto, Integer, BoardPostEntity> {
 
     @Getter
     private final BoardPostRepository repository;
@@ -45,6 +44,13 @@ public class BoardPostService
     private final BoardPostSpec spec;
     @Getter
     private final BoardPostMapstruct mapstruct = BoardPostMapstruct.INSTANCE;
+
+    public BoardPostMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public BoardPostMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     private final DtlCdService dtlCdService;
     private final ApplicationEventPublisherWrapper publisher;
@@ -56,11 +62,11 @@ public class BoardPostService
      * @return {@link Page} -- 변환된 페이징 처리된 Dto 목록
      */
     @Override
-    public Page<BoardPostDto.LIST> pageEntityToDto(final Page<BoardPostEntity> entityPage) throws Exception {
-        final List<BoardPostDto.LIST> dtoList = new ArrayList<>();
+    public Page<BoardPostDto> pageEntityToDto(final Page<BoardPostEntity> entityPage) throws Exception {
+        final List<BoardPostDto> dtoList = new ArrayList<>();
         int i = 0;
         for (BoardPostEntity entity : entityPage.getContent()) {
-            final BoardPostDto.LIST listDto = mapstruct.toListDto(entity);
+            final BoardPostDto listDto = mapstruct.toDto(entity);
             listDto.setRnum(CmmUtils.getPageRnum(entityPage, i));
             final String ctgrNm = dtlCdService.getDtlCdNm(listDto.getCtgrClCd(), listDto.getCtgrCd());
             listDto.setCtgrNm(ctgrNm);
@@ -77,16 +83,16 @@ public class BoardPostService
      * @param contentType 조회할 컨텐츠 타입
      * @return {@link List} -- 상단 고정 게시물 목록
      */
-    public List<BoardPostDto.LIST> getFxdList(final String contentType) throws Exception {
+    public List<BoardPostDto> getFxdList(final String contentType) throws Exception {
         final Map<String, Object> searchParamMap = new HashMap<>() {{
             put("contentType", contentType);
             put("fxdYn", "Y");
         }};
 
         final List<BoardPostEntity> entityList = this.getListEntity(searchParamMap);
-        final List<BoardPostDto.LIST> dtoList = new ArrayList<>();
+        final List<BoardPostDto> dtoList = new ArrayList<>();
         for (BoardPostEntity entity : entityList) {
-            final BoardPostDto.LIST listDto = mapstruct.toListDto(entity);
+            final BoardPostDto listDto = mapstruct.toDto(entity);
             final String ctgrNm = dtlCdService.getDtlCdNm(listDto.getCtgrClCd(), listDto.getCtgrCd());
             listDto.setCtgrNm(ctgrNm);
             dtoList.add(listDto);
@@ -101,7 +107,7 @@ public class BoardPostService
      * @param updatedDto - 등록된 객체
      */
     @Override
-    public void postRegist(final BoardPostDto.DTL updatedDto) throws Exception {
+    public void postRegist(final BoardPostDto updatedDto) throws Exception {
         // 태그 처리 :: 메인 로직과 분리
         publisher.publishEvent(new TagProcEvent(this, updatedDto.getClsfKey(), updatedDto.tag));
         // 조치자 추가 :: 메인 로직과 분리
@@ -114,14 +120,18 @@ public class BoardPostService
     }
 
     /**
-     * 상세 페이지 조회 후처리 (dto level)
+     * default: 상세 페이지 조회
      *
-     * @param retrievedDto - 조회된 Dto 객체
+     * @param key 조회수를 증가시킬 항목의 키
+     * @return Dto -- 조회된 객체
      */
-    @Override
-    public void postViewDtlPage(final BoardPostDto.DTL retrievedDto) throws Exception {
-        // 열람자 추가 :: 메인 로직과 분리
-        publisher.publishEvent(new ViewerAddEvent(this, retrievedDto.getClsfKey()));
+    @Transactional
+    public BoardPostDto viewDtlPage(final Integer key) throws Exception {
+
+        // 조회수 증가
+        // this.hitCntUp(key);
+
+        return this.getDtlDto(key);
     }
 
     /**
@@ -130,7 +140,7 @@ public class BoardPostService
      * @param updatedDto - 등록된 객체
      */
     @Override
-    public void postModify(final BoardPostDto.DTL updatedDto) throws Exception {
+    public void postModify(final BoardPostDto postDto, final BoardPostDto updatedDto) throws Exception {
         // 태그 처리 :: 메인 로직과 분리
         publisher.publishEvent(new TagProcEvent(this, updatedDto.getClsfKey(), updatedDto.tag));
         // 조치자 추가 :: 메인 로직과 분리
@@ -148,7 +158,7 @@ public class BoardPostService
      * @param deletedDto - 삭제된 객체
      */
     @Override
-    public void postDelete(final BoardPostDto.DTL deletedDto) throws Exception {
+    public void postDelete(final BoardPostDto deletedDto) throws Exception {
         // 태그 처리 :: 메인 로직과 분리
         publisher.publishEvent(new TagProcEvent(this, deletedDto.getClsfKey()));
     }
@@ -160,9 +170,9 @@ public class BoardPostService
      */
     @Override
     @Transactional(readOnly = true)
-    public BoardPostDto.DTL getDtlDto(final Integer key) throws Exception {
+    public BoardPostDto getDtlDto(final Integer key) throws Exception {
         final BoardPostEntity retrievedEntity = this.getDtlEntity(key);       // Entity 레벨 조회
-        final BoardPostDto.DTL retrievedDto = mapstruct.toDto(retrievedEntity);
+        final BoardPostDto retrievedDto = mapstruct.toDto(retrievedEntity);
         final String ctgrNm = dtlCdService.getDtlCdNm(retrievedDto.getCtgrClCd(), retrievedDto.getCtgrCd());
         retrievedDto.setCtgrNm(ctgrNm);
 

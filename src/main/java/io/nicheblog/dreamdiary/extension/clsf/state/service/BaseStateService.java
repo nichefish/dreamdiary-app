@@ -3,12 +3,9 @@ package io.nicheblog.dreamdiary.extension.clsf.state.service;
 import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseCrudMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
-import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
-import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -24,8 +21,8 @@ import java.util.List;
  *
  * @author nichefish
  */
-public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule & Identifiable<Key>, ListDto extends BaseAuditDto & StateCmpstnModule, Key extends Serializable, Entity extends BaseCrudEntity & StateEmbedModule, Repository extends BaseStreamRepository<Entity, Key>, Spec extends BaseSpec<Entity>, Mapstruct extends BaseCrudMapstruct<Dto, ListDto, Entity>>
-        extends BaseCrudService<Dto, ListDto, Key, Entity, Repository, Spec, Mapstruct> {
+public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule & Identifiable<Key>, Key extends Serializable, Entity extends BaseCrudEntity & StateEmbedModule>
+        extends BaseCrudService<Dto, Dto, Key, Entity> {
 
     /**
      * default: 상태를 '사용'으로 변경한다.
@@ -39,8 +36,7 @@ public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule &
         e.getState().setUseYn("Y");
         this.updt(e);
 
-        final Mapstruct mapstruct = this.getMapstruct();
-        final Dto updatedDto = mapstruct.toDto(e);
+        final Dto updatedDto = getReadMapstruct().toDto(e);
         // 변경 후처리
         this.postSetState(updatedDto);
 
@@ -62,8 +58,7 @@ public interface BaseStateService<Dto extends BaseAuditDto & StateCmpstnModule &
         e.getState().setUseYn("N");
         this.updt(e);
 
-        final Mapstruct mapstruct = this.getMapstruct();
-        final Dto updatedDto = mapstruct.toDto(e);
+        final Dto updatedDto = getReadMapstruct().toDto(e);
 
         // 변경 후처리
         this.postSetState(updatedDto);

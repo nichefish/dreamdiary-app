@@ -3,11 +3,9 @@ package io.nicheblog.dreamdiary.global.intrfc.service;
 import io.nicheblog.dreamdiary.extension.file.exception.AtchFileUploadException;
 import io.nicheblog.dreamdiary.extension.file.utils.FileUtils;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAtchEntity;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseCrudMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseAtchDto;
+import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
-import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
-import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -22,8 +20,8 @@ import java.io.Serializable;
  *
  * @author nichefish
  */
-public interface BaseMultiCrudService<Dto extends BaseAtchDto & Identifiable<Key>, ListDto extends BaseAtchDto, Key extends Serializable, Entity extends BaseAtchEntity, Repository extends BaseStreamRepository<Entity, Key>, Spec extends BaseSpec<Entity>, Mapstruct extends BaseCrudMapstruct<Dto, ListDto, Entity>>
-        extends BaseCrudService<Dto, ListDto, Key, Entity, Repository, Spec, Mapstruct> {
+public interface BaseMultiCrudService<PostDto extends BaseAtchDto & Identifiable<Key>, Dto extends BaseCrudDto & Identifiable<Key>, Key extends Serializable, Entity extends BaseAtchEntity>
+        extends BaseCrudService<PostDto, Dto, Key, Entity> {
 
     /**
      * default: 게시물 등록 (Multipart)
@@ -33,7 +31,7 @@ public interface BaseMultiCrudService<Dto extends BaseAtchDto & Identifiable<Key
      * @return {@link ServiceResponse} -- 처리된 Dto 객체
      */
     @Transactional
-    default ServiceResponse regist(final Dto registDto, final MultipartHttpServletRequest request) throws Exception {
+    default ServiceResponse regist(final PostDto registDto, final MultipartHttpServletRequest request) throws Exception {
         try {
             // 파일 영역 처리
             final Integer atchFileNo = registDto.getAtchFileNo();
@@ -53,7 +51,7 @@ public interface BaseMultiCrudService<Dto extends BaseAtchDto & Identifiable<Key
      * @return {@link ServiceResponse} -- 처리된 Dto 객체
      */
     @Transactional
-    default ServiceResponse modify(final Dto modifyDto, final MultipartHttpServletRequest request) throws Exception {
+    default ServiceResponse modify(final PostDto modifyDto, final MultipartHttpServletRequest request) throws Exception {
         try {
             // 파일 영역 처리
             final Integer atchFileNo = modifyDto.getAtchFileNo();

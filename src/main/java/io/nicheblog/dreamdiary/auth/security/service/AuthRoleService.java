@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Log4j2
 public class AuthRoleService
-        implements BaseReadonlyService<AuthRoleDto, AuthRoleDto, String, AuthRoleEntity, AuthRoleRepository, AuthRoleSpec, AuthRoleMapstruct> {
+        implements BaseReadonlyService<AuthRoleDto, String, AuthRoleEntity> {
 
     @Getter
     private final AuthRoleRepository repository;
@@ -31,4 +31,11 @@ public class AuthRoleService
     private final AuthRoleSpec spec;
     @Getter
     private final AuthRoleMapstruct mapstruct = AuthRoleMapstruct.INSTANCE;
+
+    public AuthRoleMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public AuthRoleMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 }

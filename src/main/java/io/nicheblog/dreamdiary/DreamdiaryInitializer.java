@@ -128,7 +128,7 @@ public class DreamdiaryInitializer
                 .role(authRoleEntityMngr)
                 .build();
 
-        final UserDto.DTL systemAcnt = UserDto.DTL.builder()
+        final UserDto systemAcnt = UserDto.builder()
                 .nickNm(Constant.SYSTEM_ACNT_NM)
                 .userId(Constant.SYSTEM_ACNT)
                 .password(SYSTEM_INIT_TEMP_PW)

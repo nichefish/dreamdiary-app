@@ -5,7 +5,8 @@ import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntrySmpDto;
 import io.nicheblog.dreamdiary.extension.cd.utils.CdUtils;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BasePostMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseClsfMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CdUtils.class}, builder = @Builder(disableBuilder = true))
 public interface JrnlEntryMapstruct
-        extends BasePostMapstruct<JrnlEntryDto, JrnlEntryDto, JrnlEntryEntity> {
+        extends BaseWriteMapstruct<JrnlEntryDto, JrnlEntryEntity>, BaseClsfMapstruct<JrnlEntryDto, JrnlEntryEntity> {
 
     JrnlEntryMapstruct INSTANCE = Mappers.getMapper(JrnlEntryMapstruct.class);
     JrnlDiaryMapstruct jrnlDiaryMapstruct = JrnlDiaryMapstruct.INSTANCE;
@@ -55,21 +56,6 @@ public interface JrnlEntryMapstruct
      */
     @Named("toSmpDto")
     JrnlEntrySmpDto toSmpDto(final JrnlEntryEntity entity) throws Exception;
-
-    /**
-     * Entity -> ListDto 변환
-     *
-     * @param entity 변환할 Entity 객체
-     * @return ListDto -- 변환된 ListDto 객체
-     */
-    @Override
-    @Named("toListDto")
-    @Mapping(target = "stdrdDt", expression = "java(entity.getJrnlDay() != null ? DateUtils.asStr(\"Y\".equals(entity.getJrnlDay().getDtUnknownYn()) ? entity.getJrnlDay().getAprxmtDt() : entity.getJrnlDay().getJrnlDt(), DatePtn.DATE) : null)")
-    @Mapping(target = "jrnlDtWeekDay", expression = "java(entity.getJrnlDay() != null && entity.getJrnlDay().getJrnlDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJrnlDay().getJrnlDt()) : null)")
-    @Mapping(target = "yy", expression = "java(entity.getJrnlDay() != null ? entity.getJrnlDay().getYy() : null)")
-    @Mapping(target = "mnth", expression = "java(entity.getJrnlDay() != null ? entity.getJrnlDay().getMnth() : null)")
-    @Mapping(target = "jrnlDiaryList", expression = "java(jrnlDiaryMapstruct.toDtoList(entity.getJrnlDiaryList()))")
-    JrnlEntryDto toListDto(final JrnlEntryEntity entity) throws Exception;
 
     /**
      * Dto -> Entity 변환

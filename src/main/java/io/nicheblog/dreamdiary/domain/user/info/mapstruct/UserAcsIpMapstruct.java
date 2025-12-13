@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.domain.user.info.mapstruct;
 import io.nicheblog.dreamdiary.domain.user.info.entity.UserAcsIpEntity;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserAcsIpDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
@@ -18,7 +19,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, })
 public interface UserAcsIpMapstruct
-        extends BaseMapstruct<UserAcsIpDto, UserAcsIpEntity> {
+        extends BaseWriteMapstruct<UserAcsIpDto, UserAcsIpEntity>, BaseMapstruct<UserAcsIpDto, UserAcsIpEntity> {
 
     UserAcsIpMapstruct INSTANCE = Mappers.getMapper(UserAcsIpMapstruct.class);
 

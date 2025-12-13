@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.comment.mapstruct.CommentMapstruct;
 import io.nicheblog.dreamdiary.extension.clsf.comment.model.cmpstn.CommentCmpstn;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -17,7 +18,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {CommentMapstruct.class}, builder = @Builder(disableBuilder = true))
 public interface CommentEmbedMapstruct
-        extends BaseMapstruct<CommentCmpstn, CommentEmbed> {
+        extends BaseWriteMapstruct<CommentCmpstn, CommentEmbed>, BaseMapstruct<CommentCmpstn, CommentEmbed> {
 
     CommentEmbedMapstruct INSTANCE = Mappers.getMapper(CommentEmbedMapstruct.class);
 

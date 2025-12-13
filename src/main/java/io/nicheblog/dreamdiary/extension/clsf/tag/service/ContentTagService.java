@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class ContentTagService
-        implements BaseCrudService<ContentTagDto, ContentTagDto, Integer, ContentTagEntity, ContentTagRepository, ContentTagSpec, ContentTagMapstruct> {
+        implements BaseCrudService<ContentTagDto, ContentTagDto, Integer, ContentTagEntity> {
 
     @Getter
     private final ContentTagRepository repository;
@@ -48,6 +48,13 @@ public class ContentTagService
     private final ContentTagSpec spec;
     @Getter
     private final ContentTagMapstruct mapstruct = ContentTagMapstruct.INSTANCE;
+
+    public ContentTagMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public ContentTagMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     private final TagSmpRepository tagSmpRepository;
 

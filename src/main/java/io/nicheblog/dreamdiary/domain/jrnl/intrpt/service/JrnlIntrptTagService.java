@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class JrnlIntrptTagService
-        implements BaseReadonlyService<TagDto, TagDto, Integer, JrnlIntrptTagEntity, JrnlIntrptTagRepository, JrnlIntrptTagSpec, JrnlIntrptTagMapstruct> {
+        implements BaseReadonlyService<TagDto, Integer, JrnlIntrptTagEntity> {
 
     @Getter
     private final JrnlIntrptTagRepository repository;
@@ -45,6 +45,13 @@ public class JrnlIntrptTagService
     private final JrnlIntrptTagSpec spec;
     @Getter
     private final JrnlIntrptTagMapstruct mapstruct = JrnlIntrptTagMapstruct.INSTANCE;
+
+    public JrnlIntrptTagMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public JrnlIntrptTagMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     private final ApplicationContext context;
     private JrnlIntrptTagService getSelf() {
@@ -61,8 +68,8 @@ public class JrnlIntrptTagService
     @Cacheable(value="myJrnlIntrptTagList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
     public List<TagDto> getListDtoWithCache(final Integer yy, final Integer mnth) throws Exception {
         final JrnlIntrptSearchParam searchParam = JrnlIntrptSearchParam.builder().yy(yy).mnth(mnth).build();
-
-        return this.getSelf().getListDto(searchParam);
+        final List<JrnlIntrptTagEntity> tagList = this.getSelf().getListEntity(searchParam);
+        return mapstruct.toDtoList(tagList);
     }
 
     /**

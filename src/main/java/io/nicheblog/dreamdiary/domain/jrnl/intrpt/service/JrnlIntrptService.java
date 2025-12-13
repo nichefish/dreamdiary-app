@@ -48,7 +48,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Log4j2
 public class JrnlIntrptService
-        implements BaseClsfService<JrnlIntrptDto, JrnlIntrptDto, Integer, JrnlIntrptEntity, JrnlIntrptRepository, JrnlIntrptSpec, JrnlIntrptMapstruct> {
+        implements BaseClsfService<JrnlIntrptDto, JrnlIntrptDto, Integer, JrnlIntrptEntity> {
 
     @Getter
     private final JrnlIntrptRepository repository;
@@ -58,6 +58,13 @@ public class JrnlIntrptService
     private final JrnlIntrptMapstruct mapstruct = JrnlIntrptMapstruct.INSTANCE;
     @Getter
     private final JrnlIntrptMapper mapper;
+
+    public JrnlIntrptMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public JrnlIntrptMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
     
     private final ApplicationEventPublisherWrapper publisher;
 
@@ -75,7 +82,8 @@ public class JrnlIntrptService
     @Cacheable(value="myJrnlIntrptList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.hashCode()")
     public List<JrnlIntrptDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
-        return this.getSelf().getListDto(searchParam);
+        final List<JrnlIntrptEntity> entityList = this.getSelf().getListEntity(searchParam);
+        return mapstruct.toDtoList(entityList);
     }
 
     /**
@@ -87,10 +95,11 @@ public class JrnlIntrptService
     @Cacheable(value="myImprtcIntrptList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy")
     public List<JrnlIntrptDto> getImprtcIntrptList(final Integer yy) throws Exception {
         final JrnlIntrptSearchParam searchParam = JrnlIntrptSearchParam.builder().yy(yy).imprtcYn("Y").build();
-        final List<JrnlIntrptDto> imprtcIntrptList = this.getSelf().getListDto(searchParam);
-        Collections.sort(imprtcIntrptList);
+        final List<JrnlIntrptEntity> entityList = this.getSelf().getListEntity(searchParam);
+        final List<JrnlIntrptDto> dtoList = mapstruct.toDtoList(entityList);
+        Collections.sort(dtoList);
 
-        return imprtcIntrptList;
+        return dtoList;
     }
 
     /**
@@ -102,10 +111,11 @@ public class JrnlIntrptService
     @Cacheable(value="myJrnlIntrptTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
     @SuppressWarnings("unchecked")
     public List<JrnlIntrptDto> jrnlIntrptTagDtl(final JrnlIntrptSearchParam searchParam) throws Exception {
-        List<JrnlIntrptDto> jrnlIntrptList = this.getSelf().getListDto(searchParam);
+        final List<JrnlIntrptEntity> entityList = this.getSelf().getListEntity(searchParam);
+        final List<JrnlIntrptDto> jrnlIntrptList = mapstruct.toDtoList(entityList);
         // 공휴일 정보 세팅
         final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
-        for (JrnlIntrptDto jrnlIntrpt : jrnlIntrptList) {
+        for (final JrnlIntrptDto jrnlIntrpt : jrnlIntrptList) {
             setHldyInfo(jrnlIntrpt, hldyMap);
         }
 
@@ -155,7 +165,7 @@ public class JrnlIntrptService
      * @param updatedDto - 등록된 객체
      */
     @Override
-    public void postModify(final JrnlIntrptDto updatedDto) throws Exception {
+    public void postModify(final JrnlIntrptDto postDto, final JrnlIntrptDto updatedDto) throws Exception {
         // 인덱스 재조정
         if (updatedDto.getIsIdxChanged()) this.getSelf().reorderIdx(updatedDto);
 
@@ -173,7 +183,8 @@ public class JrnlIntrptService
      */
     @Cacheable(value="myJrnlIntrptDtlDto", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #key")
     public JrnlIntrptDto getDtlDtoWithCache(final Integer key) throws Exception {
-        final JrnlIntrptDto retrieved = this.getSelf().getDtlDto(key);
+        final JrnlIntrptEntity retrievedEntity = this.getSelf().getDtlEntity(key);
+        final JrnlIntrptDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
         if (!retrieved.getIsRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("common.rslt.access-not-authorized"));
         return retrieved;
@@ -235,8 +246,9 @@ public class JrnlIntrptService
         final List<JrnlIntrptDto> list = mapper.findAllForReorder(jrnlDreamNo);
 
         // target 조회
-        final JrnlIntrptDto target = findDtlDto(postNo);
-        if (target == null) return;
+        final JrnlIntrptEntity targetEntity = findDtlEntity(postNo);
+        if (targetEntity == null) return;
+        final JrnlIntrptDto target = mapstruct.toDto(targetEntity);
 
         // 혹시 이미 포함되어 있으면 제거
         list.removeIf(e -> Objects.equals(e.getPostNo(), postNo));

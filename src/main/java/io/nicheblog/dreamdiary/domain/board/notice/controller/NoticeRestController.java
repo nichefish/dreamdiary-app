@@ -69,7 +69,7 @@ public class NoticeRestController
         searchParam.setPopupYn("Y");
         searchParam.setManagtStartDt(DateUtils.getCurrDateAddDay(-7));
         final Sort sort = Sort.by(Sort.Direction.ASC, "managt.managtDt");
-        final List<NoticeDto.LIST> noticeList = noticeService.getListDto(searchParam, sort);
+        final List<NoticeDto> noticeList = noticeService.getListDto(searchParam, sort);
 
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
@@ -97,7 +97,7 @@ public class NoticeRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> noticeRegAjax(
-            final @Valid NoticeDto.DTL notice,
+            final @Valid NoticeDto notice,
             final LogActvtyParam logParam,
             final MultipartHttpServletRequest request
     ) throws Exception {

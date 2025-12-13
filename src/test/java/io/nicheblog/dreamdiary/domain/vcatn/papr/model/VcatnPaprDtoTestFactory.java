@@ -18,8 +18,8 @@ public class VcatnPaprDtoTestFactory {
     /**
      * 휴가계획서 상세 Dto 생성
      */
-    public static VcatnPaprDto.DTL createVcatnPaprDtlDto() throws Exception {
-        return VcatnPaprDto.DTL.builder()
+    public static VcatnPaprDto createVcatnPaprDtlDto() throws Exception {
+        return VcatnPaprDto.builder()
                 .build();
     }
 }

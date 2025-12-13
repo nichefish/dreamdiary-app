@@ -81,26 +81,8 @@ public class UserDto
 
     /** 퇴사일 */
     protected String retireDt;
-    
-    /* ----- */
 
-    /** Getter :: 잠금여부 채크 */
-    public Boolean getIsLocked() {
-        return "Y".equals(this.lockedYn);
-    }
 
-    /* ----- */
-
-    /**
-     * 사용자(계정) 정보 상세 (DTL) Dto.
-     */
-    @Getter
-    @Setter
-    @SuperBuilder(toBuilder = true)
-    @NoArgsConstructor
-    @EqualsAndHashCode(callSuper = true)
-    public static class DTL
-            extends UserDto {
         /** 비밀번호 */
         private String password;
 
@@ -110,6 +92,11 @@ public class UserDto
 
         /** 계정 설명 (관리자용) */
         private String cn;
+
+        /** 입사일 */
+        private String ecnyDt;
+        /** 이름 */
+        private String userNm;
 
         /** 접속IP 사용 여부 체크 */
         @Builder.Default
@@ -140,30 +127,17 @@ public class UserDto
                     .collect(Collectors.joining(","));
             return this.authListStr;
         }
+    
+    /* ----- */
+
+    /** Getter :: 잠금여부 채크 */
+    public Boolean getIsLocked() {
+        return "Y".equals(this.lockedYn);
     }
 
-    /**
-     * 사용자(계정) 정보 목록 조회 (LIST) Dto.
-     */
-    @Getter
-    @Setter
-    @SuperBuilder(toBuilder = true)
-    @NoArgsConstructor
-    @EqualsAndHashCode(callSuper = true)
-    public static class LIST
-            extends UserDto {
-
-        /** 입사일 */
-        private String ecnyDt;
-        /** 이름 */
-        private String userNm;
-
-        /* ----- */
-
-        /** 내 정보 여부 채크 */
-        public Boolean getIsMe() {
-            return (AuthUtils.isRegstr(this.getUserId()));       // 인자로 넘긴 ID와 세션의 사용자 ID 비교
-        }
+    /** 내 정보 여부 채크 */
+    public Boolean getIsMe() {
+        return (AuthUtils.isRegstr(this.getUserId()));       // 인자로 넘긴 ID와 세션의 사용자 ID 비교
     }
 
     @Override

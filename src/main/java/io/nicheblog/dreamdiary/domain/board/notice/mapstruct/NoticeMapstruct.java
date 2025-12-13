@@ -4,7 +4,8 @@ import io.nicheblog.dreamdiary.domain.board.notice.entity.NoticeEntity;
 import io.nicheblog.dreamdiary.domain.board.notice.model.NoticeDto;
 import io.nicheblog.dreamdiary.domain.board.notice.model.NoticeXlsxDto;
 import io.nicheblog.dreamdiary.extension.cd.utils.CdUtils;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BasePostMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseClsfMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +22,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, MarkdownUtils.class, CdUtils.class}, builder = @Builder(disableBuilder = true))
 public interface NoticeMapstruct
-        extends BasePostMapstruct<NoticeDto.DTL, NoticeDto.LIST, NoticeEntity> {
+        extends BaseWriteMapstruct<NoticeDto, NoticeEntity>, BaseClsfMapstruct<NoticeDto, NoticeEntity> {
 
     NoticeMapstruct INSTANCE = Mappers.getMapper(NoticeMapstruct.class);
 
@@ -35,19 +36,7 @@ public interface NoticeMapstruct
     @Named("toDto")
     @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"NOTICE_CTGR_CD\", entity.getCtgrCd()))")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
-    NoticeDto.DTL toDto(final NoticeEntity entity) throws Exception;
-
-    /**
-     * Entity -> ListDto 변환
-     *
-     * @param entity 변환할 Entity 객체
-     * @return ListDto -- 변환된 ListDto 객체
-     */
-    @Override
-    @Named("toListDto")
-    @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"NOTICE_CTGR_CD\", entity.getCtgrCd()))")
-    @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
-    NoticeDto.LIST toListDto(final NoticeEntity entity) throws Exception;
+    NoticeDto toDto(final NoticeEntity entity) throws Exception;
 
     /**
      * Entity -> XlsxDto 변환
@@ -66,7 +55,7 @@ public interface NoticeMapstruct
      */
     @Override
     @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
-    NoticeEntity toEntity(final NoticeDto.DTL dto) throws Exception;
+    NoticeEntity toEntity(final NoticeDto dto) throws Exception;
 
     /**
      * update Entity from Dto (Dto에서 null이 아닌 값만 Entity로 매핑)
@@ -77,5 +66,5 @@ public interface NoticeMapstruct
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
-    void updateFromDto(final NoticeDto.DTL dto, final @MappingTarget NoticeEntity entity) throws Exception;
+    void updateFromDto(final NoticeDto dto, final @MappingTarget NoticeEntity entity) throws Exception;
 }

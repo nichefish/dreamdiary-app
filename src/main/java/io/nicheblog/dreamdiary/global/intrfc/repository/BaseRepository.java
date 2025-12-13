@@ -13,7 +13,6 @@ import java.io.Serializable;
  * </pre>
  *
  * @author nichefish
- * @extends JpaRepository, JpaSpecificationExecutor
  */
 @NoRepositoryBean
 public interface BaseRepository<T, ID extends Serializable>

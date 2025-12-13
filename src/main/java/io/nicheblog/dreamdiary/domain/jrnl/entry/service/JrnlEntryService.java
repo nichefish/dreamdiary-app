@@ -39,7 +39,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Log4j2
 public class JrnlEntryService
-        implements BaseClsfService<JrnlEntryDto, JrnlEntryDto, Integer, JrnlEntryEntity, JrnlEntryRepository, JrnlEntrySpec, JrnlEntryMapstruct> {
+        implements BaseClsfService<JrnlEntryDto, JrnlEntryDto, Integer, JrnlEntryEntity> {
 
     @Getter
     private final JrnlEntryRepository repository;
@@ -47,6 +47,13 @@ public class JrnlEntryService
     private final JrnlEntrySpec spec;
     @Getter
     private final JrnlEntryMapstruct mapstruct = JrnlEntryMapstruct.INSTANCE;
+
+    public JrnlEntryMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public JrnlEntryMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     private final JrnlEntryMapper jrnlEntryMapper;
     private final ApplicationEventPublisherWrapper publisher;
@@ -64,7 +71,21 @@ public class JrnlEntryService
      */
     @Cacheable(value="myJrnlEntryTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
     public List<JrnlEntryDto> jrnlEntryTagDtl(final JrnlEntrySearchParam searchParam) throws Exception {
-        return this.getSelf().getListDto(searchParam);
+        final List<JrnlEntryEntity> entityList = this.getSelf().getListEntity(searchParam);
+        return mapstruct.toDtoList(entityList);
+    }
+
+    /**
+     * 단일 항목 조회 (dto level)
+     *
+     * @param key 조회할 엔티티의 키
+     * @return {@link JrnlEntryDto} -- 조회 항목 반환
+     */
+    @Transactional(readOnly = true)
+    public JrnlEntryDto getDtlDto(final Integer key) throws Exception {
+        final JrnlEntryEntity retrievedEntity = this.getDtlEntity(key);
+
+        return mapstruct.toDto(retrievedEntity);
     }
 
     /**
@@ -110,7 +131,7 @@ public class JrnlEntryService
      * @param updatedDto - 등록된 객체
      */
     @Override
-    public void postModify(final JrnlEntryDto updatedDto) throws Exception {
+    public void postModify(final JrnlEntryDto postDto, final JrnlEntryDto updatedDto) throws Exception {
         // 인덱스 재조정
         if (updatedDto.getIsIdxChanged()) this.getSelf().reorderIdx(updatedDto);
 
@@ -178,7 +199,8 @@ public class JrnlEntryService
         final List<JrnlEntryDto> list = jrnlEntryMapper.findAllForReorder(jrnlDayNo);
 
         // target 조회
-        final JrnlEntryDto target = findDtlDto(postNo);
+        final JrnlEntryEntity targetEntity = findDtlEntity(postNo);
+        final JrnlEntryDto target = mapstruct.toDto(targetEntity);
         if (target == null) return;
 
         // 혹시 이미 포함되어 있으면 제거

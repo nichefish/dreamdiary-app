@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.domain.vcatn.stats.entity.VcatnStatsEntity;
 import io.nicheblog.dreamdiary.domain.vcatn.stats.model.VcatnStatsDto;
 import io.nicheblog.dreamdiary.domain.vcatn.stats.model.VcatnStatsListXlsxDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
@@ -19,7 +20,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class})
 public interface VcatnStatsMapstruct
-        extends BaseMapstruct<VcatnStatsDto, VcatnStatsEntity> {
+        extends BaseWriteMapstruct<VcatnStatsDto, VcatnStatsEntity>, BaseMapstruct<VcatnStatsDto, VcatnStatsEntity> {
 
     VcatnStatsMapstruct INSTANCE = Mappers.getMapper(VcatnStatsMapstruct.class);
 

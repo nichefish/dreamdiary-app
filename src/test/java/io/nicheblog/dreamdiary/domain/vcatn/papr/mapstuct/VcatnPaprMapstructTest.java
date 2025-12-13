@@ -32,7 +32,7 @@ class VcatnPaprMapstructTest {
     @Test
     void testToEntity_checkBasic() throws Exception {
         // Given::
-        VcatnPaprDto.DTL vcatnPaprDto = VcatnPaprDtoTestFactory.createVcatnPaprDtlDto();
+        VcatnPaprDto vcatnPaprDto = VcatnPaprDtoTestFactory.createVcatnPaprDtlDto();
 
         // When::
         VcatnPaprEntity vcatnPaprEntity = vcatnPaprMapstruct.toEntity(vcatnPaprDto);
@@ -48,7 +48,7 @@ class VcatnPaprMapstructTest {
     @Test
     void testToEntity_checkSchdulList() throws Exception {
         // Given::
-        VcatnPaprDto.DTL vcatnPaprDto = VcatnPaprDtoTestFactory.createVcatnPaprDtlDto();
+        VcatnPaprDto vcatnPaprDto = VcatnPaprDtoTestFactory.createVcatnPaprDtlDto();
         // 휴가 일정 세팅
         VcatnSchdulDto aa  = VcatnSchdulDtoTestFactory.createVcatnSchdulDtlDto();
         VcatnSchdulDto bb  = VcatnSchdulDtoTestFactory.createVcatnSchdulDtlDto();

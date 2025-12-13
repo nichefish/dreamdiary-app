@@ -2,7 +2,8 @@ package io.nicheblog.dreamdiary.domain.admin.tmplat.mapstruct;
 
 import io.nicheblog.dreamdiary.domain.admin.tmplat.entity.TmplatDefEntity;
 import io.nicheblog.dreamdiary.domain.admin.tmplat.model.TmplatDefDto;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseCrudMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.mapstruct.*;
@@ -18,7 +19,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, DatePtn.class})
 public interface TmplatDefMapstruct
-        extends BaseCrudMapstruct<TmplatDefDto, TmplatDefDto, TmplatDefEntity> {
+        extends BaseWriteMapstruct<TmplatDefDto, TmplatDefEntity>, BaseReadMapstruct<TmplatDefDto, TmplatDefEntity> {
 
     TmplatDefMapstruct INSTANCE = Mappers.getMapper(TmplatDefMapstruct.class);
 

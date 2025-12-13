@@ -43,7 +43,7 @@ class JrnlSbjctServiceTest {
     @SuppressWarnings("unused")
     private AuthUtils authUtils;
 
-    private JrnlSbjctDto.DTL jrnlSbjct;
+    private JrnlSbjctDto jrnlSbjct;
 
     /**
      * 각 테스트 시작 전 세팅 초기화.
@@ -86,10 +86,10 @@ class JrnlSbjctServiceTest {
         final Integer key = registered.getKey();
 
         // When::
-        final JrnlSbjctDto.DTL toModify = JrnlSbjctDtoTestFactory.createWithKey(key);
+        final JrnlSbjctDto toModify = JrnlSbjctDtoTestFactory.createWithKey(key);
         toModify.setCn("test");
         final ServiceResponse modifyResult = jrnlSbjctService.modify(toModify);
-        final JrnlSbjctDto.DTL modified = (JrnlSbjctDto.DTL) modifyResult.getRsltObj();
+        final JrnlSbjctDto modified = (JrnlSbjctDto) modifyResult.getRsltObj();
 
         // Then::
         assertNotNull(modified.getPostNo(), "수정이 정상적으로 이루어지지 않았습니다.");

@@ -19,8 +19,8 @@ public class JrnlSbjctDtoTestFactory {
     /**
      * 테스트용 저널 주제 Dto 생성
      */
-    public static JrnlSbjctDto.DTL create() throws Exception {
-        return JrnlSbjctDto.DTL.builder()
+    public static JrnlSbjctDto create() throws Exception {
+        return JrnlSbjctDto.builder()
                 .contentType(ContentType.JRNL_SBJCT.key)
                 .build();
     }
@@ -29,8 +29,8 @@ public class JrnlSbjctDtoTestFactory {
      * 테스트용 저널 주제 Dto 생성
      * @param key 식별자
      */
-    public static JrnlSbjctDto.DTL createWithKey(final Integer key) throws Exception {
-        return JrnlSbjctDto.DTL.builder()
+    public static JrnlSbjctDto createWithKey(final Integer key) throws Exception {
+        return JrnlSbjctDto.builder()
                 .postNo(key)
                 .contentType(ContentType.JRNL_SBJCT.key)
                 .build();

@@ -57,7 +57,7 @@ class UserMapstructToDtoTest {
         // Given::
 
         // When::
-        final UserDto.DTL userDto = userMapstruct.toDto(userEntity);
+        final UserDto userDto = userMapstruct.toDto(userEntity);
 
         // Then::
         assertNotNull(userDto, "변환된 사용자 상세 Dto는 null일 수 없습니다.");
@@ -87,7 +87,7 @@ class UserMapstructToDtoTest {
         BaseEntityTestFactoryHelper.setMdfusrInfo(userEntity);
 
         // When::
-        final UserDto.DTL userDto = userMapstruct.toDto(userEntity);
+        final UserDto userDto = userMapstruct.toDto(userEntity);
 
         // Then::
         assertNotNull(userDto, "변환된 사용자 상세 Dto는 null일 수 없습니다.");
@@ -112,7 +112,7 @@ class UserMapstructToDtoTest {
         userEntity.setAuthList(List.of(aa, bb));
 
         // When::
-        final UserDto.DTL userDto = userMapstruct.toDto(userEntity);
+        final UserDto userDto = userMapstruct.toDto(userEntity);
 
         // Then::
         assertNotNull(userDto, "변환된 사용자 상세 Dto는 null일 수 없습니다.");
@@ -135,7 +135,7 @@ class UserMapstructToDtoTest {
         userEntity.setAcsIpList(List.of(aa, bb));
 
         // When::
-        final UserDto.DTL userDto = userMapstruct.toDto(userEntity);
+        final UserDto userDto = userMapstruct.toDto(userEntity);
 
         // Then::
         assertNotNull(userDto, "변환된 사용자 상세 Dto는 null일 수 없습니다.");
@@ -210,7 +210,7 @@ class UserMapstructToDtoTest {
         // Given::
 
         // When::
-        final UserDto.LIST userDto = userMapstruct.toListDto(userEntity);
+        final UserDto userDto = userMapstruct.toListDto(userEntity);
 
         // Then::
         assertNotNull(userDto, "변환된 사용자 목록 Dto는 null일 수 없습니다.");
@@ -243,7 +243,7 @@ class UserMapstructToDtoTest {
         BaseEntityTestFactoryHelper.setMdfusrInfo(userEntity);
 
         // When::
-        final UserDto.LIST userListDto = userMapstruct.toListDto(userEntity);
+        final UserDto userListDto = userMapstruct.toListDto(userEntity);
 
         // Then::
         assertNotNull(userListDto, "변환된 사용자 목록 Dto는 null일 수 없습니다.");

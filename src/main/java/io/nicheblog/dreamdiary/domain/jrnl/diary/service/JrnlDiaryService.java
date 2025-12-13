@@ -7,6 +7,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.mapstruct.JrnlDiaryMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryPatchDto;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryPostDto;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiarySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.repository.jpa.JrnlDiaryRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.repository.mybatis.JrnlDiaryMapper;
@@ -49,7 +50,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Log4j2
 public class JrnlDiaryService
-        implements BaseClsfService<JrnlDiaryDto, JrnlDiaryDto, Integer, JrnlDiaryEntity, JrnlDiaryRepository, JrnlDiarySpec, JrnlDiaryMapstruct> {
+        implements BaseClsfService<JrnlDiaryPostDto, JrnlDiaryDto, Integer, JrnlDiaryEntity> {
 
     @Getter
     private final JrnlDiaryRepository repository;
@@ -59,6 +60,13 @@ public class JrnlDiaryService
     private final JrnlDiaryMapstruct mapstruct = JrnlDiaryMapstruct.INSTANCE;
     @Getter
     private final JrnlDiaryMapper mapper;
+
+    public JrnlDiaryMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public JrnlDiaryMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     private final ApplicationEventPublisherWrapper publisher;
 
@@ -76,7 +84,8 @@ public class JrnlDiaryService
     @Cacheable(value="myJrnlDiaryList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.hashCode()")
     public List<JrnlDiaryDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
-        return this.getSelf().getListDto(searchParam);
+        final List<JrnlDiaryEntity> listEntity = this.getSelf().getListEntity(searchParam);
+        return mapstruct.toDtoList(listEntity);
     }
 
     /**
@@ -88,7 +97,8 @@ public class JrnlDiaryService
     @Cacheable(value="myImprtcDiaryList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy")
     public List<JrnlDiaryDto> getImprtcDiaryList(final Integer yy) throws Exception {
         final JrnlDiarySearchParam searchParam = JrnlDiarySearchParam.builder().yy(yy).imprtcYn("Y").build();
-        final List<JrnlDiaryDto> imprtcDiaryList = this.getSelf().getListDto(searchParam);
+        final List<JrnlDiaryEntity> imprtcDiaryEntityList = this.getSelf().getListEntity(searchParam);
+        final List<JrnlDiaryDto> imprtcDiaryList = mapstruct.toDtoList(imprtcDiaryEntityList);
         Collections.sort(imprtcDiaryList);
 
         return imprtcDiaryList;
@@ -103,7 +113,8 @@ public class JrnlDiaryService
     @Cacheable(value="myJrnlDiaryTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
     @SuppressWarnings("unchecked")
     public List<JrnlDiaryDto> jrnlDiaryTagDtl(final JrnlDiarySearchParam searchParam) throws Exception {
-        List<JrnlDiaryDto> jrnlDiaryList = this.getSelf().getListDto(searchParam);
+        final List<JrnlDiaryEntity> jrnlDiaryEntityList = this.getSelf().getListEntity(searchParam);
+        final List<JrnlDiaryDto> jrnlDiaryList = mapstruct.toDtoList(jrnlDiaryEntityList);
         // 공휴일 정보 세팅
         final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
         for (JrnlDiaryDto jrnlDiary : jrnlDiaryList) {
@@ -114,12 +125,25 @@ public class JrnlDiaryService
     }
 
     /**
+     * 단일 항목 조회 (dto level)
+     *
+     * @param key 조회할 엔티티의 키
+     * @return {@link JrnlDiaryDto} -- 조회 항목 반환
+     */
+    @Transactional(readOnly = true)
+    public JrnlDiaryDto getDtlDto(final Integer key) throws Exception {
+        final JrnlDiaryEntity retrievedEntity = this.getDtlEntity(key);
+
+        return mapstruct.toDto(retrievedEntity);
+    }
+
+    /**
      * 등록 전처리. (override)
      *
      * @param registDto 등록할 객체
      */
     @Override
-    public void preRegist(final JrnlDiaryDto registDto) throws Exception {
+    public void preRegist(final JrnlDiaryPostDto registDto) throws Exception {
         // 인덱스(정렬순서) 처리
         final Integer lastIndex = repository.findLastIndexByJrnlDay(registDto.getJrnlEntryNo()).orElse(0);
         registDto.setIdx(lastIndex + 1);
@@ -145,7 +169,7 @@ public class JrnlDiaryService
      * @param modifyEntity - 수정할 객체
      */
     @Override
-    public void preModify(final JrnlDiaryDto modifyDto, final JrnlDiaryEntity modifyEntity) throws Exception {
+    public void preModify(final JrnlDiaryPostDto modifyDto, final JrnlDiaryEntity modifyEntity) throws Exception {
         boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
         modifyDto.setIsIdxChanged(isIdxChanged);
         boolean isEntryChanged = !Objects.equals(modifyDto.getJrnlEntryNo(), modifyEntity.getJrnlEntryNo());
@@ -161,12 +185,12 @@ public class JrnlDiaryService
      * @param updatedDto - 등록된 객체
      */
     @Override
-    public void postModify(final JrnlDiaryDto updatedDto) throws Exception {
+    public void postModify(final JrnlDiaryPostDto postDto, final JrnlDiaryDto updatedDto) throws Exception {
         // 인덱스 재조정 ('이동' 포함)
-        if (updatedDto.getIsEntryChanged()) {
-            this.getSelf().reorderWhenEntryChanged(updatedDto);
-        } else if (updatedDto.getIsIdxChanged()) {
-            this.getSelf().reorderIdx(updatedDto);
+        if (postDto.getIsEntryChanged()) {
+            this.getSelf().reorderWhenEntryChanged(postDto);
+        } else if (postDto.getIsIdxChanged()) {
+            this.getSelf().reorderIdx(postDto);
         }
 
         // 태그 처리 :: 메인 로직과 분리
@@ -183,7 +207,8 @@ public class JrnlDiaryService
      */
     @Cacheable(value="myJrnlDiaryDtlDto", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #key")
     public JrnlDiaryDto getDtlDtoWithCache(final Integer key) throws Exception {
-        final JrnlDiaryDto retrieved = this.getSelf().getDtlDto(key);
+        final JrnlDiaryEntity retrievedEntity = this.getSelf().getDtlEntity(key);
+        final JrnlDiaryDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
         if (!retrieved.getIsRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("common.rslt.access-not-authorized"));
         return retrieved;
@@ -197,8 +222,8 @@ public class JrnlDiaryService
     @Override
     public void postDelete(final JrnlDiaryDto deletedDto) throws Exception {
         // 인덱스 재조정
-        this.getSelf().reorderIdx(deletedDto);
-
+        this.getSelf().normalize(deletedDto.getJrnlEntryNo());
+        
         // 태그 처리 :: 메인 로직과 분리
         publisher.publishCustomEvent(new JrnlTagProcEvent(this, deletedDto.getClsfKey(), deletedDto.getYy(), deletedDto.getMnth()));
         // 관련 캐시 삭제
@@ -247,7 +272,8 @@ public class JrnlDiaryService
         final List<JrnlDiaryDto> list = mapper.findAllForReorder(jrnlEntryNo);
 
         // target 조회
-        final JrnlDiaryDto target = findDtlDto(postNo);
+        final JrnlDiaryEntity targetEntity = getDtlEntity(postNo);
+        final JrnlDiaryDto target = mapstruct.toDto(targetEntity);
         if (target == null) return;
 
         // 혹시 이미 포함되어 있으면 제거
@@ -280,7 +306,7 @@ public class JrnlDiaryService
      * @param updatedDto 업데이트된 객체
      */
     @Transactional
-    public void reorderWhenEntryChanged(final JrnlDiaryDto updatedDto) throws Exception {
+    public void reorderWhenEntryChanged(final JrnlDiaryPostDto updatedDto) throws Exception {
         // 1) 기존 entry 그룹 정리 (삭제처리와 동일한 효과)
         normalize(updatedDto.getPrevJrnlEntryNo());
         // 2) 새 entry 그룹에 삽입
@@ -293,7 +319,7 @@ public class JrnlDiaryService
      * @param updatedDto 업데이트된 객체
      */
     @Transactional
-    public void reorderIdx(final JrnlDiaryDto updatedDto) throws Exception {
+    public void reorderIdx(final JrnlDiaryPostDto updatedDto) throws Exception {
         // 1단계: 현재 entry 그룹 정리 (기존 idx 값을 normalization하여 안정화)
         normalize(updatedDto.getJrnlEntryNo());
         // 2단계: 해당 group에 새 위치로 target 삽입

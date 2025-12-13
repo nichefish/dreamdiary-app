@@ -2,7 +2,8 @@ package io.nicheblog.dreamdiary.auth.security.mapstruct;
 
 import io.nicheblog.dreamdiary.auth.security.entity.AuthRoleEntity;
 import io.nicheblog.dreamdiary.auth.security.model.AuthRoleDto;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseCrudMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
@@ -18,7 +19,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class})
 public interface AuthRoleMapstruct
-        extends BaseCrudMapstruct<AuthRoleDto, AuthRoleDto, AuthRoleEntity> {
+        extends BaseWriteMapstruct<AuthRoleDto, AuthRoleEntity>, BaseReadMapstruct<AuthRoleDto, AuthRoleEntity> {
 
     AuthRoleMapstruct INSTANCE = Mappers.getMapper(AuthRoleMapstruct.class);
 
@@ -31,16 +32,6 @@ public interface AuthRoleMapstruct
     @Override
     @Named("toDto")
     AuthRoleDto toDto(final AuthRoleEntity entity) throws Exception;
-
-    /**
-     * Entity -> ListDto 변환
-     *
-     * @param entity 변환할 Entity 객체
-     * @return ListDto -- 변환된 ListDto 객체
-     */
-    @Override
-    @Named("toListDto")
-    AuthRoleDto toListDto(final AuthRoleEntity entity) throws Exception;
 
     /**
      * Dto -> Entity 변환

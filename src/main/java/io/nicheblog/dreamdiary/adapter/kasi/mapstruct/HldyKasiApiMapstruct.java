@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.adapter.kasi.model.HldyKasiApiItemDto;
 import io.nicheblog.dreamdiary.domain.schdul.entity.SchdulEntity;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
@@ -19,7 +20,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = { Constant.class, DateUtils.class, StringUtils.class })
 public interface HldyKasiApiMapstruct
-        extends BaseMapstruct<HldyKasiApiItemDto, SchdulEntity> {
+        extends BaseWriteMapstruct<HldyKasiApiItemDto, SchdulEntity>, BaseMapstruct<HldyKasiApiItemDto, SchdulEntity> {
 
     HldyKasiApiMapstruct INSTANCE = Mappers.getMapper(HldyKasiApiMapstruct.class);
 

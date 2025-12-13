@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.domain.admin.lgnPolicy.mapstruct;
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.entity.LgnPolicyEntity;
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.model.LgnPolicyDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -16,7 +17,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface LgnPolicyMapstruct
-        extends BaseMapstruct<LgnPolicyDto, LgnPolicyEntity> {
+        extends BaseWriteMapstruct<LgnPolicyDto, LgnPolicyEntity>, BaseMapstruct<LgnPolicyDto, LgnPolicyEntity> {
 
     LgnPolicyMapstruct INSTANCE = Mappers.getMapper(LgnPolicyMapstruct.class);
 

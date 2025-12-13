@@ -70,7 +70,7 @@ public class SchdulCalPageController
         model.addAttribute("pageNm", PageNm.CAL);
 
         // 재직자 목록 조회 및 모델에 추가 :: (일정 등록 참가자용)
-        final List<UserDto.LIST> crtdUserList = userService.getCrdtUserList(DateUtils.getCurrDateAddDayStr(-40), DateUtils.getCurrDateAddDayStr(40));
+        final List<UserDto> crtdUserList = userService.getCrdtUserList(DateUtils.getCurrDateAddDayStr(-40), DateUtils.getCurrDateAddDayStr(40));
         model.addAttribute("crtdUserList", crtdUserList);
         // 코드 데이터 모델에 추가
         dtlCdService.setCdListToModel(Constant.SCHDUL_CD, model);

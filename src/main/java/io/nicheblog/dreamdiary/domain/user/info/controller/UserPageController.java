@@ -85,7 +85,7 @@ public class UserPageController
                 .and(Sort.by(Sort.Direction.DESC, "regDt"));
         final PageRequest pageRequest = CmmUtils.Param.getPageRequest(searchParam, sort, model);
         // 목록 조회
-        final Page<UserDto.LIST> userList = userService.getPageDto(searchParam, pageRequest);
+        final Page<UserDto> userList = userService.getPageDto(searchParam, pageRequest);
         model.addAttribute("userList", userList.getContent());
         model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(userList));
         // 코드 정보 모델에 추가
@@ -124,7 +124,7 @@ public class UserPageController
         model.addAttribute("pageNm", PageNm.REG);
 
         // 빈 객체 주입 (freemarker error prevention)
-        model.addAttribute("user", new UserDto.DTL());
+        model.addAttribute("user", new UserDto());
         // 등록/수정 화면 플래그 세팅
         model.addAttribute(Constant.FORM_MODE, "regist");
         // 권한 정보 모델에 추가

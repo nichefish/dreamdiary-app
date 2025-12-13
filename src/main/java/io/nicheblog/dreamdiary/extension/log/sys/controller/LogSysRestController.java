@@ -56,7 +56,7 @@ public class LogSysRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final LogSysDto.DTL rsDto = logSysService.getDtlDto(key);
+        final LogSysDto rsDto = logSysService.getDtlDto(key);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
