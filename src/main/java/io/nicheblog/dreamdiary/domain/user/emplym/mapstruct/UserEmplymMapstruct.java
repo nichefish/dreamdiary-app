@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.domain.user.emplym.entity.UserEmplymEntity;
 import io.nicheblog.dreamdiary.domain.user.info.model.emplym.UserEmplymDto;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.crypto.CryptoUtils;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -21,7 +22,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {Constant.class, DateUtils.class, StringUtils.class, DatePtn.class, CryptoUtils.class})
 public interface UserEmplymMapstruct
-        extends BaseMapstruct<UserEmplymDto, UserEmplymEntity> {
+        extends BaseWriteMapstruct<UserEmplymDto, UserEmplymEntity>, BaseMapstruct<UserEmplymDto, UserEmplymEntity> {
 
     UserEmplymMapstruct INSTANCE = Mappers.getMapper(UserEmplymMapstruct.class);
 

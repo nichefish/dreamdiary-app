@@ -198,7 +198,7 @@
                 </div>
                 <div class="col-xl-2">
                     <div class="form-check form-switch form-check-custom form-check-solid mt-2">
-                        <input type="checkbox" name="useAcsIpYn" id="useAcsIpYn" class="form-check-input" value="Y"
+                        <input type="checkbox" name="useAcsIpYn" id="useAcsIpYn" class="form-check-input cursor-pointer" value="Y"
                                <#if user.useAcsIp!false>checked="checked"</#if> />
                         <label class="form-check-label fw-bold ms-3" for="useAcsIpYn" id="useAcsIpYnLabel" style="color:<#if user.useAcsIp!false>blue<#else>gray</#if>;">
                             <#if !user.useAcsIp!false><@spring.message 'unuse'/></#if><@spring.message 'use'/>

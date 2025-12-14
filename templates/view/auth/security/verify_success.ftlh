@@ -10,7 +10,7 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         setTimeout(function() {
-            location.href = Url.AUTH_LGN_FORM;
+            location.href = Url.APP_AUTH_LGN_FORM;
         }, 3000);
     });
 </script>

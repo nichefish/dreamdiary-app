@@ -5,7 +5,7 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<#assign modal_title = springMacroRequestContext.getMessage("jrnl.day.save") />
+<#assign modal_title = springMacroRequestContext.getMessage("jrnl.dream.save") />
 <@modal.layout id="jrnl_dream_reg" size="xl">
     <#--begin::Modal Header-->
     <@component.modal_header modal_title />

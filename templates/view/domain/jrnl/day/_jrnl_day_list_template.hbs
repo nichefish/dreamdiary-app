@@ -6,7 +6,7 @@
 <script type="text/x-handlebars-template" id="jrnl_day_list_template">
     {{#each this}}
         <div class="jrnl-day">
-            <div class="jrnl-day-header">
+            <div class="jrnl-day-header" data-date="{{stdrdDt}}">
                 <div class="col-12 col-md-1 d-flex flex-wrap align-items-center fs-5 fw-bold {{#if isHldy}}text-danger{{/if}}" style="column-gap: .25rem">
                     <i class="bi bi-calendar3 fs-6 me-1 {{#if isHldy}}text-danger{{/if}}"></i>
                     {{stdrdDt}}
@@ -22,16 +22,7 @@
                 <div class="col-3 d-none d-md-flex align-items-center gap-2">
                     {{> jrnl_entry_reg_btn_partial this}}
                     {{> jrnl_dream_reg_btn_partial this}}
-                    <button type="button" class="btn btn-sm btn-light-primary btn-outlined py-2 px-3 cursor-pointer"
-                            onclick="dF.JrnlDay.mdfModal({{postNo}});"
-                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'jrnl.day'/> <@spring.message 'bs.tooltip.modal.mdf'/>">
-                        <i class="bi bi-pencil-square p-0"></i>
-                    </button>
-                    <button type="button" class="btn btn-sm btn-light-danger btn-outlined py-2 px-3 cursor-pointer"
-                            onclick="dF.JrnlDay.delAjax({{postNo}});"
-                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'jrnl.day'/> <@spring.message 'bs.tooltip.modal.mdf'/>">
-                        <i class="bi bi-trash p-0"></i>
-                    </button>
+                    {{> jrnl_day_mdf_btn_partial this}}
                 </div>
             </div>
             <div class="row">
@@ -47,11 +38,11 @@
                     {{/if}}
                 </div>
             </div>
-            <div class="row p-5">
+            <div class="jrnl-day-cn row p-5">
                 {{#each jrnlEntryList}}
-                    <label class="d-flex align-items-center mt-2">
+                    <div class="d-flex align-items-center mt-2">
                         <div class="col col-md-1 w-5 text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder ">
-                            {{#if (equals entryResolvedYn 'Y')}}
+                            {{#ifYn entryResolvedYn}}
                                 <span class="text-success"><@spring.message 'entry'/></span>
                                 <span class="position-relative d-inline-block">
                                   <i class="bi bi-book fs-4 text-success"></i>
@@ -60,48 +51,44 @@
                             {{else}}
                                 <@spring.message 'entry'/>
                                 <i class="bi bi-book fs-4 pe-1"></i>
-                            {{/if}}
+                            {{/ifYn}}
                         </div>
                         <div class="col-3 d-none d-md-flex align-items-center gap-2">
-                           {{> jrnl_diary_reg_btn_partial this}}
-                            <button type="button" class="btn btn-sm btn-light-primary btn-outlined py-2 px-3 cursor-pointer"
-                                    onclick="dF.JrnlEntry.mdfModal({{postNo}});"
-                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'jrnl.entry'/> <@spring.message 'bs.tooltip.modal.mdf'/>">
-                                <i class="bi bi-pencil-square p-0"></i>
-                            </button>
-                            <button type="button" class="btn btn-sm btn-light-danger btn-outlined py-2 px-3 cursor-pointer"
-                                    onclick="dF.JrnlEntry.delAjax({{postNo}});"
-                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'jrnl.entry'/> <@spring.message 'bs.tooltip.modal.mdf'/>">
-                                <i class="bi bi-trash p-0"></i>
+                            {{> jrnl_diary_reg_btn_partial this}}
+                            {{> jrnl_entry_mdf_btn_partial this}}
+                            <!-- toggle button -->
+                            <button type="button"
+                                    class="btn btn-sm btn-secondary ms-2 toggle-entry-btn"
+                                    onclick="dF.JrnlEntry.toggle({{postNo}})">
+                                <i class="bi bi-arrows-collapse pe-0" id="entry-toggle-icon-{{postNo}}"></i>
                             </button>
                         </div>
-                    </label>
-                    <div class="jrnl-item">
+                    </div>
+                    <div class="jrnl-entry jrnl-item" data-id={{postNo}}>
                         {{#each jrnlDiaryList}}
-                            <div class="jrnl-diary-item">
+                            <div class="jrnl-diary-item" data-id={{postNo}} data-collapsed="{{collapsedYn}}" data-resolved="{{resolvedYn}}" data-imprtc="{{imprtcYn}}">
                                 <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                                     <div class="d-flex flex-column align-items-center">
-                                        <span>
+                                        <span class="jrnl-diary-idx {{#ifYn resolvedYn}}text-success{{/ifYn}}">
                                             # {{idx}}
-                                            {{#if (equals diaryResolvedYn 'Y')}}
+                                            {{#ifYn resolvedYn}}
                                                 <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
-                                            {{/if}}
+                                            {{/ifYn}}
                                         </span>
-                                        <!-- 토글 버튼 추가 -->
+                                        <!-- toggle button -->
                                         <button type="button"
-                                                class="btn btn-sm btn-light-secondary ms-2 toggle-diary-btn"
+                                                class="btn btn-sm btn-secondary ms-2 toggle-diary-btn"
                                                 onclick="dF.JrnlDiary.toggle({{postNo}})">
-                                            <i class="bi bi-chevron-up pe-0" id="toggle-icon-{{postNo}}"></i>
+                                            <i class="bi bi-chevron-{{#ifYn collapsedYn}}down{{else}}up{{/ifYn}} pe-0" id="diary-toggle-icon"></i>
                                         </button>
                                     </div>
                                 </div>
-                                <div class="col jrnl-diary-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-id="{{postNo}}">
+                                <div class="col jrnl-diary-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
                                     {{> jrnl_diary_cn_partial this}}
                                 </div>
                                 <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                                <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
+                                <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-5 gap-2">
                                     {{> comment_reg_btn_partial this contentType="JRNL_DIARY"}}
-                                    <div class="col-1 border-2 border-gray-300 border-end w-10px">&nbsp;</div>
                                     {{> jrnl_diary_mdf_btn_partial this}}
                                 </div>
                             </div>
@@ -109,104 +96,132 @@
                     </div>
                 {{/each}}
 
-                {{#if (exists jrnlDiaryList)}}
-                    <label class="d-flex align-items-center mt-2">
-                        <span class="text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder ">
-                            {{#if (equals diaryResolvedYn 'Y')}}
-                                <span class="text-success"><@spring.message 'diary'/></span>
-                                <span class="position-relative d-inline-block">
-                                  <i class="bi bi-book fs-4 text-success"></i>
-                                  <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
-                                </span>
-                            {{else}}
-                                <@spring.message 'diary'/>
-                                <i class="bi bi-book fs-4 pe-1"></i>
-                            {{/if}}
-                        </span>
-                    </label>
-                    {{#each jrnlDiaryList}}
-                        <div class="jrnl-diary-item">
-                            <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
-                                <div class="d-flex flex-column align-items-center">
-                                    <span># {{idx}}</span>
-                                    <!-- 토글 버튼 추가 -->
-                                    <button type="button"
-                                            class="btn btn-sm btn-light-secondary ms-2 toggle-diary-btn"
-                                            onclick="dF.JrnlDiary.toggle({{postNo}})">
-                                        <i class="bi bi-chevron-up pe-0" id="toggle-icon-{{postNo}}"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="col jrnl-diary-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-id="{{postNo}}">
-                                {{> jrnl_diary_cn_partial this}}
-                            </div>
-                            <div class="col-1 ms-4 pe-0 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                            <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
-                                {{> comment_reg_btn_partial this contentType="JRNL_DIARY"}}
-                                <div class="col-1 border-2 border-gray-300 border-end w-10px">&nbsp;</div>
-                                {{> jrnl_diary_mdf_btn_partial this}}
-                            </div>
-                        </div>
-                    {{/each}}
-                {{/if}}
-                {{#if hasDream}}
-                    <label class="d-flex align-items-center mt-2">
-                        <span class="text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder">
+                {{#each jrnlDreamList}}
+                    <div class="d-flex align-items-center mt-2">
+                        <div class="col col-md-1 w-5 text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder ">
                             <@spring.message 'dream'/>
                             <i class="bi bi-moon-stars fs-4 pe-1"></i>
-                        </span>
-                    </label>
-                    {{#each jrnlDreamList}}
-                        <div class="jrnl-item">
+                        </div>
+                        <div class="col-3 d-none d-md-flex align-items-center gap-2">
+                            {{> jrnl_intrpt_reg_btn_partial this}}
+                            <!-- toggle button -->
+                            <button type="button"
+                                    class="btn btn-sm btn-secondary ms-2 toggle-entry-btn"
+                                    onclick="dF.JrnlIntrpt.toggle({{postNo}})">
+                                <i class="bi bi-arrows-collapse pe-0" id="entry-toggle-icon-{{postNo}}"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="jrnl-item">
+                        <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
+                            <div class="d-flex flex-column align-items-center">
+                                <span {{#ifYn resolvedYn}}class="text-success"{{/ifYn}}>
+                                    # {{idx}}
+                                    {{#ifYn resolvedYn}}
+                                        <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
+                                    {{/ifYn}}
+                                </span>
+                                <!-- toggle button -->
+                                <button type="button"
+                                        class="btn btn-sm btn-light-secondary ms-2 toggle-dream-btn"
+                                        onclick="dF.JrnlDream.toggle({{postNo}})">
+                                    <i class="bi bi-chevron-up pe-0" id="dream-toggle-icon-{{postNo}}"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-id="{{postNo}}" data-resolved="{{resolvedYn}}">
+                            {{> jrnl_dream_cn_partial this}}
+                        </div>
+                        <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                        <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-5 gap-2">
+                            {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
+                            {{> jrnl_dream_mdf_btn_partial this}}
+                        </div>
+                    </div>
+                    <div class="jrnl-item" data-id={{postNo}}>
+                        {{#each jrnlIntrptList}}
+                            <div class="jrnl-intrpt-item ps-15">
+                                <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <span {{#ifYn resolvedYn}}class="text-success"{{/ifYn}}>
+                                            # {{idx}}
+                                            {{#ifYn resolvedYn}}
+                                                <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
+                                            {{/ifYn}}
+                                        </span>
+                                        <!-- toggle button -->
+                                        <button type="button"
+                                                class="btn btn-sm btn-secondary ms-2 toggle-intrpt-btn"
+                                                onclick="dF.JrnlIntrpt.collapse({{postNo}})">
+                                            <i class="bi bi-chevron-up pe-0" id="intrpt-toggle-icon-{{postNo}}"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col jrnl-intrpt-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-id="{{postNo}}" data-resolved="{{resolvedYn}}">
+                                    {{> jrnl_intrpt_cn_partial this}}
+                                </div>
+                                <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                                <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-5 gap-2">
+                                    {{> comment_reg_btn_partial this contentType="JRNL_DIARY"}}
+                                    {{> jrnl_intrpt_mdf_btn_partial this}}
+                                </div>
+                            </div>
+                        {{/each}}
+                    </div>
+                {{/each}}
+                {{#each jrnlElseDreamList}}
+                    <div class="jrnl-item">
+                        <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
+                            <div class="d-flex flex-column align-items-center">
+                                <span>-</span>
+                                <!-- toggle button -->
+                                <button type="button"
+                                        class="btn btn-sm btn-light-secondary ms-2 toggle-dream-btn"
+                                        onclick="dF.JrnlDream.collapse({{postNo}})">
+                                    <i class="bi bi-chevron-up pe-0" id="dream-toggle-icon-{{postNo}}"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col py-3 jrnl-dream-cn bg-secondary" data-id="{{postNo}}" data-resolved="{{resolvedYn}}">
+                            {{> jrnl_dream_cn_partial this elseDreamYn="Y"}}
+                        </div>
+                        <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
+                        </div>
+                        <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                        <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-5 gap-2">
+                            {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
+                            {{> jrnl_dream_mdf_btn_partial this}}
+                        </div>
+                    </div>
+                    {{#each jrnlIntrptList}}
+                        <div class="jrnl-intrpt-item ps-15">
                             <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                                 <div class="d-flex flex-column align-items-center">
-                                    <span># {{idx}}</span>
-                                    <!-- 토글 버튼 추가 -->
+                                    <span {{#ifYn resolvedYn}}class="text-success"{{/ifYn}}>
+                                        # {{idx}}
+                                        {{#ifYn resolvedYn}}
+                                            <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
+                                        {{/ifYn}}
+                                    </span>
+                                    <!-- toggle button -->
                                     <button type="button"
-                                            class="btn btn-sm btn-light-secondary ms-2 toggle-dream-btn"
-                                            onclick="dF.JrnlDream.toggle({{postNo}})">
-                                        <i class="bi bi-chevron-up pe-0" id="toggle-icon-{{postNo}}"></i>
+                                            class="btn btn-sm btn-secondary ms-2 toggle-intrpt-btn"
+                                            onclick="dF.JrnlIntrpt.toggle({{postNo}})">
+                                        <i class="bi bi-chevron-up pe-0" id="intrpt-toggle-icon-{{postNo}}"></i>
                                     </button>
                                 </div>
                             </div>
-                            <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
-                                {{> jrnl_dream_cn_partial this}}
+                            <div class="col jrnl-intrpt-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-id="{{postNo}}" data-resolved="{{resolvedYn}}">
+                                {{> jrnl_intrpt_cn_partial this}}
                             </div>
-                            <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                            <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
-                                {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
-                                <div class="col-1 border-2 border-gray-300 border-end w-10px">&nbsp;</div>
-                                {{> jrnl_dream_mdf_btn_partial this}}
-                            </div>
-                        </div>
-                    {{/each}}
-                    {{#each jrnlElseDreamList}}
-                        <div class="jrnl-item">
-                            <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
-                                <div class="d-flex flex-column align-items-center">
-                                    <span>-</span>
-                                    <!-- 토글 버튼 추가 -->
-                                    <button type="button"
-                                            class="btn btn-sm btn-light-secondary ms-2 toggle-dream-btn"
-                                            onclick="dF.JrnlDream.toggle({{postNo}})">
-                                        <i class="bi bi-chevron-up pe-0" id="toggle-icon-{{postNo}}"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="col py-3 jrnl-dream-cn bg-secondary">
-                                {{> jrnl_dream_cn_partial this elseDreamYn="Y"}}
-                            </div>
-                            <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
-                            </div>
-                            <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                            <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
-                                {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
-                                <div class="col-1 border-2 border-gray-300 border-end w-10px">&nbsp;</div>
-                                {{> jrnl_dream_mdf_btn_partial this}}
+                            <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                            <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-5 gap-2">
+                                {{> comment_reg_btn_partial this contentType="JRNL_INTRPT"}}
+                                {{> jrnl_intrpt_mdf_btn_partial this}}
                             </div>
                         </div>
                     {{/each}}
-                {{/if}}
+                {{/each}}
             </div>
         </div>
     {{else}}

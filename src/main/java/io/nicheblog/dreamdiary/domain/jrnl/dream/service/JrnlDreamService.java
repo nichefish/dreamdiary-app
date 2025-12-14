@@ -2,24 +2,31 @@ package io.nicheblog.dreamdiary.domain.jrnl.dream.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.mapstruct.JrnlDreamMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamPatchDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.repository.jpa.JrnlDreamRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.repository.mybatis.JrnlDreamMapper;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.spec.JrnlDreamSpec;
+import io.nicheblog.dreamdiary.domain.jrnl.state.JrnlState;
 import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
+import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -27,6 +34,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * JrnlDreamService
@@ -40,7 +49,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Log4j2
 public class JrnlDreamService
-        implements BaseClsfService<JrnlDreamDto, JrnlDreamDto, Integer, JrnlDreamEntity, JrnlDreamRepository, JrnlDreamSpec, JrnlDreamMapstruct> {
+        implements BaseClsfService<JrnlDreamDto, JrnlDreamDto, Integer, JrnlDreamEntity> {
 
     @Getter
     private final JrnlDreamRepository repository;
@@ -48,8 +57,16 @@ public class JrnlDreamService
     private final JrnlDreamSpec spec;
     @Getter
     private final JrnlDreamMapstruct mapstruct = JrnlDreamMapstruct.INSTANCE;
+    @Getter
+    private final JrnlDreamMapper mapper;
 
-    private final JrnlDreamMapper jrnlDreamMapper;
+    public JrnlDreamMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public JrnlDreamMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
+
     private final ApplicationEventPublisherWrapper publisher;
 
     private final ApplicationContext context;
@@ -66,7 +83,8 @@ public class JrnlDreamService
     @Cacheable(value="myJrnlDreamList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.hashCode()")
     public List<JrnlDreamDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
-        return this.getSelf().getListDto(searchParam);
+        final List<JrnlDreamEntity> entityList = this.getSelf().getListEntity(searchParam);
+        return mapstruct.toDtoList(entityList);
     }
 
     /**
@@ -78,7 +96,8 @@ public class JrnlDreamService
     @Cacheable(value="myImprtcDreamList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy")
     public List<JrnlDreamDto> getImprtcDreamList(final Integer yy) throws Exception {
         final JrnlDreamSearchParam searchParam = JrnlDreamSearchParam.builder().yy(yy).imprtcYn("Y").build();
-        final List<JrnlDreamDto> imprtcDreamList = this.getSelf().getListDto(searchParam);
+        final List<JrnlDreamEntity> entityList = this.getSelf().getListEntity(searchParam);
+        final List<JrnlDreamDto> imprtcDreamList = mapstruct.toDtoList(entityList);
         Collections.sort(imprtcDreamList);
 
         return imprtcDreamList;
@@ -91,8 +110,30 @@ public class JrnlDreamService
      * @return {@link List} -- 검색 결과 목록
      */
     @Cacheable(value="myJrnlDreamTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
+    @SuppressWarnings("unchecked")
     public List<JrnlDreamDto> jrnlDreamTagDtl(final JrnlDreamSearchParam searchParam) throws Exception {
-        return this.getSelf().getListDto(searchParam);
+        final List<JrnlDreamEntity> entityList = this.getSelf().getListEntity(searchParam);
+        List<JrnlDreamDto> jrnlDreamList = mapstruct.toDtoList(entityList);
+        // 공휴일 정보 세팅
+        final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
+        for (final JrnlDreamDto jrnlDream : jrnlDreamList) {
+            setHldyInfo(jrnlDream, hldyMap);
+        }
+
+        return jrnlDreamList;
+    }
+
+    /**
+     * 단일 항목 조회 (dto level)
+     *
+     * @param key 조회할 엔티티의 키
+     * @return {@link JrnlDreamDto} -- 조회 항목 반환
+     */
+    @Transactional(readOnly = true)
+    public JrnlDreamDto getDtlDto(final Integer key) throws Exception {
+        final JrnlDreamEntity retrievedEntity = this.getDtlEntity(key);
+
+        return mapstruct.toDto(retrievedEntity);
     }
 
     /**
@@ -115,9 +156,9 @@ public class JrnlDreamService
     @Override
     public void postRegist(final JrnlDreamDto updatedDto) throws Exception {
         // 태그 처리 :: 메인 로직과 분리
-        publisher.publishEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
+        publisher.publishCustomEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
         // 관련 캐시 삭제
-        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DREAM));
+        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DREAM));
     }
 
     /**
@@ -128,23 +169,39 @@ public class JrnlDreamService
      */
     @Cacheable(value="myJrnlDreamDtlDto", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #key")
     public JrnlDreamDto getDtlDtoWithCache(final Integer key) throws Exception {
-        final JrnlDreamDto retrieved = this.getSelf().getDtlDto(key);
+        final JrnlDreamEntity retrievedEntity = this.getSelf().getDtlEntity(key);
+        final JrnlDreamDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
         if (!retrieved.getIsRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("common.rslt.access-not-authorized"));
         return retrieved;
     }
 
     /**
+     * 수정 전처리. (override)
+     *
+     * @param modifyDto - 수정할 객체
+     * @param modifyEntity - 수정할 객체
+     */
+    @Override
+    public void preModify(final JrnlDreamDto modifyDto, final JrnlDreamEntity modifyEntity) throws Exception {
+        boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
+        modifyDto.setIsIdxChanged(isIdxChanged);
+    }
+    
+    /**
      * 수정 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
      */
     @Override
-    public void postModify(final JrnlDreamDto updatedDto) throws Exception {
+    public void postModify(final JrnlDreamDto postDto, final JrnlDreamDto updatedDto) throws Exception {
+        // 인덱스 재조정
+        if (updatedDto.getIsIdxChanged()) this.getSelf().reorderIdx(updatedDto);
+        
         // 태그 처리 :: 메인 로직과 분리
-        publisher.publishEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
+        publisher.publishCustomEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
         // 관련 캐시 삭제
-        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DREAM));
+        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DREAM));
     }
 
     /**
@@ -154,10 +211,13 @@ public class JrnlDreamService
      */
     @Override
     public void postDelete(final JrnlDreamDto deletedDto) throws Exception {
+        // 인덱스 재조정
+        this.getSelf().reorderIdx(deletedDto);
+
         // 태그 처리 :: 메인 로직과 분리
-        publisher.publishEvent(new JrnlTagProcEvent(this, deletedDto.getClsfKey(), deletedDto.getYy(), deletedDto.getMnth()));
+        publisher.publishCustomEvent(new JrnlTagProcEvent(this, deletedDto.getClsfKey(), deletedDto.getYy(), deletedDto.getMnth()));
         // 관련 캐시 삭제
-        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DREAM));
+        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DREAM));
     }
 
     /**
@@ -168,6 +228,172 @@ public class JrnlDreamService
      */
     @Transactional(readOnly = true)
     public JrnlDreamDto getDeletedDtlDto(final Integer key) throws Exception {
-        return jrnlDreamMapper.getDeletedByPostNo(key);
+        return mapper.getDeletedByPostNo(key);
+    }
+
+    /**
+     * 해당 그룹 전체를 idx = 1부터 다시 정렬한다.
+     *
+     * @param jrnlDayNo 정렬을 수행할 상위 키
+     */
+    @Transactional
+    public void normalize(final Integer jrnlDayNo) {
+        final List<JrnlDreamDto> list = mapper.findAllForReorder(jrnlDayNo);
+        if (CollectionUtils.isEmpty(list) || list.size() == 1) return;
+
+        int idx = 1;
+        for (final JrnlDreamDto e : list) {
+            e.setIdx(idx++);
+            EhCacheUtils.evictCache("myJrnlDreamDtlDto", e.getPostNo());
+        }
+
+        mapper.batchUpdateIdx(list);
+    }
+
+    /**
+     * 대상 상위 키에 엔티티를 특정 위치에 삽입 후 재정렬한다.
+     *
+     * @param jrnlDayNo 정렬을 수행할 상위 키
+     * @param postNo 게시물 PK
+     * @param targetIdx 삽입할 목표 위치(1-based). null이면 맨 뒤에 삽입됨
+     */
+    @Transactional
+    public void insert(final Integer jrnlDayNo, final Integer postNo, Integer targetIdx) throws Exception {
+        final List<JrnlDreamDto> list = mapper.findAllForReorder(jrnlDayNo);
+
+        // target 조회
+        final JrnlDreamEntity targetEntity = findDtlEntity(postNo);
+        final JrnlDreamDto target = mapstruct.toDto(targetEntity);
+        if (target == null) return;
+
+        // 혹시 이미 포함되어 있으면 제거
+        list.removeIf(e -> Objects.equals(e.getPostNo(), postNo));
+
+        // entryNo 변경
+        target.setJrnlDayNo(jrnlDayNo);
+
+        // targetIdx 보정 (upper bound)
+        final int maxIdx = list.size() + 1;
+        final int normalizedIdx = Math.min(targetIdx == null ? maxIdx : targetIdx, maxIdx);
+        // 삽입 위치 계산
+        int pos = normalizedIdx - 1;
+        pos = Math.min(pos, list.size());
+        list.add(pos, target);
+
+        // idx 재정렬
+        int idx = 1;
+        for (final JrnlDreamDto e : list) {
+            e.setIdx(idx++);
+            EhCacheUtils.evictCache("myJrnlDreamDtlDto", e.getPostNo());
+        }
+
+        mapper.batchUpdateIdx(list);
+    }
+
+    /**
+     * 인덱스 변경시 관련 인덱스 업데이트
+     *
+     * @param updatedDto 업데이트된 객체
+     */
+    @Transactional
+    public void reorderIdx(final JrnlDreamDto updatedDto) throws Exception {
+        // 1단계: 현재 entry 그룹 정리 (기존 idx 값을 normalization하여 안정화)
+        normalize(updatedDto.getJrnlDayNo());
+        // 2단계: 해당 group에 새 위치로 target 삽입
+        insert(updatedDto.getJrnlDayNo(), updatedDto.getPostNo(), updatedDto.getIdx());
+    }
+
+    /**
+     * 주어진 {@link JrnlDayDto} 객체에 공휴일 및 주말 여부 정보를 설정한다.
+     *
+     * @param jrnlDream 공휴일 및 주말 정보를 설정할 대상 DTO
+     * @param hldyMap 날짜(String: yyyy-MM-dd) → 공휴일 이름 목록 매핑 정보
+     */
+    private void setHldyInfo(final JrnlDreamDto jrnlDream, final Map<String, List<String>> hldyMap) throws Exception {
+        if (jrnlDream == null || hldyMap == null) return;
+
+        final String stdrdDt = jrnlDream.getStdrdDt();
+        final boolean isHldy = hldyMap.containsKey(stdrdDt);
+        final boolean isWeekend = DateUtils.isWeekend(stdrdDt);
+        jrnlDream.setIsHldy(isHldy || isWeekend);
+        if (isHldy) {
+            final String concatHldyNm = String.join(", ", hldyMap.get(stdrdDt));
+            jrnlDream.setHldyNm(concatHldyNm);
+        }
+    }
+    
+    /**
+     * collapse 상태를 설정한다.
+     *
+     * @param postNo 대상 게시물 PK
+     * @param collapsedYn 접힘 상태(Y/N)
+     * @return collapsedYn 반영 성공 여부를 담은 ServiceResponse
+     */
+    @Transactional
+    @SuppressWarnings("unchecked")
+    public ServiceResponse setCollapse(final Integer postNo, final String collapsedYn) throws Exception {
+        final JrnlDreamEntity entity = getDtlEntity(postNo);
+        entity.setCollapsedYn(collapsedYn);
+        final JrnlDreamEntity updatedEntity = repository.save(entity);
+
+        final Integer yy = updatedEntity.getJrnlDay().getYy();
+        final Integer mnth = updatedEntity.getJrnlDay().getMnth();
+        final String cacheKey = AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth;
+
+        final Map<Integer, JrnlState> dreamMap = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myDreamStateMap", cacheKey);
+        if (dreamMap != null) {
+            final JrnlState state = dreamMap.get(postNo);
+            if (state != null) {
+                state.setCollapsedYn(collapsedYn);
+                EhCacheUtils.put("myDreamStateMap", cacheKey, dreamMap);
+            }
+        }
+
+        return ServiceResponse.builder()
+                .rslt(true)
+                .build();
+    }
+
+    /**
+     * 상태를 설정한다.
+     *
+     * @param postNo 대상 게시물 PK
+     * @param patchDto 상태 Dto
+     * @return collapsedYn 반영 성공 여부를 담은 ServiceResponse
+     */
+    @Transactional
+    @SuppressWarnings("unchecked")
+    public ServiceResponse patch(final Integer postNo, final JrnlDreamPatchDto patchDto) throws Exception {
+        if (patchDto.isAllNull()) {
+            return ServiceResponse.builder()
+                    .rslt(false)
+                    .message("변경할 항목이 없습니다.")
+                    .build();
+        }
+
+        final JrnlDreamEntity entity = getDtlEntity(postNo);
+        if (patchDto.getImprtc() != null) entity.setImprtcYn(patchDto.getImprtc() ? "Y" : "N");
+        if (patchDto.getCollapsed() != null) entity.setCollapsedYn(patchDto.getCollapsed() ? "Y" : "N");
+        if (patchDto.getResolved() != null) entity.setResolvedYn(patchDto.getResolved() ? "Y" : "N");
+
+        final JrnlDreamEntity updatedEntity = repository.save(entity);
+
+        final Integer yy = updatedEntity.getJrnlDay().getYy();
+        final Integer mnth = updatedEntity.getJrnlDay().getMnth();
+        final String cacheKey = AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth;
+        final Map<Integer, JrnlState> diaryMap = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myDreamStateMap", cacheKey);
+        if (diaryMap != null) {
+            final JrnlState state = diaryMap.get(postNo);
+            if (state != null) {
+                if (patchDto.getImprtc() != null) state.setImprtcYn(patchDto.getImprtc() ? "Y" : "N");
+                if (patchDto.getCollapsed() != null) state.setCollapsedYn(patchDto.getCollapsed() ? "Y" : "N");
+                if (patchDto.getResolved() != null) state.setResolvedYn(patchDto.getResolved() ? "Y" : "N");
+                EhCacheUtils.put("myDreamStateMap", cacheKey, diaryMap);
+            }
+        }
+
+        return ServiceResponse.builder()
+                .rslt(true)
+                .build();
     }
 }

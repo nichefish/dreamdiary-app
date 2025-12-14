@@ -216,7 +216,7 @@
                     </div>
                     <div class="col-xl-10">
                         <div class="form-check form-switch form-check-custom form-check-solid mt-2">
-                            <input type="checkbox" name="useAcsIpYn" id="useAcsIpYn" class="form-check-input" value="Y" />
+                            <input type="checkbox" name="useAcsIpYn" id="useAcsIpYn" class="form-check-input cursor-pointer" value="Y" />
                             <label class="form-check-label fw-bold ms-3" for="useAcsIpYn" id="useAcsIpYnLabel" style="color:gray;">
                                 <@spring.message 'unuse'/>
                             </label>

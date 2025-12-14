@@ -57,7 +57,7 @@ public class VcatnPaprRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> vcatnPaprRegAjax(
-            final @Valid VcatnPaprDto.DTL vcatnPapr,
+            final @Valid VcatnPaprDto vcatnPapr,
             final LogActvtyParam logParam,
             final MultipartHttpServletRequest request
     ) throws Exception {

@@ -8,7 +8,7 @@
         <div class="btn btn-icon btn-active-light-primary blink position-relative w-30px h-30px w-md-40px h-md-40px"
              data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-dismiss="click"
              title="(개발자) 테스트&#10;화면으로 이동합니다."
-             onclick="location.replace('${Url.TEST_PAGE!}');">
+             onclick="location.replace('${Url.ADMIN_TEST!}');">
             <#--begin::Svg Icon | path: icons/duotune/general/gen022.svg-->
             <span class="svg-primary svg-icon svg-icon-1">
                 <#--begin::Svg Icon | path: /var/www/preview.keenthemes.com/keenthemes/metronic/docs/core/html/src/media/icons/duotune/abstract/abs026.svg-->

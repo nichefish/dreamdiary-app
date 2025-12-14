@@ -13,13 +13,13 @@ cF.$ajax = (function(): Module {
          * AJAX 공통 형식. (jQuery.ajax)
          * @param {Object} option - AJAX 요청에 대한 설정 옵션.
          * @param {Function} func - 요청 성공시 호출될 콜백 함수.
-         * @param {string} [continueBlock] - 추가적인 블록 UI 동작 여부 (선택적).
+         * @param {'block'} [continueBlock] - 추가적인 블록 UI 동작 여부 .
          */
         request: function(option: object, func: Function, continueBlock: string): void {
             cF.ui.blockUI();
             $.ajax(
                 option
-            ).done(function(res): void {
+            ).done(function(res: AjaxResponse): void {
                 if (typeof func === 'function') {
                     const isSuccess = func(res);
                     if (!isSuccess) cF.ui.unblockUI();
@@ -38,9 +38,9 @@ cF.$ajax = (function(): Module {
          * @param {string} url - 요청할 URL.
          * @param {Object} ajaxData - JSON 형태의 요청 데이터.
          * @param {Function} func - 요청 성공시 호출될 콜백 함수.
-         * @param {boolean} [continueBlock] - 추가적인 블록 UI 동작 여부 (선택적).
+         * @param {'block'} [continueBlock] - 추가적인 블록 UI 동작 여부.
          */
-        get: function(url: string, ajaxData: object, func: Function, continueBlock: string) {
+        get: function(url: string, ajaxData: object, func: Function, continueBlock: string): void {
             const option: Record<string, any> = {
                 url: url,
                 type: 'GET',
@@ -56,7 +56,7 @@ cF.$ajax = (function(): Module {
          * @param {string} url - 요청할 URL.
          * @param {Object} ajaxData - JSON 형태의 요청 데이터.
          * @param {Function} func - 요청 성공시 호출될 콜백 함수.
-         * @param {boolean} [continueBlock] - 추가적인 블록 UI 동작 여부 (선택적).
+         * @param {'block'} [continueBlock] - 추가적인 블록 UI 동작 여부.
          */
         post: function(url: string, ajaxData: object, func: Function, continueBlock: string): void {
             const option: Record<string, any> = {
@@ -73,7 +73,7 @@ cF.$ajax = (function(): Module {
          * @param {string} url - 요청할 URL.
          * @param {FormData} ajaxData - 파일 데이터가 포함된 FormData 객체.
          * @param {Function} [callback] - 요청 성공시 호출될 콜백 함수.
-         * @param {boolean} [continueBlock] - 추가적인 블록 UI 동작 여부 (선택적).
+         * @param {'block'} [continueBlock] - 추가적인 블록 UI 동작 여부.
          */
         multipart: async function (url: string, ajaxData: FormData, callback?: (response: any) => any, continueBlock?: string): Promise<void> {
             const option: Record<string, any> = {
@@ -86,7 +86,42 @@ cF.$ajax = (function(): Module {
                 contentType: false
             };
             cF.$ajax.request(option, callback, continueBlock);
-        }
+        },
+
+        /**
+         * blockUI를 적용한 AJAX 호출.
+         * @param {string} url - 요청할 URL.
+         * @param {Object} ajaxData - JSON 형태의 요청 데이터.
+         * @param {Function} func - 요청 성공시 호출될 콜백 함수.
+         * @param {'block'} [continueBlock] - 추가적인 블록 UI 동작 여부.
+         */
+        delete: function(url: string, ajaxData: object, func: Function, continueBlock: string): void {
+            const option: Record<string, any> = {
+                url: url,
+                type: 'DELETE',
+                data: ajaxData,
+                dataType: 'json'
+            };
+            cF.$ajax.request(option, func, continueBlock);
+        },
+
+        /**
+         * blockUI를 적용한 AJAX 호출.
+         * @param {string} url - 요청할 URL.
+         * @param {Object} ajaxData - JSON 형태의 요청 데이터.
+         * @param {Function} func - 요청 성공시 호출될 콜백 함수.
+         * @param {'block'} [continueBlock] - 추가적인 블록 UI 동작 여부.
+         */
+        patch: function(url: string, ajaxData: object, func: Function, continueBlock: string): void {
+            const option: Record<string, any> = {
+                url: url,
+                type: 'PATCH',
+                data: JSON.stringify(ajaxData),
+                dataType: 'json',
+                contentType: 'application/json; charset=UTF-8',
+            };
+            cF.$ajax.request(option, func, continueBlock);
+        },
     }
 })();
 // 인증만료/접근불가로 ajax 실패시 로그인 페이지로 이동 또는 머무르기 (선택)
@@ -95,7 +130,7 @@ cF.$ajax = (function(): Module {
         error: function(xhr): void {
             const statusCode: number = xhr.status;
             const msg: string = xhr.responseJSON?.message || Message.get("view.error.access-denied");
-            const lgnFormUrl: string = "/auth/lgn-form.do";
+            const lgnFormUrl: string = "/app/auth/lgn-form.do";
 
             switch(statusCode) {
                 case 401: {
@@ -131,7 +166,7 @@ cF.$ajax = (function(): Module {
                         if (defaultMessageMatch) defaultMessage  = defaultMessageMatch[1]; // 0보다 커야 합니다
                         if (errorField && defaultMessage) {
                             const errorMsg: string = errorField + ": " + defaultMessage + ".";
-                            const snakeFieldName = cF.util.toSnakeCase(errorField);
+                            const snakeFieldName = cF.format.toSnakeCase(errorField);
                             const elmts = (cF.util.verifySelector("[name=\"" + snakeFieldName + "\"]"));
                             console.log(snakeFieldName);
                             if (elmts.length === 0) {

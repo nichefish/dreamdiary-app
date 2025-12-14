@@ -56,7 +56,7 @@
                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="음력 생일 사용시 체크합니다.">
                     음력여부 :
                 </label>
-                <input type="checkbox" name="profl.lunarYn" id="lunarYn" class="form-check-input ms-3"
+                <input type="checkbox" name="profl.lunarYn" id="lunarYn" class="form-check-input cursor-pointer ms-3"
                        value="Y" <#if (((user.profl.lunarYn)!"N") == "Y")!false>checked="checked"</#if> />
                 <label class="form-check-label fw-bold ms-3" for="lunarYn" id="lunarYnLabel" <#if ((user.profl.lunarYn)!"N") == "Y">blue<#else>gray</#if>;>
                     <#if ((user.profl.lunarYn)!"N") == "Y">음력<#else>양력</#if>

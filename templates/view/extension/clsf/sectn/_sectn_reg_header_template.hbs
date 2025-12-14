@@ -13,7 +13,7 @@
     <div class="row d-flex mb-8">
         <div class="col-12">
             <label class="d-flex align-items-center mb-2" for="title">
-                <span class="text-gray-700 fs-6 fw-bolder">제목</span>
+                <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'title'/></span>
                 <span class="text-gray-500 fs-9">(최대 50자)</span>
             </label>
         </div>
@@ -43,7 +43,7 @@
                     <i class="bi bi-question-circle"></i>
                 </label>
                 <div class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
-                    <input type="checkbox" name="deprcYn" id="deprcYn" class="form-check-input"
+                    <input type="checkbox" name="deprcYn" id="deprcYn" class="form-check-input cursor-pointer"
                            value="Y" {{checkedYn deprcYn}} />
                     <label class="form-check-label fw-bold fs-6 ms-3" for="deprcYn" id="deprcYnLabel" {{{checkedYnStyle deprcYn "color" "red//gray"}}}>
                         {{#ifYn deprcYn}}만료{{else}}해당없음{{/ifYn}}

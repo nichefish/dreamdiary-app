@@ -9,14 +9,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
 
 /**
  * ApplicationEventPublisherWrapper
  * <pre>
- *  동기/비동기적으로 애플리케이션 이벤트를 발행합니다.
+ *  동기/비동기적으로 애플리케이션 이벤트를 발행한다.
  * </pre>
  *
  * @author nichefish
@@ -29,35 +28,49 @@ public class ApplicationEventPublisherWrapper {
     private ApplicationEventPublisher delegate;
     @Resource(name = "taskExecutor")
     private Executor asyncExecutor;
+    @Resource(name = "customEventBus")
+    private CustomEventBus customEventBus;
 
     /**
-     * 동기적으로 애플리케이션 이벤트를 발행합니다.
+     * 동기적으로 애플리케이션 이벤트를 발행한다.
      *
      * @param event 발행할 {@link ApplicationEvent}
      */
-    public void publishEvent(@NotNull ApplicationEvent event) {
-        log.debug("ApplicationEventPublisherWrapper.publishEvent : {}", event);
+    public void publishEvent(final @NotNull ApplicationEvent event) {
+        log.debug("ApplicationEventPublisherWrapper.publishEvent() : {}", event);
         delegate.publishEvent(event);
     }
 
     /**
-     * 동기적으로 애플리케이션 이벤트를 발행합니다.
+     * 동기적으로 애플리케이션 이벤트를 발행한다.
      *
      * @param event 발행할 {@link ApplicationEvent}
      */
-    public void publishEvent(@NotNull Object event) {
-        log.debug("ApplicationEventPublisherWrapper.publishEvent : {}", event);
+    public void publishEvent(final @NotNull Object event) {
+        log.debug("ApplicationEventPublisherWrapper.publishEvent() : {}", event);
         delegate.publishEvent(event);
     }
 
     /**
-     * 애플리케이션 이벤트를 비동기적으로 발행합니다.
-     * 비동기 실행 전, 현재의 {@link SecurityContext}를 보존하고,실행 후 정리합니다.
+     * 동기적으로 커스텀 애플리케이션 이벤트를 발행한다.
+     * {@link CustomEventBus} 활용, FIFO 보장이 필요할 경우에만 커스텀 이벤스버스 사용
+     *
+     * @param event 발행할 {@link ApplicationEvent}
+     */
+    public void publishCustomEvent(final @NotNull Object event) throws Exception {
+        log.debug("ApplicationEventPublisherWrapper.publishCustomEvent() : {}", event);
+        if (!(event instanceof ApplicationEvent)) return;
+        Future<?> future = customEventBus.publishEvent((ApplicationEvent) event);
+        future.get();
+    }
+
+    /**
+     * 애플리케이션 이벤트를 비동기적으로 발행한다.
      *
      * @param event 발행할 {@link ApplicationEvent}
      */
     public void publishAsyncEvent(final @NotNull ApplicationEvent event) {
-        log.debug("ApplicationEventPublisherWrapper.publishAsyncEvent : {}", event);
+        log.debug("ApplicationEventPublisherWrapper.publishAsyncEvent() : {}", event);
         SecurityContext securityContext = SecurityContextHolder.getContext(); // 현재 SecurityContext 저장
 
         asyncExecutor.execute(() -> {
@@ -71,13 +84,13 @@ public class ApplicationEventPublisherWrapper {
     }
 
     /**
-     * {@link ApplicationEvent} 이외 객체 타입의 이벤트를 비동기적으로 발행합니다.
-     * 비동기 실행 전, 현재의 {@link SecurityContext}를 보존하고,실행 후 정리합니다.
+     * {@link ApplicationEvent} 이외 객체 타입의 이벤트를 비동기적으로 발행한다.
+     * 비동기 실행 전, 현재의 {@link SecurityContext}를 보존하고,실행 후 정리한다.
      *
      * @param event 발행할 이벤트 객체
      */
     public void publishAsyncEvent(final @NotNull Object event) {
-        log.debug("ApplicationEventPublisherWrapper.publishAsyncEvent : {}", event);
+        log.debug("ApplicationEventPublisherWrapper.publishAsyncEvent() : {}", event);
         SecurityContext securityContext = SecurityContextHolder.getContext();
 
         asyncExecutor.execute(() -> {
@@ -88,36 +101,5 @@ public class ApplicationEventPublisherWrapper {
                 SecurityContextHolder.clearContext();
             }
         });
-    }
-
-    /**
-     * 이벤트를 비동기적으로 발행하고 완료될 때까지 기다립니다.
-     *
-     * @param event 비동기적으로 발행할 {@link ApplicationEvent}
-     */
-    public void publishAsyncEventAndWait(ApplicationEvent event) {
-        log.debug("ApplicationEventPublisherWrapper.publishAsyncEventAndWait : {}", event);
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        CompletableFuture<Void> future = new CompletableFuture<>();
-
-        asyncExecutor.execute(() -> {
-            SecurityContextHolder.setContext(securityContext);
-            try {
-                delegate.publishEvent(event);
-                future.complete(null); // 이벤트 처리 완료
-            } catch (Exception e) {
-                future.completeExceptionally(e); // 예외 발생 시 future 완료 처리
-            } finally {
-                SecurityContextHolder.clearContext();
-            }
-        });
-
-        // 이벤트 실행이 완료될 때까지 대기
-        try {
-            future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            Thread.currentThread().interrupt(); // 인터럽트 상태 복구
-            throw new RuntimeException("이벤트 처리 중 오류 발생", e);
-        }
     }
 }

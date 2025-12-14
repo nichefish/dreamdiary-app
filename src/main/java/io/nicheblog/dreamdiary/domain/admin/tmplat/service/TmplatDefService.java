@@ -23,8 +23,8 @@ import org.springframework.stereotype.Service;
 @Service("tmplatDefService")
 @RequiredArgsConstructor
 public class TmplatDefService
-        implements BaseCrudService<TmplatDefDto, TmplatDefDto, Integer, TmplatDefEntity, TmplatDefRepository, TmplatDefSpec, TmplatDefMapstruct>,
-                   BaseStateService<TmplatDefDto, TmplatDefDto, Integer, TmplatDefEntity, TmplatDefRepository, TmplatDefSpec, TmplatDefMapstruct> {
+        implements BaseCrudService<TmplatDefDto, TmplatDefDto, Integer, TmplatDefEntity>,
+                   BaseStateService<TmplatDefDto, Integer, TmplatDefEntity> {
 
     @Getter
     private final TmplatDefRepository repository;
@@ -32,6 +32,13 @@ public class TmplatDefService
     private final TmplatDefSpec spec;
     @Getter
     private final TmplatDefMapstruct mapstruct = TmplatDefMapstruct.INSTANCE;
+
+    public TmplatDefMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public TmplatDefMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     /**
      * 등록 전처리. (override)

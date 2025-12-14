@@ -22,9 +22,9 @@ public class UserDtoTestFactory {
     /**
      * 테스트용 사용자 Dto (상세) 생성
      */
-    public static UserDto.DTL create() {
+    public static UserDto create() {
         // 객체 생성
-        return UserDto.DTL.builder()
+        return UserDto.builder()
                 .userId(TestConstant.TEST_USER)
                 .password("test_password")
                 .nickNm("test_nick_nm")
@@ -38,9 +38,9 @@ public class UserDtoTestFactory {
     /**
      * 테스트용 사용자 Dto (상세) 생성
      */
-    public static UserDto.DTL create(UserProflDto profl) {
+    public static UserDto create(UserProflDto profl) {
         // 객체 생성
-        UserDto.DTL dto = create();
+        UserDto dto = create();
         dto.setProfl(profl);
         return dto;
     }
@@ -48,9 +48,9 @@ public class UserDtoTestFactory {
     /**
      * 테스트용 사용자 Dto (상세) 생성
      */
-    public static UserDto.DTL create(UserEmplymDto emplym) {
+    public static UserDto create(UserEmplymDto emplym) {
         // 객체 생성
-        UserDto.DTL dto = create();
+        UserDto dto = create();
         dto.setEmplym(emplym);
         return dto;
     }
@@ -58,9 +58,9 @@ public class UserDtoTestFactory {
     /**
      * 테스트용 사용자 Dto (상세) 생성
      */
-    public static UserDto.DTL create(UserProflDto profl, UserEmplymDto emplym) {
+    public static UserDto create(UserProflDto profl, UserEmplymDto emplym) {
         // 객체 생성
-        UserDto.DTL dto = create();
+        UserDto dto = create();
         dto.setProfl(profl);
         dto.setEmplym(emplym);
         return dto;

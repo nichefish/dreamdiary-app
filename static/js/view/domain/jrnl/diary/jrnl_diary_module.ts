@@ -36,8 +36,6 @@ dF.JrnlDiary = (function(): dfModule {
 
             /* jquery validation */
             cF.validate.validateForm("#jrnlDiaryRegForm", dF.JrnlDiary.regAjax);
-            // checkbox init
-            cF.ui.chckboxLabel("imprtcYn", "중요//해당없음", "red//gray");
             /* tinymce editor reset */
             cF.tinymce.init('#tinymce_jrnlDiaryCn');
             cF.tinymce.setContentWhenReady("tinymce_jrnlDiaryCn", obj.cn || "");
@@ -52,7 +50,7 @@ dF.JrnlDiary = (function(): dfModule {
             const keyword: string = (document.querySelector("#jrnl_aside #diaryKeyword") as HTMLInputElement)?.value;
             if (cF.util.isEmpty(keyword)) return;
 
-            const url: string = Url.JRNL_DIARY_LIST_AJAX;
+            const url: string = Url.JRNL_DIARIES;
             const ajaxData: Record<string, any> = { "diaryKeyword": keyword };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
@@ -95,16 +93,17 @@ dF.JrnlDiary = (function(): dfModule {
 
         /**
          * 등록 모달 호출
-         * @param {string|number} jrnlDayNo - 저널 일자 번호.
-         * @param {string|number} jrnlEntryNo - 저널 항목 번호.
-         * @param {string} stdrdDt - 기준 날짜.
-         * @param {string} jrnlDtWeekDay - 기준 날짜 요일.
+         * @param {Object} param - 파라미터 객체
+         * @param {string|number} param.jrnlDayNo - 저널 일자 번호.
+         * @param {string|number} param.jrnlEntryNo - 저널 항목 번호.
+         * @param {string} param.stdrdDt - 기준 날짜.
+         * @param {string} param.jrnlDtWeekDay - 기준 날짜 요일.
          */
-        regModal: function(jrnlDayNo: string|number, jrnlEntryNo: string|number, stdrdDt: string, jrnlDtWeekDay: string): void {
+        regModal: function({ jrnlDayNo, jrnlEntryNo, stdrdDt, jrnlDtWeekDay }: { jrnlDayNo: string | number; jrnlEntryNo: string | number; stdrdDt: string; jrnlDtWeekDay: string; }): void {
             if (isNaN(Number(jrnlEntryNo))) return;
 
-            const url: string = Url.JRNL_DAY_DTL_AJAX;
-            cF.ajax.get(url, { "postNo": jrnlDayNo }, function(res: AjaxResponse): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DAY, { postNo: jrnlDayNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) return;
                 const entryList = res.rsltObj.entryList;
                 const obj: Record<string, any> = { jrnlDayNo: jrnlDayNo, jrnlEntryNo: jrnlEntryNo, stdrdDt: stdrdDt, jrnlDtWeekDay: jrnlDtWeekDay, entryList: entryList };
@@ -126,37 +125,23 @@ dF.JrnlDiary = (function(): dfModule {
          */
         regAjax: function(): void {
             const postNoElmt: HTMLInputElement = document.querySelector("#jrnlDiaryRegForm [name='postNo']");
-            const isReg: boolean = postNoElmt?.value === "";
+            const postNo: string = postNoElmt?.value;
+            const isMdf: boolean = !!postNo;
             Swal.fire({
-                text: Message.get(isReg ? "view.cnfm.reg" : "view.cnfm.mdf"),
+                text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = isReg ? Url.JRNL_DIARY_REG_AJAX : Url.JRNL_DIARY_MDF_AJAX;
+                const url: string = isMdf ? cF.util.bindUrl(Url.JRNL_DIARY, { postNo }) : Url.JRNL_DIARIES;
                 const ajaxData: FormData = new FormData(document.getElementById("jrnlDiaryRegForm") as HTMLFormElement);
                 cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            const isCalendar: boolean = Page?.calendar != null;
-                            if (isCalendar) {
-                                Page.refreshEventList();
-                                dF.JrnlDiaryTag.listAjax();     // 태그 refresh
-                            } else {
-                                if (dF.JrnlDiary.inKeywordSearchMode) {
-                                    dF.JrnlDiary.keywordListAjax();
-                                } else {
-                                    dF.JrnlDay.yyMnthListAjax();
-                                    dF.JrnlDiaryTag.listAjax();     // 태그 refresh
-                                }
-                            }
-                            // TODO: 결산 페이지에서 처리시도 처리해 줘야 한다.
-                            cF.ui.unblockUI();
-
-                            /* modal history pop */
-                            ModalHistory.reset();
+                    dF.JrnlDay.refresh();
+                            dF.JrnlDiaryTag.listAjax();     // 태그 refresh
                         });
                 }, "block");
             });
@@ -179,9 +164,8 @@ dF.JrnlDiary = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = Url.JRNL_DIARY_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "postNo" : postNo };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DIARY, { postNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
@@ -212,16 +196,15 @@ dF.JrnlDiary = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = Url.JRNL_DIARY_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "postNo" : postNo };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DIARY, { postNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
                 const { rsltObj } = res;
-                const url: string = Url.JRNL_DAY_DTL_AJAX;
-                cF.ajax.get(url, { "postNo": rsltObj.jrnlDayNo }, function(res: AjaxResponse): void {
+                const url: string = cF.util.bindUrl(Url.JRNL_DAY, { postNo: rsltObj.jrnlDayNo });
+                cF.ajax.get(url, null, function(res: AjaxResponse): void {
                     if (!res.rslt) return;
                     const entryList = res.rsltObj.entryList;
                     const obj: Record<string, any> = { ...rsltObj, entryList: entryList };
@@ -247,78 +230,158 @@ dF.JrnlDiary = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = Url.JRNL_DIARY_DEL_AJAX;
-                const ajaxData: Record<string, any> = { "postNo": postNo };
-                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                const url: string = cF.util.bindUrl(Url.JRNL_DIARY, { postNo });
+                cF.$ajax.delete(url, null, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            const isCalendar: boolean = Page?.calendar != null;
-                            if (isCalendar) {
-                                Page.refreshEventList();
-                                dF.JrnlDiaryTag.listAjax();     // 태그 refresh
-                            } else {
-                                if (dF.JrnlDiary.inKeywordSearchMode) {
-                                    dF.JrnlDiary.keywordListAjax();
-                                } else {
-                                    dF.JrnlDay.yyMnthListAjax();
-                                    dF.JrnlDiaryTag.listAjax();     // 태그 refresh
-                                }
-                            }
-
-                            /* modal history pop */
-                            ModalHistory.reset();
+                            dF.JrnlDay.refresh();
+                            dF.JrnlDiaryTag.listAjax();     // 태그 refresh
                         });
                 }, "block");
             });
         },
 
         /**
+         * 상태 변경 처리. (Ajax)
+         * @param {string|number} postNo - 글 번호.
+         * @param {object} payload
+         * @param {Function} [callback]
+         */
+        patchAjax: function(postNo: string|number, payload: object, callback: Function): void {
+            if (isNaN(Number(postNo))) return;
+
+            const url: string = cF.util.bindUrl(Url.JRNL_DIARY, { postNo });
+            cF.$ajax.patch(url, payload, function(res: AjaxResponse): void {
+                if (!res.rslt) return;
+
+                if (!callback || typeof callback != "function") return;
+
+                callback(res);
+            }, "block");
+        },
+
+        /**
+         * 정리완료 처리. (Ajax)
+         * @param {string|number} postNo - 글 번호.
+         */
+        resolveAjax: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            const item: HTMLElement = document.querySelector(`.jrnl-diary-item[data-id='${postNo}']`);
+            if (!item) return;
+
+            const current: string = (item.dataset.resolved || "N").toUpperCase();
+            const next = current === "Y" ? "N" : "Y";
+            const nextBoolean = current !== "Y"
+
+            const payload: Record<string, any> = { resolved: nextBoolean, collapsed: nextBoolean };
+            dF.JrnlDiary.patchAjax(postNo, payload, function() {
+                item.dataset.resolved = next;
+                item.dataset.collapsed = next;
+
+                const content: HTMLElement = item.querySelector(".cn");
+                if (content) {
+                    content.classList.toggle("collapsed", next === "Y");
+                }
+                const chk: HTMLInputElement = item.querySelector(".diary-context-collapse-check");
+                if (chk) chk.checked = (next === "Y");
+            });
+        },
+
+        /**
+         * 글 접기/펼치기 토글. (Ajax)
+         * @param {string|number} postNo - 글 번호.
+         */
+        collapseAjax: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            const item: HTMLElement = document.querySelector(`.jrnl-diary-item[data-id='${postNo}']`);
+            if (!item) return;
+
+            const current: string = (item.dataset.collapsed || "N").toUpperCase();
+            const next = current === "Y" ? "N" : "Y";
+            const nextBoolean = current !== "Y"
+
+            const payload: Record<string, any> = { collapsed: nextBoolean };
+            dF.JrnlDiary.patchAjax(postNo, payload, function() {
+                item.dataset.collapsed = next;
+
+                const content: HTMLElement = item.querySelector(".cn");
+                if (content) {
+                    content.classList.toggle("collapsed", next === "Y");
+                }
+                const chk: HTMLInputElement = item.querySelector(".diary-context-collapse-check");
+                if (chk) chk.checked = (next === "Y");
+            });
+        },
+
+        /**
+         * 중요여부 토글. (Ajax)
+         * @param {string|number} postNo - 글 번호.
+         */
+        imprtcAjax: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            const item: HTMLElement = document.querySelector(`.jrnl-diary-item[data-id='${postNo}']`);
+            if (!item) return;
+
+            const current: string = (item.dataset.imprtc || "N").toUpperCase();
+            const next = current === "Y" ? "N" : "Y";
+            const nextBoolean = next === "Y"
+
+            const payload: Record<string, any> = { imprtc: nextBoolean };
+            dF.JrnlDiary.patchAjax(postNo, payload, function() {
+                item.dataset.imprtc = next;
+
+                const cn = item.querySelector("div.jrnl-diary-cn");
+                if (!cn) return console.warn("cn not found.");
+                const titleWrap: HTMLElement = cn.querySelector("div.title-wrap");
+                if (!titleWrap) return console.warn("titleWrap not found.");
+                const existing = titleWrap.querySelector(".ctgr-imprtc");
+                if (nextBoolean) {
+                    if (existing) return;
+
+                    const imprtcWrap: HTMLDivElement = document.createElement("div");
+                    imprtcWrap.className = "ctgr-span ctgr-imprtc w-60px d-flex-center";
+                    imprtcWrap.innerText = "!중요";
+                    // 첫 번째 요소로 삽입
+                    titleWrap.prepend(imprtcWrap);
+                    cn.classList.add("bg-secondary");
+                } else {
+                    if (existing) existing.remove();
+                    cn.classList.remove("bg-secondary");
+                }
+            });
+        },
+
+        /**
          * toggle
          * @param {string|number} postNo - 글 번호.
+         * @deprecated
          */
         toggle: function(postNo: string|number): void {
             if (isNaN(Number(postNo))) return;
 
             const id: string = String(postNo);
-            const item: HTMLElement = document.querySelector(`.jrnl-diary-cn[data-id='${id}']`);
+            const item: HTMLElement = document.querySelector(`.jrnl-diary-item[data-id='${id}']`);
             if (!item) return console.log("item not found.");
 
             const content: HTMLElement = item.querySelector(".jrnl-diary-cn .cn");
             if (!content) return console.log("content not found.");
 
-            const icon: HTMLElement = item.querySelector(`#toggle-icon-${id}`);
-            const collapsedIds = new Set(JSON.parse(localStorage.getItem(dF.JrnlDiary.STORAGE_KEY) || "[]"));
+            const icon: HTMLElement = item.querySelector('#diary-toggle-icon');
+            if (!icon) console.log("icon not found.");
 
             const isCollapsed: boolean = content.classList.contains("collapsed");
             if (isCollapsed) {
                 content.classList.remove("collapsed");
                 icon?.classList.replace("bi-chevron-down", "bi-chevron-up");
-                collapsedIds.delete(id);
             } else {
                 content.classList.add("collapsed");
                 icon?.classList.replace("bi-chevron-up", "bi-chevron-down");
-                collapsedIds.add(id);
             }
-
-            localStorage.setItem(dF.JrnlDiary.STORAGE_KEY, JSON.stringify(Array.from(collapsedIds)));
-        },
-
-        /**
-         * 접힌 일기 초기화
-         */
-        initCollapseState: function(): void {
-            const collapsedIds = new Set(JSON.parse(localStorage.getItem(dF.JrnlDiary.STORAGE_KEY) || "[]"));
-            document.querySelectorAll(".jrnl-diary-item .jrnl-diary-cn").forEach((item: HTMLElement): void => {
-                const id: string = item.dataset.id;
-                const content: HTMLElement = item.querySelector(".cn");
-                const icon: HTMLElement = item.querySelector(`#toggle-icon-${id}`);
-                if (id && collapsedIds.has(id)) {
-                    content?.classList.add("collapsed");
-                    icon?.classList.replace("bi-chevron-up", "bi-chevron-down");
-                }
-            });
         }
     }
 })();

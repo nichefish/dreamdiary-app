@@ -13,12 +13,6 @@ public interface AdapterUrl {
     String JANDI_CONNECT_WH = "https://wh.jandi.com/connect-api/webhook";
 
     /**
-     * (API) 저널 일자
-     */
-    String API_JRNL_DAY_LIST_AJAX = Prefix.API_JRNL_DAY + "/jrnl-day-list-ajax.do";
-    String API_JRNL_DAY_DTL_AJAX = Prefix.API_JRNL_DAY + "/jrnl-day-dtl-ajax.do";
-
-    /**
      * (API) 한국천문연구원 : 특일 정보 조회
      */
     String API_HLDY_GET = Prefix.API_HLDY + "/get-hldy-info.do";
@@ -35,7 +29,7 @@ public interface AdapterUrl {
     /**
      * (API) SNMP : 메세지 발신
      */
-    String URL_API_SNMP_SEND_AJAX = "/snmp-dend-ajax.do";
+    String URL_API_SNMP_SEND_AJAX = "/snmp-dend";
 
     /**
      * PREFIX 정보

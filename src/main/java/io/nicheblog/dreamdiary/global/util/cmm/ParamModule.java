@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -144,7 +144,7 @@ class ParamModule {
      * @return {@link BaseSearchParam} -- 변환된 BaseSearchParam 객체
      */
     public static BaseSearchParam convertToParam(final Map<String, Object> searchParamMap) throws Exception {
-        if (CollectionUtils.isEmpty(searchParamMap)) return new BaseSearchParam();
+        if (MapUtils.isEmpty(searchParamMap)) return new BaseSearchParam();
         final ObjectMapper mapper = new ObjectMapper();
         return mapper.convertValue(searchParamMap, BaseSearchParam.class);
     }

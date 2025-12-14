@@ -21,7 +21,7 @@
         });
     </script>
     <div class="form-check form-switch form-check-custom form-check-solid">
-        <input type="checkbox" name="${checkboxNm}" id="${checkboxNm}" class="form-check-input ms-3"
+        <input type="checkbox" name="${checkboxNm}" id="${checkboxNm}" class="form-check-input cursor-pointer ms-3"
                value="Y" />
         <label class="form-check-label fw-bold ms-3" for="${checkboxNm}" id="${checkboxNm}Label">
             <!-- Color and Label procs by javascropt -->

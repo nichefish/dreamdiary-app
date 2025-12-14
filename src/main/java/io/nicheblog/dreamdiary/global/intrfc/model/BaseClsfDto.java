@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.global.intrfc.model;
 
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
+import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -36,8 +37,7 @@ public class BaseClsfDto
 
     /** (수정시) 조치일자 변경하지 않음 여부 (Y/N) */
     @Builder.Default
-    @Size(min = 1, max = 1)
-    @Pattern(regexp = "^[YN]$")
+    @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
     protected String managtDtUpdtYn = "N";
 
     /** 새 글 여부 */

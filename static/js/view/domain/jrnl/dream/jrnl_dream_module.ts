@@ -50,13 +50,11 @@ dF.JrnlDream = (function(): dfModule {
                 $("#elseDreamerNm").valid();
             });
             // checkbox init
-            cF.ui.chckboxLabel("imprtcYn", "중요//해당없음", "red//gray");
-            // checkbox init
-            cF.ui.chckboxLabel("nhtmrYn", "악몽//해당없음", "red//gray");
-            // checkbox init
-            cF.ui.chckboxLabel("hallucYn", "입면환각//해당없음", "blue//gray");
-            // checkbox init
-            cF.ui.chckboxLabel("elseDreamYn", "해당//미해당", "blue//gray", function(): void {
+            cF.ui.chckboxLabel("#jrnlDreamRegForm #resolvedYn", "정리완료//정리중", "green//gray");
+            cF.ui.chckboxLabel("#jrnlDreamRegForm #imprtcYn", "중요//해당없음", "red//gray");
+            cF.ui.chckboxLabel("#jrnlDreamRegForm #nhtmrYn", "악몽//해당없음", "red//gray");
+            cF.ui.chckboxLabel("#jrnlDreamRegForm #hallucYn", "입면환각//해당없음", "blue//gray");
+            cF.ui.chckboxLabel("#jrnlDreamRegForm #elseDreamYn", "해당//미해당", "blue//gray", function(): void {
                 $("#elseDreamerNmDiv").removeClass("d-none");
             }, function(): void {
                 $("#elseDreamerNmDiv").addClass("d-none");
@@ -72,11 +70,11 @@ dF.JrnlDream = (function(): dfModule {
          * 목록 조회 (Ajax)
          */
         keywordListAjax: function(): void {
-            const keyword: string = $("#jrnl_aside #dreamKeyword").val() as string;
+            const keyword: string = (document.querySelector("#jrnl_aside #dreamKeyword") as HTMLInputElement)?.value;
             if (cF.util.isEmpty(keyword)) return;
 
-            const url: string = Url.JRNL_DREAM_LIST_AJAX;
-            const ajaxData = { "dreamKeyword": $("#jrnl_aside #dreamKeyword").val() };
+            const url: string = Url.JRNL_DREAMS;
+            const ajaxData: Record<string, any> = { "dreamKeyword": keyword };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -96,7 +94,7 @@ dF.JrnlDream = (function(): dfModule {
                 cF.handlebars.template(res.rsltList, "jrnl_dream_list");
                 dF.JrnlDream.inKeywordSearchMode = true;
                 // 버튼 추가
-                $("#jrnl_aside #jrnl_diary_reset_btn").remove();
+                $("#jrnl_aside #jrnl_dream_reset_btn").remove();
                 const resetBtn = $(`<button type="button" id="jrnl_dream_reset_btn" class="btn btn-sm btn-outline btn-light-danger px-4" 
                                           onclick="dF.JrnlDream.resetKeyword();" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                                           aria-label="꿈 키워드 검색을 리셋합니다." 
@@ -118,14 +116,15 @@ dF.JrnlDream = (function(): dfModule {
 
         /**
          * 등록 모달 호출
-         * @param {string|number} jrnlDayNo - 저널 일자 번호.
-         * @param {string} stdrdDt - 기준 날짜.
-         * @param {string} jrnlDtWeekDay - 기준 날짜 요일.
+         * @param {Object} param - 파라미터 객체
+         * @param {string|number} param.jrnlDayNo - 저널 일자 번호.
+         * @param {string} param.stdrdDt - 기준 날짜.
+         * @param {string} param.jrnlDtWeekDay - 기준 날짜 요일.
          */
-        regModal: function(jrnlDayNo: string|number, stdrdDt: string, jrnlDtWeekDay: string): void {
+        regModal: function({ jrnlDayNo, stdrdDt, jrnlDtWeekDay }: { jrnlDayNo: string | number; stdrdDt: string; jrnlDtWeekDay: string; }): void {
             if (isNaN(Number(jrnlDayNo))) return;
 
-            const obj = { jrnlDayNo: jrnlDayNo, stdrdDt: stdrdDt, jrnlDtWeekDay: jrnlDtWeekDay };
+            const obj: Record<string, any> = { jrnlDayNo: jrnlDayNo, stdrdDt: stdrdDt, jrnlDtWeekDay: jrnlDtWeekDay };
             /* initialize form. */
             dF.JrnlDream.initForm(obj);
         },
@@ -143,38 +142,23 @@ dF.JrnlDream = (function(): dfModule {
          */
         regAjax: function(): void {
             const postNoElmt: HTMLInputElement = document.querySelector("#jrnlDreamRegForm [name='postNo']");
-            const isReg: boolean = postNoElmt?.value === "";
+            const postNo: string = postNoElmt?.value;
+            const isMdf: boolean = !!postNo;
             Swal.fire({
-                text: Message.get(isReg ? "view.cnfm.reg" : "view.cnfm.mdf"),
+                text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = isReg ? Url.JRNL_DREAM_REG_AJAX : Url.JRNL_DREAM_MDF_AJAX;
+                const url: string = isMdf ? cF.util.bindUrl(Url.JRNL_DREAM, { postNo }) : Url.JRNL_DREAMS;
                 const ajaxData: FormData = new FormData(document.getElementById("jrnlDreamRegForm") as HTMLFormElement);
                 cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            const isCalendar: boolean = Page?.calendar != null;
-                            if (isCalendar) {
-                                Page.refreshEventList();
-                                dF.JrnlDreamTag.listAjax();     // 태그 refresh
-                            } else {
-                                if (dF.JrnlDream.inKeywordSearchMode) {
-                                    dF.JrnlDream.keywordListAjax();
-                                } else {
-                                    dF.JrnlDay.yyMnthListAjax();
-                                    dF.JrnlDreamTag.listAjax();         // 태그 refresh
-                                }
-                            }
-
-                            // TODO: 결산 페이지에서 처리시도 처리해 줘야 한다.
-                            cF.ui.unblockUI();
-
-                            /* modal history pop */
-                            ModalHistory.reset();
+                    dF.JrnlDay.refresh();
+                            dF.JrnlDreamTag.listAjax();     // 태그 refresh
                         });
                 }, "block");
             });
@@ -197,9 +181,8 @@ dF.JrnlDream = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = Url.JRNL_DREAM_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "postNo" : postNo };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DREAM, { postNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
@@ -230,9 +213,8 @@ dF.JrnlDream = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = Url.JRNL_DREAM_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "postNo" : postNo };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DREAM, { postNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
@@ -243,6 +225,105 @@ dF.JrnlDream = (function(): dfModule {
 
                 /* modal history push */
                 ModalHistory.push(self, func, args);
+            });
+        },
+
+        /**
+         * 상태 변경 처리. (Ajax)
+         * @param {string|number} postNo - 글 번호.
+         * @param {object} payload
+         * @param {Function} [callback]
+         */
+        patchAjax: function(postNo: string|number, payload: object, callback: Function): void {
+            if (isNaN(Number(postNo))) return;
+
+            const url: string = cF.util.bindUrl(Url.JRNL_DREAM, { postNo });
+            cF.$ajax.patch(url, payload, function(res: AjaxResponse): void {
+                if (!res.rslt) return;
+
+                if (!callback || typeof callback != "function") return;
+
+                callback(res);
+            }, "block");
+        },
+
+        /**
+         * 정리완료 처리. (Ajax)
+         * @param {string|number} postNo - 글 번호.
+         */
+        resolveAjax: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            const item: HTMLElement = document.querySelector(`.jrnl-dream-item[data-id='${postNo}']`);
+            if (!item) return;
+
+            const current: string = (item.dataset.resolved || "N").toUpperCase();
+            const next = current === "Y" ? "N" : "Y";
+            const nextBoolean = current !== "Y"
+
+            const payload: Record<string, any> = { resolved: nextBoolean, collapsed: nextBoolean };
+            dF.JrnlDream.patchAjax(postNo, payload, function() {
+                item.dataset.resolved = next;
+                item.dataset.collapsed = next;
+
+                const content: HTMLElement = item.querySelector(".cn");
+                if (content) {
+                    content.classList.toggle("collapsed", next === "Y");
+                }
+                const chk: HTMLInputElement = item.querySelector(".dream-context-collapse-check");
+                if (chk) chk.checked = (next === "Y");
+            });
+        },
+
+        /**
+         * 글 접기/펼치기 토글. (Ajax)
+         * @param {string|number} postNo - 글 번호.
+         */
+        collapseAjax: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            const item: HTMLElement = document.querySelector(`.jrnl-dream-item[data-id='${postNo}']`);
+            if (!item) return;
+
+            const current: string = (item.dataset.collapsed || "N").toUpperCase();
+            const next = current === "Y" ? "N" : "Y";
+            const nextBoolean = current !== "Y"
+
+            const payload: Record<string, any> = { collapsed: nextBoolean };
+            dF.JrnlDream.patchAjax(postNo, payload, function() {
+                item.dataset.collapsed = next;
+
+                const content: HTMLElement = item.querySelector(".cn");
+                if (content) {
+                    content.classList.toggle("collapsed", next === "Y");
+                }
+                const chk: HTMLInputElement = item.querySelector(".dream-context-collapse-check");
+                if (chk) chk.checked = (next === "Y");
+            });
+        },
+
+        /**
+         * 중요여부 토글. (Ajax)
+         * @param {string|number} postNo - 글 번호.
+         */
+        imprtcAjax: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            const item: HTMLElement = document.querySelector(`.jrnl-dream-item[data-id='${postNo}']`);
+            if (!item) return;
+
+            const current: string = (item.dataset.imprtc || "N").toUpperCase();
+            const next = current === "Y" ? "N" : "Y";
+            const nextBoolean = current !== "Y"
+
+            const payload: Record<string, any> = { imprtc: nextBoolean };
+            dF.JrnlDream.patchAjax(postNo, payload, function() {
+                item.dataset.imprtc = next;
+
+                const content: HTMLElement = item.querySelector(".cn");
+                if (content) {
+                    content.classList.toggle("collapsed", next === "Y");
+                }
             });
         },
 
@@ -259,31 +340,43 @@ dF.JrnlDream = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = Url.JRNL_DREAM_DEL_AJAX;
-                const ajaxData: Record<string, any> = { "postNo": postNo };
-                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                const url: string = cF.util.bindUrl(Url.JRNL_DREAM, { postNo });
+                cF.$ajax.delete(url, null, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            const isCalendar: boolean = Page?.calendar != null;
-                            if (isCalendar) {
-                                Page.refreshEventList();
-                                dF.JrnlDreamTag.listAjax();     // 태그 refresh
-                            } else {
-                                if (dF.JrnlDream.inKeywordSearchMode) {
-                                    dF.JrnlDream.keywordListAjax();
-                                } else {
-                                    dF.JrnlDay.yyMnthListAjax();
-                                    dF.JrnlDreamTag.listAjax();     // 태그 refresh
-                                }
-                            }
-
-                            /* modal history pop */
-                            ModalHistory.reset();
+                            dF.JrnlDay.refresh();
                         });
                 }, "block");
             });
+        },
+
+        /**
+         * @param {string|number} postNo - 글 번호.
+         * @param {'Y'|'N'} collapsedYn - 글접기 여부.
+         */
+        collapse: function(postNo: string|number, collapsedYn: 'Y'|'N'): void {
+            if (isNaN(Number(postNo))) return;
+
+            const url: string = Url.JRNL_DREAM_SET_COLLAPSE_AJAX;
+            const ajaxData: Record<string, any> = { postNo, collapsedYn };
+            cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                if (!res.rslt) return;
+
+                // 찾아서 해당 그것만 collapse 추가 제거.
+                const item: HTMLElement = document.querySelector(`.jrnl-dream-cn[data-id='${postNo}']`);
+                if (!item) return console.log("item not found.");
+
+                const content: HTMLElement = item.querySelector(".cn");
+                if (!content) return console.log("content not found.");
+
+                if (collapsedYn === "Y") {
+                    content.classList.add("collapsed");
+                } else {
+                    content.classList.remove("collapsed");
+                }
+            }, "block");
         },
 
         /**
@@ -294,13 +387,14 @@ dF.JrnlDream = (function(): dfModule {
             if (isNaN(Number(postNo))) return;
 
             const id: string = String(postNo);
-            const item: HTMLElement = document.querySelector(`.jrnl-diary-cn[data-id='${id}']`);
+            const item: HTMLElement = document.querySelector(`.jrnl-dream-cn[data-id='${id}']`);
             if (!item) return console.log("item not found.");
 
-            const content: HTMLElement = item.querySelector(".jrnl-diary-cn .cn");
+            const content: HTMLElement = item.querySelector(".jrnl-dream-cn .cn");
             if (!content) return console.log("content not found.");
 
-            const icon: HTMLElement = item.querySelector(`#toggle-icon-${id}`);
+            const icon: HTMLElement = document.querySelector(`#dream-toggle-icon-${id}`);
+            if (!icon) console.log("icon not found.");
             const collapsedIds = new Set(JSON.parse(localStorage.getItem(dF.JrnlDream.STORAGE_KEY) || "[]"));
 
             const isCollapsed: boolean = content.classList.contains("collapsed");
@@ -322,10 +416,11 @@ dF.JrnlDream = (function(): dfModule {
          */
         initCollapseState: function(): void {
             const collapsedIds = new Set(JSON.parse(localStorage.getItem(dF.JrnlDream.STORAGE_KEY) || "[]"));
-            document.querySelectorAll(".jrnl-diary-item .jrnl-dream-cn").forEach((item: HTMLElement): void => {
+            document.querySelectorAll(".jrnl-dream-item .jrnl-dream-cn").forEach((item: HTMLElement): void => {
                 const id: string = item.dataset.id;
                 const content: HTMLElement = item.querySelector(".cn");
-                const icon: HTMLElement = item.querySelector(`#toggle-icon-${id}`);
+                const icon: HTMLElement = document.querySelector(`#dream-toggle-icon-${id}`);
+                if (!icon) console.log("icon not found.");
                 if (id && collapsedIds.has(id)) {
                     content?.classList.add("collapsed");
                     icon?.classList.replace("bi-chevron-up", "bi-chevron-down");

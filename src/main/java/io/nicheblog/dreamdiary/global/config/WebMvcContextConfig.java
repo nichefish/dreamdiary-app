@@ -116,9 +116,7 @@ public class WebMvcContextConfig
                 /* API 경로의 경우 처리하지 않음 */
                 .excludePathPatterns("/api/**")
                 /* 파일 다운로드의 경우 처리하지 않음 */
-                .excludePathPatterns("/**/*-download.do")
-                /* ajax 호출의 경우 처리하지 않음 */
-                .excludePathPatterns("/**/*-ajax.do");
+                .excludePathPatterns("/**/*-download.do");
 
         // 쿠키 관련 인터셉터 수동 추가
         registry.addInterceptor(cookieInterceptor)

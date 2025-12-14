@@ -39,7 +39,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Log4j2
 public class JrnlSumryService
-        implements BaseMultiCrudService<JrnlSumryDto.DTL, JrnlSumryDto.LIST, Integer, JrnlSumryEntity, JrnlSumryRepository, JrnlSumrySpec, JrnlSumryMapstruct> {
+        implements BaseMultiCrudService<JrnlSumryDto, JrnlSumryDto, Integer, JrnlSumryEntity> {
 
     @Getter
     private final JrnlSumryRepository repository;
@@ -47,6 +47,13 @@ public class JrnlSumryService
     private final JrnlSumrySpec spec;
     @Getter
     private final JrnlSumryMapstruct mapstruct = JrnlSumryMapstruct.INSTANCE;
+
+    public JrnlSumryMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public JrnlSumryMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     private final ApplicationEventPublisherWrapper publisher;
 
@@ -61,10 +68,10 @@ public class JrnlSumryService
      * 저널 결산 정뵤 목록 조회 :: 캐시 사용 위해 구현체로 pullUp
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @return {@link List<JrnlSumryDto.LIST>} -- 검색 조건에 맞는 결산 목록 Dto 리스트
+     * @return {@link List<JrnlSumryDto>} -- 검색 조건에 맞는 결산 목록 Dto 리스트
      */
     @Cacheable(value="myJrnlSumryList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId()")
-    public List<JrnlSumryDto.LIST> getMyListDto(final BaseSearchParam searchParam) throws Exception {
+    public List<JrnlSumryDto> getMyListDto(final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
 
         return this.getSelf().getListDto(searchParam);
@@ -149,7 +156,7 @@ public class JrnlSumryService
      * @param updatedDto - 등록된 객체
      */
     @Override
-    public void postModify(final JrnlSumryDto.DTL updatedDto) throws Exception {
+    public void postModify(final JrnlSumryDto postDto, final JrnlSumryDto updatedDto) throws Exception {
         // 태그 처리
         // TODO: AOP로 분리
         publisher.publishEvent(new TagProcEvent(this, updatedDto.getClsfKey(), updatedDto.tag));
@@ -159,10 +166,10 @@ public class JrnlSumryService
      * 저널 결산 상세 정보 조회 (캐시 처리)
      *
      * @param key 식별자
-     * @return {@link JrnlSumryDto.DTL} -- 조회된 결산 정보가 담긴 Dto 객체
+     * @return {@link JrnlSumryDto} -- 조회된 결산 정보가 담긴 Dto 객체
      */
     @Cacheable(value="myJrnlSumryDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #key")
-    public JrnlSumryDto.DTL getSumryDtl(final Integer key) throws Exception {
+    public JrnlSumryDto getSumryDtl(final Integer key) throws Exception {
         return this.getSelf().getDtlDto(key);
     }
 

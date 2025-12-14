@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * LogActvtyService
@@ -25,7 +26,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Log4j2
 public class LogActvtyService
-        implements BaseReadonlyService<LogActvtyDto.DTL, LogActvtyDto.LIST, Integer, LogActvtyEntity, LogActvtyRepository, LogActvtySpec, LogActvtyMapstruct> {
+        implements BaseReadonlyService<LogActvtyDto, Integer, LogActvtyEntity> {
 
     @Getter
     private final LogActvtyRepository repository;
@@ -34,34 +35,51 @@ public class LogActvtyService
     @Getter
     private final LogActvtyMapstruct mapstruct = LogActvtyMapstruct.INSTANCE;
 
+    public LogActvtyMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public LogActvtyMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
+
     private final ActiveProfile activeProfile;
+
+    /**
+     * 단일 항목 조회 (dto level)
+     *
+     * @param key 조회할 엔티티의 키
+     * @return {@link LogActvtyDto} -- 조회 항목 반환
+     */
+    @Transactional(readOnly = true)
+    public LogActvtyDto getDtlDto(final Integer key) throws Exception {
+        final LogActvtyEntity retrievedEntity = this.getDtlEntity(key);
+
+        return mapstruct.toDto(retrievedEntity);
+    }
 
     /**
      * 로그인 상태에서 활동 로그 등록
      *
      * @param logParam 활동 로그 파라미터
-     * @return {@link Boolean} -- 로그 등록 성공 여부
      */
-    public Boolean regLogActvty(final LogActvtyParam logParam) throws Exception {
+    public void regLogActvty(final LogActvtyParam logParam) throws Exception {
         // 로컬 또는 개발 접속은 활동 로그 남기지 않음
-        if (!activeProfile.isProd()) return true;
+        // if (!activeProfile.isProd()) return true;
 
         final LogActvtyEntity logActvty = mapstruct.paramToEntity(logParam);
         log.info("isSuccess: {}, rsltMsg: {}", logParam.getRslt(), logParam.getRsltMsg());
         final LogActvtyEntity rslt = repository.save(logActvty);
 
-        return rslt.getLogActvtyNo() != null;
     }
 
     /**
      * 비로그인 상태에서 활동 로그 등록
      *
      * @param logParam 활동 로그 파라미터
-     * @return {@link Boolean} -- 로그 등록 성공 여부
      */
-    public Boolean regLogAnonActvty(final LogActvtyParam logParam) throws Exception {
+    public void regLogAnonActvty(final LogActvtyParam logParam) throws Exception {
         // 로컬 또는 개발 접속은 활동 로그 남기지 않음
-        if (!activeProfile.isProd()) return true;
+        if (!activeProfile.isProd()) return;
 
         final LogActvtyEntity logActvty = mapstruct.paramToEntity(logParam);
         logActvty.setUserId(logParam.getUserId());
@@ -70,6 +88,5 @@ public class LogActvtyService
         final LogActvtyEntity rslt = repository.save(logActvty);
 
         log.info("isSuccess: {}, rsltMsg: {}", logParam.getRslt(), logParam.getRsltMsg());
-        return rslt.getLogActvtyNo() != null;
     }
 }

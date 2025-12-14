@@ -80,11 +80,11 @@ public class NoticePageController
         // 상세/수정 화면에서 목록 화면 복귀시 :: 세션에 목록 검색 인자 저장해둔 거 있는지 체크
         searchParam = (NoticeSearchParam) CmmUtils.Param.checkPrevSearchParam(baseUrl, searchParam);
         // 상단 고정 목록 조회
-        model.addAttribute("noticeFxdList", noticeService.getFxdList());
+        // model.addAttribute("noticeFxdList", noticeService.getFxdList());
         // 페이징 정보 생성:: 공백시 pageSize=10, pageNo=1
         final PageRequest pageRequest = CmmUtils.Param.getPageRequest(searchParam, "managt.managtDt", model);
         // 목록 조회 및 모델에 추가
-        final Page<NoticeDto.LIST> noticeList = noticeService.getPageDto(searchParam, pageRequest);
+        final Page<NoticeDto> noticeList = noticeService.getPageDto(searchParam, pageRequest);
         model.addAttribute("noticeList", noticeList.getContent());
         model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(noticeList));
         // 컨텐츠 타입에 맞는 태그 목록 조회

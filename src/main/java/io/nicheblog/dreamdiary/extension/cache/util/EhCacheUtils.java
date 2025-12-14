@@ -151,6 +151,32 @@ public class EhCacheUtils {
     }
 
     /**
+     * 캐시 엔트리를 갱신(put)한다.
+     *
+     * <p>
+     * 주어진 캐시 영역(cacheNm)에서 cacheKey에 해당하는 값을 value로 갱신한다.
+     * 캐시가 존재하지 않을 경우 아무 작업도 수행하지 않는다.
+     * Spring Cache 추상화를 사용하므로 동일 key가 존재하면 overwrite된다.
+     * </p>
+     *
+     * <p><b>주의:</b> value가 mutable 객체(Map, List 등)일 경우,
+     * 캐시에서 반환한 객체를 수정하면 별도의 put 없이도 값이 변경될 수 있다.
+     * 일관성을 위해 상태 변경 후 반드시 이 메서드를 통해 저장하는 것을 권장한다.
+     * </p>
+     *
+     * @param cacheNm  갱신할 캐시 영역의 이름
+     * @param cacheKey 캐시 엔트리를 식별하는 key
+     * @param value    캐시에 저장할 객체
+     */
+    public static void put(final String cacheNm, final String cacheKey, final Object value) {
+        final Cache cache = cacheManager.getCache(cacheNm);
+        if (cache == null) return;
+
+        // 업데이트된 정보를 다시 캐시에 저장
+        cache.put(cacheKey, value);
+    }
+
+    /**
      * 캐시 이름의 특정 키 evict
      *
      * @param cacheParam 캐시 이름과 키 정보를 포함한 객체
@@ -167,7 +193,10 @@ public class EhCacheUtils {
      */
     public static void evictCache(final String cacheName, final Object cacheKey) {
         final Cache cache = cacheManager.getCache(cacheName);
-        if (cache == null) return;
+        if (cache == null || cacheKey == null) {
+            log.debug("cache name {} does not exists.", cacheName);
+            return;
+        }
 
         cache.evict(cacheKey);
         log.debug("cache name {} (key: {}) evicted.", cacheName, cacheKey);
@@ -206,11 +235,18 @@ public class EhCacheUtils {
 
     /**
      * 캐시 이름으로 해당 캐시 evict
+     *
+     * @param cacheParam CacheParam
      */
     public static void evictCacheAll(final CacheParam cacheParam) {
         evictCacheAll(cacheParam.getCacheName());
     }
 
+    /**
+     * 캐시 이름으로 해당 캐시 evict
+     *
+     * @param cacheName 캐시의 이름
+     */
     public static void evictCacheAll(final String cacheName) {
         final Cache cache = cacheManager.getCache(cacheName);
         if (cache == null) return;
@@ -221,6 +257,8 @@ public class EhCacheUtils {
 
     /**
      * 캐시 이름으로 해당 캐시 evict
+     *
+     * @param cacheName String
      */
     public static void evictMyCacheAll(final String cacheName) {
         // TODO:

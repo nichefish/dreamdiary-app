@@ -2,7 +2,8 @@ package io.nicheblog.dreamdiary.extension.clsf.tag.mapstruct;
 
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.ContentTagEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.ContentTagDto;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseCrudMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
@@ -17,7 +18,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, TagMapstruct.class})
 public interface ContentTagMapstruct
-        extends BaseCrudMapstruct<ContentTagDto, ContentTagDto, ContentTagEntity> {
+        extends BaseReadMapstruct<ContentTagDto, ContentTagEntity>, BaseWriteMapstruct<ContentTagDto, ContentTagEntity> {
 
     ContentTagMapstruct INSTANCE = Mappers.getMapper(ContentTagMapstruct.class);
 
@@ -33,19 +34,6 @@ public interface ContentTagMapstruct
     @Mapping(target = "tagNm", expression = "java(entity.getTag().getTagNm())")
     @Mapping(target = "ctgr", expression = "java(entity.getTag().getCtgr())")
     ContentTagDto toDto(final ContentTagEntity entity) throws Exception;
-
-    /**
-     * Entity -> ListDto 변환
-     *
-     * @param entity 변환할 Entity 객체
-     * @return ListDto -- 변환된 ListDto 객체
-     */
-    @Override
-    @Named("toListDto")
-    @Mapping(target = "tag", expression = "java(TagMapstruct.INSTANCE.toDto(entity.getTag()))")
-    @Mapping(target = "tagNm", expression = "java(entity.getTag().getTagNm())")
-    @Mapping(target = "ctgr", expression = "java(entity.getTag().getCtgr())")
-    ContentTagDto toListDto(final ContentTagEntity entity) throws Exception;
 
     /**
      * Dto -> Entity 변환

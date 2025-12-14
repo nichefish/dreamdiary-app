@@ -7,13 +7,13 @@ import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.BasePostDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
+import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.CollectionUtils;
 
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,8 +59,7 @@ public class SchdulDto
 
     /** 개인일정 여부 (Y/N) */
     @Builder.Default
-    @Size(min = 1, max = 1)
-    @Pattern(regexp = "^[YN]$")
+    @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
     private String prvtYn = "N";
 
     /** 참석자 리스트  */

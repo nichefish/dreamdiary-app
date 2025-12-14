@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.service.strategy.JrnlDayCacheEvic
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.strategy.JrnlDiaryCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.service.strategy.JrnlDreamCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.service.strategy.JrnlEntryCacheEvictor;
+import io.nicheblog.dreamdiary.domain.jrnl.intrpt.service.strategy.JrnlIntrptCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.service.strategy.JrnlSumryCacheEvictor;
 import io.nicheblog.dreamdiary.domain.jrnl.todo.service.strategy.JrnlTodoCacheEvictor;
 import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
@@ -36,20 +37,22 @@ public class JrnlCacheEvictWorker {
     private final JrnlEntryCacheEvictor jrnlEntryCacheEvictor;
     private final JrnlDiaryCacheEvictor jrnlDiaryCacheEvictor;
     private final JrnlDreamCacheEvictor jrnlDreamCacheEvictor;
+    private final JrnlIntrptCacheEvictor jrnlIntrptCacheEvictor;
     private final JrnlTodoCacheEvictor jrnlTodoCacheEvictor;
     private final JrnlSumryCacheEvictor jrnlSumryCacheEvictor;
 
     // CacheEvictor를 매핑하는 Map
-    private final Map<String, CacheEvictor<JrnlCacheEvictEvent>> evictorMap = new HashMap<>();
+    private final Map<ContentType, CacheEvictor<JrnlCacheEvictEvent>> evictorMap = new HashMap<>();
 
     @PostConstruct
     private void initEvictorMap() {
-        evictorMap.put(ContentType.JRNL_DAY.key, jrnlDayCacheEvictor);
-        evictorMap.put(ContentType.JRNL_ENTRY.key, jrnlEntryCacheEvictor);
-        evictorMap.put(ContentType.JRNL_DIARY.key, jrnlDiaryCacheEvictor);
-        evictorMap.put(ContentType.JRNL_DREAM.key, jrnlDreamCacheEvictor);
-        evictorMap.put(ContentType.JRNL_TODO.key, jrnlTodoCacheEvictor);
-        evictorMap.put(ContentType.JRNL_SUMRY.key, jrnlSumryCacheEvictor);
+        evictorMap.put(ContentType.JRNL_DAY, jrnlDayCacheEvictor);
+        evictorMap.put(ContentType.JRNL_ENTRY, jrnlEntryCacheEvictor);
+        evictorMap.put(ContentType.JRNL_DIARY, jrnlDiaryCacheEvictor);
+        evictorMap.put(ContentType.JRNL_DREAM, jrnlDreamCacheEvictor);
+        evictorMap.put(ContentType.JRNL_INTRPT, jrnlIntrptCacheEvictor);
+        evictorMap.put(ContentType.JRNL_TODO, jrnlTodoCacheEvictor);
+        evictorMap.put(ContentType.JRNL_SUMRY, jrnlSumryCacheEvictor);
     }
 
     /**
@@ -59,7 +62,7 @@ public class JrnlCacheEvictWorker {
      */
     @Transactional
     public void handle(final JrnlCacheEvictEvent event) throws Exception {
-        final String refContentType = event.getContentType().key;
+        final ContentType refContentType = event.getContentType();
         final CacheEvictor<JrnlCacheEvictEvent> evictor = evictorMap.get(refContentType);
         if (evictor == null) {
             log.warn("No CacheEvictor found for ContentType: {}", refContentType);

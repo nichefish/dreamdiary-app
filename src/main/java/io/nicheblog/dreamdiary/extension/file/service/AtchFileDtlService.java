@@ -16,12 +16,12 @@ import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.imgscalr.Scalr;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -47,7 +47,7 @@ import java.util.*;
 @RequiredArgsConstructor
 @Log4j2
 public class AtchFileDtlService
-        implements BaseCrudService<AtchFileDtlDto, AtchFileDtlDto, Integer, AtchFileDtlEntity, AtchFileDtlRepository, AtchFileDtlSpec, AtchFileDtlMapstruct> {
+        implements BaseCrudService<AtchFileDtlDto, AtchFileDtlDto, Integer, AtchFileDtlEntity> {
 
     @Getter
     private final AtchFileDtlRepository repository;
@@ -55,6 +55,13 @@ public class AtchFileDtlService
     private final AtchFileDtlSpec spec;
     @Getter
     private final AtchFileDtlMapstruct mapstruct = AtchFileDtlMapstruct.INSTANCE;
+
+    public AtchFileDtlMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public AtchFileDtlMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     private final FileConfig fileConfig;
 
@@ -73,7 +80,8 @@ public class AtchFileDtlService
         final Map<String, Object> paramMap = new HashMap<>() {{
             put("atchFileNo", atchFileNo);
         }};
-        return this.getSelf().getListDto(paramMap);
+        final List<AtchFileDtlEntity> entityList = this.getSelf().getListEntity(paramMap);
+        return mapstruct.toDtoList(entityList);
     }
 
     /**

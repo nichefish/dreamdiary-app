@@ -42,7 +42,7 @@ import javax.validation.Valid;
 public class AuthRestController {
 
     @Getter
-    private final String baseUrl = Url.AUTH_LGN_FORM;
+    private final String baseUrl = Url.APP_AUTH_LGN_FORM;
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.LGN;      // 작업 카테고리 (로그 적재용)
 
@@ -56,7 +56,7 @@ public class AuthRestController {
      * @param request HTTP 요청 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.AUTH_INFO)
+    @GetMapping(Url.API_AUTH_INFO)
     public ResponseEntity<AjaxResponse> getAuthInfo(
             final HttpServletRequest request
     ) {
@@ -89,7 +89,7 @@ public class AuthRestController {
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(Url.AUTH_LGN_PW_CHG_AJAX)
+    @PostMapping(Url.API_AUTH_LGN_PW_CHG)
     @PermitAll
     @ResponseBody
     public ResponseEntity<AjaxResponse> lgnPwChgAjax(
@@ -113,7 +113,7 @@ public class AuthRestController {
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(Url.AUTH_EXPIRE_SESSION_AJAX)
+    @PostMapping(Url.API_AUTH_EXPIRE_SESSION)
     @PermitAll
     @ResponseBody
     public ResponseEntity<AjaxResponse> expireSessionAjax(

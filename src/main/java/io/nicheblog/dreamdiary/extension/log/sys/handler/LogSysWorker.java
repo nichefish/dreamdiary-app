@@ -43,8 +43,8 @@ public class LogSysWorker
      */
     @Override
     public void run() {
-        try {
-            while (true) {
+        while (true) {
+            try {
                 // Blocks until an element is available
                 final LogSysEvent logEvent = logSysQueue.take();
                 // 이벤트로부터 securityContext를 가져온다.
@@ -52,12 +52,12 @@ public class LogSysWorker
 
                 // 시스템 로그 로깅 처리
                 logSysService.regSysActvty(logEvent.getLog());
+            } catch (final InterruptedException e) {
+                log.warn("log regist failed", e);
+                Thread.currentThread().interrupt();
+            } catch (final Exception e) {
+                log.warn("log regist failed", e);
             }
-        } catch (final InterruptedException e) {
-            log.warn("log regist failed", e);
-            Thread.currentThread().interrupt();
-        } catch (final Exception e) {
-            log.warn("log regist failed", e);
         }
     }
 

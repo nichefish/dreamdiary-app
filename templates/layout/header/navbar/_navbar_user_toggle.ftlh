@@ -18,7 +18,7 @@
                     </span>
                 </#if>
                 <button type="button" class="badge badge-outlined badge-light-primary mt-2 fw-normal"
-                        onclick="dF.Layout.myInfoDtl();"
+                        onclick="Layout.myInfoDtl();"
                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="내 정보 화면으로 이동합니다.">
                     내 정보
                 </button>

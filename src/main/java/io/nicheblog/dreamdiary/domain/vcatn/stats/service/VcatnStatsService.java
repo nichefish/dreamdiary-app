@@ -59,10 +59,10 @@ public class VcatnStatsService {
     public List<VcatnStatsDto> getVcatnStatsList(final VcatnStatsYyDto statsYy) throws Exception {
         final String yyStr = statsYy.getStatsYy();
         // 직원목록 조회 :: 해당년도에 근무이력이 있는(중도퇴사 포함) 모든 직원(재직+프리랜서) 전원에 대하여 산정
-        final List<UserDto.LIST> userList = userService.getCrdtUserList(yyStr);
+        final List<UserDto> userList = userService.getCrdtUserList(yyStr);
 
         final List<VcatnStatsDto> stats = new ArrayList<>();
-        for (final UserDto.LIST user : userList) {
+        for (final UserDto user : userList) {
             // 각 직원에 대하여 휴가일자 산정하여 목록 반환 :: 메소드 분리
             final VcatnStatsDto vcantStats = this.getVcatnStats(user, statsYy);
             stats.add(vcantStats);
@@ -83,8 +83,8 @@ public class VcatnStatsService {
             final VcatnStatsYyDto statsYy,
             final String userId
     ) throws Exception {
-        final UserDto.DTL user = userService.getDtlDto(userId);
-        final UserDto.LIST userDtl = userMapstruct.dtlToList(user);
+        final UserDto user = userService.getDtlDto(userId);
+        final UserDto userDtl = userMapstruct.dtlToList(user);
         if (StringUtils.isEmpty(userDtl.getEcnyDt())) throw new NullPointerException(MessageUtils.getMessage("user.emplym.ecny-dt.empty"));
 
         return this.getCalcVcatnStats(userDtl, statsYy);
@@ -98,7 +98,7 @@ public class VcatnStatsService {
      * @return {@link VcatnStatsDto} -- 개인별 휴가 현황 정보
      */
     private VcatnStatsDto getCalcVcatnStats(
-            final UserDto.LIST user,
+            final UserDto user,
             final VcatnStatsYyDto statsYy
     ) throws Exception {
 
@@ -207,7 +207,7 @@ public class VcatnStatsService {
      * @param statsYy 조회할 통계 기준 년도 정보
      * @return {@link VcatnStatsDto} -- 해당 사용자에 대한 휴가 현황 정보
      */
-    private VcatnStatsDto getVcatnStats(UserDto.LIST user, VcatnStatsYyDto statsYy) throws Exception {
+    private VcatnStatsDto getVcatnStats(UserDto user, VcatnStatsYyDto statsYy) throws Exception {
         // 사용자 ID로 검색한 휴가 일정을 불러온다.
         final String userId = user.getUserId();
         final VcatnStatsKey key = new VcatnStatsKey(statsYy.getStatsYy(), userId);

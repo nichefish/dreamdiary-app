@@ -7,9 +7,9 @@ import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.tagify.BaseTagifyDataDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.tagify.BaseTagifyDto;
 import lombok.*;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
-import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;

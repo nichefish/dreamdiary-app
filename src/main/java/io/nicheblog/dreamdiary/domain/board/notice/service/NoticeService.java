@@ -9,9 +9,8 @@ import io.nicheblog.dreamdiary.domain.board.notice.repository.jpa.NoticeReposito
 import io.nicheblog.dreamdiary.domain.board.notice.spec.NoticeSpec;
 import io.nicheblog.dreamdiary.extension.clsf.managt.event.ManagtrAddEvent;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
-import io.nicheblog.dreamdiary.extension.clsf.viewer.event.ViewerAddEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
-import io.nicheblog.dreamdiary.global.intrfc.service.BasePostService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -34,7 +33,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 @Log4j2
 public class NoticeService
-        implements BasePostService<NoticeDto.DTL, NoticeDto.LIST, Integer, NoticeEntity, NoticeRepository, NoticeSpec, NoticeMapstruct> {
+        implements BaseClsfService<NoticeDto, NoticeDto, Integer, NoticeEntity> {
 
     @Getter
     private final NoticeRepository repository;
@@ -42,6 +41,13 @@ public class NoticeService
     private final NoticeSpec spec;
     @Getter
     private final NoticeMapstruct mapstruct = NoticeMapstruct.INSTANCE;
+
+    public NoticeMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public NoticeMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     private final ApplicationEventPublisherWrapper publisher;
 
@@ -58,12 +64,25 @@ public class NoticeService
     }
 
     /**
+     * 단일 항목 조회 (dto level)
+     *
+     * @param key 조회할 엔티티의 키
+     * @return {@link NoticeDto} -- 조회 항목 반환
+     */
+    @Transactional(readOnly = true)
+    public NoticeDto getDtlDto(final Integer key) throws Exception {
+        final NoticeEntity retrievedEntity = this.getDtlEntity(key);
+
+        return mapstruct.toDto(retrievedEntity);
+    }
+
+    /**
      * 등록 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
      */
     @Override
-    public void postRegist(final NoticeDto.DTL updatedDto) throws Exception {
+    public void postRegist(final NoticeDto updatedDto) throws Exception {
         // 태그 처리 :: 메인 로직과 분리
         publisher.publishEvent(new TagProcEvent(this, updatedDto.getClsfKey(), updatedDto.tag));
         // 조치자 추가 :: 메인 로직과 분리
@@ -76,14 +95,18 @@ public class NoticeService
     }
 
     /**
-     * 상세 페이지 조회 후처리 (dto level)
+     * default: 상세 페이지 조회
      *
-     * @param retrievedDto - 조회된 Dto 객체
+     * @param key 조회수를 증가시킬 항목의 키
+     * @return Dto -- 조회된 객체
      */
-    @Override
-    public void postViewDtlPage(final NoticeDto.DTL retrievedDto) throws Exception {
-        // 열람자 추가 :: 메인 로직과 분리
-        publisher.publishEvent(new ViewerAddEvent(this, retrievedDto.getClsfKey()));
+    @Transactional
+    public NoticeDto viewDtlPage(final Integer key) throws Exception {
+
+        // 조회수 증가
+        // this.hitCntUp(key);
+
+        return this.getDtlDto(key);
     }
 
     /**
@@ -92,7 +115,7 @@ public class NoticeService
      * @param updatedDto - 등록된 객체
      */
     @Override
-    public void postModify(final NoticeDto.DTL updatedDto) throws Exception {
+    public void postModify(final NoticeDto postDto,  NoticeDto updatedDto) throws Exception {
         // 태그 처리 :: 메인 로직과 분리
         publisher.publishEvent(new TagProcEvent(this, updatedDto.getClsfKey(), updatedDto.tag));
         // 조치자 추가 :: 메인 로직과 분리
@@ -110,7 +133,7 @@ public class NoticeService
      * @param deletedDto - 삭제된 객체
      */
     @Override
-    public void postDelete(final NoticeDto.DTL deletedDto) throws Exception {
+    public void postDelete(final NoticeDto deletedDto) throws Exception {
         // 태그 처리 :: 메인 로직과 분리
         publisher.publishEvent(new TagProcEvent(this, deletedDto.getClsfKey()));
     }

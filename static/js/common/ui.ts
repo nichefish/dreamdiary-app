@@ -154,24 +154,25 @@ cF.ui = (function(): Module {
 
         /**
          * 체크박스 클릭 시 라벨 변경 함수
-         * @param {string} attrId - 체크박스 요소의 ID.
+         * @param {string} selector - 체크박스 요소의 selector.
          * @param {string} ynCn - 예/아니오 문자열. "//"로 예와 아니오를 구분.
          * @param {string} ynColor - 예/아니오 색상. "//"로 예와 아니오 색상을 구분.
          * @param {Function} [yFunc] - 체크박스가 체크되었을 때 호출되는 함수. (선택적)
          * @param {Function} [nFunc] - 체크박스가 체크 해제되었을 때 호출되는 함수. (선택적)
          * @returns {boolean} - 체크박스가 정의되지 않은 경우 false를 반환.
          */
-        chckboxLabel: function(attrId: string, ynCn: string, ynColor: string, yFunc: Function, nFunc: Function): void {
-            const checkboxElmt = document.getElementById(attrId) as HTMLInputElement;
+        chckboxLabel: function(selector: string, ynCn: string, ynColor: string, yFunc: Function, nFunc: Function): void {
+            const checkboxElmt: HTMLInputElement = document.querySelector(selector);
             if (!checkboxElmt) {
                 console.log("체크박스가 정의되지 않았습니다.");
                 return;
             }
 
+            const attrId: string = checkboxElmt.getAttribute("id");
             const separator: string = "//";
             const [yesStr, noStr] = ynCn.split(separator);
             const [yesColor, noColor] = ynColor.split(separator);
-            const labelElmt: HTMLElement = document.getElementById(attrId + "Label") as HTMLElement;
+            const labelElmt: HTMLElement = document.querySelector(selector + "Label") as HTMLElement;
             checkboxElmt.addEventListener("click", function(): void {
                 if (checkboxElmt.checked) {
                     labelElmt.textContent = yesStr;

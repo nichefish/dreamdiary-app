@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.extension.cd.service;
 
-import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
+import io.nicheblog.dreamdiary.domain.board.def.model.BoardDefDto;
 import io.nicheblog.dreamdiary.extension.cache.util.RedisUtils;
 import io.nicheblog.dreamdiary.extension.cd.entity.ClCdEntity;
 import io.nicheblog.dreamdiary.extension.cd.mapstruct.ClCdMapstruct;
@@ -13,6 +13,7 @@ import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * ClCdService
@@ -26,8 +27,8 @@ import org.springframework.stereotype.Service;
 @Service("clCdService")
 @RequiredArgsConstructor
 public class ClCdService
-        implements BaseCrudService<ClCdDto, ClCdDto, String, ClCdEntity, ClCdRepository, ClCdSpec, ClCdMapstruct>,
-        BaseStateService<ClCdDto, ClCdDto, String, ClCdEntity, ClCdRepository, ClCdSpec, ClCdMapstruct> {
+        implements BaseCrudService<ClCdDto, ClCdDto, String, ClCdEntity>,
+        BaseStateService<ClCdDto, String, ClCdEntity> {
 
     @Getter
     private final ClCdRepository repository;
@@ -35,6 +36,26 @@ public class ClCdService
     private final ClCdSpec spec;
     @Getter
     private final ClCdMapstruct mapstruct = ClCdMapstruct.INSTANCE;
+
+    public ClCdMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public ClCdMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
+
+    /**
+     * 단일 항목 조회 (dto level)
+     *
+     * @param key 조회할 엔티티의 키
+     * @return {@link BoardDefDto} -- 조회 항목 반환
+     */
+    @Transactional(readOnly = true)
+    public ClCdDto getDtlDto(final String key) throws Exception {
+        final ClCdEntity retrievedEntity = this.getDtlEntity(key);
+
+        return mapstruct.toDto(retrievedEntity);
+    }
 
     /**
      * 등록 전처리. (override)
@@ -62,7 +83,7 @@ public class ClCdService
      * @param updatedDto - 등록된 객체
      */
     @Override
-    public void postModify(final ClCdDto updatedDto) throws Exception {
+    public void postModify(final ClCdDto postDto, final ClCdDto updatedDto) throws Exception {
         this.evictCache(updatedDto);
     }
 
@@ -84,7 +105,5 @@ public class ClCdService
     public void evictCache(final ClCdDto dto) throws Exception {
         RedisUtils.deleteData("cdEntityListByClCd::clCd:" + dto.getClCd());
         RedisUtils.deleteData("cdDtoListByClCd::clCd:" + dto.getClCd());
-        // 연관된 모든 엔티티의 캐시 클리어
-        EhCacheUtils.clearL2Cache();
     }
 }

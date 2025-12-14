@@ -25,8 +25,8 @@ import java.util.Optional;
 @Service("tmplatTxtService")
 @RequiredArgsConstructor
 public class TmplatTxtService
-        implements BaseCrudService<TmplatTxtDto, TmplatTxtDto, Integer, TmplatTxtEntity, TmplatTxtRepository, TmplatTxtSpec, TmplatTxtMapstruct>,
-                   BaseStateService<TmplatTxtDto, TmplatTxtDto, Integer, TmplatTxtEntity, TmplatTxtRepository, TmplatTxtSpec, TmplatTxtMapstruct> {
+        implements BaseCrudService<TmplatTxtDto, TmplatTxtDto, Integer, TmplatTxtEntity>,
+                   BaseStateService<TmplatTxtDto, Integer, TmplatTxtEntity> {
 
     @Getter
     private final TmplatTxtRepository repository;
@@ -34,6 +34,13 @@ public class TmplatTxtService
     private final TmplatTxtSpec spec;
     @Getter
     private final TmplatTxtMapstruct mapstruct = TmplatTxtMapstruct.INSTANCE;
+
+    public TmplatTxtMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public TmplatTxtMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     /**
      * 등록 전처리. (override)

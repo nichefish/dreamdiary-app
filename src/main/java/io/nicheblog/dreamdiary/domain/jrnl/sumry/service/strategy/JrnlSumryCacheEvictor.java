@@ -1,13 +1,15 @@
 package io.nicheblog.dreamdiary.domain.jrnl.sumry.service.strategy;
 
-import io.nicheblog.dreamdiary.domain.jrnl.sumry.entity.JrnlSumryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumryDto;
 import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.extension.cache.service.CacheEvictor;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
+import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * JrnlSumryCacheEvictor
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
+@Log4j2
 public class JrnlSumryCacheEvictor
         implements CacheEvictor<JrnlCacheEvictEvent> {
 
@@ -28,17 +31,22 @@ public class JrnlSumryCacheEvictor
      * @param event 캐시 삭제 이벤트 객체
      */
     @Override
+    @Transactional
     public void evict(final JrnlCacheEvictEvent event) throws Exception {
-        final JrnlCacheEvictParam param = event.getCacheEvictParam();
-        final Integer postNo = param.getPostNo();
-        // 목록 캐시 초기화
-        EhCacheUtils.evictMyCacheAll("myJrnlSumryList");
-        EhCacheUtils.evictMyCacheAll("myJrnlTotalSumry");
-        // 상세 캐시 초기화
-        EhCacheUtils.evictMyCache("myJrnlSumryDtl", postNo);
-        final JrnlSumryDto jrnlSumry = (JrnlSumryDto) EhCacheUtils.getObjectFromCache("myJrnlSumryDtl", postNo);
-        if (jrnlSumry != null) EhCacheUtils.evictMyCache("myJrnlSumryDtlByYy", jrnlSumry.getYy());
-        // L2캐시 처리
-        EhCacheUtils.clearL2Cache(JrnlSumryEntity.class);
+        final ContentType refContentType = event.getContentType();
+        try {
+            final JrnlCacheEvictParam param = event.getCacheEvictParam();
+            final Integer postNo = param.getPostNo();
+            // 목록 캐시 초기화
+            EhCacheUtils.evictMyCacheAll("myJrnlSumryList");
+            EhCacheUtils.evictMyCacheAll("myJrnlTotalSumry");
+            // 상세 캐시 초기화
+            EhCacheUtils.evictMyCache("myJrnlSumryDtl", postNo);
+            final JrnlSumryDto jrnlSumry = (JrnlSumryDto) EhCacheUtils.getObjectFromCache("myJrnlSumryDtl", postNo);
+            if (jrnlSumry != null) EhCacheUtils.evictMyCache("myJrnlSumryDtlByYy", jrnlSumry.getYy());
+        } catch (final Exception e) {
+            log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);
+            throw e;
+        }
     }
 }

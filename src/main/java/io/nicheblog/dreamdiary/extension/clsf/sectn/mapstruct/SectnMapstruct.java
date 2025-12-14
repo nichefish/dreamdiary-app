@@ -4,7 +4,8 @@ import io.nicheblog.dreamdiary.extension.cd.utils.CdUtils;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.entity.SectnEntity;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.mapstruct.embed.SectnEmbedMapstruct;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.model.SectnDto;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BasePostMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseClsfMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +22,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, MarkdownUtils.class, SectnEmbedMapstruct.class, CdUtils.class}, builder = @Builder(disableBuilder = true))
 public interface SectnMapstruct
-        extends BasePostMapstruct<SectnDto, SectnDto, SectnEntity> {
+        extends BaseWriteMapstruct<SectnDto, SectnEntity>, BaseClsfMapstruct<SectnDto, SectnEntity> {
 
     SectnMapstruct INSTANCE = Mappers.getMapper(SectnMapstruct.class);
 
@@ -36,18 +37,6 @@ public interface SectnMapstruct
     @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"SECTN_CTGR_CD\", entity.getCtgrCd()))")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
     SectnDto toDto(final SectnEntity entity) throws Exception;
-
-    /**
-     * Entity -> ListDto 변환
-     *
-     * @param entity 변환할 Entity 객체
-     * @return ListDto -- 변환된 ListDto 객체
-     */
-    @Override
-    @Named("toListDto")
-    @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"SECTN_CTGR_CD\", entity.getCtgrCd()))")
-    @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
-    SectnDto toListDto(final SectnEntity entity) throws Exception;
 
     /**
      * Dto -> Entity 변환

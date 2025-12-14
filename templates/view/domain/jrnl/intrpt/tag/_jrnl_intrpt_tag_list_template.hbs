@@ -1,0 +1,12 @@
+<#--
+ * 저널 해석(jrnl_intrpt) > 태그 목록 Template
+ * @included_in : jrnl_day_page.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="jrnl_intrpt_tag_list_template">
+    {{#each this}}
+        {{> tag_list_sized_partial this module="dF.JrnlIntrptTag"}}
+    {{else}}
+        -
+    {{/each}}
+</script>

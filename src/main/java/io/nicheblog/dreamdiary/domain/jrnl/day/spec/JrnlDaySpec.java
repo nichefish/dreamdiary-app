@@ -99,6 +99,9 @@ public class JrnlDaySpec
                     Integer mnth = (Integer) value;
                     if (mnth != 99) predicate.add(builder.equal(root.get(key), mnth));
                     continue;
+                case "stdrdDt":
+                    predicate.add(builder.equal(effectiveDtExp, DateUtils.asDate(value)));
+                    continue;
                 case "tagNo":
                     // 특정 태그된 꿈만 조회
                     Join<JrnlDayEntity, TagEmbed> tagJoin = root.join("tag", JoinType.INNER);

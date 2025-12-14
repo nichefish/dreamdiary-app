@@ -12,7 +12,7 @@ const Page: Page = (function(): Page {
          */
         init: function(): void {
             /* initialize modules. */
-            dF.JrnlDay.init();
+            dF.JrnlDay.init('LIST');
             dF.JrnlDiary.init();
             dF.JrnlDream.init();
             dF.JrnlTodo.init();
@@ -36,7 +36,7 @@ const Page: Page = (function(): Page {
          * 목록 화면으로 이동
          */
         listPage: function(): void {
-            cF.ui.blockUIReplace(Url.JRNL_DAY_PAGE);
+            cF.ui.blockUIReplace(Url.JRNL_DAY_MONTHLY);
         },
 
         /**

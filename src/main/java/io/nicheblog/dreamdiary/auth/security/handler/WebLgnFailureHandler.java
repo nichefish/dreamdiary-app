@@ -113,7 +113,7 @@ public class WebLgnFailureHandler
         // POST로 넘어왔던 Request 메소드를 GET으로 변경
         final HttpMethodRequestWrapper getMethodRequest = new HttpMethodRequestWrapper(request);
         // 로그인 화면으로 포워드
-        request.getRequestDispatcher(Url.AUTH_LGN_FORM).forward(getMethodRequest, response);
+        request.getRequestDispatcher(Url.APP_AUTH_LGN_FORM).forward(getMethodRequest, response);
     }
 
     /**

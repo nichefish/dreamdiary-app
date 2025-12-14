@@ -38,9 +38,9 @@ import io.nicheblog.dreamdiary.global.intrfc.model.*;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.mapstruct.MappingTarget;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
 /**
  * MapstructHelper
@@ -192,18 +192,4 @@ public class MapstructHelper {
         return ((ViewerEmbedModule) entity).getViewer().getList().stream()
                 .anyMatch(e -> !AuthUtils.getLgnUserId().equals(e.getRegstrId()));
     }
-
-    /**
-     * Map Post Fields (entity -> dto)
-     *
-     * @param entity 매핑할 Entity
-     * @param dto 매핑 대상 Dto
-     */
-    public static <Entity extends BaseClsfEntity, Dto extends BaseClsfDto> void mapPostFields(Entity entity, Dto dto) {
-        // AUDIT :: 공통 필드 매핑 로직
-        if (entity instanceof BasePostEntity && dto instanceof BasePostDto) {
-            //
-        }
-    }
-
 }

@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed;
 
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.ContentTagEntity;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.helper.MapstructHelper;
-import org.springframework.util.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;

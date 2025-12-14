@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.domain.jrnl.dream.controller;
 
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamPatchDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
@@ -39,7 +40,7 @@ public class JrnlDreamRestController
         extends BaseControllerImpl {
 
     @Getter
-    private final String baseUrl = Url.JRNL_DAY_PAGE;             // 기본 URL
+    private final String baseUrl = Url.JRNL_DAY_MONTHLY;             // 기본 URL
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
@@ -53,7 +54,7 @@ public class JrnlDreamRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(value = {Url.JRNL_DREAM_LIST_AJAX})
+    @GetMapping(value = {Url.JRNL_DREAMS})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDreamListAjax(
@@ -85,17 +86,20 @@ public class JrnlDreamRestController
             summary = "저널 꿈 등록/수정",
             description = "저널 꿈 정보를 등록/수정한다."
     )
-    @PostMapping(value = {Url.JRNL_DREAM_REG_AJAX, Url.JRNL_DREAM_MDF_AJAX})
+    @PostMapping(value = {Url.JRNL_DREAMS, Url.JRNL_DREAM})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDreamRegAjax(
+            final @PathVariable(value = "postNo", required = false) Integer postNo,
             final @Valid JrnlDreamDto jrnlDream,
             final LogActvtyParam logParam,
             final MultipartHttpServletRequest request
     ) throws Exception {
 
-        final boolean isReg = (jrnlDream.getKey() == null);
-        final ServiceResponse result = isReg ? jrnlDreamService.regist(jrnlDream, request) : jrnlDreamService.modify(jrnlDream, request);
+        final boolean isMdf = postNo != null;
+        if (isMdf) jrnlDream.setPostNo(postNo);
+
+        final ServiceResponse result = isMdf ? jrnlDreamService.modify(jrnlDream, request) : jrnlDreamService.regist(jrnlDream, request);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
@@ -113,11 +117,11 @@ public class JrnlDreamRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(value = {Url.JRNL_DREAM_DTL_AJAX})
+    @GetMapping(value = {Url.JRNL_DREAM})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDreamDtlAjax(
-            final @RequestParam("postNo") Integer key,
+            final @PathVariable("postNo") Integer key,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -140,15 +144,43 @@ public class JrnlDreamRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @see TagProcEventListener
      */
-    @PostMapping(value = {Url.JRNL_DREAM_DEL_AJAX})
+    @DeleteMapping(value = {Url.JRNL_DREAM})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDreamDelAjax(
-            final @RequestParam("postNo") Integer postNo,
+            final @PathVariable("postNo") Integer postNo,
             final LogActvtyParam logParam
     ) throws Exception {
 
         final ServiceResponse result = jrnlDreamService.delete(postNo);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+
+        // 로그 관련 세팅
+        logParam.setResult(isSuccess, rsltMsg);
+
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
+    }
+
+    /**
+     * 저널 꿈 상태 변경 (Ajax)
+     * (사용자USER, 관리자MNGR만 접근 가능.)
+     *
+     * @param postNo 식별자
+     * @param logParam 로그 기록을 위한 파라미터 객체
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     * @see TagProcEventListener
+     */
+    @PatchMapping(value = {Url.JRNL_DREAM})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> jrnlDreamPatchAjax(
+            final @PathVariable("postNo") Integer postNo,
+            final @RequestBody JrnlDreamPatchDto patchDto,
+            final LogActvtyParam logParam
+    ) throws Exception {
+
+        final ServiceResponse result = jrnlDreamService.patch(postNo, patchDto);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

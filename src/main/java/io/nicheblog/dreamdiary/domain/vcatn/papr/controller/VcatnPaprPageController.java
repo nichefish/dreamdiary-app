@@ -78,11 +78,11 @@ public class VcatnPaprPageController
         // 상세/수정 화면에서 목록 화면 복귀시 세션에 목록 검색 인자 저장해둔 거 있는지 체크
         searchParam = (VcatnPaprSearchParam) CmmUtils.Param.checkPrevSearchParam(baseUrl, searchParam);
         // 상단 고정 목록 조회
-        model.addAttribute("vcatnPaprFxdList", vcatnPaprService.getFxdList());
+        // model.addAttribute("vcatnPaprFxdList", vcatnPaprService.getFxdList());
         // 페이징 정보 생성:: 공백시 pageSize=10, pageNo=1
         final PageRequest pageRequest = CmmUtils.Param.getPageRequest(searchParam, "managt.managtDt", model);
         // 목록 조회
-        final Page<VcatnPaprDto.LIST> vcatnPaprList = vcatnPaprService.getPageDto(searchParam, pageRequest);
+        final Page<VcatnPaprDto> vcatnPaprList = vcatnPaprService.getPageDto(searchParam, pageRequest);
         model.addAttribute("vcatnPaprList", vcatnPaprList.getContent());
         model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(vcatnPaprList));
         // 컨텐츠 타입에 맞는 태그 목록 조회
@@ -197,7 +197,7 @@ public class VcatnPaprPageController
         model.addAttribute("pageNm", PageNm.DTL);
 
         // 객체 조회 및 모델에 추가
-        final VcatnPaprDto.DTL retrievedDto = vcatnPaprService.viewDtlPage(key);
+        final VcatnPaprDto retrievedDto = vcatnPaprService.viewDtlPage(key);
         model.addAttribute("post", retrievedDto);
 
         final boolean isSuccess = true;

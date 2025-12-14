@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.BasePostDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
+import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -57,8 +58,7 @@ public class SectnDto
 
     /** 만료 여부 (Y/N) */
     @Builder.Default
-    @Size(min = 1, max = 1)
-    @Pattern(regexp = "^[YN]$")
+    @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
     private String deprcYn = "N";
 
     /* ----- */

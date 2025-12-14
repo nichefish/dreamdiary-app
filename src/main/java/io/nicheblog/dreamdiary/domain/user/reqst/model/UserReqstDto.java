@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.domain.user.info.model.UserAcsIpDto;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserAuthRoleDto;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.global.validator.Regex;
+import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.StringUtils;
@@ -45,8 +46,7 @@ public class UserReqstDto
 
     /** 접속 IP 사용 여부 (Y/N) */
     @Builder.Default
-    @Size(min = 1, max = 1)
-    @Pattern(regexp = "^[YN]$")
+    @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
     private String useAcsIpYn = "N";
 
     /** 접속 IP 정보 */

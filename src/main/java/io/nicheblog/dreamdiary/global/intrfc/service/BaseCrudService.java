@@ -1,11 +1,9 @@
 package io.nicheblog.dreamdiary.global.intrfc.service;
 
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseCrudMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
-import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
-import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,15 +21,18 @@ import java.util.Map;
  *
  * @author nichefish
  */
-public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, ListDto extends BaseCrudDto, Key extends Serializable, Entity extends BaseCrudEntity, Repository extends BaseStreamRepository<Entity, Key>, Spec extends BaseSpec<Entity>, Mapstruct extends BaseCrudMapstruct<Dto, ListDto, Entity>>
-        extends BaseReadonlyService<Dto, ListDto, Key, Entity, Repository, Spec, Mapstruct> {
+public interface BaseCrudService<PostDto extends BaseCrudDto & Identifiable<Key>, Dto extends BaseCrudDto & Identifiable<Key>, Key extends Serializable, Entity extends BaseCrudEntity>
+        extends BaseReadonlyService<Dto, Key, Entity> {
+
+    // Resource : mapstruct
+    BaseWriteMapstruct<PostDto, Entity> getWriteMapstruct();
 
     /**
      * default: 등록 전처리 (dto level)
      *
      * @param registDto 등록할 Dto 객체
      */
-    default void preRegist(final Dto registDto) throws Exception {
+    default void preRegist(final PostDto registDto) throws Exception {
         // 등록 전처리:: 기본 공백, 필요시 각 함수에서 Override
     }
 
@@ -57,18 +58,17 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      * default: 등록 (dto level)
      *
      * @param registDto 등록할 Dto 객체
-     * @return {@link Dto} -- 등록 결과를 Dto로 변환한 객체
+     * @return {@link PostDto} -- 등록 결과를 Dto로 변환한 객체
      */
     @Transactional
-    default ServiceResponse regist(final Dto registDto) throws Exception {
+    default ServiceResponse regist(final PostDto registDto) throws Exception {
         final ServiceResponse response = new ServiceResponse();
 
         // optional: 등록 전처리 (dto)
         this.preRegist(registDto);
 
         // Dto -> Entity 변환
-        final Mapstruct mapstruct = this.getMapstruct();
-        final Entity registEntity = mapstruct.toEntity(registDto);
+        final Entity registEntity = getWriteMapstruct().toEntity(registDto);
 
         // optional: 등록 전처리 (entity)
         this.preRegist(registEntity);
@@ -76,7 +76,7 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
         // insert
         final Entity updatedEntity = this.updt(registEntity);
 
-        final Dto updatedDto = mapstruct.toDto(updatedEntity);
+        final Dto updatedDto = getReadMapstruct().toDto(updatedEntity);
 
         // optional: 등록 후처리 (dto)
         this.postRegist(updatedDto);
@@ -115,8 +115,7 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
         // optional: 벌크 등록 전처리
         this.preRegistAll(registEntityList);
         
-        final Repository repository = this.getRepository();
-        final List<Entity> updatedEntityList = repository.saveAllAndFlush(registEntityList);
+        final List<Entity> updatedEntityList = getRepository().saveAllAndFlush(registEntityList);
 
         // optional: 벌크 등록 후처리
         this.postRegistAll(updatedEntityList);
@@ -125,11 +124,11 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
     }
 
     /**
-     * default: 수정 전처리 (dto level)
+     * default: 수정 전처리 (dto)
      *
-     * @param modifyDto 수정할 Dto 객체
+     * @param postDto 수정할 Dto 객체
      */
-    default void preModify(final Dto modifyDto) throws Exception {
+    default void preModify(final PostDto postDto) throws Exception {
         // 수정 전처리:: 기본 공백, 필요시 각 함수에서 Override
     }
 
@@ -143,45 +142,54 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
     }
 
     /**
+     * default: 수정 전처리 (dto, entity)
+     *
+     * @param postDto 수정할 Dto 객체
+     * @param modifyEntity 수정 중간처리를 할 엔티티 객체
+     */
+    default void preModify(final PostDto postDto, final Entity modifyEntity) throws Exception {
+        // 수정 전처리:: 기본 공백, 필요시 각 함수에서 Override
+    }
+
+    /**
      * default: 수정 후처리 (dto level)
      *
      * @param updatedDto 수정된 dto 객체
      */
-    default void postModify(final Dto updatedDto) throws Exception {
+    default void postModify(final PostDto postDto, final Dto updatedDto) throws Exception {
         // 수정 후처리:: 기본 공백, 필요시 각 함수에서 Override
     }
 
     /**
      * default: 수정 (dto level)
      *
-     * @param modifyDto 수정할 Dto 객체
+     * @param postDto 수정할 Dto 객체
      * @return Dto - 수정된 결과를 Dto로 변환한 객체
      */
     @Transactional
-    default ServiceResponse modify(final Dto modifyDto) throws Exception {
+    default ServiceResponse modify(final PostDto postDto) throws Exception {
         final ServiceResponse response = new ServiceResponse();
 
+        // Entity 레벨 조회
+        final Entity modifyEntity = this.getDtlEntity(postDto.getKey());
+
         // optional: 수정 전처리 (dto)
-        this.preModify(modifyDto);
-
-        // Entity 레벨 조회
-        final Entity modifyEntity = this.getDtlEntity(modifyDto);
-
-        // optional: 수정 전처리 (entity, 기존 데이터 처리 관련)
+        this.preModify(postDto);
+        // optional: 수정 전처리 (entity)
         this.preModify(modifyEntity);
+        // optional: 수정 전처리 (dto, entity)
+        this.preModify(postDto, modifyEntity);
 
         // Entity 레벨 조회
-        final Mapstruct mapstruct = this.getMapstruct();
-        mapstruct.updateFromDto(modifyDto, modifyEntity);
+        getWriteMapstruct().updateFromDto(postDto, modifyEntity);
 
         // update
-        final Repository repository = this.getRepository();
-        final Entity updatedEntity = repository.saveAndFlush(modifyEntity);
+        final Entity updatedEntity = getRepository().saveAndFlush(modifyEntity);
 
-        final Dto updatedDto = mapstruct.toDto(updatedEntity);
+        final Dto updatedDto = getReadMapstruct().toDto(updatedEntity);
 
         // optional: 수정 후처리 (dto)
-        this.postModify(updatedDto);
+        this.postModify(postDto, updatedDto);
 
         response.setRslt(updatedDto.getKey() != null);
         response.setRsltObj(updatedDto);
@@ -196,10 +204,9 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      */
     @Transactional
     default Entity updt(final Entity modifyEntity) throws Exception {
-        final Repository repository = this.getRepository();
-        final Entity updatedEntity = repository.saveAndFlush(modifyEntity);
+        final Entity updatedEntity = getRepository().saveAndFlush(modifyEntity);
         try {
-            repository.refresh(updatedEntity);
+            getRepository().refresh(updatedEntity);
         } catch (final EntityNotFoundException ex) {
             ex.getStackTrace();
         }
@@ -212,7 +219,7 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      *
      * @param deletedDto - 삭제할 dto 객체
      */
-    default void preDelete(final Dto deletedDto) throws Exception {
+    default void preDelete(final PostDto deletedDto) throws Exception {
         // 기본 공백, 필요시 각 함수에서 Override
     }
 
@@ -241,7 +248,7 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      * @return Boolean 삭제 성공시 true, 실패 시 false
      */
     @Transactional
-    default ServiceResponse delete(final Dto deleteDto) throws Exception {
+    default ServiceResponse delete(final PostDto deleteDto) throws Exception {
         return this.delete(deleteDto.getKey());
     }
 
@@ -255,20 +262,15 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
     default ServiceResponse delete(final Key key) throws Exception {
         final ServiceResponse response = new ServiceResponse();
 
-        final Repository repository = this.getRepository();
         final Entity deleteEntity = this.getDtlEntity(key);
         if (deleteEntity == null) throw new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete"));
 
         // optional: 삭제 전처리 (entity level)
         this.preDelete(deleteEntity);
 
-        final Mapstruct mapstruct = this.getMapstruct();
-        final Dto deletedDto = mapstruct.toDto(deleteEntity);
+        final Dto deletedDto = getReadMapstruct().toDto(deleteEntity);
 
-        // optional: 삭제 전처리 (dto level)
-        this.preDelete(deletedDto);
-
-        repository.delete(deleteEntity);
+        getRepository().delete(deleteEntity);
 
         // optional: 삭제 후처리
         this.postDelete(deletedDto);
@@ -292,6 +294,7 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
      *
      * @param deletedEntityList 삭제된 엔티티 리스트
      */
+    @SuppressWarnings("unused")
     default void postDeleteAll(final List<Entity> deletedEntityList) {
         // 기본 공백, 필요시 각 함수에서 Override
     }
@@ -320,8 +323,7 @@ public interface BaseCrudService<Dto extends BaseCrudDto & Identifiable<Key>, Li
         // optional: bulk 삭제 전처리 (emtity)
         this.preDeleteAll(deleteEntityList);
 
-        final Repository repository = this.getRepository();
-        repository.deleteAll(deleteEntityList);
+        getRepository().deleteAll(deleteEntityList);
 
         // optional: bulk 삭제 후처리 (emtity)
         this.postDeleteAll(deleteEntityList);

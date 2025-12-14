@@ -89,7 +89,7 @@ public class UserMyPageController
                     .searchStartDt(statsYy.getBgnDt())
                     .searchEndDt(statsYy.getEndDt())
                     .build();
-            final List<VcatnPaprDto.LIST> vcatnPaprList = vcatnPaprService.getListDto(param);
+            final List<VcatnPaprDto> vcatnPaprList = vcatnPaprService.getListDto(param);
             model.addAttribute("vcatnPaprList", vcatnPaprList);
             // }
         } catch (final Exception e) {

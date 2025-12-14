@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.extension.cd.mapstruct.DtlCdMapstruct;
 import io.nicheblog.dreamdiary.extension.cd.model.DtlCdDto;
 import io.nicheblog.dreamdiary.extension.cd.repository.jpa.DtlCdRepository;
 import io.nicheblog.dreamdiary.extension.cd.spec.DtlCdSpec;
+import io.nicheblog.dreamdiary.extension.clsf.comment.model.CommentDto;
 import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.state.service.BaseStateService;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
@@ -39,8 +40,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Log4j2
 public class DtlCdService
-        implements BaseCrudService<DtlCdDto, DtlCdDto, DtlCdKey, DtlCdEntity, DtlCdRepository, DtlCdSpec, DtlCdMapstruct>,
-        BaseStateService<DtlCdDto, DtlCdDto, DtlCdKey, DtlCdEntity, DtlCdRepository, DtlCdSpec, DtlCdMapstruct> {
+        implements BaseCrudService<DtlCdDto, DtlCdDto, DtlCdKey, DtlCdEntity>,
+        BaseStateService<DtlCdDto, DtlCdKey, DtlCdEntity> {
 
     @Getter
     private final DtlCdRepository repository;
@@ -48,6 +49,13 @@ public class DtlCdService
     private final DtlCdSpec spec;
     @Getter
     private final DtlCdMapstruct mapstruct = DtlCdMapstruct.INSTANCE;
+
+    public DtlCdMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public DtlCdMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     private final ApplicationContext context;
     private DtlCdService getSelf() {
@@ -117,6 +125,19 @@ public class DtlCdService
     }
 
     /**
+     * 단일 항목 조회 (dto level)
+     *
+     * @param key 조회할 엔티티의 키
+     * @return {@link CommentDto} -- 조회 항목 반환
+     */
+    @Transactional(readOnly = true)
+    public DtlCdDto getDtlDto(final DtlCdKey key) throws Exception {
+        final DtlCdEntity retrievedEntity = this.getDtlEntity(key);
+
+        return mapstruct.toDto(retrievedEntity);
+    }
+
+    /**
      * 등록 전처리. (override)
      *
      * @param registDto 등록할 객체
@@ -143,7 +164,7 @@ public class DtlCdService
      * @param updatedDto - 등록된 객체
      */
     @Override
-    public void postModify(final DtlCdDto updatedDto) throws Exception {
+    public void postModify(final DtlCdDto postDto, final DtlCdDto updatedDto) throws Exception {
         // 관련 캐시 삭제
         this.evictCache(updatedDto);
     }
@@ -179,7 +200,5 @@ public class DtlCdService
         RedisUtils.deleteData("cdEntityListByClCd::clCd:" + rslt.getClCd());
         RedisUtils.deleteData("cdDtoListByClCd::clCd:" + rslt.getClCd());
         EhCacheUtils.evictCache("dtlCdNm", "clCd:"+ rslt.getClCd() +",dtlCd:"+ rslt.getDtlCd());
-        // 연관된 모든 엔티티의 캐시 클리어
-        EhCacheUtils.clearL2Cache();
     }
 }

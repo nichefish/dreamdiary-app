@@ -79,7 +79,7 @@
         </div>
         <div class="col-lg-1 col-3 d-flex align-items-center width-33">
             <div class="form-check form-switch mt-2 form-check-custom form-check-solid">
-                <input type="checkbox" name="jandiYn" id="jandiYn" class="form-check-input ms-3"
+                <input type="checkbox" name="jandiYn" id="jandiYn" class="form-check-input cursor-pointer ms-3"
                        value="Y" />
                 <label class="form-check-label fw-bold ms-3" for="jandiYn" id="jandiYnLabel" style="color:gray;">미발송</label>
             </div>

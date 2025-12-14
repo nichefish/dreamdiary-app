@@ -3,8 +3,8 @@ package io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.ContentTagEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
 import lombok.*;
+import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.annotations.*;
-import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;

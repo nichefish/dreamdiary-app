@@ -12,14 +12,12 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.jetbrains.annotations.NotNull;
 
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
  * JrnlDiaryDto
  * <pre>
- *  저널 일기 Dto.
+ *  저널 일기 조회용 Dto.
  * </pre>
  *
  * @author nichefish
@@ -53,20 +51,44 @@ public class JrnlDiaryDto
     private Integer jrnlEntryNo;
     /** 저널 기준일자 */
     private String stdrdDt;
+    /** 저널 기준일자 */
+    private String dtUnknownYn;
     /** 저널 일자 요일 */
     private String jrnlDtWeekDay;
+
     /** 저널 기준일자 */
     private Integer yy;
     /** 저널 기준일자 */
     private Integer mnth;
+
+    /** 공휴일 여부 */
+    private Boolean isHldy;
+    /** 공휴일 이름 */
+    private String hldyNm;
+
     /** 순번 */
     private Integer idx;
 
-    /** 편집완료 여부 (Y/N) */
+    /** 정리완료 여부 (Y/N) */
     @Builder.Default
-    @Size(min = 1, max = 1)
-    @Pattern(regexp = "^[YN]$")
-    private String editComptYn = "N";
+    private String resolvedYn = "N";
+
+    /** 글접기 여부 (Y/N) */
+    @Builder.Default
+    private String collapsedYn = "N";
+
+    /* ----- */
+
+    /** 인덱스 변경 여부 */
+    @Builder.Default
+    private Boolean isIdxChanged = false;
+
+    /** 저널 항목 변경 여부 */
+    @Builder.Default
+    private Boolean isEntryChanged = false;
+
+    /** 이전 저널 항목 번호 */
+    private Integer prevJrnlEntryNo;
 
     /* ----- */
 

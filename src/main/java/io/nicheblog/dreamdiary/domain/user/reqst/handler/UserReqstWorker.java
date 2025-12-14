@@ -49,8 +49,8 @@ public class UserReqstWorker
      */
     @Override
     public void run() {
-        try {
-            while (true) {
+        while (true) {
+            try {
                 // Blocks until an element is available
                 final UserReqstEvent event = uesrReqstQueue.take();
                 final UserReqstDto userReqst = event.getUserReqst();
@@ -71,12 +71,12 @@ public class UserReqstWorker
 
                 // 이메일 발송
                 publisher.publishAsyncEvent(new UserReqstVerificationEmailSendEvent(this, userReqst, jwt));
+            } catch (final InterruptedException e) {
+                log.warn("user request handling failed", e);
+                Thread.currentThread().interrupt();
+            } catch (final Exception e) {
+                log.warn("user request handling failed", e);
             }
-        } catch (final InterruptedException e) {
-            log.warn("user request handling failed", e);
-            Thread.currentThread().interrupt();
-        } catch (final Exception e) {
-            log.warn("user request handling failed", e);
         }
     }
 

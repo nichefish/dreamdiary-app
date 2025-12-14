@@ -32,7 +32,7 @@ dF.JrnlSbjct = (function(): dfModule {
             /* tagify */
             cF.tagify.initWithCtgr("#tagListStr", undefined);
             // 잔디발송여부 클릭시 글씨 변경
-            cF.ui.chckboxLabel("jandiYn", "발송//미발송", "blue//gray", function(): void {
+            cF.ui.chckboxLabel("#jrnlSbjctRegForm #jandiYn", "발송//미발송", "blue//gray", function(): void {
                 $("#trgetTopicSpan").show();
             }, function(): void {
                 $("#trgetTopicSpan").hide();

@@ -100,14 +100,14 @@ public class WebSecurityAdapter
 
         web.ignoring()
                 // 세션 만료 처리 URL
-                .antMatchers(Url.AUTH_EXPIRE_SESSION_AJAX)
+                .antMatchers(Url.API_AUTH_EXPIRE_SESSION)
                 // static 디렉터리의 하위 파일 목록은 인증 무시(=항상 통과 )
                 .antMatchers("/favicon.ico")
                 .antMatchers("/robots.txt")
                 // 에러 페이지
                 .antMatchers(Url.ERROR + "/**")
                 // 비밀번호 만료시 비밀번호 변경 화면
-                .antMatchers(Url.AUTH_LGN_PW_CHG_AJAX)
+                .antMatchers(Url.API_AUTH_LGN_PW_CHG)
                 // 신규계정 신청 화면/기능 전체 접근 (+아이디 중복 체크)
                 .antMatchers(Url.USER_REQST_REG_FORM)
                 .antMatchers(Url.USER_REQST_REG_AJAX)
@@ -125,10 +125,10 @@ public class WebSecurityAdapter
 
         // 1. Form 로그인 설정
         http.formLogin()
-                .loginPage(Url.AUTH_LGN_FORM)
+                .loginPage(Url.APP_AUTH_LGN_FORM)
                 .usernameParameter("userId")
                 .passwordParameter("password")
-                .loginProcessingUrl(Url.AUTH_LGN_PROC)
+                .loginProcessingUrl(Url.API_AUTH_LGN_PROC)
                 .defaultSuccessUrl(Url.MAIN)
                 .failureHandler(webLgnFailureHandler)
                 .successHandler(webLgnSuccessHandler)
@@ -139,7 +139,7 @@ public class WebSecurityAdapter
 
         // 3. OAuth2 로그인 활성화
         http.oauth2Login()
-                .loginPage(Url.AUTH_LGN_FORM)
+                .loginPage(Url.APP_AUTH_LGN_FORM)
                 .userInfoEndpoint()
                     .userService(oauth2UserService)
                 .and()
@@ -189,14 +189,14 @@ public class WebSecurityAdapter
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 .maximumSessions(1)     // 최대 1개
                 .maxSessionsPreventsLogin(false)        // true:: 나중에 접속한 사용자 로그인 방지, false:: 먼저 접속한 사용자 로그아웃 처리
-                .expiredUrl(Url.AUTH_LGN_FORM + "?dupLgnAt=Y")
+                .expiredUrl(Url.APP_AUTH_LGN_FORM + "?dupLgnAt=Y")
                 .sessionRegistry(sessionRegistry());
 
         // 로그아웃 설정
         http.logout()
-                .logoutRequestMatcher(new AntPathRequestMatcher(Url.AUTH_LGOUT))
-                .logoutUrl(Url.AUTH_LGOUT)
-                .logoutSuccessUrl(Url.AUTH_LGN_FORM)
+                .logoutRequestMatcher(new AntPathRequestMatcher(Url.API_AUTH_LGOUT))
+                .logoutUrl(Url.API_AUTH_LGOUT)
+                .logoutSuccessUrl(Url.APP_AUTH_LGN_FORM)
                 .addLogoutHandler(lgoutHandler)
                 .invalidateHttpSession(true);
 

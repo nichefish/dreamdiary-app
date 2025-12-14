@@ -64,7 +64,7 @@ dF.LgnPwChg = (function(): dfModule {
          * 비밀번호 수정 (Ajax)
          */
         lgnPwChgAjax: function(): void {
-            const url: string = Url.AUTH_LGN_PW_CHG_AJAX;
+            const url: string = Url.API_AUTH_LGN_PW_CHG;
 
             // 순수 JavaScript로 DOM 요소 접근
             const userIdElement: HTMLInputElement = document.getElementById("lgnUserId") as HTMLInputElement;
@@ -79,7 +79,7 @@ dF.LgnPwChg = (function(): dfModule {
                     text: res.message
                 }).then(function(): void {
                     ($("#lgnPwChgForm")[0] as HTMLFormElement).reset();
-                    if (res.rslt) cF.ui.blockUIReplace(Url.AUTH_LGN_FORM);
+                    if (res.rslt) cF.ui.blockUIReplace(Url.APP_AUTH_LGN_FORM);
                 });
             });
         },

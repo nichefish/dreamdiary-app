@@ -42,7 +42,7 @@ public class JrnlDiaryTagRestController
         extends BaseControllerImpl {
 
     @Getter
-    private final String baseUrl = Url.JRNL_DAY_PAGE;             // 기본 URL
+    private final String baseUrl = Url.JRNL_DAY_MONTHLY;             // 기본 URL
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 

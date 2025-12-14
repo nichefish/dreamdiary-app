@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,8 +35,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class BoardDefService
-        implements BaseCrudService<BoardDefDto, BoardDefDto, String, BoardDefEntity, BoardDefRepository, BoardDefSpec, BoardDefMapstruct>,
-        BaseStateService<BoardDefDto, BoardDefDto, String, BoardDefEntity, BoardDefRepository, BoardDefSpec, BoardDefMapstruct> {
+        implements BaseCrudService<BoardDefDto, BoardDefDto, String, BoardDefEntity>,
+        BaseStateService<BoardDefDto, String, BoardDefEntity> {
 
     @Getter
     private final BoardDefRepository repository;
@@ -43,12 +44,19 @@ public class BoardDefService
     private final BoardDefSpec spec;
     @Getter
     private final BoardDefMapstruct mapstruct = BoardDefMapstruct.INSTANCE;
+    public BoardDefMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public BoardDefMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     /**
      * boardDef 목록 메뉴 조회 (SiteAcsInfo 목록 반환)
      *
      * @return {@link List} -- 게시판 정의 목록을 메뉴 정보로 변환한 리스트
      */
+    @Transactional(readOnly = true)
     @Cacheable(value="boardDefMenuList")
     public List<SiteAcsInfo> boardDefMenuList() throws Exception {
         final Map<String, Object> searchParamMap = new HashMap<>() {{
@@ -72,11 +80,25 @@ public class BoardDefService
      *
      * @return {@link SiteAcsInfo} -- 게시판 정의를 메뉴 정보로 변환하여 반환
      */
+    @Transactional(readOnly = true)
     @Cacheable(value="boardMenu", key="#boardDef")
     public SiteAcsInfo getMenuByBoardDef(final String boardDef) throws Exception {
         final BoardDefEntity retrievedEntity = this.getDtlEntity(boardDef);
 
         return mapstruct.toMenu(retrievedEntity);
+    }
+
+    /**
+     * 단일 항목 조회 (dto level)
+     *
+     * @param key 조회할 엔티티의 키
+     * @return {@link BoardDefDto} -- 조회 항목 반환
+     */
+    @Transactional(readOnly = true)
+    public BoardDefDto getDtlDto(final String key) throws Exception {
+        final BoardDefEntity retrievedEntity = this.getDtlEntity(key);
+
+        return mapstruct.toDto(retrievedEntity);
     }
 
     /**
@@ -105,7 +127,7 @@ public class BoardDefService
      * @param updatedDto - 등록된 객체
      */
     @Override
-    public void postModify(final BoardDefDto updatedDto) throws Exception {
+    public void postModify(final BoardDefDto postDto, final BoardDefDto updatedDto) throws Exception {
         EhCacheUtils.evictCacheAll("boardDefMenuList");
         EhCacheUtils.evictCache("boardMenu", updatedDto.getBoardDef());
     }

@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
+import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -76,8 +77,7 @@ public class MenuDto
 
     /** 폴더(중메뉴) 여부 (Y/N) */
     @Builder.Default
-    @Size(min = 1, max = 1)
-    @Pattern(regexp = "^[YN]$")
+    @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
     private String dirYn = "N";
     
     /** 관리자 메뉴 여부 (Y/N) */

@@ -17,11 +17,11 @@ import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class ContentTagService
-        implements BaseCrudService<ContentTagDto, ContentTagDto, Integer, ContentTagEntity, ContentTagRepository, ContentTagSpec, ContentTagMapstruct> {
+        implements BaseCrudService<ContentTagDto, ContentTagDto, Integer, ContentTagEntity> {
 
     @Getter
     private final ContentTagRepository repository;
@@ -48,6 +48,13 @@ public class ContentTagService
     private final ContentTagSpec spec;
     @Getter
     private final ContentTagMapstruct mapstruct = ContentTagMapstruct.INSTANCE;
+
+    public ContentTagMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public ContentTagMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     private final TagSmpRepository tagSmpRepository;
 

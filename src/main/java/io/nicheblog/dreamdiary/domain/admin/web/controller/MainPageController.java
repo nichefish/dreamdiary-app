@@ -52,7 +52,7 @@ public class MainPageController
         // TODO: 접근 권한 통제
 
         // 메인 화면 꾸밀때까지 저널 일자 화면으로 리다이렉트
-        return "redirect:" + Url.JRNL_DAY_PAGE;
+        return "redirect:" + Url.JRNL_DAY_MONTHLY;
     }
 
     /**
@@ -81,7 +81,7 @@ public class MainPageController
      *
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(value = Url.ALIVE_CHECK_AJAX)
+    @GetMapping(value = Url.API_ALIVE_CHECK)
     @ResponseBody
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public ResponseEntity<AjaxResponse> aliveCheck() {

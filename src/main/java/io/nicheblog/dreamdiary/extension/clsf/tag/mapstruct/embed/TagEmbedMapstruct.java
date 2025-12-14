@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.extension.clsf.tag.mapstruct.ContentTagMapstruct;
 import io.nicheblog.dreamdiary.extension.clsf.tag.mapstruct.TagMapstruct;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
@@ -20,7 +21,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, TagMapstruct.class, ContentTagMapstruct.class}, builder = @Builder(disableBuilder = true))
 public interface TagEmbedMapstruct
-        extends BaseMapstruct<TagCmpstn, TagEmbed> {
+        extends BaseWriteMapstruct<TagCmpstn, TagEmbed>, BaseMapstruct<TagCmpstn, TagEmbed> {
 
     TagEmbedMapstruct INSTANCE = Mappers.getMapper(TagEmbedMapstruct.class);
 

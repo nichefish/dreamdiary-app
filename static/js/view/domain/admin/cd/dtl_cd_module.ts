@@ -31,7 +31,7 @@ dF.DtlCd = (function(): dfModule {
             /* jquery validation */
             cF.validate.validateForm("#dtlCdRegForm", dF.DtlCd.regAjax);
             // checkbox init
-            cF.ui.chckboxLabel("useYn", "사용//미사용", "blue//gray");
+            cF.ui.chckboxLabel("#dtlCdRegForm #useYn", "사용//미사용", "blue//gray");
             cF.validate.replaceBlankIfMatches("#dtlCdRegForm #dtlCd", cF.regex.nonCd);
             cF.validate.toUpperCase("#dtlCdRegForm #dtlCd");
         },

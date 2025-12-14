@@ -34,7 +34,7 @@ dF.JrnlTodo = (function(): dfModule {
             /* jquery validation */
             cF.validate.validateForm("#jrnlTodoRegForm", dF.JrnlTodo.regAjax);
             // checkbox init
-            cF.ui.chckboxLabel("imprtcYn", "중요//해당없음", "red//gray");
+            cF.ui.chckboxLabel("#jrnlTodoRegForm #imprtcYn", "중요//해당없음", "red//gray");
             /* tinymce editor reset */
             cF.tinymce.init('#tinymce_jrnlTodoCn');
             cF.tinymce.setContentWhenReady("tinymce_jrnlTodoCn", obj.cn || "");
@@ -54,7 +54,7 @@ dF.JrnlTodo = (function(): dfModule {
             const mnth: string = mnthElmt.value;
             if (cF.util.isEmpty(mnth)) return;
 
-            const url: string = Url.JRNL_TODO_LIST_AJAX;
+            const url: string = Url.JRNL_TODOS;
             const ajaxData: Record<string, any> = { yy, mnth };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {

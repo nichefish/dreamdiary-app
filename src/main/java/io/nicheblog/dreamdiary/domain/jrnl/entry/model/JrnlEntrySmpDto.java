@@ -7,7 +7,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 /**
- * JrnlDreamDto
+ * JrnlEntrySmpDto
  * <pre>
  *  저널 항목 Dto.
  * </pre>

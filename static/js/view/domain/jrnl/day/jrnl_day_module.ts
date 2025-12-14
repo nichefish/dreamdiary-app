@@ -8,20 +8,43 @@ if (typeof dF === 'undefined') { var dF = {} as any; }
 dF.JrnlDay = (function(): dfModule {
     return {
         initialized: false,
+        viewType: null,
         tagify: null,
 
         /**
          * initializes module.
+         * @param {"LIST"|"CAL"|"DAILY"} viewType
          */
-        init: function(): void {
+        init: function(viewType: "LIST"|"CAL"|"DAILY"): void {
             if (dF.JrnlDay.initialized) return;
+
+            dF.JrnlDay.viewType = viewType;
 
             /* initialize submodules. */
             dF.JrnlDayTag.init();
-            dF.JrnlDayAside.init();
 
             dF.JrnlDay.initialized = true;
             console.log("'dF.JrnlDay' module initialized.");
+        },
+
+        /**
+         * refresh
+         */
+        refresh: function(): void {
+            switch (dF.JrnlDay.viewType) {
+                case "LIST":
+                    dF.JrnlDay.yyMnthListAjax();
+                    break;
+                case "CAL":
+                    Page.refreshEventList();
+                    break;
+                case "DAILY":
+                    location.reload();
+                    break;
+            }
+            cF.ui.unblockUI();
+            /* modal history pop */
+            ModalHistory.reset();
         },
 
         /**
@@ -60,8 +83,9 @@ dF.JrnlDay = (function(): dfModule {
             cF.datepicker.singleDatePicker("#jrnlDt", "yyyy-MM-DD", obj.jrnlDt);
             // 날짜미상 datepicker 날짜 검색 init
             cF.datepicker.singleDatePicker("#aprxmtDt", "yyyy-MM-DD", obj.aprxmtDt);
-            // 날짜미상 checkbox init
-            cF.ui.chckboxLabel("dtUnknownYn", "날짜미상//날짜미상", "blue//gray", function(): void {
+            // checkbox init
+            cF.ui.chckboxLabel("#jrnlDayRegForm #diaryResolvedYn", "완료//미완료", "blue//gray");
+            cF.ui.chckboxLabel("#jrnlDayRegForm #dtUnknownYn", "날짜미상//날짜미상", "blue//gray", function(): void {
                 $("#jrnlDayRegForm #jrnlDtDiv").addClass("d-none");
                 $("#jrnlDayRegForm #aprxmtDtDiv").removeClass("d-none");
                 $("#jrnlDayRegForm #aprxmtDt").val($("#jrnlDayRegForm #jrnlDt").val());
@@ -70,8 +94,6 @@ dF.JrnlDay = (function(): dfModule {
                 $("#jrnlDayRegForm #aprxmtDtDiv").addClass("d-none");
                 $("#jrnlDayRegForm #jrnlDt").val($("#jrnlDayRegForm #aprxmtDt").val());
             });
-            // checkbox init
-            cF.ui.chckboxLabel("diaryResolvedYn", "완료//미완료", "blue//gray");
             /* tagify */
             dF.JrnlDay.tagify = cF.tagify.initWithCtgr("#jrnlDayRegForm #tagListStr", dF.JrnlDayTag.ctgrMap);
         },
@@ -80,12 +102,12 @@ dF.JrnlDay = (function(): dfModule {
          * 년도-월 목록 조회 (Ajax)
          */
         yyMnthListAjax: function(): void {
-            const yy: string = localStorage.getItem("jrnl_yy") ?? "9999";
+            const yy: string = cF.util.getUrlParam("yy") ?? localStorage.getItem("jrnl_yy") ?? "9999";
             if (cF.util.isEmpty(yy)) return;
-            const mnth: string = localStorage.getItem("jrnl_mnth") ?? "99";
+            const mnth: string = cF.util.getUrlParam("mnth") ?? localStorage.getItem("jrnl_mnth") ?? "99";
             if (cF.util.isEmpty(mnth)) return;
 
-            const url: string = Url.JRNL_DAY_LIST_AJAX + "?yy=" + yy + "&mnth=" + mnth;
+            const url: string = Url.JRNL_DAYS + `?viewType=list&yy=${yy}&mnth=${mnth}`;
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -104,10 +126,33 @@ dF.JrnlDay = (function(): dfModule {
                 $("#jrnl_dream_list_div").empty();
                 cF.ui.closeModal();
                 cF.handlebars.template(rsltList, "jrnl_day_list");
+                KTMenu.createInstances();
+            }, "block");
+        },
 
-                /* 글접기 처리 (localStorage) */
-                dF.JrnlDiary.initCollapseState();
-                dF.JrnlDream.initCollapseState();
+        /**
+         * 일자 조회 새 창 열기
+         * @param {string} stdrdDt 기준 일자
+         */
+        openDetatched: function(stdrdDt: string): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DAY_VIEW, { stdrdDt });
+            window.open(url, '_blank', 'noopener,noreferrer');
+        },
+
+        /**
+         * 상세 일자 데이터 조회 (Ajax)
+         * @param {string} stdrdDt 기준 일자
+         */
+        getStdrdData: function(stdrdDt: string): void {
+            const url: string = Url.JRNL_DAYS + `?viewType=daily&stdrdDt=${stdrdDt}`;
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    return;
+                }
+                const { rsltList } = res;
+                cF.handlebars.template(rsltList, "jrnl_day_list");
+                KTMenu.createInstances();
             }, "block");
         },
 
@@ -127,8 +172,8 @@ dF.JrnlDay = (function(): dfModule {
          * 사이드바 기준으로 등록 모달 날짜 계산:: 메소드 분리
          */
         validDt: function(): string {
-            const yy: string = localStorage.getItem("jrnl_yy");
-            const mnth: string = localStorage.getItem("jrnl_mnth");
+            const yy: string = cF.util.getUrlParam("yy") ?? localStorage.getItem("jrnl_yy");
+            const mnth: string = cF.util.getUrlParam("mnth") ?? localStorage.getItem("jrnl_mnth");
 
             const year: number = parseInt(yy, 10);
             let month: number = parseInt(mnth, 10);
@@ -174,30 +219,23 @@ dF.JrnlDay = (function(): dfModule {
          */
         regAjax: function(): void {
             const postNoElmt: HTMLInputElement = document.querySelector("#jrnlDayRegForm [name='postNo']");
-            const isReg: boolean = postNoElmt?.value === "";
+            const postNo: string = postNoElmt?.value;
+            const isMdf: boolean = !!postNo;
             Swal.fire({
-                text: Message.get(isReg ? "view.cnfm.reg" : "view.cnfm.mdf"),
+                text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = isReg ? Url.JRNL_DAY_REG_AJAX : Url.JRNL_DAY_MDF_AJAX;
+                const url: string = isMdf ? cF.util.bindUrl(Url.JRNL_DAY, { postNo }) : Url.JRNL_DAYS;
                 const ajaxData: FormData = new FormData(document.getElementById("jrnlDayRegForm") as HTMLFormElement);
                 cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            const isCalendar: boolean = Page?.calendar != null;
-                            if (isCalendar) {
-                                Page.refreshEventList();
-                            } else {
-                                dF.JrnlDay.yyMnthListAjax();
-                            }
+                            dF.JrnlDay.refresh();
                             dF.JrnlDayTag.listAjax();     // 태그 refresh
-
-                            /* modal history pop */
-                            ModalHistory.reset();
                         });
                 }, "block");
             });
@@ -220,9 +258,8 @@ dF.JrnlDay = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = Url.JRNL_DAY_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "postNo" : postNo };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DAY, { postNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
@@ -253,9 +290,8 @@ dF.JrnlDay = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = Url.JRNL_DAY_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "postNo" : postNo };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DAY, { postNo })
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
@@ -282,23 +318,14 @@ dF.JrnlDay = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = Url.JRNL_DAY_DEL_AJAX;
-                const ajaxData: Record<string, any> = { "postNo": postNo };
-                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                const url: string = cF.util.bindUrl(Url.JRNL_DAY, { postNo });
+                cF.$ajax.delete(url, null, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            const isCalendar: boolean = Page?.calendar != null;
-                            if (isCalendar) {
-                                Page.refreshEventList();
-                            } else {
-                                dF.JrnlDay.yyMnthListAjax();
-                            }
+                            dF.JrnlDay.refresh();
                             dF.JrnlDayTag.listAjax();     // 태그 refresh
-
-                            /* modal history pop */
-                            ModalHistory.reset();
                         });
                 }, "block");
             });

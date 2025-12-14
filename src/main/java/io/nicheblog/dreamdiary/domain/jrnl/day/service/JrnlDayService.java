@@ -9,7 +9,16 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDaySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.day.repository.jpa.JrnlDayRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.day.repository.mybatis.JrnlDayMapper;
 import io.nicheblog.dreamdiary.domain.jrnl.day.spec.JrnlDaySpec;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
+import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntryEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntryDto;
+import io.nicheblog.dreamdiary.domain.jrnl.intrpt.entity.JrnlIntrptEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.intrpt.model.JrnlIntrptDto;
+import io.nicheblog.dreamdiary.domain.jrnl.state.JrnlState;
+import io.nicheblog.dreamdiary.domain.jrnl.state.JrnlStateMaps;
 import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
@@ -22,15 +31,13 @@ import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * JrnlDayService
@@ -44,7 +51,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Log4j2
 public class JrnlDayService
-        implements BaseClsfService<JrnlDayDto, JrnlDayDto, Integer, JrnlDayEntity, JrnlDayRepository, JrnlDaySpec, JrnlDayMapstruct> {
+        implements BaseClsfService<JrnlDayDto, JrnlDayDto, Integer, JrnlDayEntity> {
 
     @Getter
     private final JrnlDayRepository repository;
@@ -52,6 +59,13 @@ public class JrnlDayService
     private final JrnlDaySpec spec;
     @Getter
     private final JrnlDayMapstruct mapstruct = JrnlDayMapstruct.INSTANCE;
+
+    public JrnlDayMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public JrnlDayMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     private final JrnlDayMapper jrnlDayMapper;
     private final ApplicationEventPublisherWrapper publisher;
@@ -72,8 +86,77 @@ public class JrnlDayService
     public List<JrnlDayDto> getMyListDto(final String lgnUserId, final JrnlDaySearchParam searchParam) throws Exception {
         searchParam.setRegstrId(lgnUserId);
 
-        final List<JrnlDayEntity> myJrnlDayListEntity = this.getSelf().getListEntity(searchParam);
-        return this.getSelf().listEntityToDto(myJrnlDayListEntity);
+        final List<JrnlDayEntity> myJrnlDayEntityList = this.getSelf().getListEntity(searchParam);
+
+        // 1) stateMap 만들기
+        final JrnlStateMaps maps = makeJrnlStateMaps(myJrnlDayEntityList, searchParam);
+
+        // 2) 캐시에 저장
+        final String cacheKey = AuthUtils.getLgnUserId() + "_" + searchParam.getYy() + "_" + searchParam.getMnth();
+        EhCacheUtils.put("myDiaryStateMap", cacheKey, maps.getDiaryMap());
+        EhCacheUtils.put("myDreamStateMap", cacheKey, maps.getDreamMap());
+        EhCacheUtils.put("myIntrptStateMap", cacheKey, maps.getIntrptMap());
+
+        return mapstruct.toDtoList(myJrnlDayEntityList);
+    }
+
+    /**
+     * 내 기준일자 조회 (dto level) :: 캐시 처리
+     *
+     * @param lgnUserId 사용자 ID
+     * @param searchParam 검색 조건이 담긴 파라미터 객체
+     * @return {@link List} -- 조회된 목록
+     */
+    public List<JrnlDayDto> getMyJrnlStdrdDays(final String lgnUserId, final JrnlDaySearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(lgnUserId);
+
+        final List<JrnlDayEntity> myJrnlDayEntityList = this.getSelf().getListEntity(searchParam);
+
+        return mapstruct.toDtoList(myJrnlDayEntityList);
+    }
+
+    /**
+     * 각 게시물 타입(일기/꿈/해석)의 상태(resolvedYn, collapsedYn)를 별도의 Map(postNo → JrnlState)으로 구성해 반환한다.
+     * @param myJrnlDayEntityList 조회된 JrnlDayEntity 전체 목록
+     * @param searchParam 조회 조건(연도/월 등). 캐시 키 생성은 호출부에서 수행하며, 본 메서드는 단순히 상태맵 생성만 담당한다.
+     * @return {@link JrnlStateMaps}
+     *  diaryMap: 일기(postNo → JrnlState)
+     *  dreamMap: 꿈(postNo → JrnlState)
+     *  intrptMap: 해석(postNo → JrnlState)
+     */
+    private JrnlStateMaps makeJrnlStateMaps(final List<JrnlDayEntity> myJrnlDayEntityList, final JrnlDaySearchParam searchParam) {
+        final Map<Integer, JrnlState> diaryMap = new HashMap<>();
+        final Map<Integer, JrnlState> dreamMap = new HashMap<>();
+        final Map<Integer, JrnlState> intrptMap = new HashMap<>();
+
+        for (final JrnlDayEntity day : myJrnlDayEntityList) {
+            final List<JrnlEntryEntity> myJrnlEntryList = day.getJrnlEntryList();
+            if (CollectionUtils.isNotEmpty(myJrnlEntryList)) {
+                for (final JrnlEntryEntity entry : myJrnlEntryList) {
+                    final List<JrnlDiaryEntity> myJrnlDiaryList = entry.getJrnlDiaryList();
+                    if (CollectionUtils.isNotEmpty(myJrnlDiaryList)) {
+                        for (final JrnlDiaryEntity diary : myJrnlDiaryList) {
+                            diaryMap.put(diary.getPostNo(), JrnlState.of(diary.getResolvedYn(), diary.getCollapsedYn(), diary.getImprtcYn()));
+                        }
+                    }
+                }
+            }
+
+            final List<JrnlDreamEntity> myJrnlDreamList = day.getJrnlDreamList();
+            if (CollectionUtils.isNotEmpty(myJrnlDreamList)) {
+                for (final JrnlDreamEntity dream : myJrnlDreamList) {
+                    dreamMap.put(dream.getPostNo(), JrnlState.of(dream.getResolvedYn(), dream.getCollapsedYn(), dream.getImprtcYn()));
+
+                    final List<JrnlIntrptEntity> myJrnlIntrptList = dream.getJrnlIntrptList();
+                    if (CollectionUtils.isNotEmpty(myJrnlIntrptList)) {
+                        for (final JrnlIntrptEntity intrpt : myJrnlIntrptList) {
+                            intrptMap.put(intrpt.getPostNo(), JrnlState.of(intrpt.getResolvedYn(), intrpt.getCollapsedYn(), intrpt.getImprtcYn()));
+                        }
+                    }
+                }
+            }
+        }
+        return new JrnlStateMaps(diaryMap, dreamMap, intrptMap);
     }
 
     /**
@@ -91,7 +174,106 @@ public class JrnlDayService
         final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
         this.setHldyInfo(listDto, hldyMap);
 
+        // resolved/collapse 상태 merge
+        this.mergeStates(listDto, searchParam);
+
         return listDto;
+    }
+
+    /**
+     * 내 기준일자 조회 (dto level) + 공휴일 정보 추가
+     *
+     * @param lgnUserId 사용자 ID
+     * @param searchParam 검색 조건이 담긴 파라미터 객체
+     * @return {@link List} -- 조회된 목록
+     */
+    @SuppressWarnings("unchecked")
+    public List<JrnlDayDto> getMyStdrdDtoWithHldy(final String lgnUserId, final JrnlDaySearchParam searchParam) throws Exception {
+        final List<JrnlDayDto> listDto = this.getSelf().getMyJrnlStdrdDays(lgnUserId, searchParam);
+
+        // 공휴일 정보 세팅
+        final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
+        this.setHldyInfo(listDto, hldyMap);
+
+        return listDto;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void mergeStates(final List<JrnlDayDto> listDto, final JrnlDaySearchParam searchParam) {
+        String cacheKey = AuthUtils.getLgnUserId()
+                   + "_" + searchParam.getYy()
+                   + "_" + searchParam.getMnth();
+
+        Map<Integer, JrnlState> diaryMap  = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myDiaryStateMap",  cacheKey);
+        Map<Integer, JrnlState> dreamMap  = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myDreamStateMap",  cacheKey);
+        Map<Integer, JrnlState> intrptMap = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myIntrptStateMap", cacheKey);
+
+        diaryMap  = diaryMap  == null ? Collections.emptyMap() : diaryMap;
+        dreamMap  = dreamMap  == null ? Collections.emptyMap() : dreamMap;
+        intrptMap = intrptMap == null ? Collections.emptyMap() : intrptMap;
+
+        applyStates(listDto, diaryMap, dreamMap, intrptMap);
+    }
+
+    private void applyStates(
+        final List<JrnlDayDto> listDto,
+        final Map<Integer, JrnlState> diaryMap,
+        final Map<Integer, JrnlState> dreamMap,
+        final Map<Integer, JrnlState> intrptMap
+    ) {
+        for (JrnlDayDto day : listDto) {
+
+            if (CollectionUtils.isNotEmpty(day.getEntryList())) {
+                for (final JrnlEntryDto entry : day.getJrnlEntryList()) {
+                    if (entry.getJrnlDiaryList() != null) {
+                        for (final JrnlDiaryDto diary : entry.getJrnlDiaryList()) {
+                            final JrnlState s = diaryMap.get(diary.getPostNo());
+                            if (s != null) {
+                                diary.setCollapsedYn(s.getCollapsedYn());
+                                diary.setResolvedYn(s.getResolvedYn());
+                                diary.setImprtcYn(s.getImprtcYn());
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (CollectionUtils.isNotEmpty(day.getJrnlDreamList())) {
+                for (final JrnlDreamDto dream : day.getJrnlDreamList()) {
+
+                    final JrnlState s = dreamMap.get(dream.getPostNo());
+                    if (s != null) {
+                        dream.setCollapsedYn(s.getCollapsedYn());
+                        dream.setResolvedYn(s.getResolvedYn());
+                        dream.setImprtcYn(s.getImprtcYn());
+                    }
+
+                    if (CollectionUtils.isNotEmpty(dream.getJrnlIntrptList())) {
+                        for (final JrnlIntrptDto intrpt : dream.getJrnlIntrptList()) {
+                            final JrnlState d = intrptMap.get(intrpt.getPostNo());
+                            if (d != null) {
+                                intrpt.setCollapsedYn(d.getCollapsedYn());
+                                intrpt.setResolvedYn(d.getResolvedYn());
+                                intrpt.setImprtcYn(d.getImprtcYn());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 단일 항목 조회 (dto level)
+     *
+     * @param key 조회할 엔티티의 키
+     * @return {@link JrnlDayDto} -- 조회 항목 반환
+     */
+    @Transactional(readOnly = true)
+    public JrnlDayDto getDtlDto(final Integer key) throws Exception {
+        final JrnlDayEntity retrievedEntity = this.getDtlEntity(key);
+
+        return mapstruct.toDto(retrievedEntity);
     }
 
     /**
@@ -127,6 +309,7 @@ public class JrnlDayService
         return existingEntity.getPostNo();
     }
 
+
     /**
      * 특정 태그의 관련 일자 목록 조회
      *
@@ -137,7 +320,8 @@ public class JrnlDayService
     public List<JrnlDayDto> jrnlDayTagDtl(final JrnlDaySearchParam searchParam) throws Exception {
         searchParam.setSort("DESC");
 
-        return this.getSelf().getListDto(searchParam);
+        final List<JrnlDayEntity> listEntity = this.getSelf().getListEntity(searchParam);
+        return mapstruct.toDtoList(listEntity);
     }
 
     /**
@@ -159,9 +343,9 @@ public class JrnlDayService
     @Override
     public void postRegist(final JrnlDayDto updatedDto) throws Exception {
         // 태그 처리 :: 메인 로직과 분리
-        publisher.publishEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
+        publisher.publishCustomEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
         // 관련 캐시 삭제
-        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DAY));
+        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DAY));
     }
 
     /**
@@ -172,7 +356,8 @@ public class JrnlDayService
      */
     @Cacheable(value="myJrnlDayDtlDto", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #key")
     public JrnlDayDto getDtlDtoWithCache(final Integer key) throws Exception {
-        final JrnlDayDto retrieved = this.getSelf().getDtlDto(key);
+        final JrnlDayEntity retrievedEntity = this.getSelf().getDtlEntity(key);
+        final JrnlDayDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
         if (!retrieved.getIsRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("common.rslt.access-not-authorized"));
 
@@ -213,11 +398,11 @@ public class JrnlDayService
      * @param updatedDto - 등록된 객체
      */
     @Override
-    public void postModify(final JrnlDayDto updatedDto) throws Exception {
+    public void postModify(final JrnlDayDto postDto, final JrnlDayDto updatedDto) throws Exception {
         // 태그 처리 :: 메인 로직과 분리
-        publisher.publishEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
+        publisher.publishCustomEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
         // 관련 캐시 삭제
-        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DAY));
+        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DAY));
     }
 
     /**
@@ -247,9 +432,9 @@ public class JrnlDayService
     @Override
     public void postDelete(final JrnlDayDto deletedDto) throws Exception {
         // 태그 처리 :: 메인 로직과 분리
-        publisher.publishEvent(new JrnlTagProcEvent(this, deletedDto.getClsfKey(), deletedDto.getYy(), deletedDto.getMnth()));
+        publisher.publishCustomEvent(new JrnlTagProcEvent(this, deletedDto.getClsfKey(), deletedDto.getYy(), deletedDto.getMnth()));
         // 관련 캐시 삭제
-        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DAY));
+        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DAY));
     }
 
     /**
@@ -272,7 +457,7 @@ public class JrnlDayService
     private void setHldyInfo(final List<JrnlDayDto> jrnlDayList, final Map<String, List<String>> hldyMap) throws Exception {
         if (CollectionUtils.isEmpty(jrnlDayList) || hldyMap == null) return;
 
-        for (JrnlDayDto jrnlDay : jrnlDayList) {
+        for (final JrnlDayDto jrnlDay : jrnlDayList) {
             setHldyInfo(jrnlDay, hldyMap);
         }
     }

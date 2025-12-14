@@ -13,15 +13,15 @@ import io.nicheblog.dreamdiary.extension.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.event.ViewerAddEvent;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
-import io.nicheblog.dreamdiary.global.intrfc.service.BasePostService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class VcatnPaprService
-        implements BasePostService<VcatnPaprDto.DTL, VcatnPaprDto.LIST, Integer, VcatnPaprEntity, VcatnPaprRepository, VcatnPaprSpec, VcatnPaprMapstruct> {
+        implements BaseClsfService<VcatnPaprDto, VcatnPaprDto, Integer, VcatnPaprEntity> {
 
     @Getter
     private final VcatnPaprRepository repository;
@@ -47,6 +47,13 @@ public class VcatnPaprService
     private final VcatnPaprSpec spec;
     @Getter
     private final VcatnPaprMapstruct mapstruct = VcatnPaprMapstruct.INSTANCE;
+
+    public VcatnPaprMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public VcatnPaprMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     private final VcatnSchdulService vcatnSchdulService;
     private final VcatnStatsYyService vcatnStatsYyService;
@@ -71,12 +78,25 @@ public class VcatnPaprService
     }
 
     /**
+     * 단일 항목 조회 (dto level)
+     *
+     * @param key 조회할 엔티티의 키
+     * @return {@link VcatnPaprDto} -- 조회 항목 반환
+     */
+    @Transactional(readOnly = true)
+    public VcatnPaprDto getDtlDto(final Integer key) throws Exception {
+        final VcatnPaprEntity retrievedEntity = this.getDtlEntity(key);
+
+        return mapstruct.toDto(retrievedEntity);
+    }
+
+    /**
      * 등록 전처리. (override)
      *
      * @param registDto 등록할 객체
      */
     @Override
-    public void preRegist(final VcatnPaprDto.DTL registDto) {
+    public void preRegist(final VcatnPaprDto registDto) {
         // 제목 자동 처리
         registDto.setTitle(this.initTitle(registDto));
     }
@@ -87,20 +107,24 @@ public class VcatnPaprService
      * @param updatedDto - 등록된 객체
      */
     @Override
-    public void postRegist(final VcatnPaprDto.DTL updatedDto) throws Exception {
+    public void postRegist(final VcatnPaprDto updatedDto) throws Exception {
         // 조치자 추가 :: 메인 로직과 분리
         publisher.publishEvent(new ViewerAddEvent(this, updatedDto.getClsfKey()));
     }
 
     /**
-     * 상세 페이지 조회 후처리 (dto level)
+     * default: 상세 페이지 조회
      *
-     * @param retrievedDto - 조회된 Dto 객체
+     * @param key 조회수를 증가시킬 항목의 키
+     * @return Dto -- 조회된 객체
      */
-    @Override
-    public void postViewDtlPage(final VcatnPaprDto.DTL retrievedDto) throws Exception {
-        // 열람자 추가 :: 메인 로직과 분리
-        publisher.publishEvent(new ViewerAddEvent(this, retrievedDto.getClsfKey()));
+    @Transactional
+    public VcatnPaprDto viewDtlPage(final Integer key) throws Exception {
+
+        // 조회수 증가
+        // this.hitCntUp(key);
+
+        return this.getDtlDto(key);
     }
 
     /**
@@ -109,7 +133,7 @@ public class VcatnPaprService
      * @param modifyDto 수정할 객체
      */
     @Override
-    public void preModify(final VcatnPaprDto.DTL modifyDto) {
+    public void preModify(final VcatnPaprDto modifyDto) {
         // 제목 자동 처리
         modifyDto.setTitle(this.initTitle(modifyDto));
     }
@@ -120,7 +144,7 @@ public class VcatnPaprService
      * @param updatedDto - 등록된 객체
      */
     @Override
-    public void postModify(final VcatnPaprDto.DTL updatedDto) throws Exception {
+    public void postModify(final VcatnPaprDto postDto, final VcatnPaprDto updatedDto) throws Exception {
         // 조치자 추가 :: 메인 로직과 분리
         publisher.publishEvent(new ViewerAddEvent(this, updatedDto.getClsfKey()));
     }

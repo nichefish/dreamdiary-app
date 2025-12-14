@@ -27,7 +27,7 @@ import java.util.List;
 @Service("atchFileService")
 @RequiredArgsConstructor
 public class AtchFileService
-        implements BaseCrudService<AtchFileDto, AtchFileDto, Integer, AtchFileEntity, AtchFileRepository, AtchFileSpec, AtchFileMapstruct> {
+        implements BaseCrudService<AtchFileDto, AtchFileDto, Integer, AtchFileEntity> {
 
     @Getter
     private final AtchFileRepository repository;
@@ -35,6 +35,13 @@ public class AtchFileService
     private final AtchFileSpec spec;
     @Getter
     private final AtchFileMapstruct mapstruct = AtchFileMapstruct.INSTANCE;
+
+    public AtchFileMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public AtchFileMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     private final AtchFileDtlService atchFileDtlService;
 

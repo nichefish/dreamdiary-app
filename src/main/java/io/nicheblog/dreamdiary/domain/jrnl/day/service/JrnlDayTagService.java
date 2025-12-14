@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class JrnlDayTagService
-        implements BaseReadonlyService<TagDto, TagDto, Integer, JrnlDayTagEntity, JrnlDayTagRepository, JrnlDayTagSpec, JrnlDayTagMapstruct> {
+        implements BaseReadonlyService<TagDto, Integer, JrnlDayTagEntity> {
 
     @Getter
     private final JrnlDayTagRepository repository;
@@ -45,6 +45,13 @@ public class JrnlDayTagService
     private final JrnlDayTagSpec spec;
     @Getter
     private final JrnlDayTagMapstruct mapstruct = JrnlDayTagMapstruct.INSTANCE;
+
+    public JrnlDayTagMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public JrnlDayTagMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     private final ApplicationContext context;
     private JrnlDayTagService getSelf() {
@@ -61,8 +68,9 @@ public class JrnlDayTagService
     @Cacheable(value="myJrnlDayTagList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
     public List<TagDto> getListDtoWithCache(final Integer yy, final Integer mnth) throws Exception {
         final JrnlDaySearchParam searchParam = JrnlDaySearchParam.builder().yy(yy).mnth(mnth).build();
+        final List<JrnlDayTagEntity> tagList = this.getSelf().getListEntity(searchParam);
 
-        return this.getSelf().getListDto(searchParam);
+        return mapstruct.toDtoList(tagList);
     }
 
     /**

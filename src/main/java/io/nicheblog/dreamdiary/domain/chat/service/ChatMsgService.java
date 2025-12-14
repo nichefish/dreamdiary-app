@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.domain.chat.mapstruct.ChatMsgMapstruct;
 import io.nicheblog.dreamdiary.domain.chat.model.ChatMsgDto;
 import io.nicheblog.dreamdiary.domain.chat.repository.jpa.ChatMsgRepository;
 import io.nicheblog.dreamdiary.domain.chat.spec.ChatMsgSpec;
-import io.nicheblog.dreamdiary.global.intrfc.service.BasePostService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Log4j2
 public class ChatMsgService
-        implements BasePostService<ChatMsgDto, ChatMsgDto, Integer, ChatMsgEntity, ChatMsgRepository, ChatMsgSpec, ChatMsgMapstruct> {
+        implements BaseClsfService<ChatMsgDto, ChatMsgDto, Integer, ChatMsgEntity> {
 
     @Getter
     private final ChatMsgRepository repository;
@@ -31,4 +31,11 @@ public class ChatMsgService
     private final ChatMsgSpec spec;
     @Getter
     private final ChatMsgMapstruct mapstruct = ChatMsgMapstruct.INSTANCE;
+
+    public ChatMsgMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public ChatMsgMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 }

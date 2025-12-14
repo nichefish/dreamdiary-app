@@ -60,7 +60,7 @@ class NoticeMapstructTest {
     @Test
     void testToEntity_checkBasic() throws Exception {
         // Given::
-        NoticeDto.DTL noticeDto = NoticeDtoTestFactory.create();
+        NoticeDto noticeDto = NoticeDtoTestFactory.create();
 
         // When::
         NoticeEntity noticeEntity = noticeMapstruct.toEntity(noticeDto);

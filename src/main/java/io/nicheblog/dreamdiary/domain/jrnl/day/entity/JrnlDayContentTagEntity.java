@@ -31,7 +31,6 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @Where(clause = "ref_content_type='JRNL_DAY' AND del_yn='N'")
 @SQLDelete(sql = "UPDATE content_tag SET del_yn = 'Y' WHERE content_tag_no = ?")
-@Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class JrnlDayContentTagEntity
         extends BaseAuditRegEntity {

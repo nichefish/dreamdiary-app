@@ -19,7 +19,7 @@
             </div>
             <div class="col-10">
                 <div class="form-check form-switch mt-2 form-check-custom form-check-solid">
-                    <input type="checkbox" name="mngrYn" id="useYn" class="form-check-input"
+                    <input type="checkbox" name="mngrYn" id="useYn" class="form-check-input cursor-pointer"
                            value="Y" {{checkedYn mngrYn}} />
                     <label class="form-check-label ms-3" for="useYn" id="useYnLabel" {{checkedYnStyle mngrYn "color" "blue//gray"}}>
                         {{^ifYn mngrYn}}미{{/ifYn}}해당
@@ -159,7 +159,7 @@
         </div>
         <div class="col-10">
             <div class="form-check form-switch mt-2 form-check-custom form-check-solid">
-                <input type="checkbox" name="state.useYn" id="useYn" class="form-check-input"
+                <input type="checkbox" name="state.useYn" id="useYn" class="form-check-input cursor-pointer"
                        value="Y" {{checkedYn state.useYn}} />
                 <label class="form-check-label ms-3" for="useYn" id="useYnLabel" {{checkedYnStyle state.useYn "color" "blue//gray"}}>
                     {{^ifYn state.useYn}}미{{/ifYn}}사용

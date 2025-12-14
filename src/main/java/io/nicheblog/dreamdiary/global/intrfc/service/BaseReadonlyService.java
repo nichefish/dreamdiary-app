@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.global.intrfc.service;
 
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseCrudMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
@@ -18,8 +18,6 @@ import javax.persistence.EntityNotFoundException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,16 +30,14 @@ import java.util.stream.Stream;
  *
  * @author nichefish
  */
-public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>, ListDto extends BaseCrudDto, Key extends Serializable, Entity extends BaseCrudEntity, Repository extends BaseStreamRepository<Entity, Key>, Spec extends BaseSpec<Entity>, Mapstruct extends BaseCrudMapstruct<Dto, ListDto, Entity>> {
+public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>, Key extends Serializable, Entity extends BaseCrudEntity> {
 
     // Resource : repository
-    Repository getRepository();
-
+    BaseStreamRepository<Entity, Key> getRepository();
     // Resource : spec
-    Spec getSpec();
-
+    BaseSpec<Entity> getSpec();
     // Resource : mapstruct
-    Mapstruct getMapstruct();
+    BaseReadMapstruct<Dto, Entity> getReadMapstruct();
 
     /**
      * default: 항목 페이징 목록 조회 (dto level)
@@ -51,7 +47,7 @@ public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>
      * @return {@link Page} -- 페이징 처리된 목록 (dto level)
      */
     @Transactional(readOnly = true)
-    default Page<ListDto> getPageDto(final BaseSearchParam searchParam, final Pageable pageable) throws Exception {
+    default Page<Dto> getPageDto(final BaseSearchParam searchParam, final Pageable pageable) throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
 
         return this.getPageDto(searchParamMap, pageable);
@@ -65,7 +61,7 @@ public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>
      * @return {@link Page} -- 페이징 처리된 목록 (dto level)
      */
     @Transactional(readOnly = true)
-    default Page<ListDto> getPageDto(final Map<String, Object> searchParamMap, final Pageable pageable) throws Exception {
+    default Page<Dto> getPageDto(final Map<String, Object> searchParamMap, final Pageable pageable) throws Exception {
         // searchParamMap에서 빈 값들 및 쓸모없는 값들 정리
         final Map<String, Object> filteredSearchKey = CmmUtils.Param.filterParamMap(searchParamMap);
 
@@ -93,10 +89,7 @@ public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>
      * @return {@link Page} -- 페이징 처리된 목록 (entity level)
      */
     default Page<Entity> getPageEntity(final Map<String, Object> searchParamMap, final Pageable pageable) throws Exception {
-        final Repository repository = this.getRepository();
-        final Spec spec = this.getSpec();
-
-        return repository.findAll(spec.searchWith(searchParamMap), pageable);
+        return getRepository().findAll(getSpec().searchWith(searchParamMap), pageable);
     }
 
     /**
@@ -105,13 +98,12 @@ public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>
      * @param entityPage 페이징 처리된 Entity 목록
      * @return {@link Page} -- 변환된 페이징 처리된 Dto 목록
      */
-    default Page<ListDto> pageEntityToDto(final Page<Entity> entityPage) throws Exception {
-        final Mapstruct mapstruct = this.getMapstruct();
+    default Page<Dto> pageEntityToDto(final Page<Entity> entityPage) throws Exception {
         final AtomicInteger counter = new AtomicInteger(0);
-        final List<ListDto> dtoList = entityPage.stream()
+        final List<Dto> dtoList = entityPage.stream()
                 .map(entity -> {
                     try {
-                        final ListDto listDto = mapstruct.toListDto(entity);
+                        final Dto listDto = getReadMapstruct().toDto(entity);
                         listDto.setRnum(CmmUtils.getPageRnum(entityPage, counter.getAndIncrement()));
                         return listDto;
                     } catch (final Exception e) {
@@ -132,7 +124,7 @@ public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>
      * @return {@link List} -- 목록 (dto level)
      */
     @Transactional(readOnly = true)
-    default List<ListDto> getListDto(final BaseSearchParam searchParam) throws Exception {
+    default List<Dto> getListDto(final BaseSearchParam searchParam) throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
 
         return this.getListDto(searchParamMap);
@@ -145,7 +137,7 @@ public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>
      * @return {@link List} -- 목록 (dto level)
      */
     @Transactional(readOnly = true)
-    default List<ListDto> getListDto(final Map<String, Object> searchParamMap) throws Exception {
+    default List<Dto> getListDto(final Map<String, Object> searchParamMap) throws Exception {
         // searchParamMap에서 빈 값들 및 쓸모없는 값들 정리
         final Map<String, Object> filteredSearchKey = CmmUtils.Param.filterParamMap(searchParamMap);
         final List<Entity> retrievedListEntity = this.getListEntity(filteredSearchKey);
@@ -161,7 +153,7 @@ public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>
      * @return {@link List} -- 목록 (dto level)
      */
     @Transactional(readOnly = true)
-    default List<ListDto> getListDto(final BaseSearchParam searchParam, Sort sort) throws Exception {
+    default List<Dto> getListDto(final BaseSearchParam searchParam, Sort sort) throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
 
         return this.getListDto(searchParamMap, sort);
@@ -175,7 +167,7 @@ public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>
      * @return {@link List} -- 목록 (dto level)
      */
     @Transactional(readOnly = true)
-    default List<ListDto> getListDto(final Map<String, Object> searchParamMap, Sort sort) throws Exception {
+    default List<Dto> getListDto(final Map<String, Object> searchParamMap, Sort sort) throws Exception {
         // searchParamMap에서 빈 값들 및 쓸모없는 값들 정리
         final Map<String, Object> filteredSearchKey = CmmUtils.Param.filterParamMap(searchParamMap);
         final List<Entity> retrievedListEntity = this.getListEntity(filteredSearchKey, sort);
@@ -203,10 +195,7 @@ public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>
      * @return {@link List} -- 목록 (entity level)
      */
     default List<Entity> getListEntity(final Map<String, Object> searchParamMap) throws Exception {
-        final Repository repository = this.getRepository();
-        final Spec spec = this.getSpec();
-
-        return repository.findAll(spec.searchWith(searchParamMap));
+        return getRepository().findAll(getSpec().searchWith(searchParamMap));
     }
 
     /**
@@ -230,10 +219,7 @@ public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>
      * @return {@link List} -- 목록 (entity level)
      */
     default List<Entity> getListEntity(final Map<String, Object> searchParamMap, Sort sort) throws Exception {
-        final Repository repository = this.getRepository();
-        final Spec spec = this.getSpec();
-
-        return repository.findAll(spec.searchWith(searchParamMap), sort);
+        return getRepository().findAll(getSpec().searchWith(searchParamMap), sort);
     }
 
     /**
@@ -242,13 +228,11 @@ public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>
      * @param entityList Entity 목록
      * @return {@link Page} -- 변환된 Dto 목록
      */
-    default List<ListDto> listEntityToDto(final List<Entity> entityList) throws Exception {
-        final Mapstruct mapstruct = this.getMapstruct();
-
+    default List<Dto> listEntityToDto(final List<Entity> entityList) throws Exception {
         return entityList.stream()
                 .map(entity -> {
                     try {
-                        return mapstruct.toListDto(entity);
+                        return getReadMapstruct().toDto(entity);
                     } catch (final Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -280,10 +264,8 @@ public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>
     @Transactional(readOnly = true)
     default Stream<Entity> getStreamEntity(final Map<String, Object> searchParamMap) throws Exception {
         final Map<String, Object> filteredSearchKey = CmmUtils.Param.filterParamMap(searchParamMap);
-        final Repository repository = this.getRepository();
-        final Spec spec = this.getSpec();
 
-        return repository.streamAllBy(spec.searchWith(filteredSearchKey));
+        return getRepository().streamAllBy(getSpec().searchWith(filteredSearchKey));
     }
 
     /**
@@ -310,10 +292,8 @@ public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>
     @Transactional(readOnly = true)
     default Stream<Entity> getStreamEntity(final Map<String, Object> searchParamMap, Sort sort) throws Exception {
         final Map<String, Object> filteredSearchKey = CmmUtils.Param.filterParamMap(searchParamMap);
-        final Repository repository = this.getRepository();
-        final Spec spec = this.getSpec();
 
-        return repository.streamAllBy(spec.searchWith(filteredSearchKey), sort);
+        return getRepository().streamAllBy(getSpec().searchWith(filteredSearchKey), sort);
     }
 
     /* ----- */
@@ -325,21 +305,17 @@ public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>
      * @return {@link Entity} -- 조회된 객체
      */
     default Entity getDtlEntity(final Key key) throws Exception {
-        // 의존성 주입
-        final Repository repository = this.getRepository();
-        final Optional<Entity> retrievedWrapper = repository.findById(key);
-
-        return Objects.requireNonNull(retrievedWrapper.orElseThrow(() -> new EntityNotFoundException("해당 정보가 존재하지 않습니다.")));
+        return getRepository().findById(key).orElseThrow(() -> new EntityNotFoundException("해당 정보가 존재하지 않습니다."));
     }
 
     /**
-     * default: 단일 항목 조회 (entity level)
+     * default: 단일 항목 조회 (entity level) = 부재시 null
      *
-     * @param dto 조회할 Key 정보가 담긴 Dto
+     * @param key 조회할 엔티티의 키
      * @return {@link Entity} -- 조회된 객체
      */
-    default Entity getDtlEntity(final Dto dto) throws Exception {
-        return this.getDtlEntity(dto.getKey());
+    default Entity findDtlEntity(final Key key) throws Exception {
+        return getRepository().findById(key).orElse(null);
     }
 
     /**
@@ -351,8 +327,21 @@ public interface BaseReadonlyService<Dto extends BaseCrudDto & Identifiable<Key>
     @Transactional(readOnly = true)
     default Dto getDtlDto(final Key key) throws Exception {
         final Entity retrievedEntity = this.getDtlEntity(key);
-        final Mapstruct mapstruct = this.getMapstruct();
 
-        return mapstruct.toDto(retrievedEntity);
+        return getReadMapstruct().toDto(retrievedEntity);
+    }
+
+    /**
+     * default: 단일 항목 조회 (dto level) = 부재시 null
+     *
+     * @param key 조회할 엔티티의 키
+     * @return {@link Dto} -- 조회 항목 반환
+     */
+    @Transactional(readOnly = true)
+    default Dto findDtlDto(final Key key) throws Exception {
+        final Entity retrievedEntity = this.findDtlEntity(key);
+        if (retrievedEntity == null) return null;
+
+        return getReadMapstruct().toDto(retrievedEntity);
     }
 }

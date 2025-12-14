@@ -1,11 +1,11 @@
 /**
- * jrnl_diary_tag_module.ts
- * 저널 일기 태그 스크립트 모듈
+ * jrnl_entry_tag_module.ts
+ * 저널 항목 태그 스크립트 모듈
  * 
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.JrnlDiaryTag = (function(): dfModule {
+dF.JrnlEntryTag = (function(): dfModule {
     return {
         initialized: false,
         ctgrMap: new Map(),
@@ -14,18 +14,18 @@ dF.JrnlDiaryTag = (function(): dfModule {
          * initializes module.
          */
         init: function(): void {
-            if (dF.JrnlDiaryTag.initialized) return;
+            if (dF.JrnlEntryTag.initialized) return;
 
-            dF.JrnlDiaryTag.getCtgrMap();
+            dF.JrnlEntryTag.getCtgrMap();
 
-            dF.JrnlDiaryTag.initialized = true;
-            console.log("'dF.JrnlDiaryTag' module initialized.");
+            dF.JrnlEntryTag.initialized = true;
+            console.log("'dF.JrnlEntryTag' module initialized.");
         },
 
         getCtgrMap: function(): void {
             const url: string = Url.JRNL_DIARY_TAG_CTGR_MAP_AJAX;
             cF.ajax.get(url, {}, function(res: AjaxResponse): void {
-                if (res.rsltMap) dF.JrnlDiaryTag.ctgrMap = res.rsltMap;
+                if (res.rsltMap) dF.JrnlEntryTag.ctgrMap = res.rsltMap;
             });
         },
 
@@ -33,14 +33,19 @@ dF.JrnlDiaryTag = (function(): dfModule {
          * 목록에 따른 일기 태그 조회 (Ajax)
          */
         listAjax: function(): void {
+            const yy: string = cF.util.getUrlParam("yy") ?? localStorage.getItem("jrnl_yy") ?? "9999";
+            if (cF.util.isEmpty(yy)) return;
+            const mnth: string = cF.util.getUrlParam("mnth") ?? localStorage.getItem("jrnl_mnth") ?? "99";
+            if (cF.util.isEmpty(mnth)) return;
+
             const url: string = Url.JRNL_DIARY_TAG_LIST_AJAX;
-            const ajaxData: Record<string, any> = { "yy": localStorage.getItem("jrnl_yy"), "mnth": localStorage.getItem("jrnl_mnth") };
+            const ajaxData: Record<string, any> = { yy, mnth };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
-                cF.handlebars.template(res.rsltList, "jrnl_diary_tag_list");
+                cF.handlebars.template(res.rsltList, "jrnl_entry_tag_list");
             });
         },
 
@@ -92,9 +97,9 @@ dF.JrnlDiaryTag = (function(): dfModule {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
-                cF.handlebars.modal(res.rsltList, "jrnl_diary_tag_dtl");
-                document.querySelector("#jrnl_diary_tag_dtl_modal .header_tag_nm").innerHTML = tagNm;
-                document.querySelector("#jrnl_diary_tag_dtl_modal .header_tag_cnt").innerHTML = (res.rsltList?.length ?? 0).toString();
+                cF.handlebars.modal(res.rsltList, "jrnl_entry_tag_dtl");
+                document.querySelector("#jrnl_entry_tag_dtl_modal .header_tag_nm").innerHTML = tagNm;
+                document.querySelector("#jrnl_entry_tag_dtl_modal .header_tag_cnt").innerHTML = (res.rsltList?.length ?? 0).toString();
 
                 /* modal history push */
                 ModalHistory.push(self, func, args);

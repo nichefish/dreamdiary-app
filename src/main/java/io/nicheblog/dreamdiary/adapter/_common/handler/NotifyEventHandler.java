@@ -177,13 +177,13 @@ public class NotifyEventHandler {
     //         final LogSysParam logParam
     // ) throws Exception {
     //     // 생일인 직원 목록 조회
-    //     List<UserDto.LIST> brthdyUserList = userService.getBrthdyCrdtUser();
+    //     List<UserDto> brthdyUserList = userService.getBrthdyCrdtUser();
     //     if (CollectionUtils.isEmpty(brthdyUserList)) return true;
     //     String jandiRsltMsg = "";
     //     boolean isSuccess = false;
     //     try {
     //         JandiTopic trgetTopic = JandiTopic.SCHDUL;
-    //         for (UserDto.LIST user : brthdyUserList) {
+    //         for (UserDto user : brthdyUserList) {
     //             // title
     //             String title = "[생일] " + user.getUserNm();
     //             // msg

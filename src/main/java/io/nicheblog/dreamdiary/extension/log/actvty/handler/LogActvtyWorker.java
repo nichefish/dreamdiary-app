@@ -44,8 +44,8 @@ public class LogActvtyWorker
      */
     @Override
     public void run() {
-        try {
-            while (true) {
+        while (true) {
+            try {
                 // Blocks until an element is available
                 final Object logEvent = logActvtyQueue.take();
 
@@ -60,12 +60,12 @@ public class LogActvtyWorker
                     // 활동 로그 (비로그인) 로깅 처리
                     logActvtyService.regLogAnonActvty(event.getLog());
                 }
+            } catch (final InterruptedException e) {
+                log.warn("log regist failed", e);
+                Thread.currentThread().interrupt();
+            } catch (final Exception e) {
+                log.warn("log regist failed", e);
             }
-        } catch (final InterruptedException e) {
-            log.warn("log regist failed", e);
-            Thread.currentThread().interrupt();
-        } catch (final Exception e) {
-            log.warn("log regist failed", e);
         }
     }
 

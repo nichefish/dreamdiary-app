@@ -1,7 +1,6 @@
 package io.nicheblog.dreamdiary.extension.clsf.sectn.service;
 
 import io.nicheblog.dreamdiary.extension.cache.service.CacheEvictService;
-import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.entity.SectnEntity;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.mapstruct.SectnMapstruct;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.model.SectnDto;
@@ -14,6 +13,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * SectnService
@@ -27,8 +27,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Log4j2
 public class SectnService
-        implements BaseMultiCrudService<SectnDto, SectnDto, Integer, SectnEntity, SectnRepository, SectnSpec, SectnMapstruct>,
-        BaseStateService<SectnDto, SectnDto, Integer, SectnEntity, SectnRepository, SectnSpec, SectnMapstruct> {
+        implements BaseMultiCrudService<SectnDto, SectnDto, Integer, SectnEntity>,
+        BaseStateService<SectnDto, Integer, SectnEntity> {
 
     @Getter
     private final SectnRepository repository;
@@ -37,7 +37,27 @@ public class SectnService
     @Getter
     private final SectnMapstruct mapstruct = SectnMapstruct.INSTANCE;
 
+    public SectnMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public SectnMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
+
     private final CacheEvictService ehCacheEvictService;
+
+    /**
+     * 단일 항목 조회 (dto level)
+     *
+     * @param key 조회할 엔티티의 키
+     * @return {@link SectnDto} -- 조회 항목 반환
+     */
+    @Transactional(readOnly = true)
+    public SectnDto getDtlDto(final Integer key) throws Exception {
+        final SectnEntity retrievedEntity = this.getDtlEntity(key);
+
+        return mapstruct.toDto(retrievedEntity);
+    }
 
     /**
      * 등록 전처리. (override)
@@ -65,7 +85,7 @@ public class SectnService
      * @param updatedDto - 등록된 객체
      */
     @Override
-    public void postModify(final SectnDto updatedDto) throws Exception {
+    public void postModify(final SectnDto postDto, final SectnDto updatedDto) throws Exception {
         this.evictCache(updatedDto);
     }
 
@@ -88,6 +108,5 @@ public class SectnService
         final String refContentType = rslt.getRefContentType();
         final Integer refPostNo = rslt.getRefPostNo();
         ehCacheEvictService.evictClsfCache(refContentType, refPostNo);
-        EhCacheUtils.clearL2Cache(SectnEntity.class);
     }
 }

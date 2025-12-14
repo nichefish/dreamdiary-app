@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.domain.jrnl.diary.entity;
 
-import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntrySmpEntity;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbed;
@@ -95,11 +94,37 @@ public class JrnlDiaryEntity
     @Column(name = "idx", columnDefinition = "INT DEFAULT 1")
     private Integer idx;
 
-    /** 편집완료 여부 (Y/N) */
+    /** 정리완료 여부 (Y/N) */
     @Builder.Default
-    @Column(name = "edit_compt_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("편집완료 여부")
-    private String editComptYn = "N";
+    @Column(name = "resolved_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Comment("정리완료 여부")
+    private String resolvedYn = "N";
+
+    /** 글접기 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "collapsed_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Comment("글접기 여부")
+    private String collapsedYn = "N";
+
+    /**
+     * 인덱스 변경 여부
+     */
+    @Builder.Default
+    @Transient
+    private Boolean isIdxChanged = false;
+
+    /**
+     * 저널 항목 변경 여부
+     */
+    @Builder.Default
+    @Transient
+    private Boolean isEntryChanged = false;
+
+    /**
+     * 이전 저널 항목 번호
+     */
+    @Transient
+    private Integer prevJrnlEntryNo;
 
     /* ----- */
 

@@ -24,7 +24,7 @@ public class VcatnStatsDto {
     private String userId;
 
     /** User */
-    private UserDto.LIST user;
+    private UserDto user;
 
     /** 산정기준년도 */
     private String statsYy;

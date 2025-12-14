@@ -2,7 +2,8 @@ package io.nicheblog.dreamdiary.extension.file.mapstruct;
 
 import io.nicheblog.dreamdiary.extension.file.entity.AtchFileEntity;
 import io.nicheblog.dreamdiary.extension.file.model.AtchFileDto;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseCrudMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -17,7 +18,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface AtchFileMapstruct
-        extends BaseCrudMapstruct<AtchFileDto, AtchFileDto, AtchFileEntity> {
+        extends BaseWriteMapstruct<AtchFileDto, AtchFileEntity>, BaseReadMapstruct<AtchFileDto, AtchFileEntity> {
 
     AtchFileMapstruct INSTANCE = Mappers.getMapper(AtchFileMapstruct.class);
 
@@ -30,16 +31,6 @@ public interface AtchFileMapstruct
     @Override
     @Named("toDto")
     AtchFileDto toDto(final AtchFileEntity entity) throws Exception;
-
-    /**
-     * Entity -> ListDto 변환
-     * 
-     * @param entity 변환할 Entity 객체
-     * @return ListDto -- 변환된 ListDto 객체
-     */
-    @Override
-    @Named("toListDto")
-    AtchFileDto toListDto(final AtchFileEntity entity) throws Exception;
 
     /**
      * Dto -> Entity 변환

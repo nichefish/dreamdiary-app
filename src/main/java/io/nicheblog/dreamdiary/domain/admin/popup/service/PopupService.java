@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 @Service("popupService")
 @RequiredArgsConstructor
 public class PopupService
-        implements BaseMultiCrudService<PopupDto, PopupDto, Integer, PopupEntity, PopupRepository, PopupSpec, PopupMapstruct> {
+        implements BaseMultiCrudService<PopupDto, PopupDto, Integer, PopupEntity> {
 
     @Getter
     private final PopupRepository repository;
@@ -30,6 +30,13 @@ public class PopupService
     private final PopupSpec spec;
     @Getter
     private final PopupMapstruct mapstruct = PopupMapstruct.INSTANCE;
+
+    public PopupMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public PopupMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     /**
      * 등록 전처리. (override)

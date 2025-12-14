@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * LogSysService
@@ -25,7 +26,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Log4j2
 public class LogSysService
-        implements BaseReadonlyService<LogSysDto.DTL, LogSysDto.LIST, Integer, LogSysEntity, LogSysRepository, LogSysSpec, LogSysMapstruct> {
+        implements BaseReadonlyService<LogSysDto, Integer, LogSysEntity> {
 
     @Getter
     private final LogSysRepository repository;
@@ -34,7 +35,27 @@ public class LogSysService
     @Getter
     private final LogSysMapstruct mapstruct = LogSysMapstruct.INSTANCE;
 
+    public LogSysMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public LogSysMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
+
     private final ActiveProfile activeProfile;
+
+    /**
+     * 단일 항목 조회 (dto level)
+     *
+     * @param key 조회할 엔티티의 키
+     * @return {@link LogSysDto} -- 조회 항목 반환
+     */
+    @Transactional(readOnly = true)
+    public LogSysDto getDtlDto(final Integer key) throws Exception {
+        final LogSysEntity retrievedEntity = this.getDtlEntity(key);
+
+        return mapstruct.toDto(retrievedEntity);
+    }
 
     /**
      * 시스템 로그 등록

@@ -2,7 +2,8 @@ package io.nicheblog.dreamdiary.extension.clsf.viewer.mapstruct;
 
 import io.nicheblog.dreamdiary.extension.clsf.viewer.entity.ViewerEntity;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.model.ViewerDto;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseCrudMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +23,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, DatePtn.class, StringUtils.class})
 public interface ViewerMapstruct
-        extends BaseCrudMapstruct<ViewerDto, ViewerDto, ViewerEntity> {
+        extends BaseWriteMapstruct<ViewerDto, ViewerEntity>, BaseReadMapstruct<ViewerDto, ViewerEntity> {
 
     ViewerMapstruct INSTANCE = Mappers.getMapper(ViewerMapstruct.class);
 

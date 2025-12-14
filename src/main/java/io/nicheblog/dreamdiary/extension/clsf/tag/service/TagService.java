@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class TagService
-        implements BaseCrudService<TagDto, TagDto, Integer, TagEntity, TagRepository, TagSpec, TagMapstruct> {
+        implements BaseCrudService<TagDto, TagDto, Integer, TagEntity> {
 
     @Getter
     private final TagRepository repository;
@@ -39,6 +39,13 @@ public class TagService
     private final TagSpec spec;
     @Getter
     private final TagMapstruct mapstruct = TagMapstruct.INSTANCE;
+
+    public TagMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public TagMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     /**
      * 태그 관리 화면에서 요소를 관리할 컨텐츠 타입 목록 조회
@@ -122,7 +129,8 @@ public class TagService
      */
     @Transactional(readOnly = true)
     public List<TagDto> getOverallSizedTagList(final TagSearchParam searchParam) throws Exception {
-        final List<TagDto> tagList = this.getListDto(searchParam);
+        final List<TagEntity> tagEntityList = this.getListEntity(searchParam);
+        final List<TagDto> tagList = mapstruct.toDtoList(tagEntityList);
         final String refContentType = searchParam.getContentType();
 
         final int maxSize = this.calcMaxSize(tagList, refContentType);
@@ -184,6 +192,19 @@ public class TagService
     @Transactional(readOnly = true)
     public Integer countTagSize(final Integer tagNo, final String contentType, final String regstrId) {
         return repository.countTagSize(tagNo, contentType, regstrId);
+    }
+
+    /**
+     * 단일 항목 조회 (dto level)
+     *
+     * @param key 조회할 엔티티의 키
+     * @return {@link TagDto} -- 조회 항목 반환
+     */
+    @Transactional(readOnly = true)
+    public TagDto getDtlDto(final Integer key) throws Exception {
+        final TagEntity retrievedEntity = this.getDtlEntity(key);
+
+        return mapstruct.toDto(retrievedEntity);
     }
 
     /**

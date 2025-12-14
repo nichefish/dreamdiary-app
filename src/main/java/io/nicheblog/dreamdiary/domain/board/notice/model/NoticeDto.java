@@ -13,12 +13,12 @@ import io.nicheblog.dreamdiary.extension.clsf.viewer.model.cmpstn.ViewerCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.model.cmpstn.ViewerCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.BasePostDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
+import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 /**
  * NoticeDto
@@ -77,8 +77,7 @@ public class NoticeDto
 
         /** 팝업공지 여부 (Y/N) */
         @Builder.Default
-        @Size(min = 1, max = 1)
-        @Pattern(regexp = "^[YN]$")
+        @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
         private String popupYn = "N";
 
         /** 파일시스템 참조 목록 */

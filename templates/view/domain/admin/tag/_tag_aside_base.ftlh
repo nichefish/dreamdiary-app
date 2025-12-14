@@ -95,7 +95,6 @@
                             <#list 1..12 as mnth>
                                 <option value="${mnth}">${mnth}</option>
                             </#list>
-                            <option value="99">전체 월</option>
                         </select>
                     </div>
                 </div>

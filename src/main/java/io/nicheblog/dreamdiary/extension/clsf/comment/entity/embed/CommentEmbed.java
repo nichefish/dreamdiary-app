@@ -2,8 +2,8 @@ package io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed;
 
 import io.nicheblog.dreamdiary.extension.clsf.comment.entity.CommentEntity;
 import lombok.*;
+import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.annotations.*;
-import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;
 import javax.persistence.OrderBy;

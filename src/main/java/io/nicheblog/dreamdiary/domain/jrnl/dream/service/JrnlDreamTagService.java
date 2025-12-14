@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class JrnlDreamTagService
-        implements BaseReadonlyService<TagDto, TagDto, Integer, JrnlDreamTagEntity, JrnlDreamTagRepository, JrnlDreamTagSpec, JrnlDreamTagMapstruct> {
+        implements BaseReadonlyService<TagDto, Integer, JrnlDreamTagEntity> {
 
     @Getter
     private final JrnlDreamTagRepository repository;
@@ -45,6 +45,13 @@ public class JrnlDreamTagService
     private final JrnlDreamTagSpec spec;
     @Getter
     private final JrnlDreamTagMapstruct mapstruct = JrnlDreamTagMapstruct.INSTANCE;
+
+    public JrnlDreamTagMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public JrnlDreamTagMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
 
     private final ApplicationContext context;
     private JrnlDreamTagService getSelf() {
@@ -62,7 +69,8 @@ public class JrnlDreamTagService
     public List<TagDto> getListDtoWithCache(final Integer yy, final Integer mnth) throws Exception {
         final JrnlDreamSearchParam searchParam = JrnlDreamSearchParam.builder().yy(yy).mnth(mnth).build();
 
-        return this.getSelf().getListDto(searchParam);
+        final List<JrnlDreamTagEntity> entityList = this.getSelf().getListEntity(searchParam);
+        return mapstruct.toDtoList(entityList);
     }
 
     /**

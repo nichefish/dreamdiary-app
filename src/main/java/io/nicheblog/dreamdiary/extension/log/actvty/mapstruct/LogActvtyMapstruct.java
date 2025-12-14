@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.extension.log.actvty.mapstruct;
 import io.nicheblog.dreamdiary.extension.log.actvty.entity.LogActvtyEntity;
 import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyDto;
 import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseCrudMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +20,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, DatePtn.class}, builder = @Builder(disableBuilder = true))
 public interface LogActvtyMapstruct
-        extends BaseCrudMapstruct<LogActvtyDto.DTL, LogActvtyDto.LIST, LogActvtyEntity> {
+        extends BaseReadMapstruct<LogActvtyDto, LogActvtyEntity> {
 
     LogActvtyMapstruct INSTANCE = Mappers.getMapper(LogActvtyMapstruct.class);
 
@@ -33,18 +33,7 @@ public interface LogActvtyMapstruct
     @Override
     @Named("toDto")
     @Mapping(target = "logDt", expression = "java(DateUtils.asStr(entity.getLogDt(), DatePtn.DATETIME))")
-    LogActvtyDto.DTL toDto(final LogActvtyEntity entity) throws Exception;
-
-    /**
-     * Entity -> ListDto 변환
-     *
-     * @param entity 변환할 Entity 객체
-     * @return ListDto -- 변환된 ListDto 객체
-     */
-    @Override
-    @Named("toListDto")
-    @Mapping(target = "logDt", expression = "java(DateUtils.asStr(entity.getLogDt(), DatePtn.DATETIME))")
-    LogActvtyDto.LIST toListDto(final LogActvtyEntity entity) throws Exception;
+    LogActvtyDto toDto(final LogActvtyEntity entity) throws Exception;
 
     /**
      * Param -> Entity 변환

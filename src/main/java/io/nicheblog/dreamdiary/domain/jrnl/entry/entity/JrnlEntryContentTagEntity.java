@@ -8,14 +8,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
-import org.hibernate.annotations.Cache;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
 /**
- * JrnlDreamTagEntity
+ * JrnlEntryContentTagEntity
  * <pre>
  *  저널 항목 태그 Entity.
  *  (사용 용이성을 위해 엔티티 분리)
@@ -32,8 +31,6 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @Where(clause = "ref_content_type='JRNL_ENTRY' AND del_yn='N'")
 @SQLDelete(sql = "UPDATE content_tag SET del_yn = 'Y' WHERE content_tag_no = ?")
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class JrnlEntryContentTagEntity
         extends BaseAuditRegEntity {
 

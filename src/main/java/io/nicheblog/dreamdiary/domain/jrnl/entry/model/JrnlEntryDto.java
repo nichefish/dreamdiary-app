@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * JrnlDreamDto
+ * JrnlEntryDto
  * <pre>
  *  저널 항목 Dto.
  * </pre>
@@ -44,6 +44,12 @@ public class JrnlEntryDto
     /** 컨텐츠 타입 */
     @Builder.Default
     private String contentType = CONTENT_TYPE.key;
+
+    /**
+     * 인덱스 변경 여부
+     */
+    @Builder.Default
+    private Boolean isIdxChanged = false;
 
     /* ----- */
 

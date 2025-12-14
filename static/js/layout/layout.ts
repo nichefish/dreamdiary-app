@@ -27,7 +27,7 @@ const Layout: Page = (function(): Page {
          * @param seconds 주기(초), 기본값 = 60
          */
         aliveCheck: function(seconds: number = 60): void {
-            const aliveCheckUrl: string = Url.ALIVE_CHECK_AJAX;
+            const aliveCheckUrl: string = Url.API_ALIVE_CHECK;
             setInterval(() => {
                 // fetch(aliveCheckUrl);
             }, seconds * 1000);
@@ -108,7 +108,7 @@ const Layout: Page = (function(): Page {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                location.replace(Url.AUTH_LGOUT);
+                location.replace(Url.API_AUTH_LGOUT);
             });
         },
     }

@@ -9,10 +9,8 @@ import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamService;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.service.JrnlEntryService;
 import io.nicheblog.dreamdiary.extension.cache.event.CommentCacheEvictEvent;
-import io.nicheblog.dreamdiary.extension.cache.event.EhCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
-import io.nicheblog.dreamdiary.extension.cache.service.CacheEvictService;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +38,6 @@ public class CommentCacheEvictWorker {
     private final JrnlDreamService jrnlDreamService;
     private final ApplicationEventPublisherWrapper publisher;
 
-
     /**
      * 캐시 evict 처리
      *
@@ -52,26 +49,26 @@ public class CommentCacheEvictWorker {
 
         switch (refContentType) {
             case JRNL_DAY: {
-                JrnlDayDto jrnlDayDto = jrnlDayService.getDtlDto(event.getRefPostNo());
-                JrnlCacheEvictParam param = JrnlCacheEvictParam.of(jrnlDayDto);
+                final JrnlDayDto jrnlDayDto = jrnlDayService.getDtlDto(event.getRefPostNo());
+                final JrnlCacheEvictParam param = JrnlCacheEvictParam.of(jrnlDayDto);
                 publisher.publishEvent(new JrnlCacheEvictEvent(this, param, ContentType.JRNL_DAY));
                 return;
             }
             case JRNL_ENTRY: {
-                JrnlEntryDto jrnlEntryDto = jrnlEntryService.getDtlDto(event.getRefPostNo());
-                JrnlCacheEvictParam param = JrnlCacheEvictParam.of(jrnlEntryDto);
+                final JrnlEntryDto jrnlEntryDto = jrnlEntryService.getDtlDto(event.getRefPostNo());
+                final JrnlCacheEvictParam param = JrnlCacheEvictParam.of(jrnlEntryDto);
                 publisher.publishEvent(new JrnlCacheEvictEvent(this, param, ContentType.JRNL_ENTRY));
                 return;
             }
             case JRNL_DIARY:  {
-                JrnlDiaryDto jrnlDiaryDto = jrnlDiaryService.getDtlDto(event.getRefPostNo());
-                JrnlCacheEvictParam param = JrnlCacheEvictParam.of(jrnlDiaryDto);
+                final JrnlDiaryDto jrnlDiaryDto = jrnlDiaryService.getDtlDto(event.getRefPostNo());
+                final JrnlCacheEvictParam param = JrnlCacheEvictParam.of(jrnlDiaryDto);
                 publisher.publishEvent(new JrnlCacheEvictEvent(this, param, ContentType.JRNL_DIARY));
                 return;
             }
             case JRNL_DREAM: {
-                JrnlDreamDto jrnlDreamDto = jrnlDreamService.getDtlDto(event.getRefPostNo());
-                JrnlCacheEvictParam param = JrnlCacheEvictParam.of(jrnlDreamDto);
+                final JrnlDreamDto jrnlDreamDto = jrnlDreamService.getDtlDto(event.getRefPostNo());
+                final JrnlCacheEvictParam param = JrnlCacheEvictParam.of(jrnlDreamDto);
                 publisher.publishEvent(new JrnlCacheEvictEvent(this, param, ContentType.JRNL_DREAM));
                 return;
             }

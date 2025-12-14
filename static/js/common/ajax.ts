@@ -21,7 +21,7 @@ cF.ajax = (function(): Module {
          * @param {string} url - 요청할 URL.
          * @param {RequestInit} options - fetch 요청에 대한 설정 옵션.
          * @param {Function} [callback] - 요청 성공 시 호출될 콜백 함수.
-         * @param {boolean} [continueBlock] - 추가적인 블록 UI 동작 여부 (선택적).
+         * @param {'block'} [continueBlock] - 추가적인 블록 UI 동작 여부.
          */
         request: async function(url: string, options: RequestInit, callback?: (response: any) => any, continueBlock: string = 'none'): Promise<void> {
             cF.ui.blockUI();  // UI 차단
@@ -46,7 +46,7 @@ cF.ajax = (function(): Module {
          * @param {string} url - 요청할 URL.
          * @param {Record<string, any>} ajaxData - JSON 형태의 요청 데이터.
          * @param {Function} [callback] - 요청 성공시 호출될 콜백 함수.
-         * @param {boolean} [continueBlock] - 추가적인 블록 UI 동작 여부 (선택적).
+         * @param {'block'} [continueBlock] - 추가적인 블록 UI 동작 여부.
          */
         get: async function (url: string, ajaxData: Record<string, any>, callback?: (response: any) => any, continueBlock?: string): Promise<void> {
             // URL에 query string을 추가 (ajaxData는 쿼리 파라미터로 변환)
@@ -54,7 +54,7 @@ cF.ajax = (function(): Module {
             const urlWithParams: URL = new URL(absoluteUrl);
             ajaxData = ajaxData ?? {};
             Object.keys(ajaxData).forEach(
-                (key: string) => urlWithParams.searchParams.append(key, String(ajaxData[key]))
+                (key: string): void => urlWithParams.searchParams.append(key, String(ajaxData[key]))
             );
 
             const options: RequestInit = {
@@ -74,7 +74,7 @@ cF.ajax = (function(): Module {
          * @param {string} url - 요청할 URL.
          * @param {Record<string, any>} ajaxData - JSON 형태의 요청 데이터.
          * @param {Function} [callback] - 요청 성공시 호출될 콜백 함수.
-         * @param {boolean} [continueBlock] - 추가적인 블록 UI 동작 여부 (선택적).
+         * @param {'block'} [continueBlock] - 추가적인 블록 UI 동작 여부.
          */
         post: async function (url: string, ajaxData: Record<string, any>, callback?: (response: any) => any, continueBlock?: string): Promise<void> {
             const options: RequestInit = {
@@ -93,7 +93,7 @@ cF.ajax = (function(): Module {
          * @param {string} url - 요청할 URL.
          * @param {FormData} ajaxData - 파일 데이터가 포함된 FormData 객체.
          * @param {Function} [callback] - 요청 성공시 호출될 콜백 함수.
-         * @param {boolean} [continueBlock] - 추가적인 블록 UI 동작 여부 (선택적).
+         * @param {'block'} [continueBlock] - 추가적인 블록 UI 동작 여부.
          */
         multipart: async function (url: string, ajaxData: FormData, callback?: (response: any) => any, continueBlock?: string): Promise<void> {
             const options: RequestInit = {
@@ -148,7 +148,7 @@ cF.ajax = (function(): Module {
         const statusCode: number = response.status;
         const msgObject: Record<string, string> = await response.json().catch(() => Message.get("view.error.access-denied"));      // "접근이 거부되었습니다. (ACCESS DENIED)"
         const msg:string = msgObject.message;
-        const lgnFormUrl: string = "/auth/lgn-form.do";
+        const lgnFormUrl: string = "/app/auth/lgn-form.do";
 
         switch(statusCode) {
             case 401: {

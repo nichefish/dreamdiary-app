@@ -152,6 +152,13 @@ public class DateUtils
     }
 
     /**
+     * 현재 월"MM" 문자열로 반환
+     */
+    public static String getCurrMnthStr() throws Exception {
+        return Integer.toString(getCurrMnth());
+    }
+
+    /**
      * 이전 월"MM" 인덱스 반환 (1월=0)
      */
     public static Integer getPrevMnthIdx() throws Exception {

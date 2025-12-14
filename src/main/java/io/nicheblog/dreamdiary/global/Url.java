@@ -21,7 +21,7 @@ import java.util.Map;
  */
 @UtilityClass
 public class Url
-    implements SiteUrl, AuthUrl, AdapterUrl {
+    implements AppUrl, ApiUrl, AuthUrl, AdapterUrl {
 
     // 클래스 로딩 시에 한 번 계산하여 할당
     @Getter

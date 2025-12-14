@@ -5,14 +5,13 @@ import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbedModul
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.*;
-import org.hibernate.annotations.Cache;
-import org.springframework.util.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,8 +33,6 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 @Where(clause = "del_yn='N'")
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class ClCdEntity
         extends BaseAuditEntity
         implements StateEmbedModule {

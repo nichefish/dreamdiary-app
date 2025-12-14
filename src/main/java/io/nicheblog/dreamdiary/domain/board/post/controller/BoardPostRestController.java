@@ -61,7 +61,7 @@ public class BoardPostRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardPostRegAjax(
-            final @Valid BoardPostDto.DTL boardPost,
+            final @Valid BoardPostDto boardPost,
             final LogActvtyParam logParam,
             final MultipartHttpServletRequest request
     ) throws Exception {

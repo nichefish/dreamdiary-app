@@ -39,7 +39,7 @@ public class JrnlTodoRestController
         extends BaseControllerImpl {
 
     @Getter
-    private final String baseUrl = Url.JRNL_DAY_PAGE;             // 기본 URL
+    private final String baseUrl = Url.JRNL_DAY_MONTHLY;             // 기본 URL
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
@@ -53,7 +53,7 @@ public class JrnlTodoRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(value = {Url.JRNL_TODO_LIST_AJAX})
+    @GetMapping(value = {Url.JRNL_TODOS})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlTodoListAjax(

@@ -38,7 +38,7 @@ public class LgnPageController
         extends BaseControllerImpl {
 
     @Getter
-    private final String baseUrl = Url.AUTH_LGN_FORM;
+    private final String baseUrl = Url.APP_AUTH_LGN_FORM;
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.LGN;      // 작업 카테고리 (로그 적재용)
 
@@ -52,7 +52,7 @@ public class LgnPageController
      * @param model 뷰에 데이터를 전달하는 ModelMap 객체
      * @return {@link String} -- 로그인 화면 뷰 경로
      */
-    @RequestMapping(Url.AUTH_LGN_FORM)
+    @RequestMapping(Url.APP_AUTH_LGN_FORM)
     @PermitAll
     public String lgnForm(
             final @RequestParam("dupLgnAt") @Nullable String dupLgnAt,
@@ -71,7 +71,7 @@ public class LgnPageController
         model.addAttribute("REMEMBER_ME_PARAM", REMEMBER_ME_PARAM);
 
         // 중복 로그인으로 인해 로그인 면으로 튕겨나왔을 경우 alert
-        if ("Y".equals(dupLgnAt)) MessageUtils.alertMessage("중복 로그인 방지에 의해 로그아웃 처리되었습니다.", Url.AUTH_LGN_FORM);
+        if ("Y".equals(dupLgnAt)) MessageUtils.alertMessage("중복 로그인 방지에 의해 로그아웃 처리되었습니다.", Url.APP_AUTH_LGN_FORM);
 
         // 로그 관련 세팅
         logParam.setResult(true, MessageUtils.RSLT_SUCCESS);
@@ -82,13 +82,13 @@ public class LgnPageController
     /**
      * GET으로 로그인 처리/로그아웃 페이지 접근시 로그인 화면으로 리다이렉트
      */
-    @GetMapping({ Url.AUTH_LGN_PROC, Url.AUTH_LGOUT})
+    @GetMapping({ Url.API_AUTH_LGN_PROC, Url.API_AUTH_LGOUT})
     public String authRedirection(
             //
     ) {
 
         log.info("'GET' access in lgnProc!");
 
-        return "redirect:" + Url.AUTH_LGN_FORM;
+        return "redirect:" + Url.APP_AUTH_LGN_FORM;
     }
 }

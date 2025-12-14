@@ -54,10 +54,10 @@ public class AjaxAwareAuthenticationEntryPoint
             response.setContentType("text/html; charset=utf-8");
             // 현재 요청 URL을 추출, 현재 URL이 로그인 페이지 URL과 다른 경우 리디렉션
             final String currentUrl = request.getRequestURI();
-            if (currentUrl.equals(Url.AUTH_LGN_FORM)) return;
+            if (currentUrl.equals(Url.APP_AUTH_LGN_FORM)) return;
             // alert창 띄운 후 로그인 페이지로 리다이렉트1
             final String msg = "세션이 만료되었습니다. 다시 로그인 해주세요.";
-            final String lgnFormUrl = Url.AUTH_LGN_FORM;
+            final String lgnFormUrl = Url.APP_AUTH_LGN_FORM;
             try (PrintWriter out = response.getWriter()) {
                 out.println("<script type=\"text/javascript\">");
                 out.println("const hasSwal = (typeof Swal !== \"undefined\");");

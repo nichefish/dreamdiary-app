@@ -52,7 +52,6 @@ public class EmailSendWorker implements Runnable {
 	@Override
 	public void run() {
 		while (true) {
-			// Blocks until an element is available
 			try {
 				// 메일 발송 처리
 				final EmailSendEvent mailEvent = emailSendQueue.take();

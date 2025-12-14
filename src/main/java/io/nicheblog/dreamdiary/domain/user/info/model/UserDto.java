@@ -5,13 +5,13 @@ import io.nicheblog.dreamdiary.domain.user.info.model.emplym.UserEmplymDto;
 import io.nicheblog.dreamdiary.domain.user.info.model.profl.UserProflDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseAtchDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
+import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,38 +71,18 @@ public class UserDto
 
     /** 잠금 여부 (Y/N) */
     @Builder.Default
-    @Size(min = 1, max = 1)
-    @Pattern(regexp = "^[YN]$")
+    @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
     protected String lockedYn = "N";
 
     /** 퇴사 여부 (Y/N) */
     @Builder.Default
-    @Size(min = 1, max = 1)
-    @Pattern(regexp = "^[YN]$")
+    @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
     protected String retireYn = "N";
 
     /** 퇴사일 */
     protected String retireDt;
-    
-    /* ----- */
 
-    /** Getter :: 잠금여부 채크 */
-    public Boolean getIsLocked() {
-        return "Y".equals(this.lockedYn);
-    }
 
-    /* ----- */
-
-    /**
-     * 사용자(계정) 정보 상세 (DTL) Dto.
-     */
-    @Getter
-    @Setter
-    @SuperBuilder(toBuilder = true)
-    @NoArgsConstructor
-    @EqualsAndHashCode(callSuper = true)
-    public static class DTL
-            extends UserDto {
         /** 비밀번호 */
         private String password;
 
@@ -113,14 +93,18 @@ public class UserDto
         /** 계정 설명 (관리자용) */
         private String cn;
 
+        /** 입사일 */
+        private String ecnyDt;
+        /** 이름 */
+        private String userNm;
+
         /** 접속IP 사용 여부 체크 */
         @Builder.Default
         private Boolean useAcsIp = false;
 
         /** 접속 IP 사용 여부 (Y/N) */
         @Builder.Default
-        @Size(min = 1, max = 1)
-        @Pattern(regexp = "^[YN]$")
+        @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
         private String useAcsIpYn = "N";
 
         /** 접속 IP 정보 */
@@ -143,30 +127,17 @@ public class UserDto
                     .collect(Collectors.joining(","));
             return this.authListStr;
         }
+    
+    /* ----- */
+
+    /** Getter :: 잠금여부 채크 */
+    public Boolean getIsLocked() {
+        return "Y".equals(this.lockedYn);
     }
 
-    /**
-     * 사용자(계정) 정보 목록 조회 (LIST) Dto.
-     */
-    @Getter
-    @Setter
-    @SuperBuilder(toBuilder = true)
-    @NoArgsConstructor
-    @EqualsAndHashCode(callSuper = true)
-    public static class LIST
-            extends UserDto {
-
-        /** 입사일 */
-        private String ecnyDt;
-        /** 이름 */
-        private String userNm;
-
-        /* ----- */
-
-        /** 내 정보 여부 채크 */
-        public Boolean getIsMe() {
-            return (AuthUtils.isRegstr(this.getUserId()));       // 인자로 넘긴 ID와 세션의 사용자 ID 비교
-        }
+    /** 내 정보 여부 채크 */
+    public Boolean getIsMe() {
+        return (AuthUtils.isRegstr(this.getUserId()));       // 인자로 넘긴 ID와 세션의 사용자 ID 비교
     }
 
     @Override

@@ -15,8 +15,8 @@ import org.mapstruct.MappingTarget;
  *
  * @author nichefish
  */
-public interface BaseClsfMapstruct<Dto extends BaseClsfDto, ListDto extends BaseClsfDto, Entity extends BaseClsfEntity>
-        extends BaseCrudMapstruct<Dto, ListDto, Entity> {
+public interface BaseClsfMapstruct<Dto extends BaseClsfDto, Entity extends BaseClsfEntity>
+        extends BaseReadMapstruct<Dto, Entity> {
 
     /**
      * default : ClsfEntity -> ClsfDto 요소들 매핑
@@ -26,17 +26,6 @@ public interface BaseClsfMapstruct<Dto extends BaseClsfDto, ListDto extends Base
      */
     @AfterMapping
     default void mapClsfFields(final Entity entity, final @MappingTarget Dto dto) throws Exception {
-        MapstructHelper.mapClsfFields(entity, dto);
-    }
-
-    /**
-     * default : ClsfEntity -> ClsfListDto 요소들 매핑
-     *
-     * @param entity 매핑할 원본 Entity 객체
-     * @param dto 매핑 대상인 Dto 객체
-     */
-    @AfterMapping
-    default void mapClsfListFields(final Entity entity, final @MappingTarget ListDto dto) throws Exception {
         MapstructHelper.mapClsfFields(entity, dto);
     }
 }

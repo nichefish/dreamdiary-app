@@ -1,0 +1,49 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.nicheblog.dreamdiary.domain.jrnl.intrpt.repository.mybatis.JrnlIntrptMapper">
+
+    <resultMap id="JrnlIntrptMap" type="io.nicheblog.dreamdiary.domain.jrnl.intrpt.model.JrnlIntrptDto">
+        <id property="postNo" column="post_no"/>
+        <result property="jrnlDreamNo" column="jrnl_dream_no"/>
+        <result property="jrnlDayNo" column="jrnl_day_no"/>
+        <result property="idx" column="idx"/>
+        <result property="yy" column="yy"/>
+        <result property="mnth" column="mnth"/>
+    </resultMap>
+
+    <!-- 삭제 데이터 조회 -->
+    <select id="getDeletedByPostNo" resultMap="JrnlIntrptMap">
+        /* JrnlIntrptMapper.getDeletedByPostNo */
+        SELECT
+            intrpt.post_no AS postNo,
+            intrpt.jrnl_dream_no AS jrnlDreamNo,
+            intrpt.idx,
+            day.post_no AS jrnlDayNo,
+            day.yy AS yy,
+            day.mnth AS mnth
+        FROM jrnl_intrpt intrpt
+            LEFT JOIN jrnl_dream dream ON intrpt.jrnl_dream_no = dream.post_no
+            LEFT JOIN jrnl_day day ON dream.jrnl_day_no = day.post_no
+        WHERE intrpt.post_no = #{postNo}
+    </select>
+
+    <!-- 인덱스 갱신을 위한 전체 객체 조회 -->
+    <select id="findAllForReorder" resultMap="JrnlIntrptMap">
+        /* JrnlIntrptMapper.findAllForReorder */
+        SELECT *
+        FROM jrnl_intrpt
+        WHERE jrnl_dream_no = #{jrnlDreamNo} AND del_yn = 'N'
+        ORDER BY idx
+    </select>
+
+    <!-- 인덱스 갱신 -->
+    <update id="batchUpdateIdx">
+        /* JrnlIntrptMapper.batchUpdateIdx */
+        <foreach collection="list" item="item" separator=";">
+            UPDATE jrnl_intrpt
+            SET idx = #{item.idx}
+            WHERE post_no = #{item.postNo} AND del_yn = 'N'
+        </foreach>
+    </update>
+</mapper>

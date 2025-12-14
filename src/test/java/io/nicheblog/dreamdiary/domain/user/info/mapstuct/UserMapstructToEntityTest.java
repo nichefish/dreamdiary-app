@@ -41,7 +41,7 @@ class UserMapstructToEntityTest {
 
     private final UserMapstruct userMapstruct = UserMapstruct.INSTANCE;
 
-    private UserDto.DTL userDto;
+    private UserDto userDto;
 
     /**
      * 각 테스트 시작 전 세팅 초기화.

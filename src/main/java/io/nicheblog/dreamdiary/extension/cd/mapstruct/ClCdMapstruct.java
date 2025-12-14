@@ -3,7 +3,8 @@ package io.nicheblog.dreamdiary.extension.cd.mapstruct;
 import io.nicheblog.dreamdiary.extension.cd.entity.ClCdEntity;
 import io.nicheblog.dreamdiary.extension.cd.model.ClCdDto;
 import io.nicheblog.dreamdiary.extension.cd.utils.CdUtils;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseCrudMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -18,7 +19,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {CdUtils.class})
 public interface ClCdMapstruct
-        extends BaseCrudMapstruct<ClCdDto, ClCdDto, ClCdEntity> {
+        extends BaseWriteMapstruct<ClCdDto, ClCdEntity>, BaseReadMapstruct<ClCdDto, ClCdEntity> {
 
     ClCdMapstruct INSTANCE = Mappers.getMapper(ClCdMapstruct.class);
 
@@ -33,17 +34,6 @@ public interface ClCdMapstruct
     @Mapping(target = "clCtgrNm", expression = "java(CdUtils.getDtlCdNm(\"CL_CTGR_CD\", entity.getClCtgrCd()))")
     @Mapping(target = "dtlCdList", expression = "java(DtlCdMapstruct.INSTANCE.toDtoList(entity.getDtlCdList()))")
     ClCdDto toDto(final ClCdEntity entity) throws Exception;
-
-    /**
-     * Entity -> ListDto 변환
-     *
-     * @param entity 변환할 Entity 객체
-     * @return ListDto -- 변환된 ListDto 객체
-     */
-    @Override
-    @Named("toListDto")
-    @Mapping(target = "clCtgrNm", expression = "java(CdUtils.getDtlCdNm(\"CL_CTGR_CD\", entity.getClCtgrCd()))")
-    ClCdDto toListDto(final ClCdEntity entity) throws Exception;
 
     /**
      * Dto -> Entity 변환

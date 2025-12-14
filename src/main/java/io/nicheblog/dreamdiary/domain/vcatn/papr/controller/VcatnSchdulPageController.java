@@ -88,7 +88,7 @@ public class VcatnSchdulPageController
         // 휴가계획서 최저년도~올해 년도(year) 목록 조회
         model.addAttribute("yyList", vcatnPaprService.getVcatnYyList());
         // 직원 목록 조회 (등록에 쓰임)
-        final List<UserDto.LIST> crtdUserList = userService.getCrdtUserList(statsYy.getBgnDt(), statsYy.getEndDt());
+        final List<UserDto> crtdUserList = userService.getCrdtUserList(statsYy.getBgnDt(), statsYy.getEndDt());
         model.addAttribute("crtdUserList", crtdUserList);
         // 일반 휴가(날짜범위)를 하루하루로 다 쪼개야 한다.
         model.addAttribute("vcatnSchdulList", vcatnSchdulService.getListDto(statsYy));

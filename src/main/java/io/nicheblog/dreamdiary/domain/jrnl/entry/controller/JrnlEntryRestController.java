@@ -39,7 +39,7 @@ public class JrnlEntryRestController
         extends BaseControllerImpl {
 
     @Getter
-    private final String baseUrl = Url.JRNL_DAY_PAGE;             // 기본 URL
+    private final String baseUrl = Url.JRNL_DAY_MONTHLY;             // 기본 URL
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
@@ -53,7 +53,7 @@ public class JrnlEntryRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(value = {Url.JRNL_ENTRY_LIST_AJAX})
+    @GetMapping(value = {Url.JRNL_ENTRIES})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlEntryListAjax(
@@ -62,6 +62,7 @@ public class JrnlEntryRestController
     ) throws Exception {
 
         final List<JrnlEntryDto> jrnlEntryList = jrnlEntryService.getListDto(searchParam);
+
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -85,17 +86,20 @@ public class JrnlEntryRestController
             summary = "저널 항목 등록/수정",
             description = "저널 항목 정보를 등록/수정한다."
     )
-    @PostMapping(value = {Url.JRNL_ENTRY_REG_AJAX, Url.JRNL_ENTRY_MDF_AJAX})
+    @PostMapping(value = {Url.JRNL_ENTRIES, Url.JRNL_ENTRY})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlEntryRegAjax(
+            final @PathVariable(value = "postNo", required = false) Integer postNo,
             final @Valid JrnlEntryDto jrnlEntry,
             final LogActvtyParam logParam,
             final MultipartHttpServletRequest request
     ) throws Exception {
 
-        final boolean isReg = (jrnlEntry.getKey() == null);
-        final ServiceResponse result = isReg ? jrnlEntryService.regist(jrnlEntry, request) : jrnlEntryService.modify(jrnlEntry, request);
+        final boolean isMdf = postNo != null;
+        if (isMdf) jrnlEntry.setPostNo(postNo);
+
+        final ServiceResponse result = isMdf ? jrnlEntryService.modify(jrnlEntry, request) : jrnlEntryService.regist(jrnlEntry, request);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
@@ -113,11 +117,11 @@ public class JrnlEntryRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(value = {Url.JRNL_ENTRY_DTL_AJAX})
+    @GetMapping(value = {Url.JRNL_ENTRY})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlEntryDtlAjax(
-            final @RequestParam("postNo") Integer key,
+            final @PathVariable("postNo") Integer key,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -140,11 +144,11 @@ public class JrnlEntryRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @see TagProcEventListener
      */
-    @PostMapping(value = {Url.JRNL_ENTRY_DEL_AJAX})
+    @DeleteMapping(value = {Url.JRNL_ENTRY})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlEntryDelAjax(
-            final @RequestParam("postNo") Integer postNo,
+            final @PathVariable("postNo") Integer postNo,
             final LogActvtyParam logParam
     ) throws Exception {
 
