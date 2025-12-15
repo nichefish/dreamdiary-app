@@ -7,6 +7,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.mapstruct.JrnlDreamMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamPatchDto;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamPostDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.repository.jpa.JrnlDreamRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.repository.mybatis.JrnlDreamMapper;
@@ -49,7 +50,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Log4j2
 public class JrnlDreamService
-        implements BaseClsfService<JrnlDreamDto, JrnlDreamDto, Integer, JrnlDreamEntity> {
+        implements BaseClsfService<JrnlDreamPostDto, JrnlDreamDto, Integer, JrnlDreamEntity> {
 
     @Getter
     private final JrnlDreamRepository repository;
@@ -83,8 +84,8 @@ public class JrnlDreamService
     @Cacheable(value="myJrnlDreamList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.hashCode()")
     public List<JrnlDreamDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
-        final List<JrnlDreamEntity> entityList = this.getSelf().getListEntity(searchParam);
-        return mapstruct.toDtoList(entityList);
+
+        return this.getSelf().getListDto(searchParam);
     }
 
     /**
@@ -96,8 +97,7 @@ public class JrnlDreamService
     @Cacheable(value="myImprtcDreamList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy")
     public List<JrnlDreamDto> getImprtcDreamList(final Integer yy) throws Exception {
         final JrnlDreamSearchParam searchParam = JrnlDreamSearchParam.builder().yy(yy).imprtcYn("Y").build();
-        final List<JrnlDreamEntity> entityList = this.getSelf().getListEntity(searchParam);
-        final List<JrnlDreamDto> imprtcDreamList = mapstruct.toDtoList(entityList);
+        final List<JrnlDreamDto> imprtcDreamList = this.getSelf().getListDto(searchParam);
         Collections.sort(imprtcDreamList);
 
         return imprtcDreamList;
@@ -112,8 +112,7 @@ public class JrnlDreamService
     @Cacheable(value="myJrnlDreamTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
     @SuppressWarnings("unchecked")
     public List<JrnlDreamDto> jrnlDreamTagDtl(final JrnlDreamSearchParam searchParam) throws Exception {
-        final List<JrnlDreamEntity> entityList = this.getSelf().getListEntity(searchParam);
-        List<JrnlDreamDto> jrnlDreamList = mapstruct.toDtoList(entityList);
+        final List<JrnlDreamDto> jrnlDreamList = this.getSelf().getListDto(searchParam);
         // 공휴일 정보 세팅
         final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
         for (final JrnlDreamDto jrnlDream : jrnlDreamList) {
@@ -124,25 +123,12 @@ public class JrnlDreamService
     }
 
     /**
-     * 단일 항목 조회 (dto level)
-     *
-     * @param key 조회할 엔티티의 키
-     * @return {@link JrnlDreamDto} -- 조회 항목 반환
-     */
-    @Transactional(readOnly = true)
-    public JrnlDreamDto getDtlDto(final Integer key) throws Exception {
-        final JrnlDreamEntity retrievedEntity = this.getDtlEntity(key);
-
-        return mapstruct.toDto(retrievedEntity);
-    }
-
-    /**
      * 등록 전처리. (override)
      *
      * @param registDto 등록할 객체
      */
     @Override
-    public void preRegist(final JrnlDreamDto registDto) throws Exception {
+    public void preRegist(final JrnlDreamPostDto registDto) throws Exception {
         // 인덱스(정렬순서) 처리
         final Integer lastIndex = repository.findLastIndexByJrnlDay(registDto.getJrnlDayNo()).orElse(0);
         registDto.setIdx(lastIndex + 1);
@@ -173,6 +159,7 @@ public class JrnlDreamService
         final JrnlDreamDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
         if (!retrieved.getIsRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("common.rslt.access-not-authorized"));
+
         return retrieved;
     }
 
@@ -183,7 +170,7 @@ public class JrnlDreamService
      * @param modifyEntity - 수정할 객체
      */
     @Override
-    public void preModify(final JrnlDreamDto modifyDto, final JrnlDreamEntity modifyEntity) throws Exception {
+    public void preModify(final JrnlDreamPostDto modifyDto, final JrnlDreamEntity modifyEntity) throws Exception {
         boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
         modifyDto.setIsIdxChanged(isIdxChanged);
     }
@@ -194,7 +181,7 @@ public class JrnlDreamService
      * @param updatedDto - 등록된 객체
      */
     @Override
-    public void postModify(final JrnlDreamDto postDto, final JrnlDreamDto updatedDto) throws Exception {
+    public void postModify(final JrnlDreamPostDto postDto, final JrnlDreamDto updatedDto) throws Exception {
         // 인덱스 재조정
         if (updatedDto.getIsIdxChanged()) this.getSelf().reorderIdx(updatedDto);
         

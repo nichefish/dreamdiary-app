@@ -39,17 +39,4 @@ public class TagPropertyService
     public TagPropertyMapstruct getWriteMapstruct() {
         return this.mapstruct;
     }
-
-    /**
-     * 단일 항목 조회 (dto level)
-     *
-     * @param key 조회할 엔티티의 키
-     * @return {@link TagPropertyDto} -- 조회 항목 반환
-     */
-    @Transactional(readOnly = true)
-    public TagPropertyDto getDtlDto(final Integer key) throws Exception {
-        final TagPropertyEntity retrievedEntity = this.getDtlEntity(key);
-
-        return mapstruct.toDto(retrievedEntity);
-    }
 }

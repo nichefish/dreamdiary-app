@@ -177,9 +177,9 @@ dF.JrnlDayAside = (function(): dfModule {
             const sort: string = cF.util.getUrlParam("sort") ?? localStorage.getItem("jrnl_day_sort") ?? "DESC";
 
             let toBeYy = yy, toBeMnth;
-            if (parseInt(mnth) === 1) {
-                // 1월일 경우, 이전 년도로 이동하고 12월로 설정
-                toBeYy = (parseInt(yy) + 1).toString(); // 이전 년도로
+            if (parseInt(mnth) === 12) {
+                // 12월일 경우, 다음 년도로 이동하고 1월로 설정
+                toBeYy = (parseInt(yy) + 1).toString(); // 다음 년도로
                 toBeMnth = "1";  // 1월로 설정
             } else {
                 toBeMnth = (parseInt(mnth) + 1).toString(); // 월을 하나 증기시킴

@@ -71,21 +71,7 @@ public class JrnlEntryService
      */
     @Cacheable(value="myJrnlEntryTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
     public List<JrnlEntryDto> jrnlEntryTagDtl(final JrnlEntrySearchParam searchParam) throws Exception {
-        final List<JrnlEntryEntity> entityList = this.getSelf().getListEntity(searchParam);
-        return mapstruct.toDtoList(entityList);
-    }
-
-    /**
-     * 단일 항목 조회 (dto level)
-     *
-     * @param key 조회할 엔티티의 키
-     * @return {@link JrnlEntryDto} -- 조회 항목 반환
-     */
-    @Transactional(readOnly = true)
-    public JrnlEntryDto getDtlDto(final Integer key) throws Exception {
-        final JrnlEntryEntity retrievedEntity = this.getDtlEntity(key);
-
-        return mapstruct.toDto(retrievedEntity);
+        return this.getSelf().getListDto(searchParam);
     }
 
     /**

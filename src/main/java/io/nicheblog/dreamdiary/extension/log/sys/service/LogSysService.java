@@ -45,19 +45,6 @@ public class LogSysService
     private final ActiveProfile activeProfile;
 
     /**
-     * 단일 항목 조회 (dto level)
-     *
-     * @param key 조회할 엔티티의 키
-     * @return {@link LogSysDto} -- 조회 항목 반환
-     */
-    @Transactional(readOnly = true)
-    public LogSysDto getDtlDto(final Integer key) throws Exception {
-        final LogSysEntity retrievedEntity = this.getDtlEntity(key);
-
-        return mapstruct.toDto(retrievedEntity);
-    }
-
-    /**
      * 시스템 로그 등록
      *
      * @param logParam 시스템 로그 파라미터

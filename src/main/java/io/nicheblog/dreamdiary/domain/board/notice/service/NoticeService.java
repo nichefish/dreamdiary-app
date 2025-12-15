@@ -64,19 +64,6 @@ public class NoticeService
     }
 
     /**
-     * 단일 항목 조회 (dto level)
-     *
-     * @param key 조회할 엔티티의 키
-     * @return {@link NoticeDto} -- 조회 항목 반환
-     */
-    @Transactional(readOnly = true)
-    public NoticeDto getDtlDto(final Integer key) throws Exception {
-        final NoticeEntity retrievedEntity = this.getDtlEntity(key);
-
-        return mapstruct.toDto(retrievedEntity);
-    }
-
-    /**
      * 등록 후처리. (override)
      *
      * @param updatedDto - 등록된 객체

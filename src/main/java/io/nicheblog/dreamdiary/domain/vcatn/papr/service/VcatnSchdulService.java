@@ -57,17 +57,4 @@ public class VcatnSchdulService
         }};
         return this.getListDto(searchParamMap);
     }
-
-    /**
-     * 단일 항목 조회 (dto level)
-     *
-     * @param key 조회할 엔티티의 키
-     * @return {@link VcatnSchdulDto} -- 조회 항목 반환
-     */
-    @Transactional(readOnly = true)
-    public VcatnSchdulDto getDtlDto(final Integer key) throws Exception {
-        final VcatnSchdulEntity retrievedEntity = this.getDtlEntity(key);
-
-        return mapstruct.toDto(retrievedEntity);
-    }
 }

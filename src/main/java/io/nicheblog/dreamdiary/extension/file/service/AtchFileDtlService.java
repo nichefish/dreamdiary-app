@@ -80,8 +80,8 @@ public class AtchFileDtlService
         final Map<String, Object> paramMap = new HashMap<>() {{
             put("atchFileNo", atchFileNo);
         }};
-        final List<AtchFileDtlEntity> entityList = this.getSelf().getListEntity(paramMap);
-        return mapstruct.toDtoList(entityList);
+
+        return this.getSelf().getListDto(paramMap);
     }
 
     /**

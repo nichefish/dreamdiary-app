@@ -72,19 +72,6 @@ public class SchdulService
     }
 
     /**
-     * 단일 항목 조회 (dto level)
-     *
-     * @param key 조회할 엔티티의 키
-     * @return {@link SchdulDto} -- 조회 항목 반환
-     */
-    @Transactional(readOnly = true)
-    public SchdulDto getDtlDto(final Integer key) throws Exception {
-        final SchdulEntity retrievedEntity = this.getDtlEntity(key);
-
-        return mapstruct.toDto(retrievedEntity);
-    }
-
-    /**
      * 등록 전처리. (override)
      *
      * @param registDto 등록할 객체

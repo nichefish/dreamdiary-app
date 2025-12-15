@@ -43,19 +43,6 @@ public class JrnlSbjctService
     private final ApplicationEventPublisherWrapper publisher;
 
     /**
-     * 단일 항목 조회 (dto level)
-     *
-     * @param key 조회할 엔티티의 키
-     * @return {@link JrnlSbjctDto} -- 조회 항목 반환
-     */
-    @Transactional(readOnly = true)
-    public JrnlSbjctDto getDtlDto(final Integer key) throws Exception {
-        final JrnlSbjctEntity retrievedEntity = this.getDtlEntity(key);
-
-        return mapstruct.toDto(retrievedEntity);
-    }
-
-    /**
      * 등록 후처리. (override)
      *
      * @param updatedDto - 등록된 객체

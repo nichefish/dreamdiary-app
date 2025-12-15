@@ -85,26 +85,13 @@ public class CommentService
     }
 
     /**
-     * 단일 항목 조회 (dto level)
-     *
-     * @param key 조회할 엔티티의 키
-     * @return {@link CommentDto} -- 조회 항목 반환
-     */
-    @Transactional(readOnly = true)
-    public CommentDto getDtlDto(final Integer key) throws Exception {
-        final CommentEntity retrievedEntity = this.getDtlEntity(key);
-
-        return mapstruct.toDto(retrievedEntity);
-    }
-
-    /**
      * 등록 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
      */
     @Override
     public void postRegist(final CommentDto updatedDto) throws Exception {
-        publisher.publishEvent(new CommentCacheEvictEvent(this, updatedDto.getRefPostNo(), updatedDto.getRefContentType()));
+        publisher.publishCustomEvent(new CommentCacheEvictEvent(this, updatedDto.getRefPostNo(), updatedDto.getRefContentType()));
     }
 
     /**
@@ -114,7 +101,7 @@ public class CommentService
      */
     @Override
     public void postModify(final CommentDto postDto, final CommentDto updatedDto) throws Exception {
-        publisher.publishEvent(new CommentCacheEvictEvent(this, updatedDto.getRefPostNo(), updatedDto.getRefContentType()));
+        publisher.publishCustomEvent(new CommentCacheEvictEvent(this, updatedDto.getRefPostNo(), updatedDto.getRefContentType()));
     }
 
     /**
@@ -124,6 +111,6 @@ public class CommentService
      */
     @Override
     public void postDelete(final CommentDto deletedDto) throws Exception {
-        publisher.publishEvent(new CommentCacheEvictEvent(this, deletedDto.getRefPostNo(), deletedDto.getRefContentType()));
+        publisher.publishCustomEvent(new CommentCacheEvictEvent(this, deletedDto.getRefPostNo(), deletedDto.getRefContentType()));
     }
 }

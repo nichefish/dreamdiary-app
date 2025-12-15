@@ -45,19 +45,6 @@ public class ClCdService
     }
 
     /**
-     * 단일 항목 조회 (dto level)
-     *
-     * @param key 조회할 엔티티의 키
-     * @return {@link BoardDefDto} -- 조회 항목 반환
-     */
-    @Transactional(readOnly = true)
-    public ClCdDto getDtlDto(final String key) throws Exception {
-        final ClCdEntity retrievedEntity = this.getDtlEntity(key);
-
-        return mapstruct.toDto(retrievedEntity);
-    }
-
-    /**
      * 등록 전처리. (override)
      *
      * @param dto 등록할 객체

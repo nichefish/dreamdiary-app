@@ -37,17 +37,4 @@ public class FlsysMetaService
     public FlsysMetaMapstruct getWriteMapstruct() {
         return this.mapstruct;
     }
-
-    /**
-     * 단일 항목 조회 (dto level)
-     *
-     * @param key 조회할 엔티티의 키
-     * @return {@link FlsysMetaDto} -- 조회 항목 반환
-     */
-    @Transactional(readOnly = true)
-    public FlsysMetaDto getDtlDto(final Integer key) throws Exception {
-        final FlsysMetaEntity retrievedEntity = this.getDtlEntity(key);
-
-        return mapstruct.toDto(retrievedEntity);
-    }
 }

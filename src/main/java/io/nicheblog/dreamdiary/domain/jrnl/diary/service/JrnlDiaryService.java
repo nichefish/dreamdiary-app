@@ -84,8 +84,8 @@ public class JrnlDiaryService
     @Cacheable(value="myJrnlDiaryList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.hashCode()")
     public List<JrnlDiaryDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
-        final List<JrnlDiaryEntity> listEntity = this.getSelf().getListEntity(searchParam);
-        return mapstruct.toDtoList(listEntity);
+
+        return this.getSelf().getListDto(searchParam);
     }
 
     /**
@@ -97,8 +97,7 @@ public class JrnlDiaryService
     @Cacheable(value="myImprtcDiaryList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy")
     public List<JrnlDiaryDto> getImprtcDiaryList(final Integer yy) throws Exception {
         final JrnlDiarySearchParam searchParam = JrnlDiarySearchParam.builder().yy(yy).imprtcYn("Y").build();
-        final List<JrnlDiaryEntity> imprtcDiaryEntityList = this.getSelf().getListEntity(searchParam);
-        final List<JrnlDiaryDto> imprtcDiaryList = mapstruct.toDtoList(imprtcDiaryEntityList);
+        final List<JrnlDiaryDto> imprtcDiaryList = this.getSelf().getListDto(searchParam);
         Collections.sort(imprtcDiaryList);
 
         return imprtcDiaryList;
@@ -113,8 +112,7 @@ public class JrnlDiaryService
     @Cacheable(value="myJrnlDiaryTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
     @SuppressWarnings("unchecked")
     public List<JrnlDiaryDto> jrnlDiaryTagDtl(final JrnlDiarySearchParam searchParam) throws Exception {
-        final List<JrnlDiaryEntity> jrnlDiaryEntityList = this.getSelf().getListEntity(searchParam);
-        final List<JrnlDiaryDto> jrnlDiaryList = mapstruct.toDtoList(jrnlDiaryEntityList);
+        final List<JrnlDiaryDto> jrnlDiaryList = this.getSelf().getListDto(searchParam);
         // 공휴일 정보 세팅
         final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
         for (JrnlDiaryDto jrnlDiary : jrnlDiaryList) {
@@ -122,19 +120,6 @@ public class JrnlDiaryService
         }
 
         return jrnlDiaryList;
-    }
-
-    /**
-     * 단일 항목 조회 (dto level)
-     *
-     * @param key 조회할 엔티티의 키
-     * @return {@link JrnlDiaryDto} -- 조회 항목 반환
-     */
-    @Transactional(readOnly = true)
-    public JrnlDiaryDto getDtlDto(final Integer key) throws Exception {
-        final JrnlDiaryEntity retrievedEntity = this.getDtlEntity(key);
-
-        return mapstruct.toDto(retrievedEntity);
     }
 
     /**

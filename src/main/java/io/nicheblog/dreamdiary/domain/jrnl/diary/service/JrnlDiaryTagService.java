@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -68,8 +69,8 @@ public class JrnlDiaryTagService
     @Cacheable(value="myJrnlDiaryTagList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
     public List<TagDto> getListDtoWithCache(final Integer yy, final Integer mnth) throws Exception {
         final JrnlDiarySearchParam searchParam = JrnlDiarySearchParam.builder().yy(yy).mnth(mnth).build();
-        final List<JrnlDiaryTagEntity> listEntity = this.getSelf().getListEntity(searchParam);
-        return mapstruct.toDtoList(listEntity);
+
+        return this.getSelf().getListDto(searchParam);
     }
 
     /**
@@ -113,6 +114,8 @@ public class JrnlDiaryTagService
      * @return {@link Integer} -- 태그 목록에서 계산된 최대 사용 빈도 (Integer)
      */
     public Integer calcMaxSize(final List<TagDto> tagList, Integer yy, Integer mnth) {
+        if (CollectionUtils.isEmpty(tagList)) return 0;
+
         int maxFrequency = 0;
 
         final JrnlDiaryContentTagParam param = JrnlDiaryContentTagParam.builder()

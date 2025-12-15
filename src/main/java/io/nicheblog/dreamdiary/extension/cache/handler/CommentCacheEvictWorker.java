@@ -51,25 +51,25 @@ public class CommentCacheEvictWorker {
             case JRNL_DAY: {
                 final JrnlDayDto jrnlDayDto = jrnlDayService.getDtlDto(event.getRefPostNo());
                 final JrnlCacheEvictParam param = JrnlCacheEvictParam.of(jrnlDayDto);
-                publisher.publishEvent(new JrnlCacheEvictEvent(this, param, ContentType.JRNL_DAY));
+                publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, param, ContentType.JRNL_DAY));
                 return;
             }
             case JRNL_ENTRY: {
                 final JrnlEntryDto jrnlEntryDto = jrnlEntryService.getDtlDto(event.getRefPostNo());
                 final JrnlCacheEvictParam param = JrnlCacheEvictParam.of(jrnlEntryDto);
-                publisher.publishEvent(new JrnlCacheEvictEvent(this, param, ContentType.JRNL_ENTRY));
+                publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, param, ContentType.JRNL_ENTRY));
                 return;
             }
             case JRNL_DIARY:  {
                 final JrnlDiaryDto jrnlDiaryDto = jrnlDiaryService.getDtlDto(event.getRefPostNo());
                 final JrnlCacheEvictParam param = JrnlCacheEvictParam.of(jrnlDiaryDto);
-                publisher.publishEvent(new JrnlCacheEvictEvent(this, param, ContentType.JRNL_DIARY));
+                publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, param, ContentType.JRNL_DIARY));
                 return;
             }
             case JRNL_DREAM: {
                 final JrnlDreamDto jrnlDreamDto = jrnlDreamService.getDtlDto(event.getRefPostNo());
                 final JrnlCacheEvictParam param = JrnlCacheEvictParam.of(jrnlDreamDto);
-                publisher.publishEvent(new JrnlCacheEvictEvent(this, param, ContentType.JRNL_DREAM));
+                publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, param, ContentType.JRNL_DREAM));
                 return;
             }
         }

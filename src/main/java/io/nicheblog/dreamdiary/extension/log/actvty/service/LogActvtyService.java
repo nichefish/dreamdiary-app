@@ -45,19 +45,6 @@ public class LogActvtyService
     private final ActiveProfile activeProfile;
 
     /**
-     * 단일 항목 조회 (dto level)
-     *
-     * @param key 조회할 엔티티의 키
-     * @return {@link LogActvtyDto} -- 조회 항목 반환
-     */
-    @Transactional(readOnly = true)
-    public LogActvtyDto getDtlDto(final Integer key) throws Exception {
-        final LogActvtyEntity retrievedEntity = this.getDtlEntity(key);
-
-        return mapstruct.toDto(retrievedEntity);
-    }
-
-    /**
      * 로그인 상태에서 활동 로그 등록
      *
      * @param logParam 활동 로그 파라미터

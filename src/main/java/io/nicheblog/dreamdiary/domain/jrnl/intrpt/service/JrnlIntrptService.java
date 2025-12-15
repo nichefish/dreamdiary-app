@@ -82,8 +82,8 @@ public class JrnlIntrptService
     @Cacheable(value="myJrnlIntrptList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.hashCode()")
     public List<JrnlIntrptDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
-        final List<JrnlIntrptEntity> entityList = this.getSelf().getListEntity(searchParam);
-        return mapstruct.toDtoList(entityList);
+
+        return this.getSelf().getListDto(searchParam);
     }
 
     /**
@@ -95,8 +95,7 @@ public class JrnlIntrptService
     @Cacheable(value="myImprtcIntrptList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy")
     public List<JrnlIntrptDto> getImprtcIntrptList(final Integer yy) throws Exception {
         final JrnlIntrptSearchParam searchParam = JrnlIntrptSearchParam.builder().yy(yy).imprtcYn("Y").build();
-        final List<JrnlIntrptEntity> entityList = this.getSelf().getListEntity(searchParam);
-        final List<JrnlIntrptDto> dtoList = mapstruct.toDtoList(entityList);
+        final List<JrnlIntrptDto> dtoList = this.getSelf().getListDto(searchParam);
         Collections.sort(dtoList);
 
         return dtoList;
@@ -111,8 +110,7 @@ public class JrnlIntrptService
     @Cacheable(value="myJrnlIntrptTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
     @SuppressWarnings("unchecked")
     public List<JrnlIntrptDto> jrnlIntrptTagDtl(final JrnlIntrptSearchParam searchParam) throws Exception {
-        final List<JrnlIntrptEntity> entityList = this.getSelf().getListEntity(searchParam);
-        final List<JrnlIntrptDto> jrnlIntrptList = mapstruct.toDtoList(entityList);
+        final List<JrnlIntrptDto> jrnlIntrptList = this.getSelf().getListDto(searchParam);
         // 공휴일 정보 세팅
         final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
         for (final JrnlIntrptDto jrnlIntrpt : jrnlIntrptList) {

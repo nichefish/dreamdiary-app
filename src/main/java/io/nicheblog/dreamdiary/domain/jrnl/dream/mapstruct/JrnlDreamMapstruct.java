@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.domain.jrnl.dream.mapstruct;
 
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamPostDto;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.mapstruct.JrnlIntrptMapstruct;
 import io.nicheblog.dreamdiary.extension.cd.utils.CdUtils;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseClsfMapstruct;
@@ -23,7 +24,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CdUtils.class}, builder = @Builder(disableBuilder = true))
 public interface JrnlDreamMapstruct
-        extends BaseWriteMapstruct<JrnlDreamDto, JrnlDreamEntity>, BaseClsfMapstruct<JrnlDreamDto, JrnlDreamEntity> {
+        extends BaseWriteMapstruct<JrnlDreamPostDto, JrnlDreamEntity>, BaseClsfMapstruct<JrnlDreamDto, JrnlDreamEntity> {
 
     JrnlDreamMapstruct INSTANCE = Mappers.getMapper(JrnlDreamMapstruct.class);
     JrnlIntrptMapstruct jrnlIntrptMapstruct = JrnlIntrptMapstruct.INSTANCE;
@@ -36,7 +37,7 @@ public interface JrnlDreamMapstruct
      */
     @Override
     @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
-    JrnlDreamEntity toEntity(final JrnlDreamDto dto) throws Exception;
+    JrnlDreamEntity toEntity(final JrnlDreamPostDto dto) throws Exception;
 
     /**
      * update Entity from Dto (Dto에서 null이 아닌 값만 Entity로 매핑)
@@ -47,7 +48,7 @@ public interface JrnlDreamMapstruct
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
-    void updateFromDto(final JrnlDreamDto dto, final @MappingTarget JrnlDreamEntity entity) throws Exception;
+    void updateFromDto(final JrnlDreamPostDto dto, final @MappingTarget JrnlDreamEntity entity) throws Exception;
 
     /**
      * Entity -> Dto 변환

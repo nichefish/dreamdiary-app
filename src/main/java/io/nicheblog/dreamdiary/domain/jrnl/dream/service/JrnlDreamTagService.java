@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -69,8 +70,7 @@ public class JrnlDreamTagService
     public List<TagDto> getListDtoWithCache(final Integer yy, final Integer mnth) throws Exception {
         final JrnlDreamSearchParam searchParam = JrnlDreamSearchParam.builder().yy(yy).mnth(mnth).build();
 
-        final List<JrnlDreamTagEntity> entityList = this.getSelf().getListEntity(searchParam);
-        return mapstruct.toDtoList(entityList);
+        return this.getSelf().getListDto(searchParam);
     }
 
     /**
@@ -113,6 +113,8 @@ public class JrnlDreamTagService
      * @return {@link Integer} -- 태그 목록에서 계산된 최대 사용 빈도 (Integer)
      */
     public Integer calcMaxSize(final List<TagDto> tagList, Integer yy, Integer mnth) {
+        if (CollectionUtils.isEmpty(tagList)) return 0;
+
         int maxFrequency = 0;
 
         final JrnlDreamContentTagParam param = JrnlDreamContentTagParam.builder()
