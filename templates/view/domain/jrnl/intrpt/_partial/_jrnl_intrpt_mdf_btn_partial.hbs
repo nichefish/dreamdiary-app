@@ -4,7 +4,12 @@
  -->
 
 <script type="text/x-handlebars-template" id="jrnl_intrpt_mdf_btn_partial">
-<!-- Dropdown -->
+    <button type="button" class="btn btn-sm btn-light-primary btn-outlined m-1 py-0 px-2 cursor-pointer"
+            onclick="dF.JrnlIntrpt.copy({{postNo}});"
+            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "bs.tooltip.copy"/>">
+        <i class="bi bi-copy p-0"></i>
+    </button>
+    <!-- Dropdown -->
     <div class="me-0 d-flex align-items-center">
         <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end"

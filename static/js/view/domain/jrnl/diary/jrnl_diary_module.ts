@@ -382,6 +382,41 @@ dF.JrnlDiary = (function(): dfModule {
                 content.classList.add("collapsed");
                 icon?.classList.replace("bi-chevron-up", "bi-chevron-down");
             }
-        }
+        },
+
+        /**
+         * copy
+         * @param {string|number} postNo - 글 번호.
+         */
+        copy: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            const url: string = cF.util.bindUrl(Url.JRNL_DIARY, { postNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    return;
+                }
+                const rsltObj: Record<string, any> = res.rsltObj;
+                const resultCn: string = rsltObj.cn;
+                // 문단/줄바꿈을 먼저 텍스트로 치환
+                const replacedCn = resultCn.replace(/<\s*br\s*\/?>/gi, "\n").replace(/<\s*\/?p\s*>/gi, "\n");
+                const div: HTMLDivElement = document.createElement("div");
+                div.innerHTML = replacedCn;
+                const textToCopy: string = (div.textContent ?? "").replace(/\n+/g, "\n").trim();
+
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(textToCopy)
+                        .then((): void => {
+                            Swal.fire({ icon: "success", text: "클립보드에 복사되었습니다." });
+                        })
+                        .catch((): void => {
+                            cF.util.legacyCopy(textToCopy);
+                        });
+                } else {
+                    cF.util.legacyCopy(textToCopy);
+                }
+            });
+        },
     }
 })();
