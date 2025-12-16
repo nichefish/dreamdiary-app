@@ -47,9 +47,9 @@ public class MessageUtils
     private void init() {
         messageSource = autowiredMessageSource;
         response = autowiredResponse;
-        RSLT_SUCCESS = getMessage("common.rslt.success");
-        RSLT_FAILURE = getMessage("common.rslt.failure");
-        RSLT_EMPTY = getMessage("common.rslt.empty");
+        RSLT_SUCCESS = getMessage("msg.rslt.success");
+        RSLT_FAILURE = getMessage("msg.rslt.failure");
+        RSLT_EMPTY = getMessage("msg.rslt.empty");
     }
 
     public static String RSLT_SUCCESS;

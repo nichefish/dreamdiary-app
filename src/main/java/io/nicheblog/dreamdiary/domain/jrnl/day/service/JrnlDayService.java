@@ -343,7 +343,7 @@ public class JrnlDayService
         final JrnlDayEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlDayDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("common.rslt.access-not-authorized"));
+        if (!retrieved.getIsRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
 
         return retrieved;
     }

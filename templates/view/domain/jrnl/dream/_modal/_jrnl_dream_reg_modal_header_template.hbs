@@ -56,38 +56,6 @@
         <div class="col-2 d-flex align-items-center">
             <div>
                 <label class="text-gray-700 fs-6 fw-bolder cursor-help"
-                       data-bs-toggle="tooltip" data-bs-placement="top" title="정리완료된 글은 녹색으로 구분되어 표시됩니다.">
-                    정리완료 여부
-                    <i class="bi bi-question-circle"></i>
-                </label>
-                <div class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
-                    <input type="checkbox" name="resolvedYn" id="resolvedYn" class="form-check-input cursor-pointer"
-                           value="Y" {{checkedYn resolvedYn}} />
-                    <label class="form-check-label fw-bold fs-6 ms-3" for="resolvedYn" id="resolvedYnLabel" {{{checkedYnStyle resolvedYn "color" "green//gray"}}}>
-                        {{#ifYn resolvedYn}}정리완료{{else}}정리중{{/ifYn}}
-                    </label>
-                </div>
-            </div>
-        </div>
-        <div class="col-2 d-flex align-items-center">
-            <div>
-                <label class="text-gray-700 fs-6 fw-bolder cursor-help"
-                       data-bs-toggle="tooltip" data-bs-placement="top" title="해당 글은 굵은 글씨, 아이콘 및 눈에 띄는 색상으로 강조됩니다.">
-                    중요 여부
-                    <i class="bi bi-question-circle"></i>
-                </label>
-                <div class="form-check form-switch form-check-custom form-check-solid cursor-pointer">
-                    <input type="checkbox" name="imprtcYn" id="imprtcYn" class="form-check-input cursor-pointer"
-                           value="Y" {{checkedYn imprtcYn}} />
-                    <label class="form-check-label fw-bold fs-6 ms-3" for="imprtcYn" id="imprtcYnLabel" {{{checkedYnStyle imprtcYn "color" "red//gray"}}}>
-                        {{#ifYn imprtcYn}}중요{{else}}해당없음{{/ifYn}}
-                    </label>
-                </div>
-            </div>
-        </div>
-        <div class="col-2 d-flex align-items-center">
-            <div>
-                <label class="text-gray-700 fs-6 fw-bolder cursor-help"
                        data-bs-toggle="tooltip" data-bs-placement="top" title="악몽입니다.">
                     악몽 여부
                     <i class="bi bi-question-circle"></i>
