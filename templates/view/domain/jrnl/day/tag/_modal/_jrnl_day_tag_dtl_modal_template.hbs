@@ -10,10 +10,9 @@
         {{/if}}
 
         <div class="jrnl-item">
-            <div class="col-12 col-md-1 d-flex flex-wrap align-items-center fs-5 fw-bold {{#if isHldy}}text-danger{{/if}}" style="column-gap: .25rem">
-                {{> jrnl_day_mdf_btn_partial this postNo=this.jrnlDayNo}}
-                <span class="fs-7 ms-4 text-muted">{{{weather}}}</span>
-                {{#if (exists hldyNm)}}<div class="w-100 ps-5 fs-6 fw-normal text-truncate">{{hldyNm}}</div>{{/if}}
+            <div class="col-12 col-md-1 d-flex flex-wrap align-items-center fs-5 fw-bold">
+                {{> jrnl_day_stdrd_dt_partial this}}
+                {{> jrnl_day_context_btn_partial this postNo=this.jrnlDayNo}}
             </div>
             <div class="col py-3 d-flex d-flex flex-column">
                 <div class="flex-row mb-2">
@@ -39,30 +38,53 @@
                 </div>
 
                 <div class="flex-row">
-                    {{#if (exists jrnlDiaryList)}}
+                    {{#each jrnlEntryList}}
                         <div class="d-flex align-items-center mt-2">
-                            <span class="text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder">
-                                <@spring.message 'diary'/>
-                                <i class="bi bi-book fs-4 pe-1"></i>
-                            </span>
-                        </div>
-                        {{#each jrnlDiaryList}}
-                            <div class="jrnl-diary-item">
-                                <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
-                                    <div># {{idx}}</div>
-                                </div>
-                                <div class="col jrnl-diary-cn">
-                                    {{> jrnl_diary_cn_partial this collapse="collapse-4"}}
-                                </div>
-                                <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                                <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
-                                    {{> comment_reg_btn_partial this contentType="JRNL_DIARY"}}
-                                    <div class="col-1 border-2 border-gray-300 border-end w-10px">&nbsp;</div>
-                                    {{> jrnl_diary_mdf_btn_partial this}}
-                                </div>
+                            <div class="col col-md-1 w-5 text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder ">
+                                {{#ifYn entryResolvedYn}}
+                                    <span class="text-success"><@spring.message 'entry'/></span>
+                                    <span class="position-relative d-inline-block">
+                                      <i class="bi bi-book fs-4 text-success"></i>
+                                      <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
+                                    </span>
+                                {{else}}
+                                    <@spring.message 'entry'/>
+                                    <i class="bi bi-book fs-4 pe-1"></i>
+                                {{/ifYn}}
                             </div>
-                        {{/each}}
-                    {{/if}}
+                            <div class="col-3 d-none d-md-flex align-items-center gap-2">
+                                {{> jrnl_diary_reg_btn_partial this}}
+                                {{> jrnl_entry_context_btn_partial this}}
+                                {{> jrnl_entry_toggle_btn_partial this}}
+                            </div>
+                        </div>
+                        <div class="jrnl-entry jrnl-item" data-id={{postNo}}>
+                            {{#each jrnlDiaryList}}
+                                <div class="jrnl-diary-item" data-id={{postNo}} data-collapsed="{{collapsedYn}}" data-resolved="{{resolvedYn}}" data-imprtc="{{imprtcYn}}">
+                                    <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
+                                        <div class="d-flex flex-column align-items-center">
+                                            <span class="jrnl-diary-idx {{#ifYn resolvedYn}}text-success{{/ifYn}}">
+                                                # {{idx}}
+                                                {{#ifYn resolvedYn}}
+                                                    <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
+                                                {{/ifYn}}
+                                            </span>
+                                            {{> jrnl_diary_toggle_btn_partial this}}
+                                        </div>
+                                    </div>
+                                    <div class="col jrnl-diary-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
+                                        {{> jrnl_diary_cn_partial this}}
+                                    </div>
+                                    <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                                    <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
+                                        {{> comment_reg_btn_partial this contentType="JRNL_DIARY"}}
+                                        {{> jrnl_diary_copy_btn_partial this}}
+                                        {{> jrnl_diary_context_btn_partial this}}
+                                    </div>
+                                </div>
+                            {{/each}}
+                        </div>
+                    {{/each}}
                     {{#if hasDream}}
                         <div class="d-flex align-items-center mt-2">
                             <span class="text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder">
@@ -81,8 +103,8 @@
                                 <div class="col-1 bd-none d-md-flex order-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                                 <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
                                     {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
-                                    <div class="col-1 border-2 border-gray-300 border-end w-10px">&nbsp;</div>
-                                    {{> jrnl_dream_mdf_btn_partial this}}
+                                    {{> jrnl_dream_copy_btn_partial this}}
+                                    {{> jrnl_dream_context_btn_partial this}}
                                 </div>
                             </div>
                         {{/each}}
@@ -97,8 +119,8 @@
                                 <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                                 <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
                                     {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
-                                    <div class="col-1 border-2 border-gray-300 border-end w-10px">&nbsp;</div>
-                                    {{> jrnl_dream_mdf_btn_partial this}}
+                                    {{> jrnl_dream_copy_btn_partial this}}
+                                    {{> jrnl_dream_context_btn_partial this}}
                                 </div>
                             </div>
                         {{/each}}

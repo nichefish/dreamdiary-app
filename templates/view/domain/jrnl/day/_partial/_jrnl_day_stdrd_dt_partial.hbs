@@ -1,0 +1,19 @@
+<#--
+ * 저널 일기(jrnl_diary) 목록 - 수정 버튼 partial
+ * @included_in : jrnl_day_page.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="jrnl_day_stdrd_dt_partial">
+    <div class="{{#if isHldy}}text-danger{{/if}}" style="column-gap: .25rem">
+        <i class="bi bi-calendar3 fs-6 me-1 {{#if isHldy}}text-danger{{/if}}"></i>
+        {{stdrdDt}}
+        {{#ifYn dtUnknownYn}}
+            <i class='bi bi-exclamation-circle cursor-pointer text-noti blink fs-7 ms-2'
+               data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="불확실한 일자입니다."></i>
+        {{else}}
+            <span class="fs-8 {{#if isHldy}}text-danger{{else}}text-gray-600{{/if}}">({{jrnlDtWeekDay}})</span>
+        {{/ifYn}}
+        <span class="fs-7 ms-4 text-muted">{{{weather}}}</span>
+        {{#if (exists hldyNm)}}<div class="w-100 ps-5 fs-6 fw-normal text-truncate">{{hldyNm}}</div>{{/if}}
+    </div>
+</script>

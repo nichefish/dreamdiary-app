@@ -382,12 +382,13 @@ dF.JrnlDream = (function(): dfModule {
         /**
          * toggle
          * @param {string|number} postNo - 글 번호.
+         * @param {HTMLElement} trigger - 클릭 버튼 객체
          */
-        toggle: function(postNo: string|number): void {
+        toggle: function(postNo: string|number, trigger: HTMLElement): void {
             if (isNaN(Number(postNo))) return;
 
             const id: string = String(postNo);
-            const item: HTMLElement = document.querySelector(`.jrnl-dream-cn[data-id='${id}']`);
+            const item: HTMLElement = trigger.closest(`.jrnl-dream-item[data-id='${id}']`);
             if (!item) return console.log("item not found.");
 
             const content: HTMLElement = item.querySelector(".jrnl-dream-cn .cn");

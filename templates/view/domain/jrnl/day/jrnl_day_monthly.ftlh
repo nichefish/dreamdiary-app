@@ -76,21 +76,25 @@
 <#include "/view/domain/jrnl/day/_modal/_jrnl_day_reg_modal.ftlh">
 <#include "/view/domain/jrnl/day/_modal/_jrnl_day_dtl_modal.ftlh">
 <#include "/view/domain/jrnl/day/_jrnl_day_list_template.hbs">
-<#include "/view/domain/jrnl/day/_partial/_jrnl_day_mdf_btn_partial.hbs">
+<#include "/view/domain/jrnl/day/_partial/_jrnl_day_stdrd_dt_partial.hbs">
+<#include "/view/domain/jrnl/day/_partial/_jrnl_day_context_btn_partial.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/day/jrnl_day_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_entry_module-->
 <#include "/view/domain/jrnl/entry/_modal/_jrnl_entry_reg_modal.ftlh">
 <#include "/view/domain/jrnl/entry/_jrnl_entry_list_template.hbs">
 <#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_reg_btn_partial.hbs">
-<#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_mdf_btn_partial.hbs">
+<#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_context_btn_partial.hbs">
+<#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_toggle_btn_partial.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/entry/jrnl_entry_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_diary_module-->
 <#include "/view/domain/jrnl/diary/_modal/_jrnl_diary_reg_modal.ftlh">
 <#include "/view/domain/jrnl/diary/_jrnl_diary_list_template.hbs">
 <#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_reg_btn_partial.hbs">
-<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_mdf_btn_partial.hbs">
+<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_copy_btn_partial.hbs">
+<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_context_btn_partial.hbs">
+<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_toggle_btn_partial.hbs">
 <#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_cn_partial.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/diary/jrnl_diary_module.js?${releaseDate!}"></script>
 
@@ -98,7 +102,9 @@
 <#include "/view/domain/jrnl/dream/_modal/_jrnl_dream_reg_modal.ftlh">
 <#include "/view/domain/jrnl/dream/_jrnl_dream_list_template.hbs">
 <#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_reg_btn_partial.hbs">
-<#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_mdf_btn_partial.hbs">
+<#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_copy_btn_partial.hbs">
+<#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_context_btn_partial.hbs">
+<#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_toggle_btn_partial.hbs">
 <#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_cn_partial.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/dream/jrnl_dream_module.js?${releaseDate!}"></script>
 
@@ -106,7 +112,9 @@
 <#include "/view/domain/jrnl/intrpt/_modal/_jrnl_intrpt_reg_modal.ftlh">
 <#include "/view/domain/jrnl/intrpt/_jrnl_intrpt_list_template.hbs">
 <#include "/view/domain/jrnl/intrpt/_partial/_jrnl_intrpt_reg_btn_partial.hbs">
-<#include "/view/domain/jrnl/intrpt/_partial/_jrnl_intrpt_mdf_btn_partial.hbs">
+<#include "/view/domain/jrnl/intrpt/_partial/_jrnl_intrpt_copy_btn_partial.hbs">
+<#include "/view/domain/jrnl/intrpt/_partial/_jrnl_intrpt_context_btn_partial.hbs">
+<#include "/view/domain/jrnl/intrpt/_partial/_jrnl_intrpt_toggle_btn_partial.hbs">
 <#include "/view/domain/jrnl/intrpt/_partial/_jrnl_intrpt_cn_partial.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/intrpt/jrnl_intrpt_module.js?${releaseDate!}"></script>
 

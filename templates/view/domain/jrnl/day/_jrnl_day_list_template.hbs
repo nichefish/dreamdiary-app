@@ -7,22 +7,13 @@
     {{#each this}}
         <div class="jrnl-day">
             <div class="jrnl-day-header" data-date="{{stdrdDt}}">
-                <div class="col-12 col-md-1 d-flex flex-wrap align-items-center fs-5 fw-bold {{#if isHldy}}text-danger{{/if}}" style="column-gap: .25rem">
-                    <i class="bi bi-calendar3 fs-6 me-1 {{#if isHldy}}text-danger{{/if}}"></i>
-                    {{stdrdDt}}
-                    {{#if (exists jrnlDt)}}
-                        <span class="fs-8 {{#if isHldy}}text-danger{{else}}text-gray-600{{/if}}">({{jrnlDtWeekDay}})</span>
-                    {{else}}
-                        <i class='bi bi-exclamation-circle cursor-pointer text-noti blink fs-7 ms-2'
-                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="불확실한 일자입니다."></i>
-                    {{/if}}
-                    <span class="fs-7 ms-4 text-muted">{{{weather}}}</span>
-                    {{#if (exists hldyNm)}}<div class="w-100 ps-5 fs-6 fw-normal text-truncate">{{hldyNm}}</div>{{/if}}
+                <div class="col-12 col-md-1 d-flex flex-wrap align-items-center fs-5 fw-bold">
+                    {{> jrnl_day_stdrd_dt_partial this}}
                 </div>
                 <div class="col-3 d-none d-md-flex align-items-center gap-2">
                     {{> jrnl_entry_reg_btn_partial this}}
                     {{> jrnl_dream_reg_btn_partial this}}
-                    {{> jrnl_day_mdf_btn_partial this}}
+                    {{> jrnl_day_context_btn_partial this}}
                 </div>
             </div>
             <div class="row">
@@ -55,18 +46,13 @@
                         </div>
                         <div class="col-3 d-none d-md-flex align-items-center gap-2">
                             {{> jrnl_diary_reg_btn_partial this}}
-                            {{> jrnl_entry_mdf_btn_partial this}}
-                            <!-- toggle button -->
-                            <button type="button"
-                                    class="btn btn-sm btn-secondary ms-2 toggle-entry-btn"
-                                    onclick="dF.JrnlEntry.toggle({{postNo}})">
-                                <i class="bi bi-arrows-collapse pe-0" id="entry-toggle-icon-{{postNo}}"></i>
-                            </button>
+                            {{> jrnl_entry_context_btn_partial this}}
+                            {{> jrnl_entry_toggle_btn_partial this}}
                         </div>
                     </div>
-                    <div class="jrnl-entry jrnl-item" data-id={{postNo}}>
+                    <div class="jrnl-entry jrnl-item" data-id="{{postNo}}">
                         {{#each jrnlDiaryList}}
-                            <div class="jrnl-diary-item" data-id={{postNo}} data-collapsed="{{collapsedYn}}" data-resolved="{{resolvedYn}}" data-imprtc="{{imprtcYn}}">
+                            <div class="jrnl-diary-item" data-id="{{postNo}}" data-collapsed="{{collapsedYn}}" data-resolved="{{resolvedYn}}" data-imprtc="{{imprtcYn}}">
                                 <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                                     <div class="d-flex flex-column align-items-center">
                                         <span class="jrnl-diary-idx {{#ifYn resolvedYn}}text-success{{/ifYn}}">
@@ -75,12 +61,7 @@
                                                 <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
                                             {{/ifYn}}
                                         </span>
-                                        <!-- toggle button -->
-                                        <button type="button"
-                                                class="btn btn-sm btn-secondary ms-2 toggle-diary-btn"
-                                                onclick="dF.JrnlDiary.toggle({{postNo}})">
-                                            <i class="bi bi-chevron-{{#ifYn collapsedYn}}down{{else}}up{{/ifYn}} pe-0" id="diary-toggle-icon"></i>
-                                        </button>
+                                        {{> jrnl_diary_toggle_btn_partial this}}
                                     </div>
                                 </div>
                                 <div class="col jrnl-diary-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
@@ -89,7 +70,8 @@
                                 <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                                 <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
                                     {{> comment_reg_btn_partial this contentType="JRNL_DIARY"}}
-                                    {{> jrnl_diary_mdf_btn_partial this}}
+                                    {{> jrnl_diary_copy_btn_partial this}}
+                                    {{> jrnl_diary_context_btn_partial this}}
                                 </div>
                             </div>
                         {{/each}}
@@ -104,43 +86,34 @@
                         </div>
                         <div class="col-3 d-none d-md-flex align-items-center gap-2">
                             {{> jrnl_intrpt_reg_btn_partial this}}
-                            <!-- toggle button -->
-                            <button type="button"
-                                    class="btn btn-sm btn-secondary ms-2 toggle-entry-btn"
-                                    onclick="dF.JrnlIntrpt.toggle({{postNo}})">
-                                <i class="bi bi-arrows-collapse pe-0" id="entry-toggle-icon-{{postNo}}"></i>
-                            </button>
+                            {{> jrnl_dream_toggle_btn_partial this}}
                         </div>
                     </div>
-                    <div class="jrnl-item">
+                    <div class="jrnl-dream-item" data-id="{{postNo}}">
                         <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                             <div class="d-flex flex-column align-items-center">
-                                <span {{#ifYn resolvedYn}}class="text-success"{{/ifYn}}>
+                                <span class="jrnl-dream-idx {{#ifYn resolvedYn}}text-success{{/ifYn}}">
                                     # {{idx}}
                                     {{#ifYn resolvedYn}}
                                         <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
                                     {{/ifYn}}
                                 </span>
-                                <!-- toggle button -->
-                                <button type="button"
-                                        class="btn btn-sm btn-light-secondary ms-2 toggle-dream-btn"
-                                        onclick="dF.JrnlDream.toggle({{postNo}})">
-                                    <i class="bi bi-chevron-up pe-0" id="dream-toggle-icon-{{postNo}}"></i>
-                                </button>
+                                {{> jrnl_dream_toggle_btn_partial this}}
                             </div>
                         </div>
-                        <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-id="{{postNo}}" data-resolved="{{resolvedYn}}">
+                        <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-resolved="{{resolvedYn}}">
                             {{> jrnl_dream_cn_partial this}}
                         </div>
                         <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                         <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
                             {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
-                            {{> jrnl_dream_mdf_btn_partial this}}
+                            {{> jrnl_dream_copy_btn_partial this}}
+                            {{> jrnl_dream_context_btn_partial this}}
                         </div>
                     </div>
-                    <div class="jrnl-item" data-id={{postNo}}>
+                    <div class="jrnl-item">
                         {{#each jrnlIntrptList}}
-                            <div class="jrnl-intrpt-item ps-15">
+                            <div class="jrnl-intrpt-item ps-15" data-id="{{postNo}}">
                                 <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                                     <div class="d-flex flex-column align-items-center">
                                         <span {{#ifYn resolvedYn}}class="text-success"{{/ifYn}}>
@@ -149,40 +122,31 @@
                                                 <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
                                             {{/ifYn}}
                                         </span>
-                                        <!-- toggle button -->
-                                        <button type="button"
-                                                class="btn btn-sm btn-secondary ms-2 toggle-intrpt-btn"
-                                                onclick="dF.JrnlIntrpt.collapse({{postNo}})">
-                                            <i class="bi bi-chevron-up pe-0" id="intrpt-toggle-icon-{{postNo}}"></i>
-                                        </button>
+                                        {{> jrnl_intrpt_toggle_btn_partial this}}
                                     </div>
                                 </div>
-                                <div class="col jrnl-intrpt-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-id="{{postNo}}" data-resolved="{{resolvedYn}}">
+                                <div class="col jrnl-intrpt-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-resolved="{{resolvedYn}}">
                                     {{> jrnl_intrpt_cn_partial this}}
                                 </div>
                                 <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                                 <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
                                     {{> comment_reg_btn_partial this contentType="JRNL_DIARY"}}
-                                    {{> jrnl_intrpt_mdf_btn_partial this}}
+                                    {{> jrnl_intrpt_copy_btn_partial this}}
+                                    {{> jrnl_intrpt_context_btn_partial this}}
                                 </div>
                             </div>
                         {{/each}}
                     </div>
                 {{/each}}
                 {{#each jrnlElseDreamList}}
-                    <div class="jrnl-item">
+                    <div class="jrnl-dream-item" data-id="{{postNo}}">
                         <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                             <div class="d-flex flex-column align-items-center">
                                 <span>-</span>
-                                <!-- toggle button -->
-                                <button type="button"
-                                        class="btn btn-sm btn-light-secondary ms-2 toggle-dream-btn"
-                                        onclick="dF.JrnlDream.collapse({{postNo}})">
-                                    <i class="bi bi-chevron-up pe-0" id="dream-toggle-icon-{{postNo}}"></i>
-                                </button>
+                                {{> jrnl_dream_toggle_btn_partial this}}
                             </div>
                         </div>
-                        <div class="col py-3 jrnl-dream-cn bg-secondary" data-id="{{postNo}}" data-resolved="{{resolvedYn}}">
+                        <div class="col py-3 jrnl-dream-cn bg-secondary" data-resolved="{{resolvedYn}}">
                             {{> jrnl_dream_cn_partial this elseDreamYn="Y"}}
                         </div>
                         <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
@@ -190,11 +154,12 @@
                         <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                         <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
                             {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
-                            {{> jrnl_dream_mdf_btn_partial this}}
+                            {{> jrnl_dream_copy_btn_partial this}}
+                            {{> jrnl_dream_context_btn_partial this}}
                         </div>
                     </div>
                     {{#each jrnlIntrptList}}
-                        <div class="jrnl-intrpt-item ps-15">
+                        <div class="jrnl-intrpt-item ps-15" data-id="{{postNo}}">
                             <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                                 <div class="d-flex flex-column align-items-center">
                                     <span {{#ifYn resolvedYn}}class="text-success"{{/ifYn}}>
@@ -203,21 +168,17 @@
                                             <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
                                         {{/ifYn}}
                                     </span>
-                                    <!-- toggle button -->
-                                    <button type="button"
-                                            class="btn btn-sm btn-secondary ms-2 toggle-intrpt-btn"
-                                            onclick="dF.JrnlIntrpt.toggle({{postNo}})">
-                                        <i class="bi bi-chevron-up pe-0" id="intrpt-toggle-icon-{{postNo}}"></i>
-                                    </button>
+                                    {{> jrnl_intrpt_toggle_btn_partial this}}
                                 </div>
                             </div>
-                            <div class="col jrnl-intrpt-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-id="{{postNo}}" data-resolved="{{resolvedYn}}">
+                            <div class="col jrnl-intrpt-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-resolved="{{resolvedYn}}">
                                 {{> jrnl_intrpt_cn_partial this}}
                             </div>
                             <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                             <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
                                 {{> comment_reg_btn_partial this contentType="JRNL_INTRPT"}}
-                                {{> jrnl_intrpt_mdf_btn_partial this}}
+                                {{> jrnl_intrpt_copy_btn_partial this}}
+                                {{> jrnl_intrpt_context_btn_partial this}}
                             </div>
                         </div>
                     {{/each}}

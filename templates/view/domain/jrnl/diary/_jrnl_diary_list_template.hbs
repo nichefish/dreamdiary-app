@@ -6,10 +6,9 @@
 <script type="text/x-handlebars-template" id="jrnl_diary_list_template">
     {{#each this}}
         <div class="jrnl-item">
-            <div class="col-12 col-md-1 d-flex flex-wrap align-items-center fs-5 fw-bold {{#if isHldy}}text-danger{{/if}}" style="column-gap: .25rem">
-                {{> jrnl_day_mdf_btn_partial this postNo=this.jrnlDayNo}}
-                <span class="fs-7 ms-4 text-muted">{{{weather}}}</span>
-                {{#if (exists hldyNm)}}<div class="w-100 ps-5 fs-6 fw-normal text-truncate">{{hldyNm}}</div>{{/if}}
+            <div class="col-12 col-md-1 d-flex flex-wrap align-items-center fs-5 fw-bold">
+                {{> jrnl_day_stdrd_dt_partial this}}
+                {{> jrnl_day_context_btn_partial this postNo=this.jrnlDayNo}}
             </div>
             <div class="col py-3 jrnl-diary-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
                 {{> jrnl_diary_cn_partial this collapse="collapse-4"}}
@@ -17,8 +16,8 @@
             <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
             <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
                 {{> comment_reg_btn_partial this contentType="JRNL_DIARY"}}
-                <div class="col-1 border-2 border-gray-300 border-end w-10px">&nbsp;</div>
-                {{> jrnl_diary_mdf_btn_partial this}}
+                {{> jrnl_diary_copy_btn_partial this}}
+                {{> jrnl_diary_context_btn_partial this}}
             </div>
         </div>
     {{else}}

@@ -1,15 +1,10 @@
 <#--
- * 저널 일기(jrnl_diary) 목록 - 수정 버튼 partial
+ * 저널 항목(jrnl_entry) 목록 - 수정 버튼 partial
  * @included_in : jrnl_day_page.ftlh
  -->
 
-<script type="text/x-handlebars-template" id="jrnl_diary_mdf_btn_partial">
-    <button type="button" class="btn btn-sm btn-light-primary btn-outlined m-1 py-0 px-2 cursor-pointer"
-            onclick="dF.JrnlDiary.copy({{postNo}});"
-            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "bs.tooltip.copy"/>">
-        <i class="bi bi-copy p-0"></i>
-    </button>
-    <!-- Dropdown -->
+<script type="text/x-handlebars-template" id="jrnl_entry_context_btn_partial">
+<!-- Dropdown -->
     <div class="me-0 d-flex align-items-center">
         <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end"
@@ -17,16 +12,16 @@
             <i class="ki-solid ki-dots-horizontal fs-2x"></i>
         </button>
         <!--begin::Menu 3-->
-        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3" data-kt-menu="true">
+        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3" data-kt-menu="true" style="">
             <!--begin::Heading-->
             <div class="menu-item px-3">
-                <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">Diary</div>
+                <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">Entry</div>
             </div>
             <!--end::Heading-->
             <!--begin::Menu item-->
             <div class="menu-item px-3 my-1 cursor-pointer"
-                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.diary"/> <@spring.message 'bs.tooltip.modal.mdf'/>">
-                <div class="menu-link flex-stack px-3" onclick="dF.JrnlDiary.mdfModal({{postNo}}, '{{stdrdDt}}');">
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.entry"/> <@spring.message 'bs.tooltip.modal.mdf'/>">
+                <div class="menu-link flex-stack px-3" onclick="dF.JrnlEntry.mdfModal({{postNo}}, '{{stdrdDt}}');">
                     <@spring.message 'txt.comm.edit'/>
                     <i class="bi bi-pencil-square fs-8"></i>
                 </div>
@@ -66,13 +61,12 @@
                         <div class="menu-content px-3">
                             <!--begin::Switch-->
                             <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
-                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="중요">
+                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.imprtc'/>">
                                 <!--begin::Input-->
-                                <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" value="1" {{#ifYn imprtcYn}}checked="checked"{{/ifYn}}
-                                       onclick="dF.JrnlDiary.imprtcAjax({{postNo}});">
+                                <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" value="1" {{#ifYn imprtcYn}}checked="checked"{{/ifYn}}>
                                 <!--end::Input-->
                                 <!--end::Label-->
-                                <span class="form-check-label text-muted fs-7">중요</span>
+                                <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.imprtc'/></span>
                                 <!--end::Label-->
                             </label>
                             <!--end::Switch-->
@@ -106,8 +100,8 @@
             <!--end::Menu separator-->
             <!--begin::Menu item-->
             <div class="menu-item px-3 my-1 cursor-pointer"
-                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.diary"/> <@spring.message 'bs.tooltip.del'/>">
-                <div class="menu-link flex-stack px-3 text-danger" onclick="dF.JrnlDiary.delAjax({{postNo}});">
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.entry"/> <@spring.message 'bs.tooltip.del'/>">
+                <div class="menu-link flex-stack px-3 text-danger" onclick="dF.JrnlEntry.delAjax({{postNo}});">
                     <@spring.message 'txt.comm.del'/>
                     <i class="bi bi-trash text-danger p-0 fs-8"></i>
                 </div>

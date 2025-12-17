@@ -1,0 +1,12 @@
+<#--
+ * 저널 일기(jrnl_diary) 목록 - 수정 버튼 partial
+ * @included_in : jrnl_day_page.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="jrnl_diary_copy_btn_partial">
+    <button type="button" class="btn btn-sm btn-light-primary btn-outlined m-1 py-0 px-2 cursor-pointer"
+            onclick="dF.JrnlDiary.copy({{postNo}});"
+            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "bs.tooltip.copy"/>">
+        <i class="bi bi-copy p-0"></i>
+    </button>
+</script>
