@@ -145,7 +145,7 @@
                     </div>
                 <#else>
                     <div class="text-success">
-                        <@spring.message 'use'/><i class="bi bi-check text-success"></i>
+                        <@spring.message 'txt.status.use'/><i class="bi bi-check text-success"></i>
                     </div>
                 </#if>
             </div>
@@ -161,11 +161,11 @@
                 <div class="col-form-label">
                     <#if user.useAcsIp!false>
                         <div class="text-success">
-                            <@spring.message 'use'/><i class="bi bi-check text-success"></i>
+                            <@spring.message 'txt.status.use'/><i class="bi bi-check text-success"></i>
                         </div>
                     <#else>
                         <div class="text-muted">
-                            <@spring.message 'unuse'/><i class="bi bi-dash fs-9 text-muted"></i>
+                            <@spring.message 'txt.status.unuse'/><i class="bi bi-dash fs-9 text-muted"></i>
                         </div>
                     </#if>
                 </div>

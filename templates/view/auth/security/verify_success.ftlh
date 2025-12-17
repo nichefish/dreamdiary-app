@@ -21,7 +21,7 @@
 <div class="d-flex-center flex-column mt-8">
     <div><@spring.message 'msg.rslt.verification-success'/></div>
 
-    <div class="text-gray-500 fw-bold min-h-100px"><@spring.message 'noti.redirect-to-lgn-form'/>...</div>
+    <div class="text-gray-500 fw-bold min-h-100px"><@spring.message 'msg.redirect-to-lgn-form'/>...</div>
 
     <div class="mt-10">
         <button type="button" class="btn btn-sm btn-outlined btn-light-primary btn-active-primary py-2 px-3"

@@ -9,7 +9,7 @@
     <#--begin::Modal Header-->
     <div class="modal-header">
         <h5 id="modal_title" class="modal-title">
-            [<@spring.message 'jrnl.intrpt.tag'/>: <span class="header_tag_nm text-primary"></span>] -- <span class="header_tag_cnt text-muted"></span><span>개</span>
+            [<@spring.message 'txt.jrnl.intrpt.tag'/>: <span class="header_tag_nm text-primary"></span>] -- <span class="header_tag_cnt text-muted"></span><span>개</span>
         </h5>
         <div>
             <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"

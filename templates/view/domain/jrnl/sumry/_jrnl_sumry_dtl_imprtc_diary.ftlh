@@ -5,7 +5,7 @@
 <hr class="my-6 text-muted" />
 <div class="d-flex align-items-center mb-6 ms-4">
     <div class="col-1 ms-4 me-6 text-center fs-6">
-        <b><@spring.message 'diary.tag'/> : </b>
+        <b><@spring.message 'txt.diary.tag'/> : </b>
     </div>
     <div class="col" id="jrnl_diary_tag_list_div">
         <#list diaryTagList![] as tag>
@@ -61,7 +61,7 @@
                     <div class="col-1 py-3 d-flex-between w-50px gap-1">
                         <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
                                 onclick="dF.Comment.modal.regModal(${diary.postNo!}, 'JRNL_DIARY');"
-                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'comment'/> <@spring.message 'bs.tooltip.modal.reg'/>">
+                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.comment'/> <@spring.message 'bs.tooltip.modal.reg'/>">
                             <i class="bi bi-chat-left-dots p-0"></i>
                         </button>
                     </div>
@@ -69,12 +69,12 @@
                     <div class="col-1 py-3 d-flex-between w-50px gap-1">
                         <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
                                 onclick="dF.JrnlDiary.mdfModal(${diary.postNo!}, '${diary.stdrdDt!}');"
-                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'jrnl.diary'/> <@spring.message 'bs.tooltip.modal.mdf'/>">
+                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.jrnl.diary'/> <@spring.message 'bs.tooltip.modal.mdf'/>">
                             <i class="bi bi-pencil-square p-0"></i>
                         </button>
                         <button type="button" class="btn btn-sm btn-light-danger btn-outlined ms-2 py-1 px-2 cursor-pointer"
                                 onclick="dF.JrnlDiary.delAjax(${diary.postNo!});"
-                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'jrnl.diary'/> <@spring.message 'bs.tooltip.del'/>">
+                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.jrnl.diary'/> <@spring.message 'bs.tooltip.del'/>">
                             <i class="bi bi-trash p-0"></i>
                         </button>
                     </div>

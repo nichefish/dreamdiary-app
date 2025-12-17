@@ -127,7 +127,7 @@ public class AuthInfo
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (CollectionUtils.isEmpty(this.authList)) throw new RuntimeException(MessageUtils.getMessage("user.auth.empty"));
+        if (CollectionUtils.isEmpty(this.authList)) throw new RuntimeException(MessageUtils.getMessage("msg.user.auth.empty"));
 
         return this.authList.stream()
                 .map(entity -> {

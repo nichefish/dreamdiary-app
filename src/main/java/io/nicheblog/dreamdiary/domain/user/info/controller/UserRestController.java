@@ -63,7 +63,7 @@ public class UserRestController
 
         final Boolean isUserIdDup = userService.userIdDupChck(userId);
         final boolean isSuccess = !isUserIdDup;;
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? "user.id.usable" : "user.id.duplicated");
+        final String rsltMsg = MessageUtils.getMessage(isSuccess ? "msg.user.id.usable" : "msg.user.id.duplicated");
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);
@@ -88,7 +88,7 @@ public class UserRestController
 
         final Boolean isEmailDup = userService.emailDupChck(email);
         final boolean isSuccess = !isEmailDup;;
-        final String rsltMsg = MessageUtils.getMessage(isSuccess ? "user.email.usable" : "user.email.duplicated");
+        final String rsltMsg = MessageUtils.getMessage(isSuccess ? "msg.user.email.usable" : "msg.user.email.duplicated");
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);

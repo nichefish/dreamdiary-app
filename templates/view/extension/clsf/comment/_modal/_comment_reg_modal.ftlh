@@ -17,7 +17,7 @@
             </div>
             <!--begin::Label-->
             <label class="mb-2" for="tinymce_commentCn">
-                <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'cn'/></span>
+                <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'txt.cn'/></span>
                 <span class="text-gray-500 fs-9">&nbsp;</span>
             </label>
             <!--end::Label-->

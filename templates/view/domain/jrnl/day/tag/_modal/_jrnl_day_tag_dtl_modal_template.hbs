@@ -42,13 +42,13 @@
                         <div class="d-flex align-items-center mt-2">
                             <div class="col col-md-1 w-5 text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder ">
                                 {{#ifYn entryResolvedYn}}
-                                    <span class="text-success"><@spring.message 'entry'/></span>
+                                    <span class="text-success"><@spring.message 'txt.entry'/></span>
                                     <span class="position-relative d-inline-block">
                                       <i class="bi bi-book fs-4 text-success"></i>
                                       <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
                                     </span>
                                 {{else}}
-                                    <@spring.message 'entry'/>
+                                    <@spring.message 'txt.entry'/>
                                     <i class="bi bi-book fs-4 pe-1"></i>
                                 {{/ifYn}}
                             </div>
@@ -88,7 +88,7 @@
                     {{#if hasDream}}
                         <div class="d-flex align-items-center mt-2">
                             <span class="text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder">
-                                <@spring.message 'dream'/>
+                                <@spring.message 'txt.dream'/>
                                 <i class="bi bi-moon-stars fs-4 pe-1"></i>
                             </span>
                         </div>

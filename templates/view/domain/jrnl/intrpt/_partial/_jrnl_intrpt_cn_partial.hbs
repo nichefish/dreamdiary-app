@@ -5,7 +5,7 @@
 
 <script type="text/x-handlebars-template" id="jrnl_intrpt_cn_partial">
     <div class="d-flex-align-center title-wrap">
-        {{#ifYn imprtcYn}}<div class="ctgr-span ctgr-imprtc w-60px d-flex-center">!<@spring.message 'imprtc'/></div>{{/ifYn}}
+        {{#ifYn imprtcYn}}<div class="ctgr-span ctgr-imprtc w-60px d-flex-center">!<@spring.message 'txt.status.imprtc'/></div>{{/ifYn}}
         {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}
     </div>
     <div class="cn {{#ifYn collapsedYn}}collapsed{{/ifYn}}">

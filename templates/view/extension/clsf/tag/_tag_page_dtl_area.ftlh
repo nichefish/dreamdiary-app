@@ -6,7 +6,7 @@
     <#--begin::Row-->
     <div class="d-flex flex-stack flex-wrap mb-3 bg-light">
         <div class="col-xl-1 col-form-label fs-6 fw-bold px-5">
-            <@spring.message 'tag'/>
+            <@spring.message 'txt.tag'/>
         </div>
         <div class="col-xl-11 text-sm-start" id="tagSpan">
             <#list post.tag.list as tag>

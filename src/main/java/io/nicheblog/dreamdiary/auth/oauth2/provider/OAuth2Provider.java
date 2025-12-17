@@ -55,7 +55,7 @@ public class OAuth2Provider {
     public AuthInfo authenticate(final OAuth2AuthenticationToken authentication) throws AuthenticationException {
 
         final String email = authentication.getPrincipal().getAttribute("email");
-        if (StringUtils.isEmpty(email)) throw new SecurityException(MessageUtils.getMessage("user.email.invalid"));
+        if (StringUtils.isEmpty(email)) throw new SecurityException(MessageUtils.getMessage("msg.user.email.invalid"));
 
         final AuthInfo authInfo = authService.loadUserByEmail(email);
 

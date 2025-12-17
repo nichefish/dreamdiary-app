@@ -58,10 +58,10 @@ public class MessageUtils
 
     public static final String RSLT_EXCEPTION = "exception";
 
-    public static final String RSLT_JANDI_SUCCESS = "jandi.rslt.success";
-    public static final String RSLT_JANDI_FAILURE = "jandi.rslt.failure";
+    public static final String RSLT_JANDI_SUCCESS = "msg.jandi.rslt.success";
+    public static final String RSLT_JANDI_FAILURE = "msg.jandi.rslt.failure";
 
-    public static final String RSLT_SUCCESS_PW_RESET = "user.pw.reset.rslt.success";
+    public static final String RSLT_SUCCESS_PW_RESET = "msg.user.pw.reset.rslt.success";
 
     public static final String LGN_FAIL_BADCREDENTIALS_CNT = "AbstractUserDetailsAuthenticationProvider.BadCredentials.failCnt";
     public static final String LGN_FAIL_BADCREDENTIALS_LOCKED = "AbstractUserDetailsAuthenticationProvider.BadCredentials.locked";
