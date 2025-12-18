@@ -8,7 +8,7 @@
         <div class="col-xl-1 col-form-label fs-6 fw-bold px-5">
             <@spring.message 'txt.tag'/>
         </div>
-        <div class="col-xl-11 text-sm-start" id="tagSpan">
+        <div class="col-xl-11 text-sm-start" id="tag_div">
             <#list post.tag.list as tag>
                 <span class="py-2 me-3 cursor-pointer opacity-hover"
                       onclick="dF.Tag.dtlModal('${tag.refTagNo}');"

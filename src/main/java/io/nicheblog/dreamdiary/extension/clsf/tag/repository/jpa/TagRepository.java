@@ -24,21 +24,13 @@ public interface TagRepository
         extends BaseStreamRepository<TagEntity, Integer> {
 
     /**
-     * 태그명으로 테이블 조회
-     *
-     * @param tagNm - 조회할 태그명
-     * @return Optional<TagEntity> - 태그명에 해당하는 TagEntity를 포함하는 Optional 객체
-     */
-    Optional<TagEntity> findByTagNm(final String tagNm);
-    
-    /**
      * 태그명 + 카테고리명으로 테이블 조회
      *
      * @param tagNm - 조회할 태그명
      * @param ctgr - 조회할 카테고리명
      * @return Optional<TagEntity> - 태그명과 카테고리명에 해당하는 TagEntity를 포함하는 Optional 객체
      */
-    @Query(value = "SELECT * FROM tag t WHERE t.tag_nm = :tagNm AND t.ctgr = :ctgr", nativeQuery = true)
+    @Query(value = "SELECT * FROM tag t WHERE t.tag_nm = :tagNm AND t.ctgr = :ctgr AND t.del_yn = 'N'", nativeQuery = true)
     Optional<TagEntity> findByTagNmAndCtgr(final String tagNm, final String ctgr);
 
     /**
@@ -50,8 +42,8 @@ public interface TagRepository
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    @Query("SELECT COUNT(ct.contentTagNo) " +
-            "FROM ContentTagEntity ct " +
+    @Query("SELECT COUNT(ct.tagContentNo) " +
+            "FROM TagContentEntity ct " +
             "INNER JOIN fetch TagEntity tag ON tag.tagNo = ct.refTagNo " +
             "WHERE ct.refTagNo = :tagNo " +
             " AND (:refContentType IS NULL OR :refContentType = '' OR ct.refContentType = :refContentType)" +

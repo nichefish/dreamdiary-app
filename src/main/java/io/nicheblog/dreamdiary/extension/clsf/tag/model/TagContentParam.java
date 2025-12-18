@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.domain.jrnl.intrpt.model;
+package io.nicheblog.dreamdiary.extension.clsf.tag.model;
 
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import lombok.Getter;
@@ -8,9 +8,9 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 /**
- * JrnlIntrptContentTagParam
+ * TagContentParam
  * <pre>
- *  저널 해석 컨텐츠 태그 목록 검색 파라미터.
+ *  태그-컨텐츠 목록 검색 파라미터.
  * </pre>
  *
  * @author nichefish
@@ -20,7 +20,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @ToString
-public class JrnlIntrptContentTagParam
+public class TagContentParam
         extends BaseSearchParam {
 
     /** 참조 글 번호 */
@@ -29,14 +29,11 @@ public class JrnlIntrptContentTagParam
     /** 참조 컨텐츠 타입 */
     private String refContentType;
 
-    /** 태그 번호 */
-    private Integer tagNo;
+    /** 태그 이름 */
+    private String tagNm;
 
-    /** 년도 */
-    private Integer yy;
-
-    /** 월 */
-    private Integer mnth;
+    /** 카테고리 */
+    private String ctgr;
 
     /** 등록자 ID */
     private String regstrId;

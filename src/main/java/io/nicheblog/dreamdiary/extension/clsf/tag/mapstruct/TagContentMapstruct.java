@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.extension.clsf.tag.mapstruct;
 
-import io.nicheblog.dreamdiary.extension.clsf.tag.entity.ContentTagEntity;
-import io.nicheblog.dreamdiary.extension.clsf.tag.model.ContentTagDto;
+import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagContentEntity;
+import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagContentDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -9,18 +9,18 @@ import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 /**
- * ContentTagMapstruct
+ * TagContentMapstruct
  * <pre>
- *  컨텐츠-태그 MapStruct 기반 Mapper 인터페이스.
+ *  태그-컨텐츠 MapStruct 기반 Mapper 인터페이스.
  * </pre>
  *
  * @author nichefish
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, TagMapstruct.class})
-public interface ContentTagMapstruct
-        extends BaseReadMapstruct<ContentTagDto, ContentTagEntity>, BaseWriteMapstruct<ContentTagDto, ContentTagEntity> {
+public interface TagContentMapstruct
+        extends BaseReadMapstruct<TagContentDto, TagContentEntity>, BaseWriteMapstruct<TagContentDto, TagContentEntity> {
 
-    ContentTagMapstruct INSTANCE = Mappers.getMapper(ContentTagMapstruct.class);
+    TagContentMapstruct INSTANCE = Mappers.getMapper(TagContentMapstruct.class);
 
     /**
      * Entity -> Dto 변환
@@ -33,7 +33,7 @@ public interface ContentTagMapstruct
     @Mapping(target = "tag", expression = "java(TagMapstruct.INSTANCE.toDto(entity.getTag()))")
     @Mapping(target = "tagNm", expression = "java(entity.getTag().getTagNm())")
     @Mapping(target = "ctgr", expression = "java(entity.getTag().getCtgr())")
-    ContentTagDto toDto(final ContentTagEntity entity) throws Exception;
+    TagContentDto toDto(final TagContentEntity entity) throws Exception;
 
     /**
      * Dto -> Entity 변환
@@ -43,7 +43,7 @@ public interface ContentTagMapstruct
      */
     @Override
     @Named("toEntity")
-    ContentTagEntity toEntity(final ContentTagDto dto) throws Exception;
+    TagContentEntity toEntity(final TagContentDto dto) throws Exception;
 
     /**
      * update Entity from Dto (Dto에서 null이 아닌 값만 Entity로 매핑)
@@ -53,5 +53,5 @@ public interface ContentTagMapstruct
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateFromDto(final ContentTagDto dto, final @MappingTarget ContentTagEntity entity) throws Exception;
+    void updateFromDto(final TagContentDto dto, final @MappingTarget TagContentEntity entity) throws Exception;
 }

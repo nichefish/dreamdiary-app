@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed;
 
-import io.nicheblog.dreamdiary.extension.clsf.tag.entity.ContentTagEntity;
+import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.helper.MapstructHelper;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -27,11 +27,11 @@ public interface TagEmbedModule {
     default List<Integer> getTagNoList() {
         if (this.getTag() == null) return new ArrayList<>();
 
-        final List<ContentTagEntity> tagList = this.getTag().getList();
+        final List<TagContentEntity> tagList = this.getTag().getList();
         if (CollectionUtils.isEmpty(tagList)) return new ArrayList<>();
         
         return tagList.stream()
-                .map(ContentTagEntity::getRefTagNo)
+                .map(TagContentEntity::getRefTagNo)
                 .toList();        
     }
 }

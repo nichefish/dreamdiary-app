@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.extension.clsf.tag.repository.jpa;
 
-import io.nicheblog.dreamdiary.extension.clsf.tag.entity.ContentTagEntity;
-import io.nicheblog.dreamdiary.extension.clsf.tag.entity.ContentTagEntityTestFactory;
+import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagContentEntity;
+import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagContentEntityTestFactory;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
 import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -21,9 +21,9 @@ import javax.persistence.EntityNotFoundException;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
- * ContentTagRepositoryTest
+ * TagContentRepositoryTest
  * <pre>
- *  컨텐츠-태그 (JPA) Repository 테스트 모듈.
+ *  태그-컨텐츠 (JPA) Repository 테스트 모듈.
  *  "@Transactional 환경에서는 flush가 의도한 대로 작동하지 않을 수 있다."
  * </pre>
  *
@@ -35,15 +35,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ImportAutoConfiguration(DataSourceConfig.class)
 @Import(TestAuditConfig.class)
 @Log4j2
-class ContentTagRepositoryTest {
+class TagContentRepositoryTest {
 
     @Autowired
     private TestEntityManager testEntityManager;
 
     @Autowired
-    private ContentTagRepository contentTagRepository;
+    private TagContentRepository tagContentRepository;
 
-    private ContentTagEntity contentTagEntity;
+    private TagContentEntity tagContentEntity;
 
     // 4. Parameterized Test 사용
     // JUnit의 @ParameterizedTest를 사용하여 같은 동작을 여러 가지 데이터로 반복 테스트할 때 유용합니다. 예를 들어, 여러 날짜에 대해 중복 검사를 하는 테스트라면 매번 테스트 메서드를 작성하는 대신, 파라미터화된 테스트로 통합할 수 있습니다.
@@ -55,8 +55,8 @@ class ContentTagRepositoryTest {
      */
     @BeforeEach
     void setUp() throws Exception {
-        // 공통적으로 사용할 contentTagEntity 초기화
-        contentTagEntity = ContentTagEntityTestFactory.create();
+        // 공통적으로 사용할 tagContentEntity 초기화
+        tagContentEntity = TagContentEntityTestFactory.create();
     }
 
     /**
@@ -67,12 +67,12 @@ class ContentTagRepositoryTest {
         // Given::
 
         // When::
-        final ContentTagEntity registered = contentTagRepository.save(contentTagEntity);
-        final Integer key = registered.getContentTagNo();
-        final ContentTagEntity retrieved = contentTagRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
+        final TagContentEntity registered = tagContentRepository.save(tagContentEntity);
+        final Integer key = registered.getTagContentNo();
+        final TagContentEntity retrieved = tagContentRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
-        assertNotNull(retrieved.getContentTagNo(), "저장된 엔티티의 key 값이 없습니다.");
+        assertNotNull(retrieved.getTagContentNo(), "저장된 엔티티의 key 값이 없습니다.");
     }
 }

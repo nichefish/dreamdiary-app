@@ -2,16 +2,16 @@ package io.nicheblog.dreamdiary.extension.clsf.tag.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
-import io.nicheblog.dreamdiary.extension.clsf.tag.entity.ContentTagEntity;
+import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagSmpEntity;
-import io.nicheblog.dreamdiary.extension.clsf.tag.mapstruct.ContentTagMapstruct;
-import io.nicheblog.dreamdiary.extension.clsf.tag.model.ContentTagDto;
-import io.nicheblog.dreamdiary.extension.clsf.tag.model.ContentTagParam;
+import io.nicheblog.dreamdiary.extension.clsf.tag.mapstruct.TagContentMapstruct;
+import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagContentDto;
+import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagContentParam;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
-import io.nicheblog.dreamdiary.extension.clsf.tag.repository.jpa.ContentTagRepository;
+import io.nicheblog.dreamdiary.extension.clsf.tag.repository.jpa.TagContentRepository;
 import io.nicheblog.dreamdiary.extension.clsf.tag.repository.jpa.TagSmpRepository;
-import io.nicheblog.dreamdiary.extension.clsf.tag.spec.ContentTagSpec;
+import io.nicheblog.dreamdiary.extension.clsf.tag.spec.TagContentSpec;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
 import lombok.Getter;
@@ -29,37 +29,37 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * ContentTagService
+ * TagContentService
  * <pre>
- *  컨텐츠-태그 서비스 모듈
+ *  태그-컨텐츠 서비스 모듈
  * </pre>
  *
  * @author nichefish
  */
-@Service("contentTagService")
+@Service("tagContentService")
 @RequiredArgsConstructor
 @Log4j2
-public class ContentTagService
-        implements BaseCrudService<ContentTagDto, ContentTagDto, Integer, ContentTagEntity> {
+public class TagContentService
+        implements BaseCrudService<TagContentDto, TagContentDto, Integer, TagContentEntity> {
 
     @Getter
-    private final ContentTagRepository repository;
+    private final TagContentRepository repository;
     @Getter
-    private final ContentTagSpec spec;
+    private final TagContentSpec spec;
     @Getter
-    private final ContentTagMapstruct mapstruct = ContentTagMapstruct.INSTANCE;
+    private final TagContentMapstruct mapstruct = TagContentMapstruct.INSTANCE;
 
-    public ContentTagMapstruct getReadMapstruct() {
+    public TagContentMapstruct getReadMapstruct() {
         return this.mapstruct;
     }
-    public ContentTagMapstruct getWriteMapstruct() {
+    public TagContentMapstruct getWriteMapstruct() {
         return this.mapstruct;
     }
 
     private final TagSmpRepository tagSmpRepository;
 
     private final ApplicationContext context;
-    private ContentTagService getSelf() {
+    private TagContentService getSelf() {
         return context.getBean(this.getClass());
     }
 
@@ -70,9 +70,9 @@ public class ContentTagService
      * @param contentType 컨텐츠 타입
      * @return {@link List} -- 태그 목록
      */
-    @Cacheable(value = "contentTagEntityListByRef", key = "#postNo + '_' + #contentType.key")
-    public List<ContentTagEntity> getListEntityByRefWithCache(final Integer postNo, final ContentType contentType) throws Exception {
-        final ContentTagParam param = ContentTagParam.builder()
+    @Cacheable(value = "tagContentEntityListByRef", key = "#postNo + '_' + #contentType.key")
+    public List<TagContentEntity> getListEntityByRefWithCache(final Integer postNo, final ContentType contentType) throws Exception {
+        final TagContentParam param = TagContentParam.builder()
                 .refPostNo(postNo)
                 .refContentType(contentType.key)
                 .build();
@@ -85,8 +85,8 @@ public class ContentTagService
      * @param param 파라미터
      * @return {@link List} -- 태그 목록
      */
-    public List<ContentTagEntity> getListEntityTag(final ContentTagParam param) throws Exception {
-        final List<ContentTagEntity> entityList = this.getSelf().getListEntity(param);
+    public List<TagContentEntity> getListEntityTag(final TagContentParam param) throws Exception {
+        final List<TagContentEntity> entityList = this.getSelf().getListEntity(param);
         return entityList.stream()
                 .peek(entity -> {
                     final Integer tagNo = entity.getRefTagNo();
@@ -119,7 +119,7 @@ public class ContentTagService
      */
     @Transactional(readOnly = true)
     public List<TagDto> getTagStrListByClsfKey(final BaseClsfKey clsfKey) throws Exception {
-        final List<ContentTagEntity> entityList = this.getSelf().getListEntityByRefWithCache(clsfKey.getPostNo(), clsfKey.getContentTypeEnum());
+        final List<TagContentEntity> entityList = this.getSelf().getListEntityByRefWithCache(clsfKey.getPostNo(), clsfKey.getContentTypeEnum());
         if (CollectionUtils.isEmpty(entityList)) return new ArrayList<>();
 
         return entityList.stream()
@@ -128,39 +128,39 @@ public class ContentTagService
     }
 
     /**
-     * 특정 게시물에 대해 태그 정보와 연결되지 않는 컨텐츠 태그 삭제.
+     * 특정 게시물에 대해 태그 정보와 연결되지 않는 태그-컨텐츠 삭제.
      *
      * @param clsfKey 참조 복합키 정보 (BaseClsfKey)
      * @param obsoleteTagList 삭제할 태그 목록
      */
     @Transactional
-    public void delObsoleteContentTags(final BaseClsfKey clsfKey, final List<TagDto> obsoleteTagList) throws Exception {
+    public void delObsoleteTagContents(final BaseClsfKey clsfKey, final List<TagDto> obsoleteTagList) throws Exception {
         final String contentType = clsfKey.getContentType();
         obsoleteTagList.forEach(tag -> {
-            final ContentTagParam param = ContentTagParam.builder()
+            final TagContentParam param = TagContentParam.builder()
                     .refPostNo(clsfKey.getPostNo())
                     .refContentType(clsfKey.getContentType())
                     .tagNm(tag.getTagNm())
                     .ctgr(tag.getCtgr())
                     .regstrId(AuthUtils.getLgnUserId())
                     .build();
-            repository.deleteObsoleteContentTags(param);
+            repository.deleteObsoleteTagContents(param);
             // 태그 캐시 처리
         });
     }
 
     /**
-     * 특정 게시물에 대해 컨텐츠 태그 목록 추가.
+     * 특정 게시물에 대해 태그-컨텐츠 목록 추가.
      *
      * @param clsfKey 참조 복합키 정보 (BaseClsfKey)
      * @param rsList  처리할 태그 엔티티 목록 (List<TagEntity>)
-     * @return {@link List} -- 등록된 컨텐츠 태그 엔티티 목록
+     * @return {@link List} -- 등록된 태그-컨텐츠 엔티티 목록
      */
     @Transactional
-    public List<ContentTagEntity> addContentTags(final BaseClsfKey clsfKey, final List<TagEntity> rsList) throws Exception {
-        final List<ContentTagEntity> contentTagList = rsList.stream()
-                .map(tag -> new ContentTagEntity(tag.getTagNo(), clsfKey))
+    public List<TagContentEntity> addTagContents(final BaseClsfKey clsfKey, final List<TagEntity> rsList) throws Exception {
+        final List<TagContentEntity> tagContentList = rsList.stream()
+                .map(tag -> new TagContentEntity(tag.getTagNo(), clsfKey))
                 .collect(Collectors.toList());
-        return this.registAll(contentTagList);
+        return this.registAll(tagContentList);
     }
 }

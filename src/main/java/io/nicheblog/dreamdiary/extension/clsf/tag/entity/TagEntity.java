@@ -51,12 +51,12 @@ public class TagEntity
     @Comment("태그")
     private String tagNm;
 
-    /** 컨텐츠 태그 */
+    /** 태그-컨텐츠 */
     @OneToMany(mappedBy = "tag", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 10)
     @NotFound(action = NotFoundAction.IGNORE)
-    private List<ContentTagEntity> contentTagList;
+    private List<TagContentEntity> tagContentList;
 
     /** 태그 속성 */
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

@@ -8,9 +8,9 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 /**
- * JrnlDiaryContentTagParam
+ * JrnlDiaryTagContentParam
  * <pre>
- *  저널 일기 컨텐츠 태그 목록 검색 파라미터.
+ *  저널 일기 태그-컨텐츠 목록 검색 파라미터.
  * </pre>
  *
  * @author nichefish
@@ -20,7 +20,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @ToString
-public class JrnlDiaryContentTagParam
+public class JrnlDiaryTagContentParam
         extends BaseSearchParam {
 
     /** 참조 글 번호 */

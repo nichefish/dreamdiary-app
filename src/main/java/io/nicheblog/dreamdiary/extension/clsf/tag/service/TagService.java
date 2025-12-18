@@ -221,7 +221,7 @@ public class TagService
     }
 
     /**
-     * 컨텐츠-태그와 연관관계 없는 마스터 태그 삭제
+     * 태그-컨텐츠와 연관관계 없는 마스터 태그 삭제
      */
     @Transactional
     public void deleteNoRefTags() {

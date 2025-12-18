@@ -3,11 +3,11 @@ package io.nicheblog.dreamdiary.domain.jrnl.dream.service;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.mapstruct.JrnlDreamTagMapstruct;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamContentTagParam;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamTagContentParam;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.repository.jpa.JrnlDreamTagRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.spec.JrnlDreamTagSpec;
-import io.nicheblog.dreamdiary.extension.clsf.tag.model.ContentTagCntDto;
+import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagContentCntDto;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseReadonlyService;
 import lombok.Getter;
@@ -117,7 +117,7 @@ public class JrnlDreamTagService
 
         int maxFrequency = 0;
 
-        final JrnlDreamContentTagParam param = JrnlDreamContentTagParam.builder()
+        final JrnlDreamTagContentParam param = JrnlDreamTagContentParam.builder()
                 .yy(yy)
                 .mnth(mnth)
                 .regstrId(AuthUtils.getLgnUserId())
@@ -139,13 +139,13 @@ public class JrnlDreamTagService
      * @return {@link Map} -- 카테고리별 태그 목록을 담은 Map
      */
     @Cacheable(value="myCountDreamSizeMap", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #param.yy + \"_\" + #param.mnth")
-    public Map<Integer, Integer> countDreamSizeMap(final JrnlDreamContentTagParam param) {
-        final List<ContentTagCntDto> tagCountList = repository.countDreamSizeMap(param);
+    public Map<Integer, Integer> countDreamSizeMap(final JrnlDreamTagContentParam param) {
+        final List<TagContentCntDto> tagCountList = repository.countDreamSizeMap(param);
 
         // List를 태그 번호를 키로 하고, 태그 개수를 값으로 하는 Map으로 변환
         final ConcurrentMap<Integer, Integer> concurrentMap = tagCountList.stream()
                 .collect(Collectors.toConcurrentMap(
-                        ContentTagCntDto::getTagNo,
+                        TagContentCntDto::getTagNo,
                         dto -> dto.getCount().intValue()   // Long을 int로 변환
                 ));
         return new ConcurrentHashMap<>(concurrentMap);

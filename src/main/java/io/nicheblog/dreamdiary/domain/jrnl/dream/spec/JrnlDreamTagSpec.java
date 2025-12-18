@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.domain.jrnl.dream.spec;
 
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamContentTagEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamTagContentEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamSmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamTagEntity;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
@@ -64,8 +64,8 @@ public class JrnlDreamTagSpec
         final List<Predicate> predicate = new ArrayList<>();
 
         // 태그 조인
-        final Join<JrnlDreamTagEntity, JrnlDreamContentTagEntity> jrnlDreamTagJoin = root.join("jrnlDreamTagList", JoinType.INNER);
-        final Join<JrnlDreamContentTagEntity, JrnlDreamSmpEntity> jrnlDreamJoin = jrnlDreamTagJoin.join("jrnlDream", JoinType.INNER);
+        final Join<JrnlDreamTagEntity, JrnlDreamTagContentEntity> jrnlDreamTagJoin = root.join("jrnlDreamTagList", JoinType.INNER);
+        final Join<JrnlDreamTagContentEntity, JrnlDreamSmpEntity> jrnlDreamJoin = jrnlDreamTagJoin.join("jrnlDream", JoinType.INNER);
         final Join<JrnlDreamSmpEntity, JrnlDaySmpEntity> jrnlDayJoin = jrnlDreamJoin.join("jrnlDay", JoinType.INNER);
         final Expression<Date> effectiveDtExp = builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"));
 

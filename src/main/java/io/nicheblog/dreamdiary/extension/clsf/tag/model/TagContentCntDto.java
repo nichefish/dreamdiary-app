@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * ContentTagCntDto
+ * TagContentCntDto
  * <pre>
  *  태그 번호 - 갯수 맵 Dto.
  * </pre>
@@ -15,7 +15,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class ContentTagCntDto {
+public class TagContentCntDto {
     
     /** 태그 번호 */
     private Integer tagNo;

@@ -10,9 +10,9 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
 /**
- * ContentTagDto
+ * TagContentDto
  * <pre>
- *  컨텐츠-태그 Dto.
+ *  태그-컨텐츠 Dto.
  * </pre>
  *
  * @author nichefish
@@ -22,13 +22,13 @@ import javax.validation.constraints.Size;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class ContentTagDto
+public class TagContentDto
         extends BaseCrudDto
-        implements Identifiable<Integer>, Comparable<ContentTagDto> {
+        implements Identifiable<Integer>, Comparable<TagContentDto> {
 
-    /** 컨텐츠 태그 번호 (PK) */
+    /** 태그-컨텐츠 번호 (PK) */
     @Positive
-    private Integer contentTagNo;
+    private Integer tagContentNo;
 
     /** 참조 태그 번호 */
     @Positive
@@ -63,7 +63,7 @@ public class ContentTagDto
      */
     @SneakyThrows
     @Override
-    public int compareTo(final @NotNull ContentTagDto compare) {
+    public int compareTo(final @NotNull TagContentDto compare) {
         String thisTagNm = this.getTagNm();
         String otherTagNm = compare.getTagNm();
         return thisTagNm.compareTo(otherTagNm);
@@ -71,6 +71,6 @@ public class ContentTagDto
 
     @Override
     public Integer getKey() {
-        return this.contentTagNo;
+        return this.tagContentNo;
     }
 }

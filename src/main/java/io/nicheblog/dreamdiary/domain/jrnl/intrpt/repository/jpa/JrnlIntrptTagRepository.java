@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.domain.jrnl.intrpt.repository.jpa;
 
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.entity.JrnlIntrptTagEntity;
-import io.nicheblog.dreamdiary.domain.jrnl.intrpt.model.JrnlIntrptContentTagParam;
-import io.nicheblog.dreamdiary.extension.clsf.tag.model.ContentTagCntDto;
+import io.nicheblog.dreamdiary.domain.jrnl.intrpt.model.JrnlIntrptTagContentParam;
+import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagContentCntDto;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
@@ -33,8 +33,8 @@ public interface JrnlIntrptTagRepository
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    @Query("SELECT new io.nicheblog.dreamdiary.extension.clsf.tag.model.ContentTagCntDto(ct.refTagNo, COUNT(ct.contentTagNo)) " +
-            "FROM JrnlIntrptContentTagEntity ct " +
+    @Query("SELECT new io.nicheblog.dreamdiary.extension.clsf.tag.model.TagContentCntDto(ct.refTagNo, COUNT(ct.tagContentNo)) " +
+            "FROM JrnlIntrptTagContentEntity ct " +
             "INNER JOIN FETCH JrnlIntrptEntity intrpt ON ct.refPostNo = intrpt.postNo " +
             "INNER JOIN FETCH JrnlDreamEntity dream ON intrpt.jrnlDreamNo = dream.postNo " +
             "INNER JOIN FETCH JrnlDayEntity day ON dream.jrnlDayNo = day.postNo " +
@@ -42,5 +42,5 @@ public interface JrnlIntrptTagRepository
             " AND (:#{#param.yy} IS NULL OR day.yy = :#{#param.yy} OR :#{#param.yy} = 9999) " +
             " AND (:#{#param.mnth} IS NULL OR day.mnth = :#{#param.mnth} OR :#{#param.mnth} = 99)" +
             "GROUP BY ct.refTagNo")
-    List<ContentTagCntDto> countIntrptSizeMap(final @Param("param") JrnlIntrptContentTagParam param);
+    List<TagContentCntDto> countIntrptSizeMap(final @Param("param") JrnlIntrptTagContentParam param);
 }

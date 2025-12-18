@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.nicheblog.dreamdiary.extension.clsf.tag.model.ContentTagDto;
+import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagContentDto;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.tagify.BaseTagifyDataDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.tagify.BaseTagifyDto;
@@ -37,13 +37,13 @@ public class TagCmpstn
     /** 컨텐츠 타입 :: 상위에서 주입받음. */
     private String contentType;
 
-    /** 컨텐츠 태그 목록 */
-    private List<ContentTagDto> list;
+    /** 태그-컨텐츠 목록 */
+    private List<TagContentDto> list;
 
-    /** 컨텐츠 태그 문자열 목록 */
+    /** 태그-컨텐츠 문자열 목록 */
     private List<String> tagStrList;
 
-    /** 컨텐츠 태그 문자열 (','로 구분) */
+    /** 태그-컨텐츠 문자열 (','로 구분) */
     private String tagListStr;
 
     /* ----- */
@@ -117,7 +117,9 @@ public class TagCmpstn
                 .sorted()
                 .map(tag -> {
                     try {
-                        return mapper.writeValueAsString(new BaseTagifyDto(tag.getTagNm(), new BaseTagifyDataDto(tag.getCtgr())));
+                        final BaseTagifyDataDto data = BaseTagifyDataDto.builder().ctgr(tag.getCtgr()).build();
+                        final BaseTagifyDto tagifyDto = new BaseTagifyDto(tag.getTagNm(), data);
+                        return mapper.writeValueAsString(tagifyDto);
                     } catch (final JsonProcessingException e) {
                         throw new RuntimeException("Error processing JSON", e);
                     }

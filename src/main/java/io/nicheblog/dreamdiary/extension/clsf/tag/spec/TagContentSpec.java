@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.extension.clsf.tag.spec;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.extension.clsf.tag.entity.ContentTagEntity;
+import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -15,17 +15,17 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * ContentTagSpec
+ * TagContentSpec
  * <pre>
- *  컨텐츠-태그 목록 검색인자 세팅 Specification.
+ *  태그-컨텐츠 목록 검색인자 세팅 Specification.
  * </pre>
  *
  * @author nichefish
  */
 @Component
 @Log4j2
-public class ContentTagSpec
-        implements BaseSpec<ContentTagEntity> {
+public class TagContentSpec
+        implements BaseSpec<TagContentEntity> {
 
     /**
      * 검색 조건 세팅 후 쿼리 후처리. (override)
@@ -36,7 +36,7 @@ public class ContentTagSpec
      */
     @Override
     public void postQuery(
-            final Root<ContentTagEntity> root,
+            final Root<TagContentEntity> root,
             final CriteriaQuery<?> query,
             final CriteriaBuilder builder
     ) {
@@ -55,7 +55,7 @@ public class ContentTagSpec
     @Override
     public List<Predicate> getPredicateWithParams(
             final Map<String, Object> searchParamMap,
-            final Root<ContentTagEntity> root,
+            final Root<TagContentEntity> root,
             final CriteriaBuilder builder
     ) {
 

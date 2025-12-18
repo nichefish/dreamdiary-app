@@ -112,7 +112,7 @@
     <cache alias="myJrnlSumryCnDtlDto" uses-template="defaultTemplate" />
 
     <!-- 태그 -->
-    <cache alias="contentTagEntityListByRef" uses-template="defaultTemplate" />
+    <cache alias="tagContentEntityListByRef" uses-template="defaultTemplate" />
     <cache alias="tagSmpDtlEntity" uses-template="defaultTemplate" />
 
     <!-- 공휴일 정보 -->

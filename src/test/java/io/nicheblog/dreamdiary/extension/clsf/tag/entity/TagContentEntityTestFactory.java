@@ -1,13 +1,10 @@
 package io.nicheblog.dreamdiary.extension.clsf.tag.entity;
 
-import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagEntity;
 import lombok.experimental.UtilityClass;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.ArrayList;
-
 /**
- * TagEntityTestFactory
+ * TagContentEntityTestFactory
  * <pre>
  *  태그-컨텐츠 Entity 생성 팩토리 모듈
  * </pre>
@@ -16,15 +13,14 @@ import java.util.ArrayList;
  */
 @UtilityClass
 @ActiveProfiles("test")
-public class TagEntityTestFactory {
+public class TagContentEntityTestFactory {
 
     /**
-     * 테스트용 태그 Entity 생성
+     * 테스트용 태그-컨텐츠 Entity 생성
      */
-    public static TagEntity create() throws Exception {
-        return TagEntity.builder()
+    public static TagContentEntity create() throws Exception {
+        return TagContentEntity.builder()
                 .tagNm("태그")
-                .tagContentList(new ArrayList<>())
                 .build();
     }
 }

@@ -1,7 +1,7 @@
-package io.nicheblog.dreamdiary.domain.jrnl.dream.entity;
+package io.nicheblog.dreamdiary.extension.clsf.tag.entity;
 
-import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagSmpEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditRegEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -14,32 +14,31 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 /**
- * JrnlDreamTagEntity
+ * TagContentEntity
  * <pre>
- *  저널 꿈 태그 Entity.
- *  (사용 용이성을 위해 엔티티 분리)
+ *  태그-컨텐츠 Entity.
  * </pre>
  *
  * @author nichefish
  */
 @Entity
-@Table(name = "content_tag")
+@Table(name = "tag_content")
 @Getter
 @Setter
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Where(clause = "ref_content_type='JRNL_DREAM' AND del_yn='N'")
-@SQLDelete(sql = "UPDATE content_tag SET del_yn = 'Y' WHERE content_tag_no = ?")
-public class JrnlDreamContentTagEntity
+@Where(clause = "del_yn='N'")
+@SQLDelete(sql = "UPDATE tag_content SET del_yn = 'Y' WHERE tag_content_no = ?")
+public class TagContentEntity
         extends BaseAuditRegEntity {
 
-    /** 컨텐츠 태그 번호 (PK) */
+    /** 태그-컨텐츠 번호 (PK) */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "content_tag_no")
-    @Comment("컨텐츠 태그 번호 (PK)")
-    private Integer contentTagNo;
+    @Column(name = "tag_content_no")
+    @Comment("태그-컨텐츠 번호 (PK)")
+    private Integer tagContentNo;
 
     /** 참조 태그 번호 */
     @Column(name = "ref_tag_no")
@@ -59,11 +58,10 @@ public class JrnlDreamContentTagEntity
     /** 태그 정보 */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ref_tag_no", referencedColumnName = "tag_no", updatable = false, insertable = false)
-    @Fetch(FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     private TagSmpEntity tag;
 
-    /** 태그 이름 */
+    /** 태그 */
     @Transient
     private String tagNm;
 
@@ -71,11 +69,17 @@ public class JrnlDreamContentTagEntity
     @Transient
     private String ctgr;
 
-    /** 참조 컨텐츠 (저널 꿈)  */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "ref_post_no", referencedColumnName = "post_no", insertable = false, updatable = false)
-    @Fetch(FetchMode.JOIN)
-    @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("저널 꿈 정보")
-    private JrnlDreamSmpEntity jrnlDream;
+    /* ----- */
+
+    /**
+     * 생성자.
+     *
+     * @param refTagNo - 참조 태그 번호
+     * @param clsfKey - 게시글 번호와 컨텐츠 타입 정보를 포함하는 분류 키 객체
+     */
+    public TagContentEntity(final Integer refTagNo, final BaseClsfKey clsfKey) {
+        this.refTagNo = refTagNo;
+        this.refPostNo = clsfKey.getPostNo();
+        this.refContentType = clsfKey.getContentType();
+    }
 }

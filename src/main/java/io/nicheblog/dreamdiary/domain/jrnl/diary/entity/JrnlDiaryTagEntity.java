@@ -55,5 +55,5 @@ public class JrnlDiaryTagEntity
     @Fetch(FetchMode.SUBSELECT)
     @BatchSize(size = 10)
     @NotFound(action = NotFoundAction.IGNORE)
-    private List<JrnlDiaryContentTagEntity> jrnlDiaryTagList;
+    private List<JrnlDiaryTagContentEntity> jrnlDiaryTagList;
 }
