@@ -40,7 +40,7 @@ public class MainPageController
      * @param model 뷰에 전달할 데이터를 저장하는 ModelMap 객체
      * @return {@link String} -- 뷰 이름을 나타내는 문자열
      */
-    @GetMapping(value = {Url.ROOT, Url.MAIN})
+    @GetMapping(value = {Url.ROOT, Url.MAIN, Url.DEVTOOLS})
     public String mainPage(
             final ModelMap model
     ) {

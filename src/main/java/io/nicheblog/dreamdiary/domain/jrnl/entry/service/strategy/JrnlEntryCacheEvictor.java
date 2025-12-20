@@ -53,7 +53,7 @@ public class JrnlEntryCacheEvictor
             // jrnl_entry_tag
             EhCacheUtils.evictMyCacheAll("myJrnlEntryTagCtgrMap");
             EhCacheUtils.evictMyCacheAll("myJrnlEntryTagDtl");
-            // 태그 처리
+            // 태그 캐시 처리
             EhCacheUtils.evictCache("tagContentEntityListByRef", postNo + "_JRNL_ENTRY");
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);

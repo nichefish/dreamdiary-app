@@ -49,7 +49,7 @@ public class JrnlDreamCacheEvictor
             // jrnl_dream_tag
             EhCacheUtils.evictMyCacheAll("myJrnlDreamTagCtgrMap");
             EhCacheUtils.evictMyCacheAll("myJrnlDreamTagDtl");
-            // 태그 처리
+            // 태그 캐시 처리
             EhCacheUtils.evictCache("tagContentEntityListByRef", postNo + "_JRNL_DREAM");
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);

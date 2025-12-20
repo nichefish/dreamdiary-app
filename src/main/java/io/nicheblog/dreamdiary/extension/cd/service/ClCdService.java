@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.extension.cd.service;
 
-import io.nicheblog.dreamdiary.domain.board.def.model.BoardDefDto;
 import io.nicheblog.dreamdiary.extension.cache.util.RedisUtils;
 import io.nicheblog.dreamdiary.extension.cd.entity.ClCdEntity;
 import io.nicheblog.dreamdiary.extension.cd.mapstruct.ClCdMapstruct;
@@ -13,7 +12,6 @@ import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * ClCdService

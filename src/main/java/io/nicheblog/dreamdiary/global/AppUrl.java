@@ -13,6 +13,7 @@ public interface AppUrl {
 
     /** 메인 */
     String ROOT = "/";
+    String DEVTOOLS = ".well-known/appspecific/com.chrome.devtools.json";
     String MAIN = Prefix.APP + "/main.do";
     String REACT_MAIN = "/react/main.do";
 

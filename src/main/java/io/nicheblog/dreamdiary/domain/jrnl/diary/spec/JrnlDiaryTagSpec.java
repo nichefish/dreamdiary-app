@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.domain.jrnl.diary.spec;
 
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryTagContentEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiarySmpEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryTagContentEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntrySmpEntity;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
