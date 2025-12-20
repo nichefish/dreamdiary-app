@@ -1,0 +1,45 @@
+<#--
+ * 저널 일자(jrnl_day) > 등록/수정 Template
+ * @included_in : _jrnl_day_reg_modal.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="jrnl_day_meta_modal_template">
+    <div class="d-flex flex-column mb-4">
+        {{#each list}}
+            {{!-- 저장된 previousMnth 변수를 비교 --}}
+            {{^if (equals mnth (lookup @root._locals "prevMnth"))}}
+                <div class="d-flex-center mt-6 mb-4 fs-5 text-dark">{{yy}}년 {{mnth}}월</div>
+            {{/if}}
+
+            <div class="d-flex align-items-center gap-2">
+                {{> jrnl_day_stdrd_dt_partial this}}
+                {{#each meta.list}}
+
+                    {{#if (equals refMetaNo ../../metaNo)}}
+                        <div>
+                        {{#if (exists ctgr)}}<span class="text-noti pe-1">[{{ctgr}}]</span>{{/if}} {{metaNm}}{{#if (exists label)}} - <span>{{label}}</span>{{/if}} <span class="text-dialog">: {{value}}{{unit}}</span>
+                        </div>
+                        <div class="separator separator-dashed my-2"></div>
+                        <button type="button" class="btn btn-sm btn-secondary btn-active-primary"
+                                onclick="dF.JrnlDay.openDetatched('{{../stdrdDt}}');">
+                            새 창 보기
+                        </button>
+                    {{/if}}
+                {{/each}}
+            </div>
+            <div class="mb-4 d-flex-align-center">
+                {{#if (exists tag.list)}}
+                    <div class="ms-5 mt-3">
+                        <i class="bi bi-tag"></i>
+                        {{#tag.list}}
+                            {{> tag_list_partial this module="dF.JrnlDayTag"}}
+                        {{/tag.list}}
+                    </div>
+                {{/if}}
+            </div>
+
+            {{!-- 현재 월을 previousMnth 변수로 저장 --}}
+            {{set "prevMnth" mnth}}
+        {{/each}}
+    </div>
+</script>

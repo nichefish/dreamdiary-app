@@ -47,6 +47,7 @@
 <#include "/view/domain/jrnl/day/_jrnl_day_list_template.hbs">
 <#include "/view/domain/jrnl/day/_partial/_jrnl_day_stdrd_dt_partial.hbs">
 <#include "/view/domain/jrnl/day/_partial/_jrnl_day_context_btn_partial.hbs">
+<#include "/view/domain/jrnl/day/_partial/_jrnl_day_meta_btn_partial.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/day/jrnl_day_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_entry_module-->
@@ -95,6 +96,10 @@
 <#include "/view/domain/jrnl/day/tag/_modal/_jrnl_day_tag_dtl_modal.ftlh">
 <#include "/view/domain/jrnl/day/tag/_jrnl_day_tag_list_template.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/day/tag/jrnl_day_tag_module.js?${releaseDate!}"></script>
+
+<#--include::jrnl_day_meta_module-->
+<#include "/view/domain/jrnl/day/meta/_modal/_jrnl_day_meta_modal.ftlh">
+<script type="text/javascript" src="/js/view/domain/jrnl/day/meta/jrnl_day_meta_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_diary_tag_module-->
 <#include "/view/domain/jrnl/diary/tag/_modal/_jrnl_diary_tag_dtl_modal.ftlh">

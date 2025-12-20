@@ -164,6 +164,9 @@
 <#include "/view/domain/jrnl/day/tag/_jrnl_day_tag_list_template.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/day/tag/jrnl_day_tag_module.js?${releaseDate!}"></script>
 
+<#--include::jrnl_day_meta_module-->
+<script type="text/javascript" src="/js/view/domain/jrnl/day/meta/jrnl_day_meta_module.js?${releaseDate!}"></script>
+
 <#--include::jrnl_dream_tag_module-->
 <#include "/view/domain/jrnl/dream/tag/_modal/_jrnl_dream_tag_dtl_modal.ftlh">
 <#include "/view/domain/jrnl/dream/tag/_jrnl_dream_tag_list_template.hbs">

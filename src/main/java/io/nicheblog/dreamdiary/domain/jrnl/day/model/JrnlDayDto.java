@@ -4,6 +4,8 @@ import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntrySmpDto;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
+import io.nicheblog.dreamdiary.extension.clsf.meta.model.cmpstn.MetaCmpstn;
+import io.nicheblog.dreamdiary.extension.clsf.meta.model.cmpstn.MetaCmpstnModule;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
@@ -36,7 +38,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class JrnlDayDto
         extends BaseClsfDto
-        implements Identifiable<Integer>, TagCmpstnModule, Comparable<JrnlDayDto>  {
+        implements Identifiable<Integer>, TagCmpstnModule, MetaCmpstnModule, Comparable<JrnlDayDto>  {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -144,4 +146,6 @@ public class JrnlDayDto
 
     /** 위임 :: 태그 정보 모듈 */
     public TagCmpstn tag;
+    /** 위임 :: 메타 정보 모듈 */
+    public MetaCmpstn meta;
 }

@@ -3,6 +3,8 @@ package io.nicheblog.dreamdiary.domain.jrnl.day.entity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntryEntity;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
+import io.nicheblog.dreamdiary.extension.clsf.meta.entity.embed.MetaEmbed;
+import io.nicheblog.dreamdiary.extension.clsf.meta.entity.embed.MetaEmbedModule;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
@@ -51,7 +53,7 @@ import java.util.List;
 )
 public class JrnlDayEntity
         extends BaseClsfEntity
-        implements TagEmbedModule {
+        implements TagEmbedModule, MetaEmbedModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -153,4 +155,7 @@ public class JrnlDayEntity
     /** 위임 :: 태그 정보 모듈 */
     @Embedded
     public TagEmbed tag;
+    /** 위임 :: 메타 정보 모듈 */
+    @Embedded
+    public MetaEmbed meta;
 }

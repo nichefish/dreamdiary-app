@@ -23,6 +23,7 @@ import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
+import io.nicheblog.dreamdiary.extension.clsf.meta.event.JrnlMetaProcEvent;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
@@ -83,7 +84,7 @@ public class JrnlDayService
      * @return {@link List} -- 조회된 목록
      */
     @Cacheable(value="myJrnlDayList", key="#lgnUserId + \"_\" + #searchParam.getYy() + \"_\" + #searchParam.getMnth()")
-    public List<JrnlDayDto> getMyListDto(final String lgnUserId, final JrnlDaySearchParam searchParam) throws Exception {
+    public List<JrnlDayDto> getMyListDtoByYyMnth(final String lgnUserId, final JrnlDaySearchParam searchParam) throws Exception {
         searchParam.setRegstrId(lgnUserId);
 
         final List<JrnlDayEntity> myJrnlDayEntityList = this.getSelf().getListEntity(searchParam);
@@ -101,6 +102,30 @@ public class JrnlDayService
     }
 
     /**
+     * 내 목록 조회 (dto level) :: 캐시 처리
+     *
+     * @param lgnUserId 사용자 ID
+     * @param searchParam 검색 조건이 담긴 파라미터 객체
+     * @return {@link List} -- 조회된 목록
+     */
+    @SuppressWarnings("unchecked")
+    public List<JrnlDayDto> getMyListDtoByMetaNoWithHldy(String lgnUserId, JrnlDaySearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(lgnUserId);
+        searchParam.setSort("DESC");
+
+        final List<JrnlDayDto> listDto = this.getSelf().getListDto(searchParam);
+
+        // 공휴일 정보 세팅
+        final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
+        this.setHldyInfo(listDto, hldyMap);
+
+        // resolved/collapse 상태 merge
+        this.mergeStates(listDto, searchParam);
+
+        return listDto;
+    }
+
+    /**
      * 내 기준일자 조회 (dto level) :: 캐시 처리
      *
      * @param lgnUserId 사용자 ID
@@ -111,6 +136,27 @@ public class JrnlDayService
         searchParam.setRegstrId(lgnUserId);
 
         return this.getSelf().getListDto(searchParam);
+    }
+
+    /**
+     * 내 목록 조회 (dto level) + 공휴일 정보 추가
+     *
+     * @param lgnUserId 사용자 ID
+     * @param searchParam 검색 조건이 담긴 파라미터 객체
+     * @return {@link List} -- 조회된 목록
+     */
+    @SuppressWarnings("unchecked")
+    public List<JrnlDayDto> getMyListDtoByYyMnthWithHldy(final String lgnUserId, final JrnlDaySearchParam searchParam) throws Exception {
+        final List<JrnlDayDto> listDto = this.getSelf().getMyListDtoByYyMnth(lgnUserId, searchParam);
+
+        // 공휴일 정보 세팅
+        final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
+        this.setHldyInfo(listDto, hldyMap);
+
+        // resolved/collapse 상태 merge
+        this.mergeStates(listDto, searchParam);
+
+        return listDto;
     }
 
     /**
@@ -155,27 +201,6 @@ public class JrnlDayService
             }
         }
         return new JrnlStateMaps(diaryMap, dreamMap, intrptMap);
-    }
-
-    /**
-     * 내 목록 조회 (dto level) + 공휴일 정보 추가
-     *
-     * @param lgnUserId 사용자 ID
-     * @param searchParam 검색 조건이 담긴 파라미터 객체
-     * @return {@link List} -- 조회된 목록
-     */
-    @SuppressWarnings("unchecked")
-    public List<JrnlDayDto> getMyListDtoWithHldy(final String lgnUserId, final JrnlDaySearchParam searchParam) throws Exception {
-        final List<JrnlDayDto> listDto = this.getSelf().getMyListDto(lgnUserId, searchParam);
-
-        // 공휴일 정보 세팅
-        final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
-        this.setHldyInfo(listDto, hldyMap);
-
-        // resolved/collapse 상태 merge
-        this.mergeStates(listDto, searchParam);
-
-        return listDto;
     }
 
     /**
@@ -328,6 +353,8 @@ public class JrnlDayService
     public void postRegist(final JrnlDayDto updatedDto) throws Exception {
         // 태그 처리 :: 메인 로직과 분리
         publisher.publishCustomEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
+        // 태그 처리 :: 메인 로직과 분리
+        publisher.publishCustomEvent(new JrnlMetaProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.meta));
         // 관련 캐시 삭제
         publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DAY));
     }
@@ -385,6 +412,8 @@ public class JrnlDayService
     public void postModify(final JrnlDayDto postDto, final JrnlDayDto updatedDto) throws Exception {
         // 태그 처리 :: 메인 로직과 분리
         publisher.publishCustomEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
+        // 태그 처리 :: 메인 로직과 분리
+        publisher.publishCustomEvent(new JrnlMetaProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.meta));
         // 관련 캐시 삭제
         publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DAY));
     }

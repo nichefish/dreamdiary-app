@@ -67,9 +67,10 @@ public class JrnlDayRestController
     ) throws Exception {
 
         final Object list = switch (viewType) {
-            case LIST -> jrnlDayService.getMyListDtoWithHldy(AuthUtils.getLgnUserId(), searchParam);
+            case LIST -> jrnlDayService.getMyListDtoByYyMnthWithHldy(AuthUtils.getLgnUserId(), searchParam);
             case CAL -> jrnlDayCalService.getSchdulTotalCalList(searchParam);
             case DAILY -> jrnlDayService.getMyStdrdDtoWithHldy(AuthUtils.getLgnUserId(), searchParam);
+            case SEARCH -> jrnlDayService.getMyListDtoByMetaNoWithHldy(AuthUtils.getLgnUserId(), searchParam);
         };
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;

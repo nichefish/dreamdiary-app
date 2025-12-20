@@ -35,17 +35,11 @@ cF.handlebars = (function(): Module {
             const isModal: boolean = mode === "modal";
 
             const actual: string = cF.handlebars.compile(data, isModal ? `${templateStr}_modal` : templateStr);
-            if (actual == null) {
-                console.error(`template compile error: ${templateStr}`);
-                return;
-            }
+            if (actual == null) return console.error(`template compile error: ${templateStr}`);
 
             // 대상 요소에 추가
             const trgetElmt: HTMLElement = document.getElementById(`${templateStr}_div`);
-            if (!trgetElmt) {
-                console.error(`target element not found: ${templateStr}_div`);
-                return;
-            }
+            if (!trgetElmt) return console.error(`target element not found: ${templateStr}_div`);
 
             trgetElmt.innerHTML = ""; // 내용 비우기
             trgetElmt.insertAdjacentHTML('beforeend', actual); // 내용 추가
@@ -56,10 +50,10 @@ cF.handlebars = (function(): Module {
 
             if (isModal) {
                 const modal: HTMLElement = document.getElementById(`${templateStr}_modal`);
-                if (modal) {
-                    const bootstrapModal: bootstrap.Modal = new bootstrap.Modal(modal);
-                    bootstrapModal.show(); // 모달을 띄움
-                }
+                if (!modal) return console.error(`target element not found: ${templateStr}_modal`);
+
+                const bootstrapModal: bootstrap.Modal = new bootstrap.Modal(modal);
+                bootstrapModal.show(); // 모달을 띄움
             }
         },
 
@@ -98,17 +92,11 @@ cF.handlebars = (function(): Module {
          */
         appendTo: function(data: Record<string, any> = {}, templateStr: string, trgetElmtId: string): void {
             const actual: string = cF.handlebars.compile(data, templateStr);
-            if (actual == null) {
-                console.error(`template compile error: ${templateStr}`);
-                return;
-            }
+            if (actual == null) return console.error(`template compile error: ${templateStr}`);
 
             // 대상 요소에 추가
             const trgetElmt: HTMLElement = document.getElementById(trgetElmtId);
-            if (!trgetElmt) {
-                console.error(`target element not found: ${templateStr}_div`);
-                return;
-            }
+            if (!trgetElmt) return console.error(`target element not found: ${templateStr}_div`);
 
             trgetElmt.insertAdjacentHTML('beforeend', actual);
             // 새로 append된 부분에서만 툴팁 활성화
@@ -456,10 +444,12 @@ document.addEventListener("DOMContentLoaded", function(): void {
     const sizedTagPartial: string = document.getElementById("tag_list_sized_partial")?.innerHTML;
     if (sizedTagPartial) Handlebars.registerPartial("tag_list_sized_partial", sizedTagPartial);
 
-    const jrnlDayContextBtnPartial: string = document.getElementById("jrnl_day_context_btn_partial")?.innerHTML;
-    if (jrnlDayContextBtnPartial) Handlebars.registerPartial("jrnl_day_context_btn_partial", jrnlDayContextBtnPartial);
     const jrnlDayStdrdDtPartial: string = document.getElementById("jrnl_day_stdrd_dt_partial")?.innerHTML;
     if (jrnlDayStdrdDtPartial) Handlebars.registerPartial("jrnl_day_stdrd_dt_partial", jrnlDayStdrdDtPartial);
+    const jrnlDayContextBtnPartial: string = document.getElementById("jrnl_day_context_btn_partial")?.innerHTML;
+    if (jrnlDayContextBtnPartial) Handlebars.registerPartial("jrnl_day_context_btn_partial", jrnlDayContextBtnPartial);
+    const jrnlDayMetaBtnPartial: string = document.getElementById("jrnl_day_meta_btn_partial")?.innerHTML;
+    if (jrnlDayMetaBtnPartial) Handlebars.registerPartial("jrnl_day_meta_btn_partial", jrnlDayMetaBtnPartial);
 
     const jrnlEntryRegBtnPartial: string = document.getElementById("jrnl_entry_reg_btn_partial")?.innerHTML;
     if (jrnlEntryRegBtnPartial) Handlebars.registerPartial("jrnl_entry_reg_btn_partial", jrnlEntryRegBtnPartial);

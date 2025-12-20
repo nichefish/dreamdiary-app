@@ -16,17 +16,6 @@ public interface CacheWarmupService {
     void warmup() throws Exception;
 
     /**
-     * 태그 카테고리 맵 웜업
-     */
-    void warmupTagCtgrMap() throws Exception;
-
-    /**
-     * 공휴일 맵 캐시 웜업
-     */
-    void warmupHldyMap() throws Exception;
-
-
-    /**
      * 로그인시 웜업
      */
     void warmupOnLgn(final String userId) throws Exception;

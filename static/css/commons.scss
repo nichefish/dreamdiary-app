@@ -246,3 +246,11 @@
     position: absolute;
     left: 0;
 }
+
+.meta-tooltip {
+    .tooltip-inner {
+        max-width: 420px;
+        text-align: left;
+        pointer-events: auto;
+    }
+}

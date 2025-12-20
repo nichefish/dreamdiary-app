@@ -46,6 +46,9 @@ public class JrnlDayCacheEvictor
             // jrnl_day_tag
             EhCacheUtils.evictMyCacheAll("myJrnlDayTagCtgrMap");
             EhCacheUtils.evictMyCacheAll("myJrnlDayTagDtl");
+            // jrnl_day_tag
+            EhCacheUtils.evictMyCacheAll("myJrnlDayMetaCtgrMap");
+            EhCacheUtils.evictCache("metaContentEntityListByRef", postNo + "_JRNL_DAY");
             // 태그 처리
             EhCacheUtils.evictCache("tagContentEntityListByRef", postNo + "_JRNL_DAY");
         } catch (final Exception e) {

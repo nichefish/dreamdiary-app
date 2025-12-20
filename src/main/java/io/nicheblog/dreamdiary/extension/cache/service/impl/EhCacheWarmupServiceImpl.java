@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.extension.cache.service.impl;
 
 import io.nicheblog.dreamdiary.DreamdiaryInitializer;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDaySearchParam;
+import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayMetaService;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayService;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayTagService;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryTagService;
@@ -39,6 +40,7 @@ public class EhCacheWarmupServiceImpl
     private final JrnlDayTagService jrnlDayTagService;
     private final JrnlDiaryTagService jrnlDiaryTagService;
     private final JrnlDreamTagService jrnlDreamTagService;
+    private final JrnlDayMetaService jrnlDayMetaService;
     private final SchdulService schdulService;
 
     /**
@@ -47,6 +49,8 @@ public class EhCacheWarmupServiceImpl
     public void warmup() throws Exception {
         // 태그 카테고리 맵 캐시 웜업
         this.warmupTagCtgrMap();
+        // 메타 카테고리 맵 캐시 웜업
+        this.warmupMetaCtgrMap();
         // 공휴일 맵 캐시 웜업
         this.warmupHldyMap();
     }
@@ -54,18 +58,24 @@ public class EhCacheWarmupServiceImpl
     /**
      * 태그 카테고리 맵 캐시 웜업
      */
-    @Override
     public void warmupTagCtgrMap() throws Exception {
-        // TODO: 사용자별 캐시 웜업
+        // TODO: 사용자별 태그 캐시 웜업
         jrnlDayTagService.getTagCtgrMap("nichefish");
         jrnlDiaryTagService.getTagCtgrMap("nichefish");
         jrnlDreamTagService.getTagCtgrMap("nichefish");
     }
 
     /**
+     * 메타 카테고리 맵 캐시 웜업
+     */
+    public void warmupMetaCtgrMap() throws Exception {
+        // TODO: 사용자별 메타 캐시 웜업
+        jrnlDayMetaService.getMetaCtgrMap("nichefish");
+    }
+
+    /**
      * 공휴일 맵 캐시 웜업
      */
-    @Override
     public void warmupHldyMap() throws Exception {
         schdulService.resyncHldyMap();
     }
@@ -79,6 +89,6 @@ public class EhCacheWarmupServiceImpl
                 .yy(DateUtils.getCurrYy())
                 .mnth(DateUtils.getCurrMnth())
                 .build();
-        jrnlDayService.getMyListDto(userId, param);
+        jrnlDayService.getMyListDtoByYyMnthWithHldy(userId, param);
     }
 }

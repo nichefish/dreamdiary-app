@@ -15,13 +15,14 @@ dF.JrnlDay = (function(): dfModule {
          * initializes module.
          * @param {"LIST"|"CAL"|"DAILY"} viewType
          */
-        init: function(viewType: "LIST"|"CAL"|"DAILY"): void {
+        init: function(viewType: "LIST"|"CAL"|"DAILY"|"SEARCH"): void {
             if (dF.JrnlDay.initialized) return;
 
             dF.JrnlDay.viewType = viewType;
 
             /* initialize submodules. */
             dF.JrnlDayTag.init();
+            dF.JrnlDayMeta.init();
 
             dF.JrnlDay.initialized = true;
             console.log("'dF.JrnlDay' module initialized.");
@@ -96,6 +97,7 @@ dF.JrnlDay = (function(): dfModule {
             });
             /* tagify */
             dF.JrnlDay.tagify = cF.tagify.initWithCtgr("#jrnlDayRegForm #tagListStr", dF.JrnlDayTag.ctgrMap);
+            dF.JrnlDay.tagify = cF.tagify.initMeta("#jrnlDayRegForm #metaListStr", dF.JrnlDayMeta.ctgrMap);
         },
 
         /**

@@ -66,6 +66,7 @@
     <cache alias="myJrnlDayTagList" uses-template="defaultTemplate" />
     <cache alias="myJrnlDaySizedTagList" uses-template="defaultTemplate" />
     <cache alias="myJrnlDayTagCtgrMap" uses-template="defaultTemplate" />
+    <cache alias="myJrnlDayMetaCtgrMap" uses-template="defaultTemplate" />
     <cache alias="myCountDaySizeMap" uses-template="defaultTemplate" />
     <cache alias="myJrnlDayTagDtl" uses-template="defaultTemplate" />
 
@@ -114,6 +115,10 @@
     <!-- 태그 -->
     <cache alias="tagContentEntityListByRef" uses-template="defaultTemplate" />
     <cache alias="tagSmpDtlEntity" uses-template="defaultTemplate" />
+
+    <!-- 메타 -->
+    <cache alias="metaContentEntityListByRef" uses-template="defaultTemplate" />
+    <cache alias="metaSmpDtlEntity" uses-template="defaultTemplate" />
 
     <!-- 공휴일 정보 -->
     <cache alias="hldyMap" uses-template="defaultTemplate" />
