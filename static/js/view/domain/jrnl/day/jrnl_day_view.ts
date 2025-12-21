@@ -19,10 +19,22 @@ const Page: Page = (function(): Page {
                 "refreshFunc": dF.JrnlDay.getStdrdData
             });
 
-            // 목록 조회
+            // datepicker
             const stdrdDt: string = window.JRNL?.stdrdDt;
+            const pattern: string = cF.date.ptnDate.toUpperCase();
+            // @ts-ignore
+            cF.datepicker.singleDatePicker("#stdrdDt", pattern, stdrdDt, function(date: monent): void {
+                const dateStr: string = date.format(pattern);
+                history.pushState(null, '', cF.util.bindUrl(Url.JRNL_DAY_VIEW, { stdrdDt: dateStr }));
+                dF.JrnlDay.getStdrdData(dateStr);
+            });
+            // 데이터 조회
             dF.JrnlDay.getStdrdData(stdrdDt);
         },
+
+        changeStdrdDt: function(): void {
+
+        }
     }
 })();
 document.addEventListener("DOMContentLoaded", function(): void {

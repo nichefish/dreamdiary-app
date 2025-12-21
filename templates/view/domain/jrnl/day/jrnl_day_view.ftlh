@@ -21,6 +21,20 @@
 
 <!--begin::Card-->
 <div class="card post">
+
+    <#--begin::Card header-->
+    <div class="card-header min-h-auto">
+        <#-- datepicker-->
+        <div class="d-flex-align-center mb-4">
+            <div class="menu-icon me-md-2 vertical-middle">
+                <label for="stdrdDt"><i class="bi bi-calendar3 fs-3 cursor-pointer"></i></label>
+            </div>
+            <div class="datepicker">
+                <input type="text" name="stdrdDt" id="stdrdDt" class="form-control form-control-sm form-control-solid w-150px d-inline cursor-pointer"
+                       value="${stdrdDt!}" placeholder="Pick date" maxlength="25" readonly />
+            </div>
+        </div>
+    </div>
     <#--begin::Card body-->
     <div class="card-body">
         <#--begin::Table body-->
