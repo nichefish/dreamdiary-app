@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.domain.jrnl.intrpt.spec;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
-import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntrySmpEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamSmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.entity.JrnlIntrptEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.entity.JrnlIntrptSmpEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagContentEntity;
@@ -46,9 +46,10 @@ public class JrnlIntrptSpec
     ) {
         // 정렬 순서 변경
         final List<Order> order = new ArrayList<>();
-        final Join<JrnlIntrptEntity, JrnlEntrySmpEntity> jrnlEntryJoin = root.join("jrnlEntry", JoinType.INNER);
-        final Join<JrnlEntrySmpEntity, JrnlDaySmpEntity> jrnlDayJoin = jrnlEntryJoin.join("jrnlDay", JoinType.INNER);
+        final Join<JrnlIntrptEntity, JrnlDreamSmpEntity> jrnlDreamJoin = root.join("jrnlDream", JoinType.INNER);
+        final Join<JrnlDreamSmpEntity, JrnlDaySmpEntity> jrnlDayJoin = jrnlDreamJoin.join("jrnlDay", JoinType.INNER);
         order.add(builder.desc(builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"))));
+        order.add(builder.asc(jrnlDreamJoin.get("idx")));
         order.add(builder.asc(root.get("idx")));
         query.orderBy(order);
         // distinct
@@ -73,8 +74,8 @@ public class JrnlIntrptSpec
         final List<Predicate> predicate = new ArrayList<>();
 
         // expressions
-        final Join<JrnlIntrptSmpEntity, JrnlEntrySmpEntity> jrnlEntryJoin = root.join("jrnlEntry", JoinType.INNER);
-        final Join<JrnlEntrySmpEntity, JrnlDaySmpEntity> jrnlDayJoin = jrnlEntryJoin.join("jrnlDay", JoinType.INNER);
+        final Join<JrnlIntrptSmpEntity, JrnlDreamSmpEntity> jrnlDreamJoin = root.join("jrnlDream", JoinType.INNER);
+        final Join<JrnlDreamSmpEntity, JrnlDaySmpEntity> jrnlDayJoin = jrnlDreamJoin.join("jrnlDay", JoinType.INNER);
         final Expression<Date> effectiveDtExp = builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"));
 
         // 파라미터 비교

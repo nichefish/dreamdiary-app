@@ -49,6 +49,10 @@ public class JrnlDreamSmpEntity {
 
     /* ----- */
 
+    /** 순번 */
+    @Column(name = "idx", columnDefinition = "INT DEFAULT 1")
+    private Integer idx;
+
     /** 저널 일자 번호  */
     @Column(name = "jrnl_day_no")
     @Comment("저널 일자 번호")

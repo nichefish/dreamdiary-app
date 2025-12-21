@@ -49,6 +49,7 @@ public class JrnlDiarySpec
         final Join<JrnlDiaryEntity, JrnlEntrySmpEntity> jrnlEntryJoin = root.join("jrnlEntry", JoinType.INNER);
         final Join<JrnlEntrySmpEntity, JrnlDaySmpEntity> jrnlDayJoin = jrnlEntryJoin.join("jrnlDay", JoinType.INNER);
         order.add(builder.desc(builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"))));
+        order.add(builder.asc(jrnlEntryJoin.get("idx")));
         order.add(builder.asc(root.get("idx")));
         query.orderBy(order);
         // distinct
