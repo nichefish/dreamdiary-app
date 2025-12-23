@@ -490,6 +490,9 @@ document.addEventListener("DOMContentLoaded", function(): void {
     if (jrnlIntrptContextBtnPartial) Handlebars.registerPartial("jrnl_intrpt_context_btn_partial", jrnlIntrptContextBtnPartial);
     const jrnlIntrptToggleBtnPartial: string = document.getElementById("jrnl_intrpt_toggle_btn_partial")?.innerHTML;
     if (jrnlIntrptToggleBtnPartial) Handlebars.registerPartial("jrnl_intrpt_toggle_btn_partial", jrnlIntrptToggleBtnPartial);
+
+    const jrnlSumryContextBtnPartial: string = document.getElementById("jrnl_sumry_context_btn_partial")?.innerHTML;
+    if (jrnlSumryContextBtnPartial) Handlebars.registerPartial("jrnl_sumry_context_btn_partial", jrnlSumryContextBtnPartial);
 });
 
 

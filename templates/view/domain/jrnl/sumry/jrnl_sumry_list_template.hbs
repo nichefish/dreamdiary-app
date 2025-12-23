@@ -1,0 +1,91 @@
+<#--
+ * 저널 결산(jrnl_sumry) 목록 조회 Template
+ * @included_in : jrnl_sumry_list.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="jrnl_sumry_list_template">
+    {{#each this}}
+        <!--begin::Card-->
+        <div class="card post">
+            <#--begin::Card body-->
+            <div class="card-body py-5">
+                <div class="row jrnl-sumry align-items-center">
+                    <div class="col-2 d-flex align-items-center">
+                        <i class="bi bi-calendar3 fs-6 me-2"></i>
+                        <a class="cursor-pointer text-underline-dotted text-dark"
+                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="상세 화면으로 이동합니다."
+                           onclick="dF.JrnlSumry.dtl({{postNo}})">
+                            {{#if (exists title)}}
+                                <span class="fs-5 me-1">{{title}}</span>
+                            {{else}}
+                                <span class="fs-5 fw-bolder me-0">{{yy}}</span>
+                                년 결산
+                            {{/if}}
+                            <i class="bi bi-pencil-square fs-4 ms-1"></i>
+                        </a>
+                        <#--TODO: 새 창으로 열기 -->
+                        <#--
+                        <a class="badge badge-secondary ms-3 p-2 btn-white bg-hover-white blank blink-slow float-end"
+                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="새 창으로 보기">
+                            <i class="bi bi-stickies fs-5 text-noti opacity-hover"></i>
+                        </a>
+                        -->
+                    </div>
+                    <div class="col fs-5">
+                        <div class="d-flex justify-content-start">
+                            <div class="text-gray-700 d-flex-center me-5">
+                                <span class="fw-bold me-2">
+                                    꿈
+                                </span>
+                                {{#ifYn dreamComptYn}}
+                                    <span class="cursor-help"
+                                          data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="꿈 기록을 완료했습니다.">
+                                        <i class="bi bi-moon-stars-fill fs-4 me-2 text-success"></i>
+                                        <i class="bi bi-check text-success" style="margin-left:-0.8rem"></i>
+                                    </span>
+                                {{else}}
+                                    <span>
+                                        <i class="bi bi-moon-stars fs-4 me-2"></i>
+                                    </span>
+                                {{/ifYn}}
+                                (<span class="text-info fw-bold mx-1">{{dreamDayCnt}}</span>일
+                                /
+                                <span class="text-info fw-bold mx-1">{{dreamCnt}}</span>개)
+                            </div>
+                            <div class="text-gray-700 d-flex-center">
+                                <span class="fw-bold me-2">
+                                    일기
+                                </span>
+                                <i class="bi bi-book fs-4 mt-1 me-2"></i>
+                                (<span class="text-info fw-bold mx-1">{{diaryDayCnt}}</span>일)
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <div class="fs-6 fw-normal text-gray-800 ps-2 pt-3 text-noti">
+                                {{{markdownCn}}}
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            {{#if (exists tag.list)}}
+                                <div class="ms-5 mt-3">
+                                    <i class="bi bi-tag"></i>
+                                    {{#tag.list}}
+                                        {{> tag_list_partial this module="dF.JrnlDayTag"}}
+                                    {{/tag.list}}
+                                </div>
+                            {{/if}}
+                        </div>
+                    </div>
+                    <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                    <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
+                        {{> jrnl_sumry_context_btn_partial this}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{else}}
+        <div class="jrnl-day d-flex-center">
+            저널 일자 정보가 없습니다.
+        </div>
+    {{/each}}
+</script>

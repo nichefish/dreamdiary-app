@@ -7,12 +7,14 @@ import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.repository.jpa.JrnlSumryRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.spec.JrnlSumrySpec;
 import io.nicheblog.dreamdiary.extension.cache.event.EhCacheEvictEvent;
+import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.handler.EhCacheEvictEventListner;
+import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultiCrudService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +41,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Log4j2
 public class JrnlSumryService
-        implements BaseMultiCrudService<JrnlSumryDto, JrnlSumryDto, Integer, JrnlSumryEntity> {
+        implements BaseClsfService<JrnlSumryDto, JrnlSumryDto, Integer, JrnlSumryEntity> {
 
     @Getter
     private final JrnlSumryRepository repository;
@@ -158,8 +160,9 @@ public class JrnlSumryService
     @Override
     public void postModify(final JrnlSumryDto postDto, final JrnlSumryDto updatedDto) throws Exception {
         // 태그 처리
-        // TODO: AOP로 분리
         publisher.publishEvent(new TagProcEvent(this, updatedDto.getClsfKey(), updatedDto.tag));
+        // 관련 캐시 삭제
+        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_SUMRY));
     }
 
     /**
