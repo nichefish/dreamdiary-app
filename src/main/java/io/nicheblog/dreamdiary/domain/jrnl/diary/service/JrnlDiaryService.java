@@ -234,7 +234,7 @@ public class JrnlDiaryService
     @Transactional
     public void normalize(final Integer jrnlEntryNo) {
         final List<JrnlDiaryDto> list = mapper.findAllForReorder(jrnlEntryNo);
-        if (CollectionUtils.isEmpty(list) || list.size() == 1) return;
+        if (CollectionUtils.isEmpty(list)) return;
 
         int idx = 1;
         for (final JrnlDiaryDto e : list) {

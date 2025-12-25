@@ -221,7 +221,7 @@ public class JrnlIntrptService
     @Transactional
     public void normalize(final Integer jrnlDreamNo) {
         final List<JrnlIntrptDto> list = mapper.findAllForReorder(jrnlDreamNo);
-        if (CollectionUtils.isEmpty(list) || list.size() == 1) return;
+        if (CollectionUtils.isEmpty(list)) return;
 
         int idx = 1;
         for (final JrnlIntrptDto e : list) {

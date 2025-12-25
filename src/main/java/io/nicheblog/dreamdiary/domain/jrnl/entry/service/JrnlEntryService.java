@@ -162,7 +162,7 @@ public class JrnlEntryService
     @Transactional
     public void normalize(final Integer jrnlDayNo) {
         final List<JrnlEntryDto> list = jrnlEntryMapper.findAllForReorder(jrnlDayNo);
-        if (CollectionUtils.isEmpty(list) || list.size() == 1) return;
+        if (CollectionUtils.isEmpty(list)) return;
 
         int idx = 1;
         for (final JrnlEntryDto e : list) {
