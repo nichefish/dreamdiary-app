@@ -30,7 +30,7 @@
         {{#if (exists jrnlDiaryList)}}
             <div class="d-flex align-items-center mt-2">
                 <span class="text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder">
-                    <@spring.message 'diary'/>
+                    <@spring.message 'txt.diary'/>
                     <i class="bi bi-book fs-4 pe-1"></i>
                 </span>
             </div>
@@ -45,7 +45,8 @@
                     <div class="col-1 d-none d-md-flex ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                     <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
                         {{> comment_reg_btn_partial this contentType="JRNL_DIARY"}}
-                        {{> jrnl_diary_mdf_btn_partial this}}
+                        {{> jrnl_diary_copy_btn_partial this}}
+                        {{> jrnl_diary_context_btn_partial this}}
                     </div>
                 </div>
             {{/each}}
@@ -53,7 +54,7 @@
         {{#if hasDream}}
             <div class="d-flex align-items-center mt-2">
                 <span class="text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder">
-                    <@spring.message 'dream'/>
+                    <@spring.message 'txt.dream'/>
                     <i class="bi bi-moon-stars fs-4 pe-1"></i>
                 </span>
             </div>
@@ -68,8 +69,8 @@
                     <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                     <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
                         {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
-                        <div class="col-1 border-2 border-gray-300 border-end w-10px">&nbsp;</div>
-                        {{> jrnl_dream_mdf_btn_partial this}}
+                        {{> jrnl_dream_copy_btn_partial this}}
+                        {{> jrnl_dream_context_btn_partial this}}
                     </div>
                 </div>
             {{/each}}
@@ -88,7 +89,8 @@
                     </div>
                     <div class="col-1 ms-4 pe-0 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                     <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
-                        {{> jrnl_dream_mdf_btn_partial this}}
+                        {{> jrnl_dream_copy_btn_partial this}}
+                        {{> jrnl_dream_context_btn_partial this}}
                     </div>
                 </div>
             {{/each}}

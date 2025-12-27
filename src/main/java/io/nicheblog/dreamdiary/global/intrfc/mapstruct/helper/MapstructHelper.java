@@ -13,6 +13,11 @@ import io.nicheblog.dreamdiary.extension.clsf.managt.entity.embed.ManagtEmbedMod
 import io.nicheblog.dreamdiary.extension.clsf.managt.mapstruct.embed.ManagtEmbedMapstruct;
 import io.nicheblog.dreamdiary.extension.clsf.managt.model.cmpstn.ManagtCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.managt.model.cmpstn.ManagtCmpstnModule;
+import io.nicheblog.dreamdiary.extension.clsf.meta.entity.embed.MetaEmbed;
+import io.nicheblog.dreamdiary.extension.clsf.meta.entity.embed.MetaEmbedModule;
+import io.nicheblog.dreamdiary.extension.clsf.meta.mapstruct.embed.MetaEmbedMapstruct;
+import io.nicheblog.dreamdiary.extension.clsf.meta.model.cmpstn.MetaCmpstn;
+import io.nicheblog.dreamdiary.extension.clsf.meta.model.cmpstn.MetaCmpstnModule;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.entity.embed.SectnEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.entity.embed.SectnEmbedModule;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.mapstruct.embed.SectnEmbedMapstruct;
@@ -132,6 +137,14 @@ public class MapstructHelper {
             final TagEmbed embed = ((TagEmbedModule) entity).getTag();
             final TagCmpstn cmpstn = TagEmbedMapstruct.INSTANCE.toDto(embed);
             ((TagCmpstnModule) dto).setTag(cmpstn);
+        }
+
+        // 메타 :: 공통 필드 매핑 로직
+        boolean usesMetaModule = (entity instanceof MetaEmbedModule && dto instanceof MetaCmpstnModule);
+        if (usesMetaModule) {
+            final MetaEmbed embed = ((MetaEmbedModule) entity).getMeta();
+            final MetaCmpstn cmpstn = MetaEmbedMapstruct.INSTANCE.toDto(embed);
+            ((MetaCmpstnModule) dto).setMeta(cmpstn);
         }
 
         // 조치 :: 공통 필드 매핑 로직

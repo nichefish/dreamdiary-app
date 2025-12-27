@@ -182,6 +182,50 @@ dF.JrnlEntry = (function(): dfModule {
         },
 
         /**
+         * 상태 변경 처리. (Ajax)
+         * @param {string|number} postNo - 글 번호.
+         * @param {object} payload
+         * @param {Function} [callback]
+         */
+        patchAjax: function(postNo: string|number, payload: object, callback: Function): void {
+            if (isNaN(Number(postNo))) return;
+
+            const url: string = cF.util.bindUrl(Url.JRNL_ENTRY, { postNo });
+            cF.$ajax.patch(url, payload, function(res: AjaxResponse): void {
+                if (!res.rslt) return;
+
+                if (!callback || typeof callback != "function") return;
+
+                callback(res);
+            }, "block");
+        },
+
+         /**
+         * 글 접기/펼치기 토글. (Ajax)
+         * @param {string|number} postNo - 글 번호.
+         */
+        collapseAjax: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            const item: HTMLElement = document.querySelector(`.jrnl-entry-item[data-id='${postNo}']`);
+            if (!item) return;
+
+            const current: string = (item.dataset.collapsed || "N").toUpperCase();
+            const next: "Y"|"N" = current === "Y" ? "N" : "Y";
+            const nextBoolean: boolean = current !== "Y"
+
+            const payload: Record<string, any> = { collapsed: nextBoolean };
+            dF.JrnlEntry.patchAjax(postNo, payload, function(): void {
+                item.dataset.collapsed = next;
+
+                item.classList.toggle("collapsed", next === "Y");
+                const chk: HTMLInputElement = item.querySelector(".entry-context-collapse-check");
+                if (chk) chk.checked = (next === "Y");
+            });
+        },
+
+
+        /**
          * toggle
          * @param {string|number} postNo - 글 번호.
          */
@@ -194,8 +238,8 @@ dF.JrnlEntry = (function(): dfModule {
             if (!diaries.length) return;
 
             // collapsed 상태 판정 → diary 중 하나라도 펴져 있으면 전체 접기
-            const shouldCollapse = Array.from(diaries).some(item => {
-                const cn = item.querySelector(".cn");
+            const shouldCollapse: boolean = Array.from(diaries).some((item: HTMLElement) => {
+                const cn: HTMLElement = item.querySelector(".cn");
                 return cn && !cn.classList.contains("collapsed");
             });
 

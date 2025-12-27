@@ -78,7 +78,7 @@ public class JrnlDayCalService {
     @Cacheable(value="myJrnlDayCalList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getYy() + \"_\" + #searchParam.getMnth()")
     public List<BaseCalDto> getMyCalListDto(final JrnlDaySearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
-        final List<JrnlDayDto> myJrnlDayList = JrnlDayService.getMyListDto(AuthUtils.getLgnUserId(), searchParam);
+        final List<JrnlDayDto> myJrnlDayList = JrnlDayService.getMyListDtoByYyMnthWithHldy(AuthUtils.getLgnUserId(), searchParam);
 
         final List<BaseCalDto> jrnlCalEventList = new ArrayList<>();
         for (final JrnlDayDto jrnlDay: myJrnlDayList) {

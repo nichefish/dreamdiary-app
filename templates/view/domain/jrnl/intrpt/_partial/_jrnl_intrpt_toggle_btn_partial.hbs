@@ -1,0 +1,12 @@
+<#--
+ * 저널 일기(jrnl_diary) 목록 - 수정 버튼 partial
+ * @included_in : jrnl_day_page.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="jrnl_intrpt_toggle_btn_partial">
+    <button type="button"
+            class="btn btn-sm btn-secondary ms-2 px-3 toggle-intrpt-btn"
+            onclick="dF.JrnlIntrpt.toggle({{postNo}}, this)">
+        <i class="bi bi-arrows-{{#ifYn collapsedYn}}expand{{else}}collapse{{/ifYn}} pe-0 intrpt-toggle-icon"></i>
+    </button>
+</script>

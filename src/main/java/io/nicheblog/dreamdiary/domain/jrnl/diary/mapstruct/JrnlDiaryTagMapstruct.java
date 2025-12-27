@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.domain.jrnl.diary.mapstruct;
 
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryTagEntity;
-import io.nicheblog.dreamdiary.extension.clsf.tag.mapstruct.ContentTagMapstruct;
+import io.nicheblog.dreamdiary.extension.clsf.tag.mapstruct.TagContentMapstruct;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
@@ -16,7 +16,7 @@ import org.mapstruct.factory.Mappers;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {ContentTagMapstruct.class})
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {TagContentMapstruct.class})
 public interface JrnlDiaryTagMapstruct
         extends BaseWriteMapstruct<TagDto, JrnlDiaryTagEntity>, BaseReadMapstruct<TagDto, JrnlDiaryTagEntity> {
 

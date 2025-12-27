@@ -7,7 +7,7 @@
     <hr class="my-6 text-muted" />
     <div class="d-flex align-items-center mb-6 ms-4">
         <div class="col-1 ms-4 me-6 text-center fs-6">
-            <b class="pe-3"><@spring.message 'tag'/> : </b>
+            <b class="pe-3"><@spring.message 'txt.tag'/> : </b>
             <button type="button" class="btn btn-sm btn-secondary btn-outline btn-active-secondary w-30px h-30px p-0"
                     onclick="dF.Tag.resetFilter();"
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'view.tag.filter-clear'/>">

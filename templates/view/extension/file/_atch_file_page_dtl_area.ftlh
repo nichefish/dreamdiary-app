@@ -7,7 +7,7 @@
 <#if (post.atchFileInfo.atchFileList)?has_content>
     <div class="d-flex flex-stack flex-wrap mb-3 bg-light">
         <div class="col-xl-1 col-form-label fs-6 fw-bold px-5">
-            <@spring.message 'atch-file'/>
+            <@spring.message 'txt.atch-file'/>
         </div>
         <div class="col-xl-11 my-3">
             <#list (post.atchFileInfo.atchFileList)![] as file>

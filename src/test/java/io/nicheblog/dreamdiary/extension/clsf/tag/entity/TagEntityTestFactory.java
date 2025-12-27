@@ -9,7 +9,7 @@ import java.util.ArrayList;
 /**
  * TagEntityTestFactory
  * <pre>
- *  컨텐츠 태그 Entity 생성 팩토리 모듈
+ *  태그-컨텐츠 Entity 생성 팩토리 모듈
  * </pre>
  *
  * @author nichefish 
@@ -24,7 +24,7 @@ public class TagEntityTestFactory {
     public static TagEntity create() throws Exception {
         return TagEntity.builder()
                 .tagNm("태그")
-                .contentTagList(new ArrayList<>())
+                .tagContentList(new ArrayList<>())
                 .build();
     }
 }

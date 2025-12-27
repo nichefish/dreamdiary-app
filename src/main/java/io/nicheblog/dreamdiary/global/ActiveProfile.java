@@ -29,7 +29,7 @@ public class ActiveProfile {
      */
     @PostConstruct
     public void init() throws Exception {
-        if (StringUtils.isEmpty(this.active)) throw new IllegalStateException(MessageUtils.getMessage("common.status.profile-invalid"));
+        if (StringUtils.isEmpty(this.active)) throw new IllegalStateException(MessageUtils.getMessage("msg.rslt.profile-invalid"));
         this.profile = Profile.valueOf(this.active.toUpperCase());
     }
 

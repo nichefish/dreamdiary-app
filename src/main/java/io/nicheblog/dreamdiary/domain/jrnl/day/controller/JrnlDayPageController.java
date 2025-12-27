@@ -52,7 +52,7 @@ public class JrnlDayPageController
     @GetMapping(Url.JRNL_DAY_MONTHLY)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String jrnlDayMonthly(
-            @ModelAttribute("searchParam") JrnlDaySearchParam searchParam,
+            final @ModelAttribute("searchParam") JrnlDaySearchParam searchParam,
             final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {
@@ -105,7 +105,8 @@ public class JrnlDayPageController
     @GetMapping(Url.JRNL_DAY_VIEW)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String jrnlDayDaily(
-            @PathVariable("stdrdDt") String stdrdDt,
+            final @PathVariable("stdrdDt") String stdrdDt,
+            final @ModelAttribute("searchParam") JrnlDaySearchParam searchParam,
             final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {

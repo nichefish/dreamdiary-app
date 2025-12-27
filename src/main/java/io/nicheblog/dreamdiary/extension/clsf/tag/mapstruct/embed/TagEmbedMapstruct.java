@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.extension.clsf.tag.mapstruct.embed;
 
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
-import io.nicheblog.dreamdiary.extension.clsf.tag.mapstruct.ContentTagMapstruct;
+import io.nicheblog.dreamdiary.extension.clsf.tag.mapstruct.TagContentMapstruct;
 import io.nicheblog.dreamdiary.extension.clsf.tag.mapstruct.TagMapstruct;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
@@ -19,7 +19,7 @@ import org.mapstruct.factory.Mappers;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, TagMapstruct.class, ContentTagMapstruct.class}, builder = @Builder(disableBuilder = true))
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, TagMapstruct.class, TagContentMapstruct.class}, builder = @Builder(disableBuilder = true))
 public interface TagEmbedMapstruct
         extends BaseWriteMapstruct<TagCmpstn, TagEmbed>, BaseMapstruct<TagCmpstn, TagEmbed> {
 
@@ -32,7 +32,7 @@ public interface TagEmbedMapstruct
      * @return Dto -- 변환된 Dto 객체
      */
     @Override
-    @Mapping(target = "list", expression = "java(ContentTagMapstruct.INSTANCE.toDtoList(entity.getList()))")
+    @Mapping(target = "list", expression = "java(TagContentMapstruct.INSTANCE.toDtoList(entity.getList()))")
     TagCmpstn toDto(final TagEmbed entity) throws Exception;
 
     /**
@@ -42,7 +42,7 @@ public interface TagEmbedMapstruct
      * @return Entity -- 변환된 Entity 객체
      */
     @Override
-    @Mapping(target = "list", expression = "java(ContentTagMapstruct.INSTANCE.toEntityList(dto.getList()))")
+    @Mapping(target = "list", expression = "java(TagContentMapstruct.INSTANCE.toEntityList(dto.getList()))")
     @Mapping(target = "tagStrList", expression = "java(dto.getParsedTagStrList())")
     TagEmbed toEntity(final TagCmpstn dto) throws Exception;
 

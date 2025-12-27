@@ -13,7 +13,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * SectnService
@@ -45,19 +44,6 @@ public class SectnService
     }
 
     private final CacheEvictService ehCacheEvictService;
-
-    /**
-     * 단일 항목 조회 (dto level)
-     *
-     * @param key 조회할 엔티티의 키
-     * @return {@link SectnDto} -- 조회 항목 반환
-     */
-    @Transactional(readOnly = true)
-    public SectnDto getDtlDto(final Integer key) throws Exception {
-        final SectnEntity retrievedEntity = this.getDtlEntity(key);
-
-        return mapstruct.toDto(retrievedEntity);
-    }
 
     /**
      * 등록 전처리. (override)

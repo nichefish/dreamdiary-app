@@ -42,7 +42,7 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     margin-left: 1rem !important;
 }
 
-.jrnl-diary-item, .jrnl-intrpt-item {
+.jrnl-diary-item, .jrnl-dream-item,.jrnl-intrpt-item {
     display: flex !important;
     flex-direction: row !important;
     justify-content: start;
@@ -60,7 +60,25 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     }
 }
 
-.jrnl-diary-cn, .jrnl-dream-cn, .jrnl-sumry-cn {
+.jrnl-entry-item {
+    &.collapsed {
+        margin-left: 90px;
+        margin-top: 12px;
+        margin-bottom: 10px;
+    }
+    &.collapsed::before {
+        content: "(collapsed)";
+        display: block;
+        color: #999;
+        font-style: italic;
+        margin: 0.5em 0;
+    }
+    &.collapsed > * {
+        display: none !important;
+    }
+}
+
+.jrnl-diary-cn, .jrnl-dream-cn, .jrnl-intrpt-cn, .jrnl-sumry-cn {
     transition: all 0.2s ease;
 
     .cn {

@@ -47,9 +47,9 @@ public class MessageUtils
     private void init() {
         messageSource = autowiredMessageSource;
         response = autowiredResponse;
-        RSLT_SUCCESS = getMessage("common.rslt.success");
-        RSLT_FAILURE = getMessage("common.rslt.failure");
-        RSLT_EMPTY = getMessage("common.rslt.empty");
+        RSLT_SUCCESS = getMessage("msg.rslt.success");
+        RSLT_FAILURE = getMessage("msg.rslt.failure");
+        RSLT_EMPTY = getMessage("msg.rslt.empty");
     }
 
     public static String RSLT_SUCCESS;
@@ -58,10 +58,10 @@ public class MessageUtils
 
     public static final String RSLT_EXCEPTION = "exception";
 
-    public static final String RSLT_JANDI_SUCCESS = "jandi.rslt.success";
-    public static final String RSLT_JANDI_FAILURE = "jandi.rslt.failure";
+    public static final String RSLT_JANDI_SUCCESS = "msg.jandi.rslt.success";
+    public static final String RSLT_JANDI_FAILURE = "msg.jandi.rslt.failure";
 
-    public static final String RSLT_SUCCESS_PW_RESET = "user.pw.reset.rslt.success";
+    public static final String RSLT_SUCCESS_PW_RESET = "msg.user.pw.reset.rslt.success";
 
     public static final String LGN_FAIL_BADCREDENTIALS_CNT = "AbstractUserDetailsAuthenticationProvider.BadCredentials.failCnt";
     public static final String LGN_FAIL_BADCREDENTIALS_LOCKED = "AbstractUserDetailsAuthenticationProvider.BadCredentials.locked";

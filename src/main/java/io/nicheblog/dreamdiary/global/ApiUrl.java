@@ -21,6 +21,8 @@ public interface ApiUrl {
     String JRNL_DAY_TAG_GROUP_LIST_AJAX = Prefix.API + "/jrnl/day/tag-group-list";
     String JRNL_DAY_TAG_DTL_AJAX = Prefix.API + "/jrnl/day/tag-dtl";
     String JRNL_DAY_TAG_CTGR_MAP_AJAX = Prefix.API + "/jrnl/day/tag-ctgr-map";
+    /** 저널 일자 메타 */
+    String JRNL_DAY_META_CTGR_MAP = Prefix.API + "/jrnl/day/meta/ctgr-map";
 
     /** 저널 꿈 */
     String JRNL_DREAMS = Prefix.API + "/jrnl/dreams";

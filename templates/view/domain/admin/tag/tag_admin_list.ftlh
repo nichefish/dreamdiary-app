@@ -24,7 +24,7 @@
 <div class="card post">
     <div class="d-flex align-items-center">
         <div class="fs-5 fw-bold me-5">
-            태그 컨텐츠 :
+            태그-컨텐츠 :
         </div>
         <div id="jrnl_tag_ctgr_div" data-ref-content-type="${refContentType!}">
             <#list contentTypeList![] as contentType>

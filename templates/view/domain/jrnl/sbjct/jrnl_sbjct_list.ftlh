@@ -23,9 +23,9 @@
             <thead>
                 <tr class="text-start fw-bolder fs-7 text-uppercase gs-0 text-muted">
                     <th class="text-center wb-keepall w-10 hidden-table">번호</th>
-                    <th class="col-lg-8 col-9 text-center wb-keepall"><@spring.message 'title'/></th>
-                    <th class="col-lg-1 text-center wb-keepall hidden-table"><@spring.message 'atch-file'/></th>
-                    <th class="text-center wb-keepall w-10 hidden-table"><@spring.message 'hit-cnt'/></th>
+                    <th class="col-lg-8 col-9 text-center wb-keepall"><@spring.message 'txt.title'/></th>
+                    <th class="col-lg-1 text-center wb-keepall hidden-table"><@spring.message 'txt.atch-file'/></th>
+                    <th class="text-center wb-keepall w-10 hidden-table"><@spring.message 'txt.hit-cnt'/></th>
                 </tr>
             </thead>
             <#--begin::Table body-->

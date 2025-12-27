@@ -1,0 +1,12 @@
+<#--
+* 저널 항목(jrnl_entry) - 등록 버튼 partial
+ * @included_in : jrnl_day_page.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="jrnl_entry_toggle_btn_partial">
+     <button type="button"
+            class="btn btn-sm btn-secondary ms-2 px-3 toggle-entry-btn"
+            onclick="dF.JrnlEntry.toggle({{postNo}})">
+        <i class="bi bi-arrows-{{#ifYn collapsedYn}}expand{{else}}collapse{{/ifYn}} pe-0" id="entry-toggle-icon-{{postNo}}"></i>
+    </button>
+</script>

@@ -84,8 +84,8 @@ public class JrnlDiaryService
     @Cacheable(value="myJrnlDiaryList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.hashCode()")
     public List<JrnlDiaryDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
-        final List<JrnlDiaryEntity> listEntity = this.getSelf().getListEntity(searchParam);
-        return mapstruct.toDtoList(listEntity);
+
+        return this.getSelf().getListDto(searchParam);
     }
 
     /**
@@ -97,8 +97,7 @@ public class JrnlDiaryService
     @Cacheable(value="myImprtcDiaryList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy")
     public List<JrnlDiaryDto> getImprtcDiaryList(final Integer yy) throws Exception {
         final JrnlDiarySearchParam searchParam = JrnlDiarySearchParam.builder().yy(yy).imprtcYn("Y").build();
-        final List<JrnlDiaryEntity> imprtcDiaryEntityList = this.getSelf().getListEntity(searchParam);
-        final List<JrnlDiaryDto> imprtcDiaryList = mapstruct.toDtoList(imprtcDiaryEntityList);
+        final List<JrnlDiaryDto> imprtcDiaryList = this.getSelf().getListDto(searchParam);
         Collections.sort(imprtcDiaryList);
 
         return imprtcDiaryList;
@@ -113,8 +112,7 @@ public class JrnlDiaryService
     @Cacheable(value="myJrnlDiaryTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
     @SuppressWarnings("unchecked")
     public List<JrnlDiaryDto> jrnlDiaryTagDtl(final JrnlDiarySearchParam searchParam) throws Exception {
-        final List<JrnlDiaryEntity> jrnlDiaryEntityList = this.getSelf().getListEntity(searchParam);
-        final List<JrnlDiaryDto> jrnlDiaryList = mapstruct.toDtoList(jrnlDiaryEntityList);
+        final List<JrnlDiaryDto> jrnlDiaryList = this.getSelf().getListDto(searchParam);
         // 공휴일 정보 세팅
         final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
         for (JrnlDiaryDto jrnlDiary : jrnlDiaryList) {
@@ -122,19 +120,6 @@ public class JrnlDiaryService
         }
 
         return jrnlDiaryList;
-    }
-
-    /**
-     * 단일 항목 조회 (dto level)
-     *
-     * @param key 조회할 엔티티의 키
-     * @return {@link JrnlDiaryDto} -- 조회 항목 반환
-     */
-    @Transactional(readOnly = true)
-    public JrnlDiaryDto getDtlDto(final Integer key) throws Exception {
-        final JrnlDiaryEntity retrievedEntity = this.getDtlEntity(key);
-
-        return mapstruct.toDto(retrievedEntity);
     }
 
     /**
@@ -210,7 +195,7 @@ public class JrnlDiaryService
         final JrnlDiaryEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlDiaryDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("common.rslt.access-not-authorized"));
+        if (!retrieved.getIsRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
         return retrieved;
     }
 
@@ -249,7 +234,7 @@ public class JrnlDiaryService
     @Transactional
     public void normalize(final Integer jrnlEntryNo) {
         final List<JrnlDiaryDto> list = mapper.findAllForReorder(jrnlEntryNo);
-        if (CollectionUtils.isEmpty(list) || list.size() == 1) return;
+        if (CollectionUtils.isEmpty(list)) return;
 
         int idx = 1;
         for (final JrnlDiaryDto e : list) {
@@ -343,104 +328,6 @@ public class JrnlDiaryService
             final String concatHldyNm = String.join(", ", hldyMap.get(stdrdDt));
             jrnlDiary.setHldyNm(concatHldyNm);
         }
-    }
-
-    /**
-     * collapse 상태를 설정한다.
-     *
-     * @param postNo 대상 게시물 PK
-     * @param collapsedYn 접힘 상태(Y/N)
-     * @return collapsedYn 반영 성공 여부를 담은 ServiceResponse
-     */
-    @Transactional
-    @SuppressWarnings("unchecked")
-    public ServiceResponse setCollapse(final Integer postNo, final String collapsedYn) throws Exception {
-        final JrnlDiaryEntity entity = getDtlEntity(postNo);
-        entity.setCollapsedYn(collapsedYn);
-        final JrnlDiaryEntity updatedEntity = repository.save(entity);
-
-        final Integer yy = updatedEntity.getJrnlEntry().getJrnlDay().getYy();
-        final Integer mnth = updatedEntity.getJrnlEntry().getJrnlDay().getMnth();
-        final String cacheKey = AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth;
-
-        final Map<Integer, JrnlState> diaryMap = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myDiaryStateMap", cacheKey);
-        if (diaryMap != null) {
-            final JrnlState state = diaryMap.get(postNo);
-            if (state != null) {
-                state.setCollapsedYn(collapsedYn);
-                EhCacheUtils.put("myDiaryStateMap", cacheKey, diaryMap);
-            }
-        }
-
-        return ServiceResponse.builder()
-                .rslt(true)
-                .build();
-    }
-
-    /**
-     * resolved 상태를 설정한다.
-     *
-     * @param postNo 대상 게시물 PK
-     * @param resolvedYn 접힘 상태(Y/N)
-     * @return collapsedYn 반영 성공 여부를 담은 ServiceResponse
-     */
-    @Transactional
-    @SuppressWarnings("unchecked")
-    public ServiceResponse resolve(final Integer postNo, final String resolvedYn) throws Exception {
-        final JrnlDiaryEntity entity = getDtlEntity(postNo);
-        entity.setResolvedYn(resolvedYn);
-        if ("Y".equals(resolvedYn)) entity.setCollapsedYn("Y");
-        final JrnlDiaryEntity updatedEntity = repository.save(entity);
-
-        final Integer yy = updatedEntity.getJrnlEntry().getJrnlDay().getYy();
-        final Integer mnth = updatedEntity.getJrnlEntry().getJrnlDay().getMnth();
-        final String cacheKey = AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth;
-
-        final Map<Integer, JrnlState> diaryMap = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myDiaryStateMap", cacheKey);
-        if (diaryMap != null) {
-            final JrnlState state = diaryMap.get(postNo);
-            if (state != null) {
-                state.setResolvedYn(resolvedYn);
-                if ("Y".equals(resolvedYn)) state.setCollapsedYn("Y");
-                EhCacheUtils.put("myDiaryStateMap", cacheKey, diaryMap);
-            }
-        }
-
-        return ServiceResponse.builder()
-                .rslt(true)
-                .build();
-    }
-
-    /**
-     * resolved 상태를 설정한다.
-     *
-     * @param postNo 대상 게시물 PK
-     * @param imprtcYn 접힘 상태(Y/N)
-     * @return collapsedYn 반영 성공 여부를 담은 ServiceResponse
-     */
-    @Transactional
-    @SuppressWarnings("unchecked")
-    public ServiceResponse imprtc(final Integer postNo, final String imprtcYn) throws Exception {
-        final JrnlDiaryEntity entity = getDtlEntity(postNo);
-        entity.setImprtcYn(imprtcYn);
-        final JrnlDiaryEntity updatedEntity = repository.save(entity);
-
-        final Integer yy = updatedEntity.getJrnlEntry().getJrnlDay().getYy();
-        final Integer mnth = updatedEntity.getJrnlEntry().getJrnlDay().getMnth();
-        final String cacheKey = AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth;
-
-        final Map<Integer, JrnlState> diaryMap = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myDiaryStateMap", cacheKey);
-        if (diaryMap != null) {
-            final JrnlState state = diaryMap.get(postNo);
-            if (state != null) {
-                state.setImprtcYn(imprtcYn);
-                EhCacheUtils.put("myDiaryStateMap", cacheKey, diaryMap);
-            }
-        }
-
-        return ServiceResponse.builder()
-                .rslt(true)
-                .build();
     }
 
     /**

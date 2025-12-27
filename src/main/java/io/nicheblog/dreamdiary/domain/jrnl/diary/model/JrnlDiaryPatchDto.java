@@ -7,7 +7,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 /**
- * JrnlDiaryDto
+ * JrnlDiaryPatchDto
  * <pre>
  *  저널 일기 상태 변경 Dto.
  * </pre>

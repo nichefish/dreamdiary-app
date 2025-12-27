@@ -37,8 +37,8 @@
                 <!--begin::Info-->
                 <div class="d-flex align-items-center py-1">
                     <a href="#answers" data-kt-scroll-toggle="true"
-                       class="btn btn-sm btn-outline btn-outline-dashed btn-outline-default px-4 me-2"><@spring.message 'comment'/> ${tmplat.commentCnt!}</a>
-                    <button class="btn btn-sm btn-light px-4 me-2 disabled"><@spring.message 'hit-cnt'/> ${tmplat.hitCnt}</button>
+                       class="btn btn-sm btn-outline btn-outline-dashed btn-outline-default px-4 me-2"><@spring.message 'txt.comment'/> ${tmplat.commentCnt!}</a>
+                    <button class="btn btn-sm btn-light px-4 me-2 disabled"><@spring.message 'txt.hit-cnt'/> ${tmplat.hitCnt}</button>
                 </div>
             </div>
         </div>

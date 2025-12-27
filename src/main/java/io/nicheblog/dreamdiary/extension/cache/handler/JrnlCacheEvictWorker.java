@@ -12,6 +12,7 @@ import io.nicheblog.dreamdiary.extension.cache.service.CacheEvictor;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,6 +63,9 @@ public class JrnlCacheEvictWorker {
      */
     @Transactional
     public void handle(final JrnlCacheEvictEvent event) throws Exception {
+        // 이벤트로부터 securityContext를 가져온다.
+        SecurityContextHolder.setContext(event.getSecurityContext());
+
         final ContentType refContentType = event.getContentType();
         final CacheEvictor<JrnlCacheEvictEvent> evictor = evictorMap.get(refContentType);
         if (evictor == null) {

@@ -8,7 +8,8 @@ package io.nicheblog.dreamdiary.domain.jrnl.day;
 public enum JrnlDayViewType {
     LIST,
     CAL,
-    DAILY;
+    DAILY,
+    SEARCH;
 
     /**
      * 대소문자 구분 없이 문자 치환

@@ -55,5 +55,5 @@ public class JrnlDreamTagEntity
     @Fetch(FetchMode.SUBSELECT)
     @BatchSize(size = 10)
     @NotFound(action = NotFoundAction.IGNORE)
-    private List<JrnlDreamContentTagEntity> jrnlDreamTagList;
+    private List<JrnlDreamTagContentEntity> jrnlDreamTagList;
 }

@@ -195,19 +195,6 @@ public class TagService
     }
 
     /**
-     * 단일 항목 조회 (dto level)
-     *
-     * @param key 조회할 엔티티의 키
-     * @return {@link TagDto} -- 조회 항목 반환
-     */
-    @Transactional(readOnly = true)
-    public TagDto getDtlDto(final Integer key) throws Exception {
-        final TagEntity retrievedEntity = this.getDtlEntity(key);
-
-        return mapstruct.toDto(retrievedEntity);
-    }
-
-    /**
      * 마스터 태그 추가:: 메소드 분리
      *
      * @param tagList 처리할 태그 Dto 목록
@@ -234,7 +221,7 @@ public class TagService
     }
 
     /**
-     * 컨텐츠-태그와 연관관계 없는 마스터 태그 삭제
+     * 태그-컨텐츠와 연관관계 없는 마스터 태그 삭제
      */
     @Transactional
     public void deleteNoRefTags() {

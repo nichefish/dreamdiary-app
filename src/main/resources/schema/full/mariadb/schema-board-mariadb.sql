@@ -144,10 +144,10 @@ CREATE TABLE IF NOT EXISTS tag (
     INDEX (tag_nm, ctgr)
 ) COMMENT = '태그';
 
--- 컨텐츠 태그 (content_tag)
+-- 태그-컨텐츠 (tag_content)
 -- @extends: BaseCrudEntity
-CREATE TABLE IF NOT EXISTS content_tag (
-    content_tag_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '컨텐츠 태그 번호 (PK)',
+CREATE TABLE IF NOT EXISTS tag_content (
+    tag_content_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '태그-컨텐츠 번호 (PK)',
     ref_tag_no INT COMMENT '참조 태그 번호',
     ref_post_no INT COMMENT '참조 글 번호',
     ref_content_type VARCHAR(30) COMMENT '참조 컨텐츠 타입',
@@ -160,7 +160,7 @@ CREATE TABLE IF NOT EXISTS content_tag (
     INDEX (ref_content_type),
     INDEX (ref_post_no, ref_content_type),
     INDEX (ref_post_no, ref_content_type, regstr_id)
-) COMMENT = '컨텐츠 태그';
+) COMMENT = '태그-컨텐츠';
 
 -- 태그 속성 (tag_property)
 -- @extends: BaseCrudEntity
@@ -177,7 +177,42 @@ CREATE TABLE IF NOT EXISTS tag_property (
     FOREIGN KEY (tag_no) REFERENCES tag(tag_no),
     INDEX (content_type),
     INDEX (tag_no, content_type)
-) COMMENT = '컨텐츠 태그';
+) COMMENT = '태그-컨텐츠';
+
+-- 메타 (meta)
+-- @extends: BaseCrudEntity
+CREATE TABLE IF NOT EXISTS meta (
+    meta_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '메타 번호 (PK)',
+    meta_nm VARCHAR(64) COMMENT '메타',
+    ctgr VARCHAR(100) COMMENT '카테고리',
+    label VARCHAR(100) COMMENT '라벨',
+    -- AUDIT
+    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    -- CONSTRAINT
+    UNIQUE (meta_nm, ctgr, label),
+    INDEX (meta_nm),
+    INDEX (meta_nm, ctgr, label)
+) COMMENT = '메타';
+
+-- 메타-컨텐츠 (meta_content)
+-- @extends: BaseCrudEntity
+CREATE TABLE IF NOT EXISTS meta_content (
+    meta_content_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '메타-컨텐츠 번호 (PK)',
+    ref_meta_no INT COMMENT '참조 메타 번호',
+    ref_post_no INT COMMENT '참조 글 번호',
+    ref_content_type VARCHAR(30) COMMENT '참조 컨텐츠 타입',
+    value VARCHAR(64) COMMENT '메타 값',
+    unit VARCHAR(20) COMMENT '단위',
+    -- AUDIT
+    regstr_id VARCHAR(20) COMMENT '등록자 ID',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    -- CONSTRAINT
+    FOREIGN KEY (ref_meta_no) REFERENCES meta(meta_no),
+    INDEX (ref_content_type),
+    INDEX (ref_post_no, ref_content_type),
+    INDEX (ref_post_no, ref_content_type, regstr_id)
+) COMMENT = '메타-컨텐츠';
 
 -- ---------- --
 
@@ -212,5 +247,3 @@ CREATE TABLE IF NOT EXISTS viewer (
     INDEX (ref_post_no, ref_content_type),
     CONSTRAINT UC_user_post UNIQUE (regstr_id, ref_post_no, ref_content_type)  -- 유니크 제약 추가
 ) COMMENT = '열람자';
-
-

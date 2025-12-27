@@ -59,8 +59,8 @@ public class JrnlDiaryCacheEvictor
             // jrnl_diary_tag
             EhCacheUtils.evictMyCacheAll("myJrnlDiaryTagCtgrMap");
             EhCacheUtils.evictMyCacheAll("myJrnlDiaryTagDtl");
-            // 태그 처리
-            EhCacheUtils.evictCache("contentTagEntityListByRef", postNo + "_JRNL_DIARY");
+            // 태그 캐시 처리
+            EhCacheUtils.evictCache("tagContentEntityListByRef", postNo + "_JRNL_DIARY");
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);
             throw e;

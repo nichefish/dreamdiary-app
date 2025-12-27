@@ -305,7 +305,7 @@ dF.JrnlDiary = (function(): dfModule {
             const nextBoolean = current !== "Y"
 
             const payload: Record<string, any> = { collapsed: nextBoolean };
-            dF.JrnlDiary.patchAjax(postNo, payload, function() {
+            dF.JrnlDiary.patchAjax(postNo, payload, function(): void {
                 item.dataset.collapsed = next;
 
                 const content: HTMLElement = item.querySelector(".cn");
@@ -328,11 +328,11 @@ dF.JrnlDiary = (function(): dfModule {
             if (!item) return;
 
             const current: string = (item.dataset.imprtc || "N").toUpperCase();
-            const next = current === "Y" ? "N" : "Y";
-            const nextBoolean = next === "Y"
+            const next: "Y"|"N" = current === "Y" ? "N" : "Y";
+            const nextBoolean: boolean = next === "Y"
 
             const payload: Record<string, any> = { imprtc: nextBoolean };
-            dF.JrnlDiary.patchAjax(postNo, payload, function() {
+            dF.JrnlDiary.patchAjax(postNo, payload, function(): void {
                 item.dataset.imprtc = next;
 
                 const cn = item.querySelector("div.jrnl-diary-cn");
@@ -359,19 +359,19 @@ dF.JrnlDiary = (function(): dfModule {
         /**
          * toggle
          * @param {string|number} postNo - 글 번호.
-         * @deprecated
+         * @param {HTMLElement} trigger - 클릭 버튼 객체
          */
-        toggle: function(postNo: string|number): void {
+        toggle: function(postNo: string|number, trigger: HTMLElement): void {
             if (isNaN(Number(postNo))) return;
 
             const id: string = String(postNo);
-            const item: HTMLElement = document.querySelector(`.jrnl-diary-item[data-id='${id}']`);
+            const item: HTMLElement = trigger.closest(`.jrnl-diary-item[data-id='${id}']`);
             if (!item) return console.log("item not found.");
 
             const content: HTMLElement = item.querySelector(".jrnl-diary-cn .cn");
             if (!content) return console.log("content not found.");
 
-            const icon: HTMLElement = item.querySelector('#diary-toggle-icon');
+            const icon: HTMLElement = item.querySelector('.diary-toggle-icon');
             if (!icon) console.log("icon not found.");
 
             const isCollapsed: boolean = content.classList.contains("collapsed");
@@ -382,6 +382,41 @@ dF.JrnlDiary = (function(): dfModule {
                 content.classList.add("collapsed");
                 icon?.classList.replace("bi-chevron-up", "bi-chevron-down");
             }
-        }
+        },
+
+        /**
+         * copy
+         * @param {string|number} postNo - 글 번호.
+         */
+        copy: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            const url: string = cF.util.bindUrl(Url.JRNL_DIARY, { postNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    return;
+                }
+                const rsltObj: Record<string, any> = res.rsltObj;
+                const resultCn: string = rsltObj.cn;
+                // 문단/줄바꿈을 먼저 텍스트로 치환
+                const replacedCn = resultCn.replace(/<\s*br\s*\/?>/gi, "\n").replace(/<\s*\/?p\s*>/gi, "\n");
+                const div: HTMLDivElement = document.createElement("div");
+                div.innerHTML = replacedCn;
+                const textToCopy: string = (div.textContent ?? "").replace(/\n+/g, "\n").trim();
+
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(textToCopy)
+                        .then((): void => {
+                            Swal.fire({ icon: "success", text: "클립보드에 복사되었습니다." });
+                        })
+                        .catch((): void => {
+                            cF.util.legacyCopy(textToCopy);
+                        });
+                } else {
+                    cF.util.legacyCopy(textToCopy);
+                }
+            });
+        },
     }
 })();

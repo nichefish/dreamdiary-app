@@ -43,7 +43,7 @@ public class TagDto
     private String tagNm;
 
     /** 게시물 태그 목록 (=게시물 리스트) */
-    private List<ContentTagDto> contentTagList;
+    private List<TagContentDto> tagContentList;
 
     /** 게시물 목록 (게시물 태그 목록을 글 목록으로 정제한 버전) */
     private List<?> contentList;
@@ -82,7 +82,6 @@ public class TagDto
      * 생성자.
 
      * @param tagNm - 생성할 태그 번호
-     * @param tagNm - 생성할 태그의 이름
      * @param ctgr - 생성할 태그의 카테고리
      */
     public TagDto(final Integer tagNo, final String tagNm, final String ctgr) {

@@ -37,4 +37,6 @@ public class JrnlDaySearchParam
 
     /** 태그 번호 */
     private Integer tagNo;
+    /** 메타 번호 */
+    private Integer metaNo;
 }

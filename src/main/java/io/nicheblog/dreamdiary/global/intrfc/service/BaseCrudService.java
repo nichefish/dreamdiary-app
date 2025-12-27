@@ -271,6 +271,7 @@ public interface BaseCrudService<PostDto extends BaseCrudDto & Identifiable<Key>
         final Dto deletedDto = getReadMapstruct().toDto(deleteEntity);
 
         getRepository().delete(deleteEntity);
+        getRepository().flush();
 
         // optional: 삭제 후처리
         this.postDelete(deletedDto);

@@ -48,6 +48,34 @@ public class MenuRestController
     private final MenuService menuService;
 
     /**
+     * 메뉴 관리 (메인) 목록 조회 (Ajax)
+     * (관리자MNGR만 접근 가능.)
+     *
+     * @param searchParam 검색 조건을 담은 파라미터 객체
+     * @param logParam 로그 기록을 위한 파라미터 객체
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     */
+    @GetMapping(Url.MENU_MAIN_LIST_AJAX)
+    @Secured({Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> mainMenuListAjax(
+            final @ModelAttribute("searchParam") MenuSearchParam searchParam,
+            final LogActvtyParam logParam
+    ) throws Exception {
+
+        // 페이징 정보 생성:: 공백시 pageSize=10, pageNo=1
+        final Sort sort = Sort.by(Sort.Direction.ASC, "state.sortOrdr");
+        final List<MenuDto> menuList = menuService.getMainMenuList(searchParam, sort);
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+
+        // 로그 관련 세팅
+        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(menuList));
+    }
+
+    /**
      * 메뉴 등록/수정 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
@@ -98,34 +126,6 @@ public class MenuRestController
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
-    }
-
-    /**
-     * 메뉴 관리 (메인) 목록 조회 (Ajax)
-     * (관리자MNGR만 접근 가능.)
-     *
-     * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
-     * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     */
-    @GetMapping(Url.MENU_MAIN_LIST_AJAX)
-    @Secured({Constant.ROLE_MNGR})
-    @ResponseBody
-    public ResponseEntity<AjaxResponse> mainMenuListAjax(
-            final @ModelAttribute("searchParam") MenuSearchParam searchParam,
-            final LogActvtyParam logParam
-    ) throws Exception {
-
-        // 페이징 정보 생성:: 공백시 pageSize=10, pageNo=1
-        final Sort sort = Sort.by(Sort.Direction.ASC, "state.sortOrdr");
-        final List<MenuDto> menuList = menuService.getMainMenuList(searchParam, sort);
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
-
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(menuList));
     }
 
     /**

@@ -2,14 +2,14 @@ package io.nicheblog.dreamdiary.extension.clsf.tag.handler;
 
 import com.nimbusds.oauth2.sdk.util.MapUtils;
 import io.nicheblog.dreamdiary.extension.cache.event.EhCacheEvictEvent;
-import io.nicheblog.dreamdiary.extension.clsf.tag.entity.ContentTagEntity;
+import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.JrnlTagCacheUpdtEvent;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
-import io.nicheblog.dreamdiary.extension.clsf.tag.service.ContentTagService;
+import io.nicheblog.dreamdiary.extension.clsf.tag.service.TagContentService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.service.TagService;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 public class TagProcWorker {
 
     private final TagService tagService;
-    private final ContentTagService contentTagService;
+    private final TagContentService tagContentService;
     private final ApplicationEventPublisherWrapper publisher;
 
     /**
@@ -55,8 +55,8 @@ public class TagProcWorker {
         final boolean isContentDelete = (event.getTagCmpstn() == null);
         final BaseClsfKey clsfKey = event.getClsfKey();
         if (isContentDelete) {
-            // 기존 컨텐츠-태그 전부 삭제
-            delExistingContentTags(event);
+            // 기존 태그-컨텐츠 전부 삭제
+            delExistingTagContents(event);
         } else {
             // 태그 처리
             procTags(event);
@@ -76,28 +76,28 @@ public class TagProcWorker {
      * @param event 태그 처리 이벤트
      */
     @Transactional
-    public void delExistingContentTags(final TagProcEvent event) throws Exception {
+    public void delExistingTagContents(final TagProcEvent event) throws Exception {
         final BaseClsfKey clsfKey = event.getClsfKey();
         // 2. 글번호 + 태그번호를 받아와서 기존 태그 목록 조회
         final Map<String, Object> searchParamMap = new HashMap<>() {{
             put("refPostNo", clsfKey.getPostNo());
             put("refContentType", clsfKey.getContentType());
         }};
-        final List<ContentTagEntity> entityList = contentTagService.getListEntity(searchParamMap);
-        contentTagService.deleteAll(entityList);
+        final List<TagContentEntity> entityList = tagContentService.getListEntity(searchParamMap);
+        tagContentService.deleteAll(entityList);
 
         // 3. 태그 개수 캐시 업데이트 (이벤트 발행)
         if (event instanceof JrnlTagProcEvent jrnlTagProcEvent) {
             final Integer yy = jrnlTagProcEvent.getYy();
             final Integer mnth = jrnlTagProcEvent.getMnth();
             final Map<Integer, Integer> tagCntChangeMap = entityList.stream()
-                    .collect(Collectors.toMap(ContentTagEntity::getRefTagNo, tagNo -> -1));
+                    .collect(Collectors.toMap(TagContentEntity::getRefTagNo, tagNo -> -1));
             publisher.publishEvent(new JrnlTagCacheUpdtEvent(this, clsfKey, yy, mnth, tagCntChangeMap));
         }
     }
 
     /**
-     * 컨텐츠 태그 처리
+     * 태그-컨텐츠 처리
      * 새로운 태그를 추가하고, 더 이상 필요하지 않은 태그를 삭제합니다. 태그 목록이 동일한 경우에는 처리하지 않고 리턴합니다.
      *
      * @param event 태그 처리 이벤트
@@ -108,9 +108,9 @@ public class TagProcWorker {
         // 태그 객체가 넘어오지 않았으면? 리턴.
         if (tagCmpstn == null) return;
 
-        // 기존 태그와 컨텐츠 태그가 동일하면 리턴
+        // 기존 태그와 태그-컨텐츠가 동일하면 리턴
         final BaseClsfKey clsfKey = event.getClsfKey();
-        final List<TagDto> existingTagList = contentTagService.getTagStrListByClsfKey(clsfKey);
+        final List<TagDto> existingTagList = tagContentService.getTagStrListByClsfKey(clsfKey);
         final List<TagDto> newTagList = tagCmpstn.getParsedTagList();
         final boolean isSame = newTagList.size() == existingTagList.size() && new HashSet<>(newTagList).containsAll(existingTagList);
         if (isSame) return;
@@ -119,7 +119,7 @@ public class TagProcWorker {
         // 새로운 태그 목록에서 기존 태그 목록을 빼면 추가해야 할 태그들이 나옴
         final Set<TagDto> newTagSet = new HashSet<>(newTagList);
         existingTagList.forEach(newTagSet::remove);
-        final List<TagEntity> rsList = CollectionUtils.isNotEmpty(newTagSet)
+        final List<TagEntity> createdTagList = CollectionUtils.isNotEmpty(newTagSet)
                 ? tagService.addMasterTag(new ArrayList<>(newTagSet))
                 : new ArrayList<>();
 
@@ -131,19 +131,19 @@ public class TagProcWorker {
         final Set<TagDto> obsoleteTagSet = new HashSet<>(existingTagList);
         newTagList.forEach(obsoleteTagSet::remove);
         if (CollectionUtils.isNotEmpty(obsoleteTagSet)) {
-            contentTagService.delObsoleteContentTags(clsfKey, new ArrayList<>(obsoleteTagSet));
+            tagContentService.delObsoleteTagContents(clsfKey, new ArrayList<>(obsoleteTagSet));
 
             for (TagDto tag : obsoleteTagSet) {
                 tagCntChangeMap.put(tag.getTagNo(), -1);
             }
         }
 
-        // 3. 추가해야 할 컨텐츠-태그를 처리해준다.
-        if (CollectionUtils.isNotEmpty(rsList)) {
+        // 3. 추가해야 할 태그-컨텐츠를 처리해준다.
+        if (CollectionUtils.isNotEmpty(createdTagList)) {
             // 태그 등록
-            final List<ContentTagEntity> registeredList = contentTagService.addContentTags(clsfKey, rsList);
+            final List<TagContentEntity> registeredList = tagContentService.addTagContents(clsfKey, createdTagList);
 
-            for (ContentTagEntity tag : registeredList) {
+            for (TagContentEntity tag : registeredList) {
                 tagCntChangeMap.put(tag.getRefTagNo(), 1);
             }
         }

@@ -1,0 +1,33 @@
+<#--
+ * Handlebars 태그(tagify) 영역 partial
+ -->
+
+<#--begin::Row-->
+<div class="row">
+    <div>
+        <label for="metaListStr" class="mb-2">
+            <span class="text-gray-700 fs-6 fw-bolder">메타</span>
+        </label>
+    </div>
+    <div class="col-xl-12 text-sm-start" id="meta_div">
+        <input name="meta.metaListStr" id="metaListStr" class="form-control form-control-solid no-space" autocomplete="off" value="{{meta.metaListStr}}"/>
+        <div class="d-flex pt-2 gap-2">
+            <div id="meta_ctgr_select_div" style="display: none; position: relative;">
+                <select id="meta_ctgr_select" class="form-select orm-select-solid py-2">
+                    <option value="custom">직접입력</option>
+                </select>
+            </div>
+            <div id="meta_ctgr_div" style="display:none;">
+                <input type="text" id="meta_ctgr" class="form-control form-control-sm form-control-solid text-noti w-100px"
+                       placeholder="메타 카테고리를 입력합니다." maxlength="500">
+            </div>
+            <div id="meta_display_div" style="display:none;">
+                <input type="text" id="meta_display" class="form-control form-control-sm form-control-solid text-dialog fw-bold fs-7 w-100px" disabled>
+            </div>
+            <div id="meta_value_div" style="display:none;">
+                <input type="text" id="meta_value" class="form-control form-control-sm form-control-solid w-200px"
+                       placeholder="메타 값을 입력합니다." maxlength="500">
+            </div>
+        </div>
+    </div>
+</div>

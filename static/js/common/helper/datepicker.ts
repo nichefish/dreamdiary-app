@@ -41,7 +41,7 @@ cF.datepicker = (function(): Module {
          * @param {Record<string, any>} options - daterangepicker`에 적용할 옵션.
          * @param {function} callback - 날짜 선택 시 실행할 콜백 함수 (선택적).
          */
-        datepicker: function(selectorStr, options: Record<string, any>, callback: Function): void {
+        datepicker: function(selectorStr: string, options: Record<string, any>, callback: Function): void {
             if (cF.util.isEmpty(selectorStr)) return;
 
             const $elmt: JQuery<HTMLInputElement> = $(selectorStr);
@@ -51,7 +51,8 @@ cF.datepicker = (function(): Module {
             $elmt.val(options.startDate);
 
             // datepicker 초기화
-            $elmt.daterangepicker(options, function(start): void {
+            // @ts-ignore
+            $elmt.daterangepicker(options, function(start: monent): void {
                 // 날짜 포맷 설정
                 $elmt.val(start.format(options.locale.format));
                 // 에러 메세지 제거

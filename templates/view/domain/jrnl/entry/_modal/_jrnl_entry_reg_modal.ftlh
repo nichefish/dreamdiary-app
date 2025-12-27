@@ -5,7 +5,7 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<#assign modal_title = springMacroRequestContext.getMessage("jrnl.entry.save") />
+<#assign modal_title = springMacroRequestContext.getMessage("txt.jrnl.entry.save") />
 <@modal.layout id="jrnl_entry_reg" size="xl">
     <#--begin::Modal Header-->
     <@component.modal_header modal_title />

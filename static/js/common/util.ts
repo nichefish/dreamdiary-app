@@ -226,6 +226,28 @@ cF.util = (function(): Module {
             const form: HTMLFormElement = document.querySelector(formSelector) as HTMLFormElement;
             const formData: FormData = new FormData(form);
             return Object.fromEntries(formData);
+        },
+
+        /**
+         * 태블릿/모바일용 우회 copy
+         * @param {string} text - 복사할 내용
+         * @deprecated
+         */
+        execCommandCopy: async function (text: string): Promise<void> {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+            } catch (e) {
+                console.warn('execCommandCopy error', e);
+            } finally {
+                document.body.removeChild(textarea);
+            }
         }
+
     }
 })();

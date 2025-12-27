@@ -47,7 +47,7 @@
                 <#--begin::row-->
                 <div class="mb-4 d-flex-between gap-4">
                     <div class="col">
-                        <span class="text-gray-900 fs-h6 fw-bold d-inline-block ms-6 mb-1"><@spring.message 'yy'/></span>
+                        <span class="text-gray-900 fs-h6 fw-bold d-inline-block ms-6 mb-1"><@spring.message 'txt.yy'/></span>
                         <div class="d-flex">
                             <div class="d-flex align-items-center me-2">
                                 <i id="left" class="bi bi-caret-left fs-2 cursor-pointer"
@@ -111,14 +111,14 @@
                 <#--begin::row-->
                 <div class="mb-5">
                     <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">
-                        <@spring.message 'jrnl.diary.keyword.search'/>
+                        <@spring.message 'txt.jrnl.diary.keyword.search'/>
                     </span>
                     <div class="d-flex gap-1">
                         <input type="text" name="diaryKeyword" id="diaryKeyword" class="form-control"
-                               value="" placeholder="<@spring.message 'jrnl.diary.keyword.search'/>" maxlength="200"/>
+                               value="" placeholder="<@spring.message 'txt.jrnl.diary.keyword.search'/>" maxlength="200"/>
                         <button type="button" id="jrnl_diary_search_btn" class="btn btn-sm btn-outline btn-light-primary px-4"
                                 onclick="dF.JrnlDiary.keywordListAjax();"
-                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.diary.keyword.search'/>">
+                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.txt.jrnl.diary.keyword.search'/>">
                             <i class="bi bi-search pe-0"></i>
                         </button>
                     </div>
@@ -126,14 +126,14 @@
                 <#--begin::row-->
                 <div class="mb-5">
                     <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">
-                        <@spring.message 'jrnl.dream.keyword.search'/>
+                        <@spring.message 'txt.jrnl.dream.keyword.search'/>
                     </span>
                     <div class="d-flex gap-1">
                         <input type="text" name="dreamKeyword" id="dreamKeyword" class="form-control"
-                               value="" placeholder="<@spring.message 'jrnl.dream.keyword.search'/>" maxlength="200"/>
+                               value="" placeholder="<@spring.message 'txt.jrnl.dream.keyword.search'/>" maxlength="200"/>
                         <button type="button" id="jrnl_dream_search_btn" class="btn btn-sm btn-outline btn-light-primary px-4"
                                 onclick="dF.JrnlDream.keywordListAjax();"
-                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.dream.keyword.search'/>">
+                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.txt.jrnl.dream.keyword.search'/>">
                             <i class="bi bi-search pe-0"></i>
                         </button>
                     </div>

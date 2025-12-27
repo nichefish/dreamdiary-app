@@ -64,6 +64,9 @@ public class BaseSearchParam
     @Size(max = 50)
     protected String managtrNm;
 
+    /** 로그인 유저 ID */
+    protected String lgnUserId;
+
     /* ----- */
 
     /**

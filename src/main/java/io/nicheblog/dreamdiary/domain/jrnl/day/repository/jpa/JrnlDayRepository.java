@@ -34,8 +34,7 @@ public interface JrnlDayRepository
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     @Query("SELECT COUNT(day.jrnlDt) " +
             "FROM JrnlDayEntity day " +
-            "WHERE day.jrnlDt = :jrnlDt " +
-            " AND day.regstrId = :regstrId")
+            "WHERE day.jrnlDt = :jrnlDt AND day.regstrId = :regstrId")
     Integer countByJrnlDt(final @Param("jrnlDt") Date jrnlDt, final @Param("regstrId") String regstrId);
 
     /**
@@ -47,8 +46,7 @@ public interface JrnlDayRepository
      */
     @Query("SELECT day " +
             "FROM JrnlDayEntity day " +
-            "WHERE day.jrnlDt = :jrnlDt " +
-            " AND day.regstrId = :regstrId")
+            "WHERE day.jrnlDt = :jrnlDt AND day.regstrId = :regstrId")
     @EntityGraph(value = "JrnlDayEntity.withTags", type = EntityGraph.EntityGraphType.LOAD)
     JrnlDayEntity findByJrnlDt(final @Param("jrnlDt") Date jrnlDt, final @Param("regstrId") String regstrId);
 }

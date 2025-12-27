@@ -87,7 +87,7 @@ public class JrnlDayTagRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayTagListAjax(
-            @ModelAttribute("searchParam") TagSearchParam searchParam,
+            final @ModelAttribute("searchParam") TagSearchParam searchParam,
             final LogActvtyParam logParam
     ) throws Exception {
 

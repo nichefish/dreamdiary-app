@@ -176,7 +176,7 @@ CREATE TABLE IF NOT EXISTS tag_property (
     FOREIGN KEY (tag_no) REFERENCES tag(tag_no),
     INDEX (content_type),
     INDEX (tag_no, content_type)
-) COMMENT = '컨텐츠 태그';
+) COMMENT = '태그 속성';
 
 -- ---------- --
 

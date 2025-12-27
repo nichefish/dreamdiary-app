@@ -152,14 +152,14 @@
                                      onclick="dF.DtlCd.unuseAjax('${dtlCd.dtlCd!}');"
                                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="클릭하여 사용 상태를&#10;변경합니다.">
                                     <i class="bi bi-check text-light blink-slow"></i>
-                                    <@spring.message 'use'/>
+                                    <@spring.message 'txt.status.use'/>
                                 </div>
                             <#else>
                                 <div class="badge badge-secondary btn-white cursor-pointer"
                                      onclick="dF.DtlCd.useAjax('${dtlCd.dtlCd!}');"
                                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="클릭하여 사용 상태를&#10;변경합니다.">
                                     <i class="bi bi-x blink-slow"></i>
-                                    <@spring.message 'unuse'/>
+                                    <@spring.message 'txt.status.unuse'/>
                                 </div>
                             </#if>
                         </td>

@@ -44,6 +44,8 @@ public class JrnlSumryCacheEvictor
             EhCacheUtils.evictMyCache("myJrnlSumryDtl", postNo);
             final JrnlSumryDto jrnlSumry = (JrnlSumryDto) EhCacheUtils.getObjectFromCache("myJrnlSumryDtl", postNo);
             if (jrnlSumry != null) EhCacheUtils.evictMyCache("myJrnlSumryDtlByYy", jrnlSumry.getYy());
+            // 태그 캐시 처리
+            EhCacheUtils.evictCache("tagContentEntityListByRef", postNo + "_JRNL_SUMRY");
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);
             throw e;

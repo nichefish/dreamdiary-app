@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.extension.clsf.tag.spec;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.extension.clsf.tag.entity.ContentTagEntity;
+import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagEntity;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 import lombok.extern.log4j.Log4j2;
@@ -61,15 +61,15 @@ public class TagSpec
 
         final List<Predicate> predicate = new ArrayList<>();
 
-        final Join<TagEntity, ContentTagEntity> contentTagJoin = root.join("contentTagList", JoinType.INNER);
-        predicate.add(builder.equal(contentTagJoin.get("regstrId"), AuthUtils.getLgnUserIdOrDefault()));     // 등록자 ID 기준으로 조회
+        final Join<TagEntity, TagContentEntity> tagContentJoin = root.join("tagContentList", JoinType.INNER);
+        predicate.add(builder.equal(tagContentJoin.get("regstrId"), AuthUtils.getLgnUserIdOrDefault()));     // 등록자 ID 기준으로 조회
 
         // 파라미터 비교
         for (final String key : searchParamMap.keySet()) {
             final Object value = searchParamMap.get(key);
             switch (key) {
                 case "contentType":
-                    predicate.add(builder.equal(contentTagJoin.get("refContentType"), value));
+                    predicate.add(builder.equal(tagContentJoin.get("refContentType"), value));
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색
                     try {
@@ -83,7 +83,7 @@ public class TagSpec
     }
     
     /**
-     * preset된 특정 검색 조건 목록을 반환한다. (컨텐츠-태그와 연관관계 없는 태그 조회)
+     * preset된 특정 검색 조건 목록을 반환한다. (태그-컨텐츠와 연관관계 없는 태그 조회)
      *
      * @return {@link Specification} -- 검색 조건에 따른 Specification 객체
      */
@@ -91,9 +91,9 @@ public class TagSpec
         return (root, query, builder) -> {
             List<Predicate> predicate = new ArrayList<>();
 
-            final Join<TagEntity, ContentTagEntity> contentTagJoin = root.join("contentTagList", JoinType.LEFT);
-            predicate.add(builder.equal(contentTagJoin.get("regstrId"), AuthUtils.getLgnUserIdOrDefault()));     // 등록자 ID 기준으로 조회
-            predicate.add(builder.isNull(contentTagJoin));
+            final Join<TagEntity, TagContentEntity> tagContentJoin = root.join("tagContentList", JoinType.LEFT);
+            predicate.add(builder.equal(tagContentJoin.get("regstrId"), AuthUtils.getLgnUserIdOrDefault()));     // 등록자 ID 기준으로 조회
+            predicate.add(builder.isNull(tagContentJoin));
 
             return builder.and(predicate.toArray(new Predicate[0]));
         };

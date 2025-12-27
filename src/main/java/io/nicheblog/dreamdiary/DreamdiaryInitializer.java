@@ -67,18 +67,18 @@ public class DreamdiaryInitializer
 
         // 파일 관련 기본 폴더 생성
         final File fileDirectory = new File("file/");
-        if (!fileDirectory.exists() && !fileDirectory.mkdirs()) throw new IOException(MessageUtils.getMessage("common.status.mkdir-failed"));
+        if (!fileDirectory.exists() && !fileDirectory.mkdirs()) throw new IOException(MessageUtils.getMessage("msg.rslt.mkdir-failed"));
         final File upfileDirectory = new File("file/upfile/");
-        if (!upfileDirectory.exists() && !upfileDirectory.mkdirs()) throw new IOException(MessageUtils.getMessage("common.status.mkdir-failed"));
+        if (!upfileDirectory.exists() && !upfileDirectory.mkdirs()) throw new IOException(MessageUtils.getMessage("msg.rslt.mkdir-failed"));
         final File reportDirectory = new File("file/report/");
-        if (!reportDirectory.exists() && !reportDirectory.mkdirs()) throw new IOException(MessageUtils.getMessage("common.status.mkdir-failed"));
+        if (!reportDirectory.exists() && !reportDirectory.mkdirs()) throw new IOException(MessageUtils.getMessage("msg.rslt.mkdir-failed"));
 
         // 캐시 웜업:: 초기 로딩 속도를 희생하여 미리 캐싱 처리함으로써 실행속도 상승
         publisher.publishAsyncEvent(new CacheWarmupEvent(this));
 
         // 시스템 재기동 로그 적재:: 운영 환경 이외에는 적재하지 않음
         if (activeProfile.isProd()) {
-            final LogSysParam logParam = new LogSysParam(true, MessageUtils.getMessage("common.status.system-restarted"), ActvtyCtgr.SYSTEM);
+            final LogSysParam logParam = new LogSysParam(true, MessageUtils.getMessage("msg.rslt.system-restarted"), ActvtyCtgr.SYSTEM);
             publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
         }
     }

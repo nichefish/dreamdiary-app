@@ -7,7 +7,7 @@
 <div class="row">
     <div>
         <label class="mb-2">
-            <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'atch-file'/></span>
+            <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'txt.atch-file'/></span>
             <span class="text-gray-500 fs-9 mx-2">※ 첨부파일은 개별 50MB, 최대 100MB까지 업로드 가능합니다.</span>
         </label>
         <input type="file" id="formFile" class="form-control"

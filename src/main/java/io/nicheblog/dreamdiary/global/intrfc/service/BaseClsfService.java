@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.global.intrfc.service;
 import io.nicheblog.dreamdiary.extension.clsf.managt.entity.embed.ManagtEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.managt.entity.embed.ManagtEmbedModule;
 import io.nicheblog.dreamdiary.extension.clsf.managt.model.cmpstn.ManagtCmpstnModule;
+import io.nicheblog.dreamdiary.extension.clsf.meta.model.cmpstn.MetaCmpstnModule;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
@@ -53,9 +54,12 @@ public interface BaseClsfService<PostDto extends BaseClsfDto & Identifiable<Key>
 
         final Dto updatedDto = getReadMapstruct().toDto(updatedEntity);
 
+        // 후처리를 위해 화면에서 넘어온 tagify 문자열 전달~
         if (registDto instanceof TagCmpstnModule && updatedDto instanceof TagCmpstnModule) {
-            // 후처리를 위해 화면에서 넘어온 tagify 문자열 전달
             ((TagCmpstnModule) updatedDto).setTagFrom((TagCmpstnModule) registDto);
+        }
+        if (registDto instanceof MetaCmpstnModule && updatedDto instanceof MetaCmpstnModule) {
+            ((MetaCmpstnModule) updatedDto).setMetaFrom((MetaCmpstnModule) registDto);
         }
 
         // optional: 등록 후처리 (dto)
@@ -105,9 +109,12 @@ public interface BaseClsfService<PostDto extends BaseClsfDto & Identifiable<Key>
 
         final Dto updatedDto = getReadMapstruct().toDto(updatedEntity);
 
+        // 후처리를 위해 화면에서 넘어온 tagify 문자열 전달
         if (postDto instanceof TagCmpstnModule && updatedDto instanceof TagCmpstnModule) {
-            // 후처리를 위해 화면에서 넘어온 tagify 문자열 전달
             ((TagCmpstnModule) updatedDto).setTagFrom((TagCmpstnModule) postDto);
+        }
+        if (postDto instanceof MetaCmpstnModule && updatedDto instanceof MetaCmpstnModule) {
+            ((MetaCmpstnModule) updatedDto).setMetaFrom((MetaCmpstnModule) postDto);
         }
 
         // optional: 수정 후처리 (dto)

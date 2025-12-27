@@ -5,7 +5,7 @@
 <hr class="my-6 text-muted" />
 <div class="d-flex align-items-center mb-6 ms-4">
     <div class="col-1 ms-4 me-6 text-center fs-6">
-        <b><@spring.message 'dream.tag'/> : </b>
+        <b><@spring.message 'txt.dream.tag'/> : </b>
     </div>
     <div class="col" id="jrnl_dream_tag_list_div">
         <#list dreamTagList![] as tag>
@@ -44,8 +44,8 @@
                         </div>
                     </div>
                     <div class="col py-3 jrnl-sumry-cn bg-secondary">
-                        <#if (dream.nhtmrYn! == 'Y')><div class="ctgr-span ctgr-imprtc w-auto">!<@spring.message 'dream.nhtmr'/></div></#if>
-                        <#if (dream.hallucYn! == 'Y')><div class="ctgr-span ctgr-gray w-auto">!<@spring.message 'dream.halluc'/></div></#if>
+                        <#if (dream.nhtmrYn! == 'Y')><div class="ctgr-span ctgr-imprtc w-auto">!<@spring.message 'txt.dream.nhtmr'/></div></#if>
+                        <#if (dream.hallucYn! == 'Y')><div class="ctgr-span ctgr-gray w-auto">!<@spring.message 'txt.dream.halluc'/></div></#if>
                         <#if (dream.title?? && dream.title! != "")><div class="d-inline-block fw-bold">${dream.title!}</div></#if>
                         <div class="cn">
                             ${(dream.markdownCn!"-")?no_esc}
@@ -67,7 +67,7 @@
                     <div class="col-1 py-3 d-flex-between w-50px gap-1">
                         <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
                                 onclick="dF.Comment.modal.regModal(${dream.postNo!}, 'JRNL_DREAM');"
-                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'comment'/> <@spring.message 'bs.tooltip.modal.reg'/>">
+                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.comment'/> <@spring.message 'bs.tooltip.modal.reg'/>">
                             <i class="bi bi-chat-left-dots p-0"></i>
                         </button>
                     </div>
@@ -75,12 +75,12 @@
                     <div class="col-1 py-3 d-flex-between w-50px gap-1">
                         <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
                                 onclick="dF.JrnlDream.mdfModal(${dream.postNo!}, '${dream.stdrdDt!}');"
-                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'jrnl.dream'/> <@spring.message 'bs.tooltip.modal.mdf'/>">
+                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.jrnl.dream'/> <@spring.message 'bs.tooltip.modal.mdf'/>">
                             <i class="bi bi-pencil-square p-0"></i>
                         </button>
                         <button type="button" class="btn btn-sm btn-light-danger btn-outlined ms-2 py-1 px-2 cursor-pointer"
                                 onclick="dF.JrnlDream.delAjax(${dream.postNo!});"
-                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'jrnl.dream'/> <@spring.message 'bs.tooltip.del'/>">
+                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.jrnl.dream'/> <@spring.message 'bs.tooltip.del'/>">
                             <i class="bi bi-trash p-0"></i>
                         </button>
                     </div>

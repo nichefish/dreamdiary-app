@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.global.intrfc.spec;
 
 import io.nicheblog.dreamdiary.domain.board.notice.entity.NoticeEntity;
-import io.nicheblog.dreamdiary.extension.clsf.tag.entity.ContentTagEntity;
+import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.jpa.domain.Specification;
@@ -79,9 +79,9 @@ public interface BaseClsfSpec<Entity extends BaseClsfEntity>
                         List<Integer> refTagNoList = (List<Integer>) searchParamMap.get(key);
                         if (CollectionUtils.isEmpty(refTagNoList)) continue;
                         // 태그 검색
-                        Join<NoticeEntity, ContentTagEntity> contentTagJoin = root.join("tag").join("list", JoinType.INNER);
-                        Expression<String> contentTagExp = contentTagJoin.get("refTagNo");
-                        predicate.add(contentTagExp.in(refTagNoList)); // IN 절 사용
+                        Join<NoticeEntity, TagContentEntity> tagContentJoin = root.join("tag").join("list", JoinType.INNER);
+                        Expression<String> tagContentExp = tagContentJoin.get("refTagNo");
+                        predicate.add(tagContentExp.in(refTagNoList)); // IN 절 사용
                     } catch (final Exception e) {
                         e.printStackTrace();
                     }

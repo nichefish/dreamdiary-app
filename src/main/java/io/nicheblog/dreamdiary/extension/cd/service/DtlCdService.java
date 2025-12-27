@@ -9,7 +9,6 @@ import io.nicheblog.dreamdiary.extension.cd.mapstruct.DtlCdMapstruct;
 import io.nicheblog.dreamdiary.extension.cd.model.DtlCdDto;
 import io.nicheblog.dreamdiary.extension.cd.repository.jpa.DtlCdRepository;
 import io.nicheblog.dreamdiary.extension.cd.spec.DtlCdSpec;
-import io.nicheblog.dreamdiary.extension.clsf.comment.model.CommentDto;
 import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.state.service.BaseStateService;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
@@ -122,19 +121,6 @@ public class DtlCdService
         final DtlCdEntity rsDtlCd = repository.findByClCdAndDtlCd(clCd, dtlCd);
         if (rsDtlCd == null) return null;
         return rsDtlCd.getDtlCdNm();
-    }
-
-    /**
-     * 단일 항목 조회 (dto level)
-     *
-     * @param key 조회할 엔티티의 키
-     * @return {@link CommentDto} -- 조회 항목 반환
-     */
-    @Transactional(readOnly = true)
-    public DtlCdDto getDtlDto(final DtlCdKey key) throws Exception {
-        final DtlCdEntity retrievedEntity = this.getDtlEntity(key);
-
-        return mapstruct.toDto(retrievedEntity);
     }
 
     /**

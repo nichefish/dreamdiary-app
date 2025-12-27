@@ -73,12 +73,12 @@
                             <#if (boardDef.state.useYn!"Y") == "Y">
                                 <div class="badge badge-success cursor-pointer" onclick="dF.BoardDef.unuseAjax('${boardDef.boardDef!}');"
                                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="클릭하여 사용 상태를&#10;변경합니다.">
-                                    <i class="bi bi-check text-light blink-slow "></i><@spring.message 'use'/>
+                                    <i class="bi bi-check text-light blink-slow "></i><@spring.message 'txt.status.use'/>
                                 </div>
                             <#else>
                                 <div class="badge badge-secondary cursor-pointer" onclick="dF.BoardDef.useAjax('${boardDef.boardDef!}');"
                                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="클릭하여 사용 상태를&#10;변경합니다.">
-                                    <i class="bi bi-x blink-slow "></i><@spring.message 'unuse'/>
+                                    <i class="bi bi-x blink-slow "></i><@spring.message 'txt.status.unuse'/>
                                 </div>
                             </#if>
                         </td>

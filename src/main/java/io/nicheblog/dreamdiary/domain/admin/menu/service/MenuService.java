@@ -83,8 +83,7 @@ public class MenuService
 
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
         searchParamMap.put("menuTyCd", Constant.MENU_TY_MAIN);
-        final List<MenuEntity> entityList = this.getSelf().getListEntity(searchParamMap, sort);
-        return mapstruct.toDtoList(entityList);
+        return this.getSelf().getListDto(searchParamMap, sort);
     }
 
     /* ----- */
@@ -103,6 +102,7 @@ public class MenuService
                 .useYn("Y")
                 .build());
         final Sort sort = Sort.by(Sort.Direction.ASC, "state.sortOrdr");
+
         return this.getListDto(searchParamMap, sort);
     }
 
@@ -120,6 +120,7 @@ public class MenuService
                 .useYn("Y")
                 .build());
         final Sort sort = Sort.by(Sort.Direction.ASC, "state.sortOrdr");
+
         return this.getListDto(searchParamMap, sort);
     }
 
@@ -135,6 +136,7 @@ public class MenuService
         searchParamMap.put("menuLabel", label.name());
         final List<MenuDto> rsMenuList = this.getSelf().getListDto(searchParamMap);
         if (CollectionUtils.isEmpty(rsMenuList)) throw new MenuNotExistsException(MessageUtils.getExceptionMsg("MenuNotExistsException"));
+
         return rsMenuList.get(0);
     }
 

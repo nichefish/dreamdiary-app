@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.extension.cd.service;
 
-import io.nicheblog.dreamdiary.domain.board.def.model.BoardDefDto;
 import io.nicheblog.dreamdiary.extension.cache.util.RedisUtils;
 import io.nicheblog.dreamdiary.extension.cd.entity.ClCdEntity;
 import io.nicheblog.dreamdiary.extension.cd.mapstruct.ClCdMapstruct;
@@ -13,7 +12,6 @@ import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * ClCdService
@@ -42,19 +40,6 @@ public class ClCdService
     }
     public ClCdMapstruct getWriteMapstruct() {
         return this.mapstruct;
-    }
-
-    /**
-     * 단일 항목 조회 (dto level)
-     *
-     * @param key 조회할 엔티티의 키
-     * @return {@link BoardDefDto} -- 조회 항목 반환
-     */
-    @Transactional(readOnly = true)
-    public ClCdDto getDtlDto(final String key) throws Exception {
-        final ClCdEntity retrievedEntity = this.getDtlEntity(key);
-
-        return mapstruct.toDto(retrievedEntity);
     }
 
     /**

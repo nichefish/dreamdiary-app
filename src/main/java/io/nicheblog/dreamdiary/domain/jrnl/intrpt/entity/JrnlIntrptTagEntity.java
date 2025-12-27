@@ -55,5 +55,5 @@ public class JrnlIntrptTagEntity
     @Fetch(FetchMode.SUBSELECT)
     @BatchSize(size = 10)
     @NotFound(action = NotFoundAction.IGNORE)
-    private List<JrnlIntrptContentTagEntity> jrnlIntrptTagList;
+    private List<JrnlIntrptTagContentEntity> jrnlIntrptTagList;
 }

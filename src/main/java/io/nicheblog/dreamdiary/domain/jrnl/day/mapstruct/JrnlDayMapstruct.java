@@ -3,7 +3,6 @@ package io.nicheblog.dreamdiary.domain.jrnl.day.mapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.mapstruct.JrnlDiaryMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.mapstruct.JrnlDreamMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.mapstruct.JrnlEntryMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseClsfMapstruct;
@@ -28,7 +27,6 @@ public interface JrnlDayMapstruct
 
     JrnlDayMapstruct INSTANCE = Mappers.getMapper(JrnlDayMapstruct.class);
     JrnlEntryMapstruct jrnlEntryMapstruct = JrnlEntryMapstruct.INSTANCE;
-    JrnlDiaryMapstruct jrnlDiaryMapstruct = JrnlDiaryMapstruct.INSTANCE;
     JrnlDreamMapstruct jrnlDreamMapstruct = JrnlDreamMapstruct.INSTANCE;
 
     /**

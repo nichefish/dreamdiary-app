@@ -7,24 +7,23 @@
     {{#each this}}
         <div class="jrnl-item">
             <div class="col-1 d-none d-md-flex-align-center flex-column py-3 border-2 border-gray-300 border-end ps-6 me-4 w-130px h-75 gap-2">
-                {{> jrnl_day_mdf_btn_partial this postNo=this.jrnlDayNo}}
+                {{> jrnl_day_context_btn_partial this postNo=this.jrnlDayNo}}
             </div>
             <div class="col py-3 jrnl-entry-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
                 <div class="d-flex-align-center title-wrap">
-                    {{#ifYn imprtcYn}}<div class="ctgr-span ctgr-imprtc w-60px d-flex-center">!<@spring.message 'imprtc'/></div>{{/ifYn}}
+                    {{#ifYn imprtcYn}}<div class="ctgr-span ctgr-imprtc w-60px d-flex-center">!<@spring.message 'txt.status.imprtc'/></div>{{/ifYn}}
                     {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}
                 </div>
             </div>
             <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
             <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
                 {{> comment_reg_btn_partial this contentType="JRNL_ENTRY"}}
-                <div class="col-1 border-2 border-gray-300 border-end w-10px">&nbsp;</div>
-                {{> jrnl_entry_mdf_btn_partial this}}
+                {{> jrnl_entry_context_btn_partial this}}
             </div>
         </div>
     {{else}}
         <div class="jrnl-day d-flex-center">
-            <@spring.message 'jrnl.entry'/> <@spring.message 'view.list.empty'/>
+            <@spring.message 'txt.jrnl.entry'/> <@spring.message 'view.list.empty'/>
         </div>
     {{/each}}
 </script>

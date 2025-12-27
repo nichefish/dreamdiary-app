@@ -60,7 +60,7 @@ public class JrnlSumryRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final List<JrnlSumryDto> jrnlSumryList = jrnlSumryService.getListDto(searchParam);
+        final List<JrnlSumryDto> jrnlSumryList = jrnlSumryService.getMyListDto(searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

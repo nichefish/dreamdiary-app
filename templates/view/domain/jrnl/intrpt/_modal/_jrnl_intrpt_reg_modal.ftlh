@@ -5,7 +5,7 @@
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<#assign modal_title = springMacroRequestContext.getMessage("jrnl.intrpt.save") />
+<#assign modal_title = springMacroRequestContext.getMessage("txt.jrnl.intrpt.save") />
 <@modal.layout id="jrnl_intrpt_reg" size="xl">
     <#--begin::Modal Header-->
     <@component.modal_header modal_title />
@@ -20,7 +20,7 @@
             <div class="row mb-4">
                 <div class="col-12">
                     <label class="d-flex align-items-center mb-2" for="tinymce_jrnlIntrptCn">
-                        <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'cn'/></span>
+                        <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'txt.cn'/></span>
                     </label>
                 </div>
                 <div class="col-12">

@@ -9,9 +9,14 @@
             <div class="d-flex-center mt-6 mb-4 fs-5 text-dark">{{yy}}년 {{mnth}}월</div>
         {{/if}}
 
-        <div class="jrnl-item">
-            <div class="col-1 d-none d-md-flex-align-center py-3 border-2 border-gray-300 border-end me-4 w-130px h-75 gap-2">
-                {{> jrnl_day_mdf_btn_partial this postNo=this.jrnlDayNo}}
+        <div class="jrnl-dream-item" data-id="{{postNo}}">
+            <div class="col-1 d-none flex-wrap d-md-flex-align-center py-3 border-2 border-gray-300 border-end me-4 w-130px h-75 gap-2">
+                <div class="d-flex flex-wrap align-items-center fs-5 fw-bold">
+                    {{> jrnl_day_stdrd_dt_partial this}}
+                </div>
+                <div class="d-flex justify-content-end w-85">
+                    {{> jrnl_day_context_btn_partial this postNo=this.jrnlDayNo}}
+                </div>
             </div>
             <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
                 {{> jrnl_dream_cn_partial this collapse="collapse-4"}}
@@ -19,8 +24,8 @@
             <div class="col-1 d-none d-md-flexborder-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
             <div class="col-1 py-3 d-none d-md-flex-between w-125px gap-1">
                 {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
-                <div class="col-1 border-2 border-gray-300 border-end w-10px">&nbsp;</div>
-                {{> jrnl_dream_mdf_btn_partial this}}
+                {{> jrnl_dream_copy_btn_partial this}}
+                {{> jrnl_dream_context_btn_partial this}}
             </div>
         </div>
 

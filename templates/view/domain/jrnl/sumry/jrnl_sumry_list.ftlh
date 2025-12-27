@@ -45,77 +45,7 @@
         </div>
     </div>
 </div>
-<#list jrnlSumryList![] as jrnlSumry>
-    <!--begin::Card-->
-    <div class="card post">
-        <#--begin::Card body-->
-        <div class="card-body py-5">
-            <div class="row jrnl-sumry align-items-center">
-                <div class="col-2 d-flex align-items-center">
-                    <i class="bi bi-calendar3 fs-6 me-2"></i>
-                    <a class="cursor-pointer text-underline-dotted text-dark"
-                       href="${Url.JRNL_SUMRY_DTL!}?postNo=${jrnlSumry.postNo!}"
-                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="상세 화면으로 이동합니다.">
-                        <#if jrnlSumry.title??>
-                            <span class="fs-5 me-1">${jrnlSumry.title!}</span>
-                        <#else>
-                            <span class="fs-5 fw-bolder me-0">${jrnlSumry.yy!}</span>
-                            년 결산
-                        </#if>
-                        <i class="bi bi-pencil-square fs-4 ms-1"></i>
-                    </a>
-                    <#--TODO: 새 창으로 열기 -->
-                    <#--
-                    <a class="badge badge-secondary ms-3 p-2 btn-white bg-hover-white blank blink-slow float-end"
-                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="새 창으로 보기">
-                        <i class="bi bi-stickies fs-5 text-noti opacity-hover"></i>
-                    </a>
-                    -->
-                </div>
-                <div class="col fs-5">
-                    <div class="d-flex justify-content-start">
-                        <div class="text-gray-700 d-flex-center me-5">
-                            <span class="fw-bold me-2">
-                                꿈
-                            </span>
-                            <#if jrnlSumry.dreamComptYn! == "Y">
-                                <span class="cursor-help"
-                                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="꿈 기록을 완료했습니다.">
-                                    <i class="bi bi-moon-stars-fill fs-4 me-2 text-success"></i>
-                                    <i class="bi bi-check text-success" style="margin-left:-0.8rem"></i>
-                                </span>
-                            <#else>
-                                <span>
-                                    <i class="bi bi-moon-stars fs-4 me-2"></i>
-                                </span>
-                            </#if>
-                            (<span class="text-info fw-bold mx-1">${jrnlSumry.dreamDayCnt!}</span>일
-                            /
-                            <span class="text-info fw-bold mx-1">${jrnlSumry.dreamCnt!}</span>개)
-                        </div>
-                        <div class="text-gray-700 d-flex-center">
-                            <span class="fw-bold me-2">
-                                일기
-                            </span>
-                            <i class="bi bi-book fs-4 mt-1 me-2"></i>
-                            (<span class="text-info fw-bold mx-1">${jrnlSumry.diaryDayCnt!}</span>일)
-                        </div>
-                    </div>
-                    <div class="mt-2">
-                        <div class="fs-6 fw-normal text-gray-800 ps-2 pt-3 text-noti">
-                            ${jrnlSumry.markdownCn?no_esc}
-                        </div>
-                    </div>
-                    <div class="mt-2">
-                        <#--목록:: 태그 표시-->
-                        <@component.list_tag jrnlSumry />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--end::Card-->
-</#list>
+<div id="jrnl_sumry_list_div"></div>
 
 <form name="procForm" id="procForm" method="get">
     <input type="hidden" name="postNo" id="postNo" value="" />
@@ -130,6 +60,11 @@
 <script type="text/javascript" src="/lib/prism/js/prism.js"></script>
 <#include "/view/global/_tinymce_img.ftlh">
 
+<#--include::jrnl_sumry_module-->
+<#include "/view/domain/jrnl/sumry/jrnl_sumry_list_template.hbs">
+<#include "/view/domain/jrnl/sumry/_modal/_jrnl_sumry_reg_modal.ftlh">
+<#include "/view/domain/jrnl/sumry/_partial/_jrnl_sumry_context_btn_partial.hbs">
+
 <#--include::jrnl_dream_module-->
 <#include "/view/domain/jrnl/dream/_modal/_jrnl_dream_reg_modal.ftlh">
 <script type="text/javascript" src="/js/view/domain/jrnl/dream/jrnl_dream_module.js?${releaseDate!}"></script>
@@ -140,6 +75,7 @@
 
 <#--include::tag-->
 <#include "/view/domain/jrnl/tag/_jrnl_tag_list_modal.ftlh">
+<#include "/view/extension/clsf/tag/_partial/_tag_list_partial.hbs">
 
 <#--include::comment-->
 <#include "/view/extension/clsf/comment/_modal/_comment_reg_modal.ftlh">

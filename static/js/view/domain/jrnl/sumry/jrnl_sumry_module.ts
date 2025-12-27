@@ -15,6 +15,8 @@ dF.JrnlSumry = (function(): dfModule {
         init: function(): void {
             if (dF.JrnlSumry.initialized) return;
 
+            dF.JrnlSumry.listAjax();
+
             dF.JrnlSumry.initialized = true;
             console.log("'dF.JrnlSumry' module initialized.");
         },
@@ -34,6 +36,23 @@ dF.JrnlSumry = (function(): dfModule {
             // tinymce editor reset
             cF.tinymce.init('#tinymce_jrnlSumryCn');
             cF.tinymce.setContentWhenReady("tinymce_jrnlSumryCn", obj.cn || "");
+        },
+
+        /**
+         * 상세 화면으로 이동 (key로 조회)
+         */
+        listAjax: function(): void {
+            const url: string = Url.JRNL_SUMRIES;
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    return;
+                }
+                const { rsltList } = res;
+                cF.ui.closeModal();
+                cF.handlebars.template(rsltList, "jrnl_sumry_list");
+                KTMenu.createInstances();
+            }, "block");
         },
 
         /**
@@ -128,7 +147,7 @@ dF.JrnlSumry = (function(): dfModule {
          * 등록(수정) 모달 호출
          * @param {string|number} postNo - 글 번호.
          */
-        regModal: function(postNo: string|number): void {
+        mdfModal: function(postNo: string|number): void {
             if (isNaN(Number(postNo))) return;
 
             const url: string = Url.JRNL_SUMRY_DTL_AJAX;
