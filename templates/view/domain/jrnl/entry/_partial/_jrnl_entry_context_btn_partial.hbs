@@ -43,7 +43,7 @@
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.resolved'/>">
                                 <!--begin::Input-->
                                 <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" value="1" {{#ifYn resolvedYn}}checked="checked"{{/ifYn}}
-                                       onclick="dF.JrnlDiary.resolveAjax({{postNo}});">
+                                       onclick="dF.JrnlEntry.resolveAjax({{postNo}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
                                 <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.resolved'/></span>
@@ -80,8 +80,8 @@
                             <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.status.collapsed'/>">
                                 <!--begin::Input-->
-                                <input class="form-check-input w-30px h-20px cursor-pointer diary-context-collapse-check" type="checkbox" value="1" {{#ifYn collapsedYn}}checked="checked"{{/ifYn}}
-                                       onclick="dF.JrnlDiary.collapseAjax({{postNo}});">
+                                <input class="form-check-input w-30px h-20px cursor-pointer entry-context-collapse-check" type="checkbox" value="1" {{#ifYn collapsedYn}}checked="checked"{{/ifYn}}
+                                       onclick="dF.JrnlEntry.collapseAjax({{postNo}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
                                 <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.collapsed'/></span>

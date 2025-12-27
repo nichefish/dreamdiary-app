@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.domain.jrnl.entry.controller;
 
 import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntryDto;
+import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntryPatchDto;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntrySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.service.JrnlEntryService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
@@ -102,6 +103,34 @@ public class JrnlEntryRestController
         final ServiceResponse result = isMdf ? jrnlEntryService.modify(jrnlEntry, request) : jrnlEntryService.regist(jrnlEntry, request);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+
+        // 로그 관련 세팅
+        logParam.setResult(isSuccess, rsltMsg);
+
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
+    }
+
+    /**
+     * 저널 항목 상태 변경 (Ajax)
+     * (사용자USER, 관리자MNGR만 접근 가능.)
+     *
+     * @param postNo 식별자
+     * @param logParam 로그 기록을 위한 파라미터 객체
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     * @see TagProcEventListener
+     */
+    @PatchMapping(value = {Url.JRNL_ENTRY})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> jrnlEntryPatchAjax(
+            final @PathVariable("postNo") Integer postNo,
+            final @RequestBody JrnlEntryPatchDto patchDto,
+            final LogActvtyParam logParam
+    ) throws Exception {
+
+        final ServiceResponse result = jrnlEntryService.patch(postNo, patchDto);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg);

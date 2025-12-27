@@ -70,6 +70,9 @@
     <cache alias="myCountDaySizeMap" uses-template="defaultTemplate" />
     <cache alias="myJrnlDayTagDtl" uses-template="defaultTemplate" />
 
+    <!-- 저널 항목 -->
+    <cache alias="myEntryStateMap" uses-template="defaultTemplate" />
+
     <!-- 저널 일기 -->
     <cache alias="myJrnlDiaryList" uses-template="defaultTemplate" />
     <cache alias="myJrnlDiaryDtlDto" uses-template="defaultTemplate" />

@@ -1,13 +1,18 @@
 package io.nicheblog.dreamdiary.domain.jrnl.entry.service;
 
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryPatchDto;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.mapstruct.JrnlEntryMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntryDto;
+import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntryPatchDto;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntrySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.repository.jpa.JrnlEntryRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.repository.mybatis.JrnlEntryMapper;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.spec.JrnlEntrySpec;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.model.JrnlIntrptDto;
+import io.nicheblog.dreamdiary.domain.jrnl.state.JrnlState;
 import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
@@ -15,6 +20,7 @@ import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -25,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -224,5 +231,45 @@ public class JrnlEntryService
         normalize(updatedDto.getJrnlDayNo());
         // 2단계: 해당 group에 새 위치로 target 삽입
         insert(updatedDto.getJrnlDayNo(), updatedDto.getPostNo(), updatedDto.getIdx());
+    }
+
+    /**
+     * 상태를 설정한다.
+     *
+     * @param postNo 대상 게시물 PK
+     * @param patchDto 상태 Dto
+     * @return collapsedYn 반영 성공 여부를 담은 ServiceResponse
+     */
+    @Transactional
+    @SuppressWarnings("unchecked")
+    public ServiceResponse patch(final Integer postNo, final JrnlEntryPatchDto patchDto) throws Exception {
+        if (patchDto.isAllNull()) {
+            return ServiceResponse.builder()
+                    .rslt(false)
+                    .message("변경할 항목이 없습니다.")
+                    .build();
+        }
+
+        final JrnlEntryEntity entity = getDtlEntity(postNo);
+        if (patchDto.getCollapsed() != null) entity.setCollapsedYn(patchDto.getCollapsed() ? "Y" : "N");
+
+        final JrnlEntryEntity updatedEntity = repository.save(entity);
+
+        final Integer yy = updatedEntity.getJrnlDay().getYy();
+        final Integer mnth = updatedEntity.getJrnlDay().getMnth();
+        final String cacheKey = AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth;
+
+        final Map<Integer, JrnlState> diaryMap = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myEntryStateMap", cacheKey);
+        if (diaryMap != null) {
+            final JrnlState state = diaryMap.get(postNo);
+            if (state != null) {
+                if (patchDto.getCollapsed() != null) state.setCollapsedYn(patchDto.getCollapsed() ? "Y" : "N");
+                EhCacheUtils.put("myEntryStateMap", cacheKey, diaryMap);
+            }
+        }
+
+        return ServiceResponse.builder()
+                .rslt(true)
+                .build();
     }
 }

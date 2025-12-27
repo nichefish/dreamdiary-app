@@ -112,6 +112,7 @@ CREATE TABLE IF NOT EXISTS jrnl_entry (
     content_type VARCHAR(32) DEFAULT 'JRNL_ENTRY' COMMENT '컨텐츠 타입',
     --
     idx INT DEFAULT 1 COMMENT '저널 항목 인덱스',
+    collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)',
     -- POST
     title VARCHAR(200) COMMENT '제목',
     cn LONGTEXT COMMENT '내용',

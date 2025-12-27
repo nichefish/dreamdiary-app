@@ -46,3 +46,8 @@ CREATE TABLE IF NOT EXISTS meta_content (
     INDEX (ref_post_no, ref_content_type),
     INDEX (ref_post_no, ref_content_type, regstr_id)
 ) COMMENT = '메타-컨텐츠';
+
+-- 저널 항목 (jrnl_entry)
+-- @extends: BaseClsfEntity
+-- @uses: CommentEmbed
+ALTER TABLE jrnl_entry ADD collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)';

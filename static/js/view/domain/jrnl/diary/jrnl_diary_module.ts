@@ -305,7 +305,7 @@ dF.JrnlDiary = (function(): dfModule {
             const nextBoolean = current !== "Y"
 
             const payload: Record<string, any> = { collapsed: nextBoolean };
-            dF.JrnlDiary.patchAjax(postNo, payload, function() {
+            dF.JrnlDiary.patchAjax(postNo, payload, function(): void {
                 item.dataset.collapsed = next;
 
                 const content: HTMLElement = item.querySelector(".cn");
@@ -328,11 +328,11 @@ dF.JrnlDiary = (function(): dfModule {
             if (!item) return;
 
             const current: string = (item.dataset.imprtc || "N").toUpperCase();
-            const next = current === "Y" ? "N" : "Y";
-            const nextBoolean = next === "Y"
+            const next: "Y"|"N" = current === "Y" ? "N" : "Y";
+            const nextBoolean: boolean = next === "Y"
 
             const payload: Record<string, any> = { imprtc: nextBoolean };
-            dF.JrnlDiary.patchAjax(postNo, payload, function() {
+            dF.JrnlDiary.patchAjax(postNo, payload, function(): void {
                 item.dataset.imprtc = next;
 
                 const cn = item.querySelector("div.jrnl-diary-cn");

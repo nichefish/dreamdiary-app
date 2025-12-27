@@ -97,6 +97,12 @@ public class JrnlEntryEntity
     @Column(name = "idx", columnDefinition = "INT DEFAULT 1")
     private Integer idx;
 
+    /** 글접기 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "collapsed_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Comment("글접기 여부")
+    private String collapsedYn = "N";
+
     /** 저널 일기 목록 */
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "jrnl_entry_no", referencedColumnName = "post_no", insertable = false, updatable = false)

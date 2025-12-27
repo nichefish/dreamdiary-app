@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.domain.jrnl.diary.model;
+package io.nicheblog.dreamdiary.domain.jrnl.entry.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,7 +7,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 /**
- * JrnlDiaryPatchDto
+ * JrnlEntryPatchDto
  * <pre>
  *  저널 일기 상태 변경 Dto.
  * </pre>
@@ -19,12 +19,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @ToString(callSuper = true)
-public class JrnlDiaryPatchDto {
+public class JrnlEntryPatchDto {
 
-    /** 중요 여부 */
-    private Boolean imprtc;
-    /** 정리완료 여부 */
-    private Boolean resolved;
     /** 글접기 여부 */
     private Boolean collapsed;
 
@@ -33,6 +29,6 @@ public class JrnlDiaryPatchDto {
      * @return 전부 공백 여부
      */
     public boolean isAllNull() {
-        return imprtc == null && collapsed == null && resolved == null;
+        return collapsed == null;
     }
 }

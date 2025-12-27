@@ -45,6 +45,10 @@ public class JrnlEntryDto
     @Builder.Default
     private String contentType = CONTENT_TYPE.key;
 
+    /** 글접기 여부 (Y/N) */
+    @Builder.Default
+    private String collapsedYn = "N";
+
     /**
      * 인덱스 변경 여부
      */

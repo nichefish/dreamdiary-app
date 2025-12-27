@@ -94,6 +94,7 @@ public class JrnlDayService
 
         // 2) 캐시에 저장
         final String cacheKey = AuthUtils.getLgnUserId() + "_" + searchParam.getYy() + "_" + searchParam.getMnth();
+        EhCacheUtils.put("myEntryStateMap", cacheKey, maps.getEntryMap());
         EhCacheUtils.put("myDiaryStateMap", cacheKey, maps.getDiaryMap());
         EhCacheUtils.put("myDreamStateMap", cacheKey, maps.getDreamMap());
         EhCacheUtils.put("myIntrptStateMap", cacheKey, maps.getIntrptMap());
@@ -169,6 +170,7 @@ public class JrnlDayService
      *  intrptMap: 해석(postNo → JrnlState)
      */
     private JrnlStateMaps makeJrnlStateMaps(final List<JrnlDayEntity> myJrnlDayEntityList, final JrnlDaySearchParam searchParam) {
+        final Map<Integer, JrnlState> entryMap = new HashMap<>();
         final Map<Integer, JrnlState> diaryMap = new HashMap<>();
         final Map<Integer, JrnlState> dreamMap = new HashMap<>();
         final Map<Integer, JrnlState> intrptMap = new HashMap<>();
@@ -177,6 +179,8 @@ public class JrnlDayService
             final List<JrnlEntryEntity> myJrnlEntryList = day.getJrnlEntryList();
             if (CollectionUtils.isNotEmpty(myJrnlEntryList)) {
                 for (final JrnlEntryEntity entry : myJrnlEntryList) {
+                    entryMap.put(entry.getPostNo(), JrnlState.of(entry.getCollapsedYn(), entry.getCollapsedYn(), entry.getCollapsedYn()));
+
                     final List<JrnlDiaryEntity> myJrnlDiaryList = entry.getJrnlDiaryList();
                     if (CollectionUtils.isNotEmpty(myJrnlDiaryList)) {
                         for (final JrnlDiaryEntity diary : myJrnlDiaryList) {
@@ -200,7 +204,7 @@ public class JrnlDayService
                 }
             }
         }
-        return new JrnlStateMaps(diaryMap, dreamMap, intrptMap);
+        return JrnlStateMaps.builder().entryMap(entryMap).diaryMap(diaryMap).dreamMap(dreamMap).intrptMap(intrptMap).build();
     }
 
     /**
@@ -229,19 +233,22 @@ public class JrnlDayService
                    + "_" + searchParam.getYy()
                    + "_" + searchParam.getMnth();
 
+        Map<Integer, JrnlState> entryMap  = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myEntryStateMap",  cacheKey);
         Map<Integer, JrnlState> diaryMap  = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myDiaryStateMap",  cacheKey);
         Map<Integer, JrnlState> dreamMap  = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myDreamStateMap",  cacheKey);
         Map<Integer, JrnlState> intrptMap = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myIntrptStateMap", cacheKey);
 
+        entryMap = entryMap  == null ? Collections.emptyMap() : entryMap;
         diaryMap = diaryMap  == null ? Collections.emptyMap() : diaryMap;
         dreamMap = dreamMap  == null ? Collections.emptyMap() : dreamMap;
         intrptMap = intrptMap == null ? Collections.emptyMap() : intrptMap;
 
-        applyStates(listDto, diaryMap, dreamMap, intrptMap);
+        applyStates(listDto, entryMap, diaryMap, dreamMap, intrptMap);
     }
 
     private void applyStates(
         final List<JrnlDayDto> listDto,
+        final Map<Integer, JrnlState> entryMap,
         final Map<Integer, JrnlState> diaryMap,
         final Map<Integer, JrnlState> dreamMap,
         final Map<Integer, JrnlState> intrptMap
@@ -250,13 +257,19 @@ public class JrnlDayService
 
             if (CollectionUtils.isNotEmpty(day.getEntryList())) {
                 for (final JrnlEntryDto entry : day.getJrnlEntryList()) {
+
+                    final JrnlState s = entryMap.get(entry.getPostNo());
+                    if (s != null) {
+                        entry.setCollapsedYn(s.getCollapsedYn());
+                    }
+
                     if (CollectionUtils.isEmpty(entry.getJrnlDiaryList())) continue;
                     for (final JrnlDiaryDto diary : entry.getJrnlDiaryList()) {
-                        final JrnlState s = diaryMap.get(diary.getPostNo());
-                        if (s != null) {
-                            diary.setCollapsedYn(s.getCollapsedYn());
-                            diary.setResolvedYn(s.getResolvedYn());
-                            diary.setImprtcYn(s.getImprtcYn());
+                        final JrnlState d = diaryMap.get(diary.getPostNo());
+                        if (d != null) {
+                            diary.setCollapsedYn(d.getCollapsedYn());
+                            diary.setResolvedYn(d.getResolvedYn());
+                            diary.setImprtcYn(d.getImprtcYn());
                         }
                     }
                 }
