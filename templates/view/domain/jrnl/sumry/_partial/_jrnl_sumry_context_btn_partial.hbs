@@ -20,16 +20,16 @@
             <!--end::Heading-->
             <!--begin::Menu item-->
             <div class="menu-item px-3 my-1 cursor-pointer"
-                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.day"/> <@spring.message 'bs.tooltip.modal.mdf'/>">
-                <div class="menu-link flex-stack px-3" onclick="dF.JrnlSumry.openDetatched('{{stdrdDt}}');">
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.sumry"/> <@spring.message 'bs.tooltip.modal.mdf'/>">
+                <div class="menu-link flex-stack px-3" onclick="dF.JrnlSumry.dtlView({{yy}});">
                     새 창 보기
                     <i class="bi bi-window-stack fs-8"></i>
                 </div>
             </div>
             <!--begin::Menu item-->
             <div class="menu-item px-3 my-1 cursor-pointer"
-                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.day"/> <@spring.message 'bs.tooltip.modal.mdf'/>">
-                <div class="menu-link flex-stack px-3" onclick="dF.JrnlSumry.mdfModal({{postNo}});">
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.sumry"/> <@spring.message 'bs.tooltip.modal.mdf'/>">
+                <div class="menu-link flex-stack px-3" onclick="dF.JrnlSumry.mdfModal({{yy}});">
                     <@spring.message 'txt.comm.edit'/>
                     <i class="bi bi-pencil-square fs-8"></i>
                 </div>

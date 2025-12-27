@@ -1,0 +1,32 @@
+<#--
+ * 저널 결산(jrnl_sumry) 목록 조회 Template
+ * @included_in : jrnl_sumry_list.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="jrnl_sumry_diary_tag_list_template">
+    <div class="row d-flex flex-nowrap align-items-center w-100 mb-4 ms-4">
+        <div class="col-1 d-none d-md-flex ms-4 me-6 text-center fs-6">
+            <b><@spring.message 'txt.diary.tag'/> : </b>
+        </div>
+        <div class="col">
+            {{#each this}}
+                {{> tag_list_sized_partial this module="dF.JrnlDiaryTag"}}
+            {{else}}
+                -
+            {{/each}}
+        </div>
+        <div class="col-1 d-none d-md-flex ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+        <div class="col-1 d-none d-md-flex ms-4 me-20 text-center fs-6 w-auto gap-3">
+            <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
+                    onclick="dF.Tag.hideSingleTag('#jrnl_diary_tag_list_div');"
+                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="1개짜리 태그를 숨기고 보입니다.">
+                <i class="bi bi-tag pe-0"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
+                    onclick="JrnlTag.listAllAjax();"
+                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="헤당 년도 전체 태그 모달 팝업을 호출합니다.">
+                <i class="bi bi-tag pe-0"></i>
+            </button>
+        </div>
+    </div>
+</script>

@@ -13,6 +13,8 @@ const Page: Page = (function(): Page {
         init: function(): void {
             /* initialize modules. */
             dF.JrnlSumry.init();
+
+            dF.JrnlSumry.listAjax();
         },
     }
 })();

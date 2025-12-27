@@ -1,9 +1,18 @@
 package io.nicheblog.dreamdiary.domain.jrnl.sumry.controller;
 
+import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayTagService;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryService;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryTagService;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamService;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamTagService;
+import io.nicheblog.dreamdiary.domain.jrnl.sumry.JrnlSumryTagType;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumrySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.service.JrnlSumryService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
+import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
 import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
@@ -21,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,6 +53,11 @@ public class JrnlSumryRestController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
     private final JrnlSumryService jrnlSumryService;
+    private final JrnlDiaryService jrnlDiaryService;
+    private final JrnlDreamService jrnlDreamService;
+    private final JrnlDayTagService jrnlDayTagService;
+    private final JrnlDiaryTagService jrnlDiaryTagService;
+    private final JrnlDreamTagService jrnlDreamTagService;
 
     /**
      * 저널 결산 목록 조회 (Ajax)
@@ -74,20 +89,20 @@ public class JrnlSumryRestController
      * 저널 결산 상세 조회 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param key 식별자
+     * @param yy 년도
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(value = {Url.JRNL_SUMRY_DTL_AJAX})
+    @GetMapping(value = {Url.JRNL_SUMRY})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSumryDtlAjax(
-            final @RequestParam("postNo") Integer key,
+            final @PathVariable("yy") Integer yy,
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final JrnlSumryDto retrievedDto = jrnlSumryService.getSumryDtl(key);
-
+        // 객체 조회 및 모델에 추가
+        final JrnlSumryDto retrievedDto = jrnlSumryService.getDtlDtoByYy(yy);
         final boolean isSuccess = (retrievedDto.getPostNo() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -95,6 +110,93 @@ public class JrnlSumryRestController
         logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
+    }
+
+    /**
+     * 저널 결산 중요 일기 목록 조회 (Ajax)
+     * (사용자USER, 관리자MNGR만 접근 가능.)
+     *
+     * @param yy 년도
+     * @param logParam 로그 기록을 위한 파라미터 객체
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     */
+    @GetMapping(value = {Url.JRNL_SUMRY_IMPRTC_DIARIES})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> jrnlSumryImprtcDiaryListAjax(
+            final @PathVariable("yy") Integer yy,
+            final LogActvtyParam logParam
+    ) throws Exception {
+
+        // 중요 일기 목록 조회
+        final List<JrnlDiaryDto> imprtcDiaryList = jrnlDiaryService.getImprtcDiaryList(yy);
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+
+        // 로그 관련 세팅
+        logParam.setResult(isSuccess, rsltMsg);
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(imprtcDiaryList));
+    }
+
+    /**
+     * 저널 결산 중요 꿈 목록  조회 (Ajax)
+     * (사용자USER, 관리자MNGR만 접근 가능.)
+     *
+     * @param yy 년도
+     * @param logParam 로그 기록을 위한 파라미터 객체
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     */
+    @GetMapping(value = {Url.JRNL_SUMRY_IMPRTC_DREAMS})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> jrnlSumryImprtcDreamListAjax(
+            final @PathVariable("yy") Integer yy,
+            final LogActvtyParam logParam
+    ) throws Exception {
+
+        // 중요 일기 목록 조회
+        final List<JrnlDreamDto> imprtcDreamList = jrnlDreamService.getImprtcDreamList(yy);
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+
+        // 로그 관련 세팅
+        logParam.setResult(isSuccess, rsltMsg);
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(imprtcDreamList));
+    }
+
+    /**
+     * 저널 결산 태그 목록 조회 (Ajax)
+     * (사용자USER, 관리자MNGR만 접근 가능.)
+     *
+     * @param yy 년도
+     * @param logParam 로그 기록을 위한 파라미터 객체
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     */
+    @GetMapping(value = {Url.JRNL_SUMRY_TAGS})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> jrnlSumryTagListAjax(
+            final @PathVariable("yy") Integer yy,
+            final @RequestParam("type") JrnlSumryTagType type,
+            final LogActvtyParam logParam
+    ) throws Exception {
+
+        // 태그 목록 조회
+        List <TagDto> tagList = new ArrayList<>();
+        switch(type) {
+            case DAY -> tagList = jrnlDayTagService.getDaySizedListDto(yy, 99);
+            case DIARY -> tagList = jrnlDiaryTagService.getDiarySizedListDto(yy, 99);
+            case DREAM -> tagList = jrnlDreamTagService.getDreamSizedListDto(yy, 99);
+        }
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+
+        // 로그 관련 세팅
+        logParam.setResult(isSuccess, rsltMsg);
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(tagList));
     }
 
     /**

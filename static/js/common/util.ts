@@ -186,11 +186,24 @@ cF.util = (function(): Module {
          * @param {Record<string, any>} params 부재시 기본으로 세팅할 값
          */
         bindUrl: function(urlTemplate: string, params: Record<string, any>): string {
-            let url = urlTemplate;
+            let url: string = urlTemplate;
             for (const key in params) {
                 url = url.replace(`{${key}}`, encodeURIComponent(params[key]));
             }
             return url;
+        },
+
+        /**
+         * url에서 pathVariable을 가져온다.
+         * @param {RegExp} regex URL 정규식
+         */
+        getPathVariableFromUrl: function(regex: RegExp): string|null  {
+            const path: string = window.location.pathname;
+            // 예: /app/jrnl/sumry/2024.do
+            const match: RegExpMatchArray = path.match(regex);
+
+            if (!match) return null;
+            return match[1];
         },
 
         /**
@@ -199,7 +212,7 @@ cF.util = (function(): Module {
          * @param {string} defaultValue 부재시 기본으로 세팅할 값
          */
         getUrlParam: function(name: string, defaultValue: string = ""): string {
-            const url = new URL(window.location.href);
+            const url: URL = new URL(window.location.href);
             return url.searchParams.get(name) ?? defaultValue;
         },
 

@@ -61,7 +61,7 @@
 <#include "/view/global/_tinymce_img.ftlh">
 
 <#--include::jrnl_sumry_module-->
-<#include "/view/domain/jrnl/sumry/jrnl_sumry_list_template.hbs">
+<#include "/view/domain/jrnl/sumry/_jrnl_sumry_list_template.hbs">
 <#include "/view/domain/jrnl/sumry/_modal/_jrnl_sumry_reg_modal.ftlh">
 <#include "/view/domain/jrnl/sumry/_partial/_jrnl_sumry_context_btn_partial.hbs">
 

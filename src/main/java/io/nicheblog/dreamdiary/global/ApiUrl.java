@@ -74,8 +74,12 @@ public interface ApiUrl {
     String JRNL_SBJCT_DEL_AJAX = "/jrnl/sbjct/del";
 
     /** 저널 결산 */
-    String JRNL_SUMRIES = "/jrnl/sumries";
-    String JRNL_SUMRY_DTL_AJAX = "/jrnl/sumry/dtl";
+    String JRNL_SUMRIES = Prefix.API + "/jrnl/sumries";
+    String JRNL_SUMRY = Prefix.API + "/jrnl/sumry/{yy}";
+    String JRNL_SUMRY_IMPRTC_DIARIES = Prefix.API + "/jrnl/sumry/{yy}/imprtc-diaries";
+    String JRNL_SUMRY_IMPRTC_DREAMS = Prefix.API + "/jrnl/sumry/{yy}/imprtc-dreams";
+    String JRNL_SUMRY_TAGS = Prefix.API + "/jrnl/sumry/{yy}/tags";
+
     String JRNL_SUMRY_MAKE_AJAX = "/jrnl/sumry/make";
     String JRNL_SUMRY_MAKE_TOTAL_AJAX = "/jrnl/sumry/make-total";
     String JRNL_SUMRY_DREAM_COMPT_AJAX = "/jrnl/sumry/dream-compt";

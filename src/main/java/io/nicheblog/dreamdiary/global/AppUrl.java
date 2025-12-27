@@ -38,7 +38,7 @@ public interface AppUrl {
 
     /** 저널 결산 */
     String JRNL_SUMRY_LIST = Prefix.APP + "/jrnl/sumry/list.do";
-    String JRNL_SUMRY_DTL = Prefix.APP + "/jrnl/sumry/dtl.do";
+    String JRNL_SUMRY_VIEW = Prefix.APP + "/jrnl/sumry/{yy}.do";
 
     /** 공지사항 */
     String NOTICE_LIST = Prefix.APP + "/notice/list.do";

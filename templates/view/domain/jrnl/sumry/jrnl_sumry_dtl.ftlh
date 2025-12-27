@@ -9,122 +9,62 @@
 <link rel="stylesheet" type="text/css" href="/css/jrnl.css?${releaseDate!}" />
 
 <!--begin::Card-->
-<div class="card post">
-    <#--begin::Card body-->
-    <div class="card-body">
-        <#--begin::header row-->
-        <div class="row">
-            <div class="col-2 d-flex align-items-center fs-5">
-                <i class="bi bi-calendar3 fs-6 me-2"></i>
-                <#if post.title??>
-                    <span class="fs-5 me-1">${post.title!}</span>
-                <#else>
-                    <span class="fs-5 fw-bold me-1">${post.yy!}</span>
-                    년 결산
-                </#if>
-            </div>
-            <div class="col-2 d-flex align-items-center fs-5">
-                <div class="text-gray-700 d-flex-center me-5">
-                    <span class="fw-bold me-2">
-                        <@spring.message 'txt.dream'/>
-                    </span>
-                    <#if post.dreamComptYn! == "Y">
-                        <span class="cursor-help"
-                              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="꿈 기록을 완료했습니다.">
-                            <i class="bi bi-moon-stars-fill fs-4 me-2 text-success"></i>
-                            <i class="bi bi-check text-success" style="margin-left:-0.8rem"></i>
-                        </span>
-                    <#else>
-                        <span>
-                            <i class="bi bi-moon-stars fs-4 me-2"></i>
-                        </span>
-                    </#if>
-                    (<span class="text-underline-dotted ms-1">${post.dreamDayCnt!}</span>일 / <span class="text-underline-dotted ms-1">${post.dreamCnt!}</span>개)
-                </div>
-                <div class="text-gray-700 d-flex-center">
-                    <span class="fw-bold me-2">
-                        <@spring.message 'txt.diary'/>
-                    </span>
-                    <i class="bi bi-book fs-4 me-2"></i>
-                    (<span class="text-underline-dotted ms-1">${post.diaryDayCnt!}</span>일)
-                </div>
-            </div>
-            <div class="col d-flex justify-content-end flex-stack align-items-center fs-5 gap-2">
-                <button type="button" class="btn btn-sm btn-light-primary btn-outlined px-3 cursor-pointer"
-                        onclick="dF.JrnlSumry.comptAjax(${post.postNo!});"
-                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.jrnl.day'/> <@spring.message 'bs.tooltip.modal.mdf'/>">
-                    <i class="bi bi-book fs-4 pe-1"></i>
-                    꿈 기록 완료 처리
-                </button>
-                <div class="d-flex justify-content-end gap-3">
-                    <#--페이지:: 버튼: 목록으로 가기-->
-                    <@component.header_btn_mdf_modal "dF.JrnlSumry.regModal(${post.postNo!})" />
-                    <form name="yyForm" id="yyForm" class="d-flex align-items-center flex-nowrap" method="get">
-                        <#--페이지:: 버튼: 조회년도 변경-->
-                        <div class="col-1 w-auto">
-                            <select id="yy" class="form-select form-select-solid fs-7 text-start"
-                                    onchange="dF.JrnlSumry.dtlByYy(this.value)"
-                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="조회 년도를 변경합니다.">>
-                                <#assign currYy = DateUtils.getCurrYy()?number />
-                                <#assign startYy = 2011 />
-                                <#list currYy..startYy as year>
-                                    <option value="${year}" ${fn.selected(post.yy!, year)}>${year}년 결산</option>
-                                </#list>
-                                <option value="2010">2010년 이전 결산</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="d-flex align-items-center">
-                    <#--페이지:: 버튼: 목록으로 가기-->
-                    <@component.post_btn_toList "dF.JrnlSumry.list();" />
-                </div>
-            </div>
-        </div>
-    </div>
-    <#--begin::Card body-->
-    <div class="card-body">
-        <#--begin::cn-->
-        <div class="fs-4 fw-normal text-gray-800 px-5 py-1 pb-6 min-h-50px text-noti">
-            ${post.markdownCn?no_esc}
-        </div>
-
-        <#--begin::meta-->
-        <div class="mb-0">
-            <#--페이지:: 태그 표시 영역-->
-            <#include "/view/extension/clsf/tag/_tag_page_dtl_area.ftlh">
-        </div>
-    </div>
+<div id="jrnl_sumry_dtl_div" class="card post">
+    <!-- handlebars template goes in here-->
 </div>
 
-<hr class="my-6 text-muted" />
-<div class="d-flex align-items-center mb-6 ms-4">
-    <div class="col-1 ms-4 me-6 text-center fs-6">
-        <b>일자 태그 : </b>
-    </div>
-    <div class="col" id="jrnl_diary_tag_list_div">
-        <#list dayTagList![] as tag>
-            <span class="py-2 me-3 cursor-pointer opacity-hover"
-                  onclick="JrnlTag.dtlModal(${tag.tagNo!}, '${tag.tagNm!}');"
-                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="해당 태그로 게시물 목록을&#10;필터링합니다.">
-                <span class="${tag.tagClass!}">
-                    <#if tag.ctgr?? && tag.ctgr != ""><span class="fs-7 text-noti">[${tag.ctgr!}]</span></#if>
-                    ${tag.tagNm!}
+<#--begin::Card header-->
+<div class="card-header min-h-auto mb-7">
+    <#--begin::Tab-->
+    <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">
+        <li class="nav-item">
+            <a class="nav-link px-6 ${(section == 'DIARY')?then('active','')}" data-bs-toggle="tab" href="#kt_tab_pane_1"
+               onclick="dF.JrnlSumry.dtlViewWithSection('DIARY');">
+                <span class="nav-icon pe-1">
+                    <i class="bi bi-book"></i>
                 </span>
-                <span class="fs-9 text-noti fw-normal" style="margin-left:-0.25em;">${tag.contentSize!}</span>
-            </span>
-        </#list>
-    </div>
-    <div class="col-1 ms-4 me-6 text-center fs-6 w-50px">
-        <!-- -->
-    </div>
+                <span class="nav-text">일기 결산</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link px-6 ${(section == 'DREAM')?then('active','')}" data-bs-toggle="tab" href="#kt_tab_pane_2"
+               onclick="dF.JrnlSumry.dtlViewWithSection('DREAM');">
+                <span class="nav-icon pe-1">
+                    <i class="bi bi-moon-stars"></i>
+                </span>
+                <span class="nav-text">꿈 결산</span>
+            </a>
+        </li>
+    </ul>
 </div>
 
-<!-- 중요 일기 -->
-<#include "/view/domain/jrnl/sumry/_jrnl_sumry_dtl_imprtc_diary.ftlh">
+<!-- 태그 헤더 :: 파일 분리 -->
+<#include "/view/domain/jrnl/sumry/tag/_jrnl_sumry_dtl_tag_header.ftlh">
+<hr class="my-6 text-muted" />
 
-<!-- 중요 꿈 -->
-<#include "/view/domain/jrnl/sumry/_jrnl_sumry_dtl_imprtc_dream.ftlh">
+<div class="jrnl_sumry_day_tag_div">
+    <!-- handlebars template goes in here -->
+</div>
+
+<div class="jrnl_sumry_diary_tag_div">
+    <!-- handlebars template goes in here -->
+</div>
+
+<div class="jrnl_sumry_dream_tag_div">
+    <!-- handlebars template goes in here -->
+</div>
+
+<div class="card-post p-10">
+    <!-- 중요 일기 -->
+    <div id="jrnl_sumry_imprtc_diary_list_div">
+        <!-- handlebars template goes in here -->
+    </div>
+
+    <!-- 중요 꿈 -->
+    <div id="jrnl_sumry_imprtc_dream_list_div">
+        <!-- handlebars template goes in here -->
+    </div>
+</div>
 
 <form name="procForm" id="procForm" method="get">
     <input type="hidden" name="postNo" id="postNo" value="" />
@@ -153,6 +93,16 @@
 <#--include::tag-->
 <#include "/view/domain/jrnl/tag/_jrnl_tag_list_modal.ftlh">
 
+<#include "/view/domain/jrnl/day/_partial/_jrnl_day_stdrd_dt_partial.hbs">
+<#include "/view/domain/jrnl/day/_partial/_jrnl_day_context_btn_partial.hbs">
+
+<#include "/view/domain/jrnl/day/_partial/_jrnl_day_meta_btn_partial.hbs">
+<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_reg_btn_partial.hbs">
+<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_context_btn_partial.hbs">
+<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_copy_btn_partial.hbs">
+<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_toggle_btn_partial.hbs">
+<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_cn_partial.hbs">
+
 <#--include::jrnl_sumry_modules-->
 <#include "/view/domain/jrnl/sumry/_modal/_jrnl_sumry_reg_modal.ftlh">
 <script type="text/javascript" src="/js/view/domain/jrnl/sumry/jrnl_sumry_module.js?${releaseDate!}"></script>
@@ -162,12 +112,24 @@
 <#include "/view/extension/clsf/sectn/_sectn_list_template.hbs">
 <script type="text/javascript" src="/js/view/extension/clsf/sectn/sectn_module.js?${releaseDate!}"></script>
 
+<#--include::tags-->
+<#include "/view/domain/jrnl/tag/_jrnl_tag_list_modal.ftlh">
+<#include "/view/extension/clsf/tag/_partial/_tag_list_partial.hbs">
+<#include "/view/extension/clsf/tag/_partial/_tag_list_sized_partial.hbs">
+
 <#--include::comment-->
 <#include "/view/extension/clsf/comment/_modal/_comment_reg_modal.ftlh">
 <#include "/view/extension/clsf/comment/_partial/_comment_list_partial.hbs">
+<#include "/view/extension/clsf/comment/_partial/_comment_reg_btn_partial.hbs">
 <script type="text/javascript" src="/js/view/extension/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
 
 <!--include::page scripts-->
+<#include "/view/domain/jrnl/sumry/_jrnl_sumry_dtl_template.hbs">
+<#include "/view/domain/jrnl/sumry/tag/_jrnl_sumry_day_tag_list_template.hbs">
+<#include "/view/domain/jrnl/sumry/tag/_jrnl_sumry_diary_tag_list_template.hbs">
+<#include "/view/domain/jrnl/sumry/tag/_jrnl_sumry_dream_tag_list_template.hbs">
+<#include "/view/domain/jrnl/sumry/_jrnl_sumry_imprtc_diary_list_template.hbs">
+<#include "/view/domain/jrnl/sumry/_jrnl_sumry_imprtc_dream_list_template.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/sumry/jrnl_sumry_dtl.js?${releaseDate!}"></script>
 
 </@layout.layout>
