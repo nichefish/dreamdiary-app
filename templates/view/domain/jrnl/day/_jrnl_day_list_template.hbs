@@ -90,7 +90,7 @@
                             {{> jrnl_dream_toggle_btn_partial this}}
                         </div>
                     </div>
-                    <div class="jrnl-dream-item" data-id="{{postNo}}">
+                    <div class="jrnl-dream-item" data-id="{{postNo}}" data-collapsed="{{collapsedYn}}" data-resolved="{{resolvedYn}}" data-imprtc="{{imprtcYn}}">
                         <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                             <div class="d-flex flex-column align-items-center">
                                 <span class="jrnl-dream-idx {{#ifYn resolvedYn}}text-success{{/ifYn}}">
@@ -102,7 +102,7 @@
                                 {{> jrnl_dream_toggle_btn_partial this}}
                             </div>
                         </div>
-                        <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-resolved="{{resolvedYn}}">
+                        <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
                             {{> jrnl_dream_cn_partial this}}
                         </div>
                         <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
@@ -140,14 +140,14 @@
                     </div>
                 {{/each}}
                 {{#each jrnlElseDreamList}}
-                    <div class="jrnl-dream-item" data-id="{{postNo}}">
+                    <div class="jrnl-dream-item" data-id="{{postNo}}" data-collapsed="{{collapsedYn}}" data-resolved="{{resolvedYn}}" data-imprtc="{{imprtcYn}}">
                         <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                             <div class="d-flex flex-column align-items-center">
                                 <span>-</span>
                                 {{> jrnl_dream_toggle_btn_partial this}}
                             </div>
                         </div>
-                        <div class="col py-3 jrnl-dream-cn bg-secondary" data-resolved="{{resolvedYn}}">
+                        <div class="col py-3 jrnl-dream-cn bg-secondary">
                             {{> jrnl_dream_cn_partial this elseDreamYn="Y"}}
                         </div>
                         <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">

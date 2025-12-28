@@ -272,8 +272,8 @@ dF.JrnlDiary = (function(): dfModule {
             if (!item) return;
 
             const current: string = (item.dataset.resolved || "N").toUpperCase();
-            const next = current === "Y" ? "N" : "Y";
-            const nextBoolean = current !== "Y"
+            const next: "Y"|"N" = current === "Y" ? "N" : "Y";
+            const nextBoolean: boolean = next === "Y"
 
             const payload: Record<string, any> = { resolved: nextBoolean, collapsed: nextBoolean };
             dF.JrnlDiary.patchAjax(postNo, payload, function() {
@@ -300,8 +300,8 @@ dF.JrnlDiary = (function(): dfModule {
             if (!item) return;
 
             const current: string = (item.dataset.collapsed || "N").toUpperCase();
-            const next = current === "Y" ? "N" : "Y";
-            const nextBoolean = current !== "Y"
+            const next: "Y"|"N" = current === "Y" ? "N" : "Y";
+            const nextBoolean: boolean = next === "Y"
 
             const payload: Record<string, any> = { collapsed: nextBoolean };
             dF.JrnlDiary.patchAjax(postNo, payload, function(): void {
@@ -334,11 +334,11 @@ dF.JrnlDiary = (function(): dfModule {
             dF.JrnlDiary.patchAjax(postNo, payload, function(): void {
                 item.dataset.imprtc = next;
 
-                const cn = item.querySelector("div.jrnl-diary-cn");
+                const cn: HTMLDivElement = item.querySelector("div.jrnl-diary-cn");
                 if (!cn) return console.warn("cn not found.");
                 const titleWrap: HTMLElement = cn.querySelector("div.title-wrap");
                 if (!titleWrap) return console.warn("titleWrap not found.");
-                const existing = titleWrap.querySelector(".ctgr-imprtc");
+                const existing: HTMLDivElement = titleWrap.querySelector(".ctgr-imprtc");
                 if (nextBoolean) {
                     if (existing) return;
 

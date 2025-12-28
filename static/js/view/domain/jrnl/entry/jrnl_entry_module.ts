@@ -32,7 +32,7 @@ dF.JrnlEntry = (function(): dfModule {
          */
         initForm: function(obj: Record<string, any> = {}): void {
             /* show modal */
-            cF.handlebars.modal(obj, "jrnl_entry_reg", ["header"]);
+            cF.handlebars.modal(obj, "jrnl_entry_reg");
 
             /* jquery validation */
             cF.validate.validateForm("#jrnlEntryRegForm", dF.JrnlEntry.regAjax);

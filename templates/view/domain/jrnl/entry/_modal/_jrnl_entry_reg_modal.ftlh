@@ -13,10 +13,6 @@
     <div class="modal-body modal-mbl-body my-5">
         <#--begin::Form-->
         <form name="jrnlEntryRegForm" id="jrnlEntryRegForm" class="form" enctype="multipart/form-data">
-            <div id="jrnl_entry_reg_modal_header_div">
-                <#--Handlebars template goes in here-->
-            </div>
-            <#--begin::Row-->
             <div id="jrnl_entry_reg_div">
                 <#--Handlebars template goes in here-->
             </div>
@@ -35,5 +31,4 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "_jrnl_entry_reg_modal_header_template.hbs">
 <#include "_jrnl_entry_reg_modal_template.hbs">

@@ -5,6 +5,49 @@
  -->
 
 <script type="text/x-handlebars-template" id="jrnl_entry_reg_modal_template">
-    <!--begin::tagify partial-->
-    <#include "/view/extension/clsf/tag/_tag_tagify_partial.hbs">
+    <input type="hidden" name="postNo" value="{{postNo}}">
+    <input type="hidden" name="jrnlDayNo" value="{{jrnlDayNo}}">
+
+    <#--begin::Row-->
+    <div class="row d-flex mb-8">
+        <div class="col-2">
+            <label class="d-flex align-items-center mb-2" for="title">
+                <span class="text-gray-700 fs-6 fw-bolder"><@spring.message "txt.jrnl.day"/></span>
+            </label>
+        </div>
+        <div class="col-2 fs-6">
+            <i class="bi bi-calendar3"></i>
+            {{stdrdDt}}
+            {{#if (exists jrnlDtWeekDay)}}
+                <span class="fs-8 text-gray-600">({{jrnlDtWeekDay}})</span>
+            {{/if}}
+        </div>
+    </div>
+    <#--begin::Row-->
+    <div class="row d-flex mb-8">
+        <div class="col-12">
+            <label class="d-flex align-items-center mb-2" for="title">
+                <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'txt.title'/></span>
+                <span class="text-gray-500 fs-9">(최대 50자)</span>
+            </label>
+        </div>
+        <div class="col-lg-2">
+            <select name="ctgrCd" id="ctgrCd" class="form-select form-select-solid">
+                <option value="">--글분류--</option>
+            </select>
+        </div>
+        <div class="col-lg-{{#if (exists postNo)}}9{{else}}10{{/if}}">
+            <input type="text" name="title" id="title" class="form-control"
+                   value="{{title}}" placeholder="제목" maxlength="100" />
+            <div id="title_validate_span"></div>
+        </div>
+        {{#if (exists postNo)}}
+            <div class="col-1 d-flex ps-0">
+                <div class="d-flex-center p-2 fw-bold fs-5 text-gray-600">#</div>
+                <input type="number" class="form-control form-control-sm" name="idx" id="idx" min="1" max="99"
+                       value="{{idx}}" placeholder="인덱스" maxlength="3"
+                       data-bs-toggle="tooltip" data-bs-placement="top" title="일자 내에서의 정렬 인덱스입니다.">
+            </div>
+        {{/if}}
+    </div>
 </script>
