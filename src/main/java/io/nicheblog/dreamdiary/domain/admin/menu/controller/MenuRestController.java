@@ -83,16 +83,18 @@ public class MenuRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(value = {Url.MENU_REG_AJAX, Url.MENU_MDF_AJAX})
+    @PostMapping(value = {Url.MENUS, Url.MENU})
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuRegAjax(
+            @PathVariable(value = "menuNo", required = false) Integer menuNo,
             final @Valid MenuDto menu,
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final boolean isReg = (menu.getMenuNo() == null);
-        final ServiceResponse result = isReg ? menuService.regist(menu) : menuService.modify(menu);
+        final boolean isMdf = menuNo != null;
+        if (isMdf) menu.setMenuNo(menuNo);
+        final ServiceResponse result = isMdf ? menuService.modify(menu) : menuService.regist(menu);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
@@ -110,7 +112,7 @@ public class MenuRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.MENU_DTL_AJAX)
+    @GetMapping(Url.MENU)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuDtlAjax(
@@ -158,19 +160,19 @@ public class MenuRestController
      * 메뉴 관리 삭제 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
-     * @param key 식별자
+     * @param menuNo 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(Url.MENU_DEL_AJAX)
+    @DeleteMapping(Url.MENU)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuDelAjax(
-            final @RequestParam("menuNo") Integer key,
+            final @PathVariable("menuNo") Integer menuNo,
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final ServiceResponse result = menuService.delete(key);
+        final ServiceResponse result = menuService.delete(menuNo);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

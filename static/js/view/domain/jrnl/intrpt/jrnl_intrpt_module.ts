@@ -74,9 +74,8 @@ dF.JrnlIntrpt = (function(): dfModule {
          * 등록 (Ajax)
          */
         regAjax: function(): void {
-            const postNoElmt: HTMLInputElement = document.querySelector("#jrnlIntrptRegForm [name='postNo']") as HTMLInputElement;
-            const postNo: string = postNoElmt?.value;
-            const isMdf: boolean = !!postNo;
+            const postNo: string = cF.util.getInputValue("#jrnlIntrptRegForm [name='postNo']");
+            const isMdf: boolean = cF.util.isNotEmpty(postNo);
             Swal.fire({
                 text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
                 showCancelButton: true,

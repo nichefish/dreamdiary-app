@@ -67,12 +67,9 @@ dF.LgnPwChg = (function(): dfModule {
             const url: string = Url.API_AUTH_LGN_PW_CHG;
 
             // 순수 JavaScript로 DOM 요소 접근
-            const userIdElement: HTMLInputElement = document.getElementById("lgnUserId") as HTMLInputElement;
-            const currPwElement: HTMLInputElement = document.getElementById("currPw") as HTMLInputElement;
-            const newPwElement: HTMLInputElement = document.getElementById("newPw") as HTMLInputElement;
-            const userId: string = userIdElement?.value || '';
-            const currPw: string = currPwElement?.value || '';
-            const newPw: string = newPwElement?.value || '';
+            const userId: string = cF.util.getInputValue("#lgnUserId");
+            const currPw: string = cF.util.getInputValue("#currPw");
+            const newPw: string = cF.util.getInputValue("#newPw");
             const ajaxData: Record<string, any> = { "userId" : userId, "currPw" : currPw, "newPw" : newPw };
             cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({

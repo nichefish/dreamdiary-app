@@ -79,7 +79,7 @@ dF.TmplatDef = (function(): dfModule {
                 if (!result.value) return;
 
                 const isReg: boolean = $("#menuRegForm #menuNo").val() === "";
-                const url: string = isReg ? Url.MENU_REG_AJAX : Url.MENU_MDF_AJAX;
+                const url: string = isReg ? Url.MENUS : Url.MENU_MDF_AJAX;
                 const ajaxData: Record<string, any> = cF.util.getJsonFormData("#tmplatDefRegForm");
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
@@ -96,9 +96,8 @@ dF.TmplatDef = (function(): dfModule {
         mdfModal: function(menuNo: string|number): void {
             if (isNaN(Number(menuNo))) return;
 
-            const url: string = Url.MENU_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "menuNo": menuNo };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+            const url: string = cF.bindUrl(Url.MENU, { menuNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;

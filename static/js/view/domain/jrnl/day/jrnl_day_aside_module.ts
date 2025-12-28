@@ -217,8 +217,7 @@ dF.JrnlDayAside = (function(): dfModule {
          * @param {'ASC'|'DESC'} [toBe] - 정렬 방향 ("ASC" 또는 "DESC").
          */
         sort: function(toBe: string): void {
-            const sortElement: HTMLInputElement = document.querySelector("#jrnl_aside #sort");
-            const asIs: string = sortElement.value;
+            const asIs: string = cF.util.getInputValue("#jrnl_aside #sort");
             if (toBe == null) toBe = (asIs !== "ASC") ? "ASC" : "DESC";
             // 쿠키에 정렬 정보 저장
             localStorage.setItem("jrnl_day_sort", toBe);

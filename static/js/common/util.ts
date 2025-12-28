@@ -40,6 +40,17 @@ cF.util = (function(): Module {
         },
 
         /**
+         * 인풋 값 반환
+         * @param {string} selector
+         * @retuns {string} 인풋 값
+         */
+        getInputValue: function(selector: string): string {
+            const el: HTMLInputElement = document.querySelector(selector);
+            if (!el) return null;
+            return el.value ?? "";
+        },
+
+        /**
          * 선택자에서 유효한 입력 요소를 반환합니다.
          * @param {string|HTMLElement|JQuery} selector - 선택자 문자열 또는 DOM 요소 또는 jQuery 객체.
          * @returns {HTMLElement[]} - 유효한 입력 요소 배열 또는 빈 배열.

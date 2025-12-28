@@ -65,14 +65,15 @@ dF.Comment.modal = (function(): dfModule {
          * 댓글 입력(등록/수정) 처리 (Ajax)
          */
         regAjax: function(): void {
-            const isReg: boolean = $("#commentRegForm #postNo").val() === "";
+            const postNo = cF.util.getInputValue("#commentRegForm #postNo");
+            const isMdf: boolean = cF.util.isNotEmpty(postNo);
             Swal.fire({
                 text: Message.get("view.cnfm.save"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = isReg ? Url.COMMENT_REG_AJAX : Url.COMMENT_MDF_AJAX;
+                const url: string = isMdf ? cF.util.bindUrl(Url.COMMENT, { postNo }) : Url.COMMENTS;
                 const ajaxData: FormData = new FormData(document.getElementById("commentRegForm") as HTMLFormElement);
                 cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
@@ -96,9 +97,8 @@ dF.Comment.modal = (function(): dfModule {
         mdfModal: function(postNo: string | number): void {
             if (isNaN(Number(postNo))) return;
 
-            const url: string = Url.COMMENT_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "postNo" : postNo };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+            const url: string = cF.util.bindUrl(Url.COMMENT, { postNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
@@ -122,8 +122,8 @@ dF.Comment.modal = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = Url.COMMENT_DEL_AJAX;
-                const ajaxData: Record<string, any> = { "postNo": postNo };         // TODO: actvtyCtgrCd 다시 추가하기.
+                const url: string = cF.util.bindUrl(Url.COMMENT, { postNo });
+                const ajaxData: Record<string, any> = { }; // TODO: actvtyCtgrCd 다시 추가하기.
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {

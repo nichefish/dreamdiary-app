@@ -56,7 +56,7 @@ public class JrnlDiaryTagRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.JRNL_DIARY_TAG_CTGR_MAP_AJAX)
+    @GetMapping(Url.JRNL_DIARY_TAG_CTGR_MAP)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDiaryTagCtgrMapAjax(
@@ -81,7 +81,7 @@ public class JrnlDiaryTagRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.JRNL_DIARY_TAG_LIST_AJAX)
+    @GetMapping(Url.JRNL_DIARY_TAGS)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> tagListAjax(

@@ -73,7 +73,7 @@ public class CommentApiControllerTest {
         
         /* 실행act & 검증assert */
         // 이 부분에서는 실제로 컨트롤러의 특정 경로에 대한 요청을 보내고 (Act), 그 결과를 검증합니다 (Assert). */
-        mockMvc.perform(get(Url.COMMENT_LIST_AJAX))
+        mockMvc.perform(get(Url.COMMENTS))
                .andExpect(status().isOk())
                .andExpect(jsonPath("$.rslt").value(true))
                .andExpect(jsonPath("$.rsltList").value(mockPage));
@@ -81,18 +81,18 @@ public class CommentApiControllerTest {
 
     @Test
     public void testCommentListAjax_WithInvalidParameters() throws Exception {
-        mockMvc.perform(get(Url.COMMENT_LIST_AJAX)
+        mockMvc.perform(get(Url.COMMENTS)
                            .param("invalidParam", "invalidValue"))
                 .andExpect(status().isBadRequest());
 
         // 잘못된 페이지 번호 (예: 음수)와 페이지 크기를 파라미터로 전달
-        mockMvc.perform(get(Url.COMMENT_LIST_AJAX)
+        mockMvc.perform(get(Url.COMMENTS)
                         .param("page", "-1")
                         .param("size", "10"))
                 .andExpect(status().isBadRequest()); // 잘못된 요청에 대한 HTTP 상태 400 (Bad Request)을 기대
 
         // 잘못된 페이지 크기 (예: 너무 크거나 작은 값)를 파라미터로 전달
-        mockMvc.perform(get(Url.COMMENT_LIST_AJAX)
+        mockMvc.perform(get(Url.COMMENTS)
                         .param("page", "0")
                         .param("size", "1000")) // 페이지 크기가 너무 큼
                 .andExpect(status().isBadRequest());
@@ -106,7 +106,7 @@ public class CommentApiControllerTest {
         // when(boardCommentService.regist(...)).thenReturn(...);
 
         // Act & Assert
-        mockMvc.perform(post(Url.COMMENT_REG_AJAX) // Replace with actual URL
+        mockMvc.perform(post(Url.COMMENTS) // Replace with actual URL
                             .contentType(ContentType.APPLICATION_JSON.toString())
                             .content(asJsonString(boardCommentDto)))
                 .andExpect(status().isOk())
@@ -121,7 +121,7 @@ public class CommentApiControllerTest {
         // when(boardCommentService.regist(...)).thenReturn(...);
 
         // Act & Assert
-        mockMvc.perform(post(Url.COMMENT_MDF_AJAX) // Replace with actual URL
+        mockMvc.perform(post(Url.COMMENT) // Replace with actual URL
                             .contentType(ContentType.APPLICATION_JSON.toString())
                             .content(asJsonString(boardCommentDto)))
                 .andExpect(status().isOk())
@@ -136,7 +136,7 @@ public class CommentApiControllerTest {
         // when(boardCommentService.delete(...)).thenReturn(true);
 
         // Act & Assert
-        mockMvc.perform(post(Url.COMMENT_DEL_AJAX) // Replace with actual URL
+        mockMvc.perform(post(Url.COMMENT) // Replace with actual URL
                 .param("commentNo", commentNo))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.someField").value("expectedValue")); // Replace with actual JSON path and value
