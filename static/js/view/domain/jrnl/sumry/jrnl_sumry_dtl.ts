@@ -25,7 +25,7 @@ const Page: Page = (function(): Page {
                     break;
                 case "DREAM":
                     dF.JrnlSumry.getImprtcDreamListAjax(yy);
-                    dF.JrnlSumry.getTagListAjax(yy, "DAY");
+                    dF.JrnlSumry.getTagListAjax(yy, "DREAM");
                     break;
             }
         },

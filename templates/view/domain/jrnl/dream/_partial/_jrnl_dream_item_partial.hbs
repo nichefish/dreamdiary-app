@@ -1,0 +1,34 @@
+<#--
+ * 저널 일자(jrnl_day) 목록 조회 Template
+ * @included_in : jrnl_day_page.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="jrnl_dream_item_partial">
+    <div class="jrnl-dream-item" data-id="{{postNo}}" data-collapsed="{{collapsedYn}}" data-resolved="{{resolvedYn}}" data-imprtc="{{imprtcYn}}">
+        <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
+            <div class="d-flex flex-column align-items-center">
+                <span class="jrnl-dream-idx {{#ifYn resolvedYn}}text-success{{/ifYn}}">
+                    # {{idx}}
+                    {{#ifYn resolvedYn}}
+                        <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
+                    {{/ifYn}}
+                </span>
+                {{> jrnl_dream_toggle_btn_partial this}}
+            </div>
+        </div>
+        <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
+            {{> jrnl_dream_cn_partial this}}
+        </div>
+        <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+        <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
+            {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
+            {{> jrnl_dream_copy_btn_partial this}}
+            {{> jrnl_dream_context_btn_partial this}}
+        </div>
+    </div>
+    <div class="jrnl-item">
+        {{#each jrnlIntrptList}}
+            {{> jrnl_intrpt_item_partial this}}
+        {{/each}}
+    </div>
+</script>

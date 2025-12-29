@@ -444,6 +444,15 @@ document.addEventListener("DOMContentLoaded", function(): void {
     const sizedTagPartial: string = document.getElementById("tag_list_sized_partial")?.innerHTML;
     if (sizedTagPartial) Handlebars.registerPartial("tag_list_sized_partial", sizedTagPartial);
 
+    const jrnlEntryItemPartial: string = document.getElementById("jrnl_entry_item_partial")?.innerHTML;
+    if (jrnlEntryItemPartial) Handlebars.registerPartial("jrnl_entry_item_partial", jrnlEntryItemPartial);
+    const jrnlDiaryItemPartial: string = document.getElementById("jrnl_diary_item_partial")?.innerHTML;
+    if (jrnlDiaryItemPartial) Handlebars.registerPartial("jrnl_diary_item_partial", jrnlDiaryItemPartial);
+    const jrnlDreamItemPartial: string = document.getElementById("jrnl_dream_item_partial")?.innerHTML;
+    if (jrnlDreamItemPartial) Handlebars.registerPartial("jrnl_dream_item_partial", jrnlDreamItemPartial);
+    const jrnlIntrptItemPartial: string = document.getElementById("jrnl_intrpt_item_partial")?.innerHTML;
+    if (jrnlIntrptItemPartial) Handlebars.registerPartial("jrnl_intrpt_item_partial", jrnlIntrptItemPartial);
+
     const jrnlDayStdrdDtPartial: string = document.getElementById("jrnl_day_stdrd_dt_partial")?.innerHTML;
     if (jrnlDayStdrdDtPartial) Handlebars.registerPartial("jrnl_day_stdrd_dt_partial", jrnlDayStdrdDtPartial);
     const jrnlDayContextBtnPartial: string = document.getElementById("jrnl_day_context_btn_partial")?.innerHTML;
@@ -482,8 +491,6 @@ document.addEventListener("DOMContentLoaded", function(): void {
 
     const jrnlIntrptCnPartial: string = document.getElementById("jrnl_intrpt_cn_partial")?.innerHTML;
     if (jrnlIntrptCnPartial) Handlebars.registerPartial("jrnl_intrpt_cn_partial", jrnlIntrptCnPartial);
-    const jrnlIntrptRegBtnPartial: string = document.getElementById("jrnl_intrpt_reg_btn_partial")?.innerHTML;
-    if (jrnlIntrptRegBtnPartial) Handlebars.registerPartial("jrnl_intrpt_reg_btn_partial", jrnlIntrptRegBtnPartial);
     const jrnlIntrptCopyBtnPartial: string = document.getElementById("jrnl_intrpt_copy_btn_partial")?.innerHTML;
     if (jrnlIntrptCopyBtnPartial) Handlebars.registerPartial("jrnl_intrpt_copy_btn_partial", jrnlIntrptCopyBtnPartial);
     const jrnlIntrptContextBtnPartial: string = document.getElementById("jrnl_intrpt_context_btn_partial")?.innerHTML;

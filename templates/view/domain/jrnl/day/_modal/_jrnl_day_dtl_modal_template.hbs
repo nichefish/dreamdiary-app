@@ -58,42 +58,42 @@
                     <i class="bi bi-moon-stars fs-4 pe-1"></i>
                 </span>
             </div>
-            {{#each jrnlDreamList}}
-                <div class="jrnl-item">
-                    <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
-                        <div># {{idx}}</div>
-                    </div>
-                    <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
-                        {{> jrnl_dream_cn_partial this collapse="collapse-4"}}
-                    </div>
-                    <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                    <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
-                        {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
-                        {{> jrnl_dream_copy_btn_partial this}}
-                        {{> jrnl_dream_context_btn_partial this}}
-                    </div>
-                </div>
-            {{/each}}
-            {{#each jrnlElseDreamList}}
-                <div class="jrnl-item">
-                    <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
-                        <div>
-                            -
-                        </div>
-                    </div>
-                    <div class="col py-3 jrnl-dream-cn bg-secondary">
-                        {{> jrnl_diary_cn_partial this collapse="collapse-4" elseDreamYn="Y"}}
-                    </div>
-                    <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
-                        {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
-                    </div>
-                    <div class="col-1 ms-4 pe-0 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                    <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
-                        {{> jrnl_dream_copy_btn_partial this}}
-                        {{> jrnl_dream_context_btn_partial this}}
-                    </div>
-                </div>
-            {{/each}}
         {{/if}}
+        {{#each jrnlDreamList}}
+            <div class="jrnl-item">
+                <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
+                    <div># {{idx}}</div>
+                </div>
+                <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
+                    {{> jrnl_dream_cn_partial this collapse="collapse-4"}}
+                </div>
+                <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
+                    {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
+                    {{> jrnl_dream_copy_btn_partial this}}
+                    {{> jrnl_dream_context_btn_partial this}}
+                </div>
+            </div>
+        {{/each}}
+        {{#each jrnlElseDreamList}}
+            <div class="jrnl-item">
+                <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
+                    <div>
+                        -
+                    </div>
+                </div>
+                <div class="col py-3 jrnl-dream-cn bg-secondary">
+                    {{> jrnl_diary_cn_partial this collapse="collapse-4" elseDreamYn="Y"}}
+                </div>
+                <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
+                    {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
+                </div>
+                <div class="col-1 ms-4 pe-0 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
+                    {{> jrnl_dream_copy_btn_partial this}}
+                    {{> jrnl_dream_context_btn_partial this}}
+                </div>
+            </div>
+            {{/each}}
     </div>
 </script>

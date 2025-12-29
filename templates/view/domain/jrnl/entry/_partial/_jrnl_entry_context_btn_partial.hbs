@@ -35,44 +35,9 @@
                 </a>
                 <!--begin::Menu sub-->
                 <div class="menu-sub menu-sub-dropdown w-175px py-4">
-                    <!--begin::Menu item-->
-                    <div class="menu-item px-3">
-                        <div class="menu-content px-3">
-                            <!--begin::Switch-->
-                            <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
-                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.resolved'/>">
-                                <!--begin::Input-->
-                                <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" value="1" {{#ifYn resolvedYn}}checked="checked"{{/ifYn}}
-                                       onclick="dF.JrnlEntry.resolveAjax({{postNo}});">
-                                <!--end::Input-->
-                                <!--end::Label-->
-                                <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.resolved'/></span>
-                                <!--end::Label-->
-                            </label>
-                            <!--end::Switch-->
-                        </div>
-                    </div>
-                    <!--end::Menu item-->
                     <!--begin::Menu separator-->
                     <div class="separator my-2"></div>
                     <!--end::Menu separator-->
-                    <!--begin::Menu item-->
-                    <div class="menu-item px-3">
-                        <div class="menu-content px-3">
-                            <!--begin::Switch-->
-                            <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
-                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.imprtc'/>">
-                                <!--begin::Input-->
-                                <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" value="1" {{#ifYn imprtcYn}}checked="checked"{{/ifYn}}>
-                                <!--end::Input-->
-                                <!--end::Label-->
-                                <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.imprtc'/></span>
-                                <!--end::Label-->
-                            </label>
-                            <!--end::Switch-->
-                        </div>
-                    </div>
-                    <!--end::Menu item-->
                     <!--begin::Menu item-->
                     <div class="menu-item px-3">
                         <div class="menu-content px-3">

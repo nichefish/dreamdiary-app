@@ -32,157 +32,21 @@
             </div>
             <div class="jrnl-day-cn row p-5">
                 {{#each jrnlEntryList}}
-                    <div class="d-flex align-items-center mt-2">
-                        <div class="col col-md-1 w-5 text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder ">
-                            {{#ifYn entryResolvedYn}}
-                                <span class="text-success"><@spring.message 'txt.entry'/></span>
-                                <span class="position-relative d-inline-block">
-                                  <i class="bi bi-book fs-4 text-success"></i>
-                                  <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
-                                </span>
-                            {{else}}
-                                <@spring.message 'txt.entry'/>
-                                <i class="bi bi-book fs-4 pe-1"></i>
-                            {{/ifYn}}
-                        </div>
-                        <div class="col-3 d-none d-md-flex align-items-center gap-2">
-                            {{> jrnl_diary_reg_btn_partial this}}
-                            {{> jrnl_entry_context_btn_partial this}}
-                            {{> jrnl_entry_toggle_btn_partial this}}
-                        </div>
-                    </div>
-                    <div class="jrnl-entry-item {{#ifYn collapsedYn}}collapsed{{/ifYn}}" data-id="{{postNo}}" data-collapsed="{{collapsedYn}}">
-                        {{#each jrnlDiaryList}}
-                            <div class="jrnl-diary-item" data-id="{{postNo}}" data-collapsed="{{collapsedYn}}" data-resolved="{{resolvedYn}}" data-imprtc="{{imprtcYn}}">
-                                <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
-                                    <div class="d-flex flex-column align-items-center">
-                                        <span class="jrnl-diary-idx {{#ifYn resolvedYn}}text-success{{/ifYn}}">
-                                            # {{idx}}
-                                            {{#ifYn resolvedYn}}
-                                                <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
-                                            {{/ifYn}}
-                                        </span>
-                                        {{> jrnl_diary_toggle_btn_partial this}}
-                                    </div>
-                                </div>
-                                <div class="col jrnl-diary-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
-                                    {{> jrnl_diary_cn_partial this}}
-                                </div>
-                                <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                                <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
-                                    {{> comment_reg_btn_partial this contentType="JRNL_DIARY"}}
-                                    {{> jrnl_diary_copy_btn_partial this}}
-                                    {{> jrnl_diary_context_btn_partial this}}
-                                </div>
-                            </div>
-                        {{/each}}
-                    </div>
+                    {{> jrnl_entry_item_partial this}}
                 {{/each}}
-
-                {{#each jrnlDreamList}}
+                {{#if hasDream}}
                     <div class="d-flex align-items-center mt-2">
                         <div class="col col-md-1 w-5 text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder ">
                             <@spring.message 'txt.dream'/>
                             <i class="bi bi-moon-stars fs-4 pe-1"></i>
                         </div>
-                        <div class="col-3 d-none d-md-flex align-items-center gap-2">
-                            {{> jrnl_intrpt_reg_btn_partial this}}
-                            {{> jrnl_dream_toggle_btn_partial this}}
-                        </div>
                     </div>
-                    <div class="jrnl-dream-item" data-id="{{postNo}}" data-collapsed="{{collapsedYn}}" data-resolved="{{resolvedYn}}" data-imprtc="{{imprtcYn}}">
-                        <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
-                            <div class="d-flex flex-column align-items-center">
-                                <span class="jrnl-dream-idx {{#ifYn resolvedYn}}text-success{{/ifYn}}">
-                                    # {{idx}}
-                                    {{#ifYn resolvedYn}}
-                                        <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
-                                    {{/ifYn}}
-                                </span>
-                                {{> jrnl_dream_toggle_btn_partial this}}
-                            </div>
-                        </div>
-                        <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
-                            {{> jrnl_dream_cn_partial this}}
-                        </div>
-                        <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                        <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
-                            {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
-                            {{> jrnl_dream_copy_btn_partial this}}
-                            {{> jrnl_dream_context_btn_partial this}}
-                        </div>
-                    </div>
-                    <div class="jrnl-item">
-                        {{#each jrnlIntrptList}}
-                            <div class="jrnl-intrpt-item ps-15" data-id="{{postNo}}">
-                                <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
-                                    <div class="d-flex flex-column align-items-center">
-                                        <span {{#ifYn resolvedYn}}class="text-success"{{/ifYn}}>
-                                            # {{idx}}
-                                            {{#ifYn resolvedYn}}
-                                                <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
-                                            {{/ifYn}}
-                                        </span>
-                                        {{> jrnl_intrpt_toggle_btn_partial this}}
-                                    </div>
-                                </div>
-                                <div class="col jrnl-intrpt-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-resolved="{{resolvedYn}}">
-                                    {{> jrnl_intrpt_cn_partial this}}
-                                </div>
-                                <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                                <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
-                                    {{> comment_reg_btn_partial this contentType="JRNL_DIARY"}}
-                                    {{> jrnl_intrpt_copy_btn_partial this}}
-                                    {{> jrnl_intrpt_context_btn_partial this}}
-                                </div>
-                            </div>
-                        {{/each}}
-                    </div>
+                {{/if}}
+                {{#each jrnlDreamList}}
+                    {{> jrnl_dream_item_partial this}}
                 {{/each}}
                 {{#each jrnlElseDreamList}}
-                    <div class="jrnl-dream-item" data-id="{{postNo}}" data-collapsed="{{collapsedYn}}" data-resolved="{{resolvedYn}}" data-imprtc="{{imprtcYn}}">
-                        <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
-                            <div class="d-flex flex-column align-items-center">
-                                <span>-</span>
-                                {{> jrnl_dream_toggle_btn_partial this}}
-                            </div>
-                        </div>
-                        <div class="col py-3 jrnl-dream-cn bg-secondary">
-                            {{> jrnl_dream_cn_partial this elseDreamYn="Y"}}
-                        </div>
-                        <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
-                        </div>
-                        <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                        <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
-                            {{> comment_reg_btn_partial this contentType="JRNL_DREAM"}}
-                            {{> jrnl_dream_copy_btn_partial this}}
-                            {{> jrnl_dream_context_btn_partial this}}
-                        </div>
-                    </div>
-                    {{#each jrnlIntrptList}}
-                        <div class="jrnl-intrpt-item ps-15" data-id="{{postNo}}">
-                            <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
-                                <div class="d-flex flex-column align-items-center">
-                                    <span {{#ifYn resolvedYn}}class="text-success"{{/ifYn}}>
-                                        # {{idx}}
-                                        {{#ifYn resolvedYn}}
-                                            <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
-                                        {{/ifYn}}
-                                    </span>
-                                    {{> jrnl_intrpt_toggle_btn_partial this}}
-                                </div>
-                            </div>
-                            <div class="col jrnl-intrpt-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-resolved="{{resolvedYn}}">
-                                {{> jrnl_intrpt_cn_partial this}}
-                            </div>
-                            <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                            <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
-                                {{> comment_reg_btn_partial this contentType="JRNL_INTRPT"}}
-                                {{> jrnl_intrpt_copy_btn_partial this}}
-                                {{> jrnl_intrpt_context_btn_partial this}}
-                            </div>
-                        </div>
-                    {{/each}}
+                    {{> jrnl_dream_item_partial this}}
                 {{/each}}
             </div>
         </div>

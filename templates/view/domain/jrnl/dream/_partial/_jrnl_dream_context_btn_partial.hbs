@@ -17,7 +17,20 @@
             <div class="menu-item px-3">
                 <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">Dream</div>
             </div>
+
             <!--end::Heading-->
+            <!--begin::Menu item-->
+            <div class="menu-item px-3 my-1 cursor-pointer"
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.intrpt"/> <@spring.message 'bs.tooltip.modal.reg'/>">
+                <div class="menu-link flex-stack px-3"
+                     onclick="dF.JrnlIntrpt.regModal({ jrnlDayNo: {{jrnlDayNo}}, jrnlDreamNo: {{postNo}}, stdrdDt: '{{stdrdDt}}', jrnlDtWeekDay: '{{jrnlDtWeekDay}}' });">
+                    <@spring.message 'txt.jrnl.intrpt.reg'/>
+                    <i class="bi bi-layers-half fs-8"></i>
+                </div>
+            </div>
+            <!--begin::Menu separator-->
+            <div class="separator my-2"></div>
+            <!--end::Menu separator-->
             <!--begin::Menu item-->
             <div class="menu-item px-3 my-1 cursor-pointer"
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.dream"/> <@spring.message 'bs.tooltip.modal.mdf'/>">
