@@ -25,6 +25,7 @@ import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.meta.event.JrnlMetaProcEvent;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.JrnlTagProcEvent;
+import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagContentDto;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -156,6 +157,8 @@ public class JrnlDayService
 
         // resolved/collapse 상태 merge
         this.mergeStates(listDto, searchParam);
+        // 접힌 entry에 태그 요약 표시
+        this.applyEntryTagSummary(listDto);
 
         return listDto;
     }
@@ -246,6 +249,15 @@ public class JrnlDayService
         applyStates(listDto, entryMap, diaryMap, dreamMap, intrptMap);
     }
 
+    /**
+     * 캐시에 저장된 상태 맵(entry/diary/dream/intrpt)을 기준으로 조회된 {@link JrnlDayDto} 트리 구조에 상태를 반영한다.
+     *
+     * @param listDto 조회된 저널 일자 목록 DTO
+     * @param entryMap entry postNo → {@link JrnlState} 맵
+     * @param diaryMap diary postNo → {@link JrnlState} 맵
+     * @param dreamMap dream postNo → {@link JrnlState} 맵
+     * @param intrptMap intrpt postNo → {@link JrnlState} 맵
+     */
     private void applyStates(
         final List<JrnlDayDto> listDto,
         final Map<Integer, JrnlState> entryMap,
@@ -300,6 +312,36 @@ public class JrnlDayService
     }
 
     /**
+     * Entry가 collapsed 상태일 경우, 하위 {@link JrnlDiaryDto} 들에 포함된 태그를 수집하여 중복 제거된 "요약 태그 목록"을 Entry에 주입한다.
+     *
+     * @param listDto 조회된 저널 일자 목록 DTO
+     */
+    private void applyEntryTagSummary(final List<JrnlDayDto> listDto) {
+        if (CollectionUtils.isEmpty(listDto)) return;
+
+        for (final JrnlDayDto day : listDto) {
+            if (CollectionUtils.isEmpty(day.getJrnlEntryList())) continue;
+
+            for (final JrnlEntryDto entry : day.getJrnlEntryList()) {
+                if (CollectionUtils.isEmpty(entry.getJrnlDiaryList())) continue;
+
+                Map<Integer, TagContentDto> tagMap = new LinkedHashMap<>();
+
+                for (final JrnlDiaryDto diary : entry.getJrnlDiaryList()) {
+                    final List<TagContentDto> tagList = diary.getTag().getList();
+                    if (CollectionUtils.isEmpty(tagList)) continue;
+
+                    for (final TagContentDto tag : tagList) {
+                        tagMap.putIfAbsent(tag.getRefTagNo(), tag);
+                    }
+                }
+
+                entry.getTag().setList(new ArrayList<>(tagMap.values()));
+            }
+        }
+    }
+
+    /**
      * 중복 체크 (정상시 true / 중복시 false)
      *
      * @param jrnlDay {@link JrnlDayDto} -- 중복 여부를 확인할 {@link JrnlDayDto} 객체
@@ -331,7 +373,6 @@ public class JrnlDayService
 
         return existingEntity.getPostNo();
     }
-
 
     /**
      * 특정 태그의 관련 일자 목록 조회

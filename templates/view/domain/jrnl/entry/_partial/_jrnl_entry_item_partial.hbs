@@ -25,9 +25,19 @@
             {{> jrnl_entry_toggle_btn_partial this}}
         </div>
     </div>
-    <div class="jrnl-entry-item {{#ifYn collapsedYn}}collapsed{{/ifYn}}" data-id="{{postNo}}" data-collapsed="{{collapsedYn}}">
-        {{#each jrnlDiaryList}}
-            {{> jrnl_diary_item_partial this}}
-        {{/each}}
+    <div class="jrnl-entry-item" data-id="{{postNo}}" data-collapsed="{{collapsedYn}}">
+        <div class="jrnl-entry-cn {{#ifYn collapsedYn}}collapsed{{/ifYn}}">
+            {{#each jrnlDiaryList}}
+                {{> jrnl_diary_item_partial this}}
+            {{/each}}
+        </div>
+        {{#if (exists tag.list)}}
+            <div class="tags jrnl-entry-tags ms-2 mt-3">
+                <i class="bi bi-tag"></i>
+                {{#tag.list}}
+                    {{> tag_list_partial this module="dF.JrnlDreamTag"}}
+                {{/tag.list}}
+            </div>
+        {{/if}}
     </div>
 </script>

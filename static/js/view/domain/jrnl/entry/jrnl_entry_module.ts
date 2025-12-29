@@ -84,7 +84,6 @@ dF.JrnlEntry = (function(): dfModule {
                             if (!res.rslt) return;
 
                             dF.JrnlDay.refresh();
-                            dF.JrnlEntryTag.listAjax();     // 태그 refresh
                         });
                 }, "block");
             });
@@ -174,7 +173,6 @@ dF.JrnlEntry = (function(): dfModule {
                             if (!res.rslt) return;
 
                             dF.JrnlDay.refresh();
-                            dF.JrnlEntryTag.listAjax();     // 태그 refresh
                         });
                 }, "block");
             });
@@ -217,7 +215,11 @@ dF.JrnlEntry = (function(): dfModule {
             dF.JrnlEntry.patchAjax(postNo, payload, function(): void {
                 item.dataset.collapsed = next;
 
-                item.classList.toggle("collapsed", next === "Y");
+                const content: HTMLElement = item.querySelector(".jrnl-entry-cn");
+                if (content) {
+                    content.classList.toggle("collapsed", next === "Y");
+                }
+
                 const chk: HTMLInputElement = item.querySelector(".entry-context-collapse-check");
                 if (chk) chk.checked = (next === "Y");
             });
