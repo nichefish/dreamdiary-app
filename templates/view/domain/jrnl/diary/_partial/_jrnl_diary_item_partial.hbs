@@ -16,8 +16,11 @@
                 {{> jrnl_diary_toggle_btn_partial this}}
             </div>
         </div>
-        <div class="col jrnl-diary-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}} {{#ifYn refrncYn}}bg-secondary{{/ifYn}}">
-            {{> jrnl_diary_cn_partial this}}
+        <div class="col">
+            {{> jrnl_diary_states_partial this}}
+            <div class="jrnl-diary-cn p-2 {{#ifYn imprtcYn}}bg-secondary{{/ifYn}} {{#ifYn refrncYn}}bg-secondary{{/ifYn}}"">
+                {{> jrnl_diary_cn_partial this}}
+            </div>
         </div>
         <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
         <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">

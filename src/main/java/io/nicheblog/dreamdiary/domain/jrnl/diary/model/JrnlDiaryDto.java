@@ -3,6 +3,8 @@ package io.nicheblog.dreamdiary.domain.jrnl.diary.model;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.comment.model.cmpstn.CommentCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.comment.model.cmpstn.CommentCmpstnModule;
+import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
+import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.BasePostDto;
@@ -30,7 +32,7 @@ import java.util.Date;
 @ToString(callSuper = true)
 public class JrnlDiaryDto
         extends BasePostDto
-        implements Identifiable<Integer>, CommentCmpstnModule, TagCmpstnModule, Comparable<JrnlDiaryDto>  {
+        implements Identifiable<Integer>, CommentCmpstnModule, TagCmpstnModule, StateCmpstnModule, Comparable<JrnlDiaryDto>  {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -121,4 +123,6 @@ public class JrnlDiaryDto
     public CommentCmpstn comment;
     /** 위임 :: 태그 정보 모듈 */
     public TagCmpstn tag;
+    /** 위임 :: 표시 정보 모듈 */
+    public StateCmpstn state;
 }

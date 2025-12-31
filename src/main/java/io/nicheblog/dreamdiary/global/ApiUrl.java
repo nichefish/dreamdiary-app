@@ -117,6 +117,9 @@ public interface ApiUrl {
     String SECTN = Prefix.API + "/sectn/{postNo}";
     String SECTN_SORT_ORDR = Prefix.API + "/sectn/sort-ordr";
 
+    /** 상태 */
+    String STATES = Prefix.API + "/states";
+
     /** 태그 */
     String TAGS = Prefix.API + "/tags";
     String TAG_DTL_AJAX = Prefix.API + "/tag/tag-dtl";

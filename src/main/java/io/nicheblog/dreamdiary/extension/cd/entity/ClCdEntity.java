@@ -1,7 +1,5 @@
 package io.nicheblog.dreamdiary.extension.cd.entity;
 
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbed;
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -34,8 +32,7 @@ import java.util.List;
 @ToString
 @Where(clause = "del_yn='N'")
 public class ClCdEntity
-        extends BaseAuditEntity
-        implements StateEmbedModule {
+        extends BaseAuditEntity {
 
     @PostLoad
     private void onLoad() {
@@ -63,11 +60,20 @@ public class ClCdEntity
     @Column(name = "dc", length=2000)
     private String dc;
 
+    /** 정렬 순서 */
+    @Column(name = "sort_ordr", columnDefinition = "INT DEFAULT 0")
+    private Integer sortOrdr;
+
+    /** 사용 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "use_yn", length = 1, columnDefinition = "CHAR DEFAULT 'Y'")
+    private String useYn = "N";
+
     /** 분류 코드 정보 */
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "cl_cd", referencedColumnName = "cl_cd", insertable = false, updatable = false)
     @BatchSize(size = 10)
-    @OrderBy("state.sortOrdr ASC")
+    @OrderBy("sortOrdr ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @ToString.Exclude
     private List<DtlCdEntity> dtlCdList;
@@ -94,10 +100,4 @@ public class ClCdEntity
             this.dtlCdList.addAll(dtlCdList);
         }
     }
-
-    /* ----- */
-
-    /** 위임 :: 상태 관리 모듈 */
-    @Embedded
-    public StateEmbed state;
 }

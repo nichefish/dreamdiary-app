@@ -29,7 +29,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ClCdDto
         extends BaseAuditDto
-        implements StateCmpstnModule, Identifiable<String> {
+        implements Identifiable<String>, StateCmpstnModule {
 
     /** 목록 순번 */
     private Long rnum;

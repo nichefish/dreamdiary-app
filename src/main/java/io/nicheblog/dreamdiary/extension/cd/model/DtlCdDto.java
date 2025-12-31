@@ -31,7 +31,7 @@ import lombok.experimental.SuperBuilder;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DtlCdDto
         extends BaseAuditDto
-        implements StateCmpstnModule, Identifiable<DtlCdKey> {
+        implements Identifiable<DtlCdKey>, StateCmpstnModule {
 
     /** 상세 코드 */
     private String dtlCd;

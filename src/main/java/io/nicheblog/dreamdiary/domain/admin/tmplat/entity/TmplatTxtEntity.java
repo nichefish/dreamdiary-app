@@ -1,7 +1,5 @@
 package io.nicheblog.dreamdiary.domain.admin.tmplat.entity;
 
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbed;
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAtchEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -31,8 +29,7 @@ import javax.persistence.Table;
 @Where(clause = "del_yn='N'")
 @SQLDelete(sql = "update tmplat_txt SET del_yn = 'Y' WHERE tmplat_txt_no = ?")
 public class TmplatTxtEntity
-        extends BaseAtchEntity
-        implements StateEmbedModule {
+        extends BaseAtchEntity {
 
     /** 템플릿 번호 (PK) */
     @Id
@@ -87,10 +84,4 @@ public class TmplatTxtEntity
     @Column(name = "default_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
     @Comment("기본설정 여부")
     private String defaultYn = "N";
-
-    /* ----- */
-
-    /** 위임 :: 상태 관리 모듈 */
-    @Embedded
-    public StateEmbed state;
 }

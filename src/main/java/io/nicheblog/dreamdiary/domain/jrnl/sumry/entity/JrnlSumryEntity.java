@@ -3,8 +3,6 @@ package io.nicheblog.dreamdiary.domain.jrnl.sumry.entity;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbedModule;
-import io.nicheblog.dreamdiary.extension.clsf.sectn.entity.embed.SectnEmbed;
-import io.nicheblog.dreamdiary.extension.clsf.sectn.entity.embed.SectnEmbedModule;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BasePostEntity;
@@ -35,7 +33,7 @@ import javax.persistence.*;
 @SQLDelete(sql = "UPDATE jrnl_sumry SET del_yn = 'Y' WHERE post_no = ?")
 public class JrnlSumryEntity
         extends BasePostEntity
-        implements CommentEmbedModule, TagEmbedModule, SectnEmbedModule {
+        implements CommentEmbedModule, TagEmbedModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -108,7 +106,4 @@ public class JrnlSumryEntity
     /** 위임 :: 태그 정보 모듈 */
     @Embedded
     public TagEmbed tag;
-    /** 위임 :: 단락 정보 모듈 */
-    @Embedded
-    public SectnEmbed sectn;
 }

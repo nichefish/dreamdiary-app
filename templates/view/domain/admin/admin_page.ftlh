@@ -165,7 +165,7 @@
                                 </div>
                             </td>
                             <td class="text-center hidden-table">
-                                ${authRole.state.sortOrdr!}
+                                ${authRole.sortOrdr!}
                             </td>
                             <td class="text-center hidden-table">
                                 ${authRole.state.useYn!}

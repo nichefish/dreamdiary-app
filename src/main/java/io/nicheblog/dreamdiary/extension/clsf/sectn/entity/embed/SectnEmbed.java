@@ -6,7 +6,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.annotations.*;
 
 import javax.persistence.*;
-import javax.persistence.OrderBy;
 import java.io.Serializable;
 import java.util.List;
 
@@ -42,7 +41,7 @@ public class SectnEmbed
     })
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 10)
-    @OrderBy("state.sortOrdr ASC")
+    // @OrderBy("sortOrdr ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("단락 목록")
     private List<SectnEntity> list;

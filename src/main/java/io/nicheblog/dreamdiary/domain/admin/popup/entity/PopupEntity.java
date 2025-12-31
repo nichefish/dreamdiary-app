@@ -1,7 +1,5 @@
 package io.nicheblog.dreamdiary.domain.admin.popup.entity;
 
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbed;
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAtchEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +10,10 @@ import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
 
 /**
@@ -33,8 +34,7 @@ import java.util.Date;
 @Where(clause = "del_yn='N'")
 @SQLDelete(sql = "UPDATE popup SET del_yn = 'Y' WHERE popup_cd = ?")
 public class PopupEntity
-        extends BaseAtchEntity
-        implements StateEmbedModule {
+        extends BaseAtchEntity {
 
     /** 팝업 코드 */
     @Id
@@ -66,10 +66,4 @@ public class PopupEntity
     @Column(name = "popup_end_dt")
     @Comment("게시종료일시")
     private Date popupEndDt;
-
-    /* ----- */
-
-    /** 위임 :: 상태 관리 모듈 */
-    @Embedded
-    public StateEmbed state;
 }

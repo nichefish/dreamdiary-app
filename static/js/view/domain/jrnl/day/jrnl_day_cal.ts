@@ -19,6 +19,7 @@ const Page: Page = (function(): Page {
             dF.Comment.modal.init({
                 "refreshFunc": dF.JrnlDay.yyMnthListAjax
             });
+            dF.State.init();
 
             dF.JrnlDayAside.init();
             // 태그 조회

@@ -3,7 +3,6 @@ package io.nicheblog.dreamdiary.extension.cd.repository.jpa;
 import io.nicheblog.dreamdiary.extension.cd.entity.DtlCdEntity;
 import io.nicheblog.dreamdiary.extension.cd.entity.DtlCdKey;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +41,7 @@ public interface DtlCdRepository
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    List<DtlCdEntity> findByClCdAndStateUseYn(final String clCd, String useYn, final Sort sort);
+    // List<DtlCdEntity> findByClCdAndStateUseYn(final String clCd, String useYn, final Sort sort);
 
     /**
      * 공통코드, 상세 코드로 상세 코드명 조회.

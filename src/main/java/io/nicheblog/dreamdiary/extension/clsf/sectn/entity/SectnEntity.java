@@ -3,8 +3,6 @@ package io.nicheblog.dreamdiary.extension.clsf.sectn.entity;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbedModule;
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbed;
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BasePostEntity;
@@ -35,7 +33,7 @@ import javax.persistence.*;
 @SQLDelete(sql = "UPDATE sectn SET del_yn = 'Y' WHERE post_no = ?")
 public class SectnEntity
         extends BasePostEntity
-        implements CommentEmbedModule, TagEmbedModule, StateEmbedModule {
+        implements CommentEmbedModule, TagEmbedModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -75,6 +73,15 @@ public class SectnEntity
     @Comment("원글 컨텐츠 타입")
     private String refContentType;
 
+    /** 정렬 순서 */
+    @Column(name = "sort_ordr", columnDefinition = "INT DEFAULT 0")
+    private Integer sortOrdr;
+
+    /** 사용 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "use_yn", length = 1, columnDefinition = "CHAR DEFAULT 'Y'")
+    private String useYn = "N";
+
     /* ----- */
 
     /** 만료 여부 (Y/N) */
@@ -91,7 +98,4 @@ public class SectnEntity
     /** 위임 :: 태그 정보 모듈 */
     @Embedded
     public TagEmbed tag;
-    /** 위임 :: 상태 관리 모듈 */
-    @Embedded
-    public StateEmbed state;
 }

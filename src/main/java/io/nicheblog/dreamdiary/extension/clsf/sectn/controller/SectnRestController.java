@@ -63,7 +63,7 @@ public class SectnRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final Sort sort = Sort.by(Sort.Direction.ASC, "state.sortOrdr");
+        final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrdr");
         final PageRequest pageRequest = CmmUtils.Param.getPageRequest(searchParam, sort);
         final Page<SectnDto> sectnList = sectnService.getPageDto(searchParam, pageRequest);
         final boolean isSuccess = true;
@@ -167,7 +167,7 @@ public class SectnRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(Url.SECTN_SORT_ORDR)
+/*    @PostMapping(Url.SECTN_SORT_ORDR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> sectnSortOrdrAjax(
             final @RequestBody SectnParam sectnParam,
@@ -183,4 +183,5 @@ public class SectnRestController
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
+    */
 }

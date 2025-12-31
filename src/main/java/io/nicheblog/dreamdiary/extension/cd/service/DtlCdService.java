@@ -9,8 +9,6 @@ import io.nicheblog.dreamdiary.extension.cd.mapstruct.DtlCdMapstruct;
 import io.nicheblog.dreamdiary.extension.cd.model.DtlCdDto;
 import io.nicheblog.dreamdiary.extension.cd.repository.jpa.DtlCdRepository;
 import io.nicheblog.dreamdiary.extension.cd.spec.DtlCdSpec;
-import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
-import io.nicheblog.dreamdiary.extension.clsf.state.service.BaseStateService;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +16,6 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
@@ -39,8 +36,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Log4j2
 public class DtlCdService
-        implements BaseCrudService<DtlCdDto, DtlCdDto, DtlCdKey, DtlCdEntity>,
-        BaseStateService<DtlCdDto, DtlCdKey, DtlCdEntity> {
+        implements BaseCrudService<DtlCdDto, DtlCdDto, DtlCdKey, DtlCdEntity> {
 
     @Getter
     private final DtlCdRepository repository;
@@ -82,7 +78,8 @@ public class DtlCdService
     @CacheableConfig(cacheTarget = CacheableConfig.CacheTarget.SHARED)
     public List<DtlCdEntity> getCdEntityListByClCd(final String clCd) throws Exception {
         if (StringUtils.isEmpty(clCd)) return null;
-        return repository.findByClCdAndStateUseYn(clCd, "Y", Sort.by(Sort.Direction.ASC, "state.sortOrdr"));
+        return null;
+        // return repository.findByClCdAndStateUseYn(clCd, "Y", Sort.by(Sort.Direction.ASC, "sortOrdr"));
     }
 
     /**
@@ -124,16 +121,6 @@ public class DtlCdService
     }
 
     /**
-     * 등록 전처리. (override)
-     *
-     * @param registDto 등록할 객체
-     */
-    @Override
-    public void preRegist(final DtlCdDto registDto) {
-        if (registDto.getState() == null) registDto.setState(new StateCmpstn());
-    }
-
-    /**
      * 등록 후처리 (override)
      *
      * @param updatedDto - 등록된 객체
@@ -151,17 +138,6 @@ public class DtlCdService
      */
     @Override
     public void postModify(final DtlCdDto postDto, final DtlCdDto updatedDto) throws Exception {
-        // 관련 캐시 삭제
-        this.evictCache(updatedDto);
-    }
-
-    /**
-     * 상태변경 후처리. (override)
-     *
-     * @param updatedDto - 상태 변경된 dto
-     */
-    @Override
-    public void postSetState(final DtlCdDto updatedDto) throws Exception {
         // 관련 캐시 삭제
         this.evictCache(updatedDto);
     }

@@ -1,7 +1,6 @@
 package io.nicheblog.dreamdiary.domain.admin.menu.controller;
 
 import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuDto;
-import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuParam;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuSearchParam;
 import io.nicheblog.dreamdiary.domain.admin.menu.service.MenuService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
@@ -64,7 +63,7 @@ public class MenuRestController
     ) throws Exception {
 
         // 페이징 정보 생성:: 공백시 pageSize=10, pageNo=1
-        final Sort sort = Sort.by(Sort.Direction.ASC, "state.sortOrdr");
+        final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrdr");
         final List<MenuDto> menuList = menuService.getMainMenuList(searchParam, sort);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
@@ -138,7 +137,7 @@ public class MenuRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(Url.MENU_SORT_ORDR_AJAX)
+/*    @PostMapping(Url.MENU_SORT_ORDR_AJAX)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuSortOrdrAjax(
@@ -154,7 +153,7 @@ public class MenuRestController
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
-    }
+    }*/
 
     /**
      * 메뉴 관리 삭제 (Ajax)

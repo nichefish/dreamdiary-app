@@ -428,7 +428,21 @@ cF.handlebars = (function(): Module {
         }
         return value ? value.toString() : 'null';
     });
+
+    /**
+     * Handlebars 헬퍼 함수 'hasState'를 등록합니다.
+     * 객체가 특정 상태값을 가지고 있는지 체크합니다.
+     *
+     * @param {any[]} stateList - 상태 목록
+     * @param {any[]} targetState - 체크할 상태
+     * @returns {boolean} - 상태 존재 여부
+     */
+    Handlebars.registerHelper('hasState', function (stateList: any[], targetState: any): boolean {
+        if (!stateList) return false;
+        return stateList.some((s: any): boolean => s.stateCd === targetState);
+    });
 })(Handlebars);
+
 document.addEventListener("DOMContentLoaded", function(): void {
     // cache entry
     const cachePartial: string = document.getElementById("cache_entry_partial")?.innerHTML;
@@ -467,6 +481,8 @@ document.addEventListener("DOMContentLoaded", function(): void {
     const jrnlEntryToggleBtnPartial: string = document.getElementById("jrnl_entry_toggle_btn_partial")?.innerHTML;
     if (jrnlEntryToggleBtnPartial) Handlebars.registerPartial("jrnl_entry_toggle_btn_partial", jrnlEntryToggleBtnPartial);
 
+    const jrnlDiaryStatesPartial: string = document.getElementById("jrnl_diary_states_partial")?.innerHTML;
+    if (jrnlDiaryStatesPartial) Handlebars.registerPartial("jrnl_diary_states_partial", jrnlDiaryStatesPartial);
     const jrnlDiaryCnPartial: string = document.getElementById("jrnl_diary_cn_partial")?.innerHTML;
     if (jrnlDiaryCnPartial) Handlebars.registerPartial("jrnl_diary_cn_partial", jrnlDiaryCnPartial);
     const jrnlDiaryRegBtnPartial: string = document.getElementById("jrnl_diary_reg_btn_partial")?.innerHTML;
@@ -478,6 +494,8 @@ document.addEventListener("DOMContentLoaded", function(): void {
     const jrnlDiaryToggleBtnPartial: string = document.getElementById("jrnl_diary_toggle_btn_partial")?.innerHTML;
     if (jrnlDiaryToggleBtnPartial) Handlebars.registerPartial("jrnl_diary_toggle_btn_partial", jrnlDiaryToggleBtnPartial);
 
+    const jrnlDreamStatesPartial: string = document.getElementById("jrnl_dream_states_partial")?.innerHTML;
+    if (jrnlDreamStatesPartial) Handlebars.registerPartial("jrnl_dream_states_partial", jrnlDreamStatesPartial);
     const jrnlDreamCnPartial: string = document.getElementById("jrnl_dream_cn_partial")?.innerHTML;
     if (jrnlDreamCnPartial) Handlebars.registerPartial("jrnl_dream_cn_partial", jrnlDreamCnPartial);
     const jrnlDreamRegBtnPartial: string = document.getElementById("jrnl_dream_reg_btn_partial")?.innerHTML;

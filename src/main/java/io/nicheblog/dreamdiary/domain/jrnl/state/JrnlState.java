@@ -22,5 +22,5 @@ public class JrnlState {
     /** 중요 여부(Y/N) */
     private String imprtcYn;
     /** 참조 여부(Y/N) */
-    private String refrncYn;
+    private Boolean refrnc;
 }

@@ -6,8 +6,6 @@ import io.nicheblog.dreamdiary.extension.clsf.sectn.mapstruct.SectnMapstruct;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.model.SectnDto;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.repository.jpa.SectnRepository;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.spec.SectnSpec;
-import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
-import io.nicheblog.dreamdiary.extension.clsf.state.service.BaseStateService;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultiCrudService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +24,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Log4j2
 public class SectnService
-        implements BaseMultiCrudService<SectnDto, SectnDto, Integer, SectnEntity>,
-        BaseStateService<SectnDto, Integer, SectnEntity> {
+        implements BaseMultiCrudService<SectnDto, SectnDto, Integer, SectnEntity> {
 
     @Getter
     private final SectnRepository repository;
@@ -44,16 +41,6 @@ public class SectnService
     }
 
     private final CacheEvictService ehCacheEvictService;
-
-    /**
-     * 등록 전처리. (override)
-     *
-     * @param registDto 등록할 객체
-     */
-    @Override
-    public void preRegist(final SectnDto registDto) {
-        if (registDto.getState() == null) registDto.setState(new StateCmpstn());
-    }
 
     /**
      * 등록 후처리. (override)

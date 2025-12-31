@@ -24,6 +24,7 @@ import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.meta.event.JrnlMetaProcEvent;
+import io.nicheblog.dreamdiary.extension.clsf.state.StateCd;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagContentDto;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
@@ -188,7 +189,12 @@ public class JrnlDayService
                     final List<JrnlDiaryEntity> myJrnlDiaryList = entry.getJrnlDiaryList();
                     if (CollectionUtils.isNotEmpty(myJrnlDiaryList)) {
                         for (final JrnlDiaryEntity diary : myJrnlDiaryList) {
-                            final JrnlState diaryState = JrnlState.builder().resolvedYn(diary.getResolvedYn()).collapsedYn(entry.getCollapsedYn()).imprtcYn(diary.getImprtcYn()).refrncYn(diary.getRefrncYn()).build();
+                            final JrnlState diaryState = JrnlState.builder()
+                                    .resolvedYn(diary.getResolvedYn())
+                                    .collapsedYn(entry.getCollapsedYn())
+                                    .imprtcYn(diary.getImprtcYn())
+                                    .refrnc(diary.state.hasState(StateCd.REFRNC))
+                                    .build();
                             diaryMap.put(diary.getPostNo(), diaryState);
                         }
                     }
@@ -198,7 +204,12 @@ public class JrnlDayService
             final List<JrnlDreamEntity> myJrnlDreamList = day.getJrnlDreamList();
             if (CollectionUtils.isNotEmpty(myJrnlDreamList)) {
                 for (final JrnlDreamEntity dream : myJrnlDreamList) {
-                    final JrnlState dreamState = JrnlState.builder().resolvedYn(dream.getResolvedYn()).collapsedYn(dream.getCollapsedYn()).imprtcYn(dream.getImprtcYn()).refrncYn(dream.getRefrncYn()).build();
+                    final JrnlState dreamState = JrnlState.builder()
+                            .resolvedYn(dream.getResolvedYn())
+                            .collapsedYn(dream.getCollapsedYn())
+                            .imprtcYn(dream.getImprtcYn())
+                            .refrnc(dream.state.hasState(StateCd.REFRNC))
+                            .build();
                     dreamMap.put(dream.getPostNo(), dreamState);
 
                     final List<JrnlIntrptEntity> myJrnlIntrptList = dream.getJrnlIntrptList();
@@ -286,7 +297,7 @@ public class JrnlDayService
                             diary.setCollapsedYn(d.getCollapsedYn());
                             diary.setResolvedYn(d.getResolvedYn());
                             diary.setImprtcYn(d.getImprtcYn());
-                            diary.setRefrncYn(d.getRefrncYn());
+                            if (d.getRefrnc()) diary.state.put(StateCd.REFRNC);
                         }
                     }
                 }
@@ -300,7 +311,7 @@ public class JrnlDayService
                         dream.setCollapsedYn(s.getCollapsedYn());
                         dream.setResolvedYn(s.getResolvedYn());
                         dream.setImprtcYn(s.getImprtcYn());
-                        dream.setRefrncYn(s.getRefrncYn());
+                        if (s.getRefrnc()) dream.state.put(StateCd.REFRNC);
                     }
 
                     if (CollectionUtils.isEmpty(dream.getJrnlIntrptList())) continue;

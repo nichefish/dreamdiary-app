@@ -348,10 +348,8 @@ public class JrnlDiaryService
         }
 
         final JrnlDiaryEntity entity = getDtlEntity(postNo);
-        if (patchDto.getImprtc() != null) entity.setImprtcYn(patchDto.getImprtc() ? "Y" : "N");
         if (patchDto.getCollapsed() != null) entity.setCollapsedYn(patchDto.getCollapsed() ? "Y" : "N");
         if (patchDto.getResolved() != null) entity.setResolvedYn(patchDto.getResolved() ? "Y" : "N");
-        if (patchDto.getRefrnc() != null) entity.setRefrncYn(patchDto.getRefrnc() ? "Y" : "N");
 
         final JrnlDiaryEntity updatedEntity = repository.save(entity);
 
@@ -363,10 +361,8 @@ public class JrnlDiaryService
         if (diaryMap != null) {
             final JrnlState state = diaryMap.get(postNo);
             if (state != null) {
-                if (patchDto.getImprtc() != null) state.setImprtcYn(patchDto.getImprtc() ? "Y" : "N");
                 if (patchDto.getCollapsed() != null) state.setCollapsedYn(patchDto.getCollapsed() ? "Y" : "N");
                 if (patchDto.getResolved() != null) state.setResolvedYn(patchDto.getResolved() ? "Y" : "N");
-                if (patchDto.getRefrnc() != null) state.setRefrncYn(patchDto.getRefrnc() ? "Y" : "N");
                 EhCacheUtils.put("myDiaryStateMap", cacheKey, diaryMap);
             }
         }

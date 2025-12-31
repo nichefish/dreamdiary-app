@@ -1,7 +1,6 @@
 package io.nicheblog.dreamdiary.domain.board.def.controller;
 
 import io.nicheblog.dreamdiary.domain.board.def.model.BoardDefDto;
-import io.nicheblog.dreamdiary.domain.board.def.model.BoardDefParam;
 import io.nicheblog.dreamdiary.domain.board.def.service.BoardDefService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
@@ -129,6 +128,7 @@ public class BoardDefRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
+/*
     @PostMapping(Url.BOARD_DEF_USE_AJAX)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
@@ -146,41 +146,16 @@ public class BoardDefRestController
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
-
-    /**
-     * 게시판 정의 상태를 '미사용'으로 변경 (Ajax)
-     * (관리자MNGR만 접근 가능.)
-     *
-     * @param boardDef 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
-     * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     */
-    @PostMapping(Url.BOARD_DEF_UNUSE_AJAX)
-    @Secured({Constant.ROLE_MNGR})
-    @ResponseBody
-    public ResponseEntity<AjaxResponse> boardDefUnuseAjax(
-            final @RequestParam("boardDef") String boardDef,
-            final LogActvtyParam logParam
-    ) throws Exception {
-
-        final ServiceResponse result = boardDefService.setStateUnuse(boardDef);
-        final boolean isSuccess = result.getRslt();
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
-
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
-    }
-
-    /**
+*/
+/*
+    *//**
      * 관리자 > 게시판 정의 관리 > 정렬 순서 저장 (드래그앤드랍 결과 반영) (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
      * @param boardDefParam 키+정렬 순서 목록을 담은 파라미터
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     */
+     *//*
     @PostMapping(Url.BOARD_DEF_SORT_ORDR_AJAX)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
@@ -197,7 +172,7 @@ public class BoardDefRestController
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
-    }
+    }*/
 
     /**
      * 게시판 정의 삭제 (Ajax)

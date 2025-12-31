@@ -106,6 +106,7 @@ declare interface AjaxResponse {
     rsltMap?: Record<string, any>;
     rsltVal?: number;
     rsltStr?: string;
+    rsltSts?: string;
     url?: string;
 }
 
