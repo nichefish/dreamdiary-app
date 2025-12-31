@@ -1,8 +1,6 @@
 package io.nicheblog.dreamdiary.domain.jrnl.entry.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryPatchDto;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.mapstruct.JrnlEntryMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntryDto;

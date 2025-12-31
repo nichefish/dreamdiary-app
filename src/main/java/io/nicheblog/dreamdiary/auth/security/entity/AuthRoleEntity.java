@@ -1,18 +1,12 @@
 package io.nicheblog.dreamdiary.auth.security.entity;
 
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbed;
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import java.util.List;
 
@@ -33,8 +27,7 @@ import java.util.List;
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
 public class AuthRoleEntity
-        extends BaseCrudEntity
-        implements StateEmbedModule {
+        extends BaseCrudEntity {
 
     /** 권한 코드 (PK) */
     @Id
@@ -53,19 +46,22 @@ public class AuthRoleEntity
     @Column(name = "top_auth_cd", length = 50)
     private String topAuthCd;
 
+    /** 정렬 순서 */
+    @Column(name = "sort_ordr", columnDefinition = "INT DEFAULT 0")
+    private Integer sortOrdr;
+
+    /** 사용 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "use_yn", length = 1, columnDefinition = "CHAR DEFAULT 'Y'")
+    private String useYn = "N";
+
     /** 하위 권한 정보 */
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "auth_cd", referencedColumnName = "top_auth_cd", insertable = false, updatable = false)
     @Fetch(value = FetchMode.JOIN)
     @BatchSize(size = 10)
-    @OrderBy("state.sortOrdr ASC")
+    // @OrderBy("sortOrdr ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("하위 권한 정보")
     private List<AuthRoleEntity> subAuthList;
-
-    /* ----- */
-
-    /** 위임 :: 상태 관리 모듈 */
-    @Embedded
-    public StateEmbed state;
 }

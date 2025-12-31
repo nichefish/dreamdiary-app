@@ -10,8 +10,6 @@ import io.nicheblog.dreamdiary.domain.admin.menu.repository.jpa.MenuRepository;
 import io.nicheblog.dreamdiary.domain.admin.menu.repository.mybatis.MenuMapper;
 import io.nicheblog.dreamdiary.domain.admin.menu.spec.MenuSpec;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
-import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
-import io.nicheblog.dreamdiary.extension.clsf.state.service.BaseStateService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
@@ -45,8 +43,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Log4j2
 public class MenuService
-        implements BaseCrudService<MenuDto, MenuDto, Integer, MenuEntity>,
-        BaseStateService<MenuDto, Integer, MenuEntity> {
+        implements BaseCrudService<MenuDto, MenuDto, Integer, MenuEntity> {
 
     @Getter
     private final MenuRepository repository;
@@ -101,7 +98,7 @@ public class MenuService
                 .mngrYn("N")
                 .useYn("Y")
                 .build());
-        final Sort sort = Sort.by(Sort.Direction.ASC, "state.sortOrdr");
+        final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrdr");
 
         return this.getListDto(searchParamMap, sort);
     }
@@ -119,7 +116,7 @@ public class MenuService
                 .mngrYn("Y")
                 .useYn("Y")
                 .build());
-        final Sort sort = Sort.by(Sort.Direction.ASC, "state.sortOrdr");
+        final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrdr");
 
         return this.getListDto(searchParamMap, sort);
     }
@@ -158,16 +155,6 @@ public class MenuService
      */
     public SiteAcsInfo getSiteAceInfoFromMenu(final MenuDto menu) {
         return mapstruct.toSiteAcsInfo(menu);
-    }
-
-    /**
-     * 등록 전처리. (override)
-     *
-     * @param dto 등록할 객체
-     */
-    @Override
-    public void preRegist(final MenuDto dto) {
-        if (dto.getState() == null) dto.setState(new StateCmpstn());
     }
 
     /**

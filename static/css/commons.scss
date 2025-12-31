@@ -103,6 +103,10 @@
 .btn-xs {
     padding: 0.5rem 1rem !important;
 }
+.btn.btn-icon.btn-xs {
+  height: calc(1.5em + 0.7rem + 2px);
+  width: calc(1.5em + 0.7rem + 2px);
+}
 /* 더 작은 버튼이 없어서 추가 */
 .btn-xxs {
     padding: 0.25rem 0.6rem !important;

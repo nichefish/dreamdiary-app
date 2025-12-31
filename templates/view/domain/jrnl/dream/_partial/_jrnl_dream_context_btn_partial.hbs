@@ -76,7 +76,7 @@
                             <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.imprtc'/>">
                                 <!--begin::Input-->
-                                <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" value="1" {{#ifYn imprtcYn}}checked="checked"{{/ifYn}}
+                                <input class="form-check-input w-30px h-20px cursor-pointer dream-context-imprtc-check" type="checkbox" value="1" {{#if (hasState state.list 'IMPRTC')}}checked="checked"{{/if}}
                                        onclick="dF.JrnlDream.imprtcAjax({{postNo}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
@@ -94,29 +94,11 @@
                             <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.status.refrnc'/>">
                                 <!--begin::Input-->
-                                <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" value="1" {{#ifYn imprtcYn}}checked="checked"{{/ifYn}}
+                                <input class="form-check-input w-30px h-20px cursor-pointer dream-context-refrnc-check" type="checkbox" value="1" {{#if (hasState state.list 'REFRNC')}}checked="checked"{{/if}}
                                        onclick="dF.JrnlDream.refrncAjax({{postNo}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
                                 <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.refrnc'/></span>
-                                <!--end::Label-->
-                            </label>
-                            <!--end::Switch-->
-                        </div>
-                    </div>
-                    <!--end::Menu item-->
-                    <!--begin::Menu item-->
-                    <div class="menu-item px-3">
-                        <div class="menu-content px-3">
-                            <!--begin::Switch-->
-                            <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
-                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="참조">
-                                <!--begin::Input-->
-                                <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" value="1" {{#ifYn imprtcYn}}checked="checked"{{/ifYn}}
-                                       onclick="dF.JrnlDream.refrncAjax({{postNo}});">
-                                <!--end::Input-->
-                                <!--end::Label-->
-                                <span class="form-check-label text-muted fs-7">참조</span>
                                 <!--end::Label-->
                             </label>
                             <!--end::Switch-->

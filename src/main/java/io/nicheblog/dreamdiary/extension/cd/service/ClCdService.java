@@ -6,8 +6,6 @@ import io.nicheblog.dreamdiary.extension.cd.mapstruct.ClCdMapstruct;
 import io.nicheblog.dreamdiary.extension.cd.model.ClCdDto;
 import io.nicheblog.dreamdiary.extension.cd.repository.jpa.ClCdRepository;
 import io.nicheblog.dreamdiary.extension.cd.spec.ClCdSpec;
-import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
-import io.nicheblog.dreamdiary.extension.clsf.state.service.BaseStateService;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +23,7 @@ import org.springframework.stereotype.Service;
 @Service("clCdService")
 @RequiredArgsConstructor
 public class ClCdService
-        implements BaseCrudService<ClCdDto, ClCdDto, String, ClCdEntity>,
-        BaseStateService<ClCdDto, String, ClCdEntity> {
+        implements BaseCrudService<ClCdDto, ClCdDto, String, ClCdEntity> {
 
     @Getter
     private final ClCdRepository repository;
@@ -40,16 +37,6 @@ public class ClCdService
     }
     public ClCdMapstruct getWriteMapstruct() {
         return this.mapstruct;
-    }
-
-    /**
-     * 등록 전처리. (override)
-     *
-     * @param dto 등록할 객체
-     */
-    @Override
-    public void preRegist(final ClCdDto dto) {
-        if (dto.getState() == null) dto.setState(new StateCmpstn());
     }
 
     /**

@@ -323,37 +323,31 @@ dF.JrnlDiary = (function(): dfModule {
         imprtcAjax: function(postNo: string|number): void {
             if (isNaN(Number(postNo))) return;
 
-            const item: HTMLElement = document.querySelector(`.jrnl-diary-item[data-id='${postNo}']`);
-            if (!item) return;
-
-            const current: string = (item.dataset.imprtc || "N").toUpperCase();
-            const next: "Y"|"N" = current === "Y" ? "N" : "Y";
-            const nextBoolean: boolean = next === "Y"
-
-            const payload: Record<string, any> = { imprtc: nextBoolean };
-            dF.JrnlDiary.patchAjax(postNo, payload, function(): void {
-                item.dataset.imprtc = next;
-
+            const payload: Record<string, any> = { postNo, contentType: "JRNL_DIARY", stateCd: "IMPRTC" };
+            dF.State.toggleAjax(payload, function(res: AjaxResponse): void {
+                const item: HTMLElement = document.querySelector(`.jrnl-diary-item[data-id='${postNo}']`);
+                if (!item) return;
+                const icon: HTMLElement = item.querySelector(".icon-imprtc");
+                if (!icon) return;
                 const cn: HTMLDivElement = item.querySelector("div.jrnl-diary-cn");
                 if (!cn) return console.warn("cn not found.");
-                const titleWrap: HTMLElement = cn.querySelector("div.title-wrap");
-                if (!titleWrap) return console.warn("titleWrap not found.");
-                const existing: HTMLDivElement = titleWrap.querySelector(".ctgr-imprtc");
-                if (nextBoolean) {
-                    if (existing) return;
+                const chk: HTMLInputElement = item.querySelector(".diary-context-imprtc-check");
 
-                    const imprtcWrap: HTMLDivElement = document.createElement("div");
-                    imprtcWrap.className = "ctgr-span ctgr-imprtc w-60px d-flex-center";
-                    imprtcWrap.innerText = "!중요";
-                    // 첫 번째 요소로 삽입
-                    titleWrap.prepend(imprtcWrap);
-                    cn.classList.add("bg-secondary");
-                } else {
-                    if (existing) existing.remove();
-                    cn.classList.remove("bg-secondary");
+                switch(res.rsltSts) {
+                    case "ON":
+                        icon.classList.remove("d-none");
+                        cn.classList.add("bg-secondary");
+                        if (chk) chk.checked = true;
+                        break;
+                    case "OFF":
+                        icon.classList.add("d-none");
+                        cn.classList.remove("bg-secondary");
+                        if (chk) chk.checked = false;
+                        break;
                 }
             });
         },
+
 
         /**
          * 참조 여부 토글. (Ajax)
@@ -362,34 +356,27 @@ dF.JrnlDiary = (function(): dfModule {
         refrncAjax: function(postNo: string|number): void {
             if (isNaN(Number(postNo))) return;
 
-            const item: HTMLElement = document.querySelector(`.jrnl-diary-item[data-id='${postNo}']`);
-            if (!item) return;
-
-            const current: string = (item.dataset.refrnc || "N").toUpperCase();
-            const next: "Y"|"N" = current === "Y" ? "N" : "Y";
-            const nextBoolean: boolean = next === "Y"
-
-            const payload: Record<string, any> = { refrnc: nextBoolean };
-            dF.JrnlDiary.patchAjax(postNo, payload, function(): void {
-                item.dataset.refrnc = next;
-
+            const payload: Record<string, any> = { postNo, contentType: "JRNL_DIARY", stateCd: "REFRNC" };
+            dF.State.toggleAjax(payload, function(res: AjaxResponse): void {
+                const item: HTMLElement = document.querySelector(`.jrnl-diary-item[data-id='${postNo}']`);
+                if (!item) return;
+                const icon: HTMLElement = item.querySelector(".icon-refrnc");
+                if (!icon) return;
                 const cn: HTMLDivElement = item.querySelector("div.jrnl-diary-cn");
                 if (!cn) return console.warn("cn not found.");
-                const titleWrap: HTMLElement = cn.querySelector("div.title-wrap");
-                if (!titleWrap) return console.warn("titleWrap not found.");
-                const existing: HTMLDivElement = titleWrap.querySelector(".ctgr-imprtc");
-                if (nextBoolean) {
-                    if (existing) return;
+                const chk: HTMLInputElement = item.querySelector(".diary-context-refrnc-check");
 
-                    const imprtcWrap: HTMLDivElement = document.createElement("div");
-                    imprtcWrap.className = "ctgr-span ctgr-imprtc w-60px d-flex-center";
-                    imprtcWrap.innerText = "!중요";
-                    // 첫 번째 요소로 삽입
-                    titleWrap.prepend(imprtcWrap);
-                    cn.classList.add("bg-secondary");
-                } else {
-                    if (existing) existing.remove();
-                    cn.classList.remove("bg-secondary");
+                switch(res.rsltSts) {
+                    case "ON":
+                        icon.classList.remove("d-none");
+                        cn.classList.add("bg-secondary");
+                        if (chk) chk.checked = true;
+                        break;
+                    case "OFF":
+                        icon.classList.add("d-none");
+                        cn.classList.remove("bg-secondary");
+                        if (chk) chk.checked = false;
+                        break;
                 }
             });
         },

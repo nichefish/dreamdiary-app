@@ -1,17 +1,15 @@
 package io.nicheblog.dreamdiary.domain.board.def.entity;
 
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbed;
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * BoardDefEntity
@@ -31,8 +29,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
 public class BoardDefEntity
-        extends BaseAuditEntity
-        implements StateEmbedModule {
+        extends BaseAuditEntity {
 
     /** 게시판 정의 (PK) */
     @Id
@@ -54,9 +51,13 @@ public class BoardDefEntity
     @Column(name = "dc", length=2000)
     private String dc;
 
-    /* ----- */
+    /** 정렬 순서 */
+    @Column(name = "sort_ordr", columnDefinition = "INT DEFAULT 0")
+    private Integer sortOrdr;
 
-    /** 위임 :: 상태 관리 모듈 */
-    @Embedded
-    public StateEmbed state;
+    /** 사용 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "use_yn", length = 1, columnDefinition = "CHAR DEFAULT 'Y'")
+    private String useYn = "N";
+
 }

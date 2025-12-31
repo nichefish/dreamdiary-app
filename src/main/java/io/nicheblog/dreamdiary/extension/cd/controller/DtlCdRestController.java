@@ -2,7 +2,6 @@ package io.nicheblog.dreamdiary.extension.cd.controller;
 
 import io.nicheblog.dreamdiary.extension.cd.entity.DtlCdKey;
 import io.nicheblog.dreamdiary.extension.cd.model.DtlCdDto;
-import io.nicheblog.dreamdiary.extension.cd.model.DtlCdParam;
 import io.nicheblog.dreamdiary.extension.cd.model.DtlCdSearchParam;
 import io.nicheblog.dreamdiary.extension.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
@@ -158,7 +157,7 @@ public class DtlCdRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(Url.DTL_CD_USE_AJAX)
+/*    @PostMapping(Url.DTL_CD_USE_AJAX)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> dtlCdUseAjax(
@@ -174,33 +173,7 @@ public class DtlCdRestController
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.fromResponse(result, rsltMsg));
-    }
-
-    /**
-     * 상세 코드 관리(useYn=N 포함) '미사용'으로 변경 (Ajax)
-     * (관리자MNGR만 접근 가능.)
-     *
-     * @param key 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
-     * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     */
-    @PostMapping(Url.DTL_CD_UNUSE_AJAX)
-    @Secured({Constant.ROLE_MNGR})
-    @ResponseBody
-    public ResponseEntity<AjaxResponse> dtlCdUnuseAjax(
-            final DtlCdKey key,
-            final LogActvtyParam logParam
-    ) throws Exception {
-
-        final ServiceResponse result = dtlCdService.setStateUnuse(key);
-        final boolean isSuccess = result.getRslt();
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
-
-        return ResponseEntity.ok(AjaxResponse.fromResponse(result, rsltMsg));
-    }
+    }*/
 
     /**
      * 상세 코드 관리(useYn=N 포함) 삭제 (Ajax)
@@ -236,7 +209,7 @@ public class DtlCdRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(Url.DTL_CD_SORT_ORDR_AJAX)
+/*    @PostMapping(Url.DTL_CD_SORT_ORDR_AJAX)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> dtlCdSortOrdrAjax(
@@ -252,5 +225,5 @@ public class DtlCdRestController
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.fromResponse(result, rsltMsg));
-    }
+    }*/
 }

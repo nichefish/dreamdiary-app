@@ -74,7 +74,7 @@ public class ClCdPageController
         // 상세/수정 화면에서 목록 화면 복귀시 세션에 목록 검색 인자 저장해둔 거 있는지 체크
         searchParam = (ClCdSearchParam) CmmUtils.Param.checkPrevSearchParam(baseUrl, searchParam);
         // 페이징 정보 생성:: 공백시 pageSize=10, pageNo=1
-        final Sort sort = Sort.by(Sort.Direction.ASC, "state.sortOrdr");
+        final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrdr");
         final PageRequest pageRequest = CmmUtils.Param.getPageRequest(searchParam, sort, model);
         // 목록 조회
         final Page<ClCdDto> clCdList = clCdService.getPageDto(searchParam, pageRequest);

@@ -2,7 +2,6 @@ package io.nicheblog.dreamdiary.domain.admin.menu.spec;
 
 import io.nicheblog.dreamdiary.domain.admin.menu.entity.MenuEntity;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseCrudSpec;
-import io.nicheblog.dreamdiary.global.intrfc.spec.embed.BaseStateSpec;
 import org.springframework.stereotype.Component;
 
 /**
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class MenuSpec
-        implements BaseCrudSpec<MenuEntity>,
-                   BaseStateSpec<MenuEntity> {
+        implements BaseCrudSpec<MenuEntity> {
     //
 }

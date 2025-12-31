@@ -16,7 +16,11 @@
                 {{> jrnl_dream_toggle_btn_partial this}}
             </div>
         </div>
-        <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}} {{#ifYn refrncYn}}bg-secondary{{/ifYn}}">
+        <div class="col">
+            {{> jrnl_dream_states_partial this}}
+            <div class="jrnl-dream-cn p-2 {{#ifYn imprtcYn}}bg-secondary{{/ifYn}} {{#ifYn refrncYn}}bg-secondary{{/ifYn}}"">
+                {{> jrnl_dream_cn_partial this}}
+            </div>
             {{> jrnl_dream_cn_partial this}}
         </div>
         <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>

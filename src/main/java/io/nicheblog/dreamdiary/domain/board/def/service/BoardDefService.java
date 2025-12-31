@@ -6,8 +6,6 @@ import io.nicheblog.dreamdiary.domain.board.def.model.BoardDefDto;
 import io.nicheblog.dreamdiary.domain.board.def.repository.jpa.BoardDefRepository;
 import io.nicheblog.dreamdiary.domain.board.def.spec.BoardDefSpec;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
-import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
-import io.nicheblog.dreamdiary.extension.clsf.state.service.BaseStateService;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
 import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;
 import lombok.Getter;
@@ -35,8 +33,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class BoardDefService
-        implements BaseCrudService<BoardDefDto, BoardDefDto, String, BoardDefEntity>,
-        BaseStateService<BoardDefDto, String, BoardDefEntity> {
+        implements BaseCrudService<BoardDefDto, BoardDefDto, String, BoardDefEntity> {
 
     @Getter
     private final BoardDefRepository repository;
@@ -86,16 +83,6 @@ public class BoardDefService
         final BoardDefEntity retrievedEntity = this.getDtlEntity(boardDef);
 
         return mapstruct.toMenu(retrievedEntity);
-    }
-
-    /**
-     * 등록 전처리. (override)
-     *
-     * @param registDto 등록할 객체
-     */
-    @Override
-    public void preRegist(final BoardDefDto registDto) {
-        if (registDto.getState() == null) registDto.setState(new StateCmpstn());
     }
 
     /**

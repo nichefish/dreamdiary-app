@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.extension.clsf.state.mapstruct.embed;
 
 import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbed;
+import io.nicheblog.dreamdiary.extension.clsf.state.mapstruct.StateMapstruct;
 import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
-import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
@@ -18,7 +18,7 @@ import org.mapstruct.factory.Mappers;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, DatePtn.class, StringUtils.class}, builder = @Builder(disableBuilder = true))
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, StateMapstruct.class}, builder = @Builder(disableBuilder = true))
 public interface StateEmbedMapstruct
         extends BaseWriteMapstruct<StateCmpstn, StateEmbed>, BaseMapstruct<StateCmpstn, StateEmbed> {
 

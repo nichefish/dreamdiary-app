@@ -264,3 +264,18 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
         content: "＋ ...더보기";
     }
 }
+
+.icon-refrnc {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: var(--bs-warning);
+    color: #fff;
+
+    &:hover {
+        background-color: rgba(0,0,0,0.02);
+    }
+}

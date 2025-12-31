@@ -54,6 +54,7 @@ import org.springframework.stereotype.Component;
  * </pre>
  *
  * @author nichefish
+ * TODO: 모듈 수가 증가할 경우 Strategy 기반 분리 고려.
  */
 @Component
 @RequiredArgsConstructor
@@ -131,6 +132,14 @@ public class MapstructHelper {
             ((SectnCmpstnModule) dto).setSectn(cmpstn);
         }
 
+        // 상태 :: 공통 필드 매핑 로직
+        boolean usesStateModule = (entity instanceof StateEmbedModule && dto instanceof StateCmpstnModule);
+        if (usesStateModule) {
+            final StateEmbed embed = ((StateEmbedModule) entity).getState();
+            final StateCmpstn cmpstn = StateEmbedMapstruct.INSTANCE.toDto(embed);
+            ((StateCmpstnModule) dto).setState(cmpstn);
+        }
+
         // 태그 :: 공통 필드 매핑 로직
         boolean usesTagModule = (entity instanceof TagEmbedModule && dto instanceof TagCmpstnModule);
         if (usesTagModule) {
@@ -163,28 +172,10 @@ public class MapstructHelper {
             ((ViewerCmpstnModule) dto).setViewer(cmpstn);
         }
 
-        // 새 글 여부 표시
+        // 새 글 여부 상태
         if (usesManagtModule && usesViewerModule) {
             ((ViewerCmpstnModule) dto).setIsNew(determineIfNew(entity));
         }
-    }
-
-    /**
-     * Map State Fields (dto -> entity)
-     *
-     * @param entity 매핑할 Dto
-     * @param dto 매핑 대상 Entity
-     */
-    public static <Entity, Dto> void mapStateFields(final Dto dto, final @MappingTarget Entity entity) throws Exception {
-        // 댓글 :: 공통 필드 매핑 로직
-        boolean usesStateModule = (entity instanceof StateEmbedModule && dto instanceof StateCmpstnModule);
-        if (!usesStateModule) return;
-        StateEmbed embed = ((StateEmbedModule) entity).getState();
-        if (embed == null) embed = new StateEmbed();
-        StateCmpstn cmpstn = ((StateCmpstnModule) dto).getState();
-        if (cmpstn == null) cmpstn = new StateCmpstn();
-        StateEmbedMapstruct.INSTANCE.updateFromDto(cmpstn, embed);
-        ((StateEmbedModule) entity).setState(embed);
     }
 
     /** 

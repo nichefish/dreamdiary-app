@@ -1,8 +1,6 @@
 package io.nicheblog.dreamdiary.domain.admin.menu.entity;
 
 import io.nicheblog.dreamdiary.extension.cd.entity.DtlCdEntity;
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbed;
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -10,7 +8,6 @@ import org.hibernate.annotations.*;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import java.util.List;
 
@@ -32,8 +29,7 @@ import java.util.List;
 @Where(clause = "del_yn='N'")
 @SQLDelete(sql = "UPDATE menu SET del_yn = 'Y' WHERE menu_no = ?")
 public class MenuEntity
-        extends BaseAuditEntity
-        implements StateEmbedModule {
+        extends BaseAuditEntity {
 
     /** 메뉴 번호 (PK) */
     @Id
@@ -103,6 +99,15 @@ public class MenuEntity
     @Transient
     private String menuSubExtendTyNm;
 
+    /** 정렬 순서 */
+    @Column(name = "sort_ordr", columnDefinition = "INT DEFAULT 0")
+    private Integer sortOrdr;
+
+    /** 사용 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "use_yn", length = 1, columnDefinition = "CHAR DEFAULT 'Y'")
+    private String useYn = "N";
+
     /** 셀프 참조 :: 상위메뉴 조회 */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "upper_menu_no", referencedColumnName = "menu_no", insertable = false, updatable = false)
@@ -116,14 +121,8 @@ public class MenuEntity
     @JoinColumn(name = "upper_menu_no", referencedColumnName = "menu_no", insertable = false, updatable = false)
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 10)
-    @OrderBy("state.sortOrdr ASC")
+    // @OrderBy("sortOrdr ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("하위메뉴 목록 조회")
     private List<MenuEntity> subMenuList;
-
-    /* ----- */
-
-    /** 위임 :: 상태 관리 모듈 */
-    @Embedded
-    public StateEmbed state;
 }

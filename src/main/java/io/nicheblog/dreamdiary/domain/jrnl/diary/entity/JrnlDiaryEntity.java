@@ -4,6 +4,8 @@ import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntrySmpEntity;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbedModule;
+import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbed;
+import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BasePostEntity;
@@ -47,7 +49,7 @@ import javax.persistence.Table;
 )
 public class JrnlDiaryEntity
         extends BasePostEntity
-        implements CommentEmbedModule, TagEmbedModule {
+        implements CommentEmbedModule, TagEmbedModule, StateEmbedModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -140,4 +142,7 @@ public class JrnlDiaryEntity
     /** 위임 :: 태그 정보 모듈 */
     @Embedded
     public TagEmbed tag;
+    /** 위임 :: 상태 정보 모듈 */
+    @Embedded
+    public StateEmbed state;
 }

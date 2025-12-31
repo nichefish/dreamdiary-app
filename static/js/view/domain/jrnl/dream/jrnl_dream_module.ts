@@ -308,34 +308,59 @@ dF.JrnlDream = (function(): dfModule {
         imprtcAjax: function(postNo: string|number): void {
             if (isNaN(Number(postNo))) return;
 
-            const item: HTMLElement = document.querySelector(`.jrnl-dream-item[data-id='${postNo}']`);
-            if (!item) return;
-
-            const current: string = (item.dataset.imprtc || "N").toUpperCase();
-            const next: "Y"|"N" = current === "Y" ? "N" : "Y";
-            const nextBoolean: boolean = next === "Y"
-
-            const payload: Record<string, any> = { imprtc: nextBoolean };
-            dF.JrnlDream.patchAjax(postNo, payload, function() {
-                item.dataset.imprtc = next;
-
+            const payload: Record<string, any> = { postNo, contentType: "JRNL_DREAM", stateCd: "IMPRTC" };
+            dF.State.toggleAjax(payload, function(res: AjaxResponse): void {
+                const item: HTMLElement = document.querySelector(`.jrnl-dream-item[data-id='${postNo}']`);
+                if (!item) return;
+                const icon: HTMLElement = item.querySelector(".icon-imprtc");
+                if (!icon) return;
                 const cn: HTMLDivElement = item.querySelector("div.jrnl-dream-cn");
                 if (!cn) return console.warn("cn not found.");
-                const titleWrap: HTMLElement = cn.querySelector("div.title-wrap");
-                if (!titleWrap) return console.warn("titleWrap not found.");
-                const existing: HTMLDivElement = titleWrap.querySelector(".ctgr-imprtc");
-                if (nextBoolean) {
-                    if (existing) return;
+                const chk: HTMLInputElement = item.querySelector(".dream-context-imprtc-check");
 
-                    const imprtcWrap: HTMLDivElement = document.createElement("div");
-                    imprtcWrap.className = "ctgr-span ctgr-imprtc w-60px d-flex-center";
-                    imprtcWrap.innerText = "!중요";
-                    // 첫 번째 요소로 삽입
-                    titleWrap.prepend(imprtcWrap);
-                    cn.classList.add("bg-secondary");
-                } else {
-                    if (existing) existing.remove();
-                    cn.classList.remove("bg-secondary");
+                switch(res.rsltSts) {
+                    case "ON":
+                        icon.classList.remove("d-none");
+                        cn.classList.add("bg-secondary");
+                        if (chk) chk.checked = true;
+                        break;
+                    case "OFF":
+                        icon.classList.add("d-none");
+                        cn.classList.remove("bg-secondary");
+                        if (chk) chk.checked = false;
+                        break;
+                }
+            });
+        },
+
+        /**
+         * 참조 여부 토글. (Ajax)
+         * @param {string|number} postNo - 글 번호.
+         */
+        refrncAjax: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            const payload: Record<string, any> = { postNo, contentType: "JRNL_DREAM", stateCd: "REFRNC" };
+            dF.State.toggleAjax(payload, function(res: AjaxResponse): void {
+                const item: HTMLElement = document.querySelector(`.jrnl-dream-item[data-id='${postNo}']`);
+                if (!item) return;
+                const icon: HTMLElement = item.querySelector(".icon-refrnc");
+                if (!icon) return;
+                const cn: HTMLDivElement = item.querySelector("div.jrnl-dream-cn");
+                if (!cn) return console.warn("cn not found.");
+                const chk: HTMLInputElement = item.querySelector(".dream-context-refrnc-check");
+
+                switch(res.rsltSts) {
+                    case "ON":
+                        icon.classList.remove("d-none");
+                        cn.classList.add("bg-secondary");
+                        if (chk) chk.checked = true;
+                        break;
+                    case "OFF":
+                        icon.classList.add("d-none");
+                        cn.classList.remove("bg-secondary");
+                        if (chk) chk.checked = false;
+                        break;
                 }
             });
         },

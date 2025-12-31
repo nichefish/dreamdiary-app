@@ -1,7 +1,6 @@
 package io.nicheblog.dreamdiary.global.intrfc.spec;
 
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
-import io.nicheblog.dreamdiary.global.intrfc.spec.embed.BaseStateSpec;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import org.apache.commons.net.util.SubnetUtils;
 import org.springframework.data.jpa.domain.Specification;
@@ -21,7 +20,7 @@ import java.util.Map;
  * </pre>
  *
  * @author nichefish
- * @see BaseCrudSpec,BaseStateSpec
+ * @see BaseCrudSpec
  */
 public interface BaseSpec<Entity> {
 
@@ -38,7 +37,7 @@ public interface BaseSpec<Entity> {
 
     /**
      * default: 인자별로 구체적인 검색 조건을 설정하여 목록을 반환한다.
-     * 
+     *
      * @param searchParamMap 검색 파라미터 맵
      * @return {@link Specification} -- 검색 조건에 맞는 Specification 객체
      */
@@ -61,10 +60,10 @@ public interface BaseSpec<Entity> {
 
     /**
      * default: 인자별로 구체적인 검색 조건을 세팅한다.
-     * 
+     *
      * @param searchParamMap 검색 파라미터 맵
-     * @param root 검색할 엔티티의 Root 객체
-     * @param builder 검색 조건을 생성하는 CriteriaBuilder 객체
+     * @param root           검색할 엔티티의 Root 객체
+     * @param builder        검색 조건을 생성하는 CriteriaBuilder 객체
      * @return {@link List} -- 설정된 검색 조건(Predicate) 리스트
      */
     default List<Predicate> getPredicateWithParams(
@@ -89,10 +88,10 @@ public interface BaseSpec<Entity> {
 
     /**
      * default: 조회 후처리 (정렬 순서 변경, distinct 등)
-     * 
-     * @param root 조회 대상 엔티티의 Root 객체
-     * @param query CriteriaQuery 객체, 조회 결과에 대한 쿼리 정의
-     * @param builder CriteriaBuilder 객체, 조회 조건을 설정하는 데 사용
+     *
+     * @param root           조회 대상 엔티티의 Root 객체
+     * @param query          CriteriaQuery 객체, 조회 결과에 대한 쿼리 정의
+     * @param builder        CriteriaBuilder 객체, 조회 조건을 설정하는 데 사용
      * @param searchParamMap 검색 조건을 담은 파라미터 맵
      */
     default void postQuery(
@@ -107,9 +106,9 @@ public interface BaseSpec<Entity> {
 
     /**
      * default: 조회 후처리 (정렬 순서 변경, distinct 등)
-     * 
-     * @param root 조회 대상 엔티티의 Root 객체
-     * @param query CriteriaQuery 객체로, 조회 결과를 정의하는 데 사용됩니다.
+     *
+     * @param root    조회 대상 엔티티의 Root 객체
+     * @param query   CriteriaQuery 객체로, 조회 결과를 정의하는 데 사용됩니다.
      * @param builder CriteriaBuilder 객체로, 쿼리 조건을 설정하는 데 사용됩니다.
      */
     default void postQuery(
@@ -122,10 +121,10 @@ public interface BaseSpec<Entity> {
 
     /**
      * IPv4/CIDR 검색 조건 세팅 :: 메소드 분리
-     * 
-     * @param key 검색할 컬럼의 이름
-     * @param ipStr 검색할 IP 주소 또는 CIDR 형식의 문자열
-     * @param root 검색 대상 엔티티의 Root 객체
+     *
+     * @param key     검색할 컬럼의 이름
+     * @param ipStr   검색할 IP 주소 또는 CIDR 형식의 문자열
+     * @param root    검색 대상 엔티티의 Root 객체
      * @param builder CriteriaBuilder 객체로, 쿼리 조건을 설정하는 데 사용됩니다.
      * @return {@link Predicate} -- IP 주소에 대한 검색 조건을 나타내는 Predicate 객체
      */
