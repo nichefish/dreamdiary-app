@@ -356,6 +356,45 @@ dF.JrnlDiary = (function(): dfModule {
         },
 
         /**
+         * 참조 여부 토글. (Ajax)
+         * @param {string|number} postNo - 글 번호.
+         */
+        refrncAjax: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            const item: HTMLElement = document.querySelector(`.jrnl-diary-item[data-id='${postNo}']`);
+            if (!item) return;
+
+            const current: string = (item.dataset.refrnc || "N").toUpperCase();
+            const next: "Y"|"N" = current === "Y" ? "N" : "Y";
+            const nextBoolean: boolean = next === "Y"
+
+            const payload: Record<string, any> = { refrnc: nextBoolean };
+            dF.JrnlDiary.patchAjax(postNo, payload, function(): void {
+                item.dataset.refrnc = next;
+
+                const cn: HTMLDivElement = item.querySelector("div.jrnl-diary-cn");
+                if (!cn) return console.warn("cn not found.");
+                const titleWrap: HTMLElement = cn.querySelector("div.title-wrap");
+                if (!titleWrap) return console.warn("titleWrap not found.");
+                const existing: HTMLDivElement = titleWrap.querySelector(".ctgr-imprtc");
+                if (nextBoolean) {
+                    if (existing) return;
+
+                    const imprtcWrap: HTMLDivElement = document.createElement("div");
+                    imprtcWrap.className = "ctgr-span ctgr-imprtc w-60px d-flex-center";
+                    imprtcWrap.innerText = "!중요";
+                    // 첫 번째 요소로 삽입
+                    titleWrap.prepend(imprtcWrap);
+                    cn.classList.add("bg-secondary");
+                } else {
+                    if (existing) existing.remove();
+                    cn.classList.remove("bg-secondary");
+                }
+            });
+        },
+
+        /**
          * toggle
          * @param {string|number} postNo - 글 번호.
          * @param {HTMLElement} trigger - 클릭 버튼 객체

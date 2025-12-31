@@ -77,6 +77,10 @@ public class JrnlDiaryDto
     @Builder.Default
     private String collapsedYn = "N";
 
+    /** 참조 여부 (Y/N) */
+    @Builder.Default
+    private String refrncYn = "N";
+
     /* ----- */
 
     /** 인덱스 변경 여부 */

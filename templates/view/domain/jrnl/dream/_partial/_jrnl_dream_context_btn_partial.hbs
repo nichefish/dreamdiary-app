@@ -92,6 +92,24 @@
                         <div class="menu-content px-3">
                             <!--begin::Switch-->
                             <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
+                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="참조">
+                                <!--begin::Input-->
+                                <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" value="1" {{#ifYn imprtcYn}}checked="checked"{{/ifYn}}
+                                       onclick="dF.JrnlDream.refrncAjax({{postNo}});">
+                                <!--end::Input-->
+                                <!--end::Label-->
+                                <span class="form-check-label text-muted fs-7">참조</span>
+                                <!--end::Label-->
+                            </label>
+                            <!--end::Switch-->
+                        </div>
+                    </div>
+                    <!--end::Menu item-->
+                    <!--begin::Menu item-->
+                    <div class="menu-item px-3">
+                        <div class="menu-content px-3">
+                            <!--begin::Switch-->
+                            <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.status.collapsed'/>">
                                 <!--begin::Input-->
                                 <input class="form-check-input w-30px h-20px cursor-pointer diary-context-collapse-check" type="checkbox" value="1" {{#ifYn collapsedYn}}checked="checked"{{/ifYn}}

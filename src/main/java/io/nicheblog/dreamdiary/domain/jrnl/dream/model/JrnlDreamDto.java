@@ -72,13 +72,15 @@ public class JrnlDreamDto
 
     /** 정리완료 여부 (Y/N) */
     @Builder.Default
-    @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
     private String resolvedYn = "N";
 
     /** 글접기 여부 (Y/N) */
     @Builder.Default
-    @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
     private String collapsedYn = "N";
+
+    /** 참조 여부 (Y/N) */
+    @Builder.Default
+    private String refrncYn = "N";
 
     /** 저널 일기 목록 */
     private List<JrnlIntrptDto> jrnlIntrptList;

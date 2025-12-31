@@ -182,12 +182,14 @@ public class JrnlDayService
             final List<JrnlEntryEntity> myJrnlEntryList = day.getJrnlEntryList();
             if (CollectionUtils.isNotEmpty(myJrnlEntryList)) {
                 for (final JrnlEntryEntity entry : myJrnlEntryList) {
-                    entryMap.put(entry.getPostNo(), JrnlState.of(entry.getCollapsedYn(), entry.getCollapsedYn(), entry.getCollapsedYn()));
+                    final JrnlState entryState = JrnlState.builder().collapsedYn(entry.getCollapsedYn()).build();
+                    entryMap.put(entry.getPostNo(), entryState);
 
                     final List<JrnlDiaryEntity> myJrnlDiaryList = entry.getJrnlDiaryList();
                     if (CollectionUtils.isNotEmpty(myJrnlDiaryList)) {
                         for (final JrnlDiaryEntity diary : myJrnlDiaryList) {
-                            diaryMap.put(diary.getPostNo(), JrnlState.of(diary.getResolvedYn(), diary.getCollapsedYn(), diary.getImprtcYn()));
+                            final JrnlState diaryState = JrnlState.builder().resolvedYn(diary.getResolvedYn()).collapsedYn(entry.getCollapsedYn()).imprtcYn(diary.getImprtcYn()).refrncYn(diary.getRefrncYn()).build();
+                            diaryMap.put(diary.getPostNo(), diaryState);
                         }
                     }
                 }
@@ -196,12 +198,14 @@ public class JrnlDayService
             final List<JrnlDreamEntity> myJrnlDreamList = day.getJrnlDreamList();
             if (CollectionUtils.isNotEmpty(myJrnlDreamList)) {
                 for (final JrnlDreamEntity dream : myJrnlDreamList) {
-                    dreamMap.put(dream.getPostNo(), JrnlState.of(dream.getResolvedYn(), dream.getCollapsedYn(), dream.getImprtcYn()));
+                    final JrnlState dreamState = JrnlState.builder().resolvedYn(dream.getResolvedYn()).collapsedYn(dream.getCollapsedYn()).imprtcYn(dream.getImprtcYn()).refrncYn(dream.getRefrncYn()).build();
+                    dreamMap.put(dream.getPostNo(), dreamState);
 
                     final List<JrnlIntrptEntity> myJrnlIntrptList = dream.getJrnlIntrptList();
                     if (CollectionUtils.isNotEmpty(myJrnlIntrptList)) {
                         for (final JrnlIntrptEntity intrpt : myJrnlIntrptList) {
-                            intrptMap.put(intrpt.getPostNo(), JrnlState.of(intrpt.getResolvedYn(), intrpt.getCollapsedYn(), intrpt.getImprtcYn()));
+                            final JrnlState intrptState = JrnlState.builder().resolvedYn(intrpt.getResolvedYn()).collapsedYn(intrpt.getCollapsedYn()).imprtcYn(intrpt.getImprtcYn()).build();
+                            intrptMap.put(intrpt.getPostNo(), intrptState);
                         }
                     }
                 }
@@ -282,6 +286,7 @@ public class JrnlDayService
                             diary.setCollapsedYn(d.getCollapsedYn());
                             diary.setResolvedYn(d.getResolvedYn());
                             diary.setImprtcYn(d.getImprtcYn());
+                            diary.setRefrncYn(d.getRefrncYn());
                         }
                     }
                 }
@@ -295,6 +300,7 @@ public class JrnlDayService
                         dream.setCollapsedYn(s.getCollapsedYn());
                         dream.setResolvedYn(s.getResolvedYn());
                         dream.setImprtcYn(s.getImprtcYn());
+                        dream.setRefrncYn(s.getRefrncYn());
                     }
 
                     if (CollectionUtils.isEmpty(dream.getJrnlIntrptList())) continue;
