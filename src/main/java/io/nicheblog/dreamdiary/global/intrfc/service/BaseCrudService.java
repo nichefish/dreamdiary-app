@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
+import io.nicheblog.dreamdiary.global.intrfc.entity.Usable;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -330,5 +331,38 @@ public interface BaseCrudService<PostDto extends BaseCrudDto & Identifiable<Key>
         this.postDeleteAll(deleteEntityList);
 
         return true;
+    }
+
+    /**
+     * 사용 여부 세팅
+     * @param key Key
+     * @return ServiceResponse
+     */
+    default ServiceResponse setUse(final Key key, final String yn) throws Exception {
+        final Entity existingEntity = this.getDtlEntity(key);
+        if (!(existingEntity instanceof Usable usable)) {
+            return ServiceResponse.builder()
+                    .rslt(false)
+                    .build();
+        }
+
+        usable.setUseYn(yn);
+        final Entity updatedEntity = getRepository().save(existingEntity);
+
+        this.postSetUse(updatedEntity);
+
+        return ServiceResponse.builder()
+            .rslt(true)
+            .rsltSts("Y".equals(yn) ? "ON" : "OFF")
+            .build();
+    }
+
+    /**
+     * default: 상태 변경 후처리 (entity level)
+     *
+     * @param updatedEntity 상태 변경된 Entity 객체
+     */
+    default void postSetUse(Entity updatedEntity) {
+        //
     }
 }

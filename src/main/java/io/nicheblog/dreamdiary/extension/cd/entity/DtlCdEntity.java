@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.extension.cd.entity;
 
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.Usable;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
@@ -29,7 +30,8 @@ import javax.persistence.*;
 @ToString
 @Where(clause = "del_yn='N'")
 public class DtlCdEntity
-        extends BaseAuditEntity {
+        extends BaseAuditEntity
+        implements Usable {
 
     /** 상세 코드 */
     @Id

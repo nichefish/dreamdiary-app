@@ -2,8 +2,6 @@ package io.nicheblog.dreamdiary.extension.cd.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
-import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.*;
@@ -29,7 +27,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ClCdDto
         extends BaseAuditDto
-        implements Identifiable<String>, StateCmpstnModule {
+        implements Identifiable<String> {
 
     /** 목록 순번 */
     private Long rnum;
@@ -52,6 +50,10 @@ public class ClCdDto
     /** 상세 코드 목록 */
     List<DtlCdDto> dtlCdList;
 
+    /** 사용 여부 (Y/N) */
+    @Builder.Default
+    private String useYn = "N";
+
     /** 상세 코드 개수 */
     @Builder.Default
     private Integer dtlCdCnt = 0;
@@ -66,7 +68,4 @@ public class ClCdDto
     public String getKey() {
         return this.clCd;
     }
-
-    /** 위임 :: 상태 관리 모듈 */
-    public StateCmpstn state;
 }

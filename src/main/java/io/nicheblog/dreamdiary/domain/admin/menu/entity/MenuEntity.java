@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.domain.admin.menu.entity;
 
 import io.nicheblog.dreamdiary.extension.cd.entity.DtlCdEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.Usable;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
@@ -29,7 +30,8 @@ import java.util.List;
 @Where(clause = "del_yn='N'")
 @SQLDelete(sql = "UPDATE menu SET del_yn = 'Y' WHERE menu_no = ?")
 public class MenuEntity
-        extends BaseAuditEntity {
+        extends BaseAuditEntity
+        implements Usable {
 
     /** 메뉴 번호 (PK) */
     @Id

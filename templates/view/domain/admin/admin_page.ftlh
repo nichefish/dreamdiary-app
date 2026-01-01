@@ -168,7 +168,7 @@
                                 ${authRole.sortOrdr!}
                             </td>
                             <td class="text-center hidden-table">
-                                ${authRole.state.useYn!}
+                                ${authRole.useYn!}
                             </td>
                         </tr>
                     <#else>

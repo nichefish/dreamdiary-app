@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.domain.board.def.entity;
 
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.Usable;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
@@ -29,7 +30,8 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
 public class BoardDefEntity
-        extends BaseAuditEntity {
+        extends BaseAuditEntity
+        implements Usable {
 
     /** 게시판 정의 (PK) */
     @Id
