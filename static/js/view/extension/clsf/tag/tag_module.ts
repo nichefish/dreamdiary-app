@@ -140,7 +140,7 @@ dF.Tag = (function(): dfModule {
          * 전체 태그 목록 조회 (Ajax)
          */
         listAjax: function(): void {
-            const url: string = Url.TAG_LIST_AJAX;
+            const url: string = Url.TAGS;
             const ajaxData: Record<string, any> = { "contentType": $("#contentType").val() };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {

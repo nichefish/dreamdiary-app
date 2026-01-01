@@ -124,9 +124,8 @@ dF.JrnlDiary = (function(): dfModule {
          * 등록 (Ajax)
          */
         regAjax: function(): void {
-            const postNoElmt: HTMLInputElement = document.querySelector("#jrnlDiaryRegForm [name='postNo']");
-            const postNo: string = postNoElmt?.value;
-            const isMdf: boolean = !!postNo;
+            const postNo: string = cF.util.getInputValue("#jrnlDiaryRegForm [name='postNo']");
+            const isMdf: boolean = cF.util.isNotEmpty(postNo);
             Swal.fire({
                 text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
                 showCancelButton: true,
@@ -273,8 +272,8 @@ dF.JrnlDiary = (function(): dfModule {
             if (!item) return;
 
             const current: string = (item.dataset.resolved || "N").toUpperCase();
-            const next = current === "Y" ? "N" : "Y";
-            const nextBoolean = current !== "Y"
+            const next: "Y"|"N" = current === "Y" ? "N" : "Y";
+            const nextBoolean: boolean = next === "Y"
 
             const payload: Record<string, any> = { resolved: nextBoolean, collapsed: nextBoolean };
             dF.JrnlDiary.patchAjax(postNo, payload, function() {
@@ -301,8 +300,8 @@ dF.JrnlDiary = (function(): dfModule {
             if (!item) return;
 
             const current: string = (item.dataset.collapsed || "N").toUpperCase();
-            const next = current === "Y" ? "N" : "Y";
-            const nextBoolean = current !== "Y"
+            const next: "Y"|"N" = current === "Y" ? "N" : "Y";
+            const nextBoolean: boolean = next === "Y"
 
             const payload: Record<string, any> = { collapsed: nextBoolean };
             dF.JrnlDiary.patchAjax(postNo, payload, function(): void {
@@ -335,11 +334,50 @@ dF.JrnlDiary = (function(): dfModule {
             dF.JrnlDiary.patchAjax(postNo, payload, function(): void {
                 item.dataset.imprtc = next;
 
-                const cn = item.querySelector("div.jrnl-diary-cn");
+                const cn: HTMLDivElement = item.querySelector("div.jrnl-diary-cn");
                 if (!cn) return console.warn("cn not found.");
                 const titleWrap: HTMLElement = cn.querySelector("div.title-wrap");
                 if (!titleWrap) return console.warn("titleWrap not found.");
-                const existing = titleWrap.querySelector(".ctgr-imprtc");
+                const existing: HTMLDivElement = titleWrap.querySelector(".ctgr-imprtc");
+                if (nextBoolean) {
+                    if (existing) return;
+
+                    const imprtcWrap: HTMLDivElement = document.createElement("div");
+                    imprtcWrap.className = "ctgr-span ctgr-imprtc w-60px d-flex-center";
+                    imprtcWrap.innerText = "!중요";
+                    // 첫 번째 요소로 삽입
+                    titleWrap.prepend(imprtcWrap);
+                    cn.classList.add("bg-secondary");
+                } else {
+                    if (existing) existing.remove();
+                    cn.classList.remove("bg-secondary");
+                }
+            });
+        },
+
+        /**
+         * 참조 여부 토글. (Ajax)
+         * @param {string|number} postNo - 글 번호.
+         */
+        refrncAjax: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            const item: HTMLElement = document.querySelector(`.jrnl-diary-item[data-id='${postNo}']`);
+            if (!item) return;
+
+            const current: string = (item.dataset.refrnc || "N").toUpperCase();
+            const next: "Y"|"N" = current === "Y" ? "N" : "Y";
+            const nextBoolean: boolean = next === "Y"
+
+            const payload: Record<string, any> = { refrnc: nextBoolean };
+            dF.JrnlDiary.patchAjax(postNo, payload, function(): void {
+                item.dataset.refrnc = next;
+
+                const cn: HTMLDivElement = item.querySelector("div.jrnl-diary-cn");
+                if (!cn) return console.warn("cn not found.");
+                const titleWrap: HTMLElement = cn.querySelector("div.title-wrap");
+                if (!titleWrap) return console.warn("titleWrap not found.");
+                const existing: HTMLDivElement = titleWrap.querySelector(".ctgr-imprtc");
                 if (nextBoolean) {
                     if (existing) return;
 

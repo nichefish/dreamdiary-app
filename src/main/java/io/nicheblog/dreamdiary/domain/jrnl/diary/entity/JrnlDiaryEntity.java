@@ -106,6 +106,12 @@ public class JrnlDiaryEntity
     @Comment("글접기 여부")
     private String collapsedYn = "N";
 
+    /** 참조 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "refrnc_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Comment("참조 여부")
+    private String refrncYn = "N";
+
     /**
      * 인덱스 변경 여부
      */

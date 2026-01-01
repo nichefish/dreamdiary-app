@@ -21,20 +21,6 @@ public class JrnlState {
     private String collapsedYn;
     /** 중요 여부(Y/N) */
     private String imprtcYn;
-
-    /**
-     * JrnlState 생성 팩토리 메서드
-     *
-     * @param resolvedYn resolved 여부(DB 값, 문자열 or null)
-     * @param collapsedYn collapse 여부(DB 값, 문자열 or null)
-     * @param imprtcYn imprtc 여부(DB 값, 문자열 or null)
-     * @return 인스턴스
-     */
-    public static JrnlState of(final String resolvedYn, final String collapsedYn, final String imprtcYn) {
-        return JrnlState.builder()
-                .resolvedYn(resolvedYn)
-                .collapsedYn(collapsedYn)
-                .imprtcYn(imprtcYn)
-                .build();
-    }
+    /** 참조 여부(Y/N) */
+    private String refrncYn;
 }

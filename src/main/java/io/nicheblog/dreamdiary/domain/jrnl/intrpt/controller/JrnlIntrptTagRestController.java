@@ -56,7 +56,7 @@ public class JrnlIntrptTagRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.JRNL_INTRPT_TAG_CTGR_MAP_AJAX)
+    @GetMapping(Url.JRNL_INTRPT_TAG_CTGR_MAP)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlIntrptTagCtgrMapAjax(
@@ -81,7 +81,7 @@ public class JrnlIntrptTagRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.JRNL_INTRPT_TAG_LIST_AJAX)
+    @GetMapping(Url.JRNL_INTRPT_TAGS)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> tagListAjax(
@@ -133,7 +133,7 @@ public class JrnlIntrptTagRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(value = {Url.JRNL_INTRPT_TAG_DTL_AJAX})
+    @GetMapping(value = {Url.JRNL_INTRPT_TAG})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlIntrptTagDtlAjax(

@@ -8,7 +8,7 @@
     <div class="me-0 d-flex align-items-center">
         <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end"
-                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="컨텍스트 메뉴를 호출합니다.">
+                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.context.menu.show'/>">
             <i class="ki-solid ki-dots-horizontal fs-2x"></i>
         </button>
         <!--begin::Menu 3-->
@@ -17,7 +17,20 @@
             <div class="menu-item px-3">
                 <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">Dream</div>
             </div>
+
             <!--end::Heading-->
+            <!--begin::Menu item-->
+            <div class="menu-item px-3 my-1 cursor-pointer"
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.intrpt"/> <@spring.message 'bs.tooltip.modal.reg'/>">
+                <div class="menu-link flex-stack px-3"
+                     onclick="dF.JrnlIntrpt.regModal({ jrnlDayNo: {{jrnlDayNo}}, jrnlDreamNo: {{postNo}}, stdrdDt: '{{stdrdDt}}', jrnlDtWeekDay: '{{jrnlDtWeekDay}}' });">
+                    <@spring.message 'txt.jrnl.intrpt.reg'/>
+                    <i class="bi bi-layers-half fs-8"></i>
+                </div>
+            </div>
+            <!--begin::Menu separator-->
+            <div class="separator my-2"></div>
+            <!--end::Menu separator-->
             <!--begin::Menu item-->
             <div class="menu-item px-3 my-1 cursor-pointer"
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.dream"/> <@spring.message 'bs.tooltip.modal.mdf'/>">
@@ -43,7 +56,7 @@
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.resolved'/>">
                                 <!--begin::Input-->
                                 <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" value="1" {{#ifYn resolvedYn}}checked="checked"{{/ifYn}}
-                                       onclick="dF.JrnlDiary.resolveAjax({{postNo}});">
+                                       onclick="dF.JrnlDream.resolveAjax({{postNo}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
                                 <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.resolved'/></span>
@@ -63,7 +76,8 @@
                             <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.imprtc'/>">
                                 <!--begin::Input-->
-                                <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" value="1" {{#ifYn imprtcYn}}checked="checked"{{/ifYn}}>
+                                <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" value="1" {{#ifYn imprtcYn}}checked="checked"{{/ifYn}}
+                                       onclick="dF.JrnlDream.imprtcAjax({{postNo}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
                                 <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.imprtc'/></span>
@@ -78,10 +92,46 @@
                         <div class="menu-content px-3">
                             <!--begin::Switch-->
                             <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
+                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.status.refrnc'/>">
+                                <!--begin::Input-->
+                                <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" value="1" {{#ifYn imprtcYn}}checked="checked"{{/ifYn}}
+                                       onclick="dF.JrnlDream.refrncAjax({{postNo}});">
+                                <!--end::Input-->
+                                <!--end::Label-->
+                                <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.refrnc'/></span>
+                                <!--end::Label-->
+                            </label>
+                            <!--end::Switch-->
+                        </div>
+                    </div>
+                    <!--end::Menu item-->
+                    <!--begin::Menu item-->
+                    <div class="menu-item px-3">
+                        <div class="menu-content px-3">
+                            <!--begin::Switch-->
+                            <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
+                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="참조">
+                                <!--begin::Input-->
+                                <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" value="1" {{#ifYn imprtcYn}}checked="checked"{{/ifYn}}
+                                       onclick="dF.JrnlDream.refrncAjax({{postNo}});">
+                                <!--end::Input-->
+                                <!--end::Label-->
+                                <span class="form-check-label text-muted fs-7">참조</span>
+                                <!--end::Label-->
+                            </label>
+                            <!--end::Switch-->
+                        </div>
+                    </div>
+                    <!--end::Menu item-->
+                    <!--begin::Menu item-->
+                    <div class="menu-item px-3">
+                        <div class="menu-content px-3">
+                            <!--begin::Switch-->
+                            <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.status.collapsed'/>">
                                 <!--begin::Input-->
                                 <input class="form-check-input w-30px h-20px cursor-pointer diary-context-collapse-check" type="checkbox" value="1" {{#ifYn collapsedYn}}checked="checked"{{/ifYn}}
-                                       onclick="dF.JrnlDiary.collapseAjax({{postNo}});">
+                                       onclick="dF.JrnlDream.collapseAjax({{postNo}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
                                 <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.collapsed'/></span>

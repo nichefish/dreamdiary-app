@@ -38,6 +38,18 @@ public interface CacheEvictor<T> {
      *
      * @param cacheName - 삭제할 캐시 이름
      * @param yy - 삭제할 연도(문자열 형식)
+     */
+    default void evictMyCacheForPeriod(final String cacheName, final Integer yy) {
+        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + yy);
+        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + yy + "_99");
+        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + "9999_99");
+    }
+
+    /**
+     * 캐시 이름에 대해서 기간 캐시 삭제
+     *
+     * @param cacheName - 삭제할 캐시 이름
+     * @param yy - 삭제할 연도(문자열 형식)
      * @param mnth - 삭제할 월(문자열 형식)
      */
     default void evictMyCacheForPeriod(final String cacheName, final Integer yy, final Integer mnth) {

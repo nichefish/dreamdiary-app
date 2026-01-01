@@ -23,7 +23,7 @@ dF.JrnlDiaryTag = (function(): dfModule {
         },
 
         getCtgrMap: function(): void {
-            const url: string = Url.JRNL_DIARY_TAG_CTGR_MAP_AJAX;
+            const url: string = Url.JRNL_DIARY_TAG_CTGR_MAP;
             cF.ajax.get(url, {}, function(res: AjaxResponse): void {
                 if (res.rsltMap) dF.JrnlDiaryTag.ctgrMap = res.rsltMap;
             });
@@ -38,7 +38,7 @@ dF.JrnlDiaryTag = (function(): dfModule {
             const mnth: string = cF.util.getUrlParam("mnth") ?? localStorage.getItem("jrnl_mnth") ?? "99";
             if (cF.util.isEmpty(mnth)) return;
 
-            const url: string = Url.JRNL_DIARY_TAG_LIST_AJAX;
+            const url: string = Url.JRNL_DIARY_TAGS;
             const ajaxData: Record<string, any> = { yy, mnth };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
@@ -53,7 +53,7 @@ dF.JrnlDiaryTag = (function(): dfModule {
          * 목록에 따른 일기 태그 (전체) 조회 (Ajax)
          */
         listAllAjax: function(): void {
-            const url: string = Url.JRNL_DIARY_TAG_LIST_AJAX;
+            const url: string = Url.JRNL_DIARY_TAGS;
             const ajaxData: Record<string, any> = { "yy": 9999, "mnth":99 };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {

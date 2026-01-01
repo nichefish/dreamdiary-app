@@ -8,7 +8,7 @@
     <div class="me-0 d-flex align-items-center">
         <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end"
-                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="컨텍스트 메뉴를 호출합니다.">
+                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.context.menu.show'/>">
             <i class="ki-solid ki-dots-horizontal fs-2x"></i>
         </button>
         <!--begin::Menu 3-->
@@ -20,16 +20,16 @@
             <!--end::Heading-->
             <!--begin::Menu item-->
             <div class="menu-item px-3 my-1 cursor-pointer"
-                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.day"/> <@spring.message 'bs.tooltip.modal.mdf'/>">
-                <div class="menu-link flex-stack px-3" onclick="dF.JrnlSumry.openDetatched('{{stdrdDt}}');">
-                    새 창 보기
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.sumry"/> <@spring.message 'bs.tooltip.modal.mdf'/>">
+                <div class="menu-link flex-stack px-3" onclick="dF.JrnlSumry.dtlView({{yy}});">
+                    <@spring.message "txt.comm.open-in-new-window"/>
                     <i class="bi bi-window-stack fs-8"></i>
                 </div>
             </div>
             <!--begin::Menu item-->
             <div class="menu-item px-3 my-1 cursor-pointer"
-                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.day"/> <@spring.message 'bs.tooltip.modal.mdf'/>">
-                <div class="menu-link flex-stack px-3" onclick="dF.JrnlSumry.mdfModal({{postNo}});">
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.sumry"/> <@spring.message 'bs.tooltip.modal.mdf'/>">
+                <div class="menu-link flex-stack px-3" onclick="dF.JrnlSumry.mdfModal({{yy}});">
                     <@spring.message 'txt.comm.edit'/>
                     <i class="bi bi-pencil-square fs-8"></i>
                 </div>

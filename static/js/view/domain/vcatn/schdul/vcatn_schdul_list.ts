@@ -50,9 +50,8 @@ const Page: Page = (function(): Page {
          * 유효성 검사:: 시작일 이전 날짜 선택 불가하게 막기
          */
         noBefore: function(beginSelectorStr: string, endSelectorStr: string): void {
-            const vcatnCdElement: HTMLSelectElement = document.getElementById("vcatnCd") as HTMLSelectElement;
             const endElmt: HTMLInputElement = document.querySelector(endSelectorStr) as HTMLInputElement;
-            const vcatnCd: string = vcatnCdElement?.value ?? '';
+            const vcatnCd: string = cF.util.getInputValue("#vcatnCd");
             if (vcatnCd === "AM_HALF" || vcatnCd === "PM_HALF") {
                 const beginElmt: HTMLInputElement = document.querySelector(beginSelectorStr) as HTMLInputElement;
                 if (beginElmt && endElmt) endElmt.value = beginElmt.value;

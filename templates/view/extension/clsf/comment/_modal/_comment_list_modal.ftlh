@@ -19,7 +19,7 @@
                 if (cF.util.isNotEmpty(refContentType)) {
                     document.querySelector(`#commentProcForm [name="refContentType"]`).value = refContentType;
                 }
-                const url = "${Url.COMMENT_LIST_AJAX!}";
+                const url = "${Url.COMMENTS!}";
                 const ajaxData = $("#commentProcForm").serializeArray();
                 cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {

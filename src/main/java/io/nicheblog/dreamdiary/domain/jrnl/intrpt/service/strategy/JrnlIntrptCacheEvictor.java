@@ -52,6 +52,7 @@ public class JrnlIntrptCacheEvictor
             // jrnl_diary
             EhCacheUtils.evictMyCacheAll("myJrnlIntrptList");
             EhCacheUtils.evictMyCache("myJrnlIntrptDtlDto", postNo);
+            this.evictMyCacheForPeriod("myImprtcIntrptList", yy);
             // jrnl_day
             EhCacheUtils.evictMyCache("myJrnlDayDtlDto", jrnlDayNo);
             this.evictMyCacheForPeriod("myJrnlDayList", yy, mnth);

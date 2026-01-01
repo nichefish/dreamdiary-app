@@ -32,7 +32,7 @@ dF.JrnlEntry = (function(): dfModule {
          */
         initForm: function(obj: Record<string, any> = {}): void {
             /* show modal */
-            cF.handlebars.modal(obj, "jrnl_entry_reg", ["header"]);
+            cF.handlebars.modal(obj, "jrnl_entry_reg");
 
             /* jquery validation */
             cF.validate.validateForm("#jrnlEntryRegForm", dF.JrnlEntry.regAjax);
@@ -68,9 +68,8 @@ dF.JrnlEntry = (function(): dfModule {
          * 등록 (Ajax)
          */
         regAjax: function(): void {
-            const postNoElmt: HTMLInputElement = document.querySelector("#jrnlEntryRegForm [name='postNo']") as HTMLInputElement;
-            const postNo: string = postNoElmt?.value;
-            const isMdf: boolean = !!postNo;
+            const postNo: string = cF.util.getInputValue("#jrnlEntryRegForm [name='postNo']");
+            const isMdf: boolean = cF.util.isNotEmpty(postNo);
             Swal.fire({
                 text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
                 showCancelButton: true,
@@ -85,7 +84,6 @@ dF.JrnlEntry = (function(): dfModule {
                             if (!res.rslt) return;
 
                             dF.JrnlDay.refresh();
-                            dF.JrnlEntryTag.listAjax();     // 태그 refresh
                         });
                 }, "block");
             });
@@ -175,7 +173,6 @@ dF.JrnlEntry = (function(): dfModule {
                             if (!res.rslt) return;
 
                             dF.JrnlDay.refresh();
-                            dF.JrnlEntryTag.listAjax();     // 태그 refresh
                         });
                 }, "block");
             });
@@ -218,7 +215,11 @@ dF.JrnlEntry = (function(): dfModule {
             dF.JrnlEntry.patchAjax(postNo, payload, function(): void {
                 item.dataset.collapsed = next;
 
-                item.classList.toggle("collapsed", next === "Y");
+                const content: HTMLElement = item.querySelector(".jrnl-entry-cn");
+                if (content) {
+                    content.classList.toggle("collapsed", next === "Y");
+                }
+
                 const chk: HTMLInputElement = item.querySelector(".entry-context-collapse-check");
                 if (chk) chk.checked = (next === "Y");
             });

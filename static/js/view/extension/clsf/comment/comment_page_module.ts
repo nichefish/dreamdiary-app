@@ -53,7 +53,7 @@ dF.Comment.page = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = Url.COMMENT_REG_AJAX;
+                const url: string = Url.COMMENTS;
                 const ajaxData: FormData = new FormData(document.getElementById("commentPageRegForm") as HTMLFormElement);
                 cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
@@ -111,7 +111,7 @@ dF.Comment.page = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = Url.COMMENT_MDF_AJAX;
+                const url: string = cF.util.bindUrl(Url.COMMENT, { postNo });
                 const ajaxData: Record<string, any> = cF.util.getJsonFormData("#commentPageMdfForm" + postNo);
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
@@ -134,8 +134,8 @@ dF.Comment.page = (function(): dfModule {
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
-                const url: string = Url.COMMENT_DEL_AJAX;
-                const ajaxData: Record<string, any> = { "postNo": postNo, "actvtyCtgrCd": "${actvtyCtgrCd!}" };
+                const url: string = cF.util.bindUrl(Url.COMMENT, { postNo });
+                const ajaxData: Record<string, any> = { "actvtyCtgrCd": "${actvtyCtgrCd!}" };
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {

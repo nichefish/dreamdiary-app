@@ -131,6 +131,12 @@ public class JrnlDreamEntity
     @Comment("글접기 여부")
     private String collapsedYn = "N";
 
+    /** 참조 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "refrnc_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Comment("참조 여부")
+    private String refrncYn = "N";
+
     /** 저널 일기 목록 */
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "jrnl_dream_no", referencedColumnName = "post_no", insertable = false, updatable = false)

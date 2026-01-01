@@ -35,6 +35,70 @@ CREATE TABLE IF NOT EXISTS jrnl_day (
     INDEX (yy, mnth)
 ) COMMENT = '저널 일자';
 
+-- 저널 항목 (jrnl_entry)
+-- @extends: BaseClsfEntity
+-- @uses: CommentEmbed
+CREATE TABLE IF NOT EXISTS jrnl_entry (
+    -- CLSF
+    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 항목 번호 (PK)',
+    content_type VARCHAR(32) DEFAULT 'JRNL_ENTRY' COMMENT '컨텐츠 타입',
+    --
+    idx INT DEFAULT 1 COMMENT '저널 항목 인덱스',
+    -- status
+    collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)',
+    -- POST
+    title VARCHAR(200) COMMENT '제목',
+    cn LONGTEXT COMMENT '내용',
+    ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
+    fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
+    hit_cnt INT DEFAULT 0 COMMENT '조회수',
+    imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
+    mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
+    -- ATCH_FILE
+    atch_file_no INT COMMENT '첨부파일 번호',
+    -- AUDIT
+    regstr_id VARCHAR(20) COMMENT '등록자 ID',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
+    mdf_dt DATETIME COMMENT '수정일시',
+    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)'
+) COMMENT = '저널 항목';
+
+-- 저널 일기 (jrnl_diary)
+-- @extends: BasePostEntity
+-- @uses: CommentEmbed
+CREATE TABLE IF NOT EXISTS jrnl_diary (
+    -- CLSF
+    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 일기 번호 (PK)',
+    content_type VARCHAR(32) DEFAULT 'JRNL_DIARY' COMMENT '컨텐츠 타입',
+    --
+    jrnl_day_no INT COMMENT '저널 일자 번호',
+    jrnl_entry_no INT COMMENT '저널 항목 번호',
+    idx INT DEFAULT 1 COMMENT '저널 일기 인덱스',
+    -- status
+    resolved_yn CHAR(1) DEFAULT 'N' COMMENT '정리완료 여부 (Y/N)',
+    collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)',
+    imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
+    refrnc_yn CHAR(1) DEFAULT 'N' COMMENT '참조 여부(Y/N)',
+    -- POST
+    title VARCHAR(200) COMMENT '제목',
+    cn LONGTEXT COMMENT '내용',
+    ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
+    fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
+    hit_cnt INT DEFAULT 0 COMMENT '조회수',
+    mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
+    -- ATCH_FILE
+    atch_file_no INT COMMENT '첨부파일 번호',
+    -- AUDIT
+    regstr_id VARCHAR(20) COMMENT '등록자 ID',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
+    mdf_dt DATETIME COMMENT '수정일시',
+    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    -- CONSTRAINT
+    INDEX (jrnl_day_no)
+) COMMENT = '저널 일기';
+
 -- 저널 꿈 (jrnl_dream)
 -- @extends: BasePostEntity
 -- @uses: CommentEmbed
@@ -51,6 +115,7 @@ CREATE TABLE IF NOT EXISTS jrnl_dream (
     else_dreamer_nm VARCHAR(64) COMMENT '꿈꾼이 이름',
     resolved_yn CHAR(1) DEFAULT 'N' COMMENT '정리완료 여부 (Y/N)',
     collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)',
+    refrnc_yn CHAR(1) DEFAULT 'N' COMMENT '참조 여부(Y/N)',
     -- POST
     title VARCHAR(200) COMMENT '제목',
     cn LONGTEXT COMMENT '내용',
@@ -102,67 +167,6 @@ CREATE TABLE IF NOT EXISTS jrnl_intrpt (
     -- CONSTRAINT
     INDEX (jrnl_dream_no)
 ) COMMENT = '저널 해석';
-
--- 저널 항목 (jrnl_entry)
--- @extends: BaseClsfEntity
--- @uses: CommentEmbed
-CREATE TABLE IF NOT EXISTS jrnl_entry (
-    -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 항목 번호 (PK)',
-    content_type VARCHAR(32) DEFAULT 'JRNL_ENTRY' COMMENT '컨텐츠 타입',
-    --
-    idx INT DEFAULT 1 COMMENT '저널 항목 인덱스',
-    collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)',
-    -- POST
-    title VARCHAR(200) COMMENT '제목',
-    cn LONGTEXT COMMENT '내용',
-    ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
-    fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
-    hit_cnt INT DEFAULT 0 COMMENT '조회수',
-    imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
-    mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
-    -- ATCH_FILE
-    atch_file_no INT COMMENT '첨부파일 번호',
-    -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
-    mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
-    mdf_dt DATETIME COMMENT '수정일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)'
-) COMMENT = '저널 항목';
-
--- 저널 일기 (jrnl_diary)
--- @extends: BasePostEntity
--- @uses: CommentEmbed
-CREATE TABLE IF NOT EXISTS jrnl_diary (
-    -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 일기 번호 (PK)',
-    content_type VARCHAR(32) DEFAULT 'JRNL_DIARY' COMMENT '컨텐츠 타입',
-    --
-    jrnl_day_no INT COMMENT '저널 일자 번호',
-    jrnl_entry_no INT COMMENT '저널 항목 번호',
-    idx INT DEFAULT 1 COMMENT '저널 일기 인덱스',
-    resolved_yn CHAR(1) DEFAULT 'N' COMMENT '정리완료 여부 (Y/N)',
-    collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)',
-    -- POST
-    title VARCHAR(200) COMMENT '제목',
-    cn LONGTEXT COMMENT '내용',
-    ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
-    fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
-    hit_cnt INT DEFAULT 0 COMMENT '조회수',
-    imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
-    mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
-    -- ATCH_FILE
-    atch_file_no INT COMMENT '첨부파일 번호',
-    -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
-    mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
-    mdf_dt DATETIME COMMENT '수정일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
-    -- CONSTRAINT
-    INDEX (jrnl_day_no)
-) COMMENT = '저널 일기';
 
 -- 저널 할일 (jrnl_todo)
 -- @extends: BasePostEntity

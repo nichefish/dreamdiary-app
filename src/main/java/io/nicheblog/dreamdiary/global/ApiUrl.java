@@ -17,10 +17,10 @@ public interface ApiUrl {
     String JRNL_DAYS = Prefix.API + "/jrnl/days";
     String JRNL_DAY = Prefix.API + "/jrnl/day/{postNo}";
     /** 저널 일자 태그 */
-    String JRNL_DAY_TAG_LIST_AJAX = Prefix.API + "/jrnl/day/tag-list";
-    String JRNL_DAY_TAG_GROUP_LIST_AJAX = Prefix.API + "/jrnl/day/tag-group-list";
-    String JRNL_DAY_TAG_DTL_AJAX = Prefix.API + "/jrnl/day/tag-dtl";
-    String JRNL_DAY_TAG_CTGR_MAP_AJAX = Prefix.API + "/jrnl/day/tag-ctgr-map";
+    String JRNL_DAY_TAGS = Prefix.API + "/jrnl/day/tags";
+    String JRNL_DAY_TAG_GROUP_LIST = Prefix.API + "/jrnl/day/tag/group-list";
+    String JRNL_DAY_TAG = Prefix.API + "/jrnl/day/tag/{tagNo}";
+    String JRNL_DAY_TAG_CTGR_MAP = Prefix.API + "/jrnl/day/tag/ctgr-map";
     /** 저널 일자 메타 */
     String JRNL_DAY_META_CTGR_MAP = Prefix.API + "/jrnl/day/meta/ctgr-map";
 
@@ -28,58 +28,57 @@ public interface ApiUrl {
     String JRNL_DREAMS = Prefix.API + "/jrnl/dreams";
     String JRNL_DREAM = Prefix.API + "/jrnl/dream/{postNo}";
     /** 저널 꿈 태그 */
-    String JRNL_DREAM_TAG_LIST_AJAX = Prefix.API + "/jrnl/dream/tag-list";
+    String JRNL_DREAM_TAGS = Prefix.API + "/jrnl/dream/tags";
     String JRNL_DREAM_TAG_GROUP_LIST_AJAX = Prefix.API + "/jrnl/dream/tag-group-list";
-    String JRNL_DREAM_TAG_DTL_AJAX = Prefix.API + "/jrnl/dream/tag-dtl";
-    String JRNL_DREAM_TAG_CTGR_MAP_AJAX = Prefix.API + "/jrnl/dream/tag-ctgr-map";
+    String JRNL_DREAM_TAG = Prefix.API + "/jrnl/dream/tag/{tagNo}";
+    String JRNL_DREAM_TAG_CTGR_MAP = Prefix.API + "/jrnl/dream/tag/ctgr-map";
     /** 저널 해석 */
     String JRNL_INTRPTS = Prefix.API + "/jrnl/intrpts";
     String JRNL_INTRPT = Prefix.API + "/jrnl/intrpt/{postNo}";
     String JRNL_INTRPT_SET_COLLAPSE_AJAX = Prefix.API + "/jrnl/intrpt/set-collapse";
     /** 저널 해석 태그 */
-    String JRNL_INTRPT_TAG_LIST_AJAX = Prefix.API + "/jrnl/intrpt/tag-list";
-    String JRNL_INTRPT_TAG_GROUP_LIST_AJAX = Prefix.API + "/jrnl/intrpt/tag-group-list";
-    String JRNL_INTRPT_TAG_DTL_AJAX = Prefix.API + "/jrnl/intrpt/tag-dtl";
-    String JRNL_INTRPT_TAG_CTGR_MAP_AJAX = Prefix.API + "/jrnl/intrpt/tag-ctgr-map";
+    String JRNL_INTRPT_TAGS = Prefix.API + "/jrnl/intrpt/tags";
+    String JRNL_INTRPT_TAG_GROUP_LIST_AJAX = Prefix.API + "/jrnl/intrpt/tag/group-list";
+    String JRNL_INTRPT_TAG = Prefix.API + "/jrnl/intrpt/{tagNo}";
+    String JRNL_INTRPT_TAG_CTGR_MAP = Prefix.API + "/jrnl/intrpt/tag/ctgr-map";
 
     /** 저널 항목 */
-    String JRNL_ENTRIES = "/jrnl/entries";
-    String JRNL_ENTRY = "/jrnl/entry/{postNo}";
+    String JRNL_ENTRIES = Prefix.API + "/jrnl/entries";
+    String JRNL_ENTRY = Prefix.API + "/jrnl/entry/{postNo}";
     /** 저널 항목 태그 */
-    String JRNL_ENTRY_TAG_LIST_AJAX = "/jrnl/dream/tag-list";
-    String JRNL_ENTRY_TAG_GROUP_LIST_AJAX = "/jrnl/entry/tag-group-list";
-    String JRNL_ENTRY_TAG_DTL_AJAX = "/jrnl/entry/tag-dtl";
-    String JRNL_ENTRY_TAG_CTGR_MAP_AJAX = "/jrnl/entry/tag-ctgr-map";
+    String JRNL_ENTRY_TAGS = Prefix.API + "/jrnl/dream/tags";
+    String JRNL_ENTRY_TAG_GROUP_LIST_AJAX = Prefix.API + "/jrnl/entry/tag/group-list";
 
     /** 저널 일기 */
-    String JRNL_DIARIES = "/api/jrnl/diaries";
-    String JRNL_DIARY = "/jrnl/diary/{postNo}";
+    String JRNL_DIARIES = Prefix.API + "/jrnl/diaries";
+    String JRNL_DIARY = Prefix.API + "/jrnl/diary/{postNo}";
     /** 저널 일기 태그 */
-    String JRNL_DIARY_TAG_LIST_AJAX = "/jrnl/diary/jrnl-diary-tag-list";
-    String JRNL_DIARY_TAG_GROUP_LIST_AJAX = "/jrnl/diary/jrnl-diary-tag-group-list";
-    String JRNL_DIARY_TAG_DTL_AJAX = "/jrnl/diary/jrnl-diary-tag-dtl";
-    String JRNL_DIARY_TAG_CTGR_MAP_AJAX = "/jrnl/diary/jrnl-diary-tag-ctgr-map";
+    String JRNL_DIARY_TAGS = Prefix.API + "/jrnl/diary/tags";
+    String JRNL_DIARY_TAG_GROUP_LIST_AJAX = Prefix.API + "/jrnl/diary/tag/group-list";
+    String JRNL_DIARY_TAG_DTL_AJAX = Prefix.API + "/jrnl/diary/tag/dtl";
+    String JRNL_DIARY_TAG_CTGR_MAP = Prefix.API + "/jrnl/diary/tag/ctgr-map";
 
     /** 저널 할일 */
-    String JRNL_TODOS = "/jrnl/todos";
-    String JRNL_TODO_REG_AJAX = "/jrnl/todo/reg";
-    String JRNL_TODO_DTL_AJAX = "/jrnl/todo/dtl";
-    String JRNL_TODO_MDF_AJAX = "/jrnl/todo/mdf";
-    String JRNL_TODO_DEL_AJAX = "/jrnl/todo/del";
+    String JRNL_TODOS = Prefix.API + "/jrnl/todos";
+    String JRNL_TODO = Prefix.API + "/jrnl/todo/{postNo}";
 
     /** 저널 주제 */
-    String JRNL_SBJCT_REG_AJAX = "/jrnl/sbjct/reg";
-    String JRNL_SBJCT_DTL_AJAX = "/jrnl/sbjct/dtl";
-    String JRNL_SBJCT_MDF_AJAX = "/jrnl/sbjct/mdf";
-    String JRNL_SBJCT_DEL_AJAX = "/jrnl/sbjct/del";
+    String JRNL_SBJCT_REG_AJAX = Prefix.API + "/jrnl/sbjct/reg";
+    String JRNL_SBJCT_DTL_AJAX = Prefix.API + "/jrnl/sbjct/dtl";
+    String JRNL_SBJCT_MDF_AJAX = Prefix.API + "/jrnl/sbjct/mdf";
+    String JRNL_SBJCT_DEL_AJAX = Prefix.API + "/jrnl/sbjct/del";
 
     /** 저널 결산 */
-    String JRNL_SUMRIES = "/jrnl/sumries";
-    String JRNL_SUMRY_DTL_AJAX = "/jrnl/sumry/dtl";
-    String JRNL_SUMRY_MAKE_AJAX = "/jrnl/sumry/make";
-    String JRNL_SUMRY_MAKE_TOTAL_AJAX = "/jrnl/sumry/make-total";
-    String JRNL_SUMRY_DREAM_COMPT_AJAX = "/jrnl/sumry/dream-compt";
-    String JRNL_SUMRY_REG_AJAX = "/jrnl/sumry/reg";
+    String JRNL_SUMRIES = Prefix.API + "/jrnl/sumries";
+    String JRNL_SUMRY = Prefix.API + "/jrnl/sumry/{yy}";
+    String JRNL_SUMRY_IMPRTC_DIARIES = Prefix.API + "/jrnl/sumry/{yy}/imprtc-diaries";
+    String JRNL_SUMRY_IMPRTC_DREAMS = Prefix.API + "/jrnl/sumry/{yy}/imprtc-dreams";
+    String JRNL_SUMRY_TAGS = Prefix.API + "/jrnl/sumry/{yy}/tags";
+
+    String JRNL_SUMRY_MAKE_AJAX = Prefix.API + "/jrnl/sumry/make";
+    String JRNL_SUMRY_MAKE_TOTAL_AJAX = Prefix.API + "/jrnl/sumry/make-total";
+    String JRNL_SUMRY_DREAM_COMPT_AJAX = Prefix.API + "/jrnl/sumry/dream-compt";
+    String JRNL_SUMRY_REG_AJAX = Prefix.API + "/jrnl/sumry/reg";
 
     /** 공지사항 */
     String NOTICE_REG_AJAX = Prefix.API + "/notice/reg";
@@ -104,28 +103,22 @@ public interface ApiUrl {
     String USER_EMAIL_DUP_CHK_AJAX = Prefix.API + "/user/email-dup-chk";
 
     /** 내 정보 관리 */
-    String USER_MY_UPLOAD_PROFL_IMG_AJAX = Prefix.API + "/user/my/my-upload-profl-img";
-    String USER_MY_REMOVE_PROFL_IMG_AJAX = Prefix.API + "/user/my/my-remove-profl-img";
-    String USER_MY_PW_CF_AJAX = Prefix.API + "/user/my/my-pw-cf";
-    String USER_MY_PW_CHG_AJAX = Prefix.API + "/user/my/my-pw-chg";
+    String USER_MY_UPLOAD_PROFL_IMG_AJAX = Prefix.API + "/user/my/upload-profl-img";
+    String USER_MY_REMOVE_PROFL_IMG_AJAX = Prefix.API + "/user/my/remove-profl-img";
+    String USER_MY_PW_CF_AJAX = Prefix.API + "/user/my/pw-cf";
+    String USER_MY_PW_CHG_AJAX = Prefix.API + "/user/my/pw-chg";
 
     /** 댓글 */
-    String COMMENT_LIST_AJAX = Prefix.API + "/comment/comment-list";
-    String COMMENT_REG_AJAX = Prefix.API + "/comment/comment-reg";
-    String COMMENT_DTL_AJAX = Prefix.API + "/comment/comment-dtl";
-    String COMMENT_MDF_AJAX = Prefix.API + "/comment/comment-mdf";
-    String COMMENT_DEL_AJAX = Prefix.API + "/comment/comment-del";
+    String COMMENTS = Prefix.API + "/comments";
+    String COMMENT = Prefix.API + "/comment/{postNo}";
 
     /** 단락 */
-    String SECTN_LIST_AJAX = Prefix.API + "/sectn/sectn-list";
-    String SECTN_REG_AJAX = Prefix.API + "/sectn/sectn-reg";
-    String SECTN_MDF_AJAX = Prefix.API + "/sectn/sectn-mdf";
-    String SECTN_DTL_AJAX = Prefix.API + "/sectn/sectn-dtl";
-    String SECTN_DEL_AJAX = Prefix.API + "/sectn/sectn-del";
-    String SECTN_SORT_ORDR_AJAX = Prefix.API + "/sectn/sectn-sort-ordr";
+    String SECTNS = Prefix.API + "/sectns";
+    String SECTN = Prefix.API + "/sectn/{postNo}";
+    String SECTN_SORT_ORDR = Prefix.API + "/sectn/sort-ordr";
 
     /** 태그 */
-    String TAG_LIST_AJAX = Prefix.API + "/tag/tag-list";
+    String TAGS = Prefix.API + "/tags";
     String TAG_DTL_AJAX = Prefix.API + "/tag/tag-dtl";
 
     /** 태그 속성 */
@@ -139,10 +132,8 @@ public interface ApiUrl {
 
     /** 메뉴 관리 */
     String MENU_MAIN_LIST_AJAX = Prefix.API + "/menu/menu-main-list";
-    String MENU_REG_AJAX = Prefix.API + "/menu/menu-reg";
-    String MENU_DTL_AJAX = Prefix.API + "/menu/menu-dtl";
-    String MENU_MDF_AJAX = Prefix.API + "/menu/menu-mdf";
-    String MENU_DEL_AJAX = Prefix.API + "/menu/menu-del";
+    String MENUS = Prefix.API + "/menus";
+    String MENU = Prefix.API + "/menu/{menuNo}";
     String MENU_SORT_ORDR_AJAX = Prefix.API + "/menu/menu-sort-ordr";
 
     /** 게시판 관리 */

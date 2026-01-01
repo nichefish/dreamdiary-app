@@ -52,6 +52,7 @@ public class JrnlDiaryCacheEvictor
             // jrnl_diary
             EhCacheUtils.evictMyCacheAll("myJrnlDiaryList");
             EhCacheUtils.evictMyCache("myJrnlDiaryDtlDto", postNo);
+            this.evictMyCacheForPeriod("myImprtcDiaryList", yy);
             // jrnl_day
             EhCacheUtils.evictMyCache("myJrnlDayDtlDto", jrnlDayNo);
             this.evictMyCacheForPeriod("myJrnlDayList", yy, mnth);
@@ -59,6 +60,7 @@ public class JrnlDiaryCacheEvictor
             // jrnl_diary_tag
             EhCacheUtils.evictMyCacheAll("myJrnlDiaryTagCtgrMap");
             EhCacheUtils.evictMyCacheAll("myJrnlDiaryTagDtl");
+
             // 태그 캐시 처리
             EhCacheUtils.evictCache("tagContentEntityListByRef", postNo + "_JRNL_DIARY");
         } catch (final Exception e) {

@@ -2,16 +2,11 @@ package io.nicheblog.dreamdiary.domain.jrnl.sumry.controller;
 
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
-import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayTagService;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryService;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryTagService;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamService;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamTagService;
+import io.nicheblog.dreamdiary.domain.jrnl.sumry.JrnlSumrySection;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumrySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.service.JrnlSumryService;
 import io.nicheblog.dreamdiary.extension.cd.service.DtlCdService;
-import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyPageControllerAspect;
 import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
@@ -26,10 +21,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * JrnlSumryPageController
@@ -51,11 +44,6 @@ public class JrnlSumryPageController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
     private final JrnlSumryService jrnlSumryService;
-    private final JrnlDiaryService jrnlDiaryService;
-    private final JrnlDreamService jrnlDreamService;
-    private final JrnlDayTagService jrnlDayTagService;
-    private final JrnlDiaryTagService jrnlDiaryTagService;
-    private final JrnlDreamTagService jrnlDreamTagService;
     private final DtlCdService dtlCdService;
 
     /**
@@ -96,16 +84,16 @@ public class JrnlSumryPageController
      * 저널 결산 상세 화면 조회
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param key 식별자
+     * @param yy 년도
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
-    @GetMapping(value = Url.JRNL_SUMRY_DTL)
+    @GetMapping(value = Url.JRNL_SUMRY_VIEW)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    public String jrnlSumryDtl(
-            final @RequestParam("postNo") @Nullable Integer key,
-            final @RequestParam("yy") @Nullable Integer yyParam,
+    public String jrnlSumryView(
+            final @PathVariable("yy") Integer yy,
+            final @RequestParam("section") JrnlSumrySection section,
             final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {
@@ -114,25 +102,8 @@ public class JrnlSumryPageController
         model.addAttribute("menuLabel", SiteMenu.JRNL_SUMRY);
         model.addAttribute("pageNm", PageNm.DTL);
 
-        // 객체 조회 및 모델에 추가
-        final JrnlSumryDto retrievedDto = key != null ? jrnlSumryService.getSumryDtl(key) : yyParam != null ? jrnlSumryService.getDtlDtoByYy(yyParam) : null;
-        model.addAttribute("post", retrievedDto);
-        assert retrievedDto != null;
-        final Integer yy = retrievedDto.getYy();
-        // 중요 일기 목록 조회
-        model.addAttribute("imprtcDiaryList", jrnlDiaryService.getImprtcDiaryList(yy));
-        // 중요 꿈 목록 조회
-        model.addAttribute("imprtcDreamList", jrnlDreamService.getImprtcDreamList(yy));
+        model.addAttribute("section", section);
 
-        // 일자 태그 목록 조회
-        final List<TagDto> jrnlDayTagList = jrnlDayTagService.getDaySizedListDto(yy, 99);
-        model.addAttribute("dayTagList", jrnlDayTagList);
-        // 일기 태그 목록 조회
-        final List<TagDto> jrnlDiaryTagList = jrnlDiaryTagService.getDiarySizedListDto(yy, 99);
-        model.addAttribute("diaryTagList", jrnlDiaryTagList);
-        // 꿈 태그 목록 조회
-        final List<TagDto> jrnlDreamTagList = jrnlDreamTagService.getDreamSizedListDto(yy, 99);
-        model.addAttribute("dreamTagList", jrnlDreamTagList);
         // 코드 데이터 모델에 추가
         dtlCdService.setCdListToModel(Constant.JRNL_SUMRY_TY_CD, model);
 

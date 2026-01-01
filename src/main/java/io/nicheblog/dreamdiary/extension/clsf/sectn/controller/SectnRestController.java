@@ -55,7 +55,7 @@ public class SectnRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.SECTN_LIST_AJAX)
+    @GetMapping(Url.SECTNS)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> sectnListAjax(
@@ -84,17 +84,19 @@ public class SectnRestController
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(value = {Url.SECTN_REG_AJAX, Url.SECTN_MDF_AJAX})
+    @PostMapping(value = {Url.SECTNS, Url.SECTN})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> sectnRegAjax(
+            final @PathVariable(value = "postNo", required = false) Integer postNo,
             final @Valid SectnDto sectn,
             final MultipartHttpServletRequest request,
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final boolean isReg = (sectn.getKey() == null);
-        final ServiceResponse result = isReg ? sectnService.regist(sectn, request) : sectnService.modify(sectn, request);
+        final boolean isMdf = (postNo != null);
+        if (isMdf) sectn.setPostNo(postNo);
+        final ServiceResponse result = isMdf ? sectnService.modify(sectn, request) : sectnService.regist(sectn, request);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
@@ -109,20 +111,20 @@ public class SectnRestController
      * 단락 상세 조회 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param key 식별자
+     * @param postNo 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.SECTN_DTL_AJAX)
+    @GetMapping(Url.SECTN)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> sectnDtlAjax(
-            final @RequestParam("postNo") Integer key,
+            final @PathVariable("postNo") Integer postNo,
             final SectnParam param,
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final SectnDto rsDto = sectnService.getDtlDto(key);
+        final SectnDto rsDto = sectnService.getDtlDto(postNo);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -140,11 +142,11 @@ public class SectnRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(Url.SECTN_DEL_AJAX)
+    @DeleteMapping(Url.SECTN)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> sectnDelAjax(
-            final @RequestParam("postNo") Integer postNo,
+            final @PathVariable("postNo") Integer postNo,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -165,7 +167,7 @@ public class SectnRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(Url.SECTN_SORT_ORDR_AJAX)
+    @PostMapping(Url.SECTN_SORT_ORDR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> sectnSortOrdrAjax(
             final @RequestBody SectnParam sectnParam,

@@ -95,8 +95,9 @@ dF.Menu = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const isReg: boolean = $("#menuRegForm #menuNo").val() === "";
-                const url: string = isReg ? Url.MENU_REG_AJAX : Url.MENU_MDF_AJAX;
+                const menuNo = cF.util.getInputValue("#menuRegForm #menuNo");
+                const isMdf: boolean = cF.util.isNotEmpty(menuNo);
+                const url: string = isMdf ? cF.bindUrl(Url.MENU, { menuNo }) : Url.MENUS;
                 const ajaxData: Record<string, any> = cF.util.getJsonFormData("#menuRegForm");
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
@@ -113,9 +114,8 @@ dF.Menu = (function(): dfModule {
         mdfModal: function(menuNo: string|number): void {
             if (isNaN(Number(menuNo))) return;
 
-            const url: string = Url.MENU_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "menuNo": menuNo };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+            const url: string = cF.bindUrl(Url.MENU, { menuNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
@@ -139,9 +139,8 @@ dF.Menu = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = Url.MENU_DEL_AJAX;
-                const ajaxData: Record<string, any> = { "menuNo": menuNo };
-                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                const url: string = cF.bindUrl(Url.MENU, { menuNo });
+                cF.$ajax.post(url, null, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.ui.blockUIReload();

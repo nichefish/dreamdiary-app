@@ -1,0 +1,28 @@
+<#--
+ * 저널 결산(jrnl_sumry) 목록 조회 Template
+ * @included_in : jrnl_sumry_list.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="jrnl_sumry_imprtc_diary_list_template">
+    {{#each this}}
+        <div class="jrnl-diary-item">
+            <div class="col-12 col-md-1 d-flex flex-wrap align-items-center fs-5 fw-bold">
+                {{> jrnl_day_stdrd_dt_partial this}}
+                {{> jrnl_day_context_btn_partial this postNo=this.jrnlDayNo}}
+            </div>
+            <div class="col py-3 jrnl-diary-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
+                {{> jrnl_diary_cn_partial this collapse="collapse-4"}}
+            </div>
+            <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+            <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
+                {{> comment_reg_btn_partial this contentType="JRNL_DIARY"}}
+                {{> jrnl_diary_copy_btn_partial this}}
+                {{> jrnl_diary_context_btn_partial this}}
+            </div>
+        </div>
+    {{else}}
+        <div class="jrnl-day d-flex-center">
+            <@spring.message 'txt.jrnl.diary'/> <@spring.message 'view.list.empty'/>
+        </div>
+    {{/each}}
+</script>

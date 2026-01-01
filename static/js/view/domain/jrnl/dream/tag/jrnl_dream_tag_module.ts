@@ -23,7 +23,7 @@ dF.JrnlDreamTag = (function(): dfModule {
         },
 
         getCtgrMap: function(): void {
-            const url: string = Url.JRNL_DREAM_TAG_CTGR_MAP_AJAX;
+            const url: string = Url.JRNL_DREAM_TAG_CTGR_MAP;
             cF.ajax.get(url, {}, function(res: AjaxResponse): void {
                 if (res.rsltMap) dF.JrnlDreamTag.ctgrMap = res.rsltMap;
             });
@@ -38,7 +38,7 @@ dF.JrnlDreamTag = (function(): dfModule {
             const mnth: string = cF.util.getUrlParam("mnth") ?? localStorage.getItem("jrnl_mnth") ?? "99";
             if (cF.util.isEmpty(mnth)) return;
 
-            const url: string = Url.JRNL_DREAM_TAG_LIST_AJAX;
+            const url: string = Url.JRNL_DREAM_TAGS;
             const ajaxData: Record<string, any> = { yy, mnth };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
@@ -53,7 +53,7 @@ dF.JrnlDreamTag = (function(): dfModule {
          * 목록에 따른 꿈 태그 (전체) 조회 (Ajax)
          */
         listAllAjax: function(): void {
-            const url: string = Url.JRNL_DREAM_TAG_LIST_AJAX;
+            const url: string = Url.JRNL_DREAM_TAGS;
             const ajaxData: Record<string, any> = { "yy": 9999, "mnth":99 };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
@@ -75,7 +75,7 @@ dF.JrnlDreamTag = (function(): dfModule {
          * 목록에 따른 꿈 태그 (전체) 조회 (Ajax)
          */
         dreamTagGroupListAllAjax: function(): void {
-            const url: string = Url.JRNL_DREAM_TAG_LIST_AJAX;
+            const url: string = Url.JRNL_DREAM_TAGS;
             const ajaxData: Record<string, any> = { "yy": 9999, "mnth":99 };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
@@ -112,9 +112,8 @@ dF.JrnlDreamTag = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = Url.JRNL_DREAM_TAG_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "tagNo": tagNo };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DREAM_TAG, { tagNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;

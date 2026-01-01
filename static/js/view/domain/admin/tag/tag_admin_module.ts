@@ -29,7 +29,7 @@ dF.TagAdmin = (function(): dfModule {
          * @param {string} refContentType - 조회할 태그의 참조 콘텐츠 유형.
          */
         tagListAjax: function(refContentType: string): void {
-            const url: string = Url.TAG_LIST_AJAX;
+            const url: string = Url.TAGS;
             const ajaxData: Record<string, any> = { "contentType": refContentType };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {

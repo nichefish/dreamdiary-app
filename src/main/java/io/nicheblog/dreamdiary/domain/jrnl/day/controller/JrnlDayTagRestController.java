@@ -20,10 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -58,7 +55,7 @@ public class JrnlDayTagRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.JRNL_DAY_TAG_CTGR_MAP_AJAX)
+    @GetMapping(Url.JRNL_DAY_TAG_CTGR_MAP)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayTagCtgrMapAjax(
@@ -83,7 +80,7 @@ public class JrnlDayTagRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.JRNL_DAY_TAG_LIST_AJAX)
+    @GetMapping(Url.JRNL_DAY_TAGS)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayTagListAjax(
@@ -109,7 +106,7 @@ public class JrnlDayTagRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.JRNL_DAY_TAG_GROUP_LIST_AJAX)
+    @GetMapping(Url.JRNL_DAY_TAG_GROUP_LIST)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayTagGroupListAjax(
@@ -135,14 +132,16 @@ public class JrnlDayTagRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(value = {Url.JRNL_DAY_TAG_DTL_AJAX})
+    @GetMapping(value = {Url.JRNL_DAY_TAG})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayTagDtlAjax(
+            final @PathVariable("tagNo") Integer tagNo,
             final JrnlDaySearchParam searchParam,
             final LogActvtyParam logParam
     ) throws Exception {
 
+        searchParam.setTagNo(tagNo);
         final List<JrnlDayDto> jrnlDayList = jrnlDayService.jrnlDayTagDtl(searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;

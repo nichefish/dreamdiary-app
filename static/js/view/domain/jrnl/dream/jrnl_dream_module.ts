@@ -141,9 +141,8 @@ dF.JrnlDream = (function(): dfModule {
          * 등록 (Ajax)
          */
         regAjax: function(): void {
-            const postNoElmt: HTMLInputElement = document.querySelector("#jrnlDreamRegForm [name='postNo']");
-            const postNo: string = postNoElmt?.value;
-            const isMdf: boolean = !!postNo;
+            const postNo: string = cF.util.getInputValue("#jrnlDreamRegForm [name='postNo']");
+            const isMdf: boolean = cF.util.isNotEmpty(postNo);
             Swal.fire({
                 text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
                 showCancelButton: true,
@@ -258,8 +257,8 @@ dF.JrnlDream = (function(): dfModule {
             if (!item) return;
 
             const current: string = (item.dataset.resolved || "N").toUpperCase();
-            const next = current === "Y" ? "N" : "Y";
-            const nextBoolean = current !== "Y"
+            const next: "Y"|"N" = current === "Y" ? "N" : "Y";
+            const nextBoolean: boolean = next === "Y"
 
             const payload: Record<string, any> = { resolved: nextBoolean, collapsed: nextBoolean };
             dF.JrnlDream.patchAjax(postNo, payload, function() {
@@ -286,8 +285,8 @@ dF.JrnlDream = (function(): dfModule {
             if (!item) return;
 
             const current: string = (item.dataset.collapsed || "N").toUpperCase();
-            const next = current === "Y" ? "N" : "Y";
-            const nextBoolean = current !== "Y"
+            const next: "Y"|"N" = current === "Y" ? "N" : "Y";
+            const nextBoolean: boolean = next === "Y"
 
             const payload: Record<string, any> = { collapsed: nextBoolean };
             dF.JrnlDream.patchAjax(postNo, payload, function() {
@@ -313,16 +312,30 @@ dF.JrnlDream = (function(): dfModule {
             if (!item) return;
 
             const current: string = (item.dataset.imprtc || "N").toUpperCase();
-            const next = current === "Y" ? "N" : "Y";
-            const nextBoolean = current !== "Y"
+            const next: "Y"|"N" = current === "Y" ? "N" : "Y";
+            const nextBoolean: boolean = next === "Y"
 
             const payload: Record<string, any> = { imprtc: nextBoolean };
             dF.JrnlDream.patchAjax(postNo, payload, function() {
                 item.dataset.imprtc = next;
 
-                const content: HTMLElement = item.querySelector(".cn");
-                if (content) {
-                    content.classList.toggle("collapsed", next === "Y");
+                const cn: HTMLDivElement = item.querySelector("div.jrnl-dream-cn");
+                if (!cn) return console.warn("cn not found.");
+                const titleWrap: HTMLElement = cn.querySelector("div.title-wrap");
+                if (!titleWrap) return console.warn("titleWrap not found.");
+                const existing: HTMLDivElement = titleWrap.querySelector(".ctgr-imprtc");
+                if (nextBoolean) {
+                    if (existing) return;
+
+                    const imprtcWrap: HTMLDivElement = document.createElement("div");
+                    imprtcWrap.className = "ctgr-span ctgr-imprtc w-60px d-flex-center";
+                    imprtcWrap.innerText = "!중요";
+                    // 첫 번째 요소로 삽입
+                    titleWrap.prepend(imprtcWrap);
+                    cn.classList.add("bg-secondary");
+                } else {
+                    if (existing) existing.remove();
+                    cn.classList.remove("bg-secondary");
                 }
             });
         },

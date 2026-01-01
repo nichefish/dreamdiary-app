@@ -138,8 +138,7 @@ dF.User = (function(): dfModule {
          */
         idDupChckAjax: function(): boolean {
             const userIdValidSpan = $("#userId_validate_span");
-            const userIdElement: HTMLInputElement = document.getElementById("userId") as HTMLInputElement;
-            const userId: string = userIdElement.value || "";
+            const userId: string = cF.util.getInputValue("#userId");
             if (!cF.regex.id.test(userId)) {
                 userIdValidSpan.text("아이디가 형식에 맞지 않습니다.").removeClass("text-success").addClass("text-danger");
                 return false;
@@ -166,9 +165,9 @@ dF.User = (function(): dfModule {
          */
         emailDupChckAjax: function(): boolean {
             const emailValidSpan = $("#emailId_validate_span");
-            const emailIdElement: HTMLInputElement = document.getElementById("emailId") as HTMLInputElement;
-            const emailDomainElement: HTMLInputElement = document.getElementById("emailDomain") as HTMLInputElement;
-            const email: string = emailIdElement.value + "@" + emailDomainElement.value || "";
+            const emailId: string = cF.util.getInputValue("#emailId");
+            const emailDomain: string =  cF.util.getInputValue("#emailDomain");
+            const email: string = emailId + "@" + emailDomain || "";
             if (!cF.regex.email.test(email)) {
                 emailValidSpan.text("이메일이 형식에 맞지 않습니다.").removeClass("text-success").addClass("text-danger");
                 return false;

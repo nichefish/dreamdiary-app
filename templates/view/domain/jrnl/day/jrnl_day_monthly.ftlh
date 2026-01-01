@@ -92,6 +92,7 @@
 <#--include::jrnl_entry_module-->
 <#include "/view/domain/jrnl/entry/_modal/_jrnl_entry_reg_modal.ftlh">
 <#include "/view/domain/jrnl/entry/_jrnl_entry_list_template.hbs">
+<#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_item_partial.hbs">
 <#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_reg_btn_partial.hbs">
 <#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_context_btn_partial.hbs">
 <#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_toggle_btn_partial.hbs">
@@ -100,6 +101,7 @@
 <#--include::jrnl_diary_module-->
 <#include "/view/domain/jrnl/diary/_modal/_jrnl_diary_reg_modal.ftlh">
 <#include "/view/domain/jrnl/diary/_jrnl_diary_list_template.hbs">
+<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_item_partial.hbs">
 <#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_reg_btn_partial.hbs">
 <#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_copy_btn_partial.hbs">
 <#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_context_btn_partial.hbs">
@@ -110,6 +112,7 @@
 <#--include::jrnl_dream_module-->
 <#include "/view/domain/jrnl/dream/_modal/_jrnl_dream_reg_modal.ftlh">
 <#include "/view/domain/jrnl/dream/_jrnl_dream_list_template.hbs">
+<#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_item_partial.hbs">
 <#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_reg_btn_partial.hbs">
 <#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_copy_btn_partial.hbs">
 <#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_context_btn_partial.hbs">
@@ -120,7 +123,7 @@
 <#--include::jrnl_intrpt_module-->
 <#include "/view/domain/jrnl/intrpt/_modal/_jrnl_intrpt_reg_modal.ftlh">
 <#include "/view/domain/jrnl/intrpt/_jrnl_intrpt_list_template.hbs">
-<#include "/view/domain/jrnl/intrpt/_partial/_jrnl_intrpt_reg_btn_partial.hbs">
+<#include "/view/domain/jrnl/intrpt/_partial/_jrnl_intrpt_item_partial.hbs">
 <#include "/view/domain/jrnl/intrpt/_partial/_jrnl_intrpt_copy_btn_partial.hbs">
 <#include "/view/domain/jrnl/intrpt/_partial/_jrnl_intrpt_context_btn_partial.hbs">
 <#include "/view/domain/jrnl/intrpt/_partial/_jrnl_intrpt_toggle_btn_partial.hbs">

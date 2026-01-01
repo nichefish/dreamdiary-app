@@ -85,17 +85,19 @@ public class JrnlTodoRestController
             summary = "저널 꿈 등록/수정",
             description = "저널 꿈 정보를 등록/수정한다."
     )
-    @PostMapping(value = {Url.JRNL_TODO_REG_AJAX, Url.JRNL_TODO_MDF_AJAX})
+    @PostMapping(value = {Url.JRNL_TODOS, Url.JRNL_TODO})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlTodoRegAjax(
+            final @PathVariable(value = "postNo", required = false) Integer postNo,
             final @Valid JrnlTodoDto jrnlTodo,
             final LogActvtyParam logParam,
             final MultipartHttpServletRequest request
     ) throws Exception {
 
-        final boolean isReg = (jrnlTodo.getKey() == null);
-        final ServiceResponse result = isReg ? jrnlTodoService.regist(jrnlTodo, request) : jrnlTodoService.modify(jrnlTodo, request);
+        final boolean isMdf = (postNo != null);
+        if (isMdf) jrnlTodo.setPostNo(postNo);
+        final ServiceResponse result = isMdf ? jrnlTodoService.modify(jrnlTodo, request) : jrnlTodoService.regist(jrnlTodo, request);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
@@ -109,19 +111,19 @@ public class JrnlTodoRestController
      * 저널 할일 상세 조회 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param key 식별자
+     * @param postNo 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(value = {Url.JRNL_TODO_DTL_AJAX})
+    @GetMapping(value = {Url.JRNL_TODO})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlTodoDtlAjax(
-            final @RequestParam("postNo") Integer key,
+            final @PathVariable("postNo") Integer postNo,
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final JrnlTodoDto retrievedDto = jrnlTodoService.getDtlDtoWithCache(key);
+        final JrnlTodoDto retrievedDto = jrnlTodoService.getDtlDtoWithCache(postNo);
         final boolean isSuccess = (retrievedDto.getPostNo() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -140,11 +142,11 @@ public class JrnlTodoRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @see TagProcEventListener
      */
-    @PostMapping(value = {Url.JRNL_TODO_DEL_AJAX})
+    @DeleteMapping(value = {Url.JRNL_TODO})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlTodoDelAjax(
-            final @RequestParam("postNo") Integer postNo,
+            final @PathVariable("postNo") Integer postNo,
             final LogActvtyParam logParam
     ) throws Exception {
 

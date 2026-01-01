@@ -40,6 +40,17 @@ cF.util = (function(): Module {
         },
 
         /**
+         * 인풋 값 반환
+         * @param {string} selector
+         * @retuns {string} 인풋 값
+         */
+        getInputValue: function(selector: string): string {
+            const el: HTMLInputElement = document.querySelector(selector);
+            if (!el) return null;
+            return el.value ?? "";
+        },
+
+        /**
          * 선택자에서 유효한 입력 요소를 반환합니다.
          * @param {string|HTMLElement|JQuery} selector - 선택자 문자열 또는 DOM 요소 또는 jQuery 객체.
          * @returns {HTMLElement[]} - 유효한 입력 요소 배열 또는 빈 배열.
@@ -186,11 +197,24 @@ cF.util = (function(): Module {
          * @param {Record<string, any>} params 부재시 기본으로 세팅할 값
          */
         bindUrl: function(urlTemplate: string, params: Record<string, any>): string {
-            let url = urlTemplate;
+            let url: string = urlTemplate;
             for (const key in params) {
                 url = url.replace(`{${key}}`, encodeURIComponent(params[key]));
             }
             return url;
+        },
+
+        /**
+         * url에서 pathVariable을 가져온다.
+         * @param {RegExp} regex URL 정규식
+         */
+        getPathVariableFromUrl: function(regex: RegExp): string|null  {
+            const path: string = window.location.pathname;
+            // 예: /app/jrnl/sumry/2024.do
+            const match: RegExpMatchArray = path.match(regex);
+
+            if (!match) return null;
+            return match[1];
         },
 
         /**
@@ -199,7 +223,7 @@ cF.util = (function(): Module {
          * @param {string} defaultValue 부재시 기본으로 세팅할 값
          */
         getUrlParam: function(name: string, defaultValue: string = ""): string {
-            const url = new URL(window.location.href);
+            const url: URL = new URL(window.location.href);
             return url.searchParams.get(name) ?? defaultValue;
         },
 

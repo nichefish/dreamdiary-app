@@ -55,7 +55,7 @@ public class CommentRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.COMMENT_LIST_AJAX)
+    @GetMapping(Url.COMMENTS)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> commentListAjax(
@@ -84,7 +84,7 @@ public class CommentRestController
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(value = {Url.COMMENT_REG_AJAX, Url.COMMENT_MDF_AJAX})
+    @PostMapping(value = {Url.COMMENTS, Url.COMMENT})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> commentRegAjax(
@@ -113,7 +113,7 @@ public class CommentRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.COMMENT_DTL_AJAX)
+    @GetMapping(Url.COMMENT)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> commentDtlAjax(
@@ -140,11 +140,11 @@ public class CommentRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(Url.COMMENT_DEL_AJAX)
+    @DeleteMapping(Url.COMMENT)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> commentDelAjax(
-            final Integer postNo,
+            final @PathVariable("postNo") Integer postNo,
             final LogActvtyParam logParam
     ) throws Exception {
 

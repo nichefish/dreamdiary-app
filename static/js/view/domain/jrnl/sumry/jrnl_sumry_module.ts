@@ -15,8 +15,6 @@ dF.JrnlSumry = (function(): dfModule {
         init: function(): void {
             if (dF.JrnlSumry.initialized) return;
 
-            dF.JrnlSumry.listAjax();
-
             dF.JrnlSumry.initialized = true;
             console.log("'dF.JrnlSumry' module initialized.");
         },
@@ -56,25 +54,96 @@ dF.JrnlSumry = (function(): dfModule {
         },
 
         /**
-         * 상세 화면으로 이동 (key로 조회)
-         * @param {string|number} postNo - 조회할 글 번호.
-         */
-        dtl: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
-
-            $("#procForm #postNo").val(postNo);
-            cF.form.blockUISubmit("#procForm", Url.JRNL_SUMRY_DTL);
-        },
-
-        /**
          * 상세 화면으로 이동 (년도로 조회)
          * @param {string|number} yy - 조회할 년도.
          */
-        dtlByYy: function(yy: string|number): void {
+        dtlView: function(yy: string|number): void {
             if (isNaN(Number(yy))) return;
 
-            $("#procForm #yy").val(yy);
-            cF.form.blockUISubmit("#procForm", Url.JRNL_SUMRY_DTL);
+            location.href = cF.util.bindUrl(Url.JRNL_SUMRY_VIEW, {yy}) + "?section=DIARY";
+        },
+
+        /**
+         * 섹션 전환 이동 (년도로 조회)
+         * @param {"DIARY"|"DREAM"} section - 조회 섹션
+         */
+        dtlViewWithSection: function(section: "DIARY"|"DREAM"): void {
+            const yy: string = cF.util.getPathVariableFromUrl(/\/sumry\/(\d{4})(?:\.do)?$/);
+            if (!yy) return console.warn("invalid yy.");
+
+            location.href = cF.util.bindUrl(Url.JRNL_SUMRY_VIEW, {yy}) + `?section=${section}`;
+        },
+
+        /**
+         * 상세 조회 (Ajax) (년도로 조회)
+         * @param {string|number} yy - 조회할 년도.
+         */
+        dtlAjax: function(yy: string|number): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_SUMRY, { yy });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    return;
+                }
+                const rsltObj: Record<string, any> = res.rsltObj;
+                /* show modal */
+                cF.handlebars.template(rsltObj, "jrnl_sumry_dtl");
+            });
+        },
+
+        /**
+         * 중요 일기 목록 조회 (Ajax) (년도로 조회)
+         * @param {string|number} yy - 조회할 년도.
+         */
+        getImprtcDiaryListAjax: function(yy: string|number): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_SUMRY_IMPRTC_DIARIES, { yy });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    return;
+                }
+                const { rsltList = [] } = res;
+                /* show modal */
+                cF.handlebars.template(rsltList, "jrnl_sumry_imprtc_diary_list");
+                document.querySelectorAll(".cn.collapsed").forEach(el => el.classList.remove("collapsed"));
+            });
+        },
+
+        /**
+         * 중요 꿈 목록 조회 (Ajax) (년도로 조회)
+         * @param {string|number} yy - 조회할 년도.
+         */
+        getImprtcDreamListAjax: function(yy: string|number): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_SUMRY_IMPRTC_DREAMS, { yy });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    return;
+                }
+                const { rsltList = [] } = res;
+                /* show modal */
+                cF.handlebars.template(rsltList, "jrnl_sumry_imprtc_diary_list");
+                document.querySelectorAll(".cn.collapsed").forEach(el => el.classList.remove("collapsed"));
+            });
+        },
+
+        /**
+         * 중요 일기 목록 조회 (Ajax) (년도로 조회)
+         * @param {string|number} yy - 조회할 년도.
+         * @param {"DAY"|"DIARY"|"DREAM"} type - 조회 타입
+         */
+        getTagListAjax: function(yy: string|number, type: "DAY"|"DIARY"|"DREAM"): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_SUMRY_TAGS, { yy }) + `?type=${type}`;
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    return;
+                }
+                const { rsltList = [] } = res;
+                /* show modal */
+                const lowerType = type.toLowerCase();
+                cF.handlebars.template(rsltList, `jrnl_sumry_${lowerType}_tag_list`);
+            });
         },
 
         /**
@@ -145,14 +214,13 @@ dF.JrnlSumry = (function(): dfModule {
 
         /**
          * 등록(수정) 모달 호출
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} yy - 년도.
          */
-        mdfModal: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        mdfModal: function(yy: string|number): void {
+            if (isNaN(Number(yy))) return;
 
-            const url: string = Url.JRNL_SUMRY_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "postNo": postNo };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_SUMRY, { yy });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
