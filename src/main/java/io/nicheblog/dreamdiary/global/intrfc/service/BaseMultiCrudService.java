@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
+import io.nicheblog.dreamdiary.global.intrfc.model.cmpstn.AtchFileCmpstn;
 import io.nicheblog.dreamdiary.global.intrfc.model.cmpstn.AtchFileCmpstnModule;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -35,6 +36,7 @@ public interface BaseMultiCrudService<PostDto extends BaseAuditDto & AtchFileCmp
     default ServiceResponse regist(final PostDto registDto, final MultipartHttpServletRequest request) throws Exception {
         try {
             // 파일 영역 처리
+            if (registDto.getFile() == null) registDto.setFile(new AtchFileCmpstn());
             final Integer existingAtchFileNo = registDto.getFile().getAtchFileNo();
             final Integer processedAtchFileNo = FileUtils.uploadFile(request, existingAtchFileNo);
             registDto.getFile().setAtchFileNo(processedAtchFileNo);    // 등록된 파일 마스터ID를 가져온다.
@@ -56,6 +58,7 @@ public interface BaseMultiCrudService<PostDto extends BaseAuditDto & AtchFileCmp
     default ServiceResponse modify(final PostDto modifyDto, final MultipartHttpServletRequest request) throws Exception {
         try {
             // 파일 영역 처리
+            if (modifyDto.getFile() == null) modifyDto.setFile(new AtchFileCmpstn());
             final Integer existingAtchFileNo = modifyDto.getFile().getAtchFileNo();
             final Integer processedAtchFileNo = FileUtils.uploadFile(request, existingAtchFileNo);
             modifyDto.getFile().setAtchFileNo(processedAtchFileNo);    // 등록된 파일 마스터ID를 가져온다.

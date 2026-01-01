@@ -4,6 +4,8 @@ import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamSmpEntity;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbedModule;
+import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbed;
+import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
@@ -37,7 +39,7 @@ import javax.persistence.Table;
 @SQLDelete(sql = "UPDATE jrnl_intrpt SET del_yn = 'Y' WHERE post_no = ?")
 public class JrnlIntrptEntity
         extends BaseClsfEntity
-        implements AtchFileEmbedModule, CommentEmbedModule, TagEmbedModule {
+        implements AtchFileEmbedModule, CommentEmbedModule, TagEmbedModule, StateEmbedModule {
 
     /** 저널 해석 고유 번호 (PK) */
     @Id
@@ -79,24 +81,6 @@ public class JrnlIntrptEntity
     @Column(name = "idx", columnDefinition = "INT DEFAULT 1")
     private Integer idx;
 
-    /** 중요 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "imprtc_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("중요 여부")
-    protected String imprtcYn = "N";
-
-    /** 정리완료 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "resolved_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("정리완료 여부")
-    private String resolvedYn = "N";
-
-    /** 글접기 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "collapsed_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("글접기 여부")
-    private String collapsedYn = "N";
-
     /**
      * 인덱스 변경 여부
      */
@@ -115,4 +99,7 @@ public class JrnlIntrptEntity
     /** 위임 :: 태그 정보 모듈 */
     @Embedded
     public TagEmbed tag;
+    /** 위임 :: 상태 정보 모듈 */
+    @Embedded
+    public StateEmbed state;
 }

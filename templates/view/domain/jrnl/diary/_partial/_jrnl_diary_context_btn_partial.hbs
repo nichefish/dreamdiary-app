@@ -42,7 +42,7 @@
                             <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.resolved'/>">
                                 <!--begin::Input-->
-                                <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" value="1" {{#ifYn resolvedYn}}checked="checked"{{/ifYn}}
+                                <input class="form-check-input w-30px h-20px cursor-pointer diary-context-resolved-check" type="checkbox" value="1" {{#if (hasState state 'RESOLVED')}}checked="checked"{{/if}}
                                        onclick="dF.JrnlDiary.resolveAjax({{postNo}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
@@ -63,7 +63,7 @@
                             <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.status.imprtc'/>">
                                 <!--begin::Input-->
-                                <input class="form-check-input w-30px h-20px cursor-pointer diary-context-imprtc-check" type="checkbox" value="1" {{#ifYn imprtcYn}}checked="checked"{{/ifYn}}
+                                <input class="form-check-input w-30px h-20px cursor-pointer diary-context-imprtc-check" type="checkbox" value="1" {{#if (hasState state 'IMPRTC')}}checked="checked"{{/if}}
                                        onclick="dF.JrnlDiary.imprtcAjax({{postNo}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
@@ -81,7 +81,7 @@
                             <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.status.refrnc'/>">
                                 <!--begin::Input-->
-                                <input class="form-check-input w-30px h-20px cursor-pointer diary-context-refrnc-check" type="checkbox" value="1" {{#if (hasState state.list 'REFRNC')}}checked="checked"{{/if}}
+                                <input class="form-check-input w-30px h-20px cursor-pointer diary-context-refrnc-check" type="checkbox" value="1" {{#if (hasState state 'REFRNC')}}checked="checked"{{/if}}
                                        onclick="dF.JrnlDiary.refrncAjax({{postNo}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
@@ -99,7 +99,7 @@
                             <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.status.collapsed'/>">
                                 <!--begin::Input-->
-                                <input class="form-check-input w-30px h-20px cursor-pointer diary-context-collapse-check" type="checkbox" value="1" {{#ifYn collapsedYn}}checked="checked"{{/ifYn}}
+                                <input class="form-check-input w-30px h-20px cursor-pointer diary-context-collapsed-check" type="checkbox" value="1" {{#if (hasState state 'COLLAPSED')}}checked="checked"{{/if}}
                                        onclick="dF.JrnlDiary.collapseAjax({{postNo}});">
                                 <!--end::Input-->
                                 <!--end::Label-->

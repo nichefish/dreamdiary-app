@@ -73,26 +73,14 @@ public class JrnlDiaryDto
     /** 순번 */
     private Integer idx;
 
-    /** 중요 여부 (Y/N) */
-    @Builder.Default
-    protected String imprtcYn = "N";
-    /** 정리완료 여부 (Y/N) */
-    @Builder.Default
-    private String resolvedYn = "N";
-    /** 글접기 여부 (Y/N) */
-    @Builder.Default
-    private String collapsedYn = "N";
-
     /* ----- */
 
     /** 인덱스 변경 여부 */
     @Builder.Default
     private Boolean isIdxChanged = false;
-
     /** 저널 항목 변경 여부 */
     @Builder.Default
     private Boolean isEntryChanged = false;
-
     /** 이전 저널 항목 번호 */
     private Integer prevJrnlEntryNo;
 

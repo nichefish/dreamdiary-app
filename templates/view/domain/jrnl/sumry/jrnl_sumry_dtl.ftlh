@@ -78,9 +78,18 @@
 <script type="text/javascript" src="/lib/prism/js/prism.js"></script>
 <#include "/view/global/_tinymce_img.ftlh">
 
-<#--include::draggable-->
-<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
-<script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
+<#--include::jrnl_day_module-->
+<#include "/view/domain/jrnl/day/_partial/_jrnl_day_stdrd_dt_partial.hbs">
+<#include "/view/domain/jrnl/day/_partial/_jrnl_day_context_btn_partial.hbs">
+<#include "/view/domain/jrnl/day/_partial/_jrnl_day_meta_btn_partial.hbs">
+
+<#--include::jrnl_diary_module-->
+<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_reg_btn_partial.hbs">
+<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_context_btn_partial.hbs">
+<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_copy_btn_partial.hbs">
+<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_toggle_btn_partial.hbs">
+<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_cn_partial.hbs">
+<script type="text/javascript" src="/js/view/domain/jrnl/diary/jrnl_diary_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_dream_module-->
 <#include "/view/domain/jrnl/dream/_modal/_jrnl_dream_reg_modal.ftlh">
@@ -92,16 +101,6 @@
 
 <#--include::tag-->
 <#include "/view/domain/jrnl/tag/_jrnl_tag_list_modal.ftlh">
-
-<#include "/view/domain/jrnl/day/_partial/_jrnl_day_stdrd_dt_partial.hbs">
-<#include "/view/domain/jrnl/day/_partial/_jrnl_day_context_btn_partial.hbs">
-
-<#include "/view/domain/jrnl/day/_partial/_jrnl_day_meta_btn_partial.hbs">
-<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_reg_btn_partial.hbs">
-<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_context_btn_partial.hbs">
-<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_copy_btn_partial.hbs">
-<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_toggle_btn_partial.hbs">
-<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_cn_partial.hbs">
 
 <#--include::jrnl_sumry_modules-->
 <#include "/view/domain/jrnl/sumry/_modal/_jrnl_sumry_reg_modal.ftlh">

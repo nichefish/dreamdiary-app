@@ -42,7 +42,7 @@
                             <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.status.collapsed'/>">
                                 <!--begin::Input-->
-                                <input class="form-check-input w-30px h-20px cursor-pointer entry-context-collapse-check" type="checkbox" value="1" {{#ifYn collapsedYn}}checked="checked"{{/ifYn}}
+                                <input class="form-check-input w-30px h-20px cursor-pointer entry-context-collapsed-check" type="checkbox" value="1" {{#if (hasState state 'COLLAPSED')}}checked="checked"{{/if}}
                                        onclick="dF.JrnlEntry.collapseAjax({{postNo}});">
                                 <!--end::Input-->
                                 <!--end::Label-->

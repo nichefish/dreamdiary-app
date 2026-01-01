@@ -39,16 +39,21 @@ import java.util.List;
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
 @SQLDelete(sql = "UPDATE jrnl_day SET del_yn = 'Y' WHERE post_no = ?")
+@NamedEntityGraph(
+    name = "JrnlDayEntity.withTags",
+    attributeNodes = {
+        @NamedAttributeNode(value = "tag", subgraph = "TagEmbed")
+    },
+    subgraphs = {
+        @NamedSubgraph(
+            name = "TagEmbed",
+            attributeNodes = @NamedAttributeNode("list")  // tag.list 즉시 로딩
+        )
+    }
+)
 public class JrnlDayEntity
         extends BaseClsfEntity
         implements TagEmbedModule, MetaEmbedModule {
-
-    /** 필수: 컨텐츠 타입 */
-    @Builder.Default
-    private static final ContentType CONTENT_TYPE = ContentType.JRNL_DAY;
-    /** 필수(Override): 글분류 코드 */
-    @Builder.Default
-    private static final String CTGR_CL_CD = CONTENT_TYPE.name() + "_CTGR_CD";
 
     /** 저널 일자 고유 번호 (PK) */
     @Id
@@ -57,11 +62,11 @@ public class JrnlDayEntity
     @Comment("저널 일자 고유 번호 (PK)")
     private Integer postNo;
 
-    /** 컨텐츠 타입 */
+    /** 필수: 컨텐츠 타입 */
     @Builder.Default
     @Column(name = "content_type", columnDefinition = "VARCHAR(50) DEFAULT 'JRNL_DAY'")
     @Comment("컨텐츠 타입")
-    private String contentType = CONTENT_TYPE.key;
+    private String contentType = ContentType.JRNL_DAY.key;
 
     /* ----- */
 
@@ -99,12 +104,6 @@ public class JrnlDayEntity
     @Column(name = "weather")
     @Comment("날씨")
     private String weather;
-
-    /** 일기 정리완료 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "diary_resolved_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("일기 정리완료 여부 (Y/N)")
-    private String diaryResolvedYn = "N";
 
     /** 저널 항목 목록 */
     @OneToMany(fetch = FetchType.LAZY)

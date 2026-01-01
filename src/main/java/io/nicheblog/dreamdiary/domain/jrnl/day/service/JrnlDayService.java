@@ -156,7 +156,7 @@ public class JrnlDayService
         final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
         this.setHldyInfo(listDto, hldyMap);
 
-        // resolved/collapse 상태 merge
+        // 상태state merge
         this.mergeStates(listDto, searchParam);
         // 접힌 entry에 태그 요약 표시
         this.applyEntryTagSummary(listDto);
@@ -165,10 +165,11 @@ public class JrnlDayService
     }
 
     /**
-     * 각 게시물 타입(일기/꿈/해석)의 상태(resolvedYn, collapsedYn)를 별도의 Map(postNo → JrnlState)으로 구성해 반환한다.
+     * 각 게시물 타입(일기/꿈/해석)의 상태를 별도의 Map(postNo → JrnlState)으로 구성해 반환한다.
      * @param myJrnlDayEntityList 조회된 JrnlDayEntity 전체 목록
      * @param searchParam 조회 조건(연도/월 등). 캐시 키 생성은 호출부에서 수행하며, 본 메서드는 단순히 상태맵 생성만 담당한다.
      * @return {@link JrnlStateMaps}
+     *  entryMap: 항목(postNo → JrnlState)
      *  diaryMap: 일기(postNo → JrnlState)
      *  dreamMap: 꿈(postNo → JrnlState)
      *  intrptMap: 해석(postNo → JrnlState)
@@ -183,16 +184,18 @@ public class JrnlDayService
             final List<JrnlEntryEntity> myJrnlEntryList = day.getJrnlEntryList();
             if (CollectionUtils.isNotEmpty(myJrnlEntryList)) {
                 for (final JrnlEntryEntity entry : myJrnlEntryList) {
-                    final JrnlState entryState = JrnlState.builder().collapsedYn(entry.getCollapsedYn()).build();
+                    final JrnlState entryState = JrnlState.builder()
+                            .collapsed(entry.state.hasState(StateCd.COLLAPSED))
+                            .build();
                     entryMap.put(entry.getPostNo(), entryState);
 
                     final List<JrnlDiaryEntity> myJrnlDiaryList = entry.getJrnlDiaryList();
                     if (CollectionUtils.isNotEmpty(myJrnlDiaryList)) {
                         for (final JrnlDiaryEntity diary : myJrnlDiaryList) {
                             final JrnlState diaryState = JrnlState.builder()
-                                    .resolvedYn(diary.getResolvedYn())
-                                    .collapsedYn(entry.getCollapsedYn())
-                                    .imprtcYn(diary.getImprtcYn())
+                                    .resolved(diary.state.hasState(StateCd.RESOLVED))
+                                    .collapsed(diary.state.hasState(StateCd.COLLAPSED))
+                                    .imprtc(diary.state.hasState(StateCd.IMPRTC))
                                     .refrnc(diary.state.hasState(StateCd.REFRNC))
                                     .build();
                             diaryMap.put(diary.getPostNo(), diaryState);
@@ -205,9 +208,9 @@ public class JrnlDayService
             if (CollectionUtils.isNotEmpty(myJrnlDreamList)) {
                 for (final JrnlDreamEntity dream : myJrnlDreamList) {
                     final JrnlState dreamState = JrnlState.builder()
-                            .resolvedYn(dream.getResolvedYn())
-                            .collapsedYn(dream.getCollapsedYn())
-                            .imprtcYn(dream.getImprtcYn())
+                            .resolved(dream.state.hasState(StateCd.RESOLVED))
+                            .collapsed(dream.state.hasState(StateCd.COLLAPSED))
+                            .imprtc(dream.state.hasState(StateCd.IMPRTC))
                             .refrnc(dream.state.hasState(StateCd.REFRNC))
                             .build();
                     dreamMap.put(dream.getPostNo(), dreamState);
@@ -215,7 +218,10 @@ public class JrnlDayService
                     final List<JrnlIntrptEntity> myJrnlIntrptList = dream.getJrnlIntrptList();
                     if (CollectionUtils.isNotEmpty(myJrnlIntrptList)) {
                         for (final JrnlIntrptEntity intrpt : myJrnlIntrptList) {
-                            final JrnlState intrptState = JrnlState.builder().resolvedYn(intrpt.getResolvedYn()).collapsedYn(intrpt.getCollapsedYn()).imprtcYn(intrpt.getImprtcYn()).build();
+                            final JrnlState intrptState = JrnlState.builder()
+                                    .resolved(intrpt.state.hasState(StateCd.RESOLVED))
+                                    .collapsed(intrpt.state.hasState(StateCd.COLLAPSED))
+                                    .build();
                             intrptMap.put(intrpt.getPostNo(), intrptState);
                         }
                     }
@@ -243,6 +249,12 @@ public class JrnlDayService
         return listDto;
     }
 
+    /**
+     * 상태state merge
+     * 
+     * @param listDto 저널 일자 목록
+     * @param searchParam 검색 파라미터
+     */
     @SuppressWarnings("unchecked")
     private void mergeStates(final List<JrnlDayDto> listDto, final JrnlDaySearchParam searchParam) {
         if (CollectionUtils.isEmpty(listDto) || searchParam == null) return;
@@ -251,15 +263,10 @@ public class JrnlDayService
                    + "_" + searchParam.getYy()
                    + "_" + searchParam.getMnth();
 
-        Map<Integer, JrnlState> entryMap  = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myEntryStateMap",  cacheKey);
-        Map<Integer, JrnlState> diaryMap  = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myDiaryStateMap",  cacheKey);
-        Map<Integer, JrnlState> dreamMap  = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myDreamStateMap",  cacheKey);
-        Map<Integer, JrnlState> intrptMap = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myIntrptStateMap", cacheKey);
-
-        entryMap = entryMap  == null ? Collections.emptyMap() : entryMap;
-        diaryMap = diaryMap  == null ? Collections.emptyMap() : diaryMap;
-        dreamMap = dreamMap  == null ? Collections.emptyMap() : dreamMap;
-        intrptMap = intrptMap == null ? Collections.emptyMap() : intrptMap;
+        final Map<Integer, JrnlState> entryMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myEntryStateMap",  cacheKey)).orElse(Collections.emptyMap());
+        final Map<Integer, JrnlState> diaryMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myDiaryStateMap",  cacheKey)).orElse(Collections.emptyMap());
+        final Map<Integer, JrnlState> dreamMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myDreamStateMap",  cacheKey)).orElse(Collections.emptyMap());
+        final Map<Integer, JrnlState> intrptMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myIntrptStateMap", cacheKey)).orElse(Collections.emptyMap());
 
         applyStates(listDto, entryMap, diaryMap, dreamMap, intrptMap);
     }
@@ -287,17 +294,17 @@ public class JrnlDayService
 
                     final JrnlState s = entryMap.get(entry.getPostNo());
                     if (s != null) {
-                        entry.setCollapsedYn(s.getCollapsedYn());
+                        entry.state.apply(StateCd.COLLAPSED, s.getCollapsed());
                     }
 
                     if (CollectionUtils.isEmpty(entry.getJrnlDiaryList())) continue;
                     for (final JrnlDiaryDto diary : entry.getJrnlDiaryList()) {
                         final JrnlState d = diaryMap.get(diary.getPostNo());
                         if (d != null) {
-                            diary.setCollapsedYn(d.getCollapsedYn());
-                            diary.setResolvedYn(d.getResolvedYn());
-                            diary.setImprtcYn(d.getImprtcYn());
-                            if (d.getRefrnc()) diary.state.put(StateCd.REFRNC);
+                            diary.state.apply(StateCd.COLLAPSED, d.getCollapsed());
+                            diary.state.apply(StateCd.RESOLVED, d.getResolved());
+                            diary.state.apply(StateCd.IMPRTC, d.getImprtc());
+                            diary.state.apply(StateCd.REFRNC, d.getRefrnc());
                         }
                     }
                 }
@@ -308,19 +315,18 @@ public class JrnlDayService
 
                     final JrnlState s = dreamMap.get(dream.getPostNo());
                     if (s != null) {
-                        dream.setCollapsedYn(s.getCollapsedYn());
-                        dream.setResolvedYn(s.getResolvedYn());
-                        dream.setImprtcYn(s.getImprtcYn());
-                        if (s.getRefrnc()) dream.state.put(StateCd.REFRNC);
+                        dream.state.apply(StateCd.COLLAPSED, s.getCollapsed());
+                        dream.state.apply(StateCd.RESOLVED, s.getResolved());
+                        dream.state.apply(StateCd.IMPRTC, s.getImprtc());
+                        dream.state.apply(StateCd.REFRNC, s.getRefrnc());
                     }
 
                     if (CollectionUtils.isEmpty(dream.getJrnlIntrptList())) continue;
                     for (final JrnlIntrptDto intrpt : dream.getJrnlIntrptList()) {
                         final JrnlState d = intrptMap.get(intrpt.getPostNo());
                         if (d != null) {
-                            intrpt.setCollapsedYn(d.getCollapsedYn());
-                            intrpt.setResolvedYn(d.getResolvedYn());
-                            intrpt.setImprtcYn(d.getImprtcYn());
+                            intrpt.state.apply(StateCd.COLLAPSED, d.getCollapsed());
+                            intrpt.state.apply(StateCd.RESOLVED, d.getResolved());
                         }
                     }
                 }

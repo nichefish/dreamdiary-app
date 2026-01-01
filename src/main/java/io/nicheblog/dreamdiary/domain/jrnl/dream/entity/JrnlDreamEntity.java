@@ -110,24 +110,6 @@ public class JrnlDreamEntity
     @Column(name = "else_dreamer_nm", length = 64)
     private String elseDreamerNm;
 
-    /** 중요 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "imprtc_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("중요 여부")
-    protected String imprtcYn = "N";
-
-    /** 정리완료 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "resolved_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("정리완료 여부")
-    private String resolvedYn = "N";
-
-    /** 글접기 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "collapsed_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("글접기 여부")
-    private String collapsedYn = "N";
-
     /** 저널 해석 목록 */
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "jrnl_dream_no", referencedColumnName = "post_no", insertable = false, updatable = false)
@@ -138,9 +120,7 @@ public class JrnlDreamEntity
     @Comment("저널 해석 목록")
     private List<JrnlIntrptEntity> jrnlIntrptList;
 
-    /**
-     * 인덱스 변경 여부
-     */
+    /** 인덱스 변경 여부 */
     @Builder.Default
     @Transient
     private Boolean isIdxChanged = false;

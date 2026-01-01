@@ -20,12 +20,15 @@ CREATE TABLE IF NOT EXISTS state (
 
 -- -------------------
 
+ALTER TABLE jrnl_day DROP COLUMN diary_resolved_yn;
+
 ALTER TABLE jrnl_entry DROP COLUMN cn;
 ALTER TABLE jrnl_entry DROP COLUMN ctgr_cd;
 ALTER TABLE jrnl_entry DROP COLUMN fxd_yn;
 ALTER TABLE jrnl_entry DROP COLUMN hit_cnt;
 ALTER TABLE jrnl_entry DROP COLUMN mdfable;
 ALTER TABLE jrnl_entry DROP COLUMN imprtc_yn;
+ALTER TABLE jrnl_entry DROP COLUMN atch_file_no;
 
 ALTER TABLE jrnl_diary DROP COLUMN ctgr_cd;
 ALTER TABLE jrnl_diary DROP COLUMN fxd_yn;
@@ -49,22 +52,13 @@ INSERT IGNORE INTO state ( ref_post_no, ref_content_type, state_cd )
 SELECT d.post_no AS ref_post_no, 'JRNL_DIARY' AS ref_content_type, 'REFRNC' AS state_cd
 FROM jrnl_diary d
 WHERE d.refrnc_yn = 'Y';
+ALTER TABLE jrnl_diary DROP COLUMN refrnc_yn;
 
 -- jrnl_dream의 기존 '참조' 상태 마이그레이션
 INSERT IGNORE INTO state ( ref_post_no, ref_content_type, state_cd )
 SELECT d.post_no AS ref_post_no, 'JRNL_DREAM' AS ref_content_type, 'REFRNC' AS state_cd
 FROM jrnl_dream d
 WHERE d.refrnc_yn = 'Y';
-
--- 저널 일기 (jrnl_diary)
--- @extends: BasePostEntity
--- @uses: CommentEmbed
-ALTER TABLE jrnl_diary DROP COLUMN refrnc_yn;
-
-
--- 저널 꿈 (jrnl_dream)
--- @extends: BasePostEntity
--- @uses: CommentEmbed
 ALTER TABLE jrnl_dream DROP COLUMN refrnc_yn;
 
 COMMIT;
@@ -78,21 +72,62 @@ INSERT IGNORE INTO state ( ref_post_no, ref_content_type, state_cd )
 SELECT d.post_no AS ref_post_no, 'JRNL_DIARY' AS ref_content_type, 'IMPRTC' AS state_cd
 FROM jrnl_diary d
 WHERE d.imprtc_yn = 'Y';
+ALTER TABLE jrnl_diary DROP COLUMN imprtc_yn;
 
--- jrnl_dream의 기존 '참조' 상태 마이그레이션
+-- jrnl_dream의 기존 '중요' 상태 마이그레이션
 INSERT IGNORE INTO state ( ref_post_no, ref_content_type, state_cd )
 SELECT d.post_no AS ref_post_no, 'JRNL_DREAM' AS ref_content_type, 'IMPRTC' AS state_cd
 FROM jrnl_dream d
 WHERE d.imprtc_yn = 'Y';
-
--- 저널 일기 (jrnl_diary)
--- @extends: BasePostEntity
--- @uses: CommentEmbed
-ALTER TABLE jrnl_diary DROP COLUMN imprtc_yn;
-
--- 저널 꿈 (jrnl_dream)
--- @extends: BasePostEntity
--- @uses: CommentEmbed
 ALTER TABLE jrnl_dream DROP COLUMN imprtc_yn;
 
 COMMIT;
+
+-- -------------------
+
+START TRANSACTION;
+
+-- jrnl_diary의 기존 '글접기' 상태 마이그레이션
+INSERT IGNORE INTO state ( ref_post_no, ref_content_type, state_cd )
+SELECT d.post_no AS ref_post_no, 'JRNL_DIARY' AS ref_content_type, 'COLLAPSED' AS state_cd
+FROM jrnl_diary d
+WHERE d.collapsed_yn = 'Y';
+ALTER TABLE jrnl_diary DROP COLUMN collapsed_yn;
+
+-- jrnl_dream의 기존 '글접기' 상태 마이그레이션
+INSERT IGNORE INTO state ( ref_post_no, ref_content_type, state_cd )
+SELECT d.post_no AS ref_post_no, 'JRNL_DREAM' AS ref_content_type, 'COLLAPSED' AS state_cd
+FROM jrnl_dream d
+WHERE d.collapsed_yn = 'Y';
+ALTER TABLE jrnl_dream DROP COLUMN collapsed_yn;
+
+-- jrnl_entry의 기존 '글접기' 상태 마이그레이션
+INSERT IGNORE INTO state ( ref_post_no, ref_content_type, state_cd )
+SELECT d.post_no AS ref_post_no, 'JRNL_ENTRY' AS ref_content_type, 'COLLAPSED' AS state_cd
+FROM jrnl_entry d
+WHERE d.collapsed_yn = 'Y';
+ALTER TABLE jrnl_entry DROP COLUMN collapsed_yn;
+
+COMMIT;
+
+-- -------------------
+
+START TRANSACTION;
+
+-- jrnl_diary의 기존 '중요' 상태 마이그레이션
+INSERT IGNORE INTO state ( ref_post_no, ref_content_type, state_cd )
+SELECT d.post_no AS ref_post_no, 'JRNL_DIARY' AS ref_content_type, 'RESOLVED' AS state_cd
+FROM jrnl_diary d
+WHERE d.resolved_yn = 'Y';
+ALTER TABLE jrnl_diary DROP COLUMN resolved_yn;
+
+-- jrnl_dream의 기존 '중요' 상태 마이그레이션
+INSERT IGNORE INTO state ( ref_post_no, ref_content_type, state_cd )
+SELECT d.post_no AS ref_post_no, 'JRNL_DREAM' AS ref_content_type, 'RESOLVED' AS state_cd
+FROM jrnl_dream d
+WHERE d.resolved_yn = 'Y';
+ALTER TABLE jrnl_dream DROP COLUMN resolved_yn;
+
+COMMIT;
+
+-- -------------------

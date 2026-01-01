@@ -179,52 +179,57 @@ dF.JrnlEntry = (function(): dfModule {
         },
 
         /**
-         * 상태 변경 처리. (Ajax)
-         * @param {string|number} postNo - 글 번호.
-         * @param {object} payload
-         * @param {Function} [callback]
+         * 상태 토글 (Ajax)
+         * @param postNo
+         * @param stateCd
+         * @param {object} object
          */
-        patchAjax: function(postNo: string|number, payload: object, callback: Function): void {
+        toggleStateAjax: function(postNo: string|number, stateCd: string, { onOffFunc }): void {
             if (isNaN(Number(postNo))) return;
 
-            const url: string = cF.util.bindUrl(Url.JRNL_ENTRY, { postNo });
-            cF.$ajax.patch(url, payload, function(res: AjaxResponse): void {
-                if (!res.rslt) return;
-
-                if (!callback || typeof callback != "function") return;
-
-                callback(res);
-            }, "block");
+            const cacheContext = { yy: cF.util.getUrlParam("yy"), mnth: cF.util.getUrlParam("mnth") };
+            const payload = { postNo, contentType: "JRNL_ENTRY", stateCd, cacheContext };
+            dF.State.toggleAjax(payload, function(res: AjaxResponse): void {
+                const item = document.querySelector(`.jrnl-entry-item[data-id='${postNo}']`) as HTMLElement;
+                if (!item) return;
+                const lowerStateCd: string = stateCd.toLowerCase();
+                const icon: HTMLElement = item.querySelector(`.icon-${lowerStateCd}`);
+                if (!icon) {
+                    console.warn("icon not found.");
+                } else {
+                    icon?.classList.toggle("d-none", res.rsltSts !== "ON");
+                }
+                const chk: HTMLInputElement = item.querySelector(`.entry-context-${lowerStateCd}-check`);
+                if (!chk) {
+                    console.warn("chk not found.");
+                } else {
+                    chk.checked = res.rsltSts === "ON";
+                }
+                const tagDiv: HTMLInputElement = item.querySelector(".jrnl-entry-tags");
+                if (!tagDiv) {
+                    console.warn("tagDiv not found.");
+                } else {
+                    tagDiv.classList.toggle("d-none", res.rsltSts !== "ON");
+                }
+                onOffFunc(res, item);
+            });
         },
 
-         /**
+        /**
          * 글 접기/펼치기 토글. (Ajax)
          * @param {string|number} postNo - 글 번호.
          */
         collapseAjax: function(postNo: string|number): void {
             if (isNaN(Number(postNo))) return;
 
-            const item: HTMLElement = document.querySelector(`.jrnl-entry-item[data-id='${postNo}']`);
-            if (!item) return;
+            const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
+                const cn: HTMLDivElement = item.querySelector("div.jrnl-entry-cn");
+                if (!cn) return console.warn("cn not found.");
 
-            const current: string = (item.dataset.collapsed || "N").toUpperCase();
-            const next: "Y"|"N" = current === "Y" ? "N" : "Y";
-            const nextBoolean: boolean = current !== "Y"
-
-            const payload: Record<string, any> = { collapsed: nextBoolean };
-            dF.JrnlEntry.patchAjax(postNo, payload, function(): void {
-                item.dataset.collapsed = next;
-
-                const content: HTMLElement = item.querySelector(".jrnl-entry-cn");
-                if (content) {
-                    content.classList.toggle("collapsed", next === "Y");
-                }
-
-                const chk: HTMLInputElement = item.querySelector(".entry-context-collapse-check");
-                if (chk) chk.checked = (next === "Y");
-            });
+                cn?.classList.toggle("collapsed", res.rsltSts === "ON");
+            }
+            this.toggleStateAjax(postNo, "COLLAPSED", { onOffFunc });
         },
-
 
         /**
          * toggle
@@ -233,78 +238,39 @@ dF.JrnlEntry = (function(): dfModule {
         toggle: function(postNo: string|number): void {
             if (isNaN(Number(postNo))) return;
 
-            const id: string = String(postNo);
-            const entry: HTMLElement = document.querySelector(`.jrnl-entry[data-id='${id}']`);
-            const diaries: NodeListOf<HTMLElement> = entry.querySelectorAll(".jrnl-diary-cn");
-            if (!diaries.length) return;
+            const item = document.querySelector(`.jrnl-entry-item[data-id='${postNo}']`) as HTMLElement;
+            if (!item) return console.warn("item not found.");
+
+            const cn: HTMLDivElement = item.querySelector("div.jrnl-entry-cn");
+            if (!cn) return console.warn("cn not found.");
 
             // collapsed 상태 판정 → diary 중 하나라도 펴져 있으면 전체 접기
-            const shouldCollapse: boolean = Array.from(diaries).some((item: HTMLElement) => {
-                const cn: HTMLElement = item.querySelector(".cn");
-                return cn && !cn.classList.contains("collapsed");
-            });
-
-            const entryIcon: HTMLElement = document.querySelector(`#entry-toggle-icon-${id}`);
-            if (!entryIcon) console.log("entryIcon not found.");
-            const collapsedIds = new Set(JSON.parse(localStorage.getItem(dF.JrnlDiary.STORAGE_KEY) || "[]"));
-
-            diaries.forEach((item: HTMLElement): void => {
-                const id: string = item.dataset.id;
-                const content: HTMLElement = item.querySelector(".cn");
-                const icon: HTMLElement = item.querySelector('#diary-toggle-icon');
-                if (!icon) console.log("icon not found.");
-
-                if (!id || !content) return;
-
-                if (shouldCollapse) {
-                    // 전체 접기
-                    content.classList.add("collapsed");
-                    icon?.classList.replace("bi-chevron-up", "bi-chevron-down");
-                    entryIcon?.classList.replace("bi-arrows-collapse", "bi-arrows-expand");
-                    collapsedIds.add(id);
-                } else {
-                    // 전체 펼치기
-                    content.classList.remove("collapsed");
-                    icon?.classList.replace("bi-chevron-down", "bi-chevron-up");
-                    entryIcon?.classList.replace("bi-arrows-expand", "bi-arrows-collapse");
-                    collapsedIds.delete(id);
-                }
-            });
-
-            localStorage.setItem(dF.JrnlDiary.STORAGE_KEY, JSON.stringify(Array.from(collapsedIds)));
-        },
-        
-        /**
-         * 접힌 엔트리 초기화
-         */
-        initCollapseState: function(): void {
-            const entries: NodeListOf<HTMLElement> = document.querySelectorAll('.jrnl-entry');
-            if (!entries.length) return;
-
-            entries.forEach((entry: HTMLElement): void => {
-                const entryId = entry.dataset.id;
-                if (!entryId) return;
-
-                const entryIcon: HTMLElement = document.querySelector(`#entry-toggle-icon-${entryId}`);
-                if (!entryIcon) return;
-
-                const diaries: NodeListOf<HTMLElement> = entry.querySelectorAll(".jrnl-diary-cn");
-                if (!diaries.length) return;
-
-                // diary 중 하나라도 "펼쳐진" 상태가 있는지 확인
-                const anyExpanded: boolean = Array.from(diaries).some((diary: HTMLElement): boolean => {
+            const shouldCollapse: boolean = cn && !cn.classList.contains("collapsed");
+            const diaries: NodeListOf<HTMLElement> = item.querySelectorAll(".jrnl-diary-cn");
+            const tagDiv = item.querySelector(".jrnl-entry-tags");
+            const icon: HTMLElement = document.querySelector(`#entry-toggle-icon-${postNo}`);
+            if (!icon) console.log("icon not found.");
+            if (shouldCollapse) {
+                // 전체 접기
+                cn.classList.add("collapsed");
+                icon.classList.add("bi-arrows-expand");
+                icon.classList.remove("bi-arrows-collapse");
+                tagDiv.classList.remove("d-none");
+                diaries.forEach((diary: HTMLElement): void => {
                     const content: HTMLElement = diary.querySelector(".cn");
-                    return content && !content.classList.contains("collapsed");
+                    content.classList.add("collapsed");
                 });
-
-                if (anyExpanded) {
-                    // diary 중 하나라도 펼쳐져 있으면 → entry 아이콘 = 'collapse'
-                    entryIcon.classList.replace("bi-arrows-expand", "bi-arrows-collapse");
-                } else {
-                    // diary가 모두 collapsed → entry 아이콘 = 'expand'
-                    entryIcon.classList.replace("bi-arrows-collapse", "bi-arrows-expand");
-                }
-            });
-        }
+            } else {
+                // 전체 펼치기
+                cn.classList.remove("collapsed");
+                icon.classList.add("bi-arrows-collapse");
+                icon.classList.remove("bi-arrows-expand");
+                tagDiv.classList.add("d-none");
+                diaries.forEach((diary: HTMLElement): void => {
+                    const content: HTMLElement = diary.querySelector(".cn");
+                    content.classList.remove("collapsed");
+                });
+            }
+        },
     }
 })();
