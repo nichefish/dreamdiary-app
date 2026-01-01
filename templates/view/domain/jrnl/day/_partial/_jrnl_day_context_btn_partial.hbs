@@ -8,7 +8,7 @@
     <div class="me-0 d-flex align-items-center">
         <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end"
-                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="컨텍스트 메뉴를 호출합니다.">
+                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.context.menu.show'/>">
             <i class="ki-solid ki-dots-horizontal fs-2x"></i>
         </button>
         <!--begin::Menu 3-->
@@ -22,7 +22,7 @@
             <div class="menu-item px-3 my-1 cursor-pointer"
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.day"/> <@spring.message 'bs.tooltip.modal.mdf'/>">
                 <div class="menu-link flex-stack px-3" onclick="dF.JrnlDay.openDetatched('{{stdrdDt}}');">
-                    새 창 보기
+                    <@spring.message "txt.comm.open-in-new-window"/>
                     <i class="bi bi-window-stack fs-8"></i>
                 </div>
             </div>
@@ -68,12 +68,12 @@
                         <div class="menu-content px-3">
                             <!--begin::Switch-->
                             <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
-                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="중요">
+                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.status.imprtc'/>">
                                 <!--begin::Input-->
                                 <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" value="1" {{#ifYn imprtcYn}}checked="checked"{{/ifYn}}>
                                 <!--end::Input-->
                                 <!--end::Label-->
-                                <span class="form-check-label text-muted fs-7">중요</span>
+                                <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.imprtc'/></span>
                                 <!--end::Label-->
                             </label>
                             <!--end::Switch-->

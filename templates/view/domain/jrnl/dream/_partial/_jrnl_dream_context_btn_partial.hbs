@@ -8,7 +8,7 @@
     <div class="me-0 d-flex align-items-center">
         <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
                 data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end"
-                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="컨텍스트 메뉴를 호출합니다.">
+                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.context.menu.show'/>">
             <i class="ki-solid ki-dots-horizontal fs-2x"></i>
         </button>
         <!--begin::Menu 3-->
@@ -81,6 +81,24 @@
                                 <!--end::Input-->
                                 <!--end::Label-->
                                 <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.imprtc'/></span>
+                                <!--end::Label-->
+                            </label>
+                            <!--end::Switch-->
+                        </div>
+                    </div>
+                    <!--end::Menu item-->
+                    <!--begin::Menu item-->
+                    <div class="menu-item px-3">
+                        <div class="menu-content px-3">
+                            <!--begin::Switch-->
+                            <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
+                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.status.refrnc'/>">
+                                <!--begin::Input-->
+                                <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" value="1" {{#ifYn imprtcYn}}checked="checked"{{/ifYn}}
+                                       onclick="dF.JrnlDream.refrncAjax({{postNo}});">
+                                <!--end::Input-->
+                                <!--end::Label-->
+                                <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.refrnc'/></span>
                                 <!--end::Label-->
                             </label>
                             <!--end::Switch-->
