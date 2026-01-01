@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.auth.security.entity;
 
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.Usable;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
@@ -27,7 +28,8 @@ import java.util.List;
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
 public class AuthRoleEntity
-        extends BaseCrudEntity {
+        extends BaseCrudEntity
+        implements Usable {
 
     /** 권한 코드 (PK) */
     @Id

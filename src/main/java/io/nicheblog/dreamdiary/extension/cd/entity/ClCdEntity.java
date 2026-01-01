@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.extension.cd.entity;
 
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.Usable;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.collections4.CollectionUtils;
@@ -32,7 +33,8 @@ import java.util.List;
 @ToString
 @Where(clause = "del_yn='N'")
 public class ClCdEntity
-        extends BaseAuditEntity {
+        extends BaseAuditEntity
+        implements Usable {
 
     @PostLoad
     private void onLoad() {

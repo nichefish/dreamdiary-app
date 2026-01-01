@@ -67,7 +67,7 @@
                             ${clCd.dtlCdCnt!0}
                         </td>
                         <td class="text-center hidden-table">
-                            <#if ((clCd.state.useYn)!"N") == "Y">
+                            <#if ((clCd.useYn)!"N") == "Y">
                                 <div class="badge badge-success cursor-pointer"
                                      onclick="dF.ClCd.unuseAjax('${clCd.clCd}');"
                                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"

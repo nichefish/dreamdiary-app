@@ -75,6 +75,10 @@ public class MenuDto
     @Size(max = 50)
     private String menuSubExtendTyNm;
 
+    /** 사용 여부 (Y/N) */
+    @Builder.Default
+    private String useYn = "N";
+
     /** 폴더(중메뉴) 여부 (Y/N) */
     @Builder.Default
     @Pattern(regexp = "^[YN]$", groups = UpdateState.class)

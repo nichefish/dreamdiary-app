@@ -147,7 +147,7 @@
                             ${dtlCd.sortOrdr!}
                         </td>
                         <td class="text-center">
-                            <#if ((dtlCd.state.useYn)!"N") == "Y">
+                            <#if ((dtlCd.useYn)!"N") == "Y">
                                 <div class="badge badge-success cursor-pointer"
                                      onclick="dF.DtlCd.unuseAjax('${dtlCd.dtlCd!}');"
                                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="클릭하여 사용 상태를&#10;변경합니다.">

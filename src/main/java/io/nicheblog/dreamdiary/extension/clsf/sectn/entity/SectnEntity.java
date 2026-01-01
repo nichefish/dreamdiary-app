@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbed;
 import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbedModule;
+import io.nicheblog.dreamdiary.global.intrfc.entity.Usable;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
@@ -36,7 +37,7 @@ import javax.persistence.*;
 @SQLDelete(sql = "UPDATE sectn SET del_yn = 'Y' WHERE post_no = ?")
 public class SectnEntity
         extends BaseClsfEntity
-        implements AtchFileEmbedModule, CommentEmbedModule, TagEmbedModule {
+        implements Usable, AtchFileEmbedModule, CommentEmbedModule, TagEmbedModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default

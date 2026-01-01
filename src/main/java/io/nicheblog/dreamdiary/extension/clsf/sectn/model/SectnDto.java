@@ -4,7 +4,6 @@ import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.comment.model.cmpstn.CommentCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.comment.model.cmpstn.CommentCmpstnModule;
 import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
-import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -37,7 +36,7 @@ import javax.validation.constraints.Size;
 @ToString(callSuper = true)
 public class SectnDto
         extends BaseClsfDto
-        implements Identifiable<Integer>, AtchFileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, StateCmpstnModule {
+        implements Identifiable<Integer>, AtchFileCmpstnModule, CommentCmpstnModule, TagCmpstnModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -50,52 +49,51 @@ public class SectnDto
     @Builder.Default
     private String contentType = CONTENT_TYPE;
 
-       /** 제목 */
-    protected String title;
-
+    /** 제목 */
+    private String title;
     /** 내용 */
-    protected String cn;
-
+    private String cn;
     /** 마크다운 처리된 내용 */
-    protected String markdownCn;
+    private String markdownCn;
 
     /** 글분류 코드 */
     @Size(max = 50)
-    protected String ctgrClCd;
-
+    private String ctgrClCd;
     /** 글분류 코드 */
     @Size(max = 50)
-    protected String ctgrCd;
-
+    private String ctgrCd;
     /** 글분류 코드 이름 */
     @Size(max = 50)
-    protected String ctgrNm;
-
+    private String ctgrNm;
     /** 글분류 존재 여부 */
     @Builder.Default
-    protected Boolean hasCtgrNm = false;
+    private Boolean hasCtgrNm = false;
+
+    /** 사용 여부 (Y/N) */
+    @Builder.Default
+    private String useYn = "N";
 
     /** 중요 여부 (Y/N) */
     @Builder.Default
-    protected String imprtcYn = "N";
+    private String imprtcYn = "N";
 
     /** 상단고정 여부 (Y/N) */
     @Builder.Default
-    protected String fxdYn = "N";
+    private String fxdYn = "N";
 
     /** 조회수 */
     @Builder.Default
     @Min(value = 0)
-    protected Integer hitCnt = 0;
+    private Integer hitCnt = 0;
 
     /** 수정권한 */
     @Builder.Default
     @Size(max = 50)
-    protected String mdfable = Constant.MDFABLE_REGSTR;
+    private String mdfable = Constant.MDFABLE_REGSTR;
 
     /** 수정 가능 여부 */
     @Builder.Default
-    protected Boolean isMdfable = false;
+    private Boolean isMdfable = false;
 
     /* ----- */
 
