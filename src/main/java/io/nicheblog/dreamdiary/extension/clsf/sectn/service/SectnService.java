@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.extension.clsf.sectn.mapstruct.SectnMapstruct;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.model.SectnDto;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.repository.jpa.SectnRepository;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.spec.SectnSpec;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultiCrudService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Log4j2
 public class SectnService
-        implements BaseMultiCrudService<SectnDto, SectnDto, Integer, SectnEntity> {
+        implements BaseCrudService<SectnDto, SectnDto, Integer, SectnEntity>, BaseMultiCrudService<SectnDto, SectnDto, Integer, SectnEntity>  {
 
     @Getter
     private final SectnRepository repository;

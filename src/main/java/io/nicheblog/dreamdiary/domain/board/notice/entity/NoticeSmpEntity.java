@@ -1,7 +1,8 @@
 package io.nicheblog.dreamdiary.domain.board.notice.entity;
 
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BasePostEntity;
+import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
@@ -29,7 +30,7 @@ import javax.persistence.*;
 @Where(clause = "del_yn='N'")
 @SQLDelete(sql = "UPDATE notice SET del_yn = 'Y' WHERE post_no = ?")
 public class NoticeSmpEntity
-        extends BasePostEntity {
+        extends BaseClsfEntity {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -47,6 +48,39 @@ public class NoticeSmpEntity
     @Column(name = "content_type", columnDefinition = "VARCHAR(50) DEFAULT 'NOTICE'")
     @Comment("컨텐츠 타입")
     private String contentType = CONTENT_TYPE.key;
+
+    /** 제목 */
+    @Column(name = "title")
+    protected String title;
+
+    /** 내용 */
+    @Column(name = "cn")
+    protected String cn;
+
+    /* ----- */
+
+    /** 중요 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "imprtc_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Comment("중요 여부")
+    protected String imprtcYn = "N";
+
+    /** 상단고정 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "fxd_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Comment("상단고정 여부")
+    protected String fxdYn = "N";
+
+    /** 조회수 */
+    @Builder.Default
+    @Column(name = "hit_cnt")
+    protected Integer hitCnt = 0;
+
+    /** 수정권한 */
+    @Builder.Default
+    @Column(name = "mdfable")
+    @Comment("수정권한")
+    private String mdfable = Constant.MDFABLE_REGSTR;
 
     /* ----- */
 

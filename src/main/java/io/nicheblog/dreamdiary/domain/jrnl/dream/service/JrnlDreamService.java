@@ -21,6 +21,7 @@ import io.nicheblog.dreamdiary.extension.clsf.tag.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultiCrudService;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -50,7 +51,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Log4j2
 public class JrnlDreamService
-        implements BaseClsfService<JrnlDreamPostDto, JrnlDreamDto, Integer, JrnlDreamEntity> {
+        implements BaseClsfService<JrnlDreamPostDto, JrnlDreamDto, Integer, JrnlDreamEntity>, BaseMultiCrudService<JrnlDreamPostDto, JrnlDreamDto, Integer, JrnlDreamEntity> {
 
     @Getter
     private final JrnlDreamRepository repository;

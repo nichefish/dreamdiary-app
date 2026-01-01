@@ -7,10 +7,16 @@ import io.nicheblog.dreamdiary.extension.clsf.sectn.model.cmpstn.SectnCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.model.cmpstn.SectnCmpstnModule;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstnModule;
-import io.nicheblog.dreamdiary.global.intrfc.model.BasePostDto;
+import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
+import io.nicheblog.dreamdiary.global.intrfc.model.cmpstn.AtchFileCmpstn;
+import io.nicheblog.dreamdiary.global.intrfc.model.cmpstn.AtchFileCmpstnModule;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 
 /**
  * JrnlSbjctDto
@@ -26,8 +32,8 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class JrnlSbjctDto
-        extends BasePostDto
-        implements Identifiable<Integer>, CommentCmpstnModule, TagCmpstnModule, SectnCmpstnModule {
+        extends BaseClsfDto
+        implements Identifiable<Integer>, AtchFileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, SectnCmpstnModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -39,6 +45,53 @@ public class JrnlSbjctDto
     /** 컨텐츠 타입 */
     @Builder.Default
     private String contentType = CONTENT_TYPE.key;
+
+       /** 제목 */
+    protected String title;
+
+    /** 내용 */
+    protected String cn;
+
+    /** 마크다운 처리된 내용 */
+    protected String markdownCn;
+
+    /** 글분류 코드 */
+    @Size(max = 50)
+    protected String ctgrClCd;
+
+    /** 글분류 코드 */
+    @Size(max = 50)
+    protected String ctgrCd;
+
+    /** 글분류 코드 이름 */
+    @Size(max = 50)
+    protected String ctgrNm;
+
+    /** 글분류 존재 여부 */
+    @Builder.Default
+    protected Boolean hasCtgrNm = false;
+
+    /** 중요 여부 (Y/N) */
+    @Builder.Default
+    protected String imprtcYn = "N";
+
+    /** 상단고정 여부 (Y/N) */
+    @Builder.Default
+    protected String fxdYn = "N";
+
+    /** 조회수 */
+    @Builder.Default
+    @Min(value = 0)
+    protected Integer hitCnt = 0;
+
+    /** 수정권한 */
+    @Builder.Default
+    @Size(max = 50)
+    protected String mdfable = Constant.MDFABLE_REGSTR;
+
+    /** 수정 가능 여부 */
+    @Builder.Default
+    protected Boolean isMdfable = false;
 
     /* ----- */
 
@@ -86,9 +139,11 @@ public class JrnlSbjctDto
         return this.postNo;
     }
 
+    /** 위임 :: 첨부파일 모듈 */
+    public AtchFileCmpstn file;
     /** 위임 :: 댓글 정보 모듈 */
     public CommentCmpstn comment;
-    /** 단락 정보 모듈 (위임) */
+    /** 위임 :: 단락 정보 모듈 */
     public SectnCmpstn sectn;
     /** 위임 :: 태그 정보 모듈 */
     public TagCmpstn tag;

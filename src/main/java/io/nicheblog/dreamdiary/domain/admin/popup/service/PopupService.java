@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.domain.admin.popup.mapstruct.PopupMapstruct;
 import io.nicheblog.dreamdiary.domain.admin.popup.model.PopupDto;
 import io.nicheblog.dreamdiary.domain.admin.popup.repository.jpa.PopupRepository;
 import io.nicheblog.dreamdiary.domain.admin.popup.spec.PopupSpec;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultiCrudService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Service;
 @Service("popupService")
 @RequiredArgsConstructor
 public class PopupService
-        implements BaseMultiCrudService<PopupDto, PopupDto, Integer, PopupEntity> {
+        implements BaseClsfService<PopupDto, PopupDto, Integer, PopupEntity>, BaseMultiCrudService<PopupDto, PopupDto, Integer, PopupEntity> {
 
     @Getter
     private final PopupRepository repository;

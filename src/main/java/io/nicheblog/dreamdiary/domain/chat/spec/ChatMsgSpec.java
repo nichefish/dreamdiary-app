@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.domain.chat.spec;
 
 import io.nicheblog.dreamdiary.domain.chat.entity.ChatMsgEntity;
-import io.nicheblog.dreamdiary.global.intrfc.spec.BasePostSpec;
+import io.nicheblog.dreamdiary.global.intrfc.spec.BaseClsfSpec;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -23,7 +23,7 @@ import java.util.Map;
 @Component
 @Log4j2
 public class ChatMsgSpec
-        implements BasePostSpec<ChatMsgEntity> {
+        implements BaseClsfSpec<ChatMsgEntity> {
 
     /**
      * 검색 조건 세팅 후 쿼리 후처리. (override)

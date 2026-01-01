@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.extension.clsf.managt.event.ManagtrAddEvent;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultiCrudService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("jrnlSbjctService")
 @RequiredArgsConstructor
 public class JrnlSbjctService
-        implements BaseClsfService<JrnlSbjctDto, JrnlSbjctDto, Integer, JrnlSbjctEntity> {
+        implements BaseClsfService<JrnlSbjctDto, JrnlSbjctDto, Integer, JrnlSbjctEntity>, BaseMultiCrudService<JrnlSbjctDto, JrnlSbjctDto, Integer, JrnlSbjctEntity> {
 
     @Getter
     private final JrnlSbjctRepository repository;

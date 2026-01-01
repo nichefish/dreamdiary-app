@@ -22,7 +22,7 @@ import java.io.Serializable;
  * @author nichefish
  */
 public interface BaseClsfService<PostDto extends BaseClsfDto & Identifiable<Key>, Dto extends BaseClsfDto & Identifiable<Key>, Key extends Serializable, Entity extends BaseClsfEntity>
-        extends BaseMultiCrudService<PostDto, Dto, Key, Entity> {
+        extends BaseCrudService<PostDto, Dto, Key, Entity> {
 
     /**
      * default: 게시물 등록 (dto level)

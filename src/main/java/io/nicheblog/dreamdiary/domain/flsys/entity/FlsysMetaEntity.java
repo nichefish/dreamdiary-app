@@ -9,7 +9,8 @@ import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.entity.embed.ViewerEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.entity.embed.ViewerEmbedModule;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BasePostEntity;
+import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
@@ -36,7 +37,7 @@ import javax.persistence.*;
 @Where(clause = "del_yn='N'")
 @SQLDelete(sql = "UPDATE flsys_meta SET del_yn = 'Y' WHERE post_no = ?")
 public class FlsysMetaEntity
-        extends BasePostEntity
+        extends BaseClsfEntity
         implements CommentEmbedModule, TagEmbedModule, ManagtEmbedModule, ViewerEmbedModule {
 
     /** 필수: 컨텐츠 타입 */
@@ -64,6 +65,34 @@ public class FlsysMetaEntity
     /** 글분류 코드 이름 :: join을 제거하고 메모리 캐시 처리 */
     @Transient
     private String ctgrNm;
+
+    /** 제목 */
+    @Column(name = "title")
+    protected String title;
+
+    /** 내용 */
+    @Column(name = "cn")
+    protected String cn;
+
+    /* ----- */
+
+    /** 중요 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "imprtc_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Comment("중요 여부")
+    protected String imprtcYn = "N";
+
+    /** 상단고정 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "fxd_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Comment("상단고정 여부")
+    protected String fxdYn = "N";
+
+    /** 수정권한 */
+    @Builder.Default
+    @Column(name = "mdfable")
+    @Comment("수정권한")
+    private String mdfable = Constant.MDFABLE_REGSTR;
 
     /* ----- */
 

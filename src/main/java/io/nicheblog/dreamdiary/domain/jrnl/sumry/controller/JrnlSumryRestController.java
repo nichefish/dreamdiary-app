@@ -27,7 +27,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -286,11 +285,10 @@ public class JrnlSumryRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSumryRegAjax(
             final @Valid JrnlSumryDto jrnlSumry,
-            final LogActvtyParam logParam,
-            final MultipartHttpServletRequest request
+            final LogActvtyParam logParam
     ) throws Exception {
 
-        final ServiceResponse result = jrnlSumryService.modify(jrnlSumry, request);
+        final ServiceResponse result = jrnlSumryService.modify(jrnlSumry);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

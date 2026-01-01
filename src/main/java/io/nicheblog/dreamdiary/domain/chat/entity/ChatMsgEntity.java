@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.domain.chat.entity;
 
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BasePostEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
@@ -28,7 +28,7 @@ import javax.persistence.*;
 @Where(clause = "del_yn='N'")
 @SQLDelete(sql = "UPDATE chat_msg SET del_yn = 'Y' WHERE post_no = ?")
 public class ChatMsgEntity
-        extends BasePostEntity {
+        extends BaseClsfEntity {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -46,4 +46,26 @@ public class ChatMsgEntity
     @Column(name = "content_type", columnDefinition = "VARCHAR(50) DEFAULT 'CHAT_MSG'")
     @Comment("컨텐츠 타입")
     private String contentType = CONTENT_TYPE.key;
+
+    /** 제목 */
+    @Column(name = "title")
+    protected String title;
+
+    /** 내용 */
+    @Column(name = "cn")
+    protected String cn;
+
+    /* ----- */
+
+    /** 중요 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "imprtc_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Comment("중요 여부")
+    protected String imprtcYn = "N";
+
+    /** 상단고정 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "fxd_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Comment("상단고정 여부")
+    protected String fxdYn = "N";
 }

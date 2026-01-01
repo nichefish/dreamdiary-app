@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.admin.tmplat.entity;
 
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAtchEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
@@ -29,7 +29,7 @@ import javax.persistence.Table;
 @Where(clause = "del_yn='N'")
 @SQLDelete(sql = "update tmplat_txt SET del_yn = 'Y' WHERE tmplat_txt_no = ?")
 public class TmplatTxtEntity
-        extends BaseAtchEntity {
+        extends BaseAuditEntity {
 
     /** 템플릿 번호 (PK) */
     @Id

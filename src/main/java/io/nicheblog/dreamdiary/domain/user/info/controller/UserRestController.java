@@ -102,6 +102,7 @@ public class UserRestController
      *
      * @param user 등록/수정 처리할 객체
      * @param logParam 로그 기록을 위한 파라미터 객체
+     * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(value = {Url.USER_REG_AJAX, Url.USER_MDF_AJAX})

@@ -5,8 +5,10 @@ import io.nicheblog.dreamdiary.extension.clsf.comment.model.cmpstn.CommentCmpstn
 import io.nicheblog.dreamdiary.extension.clsf.comment.model.cmpstn.CommentCmpstnModule;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstnModule;
-import io.nicheblog.dreamdiary.global.intrfc.model.BasePostDto;
+import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
+import io.nicheblog.dreamdiary.global.intrfc.model.cmpstn.AtchFileCmpstn;
+import io.nicheblog.dreamdiary.global.intrfc.model.cmpstn.AtchFileCmpstnModule;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -25,19 +27,17 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class JrnlDiaryPostDto
-        extends BasePostDto
-        implements Identifiable<Integer>, CommentCmpstnModule, TagCmpstnModule {
+        extends BaseClsfDto
+        implements Identifiable<Integer>, AtchFileCmpstnModule, CommentCmpstnModule, TagCmpstnModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
-    private static final ContentType CONTENT_TYPE = ContentType.JRNL_DIARY;
-    /** 필수(Override): 글분류 코드 */
-    @Builder.Default
-    private static final String CTGR_CL_CD = CONTENT_TYPE.name() + "_CTGR_CD";
+    private String contentType = ContentType.JRNL_DIARY.key;
 
-    /** 컨텐츠 타입 */
-    @Builder.Default
-    private String contentType = CONTENT_TYPE.key;
+    /** 제목 */
+    private String title;
+    /** 내용 */
+    private String cn;
 
     /* ----- */
 
@@ -46,19 +46,9 @@ public class JrnlDiaryPostDto
     /** 저널 항목 번호 */
     private Integer jrnlEntryNo;
     /** 저널 기준일자 */
-    private String stdrdDt;
-    /** 저널 일자 요일 */
-    private String jrnlDtWeekDay;
-
-    /** 저널 기준일자 */
     private Integer yy;
     /** 저널 기준일자 */
     private Integer mnth;
-
-    /** 공휴일 여부 */
-    private Boolean isHldy;
-    /** 공휴일 이름 */
-    private String hldyNm;
 
     /** 순번 */
     private Integer idx;
@@ -66,11 +56,9 @@ public class JrnlDiaryPostDto
     /** 인덱스 변경 여부 */
     @Builder.Default
     private Boolean isIdxChanged = false;
-
     /** 저널 항목 변경 여부 */
     @Builder.Default
     private Boolean isEntryChanged = false;
-
     /** 이전 저널 항목 번호 */
     private Integer prevJrnlEntryNo;
 
@@ -81,6 +69,8 @@ public class JrnlDiaryPostDto
         return this.postNo;
     }
 
+    /** 위임 :: 첨부파일 모듈 */
+    public AtchFileCmpstn file;
     /** 위임 :: 댓글 정보 모듈 */
     public CommentCmpstn comment;
     /** 위임 :: 태그 정보 모듈 */

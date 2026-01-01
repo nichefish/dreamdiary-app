@@ -27,14 +27,12 @@ public class JrnlDreamPatchDto {
     private Boolean resolved;
     /** 글접기 여부 */
     private Boolean collapsed;
-    /** 참조 여부 */
-    private Boolean refrnc;
 
     /**
      * 요청이 전부 공백인 경우 판별
      * @return 전부 공백 여부
      */
     public boolean isAllNull() {
-        return imprtc == null && collapsed == null && resolved == null && refrnc == null;
+        return imprtc == null && collapsed == null && resolved == null;
     }
 }

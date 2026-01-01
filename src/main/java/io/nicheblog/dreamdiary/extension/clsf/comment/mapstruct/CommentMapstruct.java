@@ -34,7 +34,6 @@ public interface CommentMapstruct
      */
     @Override
     @Named("toDto")
-    @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"COMMENT_CTGR_CD\", entity.getCtgrCd()))")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
     CommentDto toDto(final CommentEntity entity) throws Exception;
 
