@@ -1,7 +1,25 @@
 # DESIGN NOTES
 
-### 저널 결산(jrnl_sumry)
+## 저널(jrnl)
+- jrnl-day
+  - jrnl-entry
+    - jrnl-diary
+  - jrnl-dream
+    - jrnl-intrpt 
 
+### 저널 일자(jrnl-day)
+
+### 저널 항목(jrnl-entry)
+저널 일기를 담는 묶음.
+- 글접기시 하위 일기 태그 묶음을 요약해서 보여준다.
+ 
+### 저널 일기(jrnl-diary)
+
+### 저널 꿈(jrnl-dream)
+
+### 저널 해석(jrnl-intrpt)
+
+### 저널 결산(jrnl-sumry)
 결산 주기: 연간으로 고정.
 - 월간 결산은 지금 기준으로 투머치다.
 - 결산의 베스트 프랙티스는: 시간이 충분히 지나 사건이 ‘정리되고’, 의미가 ‘침전된 뒤’에 하는 해석이다.

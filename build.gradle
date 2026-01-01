@@ -22,7 +22,7 @@ plugins {
  * 프로젝트 정보
  */
 group = 'dreamdiary.io'
-version = '0.15.0'
+version = '0.15.2'
 
 /**
  * Java, Spring Boot 및 추가 설정
