@@ -5,17 +5,12 @@ import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
-import io.nicheblog.dreamdiary.domain.vcatn.papr.model.VcatnPaprDto;
-import io.nicheblog.dreamdiary.domain.vcatn.papr.service.VcatnPaprService;
-import io.nicheblog.dreamdiary.domain.vcatn.stats.model.VcatnStatsYyDto;
-import io.nicheblog.dreamdiary.domain.vcatn.stats.service.VcatnStatsYyService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyPageControllerAspect;
 import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
-import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +19,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
-
-import java.util.List;
 
 /**
  * UserPageController
@@ -48,8 +41,6 @@ public class UserMyPageController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.USER_MY;     // 작업 카테고리 (로그 적재용)
 
     private final UserService userService;
-    private final VcatnStatsYyService vcatnStatsYyService;
-    private final VcatnPaprService vcatnPaprService;
 
     /**
      * 내 정보 (상세) 화면 조회
@@ -74,27 +65,6 @@ public class UserMyPageController
         final String lgnUserId = AuthUtils.getLgnUserId();
         final UserDto retrievedDto = userService.getDtlDto(lgnUserId);
         model.addAttribute("user", retrievedDto);
-
-        // 휴가계획서 년도 정보 조회 (시작일자~종료일자)
-        try {
-            //if (AuthService.hasEcnyDt()) {
-            final VcatnStatsYyDto statsYy = vcatnStatsYyService.getCurrVcatnYyDt();
-            model.addAttribute("vcatnYy", statsYy);
-            final String userId = AuthUtils.getLgnUserId();
-            // VcatnStatsDto vcatnStatsDtl = vcatnStatsService.getVcatnStatsDtl(statsYy, userId);
-            //  model.addAttribute("vcatnStats", vcatnStatsDtl);
-            // 올해 사용 휴가 목록 조회
-            final BaseSearchParam param = BaseSearchParam.builder()
-                    .regstrId(lgnUserId)
-                    .searchStartDt(statsYy.getBgnDt())
-                    .searchEndDt(statsYy.getEndDt())
-                    .build();
-            final List<VcatnPaprDto> vcatnPaprList = vcatnPaprService.getListDto(param);
-            model.addAttribute("vcatnPaprList", vcatnPaprList);
-            // }
-        } catch (final Exception e) {
-            log.info("휴가계획서 정보를 조회하지 못했습니다.");
-        }
 
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;

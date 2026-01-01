@@ -110,12 +110,11 @@ public class UserRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> userRegAjax(
             final @Valid UserDto user,
-            final LogActvtyParam logParam,
-            final MultipartHttpServletRequest request
+            final LogActvtyParam logParam
     ) throws Exception {
 
         final boolean isReg = (user.getKey() == null);
-        final ServiceResponse result = isReg ? userService.regist(user, request) : userService.modify(user, request);
+        final ServiceResponse result = isReg ? userService.regist(user) : userService.modify(user);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
