@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.schdul.entity.SchdulEntity;
 import io.nicheblog.dreamdiary.domain.schdul.entity.SchdulPrtcpntEntity;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global.intrfc.spec.BasePostSpec;
+import io.nicheblog.dreamdiary.global.intrfc.spec.BaseClsfSpec;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -26,7 +26,7 @@ import java.util.Map;
 @Component
 @Log4j2
 public class SchdulSpec
-        implements BasePostSpec<SchdulEntity> {
+        implements BaseClsfSpec<SchdulEntity> {
 
     /**
      * 검색 조건 세팅 후 쿼리 후처리. (override)

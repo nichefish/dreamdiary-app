@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -79,7 +78,6 @@ public class JrnlEntryRestController
      *
      * @param jrnlEntry 등록/수정 처리할 객체
      * @param logParam 로그 기록을 위한 파라미터 객체
-     * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @see TagProcEventListener
      */
@@ -93,14 +91,13 @@ public class JrnlEntryRestController
     public ResponseEntity<AjaxResponse> jrnlEntryRegAjax(
             final @PathVariable(value = "postNo", required = false) Integer postNo,
             final @Valid JrnlEntryDto jrnlEntry,
-            final LogActvtyParam logParam,
-            final MultipartHttpServletRequest request
+            final LogActvtyParam logParam
     ) throws Exception {
 
         final boolean isMdf = postNo != null;
         if (isMdf) jrnlEntry.setPostNo(postNo);
 
-        final ServiceResponse result = isMdf ? jrnlEntryService.modify(jrnlEntry, request) : jrnlEntryService.regist(jrnlEntry, request);
+        final ServiceResponse result = isMdf ? jrnlEntryService.modify(jrnlEntry) : jrnlEntryService.regist(jrnlEntry);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 

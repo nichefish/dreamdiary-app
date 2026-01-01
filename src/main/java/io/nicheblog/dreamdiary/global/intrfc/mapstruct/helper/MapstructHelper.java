@@ -38,8 +38,14 @@ import io.nicheblog.dreamdiary.extension.clsf.viewer.entity.embed.ViewerEmbedMod
 import io.nicheblog.dreamdiary.extension.clsf.viewer.mapstruct.embed.ViewerEmbedMapstruct;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.model.cmpstn.ViewerCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.model.cmpstn.ViewerCmpstnModule;
-import io.nicheblog.dreamdiary.global.intrfc.entity.*;
-import io.nicheblog.dreamdiary.global.intrfc.model.*;
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditRegEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
+import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditDto;
+import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditRegDto;
+import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
+import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;
@@ -95,18 +101,7 @@ public class MapstructHelper {
                 ((BaseAuditDto) dto).setIsMdfusr(baseEntity.isMdfusr());
             }
         }
-        // MANAGE :: ...
-        // ATCH :: 공통 필드 매핑 로직
-        if (entity instanceof BaseAtchEntity baseEntity && dto instanceof BaseAtchDto) {
-            // 첨부파일 존재 여부
-            final Boolean hasAtchFile = !(baseEntity.getAtchFileNo() == null || baseEntity.getAtchFileInfo() == null || CollectionUtils.isEmpty(baseEntity.getAtchFileInfo().getAtchFileList()));
-            ((BaseAtchDto) dto).setHasAtchFile(hasAtchFile);
-        }
         // CLSF :: BaseClsfMapstruct쪽에 정의
-        // POST :: 공통 필드 매핑 로직
-        if (entity instanceof BasePostEntity baseEntity && dto instanceof BasePostDto) {
-            //
-        }
     }
 
     /**

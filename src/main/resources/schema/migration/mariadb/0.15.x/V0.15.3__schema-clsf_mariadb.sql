@@ -20,6 +20,28 @@ CREATE TABLE IF NOT EXISTS state (
 
 -- -------------------
 
+ALTER TABLE jrnl_entry DROP COLUMN cn;
+ALTER TABLE jrnl_entry DROP COLUMN ctgr_cd;
+ALTER TABLE jrnl_entry DROP COLUMN fxd_yn;
+ALTER TABLE jrnl_entry DROP COLUMN hit_cnt;
+ALTER TABLE jrnl_entry DROP COLUMN mdfable;
+ALTER TABLE jrnl_entry DROP COLUMN imprtc_yn;
+
+ALTER TABLE jrnl_diary DROP COLUMN ctgr_cd;
+ALTER TABLE jrnl_diary DROP COLUMN fxd_yn;
+ALTER TABLE jrnl_diary DROP COLUMN hit_cnt;
+ALTER TABLE jrnl_diary DROP COLUMN mdfable;
+
+ALTER TABLE jrnl_dream DROP COLUMN ctgr_cd;
+ALTER TABLE jrnl_dream DROP COLUMN fxd_yn;
+ALTER TABLE jrnl_dream DROP COLUMN hit_cnt;
+ALTER TABLE jrnl_dream DROP COLUMN mdfable;
+
+ALTER TABLE jrnl_intrpt DROP COLUMN ctgr_cd;
+ALTER TABLE jrnl_intrpt DROP COLUMN fxd_yn;
+ALTER TABLE jrnl_intrpt DROP COLUMN hit_cnt;
+ALTER TABLE jrnl_intrpt DROP COLUMN mdfable;
+
 START TRANSACTION;
 
 -- jrnl_diary의 기존 '참조' 상태 마이그레이션

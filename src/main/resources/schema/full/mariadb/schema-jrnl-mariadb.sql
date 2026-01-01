@@ -20,8 +20,6 @@ CREATE TABLE IF NOT EXISTS jrnl_day (
     mnth INT COMMENT '월',
     aprxmt_dt DATE COMMENT '대략일자 (날짜미상시 해당일자 이후에 표기)',
     weather VARCHAR(500) COMMENT '날씨',
-    -- ATCH_FILE
-    atch_file_no INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -43,19 +41,9 @@ CREATE TABLE IF NOT EXISTS jrnl_entry (
     post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 항목 번호 (PK)',
     content_type VARCHAR(32) DEFAULT 'JRNL_ENTRY' COMMENT '컨텐츠 타입',
     --
-    idx INT DEFAULT 1 COMMENT '저널 항목 인덱스',
-    -- status
-    collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)',
-    -- POST
     title VARCHAR(200) COMMENT '제목',
-    cn LONGTEXT COMMENT '내용',
-    ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
-    fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
-    hit_cnt INT DEFAULT 0 COMMENT '조회수',
-    imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
-    mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
-    -- ATCH_FILE
-    atch_file_no INT COMMENT '첨부파일 번호',
+    idx INT DEFAULT 1 COMMENT '저널 항목 인덱스',
+    collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -74,19 +62,13 @@ CREATE TABLE IF NOT EXISTS jrnl_diary (
     --
     jrnl_day_no INT COMMENT '저널 일자 번호',
     jrnl_entry_no INT COMMENT '저널 항목 번호',
+    --
+    title VARCHAR(200) COMMENT '제목',
+    cn LONGTEXT COMMENT '내용',
     idx INT DEFAULT 1 COMMENT '저널 일기 인덱스',
     -- status
     resolved_yn CHAR(1) DEFAULT 'N' COMMENT '정리완료 여부 (Y/N)',
     collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)',
-    imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
-    refrnc_yn CHAR(1) DEFAULT 'N' COMMENT '참조 여부(Y/N)',
-    -- POST
-    title VARCHAR(200) COMMENT '제목',
-    cn LONGTEXT COMMENT '내용',
-    ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
-    fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
-    hit_cnt INT DEFAULT 0 COMMENT '조회수',
-    mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
     -- ATCH_FILE
     atch_file_no INT COMMENT '첨부파일 번호',
     -- AUDIT
@@ -108,6 +90,9 @@ CREATE TABLE IF NOT EXISTS jrnl_dream (
     content_type VARCHAR(32) DEFAULT 'JRNL_DREAM' COMMENT '컨텐츠 타입',
     --
     jrnl_day_no INT COMMENT '저널 일자 번호',
+    --
+    title VARCHAR(200) COMMENT '제목',
+    cn LONGTEXT COMMENT '내용',
     idx INT DEFAULT 1 COMMENT '저널 꿈 인덱스',
     halluc_yn CHAR(1) DEFAULT  'N' COMMENT '입면환각 여부 (Y/N)',
     nhtmr_yn CHAR(1) DEFAULT  'N' COMMENT '악몽 여부 (Y/N)',
@@ -115,15 +100,6 @@ CREATE TABLE IF NOT EXISTS jrnl_dream (
     else_dreamer_nm VARCHAR(64) COMMENT '꿈꾼이 이름',
     resolved_yn CHAR(1) DEFAULT 'N' COMMENT '정리완료 여부 (Y/N)',
     collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)',
-    refrnc_yn CHAR(1) DEFAULT 'N' COMMENT '참조 여부(Y/N)',
-    -- POST
-    title VARCHAR(200) COMMENT '제목',
-    cn LONGTEXT COMMENT '내용',
-    ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
-    fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
-    hit_cnt INT DEFAULT 0 COMMENT '조회수',
-    imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
-    mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
     -- ATCH_FILE
     atch_file_no INT COMMENT '첨부파일 번호',
     -- AUDIT
@@ -145,17 +121,14 @@ CREATE TABLE IF NOT EXISTS jrnl_intrpt (
     content_type VARCHAR(32) DEFAULT 'JRNL_INTRPT' COMMENT '컨텐츠 타입',
     --
     jrnl_dream_no INT COMMENT '저널 꿈 번호',
+    --
+    title VARCHAR(200) COMMENT '제목',
+    cn LONGTEXT COMMENT '내용',
     idx INT DEFAULT 1 COMMENT '저널 해석 인덱스',
     resolved_yn CHAR(1) DEFAULT 'N' COMMENT '정리완료 여부 (Y/N)',
     collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)',
     -- POST
-    title VARCHAR(200) COMMENT '제목',
-    cn LONGTEXT COMMENT '내용',
-    ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
-    fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
-    hit_cnt INT DEFAULT 0 COMMENT '조회수',
     imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
-    mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
     -- ATCH_FILE
     atch_file_no INT COMMENT '첨부파일 번호',
     -- AUDIT

@@ -5,8 +5,10 @@ import io.nicheblog.dreamdiary.extension.clsf.comment.model.cmpstn.CommentCmpstn
 import io.nicheblog.dreamdiary.extension.clsf.comment.model.cmpstn.CommentCmpstnModule;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstnModule;
-import io.nicheblog.dreamdiary.global.intrfc.model.BasePostDto;
+import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
+import io.nicheblog.dreamdiary.global.intrfc.model.cmpstn.AtchFileCmpstn;
+import io.nicheblog.dreamdiary.global.intrfc.model.cmpstn.AtchFileCmpstnModule;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -28,8 +30,8 @@ import javax.validation.constraints.Size;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class CommentDto
-        extends BasePostDto
-        implements Identifiable<Integer>, CommentCmpstnModule, TagCmpstnModule {
+        extends BaseClsfDto
+        implements Identifiable<Integer>, AtchFileCmpstnModule, CommentCmpstnModule, TagCmpstnModule {
 
     /** 필수: 컨텐츠 타입 */
     private static final String CONTENT_TYPE = ContentType.COMMENT.key;
@@ -40,6 +42,12 @@ public class CommentDto
     @Builder.Default
     @Size(max = 50)
     private String contentType = CONTENT_TYPE;
+
+    /** 내용 */
+    protected String cn;
+
+    /** 마크다운 처리된 내용 */
+    protected String markdownCn;
 
     /* ----- */
 
@@ -58,6 +66,8 @@ public class CommentDto
         return this.postNo;
     }
 
+    /** 위임 :: 첨부파일 모듈 */
+    public AtchFileCmpstn file;
     /** 위임 :: 댓글 정보 모듈 */
     public CommentCmpstn comment;
     /** 위임 :: 태그 정보 모듈 */

@@ -8,7 +8,9 @@ import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbedModule;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BasePostEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbed;
+import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbedModule;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
@@ -35,21 +37,9 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
 @SQLDelete(sql = "UPDATE jrnl_diary SET del_yn = 'Y' WHERE post_no = ?")
-@NamedEntityGraph(
-    name = "JrnlDiaryEntity.withTags",
-    attributeNodes = {
-        @NamedAttributeNode(value = "tag", subgraph = "TagEmbed")
-    },
-    subgraphs = {
-        @NamedSubgraph(
-            name = "TagEmbed",
-            attributeNodes = @NamedAttributeNode("list")  // tag.list 즉시 로딩
-        )
-    }
-)
 public class JrnlDiaryEntity
-        extends BasePostEntity
-        implements CommentEmbedModule, TagEmbedModule, StateEmbedModule {
+        extends BaseClsfEntity
+        implements AtchFileEmbedModule, CommentEmbedModule, TagEmbedModule, StateEmbedModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -77,6 +67,16 @@ public class JrnlDiaryEntity
     @Transient
     private String ctgrNm;
 
+    /** 제목 */
+    @Column(name = "title")
+    protected String title;
+
+    /** 내용 */
+    @Column(name = "cn")
+    protected String cn;
+
+    /* ----- */
+
     /* ----- */
 
     /** 저널 항목 번호  */
@@ -96,6 +96,12 @@ public class JrnlDiaryEntity
     @Column(name = "idx", columnDefinition = "INT DEFAULT 1")
     private Integer idx;
 
+    /** 중요 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "imprtc_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Comment("중요 여부")
+    protected String imprtcYn = "N";
+
     /** 정리완료 여부 (Y/N) */
     @Builder.Default
     @Column(name = "resolved_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
@@ -107,12 +113,6 @@ public class JrnlDiaryEntity
     @Column(name = "collapsed_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
     @Comment("글접기 여부")
     private String collapsedYn = "N";
-
-    /** 참조 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "refrnc_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("참조 여부")
-    private String refrncYn = "N";
 
     /**
      * 인덱스 변경 여부
@@ -136,6 +136,9 @@ public class JrnlDiaryEntity
 
     /* ----- */
 
+    /** 위임 :: 첨부파일 모듈 */
+    @Embedded
+    public AtchFileEmbed file;
     /** 위임 :: 댓글 정보 모듈 */
     @Embedded
     public CommentEmbed comment;

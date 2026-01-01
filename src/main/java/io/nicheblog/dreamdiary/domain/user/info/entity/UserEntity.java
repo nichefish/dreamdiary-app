@@ -6,7 +6,10 @@ import io.nicheblog.dreamdiary.domain.user.info.model.emplym.UserEmplymDto;
 import io.nicheblog.dreamdiary.domain.user.info.model.profl.UserProflDto;
 import io.nicheblog.dreamdiary.domain.user.profl.entity.UserProflEntity;
 import io.nicheblog.dreamdiary.domain.user.profl.mapstruct.UserProflMapstruct;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAtchEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbed;
+import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbedModule;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -42,7 +45,8 @@ import java.util.stream.Collectors;
 @Where(clause = "del_yn='N'")
 @SQLDelete(sql = "UPDATE user SET del_yn = 'Y' WHERE user_no = ?")
 public class UserEntity
-        extends BaseAtchEntity {
+        extends BaseClsfEntity
+        implements AtchFileEmbedModule {
     
     @PostLoad
     private void init() {
@@ -232,4 +236,9 @@ public class UserEntity
         if (this.profl != null) this.profl.setUser(this);
         if (this.emplym != null) this.emplym.setUser(this);
     }
+
+    /* ----- */
+
+    @Embedded
+    public AtchFileEmbed file;
 }

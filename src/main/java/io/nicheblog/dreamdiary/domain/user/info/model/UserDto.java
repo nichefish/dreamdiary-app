@@ -3,8 +3,11 @@ package io.nicheblog.dreamdiary.domain.user.info.model;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.user.info.model.emplym.UserEmplymDto;
 import io.nicheblog.dreamdiary.domain.user.info.model.profl.UserProflDto;
-import io.nicheblog.dreamdiary.global.intrfc.model.BaseAtchDto;
+import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditDto;
+import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
+import io.nicheblog.dreamdiary.global.intrfc.model.cmpstn.AtchFileCmpstn;
+import io.nicheblog.dreamdiary.global.intrfc.model.cmpstn.AtchFileCmpstnModule;
 import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -29,8 +32,8 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class UserDto
-        extends BaseAtchDto
-        implements Identifiable<Integer> {
+        extends BaseClsfDto
+        implements Identifiable<Integer>, AtchFileCmpstnModule {
 
     /** 사용자 고유 번호 (PK) */
     protected Integer userNo;
@@ -144,4 +147,9 @@ public class UserDto
     public Integer getKey() {
         return this.userNo;
     }
+
+    /* ----- */
+
+    /** 위임 :: 첨부파일 모듈 */
+    public AtchFileCmpstn file;
 }

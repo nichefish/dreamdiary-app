@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
-import io.nicheblog.dreamdiary.global.intrfc.spec.BasePostSpec;
+import io.nicheblog.dreamdiary.global.intrfc.spec.BaseClsfSpec;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -27,7 +27,7 @@ import java.util.Map;
 @Component
 @Log4j2
 public class JrnlDreamSpec
-        implements BasePostSpec<JrnlDreamEntity> {
+        implements BaseClsfSpec<JrnlDreamEntity> {
 
     /**
      * 검색 조건 세팅 후 쿼리 후처리. (override)

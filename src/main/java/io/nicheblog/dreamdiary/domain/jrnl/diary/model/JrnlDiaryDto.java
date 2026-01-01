@@ -7,8 +7,10 @@ import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstnModule;
-import io.nicheblog.dreamdiary.global.intrfc.model.BasePostDto;
+import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
+import io.nicheblog.dreamdiary.global.intrfc.model.cmpstn.AtchFileCmpstn;
+import io.nicheblog.dreamdiary.global.intrfc.model.cmpstn.AtchFileCmpstnModule;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -31,19 +33,19 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class JrnlDiaryDto
-        extends BasePostDto
-        implements Identifiable<Integer>, CommentCmpstnModule, TagCmpstnModule, StateCmpstnModule, Comparable<JrnlDiaryDto>  {
+        extends BaseClsfDto
+        implements Identifiable<Integer>, AtchFileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, StateCmpstnModule, Comparable<JrnlDiaryDto>  {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
-    private static final ContentType CONTENT_TYPE = ContentType.JRNL_DIARY;
-    /** 필수(Override): 글분류 코드 */
-    @Builder.Default
-    private static final String CTGR_CL_CD = CONTENT_TYPE.name() + "_CTGR_CD";
+    private String contentType = ContentType.JRNL_DIARY.key;
 
-    /** 컨텐츠 타입 */
-    @Builder.Default
-    private String contentType = CONTENT_TYPE.key;
+   /** 제목 */
+    private String title;
+    /** 내용 */
+    private String cn;
+    /** 마크다운 처리된 내용 */
+    private String markdownCn;
 
     /* ----- */
 
@@ -71,17 +73,15 @@ public class JrnlDiaryDto
     /** 순번 */
     private Integer idx;
 
+    /** 중요 여부 (Y/N) */
+    @Builder.Default
+    protected String imprtcYn = "N";
     /** 정리완료 여부 (Y/N) */
     @Builder.Default
     private String resolvedYn = "N";
-
     /** 글접기 여부 (Y/N) */
     @Builder.Default
     private String collapsedYn = "N";
-
-    /** 참조 여부 (Y/N) */
-    @Builder.Default
-    private String refrncYn = "N";
 
     /* ----- */
 
@@ -114,15 +114,19 @@ public class JrnlDiaryDto
         return thisDate.compareTo(otherDate);
     }
 
+    /* ----- */
+
     @Override
     public Integer getKey() {
         return this.postNo;
     }
 
+    /** 위임 :: 첨부파일 모듈 */
+    public AtchFileCmpstn file;
     /** 위임 :: 댓글 정보 모듈 */
     public CommentCmpstn comment;
     /** 위임 :: 태그 정보 모듈 */
     public TagCmpstn tag;
-    /** 위임 :: 표시 정보 모듈 */
+    /** 위임 :: 상태 정보 모듈 */
     public StateCmpstn state;
 }

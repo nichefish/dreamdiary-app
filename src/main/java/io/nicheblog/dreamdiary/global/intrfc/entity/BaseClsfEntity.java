@@ -23,7 +23,7 @@ import javax.persistence.Transient;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class BaseClsfEntity
-        extends BaseAtchEntity {
+        extends BaseAuditEntity {
 
     /**
      * 글 번호 (POST_NO, PK)

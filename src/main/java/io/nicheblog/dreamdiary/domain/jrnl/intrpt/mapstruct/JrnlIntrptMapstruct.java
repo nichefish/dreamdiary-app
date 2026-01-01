@@ -35,7 +35,6 @@ public interface JrnlIntrptMapstruct
     @Override
     @Named("toDto")
     @Mapping(target = "jrnlDayNo", expression = "java(entity.getJrnlDream() != null ? entity.getJrnlDream().getJrnlDayNo() : null)")
-    @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"JRNL_DIARY_CTGR_CD\", entity.getCtgrCd()))")
     @Mapping(target = "stdrdDt", expression = "java(entity.getJrnlDream().getJrnlDay() != null ? DateUtils.asStr(\"Y\".equals(entity.getJrnlDream().getJrnlDay().getDtUnknownYn()) ? entity.getJrnlDream().getJrnlDay().getAprxmtDt() : entity.getJrnlDream().getJrnlDay().getJrnlDt(), DatePtn.DATE) : null)")
     @Mapping(target = "jrnlDtWeekDay", expression = "java(entity.getJrnlDream().getJrnlDay() != null && entity.getJrnlDream().getJrnlDay().getJrnlDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJrnlDream().getJrnlDay().getJrnlDt()) : null)")
     @Mapping(target = "yy", expression = "java(entity.getJrnlDream() != null ? entity.getJrnlDream().getJrnlDay().getYy() : null)")

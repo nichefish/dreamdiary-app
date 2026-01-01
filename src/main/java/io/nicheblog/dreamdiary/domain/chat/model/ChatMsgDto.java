@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.domain.chat.model;
 
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
-import io.nicheblog.dreamdiary.global.intrfc.model.BasePostDto;
+import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -20,7 +20,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class ChatMsgDto
-        extends BasePostDto
+        extends BaseClsfDto
         implements Identifiable<Integer> {
 
     /** 필수: 컨텐츠 타입 */
@@ -36,6 +36,23 @@ public class ChatMsgDto
 
     /** 내 메세지(등록자) 여부 */
     private Boolean isRegstr;
+
+       /** 제목 */
+    protected String title;
+
+    /** 내용 */
+    protected String cn;
+
+    /** 마크다운 처리된 내용 */
+    protected String markdownCn;
+
+    /** 중요 여부 (Y/N) */
+    @Builder.Default
+    protected String imprtcYn = "N";
+
+    /** 상단고정 여부 (Y/N) */
+    @Builder.Default
+    protected String fxdYn = "N";
 
     /* ----- */
 

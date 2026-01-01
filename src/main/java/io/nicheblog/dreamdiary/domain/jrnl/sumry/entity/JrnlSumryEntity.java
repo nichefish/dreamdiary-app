@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbedModule;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbedModule;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BasePostEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
@@ -32,12 +32,8 @@ import javax.persistence.*;
 @Where(clause = "del_yn='N'")
 @SQLDelete(sql = "UPDATE jrnl_sumry SET del_yn = 'Y' WHERE post_no = ?")
 public class JrnlSumryEntity
-        extends BasePostEntity
+        extends BaseClsfEntity
         implements CommentEmbedModule, TagEmbedModule {
-
-    /** 필수: 컨텐츠 타입 */
-    @Builder.Default
-    private static final ContentType CONTENT_TYPE = ContentType.JRNL_SUMRY;
 
     /** 저널 꿈 고유 번호 (PK) */
     @Id
@@ -46,20 +42,20 @@ public class JrnlSumryEntity
     @Comment("저널 결산 고유 번호")
     private Integer postNo;
 
-    /** 컨텐츠 타입 */
+    /** 필수: 컨텐츠 타입 */
     @Builder.Default
     @Column(name = "content_type", columnDefinition = "VARCHAR(50) DEFAULT 'JRNL_SUMRY'")
+
     @Comment("컨텐츠 타입")
-    private String contentType = CONTENT_TYPE.key;
+    private String contentType = ContentType.JRNL_SUMRY.key;
 
-    /** 글분류 코드 :: join을 제거하고 메모리 캐시 처리 */
-    @Column(name = "ctgr_cd", length = 50)
-    @Comment("저널 결산 글분류 코드 정보")
-    private String ctgrCd;
+    /** 제목 */
+    @Column(name = "title")
+    protected String title;
 
-    /** 글분류 코드 이름 :: join을 제거하고 메모리 캐시 처리 */
-    @Transient
-    private String ctgrNm;
+    /** 내용 */
+    @Column(name = "cn")
+    protected String cn;
 
     /* ----- */
 
