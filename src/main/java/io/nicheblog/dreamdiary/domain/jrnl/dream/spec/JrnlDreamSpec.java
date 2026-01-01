@@ -3,6 +3,8 @@ package io.nicheblog.dreamdiary.domain.jrnl.dream.spec;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
+import io.nicheblog.dreamdiary.extension.clsf.state.entity.StateEntity;
+import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseClsfSpec;
@@ -111,6 +113,12 @@ public class JrnlDreamSpec
                     final Join<TagEmbed, TagContentEntity> tagContentJoin = tagJoin.join("list", JoinType.INNER);
                     predicate.add(builder.equal(tagContentJoin.get("regstrId"), AuthUtils.getLgnUserId()));
                     predicate.add(builder.equal(tagContentJoin.get("refTagNo"), value));
+                    continue;
+                case "state":
+                    // 상태 검색
+                    final Join<JrnlDreamEntity, StateEmbed> stateJoin = root.join("state", JoinType.INNER);
+                    final Join<StateEmbed, StateEntity> stateListJoin = stateJoin.join("list", JoinType.INNER);
+                    predicate.add(builder.equal(stateListJoin.get("stateCd"), value));
                     continue;
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색

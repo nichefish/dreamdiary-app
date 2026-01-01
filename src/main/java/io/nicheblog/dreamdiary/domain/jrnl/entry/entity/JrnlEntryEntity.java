@@ -5,9 +5,10 @@ import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbedModule;
+import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbed;
+import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbedModule;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -37,21 +38,9 @@ import java.util.List;
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
 @SQLDelete(sql = "UPDATE jrnl_entry SET del_yn = 'Y' WHERE post_no = ?")
-@NamedEntityGraph(
-    name = "JrnlEntryEntity.withTags",
-    attributeNodes = {
-        @NamedAttributeNode(value = "tag", subgraph = "TagEmbed")
-    },
-    subgraphs = {
-        @NamedSubgraph(
-            name = "TagEmbed",
-            attributeNodes = @NamedAttributeNode("list")  // tag.list 즉시 로딩
-        )
-    }
-)
 public class JrnlEntryEntity
         extends BaseClsfEntity
-        implements CommentEmbedModule, TagEmbedModule {
+        implements CommentEmbedModule, TagEmbedModule, StateEmbedModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -70,47 +59,9 @@ public class JrnlEntryEntity
     @Comment("컨텐츠 타입")
     private String contentType = CONTENT_TYPE.key;
 
-    /** 글분류 코드 :: join을 제거하고 메모리 캐시 처리 */
-    @Column(name = "ctgr_cd", length = 50)
-    @Comment("저널 항목 글분류 코드 정보")
-    private String ctgrCd;
-
-    /** 글분류 코드 이름 :: join을 제거하고 메모리 캐시 처리 */
-    @Transient
-    private String ctgrNm;
-
     /** 제목 */
     @Column(name = "title")
     protected String title;
-
-    /** 내용 */
-    @Column(name = "cn")
-    protected String cn;
-
-    /* ----- */
-
-    /** 중요 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "imprtc_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("중요 여부")
-    protected String imprtcYn = "N";
-
-    /** 상단고정 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "fxd_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("상단고정 여부")
-    protected String fxdYn = "N";
-
-    /** 조회수 */
-    @Builder.Default
-    @Column(name = "hit_cnt")
-    protected Integer hitCnt = 0;
-
-    /** 수정권한 */
-    @Builder.Default
-    @Column(name = "mdfable")
-    @Comment("수정권한")
-    private String mdfable = Constant.MDFABLE_REGSTR;
 
     /* ----- */
 
@@ -131,12 +82,6 @@ public class JrnlEntryEntity
     @Column(name = "idx", columnDefinition = "INT DEFAULT 1")
     private Integer idx;
 
-    /** 글접기 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "collapsed_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("글접기 여부")
-    private String collapsedYn = "N";
-
     /** 저널 일기 목록 */
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "jrnl_entry_no", referencedColumnName = "post_no", insertable = false, updatable = false)
@@ -147,9 +92,7 @@ public class JrnlEntryEntity
     @Comment("저널 일기 목록")
     private List<JrnlDiaryEntity> jrnlDiaryList;
 
-    /**
-     * 인덱스 변경 여부
-     */
+    /** 인덱스 변경 여부 */
     @Builder.Default
     @Transient
     private Boolean isIdxChanged = false;
@@ -162,4 +105,7 @@ public class JrnlEntryEntity
     /** 위임 :: 태그 정보 모듈 */
     @Embedded
     public TagEmbed tag;
+    /** 위임 :: 상태 정보 모듈 */
+    @Embedded
+    public StateEmbed state;
 }

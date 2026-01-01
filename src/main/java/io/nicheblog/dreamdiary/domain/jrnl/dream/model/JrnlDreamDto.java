@@ -74,16 +74,6 @@ public class JrnlDreamDto
     /** 순번 */
     private Integer idx;
 
-    /** 중요 여부 (Y/N) */
-    @Builder.Default
-    protected String imprtcYn = "N";
-    /** 정리완료 여부 (Y/N) */
-    @Builder.Default
-    private String resolvedYn = "N";
-    /** 글접기 여부 (Y/N) */
-    @Builder.Default
-    private String collapsedYn = "N";
-
     /** 저널 일기 목록 */
     private List<JrnlIntrptDto> jrnlIntrptList;
 
@@ -102,9 +92,7 @@ public class JrnlDreamDto
     /** 꿈꾼이(타인) 이름 */
     private String elseDreamerNm;
 
-    /**
-     * 인덱스 변경 여부
-     */
+    /** 인덱스 변경 여부 */
     @Builder.Default
     private Boolean isIdxChanged = false;
 

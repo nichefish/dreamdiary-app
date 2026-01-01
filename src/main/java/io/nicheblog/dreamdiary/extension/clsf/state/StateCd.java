@@ -17,6 +17,9 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 public enum StateCd {
 
+    RESOLVED("RESOLVED", "정리완료"),
+    COLLAPSED("COLLAPSED", "접기"),
+    IMPRTC("IMPRTC", "중요"),
     REFRNC("REFRNC", "참조");
 
     public final String key;

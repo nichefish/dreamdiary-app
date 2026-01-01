@@ -6,23 +6,21 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.mapstruct.JrnlDiaryMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryPatchDto;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryPostDto;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiarySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.repository.jpa.JrnlDiaryRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.repository.mybatis.JrnlDiaryMapper;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.spec.JrnlDiarySpec;
-import io.nicheblog.dreamdiary.domain.jrnl.state.JrnlState;
 import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
+import io.nicheblog.dreamdiary.extension.clsf.state.StateCd;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultiCrudService;
-import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
@@ -97,7 +95,7 @@ public class JrnlDiaryService
      */
     @Cacheable(value="myImprtcDiaryList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy")
     public List<JrnlDiaryDto> getImprtcDiaryList(final Integer yy) throws Exception {
-        final JrnlDiarySearchParam searchParam = JrnlDiarySearchParam.builder().yy(yy).imprtcYn("Y").build();
+        final JrnlDiarySearchParam searchParam = JrnlDiarySearchParam.builder().yy(yy).state(StateCd.IMPRTC.key).build();
         final List<JrnlDiaryDto> imprtcDiaryList = this.getSelf().getListDto(searchParam);
         Collections.sort(imprtcDiaryList);
 
@@ -329,47 +327,5 @@ public class JrnlDiaryService
             final String concatHldyNm = String.join(", ", hldyMap.get(stdrdDt));
             jrnlDiary.setHldyNm(concatHldyNm);
         }
-    }
-
-    /**
-     * 상태를 설정한다.
-     *
-     * @param postNo 대상 게시물 PK
-     * @param patchDto 상태 Dto
-     * @return collapsedYn 반영 성공 여부를 담은 ServiceResponse
-     */
-    @Transactional
-    @SuppressWarnings("unchecked")
-    public ServiceResponse patch(final Integer postNo, final JrnlDiaryPatchDto patchDto) throws Exception {
-        if (patchDto.isAllNull()) {
-            return ServiceResponse.builder()
-                    .rslt(false)
-                    .message("변경할 항목이 없습니다.")
-                    .build();
-        }
-
-        final JrnlDiaryEntity entity = getDtlEntity(postNo);
-        if (patchDto.getCollapsed() != null) entity.setCollapsedYn(patchDto.getCollapsed() ? "Y" : "N");
-        if (patchDto.getResolved() != null) entity.setResolvedYn(patchDto.getResolved() ? "Y" : "N");
-
-        final JrnlDiaryEntity updatedEntity = repository.save(entity);
-
-        final Integer yy = updatedEntity.getJrnlEntry().getJrnlDay().getYy();
-        final Integer mnth = updatedEntity.getJrnlEntry().getJrnlDay().getMnth();
-        final String cacheKey = AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth;
-
-        final Map<Integer, JrnlState> diaryMap = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myDiaryStateMap", cacheKey);
-        if (diaryMap != null) {
-            final JrnlState state = diaryMap.get(postNo);
-            if (state != null) {
-                if (patchDto.getCollapsed() != null) state.setCollapsedYn(patchDto.getCollapsed() ? "Y" : "N");
-                if (patchDto.getResolved() != null) state.setResolvedYn(patchDto.getResolved() ? "Y" : "N");
-                EhCacheUtils.put("myDiaryStateMap", cacheKey, diaryMap);
-            }
-        }
-
-        return ServiceResponse.builder()
-                .rslt(true)
-                .build();
     }
 }

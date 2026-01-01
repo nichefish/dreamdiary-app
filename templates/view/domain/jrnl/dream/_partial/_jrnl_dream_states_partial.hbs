@@ -4,12 +4,24 @@
  -->
 
 <script type="text/x-handlebars-template" id="jrnl_dream_states_partial">
-    <div class="d-flex ms-2 mb-2">
-        <div class="btn btn-xs btn-icon icon-imprtc {{#if (hasState state.list 'IMPRTC')}}btn-outline btn-outline-warning{{else}}d-none{{/if}}">
-            <i class="bi bi-star fs-3 text-muted text-warning"></i>
+    <div class="d-flex jrnl-dream-states ms-2 mb-2 gap-1">
+        <div class="btn btn-xs btn-icon icon-imprtc btn-outline btn-outline-danger {{#unless (hasState state 'IMPRTC')}}d-none{{/unless}}">
+            <i class="bi bi-star-fill fs-3 text-danger"></i>
         </div>
-        <div class="btn btn-xs btn-icon icon-refrnc {{#if (hasState state.list 'REFRNC')}}btn-outline btn-outline-warning{{else}}d-none{{/if}}">
-            <i class="bi bi-link fs-3 text-muted text-warning"></i>
+        <div class="btn btn-xs btn-icon icon-collapsed btn-outline btn-outline-muted {{#unless (hasState state 'COLLAPSED')}}d-none{{/unless}}">
+            <i class="bi bi-arrows-collapse fs-3 text-muted"></i>
+        </div>
+        <div class="btn btn-xs btn-icon icon-resolved btn-outline btn-outline-success {{#unless (hasState state 'RESOLVED')}}d-none{{/unless}}">
+            <i class="bi bi-check fs-3 text-success"></i>
+        </div>
+        <div class="btn btn-xs btn-icon icon-refrnc btn-outline btn-outline-warning {{#unless (hasState state 'REFRNC')}}d-none{{/unless}}">
+            <i class="bi bi-link fs-3 text-warning"></i>
+        </div>
+        <div class="d-flex-align-center title-wrap">
+            {{#ifYn nhtmrYn}}<div class="ctgr-span ctgr-info w-auto">!<@spring.message 'dream.nhtmr'/></div>{{/ifYn}}
+            {{#ifYn hallucYn}}<div class="ctgr-span ctgr-gray w-auto">!<@spring.message 'txt.dream.halluc'/></div>{{/ifYn}}
+            {{#ifYn elseDreamYn}}<div class="ctgr-span ctgr-gray w-70px d-flex-center">({{elseDreamerNm}} <@spring.message 'txt.dream'/>)</div>{{/ifYn}}
+            {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}
         </div>
     </div>
 </script>

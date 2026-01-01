@@ -45,4 +45,29 @@ public class StateCmpstn
 
         this.list.add(new StateDto(stateCd));
     }
+
+    /**
+     * 상태 제거
+     * @param stateCd 상태 코드
+     */
+    public void remove(final StateCd stateCd) {
+        if (stateCd == null) return;
+        if (this.list == null) return;
+
+        this.list.removeIf(s -> stateCd.key.equals(s.getStateCd()));
+
+        if (this.list.isEmpty()) this.list = null; // 선택 사항: 직렬화/메모리 정리 목적
+    }
+
+    /**
+     * toggle
+     */
+    public void apply(final StateCd stateCd, final Boolean isEnabled) {
+        if (stateCd == null) return;
+        if (Boolean.TRUE.equals(isEnabled)) {
+            put(stateCd);
+        } else {
+            remove(stateCd);
+        }
+    }
 }

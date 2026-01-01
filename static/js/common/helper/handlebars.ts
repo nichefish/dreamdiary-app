@@ -433,13 +433,14 @@ cF.handlebars = (function(): Module {
      * Handlebars 헬퍼 함수 'hasState'를 등록합니다.
      * 객체가 특정 상태값을 가지고 있는지 체크합니다.
      *
-     * @param {any[]} stateList - 상태 목록
+     * @param {any} state - 상태 목록
      * @param {any[]} targetState - 체크할 상태
      * @returns {boolean} - 상태 존재 여부
      */
-    Handlebars.registerHelper('hasState', function (stateList: any[], targetState: any): boolean {
-        if (!stateList) return false;
-        return stateList.some((s: any): boolean => s.stateCd === targetState);
+    Handlebars.registerHelper('hasState', function (state: any, targetState: any): boolean {
+        if (!state) return false;
+        if (!state.list) return false;
+        return state.list.some((s: any): boolean => s.stateCd === targetState);
     });
 })(Handlebars);
 

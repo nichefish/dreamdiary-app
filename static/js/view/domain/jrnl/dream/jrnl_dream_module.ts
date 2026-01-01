@@ -228,49 +228,27 @@ dF.JrnlDream = (function(): dfModule {
         },
 
         /**
-         * 상태 변경 처리. (Ajax)
-         * @param {string|number} postNo - 글 번호.
-         * @param {object} payload
-         * @param {Function} [callback]
+         * 상태 토글 (Ajax)
+         * @param postNo
+         * @param stateCd
+         * @param {object} object
          */
-        patchAjax: function(postNo: string|number, payload: object, callback: Function): void {
+        toggleStateAjax: function(postNo: string|number, stateCd: string, { onOffFunc }): void {
             if (isNaN(Number(postNo))) return;
 
-            const url: string = cF.util.bindUrl(Url.JRNL_DREAM, { postNo });
-            cF.$ajax.patch(url, payload, function(res: AjaxResponse): void {
-                if (!res.rslt) return;
-
-                if (!callback || typeof callback != "function") return;
-
-                callback(res);
-            }, "block");
-        },
-
-        /**
-         * 정리완료 처리. (Ajax)
-         * @param {string|number} postNo - 글 번호.
-         */
-        resolveAjax: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
-
-            const item: HTMLElement = document.querySelector(`.jrnl-dream-item[data-id='${postNo}']`);
-            if (!item) return;
-
-            const current: string = (item.dataset.resolved || "N").toUpperCase();
-            const next: "Y"|"N" = current === "Y" ? "N" : "Y";
-            const nextBoolean: boolean = next === "Y"
-
-            const payload: Record<string, any> = { resolved: nextBoolean, collapsed: nextBoolean };
-            dF.JrnlDream.patchAjax(postNo, payload, function() {
-                item.dataset.resolved = next;
-                item.dataset.collapsed = next;
-
-                const content: HTMLElement = item.querySelector(".cn");
-                if (content) {
-                    content.classList.toggle("collapsed", next === "Y");
-                }
-                const chk: HTMLInputElement = item.querySelector(".dream-context-collapse-check");
-                if (chk) chk.checked = (next === "Y");
+            const cacheContext = { yy: cF.util.getUrlParam("yy"), mnth: cF.util.getUrlParam("mnth") };
+            const payload = { postNo, contentType: "JRNL_DREAM", stateCd, cacheContext };
+            dF.State.toggleAjax(payload, function(res: AjaxResponse): void {
+                const item = document.querySelector(`.jrnl-dream-item[data-id='${postNo}']`) as HTMLElement;
+                if (!item) return;
+                const lowerStateCd: string = stateCd.toLowerCase();
+                const icon: HTMLElement = item.querySelector(`.icon-${lowerStateCd}`);
+                if (!icon) console.warn("icon not found.");
+                icon?.classList.toggle("d-none", res.rsltSts !== "ON");
+                const chk: HTMLInputElement = item.querySelector(`.dream-context-${lowerStateCd}-check`);
+                if (!chk) console.warn("chk not found.");
+                if (chk) chk.checked = res.rsltSts === "ON";
+                onOffFunc(res, item);
             });
         },
 
@@ -281,24 +259,33 @@ dF.JrnlDream = (function(): dfModule {
         collapseAjax: function(postNo: string|number): void {
             if (isNaN(Number(postNo))) return;
 
-            const item: HTMLElement = document.querySelector(`.jrnl-dream-item[data-id='${postNo}']`);
-            if (!item) return;
+            const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
+                const cn: HTMLDivElement = item.querySelector("div.jrnl-dream-cn .cn");
+                if (!cn) return console.warn("cn not found.");
 
-            const current: string = (item.dataset.collapsed || "N").toUpperCase();
-            const next: "Y"|"N" = current === "Y" ? "N" : "Y";
-            const nextBoolean: boolean = next === "Y"
+                cn?.classList.toggle("collapsed", res.rsltSts === "ON");
+            }
+            this.toggleStateAjax(postNo, "COLLAPSED", { onOffFunc });
+        },
 
-            const payload: Record<string, any> = { collapsed: nextBoolean };
-            dF.JrnlDream.patchAjax(postNo, payload, function() {
-                item.dataset.collapsed = next;
+        /**
+         * 정리완료 토글. (Ajax)
+         * @param {string|number} postNo - 글 번호.
+         */
+        resolveAjax: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
 
-                const content: HTMLElement = item.querySelector(".cn");
-                if (content) {
-                    content.classList.toggle("collapsed", next === "Y");
+            const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
+                if (res.rsltSts === "ON") {
+                    const cn: HTMLDivElement = item.querySelector("div.jrnl-dream-cn .cn");
+                    if (!cn) console.warn("cn not found.");
+                    cn?.classList.add("collapsed");
+
+                    const collapsedChk: HTMLInputElement = item.querySelector(".dream-context-collapsed-check");
+                    if (collapsedChk) collapsedChk.checked = true;
                 }
-                const chk: HTMLInputElement = item.querySelector(".dream-context-collapse-check");
-                if (chk) chk.checked = (next === "Y");
-            });
+            }
+            this.toggleStateAjax(postNo, "RESOLVED", { onOffFunc });
         },
 
         /**
@@ -308,29 +295,13 @@ dF.JrnlDream = (function(): dfModule {
         imprtcAjax: function(postNo: string|number): void {
             if (isNaN(Number(postNo))) return;
 
-            const payload: Record<string, any> = { postNo, contentType: "JRNL_DREAM", stateCd: "IMPRTC" };
-            dF.State.toggleAjax(payload, function(res: AjaxResponse): void {
-                const item: HTMLElement = document.querySelector(`.jrnl-dream-item[data-id='${postNo}']`);
-                if (!item) return;
-                const icon: HTMLElement = item.querySelector(".icon-imprtc");
-                if (!icon) return;
-                const cn: HTMLDivElement = item.querySelector("div.jrnl-dream-cn");
+            const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
+                const cn: HTMLDivElement = item.querySelector("div.jrnl-dream-cn .cn");
                 if (!cn) return console.warn("cn not found.");
-                const chk: HTMLInputElement = item.querySelector(".dream-context-imprtc-check");
 
-                switch(res.rsltSts) {
-                    case "ON":
-                        icon.classList.remove("d-none");
-                        cn.classList.add("bg-secondary");
-                        if (chk) chk.checked = true;
-                        break;
-                    case "OFF":
-                        icon.classList.add("d-none");
-                        cn.classList.remove("bg-secondary");
-                        if (chk) chk.checked = false;
-                        break;
-                }
-            });
+                cn.classList.toggle("bg-secondary", res.rsltSts === "ON");
+            }
+            this.toggleStateAjax(postNo, "IMPRTC", { onOffFunc });
         },
 
         /**
@@ -340,29 +311,13 @@ dF.JrnlDream = (function(): dfModule {
         refrncAjax: function(postNo: string|number): void {
             if (isNaN(Number(postNo))) return;
 
-            const payload: Record<string, any> = { postNo, contentType: "JRNL_DREAM", stateCd: "REFRNC" };
-            dF.State.toggleAjax(payload, function(res: AjaxResponse): void {
-                const item: HTMLElement = document.querySelector(`.jrnl-dream-item[data-id='${postNo}']`);
-                if (!item) return;
-                const icon: HTMLElement = item.querySelector(".icon-refrnc");
-                if (!icon) return;
-                const cn: HTMLDivElement = item.querySelector("div.jrnl-dream-cn");
+            const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
+                const cn: HTMLDivElement = item.querySelector("div.jrnl-dream-cn .cn");
                 if (!cn) return console.warn("cn not found.");
-                const chk: HTMLInputElement = item.querySelector(".dream-context-refrnc-check");
 
-                switch(res.rsltSts) {
-                    case "ON":
-                        icon.classList.remove("d-none");
-                        cn.classList.add("bg-secondary");
-                        if (chk) chk.checked = true;
-                        break;
-                    case "OFF":
-                        icon.classList.add("d-none");
-                        cn.classList.remove("bg-secondary");
-                        if (chk) chk.checked = false;
-                        break;
-                }
-            });
+                cn.classList.toggle("bg-secondary", res.rsltSts === "ON");
+            }
+            this.toggleStateAjax(postNo, "REFRNC", { onOffFunc });
         },
 
         /**

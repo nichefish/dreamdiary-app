@@ -19,6 +19,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,6 +97,7 @@ public class DtlCdService
 
         // 코드 목록 조회 (entity level)
         final List<DtlCdEntity> rsDtlCdList = this.getCdEntityListByClCd(clCd);
+        if (CollectionUtils.isEmpty(rsDtlCdList)) return null;
         // Entity -> Dto 변환
         final List<DtlCdDto> rsDtlCdDtoList = new ArrayList<>();
         for (final DtlCdEntity dtlCdEntity : rsDtlCdList) {

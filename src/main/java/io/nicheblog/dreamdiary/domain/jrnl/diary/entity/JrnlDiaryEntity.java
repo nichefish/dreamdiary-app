@@ -58,15 +58,6 @@ public class JrnlDiaryEntity
     @Comment("컨텐츠 타입")
     private String contentType = CONTENT_TYPE.key;
 
-    /** 글분류 코드 :: join을 제거하고 메모리 캐시 처리 */
-    @Column(name = "ctgr_cd", length = 50)
-    @Comment("저널 일기 글분류 코드 정보")
-    private String ctgrCd;
-
-    /** 글분류 코드 이름 :: join을 제거하고 메모리 캐시 처리 */
-    @Transient
-    private String ctgrNm;
-
     /** 제목 */
     @Column(name = "title")
     protected String title;
@@ -96,41 +87,17 @@ public class JrnlDiaryEntity
     @Column(name = "idx", columnDefinition = "INT DEFAULT 1")
     private Integer idx;
 
-    /** 중요 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "imprtc_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("중요 여부")
-    protected String imprtcYn = "N";
-
-    /** 정리완료 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "resolved_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("정리완료 여부")
-    private String resolvedYn = "N";
-
-    /** 글접기 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "collapsed_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("글접기 여부")
-    private String collapsedYn = "N";
-
-    /**
-     * 인덱스 변경 여부
-     */
+    /** 인덱스 변경 여부 */
     @Builder.Default
     @Transient
     private Boolean isIdxChanged = false;
 
-    /**
-     * 저널 항목 변경 여부
-     */
+    /** 저널 항목 변경 여부 */
     @Builder.Default
     @Transient
     private Boolean isEntryChanged = false;
 
-    /**
-     * 이전 저널 항목 번호
-     */
+    /** 이전 저널 항목 번호 */
     @Transient
     private Integer prevJrnlEntryNo;
 

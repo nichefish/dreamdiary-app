@@ -64,7 +64,7 @@
                 <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
                     <div># {{idx}}</div>
                 </div>
-                <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
+                <div class="col py-3 jrnl-dream-cn {{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}">
                     {{> jrnl_dream_cn_partial this collapse="collapse-4"}}
                 </div>
                 <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
