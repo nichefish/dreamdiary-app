@@ -216,21 +216,6 @@ public interface ApiUrl {
     String SCHDUL_MDF_AJAX = Prefix.API + "/schdul/cal-mdf";
     String SCHDUL_DEL_AJAX = Prefix.API + "/schdul/cal-del";
 
-    String VCATN_PAPR_REG_AJAX = Prefix.APP + "/vcatn/papr/reg";
-    String VCATN_PAPR_DTL_AJAX = Prefix.APP + "/vcatn/papr/dtl";
-    String VCATN_PAPR_MDF_AJAX = Prefix.APP + "/vcatn/papr/mdf";
-    String VCATN_PAPR_CF_AJAX = Prefix.APP + "/vcatn/papr/cf";
-    String VCATN_PAPR_DEL_AJAX = Prefix.APP + "/vcatn/papr/del";
-
-    String VCATN_SCHDUL_REG_AJAX = Prefix.APP + "/vcatn/schdul-reg";
-    String VCATN_SCHDUL_DTL_AJAX = Prefix.APP + "/vcatn/schdul-dtl";
-    String VCATN_SCHDUL_MDF_AJAX = Prefix.APP + "/vcatn/schdul-mdf";
-    String VCATN_SCHDUL_DEL_AJAX = Prefix.APP + "/vcatn/schdul-del";
-    String VCATN_SCHDUL_XLSX_DOWNLOAD = Prefix.APP + "/vcatn/schdul-xlsx-download.do";
-
-    String VCATN_STATS_YY_UPDT_AJAX = Prefix.APP + "/vcatn/stats-yy-updt";
-    String VCATN_STATS_YY_XLSX_DOWNLOAD = Prefix.APP + "/vcatn/stats-xlsx-download.do";
-
     String USER_REQST_REG_AJAX = Prefix.APP + "/user/reqst/reqst-reg";
     String USER_REQST_CF_AJAX = Prefix.APP + "/user/reqst/reqst-cf";
     String USER_REQST_UNCF_AJAX = Prefix.APP + "/user/reqst/reqst-uncf";
