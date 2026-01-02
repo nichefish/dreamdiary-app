@@ -221,6 +221,17 @@ cF.handlebars = (function(): Module {
     });
 
     /**
+     * unlessYn : 값이 "Y"인 경우에 특정 템플릿 내용을 렌더링합니다.
+     * @param {string} value - 조건부로 체크할 값.
+     * @param {object} options - Handlebars 옵션 객체로, `fn`과 `inverse`를 포함.
+     * @returns {string} - `value`가 "Y"일 경우 `options.fn(this)`, 그렇지 않으면 `options.inverse(this)`.
+     */
+    Handlebars.registerHelper("unlessYn", function(value: string, options: any) {
+        const trimmedValue: string = String(value ?? "N").trim().toUpperCase();
+        return trimmedValue === "N" ? options.fn(this) : options.inverse(this);
+    });
+
+    /**
      * trueFalse : 주어진 `value`를 "Y" 값과 비교하여 `true` 또는 `false`를 반환합니다.
      * @param {string} value - 체크할 값.
      * @param {string} ynValues - "Y"와 "N" 값을 구분하는 문자열.
@@ -519,6 +530,9 @@ document.addEventListener("DOMContentLoaded", function(): void {
 
     const jrnlSumryContextBtnPartial: string = document.getElementById("jrnl_sumry_context_btn_partial")?.innerHTML;
     if (jrnlSumryContextBtnPartial) Handlebars.registerPartial("jrnl_sumry_context_btn_partial", jrnlSumryContextBtnPartial);
+
+    const menuContextBtnPartial: string = document.getElementById("menu_context_btn_partial")?.innerHTML;
+    if (menuContextBtnPartial) Handlebars.registerPartial("menu_context_btn_partial", menuContextBtnPartial);
 });
 
 

@@ -17,7 +17,7 @@ const Page: Page = (function(): Page {
             Page.updtTree();
 
             /* init : Draggable */
-            dF.Menu.initDraggable();
+            dF.Menu.initDraggable("main");
         },
         /**
          * 트리 구조 데이터 리로드 및 새로 그리기
@@ -36,8 +36,10 @@ const Page: Page = (function(): Page {
 
                 mainMenuList.forEach(function(mainMenu): void {
                     cF.handlebars.append(mainMenu, "menu_main_card");
+                    KTMenu.createInstances();
                     Page.drawSubMenu(mainMenu);
                 });
+                dF.Menu.initDraggable("sub");
             });
         },
         /**
@@ -51,6 +53,7 @@ const Page: Page = (function(): Page {
             const menuNo = upperMenu.menuNo;
             subMenuList.forEach(function(subMenu): void {
                 cF.handlebars.appendTo(subMenu, "menu_sub", "menu_sub_"+menuNo);
+                KTMenu.createInstances();
                 Page.drawSubMenu(subMenu);
             });
         },

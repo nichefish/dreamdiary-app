@@ -59,7 +59,7 @@
             </label>
         </div>
         <div class="col-4">
-            <input type="text" name="menuLabel" id="menuLabel" class="form-control d-inline-block"
+            <input type="text" name="menuLabel" id="menuLabel" class="form-control d-inline-block {{#ifYn protectedYn}}cursor-not-allowed form-control-solid{{/ifYn}}" {{#ifYn protectedYn}}readonly{{/ifYn}}
                    value="{{menuLabel}}" maxlength="200" autocomplete="off">
             <span id="menuLabel_validate_span"></span>
         </div>
@@ -143,28 +143,6 @@
             <input type="text" name="url" id="url" class="form-control"
                    value="{{url}}" maxlength="1000">
             <div id="url_validate_span"></div>
-        </div>
-    </div>
-
-    <div class="separator my-8"></div>
-
-    <#--begin::Row-->
-    <div class="row mb-4">
-        <div class="col-2 col-form-label text-center">
-            <label class="cursor-help fw-bold"
-                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="'사용'으로 체크된 메뉴만&#10;실제 코드 사용시 조회됩니다.">
-                사용 여부
-                <i class="bi bi-question-circle"></i>
-            </label>
-        </div>
-        <div class="col-10">
-            <div class="form-check form-switch mt-2 form-check-custom form-check-solid">
-                <input type="checkbox" name="state.useYn" id="useYn" class="form-check-input cursor-pointer"
-                       value="Y" {{checkedYn state.useYn}} />
-                <label class="form-check-label ms-3" for="useYn" id="useYnLabel" {{checkedYnStyle state.useYn "color" "blue//gray"}}>
-                    {{^ifYn state.useYn}}미{{/ifYn}}사용
-                </label>
-            </div>
         </div>
     </div>
 </script>

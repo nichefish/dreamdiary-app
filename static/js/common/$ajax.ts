@@ -140,6 +140,24 @@ cF.$ajax = (function(): Module {
             };
             cF.$ajax.request(option, func, continueBlock);
         },
+
+        /**
+         * blockUI를 적용한 AJAX 호출.
+         * @param {string} url - 요청할 URL.
+         * @param {Object} ajaxData - JSON 형태의 요청 데이터.
+         * @param {Function} func - 요청 성공시 호출될 콜백 함수.
+         * @param {'block'} [continueBlock] - 추가적인 블록 UI 동작 여부.
+         */
+        put: function(url: string, ajaxData: object, func: Function, continueBlock: string): void {
+            const option: Record<string, any> = {
+                url: url,
+                type: 'PUT',
+                data: JSON.stringify(ajaxData),
+                dataType: 'json',
+                contentType: 'application/json; charset=UTF-8',
+            };
+            cF.$ajax.request(option, func, continueBlock);
+        },
     }
 })();
 // 인증만료/접근불가로 ajax 실패시 로그인 페이지로 이동 또는 머무르기 (선택)
