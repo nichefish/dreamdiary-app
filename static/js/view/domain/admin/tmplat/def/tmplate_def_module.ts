@@ -36,7 +36,7 @@ dF.TmplatDef = (function(): dfModule {
          */
         initDraggable: function(): void {
             const keyExtractor: Function = (item: HTMLElement) => ({ "menuNo": Number($(item).attr("id")), "upperMenuNo": Number($(item).data("upper-menu-no")) });
-            const url: string = Url.MENU_SORT_ORDR_AJAX;
+            const url: string = Url.TEMPLATS_IDX;
             dF.TmplatDef.swappable = cF.draggable.init("", keyExtractor, url);
         },
 
@@ -96,7 +96,7 @@ dF.TmplatDef = (function(): dfModule {
         mdfModal: function(menuNo: string|number): void {
             if (isNaN(Number(menuNo))) return;
 
-            const url: string = cF.bindUrl(Url.MENU, { menuNo });
+            const url: string = cF.util.bindUrl(Url.MENU, { menuNo });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -121,9 +121,8 @@ dF.TmplatDef = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = Url.MENU_DEL_AJAX;
-                const ajaxData: Record<string, any> = { "menuNo": menuNo };
-                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                const url: string = cF.util.bindUrl(Url.MENU, { menuNo });
+                cF.$ajax.delete(url, null, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.ui.blockUIReload();
