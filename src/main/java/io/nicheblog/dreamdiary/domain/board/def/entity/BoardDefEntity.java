@@ -54,12 +54,11 @@ public class BoardDefEntity
     private String dc;
 
     /** 정렬 순서 */
-    @Column(name = "sort_ordr", columnDefinition = "INT DEFAULT 0")
-    private Integer sortOrdr;
+    @Column(name = "idx", columnDefinition = "INT DEFAULT 0")
+    private Integer idx;
 
     /** 사용 여부 (Y/N) */
     @Builder.Default
     @Column(name = "use_yn", length = 1, columnDefinition = "CHAR DEFAULT 'Y'")
     private String useYn = "N";
-
 }

@@ -63,8 +63,8 @@ public class ClCdEntity
     private String dc;
 
     /** 정렬 순서 */
-    @Column(name = "sort_ordr", columnDefinition = "INT DEFAULT 0")
-    private Integer sortOrdr;
+    @Column(name = "idx", columnDefinition = "INT DEFAULT 0")
+    private Integer idx;
 
     /** 사용 여부 (Y/N) */
     @Builder.Default
@@ -75,7 +75,7 @@ public class ClCdEntity
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "cl_cd", referencedColumnName = "cl_cd", insertable = false, updatable = false)
     @BatchSize(size = 10)
-    @OrderBy("sortOrdr ASC")
+    @OrderBy("idx ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @ToString.Exclude
     private List<DtlCdEntity> dtlCdList;

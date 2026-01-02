@@ -217,7 +217,7 @@ public class DtlCdRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final ServiceResponse result = dtlCdService.sortOrdr(dtlCdParam.getSortOrdr());
+        final ServiceResponse result = dtlCdService.idx(dtlCdParam.getSortOrdr());
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 

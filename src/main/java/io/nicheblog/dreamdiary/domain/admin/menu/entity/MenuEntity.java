@@ -102,8 +102,8 @@ public class MenuEntity
     private String menuSubExtendTyNm;
 
     /** 정렬 순서 */
-    @Column(name = "sort_ordr", columnDefinition = "INT DEFAULT 0")
-    private Integer sortOrdr;
+    @Column(name = "idx", columnDefinition = "INT DEFAULT 0")
+    private Integer idx;
 
     /** 사용 여부 (Y/N) */
     @Builder.Default
@@ -123,7 +123,7 @@ public class MenuEntity
     @JoinColumn(name = "upper_menu_no", referencedColumnName = "menu_no", insertable = false, updatable = false)
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 10)
-    // @OrderBy("sortOrdr ASC")
+    // @OrderBy("idx ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("하위메뉴 목록 조회")
     private List<MenuEntity> subMenuList;

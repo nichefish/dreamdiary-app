@@ -25,5 +25,5 @@ public class BoardDefParam
         extends BaseParam {
 
     /** 정렬순서 목록 */
-    List<BoardDefDto> sortOrdr;
+    List<BoardDefDto> idx;
 }

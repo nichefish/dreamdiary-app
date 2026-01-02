@@ -63,7 +63,7 @@ public class MenuRestController
     ) throws Exception {
 
         // 페이징 정보 생성:: 공백시 pageSize=10, pageNo=1
-        final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrdr");
+        final Sort sort = Sort.by(Sort.Direction.ASC, "idx");
         final List<MenuDto> menuList = menuService.getMainMenuList(searchParam, sort);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
@@ -145,7 +145,7 @@ public class MenuRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final ServiceResponse result = menuService.sortOrdr(menuParam.getSortOrdr());
+        final ServiceResponse result = menuService.idx(menuParam.getSortOrdr());
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 

@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS auth_role (
     auth_level INT COMMENT '권한 레벨',
     top_auth_cd VARCHAR(50) COMMENT '상위 권한 코드',
     -- STATE
-    sort_ordr INT DEFAULT 0 COMMENT '정렬 순서',
+    idx INT DEFAULT 0 COMMENT '정렬 순서',
     use_yn CHAR(1) DEFAULT 'Y' COMMENT '사용 여부 (Y/N)',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',

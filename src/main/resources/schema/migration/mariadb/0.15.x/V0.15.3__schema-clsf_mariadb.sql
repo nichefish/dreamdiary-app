@@ -131,3 +131,11 @@ ALTER TABLE jrnl_dream DROP COLUMN resolved_yn;
 COMMIT;
 
 -- -------------------
+
+ALTER TABLE board_def RENAME COLUMN sort_ordr TO idx;
+ALTER TABLE sectn RENAME COLUMN sort_ordr TO idx;
+ALTER TABLE cmm_cl_cd RENAME COLUMN sort_ordr TO idx;
+ALTER TABLE cmm_dtl_cd RENAME COLUMN sort_ordr TO idx;
+ALTER TABLE menu RENAME COLUMN sort_ordr TO idx;
+ALTER TABLE tmplat_def RENAME COLUMN sort_ordr TO idx;
+ALTER TABLE auth_role RENAME COLUMN sort_ordr TO idx;
