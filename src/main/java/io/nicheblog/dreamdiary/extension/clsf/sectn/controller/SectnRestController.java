@@ -63,7 +63,7 @@ public class SectnRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrdr");
+        final Sort sort = Sort.by(Sort.Direction.ASC, "idx");
         final PageRequest pageRequest = CmmUtils.Param.getPageRequest(searchParam, sort);
         final Page<SectnDto> sectnList = sectnService.getPageDto(searchParam, pageRequest);
         final boolean isSuccess = true;
@@ -174,7 +174,7 @@ public class SectnRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final ServiceResponse result = sectnService.sortOrdr(sectnParam.getSortOrdr());
+        final ServiceResponse result = sectnService.idx(sectnParam.getSortOrdr());
         final boolean isSuccess = result.getRslt();
         String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 

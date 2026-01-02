@@ -111,8 +111,8 @@ public class SectnEntity
     private String refContentType;
 
     /** 정렬 순서 */
-    @Column(name = "sort_ordr", columnDefinition = "INT DEFAULT 0")
-    private Integer sortOrdr;
+    @Column(name = "idx", columnDefinition = "INT DEFAULT 0")
+    private Integer idx;
 
     /** 사용 여부 (Y/N) */
     @Builder.Default

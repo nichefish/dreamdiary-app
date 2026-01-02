@@ -8,6 +8,7 @@ import org.hibernate.annotations.*;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import java.util.List;
 
@@ -49,8 +50,8 @@ public class AuthRoleEntity
     private String topAuthCd;
 
     /** 정렬 순서 */
-    @Column(name = "sort_ordr", columnDefinition = "INT DEFAULT 0")
-    private Integer sortOrdr;
+    @Column(name = "idx", columnDefinition = "INT DEFAULT 0")
+    private Integer idx;
 
     /** 사용 여부 (Y/N) */
     @Builder.Default
@@ -62,7 +63,7 @@ public class AuthRoleEntity
     @JoinColumn(name = "auth_cd", referencedColumnName = "top_auth_cd", insertable = false, updatable = false)
     @Fetch(value = FetchMode.JOIN)
     @BatchSize(size = 10)
-    // @OrderBy("sortOrdr ASC")
+    @OrderBy("idx ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("하위 권한 정보")
     private List<AuthRoleEntity> subAuthList;

@@ -164,7 +164,7 @@ public class BoardDefRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final ServiceResponse result = boardDefService.sortOrdr(boardDefParam.getSortOrdr());
+        final ServiceResponse result = boardDefService.idx(boardDefParam.getSortOrdr());
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 

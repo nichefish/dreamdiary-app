@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS tmplat_def (
     tmplat_def_cd VARCHAR(50) COMMENT '템플릿 정의 코드',
     title VARCHAR(200) COMMENT '이름',
     -- STATE
-    sort_ordr INT DEFAULT 0 COMMENT '정렬 순서',
+    idx INT DEFAULT 0 COMMENT '정렬 순서',
     use_yn CHAR(1) DEFAULT 'Y' COMMENT '사용 여부 (Y/N)',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
@@ -174,7 +174,7 @@ CREATE TABLE IF NOT EXISTS menu (
     unread_cnt_nm VARCHAR(200) COMMENT '미열람 카운트 이름 (model)',
     menu_sub_extend_ty_cd VARCHAR(50) COMMENT '하위메뉴 확장 유형 코드',
     -- STATE
-    sort_ordr INT DEFAULT 0 COMMENT '정렬 순서',
+    idx INT DEFAULT 0 COMMENT '정렬 순서',
     use_yn CHAR(1) DEFAULT 'Y' COMMENT '사용 여부 (Y/N)',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',

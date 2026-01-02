@@ -187,7 +187,7 @@ public class ClCdRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final ServiceResponse result = clCdService.sortOrdr(clCdParam.getSortOrdr());
+        final ServiceResponse result = clCdService.idx(clCdParam.getSortOrdr());
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 

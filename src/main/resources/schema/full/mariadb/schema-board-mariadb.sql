@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS board_def (
     ctgr_cl_cd VARCHAR(30) COMMENT '분류 코드',
     dc VARCHAR(2000) COMMENT '설명',
     -- STATE (module)
-    sort_ordr INT DEFAULT 0 COMMENT '정렬 순서',
+    idx INT DEFAULT 0 COMMENT '정렬 순서',
     use_yn CHAR(1) DEFAULT 'Y' COMMENT '사용 여부 (Y/N)',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',

@@ -80,7 +80,7 @@ public class DtlCdService
     public List<DtlCdEntity> getCdEntityListByClCd(final String clCd) throws Exception {
         if (StringUtils.isEmpty(clCd)) return null;
         return null;
-        // return repository.findByClCdAndStateUseYn(clCd, "Y", Sort.by(Sort.Direction.ASC, "sortOrdr"));
+        // return repository.findByClCdAndStateUseYn(clCd, "Y", Sort.by(Sort.Direction.ASC, "idx"));
     }
 
     /**

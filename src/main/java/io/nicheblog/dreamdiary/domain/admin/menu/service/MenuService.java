@@ -98,7 +98,7 @@ public class MenuService
                 .mngrYn("N")
                 .useYn("Y")
                 .build());
-        final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrdr");
+        final Sort sort = Sort.by(Sort.Direction.ASC, "idx");
 
         return this.getListDto(searchParamMap, sort);
     }
@@ -116,7 +116,7 @@ public class MenuService
                 .mngrYn("Y")
                 .useYn("Y")
                 .build());
-        final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrdr");
+        final Sort sort = Sort.by(Sort.Direction.ASC, "idx");
 
         return this.getListDto(searchParamMap, sort);
     }

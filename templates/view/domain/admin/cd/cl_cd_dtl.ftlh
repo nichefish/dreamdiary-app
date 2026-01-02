@@ -144,7 +144,7 @@
                             ${dtlCd.dc!}
                         </td>
                         <td class="text-center">
-                            ${dtlCd.sortOrdr!}
+                            ${dtlCd.idx!}
                         </td>
                         <td class="text-center">
                             <#if ((dtlCd.useYn)!"N") == "Y">

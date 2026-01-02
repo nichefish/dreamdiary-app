@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS sectn (
     ref_content_type VARCHAR(30) COMMENT '참조 컨텐츠 타입',
     deprc_yn CHAR(1) DEFAULT 'N' COMMENT '만료 여부 (Y/N)',
     -- STATE (module)
-    sort_ordr INT DEFAULT 0 COMMENT '정렬 순서',
+    idx INT DEFAULT 0 COMMENT '정렬 순서',
     use_yn CHAR(1) DEFAULT 'Y' COMMENT '사용 여부 (Y/N)',
     -- POST
     title VARCHAR(200) COMMENT '제목',
