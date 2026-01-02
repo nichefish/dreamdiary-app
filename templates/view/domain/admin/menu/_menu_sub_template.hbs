@@ -4,8 +4,8 @@
  -->
 
 <script type="text/x-handlebars-template" id="menu_sub_template">
-    <li class="list-unstyled sortable-item draggable-sub" style="{{borderColor}}"
-         id="{{menuNo}}" data-id="{{menuNo}}" data-type="{{menuTyCd}}" data-upper-menu-no="{{upperMenuNo}}">
+    <li class="menu-item list-unstyled sortable-item draggable-sub" style="{{borderColor}}"
+        data-id="{{menuNo}}" data-type="{{menuTyCd}}" data-upper-menu-no="{{upperMenuNo}}" data-idx="{{idx}}" data-use-yn="{{useYn}}">
         {{#if (equals upperMenuTyCd 'MAIN')}}
             <div class="menu-label fw-bolder text-muted fs-6 pb-1">{{ifEmpty menuLabel "-"}}</div>
         {{/if}}
@@ -27,10 +27,17 @@
                         ·
                     </span>
                 {{/if}}
-                <div class="ms-3 mb-0 text-dark cursor-pointer text-underline-dotted" onclick="dF.Menu.mdfModal('{{menuNo}}');"
-                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="수정 팝업을 호출합니다.">
-                    <span class="title fs-5 {{^ifYn state.useYn}}strikethrough{{/ifYn}}">
+                <div class="ms-3 mb-0 text-dark cursor-default text-underline-dotted">
+                    <span class="title fs-5 {{^ifYn useYn}}strikethrough{{/ifYn}}">
                         {{menuNm}}
+                        {{#ifYn protectedYn}}
+                            <i class="bi bi-shield-lock text-muted"
+                               data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.menu.protected'/>"></i>
+                        {{/ifYn}}
+                        {{#ifYn requiredYn}}
+                            <i class="bi bi-exclamation-diamond text-warning"
+                               data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.menu.required'/>"></i>
+                        {{/ifYn}}
                         <span class="badge bg-secondary text-{{#if (equals upperMenuTyCd 'MAIN')}}dark{{else}}muted{{/if}} ms-1">
                             {{ifEmpty menuLabel "-"}}
                         </span>
@@ -38,17 +45,8 @@
                 </div>
             </div>
             <div class="d-flex align-items-center justify-content-end">
-                <div class="w-80px">
-                    <div class="btn btn-sm btn-icon btn-light-primary btn-outlined cursor-pointer" {{#if (equals menuSubExtendTyCd "NO_SUB")}}style="visibility:hidden;"{{/if}}
-                         onclick="dF.Menu.regModal('${Constant.MENU_TY_SUB!}', {{menuNo}}, '{{menuNm}}');"
-                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="하위메뉴 추가 팝업을&#10;호출합니다.">
-                        <i class="fas fa-plus"></i>
-                    </div>
-                    <div class="btn btn-sm btn-icon btn-light-danger cursor-pointer"
-                         onclick="dF.Menu.delAjax({{menuNo}});"
-                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="이 메뉴를 삭제합니다.">
-                        <i class="bi bi-trash d-flex-center opacity-75"></i>
-                    </div>
+                <div class="w-40px">
+                    {{> menu_context_btn_partial this}}
                 </div>
             </div>
         </div>

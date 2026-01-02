@@ -88,15 +88,19 @@ public class MenuDto
     @Builder.Default
     private String mngrYn = "N";
 
+    /** 필수 여부 (Y/N) */
+    @Builder.Default
+    private String requiredYn = "N";
+    /** 시스템 보호 여부 (Y/N) */
+    @Builder.Default
+    private String protectedYn = "N";
+
     /** 셀프 참조 :: 상위메뉴 조회 */
     private MenuDto upperMenu;
-
     /** 셀프 참조 :: 상위메뉴명 */
     private String upperMenuNm;
-
     /** 셀프 참조 :: 상위메뉴구분코드 */
     private String upperMenuTyCd;
-
     /** 셀프 참조 :: 하위메뉴 목록 조회 */
     private List<MenuDto> subMenuList;
 

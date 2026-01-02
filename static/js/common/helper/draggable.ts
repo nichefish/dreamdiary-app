@@ -18,42 +18,46 @@ cF.draggable = (function(): Module {
          * @returns {Draggable.Sortable} - 드래그 가능한 정렬된 요소들의 인스턴스.
          */
         init: function(selectorSuffix: string = "", keyExtractor: Function, url: string, refreshFunc: Function): Draggable {
-            const containers = document.querySelectorAll(".draggable-zone" + selectorSuffix);
+            const zoneSelector: string = '.draggable-zone' + selectorSuffix;
+            const itemSelector: string = '.sortable-item.draggable' + selectorSuffix;
+            const handleSelector: string = '.draggable-handle' + selectorSuffix;
+
+            const containers: NodeListOf<Element> = document.querySelectorAll(zoneSelector);
             if (containers.length === 0) return;
 
-            let initOrdr = [];
+            let initIdxs: Object[] = [];
+            const onDragStart: Function = (event: any): void => {
+                const container: any = event.data.source.closest(zoneSelector); // 드래그 시작한 요소의 부모 컨테이너
+                const source: HTMLElement = event.data.source;
+                source.classList.add('dragging');
 
-            const onDragStart = (event: any): void => {
-                const container = event.data.source.parentElement; // 드래그 시작한 요소의 부모 컨테이너
-                event.data.source.classList.add('dragging');
-
-                // 드래그 전 초기 정렬 순서 저장
-                initOrdr = Array.from(container.querySelectorAll('.draggable' + selectorSuffix) as HTMLElement[])
-                    .map((draggable: HTMLElement) => draggable.getAttribute("id"));
+                // 드래그 전 초기 정렬 순서 저장 (스냅샷)
+                initIdxs = Array.from(container.querySelectorAll(itemSelector) as HTMLElement[])
+                    .map((el: HTMLElement): string => el.dataset.id);
             };
-            const onDragStop = (event: any): void => {
-                const container = event.data.source.parentElement; // 드래그 시작한 요소의 부모 컨테이너
-                const id: string = event.data.source.getAttribute("id");
-                setTimeout((): void => {
-                    const newTr: HTMLElement = document.querySelector(`tr[data-id='${id}'`) || document.querySelector(`li[data-id='${id}'`);
-                    newTr.classList.remove('dragging');
-                    newTr.classList.add('draggable-modified');
+            const onDragStop: Function = (event: any): void => {
+                const container = event.data.source.closest(zoneSelector); // 드래그 시작한 요소의 부모 컨테이너
+                const source: HTMLElement = event.data.source;
 
-                    // 드래그 후 정렬 순서 가져오기
-                    const newOrdr: string[] = Array.from(container.querySelectorAll('.draggable' + selectorSuffix) as HTMLElement[])
-                        .map((draggable: HTMLElement) => draggable.getAttribute("id"));
-                    const isOrdrChanged: boolean = !initOrdr.every((id: string, index: number):  boolean => id === newOrdr[index]);
+                setTimeout((): void => {
+                    source.classList.remove('dragging');
+                    source.classList.add('draggable-modified');
+
+                    // 드래그 후 정렬 순서 저장 (스냅샷)
+                    const newIdxs: string[] = Array.from(container.querySelectorAll(itemSelector) as HTMLElement[])
+                        .map((el: HTMLElement): string => el.dataset.id);
+
+                    const isChanged: boolean = initIdxs.length !== newIdxs.length || !initIdxs.every((id: string, index: number):  boolean => id === newIdxs[index]);
 
                     // 정렬 순서 ajax 저장
-                    if (isOrdrChanged) cF.draggable.sortOrdr(keyExtractor, url, refreshFunc);
+                    if (isChanged) cF.draggable.sortIdx(selectorSuffix, keyExtractor, url, refreshFunc);
                 }, 0); // 지연 시간을 0으로 설정하여 다음 이벤트 루프에서 실행되도록 함
             };
 
             return new Draggable.Sortable(containers, {
-                draggable: '.draggable' + selectorSuffix,
-                handle: '.draggable' + selectorSuffix + " .draggable-handle" + selectorSuffix,
+                draggable: zoneSelector + " " + itemSelector,
+                handle: zoneSelector + " " + itemSelector + " " + handleSelector,
                 mirror: {
-                    //appendTo: selector,
                     appendTo: "body",
                     constrainDimensions: true
                 },
@@ -62,25 +66,29 @@ cF.draggable = (function(): Module {
 
         /**
          * 정렬순서 저장
+         * @param {string} selectorSuffix - 선택 구분자
          * @param {Function} keyExtractor - 각 sortable item의 key를 추출하는 함수. 인자로 (item, index) 받음.
          * @param {string} url - 서버에 데이터 전송을 위한 URL.
          * @param {Function} [refreshFunc] - 정렬이 성공적으로 완료된 후 호출되는 콜백 함수. (선택적)
          */
-        sortOrdr: function(keyExtractor: Function, url: string, refreshFunc: Function): void {
-            const orderData = [];
-            document.querySelectorAll('.sortable-item').forEach((item: HTMLElement, index: number): void => {
-                const key = keyExtractor(item, index);
-                orderData.push({ ...key, "state": { "sortOrdr": index } });
+        sortIdx: function(selectorSuffix: string, keyExtractor: Function, url: string, refreshFunc?: Function): void {
+            const zoneSelector: string = '.draggable-zone' + selectorSuffix;
+            const itemSelector: string = '.sortable-item.draggable' + selectorSuffix;
+            const idxsData: object[] = [];
+
+            const container: Element = document.querySelector(zoneSelector);
+            const items: NodeListOf<Element> = container.querySelectorAll(itemSelector);
+            items.forEach((item: HTMLElement, idx: number): void => {
+                const key: Function = keyExtractor(item, idx);
+                idxsData.push({ ...key, idx });
             });
-            const ajaxData: Record<string, any> = { "sortOrdr": orderData };
-            cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
-                if (res.rslt) {
-                    (refreshFunc || cF.ui.blockUIReload)();
-                } else if (cF.util.isNotEmpty(res.message)) {
-                    Swal.fire({ text: res.message });
+            const ajaxData: Record<string, any> = { "idxs": idxsData };
+            cF.$ajax.put(url, ajaxData, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) return Swal.fire({ text: res.message });
                 }
+                (refreshFunc || cF.ui.blockUIReload)();
             }, "block");
         },
-
     }
 })();

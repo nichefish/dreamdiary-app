@@ -136,8 +136,8 @@ public interface ApiUrl {
     /** 메뉴 관리 */
     String MENU_MAIN_LIST_AJAX = Prefix.API + "/menu/menu-main-list";
     String MENUS = Prefix.API + "/menus";
+    String MENUS_IDX = Prefix.API + "/menus/idx";
     String MENU = Prefix.API + "/menu/{menuNo}";
-    String MENU_SORT_ORDR_AJAX = Prefix.API + "/menu/menu-sort-ordr";
 
     /** 게시판 관리 */
     String BOARD_DEF_REG_AJAX = Prefix.API + "/board/def/board-def-reg";

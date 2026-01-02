@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.domain.admin.menu.mapstruct;
 
 import io.nicheblog.dreamdiary.domain.admin.menu.entity.MenuEntity;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuDto;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuPostDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;
@@ -20,7 +21,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class}, builder = @Builder(disableBuilder = true))
 public interface MenuMapstruct
-        extends BaseWriteMapstruct<MenuDto, MenuEntity>, BaseReadMapstruct<MenuDto, MenuEntity> {
+        extends BaseWriteMapstruct<MenuPostDto, MenuEntity>, BaseReadMapstruct<MenuDto, MenuEntity> {
 
     MenuMapstruct INSTANCE = Mappers.getMapper(MenuMapstruct.class);
 
@@ -44,7 +45,7 @@ public interface MenuMapstruct
      * @return Entity -- 변환된 Entity 객체
      */
     @Override
-    MenuEntity toEntity(final MenuDto dto) throws Exception;
+    MenuEntity toEntity(final MenuPostDto dto) throws Exception;
 
     /**
      * update Entity from Dto (Dto에서 null이 아닌 값만 Entity로 매핑)
@@ -54,7 +55,7 @@ public interface MenuMapstruct
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateFromDto(final MenuDto dto, final @MappingTarget MenuEntity entity) throws Exception;
+    void updateFromDto(final MenuPostDto dto, final @MappingTarget MenuEntity entity) throws Exception;
 
     /**
      * 메뉴를 사이트 접근 정보로 변환

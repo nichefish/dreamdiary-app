@@ -36,12 +36,12 @@ dF.Menu = (function(): dfModule {
 
         /**
          * Draggable 컴포넌트 init
+         * @param {string} selectorSuffix
          */
-        initDraggable: function(): void {
-            const keyExtractor: Function = (item: HTMLElement) => ({ "menuNo": Number($(item).attr("id")), "upperMenuNo": Number($(item).data("upper-menu-no")) });
-            const url: string = Url.MENU_SORT_ORDR_AJAX;
-            dF.Menu.mainSwappable = cF.draggable.init("-main", keyExtractor, url);
-            dF.Menu.subSwappable = cF.draggable.init("-sub", keyExtractor, url);
+        initDraggable: function(selectorSuffix: string): void {
+            const keyExtractor: Function = (item: HTMLElement): Object => ({ "menuNo": Number(item.dataset.id) });
+            const url: string = Url.MENUS_IDX;
+            dF.Menu[`${selectorSuffix}Swappable`] = cF.draggable.init(`-${selectorSuffix}`, keyExtractor, url);
         },
 
         /**
@@ -97,7 +97,7 @@ dF.Menu = (function(): dfModule {
 
                 const menuNo = cF.util.getInputValue("#menuRegForm #menuNo");
                 const isMdf: boolean = cF.util.isNotEmpty(menuNo);
-                const url: string = isMdf ? cF.bindUrl(Url.MENU, { menuNo }) : Url.MENUS;
+                const url: string = isMdf ? cF.util.bindUrl(Url.MENU, { menuNo }) : Url.MENUS;
                 const ajaxData: Record<string, any> = cF.util.getJsonFormData("#menuRegForm");
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
@@ -114,7 +114,7 @@ dF.Menu = (function(): dfModule {
         mdfModal: function(menuNo: string|number): void {
             if (isNaN(Number(menuNo))) return;
 
-            const url: string = cF.bindUrl(Url.MENU, { menuNo });
+            const url: string = cF.util.bindUrl(Url.MENU, { menuNo });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -123,6 +123,27 @@ dF.Menu = (function(): dfModule {
                 const { rsltObj } = res;
                 /* initialize form. */
                 dF.Menu.initForm(rsltObj);
+            });
+        },
+
+        /**
+         * 사용 상태 변경 (Ajax)
+         */
+        toggleUseAjax: function(menuNo: string|number): void {
+            if (isNaN(Number(menuNo))) return;
+
+            const item: HTMLElement = document.querySelector(`li.menu-item[data-id='${menuNo}']`);
+            if (!item) console.warn("item does not exists.");
+            const currentUseYn: string = item.dataset.useYn;
+            const nextUseYn: string = currentUseYn === "Y" ? "N" : "Y";
+
+            const url: string = cF.util.bindUrl(Url.MENU, { menuNo });
+            const ajaxData: Record<string, any> = { "useYn": nextUseYn };
+            cF.$ajax.patch(url, ajaxData, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) return Swal.fire({ text: res.message });
+                }
+                cF.ui.blockUIReload();
             });
         },
 
@@ -139,8 +160,8 @@ dF.Menu = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = cF.bindUrl(Url.MENU, { menuNo });
-                cF.$ajax.post(url, null, function(res: AjaxResponse): void {
+                const url: string = cF.util.bindUrl(Url.MENU, { menuNo });
+                cF.$ajax.delete(url, null, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.ui.blockUIReload();
