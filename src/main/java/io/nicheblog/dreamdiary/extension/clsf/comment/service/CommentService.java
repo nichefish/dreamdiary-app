@@ -9,7 +9,7 @@ import io.nicheblog.dreamdiary.extension.clsf.comment.spec.CommentSpec;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultiCrudService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ import java.util.Map;
 @Service("commentService")
 @RequiredArgsConstructor
 public class CommentService
-        implements BaseClsfService<CommentDto, CommentDto, Integer, CommentEntity>, BaseMultiCrudService<CommentDto, CommentDto, Integer, CommentEntity> {
+        implements BaseClsfService<CommentDto, CommentDto, Integer, CommentEntity>, BaseMultipartWritableService<CommentDto, CommentDto, Integer, CommentEntity> {
 
     @Getter
     private final CommentRepository repository;

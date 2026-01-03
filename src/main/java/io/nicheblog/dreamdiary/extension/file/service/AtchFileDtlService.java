@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.extension.file.repository.jpa.AtchFileDtlReposito
 import io.nicheblog.dreamdiary.extension.file.spec.AtchFileDtlSpec;
 import io.nicheblog.dreamdiary.extension.file.utils.FileUtils;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.UUIDUtils;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
@@ -47,7 +47,7 @@ import java.util.*;
 @RequiredArgsConstructor
 @Log4j2
 public class AtchFileDtlService
-        implements BaseCrudService<AtchFileDtlDto, AtchFileDtlDto, Integer, AtchFileDtlEntity> {
+        implements BaseDtoWritableService<AtchFileDtlDto, AtchFileDtlDto, Integer, AtchFileDtlEntity> {
 
     @Getter
     private final AtchFileDtlRepository repository;

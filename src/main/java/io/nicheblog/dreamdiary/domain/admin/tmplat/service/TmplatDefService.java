@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.domain.admin.tmplat.mapstruct.TmplatDefMapstruct;
 import io.nicheblog.dreamdiary.domain.admin.tmplat.model.TmplatDefDto;
 import io.nicheblog.dreamdiary.domain.admin.tmplat.repository.jpa.TmplatDefRepository;
 import io.nicheblog.dreamdiary.domain.admin.tmplat.spec.TmplatDefSpec;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 @Service("tmplatDefService")
 @RequiredArgsConstructor
 public class TmplatDefService
-        implements BaseCrudService<TmplatDefDto, TmplatDefDto, Integer, TmplatDefEntity> {
+        implements BaseDtoWritableService<TmplatDefDto, TmplatDefDto, Integer, TmplatDefEntity> {
 
     @Getter
     private final TmplatDefRepository repository;

@@ -9,7 +9,7 @@ import io.nicheblog.dreamdiary.extension.cd.mapstruct.DtlCdMapstruct;
 import io.nicheblog.dreamdiary.extension.cd.model.DtlCdDto;
 import io.nicheblog.dreamdiary.extension.cd.repository.jpa.DtlCdRepository;
 import io.nicheblog.dreamdiary.extension.cd.spec.DtlCdSpec;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -37,7 +37,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Log4j2
 public class DtlCdService
-        implements BaseCrudService<DtlCdDto, DtlCdDto, DtlCdKey, DtlCdEntity> {
+        implements BaseDtoWritableService<DtlCdDto, DtlCdDto, DtlCdKey, DtlCdEntity> {
 
     @Getter
     private final DtlCdRepository repository;

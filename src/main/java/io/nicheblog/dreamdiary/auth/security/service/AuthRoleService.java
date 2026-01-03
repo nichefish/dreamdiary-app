@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.auth.security.mapstruct.AuthRoleMapstruct;
 import io.nicheblog.dreamdiary.auth.security.model.AuthRoleDto;
 import io.nicheblog.dreamdiary.auth.security.repository.jpa.AuthRoleRepository;
 import io.nicheblog.dreamdiary.auth.security.spec.AuthRoleSpec;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseReadonlyService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoReadableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Log4j2
 public class AuthRoleService
-        implements BaseReadonlyService<AuthRoleDto, String, AuthRoleEntity> {
+        implements BaseDtoReadableService<AuthRoleDto, String, AuthRoleEntity> {
 
     @Getter
     private final AuthRoleRepository repository;

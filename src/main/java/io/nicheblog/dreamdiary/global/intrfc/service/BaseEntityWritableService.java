@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * BaseCrudService
+ * BaseEntityWritableService
  * <pre>
- *  (공통/상속) CRUD 공통 서비스 인터페이스.
+ *  (공통/상속) 쓰기 (entity level) 공통 서비스 인터페이스.
  * </pre>
  *
  * @author nichefish
@@ -120,7 +120,7 @@ public interface BaseEntityWritableService<Key extends Serializable, Entity exte
         try {
             getRepository().refresh(updatedEntity);
         } catch (final EntityNotFoundException ex) {
-            ex.getStackTrace();
+            ex.printStackTrace();
         }
 
         // optional: 수정 후처리 (entity)

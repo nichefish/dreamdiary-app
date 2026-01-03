@@ -9,7 +9,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.dream.repository.jpa.JrnlDreamTagRepo
 import io.nicheblog.dreamdiary.domain.jrnl.dream.spec.JrnlDreamTagSpec;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagContentCntDto;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseReadonlyService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoReadableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class JrnlDreamTagService
-        implements BaseReadonlyService<TagDto, Integer, JrnlDreamTagEntity> {
+        implements BaseDtoReadableService<TagDto, Integer, JrnlDreamTagEntity> {
 
     @Getter
     private final JrnlDreamTagRepository repository;

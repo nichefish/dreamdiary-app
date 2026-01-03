@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.extension.clsf.meta.model.MetaDto;
 import io.nicheblog.dreamdiary.extension.clsf.meta.model.MetaSearchParam;
 import io.nicheblog.dreamdiary.extension.clsf.meta.repository.jpa.MetaRepository;
 import io.nicheblog.dreamdiary.extension.clsf.meta.spec.MetaSpec;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class MetaService
-        implements BaseCrudService<MetaDto, MetaDto, Integer, MetaEntity> {
+        implements BaseDtoWritableService<MetaDto, MetaDto, Integer, MetaEntity> {
 
     @Getter
     private final MetaRepository repository;
