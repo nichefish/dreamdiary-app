@@ -6,7 +6,7 @@ import io.nicheblog.dreamdiary.extension.cd.mapstruct.ClCdMapstruct;
 import io.nicheblog.dreamdiary.extension.cd.model.ClCdDto;
 import io.nicheblog.dreamdiary.extension.cd.repository.jpa.ClCdRepository;
 import io.nicheblog.dreamdiary.extension.cd.spec.ClCdSpec;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 @Service("clCdService")
 @RequiredArgsConstructor
 public class ClCdService
-        implements BaseCrudService<ClCdDto, ClCdDto, String, ClCdEntity> {
+        implements BaseDtoWritableService<ClCdDto, ClCdDto, String, ClCdEntity> {
 
     @Getter
     private final ClCdRepository repository;

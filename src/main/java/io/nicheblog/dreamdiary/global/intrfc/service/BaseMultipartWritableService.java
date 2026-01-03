@@ -22,8 +22,8 @@ import java.io.Serializable;
  *
  * @author nichefish
  */
-public interface BaseMultiCrudService<PostDto extends BaseAuditDto & AtchFileCmpstnModule & Identifiable<Key>, Dto extends BaseAuditDto & AtchFileCmpstnModule & Identifiable<Key>, Key extends Serializable, Entity extends BaseAuditEntity & AtchFileEmbedModule>
-        extends BaseCrudService<PostDto, Dto, Key, Entity> {
+public interface BaseMultipartWritableService<PostDto extends BaseAuditDto & AtchFileCmpstnModule & Identifiable<Key>, Dto extends BaseAuditDto & AtchFileCmpstnModule & Identifiable<Key>, Key extends Serializable, Entity extends BaseAuditEntity & AtchFileEmbedModule>
+        extends BaseDtoWritableService<PostDto, Dto, Key, Entity> {
 
     /**
      * default: 게시물 등록 (Multipart)

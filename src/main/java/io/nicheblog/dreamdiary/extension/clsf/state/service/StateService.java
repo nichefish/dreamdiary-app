@@ -10,7 +10,7 @@ import io.nicheblog.dreamdiary.extension.clsf.state.model.StateDto;
 import io.nicheblog.dreamdiary.extension.clsf.state.model.StateToggleDto;
 import io.nicheblog.dreamdiary.extension.clsf.state.repository.jpa.StateRepository;
 import io.nicheblog.dreamdiary.extension.clsf.state.spec.StateSpec;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Log4j2
 public class StateService
-        implements BaseCrudService<StateDto, StateDto, Integer, StateEntity> {
+        implements BaseDtoWritableService<StateDto, StateDto, Integer, StateEntity> {
 
     @Getter
     private final StateRepository repository;

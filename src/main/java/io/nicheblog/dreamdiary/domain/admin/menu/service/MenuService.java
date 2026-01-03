@@ -4,10 +4,7 @@ import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.domain.admin.menu.entity.MenuEntity;
 import io.nicheblog.dreamdiary.domain.admin.menu.exception.MenuNotExistsException;
 import io.nicheblog.dreamdiary.domain.admin.menu.mapstruct.MenuMapstruct;
-import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuDto;
-import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuPatchDto;
-import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuPostDto;
-import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuSearchParam;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.*;
 import io.nicheblog.dreamdiary.domain.admin.menu.repository.jpa.MenuRepository;
 import io.nicheblog.dreamdiary.domain.admin.menu.repository.mybatis.MenuMapper;
 import io.nicheblog.dreamdiary.domain.admin.menu.spec.MenuSpec;
@@ -15,7 +12,9 @@ import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.exception.BusinessException;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoReadableService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseSortableService;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -48,7 +47,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Log4j2
 public class MenuService
-        implements BaseCrudService<MenuPostDto, MenuDto, Integer, MenuEntity> {
+        implements BaseDtoReadableService<MenuDto, Integer, MenuEntity>,
+                   BaseDtoWritableService<MenuPostDto, MenuDto, Integer, MenuEntity>,
+                   BaseSortableService<MenuSortIdxDto, Integer, MenuEntity> {
 
     @Getter
     private final MenuRepository repository;
@@ -222,12 +223,21 @@ public class MenuService
     }
 
     /**
+     * 정렬 순서 변경 후처리.
+     */
+    @Override
+    public void postSortIdx(final List<MenuSortIdxDto> idxs) {
+        EhCacheUtils.evictCacheAll("mngrMenuList");
+        EhCacheUtils.evictCacheAll("userMenuList");
+    }
+
+    /**
      * 삭제 전처리. (override)
      *
      * @param deleteEntity - 삭제된 객체
      */
     @Override
-    public void preDelete(final MenuEntity deleteEntity) throws Exception {
+    public void preRemove(final MenuEntity deleteEntity) throws Exception {
         if ("Y".equals(deleteEntity.getProtectedYn())) {
             // 하위 메뉴 중 하나라도 보호라면 전체 롤백
             throw new BusinessException(MessageUtils.getMessage("exception.MenuProtectedException"));

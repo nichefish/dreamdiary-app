@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.extension.clsf.tag.mapstruct.TagPropertyMapstruct
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagPropertyDto;
 import io.nicheblog.dreamdiary.extension.clsf.tag.repository.jpa.TagPropertyRepository;
 import io.nicheblog.dreamdiary.extension.clsf.tag.spec.TagPropertySpec;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Log4j2
 public class TagPropertyService
-        implements BaseCrudService<TagPropertyDto, TagPropertyDto, Integer, TagPropertyEntity> {
+        implements BaseDtoWritableService<TagPropertyDto, TagPropertyDto, Integer, TagPropertyEntity> {
 
     @Getter
     private final TagPropertyRepository repository;

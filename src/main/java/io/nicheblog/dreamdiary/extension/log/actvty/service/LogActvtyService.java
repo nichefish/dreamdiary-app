@@ -7,7 +7,7 @@ import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.extension.log.actvty.repository.jpa.LogActvtyRepository;
 import io.nicheblog.dreamdiary.extension.log.actvty.spec.LogActvtySpec;
 import io.nicheblog.dreamdiary.global.ActiveProfile;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseReadonlyService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoReadableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Log4j2
 public class LogActvtyService
-        implements BaseReadonlyService<LogActvtyDto, Integer, LogActvtyEntity> {
+        implements BaseDtoReadableService<LogActvtyDto, Integer, LogActvtyEntity> {
 
     @Getter
     private final LogActvtyRepository repository;

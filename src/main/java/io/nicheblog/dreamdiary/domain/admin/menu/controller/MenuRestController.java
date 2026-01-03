@@ -1,9 +1,6 @@
 package io.nicheblog.dreamdiary.domain.admin.menu.controller;
 
-import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuDto;
-import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuPatchDto;
-import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuPostDto;
-import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuSearchParam;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.*;
 import io.nicheblog.dreamdiary.domain.admin.menu.service.MenuService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
@@ -88,7 +85,7 @@ public class MenuRestController
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuRegAjax(
-            @PathVariable(value = "menuNo", required = false) Integer menuNo,
+            final @PathVariable(value = "menuNo", required = false) Integer menuNo,
             final @Valid MenuPostDto menu,
             final LogActvtyParam logParam
     ) throws Exception {
@@ -166,7 +163,7 @@ public class MenuRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-/*    @PostMapping(Url.MENU_SORT_ORDR_AJAX)
+    @PutMapping(Url.MENUS_IDX)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuSortOrdrAjax(
@@ -174,7 +171,7 @@ public class MenuRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final ServiceResponse result = menuService.idx(menuParam.getSortOrdr());
+        final ServiceResponse result = menuService.sortIdx(menuParam.getIdxs());
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
@@ -182,7 +179,7 @@ public class MenuRestController
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
-    }*/
+    }
 
     /**
      * 메뉴 관리 삭제 (Ajax)

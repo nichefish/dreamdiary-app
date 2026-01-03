@@ -6,7 +6,7 @@ import io.nicheblog.dreamdiary.domain.board.def.model.BoardDefDto;
 import io.nicheblog.dreamdiary.domain.board.def.repository.jpa.BoardDefRepository;
 import io.nicheblog.dreamdiary.domain.board.def.spec.BoardDefSpec;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class BoardDefService
-        implements BaseCrudService<BoardDefDto, BoardDefDto, String, BoardDefEntity> {
+        implements BaseDtoWritableService<BoardDefDto, BoardDefDto, String, BoardDefEntity> {
 
     @Getter
     private final BoardDefRepository repository;

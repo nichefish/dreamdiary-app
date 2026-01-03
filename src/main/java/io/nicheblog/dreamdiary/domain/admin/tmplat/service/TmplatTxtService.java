@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.domain.admin.tmplat.mapstruct.TmplatTxtMapstruct;
 import io.nicheblog.dreamdiary.domain.admin.tmplat.model.TmplatTxtDto;
 import io.nicheblog.dreamdiary.domain.admin.tmplat.repository.jpa.TmplatTxtRepository;
 import io.nicheblog.dreamdiary.domain.admin.tmplat.spec.TmplatTxtSpec;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ import java.util.Optional;
 @Service("tmplatTxtService")
 @RequiredArgsConstructor
 public class TmplatTxtService
-        implements BaseCrudService<TmplatTxtDto, TmplatTxtDto, Integer, TmplatTxtEntity> {
+        implements BaseDtoWritableService<TmplatTxtDto, TmplatTxtDto, Integer, TmplatTxtEntity> {
 
     @Getter
     private final TmplatTxtRepository repository;
