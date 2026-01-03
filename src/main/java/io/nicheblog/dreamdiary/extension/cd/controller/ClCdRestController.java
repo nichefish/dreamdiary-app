@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.extension.cd.controller;
 
 import io.nicheblog.dreamdiary.extension.cd.model.ClCdDto;
+import io.nicheblog.dreamdiary.extension.cd.model.ClCdPatchDto;
 import io.nicheblog.dreamdiary.extension.cd.service.ClCdService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
@@ -49,7 +50,7 @@ public class ClCdRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(value = {Url.CL_CD_REG_AJAX})
+    @PostMapping(value = {Url.CD_CLS})
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> clCdRegAjax(
@@ -75,15 +76,16 @@ public class ClCdRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(value = {Url.CL_CD_MDF_AJAX})
+    @PostMapping(value = {Url.CD_CL})
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> clCdMdfAjax(
-            final @Valid ClCdDto clCd,
+            final @PathVariable("clCd") String clCd,
+            final @Valid ClCdDto clCdDto,
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final ServiceResponse result = clCdService.modify(clCd);
+        final ServiceResponse result = clCdService.modify(clCdDto);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
@@ -97,19 +99,19 @@ public class ClCdRestController
      * 분류 코드 관리(useYn=N 포함) 상세 조회 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
-     * @param key 식별자
+     * @param clCd 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.CL_CD_DTL_AJAX)
+    @GetMapping(Url.CD_CL)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> clCdDtlAjax(
-            final @RequestParam("clCd") String key,
+            final @PathVariable("clCd") String clCd,
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final ClCdDto cmmClCd = clCdService.getDtlDto(key);
+        final ClCdDto cmmClCd = clCdService.getDtlDto(clCd);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -120,30 +122,31 @@ public class ClCdRestController
     }
 
     /**
-     * 분류 코드 관리(useYn=N 포함) '사용'으로 변경 (Ajax)
+     * 코드 상태 변경 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
      * @param clCd 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-/*    @PostMapping(Url.CL_CD_USE_AJAX)
+    @PatchMapping(Url.CD_CL)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> clCdUseAjax(
-            final @RequestParam("clCd") String clCd,
+    public ResponseEntity<AjaxResponse> menuPatchAjax(
+            final @PathVariable("clCd") String clCd,
+            final @RequestBody ClCdPatchDto patchDto,
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final ServiceResponse result = clCdService.setStateUse(clCd);
+        final ServiceResponse result = clCdService.patch(clCd, patchDto);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         // 로그 관련 세팅
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity.ok(AjaxResponse.fromResponse(result, rsltMsg));
-    }*/
+        return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
+    }
 
     /**
      * 분류 코드(CL_CD) 관리(useYn=N 포함) 삭제 (Ajax)
@@ -153,11 +156,11 @@ public class ClCdRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(Url.CL_CD_DEL_AJAX)
+    @DeleteMapping(Url.CD_CL)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> clCdDelAjax(
-            final @RequestParam("clCd") String clCd,
+            final @PathVariable("clCd") String clCd,
             final LogActvtyParam logParam
     ) throws Exception {
 
@@ -170,29 +173,4 @@ public class ClCdRestController
 
         return ResponseEntity.ok(AjaxResponse.fromResponse(result, rsltMsg));
     }
-
-/*    *//**
-     * 관리자 > 메뉴 관리 > 정렬 순서 저장 (드래그앤드랍 결과 반영) (Ajax)
-     * (관리자MNGR만 접근 가능.)
-     *
-     * @param clCdParam 키+정렬 순서 목록을 담은 파라미터
-     * @param logParam 로그 기록을 위한 파라미터 객체
-     * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     *//*
-    @PostMapping(Url.CL_CD_SORT_ORDR_AJAX)
-    @Secured({Constant.ROLE_MNGR})
-    @ResponseBody
-    public ResponseEntity<AjaxResponse> clCdSortOrdrAjax(
-            final @RequestBody ClCdParam clCdParam,
-            final LogActvtyParam logParam
-    ) throws Exception {
-
-        final ServiceResponse result = clCdService.idx(clCdParam.getSortOrdr());
-        final boolean isSuccess = result.getRslt();
-        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
-
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
-
-        return ResponseEntity.ok(AjaxResponse.fromResponse(result, rsltMsg));
-    }*/
 }

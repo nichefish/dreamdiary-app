@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.Usable;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.Where;
@@ -65,6 +66,12 @@ public class DtlCdEntity
     @Builder.Default
     @Column(name = "use_yn", length = 1, columnDefinition = "CHAR DEFAULT 'Y'")
     private String useYn = "N";
+
+    /** 시스템 보호 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "protected_yn")
+    @Comment("시스템 보호 여부 (Y/N)")
+    private String protectedYn = "N";
 
     /* ---- */
 

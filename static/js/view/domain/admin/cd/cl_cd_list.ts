@@ -14,10 +14,9 @@ const Page: Page = (function(): Page {
             /* initialize modules. */
             dF.ClCd.init();
 
+            // dF.ClCd.listAjax();
             /* 모든 table 헤더에 클릭 이벤트를 설정한다. */
             cF.table.initSort();
-            /* init : Draggable */
-            dF.ClCd.initDraggable();
         },
     }
 })();

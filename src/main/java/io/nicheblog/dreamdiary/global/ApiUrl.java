@@ -161,13 +161,8 @@ public interface ApiUrl {
     String POPUP_LIST = "";
 
     /** 코드 관리 */
-    String CL_CD_REG_AJAX = Prefix.API + "/cd/cl-cd-reg";
-    String CL_CD_DTL_AJAX = Prefix.API + "/cd/cl-cd-dtl";
-    String CL_CD_MDF_AJAX = Prefix.API + "/cd/cl-cd-mdf";
-    String CL_CD_DEL_AJAX = Prefix.API + "/cd/cl-cd-del";
-    String CL_CD_USE_AJAX = Prefix.API + "/cd/cl-cd-use";
-    String CL_CD_UNUSE_AJAX = Prefix.API + "/cd/cl-cd-unuse";
-    String CL_CD_SORT_ORDR_AJAX = Prefix.API + "/cd/cl-cd-sort-ordr";
+    String CD_CLS = Prefix.API + "cd/cls";
+    String CD_CL = Prefix.API + "/cd/cl/{clCd}";
 
     String DTL_CD_REG_AJAX = Prefix.API + "/cd/dtl-cd-reg";
     String DTL_CD_DTL_AJAX = Prefix.API + "/cd/dtl-cd-dtl";
