@@ -30,7 +30,6 @@ public class DtlCdDto
 
     /** 상세 코드 */
     private String dtlCd;
-
     /** 상세 코드이름 */
     private String dtlCdNm;
 
@@ -39,6 +38,10 @@ public class DtlCdDto
 
     /** 분류 코드 */
     private String clCd;
+
+    /** 시스템 보호 여부 (Y/N) */
+    @Builder.Default
+    private String protectedYn = "N";
 
     /** 사용 여부 (Y/N) */
     @Builder.Default

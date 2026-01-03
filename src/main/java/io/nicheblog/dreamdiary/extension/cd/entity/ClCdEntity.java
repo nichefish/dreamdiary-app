@@ -5,12 +5,12 @@ import io.nicheblog.dreamdiary.global.intrfc.entity.Usable;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,6 +70,12 @@ public class ClCdEntity
     @Builder.Default
     @Column(name = "use_yn", length = 1, columnDefinition = "CHAR DEFAULT 'Y'")
     private String useYn = "N";
+
+    /** 시스템 보호 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "protected_yn")
+    @Comment("시스템 보호 여부 (Y/N)")
+    private String protectedYn = "N";
 
     /** 분류 코드 정보 */
     @OneToMany(fetch = FetchType.EAGER)

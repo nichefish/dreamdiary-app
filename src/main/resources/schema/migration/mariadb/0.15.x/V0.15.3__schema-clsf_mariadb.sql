@@ -139,3 +139,8 @@ ALTER TABLE cmm_dtl_cd RENAME COLUMN sort_ordr TO idx;
 ALTER TABLE menu RENAME COLUMN sort_ordr TO idx;
 ALTER TABLE tmplat_def RENAME COLUMN sort_ordr TO idx;
 ALTER TABLE auth_role RENAME COLUMN sort_ordr TO idx;
+
+ALTER TABLE menu ADD required_yn CHAR(1) DEFAULT 'N' COMMENT '필수 여부';
+ALTER TABLE menu ADD protected_yn CHAR(1) DEFAULT 'N' COMMENT '시스템 보호 여부';
+ALTER TABLE cmm_cl_cd ADD protected_yn CHAR(1) DEFAULT 'N' COMMENT '시스템 보호 여부';
+ALTER TABLE cmm_dtl_cd ADD protected_yn CHAR(1) DEFAULT 'N' COMMENT '시스템 보호 여부';

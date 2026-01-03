@@ -34,16 +34,18 @@ public class ClCdDto
 
     /** 분류 코드 */
     private String clCd;
-
     /** 분류 코드이름 */
     private String clCdNm;
 
     /** 설명 */
     private String dc;
 
+    /** 시스템 보호 여부 (Y/N) */
+    @Builder.Default
+    private String protectedYn = "N";
+
     /** 분류 코드 분류 코드 */
     private String clCtgrCd;
-
     /** 분류 코드 분류 코드명 */
     private String clCtgrNm;
 

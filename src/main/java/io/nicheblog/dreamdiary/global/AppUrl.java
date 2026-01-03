@@ -85,8 +85,7 @@ public interface AppUrl {
 
     /** 코드 관리 */
     String CL_CD_LIST = Prefix.APP + "/cd/list.do";
-    String CL_CD_DTL = Prefix.APP + "/cd/dtl.do";
-    
+
     /** 활동 로그 조회 */
     String LOG_ACTVTY_LIST = Prefix.APP + "/log/actvty/list.do";
 

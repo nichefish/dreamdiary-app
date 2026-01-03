@@ -19,11 +19,7 @@
             <#--begin::Table head-->
             <thead>
                 <tr class="text-start fw-bolder fs-7 text-uppercase gs-0 fw-bolder text-muted">
-                    <th class="col-1 text-center wb-keepall cursor-help w-8 hidden-table"
-                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="드래그하여&#10;항목을 이동합니다.">
-                        정렬
-                        <i class="bi bi-question-circle"></i>
-                    </th>
+                    <th class="col-1 text-center wb-keepall cursor-help w-8 hidden-table">순번</th>
                     <th class="col-3 text-center wb-keepall">분류 코드</th>
                     <th class="col-4 text-center wb-keepall">분류 코드 설명</th>
                     <th class="col-1 text-center wb-keepall">하위 상세 코드 수</th>
@@ -35,16 +31,10 @@
             <tbody class="draggable-zone">
                 <#--begin::목록-->
                 <#list clCdList![] as clCd>
-                    <tr class="sortable-item draggable bg-hover-secondary" id="${clCd.clCd!}" data-id="${clCd.clCd!}"
-                        onclick="dF.ClCd.dtl('${clCd.clCd!}');">
+                    <tr class="cl-cd-item bg-hover-secondary" id="${clCd.clCd!}" data-use-yn="${clCd.useYn!}"
+                        onclick="dF.ClCd.dtlModal('${clCd.clCd!}');">
                         <td class="text-center hidden-table">
-                            <div class="draggable-handle d-flex-center cursor-move pt-2"
-                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="드래그하여&#10;항목을 이동합니다.">
-                                <i class="ki-duotone ki-abstract-14 fs-2x">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                </i>
-                            </div>
+                            ${clCd.rnum!}
                         </td>
                         <td class="text-start px-6 cursor-pointer fw-bold text-gray-700">
                             <#if clCd.clCtgrNm??>
@@ -53,12 +43,7 @@
                                 </span>
                             </#if>
                             <span>${clCd.clCdNm!}</span>
-                            <span class="ms-1">(${clCd.clCd!})</span>
-                            <a class="badge badge-secondary ms-2 p-2 btn-white blank blink-slow float-end"
-                               data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="모달로 보기">
-                                <i class="bi bi-stickies fs-5 text-noti opacity-hover"
-                                   onclick="dF.ClCd.dtlModal('${clCd.clCd!}');"></i>
-                            </a>
+                            <span class="badge bg-light-info text-info ms-1">${clCd.clCd!}</span>
                         </td>
                         <td class="text-start ps-6 hidden-table">
                             ${clCd.dc!}
@@ -67,21 +52,12 @@
                             ${clCd.dtlCdCnt!0}
                         </td>
                         <td class="text-center hidden-table">
-                            <#if ((clCd.useYn)!"N") == "Y">
-                                <div class="badge badge-success cursor-pointer"
-                                     onclick="dF.ClCd.unuseAjax('${clCd.clCd}');"
-                                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
-                                     title="클릭하여 사용 상태를&#10;변경합니다.">
-                                    <i class="bi bi-check text-light blink-slow"></i><@spring.message 'txt.status.use'/>
-                                </div>
-                            <#else>
-                                <div class="badge badge-secondary btn-white cursor-pointer"
-                                     onclick="dF.ClCd.useAjax('${clCd.clCd}');"
-                                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
-                                     title="클릭하여 사용 상태를&#10;변경합니다.">
-                                    <i class="bi bi-x blink-slow"></i><@spring.message 'txt.status.unuse'/>
-                                </div>
-                            </#if>
+                            <div class="badge <#if ((clCd.useYn)!"N") == "Y">badge-success<#else>badge-secondary btn-white</#if> cursor-pointer"
+                                 onclick="dF.ClCd.toggleUseAjax('${clCd.clCd}');"
+                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
+                                 title="클릭하여 사용 상태를&#10;변경합니다.">
+                                <i class="bi bi-check text-light blink-slow"></i><#if ((clCd.useYn)!"N") == "Y"><@spring.message 'txt.status.use'/><#else><@spring.message 'txt.status.unuse'/></#if>
+                            </div>
                         </td>
                         <td class="text-center hidden-table">
                             <div class="badge badge-danger badge-outlined cursor-pointer"
@@ -120,6 +96,10 @@
 <#include "/view/domain/admin/cd/_modal/_cl_cd_reg_modal.ftlh">
 <#include "/view/domain/admin/cd/_modal/_cl_cd_dtl_modal.ftlh">
 <script type="text/javascript" src="/js/view/domain/admin/cd/cl_cd_module.js"></script>
+
+<#--include::dtl_cd_modules-->
+<#include "/view/domain/admin/cd/_modal/_dtl_cd_reg_modal.ftlh">
+<script type="text/javascript" src="/js/view/domain/admin/cd/dtl_cd_module.js"></script>
 
 <!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/admin/cd/cl_cd_list.js"></script>
