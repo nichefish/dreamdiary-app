@@ -8,6 +8,17 @@ if (typeof dF === 'undefined') { var dF = {} as any; }
 dF.JrnlDiary = (function(): dfModule {
     return {
         STORAGE_KEY: "collapsedJrnlDiaryIds",
+        RENDER_PROFILE: {
+            LIST: {
+                collapsed: true,
+            },
+            TAG: {
+                collapsed: false,
+            },
+            SEARCH: {
+                collapsed: false,
+            }
+        },
 
         initialized: false,
         inKeywordSearchMode: false,
@@ -68,7 +79,10 @@ dF.JrnlDiary = (function(): dfModule {
                 $("#jrnl_diary_tag_list_div").empty();
                 $("#jrnl_dream_tag_list_div").empty();
                 cF.ui.closeModal();
-                cF.handlebars.template(res.rsltList, "jrnl_diary_list");
+                const viewModels = res.rsltList.map((diary: any) =>
+                    dF.JrnlDiary.buildViewModel(diary, 'SEARCH')
+                );
+                cF.handlebars.template(viewModels, "jrnl_diary_list");
                 dF.JrnlDiary.inKeywordSearchMode = true;
                 // 버튼 추가
                 $("#jrnl_aside #jrnl_diary_reset_btn").remove();
@@ -400,5 +414,25 @@ dF.JrnlDiary = (function(): dfModule {
                 }
             });
         },
+
+        /**
+         * View Model 구성
+         * @param {Object} diary
+         * @param {String} profileName
+         */
+        buildViewModel: function(diary, profileName) {
+            const profile: any = dF.JrnlDiary.RENDER_PROFILE[profileName];
+
+            if (!profile) throw new Error(`Unknown render profile: ${profileName}`);
+
+            return {
+                ...diary,
+                view: profile,
+                cnClass: [
+                    'cn',
+                    profile.collapsed && diary.state?.includes('COLLAPSED') ? 'collapsed' : null
+                ].filter(Boolean).join(' ')
+            };
+        }
     }
 })();

@@ -97,7 +97,10 @@ dF.JrnlDiaryTag = (function(): dfModule {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
-                cF.handlebars.modal(res.rsltList, "jrnl_diary_tag_dtl");
+                const viewModels = res.rsltList.map((diary: any) =>
+                    dF.JrnlDiary.buildViewModel(diary, 'TAG')
+                );
+                cF.handlebars.modal(viewModels, "jrnl_diary_tag_dtl");
                 document.querySelector("#jrnl_diary_tag_dtl_modal .header_tag_nm").innerHTML = tagNm;
                 document.querySelector("#jrnl_diary_tag_dtl_modal .header_tag_cnt").innerHTML = (res.rsltList?.length ?? 0).toString();
                 KTMenu.createInstances();
