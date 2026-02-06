@@ -4,7 +4,7 @@
  -->
 
 <script type="text/x-handlebars-template" id="jrnl_diary_cn_partial">
-    <div class="cn {{#if (hasState state 'COLLAPSED')}}collapsed{{/if}}">
+    <div class="{{#if (exists cnClass)}}{{cnClass}}{{else}}cn {{#if (hasState state 'COLLAPSED')}}collapsed{{/if}}{{/if}}">
         {{{markdownCn}}}
     </div>
     <!-- "더 보기" 버튼, <p> child 3개 이상일 때만 보임 (css) -->
