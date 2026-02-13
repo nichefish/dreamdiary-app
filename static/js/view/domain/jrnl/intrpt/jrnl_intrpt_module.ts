@@ -280,10 +280,13 @@ dF.JrnlIntrpt = (function(): dfModule {
                 const rsltObj: Record<string, any> = res.rsltObj;
                 const resultCn: string = rsltObj.cn;
                 // 문단/줄바꿈을 먼저 텍스트로 치환
-                const replacedCn = resultCn.replace(/<\s*br\s*\/?>/gi, "\n").replace(/<\s*\/?p\s*>/gi, "\n");
+                const replacedCn: string = resultCn.replace(/<\s*br\s*\/?>/gi, "\n").replace(/<\s*\/?p[^>]*>/gi, "\n");
                 const div: HTMLDivElement = document.createElement("div");
                 div.innerHTML = replacedCn;
-                const textToCopy: string = (div.textContent ?? "").replace(/\n+/g, "\n").trim();
+                const textToCopy: string = (div.innerText ?? "")
+                    .replace(/\n+/g, "\n")
+                    .replace(/\n/g, "\r\n")
+                    .trim();
 
                 if (navigator.clipboard && window.isSecureContext) {
                     navigator.clipboard.writeText(textToCopy)

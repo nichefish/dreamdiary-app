@@ -488,6 +488,8 @@ document.addEventListener("DOMContentLoaded", function(): void {
 
     const jrnlEntryRegBtnPartial: string = document.getElementById("jrnl_entry_reg_btn_partial")?.innerHTML;
     if (jrnlEntryRegBtnPartial) Handlebars.registerPartial("jrnl_entry_reg_btn_partial", jrnlEntryRegBtnPartial);
+    const jrnlEntryCopyBtnPartial: string = document.getElementById("jrnl_entry_copy_btn_partial")?.innerHTML;
+    if (jrnlEntryCopyBtnPartial) Handlebars.registerPartial("jrnl_entry_copy_btn_partial", jrnlEntryCopyBtnPartial);
     const jrnlEntryContextBtnPartial: string = document.getElementById("jrnl_entry_context_btn_partial")?.innerHTML;
     if (jrnlEntryContextBtnPartial) Handlebars.registerPartial("jrnl_entry_context_btn_partial", jrnlEntryContextBtnPartial);
     const jrnlEntryToggleBtnPartial: string = document.getElementById("jrnl_entry_toggle_btn_partial")?.innerHTML;
