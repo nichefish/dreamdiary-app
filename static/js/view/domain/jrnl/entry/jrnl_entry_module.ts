@@ -272,5 +272,46 @@ dF.JrnlEntry = (function(): dfModule {
                 });
             }
         },
+
+        /**
+         * copy
+         * @param {string|number} postNo - 글 번호.
+         * @deprecated
+         */
+        copy: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            const url: string = cF.util.bindUrl(Url.JRNL_ENTRY, { postNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    return;
+                }
+                const rsltObj: Record<string, any> = res.rsltObj;
+                const jrnlDiaryList: object[] = rsltObj.jrnlDiaryList;
+                const resultCn: string = jrnlDiaryList?.map((item: any): any => "#" + (item?.idx ?? "") + (item?.cn ?? "")).join("\r\n");
+
+                // 문단/줄바꿈을 먼저 텍스트로 치환
+                const replacedCn: string = resultCn.replace(/<\s*br\s*\/?>/gi, "\n").replace(/<\s*\/?p[^>]*>/gi, "\n");
+                const div: HTMLDivElement = document.createElement("div");
+                div.innerHTML = replacedCn;
+                const textToCopy: string = (div.innerText ?? "")
+                    .replace(/\n+/g, "\n")
+                    .replace(/\n/g, "\r\n")
+                    .trim();
+
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(textToCopy)
+                        .then((): void => {
+                            Swal.fire({ icon: "success", text: "클립보드에 복사되었습니다." });
+                        })
+                        .catch((): void => {
+                            cF.util.legacyCopy(textToCopy);
+                        });
+                } else {
+                    cF.util.legacyCopy(textToCopy);
+                }
+            });
+        },
     }
 })();
