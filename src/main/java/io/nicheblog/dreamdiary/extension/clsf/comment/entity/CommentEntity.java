@@ -5,7 +5,9 @@ import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbedModule;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbedModule;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BasePostEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbed;
+import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbedModule;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
@@ -32,8 +34,8 @@ import javax.persistence.*;
 @Where(clause = "del_yn='N'")
 @SQLDelete(sql = "UPDATE comment SET del_yn = 'Y' WHERE post_no = ?")
 public class CommentEntity
-        extends BasePostEntity
-        implements CommentEmbedModule, TagEmbedModule {
+        extends BaseClsfEntity
+        implements AtchFileEmbedModule, CommentEmbedModule, TagEmbedModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -52,14 +54,9 @@ public class CommentEntity
     @Comment("컨텐츠 타입")
     private String contentType = CONTENT_TYPE.key;
 
-    /** 글분류 코드 :: join을 제거하고 메모리 캐시 처리 */
-    @Column(name = "ctgr_cd", length = 50)
-    @Comment("댓글 글분류 코드 정보")
-    private String ctgrCd;
-
-    /** 글분류 코드 이름 :: join을 제거하고 메모리 캐시 처리 */
-    @Transient
-    private String ctgrNm;
+    /** 내용 */
+    @Column(name = "cn")
+    protected String cn;
 
     /* ----- */
 
@@ -75,6 +72,9 @@ public class CommentEntity
 
     /* ----- */
 
+    /** 위임 :: 첨부파일 모듈 */
+    @Embedded
+    public AtchFileEmbed file;
     /** 위임 :: 댓글 정보 모듈 */
     @Embedded
     public CommentEmbed comment;

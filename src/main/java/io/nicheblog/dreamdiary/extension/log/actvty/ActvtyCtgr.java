@@ -41,6 +41,8 @@ public enum ActvtyCtgr {
     VCATN_STATS("년도별 휴가관리"),
 
     TAG("태그"),
+    META("메타"),
+    STATE("상태"),
 
     // USER
     USER("사용자 관리"),

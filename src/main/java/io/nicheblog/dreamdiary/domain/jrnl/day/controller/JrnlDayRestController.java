@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -87,7 +86,6 @@ public class JrnlDayRestController
      *
      * @param jrnlDay 등록/수정 처리할 객체
      * @param logParam 로그 기록을 위한 파라미터 객체
-     * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @see TagProcEventListener
      */
@@ -101,8 +99,7 @@ public class JrnlDayRestController
     public ResponseEntity<AjaxResponse> jrnlDayRegAjax(
             final @PathVariable(value = "postNo", required = false) Integer postNo,
             final @Valid JrnlDayDto jrnlDay,
-            final LogActvtyParam logParam,
-            final MultipartHttpServletRequest request
+            final LogActvtyParam logParam
     ) throws Exception {
 
         boolean isReg = postNo == null;
@@ -113,7 +110,7 @@ public class JrnlDayRestController
                 isReg = false;      // 등록 대신 기존 데이터 수정
             }
         }
-        final ServiceResponse result = isReg ? jrnlDayService.regist(jrnlDay, request) : jrnlDayService.modify(jrnlDay, request);
+        final ServiceResponse result = isReg ? jrnlDayService.regist(jrnlDay) : jrnlDayService.modify(jrnlDay);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 

@@ -224,7 +224,7 @@ public class UserSpec
         final List<Order> order = new ArrayList<>();
         final Join<UserEntity, UserEmplymEntity> emplymJoin = root.join("emplym", JoinType.INNER);
         final Join<UserEmplymEntity, DtlCdEntity> rankCdJoin = emplymJoin.join("rankCdInfo", JoinType.INNER);
-        order.add(builder.desc(rankCdJoin.get("state").get("sortOrdr")));
+        order.add(builder.desc(rankCdJoin.get("idx")));
         order.add(builder.asc(emplymJoin.get("ecnyDt")));
 
         return order;

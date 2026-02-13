@@ -10,6 +10,7 @@ import io.nicheblog.dreamdiary.extension.clsf.managt.event.ManagtrAddEvent;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Log4j2
 public class BoardPostService
-        implements BaseClsfService<BoardPostDto, BoardPostDto, Integer, BoardPostEntity> {
+        implements BaseClsfService<BoardPostDto, BoardPostDto, Integer, BoardPostEntity>, BaseMultipartWritableService<BoardPostDto, BoardPostDto, Integer, BoardPostEntity> {
 
     @Getter
     private final BoardPostRepository repository;

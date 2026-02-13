@@ -11,6 +11,7 @@ import io.nicheblog.dreamdiary.extension.clsf.managt.event.ManagtrAddEvent;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultipartWritableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -33,7 +34,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 @Log4j2
 public class NoticeService
-        implements BaseClsfService<NoticeDto, NoticeDto, Integer, NoticeEntity> {
+        implements BaseClsfService<NoticeDto, NoticeDto, Integer, NoticeEntity>, BaseMultipartWritableService<NoticeDto, NoticeDto, Integer, NoticeEntity> {
 
     @Getter
     private final NoticeRepository repository;

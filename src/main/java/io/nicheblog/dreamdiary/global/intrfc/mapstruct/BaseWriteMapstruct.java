@@ -1,11 +1,12 @@
 package io.nicheblog.dreamdiary.global.intrfc.mapstruct;
 
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.helper.MapstructHelper;
 import org.apache.commons.collections4.CollectionUtils;
-import org.mapstruct.*;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 /**
@@ -45,7 +46,6 @@ public interface BaseWriteMapstruct<PostDto, Entity> {
      */
     default List<Entity> toEntityList(final List<PostDto> dtoList) {
         if (CollectionUtils.isEmpty(dtoList)) return null;
-        AtomicLong i = new AtomicLong(1);
         return dtoList.stream()
                 .map(dto -> {
                     try {
@@ -55,16 +55,5 @@ public interface BaseWriteMapstruct<PostDto, Entity> {
                     }
                 })
                 .collect(Collectors.toList());
-    }
-
-    /**
-     * default : State 관련 기본 요소들 매핑
-     *
-     * @param dto 업데이트할 Dto 객체
-     * @param entity 업데이트할 대상 Entity 객체
-     */
-    @AfterMapping
-    default void mapBaseListFields(final PostDto dto, final @MappingTarget Entity entity) throws Exception {
-        MapstructHelper.mapStateFields(dto, entity);
     }
 }

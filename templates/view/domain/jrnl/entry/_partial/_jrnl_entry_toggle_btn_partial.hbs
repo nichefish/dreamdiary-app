@@ -7,6 +7,6 @@
      <button type="button"
             class="btn btn-sm btn-secondary ms-2 px-3 toggle-entry-btn"
             onclick="dF.JrnlEntry.toggle({{postNo}})">
-        <i class="bi bi-arrows-{{#ifYn collapsedYn}}expand{{else}}collapse{{/ifYn}} pe-0" id="entry-toggle-icon-{{postNo}}"></i>
+        <i class="bi bi-arrows-{{#if (hasState state 'COLLAPSED')}}expand{{else}}collapse{{/if}} pe-0" id="entry-toggle-icon-{{postNo}}"></i>
     </button>
 </script>

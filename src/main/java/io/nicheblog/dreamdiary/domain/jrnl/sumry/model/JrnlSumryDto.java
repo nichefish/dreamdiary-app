@@ -7,13 +7,10 @@ import io.nicheblog.dreamdiary.extension.clsf.sectn.model.cmpstn.SectnCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.model.cmpstn.SectnCmpstnModule;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstnModule;
-import io.nicheblog.dreamdiary.global.intrfc.model.BasePostDto;
+import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
-import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-
-import javax.validation.constraints.Pattern;
 
 /**
  * JrnlSumryDto
@@ -30,19 +27,19 @@ import javax.validation.constraints.Pattern;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class JrnlSumryDto
-        extends BasePostDto
+        extends BaseClsfDto
         implements Identifiable<Integer>, CommentCmpstnModule, TagCmpstnModule, SectnCmpstnModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
-    private static final ContentType CONTENT_TYPE = ContentType.JRNL_SUMRY;
-    /** 필수(Override): 글분류 코드 */
-    @Builder.Default
-    private static final String CTGR_CL_CD = CONTENT_TYPE.name() + "_CTGR_CD";
+    private String contentType = ContentType.JRNL_SUMRY.key;
 
-    /** 컨텐츠 타입 */
-    @Builder.Default
-    private String contentType = CONTENT_TYPE.key;
+    /** 제목 */
+    private String title;
+    /** 내용 */
+    private String cn;
+    /** 마크다운 처리된 내용 */
+    private String markdownCn;
 
     /* ----- */
 
@@ -51,45 +48,14 @@ public class JrnlSumryDto
 
     /** 꿈 일수 */
     private Integer dreamDayCnt;
-
     /** 꿈 갯수 */
     private Integer dreamCnt;
-
     /** 일기 일수 */
     private Integer diaryDayCnt;
 
     /** 꿈 기록 완료 여부 (Y/N) */
     @Builder.Default
-    @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
     private String dreamComptYn = "N";
-
-    /**
-     * 저널 결산 상세 (DTL) Dto.
-     */
-    @Getter
-    @Setter
-    @SuperBuilder(toBuilder = true)
-    @NoArgsConstructor
-    @EqualsAndHashCode(callSuper = true)
-    @ToString(callSuper = true)
-    public static class DTL
-            extends JrnlSumryDto {
-        //
-    }
-
-    /**
-     * 저널 결산 목록 조회 (LIST) Dto.
-     */
-    @Getter
-    @Setter
-    @SuperBuilder(toBuilder = true)
-    @NoArgsConstructor
-    @EqualsAndHashCode(callSuper = true)
-    @ToString(callSuper = true)
-    public static class LIST
-            extends JrnlSumryDto {
-        //
-    }
 
     /* ----- */
 
@@ -100,7 +66,7 @@ public class JrnlSumryDto
 
     /** 위임 :: 댓글 정보 모듈 */
     public CommentCmpstn comment;
-    /** 단락 정보 모듈 (위임) */
+    /** 위임 :: 단락 정보 모듈 */
     public SectnCmpstn sectn;
     /** 위임 :: 태그 정보 모듈 */
     public TagCmpstn tag;

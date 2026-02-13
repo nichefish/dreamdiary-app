@@ -69,6 +69,7 @@
 <#include "/view/domain/jrnl/entry/_jrnl_entry_list_template.hbs">
 <#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_item_partial.hbs">
 <#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_reg_btn_partial.hbs">
+<#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_copy_btn_partial.hbs">
 <#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_context_btn_partial.hbs">
 <#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_toggle_btn_partial.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/entry/jrnl_entry_module.js?${releaseDate!}"></script>
@@ -81,6 +82,7 @@
 <#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_copy_btn_partial.hbs">
 <#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_context_btn_partial.hbs">
 <#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_toggle_btn_partial.hbs">
+<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_states_partial.hbs">
 <#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_cn_partial.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/diary/jrnl_diary_module.js?${releaseDate!}"></script>
 
@@ -92,6 +94,7 @@
 <#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_copy_btn_partial.hbs">
 <#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_context_btn_partial.hbs">
 <#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_toggle_btn_partial.hbs">
+<#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_states_partial.hbs">
 <#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_cn_partial.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/dream/jrnl_dream_module.js?${releaseDate!}"></script>
 
@@ -142,6 +145,11 @@
 <#include "/view/extension/clsf/comment/_modal/_comment_reg_modal.ftlh">
 <#include "/view/extension/clsf/comment/_partial/_comment_list_partial.hbs">
 <#include "/view/extension/clsf/comment/_partial/_comment_reg_btn_partial.hbs">
+<script type="text/javascript" src="/js/view/extension/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
+
+<#--include::state-->
+<script type="text/javascript" src="/js/view/extension/clsf/state/state_module.js?${releaseDate!}"></script>
+
 <script type="text/javascript" src="/js/view/extension/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
 
 <!--include::page scripts-->

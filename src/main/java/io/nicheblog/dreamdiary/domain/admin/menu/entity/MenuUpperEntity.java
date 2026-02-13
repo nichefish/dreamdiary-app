@@ -1,7 +1,5 @@
 package io.nicheblog.dreamdiary.domain.admin.menu.entity;
 
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbed;
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,8 +31,7 @@ import javax.persistence.Table;
 @Where(clause = "del_yn='N'")
 @SQLDelete(sql = "UPDATE menu SET del_yn = 'Y' WHERE menu_no = ?")
 public class MenuUpperEntity
-        extends BaseAuditEntity
-        implements StateEmbedModule {
+        extends BaseAuditEntity {
 
     /** 메뉴 번호 (PK) */
     @Id
@@ -75,10 +72,4 @@ public class MenuUpperEntity
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("상위메뉴 조회")
     private MenuUpperEntity upperMenu;
-
-    /* ----- */
-
-    /** 위임 :: 상태 관리 모듈 */
-    @Embedded
-    public StateEmbed state;
 }

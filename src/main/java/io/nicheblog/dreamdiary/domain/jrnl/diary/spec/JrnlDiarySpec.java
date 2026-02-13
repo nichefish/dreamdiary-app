@@ -5,9 +5,11 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiarySmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntrySmpEntity;
+import io.nicheblog.dreamdiary.extension.clsf.state.entity.StateEntity;
+import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
-import io.nicheblog.dreamdiary.global.intrfc.spec.BasePostSpec;
+import io.nicheblog.dreamdiary.global.intrfc.spec.BaseClsfSpec;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -29,7 +31,7 @@ import java.util.Map;
 @Component
 @Log4j2
 public class JrnlDiarySpec
-        implements BasePostSpec<JrnlDiaryEntity> {
+        implements BaseClsfSpec<JrnlDiaryEntity> {
 
     /**
      * 검색 조건 세팅 후 쿼리 후처리. (override)
@@ -116,6 +118,12 @@ public class JrnlDiarySpec
                     final Join<TagEmbed, TagContentEntity> tagContentJoin = tagJoin.join("list", JoinType.INNER);
                     predicate.add(builder.equal(tagContentJoin.get("regstrId"), AuthUtils.getLgnUserId()));
                     predicate.add(builder.equal(tagContentJoin.get("refTagNo"), value));
+                    continue;
+                case "state":
+                    // 상태 검색
+                    final Join<JrnlDiaryEntity, StateEmbed> stateJoin = root.join("state", JoinType.INNER);
+                    final Join<StateEmbed, StateEntity> stateListJoin = stateJoin.join("list", JoinType.INNER);
+                    predicate.add(builder.equal(stateListJoin.get("stateCd"), value));
                     continue;
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색

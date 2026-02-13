@@ -9,9 +9,8 @@
             <div class="col-1 d-none d-md-flex-align-center flex-column py-3 border-2 border-gray-300 border-end ps-6 me-4 w-130px h-75 gap-2">
                 {{> jrnl_day_context_btn_partial this postNo=this.jrnlDayNo}}
             </div>
-            <div class="col py-3 jrnl-entry-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
+            <div class="col py-3 jrnl-entry-cn">
                 <div class="d-flex-align-center title-wrap">
-                    {{#ifYn imprtcYn}}<div class="ctgr-span ctgr-imprtc w-60px d-flex-center">!<@spring.message 'txt.status.imprtc'/></div>{{/ifYn}}
                     {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}
                 </div>
             </div>

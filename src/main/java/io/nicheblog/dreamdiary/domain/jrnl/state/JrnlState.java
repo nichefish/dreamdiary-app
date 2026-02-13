@@ -15,12 +15,12 @@ import lombok.Setter;
 @Builder
 public class JrnlState {
 
-    /** 정리완료 여부(Y/N) */
-    private String resolvedYn;
-    /** 글접기 여부(Y/N) */
-    private String collapsedYn;
-    /** 중요 여부(Y/N) */
-    private String imprtcYn;
-    /** 참조 여부(Y/N) */
-    private String refrncYn;
+    /** 정리완료 여부 */
+    private Boolean resolved;
+    /** 글접기 여부 */
+    private Boolean collapsed;
+    /** 중요 여부 */
+    private Boolean imprtc;
+    /** 참조 여부 */
+    private Boolean refrnc;
 }

@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagSearchParam;
 import io.nicheblog.dreamdiary.extension.clsf.tag.repository.jpa.TagRepository;
 import io.nicheblog.dreamdiary.extension.clsf.tag.spec.TagSpec;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class TagService
-        implements BaseCrudService<TagDto, TagDto, Integer, TagEntity> {
+        implements BaseDtoWritableService<TagDto, TagDto, Integer, TagEntity> {
 
     @Getter
     private final TagRepository repository;

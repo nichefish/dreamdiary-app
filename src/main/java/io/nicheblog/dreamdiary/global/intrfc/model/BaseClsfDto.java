@@ -1,11 +1,9 @@
 package io.nicheblog.dreamdiary.global.intrfc.model;
 
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
-import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
@@ -25,19 +23,17 @@ import javax.validation.constraints.Size;
 @EqualsAndHashCode(callSuper = false)
 @ToString(callSuper = true)
 public class BaseClsfDto
-        extends BaseAtchDto {
+        extends BaseAuditDto {
 
     /** 글 번호 */
     @Positive
     protected Integer postNo;
-
     /** 컨텐츠 타입 */
     @Size(max = 50)
     protected String contentType;
 
     /** (수정시) 조치일자 변경하지 않음 여부 (Y/N) */
     @Builder.Default
-    @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
     protected String managtDtUpdtYn = "N";
 
     /** 새 글 여부 */

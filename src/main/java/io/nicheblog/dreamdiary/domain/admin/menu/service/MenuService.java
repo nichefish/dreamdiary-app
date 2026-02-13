@@ -4,17 +4,18 @@ import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.domain.admin.menu.entity.MenuEntity;
 import io.nicheblog.dreamdiary.domain.admin.menu.exception.MenuNotExistsException;
 import io.nicheblog.dreamdiary.domain.admin.menu.mapstruct.MenuMapstruct;
-import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuDto;
-import io.nicheblog.dreamdiary.domain.admin.menu.model.MenuSearchParam;
+import io.nicheblog.dreamdiary.domain.admin.menu.model.*;
 import io.nicheblog.dreamdiary.domain.admin.menu.repository.jpa.MenuRepository;
 import io.nicheblog.dreamdiary.domain.admin.menu.repository.mybatis.MenuMapper;
 import io.nicheblog.dreamdiary.domain.admin.menu.spec.MenuSpec;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
-import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
-import io.nicheblog.dreamdiary.extension.clsf.state.service.BaseStateService;
 import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.exception.BusinessException;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoReadableService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseSortableService;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
@@ -22,6 +23,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
@@ -45,8 +47,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Log4j2
 public class MenuService
-        implements BaseCrudService<MenuDto, MenuDto, Integer, MenuEntity>,
-        BaseStateService<MenuDto, Integer, MenuEntity> {
+        implements BaseDtoReadableService<MenuDto, Integer, MenuEntity>,
+                   BaseDtoWritableService<MenuPostDto, MenuDto, Integer, MenuEntity>,
+                   BaseSortableService<MenuSortIdxDto, Integer, MenuEntity> {
 
     @Getter
     private final MenuRepository repository;
@@ -101,7 +104,7 @@ public class MenuService
                 .mngrYn("N")
                 .useYn("Y")
                 .build());
-        final Sort sort = Sort.by(Sort.Direction.ASC, "state.sortOrdr");
+        final Sort sort = Sort.by(Sort.Direction.ASC, "idx");
 
         return this.getListDto(searchParamMap, sort);
     }
@@ -119,7 +122,7 @@ public class MenuService
                 .mngrYn("Y")
                 .useYn("Y")
                 .build());
-        final Sort sort = Sort.by(Sort.Direction.ASC, "state.sortOrdr");
+        final Sort sort = Sort.by(Sort.Direction.ASC, "idx");
 
         return this.getListDto(searchParamMap, sort);
     }
@@ -161,16 +164,6 @@ public class MenuService
     }
 
     /**
-     * 등록 전처리. (override)
-     *
-     * @param dto 등록할 객체
-     */
-    @Override
-    public void preRegist(final MenuDto dto) {
-        if (dto.getState() == null) dto.setState(new StateCmpstn());
-    }
-
-    /**
      * 등록 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
@@ -187,11 +180,68 @@ public class MenuService
      * @param updatedDto - 등록된 객체
      */
     @Override
-    public void postModify(final MenuDto postDto, final MenuDto updatedDto) throws Exception {
+    public void postModify(final MenuPostDto postDto, final MenuDto updatedDto) throws Exception {
         EhCacheUtils.evictCacheAll("userMenuList");
         EhCacheUtils.evictCacheAll("mngrMenuList");
         EhCacheUtils.evictCacheAll("isMngrMenu");
         EhCacheUtils.evictCache("menuByLabel", updatedDto.getMenuLabel());
+    }
+
+    /**
+     * 상태를 설정한다.
+     *
+     * @param postNo 대상 게시물 PK
+     * @param patchDto 상태 Dto
+     * @return collapsedYn 반영 성공 여부를 담은 ServiceResponse
+     */
+    @Transactional
+    public ServiceResponse patch(final Integer postNo, final MenuPatchDto patchDto) throws Exception {
+        if (StringUtils.isEmpty(patchDto.getUseYn())) {
+            return ServiceResponse.builder()
+                    .rslt(false)
+                    .message("변경할 항목이 없습니다.")
+                    .build();
+        }
+
+        return this.getSelf().setUse(postNo, patchDto.getUseYn());
+    }
+    
+    /**
+     * 변경 후처리. (override)
+     *
+     * @param updateEntity - 삭제된 객체
+     */
+    @Override
+    public void postSetUse(final MenuEntity updateEntity) {
+        if ("Y".equals(updateEntity.getMngrYn())) {
+            EhCacheUtils.evictCacheAll("mngrMenuList");
+        } else {
+            EhCacheUtils.evictCacheAll("userMenuList");
+        }
+        EhCacheUtils.evictCache("isMngrMenu", updateEntity.getMenuNo().toString());
+        EhCacheUtils.evictCache("menuByLabel", updateEntity.getMenuLabel());
+    }
+
+    /**
+     * 정렬 순서 변경 후처리.
+     */
+    @Override
+    public void postSortIdx(final List<MenuSortIdxDto> idxs) {
+        EhCacheUtils.evictCacheAll("mngrMenuList");
+        EhCacheUtils.evictCacheAll("userMenuList");
+    }
+
+    /**
+     * 삭제 전처리. (override)
+     *
+     * @param deleteEntity - 삭제된 객체
+     */
+    @Override
+    public void preRemove(final MenuEntity deleteEntity) throws Exception {
+        if ("Y".equals(deleteEntity.getProtectedYn())) {
+            // 하위 메뉴 중 하나라도 보호라면 전체 롤백
+            throw new BusinessException(MessageUtils.getMessage("exception.MenuProtectedException"));
+        }
     }
 
     /**
@@ -201,9 +251,18 @@ public class MenuService
      */
     @Override
     public void postDelete(final MenuDto deletedDto) throws Exception {
+        // 서브메뉴 삭제. (재귀)
+        final Map<String, Object> searchParamMap = new HashMap<>();
+        searchParamMap.put("upperMenuNo", deletedDto.getMenuNo());
+        final List<MenuEntity> subMenuList = this.getSelf().getListEntity(searchParamMap);
+        if (CollectionUtils.isNotEmpty(subMenuList)) {
+            for (final MenuEntity subMenu : subMenuList) {
+                this.getSelf().delete(subMenu.getMenuNo());
+            }
+        }
+
         EhCacheUtils.evictCacheAll("userMenuList");
         EhCacheUtils.evictCacheAll("mngrMenuList");
-        EhCacheUtils.evictCacheAll("isMngrMenu");
         EhCacheUtils.evictCache("menuByLabel", deletedDto.getMenuLabel());
     }
 }

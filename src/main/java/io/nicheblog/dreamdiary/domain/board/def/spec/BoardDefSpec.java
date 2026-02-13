@@ -2,7 +2,6 @@ package io.nicheblog.dreamdiary.domain.board.def.spec;
 
 import io.nicheblog.dreamdiary.domain.board.def.entity.BoardDefEntity;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseCrudSpec;
-import io.nicheblog.dreamdiary.global.intrfc.spec.embed.BaseStateSpec;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -23,8 +22,7 @@ import java.util.List;
  */
 @Component
 public class BoardDefSpec
-        implements BaseCrudSpec<BoardDefEntity>,
-                   BaseStateSpec<BoardDefEntity> {
+        implements BaseCrudSpec<BoardDefEntity> {
 
     /**
      * 검색 조건 세팅 후 쿼리 후처리. (override)
@@ -41,7 +39,7 @@ public class BoardDefSpec
     ) {
         // 정렬 순서 변경
         List<Order> orders = new ArrayList<>();
-        orders.add(builder.asc(root.get("state").get("sortOrdr")));
+        orders.add(builder.asc(root.get("idx")));
         query.orderBy(orders);
     }
 }

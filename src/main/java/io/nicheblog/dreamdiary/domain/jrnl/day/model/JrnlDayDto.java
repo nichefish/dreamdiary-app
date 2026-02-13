@@ -42,14 +42,7 @@ public class JrnlDayDto
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
-    private static final ContentType CONTENT_TYPE = ContentType.JRNL_DAY;
-    /** 필수(Override): 글분류 코드 */
-    @Builder.Default
-    private static final String CTGR_CL_CD = CONTENT_TYPE.name() + "_CTGR_CD";
-
-    /** 컨텐츠 타입 */
-    @Builder.Default
-    private String contentType = CONTENT_TYPE.key;
+    private String contentType = ContentType.JRNL_DAY.key;
 
     /* ----- */
 
@@ -87,11 +80,6 @@ public class JrnlDayDto
     /** 날씨 */
     @Size(max = 100, message = "날씨 정보는 100자 이하로 입력해야 합니다.")
     private String weather;
-
-    /** 일기 정리완료 여부 (Y/N) */
-    @Builder.Default
-    @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
-    private String diaryResolvedYn = "N";
 
     /** 저널 항목 목록 */
     private List<JrnlEntryDto> jrnlEntryList;

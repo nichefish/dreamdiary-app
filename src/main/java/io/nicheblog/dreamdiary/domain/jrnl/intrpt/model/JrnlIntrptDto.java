@@ -3,17 +3,19 @@ package io.nicheblog.dreamdiary.domain.jrnl.intrpt.model;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.comment.model.cmpstn.CommentCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.comment.model.cmpstn.CommentCmpstnModule;
+import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
+import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstnModule;
-import io.nicheblog.dreamdiary.global.intrfc.model.BasePostDto;
+import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
+import io.nicheblog.dreamdiary.global.intrfc.model.cmpstn.AtchFileCmpstn;
+import io.nicheblog.dreamdiary.global.intrfc.model.cmpstn.AtchFileCmpstnModule;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.jetbrains.annotations.NotNull;
 
-import javax.validation.constraints.Pattern;
 import java.util.Date;
 
 /**
@@ -31,19 +33,12 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class JrnlIntrptDto
-        extends BasePostDto
-        implements Identifiable<Integer>, CommentCmpstnModule, TagCmpstnModule, Comparable<JrnlIntrptDto> {
+        extends BaseClsfDto
+        implements Identifiable<Integer>, AtchFileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, StateCmpstnModule, Comparable<JrnlIntrptDto> {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
-    private static final ContentType CONTENT_TYPE = ContentType.JRNL_INTRPT;
-    /** 필수(Override): 글분류 코드 */
-    @Builder.Default
-    private static final String CTGR_CL_CD = CONTENT_TYPE.name() + "_CTGR_CD";
-
-    /** 컨텐츠 타입 */
-    @Builder.Default
-    private String contentType = CONTENT_TYPE.key;
+    private String contentType = ContentType.JRNL_INTRPT.key;
 
     /* ----- */
 
@@ -66,22 +61,17 @@ public class JrnlIntrptDto
     /** 공휴일 이름 */
     private String hldyNm;
 
+    /** 제목 */
+    private String title;
+    /** 내용 */
+    private String cn;
+    /** 마크다운 처리된 내용 */
+    private String markdownCn;
+
     /** 순번 */
     private Integer idx;
 
-    /** 정리완료 여부 (Y/N) */
-    @Builder.Default
-    @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
-    private String resolvedYn = "N";
-
-    /** 글접기 여부 (Y/N) */
-    @Builder.Default
-    @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
-    private String collapsedYn = "N";
-    
-    /**
-     * 인덱스 변경 여부
-     */
+    /** 인덱스 변경 여부 */
     @Builder.Default
     private Boolean isIdxChanged = false;
 
@@ -103,13 +93,19 @@ public class JrnlIntrptDto
         return thisDate.compareTo(otherDate);
     }
 
+    /* ----- */
+
     @Override
     public Integer getKey() {
         return this.postNo;
     }
 
+    /** 위임 :: 첨부파일 모듈 */
+    public AtchFileCmpstn file;
     /** 위임 :: 댓글 정보 모듈 */
     public CommentCmpstn comment;
     /** 위임 :: 태그 정보 모듈 */
     public TagCmpstn tag;
+    /** 위임 :: 상태 정보 모듈 */
+    public StateCmpstn state;
 }

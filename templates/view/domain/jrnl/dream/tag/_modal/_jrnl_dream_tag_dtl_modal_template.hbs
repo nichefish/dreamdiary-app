@@ -18,7 +18,7 @@
                     {{> jrnl_day_context_btn_partial this postNo=this.jrnlDayNo}}
                 </div>
             </div>
-            <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
+            <div class="col py-3 jrnl-dream-cn {{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}">
                 {{> jrnl_dream_cn_partial this collapse="collapse-4"}}
             </div>
             <div class="col-1 d-none d-md-flexborder-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>

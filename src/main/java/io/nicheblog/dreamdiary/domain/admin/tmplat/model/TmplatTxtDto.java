@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.domain.admin.tmplat.model;
 
 import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstnModule;
-import io.nicheblog.dreamdiary.global.intrfc.model.BaseAtchDto;
+import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
 import lombok.*;
@@ -26,7 +26,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class TmplatTxtDto
-        extends BaseAtchDto
+        extends BaseAuditDto
         implements Identifiable<Integer>, StateCmpstnModule {
 
     /** 고유 ID (PK) */

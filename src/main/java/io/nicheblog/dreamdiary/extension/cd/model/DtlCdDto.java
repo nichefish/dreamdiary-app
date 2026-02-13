@@ -3,14 +3,9 @@ package io.nicheblog.dreamdiary.extension.cd.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.nicheblog.dreamdiary.extension.cd.entity.DtlCdKey;
-import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
-import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 /**
@@ -31,11 +26,10 @@ import lombok.experimental.SuperBuilder;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DtlCdDto
         extends BaseAuditDto
-        implements StateCmpstnModule, Identifiable<DtlCdKey> {
+        implements Identifiable<DtlCdKey> {
 
     /** 상세 코드 */
     private String dtlCd;
-
     /** 상세 코드이름 */
     private String dtlCdNm;
 
@@ -45,13 +39,18 @@ public class DtlCdDto
     /** 분류 코드 */
     private String clCd;
 
+    /** 시스템 보호 여부 (Y/N) */
+    @Builder.Default
+    private String protectedYn = "N";
+
+    /** 사용 여부 (Y/N) */
+    @Builder.Default
+    private String useYn = "N";
+
     /* ----- */
 
     @Override
     public DtlCdKey getKey() {
         return new DtlCdKey(this.clCd, this.dtlCd);
     }
-
-    /** 위임 :: 상태 관리 모듈 */
-    public StateCmpstn state;
 }

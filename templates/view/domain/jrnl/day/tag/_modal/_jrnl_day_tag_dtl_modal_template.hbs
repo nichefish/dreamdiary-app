@@ -45,7 +45,6 @@
                                     <span class="text-success"><@spring.message 'txt.entry'/></span>
                                     <span class="position-relative d-inline-block">
                                       <i class="bi bi-book fs-4 text-success"></i>
-                                      <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
                                     </span>
                                 {{else}}
                                     <@spring.message 'txt.entry'/>
@@ -63,16 +62,13 @@
                                 <div class="jrnl-diary-item" data-id={{postNo}} data-collapsed="{{collapsedYn}}" data-resolved="{{resolvedYn}}" data-imprtc="{{imprtcYn}}">
                                     <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
                                         <div class="d-flex flex-column align-items-center">
-                                            <span class="jrnl-diary-idx {{#ifYn resolvedYn}}text-success{{/ifYn}}">
+                                            <span class="jrnl-diary-idx {{#if (hasState state 'RESOLVED')}}text-success{{/if}}">
                                                 # {{idx}}
-                                                {{#ifYn resolvedYn}}
-                                                    <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
-                                                {{/ifYn}}
                                             </span>
                                             {{> jrnl_diary_toggle_btn_partial this}}
                                         </div>
                                     </div>
-                                    <div class="col jrnl-diary-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
+                                    <div class="col jrnl-diary-cn {{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}">
                                         {{> jrnl_diary_cn_partial this}}
                                     </div>
                                     <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
@@ -97,7 +93,7 @@
                                 <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
                                     <div># {{idx}}</div>
                                 </div>
-                                <div class="col py-3 jrnl-dream-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}">
+                                <div class="col py-3 jrnl-dream-cn {{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}">
                                     {{> jrnl_dream_cn_partial this collapse="collapse-4"}}
                                 </div>
                                 <div class="col-1 bd-none d-md-flex order-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>

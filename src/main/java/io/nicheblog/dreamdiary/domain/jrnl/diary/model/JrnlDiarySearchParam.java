@@ -40,5 +40,5 @@ public class JrnlDiarySearchParam
     private Integer tagNo;
 
     /** 중요 여부 **/
-    private String imprtcYn;
+    private String state;
 }

@@ -7,16 +7,13 @@
     <div class="jrnl-intrpt-item ps-15" data-id="{{postNo}}">
         <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
             <div class="d-flex flex-column align-items-center">
-                <span {{#ifYn resolvedYn}}class="text-success"{{/ifYn}}>
+                <span {{#if (hasState state 'RESOLVED')}}tclass="text-success"{{/if}}>
                     # {{idx}}
-                    {{#ifYn resolvedYn}}
-                        <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
-                    {{/ifYn}}
                 </span>
                 {{> jrnl_intrpt_toggle_btn_partial this}}
             </div>
         </div>
-        <div class="col jrnl-intrpt-cn {{#ifYn imprtcYn}}bg-secondary{{/ifYn}}" data-resolved="{{resolvedYn}}">
+        <div class="col jrnl-intrpt-cn {{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}" data-resolved="{{resolvedYn}}">
             {{> jrnl_intrpt_cn_partial this}}
         </div>
         <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>

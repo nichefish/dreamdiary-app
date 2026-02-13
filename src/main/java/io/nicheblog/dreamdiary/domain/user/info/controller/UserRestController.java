@@ -20,7 +20,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
 
@@ -102,6 +101,7 @@ public class UserRestController
      *
      * @param user 등록/수정 처리할 객체
      * @param logParam 로그 기록을 위한 파라미터 객체
+     * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(value = {Url.USER_REG_AJAX, Url.USER_MDF_AJAX})
@@ -109,12 +109,11 @@ public class UserRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> userRegAjax(
             final @Valid UserDto user,
-            final LogActvtyParam logParam,
-            final MultipartHttpServletRequest request
+            final LogActvtyParam logParam
     ) throws Exception {
 
         final boolean isReg = (user.getKey() == null);
-        final ServiceResponse result = isReg ? userService.regist(user, request) : userService.modify(user, request);
+        final ServiceResponse result = isReg ? userService.regist(user) : userService.modify(user);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 

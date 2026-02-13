@@ -3,8 +3,10 @@ package io.nicheblog.dreamdiary.domain.user.info.model;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.user.info.model.emplym.UserEmplymDto;
 import io.nicheblog.dreamdiary.domain.user.info.model.profl.UserProflDto;
-import io.nicheblog.dreamdiary.global.intrfc.model.BaseAtchDto;
+import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
+import io.nicheblog.dreamdiary.global.intrfc.model.cmpstn.AtchFileCmpstn;
+import io.nicheblog.dreamdiary.global.intrfc.model.cmpstn.AtchFileCmpstnModule;
 import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -29,104 +31,103 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class UserDto
-        extends BaseAtchDto
-        implements Identifiable<Integer> {
+        extends BaseClsfDto
+        implements Identifiable<Integer>, AtchFileCmpstnModule {
 
     /** 사용자 고유 번호 (PK) */
-    protected Integer userNo;
+    private Integer userNo;
     /** 아이디 */
     @NotEmpty
-    protected String userId;
+    private String userId;
     /** 표시이름 */
     @NotEmpty
-    protected String nickNm;
+    private String nickNm;
     /** 프로필 이미지 URL */
-    protected String proflImgUrl;
+    private String proflImgUrl;
 
     /** 이메일 */
-    protected String email;
+    private String email;
     /** E-mail ID */
     @NotEmpty
-    protected String emailId;
+    private String emailId;
     /** E-mail 뒷부분 */
     @NotEmpty
-    protected String emailDomain;
+    private String emailDomain;
     /** 연락처 */
-    protected String cttpc;
+    private String cttpc;
 
     /** 사용자 권한 정보 */
-    protected List<UserAuthRoleDto> authList;
+    private List<UserAuthRoleDto> authList;
     /** 사용자 권한 정보(문자열) */
-    protected List<String> authStrList;
+    private List<String> authStrList;
 
     /** 사용자 정보 (위임) */
-    protected UserProflDto profl;
+    private UserProflDto profl;
     /** 사용자 정보 (위임) */
-    protected UserEmplymDto emplym;
+    private UserEmplymDto emplym;
 
     /** 본인신청 여부 (Y/N) */
-    protected String isReqst;
+    private String isReqst;
     /** 승인 여부 */
-    protected Boolean isCf;
+    private Boolean isCf;
 
     /** 잠금 여부 (Y/N) */
     @Builder.Default
     @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
-    protected String lockedYn = "N";
+    private String lockedYn = "N";
 
     /** 퇴사 여부 (Y/N) */
     @Builder.Default
     @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
-    protected String retireYn = "N";
+    private String retireYn = "N";
 
     /** 퇴사일 */
-    protected String retireDt;
+    private String retireDt;
 
+    /** 비밀번호 */
+    private String password;
 
-        /** 비밀번호 */
-        private String password;
+    /** 사용자 권한 정보(문자열) (multiselect parameter) */
+    @NotEmpty
+    private String authListStr;
 
-        /** 사용자 권한 정보(문자열) (multiselect parameter) */
-        @NotEmpty
-        private String authListStr;
+    /** 계정 설명 (관리자용) */
+    private String cn;
 
-        /** 계정 설명 (관리자용) */
-        private String cn;
+    /** 입사일 */
+    private String ecnyDt;
+    /** 이름 */
+    private String userNm;
 
-        /** 입사일 */
-        private String ecnyDt;
-        /** 이름 */
-        private String userNm;
+    /** 접속IP 사용 여부 체크 */
+    @Builder.Default
+    private Boolean useAcsIp = false;
 
-        /** 접속IP 사용 여부 체크 */
-        @Builder.Default
-        private Boolean useAcsIp = false;
+    /** 접속 IP 사용 여부 (Y/N) */
+    @Builder.Default
+    @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
+    private String useAcsIpYn = "N";
 
-        /** 접속 IP 사용 여부 (Y/N) */
-        @Builder.Default
-        @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
-        private String useAcsIpYn = "N";
+    /** 접속 IP 정보 */
+    private String acsIpListStr;
 
-        /** 접속 IP 정보 */
-        private String acsIpListStr;
+    /** 접속 IP 정보 */
+    private List<UserAcsIpDto> acsIpList;
 
-        /** 접속 IP 정보 */
-        private List<UserAcsIpDto> acsIpList;
+    /** 이메일 반환 (override) */
+    public String getEmail() {
+        if (!StringUtils.isEmpty(this.email)) return this.email;
+        if (!StringUtils.isEmpty(this.emailId) || !StringUtils.isEmpty(this.emailDomain)) return null;
+        return this.emailId + "@" + this.emailDomain;
+    }
 
-        /** 이메일 반환 (override) */
-        public String getEmail() {
-            if (!StringUtils.isEmpty(this.email)) return this.email;
-            if (!StringUtils.isEmpty(this.emailId) || !StringUtils.isEmpty(this.emailDomain)) return null;
-            return this.emailId + "@" + this.emailDomain;
-        }
-
-        /** Getter Override */
-        public String getAuthListStr() {
-            if (this.authList != null) return this.authList.stream()
-                    .map(UserAuthRoleDto::getAuthCd)
-                    .collect(Collectors.joining(","));
-            return this.authListStr;
-        }
+    /** Getter Override */
+    public String getAuthListStr() {
+        if (this.authList != null) return this.authList.stream()
+                .map(UserAuthRoleDto::getAuthCd)
+                .collect(Collectors.joining(","));
+        return this.authListStr;
+    }
     
     /* ----- */
 
@@ -144,4 +145,9 @@ public class UserDto
     public Integer getKey() {
         return this.userNo;
     }
+
+    /* ----- */
+
+    /** 위임 :: 첨부파일 모듈 */
+    public AtchFileCmpstn file;
 }

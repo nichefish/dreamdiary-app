@@ -14,6 +14,9 @@
 <link rel="stylesheet" type="text/css" href="/lib/jstree/css/style.min.css" />
 
 <style>
+    .draggable-handle-sub * {
+    pointer-events: none;
+}
     div.card > ul > li {
         padding-top: 1.2em;
         padding-bottom: 1.2em;
@@ -23,9 +26,9 @@
     }
 </style>
 
-<div class="row mt-2 mb-6 px-10 draggable-zone-main" id="menu_main_card_div">
+<ul class="row mt-2 mb-6 px-10 draggable-zone-main" id="menu_main_card_div">
     <#--handlebars template goes in here-->
-</div>
+</ul>
 <!--end::Card-->
 
 <#--include::draggable-->
@@ -41,6 +44,8 @@
 <#include "/view/domain/admin/menu/_menu_main_card_template.hbs">
 <#include "/view/domain/admin/menu/_menu_sub_template.hbs">
 <script type="text/javascript" src="/js/view/domain/admin/menu/menu_module.js"></script>
+
+<#include "/view/domain/admin/menu/_partial/_menu_context_btn_partial.hbs">
 
 <!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/admin/menu/menu_page.js"></script>

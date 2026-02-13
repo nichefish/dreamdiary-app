@@ -8,6 +8,17 @@ if (typeof dF === 'undefined') { var dF = {} as any; }
 dF.JrnlDiary = (function(): dfModule {
     return {
         STORAGE_KEY: "collapsedJrnlDiaryIds",
+        RENDER_PROFILE: {
+            LIST: {
+                collapsed: true,
+            },
+            TAG: {
+                collapsed: false,
+            },
+            SEARCH: {
+                collapsed: false,
+            }
+        },
 
         initialized: false,
         inKeywordSearchMode: false,
@@ -68,7 +79,10 @@ dF.JrnlDiary = (function(): dfModule {
                 $("#jrnl_diary_tag_list_div").empty();
                 $("#jrnl_dream_tag_list_div").empty();
                 cF.ui.closeModal();
-                cF.handlebars.template(res.rsltList, "jrnl_diary_list");
+                const viewModels = res.rsltList.map((diary: any) =>
+                    dF.JrnlDiary.buildViewModel(diary, 'SEARCH')
+                );
+                cF.handlebars.template(viewModels, "jrnl_diary_list");
                 dF.JrnlDiary.inKeywordSearchMode = true;
                 // 버튼 추가
                 $("#jrnl_aside #jrnl_diary_reset_btn").remove();
@@ -243,49 +257,27 @@ dF.JrnlDiary = (function(): dfModule {
         },
 
         /**
-         * 상태 변경 처리. (Ajax)
-         * @param {string|number} postNo - 글 번호.
-         * @param {object} payload
-         * @param {Function} [callback]
+         * 상태 토글 (Ajax)
+         * @param postNo
+         * @param stateCd
+         * @param {object} object
          */
-        patchAjax: function(postNo: string|number, payload: object, callback: Function): void {
+        toggleStateAjax: function(postNo: string|number, stateCd: string, { onOffFunc }): void {
             if (isNaN(Number(postNo))) return;
 
-            const url: string = cF.util.bindUrl(Url.JRNL_DIARY, { postNo });
-            cF.$ajax.patch(url, payload, function(res: AjaxResponse): void {
-                if (!res.rslt) return;
-
-                if (!callback || typeof callback != "function") return;
-
-                callback(res);
-            }, "block");
-        },
-
-        /**
-         * 정리완료 처리. (Ajax)
-         * @param {string|number} postNo - 글 번호.
-         */
-        resolveAjax: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
-
-            const item: HTMLElement = document.querySelector(`.jrnl-diary-item[data-id='${postNo}']`);
-            if (!item) return;
-
-            const current: string = (item.dataset.resolved || "N").toUpperCase();
-            const next: "Y"|"N" = current === "Y" ? "N" : "Y";
-            const nextBoolean: boolean = next === "Y"
-
-            const payload: Record<string, any> = { resolved: nextBoolean, collapsed: nextBoolean };
-            dF.JrnlDiary.patchAjax(postNo, payload, function() {
-                item.dataset.resolved = next;
-                item.dataset.collapsed = next;
-
-                const content: HTMLElement = item.querySelector(".cn");
-                if (content) {
-                    content.classList.toggle("collapsed", next === "Y");
-                }
-                const chk: HTMLInputElement = item.querySelector(".diary-context-collapse-check");
-                if (chk) chk.checked = (next === "Y");
+            const cacheContext = { yy: cF.util.getUrlParam("yy"), mnth: cF.util.getUrlParam("mnth") };
+            const payload = { postNo, contentType: "JRNL_DIARY", stateCd, cacheContext };
+            dF.State.toggleAjax(payload, function(res: AjaxResponse): void {
+                const item = document.querySelector(`.jrnl-diary-item[data-id='${postNo}']`) as HTMLElement;
+                if (!item) return;
+                const lowerStateCd: string = stateCd.toLowerCase();
+                const icon: HTMLElement = item.querySelector(`.icon-${lowerStateCd}`);
+                if (!icon) console.warn("icon not found.");
+                icon?.classList.toggle("d-none", res.rsltSts !== "ON");
+                const chk: HTMLInputElement = item.querySelector(`.diary-context-${lowerStateCd}-check`);
+                if (!chk) console.warn("chk not found.");
+                if (chk) chk.checked = res.rsltSts === "ON";
+                onOffFunc(res, item);
             });
         },
 
@@ -296,24 +288,35 @@ dF.JrnlDiary = (function(): dfModule {
         collapseAjax: function(postNo: string|number): void {
             if (isNaN(Number(postNo))) return;
 
-            const item: HTMLElement = document.querySelector(`.jrnl-diary-item[data-id='${postNo}']`);
-            if (!item) return;
+            const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
+                const cn: HTMLDivElement = item.querySelector("div.jrnl-diary-cn .cn");
+                if (!cn) return console.warn("cn not found.");
 
-            const current: string = (item.dataset.collapsed || "N").toUpperCase();
-            const next: "Y"|"N" = current === "Y" ? "N" : "Y";
-            const nextBoolean: boolean = next === "Y"
+                cn?.classList.toggle("collapsed", res.rsltSts === "ON");
+            }
+            this.toggleStateAjax(postNo, "COLLAPSED", { onOffFunc });
+        },
 
-            const payload: Record<string, any> = { collapsed: nextBoolean };
-            dF.JrnlDiary.patchAjax(postNo, payload, function(): void {
-                item.dataset.collapsed = next;
+        /**
+         * 정리완료 토글. (Ajax)
+         * @param {string|number} postNo - 글 번호.
+         */
+        resolveAjax: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
 
-                const content: HTMLElement = item.querySelector(".cn");
-                if (content) {
-                    content.classList.toggle("collapsed", next === "Y");
+            const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
+                if (res.rsltSts === "ON") {
+                    const cn: HTMLDivElement = item.querySelector("div.jrnl-diary-cn .cn");
+                    if (!cn) console.warn("cn not found.");
+                    cn?.classList.add("collapsed");
+
+                    const collapsedChk: HTMLInputElement = item.querySelector(".diary-context-collapsed-check");
+                    if (collapsedChk) collapsedChk.checked = true;
+                    const icon: HTMLElement = item.querySelector(".icon-collapsed");
+                    icon?.classList.toggle("d-none", res.rsltSts !== "ON");
                 }
-                const chk: HTMLInputElement = item.querySelector(".diary-context-collapse-check");
-                if (chk) chk.checked = (next === "Y");
-            });
+            }
+            this.toggleStateAjax(postNo, "RESOLVED", { onOffFunc });
         },
 
         /**
@@ -323,36 +326,14 @@ dF.JrnlDiary = (function(): dfModule {
         imprtcAjax: function(postNo: string|number): void {
             if (isNaN(Number(postNo))) return;
 
-            const item: HTMLElement = document.querySelector(`.jrnl-diary-item[data-id='${postNo}']`);
-            if (!item) return;
-
-            const current: string = (item.dataset.imprtc || "N").toUpperCase();
-            const next: "Y"|"N" = current === "Y" ? "N" : "Y";
-            const nextBoolean: boolean = next === "Y"
-
-            const payload: Record<string, any> = { imprtc: nextBoolean };
-            dF.JrnlDiary.patchAjax(postNo, payload, function(): void {
-                item.dataset.imprtc = next;
-
+            const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
                 const cn: HTMLDivElement = item.querySelector("div.jrnl-diary-cn");
                 if (!cn) return console.warn("cn not found.");
-                const titleWrap: HTMLElement = cn.querySelector("div.title-wrap");
-                if (!titleWrap) return console.warn("titleWrap not found.");
-                const existing: HTMLDivElement = titleWrap.querySelector(".ctgr-imprtc");
-                if (nextBoolean) {
-                    if (existing) return;
 
-                    const imprtcWrap: HTMLDivElement = document.createElement("div");
-                    imprtcWrap.className = "ctgr-span ctgr-imprtc w-60px d-flex-center";
-                    imprtcWrap.innerText = "!중요";
-                    // 첫 번째 요소로 삽입
-                    titleWrap.prepend(imprtcWrap);
-                    cn.classList.add("bg-secondary");
-                } else {
-                    if (existing) existing.remove();
-                    cn.classList.remove("bg-secondary");
-                }
-            });
+                cn.classList.toggle("bg-secondary", res.rsltSts === "ON");
+                cn.classList.toggle("p-2", res.rsltSts === "ON");
+            }
+            this.toggleStateAjax(postNo, "IMPRTC", { onOffFunc });
         },
 
         /**
@@ -362,36 +343,13 @@ dF.JrnlDiary = (function(): dfModule {
         refrncAjax: function(postNo: string|number): void {
             if (isNaN(Number(postNo))) return;
 
-            const item: HTMLElement = document.querySelector(`.jrnl-diary-item[data-id='${postNo}']`);
-            if (!item) return;
-
-            const current: string = (item.dataset.refrnc || "N").toUpperCase();
-            const next: "Y"|"N" = current === "Y" ? "N" : "Y";
-            const nextBoolean: boolean = next === "Y"
-
-            const payload: Record<string, any> = { refrnc: nextBoolean };
-            dF.JrnlDiary.patchAjax(postNo, payload, function(): void {
-                item.dataset.refrnc = next;
-
-                const cn: HTMLDivElement = item.querySelector("div.jrnl-diary-cn");
+            const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
+                const cn: HTMLDivElement = item.querySelector("div.jrnl-diary-cn .cn");
                 if (!cn) return console.warn("cn not found.");
-                const titleWrap: HTMLElement = cn.querySelector("div.title-wrap");
-                if (!titleWrap) return console.warn("titleWrap not found.");
-                const existing: HTMLDivElement = titleWrap.querySelector(".ctgr-imprtc");
-                if (nextBoolean) {
-                    if (existing) return;
 
-                    const imprtcWrap: HTMLDivElement = document.createElement("div");
-                    imprtcWrap.className = "ctgr-span ctgr-imprtc w-60px d-flex-center";
-                    imprtcWrap.innerText = "!중요";
-                    // 첫 번째 요소로 삽입
-                    titleWrap.prepend(imprtcWrap);
-                    cn.classList.add("bg-secondary");
-                } else {
-                    if (existing) existing.remove();
-                    cn.classList.remove("bg-secondary");
-                }
-            });
+                cn.classList.toggle("bg-secondary", res.rsltSts === "ON");
+            }
+            this.toggleStateAjax(postNo, "REFRNC", { onOffFunc });
         },
 
         /**
@@ -438,10 +396,13 @@ dF.JrnlDiary = (function(): dfModule {
                 const rsltObj: Record<string, any> = res.rsltObj;
                 const resultCn: string = rsltObj.cn;
                 // 문단/줄바꿈을 먼저 텍스트로 치환
-                const replacedCn = resultCn.replace(/<\s*br\s*\/?>/gi, "\n").replace(/<\s*\/?p\s*>/gi, "\n");
+                const replacedCn: string = resultCn.replace(/<\s*br\s*\/?>/gi, "\n").replace(/<\s*\/?p[^>]*>/gi, "\n");
                 const div: HTMLDivElement = document.createElement("div");
                 div.innerHTML = replacedCn;
-                const textToCopy: string = (div.textContent ?? "").replace(/\n+/g, "\n").trim();
+                const textToCopy: string = (div.innerText ?? "")
+                    .replace(/\n+/g, "\n")
+                    .replace(/\n/g, "\r\n")
+                    .trim();
 
                 if (navigator.clipboard && window.isSecureContext) {
                     navigator.clipboard.writeText(textToCopy)
@@ -456,5 +417,25 @@ dF.JrnlDiary = (function(): dfModule {
                 }
             });
         },
+
+        /**
+         * View Model 구성
+         * @param {Object} diary
+         * @param {String} profileName
+         */
+        buildViewModel: function(diary, profileName) {
+            const profile: any = dF.JrnlDiary.RENDER_PROFILE[profileName];
+
+            if (!profile) throw new Error(`Unknown render profile: ${profileName}`);
+
+            return {
+                ...diary,
+                view: profile,
+                cnClass: [
+                    'cn',
+                    profile.collapsed && diary.state?.includes('COLLAPSED') ? 'collapsed' : null
+                ].filter(Boolean).join(' ')
+            };
+        }
     }
 })();

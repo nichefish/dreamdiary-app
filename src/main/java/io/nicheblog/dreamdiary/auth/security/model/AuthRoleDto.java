@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.auth.security.model;
 
 import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
+import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.Getter;
@@ -24,7 +25,7 @@ import java.util.List;
 @NoArgsConstructor
 public class AuthRoleDto
         extends BaseCrudDto
-        implements Identifiable<String> {
+        implements Identifiable<String>, StateCmpstnModule {
 
     /** 권한 코드 (PK) */
     private String authCd;

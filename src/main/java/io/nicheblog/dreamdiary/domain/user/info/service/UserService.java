@@ -10,7 +10,8 @@ import io.nicheblog.dreamdiary.domain.user.info.repository.jpa.UserRepository;
 import io.nicheblog.dreamdiary.domain.user.info.spec.UserSpec;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultiCrudService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -38,7 +39,7 @@ import java.util.Optional;
 @Service("userService")
 @RequiredArgsConstructor
 public class UserService
-        implements BaseMultiCrudService<UserDto, UserDto, Integer, UserEntity> {
+        implements BaseClsfService<UserDto, UserDto, Integer, UserEntity>, BaseMultipartWritableService<UserDto, UserDto, Integer, UserEntity> {
 
     @Getter
     private final UserRepository repository;

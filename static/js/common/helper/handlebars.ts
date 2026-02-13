@@ -221,6 +221,17 @@ cF.handlebars = (function(): Module {
     });
 
     /**
+     * unlessYn : 값이 "Y"인 경우에 특정 템플릿 내용을 렌더링합니다.
+     * @param {string} value - 조건부로 체크할 값.
+     * @param {object} options - Handlebars 옵션 객체로, `fn`과 `inverse`를 포함.
+     * @returns {string} - `value`가 "Y"일 경우 `options.fn(this)`, 그렇지 않으면 `options.inverse(this)`.
+     */
+    Handlebars.registerHelper("unlessYn", function(value: string, options: any) {
+        const trimmedValue: string = String(value ?? "N").trim().toUpperCase();
+        return trimmedValue === "N" ? options.fn(this) : options.inverse(this);
+    });
+
+    /**
      * trueFalse : 주어진 `value`를 "Y" 값과 비교하여 `true` 또는 `false`를 반환합니다.
      * @param {string} value - 체크할 값.
      * @param {string} ynValues - "Y"와 "N" 값을 구분하는 문자열.
@@ -428,7 +439,22 @@ cF.handlebars = (function(): Module {
         }
         return value ? value.toString() : 'null';
     });
+
+    /**
+     * Handlebars 헬퍼 함수 'hasState'를 등록합니다.
+     * 객체가 특정 상태값을 가지고 있는지 체크합니다.
+     *
+     * @param {any} state - 상태 목록
+     * @param {any[]} targetState - 체크할 상태
+     * @returns {boolean} - 상태 존재 여부
+     */
+    Handlebars.registerHelper('hasState', function (state: any, targetState: any): boolean {
+        if (!state) return false;
+        if (!state.list) return false;
+        return state.list.some((s: any): boolean => s.stateCd === targetState);
+    });
 })(Handlebars);
+
 document.addEventListener("DOMContentLoaded", function(): void {
     // cache entry
     const cachePartial: string = document.getElementById("cache_entry_partial")?.innerHTML;
@@ -462,11 +488,15 @@ document.addEventListener("DOMContentLoaded", function(): void {
 
     const jrnlEntryRegBtnPartial: string = document.getElementById("jrnl_entry_reg_btn_partial")?.innerHTML;
     if (jrnlEntryRegBtnPartial) Handlebars.registerPartial("jrnl_entry_reg_btn_partial", jrnlEntryRegBtnPartial);
+    const jrnlEntryCopyBtnPartial: string = document.getElementById("jrnl_entry_copy_btn_partial")?.innerHTML;
+    if (jrnlEntryCopyBtnPartial) Handlebars.registerPartial("jrnl_entry_copy_btn_partial", jrnlEntryCopyBtnPartial);
     const jrnlEntryContextBtnPartial: string = document.getElementById("jrnl_entry_context_btn_partial")?.innerHTML;
     if (jrnlEntryContextBtnPartial) Handlebars.registerPartial("jrnl_entry_context_btn_partial", jrnlEntryContextBtnPartial);
     const jrnlEntryToggleBtnPartial: string = document.getElementById("jrnl_entry_toggle_btn_partial")?.innerHTML;
     if (jrnlEntryToggleBtnPartial) Handlebars.registerPartial("jrnl_entry_toggle_btn_partial", jrnlEntryToggleBtnPartial);
 
+    const jrnlDiaryStatesPartial: string = document.getElementById("jrnl_diary_states_partial")?.innerHTML;
+    if (jrnlDiaryStatesPartial) Handlebars.registerPartial("jrnl_diary_states_partial", jrnlDiaryStatesPartial);
     const jrnlDiaryCnPartial: string = document.getElementById("jrnl_diary_cn_partial")?.innerHTML;
     if (jrnlDiaryCnPartial) Handlebars.registerPartial("jrnl_diary_cn_partial", jrnlDiaryCnPartial);
     const jrnlDiaryRegBtnPartial: string = document.getElementById("jrnl_diary_reg_btn_partial")?.innerHTML;
@@ -478,6 +508,8 @@ document.addEventListener("DOMContentLoaded", function(): void {
     const jrnlDiaryToggleBtnPartial: string = document.getElementById("jrnl_diary_toggle_btn_partial")?.innerHTML;
     if (jrnlDiaryToggleBtnPartial) Handlebars.registerPartial("jrnl_diary_toggle_btn_partial", jrnlDiaryToggleBtnPartial);
 
+    const jrnlDreamStatesPartial: string = document.getElementById("jrnl_dream_states_partial")?.innerHTML;
+    if (jrnlDreamStatesPartial) Handlebars.registerPartial("jrnl_dream_states_partial", jrnlDreamStatesPartial);
     const jrnlDreamCnPartial: string = document.getElementById("jrnl_dream_cn_partial")?.innerHTML;
     if (jrnlDreamCnPartial) Handlebars.registerPartial("jrnl_dream_cn_partial", jrnlDreamCnPartial);
     const jrnlDreamRegBtnPartial: string = document.getElementById("jrnl_dream_reg_btn_partial")?.innerHTML;
@@ -500,6 +532,9 @@ document.addEventListener("DOMContentLoaded", function(): void {
 
     const jrnlSumryContextBtnPartial: string = document.getElementById("jrnl_sumry_context_btn_partial")?.innerHTML;
     if (jrnlSumryContextBtnPartial) Handlebars.registerPartial("jrnl_sumry_context_btn_partial", jrnlSumryContextBtnPartial);
+
+    const menuContextBtnPartial: string = document.getElementById("menu_context_btn_partial")?.innerHTML;
+    if (menuContextBtnPartial) Handlebars.registerPartial("menu_context_btn_partial", menuContextBtnPartial);
 });
 
 

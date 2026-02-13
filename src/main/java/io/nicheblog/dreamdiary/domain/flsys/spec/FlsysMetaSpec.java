@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.domain.flsys.spec;
 
 import io.nicheblog.dreamdiary.domain.flsys.entity.FlsysMetaEntity;
-import io.nicheblog.dreamdiary.global.intrfc.spec.BasePostSpec;
+import io.nicheblog.dreamdiary.global.intrfc.spec.BaseClsfSpec;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,6 +14,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class FlsysMetaSpec
-        implements BasePostSpec<FlsysMetaEntity> {
+        implements BaseClsfSpec<FlsysMetaEntity> {
     //
 }
