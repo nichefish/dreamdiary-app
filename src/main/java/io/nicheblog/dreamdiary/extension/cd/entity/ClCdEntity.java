@@ -1,17 +1,16 @@
 package io.nicheblog.dreamdiary.extension.cd.entity;
 
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbed;
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.Usable;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +34,7 @@ import java.util.List;
 @Where(clause = "del_yn='N'")
 public class ClCdEntity
         extends BaseAuditEntity
-        implements StateEmbedModule {
+        implements Usable {
 
     @PostLoad
     private void onLoad() {
@@ -63,11 +62,26 @@ public class ClCdEntity
     @Column(name = "dc", length=2000)
     private String dc;
 
+    /** 정렬 순서 */
+    @Column(name = "idx", columnDefinition = "INT DEFAULT 0")
+    private Integer idx;
+
+    /** 사용 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "use_yn", length = 1, columnDefinition = "CHAR DEFAULT 'Y'")
+    private String useYn = "N";
+
+    /** 시스템 보호 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "protected_yn")
+    @Comment("시스템 보호 여부 (Y/N)")
+    private String protectedYn = "N";
+
     /** 분류 코드 정보 */
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "cl_cd", referencedColumnName = "cl_cd", insertable = false, updatable = false)
     @BatchSize(size = 10)
-    @OrderBy("state.sortOrdr ASC")
+    @OrderBy("idx ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @ToString.Exclude
     private List<DtlCdEntity> dtlCdList;
@@ -94,10 +108,4 @@ public class ClCdEntity
             this.dtlCdList.addAll(dtlCdList);
         }
     }
-
-    /* ----- */
-
-    /** 위임 :: 상태 관리 모듈 */
-    @Embedded
-    public StateEmbed state;
 }

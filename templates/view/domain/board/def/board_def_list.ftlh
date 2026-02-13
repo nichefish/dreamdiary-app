@@ -70,7 +70,7 @@
                             -
                         </td>
                         <td class="text-center hidden-table">
-                            <#if (boardDef.state.useYn!"Y") == "Y">
+                            <#if (boardDef.useYn!"Y") == "Y">
                                 <div class="badge badge-success cursor-pointer" onclick="dF.BoardDef.unuseAjax('${boardDef.boardDef!}');"
                                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="클릭하여 사용 상태를&#10;변경합니다.">
                                     <i class="bi bi-check text-light blink-slow "></i><@spring.message 'txt.status.use'/>

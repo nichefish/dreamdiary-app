@@ -2,8 +2,10 @@ package io.nicheblog.dreamdiary.domain.admin.popup.model;
 
 import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstnModule;
-import io.nicheblog.dreamdiary.global.intrfc.model.BaseAtchDto;
+import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
+import io.nicheblog.dreamdiary.global.intrfc.model.cmpstn.AtchFileCmpstn;
+import io.nicheblog.dreamdiary.global.intrfc.model.cmpstn.AtchFileCmpstnModule;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,8 +29,8 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class PopupDto
-        extends BaseAtchDto
-        implements Identifiable<Integer>, StateCmpstnModule {
+        extends BaseClsfDto
+        implements Identifiable<Integer>, AtchFileCmpstnModule, StateCmpstnModule {
 
     /** 팝업 코드 */
     @Size(max = 50)
@@ -58,6 +60,8 @@ public class PopupDto
         return null;
     }
 
+    /** 위임 :: 첨부파일 모듈 */
+    public AtchFileCmpstn file;
     /** 위임 :: 상태 관리 모듈 */
     public StateCmpstn state;
 }

@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.domain.admin.menu.entity;
 
 import io.nicheblog.dreamdiary.extension.cd.entity.DtlCdEntity;
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbed;
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.Sortable;
+import io.nicheblog.dreamdiary.global.intrfc.entity.Usable;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
@@ -33,7 +33,7 @@ import java.util.List;
 @SQLDelete(sql = "UPDATE menu SET del_yn = 'Y' WHERE menu_no = ?")
 public class MenuEntity
         extends BaseAuditEntity
-        implements StateEmbedModule {
+        implements Usable, Sortable {
 
     /** 메뉴 번호 (PK) */
     @Id
@@ -83,6 +83,18 @@ public class MenuEntity
     @Comment("아이콘")
     private String icon;
 
+    /** 시스템 보호 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "protected_yn")
+    @Comment("시스템 보호 여부 (Y/N)")
+    private String protectedYn = "N";
+
+    /** 필수 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "required_yn")
+    @Comment("필수 여부 (Y/N)")
+    private String requiredYn = "N";
+
     /** 하위메뉴 확장유형 코드 */
     @Column(name = "menu_sub_extend_ty_cd")
     @Comment("하위메뉴 확장유형 코드")
@@ -103,6 +115,15 @@ public class MenuEntity
     @Transient
     private String menuSubExtendTyNm;
 
+    /** 정렬 순서 */
+    @Column(name = "idx", columnDefinition = "INT DEFAULT 0")
+    private Integer idx;
+
+    /** 사용 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "use_yn", length = 1, columnDefinition = "CHAR DEFAULT 'Y'")
+    private String useYn = "N";
+
     /** 셀프 참조 :: 상위메뉴 조회 */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "upper_menu_no", referencedColumnName = "menu_no", insertable = false, updatable = false)
@@ -116,14 +137,8 @@ public class MenuEntity
     @JoinColumn(name = "upper_menu_no", referencedColumnName = "menu_no", insertable = false, updatable = false)
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 10)
-    @OrderBy("state.sortOrdr ASC")
+    @OrderBy("idx ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("하위메뉴 목록 조회")
     private List<MenuEntity> subMenuList;
-
-    /* ----- */
-
-    /** 위임 :: 상태 관리 모듈 */
-    @Embedded
-    public StateEmbed state;
 }

@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS cmm_cl_cd  (
     cl_ctgr_cd VARCHAR(50) COMMENT '분류 코드 분류 코드',
     dc VARCHAR(1000) COMMENT '분류 코드 설명',
     -- STATE (module)
-    sort_ordr INT DEFAULT 0 COMMENT '정렬 순서',
+    idx INT DEFAULT 0 COMMENT '정렬 순서',
     use_yn CHAR(1) DEFAULT 'Y' COMMENT '사용 여부 (Y/N)',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS cmm_dtl_cd (
     dtl_cd_nm VARCHAR(40) COMMENT '상세 코드 이름',
     dc VARCHAR(1000) COMMENT '상세 코드 설명',
     -- STATE (module)
-    sort_ordr INT DEFAULT 0 COMMENT '정렬 순서',
+    idx INT DEFAULT 0 COMMENT '정렬 순서',
     use_yn CHAR(1) DEFAULT 'Y' COMMENT '사용 여부 (Y/N)',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',

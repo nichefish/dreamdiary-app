@@ -2,13 +2,11 @@ package io.nicheblog.dreamdiary.adapter._common.handler;
 
 import io.nicheblog.dreamdiary.adapter.jandi.JandiTopic;
 import io.nicheblog.dreamdiary.adapter.jandi.service.JandiApiService;
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.board.notice.model.NoticeDto;
 import io.nicheblog.dreamdiary.domain.board.post.model.BoardPostDto;
 import io.nicheblog.dreamdiary.domain.schdul.model.SchdulDto;
 import io.nicheblog.dreamdiary.domain.schdul.service.SchdulService;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
-import io.nicheblog.dreamdiary.domain.vcatn.papr.model.VcatnPaprDto;
 import io.nicheblog.dreamdiary.extension.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.sys.event.LogSysEvent;
@@ -127,38 +125,6 @@ public class NotifyEventHandler {
             // url
             final String param = Constant.UTM_SOURCE + "=jandi";
             final String fullUrl = Url.DOMAIN + Url.SCHDUL_CAL + "?" + param;
-            // 메세지 발송
-            jandiApiService.sendMsg(trgetTopic, msg, title, fullUrl);
-            jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_SUCCESS);
-        } catch (final Exception e) {
-            jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);;
-            logParam.setResult(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.JANDI);
-            publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
-        }
-        return jandiRsltMsg;
-    }
-
-    /**
-     * 휴가계획서 등록 잔디 알림 메시지 발송
-     *
-     * @see LogSysEventListener
-     */
-    public String notifyVcatnPaprReg(
-            final JandiTopic trgetTopic,
-            final VcatnPaprDto result,
-            final LogSysParam logParam
-    ) {
-        String jandiRsltMsg;
-        try {
-            // title
-            String userNm = AuthUtils.getLgnUserNm();
-            String title = userNm + " " + result.getTitle();
-            // msg
-            // String msg = isReg ? "새로운 휴가 계획서가 등록되었습니다." : "휴가 계획서가 수정되었습니다.";
-            String msg = "새로운 휴가 계획서가 등록되었습니다.";
-            // url
-            final String param = "postNo=" + result.getPostNo() + "&boardDef=" + result.getContentType() + "&" + Constant.UTM_SOURCE + "=jandi";
-            final String fullUrl = Url.DOMAIN + Url.VCATN_PAPR_DTL + "?" + param;
             // 메세지 발송
             jandiApiService.sendMsg(trgetTopic, msg, title, fullUrl);
             jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_SUCCESS);

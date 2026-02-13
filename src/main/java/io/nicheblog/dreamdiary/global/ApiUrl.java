@@ -117,6 +117,9 @@ public interface ApiUrl {
     String SECTN = Prefix.API + "/sectn/{postNo}";
     String SECTN_SORT_ORDR = Prefix.API + "/sectn/sort-ordr";
 
+    /** 상태 */
+    String STATES = Prefix.API + "/states";
+
     /** 태그 */
     String TAGS = Prefix.API + "/tags";
     String TAG_DTL_AJAX = Prefix.API + "/tag/tag-dtl";
@@ -133,8 +136,8 @@ public interface ApiUrl {
     /** 메뉴 관리 */
     String MENU_MAIN_LIST_AJAX = Prefix.API + "/menu/menu-main-list";
     String MENUS = Prefix.API + "/menus";
+    String MENUS_IDX = Prefix.API + "/menus/idx";
     String MENU = Prefix.API + "/menu/{menuNo}";
-    String MENU_SORT_ORDR_AJAX = Prefix.API + "/menu/menu-sort-ordr";
 
     /** 게시판 관리 */
     String BOARD_DEF_REG_AJAX = Prefix.API + "/board/def/board-def-reg";
@@ -158,13 +161,8 @@ public interface ApiUrl {
     String POPUP_LIST = "";
 
     /** 코드 관리 */
-    String CL_CD_REG_AJAX = Prefix.API + "/cd/cl-cd-reg";
-    String CL_CD_DTL_AJAX = Prefix.API + "/cd/cl-cd-dtl";
-    String CL_CD_MDF_AJAX = Prefix.API + "/cd/cl-cd-mdf";
-    String CL_CD_DEL_AJAX = Prefix.API + "/cd/cl-cd-del";
-    String CL_CD_USE_AJAX = Prefix.API + "/cd/cl-cd-use";
-    String CL_CD_UNUSE_AJAX = Prefix.API + "/cd/cl-cd-unuse";
-    String CL_CD_SORT_ORDR_AJAX = Prefix.API + "/cd/cl-cd-sort-ordr";
+    String CD_CLS = Prefix.API + "cd/cls";
+    String CD_CL = Prefix.API + "/cd/cl/{clCd}";
 
     String DTL_CD_REG_AJAX = Prefix.API + "/cd/dtl-cd-reg";
     String DTL_CD_DTL_AJAX = Prefix.API + "/cd/dtl-cd-dtl";
@@ -212,21 +210,6 @@ public interface ApiUrl {
     String SCHDUL_DTL_AJAX = Prefix.API + "/schdul/cal-dtl";
     String SCHDUL_MDF_AJAX = Prefix.API + "/schdul/cal-mdf";
     String SCHDUL_DEL_AJAX = Prefix.API + "/schdul/cal-del";
-
-    String VCATN_PAPR_REG_AJAX = Prefix.APP + "/vcatn/papr/reg";
-    String VCATN_PAPR_DTL_AJAX = Prefix.APP + "/vcatn/papr/dtl";
-    String VCATN_PAPR_MDF_AJAX = Prefix.APP + "/vcatn/papr/mdf";
-    String VCATN_PAPR_CF_AJAX = Prefix.APP + "/vcatn/papr/cf";
-    String VCATN_PAPR_DEL_AJAX = Prefix.APP + "/vcatn/papr/del";
-
-    String VCATN_SCHDUL_REG_AJAX = Prefix.APP + "/vcatn/schdul-reg";
-    String VCATN_SCHDUL_DTL_AJAX = Prefix.APP + "/vcatn/schdul-dtl";
-    String VCATN_SCHDUL_MDF_AJAX = Prefix.APP + "/vcatn/schdul-mdf";
-    String VCATN_SCHDUL_DEL_AJAX = Prefix.APP + "/vcatn/schdul-del";
-    String VCATN_SCHDUL_XLSX_DOWNLOAD = Prefix.APP + "/vcatn/schdul-xlsx-download.do";
-
-    String VCATN_STATS_YY_UPDT_AJAX = Prefix.APP + "/vcatn/stats-yy-updt";
-    String VCATN_STATS_YY_XLSX_DOWNLOAD = Prefix.APP + "/vcatn/stats-xlsx-download.do";
 
     String USER_REQST_REG_AJAX = Prefix.APP + "/user/reqst/reqst-reg";
     String USER_REQST_CF_AJAX = Prefix.APP + "/user/reqst/reqst-cf";

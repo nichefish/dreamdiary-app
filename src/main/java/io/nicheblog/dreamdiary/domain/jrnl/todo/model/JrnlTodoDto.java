@@ -5,10 +5,14 @@ import io.nicheblog.dreamdiary.extension.clsf.comment.model.cmpstn.CommentCmpstn
 import io.nicheblog.dreamdiary.extension.clsf.comment.model.cmpstn.CommentCmpstnModule;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstnModule;
-import io.nicheblog.dreamdiary.global.intrfc.model.BasePostDto;
+import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 
 /**
  * JrnlTodoDto
@@ -25,7 +29,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class JrnlTodoDto
-        extends BasePostDto
+        extends BaseClsfDto
         implements Identifiable<Integer>, CommentCmpstnModule, TagCmpstnModule {
 
     /** 필수: 컨텐츠 타입 */
@@ -38,6 +42,53 @@ public class JrnlTodoDto
     /** 컨텐츠 타입 */
     @Builder.Default
     private String contentType = CONTENT_TYPE.key;
+
+       /** 제목 */
+    protected String title;
+
+    /** 내용 */
+    protected String cn;
+
+    /** 마크다운 처리된 내용 */
+    protected String markdownCn;
+
+    /** 글분류 코드 */
+    @Size(max = 50)
+    protected String ctgrClCd;
+
+    /** 글분류 코드 */
+    @Size(max = 50)
+    protected String ctgrCd;
+
+    /** 글분류 코드 이름 */
+    @Size(max = 50)
+    protected String ctgrNm;
+
+    /** 글분류 존재 여부 */
+    @Builder.Default
+    protected Boolean hasCtgrNm = false;
+
+    /** 중요 여부 (Y/N) */
+    @Builder.Default
+    protected String imprtcYn = "N";
+
+    /** 상단고정 여부 (Y/N) */
+    @Builder.Default
+    protected String fxdYn = "N";
+
+    /** 조회수 */
+    @Builder.Default
+    @Min(value = 0)
+    protected Integer hitCnt = 0;
+
+    /** 수정권한 */
+    @Builder.Default
+    @Size(max = 50)
+    protected String mdfable = Constant.MDFABLE_REGSTR;
+
+    /** 수정 가능 여부 */
+    @Builder.Default
+    protected Boolean isMdfable = false;
 
     /* ----- */
 

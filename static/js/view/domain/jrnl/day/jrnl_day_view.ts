@@ -18,6 +18,7 @@ const Page: Page = (function(): Page {
             dF.Comment.modal.init({
                 "refreshFunc": dF.JrnlDay.getStdrdData
             });
+            dF.State.init();
 
             // datepicker
             const stdrdDt: string = window.JRNL?.stdrdDt;
@@ -28,6 +29,7 @@ const Page: Page = (function(): Page {
                 history.pushState(null, '', cF.util.bindUrl(Url.JRNL_DAY_VIEW, { stdrdDt: dateStr }));
                 dF.JrnlDay.getStdrdData(dateStr);
             });
+
             // 데이터 조회
             dF.JrnlDay.getStdrdData(stdrdDt);
         },

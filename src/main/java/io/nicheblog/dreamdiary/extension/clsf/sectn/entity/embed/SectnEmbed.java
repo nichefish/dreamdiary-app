@@ -42,7 +42,7 @@ public class SectnEmbed
     })
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 10)
-    @OrderBy("state.sortOrdr ASC")
+    @OrderBy("idx ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("단락 목록")
     private List<SectnEntity> list;

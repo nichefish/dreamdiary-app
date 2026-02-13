@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.extension.cd.entity;
 
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbed;
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.Usable;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.Where;
@@ -32,7 +32,7 @@ import javax.persistence.*;
 @Where(clause = "del_yn='N'")
 public class DtlCdEntity
         extends BaseAuditEntity
-        implements StateEmbedModule {
+        implements Usable {
 
     /** 상세 코드 */
     @Id
@@ -57,6 +57,21 @@ public class DtlCdEntity
     /** 상세 코드설명 */
     @Column(name = "dc", length=2000)
     private String dc;
+
+    /** 정렬 순서 */
+    @Column(name = "idx", columnDefinition = "INT DEFAULT 0")
+    private Integer idx;
+
+    /** 사용 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "use_yn", length = 1, columnDefinition = "CHAR DEFAULT 'Y'")
+    private String useYn = "N";
+
+    /** 시스템 보호 여부 (Y/N) */
+    @Builder.Default
+    @Column(name = "protected_yn")
+    @Comment("시스템 보호 여부 (Y/N)")
+    private String protectedYn = "N";
 
     /* ---- */
 
@@ -87,11 +102,5 @@ public class DtlCdEntity
     public DtlCdEntity(final DtlCdKey key) {
         this(key.getClCd(), key.getDtlCd());
     }
-
-    /* ----- */
-
-    /** 위임 :: 상태 관리 모듈 */
-    @Embedded
-    public StateEmbed state;
 
 }

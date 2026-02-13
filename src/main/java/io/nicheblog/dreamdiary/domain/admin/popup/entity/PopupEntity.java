@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.domain.admin.popup.entity;
 
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbed;
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbedModule;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAtchEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbed;
+import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbedModule;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +33,8 @@ import java.util.Date;
 @Where(clause = "del_yn='N'")
 @SQLDelete(sql = "UPDATE popup SET del_yn = 'Y' WHERE popup_cd = ?")
 public class PopupEntity
-        extends BaseAtchEntity
-        implements StateEmbedModule {
+        extends BaseClsfEntity
+        implements AtchFileEmbedModule {
 
     /** 팝업 코드 */
     @Id
@@ -69,7 +69,7 @@ public class PopupEntity
 
     /* ----- */
 
-    /** 위임 :: 상태 관리 모듈 */
+    /** 위임 :: 첨부파일 모듈 */
     @Embedded
-    public StateEmbed state;
+    public AtchFileEmbed file;
 }

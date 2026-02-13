@@ -6,7 +6,7 @@ import io.nicheblog.dreamdiary.extension.file.mapstruct.AtchFileMapstruct;
 import io.nicheblog.dreamdiary.extension.file.model.AtchFileDto;
 import io.nicheblog.dreamdiary.extension.file.repository.jpa.AtchFileRepository;
 import io.nicheblog.dreamdiary.extension.file.spec.AtchFileSpec;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
@@ -27,7 +27,7 @@ import java.util.List;
 @Service("atchFileService")
 @RequiredArgsConstructor
 public class AtchFileService
-        implements BaseCrudService<AtchFileDto, AtchFileDto, Integer, AtchFileEntity> {
+        implements BaseDtoWritableService<AtchFileDto, AtchFileDto, Integer, AtchFileEntity> {
 
     @Getter
     private final AtchFileRepository repository;

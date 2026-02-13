@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.global.intrfc.mapstruct.helper.MapstructHelper;
 /**
  * StateCmpstnModule
  * <pre>
- *   State 모듈 인터페이스 (dto level)
+ *   상태 모듈 인터페이스
  * </pre>
  *
  * @author nichefish
@@ -16,6 +16,11 @@ public interface StateCmpstnModule {
     StateCmpstn getState();
 
     /** Setter */
-    void setState(StateCmpstn embed);
+    void setState(StateCmpstn cmpstn);
+
+    /** Set State */
+    default void setStateFrom(StateCmpstnModule cmpstnModule) {
+        setState(cmpstnModule.getState());
+    }
 }
 

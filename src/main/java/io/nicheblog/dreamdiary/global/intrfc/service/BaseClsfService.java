@@ -22,7 +22,7 @@ import java.io.Serializable;
  * @author nichefish
  */
 public interface BaseClsfService<PostDto extends BaseClsfDto & Identifiable<Key>, Dto extends BaseClsfDto & Identifiable<Key>, Key extends Serializable, Entity extends BaseClsfEntity>
-        extends BaseMultiCrudService<PostDto, Dto, Key, Entity> {
+        extends BaseDtoWritableService<PostDto, Dto, Key, Entity> {
 
     /**
      * default: 게시물 등록 (dto level)
@@ -86,15 +86,10 @@ public interface BaseClsfService<PostDto extends BaseClsfDto & Identifiable<Key>
 
         // optional: 수정 전처리 (dto)
         this.preModify(postDto);
-        // optional: 수정 전처리 (entity)
-        this.preModify(modifyEntity);
         // optional: 수정 전처리 (dto, entity)
         this.preModify(postDto, modifyEntity);
 
         getWriteMapstruct().updateFromDto(postDto, modifyEntity);
-
-        // optional: 수정 전처리 (entity)
-        this.preModify(modifyEntity);
 
         // managt 처리
         if (this.isManagtModule(postDto, modifyEntity)) {

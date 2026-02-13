@@ -1,7 +1,5 @@
 package io.nicheblog.dreamdiary.domain.jrnl.sumry;
 
-import io.nicheblog.dreamdiary.domain.jrnl.day.JrnlDayViewType;
-
 /**
  * JrnlDayViewType
  *

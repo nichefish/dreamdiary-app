@@ -6,17 +6,12 @@ import io.nicheblog.dreamdiary.domain.schdul.model.SchdulCalDto;
 import io.nicheblog.dreamdiary.domain.schdul.model.SchdulSearchParam;
 import io.nicheblog.dreamdiary.domain.schdul.repository.jpa.SchdulRepository;
 import io.nicheblog.dreamdiary.domain.schdul.spec.SchdulSpec;
-import io.nicheblog.dreamdiary.domain.vcatn.papr.entity.VcatnSchdulEntity;
-import io.nicheblog.dreamdiary.domain.vcatn.papr.service.VcatnSchdulService;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.model.fullcalendar.BaseCalDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
-import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -37,7 +32,6 @@ import java.util.stream.Collectors;
 public class SchdulCalService {
 
     private final SchdulService schdulService;
-    private final VcatnSchdulService vcatnSchdulService;
     private final SchdulCalMapstruct schdulCalMapstruct = SchdulCalMapstruct.INSTANCE;
     private final SchdulSpec schdulSpec;
     private final SchdulRepository schdulRepository;
@@ -50,13 +44,6 @@ public class SchdulCalService {
      */
     public List<BaseCalDto> getSchdulTotalCalList(final SchdulSearchParam searchParam) throws Exception {
         final List<BaseCalDto> totalSchdulCalList = new ArrayList<>();
-
-        // 휴가 달력 목록 검색
-        final String vcatnChk = searchParam.getVcatnChked();
-        if ("Y".equals(vcatnChk)) {
-            final List<SchdulCalDto> vcatnCalList = this.getVcatnCalList(searchParam);
-            totalSchdulCalList.addAll(vcatnCalList);
-        }
 
         // 생일 달력 목록 검색
         // final List<SchdulCalDto> brthdyCalList = this.getBrthdyCalList(searchParam);
@@ -83,38 +70,12 @@ public class SchdulCalService {
     }
 
     /**
-     * 일정 > 휴가 데이터 조회
-     * 
-     * @param searchParam 검색 조건이 담긴 파라미터 객체
-     * @return {@link List<SchdulCalDto>} -- 휴가 일정 목록
-     */
-    public List<SchdulCalDto> getVcatnCalList(final SchdulSearchParam searchParam) throws Exception {
-        // 시작일, 종료일만 파라미터 추출
-        final Map<String, Object> searchParamMap = new HashMap<>() {{
-            put("searchStartDt", searchParam.getBgnDt());
-            put("searchEndDt", searchParam.getEndDt());
-        }};
-
-        // 휴가 목록 검색
-        final List<VcatnSchdulEntity> vcatnEntityList = vcatnSchdulService.getListEntity(searchParamMap);
-        if (vcatnEntityList.isEmpty()) return Collections.emptyList();
-        // entity -> calDto
-        final List<SchdulCalDto> vcatnCalList = new ArrayList<>();
-        for (VcatnSchdulEntity vcatn : vcatnEntityList) {
-            // 각 휴가에 대해서 달력 일정 조회
-            this.procVcatnCal(vcatn, vcatnCalList);
-        }
-
-        return vcatnCalList;
-    }
-
-    /**
      * 각 휴가에 대해서 휴가달력일정을 산정해서 목록에 추가
      *
      * @param vcatn 휴가 정보
      * @param vcatnCalList 산정 정보를 누적한 휴가달력일정
      */
-    private void procVcatnCal(VcatnSchdulEntity vcatn, List<SchdulCalDto> vcatnCalList) throws Exception {
+    /*private void procVcatnCal(VcatnSchdulEntity vcatn, List<SchdulCalDto> vcatnCalList) throws Exception {
         final Date vcatnEndDt = DateUtils.Parser.sDateParse(vcatn.getEndDt());
 
         // 로직 :: 날짜 훑으면서 각 일자별로 쪼갬. 공휴일 또는 주말여부 체크
@@ -153,22 +114,7 @@ public class SchdulCalService {
             // 위 조건에 해당 안할시? 다음날짜로 넘어간다.
             keyDt = DateUtils.getDateAddDay(keyDt, 1);
         }
-    }
-
-    /**
-     * 일정 정보에서 keyDt에 대해 CalDto 생성 :: 메소드 분리
-     *
-     * @param vcatn 일정 정보가 담긴 VcatnSchdulEntity 객체
-     * @param keyDt 일정의 키 날짜
-     * @return 생성된 SchdulCalDto 객체
-     */
-    private SchdulCalDto initNewCalDto(final VcatnSchdulEntity vcatn, final Date keyDt) throws Exception {
-        final SchdulCalDto calDto = schdulCalMapstruct.toCalDto(vcatn);
-        calDto.setBgnDt(DateUtils.asStr(keyDt, DatePtn.DATE));
-        if (StringUtils.isEmpty(calDto.getSchdulCd())) calDto.setSchdulCd(Constant.SCHDUL_VCATN);
-        if (StringUtils.isEmpty(calDto.getClassName())) calDto.setClassName("cursor-pointer fc-event-danger fc-event-solid-warning");
-        return calDto;
-    }
+    }*/
 
     /**
      * 일정 정보에서 keyDt에 대해 CalDto 마무리 :: 메소드 분리

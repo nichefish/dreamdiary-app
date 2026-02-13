@@ -38,8 +38,14 @@ import io.nicheblog.dreamdiary.extension.clsf.viewer.entity.embed.ViewerEmbedMod
 import io.nicheblog.dreamdiary.extension.clsf.viewer.mapstruct.embed.ViewerEmbedMapstruct;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.model.cmpstn.ViewerCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.model.cmpstn.ViewerCmpstnModule;
-import io.nicheblog.dreamdiary.global.intrfc.entity.*;
-import io.nicheblog.dreamdiary.global.intrfc.model.*;
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditRegEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
+import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditDto;
+import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditRegDto;
+import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
+import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +60,7 @@ import org.springframework.stereotype.Component;
  * </pre>
  *
  * @author nichefish
+ * TODO: 모듈 수가 증가할 경우 Strategy 기반 분리 고려.
  */
 @Component
 @RequiredArgsConstructor
@@ -94,18 +101,7 @@ public class MapstructHelper {
                 ((BaseAuditDto) dto).setIsMdfusr(baseEntity.isMdfusr());
             }
         }
-        // MANAGE :: ...
-        // ATCH :: 공통 필드 매핑 로직
-        if (entity instanceof BaseAtchEntity baseEntity && dto instanceof BaseAtchDto) {
-            // 첨부파일 존재 여부
-            final Boolean hasAtchFile = !(baseEntity.getAtchFileNo() == null || baseEntity.getAtchFileInfo() == null || CollectionUtils.isEmpty(baseEntity.getAtchFileInfo().getAtchFileList()));
-            ((BaseAtchDto) dto).setHasAtchFile(hasAtchFile);
-        }
         // CLSF :: BaseClsfMapstruct쪽에 정의
-        // POST :: 공통 필드 매핑 로직
-        if (entity instanceof BasePostEntity baseEntity && dto instanceof BasePostDto) {
-            //
-        }
     }
 
     /**
@@ -129,6 +125,14 @@ public class MapstructHelper {
             final SectnEmbed embed = ((SectnEmbedModule) entity).getSectn();
             final SectnCmpstn cmpstn = SectnEmbedMapstruct.INSTANCE.toDto(embed);
             ((SectnCmpstnModule) dto).setSectn(cmpstn);
+        }
+
+        // 상태 :: 공통 필드 매핑 로직
+        boolean usesStateModule = (entity instanceof StateEmbedModule && dto instanceof StateCmpstnModule);
+        if (usesStateModule) {
+            final StateEmbed embed = ((StateEmbedModule) entity).getState();
+            final StateCmpstn cmpstn = StateEmbedMapstruct.INSTANCE.toDto(embed);
+            ((StateCmpstnModule) dto).setState(cmpstn);
         }
 
         // 태그 :: 공통 필드 매핑 로직
@@ -163,28 +167,10 @@ public class MapstructHelper {
             ((ViewerCmpstnModule) dto).setViewer(cmpstn);
         }
 
-        // 새 글 여부 표시
+        // 새 글 여부 상태
         if (usesManagtModule && usesViewerModule) {
             ((ViewerCmpstnModule) dto).setIsNew(determineIfNew(entity));
         }
-    }
-
-    /**
-     * Map State Fields (dto -> entity)
-     *
-     * @param entity 매핑할 Dto
-     * @param dto 매핑 대상 Entity
-     */
-    public static <Entity, Dto> void mapStateFields(final Dto dto, final @MappingTarget Entity entity) throws Exception {
-        // 댓글 :: 공통 필드 매핑 로직
-        boolean usesStateModule = (entity instanceof StateEmbedModule && dto instanceof StateCmpstnModule);
-        if (!usesStateModule) return;
-        StateEmbed embed = ((StateEmbedModule) entity).getState();
-        if (embed == null) embed = new StateEmbed();
-        StateCmpstn cmpstn = ((StateCmpstnModule) dto).getState();
-        if (cmpstn == null) cmpstn = new StateCmpstn();
-        StateEmbedMapstruct.INSTANCE.updateFromDto(cmpstn, embed);
-        ((StateEmbedModule) entity).setState(embed);
     }
 
     /** 

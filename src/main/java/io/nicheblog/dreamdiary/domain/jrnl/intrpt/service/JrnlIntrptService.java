@@ -10,7 +10,6 @@ import io.nicheblog.dreamdiary.domain.jrnl.intrpt.model.JrnlIntrptSearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.repository.jpa.JrnlIntrptRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.repository.mybatis.JrnlIntrptMapper;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.spec.JrnlIntrptSpec;
-import io.nicheblog.dreamdiary.domain.jrnl.state.JrnlState;
 import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
@@ -19,7 +18,7 @@ import io.nicheblog.dreamdiary.extension.clsf.tag.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
-import io.nicheblog.dreamdiary.global.model.ServiceResponse;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
@@ -48,7 +47,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Log4j2
 public class JrnlIntrptService
-        implements BaseClsfService<JrnlIntrptDto, JrnlIntrptDto, Integer, JrnlIntrptEntity> {
+        implements BaseClsfService<JrnlIntrptDto, JrnlIntrptDto, Integer, JrnlIntrptEntity>, BaseMultipartWritableService<JrnlIntrptDto, JrnlIntrptDto, Integer, JrnlIntrptEntity> {
 
     @Getter
     private final JrnlIntrptRepository repository;
@@ -302,37 +301,5 @@ public class JrnlIntrptService
             final String concatHldyNm = String.join(", ", hldyMap.get(stdrdDt));
             jrnlIntrpt.setHldyNm(concatHldyNm);
         }
-    }
-    
-    /**
-     * collapse 상태를 설정한다.
-     *
-     * @param postNo 대상 게시물 PK
-     * @param collapsedYn 접힘 상태(Y/N)
-     * @return collapsedYn 반영 성공 여부를 담은 ServiceResponse
-     */
-    @Transactional
-    @SuppressWarnings("unchecked")
-    public ServiceResponse setCollapse(final Integer postNo, final String collapsedYn) throws Exception {
-        final JrnlIntrptEntity entity = getDtlEntity(postNo);
-        entity.setCollapsedYn(collapsedYn);
-        final JrnlIntrptEntity updatedEntity = repository.save(entity);
-
-        final Integer yy = updatedEntity.getJrnlDream().getJrnlDay().getYy();
-        final Integer mnth = updatedEntity.getJrnlDream().getJrnlDay().getMnth();
-        final String cacheKey = AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth;
-
-        final Map<Integer, JrnlState> intrptMap = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myIntrptStateMap", cacheKey);
-        if (intrptMap != null) {
-            final JrnlState state = intrptMap.get(postNo);
-            if (state != null) {
-                state.setCollapsedYn(collapsedYn);
-                EhCacheUtils.put("myIntrptStateMap", cacheKey, intrptMap);
-            }
-        }
-
-        return ServiceResponse.builder()
-                .rslt(true)
-                .build();
     }
 }

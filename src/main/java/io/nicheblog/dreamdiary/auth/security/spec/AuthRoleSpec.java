@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.auth.security.spec;
 
 import io.nicheblog.dreamdiary.auth.security.entity.AuthRoleEntity;
-import io.nicheblog.dreamdiary.global.intrfc.spec.embed.BaseStateSpec;
+import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,6 +14,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class AuthRoleSpec
-        implements BaseStateSpec<AuthRoleEntity> {
+        implements BaseSpec<AuthRoleEntity> {
     //
 }

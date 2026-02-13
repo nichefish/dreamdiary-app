@@ -65,10 +65,4 @@ public class JrnlDiarySmpEntity {
     /** 순번 */
     @Column(name = "idx", columnDefinition = "INT DEFAULT 1")
     private Integer idx;
-
-    /** 정리완료 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "resolved_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("정리완료 여부")
-    private String resolvedYn = "N";
 }

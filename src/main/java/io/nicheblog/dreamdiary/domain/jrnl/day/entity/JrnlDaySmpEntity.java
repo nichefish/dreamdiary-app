@@ -33,13 +33,6 @@ import java.util.Date;
 @SQLDelete(sql = "UPDATE jrnl_day SET del_yn = 'Y' WHERE post_no = ?")
 public class JrnlDaySmpEntity {
 
-    /** 필수: 컨텐츠 타입 */
-    @Builder.Default
-    private static final ContentType CONTENT_TYPE = ContentType.JRNL_DAY;
-    /** 필수(Override): 글분류 코드 */
-    @Builder.Default
-    private static final String CTGR_CL_CD = CONTENT_TYPE.name() + "_CTGR_CD";
-
     /** 저널 일자 고유 번호 (PK) */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,11 +40,11 @@ public class JrnlDaySmpEntity {
     @Comment("저널 일자 고유 번호 (PK)")
     private Integer postNo;
 
-    /** 컨텐츠 타입 */
+    /** 필수: 컨텐츠 타입 */
     @Builder.Default
     @Column(name = "content_type", columnDefinition = "VARCHAR(50) DEFAULT 'JRNL_DAY'")
     @Comment("컨텐츠 타입")
-    private String contentType = CONTENT_TYPE.key;
+    private String contentType = ContentType.JRNL_DAY.key;
 
     /* ----- */
 

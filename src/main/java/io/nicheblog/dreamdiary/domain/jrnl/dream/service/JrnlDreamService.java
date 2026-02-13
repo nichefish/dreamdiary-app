@@ -6,22 +6,21 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.mapstruct.JrnlDreamMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamPatchDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamPostDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.repository.jpa.JrnlDreamRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.repository.mybatis.JrnlDreamMapper;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.spec.JrnlDreamSpec;
-import io.nicheblog.dreamdiary.domain.jrnl.state.JrnlState;
 import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
+import io.nicheblog.dreamdiary.extension.clsf.state.StateCd;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
-import io.nicheblog.dreamdiary.global.model.ServiceResponse;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
@@ -50,7 +49,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Log4j2
 public class JrnlDreamService
-        implements BaseClsfService<JrnlDreamPostDto, JrnlDreamDto, Integer, JrnlDreamEntity> {
+        implements BaseClsfService<JrnlDreamPostDto, JrnlDreamDto, Integer, JrnlDreamEntity>, BaseMultipartWritableService<JrnlDreamPostDto, JrnlDreamDto, Integer, JrnlDreamEntity> {
 
     @Getter
     private final JrnlDreamRepository repository;
@@ -96,7 +95,7 @@ public class JrnlDreamService
      */
     @Cacheable(value="myImprtcDreamList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy")
     public List<JrnlDreamDto> getImprtcDreamList(final Integer yy) throws Exception {
-        final JrnlDreamSearchParam searchParam = JrnlDreamSearchParam.builder().yy(yy).imprtcYn("Y").build();
+        final JrnlDreamSearchParam searchParam = JrnlDreamSearchParam.builder().yy(yy).state(StateCd.IMPRTC.key).build();
         final List<JrnlDreamDto> imprtcDreamList = this.getSelf().getListDto(searchParam);
         Collections.sort(imprtcDreamList);
 
@@ -307,80 +306,5 @@ public class JrnlDreamService
             final String concatHldyNm = String.join(", ", hldyMap.get(stdrdDt));
             jrnlDream.setHldyNm(concatHldyNm);
         }
-    }
-    
-    /**
-     * collapse 상태를 설정한다.
-     *
-     * @param postNo 대상 게시물 PK
-     * @param collapsedYn 접힘 상태(Y/N)
-     * @return collapsedYn 반영 성공 여부를 담은 ServiceResponse
-     */
-    @Transactional
-    @SuppressWarnings("unchecked")
-    public ServiceResponse setCollapse(final Integer postNo, final String collapsedYn) throws Exception {
-        final JrnlDreamEntity entity = getDtlEntity(postNo);
-        entity.setCollapsedYn(collapsedYn);
-        final JrnlDreamEntity updatedEntity = repository.save(entity);
-
-        final Integer yy = updatedEntity.getJrnlDay().getYy();
-        final Integer mnth = updatedEntity.getJrnlDay().getMnth();
-        final String cacheKey = AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth;
-
-        final Map<Integer, JrnlState> dreamMap = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myDreamStateMap", cacheKey);
-        if (dreamMap != null) {
-            final JrnlState state = dreamMap.get(postNo);
-            if (state != null) {
-                state.setCollapsedYn(collapsedYn);
-                EhCacheUtils.put("myDreamStateMap", cacheKey, dreamMap);
-            }
-        }
-
-        return ServiceResponse.builder()
-                .rslt(true)
-                .build();
-    }
-
-    /**
-     * 상태를 설정한다.
-     *
-     * @param postNo 대상 게시물 PK
-     * @param patchDto 상태 Dto
-     * @return collapsedYn 반영 성공 여부를 담은 ServiceResponse
-     */
-    @Transactional
-    @SuppressWarnings("unchecked")
-    public ServiceResponse patch(final Integer postNo, final JrnlDreamPatchDto patchDto) throws Exception {
-        if (patchDto.isAllNull()) {
-            return ServiceResponse.builder()
-                    .rslt(false)
-                    .message("변경할 항목이 없습니다.")
-                    .build();
-        }
-
-        final JrnlDreamEntity entity = getDtlEntity(postNo);
-        if (patchDto.getImprtc() != null) entity.setImprtcYn(patchDto.getImprtc() ? "Y" : "N");
-        if (patchDto.getCollapsed() != null) entity.setCollapsedYn(patchDto.getCollapsed() ? "Y" : "N");
-        if (patchDto.getResolved() != null) entity.setResolvedYn(patchDto.getResolved() ? "Y" : "N");
-
-        final JrnlDreamEntity updatedEntity = repository.save(entity);
-
-        final Integer yy = updatedEntity.getJrnlDay().getYy();
-        final Integer mnth = updatedEntity.getJrnlDay().getMnth();
-        final String cacheKey = AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth;
-        final Map<Integer, JrnlState> diaryMap = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myDreamStateMap", cacheKey);
-        if (diaryMap != null) {
-            final JrnlState state = diaryMap.get(postNo);
-            if (state != null) {
-                if (patchDto.getImprtc() != null) state.setImprtcYn(patchDto.getImprtc() ? "Y" : "N");
-                if (patchDto.getCollapsed() != null) state.setCollapsedYn(patchDto.getCollapsed() ? "Y" : "N");
-                if (patchDto.getResolved() != null) state.setResolvedYn(patchDto.getResolved() ? "Y" : "N");
-                EhCacheUtils.put("myDreamStateMap", cacheKey, diaryMap);
-            }
-        }
-
-        return ServiceResponse.builder()
-                .rslt(true)
-                .build();
     }
 }

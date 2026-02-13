@@ -7,6 +7,6 @@
     <button type="button"
             class="btn btn-sm btn-secondary ms-2 px-3 toggle-dream-btn"
             onclick="dF.JrnlDream.toggle({{postNo}}, this)">
-        <i class="bi bi-arrows-{{#ifYn collapsedYn}}expand{{else}}collapse{{/ifYn}} pe-0 dream-toggle-icon"></i>
+        <i class="bi bi-arrows-{{#if (hasState state 'COLLAPSED')}}expand{{else}}collapse{{/if}} pe-0 dream-toggle-icon"></i>
     </button>
 </script>

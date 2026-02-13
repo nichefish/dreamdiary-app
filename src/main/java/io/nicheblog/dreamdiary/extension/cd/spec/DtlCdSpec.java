@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.extension.cd.spec;
 
 import io.nicheblog.dreamdiary.extension.cd.entity.DtlCdEntity;
-import io.nicheblog.dreamdiary.global.intrfc.spec.embed.BaseStateSpec;
+import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 import org.springframework.stereotype.Component;
 
 /**
@@ -15,6 +15,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class DtlCdSpec
-        implements BaseStateSpec<DtlCdEntity> {
+        implements BaseSpec<DtlCdEntity> {
     //
 }

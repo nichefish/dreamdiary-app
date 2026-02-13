@@ -14,7 +14,7 @@ import io.nicheblog.dreamdiary.extension.clsf.meta.repository.jpa.MetaContentRep
 import io.nicheblog.dreamdiary.extension.clsf.meta.repository.jpa.MetaSmpRepository;
 import io.nicheblog.dreamdiary.extension.clsf.meta.spec.MetaContentSpec;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseCrudService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class MetaContentService
-        implements BaseCrudService<MetaContentDto, MetaContentDto, Integer, MetaContentEntity> {
+        implements BaseDtoWritableService<MetaContentDto, MetaContentDto, Integer, MetaContentEntity> {
 
     @Getter
     private final MetaContentRepository repository;

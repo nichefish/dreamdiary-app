@@ -2,7 +2,6 @@ package io.nicheblog.dreamdiary.domain.admin.popup.spec;
 
 import io.nicheblog.dreamdiary.domain.admin.popup.entity.PopupEntity;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseCrudSpec;
-import io.nicheblog.dreamdiary.global.intrfc.spec.embed.BaseStateSpec;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -27,8 +26,7 @@ import java.util.Map;
 @Component
 @Log4j2
 public class PopupSpec
-        implements BaseCrudSpec<PopupEntity>,
-                   BaseStateSpec<PopupEntity> {
+        implements BaseCrudSpec<PopupEntity> {
 
     /**
      * 인자별로 구체적인 검색 조건을 세팅한다. (override)

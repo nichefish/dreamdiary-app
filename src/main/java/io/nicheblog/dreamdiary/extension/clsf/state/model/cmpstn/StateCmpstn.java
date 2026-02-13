@@ -1,13 +1,17 @@
 package io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn;
 
+import io.nicheblog.dreamdiary.extension.clsf.state.StateCd;
+import io.nicheblog.dreamdiary.extension.clsf.state.model.StateDto;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * StateCmpstn
  * <pre>
- *  상태 관리(사용여부, 정렬순서) 관련 정보 위임 (dto level)
+ *  위임 :: 상태 관련 정보. (dto level)
  * </pre>
  *
  * @author nichefish
@@ -21,10 +25,49 @@ import java.io.Serializable;
 public class StateCmpstn
         implements Serializable {
 
-    /** 정렬 순서 */
-    private Integer sortOrdr;
+    /** 컨텐츠 타입 :: 상위에서 주입받음. */
+    private String contentType;
 
-    /** 사용 여부 (Y/N) */
-    @Builder.Default
-    private String useYn = "N";
+    /** 상태 목록 */
+    private List<StateDto> list;
+
+    /**
+     * 상태 추가
+     * @param stateCd 상태 코드
+     */
+    public void put(final StateCd stateCd) {
+        if (stateCd == null) return;
+        if (this.list == null) this.list = new ArrayList<>();
+        final boolean exists = this.list.stream()
+            .anyMatch(s -> stateCd.key.equals(s.getStateCd()));
+
+        if (exists) return;
+
+        this.list.add(new StateDto(stateCd));
+    }
+
+    /**
+     * 상태 제거
+     * @param stateCd 상태 코드
+     */
+    public void remove(final StateCd stateCd) {
+        if (stateCd == null) return;
+        if (this.list == null) return;
+
+        this.list.removeIf(s -> stateCd.key.equals(s.getStateCd()));
+
+        if (this.list.isEmpty()) this.list = null; // 선택 사항: 직렬화/메모리 정리 목적
+    }
+
+    /**
+     * toggle
+     */
+    public void apply(final StateCd stateCd, final Boolean isEnabled) {
+        if (stateCd == null) return;
+        if (Boolean.TRUE.equals(isEnabled)) {
+            put(stateCd);
+        } else {
+            remove(stateCd);
+        }
+    }
 }

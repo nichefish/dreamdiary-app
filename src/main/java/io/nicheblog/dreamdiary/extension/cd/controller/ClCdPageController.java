@@ -25,7 +25,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * ClCdPageController
@@ -74,7 +73,7 @@ public class ClCdPageController
         // 상세/수정 화면에서 목록 화면 복귀시 세션에 목록 검색 인자 저장해둔 거 있는지 체크
         searchParam = (ClCdSearchParam) CmmUtils.Param.checkPrevSearchParam(baseUrl, searchParam);
         // 페이징 정보 생성:: 공백시 pageSize=10, pageNo=1
-        final Sort sort = Sort.by(Sort.Direction.ASC, "state.sortOrdr");
+        final Sort sort = Sort.by(Sort.Direction.ASC, "idx");
         final PageRequest pageRequest = CmmUtils.Param.getPageRequest(searchParam, sort, model);
         // 목록 조회
         final Page<ClCdDto> clCdList = clCdService.getPageDto(searchParam, pageRequest);
@@ -92,41 +91,5 @@ public class ClCdPageController
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return "/view/domain/admin/cd/cl_cd_list";
-    }
-
-    /**
-     * 분류 코드(CL_CD) 관리(useYn=N 포함) 상세 화면 조회
-     * (관리자MNGR만 접근 가능.)
-     *
-     * @param key 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
-     * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
-     * @return {@link String} -- 화면 뷰 경로
-     */
-    @GetMapping(Url.CL_CD_DTL)
-    @Secured({Constant.ROLE_MNGR})
-    public String clCdDtl(
-            final @RequestParam("clCd") String key,
-            final LogActvtyParam logParam,
-            final ModelMap model
-    ) throws Exception {
-
-        /* 사이트 메뉴 설정 */
-        model.addAttribute("menuLabel", SiteMenu.CD);
-        model.addAttribute("pageNm", PageNm.DTL);
-
-        // 객체 조회 및 모델에 추가
-        final ClCdDto cmmClCd = clCdService.getDtlDto(key);
-        model.addAttribute("clCd", cmmClCd);
-        // 코드 데이터 모델에 추가
-        dtlCdService.setCdListToModel(Constant.CL_CTGR_CD, model);
-
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-        // 로그 관련 세팅
-
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
-
-        return "/view/domain/admin/cd/cl_cd_dtl";
     }
 }

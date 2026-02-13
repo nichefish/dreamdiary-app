@@ -29,6 +29,9 @@ public class ServiceResponse {
     @Builder.Default
     private Boolean rslt = false;
 
+    /** 결과 (객체) */
+    private String rsltSts;
+
     /** message */
     private String message;
 
@@ -46,6 +49,8 @@ public class ServiceResponse {
 
     /** 결과 (객체) */
     private Object rsltObj;
+
+
 
     /** 결과 (문자열) */
     private String rsltStr;

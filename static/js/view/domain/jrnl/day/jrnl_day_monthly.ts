@@ -19,6 +19,7 @@ const Page: Page = (function(): Page {
             dF.Comment.modal.init({
                 "refreshFunc": dF.JrnlDay.yyMnthListAjax
             });
+            dF.State.init();
 
             dF.JrnlDayAside.init();
             // 목록 조회
@@ -27,6 +28,7 @@ const Page: Page = (function(): Page {
             dF.JrnlDayTag.listAjax();
             dF.JrnlDiaryTag.listAjax();
             dF.JrnlDreamTag.listAjax();
+
             // 일기/꿈 키워드 검색에 엔터키 처리
             cF.util.enterKey("#diaryKeyword", dF.JrnlDiary.keywordListAjax);
             cF.util.enterKey("#dreamKeyword", dF.JrnlDream.keywordListAjax);

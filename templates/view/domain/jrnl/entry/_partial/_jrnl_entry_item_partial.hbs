@@ -10,7 +10,6 @@
                 <span class="text-success"><@spring.message 'txt.diary'/></span>
                 <span class="position-relative d-inline-block">
                   <i class="bi bi-book fs-4 text-success"></i>
-                  <i class="bi bi-check fs-2 text-success position-absolute top-25 start-50 translate-middle"></i>
                 </span>
             {{else}}
                 <span><@spring.message 'txt.diary'/></span>
@@ -21,23 +20,22 @@
         </div>
         <div class="col-3 d-none d-md-flex align-items-center gap-2">
             {{> jrnl_diary_reg_btn_partial this}}
+            {{> jrnl_entry_copy_btn_partial this}}
             {{> jrnl_entry_context_btn_partial this}}
             {{> jrnl_entry_toggle_btn_partial this}}
         </div>
     </div>
-    <div class="jrnl-entry-item" data-id="{{postNo}}" data-collapsed="{{collapsedYn}}">
-        <div class="jrnl-entry-cn {{#ifYn collapsedYn}}collapsed{{/ifYn}}">
+    <div class="jrnl-entry-item" data-id="{{postNo}}" data-collapsed="{{hasState state 'COLLAPSED'}}">
+        <div class="jrnl-entry-cn {{#if (hasState state 'COLLAPSED')}}collapsed{{/if}}">
             {{#each jrnlDiaryList}}
                 {{> jrnl_diary_item_partial this}}
             {{/each}}
         </div>
-        {{#if (exists tag.list)}}
-            <div class="tags jrnl-entry-tags ms-2 mt-3">
-                <i class="bi bi-tag"></i>
-                {{#tag.list}}
-                    {{> tag_list_partial this module="dF.JrnlDreamTag"}}
-                {{/tag.list}}
-            </div>
-        {{/if}}
+        <div class="tags jrnl-entry-tags ms-2 mt-3 {{#unless (hasState state 'COLLAPSED')}}d-none{{/unless}}">
+            <i class="bi bi-tag"></i>
+            {{#tag.list}}
+                {{> tag_list_partial this module="dF.JrnlDreamTag"}}
+            {{/tag.list}}
+        </div>
     </div>
 </script>

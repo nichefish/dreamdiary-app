@@ -1,5 +1,16 @@
 # CHANGELOG
 
+### 2026-01-01 | v0.15.3
+- 신규 기능
+  - 상태(state) 기능 추가
+    - 상태 컬럼을 별도 상태 테이블로 분리 및 마이그레이션
+  - 저널 항목(jrnl-entry) 글 복사 버튼 추가. (하위 일기 전체 복사)
+- 개선 사항
+  - 인터페이스 개편.
+    - BaseEntityReadable/WritableService
+    - BaseDtoReadable/WritableService
+    - BaseMultipartWritableService
+
 ### 2025-12-28 | v0.15.2
 - 개선 사항
   - 저널 일기, 꿈, 해석에 '참조 여부' 상태 컬럼 추가.

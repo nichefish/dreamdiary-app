@@ -1,7 +1,5 @@
 package io.nicheblog.dreamdiary.domain.board.def.model;
 
-import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
-import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.*;
@@ -27,7 +25,7 @@ import javax.validation.constraints.Size;
 @EqualsAndHashCode(callSuper = false)
 public class BoardDefDto
         extends BaseAuditDto
-        implements Identifiable<String>, StateCmpstnModule {
+        implements Identifiable<String> {
 
     /** 게시판 정의 */
     @NotBlank
@@ -45,13 +43,14 @@ public class BoardDefDto
     /** 설명 */
     private String dc;
 
+    /** 사용 여부 (Y/N) */
+    @Builder.Default
+    private String useYn = "N";
+
     /* ----- */
 
     @Override
     public String getKey() {
         return this.boardDef;
     }
-
-    /** 위임 :: 상태 관리 모듈 */
-    public StateCmpstn state;
 }
