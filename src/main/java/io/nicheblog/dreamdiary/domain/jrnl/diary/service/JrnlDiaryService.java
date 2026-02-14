@@ -129,7 +129,7 @@ public class JrnlDiaryService
     @Override
     public void preRegist(final JrnlDiaryPostDto registDto) throws Exception {
         // 인덱스(정렬순서) 처리
-        final Integer lastIndex = repository.findLastIndexByJrnlDay(registDto.getJrnlEntryNo()).orElse(0);
+        final Integer lastIndex = repository.findLastIndexByJrnlEntry(registDto.getJrnlEntryNo()).orElse(0);
         registDto.setIdx(lastIndex + 1);
     }
 

@@ -29,6 +29,9 @@ public interface AppUrl {
     /** 저널 일자 (달력) */
     String JRNL_DAY_CAL = Prefix.APP + "/jrnl/day/cal.do";
 
+    /** 저널 일기 (검색) */
+    String JRNL_DIARY_SEARCH = Prefix.APP + "/jrnl/diary/search.do";
+
     /** 저널 주제 */
     String JRNL_SBJCT_LIST = Prefix.APP + "/jrnl/sbjct/list.do";
     String JRNL_SBJCT_REG_FORM = Prefix.APP + "/jrnl/sbjct/reg-form.do";

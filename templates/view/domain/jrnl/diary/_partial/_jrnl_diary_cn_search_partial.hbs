@@ -2,7 +2,7 @@
  * 저널 일기(jrnl_diary) - 내용 partial
  -->
 
-<script type="text/x-handlebars-template" id="jrnl_diary_cn_partial">
+<script type="text/x-handlebars-template" id="jrnl_diary_cn_search_partial">
     <div class="{{#if (exists cnClass)}}{{cnClass}}{{else}}cn {{#if (hasState state 'COLLAPSED')}}collapsed{{/if}}{{/if}}">
         {{{markdownCn}}}
     </div>
@@ -15,7 +15,7 @@
         <div class="tags ms-2 mt-3">
             <i class="bi bi-tag"></i>
         {{#tag.list}}
-            {{> tag_list_partial this module="dF.JrnlDiaryTag"}}
+            {{> tag_list_partial this module="dF.JrnlDiarySearch"}}
         {{/tag.list}}
         </div>
     {{/if}}
