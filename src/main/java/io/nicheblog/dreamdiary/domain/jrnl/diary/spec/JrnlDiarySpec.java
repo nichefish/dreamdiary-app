@@ -12,6 +12,8 @@ import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseClsfSpec;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.tika.utils.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.*;
@@ -108,9 +110,21 @@ public class JrnlDiarySpec
                     // 99 = 모든 월
                     predicate.add(builder.equal(jrnlDayJoin.get("postNo"), value));
                     continue;
-                case "diaryKeyword":
+                case "searchKeywords":
                     // 내용 like 검색
-                    predicate.add(builder.like(root.get("cn"), "%" + value + "%"));
+                    if (!(value instanceof List<?> rawList)) continue;
+                    final List<Predicate> likeList = new ArrayList<>();
+                    final Expression<String> cnLowerExp = builder.lower(root.get("cn"));
+                    for (final Object obj : rawList) {
+                        if (obj == null) continue;
+                        final String keyword = obj.toString().trim();
+                        if (StringUtils.isEmpty(keyword)) continue;
+
+                        likeList.add(builder.like(cnLowerExp, "%" + keyword.toLowerCase() + "%"));
+                    }
+                    if (CollectionUtils.isEmpty(likeList)) continue;
+
+                    predicate.add(builder.and(likeList.toArray(new Predicate[0])));
                     continue;
                 case "tagNo":
                     // 특정 태그된 꿈만 조회

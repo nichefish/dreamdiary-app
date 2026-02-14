@@ -117,7 +117,7 @@
                         <input type="text" name="diaryKeyword" id="diaryKeyword" class="form-control"
                                value="" placeholder="<@spring.message 'txt.jrnl.diary.keyword.search'/>" maxlength="200"/>
                         <button type="button" id="jrnl_diary_search_btn" class="btn btn-sm btn-outline btn-light-primary px-4"
-                                onclick="dF.JrnlDiary.keywordListAjax();"
+                                onclick="dF.JrnlDiary.searchPopup();"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.txt.jrnl.diary.keyword.search'/>">
                             <i class="bi bi-search pe-0"></i>
                         </button>

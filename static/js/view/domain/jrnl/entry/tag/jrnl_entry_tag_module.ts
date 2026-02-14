@@ -76,6 +76,15 @@ dF.JrnlEntryTag = (function(): dfModule {
          * @param {string|number} tagNo - 조회할 태그 번호.
          * @param tagNm 태그 이름
          */
+        select: function(tagNo: string|number, tagNm: string): void {
+            dF.JrnlEntryTag.dtlModal(tagNo, tagNm);
+        },
+
+        /**
+         * 상세 모달 호출
+         * @param {string|number} tagNo - 조회할 태그 번호.
+         * @param tagNm 태그 이름
+         */
         dtlModal: function(tagNo: string|number, tagNm: string): void {
             event.stopPropagation();
             if (isNaN(Number(tagNo))) return;

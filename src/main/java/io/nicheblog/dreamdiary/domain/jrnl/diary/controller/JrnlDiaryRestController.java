@@ -62,6 +62,8 @@ public class JrnlDiaryRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
+        if (searchParam.isEmpty()) throw new IllegalArgumentException("검색 조건 필요");
+
         final List<JrnlDiaryDto> jrnlDiaryList = jrnlDiaryService.getListDtoWithCache(searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;

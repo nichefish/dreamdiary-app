@@ -4,6 +4,8 @@ import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 /**
  * JrnlDiarySearchParam
  * <pre>
@@ -33,12 +35,25 @@ public class JrnlDiarySearchParam
     /** 컨텐츠 타입 */
     private String contentType;
 
-    /** 일기 키워드 */
-    private String diaryKeyword;
+    /** 일기 검색 키워드 */
+    private List<String> searchKeywords;
 
     /** 태그 번호 */
     private Integer tagNo;
 
     /** 중요 여부 **/
     private String state;
+
+    /**
+     * 파라미터 부재 판별
+     * @return 인자 존재 여부
+     */
+    public boolean isEmpty() {
+        boolean hasKeyword = searchKeywords != null && searchKeywords.stream().anyMatch(k -> k != null && !k.trim().isEmpty());
+        boolean hasDate = yy != null || mnth != null || jrnlDayNo != null;
+        boolean hasTag = tagNo != null;
+        boolean hasState = state != null && !state.isBlank();
+
+        return !(hasKeyword || hasDate || hasTag || hasState);
+    }
 }
