@@ -39,15 +39,12 @@ public interface ApiUrl {
     /** 저널 해석 태그 */
     String JRNL_INTRPT_TAGS = Prefix.API + "/jrnl/intrpt/tags";
     String JRNL_INTRPT_TAG_GROUP_LIST_AJAX = Prefix.API + "/jrnl/intrpt/tag/group-list";
-    String JRNL_INTRPT_TAG = Prefix.API + "/jrnl/intrpt/{tagNo}";
+    String JRNL_INTRPT_TAG = Prefix.API + "/jrnl/intrpt/tag/{tagNo}";
     String JRNL_INTRPT_TAG_CTGR_MAP = Prefix.API + "/jrnl/intrpt/tag/ctgr-map";
 
     /** 저널 항목 */
     String JRNL_ENTRIES = Prefix.API + "/jrnl/entries";
     String JRNL_ENTRY = Prefix.API + "/jrnl/entry/{postNo}";
-    /** 저널 항목 태그 */
-    String JRNL_ENTRY_TAGS = Prefix.API + "/jrnl/dream/tags";
-    String JRNL_ENTRY_TAG_GROUP_LIST_AJAX = Prefix.API + "/jrnl/entry/tag/group-list";
 
     /** 저널 일기 */
     String JRNL_DIARIES = Prefix.API + "/jrnl/diaries";

@@ -4,11 +4,6 @@
 
 <#import "/layout/layout_popup.ftlh" as layout >
 
-<#--toolbar::버튼 추가-->
-<#assign toolbar>
-    <#include "/view/domain/jrnl/day/_jrnl_day_page_header.ftlh">
-</#assign>
-
 <@layout.layout toolbar=toolbar!"">
 
 <script>
@@ -50,10 +45,6 @@
 <script type="text/javascript" src="/js/common/helper/tinymce.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/lib/prism/js/prism.js"></script>
 <#include "/view/global/_tinymce_img.ftlh">
-
-<#--include::fullcalendar-->
-<script type="text/javascript" src="/metronic/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
-<script type="text/javascript" src="/js/common/helper/fullcalendar.js?${releaseDate!}"></script>
 
 <#--include::jrnl_day_module-->
 <#include "/view/domain/jrnl/day/_modal/_jrnl_day_reg_modal.ftlh">
