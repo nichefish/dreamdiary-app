@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * JrnlDiarySearchParam
@@ -40,6 +41,7 @@ public class JrnlDiarySearchParam
 
     /** 태그 번호 */
     private Integer tagNo;
+    private List<Integer> tagNos;
 
     /** 중요 여부 **/
     private String state;
@@ -50,10 +52,11 @@ public class JrnlDiarySearchParam
      */
     public boolean isEmpty() {
         boolean hasKeyword = searchKeywords != null && searchKeywords.stream().anyMatch(k -> k != null && !k.trim().isEmpty());
+        boolean hasTagNos = tagNos != null && tagNos.stream().anyMatch(Objects::nonNull);
         boolean hasDate = yy != null || mnth != null || jrnlDayNo != null;
         boolean hasTag = tagNo != null;
         boolean hasState = state != null && !state.isBlank();
 
-        return !(hasKeyword || hasDate || hasTag || hasState);
+        return !(hasKeyword || hasTagNos || hasDate || hasTag || hasState);
     }
 }

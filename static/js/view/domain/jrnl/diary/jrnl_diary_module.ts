@@ -21,20 +21,25 @@ dF.JrnlDiary = (function(): dfModule {
         },
 
         initialized: false,
+        initPromise: null,
         inKeywordSearchMode: false,
         tagify: null,
 
         /**
          * initializes module.
+         * @return Promise<void>
          */
-        init: function(): void {
-            if (dF.JrnlDiary.initialized) return;
+        init: async function(): Promise<void> {
+            if (this.initPromise) return this.initPromise;
 
-            /* initialize submodules. */
-            dF.JrnlDiaryTag.init();
+            /* initialize modules. */
+            this.initPromise = (async () => {
+                await dF.JrnlDiaryTag.init();
+                this.initialized = true;
+                console.log("'dF.JrnlDiary' module initialized.");
+            })();
 
-            dF.JrnlDiary.initialized = true;
-            console.log("'dF.JrnlDiary' module initialized.");
+            return this.initPromise;
         },
 
         /**

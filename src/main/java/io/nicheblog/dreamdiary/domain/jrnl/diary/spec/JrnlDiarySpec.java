@@ -65,6 +65,7 @@ public class JrnlDiarySpec
      *
      * @param searchParamMap 검색 파라미터 맵
      * @param root 검색할 엔티티의 Root 객체
+     * @param query - CriteriaQuery 객체
      * @param builder 검색 조건을 생성하는 CriteriaBuilder 객체
      * @return {@link List} -- 설정된 검색 조건(Predicate) 리스트
      */
@@ -72,6 +73,7 @@ public class JrnlDiarySpec
     public List<Predicate> getPredicateWithParams(
             final Map<String, Object> searchParamMap,
             final Root<JrnlDiaryEntity> root,
+            final CriteriaQuery<?> query,
             final CriteriaBuilder builder
     ) throws Exception {
 
@@ -110,9 +112,11 @@ public class JrnlDiarySpec
                     // 99 = 모든 월
                     predicate.add(builder.equal(jrnlDayJoin.get("postNo"), value));
                     continue;
-                case "searchKeywords":
+                case "searchKeywords": {
                     // 내용 like 검색
                     if (!(value instanceof List<?> rawList)) continue;
+                    if (CollectionUtils.isEmpty(rawList)) continue;
+
                     final List<Predicate> likeList = new ArrayList<>();
                     final Expression<String> cnLowerExp = builder.lower(root.get("cn"));
                     for (final Object obj : rawList) {
@@ -126,12 +130,42 @@ public class JrnlDiarySpec
 
                     predicate.add(builder.and(likeList.toArray(new Predicate[0])));
                     continue;
-                case "tagNo":
+                }
+                case "tagNo": {
                     // 특정 태그된 꿈만 조회
                     final Join<JrnlDiaryEntity, TagEmbed> tagJoin = root.join("tag", JoinType.INNER);
                     final Join<TagEmbed, TagContentEntity> tagContentJoin = tagJoin.join("list", JoinType.INNER);
                     predicate.add(builder.equal(tagContentJoin.get("regstrId"), AuthUtils.getLgnUserId()));
                     predicate.add(builder.equal(tagContentJoin.get("refTagNo"), value));
+                    continue;
+                }
+                case "tagNos":
+                    // 내용 like 검색
+                    if (!(value instanceof List<?> rawList)) continue;
+                    if (CollectionUtils.isEmpty(rawList)) continue;
+
+                    final Join<JrnlDiaryEntity, TagEmbed> tagJoin = root.join("tag", JoinType.INNER);
+                    final Join<TagEmbed, TagContentEntity> tagContentJoin = tagJoin.join("list", JoinType.INNER);
+                    predicate.add(builder.equal(tagContentJoin.get("regstrId"), AuthUtils.getLgnUserId()));
+
+                    for (final Object obj : rawList) {
+                        if (obj == null) continue;
+                        final Integer tagNo = (Integer) obj;
+
+                        Subquery<Long> sub = query.subquery(Long.class);
+                        Root<TagContentEntity> subRoot = sub.from(TagContentEntity.class);
+
+                        sub.select(subRoot.get("refPostNo"));
+                        sub.where(
+                            builder.and(
+                                builder.equal(subRoot.get("refPostNo"), root.get("postNo")),
+                                builder.equal(subRoot.get("refTagNo"), tagNo),
+                                builder.equal(subRoot.get("regstrId"), AuthUtils.getLgnUserId())
+                            )
+                        );
+
+                        predicate.add(builder.exists(sub));
+                    }
                     continue;
                 case "state":
                     // 상태 검색

@@ -59,6 +59,7 @@ public class JrnlDiaryCacheEvictor
             this.evictMyCacheForPeriod("myJrnlDayCalList", yy, mnth);
             // jrnl_diary_tag
             EhCacheUtils.evictMyCacheAll("myJrnlDiaryTagCtgrMap");
+            EhCacheUtils.evictMyCacheAll("myJrnlDiaryTagList");
             EhCacheUtils.evictMyCacheAll("myJrnlDiaryTagDtl");
 
             // 태그 캐시 처리

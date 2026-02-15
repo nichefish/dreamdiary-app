@@ -15,50 +15,103 @@ dF.JrnlDiarySearch = (function(): dfModule {
         init: function(): void {
             if (dF.JrnlDiarySearch.initialized) return;
 
-            dF.JrnlDiarySearch.initKeyword();
-            dF.JrnlDiarySearch.search();
             dF.JrnlDiarySearch.initialized = true;
             console.log("'dF.JrnlDiarySearch' module initialized.");
         },
 
+        initSearch: function(): void {
+            dF.JrnlDiarySearch.initKeyword();
+            dF.JrnlDiarySearch.initTag();
+            dF.JrnlDiarySearch.search();
+        },
+
         /**
-         * form init
+         * keyword init
          */
         initKeyword: function(): void {
             dF.JrnlDiarySearch.clearKeywordFields();
 
-            const params = new URLSearchParams(window.location.search);
+            const params: URLSearchParams = new URLSearchParams(window.location.search);
             const keywords: string[] = params.getAll("searchKeywords");
             if (keywords.length > 0) {
-                keywords.forEach(k => dF.JrnlDiarySearch.addKeywordField(k));
+                keywords.forEach((k: string) => dF.JrnlDiarySearch.addKeyword(k));
             } else {
-                dF.JrnlDiarySearch.addKeywordField();
+                dF.JrnlDiarySearch.addKeyword();
+            }
+            $("#keywordDisplay div").removeClass("text-muted").addClass("text-primary");
+        },
+
+        /**
+         * tag init
+         */
+        initTag: function(): void {
+            const params: URLSearchParams = new URLSearchParams(window.location.search);
+            const tagNos: string[] = params.getAll("tagNos");
+            if (tagNos.length > 0) {
+                tagNos.forEach((tagNo: string): void => {
+                    const tag = dF.JrnlDiaryTag.list.find(
+                        (t: any): boolean => t.tagNo === Number(tagNo)
+                    );
+                    if (!tag) return;
+                    dF.JrnlDiarySearch.select(tagNo, tag.tagNm);
+                });
             }
         },
 
         /**
-         * 키워드 검색 (Ajax)
+         * 키워드 추가
+         * @param {string} [value]
          */
-        addKeywordField: function(value = ''): void {
-            const container: HTMLElement = document.getElementById("jrnlKeywordContainer");
-            const wrapper: HTMLDivElement = document.createElement("div");
-            wrapper.className = "keyword-wrapper d-flex align-items-center gap-2";
-            wrapper.innerHTML = `
-                <input type="text" name="searchKeywords" class="form-control form-control-sm" placeholder="검색어 입력" value="${value}"/>
-                <button type="button" class="btn btn-sm btn-light-danger btn-outlined py-2 px-3 cursor-pointer"
-                        onclick="dF.JrnlDiarySearch.removeKeywordField(this);"
-                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.jrnl.day'/> <@spring.message 'bs.tooltip.modal.mdf'/>">
-                    <i class="bi bi-trash p-0"></i>
-                </button>
+        addKeyword: function(value?: string): void {
+            value = value ?? cF.util.getInputValue("#keywordInput");
+            value = value?.trim();
+            if (!value) return;
+
+            const normalized: string = value.toLowerCase();
+            const exists: boolean = $("#jrnlKeywordHiddenContainer input[name='searchKeywords']")
+                .filter(function(): boolean {
+                    const v = $(this).val() as string | undefined;
+                    return v?.toLowerCase() === normalized;
+                }).length > 0;
+            if (exists) return;
+
+            const inputContainer: HTMLElement = document.getElementById("jrnlKeywordHiddenContainer");
+            const input: HTMLInputElement = document.createElement("input");
+            input.type = "hidden";
+            input.name = "searchKeywords"
+            input.value = value;
+            inputContainer.appendChild(input);
+
+            const statusContainer: HTMLElement = document.getElementById("keywordDisplay");
+            const statusBadge: HTMLDivElement = document.createElement("div");
+            statusBadge.className = "badge badge-light-secondary keyword-wrapper fw-lighter d-flex align-items-center gap-2 px-3 py-2 text-muted";
+            statusBadge.dataset.value = value;
+            statusBadge.innerHTML = `
+                ${value}
+                <i class="bi bi-x cursor-pointer" onclick="dF.JrnlDiarySearch.removeKeyword('${value}')"></i>
             `;
-            container.appendChild(wrapper);
+            statusContainer.appendChild(statusBadge);
+            $("#msgDisplay").empty();
         },
 
         /**
-         * 키워드 검색 (Ajax)
+         * 키워드 삭제
          */
-        removeKeywordField: function(btn: HTMLElement): void {
-            btn.closest("div.keyword-wrapper")?.remove();
+        removeKeyword: function(value: string): void {
+            // hidden input 제거
+            $("#jrnlKeywordHiddenContainer input[name='searchKeywords']")
+                .filter(function () {
+                    return $(this).val() === value;
+                })
+                .remove();
+            // 칩 제거
+            $("#keywordDisplay div.keyword-wrapper")
+                .filter(function () {
+                    return $(this).attr("data-value") === value;
+                })
+                .remove();
+            // 재검색
+            dF.JrnlDiarySearch.search();
         },
 
         /**
@@ -90,11 +143,12 @@ dF.JrnlDiarySearch = (function(): dfModule {
                     ajaxData[item.name] = item.value;
                 }
             });
-            $("#msgDiv").empty();
+            $("#msgDisplay").empty();
             const hasKeyword: boolean = Array.isArray(ajaxData["searchKeywords"]) ? ajaxData["searchKeywords"]?.some(k => cF.util.isNotEmpty(k?.trim())) : cF.util.isNotEmpty(ajaxData["searchKeywords"]);
             const hasTag: boolean = Array.isArray(ajaxData["tagNos"]) ? ajaxData["tagNos"].length > 0 : !!ajaxData["tagNos"];
             if (!hasKeyword && !hasTag) {
-                $("#msgDiv").text("검색 조건을 하나 이상 입력하세요.");
+                $("#msgDisplay").text("검색 조건을 하나 이상 입력하세요.");
+                cF.handlebars.template([], "jrnl_diary_search");
                 return;
             }
             const url: string = Url.JRNL_DIARIES;
@@ -120,31 +174,56 @@ dF.JrnlDiarySearch = (function(): dfModule {
                     }
                 });
                 history.replaceState(null, "", window.location.pathname + "?" + params.toString());
+                $("#keywordDisplay div.keyword-wrapper").removeClass("text-muted").addClass("text-primary");
+                $("#keywordDisplay div.keyword-wrapper").removeClass("badge-light-secondary").addClass("badge-light-primary");
             });
         },
 
         /**
-         * View Model 구성
-         * @param {Object} diary
-         * @param {String} profileName
+         * 태그 선택
+         * @param {string|number} tagNo - 조회할 태그 번호.
+         * @param tagNm 태그 이름
          */
-        buildViewModel: function(diary, profileName) {
-            const profile: any = dF.JrnlDiary.RENDER_PROFILE[profileName];
+        select: function(tagNo: string|number, tagNm: string): void {
+            const inputContainer: HTMLElement = document.getElementById("jrnlTagNoHiddenContainer");
+            const input: HTMLInputElement = document.createElement("input");
+            input.type = "hidden";
+            input.name = "tagNos"
+            input.value = tagNo as string;
+            inputContainer.appendChild(input);
 
-            if (!profile) throw new Error(`Unknown render profile: ${profileName}`);
+            const tagContainer: HTMLElement = document.getElementById("tagDisplay");
+            const tagBadge: HTMLDivElement = document.createElement("div");
+            tagBadge.className = "badge badge-light-secondary tag-wrapper fw-lighter d-flex align-items-center gap-2 px-3 py-2 text-muted";
+            tagBadge.dataset.value = tagNo as string;
+            tagBadge.innerHTML = `
+                #${tagNm}
+                <i class="bi bi-x cursor-pointer" onclick="dF.JrnlDiarySearch.removeTag('${tagNo}')"></i>
+            `;
+            tagContainer.appendChild(tagBadge);
+            $("#msgDisplay").empty();
 
-            return {
-                ...diary,
-                view: profile,
-                cnClass: [
-                    'cn',
-                    profile.collapsed && diary.state?.includes('COLLAPSED') ? 'collapsed' : null
-                ].filter(Boolean).join(' ')
-            };
+            dF.JrnlDiarySearch.search();
         },
 
-        select: function() {
-
-        }
+        /**
+         * 키워드 삭제
+         */
+        removeTag: function(value: string): void {
+            // hidden input 제거
+            $("#jrnlTagNoHiddenContainer input[name='tagNos']")
+                .filter(function () {
+                    return $(this).val() === value;
+                })
+                .remove();
+            // 칩 제거
+            $("#tagDisplay div.tag-wrapper")
+                .filter(function () {
+                    return $(this).attr("data-value") === value;
+                })
+                .remove();
+            // 재검색
+            dF.JrnlDiarySearch.search();
+        },
     }
 })();

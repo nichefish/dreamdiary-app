@@ -40,9 +40,9 @@ public interface BaseClsfSpec<Entity extends BaseClsfEntity>
             List<Predicate> predicate = new ArrayList<>();
             try {
                 // basePredicte 먼저 처리 후 나머지에 대해 처리
-                basePredicate = getBasePredicate(searchParamMap, root, builder);
-                clsfPredicate = getClsfPredicate(searchParamMap, root, builder);
-                predicate = getPredicateWithParams(searchParamMap, root, builder);
+                basePredicate = getBasePredicate(searchParamMap, root, query, builder);
+                clsfPredicate = getClsfPredicate(searchParamMap, root, query, builder);
+                predicate = getPredicateWithParams(searchParamMap, root, query, builder);
             } catch (final Exception e) {
                 e.printStackTrace();
             }
@@ -58,12 +58,14 @@ public interface BaseClsfSpec<Entity extends BaseClsfEntity>
      * 
      * @param searchParamMap 검색 조건을 포함하는 매개변수 맵
      * @param root 엔티티의 루트 객체
+     * @param query - CriteriaQuery 객체
      * @param builder CriteriaBuilder 객체
      * @return {@link List} -- 생성된 검색 조건의 리스트
      */
     default List<Predicate> getClsfPredicate(
             final Map<String, Object> searchParamMap,
             final Root<Entity> root,
+            final CriteriaQuery<?> query,
             final CriteriaBuilder builder
     ) throws Exception {
 
