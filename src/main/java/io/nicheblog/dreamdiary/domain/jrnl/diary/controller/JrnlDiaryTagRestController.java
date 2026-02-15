@@ -89,7 +89,13 @@ public class JrnlDiaryTagRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final List<TagDto> tagList = jrnlDiaryTagService.getDiarySizedListDto(searchParam.getYy(), searchParam.getMnth());
+        List<TagDto> tagList;
+        if (searchParam.hasYyMnth()) {
+            tagList = jrnlDiaryTagService.getDiarySizedListDto(AuthUtils.getLgnUserId(), searchParam.getYy(), searchParam.getMnth());
+        } else {
+            tagList = jrnlDiaryTagService.getTagList(AuthUtils.getLgnUserId());
+        }
+
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -115,7 +121,7 @@ public class JrnlDiaryTagRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final Map<String, List<TagDto>> tagGroupMap = jrnlDiaryTagService.getDiarySizedGroupListDto(searchParam.getYy(), searchParam.getMnth());
+        final Map<String, List<TagDto>> tagGroupMap = jrnlDiaryTagService.getDiarySizedGroupListDto(AuthUtils.getLgnUserId(), searchParam.getYy(), searchParam.getMnth());
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

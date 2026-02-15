@@ -9,10 +9,11 @@ const Page: Page = (function(): Page {
     return {
         /**
          * Page 객체 초기화
+         * @return Promise<void>
          */
-        init: function(): void {
+         init: async function(): Promise<void> {
             /* initialize modules. */
-            dF.JrnlDiary.init();
+            await dF.JrnlDiary.init();
             dF.JrnlDiarySearch.init();
             dF.Comment.modal.init({
                 "refreshFunc": dF.JrnlDay.yyMnthListAjax
@@ -20,6 +21,8 @@ const Page: Page = (function(): Page {
             dF.State.init();
             // 목록 조회
             dF.JrnlDiarySearch.initKeyword();
+            dF.JrnlDiarySearch.initTag();
+            dF.JrnlDiarySearch.search();
         },
     }
 })();

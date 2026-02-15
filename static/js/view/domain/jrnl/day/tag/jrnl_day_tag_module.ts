@@ -23,7 +23,7 @@ dF.JrnlDayTag = (function(): dfModule {
         },
 
         /**
-         * 태그 카테고리 정보 조회
+         * 태그 카테고리 맵 조회
          */
         getCtgrMap: function(): void {
             const url: string = Url.JRNL_DAY_TAG_CTGR_MAP;

@@ -22,6 +22,9 @@ dF.JrnlDreamTag = (function(): dfModule {
             console.log("'dF.JrnlDreamTag' module initialized.");
         },
 
+        /**
+         * 태그 카테고리 맵 조회
+         */
         getCtgrMap: function(): void {
             const url: string = Url.JRNL_DREAM_TAG_CTGR_MAP;
             cF.ajax.get(url, {}, function(res: AjaxResponse): void {
@@ -94,7 +97,7 @@ dF.JrnlDreamTag = (function(): dfModule {
         },
 
         /**
-         * 상세 모달 호출
+         * 태그 선택
          * @param {string|number} tagNo - 조회할 태그 번호.
          * @param tagNm 태그 이름
          */

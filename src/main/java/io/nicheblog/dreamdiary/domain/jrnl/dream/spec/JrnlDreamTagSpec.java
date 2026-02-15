@@ -51,6 +51,7 @@ public class JrnlDreamTagSpec
      *
      * @param searchParamMap 검색 파라미터 맵
      * @param root 검색할 엔티티의 Root 객체
+     * @param query - CriteriaQuery 객체
      * @param builder 검색 조건을 생성하는 CriteriaBuilder 객체
      * @return {@link List} -- 설정된 검색 조건(Predicate) 리스트
      */
@@ -58,6 +59,7 @@ public class JrnlDreamTagSpec
     public List<Predicate> getPredicateWithParams(
             final Map<String, Object> searchParamMap,
             final Root<JrnlDreamTagEntity> root,
+            final CriteriaQuery<?> query,
             final CriteriaBuilder builder
     ) throws Exception {
 

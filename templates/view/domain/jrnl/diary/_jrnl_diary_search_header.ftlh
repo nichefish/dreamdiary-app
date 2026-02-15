@@ -5,7 +5,7 @@
 
 <div class="row w-100 mb-5">
     <div class="col-1 d-flex-center">
-        <div class="cursor-pointer ms-1 me-5" data-bs-toggle="collapse" href="#schdul_advanced_search_div">
+        <div class="cursor-pointer ms-1 me-5" data-bs-toggle="collapse" href="#jrnl_diary_advanced_search_div">
             <a class="btn btn-sm btn-light-primary h-100 d-flex align-items-center text-gray-700 fs-7 fw-bold">
                 <span class="svg-icon svg-icon-muted svg-icon-2 svg-icon-gray-700"
                       data-bs-toggle="tooltip" data-bs-placement="top" title="고급 필터 영역을 열고 닫습니다.">
@@ -20,8 +20,8 @@
             </a>
         </div>
     </div>
-    <div class="col-1 d-flex-align-center">
-        <button type="button" class="btn btn-sm btn-light-secondary text-dark"
+    <div class="col-1 d-flex-align-center gap-1">
+        <button type="button" class="btn btn-sm btn-outline btn-light-secondary text-dark"
                 onclick="dF.JrnlDiarySearch.resetSearch();">
             초기화
         </button>
@@ -30,22 +30,36 @@
             검색
         </button>
     </div>
-    <div class="col">
-        <span id="msgDiv"></span>
+    <div class="col d-flex-align-center">
+        <div id="keywordDisplay" class="d-flex gap-2"></div>
+        <div class="d-md-flex mx-4 pe-0 border-1 border-gray-300  h-75 w-5px"></div>
+        <div id="tagDisplay" class="d-flex border-1 border-gray-300 border-start ms-4 ps-4 gap-2"></div>
+        <div id="msgDisplay"></div>
     </div>
 </div>
-<div class="collapse mb-5 px-10 py-4 bg-light w-100" id="schdul_advanced_search_div">
+<div class="row collapse mb-5 px-10 py-4 bg-light w-100" id="jrnl_diary_advanced_search_div">
     <!--begin::Advance form-->
-    <form name="listForm" id="listForm" class="d-md-flex align-items-center flex-nowrap gap-2" method="get">
-        <div class="d-flex align-items-center justify-content-between mb-2">
-            <label class="fw-bold fs-7 text-gray-700">검색 키워드</label>
-            <button type="button" class="btn btn-sm btn-light-primary"
-                    onclick="dF.JrnlDiarySearch.addKeywordField();">
-                + 추가
-            </button>
+    <form name="listForm" id="listForm" class="d-md-flex flex-nowrap gap-2 py-2" method="get">
+        <div class="col-2">
+            <div class="d-flex-align-center justify-content-between gap-2">
+                <label for="keywordInput" class="fw-bold fs-7 text-gray-700 min-w-50px">키워드</label>
+                <input type="text" id="keywordInput" class="form-control form-control-sm" placeholder="키워드를 입력하세요">
+                <button type="button" class="btn btn-sm btn-light-primary w-100px"
+                        onclick="dF.JrnlDiarySearch.addKeyword();">
+                    + 추가
+                </button>
+            </div>
         </div>
-        <div id="jrnlKeywordContainer" class="d-flex flex-column gap-2">
-            <!-- 동적으로 input 추가 -->
+        <div class="col">
+            <div id="jrnlKeywordHiddenContainer">
+                <!-- 동적으로 input 추가 -->
+            </div>
+            <div id="jrnlTagNoHiddenContainer">
+                <!-- 동적으로 input 추가 -->
+            </div>
+            <div id="jrnlTagNoContainer" class="col-2 d-flex flex-column gap-2">
+                <!-- 동적으로 input 추가 -->
+            </div>
         </div>
     </form>
     <!--end::Advance form-->

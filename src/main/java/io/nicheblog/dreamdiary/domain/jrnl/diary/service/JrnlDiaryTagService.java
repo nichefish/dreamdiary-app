@@ -60,14 +60,29 @@ public class JrnlDiaryTagService
     }
 
     /**
+     * 태그 번호-태그 이름 맵을 반환합니다.
+     *
+     * @param userId 사용자 아이디
+     * @return {@link Map} -- 태그 번호를 키로 하고, 태그 이름을 값으로 가지는 맵
+     */
+    @Cacheable(value="myJrnlDiaryTagList", key="#userId")
+    public List<TagDto> getTagList(final String userId) throws Exception {
+        final HashMap<String, Object> paramMap = new HashMap<>() {{
+            put("regstrId", userId);
+        }};
+
+        return this.getSelf().getListDto(paramMap);
+    }
+
+    /**
      * 지정된 연도와 월을 기준으로 태그 목록을 캐시 처리하여 반환합니다.
      *
      * @param yy 조회할 연도
      * @param mnth 조회할 월
      * @return {@link List} -- 태그 목록
      */
-    @Cacheable(value="myJrnlDiaryTagList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
-    public List<TagDto> getListDtoWithCache(final Integer yy, final Integer mnth) throws Exception {
+    @Cacheable(value="myJrnlDiaryTagListYyMnth", key="#userId + \"_\" + #yy + \"_\" + #mnth")
+    public List<TagDto> getListDtoWithCache(final String userId, final Integer yy, final Integer mnth) throws Exception {
         final JrnlDiarySearchParam searchParam = JrnlDiarySearchParam.builder().yy(yy).mnth(mnth).build();
 
         return this.getSelf().getListDto(searchParam);
@@ -81,10 +96,10 @@ public class JrnlDiaryTagService
      * @param mnth 조회할 월
      * @return {@link List} -- CSS 사이즈가 적용된 태그 목록
      */
-    @Cacheable(value="myJrnlDiarySizedTagList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
-    public List<TagDto> getDiarySizedListDto(final Integer yy, final Integer mnth) throws Exception {
+    @Cacheable(value="myJrnlDiarySizedTagList", key="#userId + \"_\" + #yy + \"_\" + #mnth")
+    public List<TagDto> getDiarySizedListDto(final String userId, final Integer yy, final Integer mnth) throws Exception {
         // 저널 꿈 태그 Dto 목록 조회
-        final List<TagDto> tagList = this.getSelf().getListDtoWithCache(yy, mnth);
+        final List<TagDto> tagList = this.getSelf().getListDtoWithCache(userId, yy, mnth);
 
         final int maxSize = this.calcMaxSize(tagList, yy, mnth);
         final int MIN_SIZE = 2; // 최소 크기
@@ -159,8 +174,8 @@ public class JrnlDiaryTagService
      * @param mnth 조회할 월
      * @return {@link Map} -- 카테고리별로 그룹화된 태그 목록을 담은 Map
      */
-    public Map<String, List<TagDto>> getDiarySizedGroupListDto(final Integer yy, final Integer mnth) throws Exception {
-        final List<TagDto> tagList = this.getSelf().getDiarySizedListDto(yy, mnth);
+    public Map<String, List<TagDto>> getDiarySizedGroupListDto(final String userId, final Integer yy, final Integer mnth) throws Exception {
+        final List<TagDto> tagList = this.getSelf().getDiarySizedListDto(userId, yy, mnth);
 
         // 태그를 카테고리별로 그룹화하여 맵으로 반환
         return tagList.stream()

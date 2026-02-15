@@ -38,8 +38,8 @@ public interface BaseCrudSpec<Entity extends BaseCrudEntity>
             List<Predicate> predicate = new ArrayList<>();
             try {
                 // basePredicte 먼저 처리 후 나머지에 대해 처리
-                basePredicate = getBasePredicate(searchParamMap, root, builder);
-                predicate = getPredicateWithParams(searchParamMap, root, builder);
+                basePredicate = getBasePredicate(searchParamMap, root, query, builder);
+                predicate = getPredicateWithParams(searchParamMap, root, query, builder);
             } catch (final Exception e) {
                 e.printStackTrace();
             }
@@ -54,12 +54,14 @@ public interface BaseCrudSpec<Entity extends BaseCrudEntity>
      *
      * @param searchParamMap 검색 파라미터 맵
      * @param root 검색할 엔티티의 Root 객체
+     * @param query - CriteriaQuery 객체
      * @param builder 검색 조건을 생성하는 CriteriaBuilder 객체
      * @return {@link List} -- 설정된 검색 조건(Predicate) 리스트
      */
     default List<Predicate> getBasePredicate(
             final Map<String, Object> searchParamMap,
             final Root<Entity> root,
+            final CriteriaQuery<?> query,
             final CriteriaBuilder builder
     ) {
 

@@ -8,24 +8,47 @@ if (typeof dF === 'undefined') { var dF = {} as any; }
 dF.JrnlDiaryTag = (function(): dfModule {
     return {
         initialized: false,
+        initPromise: null,
         ctgrMap: new Map(),
+        list: [],
 
         /**
          * initializes module.
+         * @return Promise<void>
          */
-        init: function(): void {
-            if (dF.JrnlDiaryTag.initialized) return;
+        init: async function(): Promise<void> {
+            if (this.initPromise) return this.initPromise;
 
-            dF.JrnlDiaryTag.getCtgrMap();
+            /* initialize modules. */
+            this.initPromise = (async () => {
+                await dF.JrnlDiaryTag.getCtgrMap();
+                await dF.JrnlDiaryTag.getNmList();
+                this.initialized = true;
+                console.log("'dF.JrnlDiaryTag' module initialized.");
+            })();
 
-            dF.JrnlDiaryTag.initialized = true;
-            console.log("'dF.JrnlDiaryTag' module initialized.");
+            return this.initPromise;
         },
 
-        getCtgrMap: function(): void {
+        /**
+         * 태그 카테고리 맵 조회
+         * @return Promise<void>
+         */
+        getCtgrMap: async function(): Promise<void> {
             const url: string = Url.JRNL_DIARY_TAG_CTGR_MAP;
-            cF.ajax.get(url, {}, function(res: AjaxResponse): void {
+            return cF.ajax.get(url, {}, function(res: AjaxResponse): void {
                 if (res.rsltMap) dF.JrnlDiaryTag.ctgrMap = res.rsltMap;
+            });
+        },
+
+        /**
+         * 태그 이름 맵 조회
+         * @return Promise<void>
+         */
+        getNmList: async function(): Promise<void> {
+            const url: string = Url.JRNL_DIARY_TAGS;
+            return cF.ajax.get(url, {}, function(res: AjaxResponse): void {
+                if (res.rsltList) dF.JrnlDiaryTag.list = res.rsltList;
             });
         },
 
@@ -72,7 +95,7 @@ dF.JrnlDiaryTag = (function(): dfModule {
         },
 
         /**
-         * 상세 모달 호출
+         * 태그 선택
          * @param {string|number} tagNo - 조회할 태그 번호.
          * @param tagNm 태그 이름
          */
