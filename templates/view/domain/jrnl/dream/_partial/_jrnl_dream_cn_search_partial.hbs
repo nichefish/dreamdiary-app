@@ -2,8 +2,8 @@
  * 저널 꿈(jrnl_dream) - 내용 partial
  -->
 
-<script type="text/x-handlebars-template" id="jrnl_dream_cn_partial">
-    <div class="cn {{#if (hasState state 'COLLAPSED')}}collapsed collapse-4{{/if}}">
+<script type="text/x-handlebars-template" id="jrnl_dream_cn_search_partial">
+    <div class="{{#if (exists cnClass)}}{{cnClass}}{{else}}cn {{#if (hasState state 'COLLAPSED')}}collapsed{{/if}}{{/if}}">
         {{{markdownCn}}}
     </div>
     <!-- "더 보기" 버튼, <p> child 3개 이상일 때만 보임 (css) -->
@@ -15,7 +15,7 @@
         <div class="tags ms-2 mt-3">
             <i class="bi bi-tag"></i>
         {{#tag.list}}
-            {{> tag_list_partial this module="dF.JrnlDreamTag"}}
+            {{> tag_list_partial this module="dF.JrnlDreamSearch"}}
         {{/tag.list}}
         </div>
     {{/if}}

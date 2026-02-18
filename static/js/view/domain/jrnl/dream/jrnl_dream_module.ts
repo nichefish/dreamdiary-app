@@ -8,22 +8,37 @@ if (typeof dF === 'undefined') { var dF = {} as any; }
 dF.JrnlDream = (function(): dfModule {
     return {
         STORAGE_KEY: "collapsedJrnlDreamIds",
+        RENDER_PROFILE: {
+            LIST: {
+                collapsed: true,
+            },
+            TAG: {
+                collapsed: false,
+            },
+            SEARCH: {
+                collapsed: false,
+            }
+        },
 
         initialized: false,
+        initPromise: null,
         inKeywordSearchMode: false,
         tagify: null,
 
         /**
          * initializes module.
          */
-        init: function(): void {
-            if (dF.JrnlDream.initialized) return;
+        init: async function(): Promise<void> {
+            if (this.initPromise) return this.initPromise;
 
-            /* initialize submodules. */
-            dF.JrnlDreamTag.init();
+            /* initialize modules. */
+            this.initPromise = (async () => {
+                await dF.JrnlDreamTag.init();
+                this.initialized = true;
+                console.log("'dF.JrnlDiary' module initialized.");
+            })();
 
-            dF.JrnlDream.initialized = true;
-            console.log("'dF.JrnlDream' module initialized.");
+            return this.initPromise;
         },
 
         /**
@@ -67,51 +82,15 @@ dF.JrnlDream = (function(): dfModule {
         },
 
         /**
-         * 목록 조회 (Ajax)
+         * 키워드 검색 팝업 호출
          */
-        keywordListAjax: function(): void {
+        searchPopup: function(): void {
             const keyword: string = (document.querySelector("#jrnl_aside #dreamKeyword") as HTMLInputElement)?.value;
-            if (cF.util.isEmpty(keyword)) return;
-
-            const url: string = Url.JRNL_DREAMS;
-            const ajaxData: Record<string, any> = { "dreamKeyword": keyword };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
-                if (!res.rslt) {
-                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
-                    return;
-                }
-                $("#jrnl_aside #yy").val("");
-                $("#jrnl_aside #mnth").val("");
-                // 목록 영역 클리어
-                $("#jrnl_aside #diaryKeyword").val("");
-                $("#jrnl_day_list_div").empty();
-                $("#jrnl_diary_list_div").empty();
-                // 태그 헤더 클리어
-                $("#jrnl_day_tag_list_div").empty();
-                $("#jrnl_diary_tag_list_div").empty();
-                $("#jrnl_dream_tag_list_div").empty();
-                cF.ui.closeModal();
-                cF.handlebars.template(res.rsltList, "jrnl_dream_list");
-                dF.JrnlDream.inKeywordSearchMode = true;
-                // 버튼 추가
-                $("#jrnl_aside #jrnl_dream_reset_btn").remove();
-                const resetBtn = $(`<button type="button" id="jrnl_dream_reset_btn" class="btn btn-sm btn-outline btn-light-danger px-4" 
-                                          onclick="dF.JrnlDream.resetKeyword();" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
-                                          aria-label="꿈 키워드 검색을 리셋합니다." 
-                                          data-bs-original-title="꿈 키워드 검색을 리셋합니다." data-kt-initialized="1">
-                                     <i class="bi bi-x pe-0"></i>
-                                  </button>`);
-                $("#jrnl_aside #jrnl_dream_search_btn").after(resetBtn);
-                resetBtn.tooltip();
-            }, "block");
-        },
-
-        /**
-         * 키워드 검색 종료
-         */
-        resetKeyword: function(): void {
-            $("#jrnl_aside #jrnl_dream_reset_btn").remove();
-            dF.JrnlDayAside.mnth();
+            const url: string = `${Url.JRNL_DREAM_SEARCH}?searchKeywords=${keyword}`;
+            const popupNm: string = "저널 꿈 검색";
+            const options: string = 'width=1960,height=1440,top=0,left=270';
+            const popup: Window = cF.ui.openPopup(url, popupNm, options);
+            if (popup) popup.focus();
         },
 
         /**
@@ -460,5 +439,25 @@ dF.JrnlDream = (function(): dfModule {
                 }
             });
         },
+
+        /**
+         * View Model 구성
+         * @param {Object} dream
+         * @param {String} profileName
+         */
+        buildViewModel: function(dream, profileName) {
+            const profile: any = dF.JrnlDream.RENDER_PROFILE[profileName];
+
+            if (!profile) throw new Error(`Unknown render profile: ${profileName}`);
+
+            return {
+                ...dream,
+                view: profile,
+                cnClass: [
+                    'cn',
+                    profile.collapsed && dream.state?.includes('COLLAPSED') ? 'collapsed' : null
+                ].filter(Boolean).join(' ')
+            };
+        }
     }
 })();

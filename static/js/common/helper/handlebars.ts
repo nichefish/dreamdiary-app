@@ -514,6 +514,8 @@ document.addEventListener("DOMContentLoaded", function(): void {
     if (jrnlDreamStatesPartial) Handlebars.registerPartial("jrnl_dream_states_partial", jrnlDreamStatesPartial);
     const jrnlDreamCnPartial: string = document.getElementById("jrnl_dream_cn_partial")?.innerHTML;
     if (jrnlDreamCnPartial) Handlebars.registerPartial("jrnl_dream_cn_partial", jrnlDreamCnPartial);
+    const jrnlDreamCnSearchPartial: string = document.getElementById("jrnl_dream_cn_search_partial")?.innerHTML;
+    if (jrnlDreamCnSearchPartial) Handlebars.registerPartial("jrnl_dream_cn_search_partial", jrnlDreamCnSearchPartial);
     const jrnlDreamRegBtnPartial: string = document.getElementById("jrnl_dream_reg_btn_partial")?.innerHTML;
     if (jrnlDreamRegBtnPartial) Handlebars.registerPartial("jrnl_dream_reg_btn_partial", jrnlDreamRegBtnPartial);
     const jrnlDreamCopyBtnPartial: string = document.getElementById("jrnl_dream_copy_btn_partial")?.innerHTML;

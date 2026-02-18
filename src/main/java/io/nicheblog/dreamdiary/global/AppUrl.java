@@ -31,6 +31,8 @@ public interface AppUrl {
 
     /** 저널 일기 (검색) */
     String JRNL_DIARY_SEARCH = Prefix.APP + "/jrnl/diary/search.do";
+    /** 저널 꿈 (검색) */
+    String JRNL_DREAM_SEARCH = Prefix.APP + "/jrnl/dream/search.do";
 
     /** 저널 주제 */
     String JRNL_SBJCT_LIST = Prefix.APP + "/jrnl/sbjct/list.do";

@@ -31,7 +31,7 @@ const Page: Page = (function(): Page {
 
             // 일기/꿈 키워드 검색에 엔터키 처리
             cF.util.enterKey("#diaryKeyword", dF.JrnlDiary.searchPopup);
-            cF.util.enterKey("#dreamKeyword", dF.JrnlDream.keywordListAjax);
+            cF.util.enterKey("#dreamKeyword", dF.JrnlDream.searchPopup);
         },
 
         /**

@@ -8,27 +8,47 @@ if (typeof dF === 'undefined') { var dF = {} as any; }
 dF.JrnlDreamTag = (function(): dfModule {
     return {
         initialized: false,
+        initPromise: null,
         ctgrMap: new Map(),
+        list: [],
 
         /**
          * initializes module.
+         * @return Promise<void>
          */
-        init: function(): void {
-            if (dF.JrnlDreamTag.initialized) return;
+        init: async function(): Promise<void> {
+            if (this.initPromise) return this.initPromise;
 
-            dF.JrnlDreamTag.getCtgrMap();
+            /* initialize modules. */
+            this.initPromise = (async () => {
+                await dF.JrnlDreamTag.getCtgrMap();
+                await dF.JrnlDreamTag.getNmList();
+                this.initialized = true;
+                console.log("'dF.JrnlDreamTag' module initialized.");
+            })();
 
-            dF.JrnlDreamTag.initialized = true;
-            console.log("'dF.JrnlDreamTag' module initialized.");
+            return this.initPromise;
         },
 
         /**
          * 태그 카테고리 맵 조회
+         * @return Promise<void>
          */
-        getCtgrMap: function(): void {
+        getCtgrMap: async function(): Promise<void> {
             const url: string = Url.JRNL_DREAM_TAG_CTGR_MAP;
-            cF.ajax.get(url, {}, function(res: AjaxResponse): void {
+            return cF.ajax.get(url, {}, function(res: AjaxResponse): void {
                 if (res.rsltMap) dF.JrnlDreamTag.ctgrMap = res.rsltMap;
+            });
+        },
+
+        /**
+         * 태그 이름 맵 조회
+         * @return Promise<void>
+         */
+        getNmList: async function(): Promise<void> {
+            const url: string = Url.JRNL_DREAM_TAGS;
+            return cF.ajax.get(url, {}, function(res: AjaxResponse): void {
+                if (res.rsltList) dF.JrnlDreamTag.list = res.rsltList;
             });
         },
 
