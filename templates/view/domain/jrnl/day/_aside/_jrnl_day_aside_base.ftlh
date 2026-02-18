@@ -132,7 +132,7 @@
                         <input type="text" name="dreamKeyword" id="dreamKeyword" class="form-control"
                                value="" placeholder="<@spring.message 'txt.jrnl.dream.keyword.search'/>" maxlength="200"/>
                         <button type="button" id="jrnl_dream_search_btn" class="btn btn-sm btn-outline btn-light-primary px-4"
-                                onclick="dF.JrnlDream.keywordListAjax();"
+                                onclick="dF.JrnlDream.searchPopup();"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.txt.jrnl.dream.keyword.search'/>">
                             <i class="bi bi-search pe-0"></i>
                         </button>

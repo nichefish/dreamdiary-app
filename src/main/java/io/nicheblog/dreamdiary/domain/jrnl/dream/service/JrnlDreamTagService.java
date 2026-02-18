@@ -66,7 +66,7 @@ public class JrnlDreamTagService
      * @param mnth 조회할 월
      * @return {@link List} -- 태그 목록
      */
-    @Cacheable(value="myJrnlDreamTagList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
+    @Cacheable(value="myJrnlDreamTagListYyMnth", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
     public List<TagDto> getListDtoWithCache(final Integer yy, final Integer mnth) throws Exception {
         final JrnlDreamSearchParam searchParam = JrnlDreamSearchParam.builder().yy(yy).mnth(mnth).build();
 

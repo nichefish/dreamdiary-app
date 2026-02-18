@@ -49,6 +49,7 @@ public class JrnlDreamCacheEvictor
             this.evictMyCacheForPeriod("myJrnlDayCalList", yy, mnth);
             // jrnl_dream_tag
             EhCacheUtils.evictMyCacheAll("myJrnlDreamTagCtgrMap");
+            EhCacheUtils.evictMyCacheAll("myJrnlDreamTagList");
             EhCacheUtils.evictMyCacheAll("myJrnlDreamTagDtl");
             // 태그 캐시 처리
             EhCacheUtils.evictCache("tagContentEntityListByRef", postNo + "_JRNL_DREAM");
