@@ -8,7 +8,7 @@ if (typeof dF === 'undefined') { var dF = {} as any; }
 dF.JrnlDiary = (function(): dfModule {
     return {
         STORAGE_KEY: "collapsedJrnlDiaryIds",
-        RENDER_PROFILE: {
+        PROFILE: {
             LIST: {
                 collapsed: true,
             },
@@ -20,6 +20,7 @@ dF.JrnlDiary = (function(): dfModule {
             }
         },
 
+        profile: null,
         initialized: false,
         initPromise: null,
         inKeywordSearchMode: false,
@@ -27,19 +28,42 @@ dF.JrnlDiary = (function(): dfModule {
 
         /**
          * initializes module.
+         * @param {"LIST"|"CAL"|"DAILY"|"SEARCH"} viewType
          * @return Promise<void>
          */
-        init: async function(): Promise<void> {
+        init: async function(viewType: "LIST"|"CAL"|"DAILY"|"SEARCH"): Promise<void> {
             if (this.initPromise) return this.initPromise;
 
             /* initialize modules. */
             this.initPromise = (async () => {
                 await dF.JrnlDiaryTag.init();
+                this.viewType = viewType;
                 this.initialized = true;
                 console.log("'dF.JrnlDiary' module initialized.");
             })();
 
             return this.initPromise;
+        },
+
+        /**
+         * refresh
+         */
+        refresh: function(): void {
+            switch (this.viewType) {
+                case "LIST":
+                    dF.JrnlDay.yyMnthListAjax();
+                    dF.JrnlDiaryTag.listAjax();     // 태그 refresh
+                    break;
+                case "CAL":
+                    Page.refreshEventList();
+                    dF.JrnlDiaryTag.listAjax();     // 태그 refresh
+                    break;
+                case "DAILY":
+                case "SEARCH":
+                    location.reload();
+                    break;
+            }
+            cF.ui.unblockUI();
         },
 
         /**
@@ -119,8 +143,7 @@ dF.JrnlDiary = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                    dF.JrnlDay.refresh();
-                            dF.JrnlDiaryTag.listAjax();     // 태그 refresh
+                            dF.JrnlDiary.refresh();
                         });
                 }, "block");
             });
@@ -216,7 +239,6 @@ dF.JrnlDiary = (function(): dfModule {
                             if (!res.rslt) return;
 
                             dF.JrnlDay.refresh();
-                            dF.JrnlDiaryTag.listAjax();     // 태그 refresh
                         });
                 }, "block");
             });
@@ -390,7 +412,7 @@ dF.JrnlDiary = (function(): dfModule {
          * @param {String} profileName
          */
         buildViewModel: function(diary, profileName) {
-            const profile: any = dF.JrnlDiary.RENDER_PROFILE[profileName];
+            const profile: any = dF.JrnlDiary.PROFILE[profileName];
 
             if (!profile) throw new Error(`Unknown render profile: ${profileName}`);
 
