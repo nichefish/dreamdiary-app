@@ -1,7 +1,6 @@
 package io.nicheblog.dreamdiary.domain.jrnl.day.mapstruct;
 
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayEntity;
-import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.mapstruct.JrnlDreamMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.mapstruct.JrnlEntryMapstruct;
@@ -30,7 +29,29 @@ import org.mapstruct.*;
 public abstract class JrnlDayMapstruct
         implements BaseWriteMapstruct<JrnlDayDto, JrnlDayEntity>, BaseClsfMapstruct<JrnlDayDto, JrnlDayEntity> {
 
-    JrnlEntryMapstruct jrnlEntryMapstruct = JrnlEntryMapstruct.INSTANCE;
+    /**
+     * Dto -> Entity 변환
+     *
+     * @param dto 변환할 Dto 객체
+     * @return Entity -- 변환된 Entity 객체
+     */
+    @Override
+    @Named("toEntity")
+    @Mapping(target = "jrnlDt", expression = "java(DateUtils.asDate(dto.getJrnlDt()))")
+    @Mapping(target = "aprxmtDt", expression = "java(DateUtils.asDate(dto.getAprxmtDt()))")
+    public abstract JrnlDayEntity toEntity(final JrnlDayDto dto) throws Exception;
+
+    /**
+     * update Entity from Dto (Dto에서 null이 아닌 값만 Entity로 매핑)
+     *
+     * @param dto 업데이트할 Dto 객체
+     * @param entity 업데이트할 대상 Entity 객체
+     */
+    @Override
+    @Mapping(target = "jrnlDt", expression = "java(DateUtils.asDate(dto.getJrnlDt()))")
+    @Mapping(target = "aprxmtDt", expression = "java(DateUtils.asDate(dto.getAprxmtDt()))")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    public abstract void updateFromDto(final JrnlDayDto dto, final @MappingTarget JrnlDayEntity entity) throws Exception;
 
     /**
      * Entity -> Dto 변환
@@ -46,35 +67,4 @@ public abstract class JrnlDayMapstruct
     @Mapping(target = "stdrdDt", expression = "java(DateUtils.asStr(\"Y\".equals(entity.getDtUnknownYn()) ? entity.getAprxmtDt() : entity.getJrnlDt(), DatePtn.DATE))")
     @Mapping(target = "entryList", source = "jrnlEntryList")
     public abstract JrnlDayDto toDto(final JrnlDayEntity entity) throws Exception;
-
-    /**
-     * Dto -> Entity 변환
-     *
-     * @param dto 변환할 Dto 객체
-     * @return Entity -- 변환된 Entity 객체
-     */
-    @Override
-    @Named("toEntity")
-    @Mapping(target = "jrnlDt", expression = "java(DateUtils.asDate(dto.getJrnlDt()))")
-    @Mapping(target = "aprxmtDt", expression = "java(DateUtils.asDate(dto.getAprxmtDt()))")
-    public abstract JrnlDayEntity toEntity(final JrnlDayDto dto) throws Exception;
-
-    /**
-     * 일반 엔티티를 간소화 엔티티로 변환
-     * @param entity 변환할 entity 객체
-     * @return SmpEntity -- 변환된 간소화 객체
-     */
-    public abstract JrnlDaySmpEntity asSmp(final JrnlDayEntity entity) throws Exception;
-
-    /**
-     * update Entity from Dto (Dto에서 null이 아닌 값만 Entity로 매핑)
-     *
-     * @param dto 업데이트할 Dto 객체
-     * @param entity 업데이트할 대상 Entity 객체
-     */
-    @Override
-    @Mapping(target = "jrnlDt", expression = "java(DateUtils.asDate(dto.getJrnlDt()))")
-    @Mapping(target = "aprxmtDt", expression = "java(DateUtils.asDate(dto.getAprxmtDt()))")
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    public abstract void updateFromDto(final JrnlDayDto dto, final @MappingTarget JrnlDayEntity entity) throws Exception;
 }

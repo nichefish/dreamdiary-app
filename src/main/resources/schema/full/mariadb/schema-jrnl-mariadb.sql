@@ -60,7 +60,6 @@ CREATE TABLE IF NOT EXISTS jrnl_diary (
     post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 일기 번호 (PK)',
     content_type VARCHAR(32) DEFAULT 'JRNL_DIARY' COMMENT '컨텐츠 타입',
     --
-    jrnl_day_no INT COMMENT '저널 일자 번호',
     jrnl_entry_no INT COMMENT '저널 항목 번호',
     --
     title VARCHAR(200) COMMENT '제목',
@@ -78,7 +77,7 @@ CREATE TABLE IF NOT EXISTS jrnl_diary (
     mdf_dt DATETIME COMMENT '수정일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
     -- CONSTRAINT
-    INDEX (jrnl_day_no)
+    INDEX (jrnl_entry_no)
 ) COMMENT = '저널 일기';
 
 -- 저널 꿈 (jrnl_dream)
@@ -147,7 +146,7 @@ CREATE TABLE IF NOT EXISTS jrnl_intrpt (
 CREATE TABLE IF NOT EXISTS jrnl_todo (
     -- CLSF
     post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 결산 번호 (PK)',
-    content_type VARCHAR(32) DEFAULT 'JRNL_SUMRY' COMMENT '컨텐츠 타입',
+    content_type VARCHAR(32) DEFAULT 'JRNL_TODO' COMMENT '컨텐츠 타입',
     --
     idx INT DEFAULT 1 COMMENT '저널 일기 인덱스',
     yy INT UNIQUE COMMENT '결산 년도',
@@ -206,7 +205,6 @@ CREATE TABLE IF NOT EXISTS jrnl_sumry (
     yy INT UNIQUE COMMENT '결산 년도',
     dream_day_cnt INT DEFAULT 0 COMMENT '꿈 일수',
     dream_cnt INT DEFAULT 0 COMMENT '꿈 개수',
-    diary_day_cnt INT DEFAULT 0 COMMENT '일기 일수',
     dream_compt_yn CHAR(1) DEFAULT 'N' COMMENT '꿈 기록 완료 여부',
     -- ATCH_FILE
     atch_file_no INT COMMENT '첨부파일 번호',

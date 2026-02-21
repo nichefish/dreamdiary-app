@@ -2,6 +2,8 @@ package io.nicheblog.dreamdiary.domain.jrnl.diary.repository.jpa;
 
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
@@ -24,6 +26,15 @@ public interface JrnlDiaryRepository
         extends BaseStreamRepository<JrnlDiaryEntity, Integer> {
 
     /**
+     * 단건 조회 with EntityGraph
+     * @param id Integer
+     * @return Optional<JrnlIntrptEntity>
+     */
+    @EntityGraph(attributePaths = {"jrnlEntry"})
+    @NotNull
+    Optional<JrnlDiaryEntity> findById(final @NotNull Integer id);
+
+    /**
      * 해당 항목에서 일기 마지막 인덱스 조회
      *
      * @param jrnlEntryNo 조회할 항목 번호
@@ -33,7 +44,6 @@ public interface JrnlDiaryRepository
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     @Query("SELECT MAX(diary.idx) " +
             "FROM JrnlDiaryEntity diary " +
-            "INNER JOIN FETCH JrnlEntryEntity entry ON diary.jrnlEntryNo = entry.postNo " +
-            "WHERE diary.jrnlEntryNo = :jrnlEntryNo")
+            "WHERE diary.jrnlEntry.postNo = :jrnlEntryNo")
     Optional<Integer> findLastIndexByJrnlEntry(final @Param("jrnlEntryNo") Integer jrnlEntryNo);
 }

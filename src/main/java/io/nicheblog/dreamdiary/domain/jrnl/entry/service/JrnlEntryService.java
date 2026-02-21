@@ -46,7 +46,7 @@ public class JrnlEntryService
     @Getter
     private final JrnlEntrySpec spec;
     @Getter
-    private final JrnlEntryMapstruct mapstruct = JrnlEntryMapstruct.INSTANCE;
+    private final JrnlEntryMapstruct mapstruct;
 
     public JrnlEntryMapstruct getReadMapstruct() {
         return this.mapstruct;

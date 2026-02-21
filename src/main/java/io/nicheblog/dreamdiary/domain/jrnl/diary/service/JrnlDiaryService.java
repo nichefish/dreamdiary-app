@@ -56,7 +56,7 @@ public class JrnlDiaryService
     @Getter
     private final JrnlDiarySpec spec;
     @Getter
-    private final JrnlDiaryMapstruct mapstruct = JrnlDiaryMapstruct.INSTANCE;
+    private final JrnlDiaryMapstruct mapstruct;
     @Getter
     private final JrnlDiaryMapper mapper;
 
@@ -156,10 +156,10 @@ public class JrnlDiaryService
     public void preModify(final JrnlDiaryPostDto modifyDto, final JrnlDiaryEntity modifyEntity) throws Exception {
         boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
         modifyDto.setIsIdxChanged(isIdxChanged);
-        boolean isEntryChanged = !Objects.equals(modifyDto.getJrnlEntryNo(), modifyEntity.getJrnlEntryNo());
+        boolean isEntryChanged = !Objects.equals(modifyDto.getJrnlEntryNo(), modifyEntity.getJrnlEntry().getPostNo());
         modifyDto.setIsEntryChanged(isEntryChanged);
         if (isEntryChanged) {
-            modifyDto.setPrevJrnlEntryNo(modifyEntity.getJrnlEntryNo());
+            modifyDto.setPrevJrnlEntryNo(modifyEntity.getJrnlEntry().getPostNo());
         }
     }
 

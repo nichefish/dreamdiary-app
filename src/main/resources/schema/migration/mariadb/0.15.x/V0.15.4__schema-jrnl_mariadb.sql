@@ -7,3 +7,5 @@
 -- -------------------
 
 ALTER TABLE jrnl_sumry DROP COLUMN diary_day_cnt;
+ALTER TABLE jrnl_diary DROP COLUMN jrnl_day_no;
+ALTER TABLE jrnl_diary ADD INDEX idx_jrnl_entry_no (jrnl_entry_no);
