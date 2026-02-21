@@ -1,8 +1,6 @@
 package io.nicheblog.dreamdiary.domain.jrnl.dream.controller;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamService;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamTagService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
@@ -19,7 +17,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
@@ -120,33 +121,5 @@ public class JrnlDreamTagRestController
         logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withMap(tagGroupMap));
-    }
-
-    /**
-     * 저널 꿈 태그 상세 (해당 태그 꿈 목록) 조회 (Ajax)
-     * (사용자USER, 관리자MNGR만 접근 가능.)
-     *
-     * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
-     * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     */
-    @GetMapping(value = {Url.JRNL_DREAM_TAG})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    @ResponseBody
-    public ResponseEntity<AjaxResponse> jrnlDreamTagDtlAjax(
-            final @PathVariable("tagNo") Integer tagNo,
-            final JrnlDreamSearchParam searchParam,
-            final LogActvtyParam logParam
-    ) throws Exception {
-
-        searchParam.setTagNo(tagNo);
-        final List<JrnlDreamDto> jrnlDreamList = jrnlDreamService.jrnlDreamTagDtl(searchParam);
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-;
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
-
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(jrnlDreamList));
     }
 }

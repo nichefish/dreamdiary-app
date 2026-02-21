@@ -23,6 +23,14 @@ const Page: Page = (function(): Page {
             dF.JrnlDreamSearch.initKeyword();
             dF.JrnlDreamSearch.initTag();
             dF.JrnlDreamSearch.search();
+
+            const input: HTMLElement = document.getElementById("keywordInput");
+            input.addEventListener("keydown", (e: KeyboardEvent): void => {
+                if (e.key === "Enter" && !e.isComposing) {
+                    e.preventDefault();
+                    dF.JrnlDreamSearch.addKeyword();
+                }
+            });
         },
     }
 })();

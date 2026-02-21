@@ -130,56 +130,6 @@ dF.JrnlDreamSearch = (function(): dfModule {
         },
 
         /**
-         * 검색
-         */
-        search: function(): void {
-            const formArray: Record<string, any> = $("#listForm").serializeArray();
-            const ajaxData: Record<string, any> = {};
-            formArray.forEach((item: any): void => {
-                if (ajaxData[item.name]) {
-                    if (!Array.isArray(ajaxData[item.name])) ajaxData[item.name] = [ajaxData[item.name]];
-                    ajaxData[item.name].push(item.value);
-                } else {
-                    ajaxData[item.name] = item.value;
-                }
-            });
-            $("#msgDisplay").empty();
-            const hasKeyword: boolean = Array.isArray(ajaxData["searchKeywords"]) ? ajaxData["searchKeywords"]?.some(k => cF.util.isNotEmpty(k?.trim())) : cF.util.isNotEmpty(ajaxData["searchKeywords"]);
-            const hasTag: boolean = Array.isArray(ajaxData["tagNos"]) ? ajaxData["tagNos"].length > 0 : !!ajaxData["tagNos"];
-            if (!hasKeyword && !hasTag) {
-                $("#msgDisplay").text("검색 조건을 하나 이상 입력하세요.");
-                cF.handlebars.template([], "jrnl_dream_search");
-                return;
-            }
-            const url: string = Url.JRNL_DREAMS;
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
-                if (!res.rslt) {
-                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
-                    return;
-                }
-                const viewModels = res.rsltList.map((dream: any) =>
-                    dF.JrnlDream.buildViewModel(dream, 'SEARCH')
-                );
-                cF.handlebars.template(viewModels, "jrnl_dream_search");
-
-                const params = new URLSearchParams();
-                Object.keys(ajaxData).forEach(key => {
-                    const val = ajaxData[key];
-                    if (Array.isArray(val)) {
-                        val.forEach(v => {
-                            if (v && v.trim() !== "") params.append(key, v);
-                        });
-                    } else if (val && val.trim() !== "") {
-                        params.append(key, val);
-                    }
-                });
-                history.replaceState(null, "", window.location.pathname + "?" + params.toString());
-                $("#keywordDisplay div.keyword-wrapper").removeClass("text-muted").addClass("text-primary");
-                $("#keywordDisplay div.keyword-wrapper").removeClass("badge-light-secondary").addClass("badge-light-primary");
-            });
-        },
-
-        /**
          * 태그 선택
          * @param {string|number} tagNo - 조회할 태그 번호.
          * @param tagNm 태그 이름
@@ -194,7 +144,7 @@ dF.JrnlDreamSearch = (function(): dfModule {
 
             const tagContainer: HTMLElement = document.getElementById("tagDisplay");
             const tagBadge: HTMLDivElement = document.createElement("div");
-            tagBadge.className = "badge badge-light-secondary tag-wrapper fw-lighter d-flex align-items-center gap-2 px-3 py-2 text-muted";
+            tagBadge.className = "badge badge-light-primary tag-wrapper fw-lighter d-flex align-items-center gap-2 px-3 py-2 text-primary";
             tagBadge.dataset.value = tagNo as string;
             tagBadge.innerHTML = `
                 #${tagNm}
@@ -224,6 +174,57 @@ dF.JrnlDreamSearch = (function(): dfModule {
                 .remove();
             // 재검색
             dF.JrnlDreamSearch.search();
+        },
+
+        /**
+         * 검색
+         */
+        search: function(): void {
+            const formArray: Record<string, any> = $("#listForm").serializeArray();
+            const ajaxData: Record<string, any> = {};
+            formArray.forEach((item: any): void => {
+                if (ajaxData[item.name]) {
+                    if (!Array.isArray(ajaxData[item.name])) ajaxData[item.name] = [ajaxData[item.name]];
+                    ajaxData[item.name].push(item.value);
+                } else {
+                    ajaxData[item.name] = item.value;
+                }
+            });
+            $("#msgDisplay").empty();
+            const hasKeyword: boolean = Array.isArray(ajaxData["searchKeywords"]) ? ajaxData["searchKeywords"]?.some(k => cF.util.isNotEmpty(k?.trim())) : cF.util.isNotEmpty(ajaxData["searchKeywords"]);
+            const hasTag: boolean = Array.isArray(ajaxData["tagNos"]) ? ajaxData["tagNos"].length > 0 : !!ajaxData["tagNos"];
+            if (!hasKeyword && !hasTag) {
+                $("#msgDisplay").text("검색 조건을 하나 이상 입력하세요.");
+                cF.handlebars.template([], "jrnl_dream_search");
+                return;
+            }
+            const url: string = Url.JRNL_DREAMS;
+            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    return;
+                }
+                const viewModels: any[] = res.rsltList.map((dream: any): void =>
+                    dF.JrnlDream.buildViewModel(dream, 'SEARCH')
+                );
+                cF.handlebars.template(viewModels, "jrnl_dream_search");
+                KTMenu.createInstances();
+
+                const params = new URLSearchParams();
+                Object.keys(ajaxData).forEach((key: string): void => {
+                    const val: string = ajaxData[key];
+                    if (Array.isArray(val)) {
+                        val.forEach((v: string): void => {
+                            if (v && v.trim() !== "") params.append(key, v);
+                        });
+                    } else if (val && val.trim() !== "") {
+                        params.append(key, val);
+                    }
+                });
+                history.replaceState(null, "", window.location.pathname + "?" + params.toString());
+                $("#keywordDisplay div.keyword-wrapper").removeClass("text-muted").addClass("text-primary");
+                $("#keywordDisplay div.keyword-wrapper").removeClass("badge-light-secondary").addClass("badge-light-primary");
+            });
         },
     }
 })();
