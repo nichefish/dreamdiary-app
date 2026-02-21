@@ -17,6 +17,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
@@ -111,12 +112,8 @@ public class JrnlDreamEntity
     private String elseDreamerNm;
 
     /** 저널 해석 목록 */
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "jrnl_dream_no", referencedColumnName = "post_no", insertable = false, updatable = false)
-    @Fetch(FetchMode.SUBSELECT)
-    @BatchSize(size = 10)
+    @OneToMany(mappedBy = "jrnlDream", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("idx ASC")
-    @NotFound(action = NotFoundAction.IGNORE)
     @Comment("저널 해석 목록")
     private List<JrnlIntrptEntity> jrnlIntrptList;
 
