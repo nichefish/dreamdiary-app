@@ -30,7 +30,6 @@ public interface ApiUrl {
     /** 저널 꿈 태그 */
     String JRNL_DREAM_TAGS = Prefix.API + "/jrnl/dream/tags";
     String JRNL_DREAM_TAG_GROUP_LIST_AJAX = Prefix.API + "/jrnl/dream/tag-group-list";
-    String JRNL_DREAM_TAG = Prefix.API + "/jrnl/dream/tag/{tagNo}";
     String JRNL_DREAM_TAG_CTGR_MAP = Prefix.API + "/jrnl/dream/tag/ctgr-map";
     /** 저널 해석 */
     String JRNL_INTRPTS = Prefix.API + "/jrnl/intrpts";
