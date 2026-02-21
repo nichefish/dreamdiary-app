@@ -88,7 +88,6 @@
 <script type="text/javascript" src="/js/view/domain/jrnl/todo/jrnl_todo_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_diary_tag_module-->
-<#include "/view/domain/jrnl/diary/tag/_modal/_jrnl_diary_tag_dtl_modal.ftlh">
 <#include "/view/domain/jrnl/diary/tag/_jrnl_diary_tag_list_template.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/diary/tag/jrnl_diary_tag_module.js?${releaseDate!}"></script>
 

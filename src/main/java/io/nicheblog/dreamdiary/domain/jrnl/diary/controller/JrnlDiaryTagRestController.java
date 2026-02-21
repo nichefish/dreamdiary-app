@@ -1,8 +1,6 @@
 package io.nicheblog.dreamdiary.domain.jrnl.diary.controller;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiarySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryService;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryTagService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
@@ -129,31 +127,5 @@ public class JrnlDiaryTagRestController
         logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withMap(tagGroupMap));
-    }
-
-    /**
-     * 저널 일기 태그 상세 (해당 태그 꿈 목록) 조회 (Ajax)
-     * (사용자USER, 관리자MNGR만 접근 가능.)
-     *
-     * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
-     * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     */
-    @GetMapping(value = {Url.JRNL_DIARY_TAG_DTL_AJAX})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    @ResponseBody
-    public ResponseEntity<AjaxResponse> jrnlDiaryTagDtlAjax(
-            final JrnlDiarySearchParam searchParam,
-            final LogActvtyParam logParam
-    ) throws Exception {
-
-        final List<JrnlDiaryDto> jrnlDiaryList = jrnlDiaryService.jrnlDiaryTagDtl(searchParam);
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
-
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(jrnlDiaryList));
     }
 }

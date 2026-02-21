@@ -51,7 +51,6 @@ public interface ApiUrl {
     /** 저널 일기 태그 */
     String JRNL_DIARY_TAGS = Prefix.API + "/jrnl/diary/tags";
     String JRNL_DIARY_TAG_GROUP_LIST_AJAX = Prefix.API + "/jrnl/diary/tag/group-list";
-    String JRNL_DIARY_TAG_DTL_AJAX = Prefix.API + "/jrnl/diary/tag/dtl";
     String JRNL_DIARY_TAG_CTGR_MAP = Prefix.API + "/jrnl/diary/tag/ctgr-map";
 
     /** 저널 할일 */

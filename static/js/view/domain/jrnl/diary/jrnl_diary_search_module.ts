@@ -100,13 +100,13 @@ dF.JrnlDiarySearch = (function(): dfModule {
         removeKeyword: function(value: string): void {
             // hidden input 제거
             $("#jrnlKeywordHiddenContainer input[name='searchKeywords']")
-                .filter(function () {
+                .filter(function (): boolean {
                     return $(this).val() === value;
                 })
                 .remove();
             // 칩 제거
             $("#keywordDisplay div.keyword-wrapper")
-                .filter(function () {
+                .filter(function (): boolean {
                     return $(this).attr("data-value") === value;
                 })
                 .remove();
@@ -127,6 +127,53 @@ dF.JrnlDiarySearch = (function(): dfModule {
          */
         resetSearch: function(): void {
             window.location.href = window.location.pathname;
+        },
+
+        /**
+         * 태그 선택
+         * @param {string|number} tagNo - 조회할 태그 번호.
+         * @param tagNm 태그 이름
+         */
+        select: function(tagNo: string|number, tagNm: string): void {
+            const inputContainer: HTMLElement = document.getElementById("jrnlTagNoHiddenContainer");
+            const input: HTMLInputElement = document.createElement("input");
+            input.type = "hidden";
+            input.name = "tagNos"
+            input.value = tagNo as string;
+            inputContainer.appendChild(input);
+
+            const tagContainer: HTMLElement = document.getElementById("tagDisplay");
+            const tagBadge: HTMLDivElement = document.createElement("div");
+            tagBadge.className = "badge badge-light-primary tag-wrapper fw-lighter d-flex align-items-center gap-2 px-3 py-2 text-primary";
+            tagBadge.dataset.value = tagNo as string;
+            tagBadge.innerHTML = `
+                #${tagNm}
+                <i class="bi bi-x cursor-pointer" onclick="dF.JrnlDiarySearch.removeTag('${tagNo}')"></i>
+            `;
+            tagContainer.appendChild(tagBadge);
+            $("#msgDisplay").empty();
+
+            dF.JrnlDiarySearch.search();
+        },
+
+        /**
+         * 키워드 삭제
+         */
+        removeTag: function(value: string): void {
+            // hidden input 제거
+            $("#jrnlTagNoHiddenContainer input[name='tagNos']")
+                .filter(function (): boolean {
+                    return $(this).val() === value;
+                })
+                .remove();
+            // 칩 제거
+            $("#tagDisplay div.tag-wrapper")
+                .filter(function (): boolean {
+                    return $(this).attr("data-value") === value;
+                })
+                .remove();
+            // 재검색
+            dF.JrnlDiarySearch.search();
         },
 
         /**
@@ -157,16 +204,17 @@ dF.JrnlDiarySearch = (function(): dfModule {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
-                const viewModels = res.rsltList.map((diary: any) =>
+                const viewModels: any[] = res.rsltList.map((diary: any): void =>
                     dF.JrnlDiary.buildViewModel(diary, 'SEARCH')
                 );
                 cF.handlebars.template(viewModels, "jrnl_diary_search");
+                KTMenu.createInstances();
 
                 const params = new URLSearchParams();
-                Object.keys(ajaxData).forEach(key => {
-                    const val = ajaxData[key];
+                Object.keys(ajaxData).forEach((key: string): void => {
+                    const val: string = ajaxData[key];
                     if (Array.isArray(val)) {
-                        val.forEach(v => {
+                        val.forEach((v: string): void => {
                             if (v && v.trim() !== "") params.append(key, v);
                         });
                     } else if (val && val.trim() !== "") {
@@ -177,53 +225,6 @@ dF.JrnlDiarySearch = (function(): dfModule {
                 $("#keywordDisplay div.keyword-wrapper").removeClass("text-muted").addClass("text-primary");
                 $("#keywordDisplay div.keyword-wrapper").removeClass("badge-light-secondary").addClass("badge-light-primary");
             });
-        },
-
-        /**
-         * 태그 선택
-         * @param {string|number} tagNo - 조회할 태그 번호.
-         * @param tagNm 태그 이름
-         */
-        select: function(tagNo: string|number, tagNm: string): void {
-            const inputContainer: HTMLElement = document.getElementById("jrnlTagNoHiddenContainer");
-            const input: HTMLInputElement = document.createElement("input");
-            input.type = "hidden";
-            input.name = "tagNos"
-            input.value = tagNo as string;
-            inputContainer.appendChild(input);
-
-            const tagContainer: HTMLElement = document.getElementById("tagDisplay");
-            const tagBadge: HTMLDivElement = document.createElement("div");
-            tagBadge.className = "badge badge-light-secondary tag-wrapper fw-lighter d-flex align-items-center gap-2 px-3 py-2 text-muted";
-            tagBadge.dataset.value = tagNo as string;
-            tagBadge.innerHTML = `
-                #${tagNm}
-                <i class="bi bi-x cursor-pointer" onclick="dF.JrnlDiarySearch.removeTag('${tagNo}')"></i>
-            `;
-            tagContainer.appendChild(tagBadge);
-            $("#msgDisplay").empty();
-
-            dF.JrnlDiarySearch.search();
-        },
-
-        /**
-         * 키워드 삭제
-         */
-        removeTag: function(value: string): void {
-            // hidden input 제거
-            $("#jrnlTagNoHiddenContainer input[name='tagNos']")
-                .filter(function () {
-                    return $(this).val() === value;
-                })
-                .remove();
-            // 칩 제거
-            $("#tagDisplay div.tag-wrapper")
-                .filter(function () {
-                    return $(this).attr("data-value") === value;
-                })
-                .remove();
-            // 재검색
-            dF.JrnlDiarySearch.search();
         },
     }
 })();
