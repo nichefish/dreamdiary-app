@@ -50,8 +50,6 @@ public class JrnlSumryDto
     private Integer dreamDayCnt;
     /** 꿈 갯수 */
     private Integer dreamCnt;
-    /** 일기 일수 */
-    private Integer diaryDayCnt;
 
     /** 꿈 기록 완료 여부 (Y/N) */
     @Builder.Default

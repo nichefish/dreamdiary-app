@@ -28,13 +28,6 @@
                     /
                     <span class="text-info fw-bold mx-1">${totalSumry.dreamCnt!}</span>개)
                 </div>
-                <div class="text-gray-700 d-flex-center">
-                    <span class="fw-bold me-2">
-                        전체 일기
-                    </span>
-                    <i class="bi bi-book fs-4 mt-1 me-2"></i>
-                    (<span class="text-info fw-bold mx-1">${totalSumry.diaryDayCnt!}</span>일)
-                </div>
             </div>
 
             <button type="button" class="btn btn-sm btn-outline btn-light-primary px-4"
