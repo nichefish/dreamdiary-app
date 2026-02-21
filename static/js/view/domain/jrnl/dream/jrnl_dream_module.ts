@@ -8,7 +8,7 @@ if (typeof dF === 'undefined') { var dF = {} as any; }
 dF.JrnlDream = (function(): dfModule {
     return {
         STORAGE_KEY: "collapsedJrnlDreamIds",
-        RENDER_PROFILE: {
+        PROFILE: {
             LIST: {
                 collapsed: true,
             },
@@ -20,6 +20,7 @@ dF.JrnlDream = (function(): dfModule {
             }
         },
 
+        profile: null,
         initialized: false,
         initPromise: null,
         inKeywordSearchMode: false,
@@ -27,18 +28,42 @@ dF.JrnlDream = (function(): dfModule {
 
         /**
          * initializes module.
+         * @param {"LIST"|"CAL"|"DAILY"|"SEARCH"} viewType
+         * @return Promise<void>
          */
-        init: async function(): Promise<void> {
+        init: async function(viewType: "LIST"|"CAL"|"DAILY"|"SEARCH"): Promise<void> {
             if (this.initPromise) return this.initPromise;
 
             /* initialize modules. */
             this.initPromise = (async () => {
                 await dF.JrnlDreamTag.init();
+                this.viewType = viewType;
                 this.initialized = true;
                 console.log("'dF.JrnlDiary' module initialized.");
             })();
 
             return this.initPromise;
+        },
+
+        /**
+         * refresh
+         */
+        refresh: function(): void {
+            switch (this.viewType) {
+                case "LIST":
+                    dF.JrnlDay.yyMnthListAjax();
+                    dF.JrnlDreamTag.listAjax();     // 태그 refresh
+                    break;
+                case "CAL":
+                    Page.refreshEventList();
+                    dF.JrnlDreamTag.listAjax();     // 태그 refresh
+                    break;
+                case "DAILY":
+                case "SEARCH":
+                    location.reload();
+                    break;
+            }
+            cF.ui.unblockUI();
         },
 
         /**
@@ -135,8 +160,7 @@ dF.JrnlDream = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                    dF.JrnlDay.refresh();
-                            dF.JrnlDreamTag.listAjax();     // 태그 refresh
+                            dF.JrnlDream.refresh();
                         });
                 }, "block");
             });
@@ -318,7 +342,7 @@ dF.JrnlDream = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            dF.JrnlDay.refresh();
+                            dF.JrnlDream.refresh();
                         });
                 }, "block");
             });
@@ -446,7 +470,7 @@ dF.JrnlDream = (function(): dfModule {
          * @param {String} profileName
          */
         buildViewModel: function(dream, profileName) {
-            const profile: any = dF.JrnlDream.RENDER_PROFILE[profileName];
+            const profile: any = dF.JrnlDream.PROFILE[profileName];
 
             if (!profile) throw new Error(`Unknown render profile: ${profileName}`);
 

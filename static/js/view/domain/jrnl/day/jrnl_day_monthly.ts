@@ -13,8 +13,8 @@ const Page: Page = (function(): Page {
         init: function(): void {
             /* initialize modules. */
             dF.JrnlDay.init('LIST');
-            dF.JrnlDiary.init();
-            dF.JrnlDream.init();
+            dF.JrnlDiary.init('LIST');
+            dF.JrnlDream.init('LIST');
             dF.JrnlTodo.init();
             dF.Comment.modal.init({
                 "refreshFunc": dF.JrnlDay.yyMnthListAjax

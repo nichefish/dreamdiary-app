@@ -13,7 +13,7 @@ const Page: Page = (function(): Page {
          */
          init: async function(): Promise<void> {
             /* initialize modules. */
-            await dF.JrnlDiary.init();
+            await dF.JrnlDiary.init("SEARCH");
             dF.JrnlDiarySearch.init();
             dF.Comment.modal.init({
                 "refreshFunc": dF.JrnlDay.yyMnthListAjax

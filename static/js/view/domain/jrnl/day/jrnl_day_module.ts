@@ -13,7 +13,7 @@ dF.JrnlDay = (function(): dfModule {
 
         /**
          * initializes module.
-         * @param {"LIST"|"CAL"|"DAILY"} viewType
+         * @param {"LIST"|"CAL"|"DAILY"|"SEARCH"} viewType
          */
         init: function(viewType: "LIST"|"CAL"|"DAILY"|"SEARCH"): void {
             if (dF.JrnlDay.initialized) return;
@@ -35,9 +35,11 @@ dF.JrnlDay = (function(): dfModule {
             switch (dF.JrnlDay.viewType) {
                 case "LIST":
                     dF.JrnlDay.yyMnthListAjax();
+                    dF.JrnlDayTag.listAjax();     // 태그 refresh
                     break;
                 case "CAL":
                     Page.refreshEventList();
+                    dF.JrnlDayTag.listAjax();     // 태그 refresh
                     break;
                 case "DAILY":
                     location.reload();
@@ -236,7 +238,6 @@ dF.JrnlDay = (function(): dfModule {
                             if (!res.rslt) return;
 
                             dF.JrnlDay.refresh();
-                            dF.JrnlDayTag.listAjax();     // 태그 refresh
                         });
                 }, "block");
             });
@@ -326,7 +327,6 @@ dF.JrnlDay = (function(): dfModule {
                             if (!res.rslt) return;
 
                             dF.JrnlDay.refresh();
-                            dF.JrnlDayTag.listAjax();     // 태그 refresh
                         });
                 }, "block");
             });
