@@ -56,7 +56,7 @@ public class JrnlDreamService
     @Getter
     private final JrnlDreamSpec spec;
     @Getter
-    private final JrnlDreamMapstruct mapstruct = JrnlDreamMapstruct.INSTANCE;
+    private final JrnlDreamMapstruct mapstruct;
     @Getter
     private final JrnlDreamMapper mapper;
 

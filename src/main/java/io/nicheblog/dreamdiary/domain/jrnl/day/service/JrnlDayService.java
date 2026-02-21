@@ -61,7 +61,7 @@ public class JrnlDayService
     @Getter
     private final JrnlDaySpec spec;
     @Getter
-    private final JrnlDayMapstruct mapstruct = JrnlDayMapstruct.INSTANCE;
+    private final JrnlDayMapstruct mapstruct;
 
     public JrnlDayMapstruct getReadMapstruct() {
         return this.mapstruct;
