@@ -100,9 +100,6 @@ public class JrnlSumryService
         // 해당 년도 꿈 조회해서 갱신
         final Integer dreamCntByYy = repository.getDreamCntByYy(yy, regstrId);
         sumry.setDreamCnt(dreamCntByYy);
-        // 해당 년도 일기 일자 조회해서 갱신
-        final Integer diaryCntByYy = repository.getDiaryDayCntByYy(yy, regstrId);
-        sumry.setDiaryDayCnt(diaryCntByYy);
 
         repository.save(sumry);
 
@@ -145,9 +142,6 @@ public class JrnlSumryService
         // 해당 년도 꿈 조회해서 갱신
         final Integer dreamCntByYy = repository.getTotalDreamCnt(regstrId);
         totalSumry.setDreamCnt(dreamCntByYy);
-        // 해당 년도 일기 일자 조회해서 갱신
-        final Integer diaryCntByYy = repository.getTotalDiaryDayCnt(regstrId);
-        totalSumry.setDiaryDayCnt(diaryCntByYy);
 
         return totalSumry;
     }
