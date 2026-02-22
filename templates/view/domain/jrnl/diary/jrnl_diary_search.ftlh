@@ -55,7 +55,7 @@
 <#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_item_partial.hbs">
 <#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_reg_btn_partial.hbs">
 <#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_copy_btn_partial.hbs">
-<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_context_btn_partial.hbs">
+<#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_search_context_btn_partial.hbs">
 <#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_toggle_btn_partial.hbs">
 <#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_states_partial.hbs">
 <#include "/view/domain/jrnl/diary/_partial/_jrnl_diary_cn_search_partial.hbs">
