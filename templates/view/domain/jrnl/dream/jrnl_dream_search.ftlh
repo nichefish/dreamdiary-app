@@ -66,7 +66,7 @@
 <#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_item_partial.hbs">
 <#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_reg_btn_partial.hbs">
 <#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_copy_btn_partial.hbs">
-<#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_context_btn_partial.hbs">
+<#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_search_context_btn_partial.hbs">
 <#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_toggle_btn_partial.hbs">
 <#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_states_partial.hbs">
 <#include "/view/domain/jrnl/dream/_partial/_jrnl_dream_cn_partial.hbs">
