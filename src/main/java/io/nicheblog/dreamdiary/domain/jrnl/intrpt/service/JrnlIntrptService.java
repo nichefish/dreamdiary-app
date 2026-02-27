@@ -54,7 +54,7 @@ public class JrnlIntrptService
     @Getter
     private final JrnlIntrptSpec spec;
     @Getter
-    private final JrnlIntrptMapstruct mapstruct = JrnlIntrptMapstruct.INSTANCE;
+    private final JrnlIntrptMapstruct mapstruct;
     @Getter
     private final JrnlIntrptMapper mapper;
 

@@ -10,6 +10,8 @@ import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseClsfSpec;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.*;
@@ -59,6 +61,7 @@ public class JrnlDreamSpec
      *
      * @param searchParamMap 검색 파라미터 맵
      * @param root 검색할 엔티티의 Root 객체
+     * @param query - CriteriaQuery 객체
      * @param builder 검색 조건을 생성하는 CriteriaBuilder 객체
      * @return {@link List} -- 설정된 검색 조건(Predicate) 리스트
      */
@@ -66,6 +69,7 @@ public class JrnlDreamSpec
     public List<Predicate> getPredicateWithParams(
             final Map<String, Object> searchParamMap,
             final Root<JrnlDreamEntity> root,
+            final CriteriaQuery<?> query,
             final CriteriaBuilder builder
     ) throws Exception {
 
@@ -103,16 +107,60 @@ public class JrnlDreamSpec
                     // 99 = 모든 월
                     predicate.add(builder.equal(jrnlDayJoin.get("postNo"), value));
                     continue;
-                case "dreamKeyword":
+                case "searchKeywords": {
                     // 내용 like 검색
-                    predicate.add(builder.like(root.get("cn"), "%" + value + "%"));
+                    if (!(value instanceof List<?> rawList)) continue;
+                    if (CollectionUtils.isEmpty(rawList)) continue;
+
+                    final List<Predicate> likeList = new ArrayList<>();
+                    final Expression<String> cnLowerExp = builder.lower(root.get("cn"));
+                    for (final Object obj : rawList) {
+                        if (obj == null) continue;
+                        final String keyword = obj.toString().trim();
+                        if (StringUtils.isEmpty(keyword)) continue;
+
+                        likeList.add(builder.like(cnLowerExp, "%" + keyword.toLowerCase() + "%"));
+                    }
+                    if (CollectionUtils.isEmpty(likeList)) continue;
+
+                    predicate.add(builder.and(likeList.toArray(new Predicate[0])));
                     continue;
-                case "tagNo":
+                }
+                case "tagNo": {
                     // 특정 태그된 꿈만 조회
                     final Join<JrnlDreamEntity, TagEmbed> tagJoin = root.join("tag", JoinType.INNER);
                     final Join<TagEmbed, TagContentEntity> tagContentJoin = tagJoin.join("list", JoinType.INNER);
                     predicate.add(builder.equal(tagContentJoin.get("regstrId"), AuthUtils.getLgnUserId()));
                     predicate.add(builder.equal(tagContentJoin.get("refTagNo"), value));
+                    continue;
+                }
+                case "tagNos":
+                    // 내용 like 검색
+                    if (!(value instanceof List<?> rawList)) continue;
+                    if (CollectionUtils.isEmpty(rawList)) continue;
+
+                    final Join<JrnlDreamEntity, TagEmbed> tagJoin = root.join("tag", JoinType.INNER);
+                    final Join<TagEmbed, TagContentEntity> tagContentJoin = tagJoin.join("list", JoinType.INNER);
+                    predicate.add(builder.equal(tagContentJoin.get("regstrId"), AuthUtils.getLgnUserId()));
+
+                    for (final Object obj : rawList) {
+                        if (obj == null) continue;
+                        final Integer tagNo = (Integer) obj;
+
+                        Subquery<Long> sub = query.subquery(Long.class);
+                        Root<TagContentEntity> subRoot = sub.from(TagContentEntity.class);
+
+                        sub.select(subRoot.get("refPostNo"));
+                        sub.where(
+                            builder.and(
+                                builder.equal(subRoot.get("refPostNo"), root.get("postNo")),
+                                builder.equal(subRoot.get("refTagNo"), tagNo),
+                                builder.equal(subRoot.get("regstrId"), AuthUtils.getLgnUserId())
+                            )
+                        );
+
+                        predicate.add(builder.exists(sub));
+                    }
                     continue;
                 case "state":
                     // 상태 검색

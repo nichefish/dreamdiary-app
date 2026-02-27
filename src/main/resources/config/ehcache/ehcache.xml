@@ -77,6 +77,7 @@
     <cache alias="myJrnlDiaryList" uses-template="defaultTemplate" />
     <cache alias="myJrnlDiaryDtlDto" uses-template="defaultTemplate" />
     <cache alias="myJrnlDiaryTagList" uses-template="defaultTemplate" />
+    <cache alias="myJrnlDiaryTagListYyMnth" uses-template="defaultTemplate" />
     <cache alias="myJrnlDiarySizedTagList" uses-template="defaultTemplate" />
     <cache alias="myJrnlDiaryTagCtgrMap" uses-template="defaultTemplate" />
     <cache alias="myCountDiarySizeMap" uses-template="defaultTemplate" />
@@ -87,7 +88,7 @@
     <!-- 저널 꿈 -->
     <cache alias="myJrnlDreamList" uses-template="defaultTemplate" />
     <cache alias="myJrnlDreamDtlDto" uses-template="defaultTemplate" />
-    <cache alias="myJrnlDreamTagList" uses-template="defaultTemplate" />
+    <cache alias="myJrnlDreamTagListYyMnth" uses-template="defaultTemplate" />
     <cache alias="myJrnlDreamSizedTagList" uses-template="defaultTemplate" />
     <cache alias="myJrnlDreamTagCtgrMap" uses-template="defaultTemplate" />
     <cache alias="myCountDreamSizeMap" uses-template="defaultTemplate" />

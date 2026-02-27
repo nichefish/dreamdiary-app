@@ -499,12 +499,16 @@ document.addEventListener("DOMContentLoaded", function(): void {
     if (jrnlDiaryStatesPartial) Handlebars.registerPartial("jrnl_diary_states_partial", jrnlDiaryStatesPartial);
     const jrnlDiaryCnPartial: string = document.getElementById("jrnl_diary_cn_partial")?.innerHTML;
     if (jrnlDiaryCnPartial) Handlebars.registerPartial("jrnl_diary_cn_partial", jrnlDiaryCnPartial);
+    const jrnlDiaryCnSearchPartial: string = document.getElementById("jrnl_diary_cn_search_partial")?.innerHTML;
+    if (jrnlDiaryCnSearchPartial) Handlebars.registerPartial("jrnl_diary_cn_search_partial", jrnlDiaryCnSearchPartial);
     const jrnlDiaryRegBtnPartial: string = document.getElementById("jrnl_diary_reg_btn_partial")?.innerHTML;
     if (jrnlDiaryRegBtnPartial) Handlebars.registerPartial("jrnl_diary_reg_btn_partial", jrnlDiaryRegBtnPartial);
     const jrnlDiaryCopyBtnPartial: string = document.getElementById("jrnl_diary_copy_btn_partial")?.innerHTML;
     if (jrnlDiaryCopyBtnPartial) Handlebars.registerPartial("jrnl_diary_copy_btn_partial", jrnlDiaryCopyBtnPartial);
     const jrnlDiaryContextBtnPartial: string = document.getElementById("jrnl_diary_context_btn_partial")?.innerHTML;
     if (jrnlDiaryContextBtnPartial) Handlebars.registerPartial("jrnl_diary_context_btn_partial", jrnlDiaryContextBtnPartial);
+    const jrnlDiarySearchContextBtnPartial: string = document.getElementById("jrnl_diary_search_context_btn_partial")?.innerHTML;
+    if (jrnlDiarySearchContextBtnPartial) Handlebars.registerPartial("jrnl_diary_search_context_btn_partial", jrnlDiarySearchContextBtnPartial);
     const jrnlDiaryToggleBtnPartial: string = document.getElementById("jrnl_diary_toggle_btn_partial")?.innerHTML;
     if (jrnlDiaryToggleBtnPartial) Handlebars.registerPartial("jrnl_diary_toggle_btn_partial", jrnlDiaryToggleBtnPartial);
 
@@ -512,12 +516,16 @@ document.addEventListener("DOMContentLoaded", function(): void {
     if (jrnlDreamStatesPartial) Handlebars.registerPartial("jrnl_dream_states_partial", jrnlDreamStatesPartial);
     const jrnlDreamCnPartial: string = document.getElementById("jrnl_dream_cn_partial")?.innerHTML;
     if (jrnlDreamCnPartial) Handlebars.registerPartial("jrnl_dream_cn_partial", jrnlDreamCnPartial);
+    const jrnlDreamCnSearchPartial: string = document.getElementById("jrnl_dream_cn_search_partial")?.innerHTML;
+    if (jrnlDreamCnSearchPartial) Handlebars.registerPartial("jrnl_dream_cn_search_partial", jrnlDreamCnSearchPartial);
     const jrnlDreamRegBtnPartial: string = document.getElementById("jrnl_dream_reg_btn_partial")?.innerHTML;
     if (jrnlDreamRegBtnPartial) Handlebars.registerPartial("jrnl_dream_reg_btn_partial", jrnlDreamRegBtnPartial);
     const jrnlDreamCopyBtnPartial: string = document.getElementById("jrnl_dream_copy_btn_partial")?.innerHTML;
     if (jrnlDreamCopyBtnPartial) Handlebars.registerPartial("jrnl_dream_copy_btn_partial", jrnlDreamCopyBtnPartial);
     const jrnlDreamContextBtnPartial: string = document.getElementById("jrnl_dream_context_btn_partial")?.innerHTML;
     if (jrnlDreamContextBtnPartial) Handlebars.registerPartial("jrnl_dream_context_btn_partial", jrnlDreamContextBtnPartial);
+    const jrnlDreamSearchContextBtnPartial: string = document.getElementById("jrnl_dream_search_context_btn_partial")?.innerHTML;
+    if (jrnlDreamSearchContextBtnPartial) Handlebars.registerPartial("jrnl_dream_search_context_btn_partial", jrnlDreamSearchContextBtnPartial);
     const jrnlDreamToggleBtnPartial: string = document.getElementById("jrnl_dream_toggle_btn_partial")?.innerHTML;
     if (jrnlDreamToggleBtnPartial) Handlebars.registerPartial("jrnl_dream_toggle_btn_partial", jrnlDreamToggleBtnPartial);
 

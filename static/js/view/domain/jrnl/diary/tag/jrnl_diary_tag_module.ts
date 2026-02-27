@@ -8,24 +8,47 @@ if (typeof dF === 'undefined') { var dF = {} as any; }
 dF.JrnlDiaryTag = (function(): dfModule {
     return {
         initialized: false,
+        initPromise: null,
         ctgrMap: new Map(),
+        list: [],
 
         /**
          * initializes module.
+         * @return Promise<void>
          */
-        init: function(): void {
-            if (dF.JrnlDiaryTag.initialized) return;
+        init: async function(): Promise<void> {
+            if (this.initPromise) return this.initPromise;
 
-            dF.JrnlDiaryTag.getCtgrMap();
+            /* initialize modules. */
+            this.initPromise = (async () => {
+                await dF.JrnlDiaryTag.getCtgrMap();
+                await dF.JrnlDiaryTag.getNmList();
+                this.initialized = true;
+                console.log("'dF.JrnlDiaryTag' module initialized.");
+            })();
 
-            dF.JrnlDiaryTag.initialized = true;
-            console.log("'dF.JrnlDiaryTag' module initialized.");
+            return this.initPromise;
         },
 
-        getCtgrMap: function(): void {
+        /**
+         * 태그 카테고리 맵 조회
+         * @return Promise<void>
+         */
+        getCtgrMap: async function(): Promise<void> {
             const url: string = Url.JRNL_DIARY_TAG_CTGR_MAP;
-            cF.ajax.get(url, {}, function(res: AjaxResponse): void {
+            return cF.ajax.get(url, {}, function(res: AjaxResponse): void {
                 if (res.rsltMap) dF.JrnlDiaryTag.ctgrMap = res.rsltMap;
+            });
+        },
+
+        /**
+         * 태그 이름 맵 조회
+         * @return Promise<void>
+         */
+        getNmList: async function(): Promise<void> {
+            const url: string = Url.JRNL_DIARY_TAGS;
+            return cF.ajax.get(url, {}, function(res: AjaxResponse): void {
+                if (res.rsltList) dF.JrnlDiaryTag.list = res.rsltList;
             });
         },
 
@@ -67,52 +90,19 @@ dF.JrnlDiaryTag = (function(): dfModule {
                 });
                 cF.handlebars.template(ctgrSet, "jrnl_tag_ctgr");
                 cF.handlebars.modal(res.rsltList, "jrnl_tag_list");
-                $("#jrnl_tag_dtl_modal").modal("hide");
             });
         },
 
         /**
-         * 상세 모달 호출
+         * 태그 검색 팝업 호출
          * @param {string|number} tagNo - 조회할 태그 번호.
-         * @param tagNm 태그 이름
          */
-        dtlModal: function(tagNo: string|number, tagNm: string): void {
-            event.stopPropagation();
-            if (isNaN(Number(tagNo))) return;
-
-            // 기존에 열린 모달이 있으면 닫기
-            const openModals: NodeList = document.querySelectorAll('.modal.show'); // 열린 모달을 찾기
-            openModals.forEach((modal: Node): void => {
-                $(modal).modal('hide');  // 각각의 모달을 닫기
-            });
-
-            const self = this;
-            const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
-            const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
-
-            const url: string = Url.JRNL_DIARY_TAG_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "tagNo": tagNo };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
-                if (!res.rslt) {
-                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
-                    return;
-                }
-                const viewModels = res.rsltList.map((diary: any) =>
-                    dF.JrnlDiary.buildViewModel(diary, 'TAG')
-                );
-                cF.handlebars.modal(viewModels, "jrnl_diary_tag_dtl");
-                document.querySelector("#jrnl_diary_tag_dtl_modal .header_tag_nm").innerHTML = tagNm;
-                document.querySelector("#jrnl_diary_tag_dtl_modal .header_tag_cnt").innerHTML = (res.rsltList?.length ?? 0).toString();
-                KTMenu.createInstances();
-
-                /* modal history push */
-                ModalHistory.push(self, func, args);
-
-            });
+        select: function(tagNo: string|number): void {
+            const url: string = `${Url.JRNL_DIARY_SEARCH}?tagNos=${tagNo}`;
+            const popupNm: string = "저널 일기 검색";
+            const options: string = 'width=1960,height=1440,top=0,left=270';
+            const popup: Window = cF.ui.openPopup(url, popupNm, options);
+            if (popup) popup.focus();
         },
-
-        expand: function(obj: HTMLElement): void {
-            $(obj).prev(".cn").toggleClass("expanded");
-        }
     }
 })();

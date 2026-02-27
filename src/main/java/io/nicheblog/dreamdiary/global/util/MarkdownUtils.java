@@ -176,15 +176,31 @@ public class MarkdownUtils {
     public static String normalize(final String originalText) {
         if (StringUtils.isEmpty(originalText)) return null;
 
-        // 1. HTML entity decode
-        String unescapedText = StringEscapeUtils.unescapeHtml4(originalText);
-
-        // 2. 특수문자 정규화
-        return unescapedText
+        final String unescaped = StringEscapeUtils.unescapeHtml4(originalText);
+        final String replacedText = unescaped
+                .replace("\u00A0", " ")
                 .replace("‘", "'")
                 .replace("’", "'")
                 .replace("“", "\"")
                 .replace("”", "\"")
                 .replace("…", "...");
+
+
+        final Document doc = Jsoup.parseBodyFragment(replacedText);
+        for (final Element el : doc.getAllElements()) {
+            if (el.tagName().equalsIgnoreCase("script")) continue;
+            if (el.tagName().equalsIgnoreCase("style")) continue;
+
+            for (final Node child : el.childNodes()) {
+                if (child instanceof TextNode textNode) {
+                    final String originalTextMode = textNode.getWholeText();
+                    final String replacedTextNode = originalTextMode.replaceAll("(?m)^-> ", "→ ").replace(" -> ", " → ");
+
+                    textNode.text(replacedTextNode);
+                }
+            }
+        }
+
+        return doc.body().html();
     }
 }

@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.domain.jrnl.sumry.controller;
 
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayTagService;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryService;
@@ -186,7 +187,7 @@ public class JrnlSumryRestController
         List <TagDto> tagList = new ArrayList<>();
         switch(type) {
             case DAY -> tagList = jrnlDayTagService.getDaySizedListDto(yy, 99);
-            case DIARY -> tagList = jrnlDiaryTagService.getDiarySizedListDto(yy, 99);
+            case DIARY -> tagList = jrnlDiaryTagService.getDiarySizedListDto(AuthUtils.getLgnUserId(), yy, 99);
             case DREAM -> tagList = jrnlDreamTagService.getDreamSizedListDto(yy, 99);
         }
         final boolean isSuccess = true;

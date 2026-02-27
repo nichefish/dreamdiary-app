@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.domain.jrnl.day.entity;
 
-import io.nicheblog.dreamdiary.domain.jrnl.day.mapstruct.JrnlDayMapstruct;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.*;
@@ -82,15 +81,4 @@ public class JrnlDaySmpEntity {
     @Column(name = "weather")
     @Comment("날씨")
     private String weather;
-
-    /* ----- */
-
-    /**
-     * 간소화 생성자
-     * @param day JrnlDayEntity 객체
-     * @return JrnlDaySmpEntity -- 변환한 간소화 객체
-     */
-    public static JrnlDaySmpEntity from(JrnlDayEntity day) throws Exception {
-        return JrnlDayMapstruct.INSTANCE.asSmp(day);
-    }
 }
