@@ -23,7 +23,7 @@ dF.JrnlDayTag = (function(): dfModule {
         },
 
         /**
-         * 태그 카테고리 정보 조회
+         * 태그 카테고리 맵 조회
          */
         getCtgrMap: function(): void {
             const url: string = Url.JRNL_DAY_TAG_CTGR_MAP;
@@ -72,6 +72,15 @@ dF.JrnlDayTag = (function(): dfModule {
                 cF.handlebars.modal(res.rsltList, "jrnl_tag_list");
                 $("#jrnl_tag_dtl_modal").modal("hide");
             });
+        },
+
+        /**
+         * 상세 모달 호출
+         * @param {string|number} tagNo - 조회할 태그 번호.
+         * @param tagNm 태그 이름
+         */
+        select: function(tagNo: string|number, tagNm: string): void {
+            dF.JrnlDayTag.dtlModal(tagNo, tagNm);
         },
 
         /**

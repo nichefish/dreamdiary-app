@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.jrnl.intrpt.entity;
 
-import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamSmpEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbedModule;
@@ -13,11 +13,11 @@ import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbed;
 import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbedModule;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 
 /**
  * JrnlIntrptEntity
@@ -64,18 +64,11 @@ public class JrnlIntrptEntity
 
     /* ----- */
 
-    /** 저널 꿈 번호  */
-    @Column(name = "jrnl_dream_no")
-    @Comment("저널 꿈 번호")
-    private Integer jrnlDreamNo;
-
     /** 저널 꿈 정보 */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "jrnl_dream_no", referencedColumnName = "post_no", insertable = false, updatable = false)
-    @Fetch(FetchMode.JOIN)
-    @NotFound(action = NotFoundAction.IGNORE)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "jrnl_dream_no", nullable = false)
     @Comment("저널 꿈 정보")
-    private JrnlDreamSmpEntity jrnlDream;
+    private JrnlDreamEntity jrnlDream;
 
     /** 순번 */
     @Column(name = "idx", columnDefinition = "INT DEFAULT 1")

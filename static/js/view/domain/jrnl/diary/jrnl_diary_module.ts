@@ -8,7 +8,7 @@ if (typeof dF === 'undefined') { var dF = {} as any; }
 dF.JrnlDiary = (function(): dfModule {
     return {
         STORAGE_KEY: "collapsedJrnlDiaryIds",
-        RENDER_PROFILE: {
+        PROFILE: {
             LIST: {
                 collapsed: true,
             },
@@ -20,21 +20,50 @@ dF.JrnlDiary = (function(): dfModule {
             }
         },
 
+        profile: null,
         initialized: false,
+        initPromise: null,
         inKeywordSearchMode: false,
         tagify: null,
 
         /**
          * initializes module.
+         * @param {"LIST"|"CAL"|"DAILY"|"SEARCH"} viewType
+         * @return Promise<void>
          */
-        init: function(): void {
-            if (dF.JrnlDiary.initialized) return;
+        init: async function(viewType: "LIST"|"CAL"|"DAILY"|"SEARCH"): Promise<void> {
+            if (this.initPromise) return this.initPromise;
 
-            /* initialize submodules. */
-            dF.JrnlDiaryTag.init();
+            /* initialize modules. */
+            this.initPromise = (async () => {
+                await dF.JrnlDiaryTag.init();
+                this.viewType = viewType;
+                this.initialized = true;
+                console.log("'dF.JrnlDiary' module initialized.");
+            })();
 
-            dF.JrnlDiary.initialized = true;
-            console.log("'dF.JrnlDiary' module initialized.");
+            return this.initPromise;
+        },
+
+        /**
+         * refresh
+         */
+        refresh: function(): void {
+            switch (this.viewType) {
+                case "LIST":
+                    dF.JrnlDay.yyMnthListAjax();
+                    dF.JrnlDiaryTag.listAjax();     // 태그 refresh
+                    break;
+                case "CAL":
+                    Page.refreshEventList();
+                    dF.JrnlDiaryTag.listAjax();     // 태그 refresh
+                    break;
+                case "DAILY":
+                case "SEARCH":
+                    location.reload();
+                    break;
+            }
+            cF.ui.unblockUI();
         },
 
         /**
@@ -55,54 +84,15 @@ dF.JrnlDiary = (function(): dfModule {
         },
 
         /**
-         * 목록 조회 (Ajax)
+         * 키워드 검색 (Ajax)
          */
-        keywordListAjax: function(): void {
+        searchPopup: function(): void {
             const keyword: string = (document.querySelector("#jrnl_aside #diaryKeyword") as HTMLInputElement)?.value;
-            if (cF.util.isEmpty(keyword)) return;
-
-            const url: string = Url.JRNL_DIARIES;
-            const ajaxData: Record<string, any> = { "diaryKeyword": keyword };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
-                if (!res.rslt) {
-                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
-                    return;
-                }
-                $("#jrnl_aside #yy").val("");
-                $("#jrnl_aside #mnth").val("");
-                // 목록 영역 클리어
-                $("#jrnl_aside #dreamKeyword").val("");
-                $("#jrnl_day_list_div").empty();
-                $("#jrnl_dream_list_div").empty();
-                // 태그 헤더 클리어
-                $("#jrnl_day_tag_list_div").empty();
-                $("#jrnl_diary_tag_list_div").empty();
-                $("#jrnl_dream_tag_list_div").empty();
-                cF.ui.closeModal();
-                const viewModels = res.rsltList.map((diary: any) =>
-                    dF.JrnlDiary.buildViewModel(diary, 'SEARCH')
-                );
-                cF.handlebars.template(viewModels, "jrnl_diary_list");
-                dF.JrnlDiary.inKeywordSearchMode = true;
-                // 버튼 추가
-                $("#jrnl_aside #jrnl_diary_reset_btn").remove();
-                const resetBtn = $(`<button type="button" id="jrnl_diary_reset_btn" class="btn btn-sm btn-outline btn-light-danger px-4" 
-                                          onclick="dF.JrnlDiary.resetKeyword();" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
-                                          aria-label="일기 키워드 검색을 리셋합니다." 
-                                          data-bs-original-title="일기 키워드 검색을 리셋합니다." data-kt-initialized="1">
-                                     <i class="bi bi-x pe-0"></i>
-                                  </button>`);
-                $("#jrnl_aside #jrnl_diary_search_btn").after(resetBtn);
-                resetBtn.tooltip();
-            }, "block");
-        },
-
-        /**
-         * 키워드 검색 종료
-         */
-        resetKeyword: function(): void {
-            $("#jrnl_aside #jrnl_diary_reset_btn").remove();
-            dF.JrnlDayAside.mnth();
+            const url: string = `${Url.JRNL_DIARY_SEARCH}?searchKeywords=${keyword}`;
+            const popupNm: string = "저널 일기 검색";
+            const options: string = 'width=1960,height=1440,top=0,left=270';
+            const popup: Window = cF.ui.openPopup(url, popupNm, options);
+            if (popup) popup.focus();
         },
 
         /**
@@ -153,8 +143,7 @@ dF.JrnlDiary = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                    dF.JrnlDay.refresh();
-                            dF.JrnlDiaryTag.listAjax();     // 태그 refresh
+                            dF.JrnlDiary.refresh();
                         });
                 }, "block");
             });
@@ -250,7 +239,6 @@ dF.JrnlDiary = (function(): dfModule {
                             if (!res.rslt) return;
 
                             dF.JrnlDay.refresh();
-                            dF.JrnlDiaryTag.listAjax();     // 태그 refresh
                         });
                 }, "block");
             });
@@ -424,7 +412,7 @@ dF.JrnlDiary = (function(): dfModule {
          * @param {String} profileName
          */
         buildViewModel: function(diary, profileName) {
-            const profile: any = dF.JrnlDiary.RENDER_PROFILE[profileName];
+            const profile: any = dF.JrnlDiary.PROFILE[profileName];
 
             if (!profile) throw new Error(`Unknown render profile: ${profileName}`);
 

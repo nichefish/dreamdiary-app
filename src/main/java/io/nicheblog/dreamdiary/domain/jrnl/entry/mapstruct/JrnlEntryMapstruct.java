@@ -13,7 +13,6 @@ import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,12 +25,15 @@ import java.util.stream.Collectors;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CdUtils.class}, builder = @Builder(disableBuilder = true))
-public interface JrnlEntryMapstruct
-        extends BaseWriteMapstruct<JrnlEntryDto, JrnlEntryEntity>, BaseClsfMapstruct<JrnlEntryDto, JrnlEntryEntity> {
-
-    JrnlEntryMapstruct INSTANCE = Mappers.getMapper(JrnlEntryMapstruct.class);
-    JrnlDiaryMapstruct jrnlDiaryMapstruct = JrnlDiaryMapstruct.INSTANCE;
+@Mapper(
+    componentModel = "spring",
+    unmappedTargetPolicy = ReportingPolicy.IGNORE,
+    imports = { DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CdUtils.class },
+    uses = { JrnlDiaryMapstruct.class },
+    builder = @Builder(disableBuilder = true)
+)
+public abstract class JrnlEntryMapstruct
+        implements BaseWriteMapstruct<JrnlEntryDto, JrnlEntryEntity>, BaseClsfMapstruct<JrnlEntryDto, JrnlEntryEntity> {
 
     /**
      * Entity -> Dto 변환
@@ -43,10 +45,9 @@ public interface JrnlEntryMapstruct
     @Named("toDto")
     @Mapping(target = "stdrdDt", expression = "java(entity.getJrnlDay() != null ? DateUtils.asStr(\"Y\".equals(entity.getJrnlDay().getDtUnknownYn()) ? entity.getJrnlDay().getAprxmtDt() : entity.getJrnlDay().getJrnlDt(), DatePtn.DATE) : null)")
     @Mapping(target = "jrnlDtWeekDay", expression = "java(entity.getJrnlDay() != null && entity.getJrnlDay().getJrnlDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJrnlDay().getJrnlDt()) : null)")
-    @Mapping(target = "yy", expression = "java(entity.getJrnlDay() != null ? entity.getJrnlDay().getYy() : null)")
-    @Mapping(target = "mnth", expression = "java(entity.getJrnlDay() != null ? entity.getJrnlDay().getMnth() : null)")
-    @Mapping(target = "jrnlDiaryList", expression = "java(jrnlDiaryMapstruct.toDtoList(entity.getJrnlDiaryList()))")
-    JrnlEntryDto toDto(final JrnlEntryEntity entity) throws Exception;
+    @Mapping(target = "yy", source = "jrnlDay.yy")
+    @Mapping(target = "mnth", source = "jrnlDay.mnth")
+    public abstract JrnlEntryDto toDto(final JrnlEntryEntity entity) throws Exception;
 
     /**
      * Entity -> ListDto 변환
@@ -55,7 +56,7 @@ public interface JrnlEntryMapstruct
      * @return ListDto -- 변환된 ListDto 객체
      */
     @Named("toSmpDto")
-    JrnlEntrySmpDto toSmpDto(final JrnlEntryEntity entity) throws Exception;
+    public abstract JrnlEntrySmpDto toSmpDto(final JrnlEntryEntity entity) throws Exception;
 
     /**
      * Dto -> Entity 변환
@@ -64,7 +65,7 @@ public interface JrnlEntryMapstruct
      * @return Entity -- 변환된 Entity 객체
      */
     @Override
-    JrnlEntryEntity toEntity(final JrnlEntryDto dto) throws Exception;
+    public abstract JrnlEntryEntity toEntity(final JrnlEntryDto dto) throws Exception;
 
     /**
      * update Entity from Dto (Dto에서 null이 아닌 값만 Entity로 매핑)
@@ -74,7 +75,7 @@ public interface JrnlEntryMapstruct
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateFromDto(final JrnlEntryDto dto, final @MappingTarget JrnlEntryEntity entity) throws Exception;
+    public abstract void updateFromDto(final JrnlEntryDto dto, final @MappingTarget JrnlEntryEntity entity) throws Exception;
 
     /**
      * EntityList to DtoList
@@ -82,7 +83,7 @@ public interface JrnlEntryMapstruct
      * @param entityList 변환할 Entity 목록
      * @return {@link List} -- 변환된 Dto 목록
      */
-    default List<JrnlEntrySmpDto> toSmpDtoList(final List<JrnlEntryEntity> entityList) {
+    public List<JrnlEntrySmpDto> toSmpDtoList(final List<JrnlEntryEntity> entityList) {
         if (CollectionUtils.isEmpty(entityList)) return null;
         return entityList.stream()
                 .map(entity -> {

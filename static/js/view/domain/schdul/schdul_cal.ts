@@ -31,7 +31,7 @@ const Page: Page = (function(): Page {
             Page.calendar = cF.fullcalendar.init("full_calendar_app", Page.eventList, function(info): void {
                 // 일정 onclick 이벤트
                 const event = info.event;
-                const schdulCd = event.groupId;
+                const schdulCd: string = event.groupId;
                 const isVcatn: boolean = schdulCd === "${Constant.SCHDUL_VCATN!}";
                 const isBrthdy: boolean = schdulCd === "${Constant.SCHDUL_BRTHDY!}"
                 if (isVcatn || isBrthdy) return;     // 휴가/생일은 팝업 띄우지 않음 - 휴가관리/사용자 정보 쪽에서 관리

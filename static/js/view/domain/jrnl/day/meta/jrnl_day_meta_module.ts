@@ -36,7 +36,7 @@ dF.JrnlDayMeta = (function(): dfModule {
         },
 
         /**
-         * 태그 카테고리 정보 조회
+         * 태그 카테고리 맵 조회
          */
         getCtgrMap: function(): void {
             const url: string = Url.JRNL_DAY_META_CTGR_MAP;

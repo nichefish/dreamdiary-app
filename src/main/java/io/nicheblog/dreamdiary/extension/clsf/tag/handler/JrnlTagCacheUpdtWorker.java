@@ -129,7 +129,9 @@ public class JrnlTagCacheUpdtWorker {
         // 변경된 태그 목록 캐시 저장
         final String listCacheNm = this.getTagListCacheNmByContentType(contentType);
         final Cache listCache = cacheManager.getCache(listCacheNm);
-        listCache.put(cacheKey, sizedTagList);
+        if (listCache != null) listCache.put(cacheKey, sizedTagList);
+        final Cache yyMnthlistCache = cacheManager.getCache(listCacheNm + "YyMnth");
+        if (yyMnthlistCache != null) yyMnthlistCache.put(cacheKey, sizedTagList);
         // 기존 sizedList 캐시 초기화 (size에 따른 tagClass를 재계산해야 하므로)
         EhCacheUtils.evictCache(sizedListCacheNm, cacheKey);
     }

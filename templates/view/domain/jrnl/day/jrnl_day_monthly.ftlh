@@ -147,12 +147,10 @@
 <script type="text/javascript" src="/js/view/domain/jrnl/day/meta/jrnl_day_meta_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_diary_tag_module-->
-<#include "/view/domain/jrnl/diary/tag/_modal/_jrnl_diary_tag_dtl_modal.ftlh">
 <#include "/view/domain/jrnl/diary/tag/_jrnl_diary_tag_list_template.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/diary/tag/jrnl_diary_tag_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_dream_tag_module-->
-<#include "/view/domain/jrnl/dream/tag/_modal/_jrnl_dream_tag_dtl_modal.ftlh">
 <#include "/view/domain/jrnl/dream/tag/_jrnl_dream_tag_list_template.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/dream/tag/jrnl_dream_tag_module.js?${releaseDate!}"></script>
 

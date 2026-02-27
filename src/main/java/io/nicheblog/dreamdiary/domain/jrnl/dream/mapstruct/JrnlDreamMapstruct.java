@@ -12,7 +12,6 @@ import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
 
 /**
  * JrnlDreamMapstruct
@@ -22,12 +21,15 @@ import org.mapstruct.factory.Mappers;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CdUtils.class}, builder = @Builder(disableBuilder = true))
-public interface JrnlDreamMapstruct
-        extends BaseWriteMapstruct<JrnlDreamPostDto, JrnlDreamEntity>, BaseClsfMapstruct<JrnlDreamDto, JrnlDreamEntity> {
-
-    JrnlDreamMapstruct INSTANCE = Mappers.getMapper(JrnlDreamMapstruct.class);
-    JrnlIntrptMapstruct jrnlIntrptMapstruct = JrnlIntrptMapstruct.INSTANCE;
+@Mapper(
+    componentModel = "spring",
+    unmappedTargetPolicy = ReportingPolicy.IGNORE,
+    imports = { DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CdUtils.class },
+    uses = { JrnlIntrptMapstruct.class },
+    builder = @Builder(disableBuilder = true)
+)
+public abstract class JrnlDreamMapstruct
+        implements BaseWriteMapstruct<JrnlDreamPostDto, JrnlDreamEntity>, BaseClsfMapstruct<JrnlDreamDto, JrnlDreamEntity> {
 
     /**
      * Dto -> Entity 변환
@@ -37,7 +39,7 @@ public interface JrnlDreamMapstruct
      */
     @Override
     @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
-    JrnlDreamEntity toEntity(final JrnlDreamPostDto dto) throws Exception;
+    public abstract JrnlDreamEntity toEntity(final JrnlDreamPostDto dto) throws Exception;
 
     /**
      * update Entity from Dto (Dto에서 null이 아닌 값만 Entity로 매핑)
@@ -48,7 +50,7 @@ public interface JrnlDreamMapstruct
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
-    void updateFromDto(final JrnlDreamPostDto dto, final @MappingTarget JrnlDreamEntity entity) throws Exception;
+    public abstract void updateFromDto(final JrnlDreamPostDto dto, final @MappingTarget JrnlDreamEntity entity) throws Exception;
 
     /**
      * Entity -> Dto 변환
@@ -57,13 +59,11 @@ public interface JrnlDreamMapstruct
      * @return Dto -- 변환된 Dto 객체
      */
     @Override
-    @Named("toDto")
     @Mapping(target = "stdrdDt", expression = "java(entity.getJrnlDay() != null ? DateUtils.asStr(\"Y\".equals(entity.getJrnlDay().getDtUnknownYn()) ? entity.getJrnlDay().getAprxmtDt() : entity.getJrnlDay().getJrnlDt(), DatePtn.DATE) : null)")
     @Mapping(target = "dtUnknownYn", expression = "java(entity.getJrnlDay() != null ? entity.getJrnlDay().getDtUnknownYn() : \"N\")")
     @Mapping(target = "jrnlDtWeekDay", expression = "java(entity.getJrnlDay() != null && entity.getJrnlDay().getJrnlDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJrnlDay().getJrnlDt()) : null)")
-    @Mapping(target = "yy", expression = "java(entity.getJrnlDay() != null ? entity.getJrnlDay().getYy() : null)")
-    @Mapping(target = "mnth", expression = "java(entity.getJrnlDay() != null ? entity.getJrnlDay().getMnth() : null)")
+    @Mapping(target = "yy", source = "jrnlDay.yy")
+    @Mapping(target = "mnth", source = "jrnlDay.mnth")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
-    @Mapping(target = "jrnlIntrptList", expression = "java(jrnlIntrptMapstruct.toDtoList(entity.getJrnlIntrptList()))")
-    JrnlDreamDto toDto(final JrnlDreamEntity entity) throws Exception;
+    public abstract JrnlDreamDto toDto(final JrnlDreamEntity entity) throws Exception;
 }

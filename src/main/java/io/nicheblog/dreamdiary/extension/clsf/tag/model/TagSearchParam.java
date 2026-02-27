@@ -41,4 +41,14 @@ public class TagSearchParam
     /** 컨텐츠 타입 */
     @Size(max = 50)
     private String contentType;
+
+    /**
+     * 년도/월 존재여부 반환
+     * @return 년도/월 존재여부
+     */
+    public Boolean hasYyMnth() {
+        boolean hasYy = this.yy != null && this.yy > 0;
+        boolean hasMnth = this.mnth != null && this.mnth > 0;
+        return hasYy && hasMnth;
+    }
 }

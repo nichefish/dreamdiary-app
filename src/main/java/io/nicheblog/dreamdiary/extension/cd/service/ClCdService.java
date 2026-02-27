@@ -1,7 +1,5 @@
 package io.nicheblog.dreamdiary.extension.cd.service;
 
-import io.nicheblog.dreamdiary.domain.admin.menu.entity.MenuEntity;
-import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.extension.cache.util.RedisUtils;
 import io.nicheblog.dreamdiary.extension.cd.entity.ClCdEntity;
 import io.nicheblog.dreamdiary.extension.cd.mapstruct.ClCdMapstruct;

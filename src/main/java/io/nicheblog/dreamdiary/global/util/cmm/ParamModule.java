@@ -194,7 +194,7 @@ class ParamModule {
                     }
                     continue;
                 }
-                if (key.startsWith("searchKeyword")) continue;
+                if (!"searchKeywords".equals(key) && key.startsWith("searchKeyword")) continue;
                 if (key.endsWith("Dt")) continue;
                 filteredSearchKey.put(key, value);
             }

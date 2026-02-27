@@ -61,7 +61,7 @@ public class JrnlDayService
     @Getter
     private final JrnlDaySpec spec;
     @Getter
-    private final JrnlDayMapstruct mapstruct = JrnlDayMapstruct.INSTANCE;
+    private final JrnlDayMapstruct mapstruct;
 
     public JrnlDayMapstruct getReadMapstruct() {
         return this.mapstruct;
@@ -246,6 +246,11 @@ public class JrnlDayService
         final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
         this.setHldyInfo(listDto, hldyMap);
 
+        // 상태state merge
+        this.mergeStates(listDto, searchParam);
+        // 접힌 entry에 태그 요약 표시
+        this.applyEntryTagSummary(listDto);
+
         return listDto;
     }
 
@@ -259,15 +264,33 @@ public class JrnlDayService
     private void mergeStates(final List<JrnlDayDto> listDto, final JrnlDaySearchParam searchParam) {
         if (CollectionUtils.isEmpty(listDto) || searchParam == null) return;
 
-        final String cacheKey = AuthUtils.getLgnUserId()
-                   + "_" + searchParam.getYy()
-                   + "_" + searchParam.getMnth();
+        final String cacheKey = AuthUtils.getLgnUserId() + "_" + searchParam.getYy() + "_" + searchParam.getMnth();
 
         final Map<Integer, JrnlState> entryMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myEntryStateMap",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JrnlState> diaryMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myDiaryStateMap",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JrnlState> dreamMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myDreamStateMap",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JrnlState> intrptMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myIntrptStateMap", cacheKey)).orElse(Collections.emptyMap());
 
+        applyStates(listDto, entryMap, diaryMap, dreamMap, intrptMap);
+    }
+
+    /**
+     * 상태state merge
+     *
+     * @param jrnlDay 저널 일자
+     */
+    @SuppressWarnings("unchecked")
+    private void mergeStates(final JrnlDayDto jrnlDay) {
+        if (jrnlDay == null) return;
+
+        final String cacheKey = AuthUtils.getLgnUserId() + "_" + jrnlDay.getYy() + "_" + jrnlDay.getMnth();
+
+        final Map<Integer, JrnlState> entryMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myEntryStateMap",  cacheKey)).orElse(Collections.emptyMap());
+        final Map<Integer, JrnlState> diaryMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myDiaryStateMap",  cacheKey)).orElse(Collections.emptyMap());
+        final Map<Integer, JrnlState> dreamMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myDreamStateMap",  cacheKey)).orElse(Collections.emptyMap());
+        final Map<Integer, JrnlState> intrptMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("myIntrptStateMap", cacheKey)).orElse(Collections.emptyMap());
+
+        final List<JrnlDayDto> listDto = List.of(jrnlDay);
         applyStates(listDto, entryMap, diaryMap, dreamMap, intrptMap);
     }
 
@@ -465,6 +488,9 @@ public class JrnlDayService
         // 공휴일 정보 세팅
         final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
         this.setHldyInfo(retrieved, hldyMap);
+
+        // resolved/collapse 상태 merge
+        this.mergeStates(retrieved);
 
         return retrieved;
     }

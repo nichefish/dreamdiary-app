@@ -13,8 +13,8 @@ const Page: Page = (function(): Page {
         init: function(): void {
             /* initialize modules. */
             dF.JrnlDay.init('CAL');
-            dF.JrnlDiary.init();
-            dF.JrnlDream.init();
+            dF.JrnlDiary.init('CAL');
+            dF.JrnlDream.init('CAL');
             dF.JrnlTodo.init();
             dF.Comment.modal.init({
                 "refreshFunc": dF.JrnlDay.yyMnthListAjax
@@ -27,8 +27,8 @@ const Page: Page = (function(): Page {
             dF.JrnlDiaryTag.listAjax();
             dF.JrnlDreamTag.listAjax();
             // 일기/꿈 키워드 검색에 엔터키 처리
-            cF.util.enterKey("#diaryKeyword", dF.JrnlDiary.keywordListAjax);
-            cF.util.enterKey("#dreamKeyword", dF.JrnlDream.keywordListAjax);
+            cF.util.enterKey("#diaryKeyword", dF.JrnlDiary.searchPopup);
+            cF.util.enterKey("#dreamKeyword", dF.JrnlDream.searchPopup);
 
             // 초기 일자 설정
             const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy");

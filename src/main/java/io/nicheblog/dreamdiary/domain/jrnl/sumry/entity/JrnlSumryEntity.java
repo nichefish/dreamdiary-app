@@ -79,10 +79,6 @@ public class JrnlSumryEntity
     @Column(name = "dream_cnt")
     private Integer dreamCnt;
 
-    /** 일기 일수 */
-    @Column(name = "diary_day_cnt")
-    private Integer diaryDayCnt;
-
     /* ----- */
 
     /**
