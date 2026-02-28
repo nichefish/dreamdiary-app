@@ -12,9 +12,11 @@ import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -227,5 +229,17 @@ public class TagService
     public void deleteNoRefTags() {
         final List<TagEntity> entity = repository.findAll(spec.getNoRefTags());
         repository.deleteAll(entity);
+    }
+
+    /**
+     * 태그 번호 목록으로 태그 목록 조회
+     * @param tagNos List<Integer>
+     * @return List<TagDto>
+     */
+    public List<TagDto> getTagListByTagNos(final List<Integer> tagNos) {
+        if (CollectionUtils.isEmpty(tagNos)) return Collections.emptyList();
+
+        final List<TagEntity> tagEntityList = repository.findAllByTagNoIn(tagNos);
+        return mapstruct.toDtoList(tagEntityList);
     }
 }

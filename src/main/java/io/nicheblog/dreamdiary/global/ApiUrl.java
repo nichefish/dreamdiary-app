@@ -27,6 +27,7 @@ public interface ApiUrl {
     /** 저널 꿈 */
     String JRNL_DREAMS = Prefix.API + "/jrnl/dreams";
     String JRNL_DREAM = Prefix.API + "/jrnl/dream/{postNo}";
+    String JRNL_DREAMS_EXPORT = Prefix.API + "/jrnl/dreams/export";
     /** 저널 꿈 태그 */
     String JRNL_DREAM_TAGS = Prefix.API + "/jrnl/dream/tags";
     String JRNL_DREAM_TAG_GROUP_LIST_AJAX = Prefix.API + "/jrnl/dream/tag-group-list";
@@ -48,6 +49,7 @@ public interface ApiUrl {
     /** 저널 일기 */
     String JRNL_DIARIES = Prefix.API + "/jrnl/diaries";
     String JRNL_DIARY = Prefix.API + "/jrnl/diary/{postNo}";
+    String JRNL_DIARIES_EXPORT = Prefix.API + "/jrnl/diaries/export";
     /** 저널 일기 태그 */
     String JRNL_DIARY_TAGS = Prefix.API + "/jrnl/diary/tags";
     String JRNL_DIARY_TAG_GROUP_LIST_AJAX = Prefix.API + "/jrnl/diary/tag/group-list";
