@@ -178,13 +178,11 @@ public class MarkdownUtils {
 
         final String unescaped = StringEscapeUtils.unescapeHtml4(originalText);
         final String replacedText = unescaped
-                .replace("\u00A0", " ")
                 .replace("‘", "'")
                 .replace("’", "'")
                 .replace("“", "\"")
                 .replace("”", "\"")
                 .replace("…", "...");
-
 
         final Document doc = Jsoup.parseBodyFragment(replacedText);
         for (final Element el : doc.getAllElements()) {
@@ -193,9 +191,8 @@ public class MarkdownUtils {
 
             for (final Node child : el.childNodes()) {
                 if (child instanceof TextNode textNode) {
-                    final String originalTextMode = textNode.getWholeText();
-                    final String replacedTextNode = originalTextMode.replaceAll("(?m)^-> ", "→ ").replace(" -> ", " → ");
-
+                    final String originalTextNode = textNode.getWholeText();
+                    final String replacedTextNode = originalTextNode.replaceAll("(?m)^->(?=[ \\u00A0])", "→").replaceAll("(?<=[ \\u00A0])->(?=[ \\u00A0])", "→");
                     textNode.text(replacedTextNode);
                 }
             }
