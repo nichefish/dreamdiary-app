@@ -8,6 +8,8 @@ if (typeof dF === 'undefined') { var dF = {} as any; }
 dF.JrnlDreamSearch = (function(): dfModule {
     return {
         initialized: false,
+        currentResults: [] as any[],
+        currentSearchParams: {} as Record<string, any>,
 
         /**
          * initializes module.
@@ -100,13 +102,13 @@ dF.JrnlDreamSearch = (function(): dfModule {
         removeKeyword: function(value: string): void {
             // hidden input 제거
             $("#jrnlKeywordHiddenContainer input[name='searchKeywords']")
-                .filter(function () {
+                .filter(function (): boolean {
                     return $(this).val() === value;
                 })
                 .remove();
             // 칩 제거
             $("#keywordDisplay div.keyword-wrapper")
-                .filter(function () {
+                .filter(function (): boolean {
                     return $(this).attr("data-value") === value;
                 })
                 .remove();
@@ -120,6 +122,22 @@ dF.JrnlDreamSearch = (function(): dfModule {
         clearKeywordFields: function(): void {
             $("#jrnlKeywordContainer").empty();
             $("#jrnlTagNoContainer").empty();
+        },
+
+        /**
+         * 정렬
+         */
+        toggleSort: function(): void {
+            const $sortInput = $("#sortInput");
+            const current = $sortInput.val();
+            const next: "desc"|"asc" = current === "desc" ? "asc" : "desc";
+            $sortInput.val(next);
+
+            // 아이콘 변경
+            const icon = $(".bi-sort-down-alt, .bi-sort-up");
+            icon.toggleClass("bi-sort-down-alt bi-sort-up");
+
+            dF.JrnlDreamSearch.search();
         },
 
         /**
@@ -162,13 +180,13 @@ dF.JrnlDreamSearch = (function(): dfModule {
         removeTag: function(value: string): void {
             // hidden input 제거
             $("#jrnlTagNoHiddenContainer input[name='tagNos']")
-                .filter(function () {
+                .filter(function (): boolean {
                     return $(this).val() === value;
                 })
                 .remove();
             // 칩 제거
             $("#tagDisplay div.tag-wrapper")
-                .filter(function () {
+                .filter(function (): boolean {
                     return $(this).attr("data-value") === value;
                 })
                 .remove();
@@ -210,6 +228,10 @@ dF.JrnlDreamSearch = (function(): dfModule {
                 cF.handlebars.template(viewModels, "jrnl_dream_search");
                 KTMenu.createInstances();
 
+                // 상태 저장
+                dF.JrnlDreamSearch.currentResults = viewModels;
+                dF.JrnlDreamSearch.currentSearchParams = ajaxData;
+
                 const params = new URLSearchParams();
                 Object.keys(ajaxData).forEach((key: string): void => {
                     const val: string = ajaxData[key];
@@ -225,6 +247,50 @@ dF.JrnlDreamSearch = (function(): dfModule {
                 $("#keywordDisplay div.keyword-wrapper").removeClass("text-muted").addClass("text-primary");
                 $("#keywordDisplay div.keyword-wrapper").removeClass("badge-light-secondary").addClass("badge-light-primary");
             });
+        },
+
+        /**
+         * 클립보드에 검색 내용 복사
+         */
+        copy: function(): void {
+            const results: [] = dF.JrnlDreamSearch.currentResults;
+
+            if (!results || results.length === 0) {
+                Swal.fire({ text: "복사할 검색 결과가 없습니다." });
+                return;
+            }
+
+            let prevDate: string|null = null;
+            const textToCopy: string = results.map((item: any): string => {
+                const date: string = `${item.stdrdDt} (${item.jrnlDtWeekDay})`;
+                const content: string = cF.util.htmlToText(item.markdownCn ?? "");
+
+                let block: string = "";
+                // 날짜가 바뀌었을 때만 날짜 출력
+                if (date !== prevDate) {
+                    block += `\r\n${date}\r\n`;
+                    prevDate = date;
+                }
+
+                block += [
+                    `#${item.idx}`,
+                    content
+                ].join("\r\n");
+
+                return block;
+            }).join("\r\n\r\n");
+
+            navigator.clipboard.writeText(textToCopy)
+                .then(() => {
+                    Swal.fire({
+                        text: `현재 페이지 ${results.length}건이 복사되었습니다.`,
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                })
+                .catch((): void => {
+                    cF.util.legacyCopy(textToCopy);
+                });
         },
     }
 })();

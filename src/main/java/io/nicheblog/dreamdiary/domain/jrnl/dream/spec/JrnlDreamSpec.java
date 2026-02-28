@@ -37,18 +37,27 @@ public class JrnlDreamSpec
      * 검색 조건 세팅 후 쿼리 후처리. (override)
      * 
      * @param root 조회할 엔티티의 Root 객체
-     * @param query - CriteriaQuery 객체
+     * @param query CriteriaQuery 객체
      * @param builder CriteriaBuilder 객체
+     * @param searchParamMap 검색 조건을 담은 파라미터 맵
      */
     @Override
     public void postQuery(
             final Root<JrnlDreamEntity> root,
             final CriteriaQuery<?> query,
-            final CriteriaBuilder builder
+            final CriteriaBuilder builder,
+            final Map<String, Object> searchParamMap
     ) {
         // 정렬 순서 변경
         final List<Order> order = new ArrayList<>();
         final Join<JrnlDreamEntity, JrnlDaySmpEntity> jrnlDayJoin = root.join("jrnlDay", JoinType.INNER);
+        final String sort = String.valueOf(searchParamMap.getOrDefault("sort", "desc")).toLowerCase();
+        final Expression<Date> dateExp = builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"));
+        if ("desc".equals(sort)) {
+            order.add(builder.desc(dateExp));
+        } else {
+            order.add(builder.asc(dateExp));
+        }
         order.add(builder.desc(builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"))));
         order.add(builder.asc(root.get("idx")));
         query.orderBy(order);
