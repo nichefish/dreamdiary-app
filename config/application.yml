@@ -22,3 +22,4 @@ logging:
         org.hibernate.type.descriptor.sql: OFF
         org.hibernate.type.descriptor.type: OFF
         com.p6spy: INFO
+        org.flywaydb: DEBUG
