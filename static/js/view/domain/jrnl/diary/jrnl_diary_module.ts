@@ -395,7 +395,7 @@ dF.JrnlDiary = (function(): dfModule {
                 if (navigator.clipboard && window.isSecureContext) {
                     navigator.clipboard.writeText(textToCopy)
                         .then((): void => {
-                            Swal.fire({ icon: "success", text: "클립보드에 복사되었습니다." });
+                            Swal.fire({ icon: "success", text: "클립보드에 복사되었습니다.", timer: 1500, showConfirmButton: false });
                         })
                         .catch((): void => {
                             cF.util.legacyCopy(textToCopy);

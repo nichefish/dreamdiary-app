@@ -26,7 +26,6 @@ public class JrnlDreamSearchParam
 
     /** 년도 */
     private Integer yy;
-
     /** 월 */
     private Integer mnth;
 
@@ -42,6 +41,10 @@ public class JrnlDreamSearchParam
     /** 태그 번호 */
     private Integer tagNo;
     private List<Integer> tagNos;
+
+    /** 정렬 */
+    @Builder.Default
+    private String sort = "DESC";
 
     /** 중요 여부 **/
     private String state;
