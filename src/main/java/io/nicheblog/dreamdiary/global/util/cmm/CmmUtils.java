@@ -9,6 +9,8 @@ import io.nicheblog.dreamdiary.global.validator.Regex;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -37,6 +39,7 @@ public class CmmUtils {
     /**
      * 공통 > Object -> Map으로 변환
      */
+    @SuppressWarnings("unchecked")
     public static Map<String, Object> convertToMap(final Object searchParam) throws Exception {
         if (searchParam == null) return new HashMap<>();
 
@@ -88,10 +91,7 @@ public class CmmUtils {
      * (SNAKE CASE 별도 처리 가능)
      */
     @SuppressWarnings("deprecation")
-    public String createQueryStringFromObject(
-            final Object object,
-            final String strategy
-    ) throws Exception {
+    public String createQueryStringFromObject(final Object object, final String strategy) throws Exception {
         // object -> hashMap
         final ObjectMapper mapper = new ObjectMapper();
         if ("SNAKE".equals(strategy)) {
@@ -110,7 +110,7 @@ public class CmmUtils {
      */
     public String createParamStringFromMap(final Map<String, Object> paramMap) throws Exception {
         final StringBuilder paramData = new StringBuilder();
-        for (Map.Entry<String, Object> param : paramMap.entrySet()) {
+        for (final Map.Entry<String, Object> param : paramMap.entrySet()) {
             if (!paramData.isEmpty()) paramData.append("&");
             paramData.append(URLEncoder.encode(param.getKey(), StandardCharsets.UTF_8));
             paramData.append("=");
@@ -148,7 +148,7 @@ public class CmmUtils {
         if (StringUtils.isEmpty(queryString)) return null;
 
         final Map<String, String> resultMap = new HashMap<>();
-        for (String param : queryString.split("&")) {
+        for (final String param : queryString.split("&")) {
             final String[] pair = param.split("=");
             resultMap.put(pair[0], (pair.length > 1) ? pair[1] : "");
         }
@@ -200,5 +200,25 @@ public class CmmUtils {
         return Arrays.stream(valueStr.split(delimiter))
                 .map(String::trim)
                 .collect(Collectors.toSet());
+    }
+
+    /**
+     * HTML 을 텍스트로 변환
+     *
+     * @param html String
+     * @return String
+     */
+    public static String htmlToText(final String html) {
+        if (StringUtils.isEmpty(html)) return "";
+
+        Document doc = Jsoup.parse(html);
+        doc.outputSettings(new Document.OutputSettings().prettyPrint(false));
+
+        doc.select("br").append("\\n");
+        doc.select("p").prepend("\\n");
+        doc.select("div").prepend("\\n");
+        doc.select("li").prepend("\\n");
+
+        return doc.text().replace("\\n", "\n").trim();
     }
 }

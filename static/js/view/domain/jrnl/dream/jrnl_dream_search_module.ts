@@ -232,17 +232,7 @@ dF.JrnlDreamSearch = (function(): dfModule {
                 dF.JrnlDreamSearch.currentResults = viewModels;
                 dF.JrnlDreamSearch.currentSearchParams = ajaxData;
 
-                const params = new URLSearchParams();
-                Object.keys(ajaxData).forEach((key: string): void => {
-                    const val: string = ajaxData[key];
-                    if (Array.isArray(val)) {
-                        val.forEach((v: string): void => {
-                            if (v && v.trim() !== "") params.append(key, v);
-                        });
-                    } else if (val && val.trim() !== "") {
-                        params.append(key, val);
-                    }
-                });
+                const params: URLSearchParams = cF.util.buildUrlParams(ajaxData);
                 history.replaceState(null, "", window.location.pathname + "?" + params.toString());
                 $("#keywordDisplay div.keyword-wrapper").removeClass("text-muted").addClass("text-primary");
                 $("#keywordDisplay div.keyword-wrapper").removeClass("badge-light-secondary").addClass("badge-light-primary");
@@ -292,5 +282,22 @@ dF.JrnlDreamSearch = (function(): dfModule {
                     cF.util.legacyCopy(textToCopy);
                 });
         },
+
+        /**
+         * 검색 결과 txt 다운로드
+         */
+        exportTxt: function(): void {
+            const ajaxData: Record<string, any> = dF.JrnlDreamSearch.currentSearchParams;
+            $("#msgDisplay").empty();
+            const hasKeyword: boolean = Array.isArray(ajaxData["searchKeywords"]) ? ajaxData["searchKeywords"]?.some(k => cF.util.isNotEmpty(k?.trim())) : cF.util.isNotEmpty(ajaxData["searchKeywords"]);
+            const hasTag: boolean = Array.isArray(ajaxData["tagNos"]) ? ajaxData["tagNos"].length > 0 : !!ajaxData["tagNos"];
+            if (!hasKeyword && !hasTag) {
+                $("#msgDisplay").text("검색 조건을 하나 이상 입력하세요.");
+                return;
+            }
+
+            const params: URLSearchParams = cF.util.buildUrlParams(ajaxData);
+            window.location.href = Url.JRNL_DREAMS_EXPORT + "?" + params.toString();
+        }
     }
 })();

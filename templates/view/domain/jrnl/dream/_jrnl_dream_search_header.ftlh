@@ -39,7 +39,9 @@
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "bs.tooltip.copy"/>">
             <i class="bi bi-copy"></i>
         </button>
-        <button type="button" class="btn btn-sm btn-outline btn-light-primary ps-3 pe-2">
+        <button type="button" class="btn btn-sm btn-outline btn-light-primary ps-3 pe-2"
+                onclick="dF.JrnlDreamSearch.exportTxt();"
+                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "bs.tooltip.export-txt"/>">
             <i class="fas fa-download"></i>
         </button>
     </div>

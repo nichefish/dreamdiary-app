@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.domain.jrnl.diary.controller;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryPostDto;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiarySearchParam;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryExportService;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
@@ -45,6 +46,7 @@ public class JrnlDiaryRestController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
     private final JrnlDiaryService jrnlDiaryService;
+    private final JrnlDiaryExportService jrnlDiaryExportService;
 
     /**
      * 저널 일기 목록 조회 (Ajax)

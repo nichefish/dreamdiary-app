@@ -300,5 +300,28 @@ cF.util = (function(): Module {
                 .trim();
         },
 
+        /**
+         * 객체로부터 url 파라미터 생성
+         * @param data
+         */
+        buildUrlParams: function(data: Record<string, any>): URLSearchParams {
+            const params = new URLSearchParams();
+        
+            Object.keys(data).forEach((key: string): void => {
+                const val: any = data[key];
+        
+                if (Array.isArray(val)) {
+                    val.forEach((v: string): void => {
+                        if (v && v.trim() !== "") {
+                            params.append(key, v);
+                        }
+                    });
+                } else if (val && val.toString().trim() !== "") {
+                    params.append(key, val.toString());
+                }
+            });
+        
+            return params;
+        },
     }
 })();
