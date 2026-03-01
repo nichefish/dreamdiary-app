@@ -28,7 +28,7 @@ dF.JrnlDayMeta = (function(): dfModule {
                 e.preventDefault();
 
                 const metaNo: string = metaElmt.getAttribute("id").replace("meta-no-", "");
-                dF.JrnlDayMeta.showMeta(metaNo);
+                dF.JrnlDayMeta.modal(metaNo);
             });
 
             dF.JrnlDayMeta.initialized = true;
@@ -46,10 +46,24 @@ dF.JrnlDayMeta = (function(): dfModule {
         },
 
         /**
+         * 목록에 따른 일자 태그 조회 (Ajax)
+         */
+        listAjax: function(): void {
+            const url: string = Url.JRNL_DAY_METAS;
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    return;
+                }
+                cF.handlebars.template(res.rsltList, "jrnl_day_meta_list");
+            });
+        },
+
+        /**
          * 메타 모달 호출
          * @param {string|number} metaNo - 조회할 메타 번호.
          */
-        showMeta: function(metaNo: string|number): void {
+        modal: function(metaNo: string|number): void {
             if (isNaN(Number(metaNo))) return;
 
             ModalHistory.reset();
@@ -69,6 +83,18 @@ dF.JrnlDayMeta = (function(): dfModule {
 
                 /* modal history push */
                 ModalHistory.push(self, func, args);
+            });
+        },
+
+
+        select: function(metaNo: string|number): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DAY_META, { metaNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    return;
+                }
+                cF.handlebars.template(res.rsltObj, "jrnl_day_meta_config");
             });
         }
     }

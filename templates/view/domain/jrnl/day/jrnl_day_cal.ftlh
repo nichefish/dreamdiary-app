@@ -1,5 +1,5 @@
 <#--
- * 일정 > 전체 일정 화면 (달력)
+ * 저널 일자(jrnl_day) : 페이지 (달력)
  -->
 
 <#import "/layout/layout_with_aside.ftlh" as layout >
@@ -76,8 +76,8 @@
         <#--begin::Tab-->
         <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">
             <li class="nav-item">
-                <a class="nav-link px-6" data-bs-toggle="tab" href="#kt_tab_pane_1"
-                   onclick="Page.listPage();">
+                <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
+                   onclick="Page.changeView(Url.JRNL_DAY_MONTHLY);">
                     <span class="nav-icon">
                         <i class="bi bi-people"></i>
                     </span>
@@ -85,12 +85,21 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link px-6 active" data-bs-toggle="tab" href="#kt_tab_pane_2"
-                   onclick="Page.calPage();">
+                <a class="nav-link px-6 cursor-pointer active" data-bs-toggle="tab"
+                   onclick="Page.changeView(Url.JRNL_DAY_CAL);">
                     <span class="nav-icon">
                         <i class="bi bi-sort-down-alt"></i>
                     </span>
                     <span class="nav-text">달력 VIEW</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
+                   onclick="Page.changeView(Url.JRNL_DAY_META_VIEW);">
+                    <span class="nav-icon">
+                        <i class="bi bi-people"></i>
+                    </span>
+                    <span class="nav-text">메타 VIEW</span>
                 </a>
             </li>
         </ul>
@@ -178,6 +187,8 @@
 <#include "/view/domain/jrnl/tag/_jrnl_tag_list_modal.ftlh">
 <#include "/view/extension/clsf/tag/_partial/_tag_list_partial.hbs">
 <#include "/view/extension/clsf/tag/_partial/_tag_list_sized_partial.hbs">
+
+<#include "/view/extension/clsf/meta/_partial/_meta_list_partial.hbs">
 
 <#--include::comment-->
 <#include "/view/extension/clsf/comment/_modal/_comment_reg_modal.ftlh">

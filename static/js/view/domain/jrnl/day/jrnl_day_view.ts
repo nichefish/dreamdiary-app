@@ -26,7 +26,7 @@ const Page: Page = (function(): Page {
             // @ts-ignore
             cF.datepicker.singleDatePicker("#stdrdDt", pattern, stdrdDt, function(date: monent): void {
                 const dateStr: string = date.format(pattern);
-                history.pushState(null, '', cF.util.bindUrl(Url.JRNL_DAY_VIEW, { stdrdDt: dateStr }));
+                history.pushState(null, '', cF.util.bindUrl(Url.JRNL_DAY_DAILY_VIEW, { stdrdDt: dateStr }));
                 dF.JrnlDay.getStdrdData(dateStr);
             });
 

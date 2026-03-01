@@ -20,7 +20,7 @@
         <#--begin::Tab-->
         <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">
             <li class="nav-item">
-                <a class="nav-link px-6 cursor-pointer active" data-bs-toggle="tab"
+                <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
                    onclick="Page.changeView(Url.JRNL_DAY_MONTHLY);">
                     <span class="nav-icon">
                         <i class="bi bi-people"></i>
@@ -38,7 +38,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
+                <a class="nav-link px-6 cursor-pointer active" data-bs-toggle="tab"
                    onclick="Page.changeView(Url.JRNL_DAY_META_VIEW);">
                     <span class="nav-icon">
                         <i class="bi bi-people"></i>
@@ -49,19 +49,22 @@
         </ul>
     </div>
 
-    <!-- 태그 헤더 :: 파일 분리 -->
-    <#include "/view/domain/jrnl/day/tag/_jrnl_day_tag_header.ftlh">
+    <!-- 메타 헤더 :: 파일 분리 -->
+    <#include "/view/domain/jrnl/day/tag/_jrnl_day_meta_header.ftlh">
 
+    <div class="separator separator-dashed"></div>
     <#--begin::Card body-->
     <div class="card-body">
+        <#--begin::form-->
+        <div id="jrnl_day_meta_config_div" class="d-flex-align-center mb-2 ps-2 min-h-42px">
+            <span class="text-muted">
+                메타를 선택해 주세요.
+            </span>
+            <#--handlebars template goes in here-->
+        </div>
         <#--begin::Table body-->
-        <div id="jrnl_day_list_div">
-            <#--handlebars template goes in here-->
-        </div>
-        <div id="jrnl_diary_list_div">
-            <#--handlebars template goes in here-->
-        </div>
-        <div id="jrnl_dream_list_div">
+        <div id="jrnl_day_meta_graph_div" class="border border-1 border-primary d-flex-align-center min-h-42px" style="min-height: 200px;">
+            graph goes in here
             <#--handlebars template goes in here-->
         </div>
     </div>
@@ -76,10 +79,6 @@
 <script type="text/javascript" src="/js/common/helper/tinymce.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/lib/prism/js/prism.js"></script>
 <#include "/view/global/_tinymce_img.ftlh">
-
-<#--include::fullcalendar-->
-<script type="text/javascript" src="/metronic/assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
-<script type="text/javascript" src="/js/common/helper/fullcalendar.js?${releaseDate!}"></script>
 
 <#--include::jrnl_day_module-->
 <#include "/view/domain/jrnl/day/_modal/_jrnl_day_reg_modal.ftlh">
@@ -146,6 +145,8 @@
 
 <#--include::jrnl_day_meta_module-->
 <#include "/view/domain/jrnl/day/meta/_modal/_jrnl_day_meta_modal.ftlh">
+<#include "/view/domain/jrnl/day/meta/_modal/_jrnl_day_meta_list_template.hbs">
+<#include "/view/domain/jrnl/day/meta/_jrnl_day_meta_config.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/day/meta/jrnl_day_meta_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_diary_tag_module-->
@@ -178,6 +179,6 @@
 <script type="text/javascript" src="/js/view/extension/clsf/state/state_module.js?${releaseDate!}"></script>
 
 <!--include::page scripts-->
-<script type="text/javascript" src="/js/view/domain/jrnl/day/jrnl_day_monthly.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/jrnl/day/jrnl_day_meta.js?${releaseDate!}"></script>
 
 </@layout.layout>
