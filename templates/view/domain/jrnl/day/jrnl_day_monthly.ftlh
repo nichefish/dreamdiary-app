@@ -16,7 +16,7 @@
 <!--begin::Card-->
 <div class="card post">
     <#--begin::Card header-->
-    <div class="card-header min-h-auto mb-7">
+    <div class="card-header min-h-auto mb-7 justify-content-between">
         <#--begin::Tab-->
         <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">
             <li class="nav-item">
@@ -47,6 +47,23 @@
                 </a>
             </li>
         </ul>
+        <div class="d-flex align-items-end mb-2">
+            <div class="mx-3"
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="일기 토글">
+                <label for="toggleDiaries" class="me-2 text-muted cursor-help">DIARIES</label>
+                <input type="checkbox" id="toggleDiaries" class="form-check-input cursor-pointer" onclick="dF.JrnlDay.toggleParam();" checked>
+            </div>
+            <div class="mx-3"
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="꿈 토글">
+                <label for="toggleDreams" class="me-2 text-muted cursor-help">DREAMS</label>
+                <input type="checkbox" id="toggleDreams" class="form-check-input cursor-pointer" onclick="dF.JrnlDay.toggleParam();" checked>
+            </div>
+            <div class="mx-3"
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="태그클라우드 토글">
+                <label for="toggleTagCloud" class="me-2 text-muted cursor-help">TAGCLOUD</label>
+                <input type="checkbox" id="toggleTagCloud" class="form-check-input cursor-pointer" onclick="dF.JrnlDay.toggleParam();" checked>
+            </div>
+        </div>
     </div>
 
     <!-- 태그 헤더 :: 파일 분리 -->

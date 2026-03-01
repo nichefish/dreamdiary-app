@@ -24,10 +24,6 @@ const Page: Page = (function(): Page {
             dF.JrnlDayAside.init();
             // 목록 조회
             dF.JrnlDay.yyMnthListAjax();
-            // 태그 조회
-            dF.JrnlDayTag.listAjax();
-            dF.JrnlDiaryTag.listAjax();
-            dF.JrnlDreamTag.listAjax();
 
             // 일기/꿈 키워드 검색에 엔터키 처리
             cF.util.enterKey("#diaryKeyword", dF.JrnlDiary.searchPopup);

@@ -39,4 +39,11 @@ public class JrnlDaySearchParam
     private Integer tagNo;
     /** 메타 번호 */
     private Integer metaNo;
+
+    /** 일기 렌더링 여부 */
+    private boolean showDiaries;
+    /** 꿈 렌더링 여부 */
+    private boolean showDreams;
+    /** 태그클라우드 렌더링 여부 */
+    private boolean showTagCloud;
 }
