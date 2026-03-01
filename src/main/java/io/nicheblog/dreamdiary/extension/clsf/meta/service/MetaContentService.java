@@ -125,7 +125,13 @@ public class MetaContentService
         if (CollectionUtils.isEmpty(entityList)) return new ArrayList<>();
 
         return entityList.stream()
-                .map(meta -> MetaDto.builder().metaNo(meta.getRefMetaNo()).metaNm(meta.getMetaNm()).value(meta.getValue()).build())
+                .map(meta -> MetaDto.builder()
+                        .metaNo(meta.getRefMetaNo())
+                        .metaNm(meta.getMetaNm())
+                        .ctgr(meta.getCtgr())
+                        .value(meta.getValue())
+                        .unit(meta.getUnit())
+                        .build())
                 .collect(Collectors.toList());
     }
 

@@ -9,7 +9,8 @@ dF.JrnlDay = (function(): dfModule {
     return {
         initialized: false,
         viewType: null,
-        tagify: null,
+        tagTagify: null,
+        metaTagify: null,
 
         /**
          * initializes module.
@@ -98,8 +99,8 @@ dF.JrnlDay = (function(): dfModule {
                 $("#jrnlDayRegForm #jrnlDt").val($("#jrnlDayRegForm #aprxmtDt").val());
             });
             /* tagify */
-            dF.JrnlDay.tagify = cF.tagify.initWithCtgr("#jrnlDayRegForm #tagListStr", dF.JrnlDayTag.ctgrMap);
-            dF.JrnlDay.tagify = cF.tagify.initMeta("#jrnlDayRegForm #metaListStr", dF.JrnlDayMeta.ctgrMap);
+            dF.JrnlDay.tagTagify = cF.tagify.initWithCtgr("#jrnlDayRegForm #tagListStr", dF.JrnlDayTag.ctgrMap);
+            dF.JrnlDay.metaTagify = cF.tagify.initMeta("#jrnlDayRegForm #metaListStr", dF.JrnlDayMeta.ctgrMap);
         },
 
         /**
@@ -224,23 +225,35 @@ dF.JrnlDay = (function(): dfModule {
         regAjax: function(): void {
             const postNo: string = cF.util.getInputValue("#jrnlDayRegForm [name='postNo']");
             const isMdf: boolean = cF.util.isNotEmpty(postNo);
-            Swal.fire({
-                text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
-                showCancelButton: true,
-            }).then(function(result: SwalResult): void {
-                if (!result.value) return;
 
-                const url: string = isMdf ? cF.util.bindUrl(Url.JRNL_DAY, { postNo }) : Url.JRNL_DAYS;
-                const ajaxData: FormData = new FormData(document.getElementById("jrnlDayRegForm") as HTMLFormElement);
-                cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
-                    Swal.fire({ text: res.message })
-                        .then(function(): void {
-                            if (!res.rslt) return;
+            // 등록 클릭시 입력 중이던 메타 추가
+            if (dF.JrnlDay.metaTagify?.draft?.value) {
+                const meta: string = cF.util.getInputValue("#meta_value");
+                const { value, ctgr } = dF.JrnlDay.metaTagify?.draft;
+                if (value && meta) {
+                    cF.tagify.commitTag(dF.JrnlDay.metaTagify, value, ctgr, meta);
+                }
+            }
+            setTimeout((): void => {
+                Swal.fire({
+                    text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
+                    showCancelButton: true,
+                }).then(function(result: SwalResult): void {
+                    if (!result.value) return;
 
-                            dF.JrnlDay.refresh();
-                        });
-                }, "block");
-            });
+                    const url: string = isMdf ? cF.util.bindUrl(Url.JRNL_DAY, { postNo }) : Url.JRNL_DAYS;
+                    const ajaxData: FormData = new FormData(document.getElementById("jrnlDayRegForm") as HTMLFormElement);
+                    cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
+                        Swal.fire({ text: res.message })
+                            .then(function(): void {
+                                if (!res.rslt) return;
+
+                                dF.JrnlDay.refresh();
+                            });
+                    }, "block");
+                });
+            }, 0);
+
         },
 
         /**
