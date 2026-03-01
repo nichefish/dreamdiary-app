@@ -1,0 +1,12 @@
+<#--
+ * 저널 일자(jrnl_day) : 메타 목록 Template
+ * @included_in : jrnl_day_meta.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="jrnl_day_meta_list_template">
+    {{#each this}}
+        {{> meta_list_partial this module="dF.JrnlDayMeta"}}
+    {{else}}
+        -
+    {{/each}}
+</script>

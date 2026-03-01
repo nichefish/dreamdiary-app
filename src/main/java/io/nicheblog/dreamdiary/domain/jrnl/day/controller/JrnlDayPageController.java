@@ -51,7 +51,7 @@ public class JrnlDayPageController
      */
     @GetMapping(Url.JRNL_DAY_MONTHLY)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    public String jrnlDayMonthly(
+    public String jrnlDayMonthlyPage(
             final @ModelAttribute("searchParam") JrnlDaySearchParam searchParam,
             final LogActvtyParam logParam,
             final ModelMap model
@@ -86,8 +86,8 @@ public class JrnlDayPageController
      *
      * @return {@link String} -- 화면 뷰 경로
      */
-    @GetMapping(Url.JRNL_DAY_VIEW_TODAY)
-    public String viewToday() throws Exception {
+    @GetMapping(Url.JRNL_DAY_DAILY_VIEW_TODAY)
+    public String jrnlDayViewTodayPage() throws Exception {
         final String today = DateUtils.getCurrDateStr(DatePtn.DATE); // yyyy-MM-dd
 
         return "redirect:/jrnl/day/" + today + ".do";
@@ -102,9 +102,9 @@ public class JrnlDayPageController
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
-    @GetMapping(Url.JRNL_DAY_VIEW)
+    @GetMapping(Url.JRNL_DAY_DAILY_VIEW)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    public String jrnlDayDaily(
+    public String jrnlDayViewDailyPage(
             final @PathVariable("stdrdDt") String stdrdDt,
             final @ModelAttribute("searchParam") JrnlDaySearchParam searchParam,
             final LogActvtyParam logParam,

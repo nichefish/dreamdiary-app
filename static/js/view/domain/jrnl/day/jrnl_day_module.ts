@@ -139,7 +139,7 @@ dF.JrnlDay = (function(): dfModule {
          * @param {string} stdrdDt 기준 일자
          */
         openDetatched: function(stdrdDt: string): void {
-            const url: string = cF.util.bindUrl(Url.JRNL_DAY_VIEW, { stdrdDt });
+            const url: string = cF.util.bindUrl(Url.JRNL_DAY_DAILY_VIEW, { stdrdDt });
             window.open(url, '_blank', 'noopener,noreferrer');
         },
 
