@@ -63,7 +63,7 @@ public class JrnlDreamExportController
         final List<JrnlDreamDto> jrnlDreamList = jrnlDreamService.getListDtoWithCache(searchParam);
         final String text = jrnlDreamExportService.buildTxt(jrnlDreamList, searchParam);
         final byte[] bytes = text.getBytes(StandardCharsets.UTF_8);
-        final String filename = "dreams_search_" + DateUtils.getCurrDateStr(DatePtn.PDATE) + ".txt";
+        final String filename = "dreams_search_@" + DateUtils.getCurrDateStr(DatePtn.PDATE) + ".txt";
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")

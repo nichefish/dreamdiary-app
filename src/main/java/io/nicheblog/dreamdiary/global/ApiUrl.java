@@ -45,6 +45,7 @@ public interface ApiUrl {
     /** 저널 항목 */
     String JRNL_ENTRIES = Prefix.API + "/jrnl/entries";
     String JRNL_ENTRY = Prefix.API + "/jrnl/entry/{postNo}";
+    String JRNL_ENTRY_EXPORT = Prefix.API + "/jrnl/entry/{postNo}/export";
 
     /** 저널 일기 */
     String JRNL_DIARIES = Prefix.API + "/jrnl/diaries";

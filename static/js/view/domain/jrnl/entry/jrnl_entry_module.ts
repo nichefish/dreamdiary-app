@@ -303,7 +303,7 @@ dF.JrnlEntry = (function(): dfModule {
                 if (navigator.clipboard && window.isSecureContext) {
                     navigator.clipboard.writeText(textToCopy)
                         .then((): void => {
-                            Swal.fire({ icon: "success", text: "클립보드에 복사되었습니다." });
+                            Swal.fire({ icon: "success", text: "클립보드에 복사되었습니다.", timer: 1500, showConfirmButton: false  });
                         })
                         .catch((): void => {
                             cF.util.legacyCopy(textToCopy);
@@ -313,5 +313,14 @@ dF.JrnlEntry = (function(): dfModule {
                 }
             });
         },
+
+        /**
+         * 검색 결과 txt 다운로드
+         */
+        exportTxt: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            window.location.href = cF.util.bindUrl(Url.JRNL_ENTRY_EXPORT, {postNo});
+        }
     }
 })();

@@ -1,9 +1,8 @@
-package io.nicheblog.dreamdiary.domain.jrnl.diary.service;
+package io.nicheblog.dreamdiary.domain.jrnl.entry.service;
 
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiarySearchParam;
+import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntryDto;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagContentDto;
-import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.extension.clsf.tag.service.TagService;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.RequiredArgsConstructor;
@@ -13,57 +12,38 @@ import org.apache.tika.utils.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
- * JrnlDiaryExportService
+ * JrnlEntryExportService
  * <pre>
- *  저널 일기 내보내기 서비스 모듈.
+ *  저널 항목 내보내기 서비스 모듈.
  * </pre>
  *
  * @author nichefish
  */
-@Service("jrnlDiaryExportService")
+@Service("jrnlEntryExportService")
 @RequiredArgsConstructor
 @Log4j2
-public class JrnlDiaryExportService {
+public class JrnlEntryExportService {
 
     private final TagService tagService;
 
-    /**
-     * 저널 일기 txt 다룬로드
-     * (사용자USER, 관리자MNGR만 접근 가능.)
-     *
-     * @param jrnlDiaryList List<JrnlDiaryDto>
-     * @param searchParam JrnlDiarySearchParam
-     * @return 내보내기 txt
-     */
-    public String buildTxt(final List<JrnlDiaryDto> jrnlDiaryList, final JrnlDiarySearchParam searchParam) {
-
-        final List<TagDto> tagList = tagService.getTagListByTagNos(searchParam.getTagNos());
+    public String buildTxt(final JrnlEntryDto entry) {
+        if (entry == null) return "";
 
         final StringBuilder sb = new StringBuilder();
         // =========================
         // 1. 검색 조건 헤더
         // =========================
         sb.append("=== dreamdiary export ===\r\n");
-        // search keywords
-        if (CollectionUtils.isNotEmpty(searchParam.getSearchKeywords())) {
-            sb.append("keywords: ")
-              .append(String.join(", ", searchParam.getSearchKeywords()))
-              .append("\r\n");
-        }
-        // search tags
-        if (CollectionUtils.isNotEmpty(tagList)) {
-            final String tagLine = tagList.stream()
-                    .map(tag -> "#" + tag.getTagNm())
-                    .collect(Collectors.joining(", "));
 
-            sb.append("tags: ")
-              .append(tagLine)
-              .append("\r\n");
-        }
+        final String stdrdDt = entry.getStdrdDt();
+        final String jrnlWeekDay = StringUtils.isEmpty(entry.getJrnlDtWeekDay()) ? "" : "(" + entry.getJrnlDtWeekDay() + ")";
+        final String date = stdrdDt + jrnlWeekDay;
+        sb.append("\r\n").append(date).append("\r\n");
+
+        final List<JrnlDiaryDto> jrnlDiaryList = entry.getJrnlDiaryList();
+
         sb.append("total: ")
           .append(CollectionUtils.isEmpty(jrnlDiaryList) ? 0 : jrnlDiaryList.size())
           .append("\r\n");
@@ -73,17 +53,7 @@ public class JrnlDiaryExportService {
         // =========================
         // 2. 본문
         // =========================
-        String prevDate = null;
-        for (final JrnlDiaryDto diary: jrnlDiaryList) {
-            final String stdrdDt = diary.getStdrdDt();
-            final String jrnlWeekDay = StringUtils.isEmpty(diary.getJrnlDtWeekDay()) ? "" : "(" + diary.getJrnlDtWeekDay() + ")";
-            final String date = stdrdDt + jrnlWeekDay;
-
-            if (!Objects.equals(prevDate, date)) {
-                sb.append("\r\n").append(date).append("\r\n");
-                prevDate = date;
-            }
-
+        for (final JrnlDiaryDto diary : jrnlDiaryList) {
             sb.append("#")
               .append(diary.getIdx())
               .append("\r\n")

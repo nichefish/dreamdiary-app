@@ -63,7 +63,7 @@ public class JrnlDiaryExportController
         final List<JrnlDiaryDto> jrnlDiaryList = jrnlDiaryService.getListDtoWithCache(searchParam);
         final String text = jrnlDiaryExportService.buildTxt(jrnlDiaryList, searchParam);
         final byte[] bytes = text.getBytes(StandardCharsets.UTF_8);
-        final String filename = "diaries_search_" + DateUtils.getCurrDateStr(DatePtn.PDATE) + ".txt";
+        final String filename = "diaries_search_@" + DateUtils.getCurrDateStr(DatePtn.PDATE) + ".txt";
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
