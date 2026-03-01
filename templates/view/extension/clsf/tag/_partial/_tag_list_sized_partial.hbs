@@ -1,9 +1,9 @@
 <#--
-* 캐시 상세 모달 partial
-* @included_in : _cache_dtl_modal_template.hbs
+ * 태그 목록(sized) partial
+ * @see handlebars.ts
 -->
 
-<script type="text/x-handlebars-template" id="tag_list_sized_partial">
+<script type="text/x-handlebars-template" id="tag_list_sized_partial" data-partial>
     <span class="py-2 me-3 cursor-pointer opacity-hover"
           onclick="{{module}}.select({{tagNo}}, '{{tagNm}}');"
           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "view.tag.content-list"/>">
