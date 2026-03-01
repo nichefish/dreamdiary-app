@@ -95,6 +95,7 @@
 <#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_item_partial.hbs">
 <#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_reg_btn_partial.hbs">
 <#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_copy_btn_partial.hbs">
+<#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_export_btn_partial.hbs">
 <#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_context_btn_partial.hbs">
 <#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_toggle_btn_partial.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/entry/jrnl_entry_module.js?${releaseDate!}"></script>
