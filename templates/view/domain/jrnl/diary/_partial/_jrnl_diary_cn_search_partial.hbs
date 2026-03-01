@@ -1,8 +1,9 @@
 <#--
  * 저널 일기(jrnl_diary) - 내용 partial
+ * @see handlebars.ts
  -->
 
-<script type="text/x-handlebars-template" id="jrnl_diary_cn_search_partial">
+<script type="text/x-handlebars-template" id="jrnl_diary_cn_search_partial" data-partial>
     <div class="{{#if (exists cnClass)}}{{cnClass}}{{else}}cn {{#if (hasState state 'COLLAPSED')}}collapsed{{/if}}{{/if}}">
         {{{markdownCn}}}
     </div>

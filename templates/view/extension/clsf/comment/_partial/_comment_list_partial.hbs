@@ -1,9 +1,9 @@
 <#--
-* 댓글 목록 조회 모달 partial
-* @included_in : _cache_dtl_modal_template.hbs
+ * 댓글 목록 partial
+ * @see handlebars.ts
 -->
 
-<script type="text/x-handlebars-template" id="comment_list_partial">
+<script type="text/x-handlebars-template" id="comment_list_partial" data-partial>
     <div class="row {{#if @first}}mt-2{{/if}} {{#if @last}}mb-1{{/if}} d-flex-align-center">
         <div class="col d-flex-align-center position-relative ms-4">
             <div class="li text-comment">{{{markdownCn}}}</div>

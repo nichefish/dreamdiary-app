@@ -1,9 +1,9 @@
 <#--
- * 저널 일기(jrnl_diary) 목록 - 수정 버튼 partial
- * @included_in : jrnl_day_page.ftlh
+ * 저널 일자(jrnl_day) - 일자 partial
+ * @see handlebars.ts
  -->
 
-<script type="text/x-handlebars-template" id="jrnl_day_stdrd_dt_partial">
+<script type="text/x-handlebars-template" id="jrnl_day_stdrd_dt_partial" data-partial>
     <div class="{{#if isHldy}}text-danger{{/if}}" style="column-gap: .25rem">
         <i class="bi bi-calendar3 fs-6 me-1 {{#if isHldy}}text-danger{{/if}}"></i>
         {{stdrdDt}}
