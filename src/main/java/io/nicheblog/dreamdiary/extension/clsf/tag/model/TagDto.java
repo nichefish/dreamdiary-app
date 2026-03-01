@@ -24,7 +24,7 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = {"ctgr", "tagNm"}, callSuper = false)
+@EqualsAndHashCode(of = { "ctgr", "tagNm" }, callSuper = false)
 public class TagDto
         extends BaseCrudDto
         implements Identifiable<Integer>, Comparable<TagDto> {
