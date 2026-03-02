@@ -34,7 +34,7 @@ dependencies {
  */
 dependencies {
     /* ↓ Spring Boot 기본 모듈 */
-    implementation(platform("org.springframework.boot:spring-boot-dependencies:3.2.2"))
+    implementation(platform("org.springframework.boot:spring-boot-dependencies:2.7.18"))
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'    // @Valid 사용을 위해 필요
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
