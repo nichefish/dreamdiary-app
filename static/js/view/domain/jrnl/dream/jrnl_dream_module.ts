@@ -440,11 +440,13 @@ dF.JrnlDream = (function(): dfModule {
                     return;
                 }
                 const rsltObj: Record<string, any> = res.rsltObj;
+                const { stdrdDt, jrnlDtWeekDay } = rsltObj;
+                const date: string = stdrdDt + " (" + jrnlDtWeekDay + ")" + "\r\n";
                 const resultCn: string = rsltObj.cn;
                 // 문단/줄바꿈을 먼저 텍스트로 치환
                 const replacedCn: string = resultCn.replace(/<\s*br\s*\/?>/gi, "\n").replace(/<\s*\/?p[^>]*>/gi, "\n");
                 const div: HTMLDivElement = document.createElement("div");
-                div.innerHTML = replacedCn;
+                div.innerHTML = date + replacedCn;
                 const textToCopy: string = (div.innerText ?? "")
                     .replace(/\n+/g, "\n")
                     .replace(/\n/g, "\r\n")
