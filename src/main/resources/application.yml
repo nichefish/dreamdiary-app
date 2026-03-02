@@ -75,6 +75,7 @@ spring:
                     batch_versioned_data: true
                     order_inserts: true
                     order_updates: true
+                    time_zone: Asia/Seoul
                 type:
                     descriptor:
                         sql: trace
