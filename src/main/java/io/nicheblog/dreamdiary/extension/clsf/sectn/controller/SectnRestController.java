@@ -1,12 +1,9 @@
 package io.nicheblog.dreamdiary.extension.clsf.sectn.controller;
 
 import io.nicheblog.dreamdiary.extension.clsf.sectn.model.SectnDto;
-import io.nicheblog.dreamdiary.extension.clsf.sectn.model.SectnParam;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.model.SectnSearchParam;
 import io.nicheblog.dreamdiary.extension.clsf.sectn.service.SectnService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
@@ -34,7 +31,6 @@ import javax.validation.Valid;
  * </pre>
  *
  * @author nichefish
- * @see LogActvtyRestControllerAspect
  */
 @RestController
 @RequiredArgsConstructor
@@ -52,15 +48,13 @@ public class SectnRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.SECTNS)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> sectnListAjax(
-            @ModelAttribute("searchParam") SectnSearchParam searchParam,
-            final LogActvtyParam logParam
+            @ModelAttribute("searchParam") SectnSearchParam searchParam
     ) throws Exception {
 
         final Sort sort = Sort.by(Sort.Direction.ASC, "idx");
@@ -68,9 +62,6 @@ public class SectnRestController
         final Page<SectnDto> sectnList = sectnService.getPageDto(searchParam, pageRequest);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(sectnList.getContent()));
     }
@@ -80,7 +71,6 @@ public class SectnRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param sectn 등록/수정 처리할 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
@@ -90,8 +80,7 @@ public class SectnRestController
     public ResponseEntity<AjaxResponse> sectnRegAjax(
             final @PathVariable(value = "postNo", required = false) Integer postNo,
             final @Valid SectnDto sectn,
-            final MultipartHttpServletRequest request,
-            final LogActvtyParam logParam
+            final MultipartHttpServletRequest request
     ) throws Exception {
 
         final boolean isMdf = (postNo != null);
@@ -100,36 +89,26 @@ public class SectnRestController
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
-
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
-
 
     /**
      * 단락 상세 조회 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param postNo 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.SECTN)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> sectnDtlAjax(
-            final @PathVariable("postNo") Integer postNo,
-            final SectnParam param,
-            final LogActvtyParam logParam
+            final @PathVariable("postNo") Integer postNo
     ) throws Exception {
 
         final SectnDto rsDto = sectnService.getDtlDto(postNo);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(rsDto));
     }
@@ -139,23 +118,17 @@ public class SectnRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param postNo 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @DeleteMapping(Url.SECTN)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> sectnDelAjax(
-            final @PathVariable("postNo") Integer postNo,
-            final LogActvtyParam logParam
+            final @PathVariable("postNo") Integer postNo
     ) throws Exception {
 
         final ServiceResponse result = sectnService.delete(postNo);;
-        final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -164,22 +137,17 @@ public class SectnRestController
      * 관리자 > 메뉴 관리 > 정렬 순서 저장 (드래그앤드랍 결과 반영) (Ajax)
      *
      * @param sectnParam 키+정렬 순서 목록을 담은 파라미터
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
 /*    @PostMapping(Url.SECTN_SORT_ORDR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> sectnSortOrdrAjax(
-            final @RequestBody SectnParam sectnParam,
-            final LogActvtyParam logParam
+            final @RequestBody SectnParam sectnParam
     ) throws Exception {
 
         final ServiceResponse result = sectnService.idx(sectnParam.getSortOrdr());
         final boolean isSuccess = result.getRslt();
         String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
-
-        // logParam.setCn("key: " + menuNo);
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }

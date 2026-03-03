@@ -8,8 +8,6 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayCalService;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
@@ -33,7 +31,6 @@ import java.util.List;
  * </pre>
  *
  * @author nichefish
- * @see LogActvtyRestControllerAspect
  */
 @RestController
 @RequiredArgsConstructor
@@ -53,7 +50,6 @@ public class JrnlDayRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_DAYS})
@@ -61,8 +57,7 @@ public class JrnlDayRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayListAjax(
             final @RequestParam("viewType") JrnlDayViewType viewType,
-            final JrnlDaySearchParam searchParam,
-            final LogActvtyParam logParam
+            final JrnlDaySearchParam searchParam
     ) throws Exception {
 
         final Object list = switch (viewType) {
@@ -74,9 +69,6 @@ public class JrnlDayRestController
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
-
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList((List<?>) list));
     }
 
@@ -85,7 +77,6 @@ public class JrnlDayRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param jrnlDay 등록/수정 처리할 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @see TagProcEventListener
      */
@@ -98,8 +89,7 @@ public class JrnlDayRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayRegAjax(
             final @PathVariable(value = "postNo", required = false) Integer postNo,
-            final @Valid JrnlDayDto jrnlDay,
-            final LogActvtyParam logParam
+            final @Valid JrnlDayDto jrnlDay
     ) throws Exception {
 
         boolean isReg = postNo == null;
@@ -114,9 +104,6 @@ public class JrnlDayRestController
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
-
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 
@@ -125,23 +112,18 @@ public class JrnlDayRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param key 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_DAY})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayDtlAjax(
-            final @PathVariable("postNo") Integer key,
-            final LogActvtyParam logParam
+            final @PathVariable("postNo") Integer key
     ) throws Exception {
 
         final JrnlDayDto retrievedDto = jrnlDayService.getDtlDtoWithCacheWithHldy(key);
         final boolean isSuccess = (retrievedDto.getPostNo() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
     }
@@ -151,7 +133,6 @@ public class JrnlDayRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param key 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @see TagProcEventListener
      */
@@ -159,16 +140,12 @@ public class JrnlDayRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayDelAjax(
-            final @PathVariable("postNo") Integer key,
-            final LogActvtyParam logParam
+            final @PathVariable("postNo") Integer key
     ) throws Exception {
 
         final ServiceResponse result = jrnlDayService.delete(key);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }

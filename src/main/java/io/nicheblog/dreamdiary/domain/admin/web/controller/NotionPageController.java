@@ -4,12 +4,9 @@ import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.domain.flsys.model.FlsysSearchParam;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyPageControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.access.annotation.Secured;
@@ -29,7 +26,6 @@ import javax.annotation.Nullable;
  * TODO: 보완 예정
  *
  * @author nichefish
- * @see LogActvtyPageControllerAspect
  */
 @Controller
 @Log4j2
@@ -57,7 +53,6 @@ public class NotionPageController
     public String notionPage(
             @ModelAttribute("searchParam") FlsysSearchParam searchParam,
             final @RequestParam("notionPageId") @Nullable String notionPageIdParam,
-            final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {
 
@@ -68,12 +63,6 @@ public class NotionPageController
         // NotionRetriever notionRetriever = new NotionRetriever(notionPageId);
         // String notionPage = notionRetriever.render();
         // model.addAttribute("notionPage", notionPage);
-
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return "/view/global/_common/notion/notion_home";
     }

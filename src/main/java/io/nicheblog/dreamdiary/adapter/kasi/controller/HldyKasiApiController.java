@@ -2,8 +2,6 @@ package io.nicheblog.dreamdiary.adapter.kasi.controller;
 
 import io.nicheblog.dreamdiary.adapter.kasi.service.HldyKasiApiService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
@@ -29,7 +27,6 @@ import javax.annotation.Nullable;
  * </pre>
  *
  * @author nichefish
- * @see LogActvtyRestControllerAspect
  */
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")   // CORS 에러 해결 위한 조치
@@ -51,7 +48,6 @@ public class HldyKasiApiController
      * 한국천문연구원(KASI):: 휴일 정보 조회 및 DB 저장
      *
      * @param yy 조회할 연도의 문자열 (nullable, 지정되지 않을 경우 현재 연도를 사용)
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @Operation(
@@ -60,8 +56,7 @@ public class HldyKasiApiController
     )
     @PostMapping(Url.API_HLDY_GET)
     public ResponseEntity<AjaxResponse> getHldyInfo(
-            final @Nullable String yy,
-            final LogActvtyParam logParam
+            final @Nullable String yy
     ) throws Exception {
 
         log.info("requestUrl: {}", request.getRequestURL() + "?" + request.getQueryString());
@@ -70,9 +65,6 @@ public class HldyKasiApiController
         final String yyStr = !StringUtils.isEmpty(yy) ? yy : DateUtils.getCurrYyStr();
         final boolean isSuccess = hldyKasiApiService.resyncHldy(yyStr);
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }

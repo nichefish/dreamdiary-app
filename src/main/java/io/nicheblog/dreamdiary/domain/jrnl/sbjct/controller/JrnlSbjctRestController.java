@@ -6,8 +6,6 @@ import io.nicheblog.dreamdiary.extension.clsf.managt.handler.ManagtrEventListene
 import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
@@ -31,7 +29,6 @@ import javax.validation.Valid;
  * </pre>
  *
  * @author nichefish
- * @see LogActvtyRestControllerAspect
  */
 @RestController
 @RequiredArgsConstructor
@@ -51,7 +48,6 @@ public class JrnlSbjctRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param jrnlSbjct 등록/수정 처리할 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @see TagProcEventListener
@@ -62,7 +58,6 @@ public class JrnlSbjctRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSbjctRegAjax(
             final @Valid JrnlSbjctDto jrnlSbjct,
-            final LogActvtyParam logParam,
             final MultipartHttpServletRequest request
     ) throws Exception {
 
@@ -70,9 +65,6 @@ public class JrnlSbjctRestController
         final ServiceResponse result = isReg ? jrnlSbjctService.regist(jrnlSbjct, request) : jrnlSbjctService.modify(jrnlSbjct, request);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -82,7 +74,6 @@ public class JrnlSbjctRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param key 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @see ViewerEventListener
      */
@@ -90,16 +81,12 @@ public class JrnlSbjctRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSbjctDtlAjax(
-            final @RequestParam("postNo") Integer key,
-            final LogActvtyParam logParam
+            final @RequestParam("postNo") Integer key
     ) throws Exception {
 
         final JrnlSbjctDto retrievedDto = jrnlSbjctService.viewDtlPage(key);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
     }
@@ -109,7 +96,6 @@ public class JrnlSbjctRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param postNo 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @see TagProcEventListener
      */
@@ -117,16 +103,12 @@ public class JrnlSbjctRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSbjctDelAjax(
-            final @RequestParam("postNo") Integer postNo,
-            final LogActvtyParam logParam
+            final @RequestParam("postNo") Integer postNo
     ) throws Exception {
 
         final ServiceResponse result = jrnlSbjctService.delete(postNo);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }

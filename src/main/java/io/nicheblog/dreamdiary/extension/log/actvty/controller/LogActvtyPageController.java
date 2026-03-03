@@ -4,7 +4,6 @@ import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyDto;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtySearchParam;
 import io.nicheblog.dreamdiary.extension.log.actvty.service.LogActvtyService;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -50,7 +49,6 @@ public class LogActvtyPageController
      * (관리자MNGR만 접근 가능.)
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
@@ -58,7 +56,6 @@ public class LogActvtyPageController
     @Secured(Constant.ROLE_MNGR)
     public String logActvtyList(
             @ModelAttribute("searchParam") LogActvtySearchParam searchParam,
-            final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {
 
@@ -80,9 +77,6 @@ public class LogActvtyPageController
 
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return "/view/domain/admin/log/actvty/log_actvty_list";
     }

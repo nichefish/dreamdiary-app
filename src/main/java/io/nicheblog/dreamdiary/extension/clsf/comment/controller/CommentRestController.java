@@ -1,12 +1,9 @@
 package io.nicheblog.dreamdiary.extension.clsf.comment.controller;
 
 import io.nicheblog.dreamdiary.extension.clsf.comment.model.CommentDto;
-import io.nicheblog.dreamdiary.extension.clsf.comment.model.CommentParam;
 import io.nicheblog.dreamdiary.extension.clsf.comment.model.CommentSearchParam;
 import io.nicheblog.dreamdiary.extension.clsf.comment.service.CommentService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
@@ -34,7 +31,6 @@ import javax.validation.Valid;
  * </pre>
  *
  * @author nichefish
- * @see LogActvtyRestControllerAspect
  */
 @RestController
 @RequiredArgsConstructor
@@ -52,15 +48,13 @@ public class CommentRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      * 
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.COMMENTS)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> commentListAjax(
-            final @ModelAttribute("searchParam") CommentSearchParam searchParam,
-            final LogActvtyParam logParam
+            final @ModelAttribute("searchParam") CommentSearchParam searchParam
     ) throws Exception {
 
         final Sort sort = Sort.by(Sort.Direction.ASC, "regDt");
@@ -68,9 +62,6 @@ public class CommentRestController
         final Page<CommentDto> commentList = commentService.getPageDto(searchParam, pageRequest);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(commentList.getContent()));
     }
@@ -80,7 +71,6 @@ public class CommentRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      * 
      * @param comment 등록/수정 처리할 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
@@ -89,7 +79,6 @@ public class CommentRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> commentRegAjax(
             final @Valid CommentDto comment,
-            final LogActvtyParam logParam,
             final MultipartHttpServletRequest request
     ) throws Exception {
 
@@ -97,9 +86,6 @@ public class CommentRestController
         final ServiceResponse result = isReg ? commentService.regist(comment, request) : commentService.modify(comment, request);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -109,25 +95,18 @@ public class CommentRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param key 식별자
-     * @param param 조회 파라미터
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.COMMENT)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> commentDtlAjax(
-            final @RequestParam("postNo") Integer key,
-            final CommentParam param,
-            final LogActvtyParam logParam
+            final @RequestParam("postNo") Integer key
     ) throws Exception {
 
         final CommentDto rsDto = commentService.getDtlDto(key);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(rsDto));
     }
@@ -137,23 +116,17 @@ public class CommentRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param postNo 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @DeleteMapping(Url.COMMENT)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> commentDelAjax(
-            final @PathVariable("postNo") Integer postNo,
-            final LogActvtyParam logParam
+            final @PathVariable("postNo") Integer postNo
     ) throws Exception {
 
         final ServiceResponse result = commentService.delete(postNo);
-        final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }

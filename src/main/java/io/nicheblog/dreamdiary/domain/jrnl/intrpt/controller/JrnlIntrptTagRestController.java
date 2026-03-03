@@ -8,8 +8,6 @@ import io.nicheblog.dreamdiary.domain.jrnl.intrpt.service.JrnlIntrptTagService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagSearchParam;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
@@ -34,7 +32,6 @@ import java.util.Map;
  * </pre>
  *
  * @author nichefish
- * @see LogActvtyRestControllerAspect
  */
 @RestController
 @RequiredArgsConstructor
@@ -53,22 +50,18 @@ public class JrnlIntrptTagRestController
      * 저널 일기 태그 카테고리 맵 조회 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.JRNL_INTRPT_TAG_CTGR_MAP)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlIntrptTagCtgrMapAjax(
-            final LogActvtyParam logParam
+            //
     ) throws Exception {
 
         final Map<String, List<String>> tagCtgrMap = jrnlIntrptTagService.getTagCtgrMap(AuthUtils.getLgnUserId());
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withMap(tagCtgrMap));
     }
@@ -78,23 +71,18 @@ public class JrnlIntrptTagRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.JRNL_INTRPT_TAGS)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> tagListAjax(
-            final @ModelAttribute("searchParam") TagSearchParam searchParam,
-            final LogActvtyParam logParam
+            final @ModelAttribute("searchParam") TagSearchParam searchParam
     ) throws Exception {
 
         final List<TagDto> tagList = jrnlIntrptTagService.getIntrptSizedListDto(searchParam.getYy(), searchParam.getMnth());
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(tagList));
     }
@@ -104,23 +92,18 @@ public class JrnlIntrptTagRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.JRNL_INTRPT_TAG_GROUP_LIST_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> tagGroupListAjax(
-            final @ModelAttribute("searchParam") TagSearchParam searchParam,
-            final LogActvtyParam logParam
+            final @ModelAttribute("searchParam") TagSearchParam searchParam
     ) throws Exception {
 
         final Map<String, List<TagDto>> tagGroupMap = jrnlIntrptTagService.getIntrptSizedGroupListDto(searchParam.getYy(), searchParam.getMnth());
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withMap(tagGroupMap));
     }
@@ -130,23 +113,18 @@ public class JrnlIntrptTagRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_INTRPT_TAG})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlIntrptTagDtlAjax(
-            final JrnlIntrptSearchParam searchParam,
-            final LogActvtyParam logParam
+            final JrnlIntrptSearchParam searchParam
     ) throws Exception {
 
         final List<JrnlIntrptDto> jrnlIntrptList = jrnlIntrptService.jrnlIntrptTagDtl(searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(jrnlIntrptList));
     }

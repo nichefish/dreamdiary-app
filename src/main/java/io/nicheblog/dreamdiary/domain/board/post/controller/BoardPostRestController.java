@@ -5,8 +5,6 @@ import io.nicheblog.dreamdiary.domain.board.post.service.BoardPostService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
@@ -31,7 +29,6 @@ import javax.validation.Valid;
  * </pre>
  *
  * @author nichefish
- * @see LogActvtyRestControllerAspect
  */
 @RestController
 @RequiredArgsConstructor
@@ -51,7 +48,6 @@ public class BoardPostRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param boardPost 등록/수정 처리할 게시물
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @see TagProcEventListener
@@ -62,7 +58,6 @@ public class BoardPostRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardPostRegAjax(
             final @Valid BoardPostDto boardPost,
-            final LogActvtyParam logParam,
             final MultipartHttpServletRequest request
     ) throws Exception {
 
@@ -70,9 +65,6 @@ public class BoardPostRestController
         final ServiceResponse result = isReg ? boardPostService.regist(boardPost, request) : boardPostService.modify(boardPost, request);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
-
-         // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -82,7 +74,6 @@ public class BoardPostRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param postNo 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @see ViewerEventListener
      */
@@ -90,16 +81,12 @@ public class BoardPostRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardPostDtlAjax(
-            final @RequestParam("postNo") Integer postNo,
-            final LogActvtyParam logParam
+            final @RequestParam("postNo") Integer postNo
     ) throws Exception {
 
         final BoardPostDto retrievedDto = boardPostService.viewDtlPage(postNo);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
     }
@@ -109,7 +96,6 @@ public class BoardPostRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param postNo 복합키 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @see TagProcEventListener
      */
@@ -117,16 +103,12 @@ public class BoardPostRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardPostDelAjax(
-            final Integer postNo,
-            final LogActvtyParam logParam
+            final Integer postNo
     ) throws Exception {
 
         final ServiceResponse result = boardPostService.delete(postNo);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }

@@ -3,7 +3,6 @@ package io.nicheblog.dreamdiary.domain.admin.web.controller;
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyPageControllerAspect;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * </pre>
  *
  * @author nichefish
- * @see LogActvtyPageControllerAspect
  */
 @Controller
 public class MainPageController

@@ -6,7 +6,6 @@ import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryExportService;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
@@ -19,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -30,7 +28,6 @@ import java.util.List;
  * </pre>
  *
  * @author nichefish
- * @see LogActvtyRestControllerAspect
  */
 @RestController
 @RequiredArgsConstructor
@@ -50,14 +47,12 @@ public class JrnlDiaryExportController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @param response HttpServletResponse
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @see TagProcEventListener
      */
     @GetMapping(value = Url.JRNL_DIARIES_EXPORT, produces = "text/plain; charset=UTF-8")
     public ResponseEntity<byte[]> jrnlDiaryExportTxt(
-            final JrnlDiarySearchParam searchParam,
-            final HttpServletResponse response
+            final JrnlDiarySearchParam searchParam
     ) throws Exception {
 
         final List<JrnlDiaryDto> jrnlDiaryList = jrnlDiaryService.getListDtoWithCache(searchParam);

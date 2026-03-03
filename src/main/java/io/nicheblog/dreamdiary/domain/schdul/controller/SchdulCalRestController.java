@@ -3,8 +3,6 @@ package io.nicheblog.dreamdiary.domain.schdul.controller;
 import io.nicheblog.dreamdiary.domain.schdul.model.SchdulSearchParam;
 import io.nicheblog.dreamdiary.domain.schdul.service.SchdulCalService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
@@ -29,7 +27,6 @@ import java.util.List;
  * </pre>
  *
  * @author nichefish
- * @see LogActvtyRestControllerAspect
  */
 @RestController
 @RequiredArgsConstructor
@@ -49,23 +46,18 @@ public class SchdulCalRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.SCHDUL_CAL_LIST_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> schdulCalListAjax(
-            final SchdulSearchParam searchParam,
-            final LogActvtyParam logParam
+            final SchdulSearchParam searchParam
     ) throws Exception {
 
         final List<BaseCalDto> schdulCalList = schdulCalService.getSchdulTotalCalList(searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(schdulCalList));
     }

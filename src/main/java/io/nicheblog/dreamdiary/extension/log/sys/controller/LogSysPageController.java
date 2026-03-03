@@ -3,7 +3,6 @@ package io.nicheblog.dreamdiary.extension.log.sys.controller;
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.extension.log.sys.model.LogSysDto;
 import io.nicheblog.dreamdiary.extension.log.sys.model.LogSysSearchParam;
 import io.nicheblog.dreamdiary.extension.log.sys.service.LogSysService;
@@ -58,7 +57,6 @@ public class LogSysPageController
     @Secured(Constant.ROLE_MNGR)
     public String logSysList(
             @ModelAttribute("searchParam") LogSysSearchParam searchParam,
-            final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {
 
@@ -80,9 +78,6 @@ public class LogSysPageController
 
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return "/view/domain/admin/log/sys/log_sys_list";
     }

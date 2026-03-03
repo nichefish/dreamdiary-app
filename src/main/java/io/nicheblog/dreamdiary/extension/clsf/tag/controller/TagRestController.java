@@ -4,8 +4,6 @@ import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagSearchParam;
 import io.nicheblog.dreamdiary.extension.clsf.tag.service.TagService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
@@ -27,7 +25,6 @@ import java.util.List;
  * </pre>
  *
  * @author nichefish
- * @see LogActvtyRestControllerAspect
  */
 @RestController
 @RequiredArgsConstructor
@@ -45,23 +42,18 @@ public class TagRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.TAGS)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> tagListAjax(
-            @ModelAttribute("searchParam") TagSearchParam searchParam,
-            final LogActvtyParam logParam
+            @ModelAttribute("searchParam") TagSearchParam searchParam
     ) throws Exception {
 
         final List<TagDto> tagList = tagService.getOverallSizedTagList(searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(tagList));
     }
@@ -71,23 +63,18 @@ public class TagRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param tagNo 태그 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.TAG_DTL_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> TagDtlAjax(
-            final @RequestParam("tagNo") Integer tagNo,
-            final LogActvtyParam logParam
+            final @RequestParam("tagNo") Integer tagNo
     ) throws Exception {
 
         final TagDto tagDto = tagService.getDtlDto(tagNo);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(tagDto));
     }
