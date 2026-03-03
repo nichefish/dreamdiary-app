@@ -2,9 +2,11 @@ package io.nicheblog.dreamdiary.extension.log.actvty.entity;
 
 import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.extension.cd.entity.DtlCdEntity;
+import io.nicheblog.dreamdiary.extension.log.actvty.LogType;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +44,7 @@ import java.util.*;
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class LogActvtyEntity
-    extends BaseCrudEntity
+        extends BaseCrudEntity
         implements Serializable {
 
     // 브라우저 정보 (브라우저 종류, 버전, 운영체제 등)
@@ -62,6 +64,10 @@ public class LogActvtyEntity
     @Comment("작업자 ID")
     private String userId;
 
+    /** trace ID */
+    @Column(name = "trace_id", length = 72)
+    private String traceId;
+
     /** 작업자 정보 */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", insertable = false, updatable = false)
@@ -76,6 +82,11 @@ public class LogActvtyEntity
     @Column(name = "log_dt", updatable = false)
     @Comment("작업일시")
     private Date logDt;
+
+    /** 로그 타입 */
+    @Enumerated(EnumType.STRING)
+    @Column(name="log_type", length = 20)
+    private LogType logType;
 
     /** 작업 구분 코드 (ex. 게시판, 공지사항, ...) (기능/모듈 단위) */
     @Column(name = "actvty_ctgr_cd", length = 400)
@@ -93,39 +104,27 @@ public class LogActvtyEntity
     @Comment("작업 구분 코드 정보")
     private DtlCdEntity actvtyCtgrInfo;
 
-    /** 작업 유형 코드 (조회, 검색, 처리...) */
-    @Column(name = "action_ty_cd", length = 50)
-    @Comment("작업 유형 코드")
-    private String actionTyCd;
-
-    /** 작업 유형 코드 정보 (복합키 조인) */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula = @JoinFormula(value = "\'" + Constant.ACTION_TY_CD + "\'", referencedColumnName = "cl_cd")),
-            @JoinColumnOrFormula(column = @JoinColumn(name = "action_ty_cd", referencedColumnName = "dtl_cd", insertable = false, updatable = false))
-    })
-    @Fetch(value = FetchMode.JOIN)
-    @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("작업 유형 코드 정보")
-    private DtlCdEntity actionTyInfo;
+    /** 메소드 */
+    @Column(name = "httpMethod", length = 1000)
+    @Comment("메소드")
+    private String httpMethod;
 
     /** 작업 URL */
-    @Column(name = "url", length = 400)
+    @Column(name = "requestUri", length = 400)
     @Comment("작업 URL")
-    private String url;
+    private String requestUri;
 
-    /** 작업 URL 정보 */
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "url", referencedColumnName = "url", insertable = false, updatable = false)
-    @Fetch(value = FetchMode.JOIN)
-    @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("작업 URL 정보")
-    private LogActvtyUrlNmEntity urlNmInfo;
+    /** 시그니처 */
+    @Column(name="signature")
+    private String signature;
 
-    /** 메소드 */
-    @Column(name = "mthd", length = 1000)
-    @Comment("메소드")
-    private String mthd;
+    @Column
+    @Schema(description = "HTTP 상태 코드")
+    private Integer httpStatus;
+
+    @Column
+    @Schema(description = "소요 시간")
+    private Long durationMs;
 
     /** 작업 파라미터 */
     @Column(name = "param", length = 1000)
