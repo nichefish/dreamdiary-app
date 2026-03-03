@@ -3,8 +3,6 @@ package io.nicheblog.dreamdiary.domain.user.reqst.controller;
 import io.nicheblog.dreamdiary.domain.user.reqst.model.UserReqstDto;
 import io.nicheblog.dreamdiary.domain.user.reqst.service.UserReqstService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
@@ -31,7 +29,6 @@ import javax.validation.Valid;
  * TODO: 기능추가 예정
  *
  * @author nichefish
- * @see LogActvtyRestControllerAspect
  */
 @RestController
 @RequiredArgsConstructor
@@ -51,22 +48,17 @@ public class UserReqstRestController
      * (비로그인 사용자도 외부에서 접근 가능.) (인증 없음)
      *
      * @param userReqst 등록/수정할 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(value = {Url.USER_REQST_REG_AJAX})
     @ResponseBody
     public ResponseEntity<AjaxResponse> userReqstRegAjax(
-            final @Valid UserReqstDto userReqst,
-            final LogActvtyParam logParam
+            final @Valid UserReqstDto userReqst
     ) throws Exception {
 
         final ServiceResponse result = userReqstService.regist(userReqst);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? "신규계정이 성공적으로 신청되었습니다." : "신규계정 신청에 실패했습니다.";     // TODO: 메세지 변수로 빼기
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -76,23 +68,18 @@ public class UserReqstRestController
      * (관리자MNGR만 접근 가능.)
      *
      * @param userNo 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.USER_REQST_CF_AJAX)
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> userCfAjax(
-            final @RequestParam("userNo") Integer userNo,
-            final LogActvtyParam logParam
+            final @RequestParam("userNo") Integer userNo
     ) throws Exception {
 
         final ServiceResponse result = userReqstService.cf(userNo);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -102,23 +89,18 @@ public class UserReqstRestController
      * (관리자MNGR만 접근 가능.)
      *
      * @param userNo 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.USER_REQST_UNCF_AJAX)
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> userUncfAjax(
-            final @RequestParam("userNo") Integer userNo,
-            final LogActvtyParam logParam
+            final @RequestParam("userNo") Integer userNo
     ) throws Exception {
 
         final ServiceResponse result = userReqstService.uncf(userNo);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }

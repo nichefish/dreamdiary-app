@@ -6,8 +6,6 @@ import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserPwChgParam;
 import io.nicheblog.dreamdiary.domain.user.my.service.UserMyService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -34,7 +32,6 @@ import javax.validation.Valid;
  * </pre>
  *
  * @author nichefish
- * @see LogActvtyRestControllerAspect
  */
 @RestController
 @RequiredArgsConstructor
@@ -86,22 +83,17 @@ public class AuthRestController {
      * (비로그인 사용자도 외부에서 접근 가능)
      *
      * @param userPwChgParam 비밀번호 변경을 위한 파라미터 객체 (유효성 검사 적용)
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.API_AUTH_LGN_PW_CHG)
     @PermitAll
     @ResponseBody
     public ResponseEntity<AjaxResponse> lgnPwChgAjax(
-            final @Valid UserPwChgParam userPwChgParam,
-            final LogActvtyParam logParam
+            final @Valid UserPwChgParam userPwChgParam
     ) throws Exception {
 
         final boolean isSuccess = userMyService.lgnPwChg(userPwChgParam);
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -110,23 +102,18 @@ public class AuthRestController {
      * 세션 강제 만료 처리 (중복 로그인 '기존 아이디 끊기'에서 취소 선택시)
      *
      * @param request HTTP 요청 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.API_AUTH_EXPIRE_SESSION)
     @PermitAll
     @ResponseBody
     public ResponseEntity<AjaxResponse> expireSessionAjax(
-            final HttpServletRequest request,
-            final LogActvtyParam logParam
+            final HttpServletRequest request
     ) {
 
         // 세션 만료 처리
         final HttpSession session = request.getSession(false);
         if (session != null) session.invalidate();
-
-        // 로그 관련 세팅
-        logParam.setResult(true, MessageUtils.RSLT_SUCCESS);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS));
     }

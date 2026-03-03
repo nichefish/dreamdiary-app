@@ -1,11 +1,9 @@
 package io.nicheblog.dreamdiary.domain.chat.controller;
 
-import io.nicheblog.dreamdiary.auth.jwt.provider.JwtTokenProvider;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.chat.model.ChatMsgDto;
 import io.nicheblog.dreamdiary.domain.chat.model.ChatMsgSearchParam;
 import io.nicheblog.dreamdiary.domain.chat.service.ChatMsgService;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -38,28 +36,22 @@ import java.util.Objects;
 public class ChatController {
 
     private final ChatMsgService chatMsgService;
-    private final JwtTokenProvider jwtTokenProvider;
 
     /**
      * 기존 채팅 메시지를 DB에서 가져온다.
      *
      * @param searchParam 검색 파라미터
-     * @param logParam 로그 파라미터
      * @return AjaxResponse를 포함한 ResponseEntity 객체
      */
     @GetMapping("/chat/messages")
     @ResponseBody
     public ResponseEntity<AjaxResponse> getChatMessages(
-            final ChatMsgSearchParam searchParam,
-            final LogActvtyParam logParam
+            final ChatMsgSearchParam searchParam
     ) throws Exception {
 
         final List<ChatMsgDto> messageList = chatMsgService.getListDto(searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(messageList));
     }

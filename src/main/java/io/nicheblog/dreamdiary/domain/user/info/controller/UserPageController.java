@@ -8,13 +8,10 @@
  import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
  import io.nicheblog.dreamdiary.extension.cd.service.DtlCdService;
  import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
- import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyPageControllerAspect;
- import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
  import io.nicheblog.dreamdiary.global.Constant;
  import io.nicheblog.dreamdiary.global.Url;
  import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
  import io.nicheblog.dreamdiary.global.model.PaginationInfo;
- import io.nicheblog.dreamdiary.global.util.MessageUtils;
  import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
  import lombok.Getter;
  import lombok.RequiredArgsConstructor;
@@ -39,7 +36,6 @@
  * </pre>
  *
  * @author nichefish
- * @see LogActvtyPageControllerAspect
  */
 @Controller
 @RequiredArgsConstructor
@@ -61,7 +57,6 @@ public class UserPageController
      * (관리자MNGR만 접근 가능.)
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
@@ -69,7 +64,6 @@ public class UserPageController
     @Secured(Constant.ROLE_MNGR)
     public String userList(
             @ModelAttribute("searchParam") UserSearchParam searchParam,
-            final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {
 
@@ -96,26 +90,18 @@ public class UserPageController
         // 목록 검색 URL + 파라미터 모델에 추가
         CmmUtils.Param.setModelAttrMap(searchParam, baseUrl, model);
 
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
-
         return "/view/domain/user/user_list";
     }
 
     /**
      * 사용자 관리 > 계정 및 권한 관리 > 사용자 등록 화면 조회
      * (관리자MNGR만 접근 가능.)
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.USER_REG_FORM)
     @Secured(Constant.ROLE_MNGR)
     public String userRegForm(
-            final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {
 
@@ -138,12 +124,6 @@ public class UserPageController
         dtlCdService.setCdListToModel(Constant.EMPLYM_CD, model);
         dtlCdService.setCdListToModel(Constant.RANK_CD, model);
 
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
-
         return "/view/domain/user/user_reg_form";
     }
 
@@ -152,7 +132,6 @@ public class UserPageController
      * (관리자MNGR만 접근 가능.)
      *
      * @param key 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
@@ -160,7 +139,6 @@ public class UserPageController
     @Secured(Constant.ROLE_MNGR)
     public String userDtl(
             final @RequestParam("userNo") Integer key,
-            final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {
 
@@ -172,12 +150,6 @@ public class UserPageController
         final UserDto retrievedDto = userService.getDtlDto(key);
         model.addAttribute("user", retrievedDto);
 
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
-
         return "/view/domain/user/user_dtl";
     }
 
@@ -186,7 +158,6 @@ public class UserPageController
      * (관리자MNGR만 접근 가능.)
      *
      * @param key 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
@@ -194,7 +165,6 @@ public class UserPageController
     @Secured(Constant.ROLE_MNGR)
     public String userMdfForm(
             final @RequestParam("userNo") Integer key,
-            final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {
 
@@ -217,12 +187,6 @@ public class UserPageController
         dtlCdService.setCdListToModel(Constant.TEAM_CD, model);
         dtlCdService.setCdListToModel(Constant.EMPLYM_CD, model);
         dtlCdService.setCdListToModel(Constant.RANK_CD, model);
-
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return "/view/domain/user/user_reg_form";
     }

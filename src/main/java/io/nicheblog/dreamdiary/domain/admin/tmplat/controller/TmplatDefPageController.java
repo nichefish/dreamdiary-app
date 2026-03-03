@@ -6,13 +6,10 @@ import io.nicheblog.dreamdiary.domain.admin.tmplat.model.TmplatDefDto;
 import io.nicheblog.dreamdiary.domain.admin.tmplat.model.TmplatDefSearchParam;
 import io.nicheblog.dreamdiary.domain.admin.tmplat.service.TmplatDefService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyPageControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.PaginationInfo;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +30,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
  * TODO: 신규개발 예정
  *
  * @author nichefish
- * @see LogActvtyPageControllerAspect
  */
 @Controller
 @RequiredArgsConstructor
@@ -53,7 +49,6 @@ public class TmplatDefPageController
      * (관리자MNGR만 접근 가능.)
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
@@ -61,7 +56,6 @@ public class TmplatDefPageController
     @Secured({Constant.ROLE_MNGR})
     public String tmplatDefList(
             @ModelAttribute("searchParam") TmplatDefSearchParam searchParam,
-            final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {
 
@@ -80,11 +74,6 @@ public class TmplatDefPageController
 
         // 목록 검색 URL + 파라미터 모델에 추가
         CmmUtils.Param.setModelAttrMap(searchParam, baseUrl, model);
-
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        logParam.setResult(isSuccess, rsltMsg);
 
         return "/view/domain/admin/tmplat/def/tmplat_def_list";
     }

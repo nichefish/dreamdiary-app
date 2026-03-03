@@ -7,10 +7,8 @@ import io.nicheblog.dreamdiary.domain.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
 import io.nicheblog.dreamdiary.domain.user.reqst.service.UserReqstService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +18,11 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+/**
+ * AuthPageController
+ *
+ * @author nichefish
+ */
 @Controller
 @RequiredArgsConstructor
 public class AuthPageController
@@ -38,19 +41,15 @@ public class AuthPageController
      * 사용자 신청 인증코드 메일로부터 사용자를 인증합니다.
      *
      * @param token 사용자 신청시 생성된 jwt 토큰
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.API_AUTH_VERIFY)
     public String verifySecurityCode(
             final @PathVariable("token") String token,
-            final LogActvtyParam logParam,
             final ModelMap model
     ) {
 
-        boolean isSuccess = false;
         String rsltMsg = null;
-
         try {
             if (StringUtils.isEmpty(token)) throw new AuthenticationFailureException("인증에 필요한 정보가 없습니다.");
             if (!jwtTokenProvider.validateToken(token)) throw new AuthenticationFailureException("이미 만료된 인증 코드입니다.");
@@ -63,18 +62,12 @@ public class AuthPageController
             // 계정 승인 처리
             userReqstService.cf(user.getUserNo());
 
-            isSuccess = true;
-            rsltMsg = MessageUtils.RSLT_SUCCESS;
-
             return "/view/auth/security/verify_success";
         } catch (final Exception e) {
             rsltMsg = e.getMessage();
             model.addAttribute("errorMsg", rsltMsg);
 
             return "/view/auth/security/verify_failure";
-        } finally {
-            // 로그 관련 세팅
-            logParam.setResult(isSuccess, rsltMsg);
         }
     }
 }
