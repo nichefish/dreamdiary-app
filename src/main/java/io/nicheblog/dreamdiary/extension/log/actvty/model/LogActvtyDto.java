@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.extension.log.actvty.model;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.extension.log.actvty.LogType;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.EqualsAndHashCode;
@@ -44,22 +45,25 @@ public class LogActvtyDto
     private String actvtyCtgrCd;
     /** 작업 구분 코드 (ex. 게시판, 공지사항, ...) (기능/모듈 단위) */
     private String actvtyCtgrNm;
-    /** 작업 유형 코드 (조회, 검색, 제출, 처리...) */
-    private String actionTyCd;
-    /** 작업 유형 코드 (조회, 검색, 제출, 처리...) */
-    private String actionTyNm;
 
+    /** trace ID */
+    private String traceId;
+
+    /** HTTP 메소드 */
+    private String httpMethod;
     /** 작업 URL */
-    private String url;
-    /** 작업 URL 이름 */
-    private String urlNm;
+    private String requestUri;
     /** 작업 파라미터 */
     private String param;
     /** 작업 파라미터 맵 */
     private HashMap<String, String> paramMap;
 
-    /** 메소드 */
-    private String mthd;
+    /** 로그 타입 */
+    private LogType logType;
+
+    /** 시그니처 */
+    private String signature;
+
     /** 작업 내용 */
     private String cn;
 
@@ -76,6 +80,8 @@ public class LogActvtyDto
     private String exceptionNm;
     /** 익셉션 메세지 */
     private String exceptionMsg;
+    /** 소요시간 (ms) */
+    private Long durationMs;
 
     /* ----- */
 
