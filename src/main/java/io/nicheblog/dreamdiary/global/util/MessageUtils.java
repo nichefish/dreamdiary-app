@@ -149,12 +149,20 @@ public class MessageUtils
      * @return {@link String} -- 예외 메시지
      */
     public static String getExceptionMsg(final Throwable e) {
-        if (StringUtils.isNotEmpty(e.getMessage())) return e.getMessage();
-
         final String exceptionNm = getExceptionNm(e);
-        final String rsltMsg = getMessage(RSLT_EXCEPTION + "." + exceptionNm);
-        log.error("exceptionNm: {}, rsltMsg: {}. {}", exceptionNm, rsltMsg, e.getStackTrace());
-        return rsltMsg;
+        final String bundleKey = RSLT_EXCEPTION + "." + exceptionNm;
+
+        final String rsltMsg = getMessage(bundleKey);
+        // messageBundle에 정의된 값이 실제로 존재하는 경우
+        if (!bundleKey.equals(rsltMsg)) return rsltMsg;
+        // 정의가 없으면 raw message 사용 (200자 제한)
+        final String msg = e.getMessage();
+        if (StringUtils.isNotEmpty(msg)) {
+            if (msg.length() > 200) return msg.substring(0, 200) + "...";
+            return msg;
+        }
+        // 그것도 없으면 기본 메시지
+        return "Unexpected error occurred.";
     }
 
     /**
