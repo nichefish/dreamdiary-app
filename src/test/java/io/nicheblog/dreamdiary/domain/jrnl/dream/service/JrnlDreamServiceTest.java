@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDtoTestFactory;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamPostDto;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +44,7 @@ class JrnlDreamServiceTest {
     @SuppressWarnings("unused")
     private AuthUtils authUtils;
     
-    private JrnlDreamDto jrnlDream;
+    private JrnlDreamPostDto jrnlDream;
 
     /**
      * 각 테스트 시작 전 세팅 초기화.
@@ -51,7 +52,7 @@ class JrnlDreamServiceTest {
     @BeforeEach
     void setUp() throws Exception {
         // 공통적으로 사용할 JrnlDreamDto 초기화
-        jrnlDream = JrnlDreamDtoTestFactory.create();
+        jrnlDream = JrnlDreamDtoTestFactory.createPost();
 
         // AuthUtils Mock
         try (final MockedStatic<AuthUtils> mockedStatic = mockStatic(AuthUtils.class)) {
@@ -86,9 +87,9 @@ class JrnlDreamServiceTest {
         final Integer key = registered.getKey();
 
         // When::
-        final JrnlDreamDto toModify = JrnlDreamDtoTestFactory.createWithKey(key);
+        final JrnlDreamPostDto toModify = JrnlDreamDtoTestFactory.createPostWithKey(key);
         toModify.setCn("test");
-        final ServiceResponse modifyResult = jrnlDreamService.modify(jrnlDream);
+        final ServiceResponse modifyResult = jrnlDreamService.modify(toModify);
         final JrnlDreamDto modified = (JrnlDreamDto) modifyResult.getRsltObj();
 
         // Then::

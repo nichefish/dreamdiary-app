@@ -24,7 +24,6 @@ public class NoticeDtoTestFactory {
         return NoticeDto.builder()
                 .postNo(0)
                 .contentType(ContentType.NOTICE.key)
-                .popupYn("Y")
                 .title("test_title")
                 .cn("test_cn")
                 .ctgrCd("test_ctgr_cd")

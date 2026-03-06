@@ -210,7 +210,7 @@ class UserMapstructToDtoTest {
         // Given::
 
         // When::
-        final UserDto userDto = userMapstruct.toListDto(userEntity);
+        final UserDto userDto = userMapstruct.toDto(userEntity);
 
         // Then::
         assertNotNull(userDto, "변환된 사용자 목록 Dto는 null일 수 없습니다.");
@@ -243,7 +243,7 @@ class UserMapstructToDtoTest {
         BaseEntityTestFactoryHelper.setMdfusrInfo(userEntity);
 
         // When::
-        final UserDto userListDto = userMapstruct.toListDto(userEntity);
+        final UserDto userListDto = userMapstruct.toDto(userEntity);
 
         // Then::
         assertNotNull(userListDto, "변환된 사용자 목록 Dto는 null일 수 없습니다.");
