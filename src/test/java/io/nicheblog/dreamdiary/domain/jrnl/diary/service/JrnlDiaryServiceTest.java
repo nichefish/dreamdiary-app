@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDtoTestFactory;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryPostDto;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +44,7 @@ class JrnlDiaryServiceTest {
     @SuppressWarnings("unused")
     private AuthUtils authUtils;
 
-    private JrnlDiaryDto jrnlDiary;
+    private JrnlDiaryPostDto jrnlDiary;
 
     /**
      * 각 테스트 시작 전 세팅 초기화.
@@ -51,7 +52,7 @@ class JrnlDiaryServiceTest {
     @BeforeEach
     void setUp() throws Exception {
         // 공통적으로 사용할 JrnlDiaryDto 초기화
-        jrnlDiary = JrnlDiaryDtoTestFactory.create();
+        jrnlDiary = JrnlDiaryDtoTestFactory.createPost();
 
         // AuthUtils Mock
         try (final MockedStatic<AuthUtils> mockedStatic = mockStatic(AuthUtils.class)) {
@@ -86,7 +87,7 @@ class JrnlDiaryServiceTest {
         final Integer key = registered.getKey();
 
         // When::
-        final JrnlDiaryDto toModify = JrnlDiaryDtoTestFactory.createWithKey(key);
+        final JrnlDiaryPostDto toModify = JrnlDiaryDtoTestFactory.createPostWithKey(key);
         toModify.setCn("test");
         final ServiceResponse modifyResult = jrnlDiaryService.modify(toModify);
         final JrnlDiaryDto modified = (JrnlDiaryDto) modifyResult.getRsltObj();

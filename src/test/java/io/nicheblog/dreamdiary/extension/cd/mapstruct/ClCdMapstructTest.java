@@ -90,7 +90,7 @@ class ClCdMapstructTest {
         clCdEntity.setClCtgrCd(TestConstant.TEST_CL_CTGR_CD);
         
         // When::
-        ClCdDto dto = clCdMapstruct.toListDto(clCdEntity);
+        ClCdDto dto = clCdMapstruct.toDto(clCdEntity);
 
         // Then::
         assertNotNull(dto, "변환된 dto는 null일 수 없습니다.");
@@ -114,7 +114,7 @@ class ClCdMapstructTest {
         BaseEntityTestFactoryHelper.setMdfusrInfo(clCdEntity);
 
         // When::
-        ClCdDto dto = clCdMapstruct.toListDto(clCdEntity);
+        ClCdDto dto = clCdMapstruct.toDto(clCdEntity);
 
         // Then::
         assertNotNull(dto);

@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseEntityTestFactoryHelper;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
+import org.mapstruct.factory.Mappers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
@@ -26,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ActiveProfiles("test")
 class JrnlDreamMapstructTest {
 
-    private final JrnlDreamMapstruct jrnlDreamMapstruct = JrnlDreamMapstruct.INSTANCE;
+    private final JrnlDreamMapstruct jrnlDreamMapstruct = Mappers.getMapper(JrnlDreamMapstruct.class);
 
     private JrnlDreamEntity jrnlDreamEntity;
 
