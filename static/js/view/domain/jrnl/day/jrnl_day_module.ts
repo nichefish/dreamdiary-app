@@ -127,16 +127,16 @@ dF.JrnlDay = (function(): dfModule {
          * URL 파라미터로부터 파라미터 객체 초기화
          */
         toggleParam: function(): void {
-            const showDiaries = $("#toggleDiaries").is(":checked");
-            const showDreams = $("#toggleDreams").is(":checked");
-            const showTagCloud = $("#toggleTagCloud").is(":checked");
+            const showDiaries: boolean = $("#toggleDiaries").is(":checked");
+            const showDreams: boolean = $("#toggleDreams").is(":checked");
+            const showTagCloud: boolean = $("#toggleTagCloud").is(":checked");
 
             dF.JrnlDay.currentSearchParams.showDiaries = showDiaries;
             dF.JrnlDay.currentSearchParams.showDreams = showDreams;
             dF.JrnlDay.currentSearchParams.showTagCloud = showTagCloud;
 
             // URL 동기화
-            const url = new URL(window.location.href);
+            const url: URL = new URL(window.location.href);
             url.searchParams.set("showDiaries", String(showDiaries));
             url.searchParams.set("showDreams", String(showDreams));
             url.searchParams.set("showTagCloud", String(showTagCloud));
@@ -153,8 +153,8 @@ dF.JrnlDay = (function(): dfModule {
             dF.JrnlDay.initSearchParams();
 
             // 🔹 1. URL 동기화
-            const urlObj = new URL(window.location.href);
-            const params = dF.JrnlDay.currentSearchParams;
+            const urlObj: URL = new URL(window.location.href);
+            const params: Record<string, any> = dF.JrnlDay.currentSearchParams;
 
             Object.keys(params).forEach(key => {
                 urlObj.searchParams.set(key, String(params[key]));
@@ -221,7 +221,12 @@ dF.JrnlDay = (function(): dfModule {
                     return;
                 }
                 const { rsltList } = res;
-                cF.handlebars.template(rsltList, "jrnl_day_list");
+                const renderModel = {
+                    list: rsltList,
+                    showDiaries: true,
+                    showDreams: true
+                };
+                cF.handlebars.template(renderModel, "jrnl_day_list");
                 KTMenu.createInstances();
             }, "block");
         },

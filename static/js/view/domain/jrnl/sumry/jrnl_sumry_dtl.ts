@@ -19,12 +19,12 @@ const Page: Page = (function(): Page {
             const section: string = cF.util.getUrlParam("section");
             switch (section) {
                 case "DIARY":
-                    dF.JrnlSumry.getImprtcDiaryListAjax(yy);
+                    dF.JrnlSumry.getSumryDiaryListAjax(yy);
                     dF.JrnlSumry.getTagListAjax(yy, "DAY");
                     dF.JrnlSumry.getTagListAjax(yy, "DIARY");
                     break;
                 case "DREAM":
-                    dF.JrnlSumry.getImprtcDreamListAjax(yy);
+                    dF.JrnlSumry.getMySumryDreamListAjax(yy);
                     dF.JrnlSumry.getTagListAjax(yy, "DREAM");
                     break;
             }

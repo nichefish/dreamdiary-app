@@ -3,9 +3,11 @@ package io.nicheblog.dreamdiary.domain.jrnl.sumry.controller;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayTagService;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
+import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiarySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryService;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryTagService;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamService;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamTagService;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.JrnlSumryTagType;
@@ -106,19 +108,24 @@ public class JrnlSumryRestController
      * @param yy 년도
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(value = {Url.JRNL_SUMRY_IMPRTC_DIARIES})
+    @GetMapping(value = {Url.JRNL_SUMRY_DIARIES})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSumryImprtcDiaryListAjax(
-            final @PathVariable("yy") Integer yy
+            final @PathVariable("yy") Integer yy,
+            final @RequestParam(defaultValue = "true") boolean showImprtc,
+            final @RequestParam(defaultValue = "false") boolean showRefrnc,
+            final JrnlDiarySearchParam searchParam
     ) throws Exception {
 
         // 중요 일기 목록 조회
-        final List<JrnlDiaryDto> imprtcDiaryList = jrnlDiaryService.getImprtcDiaryList(yy);
+        searchParam.setYy(yy);
+        searchParam.resolveStates(showImprtc, showRefrnc);
+        final List<JrnlDiaryDto> mySumryDiaryList = jrnlDiaryService.getMySumryDiaryList(AuthUtils.getLgnUserId(), searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(imprtcDiaryList));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(mySumryDiaryList));
     }
 
     /**
@@ -128,15 +135,20 @@ public class JrnlSumryRestController
      * @param yy 년도
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(value = {Url.JRNL_SUMRY_IMPRTC_DREAMS})
+    @GetMapping(value = {Url.JRNL_SUMRY_DREAMS})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSumryImprtcDreamListAjax(
-            final @PathVariable("yy") Integer yy
+            final @PathVariable("yy") Integer yy,
+            final @RequestParam(defaultValue = "true") boolean showImprtc,
+            final @RequestParam(defaultValue = "false") boolean showRefrnc,
+            final JrnlDreamSearchParam searchParam
     ) throws Exception {
 
-        // 중요 일기 목록 조회
-        final List<JrnlDreamDto> imprtcDreamList = jrnlDreamService.getImprtcDreamList(yy);
+        // 중요 꿈 목록 조회
+        searchParam.setYy(yy);
+        searchParam.resolveStates(showImprtc, showRefrnc);
+        final List<JrnlDreamDto> imprtcDreamList = jrnlDreamService.getMySumryDreamList(AuthUtils.getLgnUserId(), searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

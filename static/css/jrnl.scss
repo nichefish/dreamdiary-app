@@ -276,3 +276,14 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
         background-color: rgba(0,0,0,0.02);
     }
 }
+
+.jrnl-diary-cn:has(.cn.imprtc) {
+    border-left: 2px solid #ef4444;
+    background: #fff5f5;
+}
+
+.jrnl-diary-cn:has(.cn.refrnc) {
+    border-left: 2px solid #f59e0b;
+    background: #fffcec;
+}
+

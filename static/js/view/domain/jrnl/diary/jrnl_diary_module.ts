@@ -17,6 +17,9 @@ dF.JrnlDiary = (function(): dfModule {
             },
             SEARCH: {
                 collapsed: false,
+            },
+            SUMRY: {
+                collapsed: false,
             }
         },
 
@@ -319,7 +322,6 @@ dF.JrnlDiary = (function(): dfModule {
                 if (!cn) return console.warn("cn not found.");
 
                 cn.classList.toggle("bg-secondary", res.rsltSts === "ON");
-                cn.classList.toggle("p-2", res.rsltSts === "ON");
             }
             this.toggleStateAjax(postNo, "IMPRTC", { onOffFunc });
         },
@@ -423,7 +425,9 @@ dF.JrnlDiary = (function(): dfModule {
                 view: profile,
                 cnClass: [
                     'cn',
-                    profile.collapsed && diary.state?.includes('COLLAPSED') ? 'collapsed' : null
+                    profile.collapsed && diary.state?.list?.includes('COLLAPSED') ? 'collapsed' : null,
+                    diary.state?.list?.includes('IMPRTC') ? 'border-1 border-danger' : null,
+                    diary.state?.list?.includes('REFRNC') ? 'border-1 border-warning' : null
                 ].filter(Boolean).join(' ')
             };
         }
