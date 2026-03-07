@@ -42,6 +42,19 @@
 <#include "/view/domain/jrnl/sumry/tag/_jrnl_sumry_dtl_tag_header.ftlh">
 <hr class="my-6 text-muted" />
 
+<div class="d-flex align-items-end justify-content-end mb-2">
+    <div class="mx-3"
+         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="중요 토글">
+        <label for="toggleImprtc" class="me-2 text-muted cursor-help">IMPORTANT</label>
+        <input type="checkbox" id="toggleImprtc" class="form-check-input cursor-pointer" onclick="dF.JrnlSumry.toggleParam();" checked>
+    </div>
+    <div class="mx-3"
+         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="참조 토글">
+        <label for="toggleRefrnc" class="me-2 text-muted cursor-help">REFERENCE</label>
+        <input type="checkbox" id="toggleRefrnc" class="form-check-input cursor-pointer" onclick="dF.JrnlSumry.toggleParam();" checked>
+    </div>
+</div>
+
 <div class="jrnl_sumry_day_tag_div">
     <!-- handlebars template goes in here -->
 </div>
@@ -56,7 +69,7 @@
 
 <div class="card-post p-10">
     <!-- 중요 일기 -->
-    <div id="jrnl_sumry_imprtc_diary_list_div">
+    <div id="jrnl_sumry_diary_list_div">
         <!-- handlebars template goes in here -->
     </div>
 
@@ -121,12 +134,15 @@
 <#include "/view/extension/clsf/comment/_partial/_comment_reg_btn_partial.hbs">
 <script type="text/javascript" src="/js/view/extension/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
 
+<#--include::state-->
+<script type="text/javascript" src="/js/view/extension/clsf/state/state_module.js?${releaseDate!}"></script>
+
 <!--include::page scripts-->
 <#include "/view/domain/jrnl/sumry/_jrnl_sumry_dtl_template.hbs">
 <#include "/view/domain/jrnl/sumry/tag/_jrnl_sumry_day_tag_list_template.hbs">
 <#include "/view/domain/jrnl/sumry/tag/_jrnl_sumry_diary_tag_list_template.hbs">
 <#include "/view/domain/jrnl/sumry/tag/_jrnl_sumry_dream_tag_list_template.hbs">
-<#include "/view/domain/jrnl/sumry/_jrnl_sumry_imprtc_diary_list_template.hbs">
+<#include "/view/domain/jrnl/sumry/_jrnl_sumry_diary_list_template.hbs">
 <#include "/view/domain/jrnl/sumry/_jrnl_sumry_imprtc_dream_list_template.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/sumry/jrnl_sumry_dtl.js?${releaseDate!}"></script>
 

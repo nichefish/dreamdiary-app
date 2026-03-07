@@ -92,20 +92,62 @@ dF.JrnlSumry = (function(): dfModule {
         },
 
         /**
+         * URL 파라미터로부터 파라미터 객체 초기화
+         */
+        toggleParam: function(): void {
+            const showImprtc: boolean = $("#toggleImprtc").is(":checked");
+            const showRefrnc: boolean = $("#toggleRefrnc").is(":checked");
+
+            // URL 동기화
+            const url = new URL(window.location.href);
+            url.searchParams.set("showImprtc", String(showImprtc));
+            url.searchParams.set("showRefrnc", String(showRefrnc));
+            window.history.replaceState(null, "", url.toString());
+
+            // 재조회
+            const yy: string = cF.util.getPathVariableFromUrl(/\/sumry\/(\d{4})(?:\.do)?$/);
+            const section: string = cF.util.getUrlParam("section");
+            switch (section) {
+                case "DIARY":
+                    dF.JrnlSumry.getSumryDiaryListAjax(yy);
+                    break;
+                case "DREAM":
+                    dF.JrnlSumry.getSumryDreamListAjax(yy);
+                    break;
+            }
+        },
+
+        /**
          * 중요 일기 목록 조회 (Ajax) (년도로 조회)
          * @param {string|number} yy - 조회할 년도.
          */
-        getImprtcDiaryListAjax: function(yy: string|number): void {
-            const url: string = cF.util.bindUrl(Url.JRNL_SUMRY_IMPRTC_DIARIES, { yy });
-            cF.ajax.get(url, null, function(res: AjaxResponse): void {
+        getSumryDiaryListAjax: function(yy: string|number): void {
+            const showImprtc: boolean = $("#toggleImprtc").is(":checked");
+            const showRefrnc: boolean = $("#toggleRefrnc").is(":checked");
+
+            // 둘 다 false → 조회 의미 없음
+            if (!showImprtc && !showRefrnc) {
+                cF.handlebars.template([], "jrnl_sumry_diary_list");
+                return;
+            }
+
+            const url: string = cF.util.bindUrl(Url.JRNL_SUMRY_DIARIES, { yy });
+            const ajaxData: Record<string, any> = {
+                showImprtc,
+                showRefrnc
+            };
+            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
-                const { rsltList = [] } = res;
-                /* show modal */
-                cF.handlebars.template(rsltList, "jrnl_sumry_imprtc_diary_list");
+
+                const viewModels: any[] = res.rsltList.map((diary: any): void =>
+                    dF.JrnlDiary.buildViewModel(diary, 'SUMRY')
+                );
+                cF.handlebars.template(viewModels, "jrnl_sumry_diary_list");
                 document.querySelectorAll(".cn.collapsed").forEach(el => el.classList.remove("collapsed"));
+                KTMenu.createInstances();
             });
         },
 
@@ -113,17 +155,19 @@ dF.JrnlSumry = (function(): dfModule {
          * 중요 꿈 목록 조회 (Ajax) (년도로 조회)
          * @param {string|number} yy - 조회할 년도.
          */
-        getImprtcDreamListAjax: function(yy: string|number): void {
-            const url: string = cF.util.bindUrl(Url.JRNL_SUMRY_IMPRTC_DREAMS, { yy });
+        getSumryDreamListAjax: function(yy: string|number): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_SUMRY_DREAMS, { yy });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
-                const { rsltList = [] } = res;
-                /* show modal */
-                cF.handlebars.template(rsltList, "jrnl_sumry_imprtc_diary_list");
+                const viewModels: any[] = res.rsltList.map((dream: any): void =>
+                    dF.JrnlDream.buildViewModel(dream, 'SUMRY')
+                );
+                cF.handlebars.template(viewModels, "jrnl_sumry_dream_list");
                 document.querySelectorAll(".cn.collapsed").forEach(el => el.classList.remove("collapsed"));
+                KTMenu.createInstances();
             });
         },
 

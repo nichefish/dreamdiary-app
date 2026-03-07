@@ -7,11 +7,11 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDaySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
+import io.nicheblog.dreamdiary.domain.jrnl.dream.service.helper.JrnlDreamViewHelper;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntryDto;
+import io.nicheblog.dreamdiary.domain.jrnl.entry.service.helper.JrnlEntryViewHelper;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.entity.JrnlIntrptEntity;
-import io.nicheblog.dreamdiary.domain.jrnl.intrpt.model.JrnlIntrptDto;
 import io.nicheblog.dreamdiary.domain.jrnl.state.JrnlState;
 import io.nicheblog.dreamdiary.domain.jrnl.state.JrnlStateMaps;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
@@ -24,6 +24,8 @@ import java.util.*;
 
 /**
  * JrnlDayViewHelper
+ *
+ * @author nichefish
  */
 public final class JrnlDayViewHelper {
 
@@ -84,49 +86,8 @@ public final class JrnlDayViewHelper {
         final Map<Integer, JrnlState> intrptMap
     ) {
         for (JrnlDayDto day : listDto) {
-
-            if (CollectionUtils.isNotEmpty(day.getEntryList())) {
-                for (final JrnlEntryDto entry : day.getJrnlEntryList()) {
-
-                    final JrnlState s = entryMap.get(entry.getPostNo());
-                    if (s != null) {
-                        entry.state.apply(StateCd.COLLAPSED, s.getCollapsed());
-                    }
-
-                    if (CollectionUtils.isEmpty(entry.getJrnlDiaryList())) continue;
-                    for (final JrnlDiaryDto diary : entry.getJrnlDiaryList()) {
-                        final JrnlState d = diaryMap.get(diary.getPostNo());
-                        if (d != null) {
-                            diary.state.apply(StateCd.COLLAPSED, d.getCollapsed());
-                            diary.state.apply(StateCd.RESOLVED, d.getResolved());
-                            diary.state.apply(StateCd.IMPRTC, d.getImprtc());
-                            diary.state.apply(StateCd.REFRNC, d.getRefrnc());
-                        }
-                    }
-                }
-            }
-
-            if (CollectionUtils.isNotEmpty(day.getJrnlDreamList())) {
-                for (final JrnlDreamDto dream : day.getJrnlDreamList()) {
-
-                    final JrnlState s = dreamMap.get(dream.getPostNo());
-                    if (s != null) {
-                        dream.state.apply(StateCd.COLLAPSED, s.getCollapsed());
-                        dream.state.apply(StateCd.RESOLVED, s.getResolved());
-                        dream.state.apply(StateCd.IMPRTC, s.getImprtc());
-                        dream.state.apply(StateCd.REFRNC, s.getRefrnc());
-                    }
-
-                    if (CollectionUtils.isEmpty(dream.getJrnlIntrptList())) continue;
-                    for (final JrnlIntrptDto intrpt : dream.getJrnlIntrptList()) {
-                        final JrnlState d = intrptMap.get(intrpt.getPostNo());
-                        if (d != null) {
-                            intrpt.state.apply(StateCd.COLLAPSED, d.getCollapsed());
-                            intrpt.state.apply(StateCd.RESOLVED, d.getResolved());
-                        }
-                    }
-                }
-            }
+            JrnlEntryViewHelper.applyStates(day.getJrnlEntryList(), entryMap, diaryMap);
+            JrnlDreamViewHelper.applyStates(day.getJrnlDreamList(), dreamMap, intrptMap);
         }
     }
 
@@ -151,50 +112,11 @@ public final class JrnlDayViewHelper {
         for (JrnlDayDto day : listDto) {
 
             if (searchParam.isShowDiaries()) {
-                if (CollectionUtils.isNotEmpty(day.getEntryList())) {
-                    for (final JrnlEntryDto entry : day.getJrnlEntryList()) {
-
-                        final JrnlState s = entryMap.get(entry.getPostNo());
-                        if (s != null) {
-                            entry.state.apply(StateCd.COLLAPSED, s.getCollapsed());
-                        }
-
-                        if (CollectionUtils.isEmpty(entry.getJrnlDiaryList())) continue;
-                        for (final JrnlDiaryDto diary : entry.getJrnlDiaryList()) {
-                            final JrnlState d = diaryMap.get(diary.getPostNo());
-                            if (d != null) {
-                                diary.state.apply(StateCd.COLLAPSED, d.getCollapsed());
-                                diary.state.apply(StateCd.RESOLVED, d.getResolved());
-                                diary.state.apply(StateCd.IMPRTC, d.getImprtc());
-                                diary.state.apply(StateCd.REFRNC, d.getRefrnc());
-                            }
-                        }
-                    }
-                }
+                JrnlEntryViewHelper.applyStates(day.getJrnlEntryList(), entryMap, diaryMap);
             }
 
             if (searchParam.isShowDiaries()) {
-                if (CollectionUtils.isNotEmpty(day.getJrnlDreamList())) {
-                    for (final JrnlDreamDto dream : day.getJrnlDreamList()) {
-
-                        final JrnlState s = dreamMap.get(dream.getPostNo());
-                        if (s != null) {
-                            dream.state.apply(StateCd.COLLAPSED, s.getCollapsed());
-                            dream.state.apply(StateCd.RESOLVED, s.getResolved());
-                            dream.state.apply(StateCd.IMPRTC, s.getImprtc());
-                            dream.state.apply(StateCd.REFRNC, s.getRefrnc());
-                        }
-
-                        if (CollectionUtils.isEmpty(dream.getJrnlIntrptList())) continue;
-                        for (final JrnlIntrptDto intrpt : dream.getJrnlIntrptList()) {
-                            final JrnlState d = intrptMap.get(intrpt.getPostNo());
-                            if (d != null) {
-                                intrpt.state.apply(StateCd.COLLAPSED, d.getCollapsed());
-                                intrpt.state.apply(StateCd.RESOLVED, d.getResolved());
-                            }
-                        }
-                    }
-                }
+                JrnlDreamViewHelper.applyStates(day.getJrnlDreamList(), dreamMap, intrptMap);
             }
         }
     }

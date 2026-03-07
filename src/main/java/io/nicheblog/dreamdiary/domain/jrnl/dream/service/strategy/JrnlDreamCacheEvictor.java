@@ -41,8 +41,8 @@ public class JrnlDreamCacheEvictor
             final Integer mnth = param.getMnth();
             // jrnl_dream
             EhCacheUtils.evictMyCacheAll("myJrnlDreamList");
+            EhCacheUtils.evictMyCacheAll("mySumryDreamList");
             EhCacheUtils.evictMyCache("myJrnlDreamDtlDto", postNo);
-            this.evictMyCacheForPeriod("myImprtcDreamList", yy);
             // jrnl_day
             EhCacheUtils.evictMyCache("myJrnlDayDtlDto", jrnlDayNo);
             this.evictMyCacheForPeriod("myJrnlDayList", yy, mnth);

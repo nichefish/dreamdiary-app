@@ -17,6 +17,9 @@ dF.JrnlDream = (function(): dfModule {
             },
             SEARCH: {
                 collapsed: false,
+            },
+            SUMRY: {
+                collapsed: false,
             }
         },
 
