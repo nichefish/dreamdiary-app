@@ -1,33 +1,33 @@
 <#--
- * 저널 결산(jrnl_sumry) > 등록 Modal
+ * 저널 결산 리뷰(jrnl_sumry_review) > 등록 Modal
  -->
 
 <#import "/layout/modal_layout.ftlh" as modal>
 
-<#assign modal_title = springMacroRequestContext.getMessage("txt.jrnl.sumry.save") />
-<@modal.layout id="jrnl_sumry_reg" size="xl">
+<#assign modal_title = springMacroRequestContext.getMessage("txt.jrnl.sumry.review.save") />
+<@modal.layout id="jrnl_sumry_review_reg" size="xl">
     <#--begin::Modal Header-->
     <@component.modal_header modal_title />
     <#--begin::Modal Body-->
     <div class="modal-body modal-mbl-body my-5">
         <#--begin::Form-->
-        <form name="jrnlSumryRegForm" id="jrnlSumryRegForm" class="form" enctype="multipart/form-data">
-            <div id="jrnl_sumry_reg_modal_header_div">
+        <form name="jrnlSumryReviewRegForm" id="jrnlSumryReviewRegForm" class="form" enctype="multipart/form-data">
+            <div id="jrnl_sumry_review_reg_modal_header_div">
                 <#--Handlebars template goes in here-->
             </div>
             <#--begin::Row-->
             <div class="row mb-4">
                 <div class="col-12">
-                    <label class="d-flex align-items-center mb-2" for="tinymce_jrnlSumryCn">
+                    <label class="d-flex align-items-center mb-2" for="tinymce_jrnlSumryReviewCn">
                         <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'txt.cn'/></span>
                     </label>
                 </div>
                 <div class="col-12">
-                    <textarea name="cn" id="tinymce_jrnlSumryCn" class="form-control form-control-solid h-100px required"></textarea>
-                    <div id="tinymce_jrnlSumryCn_validate_span"></div>
+                    <textarea name="cn" id="tinymce_jrnlSumryReviewCn" class="form-control form-control-solid h-100px required"></textarea>
+                    <div id="tinymce_jrnlSumryReviewCn_validate_span"></div>
                 </div>
             </div>
-            <div id="jrnl_sumry_reg_div">
+            <div id="jrnl_sumry_review_reg_div">
                 <#--Handlebars template goes in here-->
             </div>
         </form>
@@ -37,7 +37,7 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-end">
             <#--모달:: 버튼: 저장하기-->
-            <@component.modal_btn_save "dF.JrnlSumry.submit();" />
+            <@component.modal_btn_save "dF.JrnlSumryReview.submit();" />
             <#--모달:: 버튼: 모달 닫기-->
             <@component.modal_btn_close_safe "" />
         </div>
@@ -45,5 +45,5 @@
 </@modal.layout>
 
 <#--include:: Handlebars template-->
-<#include "_jrnl_sumry_reg_modal_header_template.hbs">
-<#include "_jrnl_sumry_reg_modal_template.hbs">
+<#include "_jrnl_sumry_review_reg_modal_header_template.hbs">
+<#include "_jrnl_sumry_review_reg_modal_template.hbs">

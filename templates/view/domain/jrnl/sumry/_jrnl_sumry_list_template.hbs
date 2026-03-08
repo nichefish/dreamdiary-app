@@ -13,29 +13,22 @@
                     <div class="col-2 d-flex align-items-center">
                         <i class="bi bi-calendar3 fs-6 me-2"></i>
                         <a class="cursor-pointer text-underline-dotted text-dark"
-                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="상세 화면으로 이동합니다."
+                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.sumry'/> <@spring.message 'bs.tooltip.page.dtl'/>"
                            onclick="dF.JrnlSumry.dtlView({{yy}})">
                             {{#if (exists title)}}
                                 <span class="fs-5 me-1">{{title}}</span>
                             {{else}}
                                 <span class="fs-5 fw-bolder me-0">{{yy}}</span>
-                                년 결산
+                                <@spring.message 'txt.sumry-by-yy'/>
                             {{/if}}
                             <i class="bi bi-pencil-square fs-4 ms-1"></i>
                         </a>
-                        <#--TODO: 새 창으로 열기 -->
-                        <#--
-                        <a class="badge badge-secondary ms-3 p-2 btn-white bg-hover-white blank blink-slow float-end"
-                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="새 창으로 보기">
-                            <i class="bi bi-stickies fs-5 text-noti opacity-hover"></i>
-                        </a>
-                        -->
                     </div>
                     <div class="col fs-5">
                         <div class="d-flex justify-content-start">
                             <div class="text-gray-700 d-flex-center me-5">
                                 <span class="fw-bold me-2">
-                                    꿈
+                                    <@spring.message 'txt.dream'/>
                                 </span>
                                 {{#ifYn dreamComptYn}}
                                     <span class="cursor-help"
@@ -78,7 +71,7 @@
         </div>
     {{else}}
         <div class="jrnl-day d-flex-center">
-            저널 일자 정보가 없습니다.
+            <@spring.message 'msg.rslt.empty'/>
         </div>
     {{/each}}
 </script>

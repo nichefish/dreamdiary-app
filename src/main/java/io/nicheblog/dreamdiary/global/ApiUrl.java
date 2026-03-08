@@ -80,6 +80,10 @@ public interface ApiUrl {
     String JRNL_SUMRY_DREAM_COMPT_AJAX = Prefix.API + "/jrnl/sumry/dream-compt";
     String JRNL_SUMRY_REG_AJAX = Prefix.API + "/jrnl/sumry/reg";
 
+    /** 저널 결산 리뷰 */
+    String JRNL_SUMRY_REVIEWS = Prefix.API + "/jrnl/sumry/reviews";
+    String JRNL_SUMRY_REVIEW = Prefix.API + "/jrnl/sumry/review/{postNo}";
+
     /** 공지사항 */
     String NOTICE_REG_AJAX = Prefix.API + "/notice/reg";
     String NOTICE = Prefix.API + "/notice/{postNo}";

@@ -1,0 +1,20 @@
+<#--
+ * 저널 결산 리뷰(jrnl_sumry_review) - 목록 조회 Template
+ * @see handlebars.ts
+ -->
+
+<script type="text/x-handlebars-template" id="jrnl_sumry_review_item_partial" data-partial>
+    <div class="jrnl-sumry-review-item ms-7 me-15 ps-3" data-id="{{postNo}}">
+        <div class="col">
+            <div class="jrnl-sumry-review-cn p-2 text-noti">
+                {{> jrnl_sumry_review_cn_partial this}}
+            </div>
+        </div>
+        <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+        <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
+            {{> comment_reg_btn_partial this contentType="JRNL_SUMRY_REVIEW"}}
+            {{> jrnl_diary_copy_btn_partial this}}
+            {{> jrnl_sumry_review_context_btn_partial this}}
+        </div>
+    </div>
+</script>

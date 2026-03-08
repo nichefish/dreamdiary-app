@@ -6,50 +6,50 @@ import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbedM
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbed;
+import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbedModule;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
-import java.util.List;
 
 /**
- * JrnlSumryEntity
+ * JrnlSumryReviewEntity
  * <pre>
- *  저널 결산 Entity.
+ *  저널 결산 리뷰 Entity.
  * </pre>
  *
  * @author nichefish
  */
 @Entity
-@Table(name = "jrnl_sumry")
+@Table(name = "jrnl_sumry_review")
 @Getter
 @Setter
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE jrnl_sumry SET del_yn = 'Y' WHERE post_no = ?")
-public class JrnlSumryEntity
+@SQLDelete(sql = "UPDATE jrnl_sumry_review SET del_yn = 'Y' WHERE post_no = ?")
+public class JrnlSumryReviewEntity
         extends BaseClsfEntity
-        implements CommentEmbedModule, TagEmbedModule {
+        implements CommentEmbedModule, TagEmbedModule, AtchFileEmbedModule {
 
     /** 저널 꿈 고유 번호 (PK) */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_no")
-    @Comment("저널 결산 고유 번호")
+    @Comment("저널 결산 리뷰 고유 번호")
     private Integer postNo;
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
-    @Column(name = "content_type", columnDefinition = "VARCHAR(50) DEFAULT 'JRNL_SUMRY'")
+    @Column(name = "content_type", columnDefinition = "VARCHAR(50) DEFAULT 'JRNL_SUMRY_REVIEW'")
 
     @Comment("컨텐츠 타입")
-    private String contentType = ContentType.JRNL_SUMRY.key;
+    private String contentType = ContentType.JRNL_SUMRY_REVIEW.key;
 
     /** 제목 */
     @Column(name = "title")
@@ -61,49 +61,28 @@ public class JrnlSumryEntity
 
     /* ----- */
 
-    /** 꿈 기록 완료 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "dream_compt_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("꿈 기록 완료 여부 (Y/N)")
-    private String dreamComptYn = "N";
+    /** 저널 결산 번호  */
+    @Column(name = "jrnl_sumry_no")
+    @Comment("저널 결산 번호")
+    private Integer jrnlSumryNo;
 
-    /* ----- */
-
-    /** 결산 년도 */
-    @Column(name = "yy", unique = true)
-    private Integer yy;
-
-    /** 꿈 일수 */
-    @Column(name = "dream_day_cnt")
-    private Integer dreamDayCnt;
-
-    /** 꿈 갯수 */
-    @Column(name = "dream_cnt")
-    private Integer dreamCnt;
-
-    /** 저널 항목 목록 */
-    @OneToMany(fetch = FetchType.LAZY)
+    /** 저널 결산 정보 */
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "jrnl_sumry_no", referencedColumnName = "post_no", insertable = false, updatable = false)
-    @Fetch(FetchMode.SUBSELECT)
-    @BatchSize(size = 10)
-    @OrderBy("idx ASC")
+    @Fetch(FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("저널 결산 리뷰 목록")
-    private List<JrnlSumryReviewEntity> jrnlSumryReviewList;
+    @Comment("저널 일자 정보")
+    private JrnlSumryEntity jrnlSumry;
+
+    /** 순번 */
+    @Column(name = "idx", columnDefinition = "INT DEFAULT 1")
+    private Integer idx;
 
     /* ----- */
 
-    /**
-     * 생성자.
-     *
-     * @param yy - 생성할 엔티티에 설정할 연도 값
-     */
-    public JrnlSumryEntity(final Integer yy) {
-        this.yy = yy;
-    }
-
-    /* ----- */
-
+    /** 위임 :: 첨부파일 모듈 */
+    @Embedded
+    public AtchFileEmbed file;
     /** 위임 :: 댓글 정보 모듈 */
     @Embedded
     public CommentEmbed comment;

@@ -1,16 +1,12 @@
 <#--
- * 저널 일기(jrnl_diary) - 내용 partial
+ * 저널 결산 리뷰(jrnl_sumry_review) - 내용 partial
  * @see handlebars.ts
  -->
 
-<script type="text/x-handlebars-template" id="jrnl_diary_cn_partial" data-partial>
+<script type="text/x-handlebars-template" id="jrnl_sumry_review_cn_partial" data-partial>
     <div class="{{#if (exists cnClass)}}{{cnClass}}{{else}}cn {{cnStateClass state}}{{/if}}">
         {{{markdownCn}}}
     </div>
-    <!-- "더 보기" 버튼, <p> child 3개 이상일 때만 보임 (css) -->
-    <button type="button" class="btn btn-xxs btn-active-light-info badge-light-primary btn-outlined expand-btn"
-            onclick="dF.JrnlDayTag.expand(this);">
-    </button>
 
     {{#if (exists tag.list)}}
         <div class="tags ms-2 mt-3">

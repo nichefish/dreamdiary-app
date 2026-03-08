@@ -13,6 +13,7 @@ const Page: Page = (function(): Page {
         init: function(): void {
             /* initialize modules. */
             dF.JrnlSumry.init();
+            dF.JrnlSumryReview.init();
 
             const yy: string = cF.util.getPathVariableFromUrl(/\/sumry\/(\d{4})(?:\.do)?$/);
             if (yy) dF.JrnlSumry.dtlAjax(yy);

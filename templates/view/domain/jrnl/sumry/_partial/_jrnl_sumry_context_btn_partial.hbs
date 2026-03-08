@@ -1,5 +1,5 @@
 <#--
- * 저널 결산(jrnl_sumry)  - 컨텍스트 버튼 partial
+ * 저널 결산(jrnl_sumry) - 컨텍스트 버튼 partial
  * @see handlebars.ts
  -->
 
@@ -20,9 +20,9 @@
             <!--end::Heading-->
             <!--begin::Menu item-->
             <div class="menu-item px-3 my-1 cursor-pointer"
-                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.sumry"/> <@spring.message 'bs.tooltip.modal.mdf'/>">
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.sumry"/> <@spring.message 'txt.comm.open-in-new-window'/>">
                 <div class="menu-link flex-stack px-3" onclick="dF.JrnlSumry.dtlView({{yy}});">
-                    <@spring.message "txt.comm.open-in-new-window"/>
+                    <@spring.message 'txt.sumry'/> <@spring.message "txt.comm.open-in-new-window"/>
                     <i class="bi bi-window-stack fs-8"></i>
                 </div>
             </div>
@@ -30,7 +30,7 @@
             <div class="menu-item px-3 my-1 cursor-pointer"
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.sumry"/> <@spring.message 'bs.tooltip.modal.mdf'/>">
                 <div class="menu-link flex-stack px-3" onclick="dF.JrnlSumry.mdfModal({{yy}});">
-                    <@spring.message 'txt.comm.edit'/>
+                    <@spring.message 'txt.sumry'/> <@spring.message 'txt.comm.edit'/>
                     <i class="bi bi-pencil-square fs-8"></i>
                 </div>
             </div>

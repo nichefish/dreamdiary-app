@@ -9,10 +9,10 @@ import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
+import io.nicheblog.dreamdiary.global.intrfc.model.cmpstn.AtchFileCmpstn;
+import io.nicheblog.dreamdiary.global.intrfc.model.cmpstn.AtchFileCmpstnModule;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-
-import java.util.List;
 
 /**
  * JrnlSumryDto
@@ -28,37 +28,27 @@ import java.util.List;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class JrnlSumryDto
+public class JrnlSumryReviewDto
         extends BaseClsfDto
-        implements Identifiable<Integer>, CommentCmpstnModule, TagCmpstnModule, SectnCmpstnModule {
+        implements Identifiable<Integer>, CommentCmpstnModule, TagCmpstnModule, SectnCmpstnModule, AtchFileCmpstnModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
-    private String contentType = ContentType.JRNL_SUMRY.key;
+    private String contentType = ContentType.JRNL_SUMRY_REVIEW.key;
 
     /** 제목 */
-    private String title;
+    protected String title;
     /** 내용 */
-    private String cn;
+    protected String cn;
     /** 마크다운 처리된 내용 */
     private String markdownCn;
 
     /* ----- */
 
+    /** 저널 결산 번호  */
+    private Integer jrnlSumryNo;
     /** 결산 년도 */
     private Integer yy;
-
-    /** 꿈 일수 */
-    private Integer dreamDayCnt;
-    /** 꿈 갯수 */
-    private Integer dreamCnt;
-
-    /** 꿈 기록 완료 여부 (Y/N) */
-    @Builder.Default
-    private String dreamComptYn = "N";
-
-    /** 저널 결산 리뷰 목록 */
-    private List<JrnlSumryReviewDto> jrnlSumryReviewList;
 
     /* ----- */
 
@@ -67,6 +57,8 @@ public class JrnlSumryDto
         return this.postNo;
     }
 
+    /** 위임 :: 첨부파일 모듈 */
+    public AtchFileCmpstn file;
     /** 위임 :: 댓글 정보 모듈 */
     public CommentCmpstn comment;
     /** 위임 :: 단락 정보 모듈 */

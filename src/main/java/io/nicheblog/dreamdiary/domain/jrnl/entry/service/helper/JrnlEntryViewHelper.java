@@ -1,7 +1,5 @@
 package io.nicheblog.dreamdiary.domain.jrnl.entry.service.helper;
 
-import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.helper.JrnlDiaryViewHelper;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.state.JrnlState;

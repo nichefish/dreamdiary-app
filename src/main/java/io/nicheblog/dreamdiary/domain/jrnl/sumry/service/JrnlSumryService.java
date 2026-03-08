@@ -48,7 +48,7 @@ public class JrnlSumryService
     @Getter
     private final JrnlSumrySpec spec;
     @Getter
-    private final JrnlSumryMapstruct mapstruct = JrnlSumryMapstruct.INSTANCE;
+    private final JrnlSumryMapstruct mapstruct;
 
     public JrnlSumryMapstruct getReadMapstruct() {
         return this.mapstruct;

@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.domain.jrnl.sumry.mapstruct;
 
-import io.nicheblog.dreamdiary.domain.jrnl.sumry.entity.JrnlSumryEntity;
-import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumryDto;
+import io.nicheblog.dreamdiary.domain.jrnl.sumry.entity.JrnlSumryReviewEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumryReviewDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseClsfMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
@@ -9,9 +9,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
 
 /**
- * JrnlSumryMapstruct
+ * JrnlSumryReviewMapstruct
  * <pre>
- *  저널 결산 MapStruct 기반 Mapper 인터페이스.
+ *  저널 결산 리뷰 MapStruct 기반 Mapper 인터페이스.
  * </pre>
  *
  * @author nichefish
@@ -20,11 +20,10 @@ import org.mapstruct.*;
     componentModel = "spring",
     unmappedTargetPolicy = ReportingPolicy.IGNORE,
     imports = { StringUtils.class, MarkdownUtils.class },
-    uses = { JrnlSumryReviewMapstruct.class },
     builder = @Builder(disableBuilder = true)
 )
-public abstract class JrnlSumryMapstruct
-        implements BaseWriteMapstruct<JrnlSumryDto, JrnlSumryEntity>, BaseClsfMapstruct<JrnlSumryDto, JrnlSumryEntity> {
+public abstract class JrnlSumryReviewMapstruct
+        implements BaseWriteMapstruct<JrnlSumryReviewDto, JrnlSumryReviewEntity>, BaseClsfMapstruct<JrnlSumryReviewDto, JrnlSumryReviewEntity> {
 
     /**
      * Entity -> Dto 변환
@@ -35,7 +34,7 @@ public abstract class JrnlSumryMapstruct
     @Override
     @Named("toDto")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
-    public abstract JrnlSumryDto toDto(final JrnlSumryEntity entity) throws Exception;
+    public abstract JrnlSumryReviewDto toDto(final JrnlSumryReviewEntity entity) throws Exception;
 
     /**
      * Dto -> Entity 변환
@@ -45,7 +44,7 @@ public abstract class JrnlSumryMapstruct
      */
     @Override
     @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
-    public abstract JrnlSumryEntity toEntity(final JrnlSumryDto dto) throws Exception;
+    public abstract JrnlSumryReviewEntity toEntity(final JrnlSumryReviewDto dto) throws Exception;
 
     /**
      * update Entity from Dto (Dto에서 null이 아닌 값만 Entity로 매핑)
@@ -56,5 +55,5 @@ public abstract class JrnlSumryMapstruct
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
-    public abstract void updateFromDto(final JrnlSumryDto dto, final @MappingTarget JrnlSumryEntity entity) throws Exception;
+    public abstract void updateFromDto(final JrnlSumryReviewDto dto, final @MappingTarget JrnlSumryReviewEntity entity) throws Exception;
 }
