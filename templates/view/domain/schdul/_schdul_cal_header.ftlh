@@ -49,10 +49,6 @@
             </label>
         </a>
     </div>
-    <a href="${Url.VCATN_PAPR_REG_FORM!}" class="btn btn-sm btn-primary"
-       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="휴가계획서 등록 화면으로&#10;이동합니다.">
-        <i class="fas fa-plus"></i>휴가 등록
-    </a>
     <a href="javascript:void(0);" class="btn btn-sm btn-primary"
        onclick="dF.Schdul.regModal();"
        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="일정 등록 모달을 호출합니다.">
