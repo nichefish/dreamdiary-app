@@ -1,9 +1,10 @@
 <#--
  * 저널 일기(jrnl_diary) - 내용 partial
+ * @see handlebars.ts
  -->
 
-<script type="text/x-handlebars-template" id="jrnl_diary_cn_search_partial">
-    <div class="{{#if (exists cnClass)}}{{cnClass}}{{else}}cn {{#if (hasState state 'COLLAPSED')}}collapsed{{/if}}{{/if}}">
+<script type="text/x-handlebars-template" id="jrnl_diary_cn_search_partial" data-partial>
+    <div class="{{#if (exists cnClass)}}{{cnClass}}{{else}}cn {{cnStateClass state}}{{/if}}">
         {{{markdownCn}}}
     </div>
     <!-- "더 보기" 버튼, <p> child 3개 이상일 때만 보임 (css) -->

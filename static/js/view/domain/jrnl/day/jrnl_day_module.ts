@@ -9,7 +9,9 @@ dF.JrnlDay = (function(): dfModule {
     return {
         initialized: false,
         viewType: null,
-        tagify: null,
+        tagTagify: null,
+        metaTagify: null,
+        currentSearchParams: null,
 
         /**
          * initializes module.
@@ -35,7 +37,6 @@ dF.JrnlDay = (function(): dfModule {
             switch (dF.JrnlDay.viewType) {
                 case "LIST":
                     dF.JrnlDay.yyMnthListAjax();
-                    dF.JrnlDayTag.listAjax();     // 태그 refresh
                     break;
                 case "CAL":
                     Page.refreshEventList();
@@ -98,21 +99,71 @@ dF.JrnlDay = (function(): dfModule {
                 $("#jrnlDayRegForm #jrnlDt").val($("#jrnlDayRegForm #aprxmtDt").val());
             });
             /* tagify */
-            dF.JrnlDay.tagify = cF.tagify.initWithCtgr("#jrnlDayRegForm #tagListStr", dF.JrnlDayTag.ctgrMap);
-            dF.JrnlDay.tagify = cF.tagify.initMeta("#jrnlDayRegForm #metaListStr", dF.JrnlDayMeta.ctgrMap);
+            dF.JrnlDay.tagTagify = cF.tagify.initWithCtgr("#jrnlDayRegForm #tagListStr", dF.JrnlDayTag.ctgrMap);
+            dF.JrnlDay.metaTagify = cF.tagify.initMeta("#jrnlDayRegForm #metaListStr", dF.JrnlDayMeta.ctgrMap);
+        },
+
+        /**
+         * URL 파라미터로부터 파라미터 객체 초기화
+         */
+        initSearchParams: function(): void {
+            if (dF.JrnlDay.currentSearchParams) return;
+
+            const yy: string = cF.util.getUrlParam("yy") ?? localStorage.getItem("jrnl_yy") ?? "9999";
+            const mnth: string = cF.util.getUrlParam("mnth") ?? localStorage.getItem("jrnl_mnth") ?? "99";
+            const showDiaries = cF.util.getUrlParam("showDiaries") !== "false";
+            const showDreams = cF.util.getUrlParam("showDreams") !== "false";
+            const showTagCloud = cF.util.getUrlParam("showTagCloud") !== "false";
+
+            dF.JrnlDay.currentSearchParams = { "viewType": "list", yy, mnth, showDiaries, showDreams, showTagCloud };
+
+            // DOM에 상태 반영
+            $("#toggleDiaries").prop("checked", showDiaries);
+            $("#toggleDreams").prop("checked", showDreams);
+            $("#toggleTagCloud").prop("checked", showTagCloud);
+        },
+
+        /**
+         * URL 파라미터로부터 파라미터 객체 초기화
+         */
+        toggleParam: function(): void {
+            const showDiaries: boolean = $("#toggleDiaries").is(":checked");
+            const showDreams: boolean = $("#toggleDreams").is(":checked");
+            const showTagCloud: boolean = $("#toggleTagCloud").is(":checked");
+
+            dF.JrnlDay.currentSearchParams.showDiaries = showDiaries;
+            dF.JrnlDay.currentSearchParams.showDreams = showDreams;
+            dF.JrnlDay.currentSearchParams.showTagCloud = showTagCloud;
+
+            // URL 동기화
+            const url: URL = new URL(window.location.href);
+            url.searchParams.set("showDiaries", String(showDiaries));
+            url.searchParams.set("showDreams", String(showDreams));
+            url.searchParams.set("showTagCloud", String(showTagCloud));
+            window.history.replaceState(null, "", url.toString());
+
+            // 재조회
+            dF.JrnlDay.yyMnthListAjax();
         },
 
         /**
          * 년도-월 목록 조회 (Ajax)
          */
         yyMnthListAjax: function(): void {
-            const yy: string = cF.util.getUrlParam("yy") ?? localStorage.getItem("jrnl_yy") ?? "9999";
-            if (cF.util.isEmpty(yy)) return;
-            const mnth: string = cF.util.getUrlParam("mnth") ?? localStorage.getItem("jrnl_mnth") ?? "99";
-            if (cF.util.isEmpty(mnth)) return;
+            dF.JrnlDay.initSearchParams();
 
-            const url: string = Url.JRNL_DAYS + `?viewType=list&yy=${yy}&mnth=${mnth}`;
-            cF.ajax.get(url, null, function(res: AjaxResponse): void {
+            // 🔹 1. URL 동기화
+            const urlObj: URL = new URL(window.location.href);
+            const params: Record<string, any> = dF.JrnlDay.currentSearchParams;
+
+            Object.keys(params).forEach(key => {
+                urlObj.searchParams.set(key, String(params[key]));
+            });
+
+            window.history.replaceState(null, "", urlObj.toString());
+
+            const url: string = Url.JRNL_DAYS;
+            cF.ajax.get(url, dF.JrnlDay.currentSearchParams, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
@@ -129,8 +180,23 @@ dF.JrnlDay = (function(): dfModule {
                 $("#jrnl_diary_list_div").empty();
                 $("#jrnl_dream_list_div").empty();
                 cF.ui.closeModal();
-                cF.handlebars.template(rsltList, "jrnl_day_list");
+                const renderModel = {
+                    list: rsltList,
+                    showDiaries: dF.JrnlDay.currentSearchParams.showDiaries,
+                    showDreams: dF.JrnlDay.currentSearchParams.showDreams
+                };
+                cF.handlebars.template(renderModel, "jrnl_day_list");
                 KTMenu.createInstances();
+
+                const { showDiaries, showDreams, showTagCloud } = dF.JrnlDay.currentSearchParams;
+                $("#jrnl_tag_header").toggle(showTagCloud);
+                if (showTagCloud) {
+                    dF.JrnlDayTag.listAjax();
+                    $("#jrnl_diary_tag_header").toggleClass("d-none", !showDiaries);
+                    if (showDiaries) dF.JrnlDiaryTag.listAjax();
+                    $("#jrnl_dream_tag_header").toggleClass("d-none", !showDreams);
+                    if (showDreams) dF.JrnlDreamTag.listAjax();
+                }
             }, "block");
         },
 
@@ -139,7 +205,7 @@ dF.JrnlDay = (function(): dfModule {
          * @param {string} stdrdDt 기준 일자
          */
         openDetatched: function(stdrdDt: string): void {
-            const url: string = cF.util.bindUrl(Url.JRNL_DAY_VIEW, { stdrdDt });
+            const url: string = cF.util.bindUrl(Url.JRNL_DAY_DAILY_VIEW, { stdrdDt });
             window.open(url, '_blank', 'noopener,noreferrer');
         },
 
@@ -155,7 +221,12 @@ dF.JrnlDay = (function(): dfModule {
                     return;
                 }
                 const { rsltList } = res;
-                cF.handlebars.template(rsltList, "jrnl_day_list");
+                const renderModel = {
+                    list: rsltList,
+                    showDiaries: true,
+                    showDreams: true
+                };
+                cF.handlebars.template(renderModel, "jrnl_day_list");
                 KTMenu.createInstances();
             }, "block");
         },
@@ -224,23 +295,35 @@ dF.JrnlDay = (function(): dfModule {
         regAjax: function(): void {
             const postNo: string = cF.util.getInputValue("#jrnlDayRegForm [name='postNo']");
             const isMdf: boolean = cF.util.isNotEmpty(postNo);
-            Swal.fire({
-                text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
-                showCancelButton: true,
-            }).then(function(result: SwalResult): void {
-                if (!result.value) return;
 
-                const url: string = isMdf ? cF.util.bindUrl(Url.JRNL_DAY, { postNo }) : Url.JRNL_DAYS;
-                const ajaxData: FormData = new FormData(document.getElementById("jrnlDayRegForm") as HTMLFormElement);
-                cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
-                    Swal.fire({ text: res.message })
-                        .then(function(): void {
-                            if (!res.rslt) return;
+            // 등록 클릭시 입력 중이던 메타 추가
+            if (dF.JrnlDay.metaTagify?.draft?.value) {
+                const meta: string = cF.util.getInputValue("#meta_value");
+                const { value, ctgr } = dF.JrnlDay.metaTagify?.draft;
+                if (value && meta) {
+                    cF.tagify.commitTag(dF.JrnlDay.metaTagify, value, ctgr, meta);
+                }
+            }
+            setTimeout((): void => {
+                Swal.fire({
+                    text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
+                    showCancelButton: true,
+                }).then(function(result: SwalResult): void {
+                    if (!result.value) return;
 
-                            dF.JrnlDay.refresh();
-                        });
-                }, "block");
-            });
+                    const url: string = isMdf ? cF.util.bindUrl(Url.JRNL_DAY, { postNo }) : Url.JRNL_DAYS;
+                    const ajaxData: FormData = new FormData(document.getElementById("jrnlDayRegForm") as HTMLFormElement);
+                    cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
+                        Swal.fire({ text: res.message })
+                            .then(function(): void {
+                                if (!res.rslt) return;
+
+                                dF.JrnlDay.refresh();
+                            });
+                    }, "block");
+                });
+            }, 0);
+
         },
 
         /**

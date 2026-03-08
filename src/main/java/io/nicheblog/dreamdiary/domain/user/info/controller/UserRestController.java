@@ -5,9 +5,6 @@ import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserSearchParam;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.handler.LogActvtyEventListener;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
@@ -30,7 +27,6 @@ import javax.validation.Valid;
  * </pre>
  *
  * @author nichefish
- * @see LogActvtyRestControllerAspect
  */
 @RestController
 @RequiredArgsConstructor
@@ -50,22 +46,17 @@ public class UserRestController
      * 사용자 계정 신청시 사용해야 하므로 인증 없이 접근 가능
      *
      * @param userId 중복 체크를 할 사용자 아이디
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.USER_ID_DUP_CHK_AJAX)
     @ResponseBody
     public ResponseEntity<AjaxResponse> userIdDupChckAjax(
-            final @RequestParam("userId") String userId,
-            final LogActvtyParam logParam
+            final @RequestParam("userId") String userId
     ) {
 
         final Boolean isUserIdDup = userService.userIdDupChck(userId);
         final boolean isSuccess = !isUserIdDup;;
         final String rsltMsg = MessageUtils.getMessage(isSuccess ? "msg.user.id.usable" : "msg.user.id.duplicated");
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -75,22 +66,17 @@ public class UserRestController
      * 사용자 계정 신청시 사용해야 하므로 인증 없이 접근 가능
      *
      * @param email 중복 체크를 할 사용자 아이디
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.USER_EMAIL_DUP_CHK_AJAX)
     @ResponseBody
     public ResponseEntity<AjaxResponse> userEmailDupChckAjax(
-            final @RequestParam("email") String email,
-            final LogActvtyParam logParam
+            final @RequestParam("email") String email
     ) {
 
         final Boolean isEmailDup = userService.emailDupChck(email);
         final boolean isSuccess = !isEmailDup;;
         final String rsltMsg = MessageUtils.getMessage(isSuccess ? "msg.user.email.usable" : "msg.user.email.duplicated");
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -100,25 +86,19 @@ public class UserRestController
      * (관리자MNGR만 접근 가능.)
      *
      * @param user 등록/수정 처리할 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
-     * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(value = {Url.USER_REG_AJAX, Url.USER_MDF_AJAX})
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> userRegAjax(
-            final @Valid UserDto user,
-            final LogActvtyParam logParam
+            final @Valid UserDto user
     ) throws Exception {
 
         final boolean isReg = (user.getKey() == null);
         final ServiceResponse result = isReg ? userService.regist(user) : userService.modify(user);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -128,23 +108,18 @@ public class UserRestController
      * (관리자MNGR만 접근 가능.)
      *
      * @param userNo 패스워드를 초기화할 사용자 아이디
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.USER_PW_RESET_AJAX)
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> passwordResetAjax(
-            final @RequestParam("userNo") Integer userNo,
-            final LogActvtyParam logParam
+            final @RequestParam("userNo") Integer userNo
     ) throws Exception {
 
         final ServiceResponse result = userService.passwordReset(userNo);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS_PW_RESET : MessageUtils.RSLT_FAILURE);
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -154,15 +129,13 @@ public class UserRestController
      * (관리자MNGR만 접근 가능.)
      *
      * @param userNo 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.USER_DEL_AJAX)
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> userDelAjax(
-            final @RequestParam("userNo") Integer userNo,
-            final LogActvtyParam logParam
+            final @RequestParam("userNo") Integer userNo
     ) throws Exception {
 
         final UserDto user = userService.getDtlDto(userNo);
@@ -177,9 +150,6 @@ public class UserRestController
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
-
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
 
@@ -187,16 +157,13 @@ public class UserRestController
      * 사용자 관리 > 계정 및 권한 관리 > 사용자 목록 엑셀 다운로드
      * (관리자MNGR만 접근 가능.)
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
-     * @see LogActvtyEventListener
      * TODO: 더 일반화하기
      */
     @GetMapping(Url.USER_LIST_XLSX_DOWNLOAD)
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> userListXlsxDownload(
-            final @ModelAttribute("searchParam") UserSearchParam searchParam,
-            final LogActvtyParam logParam
+            final @ModelAttribute("searchParam") UserSearchParam searchParam
     ) throws Exception {
 
         final AjaxResponse ajaxResponse = new AjaxResponse();
@@ -206,17 +173,9 @@ public class UserRestController
         try {
             // List<Object> userListXlsx = userService.userListXlsx(searchParamMap);
             // xlsxUtils.listXlxsDownload(Constant.user_profl, userListXlsx);
-            isSuccess = true;
-            rsltMsg = MessageUtils.RSLT_SUCCESS;
         } catch (final Exception e) {
-            isSuccess = false;
             rsltMsg = MessageUtils.getExceptionMsg(e);
-            logParam.setExceptionInfo(e);
             MessageUtils.alertMessage(rsltMsg, baseUrl);
-        } finally {
-            // 로그 관련 세팅
-            logParam.setResult(isSuccess, rsltMsg);
-            // publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
         }
 
         return ResponseEntity.ok(ajaxResponse);

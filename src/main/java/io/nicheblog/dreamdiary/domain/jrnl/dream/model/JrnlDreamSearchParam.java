@@ -1,9 +1,13 @@
 package io.nicheblog.dreamdiary.domain.jrnl.dream.model;
 
+import io.nicheblog.dreamdiary.extension.clsf.state.StateCd;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,7 +30,6 @@ public class JrnlDreamSearchParam
 
     /** 년도 */
     private Integer yy;
-
     /** 월 */
     private Integer mnth;
 
@@ -43,20 +46,36 @@ public class JrnlDreamSearchParam
     private Integer tagNo;
     private List<Integer> tagNos;
 
-    /** 중요 여부 **/
-    private String state;
+    /** 정렬 */
+    @Builder.Default
+    private String sort = "DESC";
+
+    /** 상태(중요, 참조..) **/
+    private List<String> states;
 
     /**
      * 파라미터 부재 판별
      * @return 인자 존재 여부
      */
     public boolean isEmpty() {
-        boolean hasKeyword = searchKeywords != null && searchKeywords.stream().anyMatch(k -> k != null && !k.trim().isEmpty());
-        boolean hasTagNos = tagNos != null && tagNos.stream().anyMatch(Objects::nonNull);
-        boolean hasDate = yy != null || mnth != null || jrnlDayNo != null;
-        boolean hasTag = tagNo != null;
-        boolean hasState = state != null && !state.isBlank();
+        final boolean hasKeyword = searchKeywords != null && searchKeywords.stream().anyMatch(k -> k != null && !k.trim().isEmpty());
+        final boolean hasTagNos = CollectionUtils.isNotEmpty(tagNos) && tagNos.stream().anyMatch(Objects::nonNull);
+        final boolean hasDate = yy != null || mnth != null || jrnlDayNo != null;
+        final boolean hasTag = tagNo != null;
+        final boolean hasState = CollectionUtils.isNotEmpty(states) && states.stream().anyMatch(StringUtils::isNotEmpty);
 
         return !(hasKeyword || hasTagNos || hasDate || hasTag || hasState);
+    }
+
+    /**
+     * 상태 파라미터 세팅
+     */
+    public void resolveStates(final Boolean showImprtc, final Boolean showRefrnc) {
+        final List<String> states = new ArrayList<>(2);
+
+        if (showImprtc) states.add(StateCd.IMPRTC.key);
+        if (showRefrnc) states.add(StateCd.REFRNC.key);
+
+        this.states = states;
     }
 }

@@ -163,7 +163,7 @@ cF.util = (function(): Module {
         blockUIFileDownload: (function(): void {
             cF.ui.blockUI();
             const downloadTimer = setInterval(function(): void {
-                const token = cF.cookie.get("FILE_CREATE_SUCCESS");
+                const token: string = cF.cookie.get("FILE_CREATE_SUCCESS");
                 if (token === "TRUE") {
                     cF.ui.unblockUI();
                     clearInterval(downloadTimer);
@@ -178,10 +178,10 @@ cF.util = (function(): Module {
          * @returns {Array} - 각 chunk별로 분할된 객체 배열.
          */
         serializeJsonArray: function(arr: Array<any>, chunk: number): Record<any, any> {
-            const processedArr = [];
-            for (let i = 0; i < arr.length; i += chunk) {
-                const form = arr.slice(i, i + chunk);
-                const obj = form.reduce((acc, field) => {
+            const processedArr: any[] = [];
+            for (let i: number = 0; i < arr.length; i += chunk) {
+                const form: any[] = arr.slice(i, i + chunk);
+                const obj: any = form.reduce((acc: any, field: any): any => {
                     if (cF.util.isEmpty(field)) return acc;
                     acc[field.name] = field.value;
                     return acc;
@@ -236,7 +236,7 @@ cF.util = (function(): Module {
             if (url.startsWith('http://') || url.startsWith('https://')) {
                 return url;  // 이미 절대 경로라면 그대로 반환
             } else {
-                const baseUrl = window.location.origin;  // 현재 웹사이트의 절대 URL
+                const baseUrl: string = window.location.origin;  // 현재 웹사이트의 절대 URL
                 return baseUrl + url;  // 상대 경로를 절대 경로로 결합
             }
         },
@@ -258,7 +258,7 @@ cF.util = (function(): Module {
          * @deprecated
          */
         execCommandCopy: async function (text: string): Promise<void> {
-            const textarea = document.createElement('textarea');
+            const textarea: HTMLTextAreaElement = document.createElement('textarea');
             textarea.value = text;
             textarea.style.position = 'fixed';
             textarea.style.opacity = '0';
@@ -271,7 +271,57 @@ cF.util = (function(): Module {
             } finally {
                 document.body.removeChild(textarea);
             }
-        }
+        },
 
+        /**
+         * HTML 문자열을 의미 있는 텍스트로 정제한다.
+         * br/p 태그를 줄바꿈으로 치환 후 순수 텍스트로 변환.
+         * @param {string} html
+         * @returns {string}
+         */
+        htmlToText: function(html: string): string {
+            if (cF.util.isEmpty(html)) return "";
+
+            // 줄바꿈 태그 치환
+            const replaced: string = html
+                .replace(/<\s*br\s*\/?>/gi, "\n")
+                .replace(/<\s*\/?p[^>]*>/gi, "\n");
+
+            // DOM 파싱 후 텍스트 추출
+            const div: HTMLDivElement = document.createElement("div");
+            div.innerHTML = replaced;
+
+            const text: string = div.innerText ?? "";
+
+            // 줄 정리
+            return text
+                .replace(/\n+/g, "\n")
+                .replace(/\n/g, "\r\n")
+                .trim();
+        },
+
+        /**
+         * 객체로부터 url 파라미터 생성
+         * @param data
+         */
+        buildUrlParams: function(data: Record<string, any>): URLSearchParams {
+            const params = new URLSearchParams();
+        
+            Object.keys(data).forEach((key: string): void => {
+                const val: any = data[key];
+        
+                if (Array.isArray(val)) {
+                    val.forEach((v: string): void => {
+                        if (v && v.trim() !== "") {
+                            params.append(key, v);
+                        }
+                    });
+                } else if (val && val.toString().trim() !== "") {
+                    params.append(key, val.toString());
+                }
+            });
+        
+            return params;
+        },
     }
 })();

@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.global.handler;
 
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.MDC;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.context.SecurityContext;
@@ -9,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 
@@ -71,14 +73,17 @@ public class ApplicationEventPublisherWrapper {
      */
     public void publishAsyncEvent(final @NotNull ApplicationEvent event) {
         log.debug("ApplicationEventPublisherWrapper.publishAsyncEvent() : {}", event);
-        SecurityContext securityContext = SecurityContextHolder.getContext(); // 현재 SecurityContext 저장
+        final SecurityContext securityContext = SecurityContextHolder.getContext(); // 현재 SecurityContext 저장
+        final Map<String, String> mdcContext = MDC.getCopyOfContextMap(); // ⭐ 추가
 
         asyncExecutor.execute(() -> {
             SecurityContextHolder.setContext(securityContext); // 비동기 실행 전에 SecurityContext 설정
+            if (mdcContext != null) MDC.setContextMap(mdcContext);  // 비동기 실행 전에 MDC 복원
             try {
                 delegate.publishEvent(event);
             } finally {
                 SecurityContextHolder.clearContext(); // 실행 후 SecurityContext 정리
+                MDC.clear(); // 실행 후 MDC 정리
             }
         });
     }
@@ -91,14 +96,17 @@ public class ApplicationEventPublisherWrapper {
      */
     public void publishAsyncEvent(final @NotNull Object event) {
         log.debug("ApplicationEventPublisherWrapper.publishAsyncEvent() : {}", event);
-        SecurityContext securityContext = SecurityContextHolder.getContext();
+        final SecurityContext securityContext = SecurityContextHolder.getContext();
+        final Map<String, String> mdcContext = MDC.getCopyOfContextMap(); // ⭐ 추가
 
         asyncExecutor.execute(() -> {
             SecurityContextHolder.setContext(securityContext);
+            if (mdcContext != null) MDC.setContextMap(mdcContext);  // 비동기 실행 전에 MDC 복원
             try {
                 delegate.publishEvent(event);
             } finally {
-                SecurityContextHolder.clearContext();
+                SecurityContextHolder.clearContext(); // 실행 후 SecurityContext 정리
+                MDC.clear(); // 실행 후 MDC 정리
             }
         });
     }

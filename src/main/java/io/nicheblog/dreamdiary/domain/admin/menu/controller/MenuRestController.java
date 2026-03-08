@@ -3,8 +3,6 @@ package io.nicheblog.dreamdiary.domain.admin.menu.controller;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.*;
 import io.nicheblog.dreamdiary.domain.admin.menu.service.MenuService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
@@ -30,7 +28,6 @@ import java.util.List;
  * </pre>
  *
  * @author nichefish
- * @see LogActvtyRestControllerAspect
  */
 @Controller
 @RequiredArgsConstructor
@@ -50,15 +47,13 @@ public class MenuRestController
      * (관리자MNGR만 접근 가능.)
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.MENU_MAIN_LIST_AJAX)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> mainMenuListAjax(
-            final @ModelAttribute("searchParam") MenuSearchParam searchParam,
-            final LogActvtyParam logParam
+            final @ModelAttribute("searchParam") MenuSearchParam searchParam
     ) throws Exception {
 
         // 페이징 정보 생성:: 공백시 pageSize=10, pageNo=1
@@ -66,9 +61,6 @@ public class MenuRestController
         final List<MenuDto> menuList = menuService.getMainMenuList(searchParam, sort);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(menuList));
     }
@@ -78,7 +70,6 @@ public class MenuRestController
      * (관리자MNGR만 접근 가능.)
      *
      * @param menu 등록/수정 처리할 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(value = {Url.MENUS, Url.MENU})
@@ -86,8 +77,7 @@ public class MenuRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuRegAjax(
             final @PathVariable(value = "menuNo", required = false) Integer menuNo,
-            final @Valid MenuPostDto menu,
-            final LogActvtyParam logParam
+            final @Valid MenuPostDto menu
     ) throws Exception {
 
         final boolean isMdf = menuNo != null;
@@ -95,9 +85,6 @@ public class MenuRestController
         final ServiceResponse result = isMdf ? menuService.modify(menu) : menuService.regist(menu);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -107,23 +94,18 @@ public class MenuRestController
      * (관리자MNGR만 접근 가능.)
      *
      * @param menuNo 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.MENU)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuDtlAjax(
-            final @PathVariable("menuNo") Integer menuNo,
-            final LogActvtyParam logParam
+            final @PathVariable("menuNo") Integer menuNo
     ) throws Exception {
 
         final MenuDto retrievedDto = menuService.getDtlDto(menuNo);
         final boolean isSuccess = retrievedDto != null;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
     }
@@ -133,7 +115,6 @@ public class MenuRestController
      * (관리자MNGR만 접근 가능.)
      *
      * @param menuNo 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PatchMapping(Url.MENU)
@@ -141,16 +122,12 @@ public class MenuRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuPatchAjax(
             final @PathVariable("menuNo") Integer menuNo,
-            final @RequestBody MenuPatchDto patchDto,
-            final LogActvtyParam logParam
+            final @RequestBody MenuPatchDto patchDto
     ) throws Exception {
 
         final ServiceResponse result = menuService.patch(menuNo, patchDto);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -160,23 +137,18 @@ public class MenuRestController
      * (관리자MNGR만 접근 가능.)
      *
      * @param menuParam 키+정렬 순서 목록을 담은 파라미터
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PutMapping(Url.MENUS_IDX)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuSortOrdrAjax(
-            final @RequestBody MenuParam menuParam,
-            final LogActvtyParam logParam
+            final @RequestBody MenuParam menuParam
     ) throws Exception {
 
         final ServiceResponse result = menuService.sortIdx(menuParam.getIdxs());
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -186,23 +158,17 @@ public class MenuRestController
      * (관리자MNGR만 접근 가능.)
      *
      * @param menuNo 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @DeleteMapping(Url.MENU)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuDelAjax(
-            final @PathVariable("menuNo") Integer menuNo,
-            final LogActvtyParam logParam
+            final @PathVariable("menuNo") Integer menuNo
     ) throws Exception {
 
         final ServiceResponse result = menuService.delete(menuNo);
-        final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }

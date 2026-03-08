@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.domain.jrnl.diary.entity;
 
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
+import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntryEntity;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.experimental.UtilityClass;
@@ -28,8 +29,10 @@ public class JrnlDiaryEntityTestFactory {
                 .contentType(ContentType.JRNL_DIARY.key)
                 .title("test_title")
                 .cn("test_cn")
-                .ctgrCd("test_ctgr_cd")
-                .jrnlDay(JrnlDaySmpEntity.from(jrnlDayEntity))
+                .jrnlEntry(JrnlEntryEntity.builder()
+                        .jrnlDayNo(jrnlDayEntity != null ? jrnlDayEntity.getPostNo() : null)
+                        .jrnlDay(toSmpEntity(jrnlDayEntity))
+                        .build())
                 .build();
     }
 
@@ -38,12 +41,12 @@ public class JrnlDiaryEntityTestFactory {
      * @param jrnlDtStr 저널 일자 날짜 문자열
      */
     public static JrnlDiaryEntity createWithJrnlDt(String jrnlDtStr) throws Exception {
+        final JrnlDaySmpEntity jrnlDay = JrnlDaySmpEntity.builder().jrnlDt(DateUtils.asDate(jrnlDtStr)).build();
         return JrnlDiaryEntity.builder()
                 .contentType(ContentType.JRNL_DIARY.key)
                 .title("test_title")
                 .cn("test_cn")
-                .ctgrCd("test_ctgr_cd")
-                .jrnlDay(JrnlDaySmpEntity.builder().jrnlDt(DateUtils.asDate(jrnlDtStr)).build())
+                .jrnlEntry(JrnlEntryEntity.builder().jrnlDay(jrnlDay).build())
                 .build();
     }
 
@@ -53,5 +56,19 @@ public class JrnlDiaryEntityTestFactory {
     public static JrnlDiaryEntity create() throws Exception {
         String tempJrnlDtStr = "2000-01-01";
         return createWithJrnlDt(tempJrnlDtStr);
+    }
+
+    private static JrnlDaySmpEntity toSmpEntity(final JrnlDayEntity jrnlDayEntity) {
+        if (jrnlDayEntity == null) return null;
+        return JrnlDaySmpEntity.builder()
+                .postNo(jrnlDayEntity.getPostNo())
+                .contentType(jrnlDayEntity.getContentType())
+                .jrnlDt(jrnlDayEntity.getJrnlDt())
+                .dtUnknownYn(jrnlDayEntity.getDtUnknownYn())
+                .yy(jrnlDayEntity.getYy())
+                .mnth(jrnlDayEntity.getMnth())
+                .aprxmtDt(jrnlDayEntity.getAprxmtDt())
+                .weather(jrnlDayEntity.getWeather())
+                .build();
     }
 }

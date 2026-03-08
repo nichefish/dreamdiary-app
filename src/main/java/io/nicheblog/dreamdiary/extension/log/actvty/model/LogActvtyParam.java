@@ -2,8 +2,8 @@ package io.nicheblog.dreamdiary.extension.log.actvty.model;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.extension.log.actvty.LogType;
 import io.nicheblog.dreamdiary.extension.log.sys.model.LogSysParam;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.EqualsAndHashCode;
@@ -39,14 +39,28 @@ public class LogActvtyParam
     /** 사용자 ID */
     private String userId;
 
+    /** trace ID */
+    private String traceId;
+
+    /** 로그 타입 */
+    private LogType logType;
+
+    /** 시그니처 */
+    private String signature;
+
+
     /** 액션 구분 코드 */
     private String actionTyCd;
 
-    /** URL */
-    private String url;
-
     /** 메소드 */
-    private String mthd;
+    private String httpMethod;
+    /** URL */
+    private String requestUri;
+    /** HTTP status */
+    private Integer httpStatus;
+
+    /** ( */
+    private Long durationMs;
 
     /** 파라미터 */
     private String param;
@@ -182,10 +196,9 @@ public class LogActvtyParam
         if (attr == null) return;
 
         final HttpServletRequest request = attr.getRequest();
-        this.url = request.getServletPath();         // 작업 url
-        this.mthd = request.getMethod();           // 접근 메소드
+        this.requestUri = request.getServletPath();         // 작업 url
+        this.httpMethod = request.getMethod();           // 접근 메소드
         this.param = request.getQueryString();       // 작업 파라미터
-        this.referer = request.getHeader(Constant.REFERER);      // 리퍼러
         this.ipAddr = AuthUtils.getAcsIpAddr();       // 작업 IP
     }
 
@@ -205,6 +218,7 @@ public class LogActvtyParam
     public void setExceptionInfo(final Throwable e) {
         this.exceptionNm = MessageUtils.getExceptionNm(e);
         this.exceptionMsg = MessageUtils.getExceptionMsg(e);
+
     }
 
     /**

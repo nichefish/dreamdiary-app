@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseEntityTestFactoryHelper;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,10 +25,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * @author nichefish
  */
 @ActiveProfiles("test")
+@RequiredArgsConstructor
 class JrnlDiaryMapstructTest {
 
-    private final JrnlDiaryMapstruct jrnlDiaryMapstruct = JrnlDiaryMapstruct.INSTANCE;
-
+    private final JrnlDiaryMapstruct jrnlDiaryMapstruct;
     private JrnlDiaryEntity jrnlDiaryEntity;
 
     /**
@@ -51,7 +52,7 @@ class JrnlDiaryMapstructTest {
 
         // Then::
         assertNotNull(jrnlDiaryDto, "변환된 저널 일기 Dto는 null일 수 없습니다.");
-        assertEquals(DateUtils.asStr(jrnlDiaryEntity.getJrnlDay().getJrnlDt(), DatePtn.DATE), jrnlDiaryDto.getStdrdDt(), "기준일자가 제대로 산정되지 않았습니다.");
+        assertEquals(DateUtils.asStr(jrnlDiaryEntity.getJrnlEntry().getJrnlDay().getJrnlDt(), DatePtn.DATE), jrnlDiaryDto.getStdrdDt(), "기준일자가 제대로 산정되지 않았습니다.");
     }
 
     /**

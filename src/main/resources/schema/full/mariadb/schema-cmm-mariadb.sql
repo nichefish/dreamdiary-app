@@ -110,31 +110,31 @@ CREATE TABLE IF NOT EXISTS log_actvty (
     log_actvty_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '활동 로그 번호 (PK)',
     log_dt DATETIME COMMENT '로그 기록 일시',
     user_id VARCHAR(20) COMMENT '로그 사용자 ID',
+    trace_id VARCHAR(64) COMMENT 'Trace ID',
+    log_type VARCHAR(20) COMMENT '로그 타입',
     actvty_ctgr_cd VARCHAR(50) COMMENT '활동 카테고리 코드',
-    action_ty_cd VARCHAR(50) COMMENT '액션 타입 코드',
-    url VARCHAR(400) COMMENT '요청 URL',
-    mthd VARCHAR(400) COMMENT '요청 메소드',
+    http_method VARCHAR(400) COMMENT 'HTTP 메소드',
+    request_uri VARCHAR(400) COMMENT '요청 URI',
     param VARCHAR(500) COMMENT '요청 파라미터',
-    cn LONGTEXT COMMENT '내용',
+
     ip_addr VARCHAR(20) COMMENT 'IP 주소',
     referer VARCHAR(1000) COMMENT '리퍼러 URL',
-    rslt CHAR(1) COMMENT '결과',
+
+    cn LONGTEXT COMMENT '내용',
+
+    http_status int COMMENT 'HTTP 상태',
+    duration_ms long COMMENT '소요시간(ms)',
+    rslt TINYINT NOT NULL COMMENT '결과',
     rslt_msg VARCHAR(50) COMMENT '결과 메시지',
     exception_nm VARCHAR(100) COMMENT '예외 이름',
     exception_msg VARCHAR(4000) COMMENT '예외 메시지',
     -- AUDIT
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)'
+    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    -- CONSTRAINT
+    INDEX idx_trace_id (trace_id),
+    INDEX idx_log_dt (log_dt),
+    INDEX idx_user_dt (user_id, log_dt)
 ) COMMENT = '활동 로그';
-
--- 활동 로그 URL명 (log_actvty_url_nm)
--- @extends: BaseCrudEntity
-CREATE TABLE IF NOT EXISTS log_actvty_url_nm (
-    log_actvty_url_nm_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '활동 로그 URL명 번호 (PK)',
-    url VARCHAR(200) UNIQUE COMMENT 'URL',
-    url_nm VARCHAR(200) COMMENT 'URL 이름',
-    -- AUDIT
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)'
-) COMMENT = '활동 로그 URL명';
 
 -- 시스템 로그 (log_sys)
 -- @extends: BaseCrudEntity
@@ -144,7 +144,7 @@ CREATE TABLE IF NOT EXISTS log_sys (
     user_id VARCHAR(20) COMMENT '로그 기록 사용자 ID',
     actvty_ctgr_cd VARCHAR(50) COMMENT '활동 카테고리 코드',
     cn LONGTEXT COMMENT '내용',
-    rslt CHAR(1) COMMENT '결과',
+    rslt TINYINT NOT NULL COMMENT '결과',
     rslt_msg VARCHAR(500) COMMENT '결과 메시지',
     exception_nm VARCHAR(100) COMMENT '예외 이름',
     exception_msg VARCHAR(4000) COMMENT '예외 메시지',

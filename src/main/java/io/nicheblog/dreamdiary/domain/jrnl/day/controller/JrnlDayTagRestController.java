@@ -8,8 +8,6 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayTagService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagSearchParam;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
@@ -32,7 +30,6 @@ import java.util.Map;
  * </pre>
  *
  * @author nichefish
- * @see LogActvtyRestControllerAspect
  */
 @RestController
 @RequiredArgsConstructor
@@ -52,22 +49,18 @@ public class JrnlDayTagRestController
      * 저널 일자 태그 카테고리 맵 조회 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.JRNL_DAY_TAG_CTGR_MAP)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayTagCtgrMapAjax(
-            final LogActvtyParam logParam
+            //
     ) throws Exception {
 
         final Map<String, List<String>> tagCtgrMap = jrnlDayTagService.getTagCtgrMap(AuthUtils.getLgnUserId());
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withMap(tagCtgrMap));
     }
@@ -77,23 +70,18 @@ public class JrnlDayTagRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.JRNL_DAY_TAGS)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayTagListAjax(
-            final @ModelAttribute("searchParam") TagSearchParam searchParam,
-            final LogActvtyParam logParam
+            final @ModelAttribute("searchParam") TagSearchParam searchParam
     ) throws Exception {
 
         final List<TagDto> tagList = jrnlDayTagService.getDaySizedListDto(searchParam.getYy(), searchParam.getMnth());
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(tagList));
     }
@@ -103,23 +91,18 @@ public class JrnlDayTagRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.JRNL_DAY_TAG_GROUP_LIST)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayTagGroupListAjax(
-            @ModelAttribute("searchParam") TagSearchParam searchParam,
-            final LogActvtyParam logParam
+            @ModelAttribute("searchParam") TagSearchParam searchParam
     ) throws Exception {
 
         final Map<String, List<TagDto>> tagGroupMap = jrnlDayTagService.getDaySizedGroupListDto(searchParam.getYy(), searchParam.getMnth());
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withMap(tagGroupMap));
     }
@@ -129,7 +112,6 @@ public class JrnlDayTagRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_DAY_TAG})
@@ -137,17 +119,13 @@ public class JrnlDayTagRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayTagDtlAjax(
             final @PathVariable("tagNo") Integer tagNo,
-            final JrnlDaySearchParam searchParam,
-            final LogActvtyParam logParam
+            final JrnlDaySearchParam searchParam
     ) throws Exception {
 
         searchParam.setTagNo(tagNo);
         final List<JrnlDayDto> jrnlDayList = jrnlDayService.jrnlDayTagDtl(searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(jrnlDayList));
     }

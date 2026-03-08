@@ -5,22 +5,19 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDaySmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiarySmpEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntrySmpEntity;
+import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.state.entity.StateEntity;
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbed;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseClsfSpec;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.tika.utils.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * JrnlDiarySpec
@@ -39,20 +36,28 @@ public class JrnlDiarySpec
      * 검색 조건 세팅 후 쿼리 후처리. (override)
      * 
      * @param root 조회할 엔티티의 Root 객체
-     * @param query - CriteriaQuery 객체
+     * @param query CriteriaQuery 객체
      * @param builder CriteriaBuilder 객체
+     * @param searchParamMap 검색 조건을 담은 파라미터 맵
      */
     @Override
     public void postQuery(
             final Root<JrnlDiaryEntity> root,
             final CriteriaQuery<?> query,
-            final CriteriaBuilder builder
+            final CriteriaBuilder builder,
+            final Map<String, Object> searchParamMap
     ) {
         // 정렬 순서 변경
         final List<Order> order = new ArrayList<>();
         final Join<JrnlDiaryEntity, JrnlEntrySmpEntity> jrnlEntryJoin = root.join("jrnlEntry", JoinType.INNER);
         final Join<JrnlEntrySmpEntity, JrnlDaySmpEntity> jrnlDayJoin = jrnlEntryJoin.join("jrnlDay", JoinType.INNER);
-        order.add(builder.desc(builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"))));
+        final String sort = String.valueOf(searchParamMap.getOrDefault("sort", "desc")).toLowerCase();
+        final Expression<Date> dateExp = builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"));
+        if ("desc".equals(sort)) {
+            order.add(builder.desc(dateExp));
+        } else {
+            order.add(builder.asc(dateExp));
+        }
         order.add(builder.asc(jrnlEntryJoin.get("idx")));
         order.add(builder.asc(root.get("idx")));
         query.orderBy(order);
@@ -112,7 +117,7 @@ public class JrnlDiarySpec
                     // 99 = 모든 월
                     predicate.add(builder.equal(jrnlDayJoin.get("postNo"), value));
                     continue;
-                case "searchKeywords": {
+                case "searchKeywords":
                     // 내용 like 검색
                     if (!(value instanceof List<?> rawList)) continue;
                     if (CollectionUtils.isEmpty(rawList)) continue;
@@ -121,58 +126,75 @@ public class JrnlDiarySpec
                     final Expression<String> cnLowerExp = builder.lower(root.get("cn"));
                     for (final Object obj : rawList) {
                         if (obj == null) continue;
-                        final String keyword = obj.toString().trim();
+                        final String keyword = obj.toString().trim().toLowerCase();
                         if (StringUtils.isEmpty(keyword)) continue;
 
-                        likeList.add(builder.like(cnLowerExp, "%" + keyword.toLowerCase() + "%"));
+                        likeList.add(builder.like(cnLowerExp, "%" + keyword + "%"));
                     }
                     if (CollectionUtils.isEmpty(likeList)) continue;
 
                     predicate.add(builder.and(likeList.toArray(new Predicate[0])));
                     continue;
-                }
-                case "tagNo": {
-                    // 특정 태그된 꿈만 조회
+                case "tagNo":
+                    // 특정 태그된 일기만 검색
                     final Join<JrnlDiaryEntity, TagEmbed> tagJoin = root.join("tag", JoinType.INNER);
                     final Join<TagEmbed, TagContentEntity> tagContentJoin = tagJoin.join("list", JoinType.INNER);
                     predicate.add(builder.equal(tagContentJoin.get("regstrId"), AuthUtils.getLgnUserId()));
                     predicate.add(builder.equal(tagContentJoin.get("refTagNo"), value));
+                    predicate.add(builder.equal(tagContentJoin.get("refContentType"), ContentType.JRNL_DIARY.key));
                     continue;
-                }
                 case "tagNos":
-                    // 내용 like 검색
+                    // 태그 exists 검색
                     if (!(value instanceof List<?> rawList)) continue;
                     if (CollectionUtils.isEmpty(rawList)) continue;
 
-                    final Join<JrnlDiaryEntity, TagEmbed> tagJoin = root.join("tag", JoinType.INNER);
-                    final Join<TagEmbed, TagContentEntity> tagContentJoin = tagJoin.join("list", JoinType.INNER);
-                    predicate.add(builder.equal(tagContentJoin.get("regstrId"), AuthUtils.getLgnUserId()));
+                    final List<Integer> tagNos = rawList.stream()
+                        .filter(Objects::nonNull)
+                        .map(o -> (Integer) o)
+                        .toList();
 
-                    for (final Object obj : rawList) {
-                        if (obj == null) continue;
-                        final Integer tagNo = (Integer) obj;
+                    if (tagNos.isEmpty()) break;
+                    final String userId = AuthUtils.getLgnUserId();
+                    final Subquery<Long> sub = query.subquery(Long.class);
+                    final Root<TagContentEntity> subRoot = sub.from(TagContentEntity.class);
 
-                        Subquery<Long> sub = query.subquery(Long.class);
-                        Root<TagContentEntity> subRoot = sub.from(TagContentEntity.class);
+                    sub.select(subRoot.get("refPostNo"));
+                    sub.where(
+                        builder.and(
+                            builder.equal(subRoot.get("refPostNo"), root.get("postNo")),
+                            builder.equal(subRoot.get("refContentType"), ContentType.JRNL_DIARY.key),
+                            builder.equal(subRoot.get("regstrId"), userId),
+                            subRoot.get("refTagNo").in(tagNos)
+                        )
+                    );
 
-                        sub.select(subRoot.get("refPostNo"));
-                        sub.where(
-                            builder.and(
-                                builder.equal(subRoot.get("refPostNo"), root.get("postNo")),
-                                builder.equal(subRoot.get("refTagNo"), tagNo),
-                                builder.equal(subRoot.get("regstrId"), AuthUtils.getLgnUserId())
-                            )
-                        );
-
-                        predicate.add(builder.exists(sub));
-                    }
+                    predicate.add(builder.exists(sub));
                     continue;
-                case "state":
-                    // 상태 검색
-                    final Join<JrnlDiaryEntity, StateEmbed> stateJoin = root.join("state", JoinType.INNER);
-                    final Join<StateEmbed, StateEntity> stateListJoin = stateJoin.join("list", JoinType.INNER);
-                    predicate.add(builder.equal(stateListJoin.get("stateCd"), value));
-                    continue;
+                // 상태 검색
+                case "states":
+                    if (!(value instanceof List<?> rawList)) continue;
+                    if (CollectionUtils.isEmpty(rawList)) continue;
+
+                    final Subquery<Long> subquery = query.subquery(Long.class);
+                    final Root<StateEntity> stateRoot = subquery.from(StateEntity.class);
+                    final List<String> states = rawList.stream()
+                        .filter(Objects::nonNull)
+                        .map(o -> o.toString().trim())
+                        .filter(StringUtils::isNotEmpty)
+                        .toList();
+
+                    subquery.select(stateRoot.get("refPostNo"));
+                    subquery.where(
+                        builder.and(
+                            builder.equal(stateRoot.get("refPostNo"), root.get("postNo")),
+                            builder.equal(stateRoot.get("refContentType"), ContentType.JRNL_DIARY.key),
+                            stateRoot.get("stateCd").in(states)
+                        )
+                    );
+
+                    predicate.add(builder.equal(root.get("regstrId"), AuthUtils.getLgnUserId()));
+                    predicate.add(builder.exists(subquery));
+                    break;
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색
                     try {

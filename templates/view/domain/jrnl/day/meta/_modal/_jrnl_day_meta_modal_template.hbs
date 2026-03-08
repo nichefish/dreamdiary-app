@@ -14,7 +14,6 @@
             <div class="d-flex align-items-center gap-2">
                 {{> jrnl_day_stdrd_dt_partial this}}
                 {{#each meta.list}}
-
                     {{#if (equals refMetaNo ../../metaNo)}}
                         <div>
                         {{#if (exists ctgr)}}<span class="text-noti pe-1">[{{ctgr}}]</span>{{/if}} {{metaNm}}{{#if (exists label)}} - <span>{{label}}</span>{{/if}} <span class="text-dialog">: {{value}}{{unit}}</span>
@@ -23,6 +22,7 @@
                         <button type="button" class="btn btn-sm btn-secondary btn-active-primary"
                                 onclick="dF.JrnlDay.openDetatched('{{../stdrdDt}}');">
                             <@spring.message "txt.comm.open-in-new-window"/>
+                            <i class="bi bi-window-stack fs-7 ms-1 pe-0"></i>
                         </button>
                     {{/if}}
                 {{/each}}

@@ -24,7 +24,7 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = {"value", "metaNm"}, callSuper = false)
+@EqualsAndHashCode(of = { "ctgr", "metaNm", "value", "unit" }, callSuper = false)
 public class MetaDto
         extends BaseCrudDto
         implements Identifiable<Integer>, Comparable<MetaDto> {

@@ -289,12 +289,14 @@ dF.JrnlEntry = (function(): dfModule {
                 }
                 const rsltObj: Record<string, any> = res.rsltObj;
                 const jrnlDiaryList: object[] = rsltObj.jrnlDiaryList;
+                const { stdrdDt, jrnlDtWeekDay } = rsltObj;
+                const date: string = stdrdDt + " (" + jrnlDtWeekDay + ")" + "\r\n";
                 const resultCn: string = jrnlDiaryList?.map((item: any): any => "#" + (item?.idx ?? "") + (item?.cn ?? "")).join("\r\n");
 
                 // 문단/줄바꿈을 먼저 텍스트로 치환
                 const replacedCn: string = resultCn.replace(/<\s*br\s*\/?>/gi, "\n").replace(/<\s*\/?p[^>]*>/gi, "\n");
                 const div: HTMLDivElement = document.createElement("div");
-                div.innerHTML = replacedCn;
+                div.innerHTML = date + replacedCn;
                 const textToCopy: string = (div.innerText ?? "")
                     .replace(/\n+/g, "\n")
                     .replace(/\n/g, "\r\n")
@@ -303,7 +305,7 @@ dF.JrnlEntry = (function(): dfModule {
                 if (navigator.clipboard && window.isSecureContext) {
                     navigator.clipboard.writeText(textToCopy)
                         .then((): void => {
-                            Swal.fire({ icon: "success", text: "클립보드에 복사되었습니다." });
+                            Swal.fire({ icon: "success", text: "클립보드에 복사되었습니다.", timer: 1500, showConfirmButton: false  });
                         })
                         .catch((): void => {
                             cF.util.legacyCopy(textToCopy);
@@ -313,5 +315,14 @@ dF.JrnlEntry = (function(): dfModule {
                 }
             });
         },
+
+        /**
+         * 검색 결과 txt 다운로드
+         */
+        exportTxt: function(postNo: string|number): void {
+            if (isNaN(Number(postNo))) return;
+
+            window.location.href = cF.util.bindUrl(Url.JRNL_ENTRY_EXPORT, {postNo});
+        }
     }
 })();

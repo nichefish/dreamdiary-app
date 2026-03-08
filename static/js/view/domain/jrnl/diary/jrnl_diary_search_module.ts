@@ -8,6 +8,8 @@ if (typeof dF === 'undefined') { var dF = {} as any; }
 dF.JrnlDiarySearch = (function(): dfModule {
     return {
         initialized: false,
+        currentResults: [] as any[],
+        currentSearchParams: {} as Record<string, any>,
 
         /**
          * initializes module.
@@ -123,6 +125,22 @@ dF.JrnlDiarySearch = (function(): dfModule {
         },
 
         /**
+         * 정렬
+         */
+        toggleSort: function(): void {
+            const $sortInput = $("#sortInput");
+            const current = $sortInput.val();
+            const next: "desc"|"asc" = current === "desc" ? "asc" : "desc";
+            $sortInput.val(next);
+
+            // 아이콘 변경
+            const icon = $(".bi-sort-down-alt, .bi-sort-up");
+            icon.toggleClass("bi-sort-down-alt bi-sort-up");
+
+            dF.JrnlDiarySearch.search();
+        },
+
+        /**
          * 키워드 검색 종료
          */
         resetSearch: function(): void {
@@ -210,21 +228,76 @@ dF.JrnlDiarySearch = (function(): dfModule {
                 cF.handlebars.template(viewModels, "jrnl_diary_search");
                 KTMenu.createInstances();
 
-                const params = new URLSearchParams();
-                Object.keys(ajaxData).forEach((key: string): void => {
-                    const val: string = ajaxData[key];
-                    if (Array.isArray(val)) {
-                        val.forEach((v: string): void => {
-                            if (v && v.trim() !== "") params.append(key, v);
-                        });
-                    } else if (val && val.trim() !== "") {
-                        params.append(key, val);
-                    }
-                });
+                // 상태 저장
+                dF.JrnlDiarySearch.currentResults = viewModels;
+                dF.JrnlDiarySearch.currentSearchParams = ajaxData;
+
+                const params: URLSearchParams = cF.util.buildUrlParams(ajaxData);
                 history.replaceState(null, "", window.location.pathname + "?" + params.toString());
                 $("#keywordDisplay div.keyword-wrapper").removeClass("text-muted").addClass("text-primary");
                 $("#keywordDisplay div.keyword-wrapper").removeClass("badge-light-secondary").addClass("badge-light-primary");
             });
         },
+
+        /**
+         * 클립보드에 검색 내용 복사
+         */
+        copy: function(): void {
+            const results: [] = dF.JrnlDiarySearch.currentResults;
+
+            if (!results || results.length === 0) {
+                Swal.fire({ text: "복사할 검색 결과가 없습니다." });
+                return;
+            }
+
+            let prevDate: string|null = null;
+            const textToCopy: string = results.map((item: any): string => {
+                const date: string = `${item.stdrdDt} (${item.jrnlDtWeekDay})`;
+                const content: string = cF.util.htmlToText(item.markdownCn ?? "");
+
+                let block: string = "";
+                // 날짜가 바뀌었을 때만 날짜 출력
+                if (date !== prevDate) {
+                    block += `\r\n${date}\r\n`;
+                    prevDate = date;
+                }
+
+                block += [
+                    `#${item.idx}`,
+                    content
+                ].join("\r\n");
+
+                return block;
+            }).join("\r\n\r\n");
+
+            navigator.clipboard.writeText(textToCopy)
+                .then(() => {
+                    Swal.fire({
+                        text: `현재 페이지 ${results.length}건이 복사되었습니다.`,
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                })
+                .catch((): void => {
+                    cF.util.legacyCopy(textToCopy);
+                });
+        },
+
+        /**
+         * 검색 결과 txt 다운로드
+         */
+        exportTxt: function(): void {
+            const ajaxData: Record<string, any> = dF.JrnlDiarySearch.currentSearchParams;
+            $("#msgDisplay").empty();
+            const hasKeyword: boolean = Array.isArray(ajaxData["searchKeywords"]) ? ajaxData["searchKeywords"]?.some(k => cF.util.isNotEmpty(k?.trim())) : cF.util.isNotEmpty(ajaxData["searchKeywords"]);
+            const hasTag: boolean = Array.isArray(ajaxData["tagNos"]) ? ajaxData["tagNos"].length > 0 : !!ajaxData["tagNos"];
+            if (!hasKeyword && !hasTag) {
+                $("#msgDisplay").text("검색 조건을 하나 이상 입력하세요.");
+                return;
+            }
+
+            const params: URLSearchParams = cF.util.buildUrlParams(ajaxData);
+            window.location.href = Url.JRNL_DIARIES_EXPORT + "?" + params.toString();
+        }
     }
 })();

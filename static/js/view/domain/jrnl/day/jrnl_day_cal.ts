@@ -163,18 +163,13 @@ const Page: Page = (function(): Page {
         },
 
         /**
-         * 목록 화면으로 이동
+         * VIEW 변경
+         *
+         * @param {string} url
          */
-        listPage: function(): void {
-            cF.ui.blockUIReplace(Url.JRNL_DAY_MONTHLY);
+        changeView: function(url: string): void {
+            cF.ui.blockUIReplace(url);
         },
-
-        /**
-         * 달력 화면으로 이동
-         */
-        calPage: function(): void {
-            cF.ui.blockUIReplace(Url.JRNL_DAY_CAL);
-        }
     }
 })();
 document.addEventListener("DOMContentLoaded", function(): void {

@@ -24,8 +24,9 @@ public interface AppUrl {
 
     /** 저널 일자 (리스트) */
     String JRNL_DAY_MONTHLY = Prefix.APP + "/jrnl/day/monthly.do";
-    String JRNL_DAY_VIEW_TODAY = Prefix.APP + "/jrnl/day.do";
-    String JRNL_DAY_VIEW = Prefix.APP + "/jrnl/day/{stdrdDt}.do";
+    String JRNL_DAY_META_VIEW = Prefix.APP + "/jrnl/day/meta.do";
+    String JRNL_DAY_DAILY_VIEW_TODAY = Prefix.APP + "/jrnl/day.do";
+    String JRNL_DAY_DAILY_VIEW = Prefix.APP + "/jrnl/day/{stdrdDt}.do";
     /** 저널 일자 (달력) */
     String JRNL_DAY_CAL = Prefix.APP + "/jrnl/day/cal.do";
 

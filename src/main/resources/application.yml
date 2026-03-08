@@ -75,6 +75,7 @@ spring:
                     batch_versioned_data: true
                     order_inserts: true
                     order_updates: true
+                    time_zone: Asia/Seoul
                 type:
                     descriptor:
                         sql: trace
@@ -93,6 +94,7 @@ spring:
         baseline-on-migrate: false  # 기존 스키마가 있어도 마이그레이션 실행
         validate-on-migrate: false  # 이전 SQL과 충돌 방지
         clean-disabled: true        # 혹시라도 clean이 허용되어 DB 리셋되는 것 방지
+        enabled: false              # 자동 마이그레이션 off. (수동 처리)
 
     jackson:
         date-format: yyyy-MM-dd HH:mm:ss

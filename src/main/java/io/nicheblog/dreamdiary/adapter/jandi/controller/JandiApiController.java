@@ -4,8 +4,6 @@ import io.nicheblog.dreamdiary.adapter.jandi.model.JandiApiRespnsDto;
 import io.nicheblog.dreamdiary.adapter.jandi.model.JandiParam;
 import io.nicheblog.dreamdiary.adapter.jandi.service.JandiApiService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -26,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
  * </pre>
  *
  * @author nichefish
- * @see LogActvtyRestControllerAspect
  */
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")   // CORS 에러 해결 위한 조치
@@ -44,7 +41,6 @@ public class JandiApiController
     /**
      * JANDI :: 잔디 메신저로 웹훅 메세지 전송
      *
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @param jandiParam 잔디 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
@@ -54,8 +50,7 @@ public class JandiApiController
     )
     @PostMapping(Url.API_JANDI_SND_MSG)
     public ResponseEntity<JandiApiRespnsDto> sendMsg(
-            final JandiParam jandiParam,
-            final LogActvtyParam logParam
+            final JandiParam jandiParam
     ) throws Exception {
 
         final JandiApiRespnsDto apiResponse = new JandiApiRespnsDto();
@@ -66,8 +61,6 @@ public class JandiApiController
 
         // 응답 결과 세팅
         apiResponse.setApiResult(isSuccess, rsltMsg);
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return ResponseEntity.ok(apiResponse);
     }

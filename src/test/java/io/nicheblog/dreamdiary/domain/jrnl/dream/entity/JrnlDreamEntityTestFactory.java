@@ -28,8 +28,8 @@ public class JrnlDreamEntityTestFactory {
                 .contentType(ContentType.JRNL_DREAM.key)
                 .title("test_title")
                 .cn("test_cn")
-                .ctgrCd("test_ctgr_cd")
-                .jrnlDay(JrnlDaySmpEntity.from(jrnlDayEntity))
+                .jrnlDayNo(jrnlDayEntity != null ? jrnlDayEntity.getPostNo() : null)
+                .jrnlDay(toSmpEntity(jrnlDayEntity))
                 .build();
     }
 
@@ -42,7 +42,6 @@ public class JrnlDreamEntityTestFactory {
                 .contentType(ContentType.JRNL_DREAM.key)
                 .title("test_title")
                 .cn("test_cn")
-                .ctgrCd("test_ctgr_cd")
                 .jrnlDay(JrnlDaySmpEntity.builder().jrnlDt(DateUtils.asDate(jrnlDtStr)).build())
                 .build();
     }
@@ -53,5 +52,19 @@ public class JrnlDreamEntityTestFactory {
     public static JrnlDreamEntity create() throws Exception {
         String tempJrnlDtStr = "2000-01-01";
         return createWithJrnlDt(tempJrnlDtStr);
+    }
+
+    private static JrnlDaySmpEntity toSmpEntity(final JrnlDayEntity jrnlDayEntity) {
+        if (jrnlDayEntity == null) return null;
+        return JrnlDaySmpEntity.builder()
+                .postNo(jrnlDayEntity.getPostNo())
+                .contentType(jrnlDayEntity.getContentType())
+                .jrnlDt(jrnlDayEntity.getJrnlDt())
+                .dtUnknownYn(jrnlDayEntity.getDtUnknownYn())
+                .yy(jrnlDayEntity.getYy())
+                .mnth(jrnlDayEntity.getMnth())
+                .aprxmtDt(jrnlDayEntity.getAprxmtDt())
+                .weather(jrnlDayEntity.getWeather())
+                .build();
     }
 }

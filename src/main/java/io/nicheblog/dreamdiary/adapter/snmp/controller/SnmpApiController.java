@@ -3,8 +3,6 @@ package io.nicheblog.dreamdiary.adapter.snmp.controller;
 import io.nicheblog.dreamdiary.adapter.snmp.model.SnmpApiParam;
 import io.nicheblog.dreamdiary.adapter.snmp.util.SnmpUtils;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.AjaxResponse;
@@ -24,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
  * </pre>
  *
  * @author nichefish
- * @see LogActvtyRestControllerAspect
  */
 @RestController
 @CrossOrigin(origins="*", allowedHeaders="*")   // CORS 에러 해결 위한 조치
@@ -42,23 +39,18 @@ public class SnmpApiController
      * 비로그인 사용자도 외부에서 접근 가능. (인증 없음)
      * 
      * @param snmpApiParam - SNMP API 파라미터 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.URL_API_SNMP_SEND_AJAX)
     @ResponseBody
     public ResponseEntity<AjaxResponse> snmpSendAjax (
-            final SnmpApiParam snmpApiParam,
-            final LogActvtyParam logParam
+            final SnmpApiParam snmpApiParam
         ) throws Exception {
 
         SnmpUtils.sendSnmpMessage(snmpApiParam);
 
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }

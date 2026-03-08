@@ -15,7 +15,6 @@ import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
-import io.nicheblog.dreamdiary.extension.clsf.state.StateCd;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
@@ -90,35 +89,17 @@ public class JrnlDreamService
     /**
      * 특정 년도의 중요 꿈 목록 조회 :: 캐시 처리
      *
-     * @param yy 조회할 년도
+     * @param lgnUserId String
+     * @param searchParam JrnlDreamSearchParam
      * @return {@link List} -- 해당 년도의 중요 목록
      */
-    @Cacheable(value="myImprtcDreamList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy")
-    public List<JrnlDreamDto> getImprtcDreamList(final Integer yy) throws Exception {
-        final JrnlDreamSearchParam searchParam = JrnlDreamSearchParam.builder().yy(yy).state(StateCd.IMPRTC.key).build();
-        final List<JrnlDreamDto> imprtcDreamList = this.getSelf().getListDto(searchParam);
-        Collections.sort(imprtcDreamList);
+    @Cacheable(value="mySumryDreamList", key="#lgnUserId + \"_\" + #searchParam.getYy() + \"_\" + #searchParam.getStates()")
+    public List<JrnlDreamDto> getMySumryDreamList(final String lgnUserId, final JrnlDreamSearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(lgnUserId);
+        final List<JrnlDreamDto> mySumryDreamList = this.getSelf().getListDto(searchParam);
+        Collections.sort(mySumryDreamList);
 
-        return imprtcDreamList;
-    }
-
-    /**
-     * 특정 태그의 관련 꿈 목록 조회 :: 캐시 처리
-     *
-     * @param searchParam 검색 조건이 담긴 파라미터 객체
-     * @return {@link List} -- 검색 결과 목록
-     */
-    @Cacheable(value="myJrnlDreamTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
-    @SuppressWarnings("unchecked")
-    public List<JrnlDreamDto> jrnlDreamTagDtl(final JrnlDreamSearchParam searchParam) throws Exception {
-        final List<JrnlDreamDto> jrnlDreamList = this.getSelf().getListDto(searchParam);
-        // 공휴일 정보 세팅
-        final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
-        for (final JrnlDreamDto jrnlDream : jrnlDreamList) {
-            setHldyInfo(jrnlDream, hldyMap);
-        }
-
-        return jrnlDreamList;
+        return mySumryDreamList;
     }
 
     /**

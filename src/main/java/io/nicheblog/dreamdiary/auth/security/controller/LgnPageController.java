@@ -4,8 +4,6 @@ import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyPageControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -29,7 +27,6 @@ import javax.annotation.security.PermitAll;
  * </pre>
  *
  * @author nichefish
- * @see LogActvtyPageControllerAspect
  */
 @Controller
 @RequiredArgsConstructor
@@ -56,7 +53,6 @@ public class LgnPageController
     @PermitAll
     public String lgnForm(
             final @RequestParam("dupLgnAt") @Nullable String dupLgnAt,
-            final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {
 
@@ -72,9 +68,6 @@ public class LgnPageController
 
         // 중복 로그인으로 인해 로그인 면으로 튕겨나왔을 경우 alert
         if ("Y".equals(dupLgnAt)) MessageUtils.alertMessage("중복 로그인 방지에 의해 로그아웃 처리되었습니다.", Url.APP_AUTH_LGN_FORM);
-
-        // 로그 관련 세팅
-        logParam.setResult(true, MessageUtils.RSLT_SUCCESS);
 
         return "/view/auth/security/lgn_form";
     }
