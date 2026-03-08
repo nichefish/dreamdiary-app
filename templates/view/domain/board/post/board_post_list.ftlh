@@ -52,7 +52,7 @@
                                     <div class="my-1">
                                         <a href="${Url.BOARD_POST_DTL!}?boardDef=${post.boardDef!}&postNo=${post.postNo!}&notionPageId=${post.notionPageId!}"
                                            class="title-fxd vertical-middle text-underline-dotted <#if (((post.imprtcYn)!"N") == "Y")!false>fw-bold</#if>"
-                                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="상세 화면으로 이동합니다.">
+                                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.page.dtl'/>">
                                             <#if (post.ctgrNm!"") != "">
                                                 <span class="ctgr-span ctgr-imprtc">${post.ctgrNm!}</span>
                                             </#if>
@@ -109,7 +109,7 @@
                                     <div class="my-1">
                                         <a href="${Url.BOARD_POST_DTL!}?boardDef=${post.boardDef!}&postNo=${post.postNo!}&notionPageId=${post.notionPageId!}"
                                            class="text-dark vertical-middle text-underline-dotted <#if (((post.imprtcYn)!"N") == "Y")!false>fw-bold text-danger</#if>"
-                                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="상세 화면으로 이동합니다.">
+                                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.page.dtl'/>">
                                             <#if (post.ctgrNm!"") != "">
                                                 <span class="ctgr-span ctgr-gray">${post.ctgrNm!}</span>
                                             </#if>

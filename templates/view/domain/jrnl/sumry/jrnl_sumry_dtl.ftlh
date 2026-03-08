@@ -23,7 +23,7 @@
                 <span class="nav-icon pe-1">
                     <i class="bi bi-book"></i>
                 </span>
-                <span class="nav-text">일기 결산</span>
+                <span class="nav-text"><@spring.message 'txt.diary.sumry'/></span>
             </a>
         </li>
         <li class="nav-item">
@@ -32,7 +32,7 @@
                 <span class="nav-icon pe-1">
                     <i class="bi bi-moon-stars"></i>
                 </span>
-                <span class="nav-text">꿈 결산</span>
+                <span class="nav-text"><@spring.message 'txt.dream.sumry'/></span>
             </a>
         </li>
     </ul>
@@ -114,10 +114,6 @@
 <#--include::tag-->
 <#include "/view/domain/jrnl/tag/_jrnl_tag_list_modal.ftlh">
 
-<#--include::jrnl_sumry_modules-->
-<#include "/view/domain/jrnl/sumry/_modal/_jrnl_sumry_reg_modal.ftlh">
-<script type="text/javascript" src="/js/view/domain/jrnl/sumry/jrnl_sumry_module.js?${releaseDate!}"></script>
-
 <#--include::sectn-->
 <#include "/view/extension/clsf/sectn/_modal/_sectn_reg_modal.ftlh">
 <#include "/view/extension/clsf/sectn/_sectn_list_template.hbs">
@@ -137,13 +133,22 @@
 <#--include::state-->
 <script type="text/javascript" src="/js/view/extension/clsf/state/state_module.js?${releaseDate!}"></script>
 
-<!--include::page scripts-->
+<#--include::jrnl_sumry_modules-->
+<#include "/view/domain/jrnl/sumry/_partial/_jrnl_sumry_context_btn_partial.hbs">
+<#include "/view/domain/jrnl/sumry/_partial/_jrnl_sumry_review_item_partial.hbs">
+<#include "/view/domain/jrnl/sumry/_partial/_jrnl_sumry_review_cn_partial.hbs">
+<#include "/view/domain/jrnl/sumry/_partial/_jrnl_sumry_review_context_btn_partial.hbs">
+<#include "/view/domain/jrnl/sumry/_modal/_jrnl_sumry_review_reg_modal.ftlh">
 <#include "/view/domain/jrnl/sumry/_jrnl_sumry_dtl_template.hbs">
 <#include "/view/domain/jrnl/sumry/tag/_jrnl_sumry_day_tag_list_template.hbs">
 <#include "/view/domain/jrnl/sumry/tag/_jrnl_sumry_diary_tag_list_template.hbs">
 <#include "/view/domain/jrnl/sumry/tag/_jrnl_sumry_dream_tag_list_template.hbs">
 <#include "/view/domain/jrnl/sumry/_jrnl_sumry_diary_list_template.hbs">
 <#include "/view/domain/jrnl/sumry/_jrnl_sumry_imprtc_dream_list_template.hbs">
+<script type="text/javascript" src="/js/view/domain/jrnl/sumry/jrnl_sumry_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/jrnl/sumry/jrnl_sumry_review_module.js?${releaseDate!}"></script>
+
+<!--include::page scripts-->
 <script type="text/javascript" src="/js/view/domain/jrnl/sumry/jrnl_sumry_dtl.js?${releaseDate!}"></script>
 
 </@layout.layout>

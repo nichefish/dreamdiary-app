@@ -7,6 +7,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.model.JrnlIntrptDto;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumryDto;
+import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumryReviewDto;
 import io.nicheblog.dreamdiary.domain.jrnl.todo.model.JrnlTodoDto;
 import lombok.*;
 
@@ -132,6 +133,19 @@ public class JrnlCacheEvictParam {
      * @return {@link JrnlCacheEvictParam}
      */
     public static JrnlCacheEvictParam of(final JrnlSumryDto dto) {
+        return JrnlCacheEvictParam.builder()
+                .postNo(dto.getPostNo())
+                .yy(dto.getYy())
+                .build();
+    }
+
+    /**
+     * 팩토리 메서드 패턴
+     *
+     * @param dto {@link JrnlTodoDto}
+     * @return {@link JrnlCacheEvictParam}
+     */
+    public static JrnlCacheEvictParam of(final JrnlSumryReviewDto dto) {
         return JrnlCacheEvictParam.builder()
                 .postNo(dto.getPostNo())
                 .yy(dto.getYy())

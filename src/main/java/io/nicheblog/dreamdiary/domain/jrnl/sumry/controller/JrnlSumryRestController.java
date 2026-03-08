@@ -258,7 +258,6 @@ public class JrnlSumryRestController
     ) throws Exception {
 
         final ServiceResponse result = jrnlSumryService.modify(jrnlSumry);
-        final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
