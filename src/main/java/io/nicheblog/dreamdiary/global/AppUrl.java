@@ -115,15 +115,6 @@ public interface AppUrl {
 
     String SCHDUL_CAL = Prefix.APP + "/schdul/cal.do";
 
-    String VCATN_PAPR_LIST = Prefix.APP + "/vcatn/papr/list.do";
-    String VCATN_PAPR_REG_FORM = Prefix.APP + "/vcatn/papr/reg-form.do";
-    String VCATN_PAPR_DTL = Prefix.APP + "/vcatn/papr/dtl.do";
-    String VCATN_PAPR_MDF_FORM = Prefix.APP + "/vcatn/papr/mdf-form.do";
-
-    String VCATN_SCHDUL_LIST = Prefix.APP + "/vcatn-schdul-list.do";
-
-    String VCATN_STATS_YY = Prefix.APP + "/vcatn-stats-yy.do";
-
     String USER_REQST_REG_FORM = Prefix.APP + "/user/reqst/form.do";
 
     /**

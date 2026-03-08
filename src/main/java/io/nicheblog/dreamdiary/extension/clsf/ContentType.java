@@ -31,7 +31,6 @@ public enum ContentType {
     JRNL_SUMRY("JRNL_SUMRY", "저널 결산"),
     JRNL_TODO("JRNL_TODO", "저널 할일", "book"),
     // 일정
-    VCATN_PAPR("VCATN_PAPR", "휴가계획서"),
     SCHDUL("SCHDUL", "일정"),
     // 채팅
     CHAT_MSG("CHAT_MSG", "채팅 메세지"),

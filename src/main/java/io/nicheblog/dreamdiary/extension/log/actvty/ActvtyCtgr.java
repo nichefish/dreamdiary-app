@@ -36,10 +36,6 @@ public enum ActvtyCtgr {
     JRNL("꿈 관리"),
     BOARD_POST("게시판"),
 
-    VCATN_PAPR("휴가계획서"),
-    VCATN_SCHDUL("휴가사용일자"),
-    VCATN_STATS("년도별 휴가관리"),
-
     TAG("태그"),
     META("메타"),
     STATE("상태"),
