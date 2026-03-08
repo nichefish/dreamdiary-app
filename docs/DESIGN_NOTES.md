@@ -40,6 +40,14 @@
 - URL: KEY 기반 접근 대신 년도 기반 접근
   - "yy UNIQUE가 이미 걸려 있다면, 년도 기반 url은 ‘문제 없음’이 아니라 ‘의도에 정확히 부합’한다."
 
+## 로그
+- 로그 기준 재설정 중.
+  - "페이지 조회도, 데이터 조회 API도, 운영 관점에서 볼 때 예외 없으면 성공이다." “HTTP status 기준이 충분하다."
+- 모든 요청에 traceID 추가.
+  - "Filter가 HandlerInterceptor보다 먼저 작동한다." "Filter → Interceptor → Controller. 응답 시에는 역순으로 빠져나온다."
+  - "Filter에서 모든 요청에 traceId를 생성한다."
+  - "이 구조면 서버 로그 ↔ DB access 로그 ↔ audit 로그, 전부 하나의 traceId로 묶인다. 이게 운영 관측성(Observability)의 최소 단위다."
+
 ## 분류(clsf)
 
 ### 댓글(comment)
