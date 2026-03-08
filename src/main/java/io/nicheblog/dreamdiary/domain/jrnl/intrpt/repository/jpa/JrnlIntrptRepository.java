@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.domain.jrnl.intrpt.repository.jpa;
 
-import io.nicheblog.dreamdiary.domain.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.entity.JrnlIntrptEntity;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import org.jetbrains.annotations.NotNull;

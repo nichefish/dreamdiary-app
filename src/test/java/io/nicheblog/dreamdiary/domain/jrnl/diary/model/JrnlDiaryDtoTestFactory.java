@@ -35,4 +35,24 @@ public class JrnlDiaryDtoTestFactory {
                 .contentType(ContentType.JRNL_DIARY.key)
                 .build();
     }
+
+    /**
+     * 테스트용 일기 PostDto 생성
+     */
+    public static JrnlDiaryPostDto createPost() throws Exception {
+        return JrnlDiaryPostDto.builder()
+                .contentType(ContentType.JRNL_DIARY.key)
+                .build();
+    }
+
+    /**
+     * 테스트용 일기 PostDto 생성
+     * @param key 식별키
+     */
+    public static JrnlDiaryPostDto createPostWithKey(final Integer key) throws Exception {
+        return JrnlDiaryPostDto.builder()
+                .postNo(key)
+                .contentType(ContentType.JRNL_DIARY.key)
+                .build();
+    }
 }

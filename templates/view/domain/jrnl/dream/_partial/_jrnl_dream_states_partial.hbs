@@ -1,9 +1,9 @@
 <#--
- * 저널 일자(jrnl_day) 목록 조회 Template
- * @included_in : jrnl_day_page.ftlh
+ * 저널 일자(jrnl_day) 상태 partial
+ * @see handlebars.ts
  -->
 
-<script type="text/x-handlebars-template" id="jrnl_dream_states_partial">
+<script type="text/x-handlebars-template" id="jrnl_dream_states_partial" data-partial>
     <div class="d-flex jrnl-dream-states ms-2 mb-2 gap-1">
         <div class="btn btn-xs btn-icon icon-imprtc btn-outline btn-outline-danger {{#unless (hasState state 'IMPRTC')}}d-none{{/unless}}">
             <i class="bi bi-star-fill fs-3 text-danger"></i>

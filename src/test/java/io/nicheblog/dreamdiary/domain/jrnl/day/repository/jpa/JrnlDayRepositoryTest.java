@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.diary.repository.jpa.JrnlDiaryReposit
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntityTestFactory;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.repository.jpa.JrnlDreamRepository;
+import io.nicheblog.dreamdiary.domain.jrnl.entry.entity.JrnlEntryEntity;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
 import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
@@ -193,7 +194,7 @@ class JrnlDayRepositoryTest {
         jrnlDreamRepository.save(jrnlDream);
 
         final JrnlDayEntity retrieved = jrnlDayRepository.findById(jrnlDayNo).orElseThrow(() -> new EntityNotFoundException("저널 일자를 찾을 수 없습니다."));
-        final List<JrnlDreamEntity> dreamList = retrieved.getJrnlDreamList();
+        final List<JrnlEntryEntity> entryList = retrieved.getJrnlEntryList();
 
         // Then::
         assertNotNull(retrieved);
@@ -216,17 +217,20 @@ class JrnlDayRepositoryTest {
 
         // When::
         // 저널 꿈 regist
+        final JrnlEntryEntity jrnlEntry = testEntityManager.persistFlushFind(
+                JrnlEntryEntity.builder().jrnlDayNo(jrnlDayNo).title("test_entry").idx(1).build()
+        );
         final JrnlDiaryEntity jrnlDiary = JrnlDiaryEntityTestFactory.create();
-        jrnlDiary.setJrnlDayNo(jrnlDayNo);
+        jrnlDiary.setJrnlEntry(jrnlEntry);
         jrnlDiaryRepository.save(jrnlDiary);
 
         final JrnlDayEntity retrieved = jrnlDayRepository.findById(jrnlDayNo).orElseThrow(() -> new EntityNotFoundException("저널 일자를 찾을 수 없습니다."));
-        final List<JrnlDreamEntity> dreamList = retrieved.getJrnlDreamList();
+        final List<JrnlEntryEntity> entryList = retrieved.getJrnlEntryList();
 
         // Then::
         assertNotNull(retrieved);
         assertNotNull(jrnlDayNo);
         // jrnlDiary
-        assertNotNull(retrieved.getJrnlDiaryList());
+        assertNotNull(entryList);
     }
 }

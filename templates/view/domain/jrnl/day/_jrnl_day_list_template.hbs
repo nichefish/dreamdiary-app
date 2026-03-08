@@ -4,15 +4,19 @@
  -->
 
 <script type="text/x-handlebars-template" id="jrnl_day_list_template">
-    {{#each this}}
+    {{#each list}}
         <div class="jrnl-day">
             <div class="jrnl-day-header" data-date="{{stdrdDt}}">
                 <div class="col-12 col-md-1 d-flex flex-wrap align-items-center fs-5 fw-bold">
                     {{> jrnl_day_stdrd_dt_partial this}}
                 </div>
                 <div class="col-3 d-none d-md-flex align-items-center gap-2">
-                    {{> jrnl_entry_reg_btn_partial this}}
-                    {{> jrnl_dream_reg_btn_partial this}}
+                    {{#if ../showDiaries}}
+                        {{> jrnl_entry_reg_btn_partial this}}
+                    {{/if}}
+                    {{#if ../showDreams}}
+                        {{> jrnl_dream_reg_btn_partial this}}
+                    {{/if}}
                     {{> jrnl_day_context_btn_partial this}}
                     {{> jrnl_day_meta_btn_partial this}}
                 </div>
@@ -31,23 +35,27 @@
                 </div>
             </div>
             <div class="jrnl-day-cn row p-5">
-                {{#each jrnlEntryList}}
-                    {{> jrnl_entry_item_partial this}}
-                {{/each}}
-                {{#if hasDream}}
-                    <div class="d-flex align-items-center mt-2">
-                        <div class="col col-md-1 w-5 text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder ">
-                            <@spring.message 'txt.dream'/>
-                            <i class="bi bi-moon-stars fs-4 pe-1"></i>
-                        </div>
-                    </div>
+                {{#if ../showDiaries}}
+                    {{#each jrnlEntryList}}
+                        {{> jrnl_entry_item_partial this}}
+                    {{/each}}
                 {{/if}}
-                {{#each jrnlDreamList}}
-                    {{> jrnl_dream_item_partial this}}
-                {{/each}}
-                {{#each jrnlElseDreamList}}
-                    {{> jrnl_dream_item_partial this}}
-                {{/each}}
+                {{#if ../showDreams}}
+                    {{#if hasDream}}
+                        <div class="d-flex align-items-center mt-2">
+                            <div class="col col-md-1 w-5 text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder ">
+                                <@spring.message 'txt.dream'/>
+                                <i class="bi bi-moon-stars fs-4 pe-1"></i>
+                            </div>
+                        </div>
+                    {{/if}}
+                    {{#each jrnlDreamList}}
+                        {{> jrnl_dream_item_partial this}}
+                    {{/each}}
+                    {{#each jrnlElseDreamList}}
+                        {{> jrnl_dream_item_partial this}}
+                    {{/each}}
+                {{/if}}
             </div>
         </div>
     {{else}}

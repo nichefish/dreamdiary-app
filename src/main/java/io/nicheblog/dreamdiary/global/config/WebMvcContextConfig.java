@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.handler.UTF8DecodeResourceResolver;
 import io.nicheblog.dreamdiary.global.interceptor.CookieInterceptor;
 import io.nicheblog.dreamdiary.global.interceptor.FreemarkerInterceptor;
+import io.nicheblog.dreamdiary.global.interceptor.LogActvtyInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mobile.device.DeviceResolverHandlerInterceptor;
@@ -32,6 +33,7 @@ public class WebMvcContextConfig
     private final FreemarkerInterceptor freemarkerInterceptor;
     private final CookieInterceptor cookieInterceptor;
     private final CsrfInterceptor csrfInterceptor;
+    private final LogActvtyInterceptor logActvtyInterceptor;
 
     private static final List<String> STATIC_RESOURCES_URL_PATTERN = List.of(Constant.STATIC_PATHS);
 
@@ -54,44 +56,44 @@ public class WebMvcContextConfig
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
 
         // 파일 업로드 경로
-        String upfileContextPath = "/upfile/**";
-        String upfileResourcePath = "file:file/upfile/";
+        final String upfileContextPath = "/upfile/**";
+        final String upfileResourcePath = "file:file/upfile/";
         registry.addResourceHandler(upfileContextPath)
                 .addResourceLocations(upfileResourcePath)
                 .resourceChain(true)
                 .addResolver(new UTF8DecodeResourceResolver());
         // 정적 컨텐츠 경로
-        String contentContextPath = "/content/**";
-        String contentResourcePath = "file:file/content/";
+        final String contentContextPath = "/content/**";
+        final String contentResourcePath = "file:file/content/";
         registry.addResourceHandler(contentContextPath)
                 .addResourceLocations(contentResourcePath)
                 .resourceChain(true)
                 .addResolver(new UTF8DecodeResourceResolver());
         // workspace 경로
-        String workspaceContextPath = "/flsys/**";
-        String workspaceResourcePath = "file:file/flsys/";
+        final String workspaceContextPath = "/flsys/**";
+        final String workspaceResourcePath = "file:file/flsys/";
         registry.addResourceHandler(workspaceContextPath)
                 .addResourceLocations(workspaceResourcePath)
                 .resourceChain(true)
                 .addResolver(new UTF8DecodeResourceResolver());
         // react 경로 = 기본경로에 추가로 동작하도록
-        String reactContextPath = "/react/**";
-        String reactResourcePath = "file:static/react/";
+        final String reactContextPath = "/react/**";
+        final String reactResourcePath = "file:static/react/";
         registry.addResourceHandler(reactContextPath)
                 .addResourceLocations(reactResourcePath)
                 .resourceChain(true)
                 .addResolver(new UTF8DecodeResourceResolver());
         // vue 경로 = 기본경로에 추가로 동작하도록
-        String vueContextPath = "/vue/**";
-        String vueResourcePath = "file:static/vue/";
+        final String vueContextPath = "/vue/**";
+        final String vueResourcePath = "file:static/vue/";
         registry.addResourceHandler(vueContextPath)
                 .addResourceLocations(vueResourcePath)
                 .resourceChain(true)
                 .addResolver(new UTF8DecodeResourceResolver());
         // 기본 static 경로
-        String staticContextPath = "/static/**";
-        String orglStaticPath = "classpath:/static/";
-        String externalStaticPath = "static/";
+        final String staticContextPath = "/static/**";
+        final String orglStaticPath = "classpath:/static/";
+        final String externalStaticPath = "static/";
         registry.addResourceHandler(staticContextPath)
                 .addResourceLocations(orglStaticPath, externalStaticPath)
                 .resourceChain(true)
@@ -136,5 +138,10 @@ public class WebMvcContextConfig
 
         // device 감지 관련 인터셉터 수동 추가
         registry.addInterceptor(new DeviceResolverHandlerInterceptor());
+
+        // 로그 관련 인터셉터 수동 추가`
+        registry.addInterceptor(logActvtyInterceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns(STATIC_RESOURCES_URL_PATTERN);
     }
 }

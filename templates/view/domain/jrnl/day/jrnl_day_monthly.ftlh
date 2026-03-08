@@ -16,12 +16,12 @@
 <!--begin::Card-->
 <div class="card post">
     <#--begin::Card header-->
-    <div class="card-header min-h-auto mb-7">
+    <div class="card-header min-h-auto mb-7 justify-content-between">
         <#--begin::Tab-->
         <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">
             <li class="nav-item">
-                <a class="nav-link px-6 active" data-bs-toggle="tab" href="#kt_tab_pane_1"
-                   onclick="Page.listPage();">
+                <a class="nav-link px-6 cursor-pointer active" data-bs-toggle="tab"
+                   onclick="Page.changeView(Url.JRNL_DAY_MONTHLY);">
                     <span class="nav-icon">
                         <i class="bi bi-people"></i>
                     </span>
@@ -29,22 +29,40 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link px-6" data-bs-toggle="tab" href="#kt_tab_pane_2"
-                   onclick="Page.calPage();">
+                <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
+                   onclick="Page.changeView(Url.JRNL_DAY_CAL);">
                     <span class="nav-icon">
                         <i class="bi bi-sort-down-alt"></i>
                     </span>
                     <span class="nav-text">달력 VIEW</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
+                   onclick="Page.changeView(Url.JRNL_DAY_META_VIEW);">
+                    <span class="nav-icon">
+                        <i class="bi bi-people"></i>
+                    </span>
+                    <span class="nav-text">메타 VIEW</span>
+                </a>
+            </li>
         </ul>
-        <div id="meta_btn_div" class="d-flex justify-content-end align-items-center">
-            <button class="btn btn-sm btn-secondary  btn-active-color-primary"
-                    onclick="dF.JrnlDay.metaPage();"
-                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="메타">
-                <span>메타</span>
-                <i class="bi bi-bar-chart"></i>
-            </button>
+        <div class="d-flex align-items-end mb-2">
+            <div class="mx-3"
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="일기 토글">
+                <label for="toggleDiaries" class="me-2 text-muted cursor-help">DIARIES</label>
+                <input type="checkbox" id="toggleDiaries" class="form-check-input cursor-pointer" onclick="dF.JrnlDay.toggleParam();" checked>
+            </div>
+            <div class="mx-3"
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="꿈 토글">
+                <label for="toggleDreams" class="me-2 text-muted cursor-help">DREAMS</label>
+                <input type="checkbox" id="toggleDreams" class="form-check-input cursor-pointer" onclick="dF.JrnlDay.toggleParam();" checked>
+            </div>
+            <div class="mx-3"
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="태그클라우드 토글">
+                <label for="toggleTagCloud" class="me-2 text-muted cursor-help">TAGCLOUD</label>
+                <input type="checkbox" id="toggleTagCloud" class="form-check-input cursor-pointer" onclick="dF.JrnlDay.toggleParam();" checked>
+            </div>
         </div>
     </div>
 
@@ -95,6 +113,7 @@
 <#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_item_partial.hbs">
 <#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_reg_btn_partial.hbs">
 <#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_copy_btn_partial.hbs">
+<#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_export_btn_partial.hbs">
 <#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_context_btn_partial.hbs">
 <#include "/view/domain/jrnl/entry/_partial/_jrnl_entry_toggle_btn_partial.hbs">
 <script type="text/javascript" src="/js/view/domain/jrnl/entry/jrnl_entry_module.js?${releaseDate!}"></script>
@@ -163,6 +182,8 @@
 <#include "/view/domain/jrnl/tag/_jrnl_tag_list_modal.ftlh">
 <#include "/view/extension/clsf/tag/_partial/_tag_list_partial.hbs">
 <#include "/view/extension/clsf/tag/_partial/_tag_list_sized_partial.hbs">
+
+<#include "/view/extension/clsf/meta/_partial/_meta_list_partial.hbs">
 
 <#--include::comment-->
 <#include "/view/extension/clsf/comment/_modal/_comment_reg_modal.ftlh">

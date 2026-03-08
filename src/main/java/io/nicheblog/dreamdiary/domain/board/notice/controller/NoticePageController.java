@@ -10,14 +10,11 @@ import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.tag.service.TagService;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyPageControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.PaginationInfo;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +36,6 @@ import org.springframework.web.bind.annotation.RequestParam;
  * </pre>
  *
  * @author nichefish
- * @see LogActvtyPageControllerAspect
  */
 @Controller
 @RequiredArgsConstructor
@@ -61,7 +57,6 @@ public class NoticePageController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
@@ -69,7 +64,6 @@ public class NoticePageController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String noticeList(
             @ModelAttribute("searchParam") NoticeSearchParam searchParam,
-            final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {
 
@@ -94,12 +88,6 @@ public class NoticePageController
         // 목록 검색 URL + 파라미터 모델에 추가
         CmmUtils.Param.setModelAttrMap(searchParam, baseUrl, model);
 
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
-
         return "/view/domain/board/notice/notice_list";
     }
 
@@ -107,14 +95,12 @@ public class NoticePageController
      * 공지사항 등록 화면 조회
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.NOTICE_REG_FORM)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String noticeRegForm(
-            final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {
 
@@ -130,13 +116,6 @@ public class NoticePageController
         dtlCdService.setCdListToModel(Constant.NOTICE_CTGR_CD, model);
         dtlCdService.setCdListToModel(Constant.MDFABLE_CD, model);
         dtlCdService.setCdListToModel(Constant.JANDI_TOPIC_CD, model);
-        // cmmService.setModelFlsysPath(model);
-
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return "/view/domain/board/notice/notice_reg_form";
     }
@@ -146,7 +125,6 @@ public class NoticePageController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param notice 작성 중인 게시물
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
@@ -154,7 +132,6 @@ public class NoticePageController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String noticeRegPreviewPop(
             final NoticeDto notice,
-            final LogActvtyParam logParam,
             final ModelMap model
     ) {
 
@@ -166,12 +143,6 @@ public class NoticePageController
         notice.setMarkdownCn(MarkdownUtils.markdown(notice.getCn()));
         model.addAttribute("post", notice);
 
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
-
         return "/view/domain/board/notice/notice_preview_pop";
     }
 
@@ -180,7 +151,6 @@ public class NoticePageController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param key 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      * @see ViewerEventListener
@@ -189,7 +159,6 @@ public class NoticePageController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String noticeDtl(
             final @RequestParam("postNo") Integer key,
-            final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {
 
@@ -201,12 +170,6 @@ public class NoticePageController
         final NoticeDto retrievedDto = noticeService.viewDtlPage(key);
         model.addAttribute("post", retrievedDto);
 
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
-
         return "/view/domain/board/notice/notice_dtl";
     }
 
@@ -215,7 +178,6 @@ public class NoticePageController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param key 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
@@ -223,7 +185,6 @@ public class NoticePageController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String noticeMdfForm(
             final @RequestParam("postNo") Integer key,
-            final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {
 
@@ -240,13 +201,6 @@ public class NoticePageController
         dtlCdService.setCdListToModel(Constant.NOTICE_CTGR_CD, model);
         dtlCdService.setCdListToModel(Constant.MDFABLE_CD, model);
         dtlCdService.setCdListToModel(Constant.JANDI_TOPIC_CD, model);
-        // cmmService.setModelFlsysPath(model);
-
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return "/view/domain/board/notice/notice_reg_form";
     }

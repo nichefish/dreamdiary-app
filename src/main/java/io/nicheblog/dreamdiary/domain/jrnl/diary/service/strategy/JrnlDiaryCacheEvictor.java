@@ -51,8 +51,8 @@ public class JrnlDiaryCacheEvictor
             final Integer mnth = jrnlDay.getMnth();
             // jrnl_diary
             EhCacheUtils.evictMyCacheAll("myJrnlDiaryList");
+            EhCacheUtils.evictMyCacheAll("mySumryDiaryList");
             EhCacheUtils.evictMyCache("myJrnlDiaryDtlDto", postNo);
-            this.evictMyCacheForPeriod("myImprtcDiaryList", yy);
             // jrnl_day
             EhCacheUtils.evictMyCache("myJrnlDayDtlDto", jrnlDayNo);
             this.evictMyCacheForPeriod("myJrnlDayList", yy, mnth);

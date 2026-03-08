@@ -64,7 +64,7 @@
                         <td class="text-start ps-4">
                             <label class="text-decoration-underline text-primary cursor-help"
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="URL:&#10;${log.url!}">
-                                ${log.urlNm!log.url}
+                                ${log.requestUri!}
                             </label>
                         </td>
                         <td class="text-center">

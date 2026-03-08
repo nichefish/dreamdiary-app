@@ -3,8 +3,8 @@
  -->
 
 <#--begin::Tags-->
-<div class="mb-6 ms-4">
-    <div class="d-flex align-items-center mb-4 ms-4">
+<div id="jrnl_tag_header" class="mb-6 ms-4">
+    <div id="jrnl_day_tag_header" class="d-flex align-items-center mb-4 ms-4">
         <div class="col-1 d-none d-md-flex ms-4 me-6 text-center fs-6">
             <b><@spring.message 'txt.day.tag'/> : </b>
         </div>
@@ -24,9 +24,9 @@
                 <i class="bi bi-tag pe-0"></i>
             </button>
         </div>
+        <div class="separator"></div>
     </div>
-    <div class="separator mx-20 mb-4"></div>
-    <div class="d-flex align-items-center mb-4 ms-4">
+    <div id="jrnl_diary_tag_header" class="d-flex align-items-center mb-4 ms-4">
         <div class="col-1 d-none d-md-flex ms-4 me-6 text-center fs-6">
             <b><@spring.message 'txt.diary.tag'/> : </b>
         </div>
@@ -46,9 +46,9 @@
                 <i class="bi bi-tag pe-0"></i>
             </button>
         </div>
+        <div class="separator"></div>
     </div>
-    <div class="separator mx-20 mb-4"></div>
-    <div class="d-flex align-items-center mb-6 ms-4">
+    <div id="jrnl_dream_tag_header" class="d-flex align-items-center mb-6 ms-4">
         <div class="col-1 d-none d-md-flex ms-4 me-6 text-center fs-6">
             <b><@spring.message 'txt.dream.tag'/> : </b>
         </div>

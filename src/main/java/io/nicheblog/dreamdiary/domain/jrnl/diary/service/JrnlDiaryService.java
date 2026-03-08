@@ -15,7 +15,6 @@ import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.extension.clsf.ContentType;
-import io.nicheblog.dreamdiary.extension.clsf.state.StateCd;
 import io.nicheblog.dreamdiary.extension.clsf.tag.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
@@ -90,35 +89,17 @@ public class JrnlDiaryService
     /**
      * 특정 년도의 중요 일기 목록 조회 :: 캐시 처리
      *
-     * @param yy 조회할 년도
+     * @param lgnUserId String
+     * @param searchParam JrnlDiarySearchParam
      * @return {@link List} -- 해당 년도의 중요 목록
      */
-    @Cacheable(value="myImprtcDiaryList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy")
-    public List<JrnlDiaryDto> getImprtcDiaryList(final Integer yy) throws Exception {
-        final JrnlDiarySearchParam searchParam = JrnlDiarySearchParam.builder().yy(yy).state(StateCd.IMPRTC.key).build();
-        final List<JrnlDiaryDto> imprtcDiaryList = this.getSelf().getListDto(searchParam);
-        Collections.sort(imprtcDiaryList);
+    @Cacheable(value="mySumryDiaryList", key="#lgnUserId + \"_\" + #searchParam.getYy() + \"_\" + #searchParam.getStates()")
+    public List<JrnlDiaryDto> getMySumryDiaryList(final String lgnUserId, final JrnlDiarySearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(lgnUserId);
+        final List<JrnlDiaryDto> mySumryDiaryList = this.getSelf().getListDto(searchParam);
+        Collections.sort(mySumryDiaryList);
 
-        return imprtcDiaryList;
-    }
-
-    /**
-     * 특정 태그의 관련 일기 목록 조회 :: 캐시 처리
-     *
-     * @param searchParam 검색 조건이 담긴 파라미터 객체
-     * @return {@link List} -- 검색 결과 목록
-     */
-    @Cacheable(value="myJrnlDiaryTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
-    @SuppressWarnings("unchecked")
-    public List<JrnlDiaryDto> jrnlDiaryTagDtl(final JrnlDiarySearchParam searchParam) throws Exception {
-        final List<JrnlDiaryDto> jrnlDiaryList = this.getSelf().getListDto(searchParam);
-        // 공휴일 정보 세팅
-        final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
-        for (JrnlDiaryDto jrnlDiary : jrnlDiaryList) {
-            setHldyInfo(jrnlDiary, hldyMap);
-        }
-
-        return jrnlDiaryList;
+        return mySumryDiaryList;
     }
 
     /**

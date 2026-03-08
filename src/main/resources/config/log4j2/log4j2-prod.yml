@@ -13,7 +13,7 @@ Configuration:
             - name: log-path
               value: "log"
             - name: log-format
-              value: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} %c{1}.%M(%L) - %msg%n"
+              value: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} %X{traceId} %c{1}.%M(%L) - %msg%n"
 
     Appenders:
         Console:
@@ -29,7 +29,7 @@ Configuration:
                   pattern: ${log-format}
               Policies:
                   SizeBasedTriggeringPolicy:
-                      size: 1GB
+                      size: 100MB
                   TimeBasedTriggeringPolicy:
                       interval: 1
                       modulate: true
@@ -41,7 +41,7 @@ Configuration:
                   pattern: ${log-format}
               Policies:
                   SizeBasedTriggeringPolicy:
-                      size: 1GB
+                      size: 100MB
                   TimeBasedTriggeringPolicy:
                       interval: 1
                       modulate: true

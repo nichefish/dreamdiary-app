@@ -26,7 +26,7 @@ cF.tagify = (function(): Module {
         // 태그 메타데이터 (data)를 문자열로 변환하여 표시
         const ctgr: string = cF.util.isNotEmpty(tagData.data) ? tagData.data.ctgr : "";
         const ctgrSpan: string = ctgr !== "" ? `<span class="tagify__tag-category text-noti me-1">[${tagData.data.ctgr}]</span>` : "";
-        const meta: string = cF.util.isNotEmpty(tagData.data) ? tagData.data.value : "";
+        const meta: string = cF.util.isNotEmpty(tagData.data?.value) ? tagData.data.value : "";
         const idx: number = meta.indexOf(":");
         const label: string = idx !== -1 ? meta.slice(0, idx) : "";
         const value: string = idx !== -1 ? meta.slice(idx + 1) : meta;

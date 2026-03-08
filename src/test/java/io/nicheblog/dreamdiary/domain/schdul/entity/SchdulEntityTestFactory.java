@@ -24,7 +24,6 @@ public class SchdulEntityTestFactory {
                 .contentType(ContentType.SCHDUL.key)
                 .title("test_title")
                 .cn("test_cn")
-                .ctgrCd("test_ctgr_cd")
                 .build();
     }
 }

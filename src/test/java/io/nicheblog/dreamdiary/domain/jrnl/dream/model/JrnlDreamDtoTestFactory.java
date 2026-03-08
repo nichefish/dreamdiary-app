@@ -35,4 +35,24 @@ public class JrnlDreamDtoTestFactory {
                 .contentType(ContentType.JRNL_DREAM.key)
                 .build();
     }
+
+    /**
+     * 테스트용 꿈 PostDto 생성
+     */
+    public static JrnlDreamPostDto createPost() throws Exception {
+        return JrnlDreamPostDto.builder()
+                .contentType(ContentType.JRNL_DREAM.key)
+                .build();
+    }
+
+    /**
+     * 테스트용 꿈 PostDto 생성
+     * @param key 식별키
+     */
+    public static JrnlDreamPostDto createPostWithKey(final Integer key) throws Exception {
+        return JrnlDreamPostDto.builder()
+                .postNo(key)
+                .contentType(ContentType.JRNL_DREAM.key)
+                .build();
+    }
 }

@@ -22,11 +22,14 @@ public interface ApiUrl {
     String JRNL_DAY_TAG = Prefix.API + "/jrnl/day/tag/{tagNo}";
     String JRNL_DAY_TAG_CTGR_MAP = Prefix.API + "/jrnl/day/tag/ctgr-map";
     /** 저널 일자 메타 */
+    String JRNL_DAY_METAS = Prefix.API + "/jrnl/day/metas";
+    String JRNL_DAY_META = Prefix.API + "/jrnl/day/metas/{metaNo}";
     String JRNL_DAY_META_CTGR_MAP = Prefix.API + "/jrnl/day/meta/ctgr-map";
 
     /** 저널 꿈 */
     String JRNL_DREAMS = Prefix.API + "/jrnl/dreams";
     String JRNL_DREAM = Prefix.API + "/jrnl/dream/{postNo}";
+    String JRNL_DREAMS_EXPORT = Prefix.API + "/jrnl/dreams/export";
     /** 저널 꿈 태그 */
     String JRNL_DREAM_TAGS = Prefix.API + "/jrnl/dream/tags";
     String JRNL_DREAM_TAG_GROUP_LIST_AJAX = Prefix.API + "/jrnl/dream/tag-group-list";
@@ -44,10 +47,12 @@ public interface ApiUrl {
     /** 저널 항목 */
     String JRNL_ENTRIES = Prefix.API + "/jrnl/entries";
     String JRNL_ENTRY = Prefix.API + "/jrnl/entry/{postNo}";
+    String JRNL_ENTRY_EXPORT = Prefix.API + "/jrnl/entry/{postNo}/export";
 
     /** 저널 일기 */
     String JRNL_DIARIES = Prefix.API + "/jrnl/diaries";
     String JRNL_DIARY = Prefix.API + "/jrnl/diary/{postNo}";
+    String JRNL_DIARIES_EXPORT = Prefix.API + "/jrnl/diaries/export";
     /** 저널 일기 태그 */
     String JRNL_DIARY_TAGS = Prefix.API + "/jrnl/diary/tags";
     String JRNL_DIARY_TAG_GROUP_LIST_AJAX = Prefix.API + "/jrnl/diary/tag/group-list";
@@ -66,8 +71,8 @@ public interface ApiUrl {
     /** 저널 결산 */
     String JRNL_SUMRIES = Prefix.API + "/jrnl/sumries";
     String JRNL_SUMRY = Prefix.API + "/jrnl/sumry/{yy}";
-    String JRNL_SUMRY_IMPRTC_DIARIES = Prefix.API + "/jrnl/sumry/{yy}/imprtc-diaries";
-    String JRNL_SUMRY_IMPRTC_DREAMS = Prefix.API + "/jrnl/sumry/{yy}/imprtc-dreams";
+    String JRNL_SUMRY_DIARIES = Prefix.API + "/jrnl/sumry/{yy}/diaries";
+    String JRNL_SUMRY_DREAMS = Prefix.API + "/jrnl/sumry/{yy}/dreams";
     String JRNL_SUMRY_TAGS = Prefix.API + "/jrnl/sumry/{yy}/tags";
 
     String JRNL_SUMRY_MAKE_AJAX = Prefix.API + "/jrnl/sumry/make";

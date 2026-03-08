@@ -32,7 +32,6 @@ public class JrnlSumryEntityTestFactory {
                 .contentType(ContentType.JRNL_SUMRY.key)
                 .title("test_title")
                 .cn("test_cn")
-                .ctgrCd("test_ctgr_cd")
                 .build();
     }
 }

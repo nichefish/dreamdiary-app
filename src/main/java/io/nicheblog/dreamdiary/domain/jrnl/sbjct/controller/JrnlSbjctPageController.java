@@ -10,14 +10,11 @@ import io.nicheblog.dreamdiary.extension.clsf.ContentType;
 import io.nicheblog.dreamdiary.extension.clsf.tag.service.TagService;
 import io.nicheblog.dreamdiary.extension.clsf.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyPageControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.PaginationInfo;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +38,6 @@ import javax.validation.Valid;
  * </pre>
  *
  * @author nichefish
- * @see LogActvtyPageControllerAspect
  */
 @Controller
 @RequiredArgsConstructor
@@ -63,7 +59,6 @@ public class JrnlSbjctPageController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
@@ -71,7 +66,6 @@ public class JrnlSbjctPageController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String jrnlSbjctList(
             @ModelAttribute("searchParam") JrnlSbjctSearchParam searchParam,
-            final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {
 
@@ -96,12 +90,6 @@ public class JrnlSbjctPageController
         // 목록 검색 URL + 파라미터 모델에 추가
         CmmUtils.Param.setModelAttrMap(searchParam, baseUrl, model);
 
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
-
         return "/view/domain/jrnl/sbjct/jrnl_sbjct_list";
     }
 
@@ -109,14 +97,12 @@ public class JrnlSbjctPageController
      * 저널 주제 등록 화면 조회
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.JRNL_SBJCT_REG_FORM)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String jrnlSbjctRegForm(
-            final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {
 
@@ -132,13 +118,6 @@ public class JrnlSbjctPageController
         dtlCdService.setCdListToModel(Constant.JRNL_SBJCT_CTGR_CD, model);
         dtlCdService.setCdListToModel(Constant.MDFABLE_CD, model);
         dtlCdService.setCdListToModel(Constant.JANDI_TOPIC_CD, model);
-        // cmmService.setModelFlsysPath(model);
-
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return "/view/domain/jrnl/sbjct/jrnl_sbjct_reg_form";
     }
@@ -148,7 +127,6 @@ public class JrnlSbjctPageController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param jrnlSbjct 작성 중인 게시물
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
@@ -156,7 +134,6 @@ public class JrnlSbjctPageController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String jrnlSbjctRegPreviewPop(
             final @Valid JrnlSbjctDto jrnlSbjct,
-            final LogActvtyParam logParam,
             final ModelMap model
     ) {
 
@@ -168,12 +145,6 @@ public class JrnlSbjctPageController
         jrnlSbjct.setMarkdownCn(MarkdownUtils.markdown(jrnlSbjct.getCn()));
         model.addAttribute("post", jrnlSbjct);
 
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
-
         return "/view/domain/jrnl/sbjct/jrnl_sbjct_preview_pop";
     }
 
@@ -182,7 +153,6 @@ public class JrnlSbjctPageController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param key 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      * @see ViewerEventListener
@@ -191,7 +161,6 @@ public class JrnlSbjctPageController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String jrnlSbjctDtl(
             final @RequestParam("postNo") Integer key,
-            final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {
 
@@ -203,12 +172,6 @@ public class JrnlSbjctPageController
         final JrnlSbjctDto retrievedDto = jrnlSbjctService.viewDtlPage(key);
         model.addAttribute("post", retrievedDto);
 
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
-
         return "/view/domain/jrnl/sbjct/jrnl_sbjct_dtl";
     }
 
@@ -217,7 +180,6 @@ public class JrnlSbjctPageController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param key 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
@@ -225,7 +187,6 @@ public class JrnlSbjctPageController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String jrnlSbjctMdfForm(
             final @RequestParam("postNo") Integer key,
-            final LogActvtyParam logParam,
             final ModelMap model
     ) throws Exception {
 
@@ -242,13 +203,6 @@ public class JrnlSbjctPageController
         dtlCdService.setCdListToModel(Constant.JRNL_SBJCT_CTGR_CD, model);
         dtlCdService.setCdListToModel(Constant.MDFABLE_CD, model);
         dtlCdService.setCdListToModel(Constant.JANDI_TOPIC_CD, model);
-        // cmmService.setModelFlsysPath(model);
-        
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         return "/view/domain/jrnl/sbjct/jrnl_sbjct_reg_form";
     }

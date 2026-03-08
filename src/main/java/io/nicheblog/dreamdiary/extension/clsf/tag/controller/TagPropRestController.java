@@ -3,8 +3,6 @@ package io.nicheblog.dreamdiary.extension.clsf.tag.controller;
 import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagPropertyDto;
 import io.nicheblog.dreamdiary.extension.clsf.tag.service.TagPropertyService;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
@@ -30,7 +28,6 @@ import javax.validation.Valid;
  * </pre>
  *
  * @author nichefish
- * @see LogActvtyRestControllerAspect
  */
 @RestController
 @RequiredArgsConstructor
@@ -49,7 +46,6 @@ public class TagPropRestController
      *
      * @param tagProperty 등록/수정 처리할 객체
      * @param key 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.TAG_PROPERTY_REG_AJAX, Url.TAG_PROPERTY_MDF_AJAX})
@@ -57,17 +53,13 @@ public class TagPropRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> TagPropertyRegAjax(
             final @Valid TagPropertyDto tagProperty,
-            final @RequestParam("tagPropertyNo") Integer key,
-            final LogActvtyParam logParam
+            final @RequestParam("tagPropertyNo") Integer key
     ) throws Exception {
 
         final boolean isReg = key == null;
         final ServiceResponse result = isReg ? tagPropertyService.regist(tagProperty) : tagPropertyService.modify(tagProperty);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
@@ -77,23 +69,18 @@ public class TagPropRestController
      * (관리자MNGR만 접근 가능.)
      *
      * @param key 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.TAG_PROPERTY_DTL_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> TagDtlAjax(
-            final LogActvtyParam logParam,
             final @RequestParam("tagPropertyNo") Integer key
     ) throws Exception {
 
         final TagPropertyDto tagDto = tagPropertyService.getDtlDto(key);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(tagDto));
     }
@@ -103,24 +90,19 @@ public class TagPropRestController
      * (관리자MNGR만 접근 가능.)
      *
      * @param key 식별자
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.TAG_PROPERTY_DEL_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> TagPropertyDelAjax(
-            final @RequestParam("tagPropertyNo") Integer key,
-            final LogActvtyParam logParam
+            final @RequestParam("tagPropertyNo") Integer key
 
     ) throws Exception {
 
         final TagPropertyDto tagDto = tagPropertyService.getDtlDto(key);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(tagDto));
     }

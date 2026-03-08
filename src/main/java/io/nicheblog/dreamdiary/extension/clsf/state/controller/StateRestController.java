@@ -4,8 +4,6 @@ import io.nicheblog.dreamdiary.extension.clsf.state.model.StateToggleDto;
 import io.nicheblog.dreamdiary.extension.clsf.state.service.StateService;
 import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.aspect.LogActvtyRestControllerAspect;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
@@ -29,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
  * </pre>
  *
  * @author nichefish
- * @see LogActvtyRestControllerAspect
  */
 @RestController
 @RequiredArgsConstructor
@@ -46,7 +43,6 @@ public class StateRestController
      * 상태 변경 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @see TagProcEventListener
      */
@@ -54,17 +50,12 @@ public class StateRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> stateAjax(
-            final @RequestBody StateToggleDto stateToggle,
-            final LogActvtyParam logParam
+            final @RequestBody StateToggleDto stateToggle
     ) throws Exception {
 
         final ServiceResponse result = stateService.toggle(stateToggle);
-        final boolean isSuccess = result.getRslt();
         final String rsltSts = result.getRsltSts();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg);
 
         final AjaxResponse response = AjaxResponse.fromResponseWithObj(result, rsltMsg);
         response.setRsltSts(rsltSts);
