@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.clsf.meta.handler;
 
-import io.nicheblog.dreamdiary.extension.cache.handler.EhCacheEvictEventListner;
+import io.nicheblog.dreamdiary.infrastructure.cache.handler.EhCacheEvictEventListner;
 import io.nicheblog.dreamdiary.domain.clsf.meta.event.MetaProcEvent;
 import io.nicheblog.dreamdiary.global.config.AsyncConfig;
 import lombok.RequiredArgsConstructor;

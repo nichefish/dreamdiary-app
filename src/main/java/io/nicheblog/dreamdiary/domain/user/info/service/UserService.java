@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.domain.user.info.mapstruct.UserMapstruct;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.domain.user.info.repository.jpa.UserRepository;
 import io.nicheblog.dreamdiary.domain.user.info.spec.UserSpec;
-import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
+import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultipartWritableService;

@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.domain.admin.menu.model.*;
 import io.nicheblog.dreamdiary.domain.admin.menu.repository.jpa.MenuRepository;
 import io.nicheblog.dreamdiary.domain.admin.menu.repository.mybatis.MenuMapper;
 import io.nicheblog.dreamdiary.domain.admin.menu.spec.MenuSpec;
-import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
+import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.exception.BusinessException;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;

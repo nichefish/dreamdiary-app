@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
-import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;

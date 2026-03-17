@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.domain.user.my.controller;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.user.info.model.UserPwChgParam;
 import io.nicheblog.dreamdiary.domain.user.my.service.UserMyService;
-import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;

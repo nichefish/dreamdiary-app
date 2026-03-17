@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.domain.user.reqst.model.UserReqstDto;
 import io.nicheblog.dreamdiary.domain.user.reqst.model.UserReqstDtoTestFactory;
 import io.nicheblog.dreamdiary.domain.user.reqst.service.UserReqstService;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.extension.cd.service.DtlCdService;
+import io.nicheblog.dreamdiary.infrastructure.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.global.intrfc.controller.BaseControllerTestHelper;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;

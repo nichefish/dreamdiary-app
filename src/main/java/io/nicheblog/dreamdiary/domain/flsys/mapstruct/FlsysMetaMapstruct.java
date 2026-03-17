@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.domain.flsys.mapstruct;
 
 import io.nicheblog.dreamdiary.domain.flsys.entity.FlsysMetaEntity;
 import io.nicheblog.dreamdiary.domain.flsys.model.FlsysMetaDto;
-import io.nicheblog.dreamdiary.extension.cd.utils.CdUtils;
+import io.nicheblog.dreamdiary.infrastructure.cd.utils.CdUtils;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseClsfMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;

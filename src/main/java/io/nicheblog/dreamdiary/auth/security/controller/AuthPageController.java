@@ -6,7 +6,7 @@ import io.nicheblog.dreamdiary.auth.security.exception.AuthenticationFailureExce
 import io.nicheblog.dreamdiary.domain.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
 import io.nicheblog.dreamdiary.domain.user.reqst.service.UserReqstService;
-import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import lombok.Getter;

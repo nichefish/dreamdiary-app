@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.clsf.meta.handler;
 
-import io.nicheblog.dreamdiary.extension.cache.event.EhCacheEvictEvent;
+import io.nicheblog.dreamdiary.infrastructure.cache.event.EhCacheEvictEvent;
 import io.nicheblog.dreamdiary.domain.clsf.meta.entity.MetaContentEntity;
 import io.nicheblog.dreamdiary.domain.clsf.meta.entity.MetaEntity;
 import io.nicheblog.dreamdiary.domain.clsf.meta.event.JrnlMetaProcEvent;

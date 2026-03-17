@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.domain.board.post.model.BoardPostDto;
 import io.nicheblog.dreamdiary.domain.board.post.service.BoardPostService;
 import io.nicheblog.dreamdiary.domain.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.domain.clsf.viewer.handler.ViewerEventListener;
-import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;

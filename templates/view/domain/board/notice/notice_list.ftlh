@@ -183,7 +183,7 @@
 
 <#--include::modals-->
 <#include "/view/domain/clsf/comment/_modal/_comment_list_modal.ftlh">
-<#include "/view/extension/file/_modal/_atch_file_list_modal.ftlh">
+<#include "/view/infrastructure/file/_modal/_atch_file_list_modal.ftlh">
 
 <#--include::notice_modules-->
 <#include "/view/domain/board/notice/_modal/_notice_dtl_modal.ftlh">

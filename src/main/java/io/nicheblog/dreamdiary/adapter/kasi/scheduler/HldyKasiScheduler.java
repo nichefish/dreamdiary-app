@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.adapter.kasi.scheduler;
 
 import io.nicheblog.dreamdiary.adapter.kasi.service.HldyKasiApiService;
-import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.sys.event.LogSysEvent;
-import io.nicheblog.dreamdiary.extension.log.sys.handler.LogSysEventListener;
-import io.nicheblog.dreamdiary.extension.log.sys.model.LogSysParam;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.sys.event.LogSysEvent;
+import io.nicheblog.dreamdiary.infrastructure.log.sys.handler.LogSysEventListener;
+import io.nicheblog.dreamdiary.infrastructure.log.sys.model.LogSysParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;

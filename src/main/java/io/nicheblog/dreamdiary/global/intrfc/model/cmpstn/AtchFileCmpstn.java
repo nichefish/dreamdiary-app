@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.global.intrfc.model.cmpstn;
 
-import io.nicheblog.dreamdiary.extension.file.model.AtchFileDtlDto;
-import io.nicheblog.dreamdiary.extension.file.model.AtchFileDto;
+import io.nicheblog.dreamdiary.infrastructure.file.model.AtchFileDtlDto;
+import io.nicheblog.dreamdiary.infrastructure.file.model.AtchFileDto;
 import lombok.*;
 import org.apache.commons.collections4.CollectionUtils;
 

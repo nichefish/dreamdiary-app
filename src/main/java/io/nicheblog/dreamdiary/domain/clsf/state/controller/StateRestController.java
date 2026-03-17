@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.domain.clsf.state.controller;
 import io.nicheblog.dreamdiary.domain.clsf.state.model.StateToggleDto;
 import io.nicheblog.dreamdiary.domain.clsf.state.service.StateService;
 import io.nicheblog.dreamdiary.domain.clsf.tag.handler.TagProcEventListener;
-import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;

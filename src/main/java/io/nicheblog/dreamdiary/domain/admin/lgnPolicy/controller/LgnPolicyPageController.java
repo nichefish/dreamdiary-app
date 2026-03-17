@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.model.LgnPolicyDto;
 import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.service.LgnPolicyService;
 import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
-import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;

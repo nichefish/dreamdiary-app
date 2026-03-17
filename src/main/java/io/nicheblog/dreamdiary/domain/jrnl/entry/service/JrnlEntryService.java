@@ -8,9 +8,9 @@ import io.nicheblog.dreamdiary.domain.jrnl.entry.repository.jpa.JrnlEntryReposit
 import io.nicheblog.dreamdiary.domain.jrnl.entry.repository.mybatis.JrnlEntryMapper;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.spec.JrnlEntrySpec;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.model.JrnlIntrptDto;
-import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
-import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
-import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
+import io.nicheblog.dreamdiary.infrastructure.cache.event.JrnlCacheEvictEvent;
+import io.nicheblog.dreamdiary.infrastructure.cache.model.JrnlCacheEvictParam;
+import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.domain.clsf.ContentType;
 import io.nicheblog.dreamdiary.domain.clsf.tag.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;

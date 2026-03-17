@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.domain.jrnl.sbjct.mapstruct;
 
 import io.nicheblog.dreamdiary.domain.jrnl.sbjct.entity.JrnlSbjctEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.sbjct.model.JrnlSbjctDto;
-import io.nicheblog.dreamdiary.extension.cd.utils.CdUtils;
+import io.nicheblog.dreamdiary.infrastructure.cd.utils.CdUtils;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseClsfMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;

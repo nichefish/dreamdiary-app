@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.global.intrfc.entity.embed;
 
 import io.nicheblog.dreamdiary.domain.clsf.comment.entity.embed.CommentEmbedModule;
-import io.nicheblog.dreamdiary.extension.file.entity.AtchFileDtlEntity;
-import io.nicheblog.dreamdiary.extension.file.entity.AtchFileEntity;
+import io.nicheblog.dreamdiary.infrastructure.file.entity.AtchFileDtlEntity;
+import io.nicheblog.dreamdiary.infrastructure.file.entity.AtchFileEntity;
 import lombok.*;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;

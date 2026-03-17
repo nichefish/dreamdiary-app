@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.global;
 
 import io.nicheblog.dreamdiary.adapter.AdapterConstant;
 import io.nicheblog.dreamdiary.auth.AuthConstant;
-import io.nicheblog.dreamdiary.extension.cd.CdConstant;
+import io.nicheblog.dreamdiary.infrastructure.cd.CdConstant;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;

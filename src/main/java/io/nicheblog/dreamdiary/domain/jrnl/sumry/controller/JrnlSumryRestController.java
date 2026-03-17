@@ -16,7 +16,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumrySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.service.JrnlSumryService;
 import io.nicheblog.dreamdiary.domain.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.domain.clsf.tag.model.TagDto;
-import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;

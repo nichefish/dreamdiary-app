@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.domain.clsf.tag.handler;
 
 import com.nimbusds.oauth2.sdk.util.MapUtils;
-import io.nicheblog.dreamdiary.extension.cache.event.EhCacheEvictEvent;
+import io.nicheblog.dreamdiary.infrastructure.cache.event.EhCacheEvictEvent;
 import io.nicheblog.dreamdiary.domain.clsf.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.domain.clsf.tag.entity.TagEntity;
 import io.nicheblog.dreamdiary.domain.clsf.tag.event.JrnlTagCacheUpdtEvent;

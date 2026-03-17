@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.auth;
 
-import io.nicheblog.dreamdiary.extension.notify.email.model.EmailAddress;
+import io.nicheblog.dreamdiary.infrastructure.notify.email.model.EmailAddress;
 import io.nicheblog.dreamdiary.global.Constant;
 
 /**

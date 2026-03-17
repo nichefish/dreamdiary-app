@@ -2,8 +2,8 @@ package io.nicheblog.dreamdiary.domain.flsys.controller;
 
 import io.nicheblog.dreamdiary.domain.flsys.model.FlsysMetaDto;
 import io.nicheblog.dreamdiary.domain.flsys.service.FlsysMetaService;
-import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.handler.LogActvtyEventListener;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;

@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamPostDto;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.mapstruct.JrnlIntrptMapstruct;
-import io.nicheblog.dreamdiary.extension.cd.utils.CdUtils;
+import io.nicheblog.dreamdiary.infrastructure.cd.utils.CdUtils;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseClsfMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;

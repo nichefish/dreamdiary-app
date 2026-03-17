@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.domain.board.notice.mapstruct;
 import io.nicheblog.dreamdiary.domain.board.notice.entity.NoticeEntity;
 import io.nicheblog.dreamdiary.domain.board.notice.model.NoticeDto;
 import io.nicheblog.dreamdiary.domain.board.notice.model.NoticeXlsxDto;
-import io.nicheblog.dreamdiary.extension.cd.utils.CdUtils;
+import io.nicheblog.dreamdiary.infrastructure.cd.utils.CdUtils;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseClsfMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;

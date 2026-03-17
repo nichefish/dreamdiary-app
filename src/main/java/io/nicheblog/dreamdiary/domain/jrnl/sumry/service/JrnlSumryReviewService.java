@@ -6,8 +6,8 @@ import io.nicheblog.dreamdiary.domain.jrnl.sumry.mapstruct.JrnlSumryReviewMapstr
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumryReviewDto;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.repository.jpa.JrnlSumryReviewRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.spec.JrnlSumryReviewSpec;
-import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
-import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
+import io.nicheblog.dreamdiary.infrastructure.cache.event.JrnlCacheEvictEvent;
+import io.nicheblog.dreamdiary.infrastructure.cache.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.domain.clsf.ContentType;
 import io.nicheblog.dreamdiary.domain.clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;

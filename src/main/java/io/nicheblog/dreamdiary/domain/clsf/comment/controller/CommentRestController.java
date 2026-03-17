@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.domain.clsf.comment.controller;
 import io.nicheblog.dreamdiary.domain.clsf.comment.model.CommentDto;
 import io.nicheblog.dreamdiary.domain.clsf.comment.model.CommentSearchParam;
 import io.nicheblog.dreamdiary.domain.clsf.comment.service.CommentService;
-import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
