@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.domain.clsf.tag.handler;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
+import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.domain.clsf.ContentType;
 import io.nicheblog.dreamdiary.domain.clsf.tag.event.JrnlTagCacheUpdtEvent;
 import io.nicheblog.dreamdiary.domain.clsf.tag.model.TagDto;

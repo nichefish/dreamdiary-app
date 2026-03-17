@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.clsf.sectn.service;
 
-import io.nicheblog.dreamdiary.extension.cache.service.CacheEvictService;
+import io.nicheblog.dreamdiary.infrastructure.cache.service.CacheEvictService;
 import io.nicheblog.dreamdiary.domain.clsf.sectn.entity.SectnEntity;
 import io.nicheblog.dreamdiary.domain.clsf.sectn.mapstruct.SectnMapstruct;
 import io.nicheblog.dreamdiary.domain.clsf.sectn.model.SectnDto;

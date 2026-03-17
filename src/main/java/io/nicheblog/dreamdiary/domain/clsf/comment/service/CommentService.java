@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.clsf.comment.service;
 
-import io.nicheblog.dreamdiary.extension.cache.event.CommentCacheEvictEvent;
+import io.nicheblog.dreamdiary.infrastructure.cache.event.CommentCacheEvictEvent;
 import io.nicheblog.dreamdiary.domain.clsf.comment.entity.CommentEntity;
 import io.nicheblog.dreamdiary.domain.clsf.comment.mapstruct.CommentMapstruct;
 import io.nicheblog.dreamdiary.domain.clsf.comment.model.CommentDto;

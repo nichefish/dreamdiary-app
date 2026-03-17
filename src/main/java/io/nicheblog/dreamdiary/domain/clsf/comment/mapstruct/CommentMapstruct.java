@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.clsf.comment.mapstruct;
 
-import io.nicheblog.dreamdiary.extension.cd.utils.CdUtils;
+import io.nicheblog.dreamdiary.infrastructure.cd.utils.CdUtils;
 import io.nicheblog.dreamdiary.domain.clsf.comment.entity.CommentEntity;
 import io.nicheblog.dreamdiary.domain.clsf.comment.mapstruct.embed.CommentEmbedMapstruct;
 import io.nicheblog.dreamdiary.domain.clsf.comment.model.CommentDto;

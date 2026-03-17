@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.clsf.sectn.mapstruct;
 
-import io.nicheblog.dreamdiary.extension.cd.utils.CdUtils;
+import io.nicheblog.dreamdiary.infrastructure.cd.utils.CdUtils;
 import io.nicheblog.dreamdiary.domain.clsf.sectn.entity.SectnEntity;
 import io.nicheblog.dreamdiary.domain.clsf.sectn.mapstruct.embed.SectnEmbedMapstruct;
 import io.nicheblog.dreamdiary.domain.clsf.sectn.model.SectnDto;

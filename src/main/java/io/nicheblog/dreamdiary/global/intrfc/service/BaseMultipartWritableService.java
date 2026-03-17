@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.global.intrfc.service;
 
-import io.nicheblog.dreamdiary.extension.file.exception.AtchFileUploadException;
-import io.nicheblog.dreamdiary.extension.file.utils.FileUtils;
+import io.nicheblog.dreamdiary.infrastructure.file.exception.AtchFileUploadException;
+import io.nicheblog.dreamdiary.infrastructure.file.utils.FileUtils;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditDto;

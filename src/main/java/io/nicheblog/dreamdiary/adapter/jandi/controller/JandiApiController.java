@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.adapter.jandi.controller;
 import io.nicheblog.dreamdiary.adapter.jandi.model.JandiApiRespnsDto;
 import io.nicheblog.dreamdiary.adapter.jandi.model.JandiParam;
 import io.nicheblog.dreamdiary.adapter.jandi.service.JandiApiService;
-import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;

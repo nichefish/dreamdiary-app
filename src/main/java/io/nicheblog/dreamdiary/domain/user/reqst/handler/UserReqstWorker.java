@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.auth.jwt.provider.JwtTokenProvider;
 import io.nicheblog.dreamdiary.auth.security.service.VerificationCodeService;
 import io.nicheblog.dreamdiary.domain.user.reqst.event.UserReqstEvent;
 import io.nicheblog.dreamdiary.domain.user.reqst.model.UserReqstDto;
-import io.nicheblog.dreamdiary.extension.notify.email.event.UserReqstVerificationEmailSendEvent;
+import io.nicheblog.dreamdiary.infrastructure.notify.email.event.UserReqstVerificationEmailSendEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

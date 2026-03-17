@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.domain.jrnl.sumry.service.strategy;
 
-import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
-import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
-import io.nicheblog.dreamdiary.extension.cache.service.CacheEvictor;
-import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
+import io.nicheblog.dreamdiary.infrastructure.cache.event.JrnlCacheEvictEvent;
+import io.nicheblog.dreamdiary.infrastructure.cache.model.JrnlCacheEvictParam;
+import io.nicheblog.dreamdiary.infrastructure.cache.service.CacheEvictor;
+import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.domain.clsf.ContentType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

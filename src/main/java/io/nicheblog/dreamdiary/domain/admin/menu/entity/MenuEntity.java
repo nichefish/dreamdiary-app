@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.admin.menu.entity;
 
-import io.nicheblog.dreamdiary.extension.cd.entity.DtlCdEntity;
+import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.Sortable;
 import io.nicheblog.dreamdiary.global.intrfc.entity.Usable;

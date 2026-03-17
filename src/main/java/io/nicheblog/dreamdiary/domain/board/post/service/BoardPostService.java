@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.domain.board.post.mapstruct.BoardPostMapstruct;
 import io.nicheblog.dreamdiary.domain.board.post.model.BoardPostDto;
 import io.nicheblog.dreamdiary.domain.board.post.repository.jpa.BoardPostRepository;
 import io.nicheblog.dreamdiary.domain.board.post.spec.BoardPostSpec;
-import io.nicheblog.dreamdiary.extension.cd.service.DtlCdService;
+import io.nicheblog.dreamdiary.infrastructure.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.domain.clsf.managt.event.ManagtrAddEvent;
 import io.nicheblog.dreamdiary.domain.clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;

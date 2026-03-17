@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.auth.security.filter;
 
-import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.event.LogAnonActvtyEvent;
-import io.nicheblog.dreamdiary.extension.log.actvty.handler.LogActvtyEventListener;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.event.LogAnonActvtyEvent;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.handler.LogActvtyEventListener;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.util.HttpUtils;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
