@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.jrnl.intrpt.entity;
 
-import io.nicheblog.dreamdiary.extension.clsf.tag.entity.TagSmpEntity;
+import io.nicheblog.dreamdiary.domain.clsf.tag.entity.TagSmpEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditRegEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

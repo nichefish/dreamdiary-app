@@ -2,9 +2,9 @@ package io.nicheblog.dreamdiary.domain.jrnl.dream.service;
 
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamSearchParam;
-import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagContentDto;
-import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
-import io.nicheblog.dreamdiary.extension.clsf.tag.service.TagService;
+import io.nicheblog.dreamdiary.domain.clsf.tag.model.TagContentDto;
+import io.nicheblog.dreamdiary.domain.clsf.tag.model.TagDto;
+import io.nicheblog.dreamdiary.domain.clsf.tag.service.TagService;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

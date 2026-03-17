@@ -1,0 +1,27 @@
+package io.nicheblog.dreamdiary.domain.clsf.state.adapter;
+
+import io.nicheblog.dreamdiary.domain.clsf.ContentType;
+import io.nicheblog.dreamdiary.domain.clsf.state.model.StateToggleDto;
+
+/**
+ * StateCacheUpdater
+ *
+ * @author nichefish
+ */
+public interface StateCacheUpdater {
+
+    /**
+     * 지원 여부 반환
+     * @param contentType ContentType
+     * @return 지원 여부
+     */
+    boolean supports(final ContentType contentType);
+
+    /**
+     * 캐시 업데이트
+     * @param toggle 전달된 toggle 객체
+     * @param cacheKey 캐시 키
+     * @param isEnabled 활성화 여부
+     */
+    void update(final StateToggleDto toggle, final String cacheKey, final Boolean isEnabled);
+}

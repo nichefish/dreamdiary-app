@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.entity.JrnlDayMetaEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.day.mapstruct.JrnlDayMetaMapstruct;
 import io.nicheblog.dreamdiary.domain.jrnl.day.repository.jpa.JrnlDayMetaRepository;
 import io.nicheblog.dreamdiary.domain.jrnl.day.spec.JrnlDayMetaSpec;
-import io.nicheblog.dreamdiary.extension.clsf.meta.model.MetaDto;
+import io.nicheblog.dreamdiary.domain.clsf.meta.model.MetaDto;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoReadableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

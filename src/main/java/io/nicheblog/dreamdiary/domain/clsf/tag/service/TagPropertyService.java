@@ -1,0 +1,41 @@
+package io.nicheblog.dreamdiary.domain.clsf.tag.service;
+
+import io.nicheblog.dreamdiary.domain.clsf.tag.entity.TagPropertyEntity;
+import io.nicheblog.dreamdiary.domain.clsf.tag.mapstruct.TagPropertyMapstruct;
+import io.nicheblog.dreamdiary.domain.clsf.tag.model.TagPropertyDto;
+import io.nicheblog.dreamdiary.domain.clsf.tag.repository.jpa.TagPropertyRepository;
+import io.nicheblog.dreamdiary.domain.clsf.tag.spec.TagPropertySpec;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Service;
+
+/**
+ * TagPropertyService
+ * <pre>
+ *  태그 속성 서비스 모듈.
+ * </pre>
+ *
+ * @author nichefish
+ */
+@Service("tagPropertyService")
+@RequiredArgsConstructor
+@Log4j2
+public class TagPropertyService
+        implements BaseDtoWritableService<TagPropertyDto, TagPropertyDto, Integer, TagPropertyEntity> {
+
+    @Getter
+    private final TagPropertyRepository repository;
+    @Getter
+    private final TagPropertySpec spec;
+    @Getter
+    private final TagPropertyMapstruct mapstruct = TagPropertyMapstruct.INSTANCE;
+
+    public TagPropertyMapstruct getReadMapstruct() {
+        return this.mapstruct;
+    }
+    public TagPropertyMapstruct getWriteMapstruct() {
+        return this.mapstruct;
+    }
+}

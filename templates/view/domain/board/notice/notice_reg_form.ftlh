@@ -140,7 +140,7 @@
                 <#include "/view/global/_common/flsys/_flsys_reg_area.ftlh">
 
                 <!-- #include:: component:: 태그 태그 -->
-                <#include "/view/extension/clsf/tag/_tag_page_reg_area.ftlh">
+                <#include "/view/domain/clsf/tag/_tag_page_reg_area.ftlh">
             </div>
 
             <div class="separator my-8"></div>
@@ -171,7 +171,7 @@
         <#--begin::Card body-->
         <div class="card-body pt-0">
             <#--페이지:: 단락 영역-->
-            <#include "/view/extension/clsf/sectn/_sectn_page_reg_area.ftlh">
+            <#include "/view/domain/clsf/sectn/_sectn_page_reg_area.ftlh">
         </div>
     </div>
 </#if>
@@ -187,14 +187,14 @@
 <script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
 
 <#--include::sectn_module-->
-<#include "/view/extension/clsf/sectn/_modal/_sectn_reg_modal.ftlh">
-<#include "/view/extension/clsf/sectn/_sectn_list_template.hbs">
-<script type="text/javascript" src="/js/view/extension/clsf/sectn/sectn_module.js?${releaseDate!}"></script>
+<#include "/view/domain/clsf/sectn/_modal/_sectn_reg_modal.ftlh">
+<#include "/view/domain/clsf/sectn/_sectn_list_template.hbs">
+<script type="text/javascript" src="/js/view/domain/clsf/sectn/sectn_module.js?${releaseDate!}"></script>
 
 <#--include::comment_module-->
-<#include "/view/extension/clsf/comment/_modal/_comment_reg_modal.ftlh">
-<#include "/view/extension/clsf/comment/_comment_list_partial.hbs">
-<script type="text/javascript" src="/js/view/extension/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
+<#include "/view/domain/clsf/comment/_modal/_comment_reg_modal.ftlh">
+<#include "/view/domain/clsf/comment/_comment_list_partial.hbs">
+<script type="text/javascript" src="/js/view/domain/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
 
 <#--include::notice_module-->
 <script type="text/javascript" src="/js/view/domain/board/notice/notice_module.js?${releaseDate!}"></script>

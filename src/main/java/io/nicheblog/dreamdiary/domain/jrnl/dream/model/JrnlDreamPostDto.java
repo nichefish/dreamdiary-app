@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.domain.jrnl.dream.model;
 
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.model.JrnlIntrptDto;
-import io.nicheblog.dreamdiary.extension.clsf.ContentType;
-import io.nicheblog.dreamdiary.extension.clsf.comment.model.cmpstn.CommentCmpstn;
-import io.nicheblog.dreamdiary.extension.clsf.comment.model.cmpstn.CommentCmpstnModule;
-import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
-import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstnModule;
+import io.nicheblog.dreamdiary.domain.clsf.ContentType;
+import io.nicheblog.dreamdiary.domain.clsf.comment.model.cmpstn.CommentCmpstn;
+import io.nicheblog.dreamdiary.domain.clsf.comment.model.cmpstn.CommentCmpstnModule;
+import io.nicheblog.dreamdiary.domain.clsf.tag.model.cmpstn.TagCmpstn;
+import io.nicheblog.dreamdiary.domain.clsf.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.intrfc.model.cmpstn.AtchFileCmpstn;

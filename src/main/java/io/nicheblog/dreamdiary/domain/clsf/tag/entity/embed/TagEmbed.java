@@ -1,0 +1,82 @@
+package io.nicheblog.dreamdiary.domain.clsf.tag.entity.embed;
+
+import io.nicheblog.dreamdiary.domain.clsf.tag.entity.TagContentEntity;
+import io.nicheblog.dreamdiary.domain.clsf.tag.model.cmpstn.TagCmpstn;
+import lombok.*;
+import org.apache.commons.collections4.CollectionUtils;
+import org.hibernate.annotations.*;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Comparator;
+import java.util.List;
+
+/**
+ * TagEmbed
+ * <pre>
+ *  위임 :: 태그 관련 정보. (entity level)
+ * </pre>
+ *
+ * @author nichefish
+ * @see TagEmbedModule
+ */
+@Embeddable
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class TagEmbed
+        implements Serializable {
+
+    /** 태그-컨텐츠 목록 */
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumnsOrFormulas({
+            @JoinColumnOrFormula(column = @JoinColumn(name = "ref_post_no", referencedColumnName = "post_no", insertable = false, updatable = false)),
+            @JoinColumnOrFormula(column = @JoinColumn(name = "ref_content_type", referencedColumnName = "content_type", insertable = false, updatable = false)),
+    })
+    @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 10)
+    @NotFound(action = NotFoundAction.IGNORE)
+    @Comment("태그-컨텐츠 목록")
+    private List<TagContentEntity> list;
+
+    /**
+     * 태그-컨텐츠 문자열 목록
+     * {@link TagCmpstn}에서 파싱된 문자열을 전달받는 데 사용한다.
+     */
+    @Transient
+    private List<String> tagStrList;
+
+    /** 태그-컨텐츠 문자열 (','로 구분) */
+    @Transient
+    private String tagListStr;
+
+    /** 정렬된 태그 목록 캐시 */
+    @Transient
+    private List<TagContentEntity> sortedListCache;
+
+    /**
+     * getter override (정렬된 태그 목록 캐시 및 반환)
+     */
+    public List<TagContentEntity> getList() {
+        if (CollectionUtils.isEmpty(list)) return list;
+        if (!CollectionUtils.isEmpty(sortedListCache)) return sortedListCache;
+
+        sortedListCache = list.stream()
+            .sorted(Comparator.comparing(
+                (TagContentEntity ct) -> ct.getTag().getTagNm(),
+                Comparator.nullsLast(String::compareTo)
+            ))
+            .toList();
+        return sortedListCache;
+    }
+
+    /**
+     * setter override (정렬된 태그 목록 캐시 초기화)
+     */
+    public void setList(final List<TagContentEntity> list) {
+        this.list = list;
+        this.sortedListCache = null;
+    }
+}

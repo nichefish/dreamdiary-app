@@ -15,8 +15,8 @@ import io.nicheblog.dreamdiary.domain.jrnl.intrpt.entity.JrnlIntrptEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.state.JrnlState;
 import io.nicheblog.dreamdiary.domain.jrnl.state.JrnlStateMaps;
 import io.nicheblog.dreamdiary.extension.cache.util.EhCacheUtils;
-import io.nicheblog.dreamdiary.extension.clsf.state.StateCd;
-import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagContentDto;
+import io.nicheblog.dreamdiary.domain.clsf.state.StateCd;
+import io.nicheblog.dreamdiary.domain.clsf.tag.model.TagContentDto;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.collections4.CollectionUtils;
 

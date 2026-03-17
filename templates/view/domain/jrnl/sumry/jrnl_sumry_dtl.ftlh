@@ -115,23 +115,23 @@
 <#include "/view/domain/jrnl/tag/_jrnl_tag_list_modal.ftlh">
 
 <#--include::sectn-->
-<#include "/view/extension/clsf/sectn/_modal/_sectn_reg_modal.ftlh">
-<#include "/view/extension/clsf/sectn/_sectn_list_template.hbs">
-<script type="text/javascript" src="/js/view/extension/clsf/sectn/sectn_module.js?${releaseDate!}"></script>
+<#include "/view/domain/clsf/sectn/_modal/_sectn_reg_modal.ftlh">
+<#include "/view/domain/clsf/sectn/_sectn_list_template.hbs">
+<script type="text/javascript" src="/js/view/domain/clsf/sectn/sectn_module.js?${releaseDate!}"></script>
 
 <#--include::tags-->
 <#include "/view/domain/jrnl/tag/_jrnl_tag_list_modal.ftlh">
-<#include "/view/extension/clsf/tag/_partial/_tag_list_partial.hbs">
-<#include "/view/extension/clsf/tag/_partial/_tag_list_sized_partial.hbs">
+<#include "/view/domain/clsf/tag/_partial/_tag_list_partial.hbs">
+<#include "/view/domain/clsf/tag/_partial/_tag_list_sized_partial.hbs">
 
 <#--include::comment-->
-<#include "/view/extension/clsf/comment/_modal/_comment_reg_modal.ftlh">
-<#include "/view/extension/clsf/comment/_partial/_comment_list_partial.hbs">
-<#include "/view/extension/clsf/comment/_partial/_comment_reg_btn_partial.hbs">
-<script type="text/javascript" src="/js/view/extension/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
+<#include "/view/domain/clsf/comment/_modal/_comment_reg_modal.ftlh">
+<#include "/view/domain/clsf/comment/_partial/_comment_list_partial.hbs">
+<#include "/view/domain/clsf/comment/_partial/_comment_reg_btn_partial.hbs">
+<script type="text/javascript" src="/js/view/domain/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
 
 <#--include::state-->
-<script type="text/javascript" src="/js/view/extension/clsf/state/state_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/domain/clsf/state/state_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_sumry_modules-->
 <#include "/view/domain/jrnl/sumry/_partial/_jrnl_sumry_context_btn_partial.hbs">

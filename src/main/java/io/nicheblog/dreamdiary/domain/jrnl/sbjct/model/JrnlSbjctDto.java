@@ -1,12 +1,12 @@
 package io.nicheblog.dreamdiary.domain.jrnl.sbjct.model;
 
-import io.nicheblog.dreamdiary.extension.clsf.ContentType;
-import io.nicheblog.dreamdiary.extension.clsf.comment.model.cmpstn.CommentCmpstn;
-import io.nicheblog.dreamdiary.extension.clsf.comment.model.cmpstn.CommentCmpstnModule;
-import io.nicheblog.dreamdiary.extension.clsf.sectn.model.cmpstn.SectnCmpstn;
-import io.nicheblog.dreamdiary.extension.clsf.sectn.model.cmpstn.SectnCmpstnModule;
-import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstn;
-import io.nicheblog.dreamdiary.extension.clsf.tag.model.cmpstn.TagCmpstnModule;
+import io.nicheblog.dreamdiary.domain.clsf.ContentType;
+import io.nicheblog.dreamdiary.domain.clsf.comment.model.cmpstn.CommentCmpstn;
+import io.nicheblog.dreamdiary.domain.clsf.comment.model.cmpstn.CommentCmpstnModule;
+import io.nicheblog.dreamdiary.domain.clsf.sectn.model.cmpstn.SectnCmpstn;
+import io.nicheblog.dreamdiary.domain.clsf.sectn.model.cmpstn.SectnCmpstnModule;
+import io.nicheblog.dreamdiary.domain.clsf.tag.model.cmpstn.TagCmpstn;
+import io.nicheblog.dreamdiary.domain.clsf.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
