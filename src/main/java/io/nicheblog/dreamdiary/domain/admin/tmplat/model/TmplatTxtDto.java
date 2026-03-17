@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.domain.admin.tmplat.model;
 
-import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstn;
-import io.nicheblog.dreamdiary.extension.clsf.state.model.cmpstn.StateCmpstnModule;
+import io.nicheblog.dreamdiary.domain.clsf.state.model.cmpstn.StateCmpstn;
+import io.nicheblog.dreamdiary.domain.clsf.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.validator.state.UpdateState;

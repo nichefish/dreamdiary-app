@@ -10,8 +10,8 @@ import io.nicheblog.dreamdiary.domain.jrnl.todo.repository.jpa.JrnlTodoRepositor
 import io.nicheblog.dreamdiary.domain.jrnl.todo.spec.JrnlTodoSpec;
 import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
-import io.nicheblog.dreamdiary.extension.clsf.ContentType;
-import io.nicheblog.dreamdiary.extension.clsf.tag.event.JrnlTagProcEvent;
+import io.nicheblog.dreamdiary.domain.clsf.ContentType;
+import io.nicheblog.dreamdiary.domain.clsf.tag.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;

@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.domain.jrnl.intrpt.service.helper;
 
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.model.JrnlIntrptDto;
 import io.nicheblog.dreamdiary.domain.jrnl.state.JrnlState;
-import io.nicheblog.dreamdiary.extension.clsf.state.StateCd;
+import io.nicheblog.dreamdiary.domain.clsf.state.StateCd;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;

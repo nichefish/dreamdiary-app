@@ -61,11 +61,11 @@
 
 <#--include::tag-->
 <#include "/view/domain/jrnl/tag/_jrnl_tag_list_modal.ftlh">
-<#include "/view/extension/clsf/tag/_partial/_tag_list_partial.hbs">
+<#include "/view/domain/clsf/tag/_partial/_tag_list_partial.hbs">
 
 <#--include::comment-->
-<#include "/view/extension/clsf/comment/_modal/_comment_reg_modal.ftlh">
-<script type="text/javascript" src="/js/view/extension/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
+<#include "/view/domain/clsf/comment/_modal/_comment_reg_modal.ftlh">
+<script type="text/javascript" src="/js/view/domain/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
 
 <#--include::script modules-->
 <script type="text/javascript" src="/js/view/domain/jrnl/sumry/jrnl_sumry_module.js?${releaseDate!}"></script>

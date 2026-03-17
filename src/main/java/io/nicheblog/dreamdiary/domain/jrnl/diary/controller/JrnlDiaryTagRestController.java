@@ -2,8 +2,8 @@ package io.nicheblog.dreamdiary.domain.jrnl.diary.controller;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryTagService;
-import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagDto;
-import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagSearchParam;
+import io.nicheblog.dreamdiary.domain.clsf.tag.model.TagDto;
+import io.nicheblog.dreamdiary.domain.clsf.tag.model.TagSearchParam;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;

@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.domain.schdul.controller;
 
 import io.nicheblog.dreamdiary.domain.schdul.model.SchdulDto;
 import io.nicheblog.dreamdiary.domain.schdul.service.SchdulService;
-import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
+import io.nicheblog.dreamdiary.domain.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;

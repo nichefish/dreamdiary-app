@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.domain.jrnl.sumry.controller;
 
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumryReviewDto;
 import io.nicheblog.dreamdiary.domain.jrnl.sumry.service.JrnlSumryReviewService;
-import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
+import io.nicheblog.dreamdiary.domain.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;

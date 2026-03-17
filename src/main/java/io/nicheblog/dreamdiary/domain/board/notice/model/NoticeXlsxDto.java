@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.board.notice.model;
 
-import io.nicheblog.dreamdiary.extension.clsf.ContentType;
+import io.nicheblog.dreamdiary.domain.clsf.ContentType;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 

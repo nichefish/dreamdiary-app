@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.domain.jrnl.intrpt.controller;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.model.JrnlIntrptDto;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.model.JrnlIntrptSearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.service.JrnlIntrptService;
-import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
+import io.nicheblog.dreamdiary.domain.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;

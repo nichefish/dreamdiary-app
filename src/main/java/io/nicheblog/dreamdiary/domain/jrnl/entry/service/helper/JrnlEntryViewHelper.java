@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.domain.jrnl.entry.service.helper;
 import io.nicheblog.dreamdiary.domain.jrnl.diary.service.helper.JrnlDiaryViewHelper;
 import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntryDto;
 import io.nicheblog.dreamdiary.domain.jrnl.state.JrnlState;
-import io.nicheblog.dreamdiary.extension.clsf.state.StateCd;
+import io.nicheblog.dreamdiary.domain.clsf.state.StateCd;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;

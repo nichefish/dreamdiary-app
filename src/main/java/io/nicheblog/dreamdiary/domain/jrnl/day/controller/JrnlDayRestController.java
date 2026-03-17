@@ -6,7 +6,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDaySearchParam;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayCalService;
 import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayService;
-import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
+import io.nicheblog.dreamdiary.domain.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;

@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.domain.jrnl.intrpt.repository.jpa;
 
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.entity.JrnlIntrptTagEntity;
 import io.nicheblog.dreamdiary.domain.jrnl.intrpt.model.JrnlIntrptTagContentParam;
-import io.nicheblog.dreamdiary.extension.clsf.tag.model.TagContentCntDto;
+import io.nicheblog.dreamdiary.domain.clsf.tag.model.TagContentCntDto;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
@@ -33,7 +33,7 @@ public interface JrnlIntrptTagRepository
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    @Query("SELECT new io.nicheblog.dreamdiary.extension.clsf.tag.model.TagContentCntDto(ct.refTagNo, COUNT(ct.tagContentNo)) " +
+    @Query("SELECT new io.nicheblog.dreamdiary.domain.clsf.tag.model.TagContentCntDto(ct.refTagNo, COUNT(ct.tagContentNo)) " +
             "FROM JrnlIntrptTagContentEntity ct " +
             "INNER JOIN FETCH JrnlIntrptEntity intrpt ON ct.refPostNo = intrpt.postNo " +
             "INNER JOIN FETCH JrnlDayEntity day ON intrpt.jrnlDream.jrnlDayNo = day.postNo " +

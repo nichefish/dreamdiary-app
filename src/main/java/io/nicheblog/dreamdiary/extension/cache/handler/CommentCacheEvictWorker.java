@@ -11,7 +11,7 @@ import io.nicheblog.dreamdiary.domain.jrnl.entry.service.JrnlEntryService;
 import io.nicheblog.dreamdiary.extension.cache.event.CommentCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.extension.cache.model.JrnlCacheEvictParam;
-import io.nicheblog.dreamdiary.extension.clsf.ContentType;
+import io.nicheblog.dreamdiary.domain.clsf.ContentType;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

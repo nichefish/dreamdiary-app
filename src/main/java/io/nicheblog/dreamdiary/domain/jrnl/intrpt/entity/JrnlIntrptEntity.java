@@ -1,13 +1,13 @@
 package io.nicheblog.dreamdiary.domain.jrnl.intrpt.entity;
 
 import io.nicheblog.dreamdiary.domain.jrnl.dream.entity.JrnlDreamEntity;
-import io.nicheblog.dreamdiary.extension.clsf.ContentType;
-import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbed;
-import io.nicheblog.dreamdiary.extension.clsf.comment.entity.embed.CommentEmbedModule;
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbed;
-import io.nicheblog.dreamdiary.extension.clsf.state.entity.embed.StateEmbedModule;
-import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbed;
-import io.nicheblog.dreamdiary.extension.clsf.tag.entity.embed.TagEmbedModule;
+import io.nicheblog.dreamdiary.domain.clsf.ContentType;
+import io.nicheblog.dreamdiary.domain.clsf.comment.entity.embed.CommentEmbed;
+import io.nicheblog.dreamdiary.domain.clsf.comment.entity.embed.CommentEmbedModule;
+import io.nicheblog.dreamdiary.domain.clsf.state.entity.embed.StateEmbed;
+import io.nicheblog.dreamdiary.domain.clsf.state.entity.embed.StateEmbedModule;
+import io.nicheblog.dreamdiary.domain.clsf.tag.entity.embed.TagEmbed;
+import io.nicheblog.dreamdiary.domain.clsf.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbed;
 import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbedModule;

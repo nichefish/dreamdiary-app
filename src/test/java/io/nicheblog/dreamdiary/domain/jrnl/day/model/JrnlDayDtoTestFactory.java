@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.jrnl.day.model;
 
-import io.nicheblog.dreamdiary.extension.clsf.ContentType;
+import io.nicheblog.dreamdiary.domain.clsf.ContentType;
 import lombok.experimental.UtilityClass;
 import org.springframework.test.context.ActiveProfiles;
 

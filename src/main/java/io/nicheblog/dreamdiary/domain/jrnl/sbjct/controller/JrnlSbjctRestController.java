@@ -2,9 +2,9 @@ package io.nicheblog.dreamdiary.domain.jrnl.sbjct.controller;
 
 import io.nicheblog.dreamdiary.domain.jrnl.sbjct.model.JrnlSbjctDto;
 import io.nicheblog.dreamdiary.domain.jrnl.sbjct.service.JrnlSbjctService;
-import io.nicheblog.dreamdiary.extension.clsf.managt.handler.ManagtrEventListener;
-import io.nicheblog.dreamdiary.extension.clsf.tag.handler.TagProcEventListener;
-import io.nicheblog.dreamdiary.extension.clsf.viewer.handler.ViewerEventListener;
+import io.nicheblog.dreamdiary.domain.clsf.managt.handler.ManagtrEventListener;
+import io.nicheblog.dreamdiary.domain.clsf.tag.handler.TagProcEventListener;
+import io.nicheblog.dreamdiary.domain.clsf.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;

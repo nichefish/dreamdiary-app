@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.domain.jrnl.dream.model;
 
-import io.nicheblog.dreamdiary.extension.clsf.state.StateCd;
+import io.nicheblog.dreamdiary.domain.clsf.state.StateCd;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
