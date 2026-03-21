@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.auth.security.provider.helper;
 
+import io.nicheblog.dreamdiary.auth.policy.entity.AuthPolicyEntity;
 import io.nicheblog.dreamdiary.auth.security.exception.*;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLgnManager;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.auth.policy.entity.LgnPolicyEntity;
-import io.nicheblog.dreamdiary.auth.policy.service.LgnPolicyService;
+import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyService;
 import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -44,7 +44,7 @@ import java.util.List;
 public class AuthenticationHelper {
 
     private final UserService userService;
-    private final LgnPolicyService lgnPolicyService;
+    private final AuthPolicyService authPolicyService;
     private final PasswordEncoder passwordEncoder;
 
     /**
@@ -167,8 +167,8 @@ public class AuthenticationHelper {
      * @return {@link Boolean} -- 비밀번호가 만료되지 않은 경우 true
      */
     public Boolean isPwExpryValid(final AuthInfo authInfo) throws Exception {
-        final LgnPolicyEntity lgnPolicy = lgnPolicyService.getDtlEntity();
-        final Integer pwChgDy = lgnPolicy.getPwChgDy();
+        final AuthPolicyEntity authPolicy = authPolicyService.getDtlEntity();
+        final Integer pwChgDy = authPolicy.getPwChgDy();
         final Date pwExprDt = DateUtils.getDateAddDay(authInfo.getPwChgDt(), pwChgDy);
         final boolean isPwExprd = (pwExprDt == null || pwExprDt.compareTo(DateUtils.getCurrDate()) < 0);
         return !isPwExprd;

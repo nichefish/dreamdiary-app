@@ -9,15 +9,15 @@ import org.hibernate.annotations.DynamicInsert;
 import javax.persistence.*;
 
 /**
- * LgnPolicyEntity
+ * AuthPolicyEntity
  * <pre>
- *  로그인 정책 Entity.
+ *  인증 정책 Entity.
  * </pre>
  *
  * @author nichefish
  */
 @Entity
-@Table(name = "lgn_policy")
+@Table(name = "auth_policy")
 @DynamicInsert      // null인 값은 (null로 insert하는 대신) insert에서 제외
 @Getter
 @Setter
@@ -25,15 +25,15 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(callSuper = false)
-public class LgnPolicyEntity
+public class AuthPolicyEntity
         extends BaseAuditEntity {
 
-    /** 로그인 정책 번호 (PK) */
+    /** 인증 정책 번호 (PK) */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "lgn_policy_no")
-    @Comment("로그인 정책 번호 (key)")
-    private Integer lgnPolicyNo;
+    @Column(name = "auth_policy_no")
+    @Comment("인증 정책 번호 (key)")
+    private Integer authPolicyNo;
 
     /** 로그인 최대 시도 횟수 */
     @Column(name = "lgn_try_lmt")

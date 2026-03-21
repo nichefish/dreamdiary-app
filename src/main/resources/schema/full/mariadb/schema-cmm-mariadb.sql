@@ -58,10 +58,10 @@ CREATE TABLE IF NOT EXISTS cmm_dtl_cd (
 
 -- -----------------------
 
--- 로그인 정책 (lgn_policy)
+-- 인증 정책 (auth_policy)
 -- @extends: BaseAuditEntity
-CREATE TABLE IF NOT EXISTS lgn_policy (
-    lgn_policy_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '로그인 정책 번호 (PK)',
+CREATE TABLE IF NOT EXISTS auth_policy (
+    auth_policy_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '인증 정책 번호 (PK)',
     lgn_try_lmt INT COMMENT '로그인 시도 제한 횟수',
     pw_chg_dy INT COMMENT '패스워드 변경 주기',
     lgn_lock_dy INT COMMENT '계정 잠금 주기',
@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS lgn_policy (
     mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
     mdf_dt DATETIME COMMENT '수정일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)'
-) COMMENT = '로그인 정책';
+) COMMENT = '인증 정책';
 
 -- -----------------------
 

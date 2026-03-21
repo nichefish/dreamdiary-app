@@ -73,8 +73,8 @@ public interface AppUrl {
     String TAG_LIST = Prefix.APP + "/tag/list.do";
     String TAG_CLOUD_PAGE = Prefix.APP + "/tag/tag-cloud-page.do";
 
-    /** 로그인 정책 관리 */
-    String LGN_POLICY_FORM = Prefix.APP + "/lgn-policy/form.do";
+    /** 인증 정책 관리 */
+    String AUTH_POLICY_FORM = Prefix.APP + "/lgn-policy/form.do";
 
     /** 메뉴 관리 */
     String MENU_PAGE = Prefix.APP + "/menu/page.do";

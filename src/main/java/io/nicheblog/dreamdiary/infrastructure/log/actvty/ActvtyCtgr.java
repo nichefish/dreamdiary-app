@@ -46,7 +46,7 @@ public enum ActvtyCtgr {
     USER_REQST("신규계정 신청"),
 
     // MANAGE
-    LGN_POLICY("로그인 정책 관리"),
+    AUTH_POLICY("인증 정책 관리"),
     MENU("메뉴 관리"),
     BOARD_DEF("게시판 관리"),
     TMPLAT("템플릿 관리"),

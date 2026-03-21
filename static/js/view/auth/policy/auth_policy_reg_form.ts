@@ -1,6 +1,6 @@
 /**
- * lgn_policy_reg_form.ts
- * 로그인 정책 등록/수정 페이지 스크립트
+ * auth_policy_reg_form.ts
+ * 인증 정책 등록/수정 페이지 스크립트
  *
  * @author nichefish
  */
@@ -12,9 +12,9 @@ const Page: Page = (function(): Page {
          */
         init: function(): void {
             /* initialize modules. */
-            dF.LgnPolicy.init();
+            dF.AuthPolicy.init();
             /* initialize form. */
-            dF.LgnPolicy.initForm();
+            dF.AuthPolicy.initForm();
         },
     }
 })();

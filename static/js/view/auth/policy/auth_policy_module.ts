@@ -1,11 +1,11 @@
 /**
- * lgn_policy_module.ts
- * 로그인 정책 스크립트 모듈
+ * auth_policy_module.ts
+ * 인증 정책 스크립트 모듈
  *
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.LgnPolicy = (function(): dfModule {
+dF.AuthPolicy = (function(): dfModule {
     return {
         initialized: false,
 
@@ -13,10 +13,10 @@ dF.LgnPolicy = (function(): dfModule {
          * initializes module.
          */
         init: function(): void {
-            if (dF.LgnPolicy.initialized) return;
+            if (dF.AuthPolicy.initialized) return;
 
-            dF.LgnPolicy.initialized = true;
-            console.log("'dF.LgnPolicy' module initialized.");
+            dF.AuthPolicy.initialized = true;
+            console.log("'dF.AuthPolicy' module initialized.");
         },
 
         /**
@@ -24,7 +24,7 @@ dF.LgnPolicy = (function(): dfModule {
          */
         initForm: function(): void {
             /* jquery validation */
-            cF.validate.validateForm("#lgnPolicyForm", dF.LgnPolicy.regAjax, {
+            cF.validate.validateForm("#authPolicyForm", dF.AuthPolicy.regAjax, {
                 rules: {
                     lgnLockDy: { maxlength: 3 },
                     lgnTryLmt: { maxlength: 3 },
@@ -41,7 +41,7 @@ dF.LgnPolicy = (function(): dfModule {
          * form submit
          */
         submit: function(): void {
-            $("#lgnPolicyForm").submit();
+            $("#authPolicyForm").submit();
         },
 
         /**
@@ -54,12 +54,12 @@ dF.LgnPolicy = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = Url.LGN_POLICY_REG_AJAX;
-                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#lgnPolicyForm");
+                const url: string = Url.AUTH_POLICY_REG_AJAX;
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#authPolicyForm");
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
-                            if (res.rslt) cF.ui.blockUIReplace(Url.LGN_POLICY_FORM);
+                            if (res.rslt) cF.ui.blockUIReplace(Url.AUTH_POLICY_FORM);
                         });
                 }, "block");
             });

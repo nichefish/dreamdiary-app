@@ -35,9 +35,9 @@
     <!-- 사용자 정보 -->
     <cache alias="auditorInfo" uses-template="defaultTemplate" />
 
-    <!-- 로그인 정책 관리 -->
-    <cache alias="lgnPolicy" uses-template="defaultTemplate" />
-    <cache alias="lgnPolicyEntity" uses-template="defaultTemplate" />
+    <!-- 인증 정책 관리 -->
+    <cache alias="authPolicy" uses-template="defaultTemplate" />
+    <cache alias="authPolicyEntity" uses-template="defaultTemplate" />
 
     <!-- 메뉴 -->
     <cache alias="userMenuList" uses-template="defaultTemplate" />

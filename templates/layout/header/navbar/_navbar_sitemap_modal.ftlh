@@ -180,13 +180,13 @@
                             <span class="menu-title">${SiteMenu.MENU_BOARD_DEF[2]!}</span>
                         </a>
                     </div>
-                    <!-- 사이트 관리 > 로그인 정책 관리 -->
+                    <!-- 사이트 관리 > 인증 정책 관리 -->
                     <div class="menu-item">
-                        <a class="menu-link" href="${SiteMenu.MENU_LGN_POLICY[3]!}">
+                        <a class="menu-link" href="${SiteMenu.MENU_AUTH_POLICY[3]!}">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
-                            <span class="menu-title">${SiteMenu.MENU_LGN_POLICY[2]!}</span>
+                            <span class="menu-title">${SiteMenu.MENU_AUTH_POLICY[2]!}</span>
                         </a>
                     </div>
                     <#if isDev!false>

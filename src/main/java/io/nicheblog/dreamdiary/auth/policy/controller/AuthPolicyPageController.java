@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.auth.policy.controller;
 
-import io.nicheblog.dreamdiary.auth.policy.model.LgnPolicyDto;
-import io.nicheblog.dreamdiary.auth.policy.service.LgnPolicyService;
+import io.nicheblog.dreamdiary.auth.policy.model.AuthPolicyDto;
+import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyService;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
@@ -17,9 +17,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
- * LgnPolicyPageController
+ * AuthPolicyPageController
  * <pre>
- *  로그인 정책 관리 페이지 컨트롤러.
+ *  인증 정책 관리 페이지 컨트롤러.
  * </pre>
  *
  * @author nichefish
@@ -27,37 +27,37 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 @RequiredArgsConstructor
 @Log4j2
-public class LgnPolicyPageController
+public class AuthPolicyPageController
         extends BaseControllerImpl {
 
     @Getter
-    private final String baseUrl = Url.LGN_POLICY_FORM;             // 기본 URL
+    private final String baseUrl = Url.AUTH_POLICY_FORM;             // 기본 URL
     @Getter
-    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.LGN_POLICY;        // 작업 카테고리 (로그 적재용)
+    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.AUTH_POLICY;        // 작업 카테고리 (로그 적재용)
 
-    private final LgnPolicyService lgnPolicyService;
+    private final AuthPolicyService authPolicyService;
 
     /**
-     * 사이트 관리 > 로그인 설정 관리 > 로그인 설정 등록/수정 화면 조회
+     * 인증 정책 등록/수정 화면 조회
      * (관리자MNGR만 접근 가능.)
      *
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
-    @GetMapping(Url.LGN_POLICY_FORM)
+    @GetMapping(Url.AUTH_POLICY_FORM)
     @Secured(Constant.ROLE_MNGR)
-    public String lgnPolicyForm(
+    public String authPolicyForm(
             final ModelMap model
     ) throws Exception {
 
         /* 사이트 메뉴 설정 */
-        model.addAttribute("menuLabel", SiteMenu.LGN_POLICY);
+        model.addAttribute("menuLabel", SiteMenu.AUTH_POLICY);
         model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // 항목 조회 및 모델에 추가 :: 현재는 항상 고정 ID(1L)로 조회한다.
-        final LgnPolicyDto lgnPolicy = lgnPolicyService.getDtlDto();
-        model.addAttribute("lgnPolicy", lgnPolicy);
+        final AuthPolicyDto authPolicy = authPolicyService.getDtlDto();
+        model.addAttribute("authPolicy", authPolicy);
 
-        return "/view/auth/poilcy/lgn_policy/lgn_policy_reg_form";
+        return "/view/auth/policy/auth_policy_reg_form";
     }
 }

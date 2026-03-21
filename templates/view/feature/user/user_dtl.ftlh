@@ -73,7 +73,7 @@
             <div class="col-xl-2">
                 <button type="button" class="btn btn-sm btn-secondary"
                         onclick="dF.User.pwResetAjax();"
-                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="비밀번호를 초기화합니다.&#10;로그인 정책 관리 메뉴에서&#10;초기화 값을 설정할 수&#10;있습니다.">
+                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="비밀번호를 초기화합니다.&#10;인증 정책 관리 메뉴에서&#10;초기화 값을 설정할 수&#10;있습니다.">
                     비밀번호 초기화
                 </button>
             </div>

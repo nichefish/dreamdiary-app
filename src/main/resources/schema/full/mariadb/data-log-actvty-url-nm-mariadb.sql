@@ -119,7 +119,7 @@ INSERT IGNORE INTO LOG_ACTVTY_URL_NM (URL, URL_NM) VALUES ('/admin/siteMng.do', 
 INSERT IGNORE INTO LOG_ACTVTY_URL_NM (URL, URL_NM) VALUES ('/cache/cacheActiveListAjax.do', '저장된 캐시 조회 (Ajax)');
 INSERT IGNORE INTO LOG_ACTVTY_URL_NM (URL, URL_NM) VALUES ('/cache/cacheClearAjax.do', '저장된 캐시 초기화 (Ajax)');
 
-INSERT IGNORE INTO LOG_ACTVTY_URL_NM (URL, URL_NM) VALUES ('/lgnPolicy/lgnPolicyForm.do', '로그인 관리 화면 조회');
+INSERT IGNORE INTO LOG_ACTVTY_URL_NM (URL, URL_NM) VALUES ('/authPolicy/lgnPolicyForm.do', '로그인 관리 화면 조회');
 INSERT IGNORE INTO LOG_ACTVTY_URL_NM (URL, URL_NM) VALUES ('/lgnPolicy/lgnPolicyRegAjax.do', '로그인 관리 화면 조회');
 
 INSERT IGNORE INTO LOG_ACTVTY_URL_NM (URL, URL_NM) VALUES ('/cd/clCdList.do', '분류 코드 관리 목록 화면 조회');

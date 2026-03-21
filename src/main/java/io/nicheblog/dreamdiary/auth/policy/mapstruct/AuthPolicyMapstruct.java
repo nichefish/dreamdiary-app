@@ -1,25 +1,25 @@
 package io.nicheblog.dreamdiary.auth.policy.mapstruct;
 
-import io.nicheblog.dreamdiary.auth.policy.entity.LgnPolicyEntity;
-import io.nicheblog.dreamdiary.auth.policy.model.LgnPolicyDto;
+import io.nicheblog.dreamdiary.auth.policy.entity.AuthPolicyEntity;
+import io.nicheblog.dreamdiary.auth.policy.model.AuthPolicyDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 /**
- * LgnPolicyMapstruct
+ * AuthPolicyMapstruct
  * <pre>
- *  로그인 정책 관리 MapStruct 기반 Mapper 인터페이스.
+ *  인증 정책 관리 MapStruct 기반 Mapper 인터페이스.
  * </pre>
  *
  * @author nichefish
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface LgnPolicyMapstruct
-        extends BaseWriteMapstruct<LgnPolicyDto, LgnPolicyEntity>, BaseMapstruct<LgnPolicyDto, LgnPolicyEntity> {
+public interface AuthPolicyMapstruct
+        extends BaseWriteMapstruct<AuthPolicyDto, AuthPolicyEntity>, BaseMapstruct<AuthPolicyDto, AuthPolicyEntity> {
 
-    LgnPolicyMapstruct INSTANCE = Mappers.getMapper(LgnPolicyMapstruct.class);
+    AuthPolicyMapstruct INSTANCE = Mappers.getMapper(AuthPolicyMapstruct.class);
 
     /**
      * Entity -> Dto 변환
@@ -29,7 +29,7 @@ public interface LgnPolicyMapstruct
      */
     @Override
     @Named("toDto")
-    LgnPolicyDto toDto(final LgnPolicyEntity entity) throws Exception;
+    AuthPolicyDto toDto(final AuthPolicyEntity entity) throws Exception;
 
     /**
      * Dto -> Entity 변환
@@ -38,7 +38,7 @@ public interface LgnPolicyMapstruct
      * @return Entity -- 변환된 Entity 객체
      */
     @Override
-    LgnPolicyEntity toEntity(final LgnPolicyDto dto) throws Exception;
+    AuthPolicyEntity toEntity(final AuthPolicyDto dto) throws Exception;
 
     /**
      * update Entity from Dto (Dto에서 null이 아닌 값만 Entity로 매핑)
@@ -48,5 +48,5 @@ public interface LgnPolicyMapstruct
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateFromDto(final LgnPolicyDto dto, final @MappingTarget LgnPolicyEntity entity) throws Exception;
+    void updateFromDto(final AuthPolicyDto dto, final @MappingTarget AuthPolicyEntity entity) throws Exception;
 }

@@ -22,7 +22,7 @@ public enum SiteMenu {
 
     ERROR("에러"),
 
-    LGN_POLICY("로그인 정책 관리"),
+    AUTH_POLICY("인증 정책 관리"),
     MENU("메뉴 관리"),
     CD("코드 관리"),
 

@@ -29,9 +29,9 @@ public class AuthPageController
         extends BaseControllerImpl {
 
     @Getter
-    private final String baseUrl = Url.LGN_POLICY_FORM;             // 기본 URL
+    private final String baseUrl = Url.AUTH_POLICY_FORM;             // 기본 URL
     @Getter
-    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.LGN_POLICY;        // 작업 카테고리 (로그 적재용)
+    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.AUTH_POLICY;        // 작업 카테고리 (로그 적재용)
 
     private final UserService userService;
     private final UserReqstService userReqstService;

@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.auth.policy.controller;
 
-import io.nicheblog.dreamdiary.auth.policy.model.LgnPolicyDto;
-import io.nicheblog.dreamdiary.auth.policy.service.LgnPolicyService;
+import io.nicheblog.dreamdiary.auth.policy.model.AuthPolicyDto;
+import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -21,9 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 /**
- * LgnPolicyRestController
+ * AuthPolicyRestController
  * <pre>
- *  로그인 정책 관리 API 컨트롤러.
+ *  인증 정책 관리 API 컨트롤러.
  * </pre>
  *
  * @author nichefish
@@ -31,31 +31,31 @@ import javax.validation.Valid;
 @RestController
 @RequiredArgsConstructor
 @Log4j2
-public class LgnPolicyRestController
+public class AuthPolicyRestController
         extends BaseControllerImpl {
 
     @Getter
-    private final String baseUrl = Url.LGN_POLICY_FORM;             // 기본 URL
+    private final String baseUrl = Url.AUTH_POLICY_FORM;             // 기본 URL
     @Getter
-    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.LGN_POLICY;        // 작업 카테고리 (로그 적재용)
+    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.AUTH_POLICY;        // 작업 카테고리 (로그 적재용)
 
-    private final LgnPolicyService lgnPolicyService;
+    private final AuthPolicyService authPolicyService;
 
     /**
-     * 사이트 관리 > 로그인 설정 관리 > 로그인 설정 등록/수정 (Ajax)
+     * 인증 정책 등록/수정 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
-     * @param lgnPolicy 등록/수정 처리할 객체
+     * @param authPolicy 등록/수정 처리할 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PostMapping(Url.LGN_POLICY_REG_AJAX)
+    @PostMapping(Url.AUTH_POLICY_REG_AJAX)
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
-    public ResponseEntity<AjaxResponse> lgnPolicyRegAjax(
-            final @Valid LgnPolicyDto lgnPolicy
+    public ResponseEntity<AjaxResponse> authPolicyRegAjax(
+            final @Valid AuthPolicyDto authPolicy
     ) throws Exception {
 
-        final ServiceResponse result = lgnPolicyService.regist(lgnPolicy);
+        final ServiceResponse result = authPolicyService.regist(authPolicy);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
