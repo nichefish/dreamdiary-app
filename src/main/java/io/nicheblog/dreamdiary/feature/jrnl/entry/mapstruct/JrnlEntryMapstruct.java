@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.feature.jrnl.entry.mapstruct;
 
+import io.nicheblog.dreamdiary.feature.clsf.shared.mapstruct.BaseClsfMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.mapstruct.JrnlDiaryMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.entity.JrnlEntryEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.model.JrnlEntryDto;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.model.JrnlEntrySmpDto;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseClsfMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;

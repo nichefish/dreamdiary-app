@@ -1,8 +1,9 @@
-package io.nicheblog.dreamdiary.global.intrfc.spec;
+package io.nicheblog.dreamdiary.feature.clsf.shared.spec;
 
 import io.nicheblog.dreamdiary.feature.board.notice.entity.NoticeEntity;
+import io.nicheblog.dreamdiary.feature.clsf.shared.entity.BaseClsfEntity;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagContentEntity;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
+import io.nicheblog.dreamdiary.global.intrfc.spec.BaseCrudSpec;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.jpa.domain.Specification;
 

@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.jrnl.sumry.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf.shared.service.BaseClsfService;
 import io.nicheblog.dreamdiary.feature.clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
@@ -12,7 +13,6 @@ import io.nicheblog.dreamdiary.feature.jrnl.sumry.repository.jpa.JrnlSumryReposi
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.spec.JrnlSumrySpec;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.event.EhCacheEvictEvent;
 import io.nicheblog.dreamdiary.infrastructure.cache.handler.EhCacheEvictEventListner;

@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.schdul.mapstruct;
 
+import io.nicheblog.dreamdiary.feature.clsf.shared.mapstruct.BaseClsfMapstruct;
 import io.nicheblog.dreamdiary.feature.schdul.entity.SchdulEntity;
 import io.nicheblog.dreamdiary.feature.schdul.model.SchdulDto;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseClsfMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;

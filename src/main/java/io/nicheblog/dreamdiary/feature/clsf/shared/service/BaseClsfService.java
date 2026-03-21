@@ -1,13 +1,14 @@
-package io.nicheblog.dreamdiary.global.intrfc.service;
+package io.nicheblog.dreamdiary.feature.clsf.shared.service;
 
 import io.nicheblog.dreamdiary.feature.clsf.managt.entity.embed.ManagtEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.managt.entity.embed.ManagtEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.managt.model.cmpstn.ManagtCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.meta.model.cmpstn.MetaCmpstnModule;
+import io.nicheblog.dreamdiary.feature.clsf.shared.entity.BaseClsfEntity;
+import io.nicheblog.dreamdiary.feature.clsf.shared.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstnModule;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
-import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import org.springframework.transaction.annotation.Transactional;
 

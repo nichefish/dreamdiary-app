@@ -2,48 +2,15 @@ package io.nicheblog.dreamdiary.global.intrfc.mapstruct.helper;
 
 import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.comment.mapstruct.embed.CommentEmbedMapstruct;
-import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstnModule;
-import io.nicheblog.dreamdiary.feature.clsf.managt.entity.embed.ManagtEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.managt.entity.embed.ManagtEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.managt.mapstruct.embed.ManagtEmbedMapstruct;
-import io.nicheblog.dreamdiary.feature.clsf.managt.model.cmpstn.ManagtCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.managt.model.cmpstn.ManagtCmpstnModule;
-import io.nicheblog.dreamdiary.feature.clsf.meta.entity.embed.MetaEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.meta.entity.embed.MetaEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.meta.mapstruct.embed.MetaEmbedMapstruct;
-import io.nicheblog.dreamdiary.feature.clsf.meta.model.cmpstn.MetaCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.meta.model.cmpstn.MetaCmpstnModule;
-import io.nicheblog.dreamdiary.feature.clsf.sectn.entity.embed.SectnEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.sectn.entity.embed.SectnEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.sectn.mapstruct.embed.SectnEmbedMapstruct;
-import io.nicheblog.dreamdiary.feature.clsf.sectn.model.cmpstn.SectnCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.sectn.model.cmpstn.SectnCmpstnModule;
-import io.nicheblog.dreamdiary.feature.clsf.state.entity.embed.StateEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.state.entity.embed.StateEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.state.mapstruct.embed.StateEmbedMapstruct;
-import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstnModule;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.tag.mapstruct.embed.TagEmbedMapstruct;
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstnModule;
-import io.nicheblog.dreamdiary.feature.clsf.viewer.entity.embed.ViewerEmbed;
+import io.nicheblog.dreamdiary.feature.clsf.shared.entity.BaseClsfEntity;
+import io.nicheblog.dreamdiary.feature.clsf.shared.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.feature.clsf.viewer.entity.embed.ViewerEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.viewer.mapstruct.embed.ViewerEmbedMapstruct;
-import io.nicheblog.dreamdiary.feature.clsf.viewer.model.cmpstn.ViewerCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.viewer.model.cmpstn.ViewerCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditRegEntity;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditRegDto;
-import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -102,75 +69,6 @@ public class MapstructHelper {
             }
         }
         // CLSF :: BaseClsfMapstruct쪽에 정의
-    }
-
-    /**
-     * Map Clsf Fields (entity -> dto)
-     *
-     * @param entity 매핑할 Entity
-     * @param dto 매핑 대상 Dto
-     */
-    public static <Entity extends BaseClsfEntity, Dto extends BaseClsfDto> void mapClsfFields(final Entity entity, final @MappingTarget Dto dto) throws Exception {
-        // 댓글 :: 공통 필드 매핑 로직
-        boolean usesCommentModule = (entity instanceof CommentEmbedModule && dto instanceof CommentCmpstnModule);
-        if (usesCommentModule) {
-            final CommentEmbed embed = ((CommentEmbedModule) entity).getComment();
-            final CommentCmpstn cmpstn = CommentEmbedMapstruct.INSTANCE.toDto(embed);
-            ((CommentCmpstnModule) dto).setComment(cmpstn);
-        }
-
-        // 단락 :: 공통 필드 매핑 로직
-        boolean usesSectnModule = (entity instanceof SectnEmbedModule && dto instanceof SectnCmpstnModule);
-        if (usesSectnModule) {
-            final SectnEmbed embed = ((SectnEmbedModule) entity).getSectn();
-            final SectnCmpstn cmpstn = SectnEmbedMapstruct.INSTANCE.toDto(embed);
-            ((SectnCmpstnModule) dto).setSectn(cmpstn);
-        }
-
-        // 상태 :: 공통 필드 매핑 로직
-        boolean usesStateModule = (entity instanceof StateEmbedModule && dto instanceof StateCmpstnModule);
-        if (usesStateModule) {
-            final StateEmbed embed = ((StateEmbedModule) entity).getState();
-            final StateCmpstn cmpstn = StateEmbedMapstruct.INSTANCE.toDto(embed);
-            ((StateCmpstnModule) dto).setState(cmpstn);
-        }
-
-        // 태그 :: 공통 필드 매핑 로직
-        boolean usesTagModule = (entity instanceof TagEmbedModule && dto instanceof TagCmpstnModule);
-        if (usesTagModule) {
-            final TagEmbed embed = ((TagEmbedModule) entity).getTag();
-            final TagCmpstn cmpstn = TagEmbedMapstruct.INSTANCE.toDto(embed);
-            ((TagCmpstnModule) dto).setTag(cmpstn);
-        }
-
-        // 메타 :: 공통 필드 매핑 로직
-        boolean usesMetaModule = (entity instanceof MetaEmbedModule && dto instanceof MetaCmpstnModule);
-        if (usesMetaModule) {
-            final MetaEmbed embed = ((MetaEmbedModule) entity).getMeta();
-            final MetaCmpstn cmpstn = MetaEmbedMapstruct.INSTANCE.toDto(embed);
-            ((MetaCmpstnModule) dto).setMeta(cmpstn);
-        }
-
-        // 조치 :: 공통 필드 매핑 로직
-        boolean usesManagtModule = (entity instanceof ManagtEmbedModule && dto instanceof ManagtCmpstnModule);
-        if (usesManagtModule) {
-            final ManagtEmbed embed = ((ManagtEmbedModule) entity).getManagt();
-            final ManagtCmpstn cmpstn = ManagtEmbedMapstruct.INSTANCE.toDto(embed);
-            ((ManagtCmpstnModule) dto).setManagt(cmpstn);
-        }
-
-        // 열람 :: 공통 필드 매핑 로직
-        boolean usesViewerModule = (entity instanceof ViewerEmbedModule && dto instanceof ViewerCmpstnModule);
-        if (usesViewerModule) {
-            final ViewerEmbed embed = ((ViewerEmbedModule) entity).getViewer();
-            final ViewerCmpstn cmpstn = ViewerEmbedMapstruct.INSTANCE.toDto(embed);
-            ((ViewerCmpstnModule) dto).setViewer(cmpstn);
-        }
-
-        // 새 글 여부 상태
-        if (usesManagtModule && usesViewerModule) {
-            ((ViewerCmpstnModule) dto).setIsNew(determineIfNew(entity));
-        }
     }
 
     /** 

@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.flsys.spec;
 
+import io.nicheblog.dreamdiary.feature.clsf.shared.spec.BaseClsfSpec;
 import io.nicheblog.dreamdiary.feature.flsys.entity.FlsysMetaEntity;
-import io.nicheblog.dreamdiary.global.intrfc.spec.BaseClsfSpec;
 import org.springframework.stereotype.Component;
 
 /**

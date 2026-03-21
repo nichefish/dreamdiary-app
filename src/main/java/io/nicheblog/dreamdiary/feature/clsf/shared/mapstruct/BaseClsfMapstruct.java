@@ -1,8 +1,9 @@
-package io.nicheblog.dreamdiary.global.intrfc.mapstruct;
+package io.nicheblog.dreamdiary.feature.clsf.shared.mapstruct;
 
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.helper.MapstructHelper;
-import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
+import io.nicheblog.dreamdiary.feature.clsf.shared.entity.BaseClsfEntity;
+import io.nicheblog.dreamdiary.feature.clsf.shared.mapstruct.helper.ClsfMapstructHelper;
+import io.nicheblog.dreamdiary.feature.clsf.shared.model.BaseClsfDto;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.MappingTarget;
 
@@ -26,6 +27,6 @@ public interface BaseClsfMapstruct<Dto extends BaseClsfDto, Entity extends BaseC
      */
     @AfterMapping
     default void mapClsfFields(final Entity entity, final @MappingTarget Dto dto) throws Exception {
-        MapstructHelper.mapClsfFields(entity, dto);
+        ClsfMapstructHelper.mapClsfFields(entity, dto);
     }
 }

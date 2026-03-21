@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.board.notice.spec;
 
 import io.nicheblog.dreamdiary.feature.board.notice.entity.NoticeEntity;
-import io.nicheblog.dreamdiary.global.intrfc.spec.BaseClsfSpec;
+import io.nicheblog.dreamdiary.feature.clsf.shared.spec.BaseClsfSpec;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;

@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.clsf.viewer.entity;
 
+import io.nicheblog.dreamdiary.feature.clsf.shared.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditRegEntity;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

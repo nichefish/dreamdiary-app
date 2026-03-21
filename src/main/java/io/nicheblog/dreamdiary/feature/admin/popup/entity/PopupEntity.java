@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.admin.popup.entity;
 
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
+import io.nicheblog.dreamdiary.feature.clsf.shared.entity.BaseClsfEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbed;
 import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbedModule;
 import lombok.AllArgsConstructor;

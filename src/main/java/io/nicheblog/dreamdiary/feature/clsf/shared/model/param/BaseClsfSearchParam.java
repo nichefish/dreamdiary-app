@@ -1,5 +1,6 @@
-package io.nicheblog.dreamdiary.global.intrfc.model.param;
+package io.nicheblog.dreamdiary.feature.clsf.shared.model.param;
 
+import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 

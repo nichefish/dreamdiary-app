@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.chat.entity;
 
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
+import io.nicheblog.dreamdiary.feature.clsf.shared.entity.BaseClsfEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
