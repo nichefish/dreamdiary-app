@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.infrastructure.report.pdf.util;
+package io.nicheblog.dreamdiary.feature.report.pdf.util;
 
 import io.nicheblog.dreamdiary.infrastructure.file.model.AtchFileDtlDto;
 import io.nicheblog.dreamdiary.infrastructure.file.utils.FileUtils;

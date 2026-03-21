@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.infrastructure.report.xlsx.model;
+package io.nicheblog.dreamdiary.feature.report.xlsx.model;
 
 import lombok.Getter;
 import lombok.Setter;

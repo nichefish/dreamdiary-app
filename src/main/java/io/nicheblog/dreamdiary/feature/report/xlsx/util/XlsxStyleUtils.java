@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.infrastructure.report.xlsx.util;
+package io.nicheblog.dreamdiary.feature.report.xlsx.util;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
