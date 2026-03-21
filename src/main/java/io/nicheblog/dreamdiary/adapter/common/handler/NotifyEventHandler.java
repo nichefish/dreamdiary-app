@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.adapter._common.handler;
+package io.nicheblog.dreamdiary.adapter.common.handler;
 
 import io.nicheblog.dreamdiary.adapter.jandi.JandiTopic;
 import io.nicheblog.dreamdiary.adapter.jandi.service.JandiApiService;

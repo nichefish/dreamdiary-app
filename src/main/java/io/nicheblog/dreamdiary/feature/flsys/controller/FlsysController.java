@@ -74,7 +74,7 @@ public class FlsysController
         final FlsysDto flsys = flsysService.getFlsysByPath(filePath);
         model.addAttribute("file", flsys);
 
-        return "/view/global/_common//flsys/flsys_home";
+        return "/view/global/common//flsys/flsys_home";
     }
 
     /**

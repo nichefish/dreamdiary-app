@@ -64,6 +64,6 @@ public class NotionPageController
         // String notionPage = notionRetriever.render();
         // model.addAttribute("notionPage", notionPage);
 
-        return "/view/global/_common/notion/notion_home";
+        return "/view/global/common/notion/notion_home";
     }
 }
