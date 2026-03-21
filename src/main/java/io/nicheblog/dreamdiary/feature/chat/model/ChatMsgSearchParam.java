@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.feature.chat.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
-import io.nicheblog.dreamdiary.global.intrfc.model.param.BasePostSearchParam;
+import io.nicheblog.dreamdiary.feature.clsf.shared.model.param.BaseClsfSearchParam;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -26,7 +26,7 @@ import java.util.Date;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ChatMsgSearchParam
-        extends BasePostSearchParam {
+        extends BaseClsfSearchParam {
 
     /** 컨텐츠 타입 */
     @Builder.Default

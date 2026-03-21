@@ -6,7 +6,7 @@ import io.nicheblog.dreamdiary.feature.jrnl.day.repository.jpa.JrnlDayRepository
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayService;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.infrastructure.freemarker.config.TestFreemarkerConfig;
-import io.nicheblog.dreamdiary.global.intrfc.controller.BaseControllerTestHelper;
+import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerTestHelper;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

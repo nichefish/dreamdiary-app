@@ -1,12 +1,12 @@
 package io.nicheblog.dreamdiary.feature.clsf.sectn.service;
 
+import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.feature.clsf.sectn.entity.SectnEntity;
 import io.nicheblog.dreamdiary.feature.clsf.sectn.mapstruct.SectnMapstruct;
 import io.nicheblog.dreamdiary.feature.clsf.sectn.model.SectnDto;
 import io.nicheblog.dreamdiary.feature.clsf.sectn.repository.jpa.SectnRepository;
 import io.nicheblog.dreamdiary.feature.clsf.sectn.spec.SectnSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.infrastructure.cache.service.CacheEvictService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

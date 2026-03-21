@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.jrnl.sumry.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.feature.clsf.shared.service.BaseClsfService;
 import io.nicheblog.dreamdiary.feature.clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.event.JrnlCacheEvictEvent;
@@ -13,7 +14,6 @@ import io.nicheblog.dreamdiary.feature.jrnl.sumry.repository.jpa.JrnlSumryReview
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.spec.JrnlSumryReviewSpec;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultipartWritableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

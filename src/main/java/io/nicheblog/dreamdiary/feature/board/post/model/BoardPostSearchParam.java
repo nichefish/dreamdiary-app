@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.board.post.model;
 
-import io.nicheblog.dreamdiary.global.intrfc.model.param.BasePostSearchParam;
+import io.nicheblog.dreamdiary.feature.clsf.shared.model.param.BaseClsfSearchParam;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -21,7 +21,7 @@ import javax.validation.constraints.Size;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class BoardPostSearchParam
-        extends BasePostSearchParam {
+        extends BaseClsfSearchParam {
 
     /** 게시판 정의 */
     @Size(max = 50)
