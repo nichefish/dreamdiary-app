@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.infrastructure.cd.mapstruct;
 
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.infrastructure.cd.entity.ClCdEntity;
 import io.nicheblog.dreamdiary.infrastructure.cd.model.ClCdDto;
 import io.nicheblog.dreamdiary.infrastructure.cd.utils.CdUtils;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 

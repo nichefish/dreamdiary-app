@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.clsf.tag.handler;
 
-import io.nicheblog.dreamdiary.infrastructure.cache.handler.EhCacheEvictEventListner;
 import io.nicheblog.dreamdiary.feature.clsf.tag.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.CustomEventBus;
 import io.nicheblog.dreamdiary.global.handler.CustomEventHandler;
+import io.nicheblog.dreamdiary.infrastructure.cache.handler.EhCacheEvictEventListner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;

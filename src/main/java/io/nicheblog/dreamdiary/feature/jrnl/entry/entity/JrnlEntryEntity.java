@@ -1,7 +1,5 @@
 package io.nicheblog.dreamdiary.feature.jrnl.entry.entity;
 
-import io.nicheblog.dreamdiary.feature.jrnl.day.entity.JrnlDaySmpEntity;
-import io.nicheblog.dreamdiary.feature.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbedModule;
@@ -9,6 +7,8 @@ import io.nicheblog.dreamdiary.feature.clsf.state.entity.embed.StateEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbedModule;
+import io.nicheblog.dreamdiary.feature.jrnl.day.entity.JrnlDaySmpEntity;
+import io.nicheblog.dreamdiary.feature.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

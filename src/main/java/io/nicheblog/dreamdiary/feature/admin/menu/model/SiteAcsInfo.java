@@ -1,6 +1,5 @@
-package io.nicheblog.dreamdiary.global.model;
+package io.nicheblog.dreamdiary.feature.admin.menu.model;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

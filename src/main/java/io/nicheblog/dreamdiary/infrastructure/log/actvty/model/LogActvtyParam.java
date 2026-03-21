@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.infrastructure.log.actvty.model;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseParam;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.LogType;
 import io.nicheblog.dreamdiary.infrastructure.log.sys.model.LogSysParam;
-import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseParam;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

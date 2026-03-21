@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.infrastructure.web.interceptor;
 
 import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.infrastructure.web.config.WebMvcContextConfig;
-import io.nicheblog.dreamdiary.global.util.CookieUtils;
+import io.nicheblog.dreamdiary.infrastructure.web.util.CookieUtils;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.MapUtils;
 import org.jetbrains.annotations.NotNull;

@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.feature.board.def.mapstruct;
 
+import io.nicheblog.dreamdiary.feature.admin.menu.model.SiteAcsInfo;
 import io.nicheblog.dreamdiary.feature.board.def.entity.BoardDefEntity;
 import io.nicheblog.dreamdiary.feature.board.def.model.BoardDefDto;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
-import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 

@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global.config;
+package io.nicheblog.dreamdiary.infrastructure.web.config;
 
 import io.nicheblog.dreamdiary.auth.security.interceptor.WebSocketAuthInterceptor;
 import lombok.RequiredArgsConstructor;

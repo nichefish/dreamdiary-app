@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.jrnl._shared.event;
 
+import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictEventListner;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.security.core.context.SecurityContext;

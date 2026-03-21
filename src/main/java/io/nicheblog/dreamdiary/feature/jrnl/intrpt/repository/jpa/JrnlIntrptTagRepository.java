@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.jrnl.intrpt.repository.jpa;
 
+import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagContentCntDto;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.entity.JrnlIntrptTagEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptTagContentParam;
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagContentCntDto;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;

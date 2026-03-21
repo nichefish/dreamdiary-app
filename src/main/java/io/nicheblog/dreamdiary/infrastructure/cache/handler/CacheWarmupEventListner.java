@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.infrastructure.cache.handler;
 
+import io.nicheblog.dreamdiary.global.config.AsyncConfig;
 import io.nicheblog.dreamdiary.infrastructure.cache.event.CacheWarmupEvent;
 import io.nicheblog.dreamdiary.infrastructure.cache.service.CacheWarmupService;
-import io.nicheblog.dreamdiary.global.config.AsyncConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;

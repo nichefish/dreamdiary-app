@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.infrastructure.messaging.email.handler;
 
-import io.nicheblog.dreamdiary.infrastructure.messaging.email.event.EmailSendEvent;
 import io.nicheblog.dreamdiary.global.config.AsyncConfig;
+import io.nicheblog.dreamdiary.infrastructure.messaging.email.event.EmailSendEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.event.EventListener;

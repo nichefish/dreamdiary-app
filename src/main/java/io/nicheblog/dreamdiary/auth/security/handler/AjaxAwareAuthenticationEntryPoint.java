@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.auth.security.handler;
 
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global.util.HttpUtils;
+import io.nicheblog.dreamdiary.infrastructure.web.util.HttpUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;

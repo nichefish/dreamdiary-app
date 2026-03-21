@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.infrastructure.log.sys.entity;
 
 import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
-import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
+import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;

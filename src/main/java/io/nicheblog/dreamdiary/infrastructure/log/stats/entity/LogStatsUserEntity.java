@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.infrastructure.log.stats.entity;
 
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.entity.LogActvtyEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.entity.LogActvtyEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

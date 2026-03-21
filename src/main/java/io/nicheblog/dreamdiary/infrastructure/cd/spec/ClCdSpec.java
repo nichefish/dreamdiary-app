@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.infrastructure.cd.spec;
 
-import io.nicheblog.dreamdiary.infrastructure.cd.entity.ClCdEntity;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
+import io.nicheblog.dreamdiary.infrastructure.cd.entity.ClCdEntity;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 

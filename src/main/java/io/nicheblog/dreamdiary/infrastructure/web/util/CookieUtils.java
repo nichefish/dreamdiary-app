@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global.util;
+package io.nicheblog.dreamdiary.infrastructure.web.util;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;

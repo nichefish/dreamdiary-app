@@ -1,14 +1,14 @@
 package io.nicheblog.dreamdiary.feature.jrnl.intrpt.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagContentCntDto;
+import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.entity.JrnlIntrptTagEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.mapstruct.JrnlIntrptTagMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptTagContentParam;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.repository.jpa.JrnlIntrptTagRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.spec.JrnlIntrptTagSpec;
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagContentCntDto;
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoReadableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

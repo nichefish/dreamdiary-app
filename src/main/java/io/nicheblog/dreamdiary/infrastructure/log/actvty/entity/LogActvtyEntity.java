@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.infrastructure.log.actvty.entity;
 
 import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
-import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.LogType;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
+import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.LogType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

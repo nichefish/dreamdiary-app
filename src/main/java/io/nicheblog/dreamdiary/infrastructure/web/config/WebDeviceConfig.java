@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global.config;
+package io.nicheblog.dreamdiary.infrastructure.web.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

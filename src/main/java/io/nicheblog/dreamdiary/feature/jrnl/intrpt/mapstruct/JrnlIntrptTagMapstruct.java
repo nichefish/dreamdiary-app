@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.jrnl.intrpt.mapstruct;
 
-import io.nicheblog.dreamdiary.feature.jrnl.intrpt.entity.JrnlIntrptTagEntity;
 import io.nicheblog.dreamdiary.feature.clsf.tag.mapstruct.TagContentMapstruct;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
+import io.nicheblog.dreamdiary.feature.jrnl.intrpt.entity.JrnlIntrptTagEntity;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import org.mapstruct.*;

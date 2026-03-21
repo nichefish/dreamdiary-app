@@ -1,16 +1,16 @@
 package io.nicheblog.dreamdiary.infrastructure.messaging.jandi.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.nicheblog.dreamdiary.global.Url;
+import io.nicheblog.dreamdiary.global.util.JsonRestTemplate;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.JandiProperties;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.JandiTopic;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.model.JandiApiRespnsDto;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.model.JandiApiSndMsgConnectInfoDto;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.model.JandiApiSndMsgDto;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.model.JandiParam;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
-import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global.config.HttpClientConfig;
-import io.nicheblog.dreamdiary.global.util.JsonRestTemplate;
+import io.nicheblog.dreamdiary.infrastructure.web.config.HttpClientConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpEntity;

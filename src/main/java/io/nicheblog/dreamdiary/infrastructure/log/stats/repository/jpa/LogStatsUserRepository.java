@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.infrastructure.log.stats.repository.jpa;
 
+import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import io.nicheblog.dreamdiary.infrastructure.log.stats.entity.LogStatsUserEntity;
 import io.nicheblog.dreamdiary.infrastructure.log.stats.model.LogStatsUserIntrfc;
-import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
