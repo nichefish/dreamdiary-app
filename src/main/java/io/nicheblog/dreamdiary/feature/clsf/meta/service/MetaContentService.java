@@ -13,7 +13,7 @@ import io.nicheblog.dreamdiary.feature.clsf.meta.model.MetaSearchParam;
 import io.nicheblog.dreamdiary.feature.clsf.meta.repository.jpa.MetaContentRepository;
 import io.nicheblog.dreamdiary.feature.clsf.meta.repository.jpa.MetaSmpRepository;
 import io.nicheblog.dreamdiary.feature.clsf.meta.spec.MetaContentSpec;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
+import io.nicheblog.dreamdiary.feature.clsf.shared.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

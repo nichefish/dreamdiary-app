@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.feature.clsf.comment.mapstruct;
 import io.nicheblog.dreamdiary.feature.clsf.comment.entity.CommentEntity;
 import io.nicheblog.dreamdiary.feature.clsf.comment.mapstruct.embed.CommentEmbedMapstruct;
 import io.nicheblog.dreamdiary.feature.clsf.comment.model.CommentDto;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseClsfMapstruct;
+import io.nicheblog.dreamdiary.feature.clsf.shared.mapstruct.BaseClsfMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;

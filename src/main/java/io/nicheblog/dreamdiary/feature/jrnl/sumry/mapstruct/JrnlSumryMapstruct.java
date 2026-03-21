@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.jrnl.sumry.mapstruct;
 
+import io.nicheblog.dreamdiary.feature.clsf.shared.mapstruct.BaseClsfMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.entity.JrnlSumryEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryDto;
-import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseClsfMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import org.apache.commons.lang3.StringUtils;

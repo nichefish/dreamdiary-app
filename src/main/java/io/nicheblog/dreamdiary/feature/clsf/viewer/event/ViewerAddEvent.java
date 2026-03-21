@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.clsf.viewer.event;
 
+import io.nicheblog.dreamdiary.feature.clsf.shared.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.feature.clsf.viewer.handler.ViewerEventListener;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.security.core.context.SecurityContext;

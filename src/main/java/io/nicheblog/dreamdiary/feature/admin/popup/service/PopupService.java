@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.feature.admin.popup.mapstruct.PopupMapstruct;
 import io.nicheblog.dreamdiary.feature.admin.popup.model.PopupDto;
 import io.nicheblog.dreamdiary.feature.admin.popup.repository.jpa.PopupRepository;
 import io.nicheblog.dreamdiary.feature.admin.popup.spec.PopupSpec;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
+import io.nicheblog.dreamdiary.feature.clsf.shared.service.BaseClsfService;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultipartWritableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

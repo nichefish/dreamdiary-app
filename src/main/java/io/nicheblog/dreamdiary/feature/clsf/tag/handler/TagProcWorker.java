@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.clsf.tag.handler;
 
 import com.nimbusds.oauth2.sdk.util.MapUtils;
+import io.nicheblog.dreamdiary.feature.clsf.shared.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagEntity;
 import io.nicheblog.dreamdiary.feature.clsf.tag.event.JrnlTagCacheUpdtEvent;
@@ -11,7 +12,6 @@ import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagContentService;
 import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagService;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.infrastructure.cache.event.EhCacheEvictEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
