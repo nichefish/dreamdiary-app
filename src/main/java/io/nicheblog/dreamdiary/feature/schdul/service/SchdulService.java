@@ -10,7 +10,7 @@ import io.nicheblog.dreamdiary.feature.schdul.repository.jpa.SchdulRepository;
 import io.nicheblog.dreamdiary.feature.schdul.spec.SchdulSpec;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.feature.clsf.tag.event.TagProcEvent;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;

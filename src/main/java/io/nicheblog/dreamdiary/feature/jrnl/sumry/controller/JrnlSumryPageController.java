@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumrySearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.service.JrnlSumryService;
 import io.nicheblog.dreamdiary.infrastructure.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import lombok.Getter;

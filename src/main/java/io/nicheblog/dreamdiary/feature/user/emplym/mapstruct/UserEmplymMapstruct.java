@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.feature.user.emplym.mapstruct;
 
 import io.nicheblog.dreamdiary.feature.user.emplym.entity.UserEmplymEntity;
 import io.nicheblog.dreamdiary.feature.user.info.model.emplym.UserEmplymDto;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.crypto.CryptoUtils;

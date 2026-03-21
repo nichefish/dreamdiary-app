@@ -7,7 +7,7 @@ import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.model.JandiApiResp
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.model.JandiApiSndMsgConnectInfoDto;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.model.JandiApiSndMsgDto;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.model.JandiParam;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.config.HttpClientConfig;
 import io.nicheblog.dreamdiary.global.util.JsonRestTemplate;

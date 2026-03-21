@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.global.config;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModelException;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
@@ -71,7 +71,7 @@ public class TestFreemarkerConfig
         // Add global variables and Add static support
         TemplateHashModel statics = config.getStaticModels();
         sharedVariables.put("Statics", statics);
-        sharedVariables.put("Constant", statics.get("io.nicheblog.dreamdiary.global.Constant"));
+        sharedVariables.put("Constant", statics.get("io.nicheblog.dreamdiary.infrastructure.Constant"));
         sharedVariables.put("Url", statics.get("io.nicheblog.dreamdiary.global.Url"));
         sharedVariables.put("DateUtils", statics.get("io.nicheblog.dreamdiary.global.util.date.DateUtils"));
         return sharedVariables;

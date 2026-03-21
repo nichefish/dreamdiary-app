@@ -6,7 +6,7 @@ import io.nicheblog.dreamdiary.feature.user.info.entity.*;
 import io.nicheblog.dreamdiary.feature.user.info.model.profl.UserProflDto;
 import io.nicheblog.dreamdiary.feature.user.profl.entity.UserProflEntity;
 import io.nicheblog.dreamdiary.feature.user.profl.entity.UserProflEntityTestFactory;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;

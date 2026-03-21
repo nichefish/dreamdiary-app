@@ -6,7 +6,7 @@ import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyDto;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtySearchParam;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.service.LogActvtyService;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.PaginationInfo;

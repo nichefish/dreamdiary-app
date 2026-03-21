@@ -6,7 +6,7 @@ import io.nicheblog.dreamdiary.feature.user.reqst.event.UserReqstVerificationEma
 import io.nicheblog.dreamdiary.infrastructure.messaging.email.handler.EmailSendWorker;
 import io.nicheblog.dreamdiary.infrastructure.messaging.email.model.EmailAddress;
 import io.nicheblog.dreamdiary.infrastructure.messaging.email.model.EmailSendParam;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.ServerInfo;
 import io.nicheblog.dreamdiary.global.config.AsyncConfig;
 import lombok.RequiredArgsConstructor;

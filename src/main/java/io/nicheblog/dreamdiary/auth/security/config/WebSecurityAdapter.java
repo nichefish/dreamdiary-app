@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.auth.security.handler.LgoutHandler;
 import io.nicheblog.dreamdiary.auth.security.handler.WebLgnFailureHandler;
 import io.nicheblog.dreamdiary.auth.security.handler.WebLgnSuccessHandler;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

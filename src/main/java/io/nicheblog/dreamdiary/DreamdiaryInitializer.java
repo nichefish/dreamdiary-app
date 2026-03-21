@@ -13,7 +13,7 @@ import io.nicheblog.dreamdiary.infrastructure.log.sys.event.LogSysEvent;
 import io.nicheblog.dreamdiary.infrastructure.log.sys.handler.LogSysEventListener;
 import io.nicheblog.dreamdiary.infrastructure.log.sys.model.LogSysParam;
 import io.nicheblog.dreamdiary.global.ActiveProfile;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;

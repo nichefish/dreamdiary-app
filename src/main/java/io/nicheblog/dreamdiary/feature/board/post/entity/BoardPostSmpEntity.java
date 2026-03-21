@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.board.post.entity;
 
 import io.nicheblog.dreamdiary.feature.board.def.entity.BoardDefEntity;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

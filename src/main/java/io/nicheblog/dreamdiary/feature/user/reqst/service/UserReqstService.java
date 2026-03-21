@@ -7,7 +7,7 @@ import io.nicheblog.dreamdiary.feature.user.info.repository.jpa.UserRepository;
 import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
 import io.nicheblog.dreamdiary.feature.user.reqst.mapstruct.UserReqstMapstruct;
 import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDto;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;

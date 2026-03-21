@@ -9,7 +9,7 @@ import io.nicheblog.dreamdiary.feature.admin.menu.repository.jpa.MenuRepository;
 import io.nicheblog.dreamdiary.feature.admin.menu.repository.mybatis.MenuMapper;
 import io.nicheblog.dreamdiary.feature.admin.menu.spec.MenuSpec;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.exception.BusinessException;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoReadableService;

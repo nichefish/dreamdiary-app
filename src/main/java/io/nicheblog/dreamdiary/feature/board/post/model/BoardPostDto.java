@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.viewer.model.cmpstn.ViewerCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.viewer.model.cmpstn.ViewerCmpstnModule;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.intrfc.model.cmpstn.AtchFileCmpstn;
