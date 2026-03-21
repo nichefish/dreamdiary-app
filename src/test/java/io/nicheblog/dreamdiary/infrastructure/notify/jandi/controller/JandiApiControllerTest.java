@@ -1,8 +1,9 @@
 package io.nicheblog.dreamdiary.infrastructure.notify.jandi.controller;
 
-import io.nicheblog.dreamdiary.infrastructure.notify.jandi.JandiTopic;
-import io.nicheblog.dreamdiary.infrastructure.notify.jandi.model.JandiParam;
-import io.nicheblog.dreamdiary.infrastructure.notify.jandi.service.JandiApiService;
+import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.JandiTopic;
+import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.controller.JandiApiController;
+import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.model.JandiParam;
+import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.service.JandiApiService;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImplTest;

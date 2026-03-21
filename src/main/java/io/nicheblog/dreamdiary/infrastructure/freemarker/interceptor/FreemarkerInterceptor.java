@@ -13,7 +13,7 @@ import io.nicheblog.dreamdiary.global.ActiveProfile;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.ReleaseInfo;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global.config.WebMvcContextConfig;
+import io.nicheblog.dreamdiary.infrastructure.web.config.WebMvcContextConfig;
 import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;

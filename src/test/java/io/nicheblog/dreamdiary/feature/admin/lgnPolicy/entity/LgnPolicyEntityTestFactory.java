@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.admin.lgnPolicy.entity;
 
+import io.nicheblog.dreamdiary.auth.policy.entity.LgnPolicyEntity;
 import lombok.experimental.UtilityClass;
 import org.springframework.test.context.ActiveProfiles;
 

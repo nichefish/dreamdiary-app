@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.global;
 
-import io.nicheblog.dreamdiary.adapter.AdapterUrl;
 import io.nicheblog.dreamdiary.auth.AuthUrl;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;

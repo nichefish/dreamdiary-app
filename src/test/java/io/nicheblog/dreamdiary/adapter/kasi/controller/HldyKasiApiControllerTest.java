@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.adapter.kasi.controller;
 
-import io.nicheblog.dreamdiary.adapter.kasi.service.HldyKasiApiService;
+import io.nicheblog.dreamdiary.feature.schdul.kasi.controller.HldyKasiApiController;
+import io.nicheblog.dreamdiary.feature.schdul.kasi.service.HldyKasiApiService;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.Url;
 import lombok.extern.log4j.Log4j2;
