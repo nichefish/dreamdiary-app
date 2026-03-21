@@ -6,7 +6,7 @@ import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.PaginationInfo;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
+import io.nicheblog.dreamdiary.infrastructure.web.util.ParamUtils;
 import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyDto;
@@ -65,15 +65,15 @@ public class LogActvtyPageController
 
         // 활동 로그 목록 조회
         // 상세/수정 화면에서 목록 화면 복귀시 세션에 목록 검색 인자 저장해둔 거 있는지 체크
-        searchParam = (LogActvtySearchParam) CmmUtils.Param.checkPrevSearchParam(baseUrl, searchParam);
+        searchParam = (LogActvtySearchParam) ParamUtils.checkPrevSearchParam(baseUrl, searchParam);
         // 페이징 정보 생성:: 공백시 pageSize=10, pageNo=1
-        final PageRequest pageRequest = CmmUtils.Param.getPageRequest(searchParam, "logDt", model);
+        final PageRequest pageRequest = ParamUtils.getPageRequest(searchParam, "logDt", model);
         // 목록 조회
         final Page<LogActvtyDto> logActvtyList = logActvtyService.getPageDto(searchParam, pageRequest);
         model.addAttribute("logActvtyList", logActvtyList.getContent());
         model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(logActvtyList));
         // 목록 검색 URL + 파라미터 모델에 추가
-        CmmUtils.Param.setModelAttrMap(searchParam, baseUrl, model);
+        ParamUtils.setModelAttrMap(searchParam, baseUrl, model);
 
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;

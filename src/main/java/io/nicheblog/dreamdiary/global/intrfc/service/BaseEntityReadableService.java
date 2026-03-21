@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
+import io.nicheblog.dreamdiary.infrastructure.web.util.ParamUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -65,7 +66,7 @@ public interface BaseEntityReadableService<Key extends Serializable, Entity exte
      */
     default List<Entity> getListEntity(final BaseSearchParam searchParam) throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
-        final Map<String, Object> filteredSearchKey = CmmUtils.Param.filterParamMap(searchParamMap);
+        final Map<String, Object> filteredSearchKey = ParamUtils.filterParamMap(searchParamMap);
 
         return this.getListEntity(filteredSearchKey);
     }
@@ -127,7 +128,7 @@ public interface BaseEntityReadableService<Key extends Serializable, Entity exte
      */
     @Transactional(readOnly = true)
     default Stream<Entity> getStreamEntity(final Map<String, Object> searchParamMap) throws Exception {
-        final Map<String, Object> filteredSearchKey = CmmUtils.Param.filterParamMap(searchParamMap);
+        final Map<String, Object> filteredSearchKey = ParamUtils.filterParamMap(searchParamMap);
 
         return getRepository().streamAllBy(getSpec().searchWith(filteredSearchKey));
     }
@@ -155,7 +156,7 @@ public interface BaseEntityReadableService<Key extends Serializable, Entity exte
      */
     @Transactional(readOnly = true)
     default Stream<Entity> getStreamEntity(final Map<String, Object> searchParamMap, Sort sort) throws Exception {
-        final Map<String, Object> filteredSearchKey = CmmUtils.Param.filterParamMap(searchParamMap);
+        final Map<String, Object> filteredSearchKey = ParamUtils.filterParamMap(searchParamMap);
 
         return getRepository().streamAllBy(getSpec().searchWith(filteredSearchKey), sort);
     }

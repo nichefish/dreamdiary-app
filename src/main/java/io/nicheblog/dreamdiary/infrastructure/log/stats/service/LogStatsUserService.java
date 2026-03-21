@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.infrastructure.log.stats.service;
 
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
+import io.nicheblog.dreamdiary.infrastructure.web.util.ParamUtils;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.log.stats.mapstruct.LogStatsUserMapstruct;
@@ -45,7 +46,7 @@ public class LogStatsUserService {
         // 목록 검색 (기본 조건 :: 당일 시작 ~ 당일 끝)
         if (!searchParamMap.containsKey("searchStartDt")) searchParamMap.put("searchStartDt", DateUtils.getCurrDateStr(DatePtn.DATE));
         // searchParamMap에서 빈 값들 및 쓸모없는 값들 정리
-        Map<String, Object> filteredSearchKey = CmmUtils.Param.filterParamMap(searchParamMap);
+        Map<String, Object> filteredSearchKey = ParamUtils.filterParamMap(searchParamMap);
         return logStatsUserRepository.getStatsUserIntrfcList((Date) filteredSearchKey.get("searchStartDt"), (Date) filteredSearchKey.get("searchEndDt"));
     }
 
@@ -88,7 +89,7 @@ public class LogStatsUserService {
         // 목록 검색 (기본 조건 :: 당일 시작 ~ 당일 끝)
         if (!searchParamMap.containsKey("searchStartDt")) searchParamMap.put("searchStartDt", DateUtils.getCurrDateStr(DatePtn.DATE));
         // searchParamMap에서 빈 값들 및 쓸모없는 값들 정리
-        final Map<String, Object> filteredSearchKey = CmmUtils.Param.filterParamMap(searchParamMap);
+        final Map<String, Object> filteredSearchKey = ParamUtils.filterParamMap(searchParamMap);
         return logStatsUserRepository.getStatsNotUserIntrfcList((Date) filteredSearchKey.get("searchStartDt"), (Date) filteredSearchKey.get("searchEndDt"));
     }
 

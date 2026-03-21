@@ -1,9 +1,13 @@
-package io.nicheblog.dreamdiary.global.util.cmm;
+package io.nicheblog.dreamdiary.infrastructure.web.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
+import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.Constant;
+import lombok.experimental.UtilityClass;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
@@ -13,6 +17,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpSession;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +32,67 @@ import java.util.Map;
  *
  * @author nichefish
  */
-class ParamModule {
+@UtilityClass
+@Log4j2
+public class ParamUtils {
+
+
+    /**
+     * 공통 > dto의 property 값으로 paramString 생성
+     * 기본 :: 프로퍼티 그대로 변환
+     */
+    public String createQueryStringFromObject(final Object object) throws Exception {
+        // object -> hashMap
+        return createQueryStringFromObject(object, null);
+    }
+
+    /**
+     * 공통 > dto의 property 값으로 paramString 생성
+     * (SNAKE CASE 별도 처리 가능)
+     */
+    @SuppressWarnings({"deprecation", "unchecked"})
+    public String createQueryStringFromObject(final Object object, final String strategy) throws Exception {
+        // object -> hashMap
+        final ObjectMapper mapper = new ObjectMapper();
+        if ("SNAKE".equals(strategy)) {
+            mapper.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
+        }
+        final Map<String, Object> paramMap = mapper.convertValue(object, HashMap.class);
+        // map에서 value가 비어있는 key들을 걸러냄
+        final Map<String, Object> filteredParamMap = ParamUtils.filterParamMap(paramMap);
+        // queryString으로 변환;
+        return createParamStringFromMap(filteredParamMap);
+    }
+
+    /**
+     * 공통 > map의 key-value값으로 paramString 생성
+     */
+    public String createParamStringFromMap(final Map<String, Object> paramMap) throws Exception {
+        final StringBuilder paramData = new StringBuilder();
+        for (final Map.Entry<String, Object> param : paramMap.entrySet()) {
+            if (!paramData.isEmpty()) paramData.append("&");
+            paramData.append(URLEncoder.encode(param.getKey(), StandardCharsets.UTF_8));
+            paramData.append("=");
+            paramData.append(URLEncoder.encode(String.valueOf(param.getValue()), StandardCharsets.UTF_8));
+        }
+        log.info("creating paramString... paramData: {}, paramString: {}", paramData, paramData.toString());
+        return paramData.toString();
+    }
+
+    /**
+     * 쿼리스트링을 Map에 담아서 반환
+     */
+    public Map<String, String> queryStringToMap(final String queryString) {
+        log.info("queryString: {}", queryString);
+        if (StringUtils.isEmpty(queryString)) return null;
+
+        final Map<String, String> resultMap = new HashMap<>();
+        for (final String param : queryString.split("&")) {
+            final String[] pair = param.split("=");
+            resultMap.put(pair[0], (pair.length > 1) ? pair[1] : "");
+        }
+        return resultMap;
+    }
 
     /**
      * 상세/수정 화면에서 목록 화면 복귀시 세션에 목록 검색 인자 저장해둔 거 있는지 체크

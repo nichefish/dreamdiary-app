@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
-import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
+import io.nicheblog.dreamdiary.infrastructure.web.util.ParamUtils;
 import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.log.stats.model.LogStatsSearchParam;
@@ -65,14 +65,14 @@ public class LogStatsPageController
 
         // 활동 로그 목록 조회
         // 상세/수정 화면에서 목록 화면 복귀시 세션에 목록 검색 인자 저장해둔 거 있는지 체크
-        searchParam = (LogStatsSearchParam) CmmUtils.Param.checkPrevSearchParam(baseUrl, searchParam);
+        searchParam = (LogStatsSearchParam) ParamUtils.checkPrevSearchParam(baseUrl, searchParam);
         // 목록 조회
         final List<LogStatsUserDto> logStatsUserList = logStatsUserService.logStatsUserDtoList(searchParam, Pageable.unpaged());
         if (logStatsUserList != null) model.addAttribute("logStatsUserList", logStatsUserList);
         final List<LogStatsUserDto> logStatsNotUserList = logStatsUserService.logStatsNotUserDtoList(searchParam, Pageable.unpaged());
         if (logStatsUserList != null) model.addAttribute("logStatsNotUserList", logStatsNotUserList);
         // 목록 검색 URL + 파라미터 모델에 추가
-        CmmUtils.Param.setModelAttrMap(searchParam, baseUrl, model);
+        ParamUtils.setModelAttrMap(searchParam, baseUrl, model);
 
         return "/view/feature/admin/log/stats/log_stats_user_list";
     }
