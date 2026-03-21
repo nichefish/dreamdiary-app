@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.PaginationInfo;
-import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
+import io.nicheblog.dreamdiary.infrastructure.web.util.ParamUtils;
 import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.infrastructure.cd.model.ClCdDto;
 import io.nicheblog.dreamdiary.infrastructure.cd.model.ClCdSearchParam;
@@ -67,16 +67,16 @@ public class ClCdPageController
         model.addAttribute("pageNm", PageNm.LIST);
 
         // 상세/수정 화면에서 목록 화면 복귀시 세션에 목록 검색 인자 저장해둔 거 있는지 체크
-        searchParam = (ClCdSearchParam) CmmUtils.Param.checkPrevSearchParam(baseUrl, searchParam);
+        searchParam = (ClCdSearchParam) ParamUtils.checkPrevSearchParam(baseUrl, searchParam);
         // 페이징 정보 생성:: 공백시 pageSize=10, pageNo=1
         final Sort sort = Sort.by(Sort.Direction.ASC, "idx");
-        final PageRequest pageRequest = CmmUtils.Param.getPageRequest(searchParam, sort, model);
+        final PageRequest pageRequest = ParamUtils.getPageRequest(searchParam, sort, model);
         // 목록 조회
         final Page<ClCdDto> clCdList = clCdService.getPageDto(searchParam, pageRequest);
         model.addAttribute("clCdList", clCdList.getContent());
         model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(clCdList));
         // 목록 검색 URL + 파라미터 모델에 추가
-        CmmUtils.Param.setModelAttrMap(searchParam, baseUrl, model);
+        ParamUtils.setModelAttrMap(searchParam, baseUrl, model);
         // 코드 데이터 모델에 추가
         dtlCdService.setCdListToModel(Constant.CL_CTGR_CD, model);
 

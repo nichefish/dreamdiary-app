@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.feature.board.def.service.BoardDefService;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.PaginationInfo;
-import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
+import io.nicheblog.dreamdiary.infrastructure.web.util.ParamUtils;
 import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import lombok.Getter;
@@ -65,17 +65,17 @@ public class BoardDefPageController
         model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // 상세/수정 화면에서 목록 화면 복귀시 세션에 목록 검색 인자 저장해둔 거 있는지 체크
-        searchParam = (BoardDefSearchParam) CmmUtils.Param.checkPrevSearchParam(baseUrl, searchParam);
+        searchParam = (BoardDefSearchParam) ParamUtils.checkPrevSearchParam(baseUrl, searchParam);
         // 페이징 정보 생성:: 공백시 pageSize=10, pageNo=1
         final Sort sort = Sort.by(Sort.Direction.ASC, "idx");
-        final PageRequest pageRequest = CmmUtils.Param.getPageRequest(searchParam, sort, model);
+        final PageRequest pageRequest = ParamUtils.getPageRequest(searchParam, sort, model);
         // 목록 조회
         final Page<BoardDefDto> boardDefMngList = boardDefService.getPageDto(searchParam, pageRequest);
         model.addAttribute("boardDefMngList", boardDefMngList.getContent());
         model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(boardDefMngList));
 
         // 목록 검색 URL + 파라미터 모델에 추가
-        CmmUtils.Param.setModelAttrMap(searchParam, baseUrl, model);
+        ParamUtils.setModelAttrMap(searchParam, baseUrl, model);
         // 코드 정보 모델에 추가
 
         return "/view/feature/board/def/board_def_list";

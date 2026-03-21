@@ -7,7 +7,7 @@ import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
+import io.nicheblog.dreamdiary.infrastructure.web.util.ParamUtils;
 import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
@@ -58,7 +58,7 @@ public class CommentRestController
     ) throws Exception {
 
         final Sort sort = Sort.by(Sort.Direction.ASC, "regDt");
-        final PageRequest pageRequest = CmmUtils.Param.getPageRequest(searchParam, sort);
+        final PageRequest pageRequest = ParamUtils.getPageRequest(searchParam, sort);
         final Page<CommentDto> commentList = commentService.getPageDto(searchParam, pageRequest);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;

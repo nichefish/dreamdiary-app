@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.feature.admin.tmplat.service.TmplatDefService;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.PaginationInfo;
-import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
+import io.nicheblog.dreamdiary.infrastructure.web.util.ParamUtils;
 import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import lombok.Getter;
@@ -64,16 +64,16 @@ public class TmplatDefPageController
         model.addAttribute("pageNm", PageNm.LIST);
 
         // 상세/수정 화면에서 목록 화면 복귀시 :: 세션에 목록 검색 인자 저장해둔 거 있는지 체크
-        searchParam = (TmplatDefSearchParam) CmmUtils.Param.checkPrevSearchParam(baseUrl, searchParam);
+        searchParam = (TmplatDefSearchParam) ParamUtils.checkPrevSearchParam(baseUrl, searchParam);
 
         // 목록 조회
-        final PageRequest pageRequest = CmmUtils.Param.getPageRequest(searchParam, "regDt", model);
+        final PageRequest pageRequest = ParamUtils.getPageRequest(searchParam, "regDt", model);
         final Page<TmplatDefDto> tmplatList = tmplatDefService.getPageDto(searchParam, pageRequest);
         model.addAttribute("tmplatList", tmplatList.getContent());
         model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(tmplatList));
 
         // 목록 검색 URL + 파라미터 모델에 추가
-        CmmUtils.Param.setModelAttrMap(searchParam, baseUrl, model);
+        ParamUtils.setModelAttrMap(searchParam, baseUrl, model);
 
         return "/view/feature/admin/tmplat/def/tmplat_def_list";
     }

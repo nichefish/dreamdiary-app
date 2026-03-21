@@ -12,7 +12,7 @@ import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.PaginationInfo;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
-import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
+import io.nicheblog.dreamdiary.infrastructure.web.util.ParamUtils;
 import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.infrastructure.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
@@ -72,11 +72,11 @@ public class NoticePageController
         model.addAttribute("pageNm", PageNm.LIST);
 
         // 상세/수정 화면에서 목록 화면 복귀시 :: 세션에 목록 검색 인자 저장해둔 거 있는지 체크
-        searchParam = (NoticeSearchParam) CmmUtils.Param.checkPrevSearchParam(baseUrl, searchParam);
+        searchParam = (NoticeSearchParam) ParamUtils.checkPrevSearchParam(baseUrl, searchParam);
         // 상단 고정 목록 조회
         // model.addAttribute("noticeFxdList", noticeService.getFxdList());
         // 페이징 정보 생성:: 공백시 pageSize=10, pageNo=1
-        final PageRequest pageRequest = CmmUtils.Param.getPageRequest(searchParam, "managt.managtDt", model);
+        final PageRequest pageRequest = ParamUtils.getPageRequest(searchParam, "managt.managtDt", model);
         // 목록 조회 및 모델에 추가
         final Page<NoticeDto> noticeList = noticeService.getPageDto(searchParam, pageRequest);
         model.addAttribute("noticeList", noticeList.getContent());
@@ -86,7 +86,7 @@ public class NoticePageController
         // 코드 정보 모델에 추가
         dtlCdService.setCdListToModel(Constant.NOTICE_CTGR_CD, model);
         // 목록 검색 URL + 파라미터 모델에 추가
-        CmmUtils.Param.setModelAttrMap(searchParam, baseUrl, model);
+        ParamUtils.setModelAttrMap(searchParam, baseUrl, model);
 
         return "/view/feature/board/notice/notice_list";
     }
