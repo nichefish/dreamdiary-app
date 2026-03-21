@@ -2,10 +2,10 @@ package io.nicheblog.dreamdiary.auth.security.mapstruct;
 
 import io.nicheblog.dreamdiary.auth.Auth;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
-import io.nicheblog.dreamdiary.domain.user.info.entity.*;
-import io.nicheblog.dreamdiary.domain.user.info.model.profl.UserProflDto;
-import io.nicheblog.dreamdiary.domain.user.profl.entity.UserProflEntity;
-import io.nicheblog.dreamdiary.domain.user.profl.entity.UserProflEntityTestFactory;
+import io.nicheblog.dreamdiary.feature.user.info.entity.*;
+import io.nicheblog.dreamdiary.feature.user.info.model.profl.UserProflDto;
+import io.nicheblog.dreamdiary.feature.user.profl.entity.UserProflEntity;
+import io.nicheblog.dreamdiary.feature.user.profl.entity.UserProflEntityTestFactory;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;

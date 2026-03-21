@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.global.intrfc.entity.embed;
 
-import io.nicheblog.dreamdiary.domain.clsf.comment.entity.embed.CommentEmbedModule;
+import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbedModule;
 import io.nicheblog.dreamdiary.infrastructure.file.entity.AtchFileDtlEntity;
 import io.nicheblog.dreamdiary.infrastructure.file.entity.AtchFileEntity;
 import lombok.*;

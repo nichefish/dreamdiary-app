@@ -2,8 +2,7 @@ package io.nicheblog.dreamdiary.auth.security.controller;
 
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfoTestFactory;
-import io.nicheblog.dreamdiary.auth.security.controller.LgnPageController;
-import io.nicheblog.dreamdiary.domain.user.my.service.UserMyService;
+import io.nicheblog.dreamdiary.feature.user.my.service.UserMyService;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.BaseControllerTestHelper;
 import org.junit.jupiter.api.Assertions;

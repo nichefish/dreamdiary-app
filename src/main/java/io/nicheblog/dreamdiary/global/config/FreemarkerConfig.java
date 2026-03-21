@@ -124,7 +124,7 @@ public class FreemarkerConfig
         sharedVariables.put("Constant", statics.get("io.nicheblog.dreamdiary.global.Constant"));
         sharedVariables.put("Url", statics.get("io.nicheblog.dreamdiary.global.Url"));
         // TODO: SiteMenu 빼기
-        sharedVariables.put("SiteMenu", statics.get("io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu"));
+        sharedVariables.put("SiteMenu", statics.get("io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu"));
         sharedVariables.put("DateUtils", statics.get("io.nicheblog.dreamdiary.global.util.date.DateUtils"));
         return sharedVariables;
     }

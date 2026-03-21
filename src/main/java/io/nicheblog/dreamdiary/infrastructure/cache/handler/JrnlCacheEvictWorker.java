@@ -1,15 +1,15 @@
 package io.nicheblog.dreamdiary.infrastructure.cache.handler;
 
-import io.nicheblog.dreamdiary.domain.jrnl.day.service.strategy.JrnlDayCacheEvictor;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.service.strategy.JrnlDiaryCacheEvictor;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.service.strategy.JrnlDreamCacheEvictor;
-import io.nicheblog.dreamdiary.domain.jrnl.entry.service.strategy.JrnlEntryCacheEvictor;
-import io.nicheblog.dreamdiary.domain.jrnl.intrpt.service.strategy.JrnlIntrptCacheEvictor;
-import io.nicheblog.dreamdiary.domain.jrnl.sumry.service.strategy.JrnlSumryCacheEvictor;
-import io.nicheblog.dreamdiary.domain.jrnl.todo.service.strategy.JrnlTodoCacheEvictor;
+import io.nicheblog.dreamdiary.feature.jrnl.day.service.strategy.JrnlDayCacheEvictor;
+import io.nicheblog.dreamdiary.feature.jrnl.diary.service.strategy.JrnlDiaryCacheEvictor;
+import io.nicheblog.dreamdiary.feature.jrnl.dream.service.strategy.JrnlDreamCacheEvictor;
+import io.nicheblog.dreamdiary.feature.jrnl.entry.service.strategy.JrnlEntryCacheEvictor;
+import io.nicheblog.dreamdiary.feature.jrnl.intrpt.service.strategy.JrnlIntrptCacheEvictor;
+import io.nicheblog.dreamdiary.feature.jrnl.sumry.service.strategy.JrnlSumryCacheEvictor;
+import io.nicheblog.dreamdiary.feature.jrnl.todo.service.strategy.JrnlTodoCacheEvictor;
 import io.nicheblog.dreamdiary.infrastructure.cache.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.infrastructure.cache.service.CacheEvictor;
-import io.nicheblog.dreamdiary.domain.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.context.SecurityContextHolder;

@@ -2,11 +2,11 @@ package io.nicheblog.dreamdiary;
 
 import io.nicheblog.dreamdiary.auth.security.entity.AuthRoleEntity;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
-import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.model.LgnPolicyDto;
-import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.service.LgnPolicyService;
-import io.nicheblog.dreamdiary.domain.user.info.model.UserAuthRoleDto;
-import io.nicheblog.dreamdiary.domain.user.info.model.UserDto;
-import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
+import io.nicheblog.dreamdiary.feature.admin.lgnPolicy.model.LgnPolicyDto;
+import io.nicheblog.dreamdiary.feature.admin.lgnPolicy.service.LgnPolicyService;
+import io.nicheblog.dreamdiary.feature.user.info.model.UserAuthRoleDto;
+import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
+import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
 import io.nicheblog.dreamdiary.infrastructure.cache.event.CacheWarmupEvent;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.log.sys.event.LogSysEvent;

@@ -2,11 +2,11 @@ package io.nicheblog.dreamdiary.adapter._common.handler;
 
 import io.nicheblog.dreamdiary.adapter.jandi.JandiTopic;
 import io.nicheblog.dreamdiary.adapter.jandi.service.JandiApiService;
-import io.nicheblog.dreamdiary.domain.board.notice.model.NoticeDto;
-import io.nicheblog.dreamdiary.domain.board.post.model.BoardPostDto;
-import io.nicheblog.dreamdiary.domain.schdul.model.SchdulDto;
-import io.nicheblog.dreamdiary.domain.schdul.service.SchdulService;
-import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
+import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeDto;
+import io.nicheblog.dreamdiary.feature.board.post.model.BoardPostDto;
+import io.nicheblog.dreamdiary.feature.schdul.model.SchdulDto;
+import io.nicheblog.dreamdiary.feature.schdul.service.SchdulService;
+import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
 import io.nicheblog.dreamdiary.infrastructure.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.log.sys.event.LogSysEvent;

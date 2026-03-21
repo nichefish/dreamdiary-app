@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.infrastructure.notify.email.handler;
 
-import io.nicheblog.dreamdiary.domain.user.reqst.handler.UserReqstWorker;
-import io.nicheblog.dreamdiary.domain.user.reqst.model.UserReqstDto;
+import io.nicheblog.dreamdiary.feature.user.reqst.handler.UserReqstWorker;
+import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDto;
 import io.nicheblog.dreamdiary.infrastructure.notify.email.event.EmailSendEvent;
 import io.nicheblog.dreamdiary.infrastructure.notify.email.event.UserReqstVerificationEmailSendEvent;
 import io.nicheblog.dreamdiary.infrastructure.notify.email.model.EmailAddress;
