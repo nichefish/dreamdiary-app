@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.infrastructure.cache.model;
+package io.nicheblog.dreamdiary.feature.jrnl._shared.model;
 
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiaryDto;

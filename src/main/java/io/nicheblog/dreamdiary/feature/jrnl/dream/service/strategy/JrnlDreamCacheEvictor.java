@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.jrnl.dream.service.strategy;
 
-import io.nicheblog.dreamdiary.infrastructure.cache.event.JrnlCacheEvictEvent;
-import io.nicheblog.dreamdiary.infrastructure.cache.model.JrnlCacheEvictParam;
+import io.nicheblog.dreamdiary.feature.jrnl._shared.event.JrnlCacheEvictEvent;
+import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.infrastructure.cache.service.CacheEvictor;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;

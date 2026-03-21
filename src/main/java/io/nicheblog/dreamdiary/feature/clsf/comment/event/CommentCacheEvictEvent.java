@@ -1,7 +1,6 @@
-package io.nicheblog.dreamdiary.infrastructure.cache.event;
+package io.nicheblog.dreamdiary.feature.clsf.comment.event;
 
-import io.nicheblog.dreamdiary.infrastructure.cache.handler.JrnlCacheEvictEventListner;
-import io.nicheblog.dreamdiary.infrastructure.cache.model.JrnlCacheEvictParam;
+import io.nicheblog.dreamdiary.feature.clsf.comment.handler.CommentCacheEvictEventListner;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
@@ -9,24 +8,24 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * JrnlCacheEvictEvent
+ * CommentCacheEvictEvent
  * <pre>
- *  EhCache 캐시 evict 이벤트 :: 메인 로직과 분리
+ *  댓글 관련 캐시 evict 이벤트 :: 메인 로직과 분리
  * </pre>
  *
  * @author nichefish
- * @see JrnlCacheEvictEventListner
+ * @see CommentCacheEvictEventListner
  */
 @Getter
-public class JrnlCacheEvictEvent
+public class CommentCacheEvictEvent
         extends ApplicationEvent {
 
     /** 보안 컨텍스트 */
     private final SecurityContext securityContext;
     /** 저장 객체 */
-    private final JrnlCacheEvictParam cacheEvictParam;
+    private final Integer refPostNo;
     /** 컨텐츠 타입 */
-    private final ContentType contentType;
+    private final ContentType refContentType;
 
     /* ----- */
 
@@ -35,10 +34,10 @@ public class JrnlCacheEvictEvent
      *
      * @param source 이벤트의 출처를 나타내는 객체
      */
-    public JrnlCacheEvictEvent(final Object source, final JrnlCacheEvictParam cacheEvictParam, final ContentType contentType) {
+    public CommentCacheEvictEvent(final Object source, final Integer refPostNo, final String refContentType) {
         super(source);
         this.securityContext = SecurityContextHolder.getContext();
-        this.cacheEvictParam = cacheEvictParam;
-        this.contentType = contentType;
+        this.refPostNo = refPostNo;
+        this.refContentType = ContentType.valueOf(refContentType);
     }
 }
