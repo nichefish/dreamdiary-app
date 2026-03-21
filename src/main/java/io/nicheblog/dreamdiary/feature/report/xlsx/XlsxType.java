@@ -1,6 +1,6 @@
-package io.nicheblog.dreamdiary.infrastructure.report.xlsx;
+package io.nicheblog.dreamdiary.feature.report.xlsx;
 
-import io.nicheblog.dreamdiary.infrastructure.report.xlsx.model.XlsxCell;
+import io.nicheblog.dreamdiary.feature.report.xlsx.model.XlsxCell;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
