@@ -1,6 +1,8 @@
-package io.nicheblog.dreamdiary.global.model;
+package io.nicheblog.dreamdiary.infrastructure.web.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.nicheblog.dreamdiary.global.model.PaginationInfo;
+import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

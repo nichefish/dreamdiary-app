@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.infrastructure.messaging.snmp.util.SnmpUtils;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
-import io.nicheblog.dreamdiary.global.model.AjaxResponse;
+import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;

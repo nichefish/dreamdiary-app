@@ -9,7 +9,7 @@ import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
-import io.nicheblog.dreamdiary.global.model.AjaxResponse;
+import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;

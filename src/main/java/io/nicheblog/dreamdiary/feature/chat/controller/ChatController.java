@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.chat.model.ChatMsgDto;
 import io.nicheblog.dreamdiary.feature.chat.model.ChatMsgSearchParam;
 import io.nicheblog.dreamdiary.feature.chat.service.ChatMsgService;
-import io.nicheblog.dreamdiary.global.model.AjaxResponse;
+import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;

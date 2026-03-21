@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.global.handler;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
-import io.nicheblog.dreamdiary.global.model.AjaxResponse;
+import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.HttpUtils;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;

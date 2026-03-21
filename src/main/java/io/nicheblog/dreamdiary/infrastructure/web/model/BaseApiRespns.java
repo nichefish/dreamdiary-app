@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global.model;
+package io.nicheblog.dreamdiary.infrastructure.web.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
