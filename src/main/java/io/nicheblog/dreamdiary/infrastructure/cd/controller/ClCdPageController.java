@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.infrastructure.cd.controller;
 
-import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
-import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
+import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.infrastructure.cd.model.ClCdDto;
 import io.nicheblog.dreamdiary.infrastructure.cd.model.ClCdSearchParam;
 import io.nicheblog.dreamdiary.infrastructure.cd.service.ClCdService;
@@ -80,6 +80,6 @@ public class ClCdPageController
         // 코드 데이터 모델에 추가
         dtlCdService.setCdListToModel(Constant.CL_CTGR_CD, model);
 
-        return "/view/domain/admin/cd/cl_cd_list";
+        return "/view/feature/admin/cd/cl_cd_list";
     }
 }

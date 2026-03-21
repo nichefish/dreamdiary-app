@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.infrastructure.log.sys.controller;
 
-import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
-import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
+import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.log.sys.model.LogSysDto;
 import io.nicheblog.dreamdiary.infrastructure.log.sys.model.LogSysSearchParam;
@@ -79,6 +79,6 @@ public class LogSysPageController
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        return "/view/domain/admin/log/sys/log_sys_list";
+        return "/view/feature/admin/log/sys/log_sys_list";
     }
 }

@@ -1,14 +1,14 @@
 package io.nicheblog.dreamdiary.infrastructure.cache.model;
 
-import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryPostDto;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
-import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntryDto;
-import io.nicheblog.dreamdiary.domain.jrnl.intrpt.model.JrnlIntrptDto;
-import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumryDto;
-import io.nicheblog.dreamdiary.domain.jrnl.sumry.model.JrnlSumryReviewDto;
-import io.nicheblog.dreamdiary.domain.jrnl.todo.model.JrnlTodoDto;
+import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
+import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiaryDto;
+import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiaryPostDto;
+import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamDto;
+import io.nicheblog.dreamdiary.feature.jrnl.entry.model.JrnlEntryDto;
+import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptDto;
+import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryDto;
+import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryReviewDto;
+import io.nicheblog.dreamdiary.feature.jrnl.todo.model.JrnlTodoDto;
 import lombok.*;
 
 /**

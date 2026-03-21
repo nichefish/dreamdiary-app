@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.infrastructure.log.stats.controller;
 
-import io.nicheblog.dreamdiary.domain.admin.menu.SiteMenu;
-import io.nicheblog.dreamdiary.domain.admin.menu.model.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
+import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.log.stats.model.LogStatsSearchParam;
 import io.nicheblog.dreamdiary.infrastructure.log.stats.model.LogStatsUserDto;
@@ -74,6 +74,6 @@ public class LogStatsPageController
         // 목록 검색 URL + 파라미터 모델에 추가
         CmmUtils.Param.setModelAttrMap(searchParam, baseUrl, model);
 
-        return "/view/domain/admin/log/stats/log_stats_user_list";
+        return "/view/feature/admin/log/stats/log_stats_user_list";
     }
 }

@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.global.intrfc.entity;
 
-import io.nicheblog.dreamdiary.domain.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import lombok.*;
 
 import java.io.Serializable;

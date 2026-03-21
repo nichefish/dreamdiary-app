@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.auth.security.model;
 
-import io.nicheblog.dreamdiary.domain.user.info.model.profl.UserProflDto;
+import io.nicheblog.dreamdiary.feature.user.info.model.profl.UserProflDto;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Builder;

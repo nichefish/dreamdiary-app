@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.adapter.kasi.mapstruct;
 
 import io.nicheblog.dreamdiary.adapter.kasi.model.HldyKasiApiItemDto;
-import io.nicheblog.dreamdiary.domain.schdul.entity.SchdulEntity;
+import io.nicheblog.dreamdiary.feature.schdul.entity.SchdulEntity;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;

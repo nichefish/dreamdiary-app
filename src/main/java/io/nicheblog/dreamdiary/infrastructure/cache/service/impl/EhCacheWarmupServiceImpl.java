@@ -1,13 +1,13 @@
 package io.nicheblog.dreamdiary.infrastructure.cache.service.impl;
 
 import io.nicheblog.dreamdiary.DreamdiaryInitializer;
-import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDaySearchParam;
-import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayMetaService;
-import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayService;
-import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayTagService;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryTagService;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamTagService;
-import io.nicheblog.dreamdiary.domain.schdul.service.SchdulService;
+import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDaySearchParam;
+import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayMetaService;
+import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayService;
+import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayTagService;
+import io.nicheblog.dreamdiary.feature.jrnl.diary.service.JrnlDiaryTagService;
+import io.nicheblog.dreamdiary.feature.jrnl.dream.service.JrnlDreamTagService;
+import io.nicheblog.dreamdiary.feature.schdul.service.SchdulService;
 import io.nicheblog.dreamdiary.infrastructure.cache.service.CacheWarmupService;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;

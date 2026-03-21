@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.infrastructure.cache.event;
 
 import io.nicheblog.dreamdiary.infrastructure.cache.handler.JrnlCacheEvictEventListner;
 import io.nicheblog.dreamdiary.infrastructure.cache.model.JrnlCacheEvictParam;
-import io.nicheblog.dreamdiary.domain.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.security.core.context.SecurityContext;

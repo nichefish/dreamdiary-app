@@ -1,17 +1,17 @@
 package io.nicheblog.dreamdiary.infrastructure.cache.handler;
 
-import io.nicheblog.dreamdiary.domain.jrnl.day.model.JrnlDayDto;
-import io.nicheblog.dreamdiary.domain.jrnl.day.service.JrnlDayService;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.model.JrnlDiaryDto;
-import io.nicheblog.dreamdiary.domain.jrnl.diary.service.JrnlDiaryService;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.model.JrnlDreamDto;
-import io.nicheblog.dreamdiary.domain.jrnl.dream.service.JrnlDreamService;
-import io.nicheblog.dreamdiary.domain.jrnl.entry.model.JrnlEntryDto;
-import io.nicheblog.dreamdiary.domain.jrnl.entry.service.JrnlEntryService;
+import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
+import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayService;
+import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiaryDto;
+import io.nicheblog.dreamdiary.feature.jrnl.diary.service.JrnlDiaryService;
+import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamDto;
+import io.nicheblog.dreamdiary.feature.jrnl.dream.service.JrnlDreamService;
+import io.nicheblog.dreamdiary.feature.jrnl.entry.model.JrnlEntryDto;
+import io.nicheblog.dreamdiary.feature.jrnl.entry.service.JrnlEntryService;
 import io.nicheblog.dreamdiary.infrastructure.cache.event.CommentCacheEvictEvent;
 import io.nicheblog.dreamdiary.infrastructure.cache.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.infrastructure.cache.model.JrnlCacheEvictParam;
-import io.nicheblog.dreamdiary.domain.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
