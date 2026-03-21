@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global.model;
+package io.nicheblog.dreamdiary.infrastructure.web.model;
 
 import lombok.Getter;
 import lombok.Setter;

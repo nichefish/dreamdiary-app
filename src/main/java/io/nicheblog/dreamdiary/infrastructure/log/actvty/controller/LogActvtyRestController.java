@@ -1,13 +1,13 @@
 package io.nicheblog.dreamdiary.infrastructure.log.actvty.controller;
 
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyDto;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.service.LogActvtyService;
+import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global.intrfc.controller;
+package io.nicheblog.dreamdiary.infrastructure.web.controller;
 
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 
