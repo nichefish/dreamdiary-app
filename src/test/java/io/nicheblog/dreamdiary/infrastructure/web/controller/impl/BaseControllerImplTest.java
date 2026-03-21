@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global.intrfc.controller.impl;
+package io.nicheblog.dreamdiary.infrastructure.web.controller.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

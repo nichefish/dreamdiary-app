@@ -215,9 +215,24 @@ public interface ApiUrl {
     String SCHDUL_MDF_AJAX = Prefix.API + "/schdul/cal-mdf";
     String SCHDUL_DEL_AJAX = Prefix.API + "/schdul/cal-del";
 
-    String USER_REQST_REG_AJAX = Prefix.APP + "/user/reqst/reqst-reg";
-    String USER_REQST_CF_AJAX = Prefix.APP + "/user/reqst/reqst-cf";
-    String USER_REQST_UNCF_AJAX = Prefix.APP + "/user/reqst/reqst-uncf";
+    String USER_REQST_REG_AJAX = Prefix.API + "/user/reqst/reqst-reg";
+    String USER_REQST_CF_AJAX = Prefix.API + "/user/reqst/reqst-cf";
+    String USER_REQST_UNCF_AJAX = Prefix.API + "/user/reqst/reqst-uncf";
+
+    String JANDI_CONNECT_WH = "https://wh.jandi.com/connect-api/webhook";
+
+    /** (API) 한국천문연구원 : 특일 정보 조회 */
+    String API_HLDY_GET = Prefix.API + "/hldy/get-hldy-info.do";
+    
+    /** (API) SNMP : 메세지 발신 */
+    String URL_API_SNMP_SEND_AJAX = Prefix.API +"/snmp/send";
+
+    /** (API) JANDI : 메세지 송수신 */
+    String API_JANDI_SND_MSG = Prefix.API + "/jandi/send-msg.do";
+    String API_JANDI_RCV_MSG = Prefix.API + "/jandi/receive-msg.do";
+
+    /** (API) NOTION */
+    String API_NOTION_GET = Prefix.API + "/notion/notion.do";
 
     /**
      * PREFIX 정의 정보

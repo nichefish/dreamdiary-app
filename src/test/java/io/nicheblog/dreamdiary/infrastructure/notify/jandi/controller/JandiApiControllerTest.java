@@ -6,7 +6,7 @@ import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.model.JandiParam;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.service.JandiApiService;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImplTest;
+import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImplTest;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

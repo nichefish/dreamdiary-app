@@ -1,12 +1,12 @@
 package io.nicheblog.dreamdiary.infrastructure.messaging.jandi.controller;
 
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.model.JandiApiRespnsDto;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.model.JandiParam;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.service.JandiApiService;
+import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Getter;

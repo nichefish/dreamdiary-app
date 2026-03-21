@@ -2,10 +2,10 @@ package io.nicheblog.dreamdiary.infrastructure.web.config;
 
 import io.nicheblog.dreamdiary.auth.security.interceptor.CsrfInterceptor;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global.handler.UTF8DecodeResourceResolver;
 import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.infrastructure.freemarker.interceptor.FreemarkerInterceptor;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.interceptor.LogActvtyInterceptor;
+import io.nicheblog.dreamdiary.infrastructure.web.handler.UTF8DecodeResourceResolver;
 import io.nicheblog.dreamdiary.infrastructure.web.interceptor.CookieInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

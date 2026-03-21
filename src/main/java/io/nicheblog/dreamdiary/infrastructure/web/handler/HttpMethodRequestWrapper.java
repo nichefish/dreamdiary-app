@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global.handler;
+package io.nicheblog.dreamdiary.infrastructure.web.handler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
