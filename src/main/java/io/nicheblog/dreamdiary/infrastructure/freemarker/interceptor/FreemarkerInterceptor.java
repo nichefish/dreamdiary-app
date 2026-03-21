@@ -10,7 +10,7 @@ import io.nicheblog.dreamdiary.feature.admin.menu.service.MenuService;
 import io.nicheblog.dreamdiary.feature.board.def.service.BoardDefService;
 import io.nicheblog.dreamdiary.feature.board.notice.service.NoticeService;
 import io.nicheblog.dreamdiary.global.ActiveProfile;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.ReleaseInfo;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.infrastructure.web.config.WebMvcContextConfig;

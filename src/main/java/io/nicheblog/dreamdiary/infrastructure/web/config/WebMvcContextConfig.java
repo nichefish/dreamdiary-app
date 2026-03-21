@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.infrastructure.web.config;
 
 import io.nicheblog.dreamdiary.auth.security.interceptor.CsrfInterceptor;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.handler.UTF8DecodeResourceResolver;
 import io.nicheblog.dreamdiary.infrastructure.web.interceptor.CookieInterceptor;

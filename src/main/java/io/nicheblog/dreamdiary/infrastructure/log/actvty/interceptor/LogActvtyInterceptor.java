@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.LogType;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import lombok.RequiredArgsConstructor;

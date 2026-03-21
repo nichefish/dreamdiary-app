@@ -10,7 +10,7 @@ import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.event.LogAnonActvtyEvent;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.handler.HttpMethodRequestWrapper;

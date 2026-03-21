@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nicheblog.dreamdiary.feature.user.info.model.emplym.UserEmplymDto;
 import io.nicheblog.dreamdiary.feature.user.info.model.profl.UserProflDto;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import lombok.experimental.UtilityClass;
 import org.springframework.test.context.ActiveProfiles;

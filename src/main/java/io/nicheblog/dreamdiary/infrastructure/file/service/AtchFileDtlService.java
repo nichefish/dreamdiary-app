@@ -7,7 +7,7 @@ import io.nicheblog.dreamdiary.infrastructure.file.model.AtchFileDtlDto;
 import io.nicheblog.dreamdiary.infrastructure.file.repository.jpa.AtchFileDtlRepository;
 import io.nicheblog.dreamdiary.infrastructure.file.spec.AtchFileDtlSpec;
 import io.nicheblog.dreamdiary.infrastructure.file.utils.FileUtils;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.UUIDUtils;

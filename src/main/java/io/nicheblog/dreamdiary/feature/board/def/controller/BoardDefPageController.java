@@ -6,7 +6,7 @@ import io.nicheblog.dreamdiary.feature.board.def.model.BoardDefDto;
 import io.nicheblog.dreamdiary.feature.board.def.model.BoardDefSearchParam;
 import io.nicheblog.dreamdiary.feature.board.def.service.BoardDefService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.model.PaginationInfo;

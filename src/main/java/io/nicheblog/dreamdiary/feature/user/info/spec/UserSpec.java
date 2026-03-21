@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.feature.user.emplym.entity.UserEmplymEntity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.feature.user.profl.entity.UserProflEntity;
 import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseCrudSpec;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;

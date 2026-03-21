@@ -7,7 +7,7 @@ import io.nicheblog.dreamdiary.feature.flsys.model.FlsysSearchParam;
 import io.nicheblog.dreamdiary.feature.flsys.service.FlsysService;
 import io.nicheblog.dreamdiary.infrastructure.file.utils.FileUtils;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;

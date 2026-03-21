@@ -9,7 +9,7 @@ import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.feature.user.info.repository.jpa.UserRepository;
 import io.nicheblog.dreamdiary.feature.user.info.spec.UserSpec;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseClsfService;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;

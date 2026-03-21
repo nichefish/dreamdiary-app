@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.infrastructure.messaging.email.model;
 
 import io.nicheblog.dreamdiary.infrastructure.file.model.AtchFileDtlDto;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import lombok.*;
 
 import java.util.List;

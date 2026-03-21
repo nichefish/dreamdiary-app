@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.feature.schdul.controller;
 import io.nicheblog.dreamdiary.feature.schdul.model.SchdulSearchParam;
 import io.nicheblog.dreamdiary.feature.schdul.service.SchdulCalService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.intrfc.model.fullcalendar.BaseCalDto;

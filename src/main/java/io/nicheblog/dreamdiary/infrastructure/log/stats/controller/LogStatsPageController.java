@@ -6,7 +6,7 @@ import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.log.stats.model.LogStatsSearchParam;
 import io.nicheblog.dreamdiary.infrastructure.log.stats.model.LogStatsUserDto;
 import io.nicheblog.dreamdiary.infrastructure.log.stats.service.LogStatsUserService;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;

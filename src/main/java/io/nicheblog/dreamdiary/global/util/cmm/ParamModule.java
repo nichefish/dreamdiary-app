@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.global.util.cmm;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.collections4.MapUtils;

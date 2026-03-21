@@ -7,7 +7,7 @@ import io.nicheblog.dreamdiary.feature.clsf.sectn.entity.embed.SectnEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.sectn.entity.embed.SectnEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbedModule;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbed;
 import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbedModule;
