@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.global.config;
 
-import io.nicheblog.dreamdiary.global.filter.TraceFilter;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.filter.TraceFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
