@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.auth;
 
-import io.nicheblog.dreamdiary.infrastructure.messaging.email.model.EmailAddress;
 import io.nicheblog.dreamdiary.infrastructure.Constant;
+import io.nicheblog.dreamdiary.infrastructure.messaging.email.model.EmailAddress;
 
 /**
  * AuthConstant

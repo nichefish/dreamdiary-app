@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.infrastructure.file.spec;
 
-import io.nicheblog.dreamdiary.infrastructure.file.entity.AtchFileEntity;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
+import io.nicheblog.dreamdiary.infrastructure.file.entity.AtchFileEntity;
 import org.springframework.stereotype.Component;
 
 /**

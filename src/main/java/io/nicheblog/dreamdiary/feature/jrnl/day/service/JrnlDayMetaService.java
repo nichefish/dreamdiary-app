@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.feature.jrnl.day.service;
 
+import io.nicheblog.dreamdiary.feature.clsf.meta.model.MetaDto;
 import io.nicheblog.dreamdiary.feature.jrnl.day.entity.JrnlDayMetaEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.day.mapstruct.JrnlDayMetaMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.day.repository.jpa.JrnlDayMetaRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.day.spec.JrnlDayMetaSpec;
-import io.nicheblog.dreamdiary.feature.clsf.meta.model.MetaDto;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoReadableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

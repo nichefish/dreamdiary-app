@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.infrastructure.cd.repository.jpa;
 
-import io.nicheblog.dreamdiary.infrastructure.cd.entity.ClCdEntity;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
+import io.nicheblog.dreamdiary.infrastructure.cd.entity.ClCdEntity;
 import org.springframework.stereotype.Repository;
 
 /**

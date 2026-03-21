@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.infrastructure.file.entity;
 
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import io.nicheblog.dreamdiary.infrastructure.file.mapstruct.AtchFileDtlMapstruct;
 import io.nicheblog.dreamdiary.infrastructure.file.model.AtchFileDtlDto;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

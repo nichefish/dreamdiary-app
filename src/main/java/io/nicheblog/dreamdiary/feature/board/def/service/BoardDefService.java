@@ -1,13 +1,13 @@
 package io.nicheblog.dreamdiary.feature.board.def.service;
 
+import io.nicheblog.dreamdiary.feature.admin.menu.model.SiteAcsInfo;
 import io.nicheblog.dreamdiary.feature.board.def.entity.BoardDefEntity;
 import io.nicheblog.dreamdiary.feature.board.def.mapstruct.BoardDefMapstruct;
 import io.nicheblog.dreamdiary.feature.board.def.model.BoardDefDto;
 import io.nicheblog.dreamdiary.feature.board.def.repository.jpa.BoardDefRepository;
 import io.nicheblog.dreamdiary.feature.board.def.spec.BoardDefSpec;
-import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
-import io.nicheblog.dreamdiary.global.model.SiteAcsInfo;
+import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

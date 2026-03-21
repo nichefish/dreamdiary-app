@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.infrastructure.file.mapstruct;
 
-import io.nicheblog.dreamdiary.infrastructure.file.entity.AtchFileDtlEntity;
-import io.nicheblog.dreamdiary.infrastructure.file.model.AtchFileDtlDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
+import io.nicheblog.dreamdiary.infrastructure.file.entity.AtchFileDtlEntity;
+import io.nicheblog.dreamdiary.infrastructure.file.model.AtchFileDtlDto;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 

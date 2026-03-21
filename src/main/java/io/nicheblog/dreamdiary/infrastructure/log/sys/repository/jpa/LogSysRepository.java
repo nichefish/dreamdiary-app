@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.infrastructure.log.sys.repository.jpa;
 
-import io.nicheblog.dreamdiary.infrastructure.log.sys.entity.LogSysEntity;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
+import io.nicheblog.dreamdiary.infrastructure.log.sys.entity.LogSysEntity;
 import org.springframework.stereotype.Repository;
 
 /**

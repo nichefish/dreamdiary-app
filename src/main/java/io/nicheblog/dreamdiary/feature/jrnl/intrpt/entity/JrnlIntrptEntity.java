@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.jrnl.intrpt.entity;
 
-import io.nicheblog.dreamdiary.feature.jrnl.dream.entity.JrnlDreamEntity;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbedModule;
@@ -8,6 +7,7 @@ import io.nicheblog.dreamdiary.feature.clsf.state.entity.embed.StateEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbedModule;
+import io.nicheblog.dreamdiary.feature.jrnl.dream.entity.JrnlDreamEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseClsfEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbed;
 import io.nicheblog.dreamdiary.global.intrfc.entity.embed.AtchFileEmbedModule;

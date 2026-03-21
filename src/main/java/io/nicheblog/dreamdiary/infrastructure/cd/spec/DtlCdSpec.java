@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.infrastructure.cd.spec;
 
-import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
+import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
 import org.springframework.stereotype.Component;
 
 /**

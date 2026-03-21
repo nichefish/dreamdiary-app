@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.user.reqst.event;
 
-import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDto;
 import io.nicheblog.dreamdiary.feature.user.reqst.handler.UserReqstVerificationEmailEventListener;
+import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDto;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 

@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.infrastructure.log.actvty.handler;
 
+import io.nicheblog.dreamdiary.global.config.AsyncConfig;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.event.LogAnonActvtyEvent;
 import io.nicheblog.dreamdiary.infrastructure.log.sys.event.LogSysEvent;
-import io.nicheblog.dreamdiary.global.config.AsyncConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;

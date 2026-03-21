@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.infrastructure.file.repository.jpa;
 
-import io.nicheblog.dreamdiary.infrastructure.file.entity.AtchFileDtlEntity;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
+import io.nicheblog.dreamdiary.infrastructure.file.entity.AtchFileDtlEntity;
 import org.springframework.stereotype.Repository;
 
 /**

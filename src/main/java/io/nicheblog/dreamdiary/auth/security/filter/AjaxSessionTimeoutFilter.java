@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.auth.security.filter;
 
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.event.LogAnonActvtyEvent;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
-import io.nicheblog.dreamdiary.global.util.HttpUtils;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.nicheblog.dreamdiary.infrastructure.web.util.HttpUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;

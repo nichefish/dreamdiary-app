@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.admin.menu.entity;
 
-import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.Sortable;
 import io.nicheblog.dreamdiary.global.intrfc.entity.Usable;
+import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;

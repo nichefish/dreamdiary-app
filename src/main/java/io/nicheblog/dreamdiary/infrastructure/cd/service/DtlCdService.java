@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.infrastructure.cd.service;
 
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import io.nicheblog.dreamdiary.infrastructure.cache.config.CacheableConfig;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.RedisUtils;
@@ -9,7 +10,6 @@ import io.nicheblog.dreamdiary.infrastructure.cd.mapstruct.DtlCdMapstruct;
 import io.nicheblog.dreamdiary.infrastructure.cd.model.DtlCdDto;
 import io.nicheblog.dreamdiary.infrastructure.cd.repository.jpa.DtlCdRepository;
 import io.nicheblog.dreamdiary.infrastructure.cd.spec.DtlCdSpec;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
