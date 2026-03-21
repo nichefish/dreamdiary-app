@@ -177,7 +177,7 @@
 
 <#--include::modals-->
 <#include "/view/feature/clsf/comment/_modal/_comment_list_modal.ftlh">
-<#include "/view/infrastructure/file/_modal/_atch_file_list_modal.ftlh">
+<#include "/view/feature/clsf/file/_modal/_atch_file_list_modal.ftlh">
 
 <#--include::board_post_module-->
 <#include "/view/feature/board/post/_modal/_board_post_dtl_modal.ftlh">

@@ -1,11 +1,6 @@
 package io.nicheblog.dreamdiary.global.intrfc.mapstruct.helper;
 
 import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.managt.entity.embed.ManagtEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.shared.entity.BaseClsfEntity;
-import io.nicheblog.dreamdiary.feature.clsf.shared.model.BaseClsfDto;
-import io.nicheblog.dreamdiary.feature.clsf.viewer.entity.embed.ViewerEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditRegEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
@@ -16,7 +11,6 @@ import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cd.service.DtlCdService;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.CollectionUtils;
 import org.mapstruct.MappingTarget;
 import org.springframework.stereotype.Component;
 
@@ -69,24 +63,5 @@ public class MapstructHelper {
             }
         }
         // CLSF :: BaseClsfMapstruct쪽에 정의
-    }
-
-    /** 
-     * 새 글 여부 처리 로직:: 메소드 분리
-     *
-     * @param entity 새 글 여부를 판단할 BaseClsfEntity 객체
-     * @return 새 글이면 true, 그렇지 않으면 false
-     */
-    public static <Entity extends BaseClsfEntity, Dto extends BaseClsfDto> Boolean determineIfNew(Entity entity) throws Exception {
-
-        if (((ManagtEmbedModule) entity).getManagt() == null || ((ManagtEmbedModule) entity).getManagt().getManagtDt() == null) return false;
-        // 최종수정 이후 7일 지난 글은 새 글이 아님
-        if (!((ManagtEmbedModule) entity).getManagt().getManagtDt().after(DateUtils.getCurrDateAddDay(-7))) return false;
-        // 내가 최종수정자면 false
-        if (AuthUtils.isRegstr(((ManagtEmbedModule) entity).getManagt().getManagtrId())) return false;
-        // 열람자에 내가 없으면 true
-        if (((ViewerEmbedModule) entity).getViewer() == null || CollectionUtils.isEmpty(((ViewerEmbedModule) entity).getViewer().getList())) return true;
-        return ((ViewerEmbedModule) entity).getViewer().getList().stream()
-                .anyMatch(e -> !AuthUtils.getLgnUserId().equals(e.getRegstrId()));
     }
 }

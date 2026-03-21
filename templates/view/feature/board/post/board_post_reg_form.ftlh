@@ -104,7 +104,7 @@
             </div>
 
             <#--페이지:: 첨부파일 추가추가 영역-->
-            <#include "/view/infrastructure/file/_atch_file_page_reg_area.ftlh">
+            <#include "/view/feature/clsf/file/_atch_file_page_reg_area.ftlh">
 
             <!-- #include:: component:: 파일시스템 참조 -->
 

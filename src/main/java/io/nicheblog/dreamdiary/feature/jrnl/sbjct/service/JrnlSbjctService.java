@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.jrnl.sbjct.service;
 
+import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.feature.clsf.managt.event.ManagtrAddEvent;
 import io.nicheblog.dreamdiary.feature.clsf.shared.service.BaseClsfService;
 import io.nicheblog.dreamdiary.feature.clsf.tag.event.TagProcEvent;
@@ -9,7 +10,6 @@ import io.nicheblog.dreamdiary.feature.jrnl.sbjct.model.JrnlSbjctDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sbjct.repository.jpa.JrnlSbjctRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.sbjct.spec.JrnlSbjctSpec;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseMultipartWritableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

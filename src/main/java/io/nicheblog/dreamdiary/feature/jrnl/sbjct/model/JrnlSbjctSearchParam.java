@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.jrnl.sbjct.model;
 
-import io.nicheblog.dreamdiary.global.intrfc.model.param.BasePostSearchParam;
+import io.nicheblog.dreamdiary.feature.clsf.shared.model.param.BaseClsfSearchParam;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -19,6 +19,6 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class JrnlSbjctSearchParam
-        extends BasePostSearchParam {
+        extends BaseClsfSearchParam {
     //
 }

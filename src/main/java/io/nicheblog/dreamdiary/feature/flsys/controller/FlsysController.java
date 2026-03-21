@@ -2,13 +2,13 @@ package io.nicheblog.dreamdiary.feature.flsys.controller;
 
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
+import io.nicheblog.dreamdiary.feature.clsf.file.utils.FileUtils;
 import io.nicheblog.dreamdiary.feature.flsys.model.FlsysDto;
 import io.nicheblog.dreamdiary.feature.flsys.model.FlsysSearchParam;
 import io.nicheblog.dreamdiary.feature.flsys.service.FlsysService;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.Constant;
-import io.nicheblog.dreamdiary.infrastructure.file.utils.FileUtils;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;

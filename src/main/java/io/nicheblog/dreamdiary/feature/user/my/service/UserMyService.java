@@ -1,6 +1,8 @@
 package io.nicheblog.dreamdiary.feature.user.my.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.feature.clsf.file.model.AtchFileDtlDto;
+import io.nicheblog.dreamdiary.feature.clsf.file.utils.FileUtils;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserPwChgParam;
 import io.nicheblog.dreamdiary.feature.user.info.repository.jpa.UserRepository;
@@ -8,8 +10,6 @@ import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
-import io.nicheblog.dreamdiary.infrastructure.file.model.AtchFileDtlDto;
-import io.nicheblog.dreamdiary.infrastructure.file.utils.FileUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;

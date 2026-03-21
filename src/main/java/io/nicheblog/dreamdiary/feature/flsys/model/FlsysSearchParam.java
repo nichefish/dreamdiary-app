@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.flsys.model;
 
-import io.nicheblog.dreamdiary.global.intrfc.model.param.BasePostSearchParam;
+import io.nicheblog.dreamdiary.feature.clsf.shared.model.param.BaseClsfSearchParam;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -22,7 +22,7 @@ import javax.validation.constraints.Size;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class FlsysSearchParam
-        extends BasePostSearchParam {
+        extends BaseClsfSearchParam {
 
     /** 참조 글 번호 */
     @Positive
