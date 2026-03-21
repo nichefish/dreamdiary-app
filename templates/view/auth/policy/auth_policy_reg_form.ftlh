@@ -1,5 +1,5 @@
 <#--
- * 로그인 정책(lgn_policy) > 관리 화면
+ * 인증 정책(auth_policy) > 관리 화면
  -->
 
 <#import "/layout/layout_default.ftlh" as layout >
@@ -10,8 +10,8 @@
     <#--begin::Card body-->
     <div class="card-body">
         <#--begin::Form-->
-        <form name="lgnPolicyForm" id="lgnPolicyForm" class="form">
-            <input type="hidden" name="lgnPolicyNo" value="${lgnPolicy.lgnPolicyNo!}">
+        <form name="authPolicyForm" id="authPolicyForm" class="form">
+            <input type="hidden" name="authPolicyNo" value="${authPolicy.authPolicyNo!}">
             <#--begin::Row-->
             <div class="row mb-4">
                 <div class="col-xl-2 col-form-label fs-6 fw-bold">
@@ -19,7 +19,7 @@
                 </div>
                 <div class="col-xl-1">
                     <input type="text" name="lgnLockDy" id="lgnLockDy" class="form-control form-control-solid text-end required number"
-                           value="${lgnPolicy.lgnLockDy!}" maxlength="3" />
+                           value="${authPolicy.lgnLockDy!}" maxlength="3" />
                     <div id="lgnLockDy_validate_span"></div>
                 </div>
                 <div class="col-xl-1 col-form-label w-5">
@@ -37,7 +37,7 @@
                 </div>
                 <div class="col-xl-1">
                     <input type="text" name="lgnTryLmt" id="lgnTryLmt" class="form-control form-control-solid text-end required number"
-                           value="${lgnPolicy.lgnTryLmt!}" maxlength="3" />
+                           value="${authPolicy.lgnTryLmt!}" maxlength="3" />
                     <div id="lgnTryLmt_validate_span"></div>
                 </div>
                 <div class="col-xl-1 col-form-label w-5">
@@ -55,7 +55,7 @@
                 </div>
                 <div class="col-xl-1">
                     <input type="text" name="pwChgDy" id="pwChgDy" class="form-control form-control-solid text-end required number"
-                           value="${lgnPolicy.pwChgDy!}" maxlength="3" />
+                           value="${authPolicy.pwChgDy!}" maxlength="3" />
                     <div id="pwChgDy_validate_span"></div>
                 </div>
                 <div class="col-xl-1 col-form-label w-5">
@@ -73,7 +73,7 @@
                 </div>
                 <div class="col-xl-2">
                     <input type="password" name="pwForReset" id="pwForReset" class="form-control form-control-solid required"
-                           value="${lgnPolicy.pwForReset!}" maxlength="16" autocomplete="off" />
+                           value="${authPolicy.pwForReset!}" maxlength="16" autocomplete="off" />
                     <div id="pwForReset_validate_span"></div>
                 </div>
                 <div class="col-xl-8 text-noti">
@@ -88,16 +88,16 @@
         <#--버튼 영역-->
         <div class="d-flex justify-content-end">
             <#--페이지:: 버튼: 저장하기-->
-            <@component.post_btn_submit "dF.LgnPolicy.submit();" />
+            <@component.post_btn_submit "dF.AuthPolicy.submit();" />
         </div>
     </div>
 </div>
 <!--end::Card-->
 
 <#--include::script modules-->
-<script type="text/javascript" src="/js/view/auth/poilcy/lgn_policy/lgn_policy_module.js"></script>
+<script type="text/javascript" src="/js/view/auth/policy/auth_policy_module.js"></script>
 
 <!--include::page scripts-->
-<script type="text/javascript" src="/js/view/auth/poilcy/lgn_policy/lgn_policy_reg_form.js"></script>
+<script type="text/javascript" src="/js/view/auth/policy/auth_policy_reg_form.js"></script>
 
 </@layout.layout>

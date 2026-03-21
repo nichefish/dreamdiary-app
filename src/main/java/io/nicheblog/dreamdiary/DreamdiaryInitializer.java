@@ -2,8 +2,8 @@ package io.nicheblog.dreamdiary;
 
 import io.nicheblog.dreamdiary.auth.security.entity.AuthRoleEntity;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
-import io.nicheblog.dreamdiary.auth.policy.model.LgnPolicyDto;
-import io.nicheblog.dreamdiary.auth.policy.service.LgnPolicyService;
+import io.nicheblog.dreamdiary.auth.policy.model.AuthPolicyDto;
+import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyService;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserAuthRoleDto;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
@@ -45,7 +45,7 @@ public class DreamdiaryInitializer
     private final ActiveProfile activeProfile;
     private final AuthService authService;
     private final UserService userService;
-    private final LgnPolicyService lgnPolicyService;
+    private final AuthPolicyService authPolicyService;
     private final ApplicationEventPublisherWrapper publisher;
 
     @Value("${system.init-temp-pw:}")
@@ -62,8 +62,8 @@ public class DreamdiaryInitializer
         log.info("DreamdiaryApplication init... activeProfile: {}", activeProfile.getActive());
 
         this.regSystemAcntIfEmpty();
-        // 로그인 정책 부재시 등록 :: 메소드 분리
-        this.regLgnPolicyIfEmpty();
+        // 인증 정책 부재시 등록 :: 메소드 분리
+        this.regAuthPolicyIfEmpty();
 
         // 파일 관련 기본 폴더 생성
         final File fileDirectory = new File("file/");
@@ -141,33 +141,33 @@ public class DreamdiaryInitializer
     }
 
     /**
-     * 최초 실행시 로그인 정책이 공백이므로 기본값 자동 등록. (PW 암호화)
+     * 최초 실행시 인증 정책이 공백이므로 기본값 자동 등록. (PW 암호화)
      *
      * @see LogSysEventListener
      */
-    public void regLgnPolicyIfEmpty() {
+    public void regAuthPolicyIfEmpty() {
 
         final LogSysParam logParam = new LogSysParam();
 
         boolean isSuccess = false;
-        boolean lgnPolicyExists = false;
+        boolean authPolicyExists = false;
         String rsltMsg = "";
         try {
-            // 로그인 정책 존재여부 체크
-            final LgnPolicyDto rsLgnPolicy = lgnPolicyService.getDtlDto();
-            if (rsLgnPolicy != null) {
-                lgnPolicyExists = true;
+            // 인증 정책 존재여부 체크
+            final AuthPolicyDto rsAuthPolicy = authPolicyService.getDtlDto();
+            if (rsAuthPolicy != null) {
+                authPolicyExists = true;
                 return;
             }
-            // 로그인 정책 부재시 등록:: 메소드 분리
-            isSuccess = this.regLgnPolicy();
+            // 인증 정책 부재시 등록:: 메소드 분리
+            isSuccess = this.regAuthPolicy();
             rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
         } catch (final Exception e) {
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);
         } finally {
-            // 로그인 정책 등록 처리했을 경우 로그 적재
-            if (!lgnPolicyExists) {
+            // 인증 정책 등록 처리했을 경우 로그 적재
+            if (!authPolicyExists) {
                 logParam.setResult(isSuccess, rsltMsg);
                 publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
             }
@@ -175,18 +175,18 @@ public class DreamdiaryInitializer
     }
 
     /**
-     * 로그인 정책 등록.
+     * 인증 정책 등록.
      * 임의의 고정 패스워드로 생성되었으므로 최초설치 후 직접 비밀번호를 변경해 주어야 한다.
      */
-    public boolean regLgnPolicy() throws Exception {
+    public boolean regAuthPolicy() throws Exception {
 
-        final LgnPolicyDto lgnPolicy = LgnPolicyDto.builder()
+        final AuthPolicyDto authPolicy = AuthPolicyDto.builder()
                 .lgnTryLmt(5)
                 .pwChgDy(90)
                 .lgnLockDy(90)
                 .pwForReset(SYSTEM_INIT_TEMP_PW)
                 .build();
 
-        return lgnPolicyService.regist(lgnPolicy).getRslt();
+        return authPolicyService.regist(authPolicy).getRslt();
     }
 }

@@ -1,8 +1,7 @@
-package io.nicheblog.dreamdiary.feature.admin.lgnPolicy.repository.jpa;
+package io.nicheblog.dreamdiary.auth.policy.repository.jpa;
 
-import io.nicheblog.dreamdiary.auth.policy.entity.LgnPolicyEntity;
-import io.nicheblog.dreamdiary.auth.policy.repository.jpa.LgnPolicyRepository;
-import io.nicheblog.dreamdiary.feature.admin.lgnPolicy.entity.LgnPolicyEntityTestFactory;
+import io.nicheblog.dreamdiary.auth.policy.entity.AuthPolicyEntity;
+import io.nicheblog.dreamdiary.auth.policy.entity.AuthPolicyEntityTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
 import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
@@ -22,9 +21,9 @@ import javax.persistence.EntityNotFoundException;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * LgnPolicyRepositoryTest
+ * AuthPolicyRepositoryTest
  * <pre>
- *  로그인 정책 관리 (JPA) Repository 테스트 모듈
+ *  인증 정책 관리 (JPA) Repository 테스트 모듈
  * </pre>
  *
  * @author nichefish
@@ -35,20 +34,20 @@ import static org.junit.jupiter.api.Assertions.*;
 @ImportAutoConfiguration(DataSourceConfig.class)
 @Import(TestAuditConfig.class)
 @Log4j2
-class LgnPolicyRepositoryTest {
+class AuthPolicyRepositoryTest {
 
     @Autowired
-    private LgnPolicyRepository lgnPolicyRepository;
+    private AuthPolicyRepository authPolicyRepository;
 
-    private LgnPolicyEntity lgnPolicyEntity;
+    private AuthPolicyEntity authPolicyEntity;
 
     /**
      * 각 테스트 시작 전 세팅 초기화.
      */
     @BeforeEach
     void setUp() throws Exception {
-        // 공통적으로 사용할 lgnPolicyEntity 초기화
-        lgnPolicyEntity = LgnPolicyEntityTestFactory.create();
+        // 공통적으로 사용할 authPolicyEntity 초기화
+        authPolicyEntity = AuthPolicyEntityTestFactory.create();
     }
 
     /**
@@ -59,13 +58,13 @@ class LgnPolicyRepositoryTest {
         // Given::
 
         // When::
-        final LgnPolicyEntity registered = lgnPolicyRepository.save(lgnPolicyEntity);
-        final Integer key = registered.getLgnPolicyNo();
-        final LgnPolicyEntity retrieved = lgnPolicyRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
+        final AuthPolicyEntity registered = authPolicyRepository.save(authPolicyEntity);
+        final Integer key = registered.getAuthPolicyNo();
+        final AuthPolicyEntity retrieved = authPolicyRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
-        assertNotNull(retrieved.getLgnPolicyNo(), "저장된 엔티티의 key 값이 없습니다.");
+        assertNotNull(retrieved.getAuthPolicyNo(), "저장된 엔티티의 key 값이 없습니다.");
         // audit
         assertNotNull(retrieved.getRegDt(), "등록일자 audit 처리가 되지 않았습니다.");
         assertNotNull(retrieved.getRegstrId(),  "등록자 audit 처리가 되지 않았습니다.");
@@ -78,17 +77,17 @@ class LgnPolicyRepositoryTest {
     @Test
     public void testModify() throws Exception {
         // Given::
-        LgnPolicyEntity registered = lgnPolicyRepository.save(lgnPolicyEntity);
-        Integer key = registered.getLgnPolicyNo();
+        AuthPolicyEntity registered = authPolicyRepository.save(authPolicyEntity);
+        Integer key = registered.getAuthPolicyNo();
 
         // When::
-        LgnPolicyEntity toModify = lgnPolicyRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
+        AuthPolicyEntity toModify = authPolicyRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
         toModify.setLgnTryLmt(25);
-        LgnPolicyEntity modified = lgnPolicyRepository.save(toModify);
+        AuthPolicyEntity modified = authPolicyRepository.save(toModify);
 
         // Then::
         assertNotNull(modified, "저장한 데이터를 조회할 수 없습니다.");
-        assertNotNull(modified.getLgnPolicyNo(), "저장된 엔티티의 key 값이 없습니다.");
+        assertNotNull(modified.getAuthPolicyNo(), "저장된 엔티티의 key 값이 없습니다.");
         // audit
         assertNotNull(modified.getMdfDt(), "수정일자 audit 처리가 되지 않았습니다.");
         assertNotNull(modified.getMdfusrId(),  "수정자 audit 처리가 되지 않았습니다.");
@@ -103,14 +102,14 @@ class LgnPolicyRepositoryTest {
     @Test
     public void testDelete() throws Exception {
         // Given::
-        final LgnPolicyEntity registered = lgnPolicyRepository.save(lgnPolicyEntity);
-        final Integer key = registered.getLgnPolicyNo();
+        final AuthPolicyEntity registered = authPolicyRepository.save(authPolicyEntity);
+        final Integer key = registered.getAuthPolicyNo();
 
         // When::
-        final LgnPolicyEntity toDelete = lgnPolicyRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete")));
-        lgnPolicyRepository.delete(toDelete);
+        final AuthPolicyEntity toDelete = authPolicyRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete")));
+        authPolicyRepository.delete(toDelete);
 
-        final LgnPolicyEntity retrieved = lgnPolicyRepository.findById(key).orElse(null);
+        final AuthPolicyEntity retrieved = authPolicyRepository.findById(key).orElse(null);
 
         // Then::
         assertNull(retrieved, "삭제가 제대로 이루어지지 않았습니다.");

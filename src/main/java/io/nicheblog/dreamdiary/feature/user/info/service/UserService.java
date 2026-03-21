@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.user.info.service;
 
-import io.nicheblog.dreamdiary.auth.policy.entity.LgnPolicyEntity;
-import io.nicheblog.dreamdiary.auth.policy.service.LgnPolicyService;
+import io.nicheblog.dreamdiary.auth.policy.entity.AuthPolicyEntity;
+import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyService;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserStusEmbed;
 import io.nicheblog.dreamdiary.feature.user.info.mapstruct.UserMapstruct;
@@ -55,7 +55,7 @@ public class UserService
         return this.mapstruct;
     }
 
-    private final LgnPolicyService lgnPolicyService;
+    private final AuthPolicyService authPolicyService;
     private final PasswordEncoder passwordEncoder;
 
     /**
@@ -144,8 +144,8 @@ public class UserService
         if (retrievedEntity == null) throw new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException"));
 
         // 로그인 설정 조회 (cachable)
-        final LgnPolicyEntity lgnPolicy = lgnPolicyService.getDtlEntity();
-        final String pwForReset = lgnPolicy.getPwForReset();
+        final AuthPolicyEntity authPolicy = authPolicyService.getDtlEntity();
+        final String pwForReset = authPolicy.getPwForReset();
         // update
         retrievedEntity.setPassword(pwForReset);
         retrievedEntity.acntStus.setNeedsPwReset("Y");
@@ -199,8 +199,8 @@ public class UserService
         if (StringUtils.isEmpty(userId)) return false;
         if (Constant.SYSTEM_ACNT.equals(userId) || Constant.DEV_ACNT.equals(userId)) return false;
 
-        final LgnPolicyEntity lgnPolicy = lgnPolicyService.getDtlEntity();
-        final Integer lgnLockDy = lgnPolicy.getLgnLockDy();
+        final AuthPolicyEntity authPolicy = authPolicyService.getDtlEntity();
+        final Integer lgnLockDy = authPolicy.getLgnLockDy();
 
         final UserEntity user = this.getDtlEntity(userId);
         Date lastLgnDt = user.acntStus.getLstLgnDt();

@@ -11,9 +11,9 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
 /**
- * LgnPolicyDto
+ * AuthPolicyDto
  * <pre>
- *  로그인 정책 정보 Dto.
+ *  인증 정책 정보 Dto.
  * </pre>
  *
  * @author nichefish
@@ -24,11 +24,11 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class LgnPolicyDto
+public class AuthPolicyDto
         extends BaseAuditDto {
 
-    /** 로그인 정책 고유 번호 (PK) */
-    private Integer lgnPolicyNo;
+    /** 인증 정책 고유 번호 (PK) */
+    private Integer authPolicyNo;
 
     /** 로그인 최대 시도 횟수 */
     @Positive

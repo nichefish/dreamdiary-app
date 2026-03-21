@@ -134,8 +134,8 @@ public interface ApiUrl {
     String TAG_PROPERTY_MDF_AJAX = Prefix.API + "/tag-property/tag-property-mdf";
     String TAG_PROPERTY_DEL_AJAX = Prefix.API + "/tag-property/tag-property-del";
 
-    /** 로그인 정책 관리 */
-    String LGN_POLICY_REG_AJAX = Prefix.API + "/lgn-policy/reg";
+    /** 인증 정책 관리 */
+    String AUTH_POLICY_REG_AJAX = Prefix.API + "/lgn-policy/reg";
 
     /** 메뉴 관리 */
     String MENU_MAIN_LIST_AJAX = Prefix.API + "/menu/menu-main-list";
