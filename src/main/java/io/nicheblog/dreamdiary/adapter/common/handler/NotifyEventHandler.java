@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.adapter.common.handler;
 
-import io.nicheblog.dreamdiary.adapter.jandi.JandiTopic;
-import io.nicheblog.dreamdiary.adapter.jandi.service.JandiApiService;
+import io.nicheblog.dreamdiary.infrastructure.notify.jandi.JandiTopic;
+import io.nicheblog.dreamdiary.infrastructure.notify.jandi.service.JandiApiService;
 import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeDto;
 import io.nicheblog.dreamdiary.feature.board.post.model.BoardPostDto;
 import io.nicheblog.dreamdiary.feature.schdul.model.SchdulDto;
