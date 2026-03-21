@@ -1,6 +1,6 @@
-package io.nicheblog.dreamdiary.infrastructure.cache.handler;
+package io.nicheblog.dreamdiary.feature.jrnl._shared.handler;
 
-import io.nicheblog.dreamdiary.infrastructure.cache.event.JrnlCacheEvictEvent;
+import io.nicheblog.dreamdiary.feature.jrnl._shared.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.global.handler.CustomEventBus;
 import io.nicheblog.dreamdiary.global.handler.CustomEventHandler;
 import lombok.RequiredArgsConstructor;

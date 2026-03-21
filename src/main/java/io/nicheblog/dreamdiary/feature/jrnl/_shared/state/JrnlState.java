@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.feature.jrnl.state;
+package io.nicheblog.dreamdiary.feature.jrnl._shared.state;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.clsf.state.adapter;
 
-import io.nicheblog.dreamdiary.feature.jrnl.state.JrnlState;
+import io.nicheblog.dreamdiary.feature.jrnl._shared.state.JrnlState;
 import io.nicheblog.dreamdiary.feature.clsf.state.StateCd;
 
 /**

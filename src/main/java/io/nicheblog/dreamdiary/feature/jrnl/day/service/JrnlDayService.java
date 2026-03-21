@@ -11,9 +11,9 @@ import io.nicheblog.dreamdiary.feature.jrnl.day.repository.mybatis.JrnlDayMapper
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.helper.JrnlDayViewHelper;
 import io.nicheblog.dreamdiary.feature.jrnl.day.spec.JrnlDaySpec;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiaryDto;
-import io.nicheblog.dreamdiary.feature.jrnl.state.JrnlStateMaps;
-import io.nicheblog.dreamdiary.infrastructure.cache.event.JrnlCacheEvictEvent;
-import io.nicheblog.dreamdiary.infrastructure.cache.model.JrnlCacheEvictParam;
+import io.nicheblog.dreamdiary.feature.jrnl._shared.state.JrnlStateMaps;
+import io.nicheblog.dreamdiary.feature.jrnl._shared.event.JrnlCacheEvictEvent;
+import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.meta.event.JrnlMetaProcEvent;

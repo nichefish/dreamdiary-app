@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.infrastructure.cache.handler;
+package io.nicheblog.dreamdiary.feature.jrnl._shared.handler;
 
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.strategy.JrnlDayCacheEvictor;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.service.strategy.JrnlDiaryCacheEvictor;
@@ -7,7 +7,7 @@ import io.nicheblog.dreamdiary.feature.jrnl.entry.service.strategy.JrnlEntryCach
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.service.strategy.JrnlIntrptCacheEvictor;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.service.strategy.JrnlSumryCacheEvictor;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.service.strategy.JrnlTodoCacheEvictor;
-import io.nicheblog.dreamdiary.infrastructure.cache.event.JrnlCacheEvictEvent;
+import io.nicheblog.dreamdiary.feature.jrnl._shared.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.infrastructure.cache.service.CacheEvictor;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import lombok.RequiredArgsConstructor;

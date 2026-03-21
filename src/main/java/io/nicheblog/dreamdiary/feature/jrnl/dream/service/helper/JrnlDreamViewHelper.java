@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.feature.jrnl.dream.service.helper;
 
 import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.service.helper.JrnlIntrptViewHelper;
-import io.nicheblog.dreamdiary.feature.jrnl.state.JrnlState;
+import io.nicheblog.dreamdiary.feature.jrnl._shared.state.JrnlState;
 import io.nicheblog.dreamdiary.feature.clsf.state.StateCd;
 import org.apache.commons.collections4.CollectionUtils;
 

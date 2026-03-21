@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global.config;
+package io.nicheblog.dreamdiary.infrastructure.freemarker.config;
 
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.TemplateHashModel;
