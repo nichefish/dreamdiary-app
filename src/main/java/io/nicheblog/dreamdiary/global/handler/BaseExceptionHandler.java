@@ -46,7 +46,7 @@ public class BaseExceptionHandler {
      * @return Ajax 요청의 경우 {@link ResponseEntity}, 페이지 요청의 경우 {@link ModelAndView} 객체
      */
     private Object handleException(final Exception e, final WebRequest request, final HttpStatus status) {
-        return handleException(e, request, status, "/view/global/_common/error/error_page");
+        return handleException(e, request, status, "/view/global/common/error/error_page");
     }
 
     /**
@@ -91,7 +91,7 @@ public class BaseExceptionHandler {
             final NoHandlerFoundException e,
             final WebRequest request
     ) {
-        return handleException(e, request, HttpStatus.NOT_FOUND, "/view/global/_common/error/error_not_found");
+        return handleException(e, request, HttpStatus.NOT_FOUND, "/view/global/common/error/error_not_found");
     }
 
     /**
@@ -107,7 +107,7 @@ public class BaseExceptionHandler {
             final AccessDeniedException e,
             final WebRequest request
     ) {
-        return handleException(e, request, HttpStatus.FORBIDDEN, "/view/global/_common/error/error_access_denied");
+        return handleException(e, request, HttpStatus.FORBIDDEN, "/view/global/common/error/error_access_denied");
     }
 
     /**

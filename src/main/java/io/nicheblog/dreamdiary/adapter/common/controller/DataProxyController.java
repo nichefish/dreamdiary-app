@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.adapter._common.controller;
+package io.nicheblog.dreamdiary.adapter.common.controller;
 
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.global.Constant;

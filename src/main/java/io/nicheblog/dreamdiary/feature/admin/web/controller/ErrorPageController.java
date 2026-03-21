@@ -47,16 +47,16 @@ public class ErrorPageController
         final Object statusObj = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
 
         // 응답 코드에 따른 페이지 분기
-        if (statusObj == null) return "/view/global/_common/error/error_page";
+        if (statusObj == null) return "/view/global/common/error/error_page";
 
         final int statusCode = Integer.parseInt(statusObj.toString());
         final HttpStatus status = HttpStatus.resolve(statusCode);
-        if (status == null) return "/view/global/_common/error/error_page";
+        if (status == null) return "/view/global/common/error/error_page";
         return switch (status) {
-            case BAD_REQUEST -> "/view/global/_common/error/error_bad_request";
-            case FORBIDDEN -> "/view/global/_common/error/error_access_denied";
-            case NOT_FOUND -> "/view/global/_common/error/error_not_found";
-            default -> "/view/global/_common/error/error_page";
+            case BAD_REQUEST -> "/view/global/common/error/error_bad_request";
+            case FORBIDDEN -> "/view/global/common/error/error_access_denied";
+            case NOT_FOUND -> "/view/global/common/error/error_not_found";
+            default -> "/view/global/common/error/error_page";
         };
     }
 
@@ -77,7 +77,7 @@ public class ErrorPageController
         model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // 에러 화면 반환
-        return "/view/global/_common/error/error_not_found";
+        return "/view/global/common/error/error_not_found";
     }
 
     /**
@@ -97,7 +97,7 @@ public class ErrorPageController
         model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // 에러 화면으로 리다이렉트 리다리렉트
-        return "/view/global/_common/error/error_access_denied";
+        return "/view/global/common/error/error_access_denied";
     }
 
     /**
@@ -117,6 +117,6 @@ public class ErrorPageController
         model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // 에러 화면으로 리다이렉트 리다리렉트
-        return "/view/global/_common/error/error_page";
+        return "/view/global/common/error/error_page";
     }
 }

@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.adapter.jandi.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.nicheblog.dreamdiary.adapter._common.model.BaseApiRespns;
+import io.nicheblog.dreamdiary.adapter.common.model.BaseApiRespns;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
