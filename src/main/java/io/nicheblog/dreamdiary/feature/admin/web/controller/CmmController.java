@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.admin.web.controller;
 
 import io.nicheblog.dreamdiary.global.*;
-import io.nicheblog.dreamdiary.global.model.AjaxResponse;
+import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
