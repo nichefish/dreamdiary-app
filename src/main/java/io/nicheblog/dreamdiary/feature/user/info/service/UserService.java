@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.user.info.service;
 
-import io.nicheblog.dreamdiary.feature.admin.lgnPolicy.entity.LgnPolicyEntity;
-import io.nicheblog.dreamdiary.feature.admin.lgnPolicy.service.LgnPolicyService;
+import io.nicheblog.dreamdiary.auth.policy.entity.LgnPolicyEntity;
+import io.nicheblog.dreamdiary.auth.policy.service.LgnPolicyService;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserStusEmbed;
 import io.nicheblog.dreamdiary.feature.user.info.mapstruct.UserMapstruct;

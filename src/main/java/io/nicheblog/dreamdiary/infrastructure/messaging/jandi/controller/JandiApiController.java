@@ -1,0 +1,105 @@
+package io.nicheblog.dreamdiary.infrastructure.messaging.jandi.controller;
+
+import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.model.JandiApiRespnsDto;
+import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.model.JandiParam;
+import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.service.JandiApiService;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.global.Url;
+import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+ * JandiApiController
+ * <pre>
+ *  JANDI:: (incoming/outgoing) webhook API 컨트롤러.
+ * </pre>
+ *
+ * @author nichefish
+ */
+@RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")   // CORS 에러 해결 위한 조치
+@RequiredArgsConstructor
+@Log4j2
+@Tag(name = "잔디 메신저 API", description = "잔디 메신저 API입니다.")
+public class JandiApiController
+        extends BaseControllerImpl {
+
+    @Getter
+    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JANDI;      // 작업 카테고리 (로그 적재용)
+
+    private final JandiApiService jandiApiService;
+
+    /**
+     * JANDI :: 잔디 메신저로 웹훅 메세지 전송
+     *
+     * @param jandiParam 잔디 파라미터 객체
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     */
+    @Operation(
+            summary = "잔디 메신저로 웹훅 메세지 전송",
+            description = "잔디 메신저로 웹훅 메세지를 전송한다."
+    )
+    @PostMapping(Url.API_JANDI_SND_MSG)
+    public ResponseEntity<JandiApiRespnsDto> sendMsg(
+            final JandiParam jandiParam
+    ) throws Exception {
+
+        final JandiApiRespnsDto apiResponse = new JandiApiRespnsDto();
+        log.info("requestUrl: {}, jandiParam: {}", request.getRequestURL(), jandiParam.toString());
+
+        final boolean isSuccess = jandiApiService.sendMsg(jandiParam);
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+
+        // 응답 결과 세팅
+        apiResponse.setApiResult(isSuccess, rsltMsg);
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    /**
+     * JANDI :: 잔디 메신저로부터 웹훅 메세지 수신
+     */
+    // @Operation(
+    //         summary = "잔디 메신저로부터 웹훅 메세지 수신",
+    //         description = "잔디 메신저로부터 웹훅 메세지를 수신한다."
+    // )
+    // @PostMapping(Url.API_JANDI_RCV_MSG)
+    // public ResponseEntity<JandiApiRespnsDto> receiveMsg(
+    //         final @RequestBody @Nullable JandiApiRcvMsgDto rcvMsg,
+    //         final LogActvtyParam logParam
+    // ) {
+//
+    //     JandiApiRespnsDto apiResponse = new JandiApiRespnsDto();
+//
+    //     log.info("requestUrl: {}", request.getRequestURL());
+//
+    //     final boolean isSuccess = false;
+    //     final String rsltMsg = "";
+    //     try {
+    //         isSuccess = jandiApiService.receiveMsg(rcvMsg);
+    //         rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+    //     } catch (final Exception e) {
+    //         isSuccess = false;
+    //         rsltMsg = MessageUtils.getExceptionMsg(e);
+    //         logParam.setExceptionInfo(e);
+    //     } finally {
+    //         apiResponse.setApiResult(isSuccess, rsltMsg);
+    //         // 로그 관련 세팅
+    //         logParam.setResult(isSuccess, rsltMsg);
+    //         publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
+    //     }
+    //
+    //     return ResponseEntity
+    //        .status(HttpStatus.OK)
+    //        .body(apiResponse);
+    // }
+}

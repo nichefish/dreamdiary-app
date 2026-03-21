@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.admin.lgnPolicy.repository.jpa;
 
-import io.nicheblog.dreamdiary.feature.admin.lgnPolicy.entity.LgnPolicyEntity;
+import io.nicheblog.dreamdiary.auth.policy.entity.LgnPolicyEntity;
+import io.nicheblog.dreamdiary.auth.policy.repository.jpa.LgnPolicyRepository;
 import io.nicheblog.dreamdiary.feature.admin.lgnPolicy.entity.LgnPolicyEntityTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
