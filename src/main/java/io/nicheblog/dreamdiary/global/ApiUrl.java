@@ -13,6 +13,20 @@ public interface ApiUrl {
 
     String API_ALIVE_CHECK = Prefix.API + "/alive-check";
 
+    /** 로그인 관련 */
+    String API_AUTH_LGN_PROC = Prefix.API + "/auth/lgn-proc";
+    String API_AUTH_LGN_PW_CHG = Prefix.API + "/auth/lgn-pw-chg";
+    String API_AUTH_LGOUT = Prefix.API + "/auth/lgout";
+    String API_AUTH_EXPIRE_SESSION = Prefix.API + "/auth/expire-session";
+    String API_AUTH_VERIFY = Prefix.API + "/auth/verify/{token}";
+    String API_AUTH_INFO = Prefix.API + "/auth/get-auth-info";
+
+    /** 소셜 로그인 팝업 */
+    String OAUTH2_GOOGLE = "/oauth2/authorization/google";
+    String OAUTH2_GOOGLE_REDIRECT_URI = "/login/oauth2/code/google";
+    String OAUTH2_NAVER = "/oauth2/authorization/naver";
+    String OAUTH2_NAVER_REDIRECT_URI = "/login/oauth2/code/naver";
+
     /** 저널 일자 */
     String JRNL_DAYS = Prefix.API + "/jrnl/days";
     String JRNL_DAY = Prefix.API + "/jrnl/day/{postNo}";

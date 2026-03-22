@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.global;
 
-import io.nicheblog.dreamdiary.auth.AuthUrl;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
@@ -20,7 +19,7 @@ import java.util.Map;
  */
 @UtilityClass
 public class Url
-    implements AppUrl, ApiUrl, AuthUrl {
+    implements AppUrl, ApiUrl {
 
     // 클래스 로딩 시에 한 번 계산하여 할당
     @Getter
