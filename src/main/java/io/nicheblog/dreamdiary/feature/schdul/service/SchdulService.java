@@ -14,8 +14,8 @@ import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -177,7 +177,7 @@ public class SchdulService
     @Cacheable(cacheNames = "hldyEntityList")
     public List<SchdulEntity> getHldyEntityList() throws Exception {
         final Map<String, Object> searchParamMap = new HashMap<>() {{
-            put("schdulCd", Constant.SCHDUL_HLDY);
+            put("schdulCd", Code.SCHDUL_HLDY);
         }};
 
         return this.getListEntity(searchParamMap);
@@ -192,7 +192,7 @@ public class SchdulService
         // 공휴일 여부 체크
         final Date asDate = DateUtils.asDate(date);
         final Date sDate = DateUtils.Parser.sDateParse(asDate);
-        final Optional<SchdulEntity> schdulDtlWrapper = repository.findBySchdulCdAndBgnDt(Constant.SCHDUL_HLDY, sDate);
+        final Optional<SchdulEntity> schdulDtlWrapper = repository.findBySchdulCdAndBgnDt(Code.SCHDUL_HLDY, sDate);
 
         return schdulDtlWrapper.isPresent();
     }
@@ -241,7 +241,7 @@ public class SchdulService
      * 공휴일 정보를 다시 동기화하여 캐시에 갱신한다.
      */
     public void resyncHldyMap() throws Exception {
-        final SchdulSearchParam param = SchdulSearchParam.builder().schdulCd(Constant.SCHDUL_HLDY).build();
+        final SchdulSearchParam param = SchdulSearchParam.builder().schdulCd(Code.SCHDUL_HLDY).build();
         final List<SchdulEntity> hldyList = this.getSelf().getListEntity(param);
 
         final Map<String, List<String>> hldyMap = hldyList.stream()

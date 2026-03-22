@@ -3,8 +3,9 @@ package io.nicheblog.dreamdiary.feature.admin.menu.controller;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.MenuSearchParam;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import io.nicheblog.dreamdiary.infrastructure.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
@@ -58,7 +59,7 @@ public class MenuPageController
         model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // 코드 데이터 모델에 추가
-        dtlCdService.setCdListToModel(Constant.MENU_SUB_EXTEND_TY_CD, model);
+        dtlCdService.setCdListToModel(Code.MENU_SUB_EXTEND_TY_CD, model);
 
         return "/view/feature/admin/menu/menu_page";
     }

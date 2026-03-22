@@ -2,10 +2,10 @@ package io.nicheblog.dreamdiary.feature.schdul.kasi.mapstruct;
 
 import io.nicheblog.dreamdiary.feature.schdul.entity.SchdulEntity;
 import io.nicheblog.dreamdiary.feature.schdul.kasi.model.HldyKasiApiItemDto;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
@@ -45,7 +45,7 @@ public interface HldyKasiApiMapstruct
     @Mapping(target = "contentType", expression = "java(\"schdul\")")
     @Mapping(target = "title", expression = "java(dto.getDateName())")
     @Mapping(target = "cn", expression = "java(dto.getDateName())")
-    @Mapping(target = "schdulCd", expression = "java(Constant.SCHDUL_HLDY)")
+    @Mapping(target = "schdulCd", expression = "java(Code.SCHDUL_HLDY)")
     @Mapping(target = "bgnDt", expression = "java(DateUtils.asDate(dto.getLocdate()))")
     @Mapping(target = "endDt", expression = "java(DateUtils.asDate(dto.getLocdate()))")
     SchdulEntity toEntity(final HldyKasiApiItemDto dto) throws Exception;

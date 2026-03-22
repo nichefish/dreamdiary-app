@@ -6,8 +6,9 @@ import io.nicheblog.dreamdiary.feature.jrnl.sumry.JrnlSumrySection;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumrySearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.service.JrnlSumryService;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import io.nicheblog.dreamdiary.infrastructure.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
@@ -91,7 +92,7 @@ public class JrnlSumryPageController
         model.addAttribute("section", section);
 
         // 코드 데이터 모델에 추가
-        dtlCdService.setCdListToModel(Constant.JRNL_SUMRY_TY_CD, model);
+        dtlCdService.setCdListToModel(Code.JRNL_SUMRY_TY_CD, model);
 
         return "/view/feature/jrnl/sumry/jrnl_sumry_dtl";
     }

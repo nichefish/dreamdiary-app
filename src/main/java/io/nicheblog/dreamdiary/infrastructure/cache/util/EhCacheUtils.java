@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.infrastructure.cache.util;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.infrastructure.cache.model.CacheParam;
 import io.nicheblog.dreamdiary.infrastructure.cache.service.CacheStrategy;
 import lombok.RequiredArgsConstructor;

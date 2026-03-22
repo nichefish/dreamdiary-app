@@ -5,9 +5,10 @@ import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.feature.schdul.model.SchdulSearchParam;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import io.nicheblog.dreamdiary.infrastructure.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
@@ -67,8 +68,8 @@ public class SchdulCalPageController
         final List<UserDto> crtdUserList = userService.getCrdtUserList(DateUtils.getCurrDateAddDayStr(-40), DateUtils.getCurrDateAddDayStr(40));
         model.addAttribute("crtdUserList", crtdUserList);
         // 코드 데이터 모델에 추가
-        dtlCdService.setCdListToModel(Constant.SCHDUL_CD, model);
-        dtlCdService.setCdListToModel(Constant.JANDI_TOPIC_CD, model);
+        dtlCdService.setCdListToModel(Code.SCHDUL_CD, model);
+        dtlCdService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
 
         return "/view/feature/schdul/schdul_cal";
     }

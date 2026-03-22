@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.feature.clsf._shared.spec.BaseClsfSpec;
 import io.nicheblog.dreamdiary.feature.schdul.entity.SchdulEntity;
 import io.nicheblog.dreamdiary.feature.schdul.entity.SchdulPrtcpntEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
@@ -87,15 +87,15 @@ public class SchdulSpec
                 case "getHldyCeremonyOnly":
                     // 휴일/공휴일, 행사 조회
                     predicate.add(builder.equal(prvtYnExp, "N"));
-                    Predicate hldy = builder.equal(schdulCdExp, Constant.SCHDUL_HLDY);
-                    Predicate ceremony = builder.equal(schdulCdExp, Constant.SCHDUL_CEREMONY);
+                    Predicate hldy = builder.equal(schdulCdExp, Code.SCHDUL_HLDY);
+                    Predicate ceremony = builder.equal(schdulCdExp, Code.SCHDUL_CEREMONY);
                     predicate.add(builder.or(hldy, ceremony));
                     continue;
                 case "getExceptHldyCeremony":
                     // 휴일/공휴일, 행사 제외하고 조회
                     predicate.add(builder.equal(prvtYnExp, "N"));
-                    Predicate notHldy = builder.notEqual(schdulCdExp, Constant.SCHDUL_HLDY);
-                    Predicate notCeremony = builder.notEqual(schdulCdExp, Constant.SCHDUL_CEREMONY);
+                    Predicate notHldy = builder.notEqual(schdulCdExp, Code.SCHDUL_HLDY);
+                    Predicate notCeremony = builder.notEqual(schdulCdExp, Code.SCHDUL_CEREMONY);
                     predicate.add(builder.and(notHldy, notCeremony));
                     continue;
                 case "getPrvtOnly":
@@ -107,19 +107,19 @@ public class SchdulSpec
                 case "indtChked":
                     // 내근 조회
                     if ("N".equals(value)) {
-                        predicate.add(builder.notEqual(schdulCdExp, Constant.SCHDUL_INDT));
+                        predicate.add(builder.notEqual(schdulCdExp, Code.SCHDUL_INDT));
                     }
                     continue;
                 case "outdtChked":
                     // 외근 조회
                     if ("N".equals(value)) {
-                        predicate.add(builder.notEqual(schdulCdExp, Constant.SCHDUL_OUTDT));
+                        predicate.add(builder.notEqual(schdulCdExp, Code.SCHDUL_OUTDT));
                     }
                     continue;
                 case "tlcmmtChked":
                     // 재택근무 조회
                     if ("N".equals(value)) {
-                        predicate.add(builder.notEqual(schdulCdExp, Constant.SCHDUL_TLCMMT));
+                        predicate.add(builder.notEqual(schdulCdExp,Code.SCHDUL_TLCMMT));
                     }
                     continue;
                 // case "myPaprChked":

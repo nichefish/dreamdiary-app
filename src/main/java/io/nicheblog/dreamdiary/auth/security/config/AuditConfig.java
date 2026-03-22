@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.auth.security.config;
 
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
+import io.nicheblog.dreamdiary.global.Constant;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,7 +58,7 @@ public class AuditConfig {
 
             // 비로그인"Anonymous"시 시스템 계정(system)으로 자동 처리
             final Object principal = authentication.getPrincipal();
-            boolean isAnonymous = (principal instanceof String);
+            final boolean isAnonymous = (principal instanceof String);
             if (isAnonymous) return Optional.of(Constant.SYSTEM_ACNT);
 
             // 로그인 사용자 ID 반환

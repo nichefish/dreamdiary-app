@@ -2,9 +2,9 @@ package io.nicheblog.dreamdiary.feature.user.reqst.handler;
 
 import io.nicheblog.dreamdiary.feature.user.reqst.event.UserReqstVerificationEmailSendEvent;
 import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDto;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.ServerInfo;
 import io.nicheblog.dreamdiary.global.config.AsyncConfig;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.infrastructure.messaging.email.event.EmailSendEvent;
 import io.nicheblog.dreamdiary.infrastructure.messaging.email.handler.EmailSendWorker;
 import io.nicheblog.dreamdiary.infrastructure.messaging.email.model.EmailAddress;

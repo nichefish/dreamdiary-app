@@ -6,8 +6,9 @@
  import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
  import io.nicheblog.dreamdiary.feature.user.info.model.UserSearchParam;
  import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
+ import io.nicheblog.dreamdiary.global.Constant;
  import io.nicheblog.dreamdiary.global.Url;
- import io.nicheblog.dreamdiary.infrastructure.Constant;
+ import io.nicheblog.dreamdiary.infrastructure.cd.Code;
  import io.nicheblog.dreamdiary.infrastructure.cd.service.DtlCdService;
  import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
  import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
@@ -84,9 +85,9 @@ public class UserPageController
         model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(userList));
         // 코드 정보 모델에 추가
         dtlCdService.setCdListToModel(Constant.AUTH_CD, model);
-        dtlCdService.setCdListToModel(Constant.TEAM_CD, model);
-        dtlCdService.setCdListToModel(Constant.EMPLYM_CD, model);
-        dtlCdService.setCdListToModel(Constant.RANK_CD, model);
+        dtlCdService.setCdListToModel(Code.TEAM_CD, model);
+        dtlCdService.setCdListToModel(Code.EMPLYM_CD, model);
+        dtlCdService.setCdListToModel(Code.RANK_CD, model);
         // 목록 검색 URL + 파라미터 모델에 추가
         ParamUtils.setModelAttrMap(searchParam, baseUrl, model);
 
@@ -120,9 +121,9 @@ public class UserPageController
         model.addAttribute("authRoleList", authRoleService.getListDto(searchParamMap));
         // 코드 정보 모델에 추가
         dtlCdService.setCdListToModel(Constant.AUTH_CD, model);
-        dtlCdService.setCdListToModel(Constant.TEAM_CD, model);
-        dtlCdService.setCdListToModel(Constant.EMPLYM_CD, model);
-        dtlCdService.setCdListToModel(Constant.RANK_CD, model);
+        dtlCdService.setCdListToModel(Code.TEAM_CD, model);
+        dtlCdService.setCdListToModel(Code.EMPLYM_CD, model);
+        dtlCdService.setCdListToModel(Code.RANK_CD, model);
 
         return "/view/feature/user/user_reg_form";
     }
@@ -184,9 +185,9 @@ public class UserPageController
         model.addAttribute("authRoleList", authRoleService.getListDto(searchParamMap));
         // 코드 정보 모델에 추가
         dtlCdService.setCdListToModel(Constant.AUTH_CD, model);
-        dtlCdService.setCdListToModel(Constant.TEAM_CD, model);
-        dtlCdService.setCdListToModel(Constant.EMPLYM_CD, model);
-        dtlCdService.setCdListToModel(Constant.RANK_CD, model);
+        dtlCdService.setCdListToModel(Code.TEAM_CD, model);
+        dtlCdService.setCdListToModel(Code.EMPLYM_CD, model);
+        dtlCdService.setCdListToModel(Code.RANK_CD, model);
 
         return "/view/feature/user/user_reg_form";
     }

@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.infrastructure.messaging.email.model;
 
-import io.nicheblog.dreamdiary.infrastructure.Constant;
+import io.nicheblog.dreamdiary.global.Constant;
 import lombok.*;
 
 import java.util.List;

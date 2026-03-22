@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.infrastructure.cd.controller;
 
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.infrastructure.cd.model.ClCdDto;
 import io.nicheblog.dreamdiary.infrastructure.cd.model.ClCdPatchDto;
 import io.nicheblog.dreamdiary.infrastructure.cd.service.ClCdService;

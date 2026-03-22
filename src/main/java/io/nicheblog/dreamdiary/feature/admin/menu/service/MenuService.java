@@ -16,8 +16,8 @@ import io.nicheblog.dreamdiary.global.intrfc.service.BaseSortableService;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -84,7 +84,7 @@ public class MenuService
     ) throws Exception {
 
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
-        searchParamMap.put("menuTyCd", Constant.MENU_TY_MAIN);
+        searchParamMap.put("menuTyCd", Code.MENU_TY_MAIN);
         return this.getSelf().getListDto(searchParamMap, sort);
     }
 
@@ -99,7 +99,7 @@ public class MenuService
     @Cacheable(value="userMenuList")
     public List<MenuDto> getUserMenuList() throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(MenuSearchParam.builder()
-                .menuTyCd(Constant.MENU_TY_MAIN)
+                .menuTyCd(Code.MENU_TY_MAIN)
                 .mngrYn("N")
                 .useYn("Y")
                 .build());
@@ -117,7 +117,7 @@ public class MenuService
     @Cacheable(value="mngrMenuList")
     public List<MenuDto> getMngrMenuList() throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(MenuSearchParam.builder()
-                .menuTyCd(Constant.MENU_TY_MAIN)
+                .menuTyCd(Code.MENU_TY_MAIN)
                 .mngrYn("Y")
                 .useYn("Y")
                 .build());

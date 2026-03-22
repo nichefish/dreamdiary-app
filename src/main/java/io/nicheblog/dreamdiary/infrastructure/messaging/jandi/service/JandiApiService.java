@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.infrastructure.messaging.jandi.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.JsonRestTemplate;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.JandiProperties;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.JandiTopic;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.model.JandiApiRespnsDto;

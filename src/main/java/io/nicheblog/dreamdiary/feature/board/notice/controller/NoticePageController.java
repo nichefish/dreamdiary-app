@@ -8,9 +8,10 @@ import io.nicheblog.dreamdiary.feature.board.notice.service.NoticeService;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagService;
 import io.nicheblog.dreamdiary.feature.clsf.viewer.handler.ViewerEventListener;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import io.nicheblog.dreamdiary.infrastructure.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
@@ -113,9 +114,9 @@ public class NoticePageController
         // 등록/수정 화면 플래그 세팅
         model.addAttribute(Constant.FORM_MODE, "regist");
         // 코드 정보 모델에 추가
-        dtlCdService.setCdListToModel(Constant.NOTICE_CTGR_CD, model);
+        dtlCdService.setCdListToModel(Code.NOTICE_CTGR_CD, model);
         dtlCdService.setCdListToModel(Constant.MDFABLE_CD, model);
-        dtlCdService.setCdListToModel(Constant.JANDI_TOPIC_CD, model);
+        dtlCdService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
 
         return "/view/feature/board/notice/notice_reg_form";
     }
@@ -200,7 +201,7 @@ public class NoticePageController
         // 코드 정보 모델에 추가
         dtlCdService.setCdListToModel(Constant.NOTICE_CTGR_CD, model);
         dtlCdService.setCdListToModel(Constant.MDFABLE_CD, model);
-        dtlCdService.setCdListToModel(Constant.JANDI_TOPIC_CD, model);
+        dtlCdService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
 
         return "/view/feature/board/notice/notice_reg_form";
     }
