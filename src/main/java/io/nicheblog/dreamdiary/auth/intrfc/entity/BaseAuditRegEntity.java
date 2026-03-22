@@ -1,9 +1,10 @@
-package io.nicheblog.dreamdiary.global.intrfc.entity;
+package io.nicheblog.dreamdiary.auth.intrfc.entity;
 
 import io.nicheblog.dreamdiary.auth.security.config.AuditConfig;
 import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.auth.security.util.AuditorUtils;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

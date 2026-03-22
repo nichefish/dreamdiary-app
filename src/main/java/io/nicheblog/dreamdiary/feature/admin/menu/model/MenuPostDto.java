@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.admin.menu.model;
 
-import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditDto;
+import io.nicheblog.dreamdiary.auth.intrfc.model.BaseAuditDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

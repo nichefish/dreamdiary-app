@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global.intrfc.model;
+package io.nicheblog.dreamdiary.auth.intrfc.model;
 
 import io.nicheblog.dreamdiary.auth.security.model.AuditorDto;
 import lombok.*;

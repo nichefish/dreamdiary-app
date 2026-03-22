@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.auth.policy.model;
 
-import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditDto;
+import io.nicheblog.dreamdiary.auth.intrfc.model.BaseAuditDto;
 import io.nicheblog.dreamdiary.global.validator.Regex;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

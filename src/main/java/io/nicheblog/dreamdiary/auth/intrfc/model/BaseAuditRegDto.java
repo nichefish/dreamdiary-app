@@ -1,7 +1,8 @@
-package io.nicheblog.dreamdiary.global.intrfc.model;
+package io.nicheblog.dreamdiary.auth.intrfc.model;
 
 import io.nicheblog.dreamdiary.auth.security.model.AuditorDto;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
 import io.nicheblog.dreamdiary.global.util.crypto.CryptoUtils;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

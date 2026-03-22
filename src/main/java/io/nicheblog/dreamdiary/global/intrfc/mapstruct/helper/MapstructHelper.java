@@ -1,15 +1,14 @@
 package io.nicheblog.dreamdiary.global.intrfc.mapstruct.helper;
 
+import io.nicheblog.dreamdiary.auth.intrfc.entity.BaseAuditEntity;
+import io.nicheblog.dreamdiary.auth.intrfc.entity.BaseAuditRegEntity;
+import io.nicheblog.dreamdiary.auth.intrfc.model.BaseAuditDto;
+import io.nicheblog.dreamdiary.auth.intrfc.model.BaseAuditRegDto;
 import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditRegEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
-import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditDto;
-import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditRegDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.cd.service.DtlCdService;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.MappingTarget;
 import org.springframework.stereotype.Component;
@@ -26,8 +25,6 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class MapstructHelper {
-
-    private final DtlCdService dtlCdService;
 
     /**
      * Map Base-inheritted Fields (entity -> dto)
