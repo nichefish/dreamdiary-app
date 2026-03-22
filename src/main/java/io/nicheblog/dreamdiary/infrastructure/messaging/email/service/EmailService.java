@@ -94,7 +94,7 @@ public class EmailService {
             // 첨부파일 처리
             mailSendParam.getAtchFileList().forEach(attachFile -> {
                 try {
-                    helper.addAttachment(attachFile.getOrgnFileNm(), new File(attachFile.getFileStrePath()));
+                    helper.addAttachment(attachFile.getFileNm(), new File(attachFile.getFilePath()));
                 } catch (MessagingException e) {
                     log.error("Error attaching file", e);
                 }
