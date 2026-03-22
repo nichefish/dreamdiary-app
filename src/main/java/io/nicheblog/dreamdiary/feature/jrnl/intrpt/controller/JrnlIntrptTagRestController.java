@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.jrnl.intrpt.controller;
 
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagSearchParam;
@@ -7,7 +8,6 @@ import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptDto;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.service.JrnlIntrptService;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.service.JrnlIntrptTagService;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
@@ -53,7 +53,7 @@ public class JrnlIntrptTagRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.JRNL_INTRPT_TAG_CTGR_MAP)
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlIntrptTagCtgrMapAjax(
             //
@@ -74,7 +74,7 @@ public class JrnlIntrptTagRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.JRNL_INTRPT_TAGS)
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> tagListAjax(
             final @ModelAttribute("searchParam") TagSearchParam searchParam
@@ -95,7 +95,7 @@ public class JrnlIntrptTagRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.JRNL_INTRPT_TAG_GROUP_LIST_AJAX)
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> tagGroupListAjax(
             final @ModelAttribute("searchParam") TagSearchParam searchParam
@@ -116,7 +116,7 @@ public class JrnlIntrptTagRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_INTRPT_TAG})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlIntrptTagDtlAjax(
             final JrnlIntrptSearchParam searchParam

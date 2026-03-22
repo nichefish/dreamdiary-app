@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.jrnl.day.controller;
 
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.feature.jrnl.day.JrnlDayViewType;
@@ -7,7 +8,6 @@ import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDaySearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayCalService;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayService;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -53,7 +53,7 @@ public class JrnlDayRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_DAYS})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayListAjax(
             final @RequestParam("viewType") JrnlDayViewType viewType,
@@ -85,7 +85,7 @@ public class JrnlDayRestController
             description = "저널 일자 정보를 등록/수정한다."
     )
     @PostMapping(value = {Url.JRNL_DAYS, Url.JRNL_DAY})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayRegAjax(
             final @PathVariable(value = "postNo", required = false) Integer postNo,
@@ -115,7 +115,7 @@ public class JrnlDayRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_DAY})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayDtlAjax(
             final @PathVariable("postNo") Integer key
@@ -137,7 +137,7 @@ public class JrnlDayRestController
      * @see TagProcEventListener
      */
     @DeleteMapping(value = {Url.JRNL_DAY})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayDelAjax(
             final @PathVariable("postNo") Integer key

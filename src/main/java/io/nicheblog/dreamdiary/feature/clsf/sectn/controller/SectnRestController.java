@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.clsf.sectn.controller;
 
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.clsf.sectn.model.SectnDto;
 import io.nicheblog.dreamdiary.feature.clsf.sectn.model.SectnSearchParam;
 import io.nicheblog.dreamdiary.feature.clsf.sectn.service.SectnService;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -51,7 +51,7 @@ public class SectnRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.SECTNS)
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> sectnListAjax(
             @ModelAttribute("searchParam") SectnSearchParam searchParam
@@ -75,7 +75,7 @@ public class SectnRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(value = {Url.SECTNS, Url.SECTN})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> sectnRegAjax(
             final @PathVariable(value = "postNo", required = false) Integer postNo,
@@ -100,7 +100,7 @@ public class SectnRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.SECTN)
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> sectnDtlAjax(
             final @PathVariable("postNo") Integer postNo
@@ -121,7 +121,7 @@ public class SectnRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @DeleteMapping(Url.SECTN)
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> sectnDelAjax(
             final @PathVariable("postNo") Integer postNo

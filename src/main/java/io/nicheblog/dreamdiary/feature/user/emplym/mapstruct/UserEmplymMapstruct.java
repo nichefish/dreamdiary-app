@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.crypto.CryptoUtils;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
@@ -20,7 +21,11 @@ import org.mapstruct.factory.Mappers;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {Constant.class, DateUtils.class, StringUtils.class, DatePtn.class, CryptoUtils.class})
+@Mapper(
+        componentModel = "spring",
+        unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        imports = { Constant.class, Code.class, DateUtils.class, StringUtils.class, DatePtn.class, CryptoUtils.class }
+)
 public interface UserEmplymMapstruct
         extends BaseWriteMapstruct<UserEmplymDto, UserEmplymEntity>, BaseMapstruct<UserEmplymDto, UserEmplymEntity> {
 
@@ -47,7 +52,7 @@ public interface UserEmplymMapstruct
      * @return Entity -- 변환된 Entity 객체
      */
     @Override
-    @Mapping(target = "apntcYn", expression = "java(Constant.RANK_STAFF.equals(dto.getRankCd()) ? dto.getApntcYn() : null)")
+    @Mapping(target = "apntcYn", expression = "java(Code.RANK_STAFF.equals(dto.getRankCd()) ? dto.getApntcYn() : null)")
     @Mapping(target = "ecnyDt", expression = "java(DateUtils.asDate(dto.getEcnyDt()))")
     @Mapping(target = "retireDt", expression = "java(\"Y\".equals(dto.getRetireYn()) ? DateUtils.asDate(dto.getRetireDt()) : null)")
     @Mapping(target = "emplymEmail", expression = "java(dto.getEmplymEmailId() + \"@\" + dto.getEmplymEmailDomain())")

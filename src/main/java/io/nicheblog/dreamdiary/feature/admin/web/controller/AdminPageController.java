@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.feature.admin.web.controller;
 
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.auth.security.model.AuthRoleDto;
 import io.nicheblog.dreamdiary.auth.security.service.AuthRoleService;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
@@ -48,7 +48,7 @@ public class AdminPageController
      * @return {@link String} -- 뷰 이름을 나타내는 문자열
      */
     @GetMapping(Url.ADMIN_PAGE)
-    @Secured(Constant.ROLE_MNGR)
+    @Secured(AuthConstant.ROLE_MNGR)
     public String adminPage(
             final ModelMap model
     ) throws Exception {
@@ -72,7 +72,7 @@ public class AdminPageController
      * @return {@link String} -- 뷰 이름을 나타내는 문자열
      */
     @GetMapping(Url.ADMIN_TEST)
-    @Secured(Constant.ROLE_MNGR)
+    @Secured(AuthConstant.ROLE_MNGR)
     public String testPage(
             final ModelMap model
     ) {

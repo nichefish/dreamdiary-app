@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.clsf.comment.controller;
 
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.clsf.comment.model.CommentDto;
 import io.nicheblog.dreamdiary.feature.clsf.comment.model.CommentSearchParam;
 import io.nicheblog.dreamdiary.feature.clsf.comment.service.CommentService;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -51,7 +51,7 @@ public class CommentRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.COMMENTS)
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> commentListAjax(
             final @ModelAttribute("searchParam") CommentSearchParam searchParam
@@ -75,7 +75,7 @@ public class CommentRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(value = {Url.COMMENTS, Url.COMMENT})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> commentRegAjax(
             final @Valid CommentDto comment,
@@ -98,7 +98,7 @@ public class CommentRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.COMMENT)
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> commentDtlAjax(
             final @RequestParam("postNo") Integer key
@@ -119,7 +119,7 @@ public class CommentRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @DeleteMapping(Url.COMMENT)
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> commentDelAjax(
             final @PathVariable("postNo") Integer postNo

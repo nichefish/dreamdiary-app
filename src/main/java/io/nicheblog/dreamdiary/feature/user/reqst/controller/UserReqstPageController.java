@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.user.reqst.controller;
 
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
@@ -58,7 +59,7 @@ public class UserReqstPageController
         // 등록/수정 화면 플래그 세팅
         model.addAttribute(Constant.FORM_MODE, "regist");
         // 코드 정보 모델에 추가
-        dtlCdService.setCdListToModel(Constant.AUTH_CD, model);
+        dtlCdService.setCdListToModel(AuthConstant.AUTH_CD, model);
         dtlCdService.setCdListToModel(Code.CMPY_CD, model);
         dtlCdService.setCdListToModel(Code.TEAM_CD, model);
         dtlCdService.setCdListToModel(Code.EMPLYM_CD, model);

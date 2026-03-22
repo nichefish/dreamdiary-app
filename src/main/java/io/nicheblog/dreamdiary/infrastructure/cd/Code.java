@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.infrastructure.cd;
 
+import io.nicheblog.dreamdiary.auth.Mdfable;
 import lombok.AllArgsConstructor;
 
 /**
@@ -12,6 +13,15 @@ import lombok.AllArgsConstructor;
  * @author nichefish
  */
 public interface Code {
+
+    /** 수정 권한 코드 */
+    String MDFABLE_CD = "MDFABLE_CD";
+
+    /** MDFABLE */
+    String MDFABLE_REGSTR = Mdfable.REGSTR.name();
+    String MDFABLE_MNGR = Mdfable.MNGR.name();
+    String MDFABLE_USER = Mdfable.USER.name();
+    String MDFABLE_ALL = Mdfable.ALL.name();
 
     /** 디바이스 정보 */
     @AllArgsConstructor

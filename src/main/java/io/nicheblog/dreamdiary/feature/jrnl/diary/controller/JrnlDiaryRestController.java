@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.feature.jrnl.diary.controller;
 
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiaryPostDto;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiarySearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.service.JrnlDiaryService;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -51,7 +51,7 @@ public class JrnlDiaryRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_DIARIES})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDiaryListAjax(
             final JrnlDiarySearchParam searchParam
@@ -74,7 +74,7 @@ public class JrnlDiaryRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_DIARY})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDiaryDtlAjax(
             final @PathVariable("postNo") Integer key
@@ -101,7 +101,7 @@ public class JrnlDiaryRestController
             description = "저널 일기 정보를 등록/수정한다."
     )
     @PostMapping(value = {Url.JRNL_DIARIES, Url.JRNL_DIARY})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDiaryRegAjax(
             final @PathVariable(value = "postNo", required = false) Integer postNo,
@@ -128,7 +128,7 @@ public class JrnlDiaryRestController
      * @see TagProcEventListener
      */
     @DeleteMapping(value = {Url.JRNL_DIARY})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDiaryDelAjax(
             final @PathVariable("postNo") Integer postNo

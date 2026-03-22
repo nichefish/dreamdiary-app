@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.infrastructure.log.sys.controller;
 
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -49,12 +50,11 @@ public class LogSysPageController
      * (관리자MNGR만 접근 가능.)
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.LOG_SYS_LIST)
-    @Secured(Constant.ROLE_MNGR)
+    @Secured(AuthConstant.ROLE_MNGR)
     public String logSysList(
             @ModelAttribute("searchParam") LogSysSearchParam searchParam,
             final ModelMap model

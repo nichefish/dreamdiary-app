@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.jrnl.sumry.controller;
 
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryReviewDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.service.JrnlSumryReviewService;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -47,7 +47,7 @@ public class JrnlSumryReviewRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_SUMRY_REVIEW})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSumryDtlAjax(
             final @PathVariable("postNo") Integer key
@@ -70,7 +70,7 @@ public class JrnlSumryReviewRestController
      * @see TagProcEventListener
      */
     @PostMapping(value = {Url.JRNL_SUMRY_REVIEWS, Url.JRNL_SUMRY_REVIEW})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSumryReviewRegAjax(
             final @PathVariable(value = "postNo", required = false) Integer postNo,
@@ -95,7 +95,7 @@ public class JrnlSumryReviewRestController
      * @see TagProcEventListener
      */
     @DeleteMapping(value = {Url.JRNL_SUMRY_REVIEW})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSumryReviewAjax(
             final @PathVariable("postNo") Integer postNo

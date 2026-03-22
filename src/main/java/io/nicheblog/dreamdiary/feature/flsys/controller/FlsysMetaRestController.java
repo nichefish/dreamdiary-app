@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.flsys.controller;
 
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.feature.flsys.model.FlsysMetaDto;
 import io.nicheblog.dreamdiary.feature.flsys.service.FlsysMetaService;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -51,7 +51,7 @@ public class FlsysMetaRestController
      * @see LogActvtyEventListener
      */
     @PostMapping(value = {Url.FLSYS_META_REG_AJAX, Url.FLSYS_META_MDF_AJAX})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> flsysMetaRegAjax(
             final @Valid FlsysMetaDto flsysMeta
@@ -75,7 +75,7 @@ public class FlsysMetaRestController
      * @see LogActvtyEventListener
      */
     @GetMapping(Url.FLSYS_META_DTL_AJAX)
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> flsysMetaDtlAjax(
             final @RequestParam("postNo") Integer key
@@ -98,7 +98,7 @@ public class FlsysMetaRestController
      * @see LogActvtyEventListener
      */
     @PostMapping(Url.FLSYS_META_DEL_AJAX)
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> flsysMetaDelAjax(
             final @RequestParam("postNo") Integer postNo

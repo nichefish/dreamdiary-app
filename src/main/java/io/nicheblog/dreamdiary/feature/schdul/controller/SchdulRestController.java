@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.schdul.controller;
 
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.feature.schdul.model.SchdulDto;
 import io.nicheblog.dreamdiary.feature.schdul.service.SchdulService;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -49,7 +49,7 @@ public class SchdulRestController
      * @see TagProcEventListener
      */
     @PostMapping(value = {Url.SCHDUL_REG_AJAX, Url.SCHDUL_MDF_AJAX})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> schdulRegAjax(
             final @Valid SchdulDto schdul
@@ -70,7 +70,7 @@ public class SchdulRestController
      * @param key 식별자
      */
     @GetMapping(Url.SCHDUL_DTL_AJAX)
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> schdulDtlAjax(
             final @RequestParam("postNo") Integer key
@@ -91,7 +91,7 @@ public class SchdulRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.SCHDUL_DEL_AJAX)
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> schdulDelAjax(
             final @RequestParam("postNo") Integer postNo

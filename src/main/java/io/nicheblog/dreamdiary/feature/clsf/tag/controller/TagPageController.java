@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.feature.clsf.tag.controller;
 
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagSearchParam;
 import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagService;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
@@ -45,7 +45,7 @@ public class TagPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.TAG_LIST)
-    @Secured({Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_MNGR})
     public String tagAdminList(
             @ModelAttribute("searchParam") TagSearchParam searchParam,
             final ModelMap model

@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
@@ -18,7 +19,7 @@ import org.mapstruct.factory.Mappers;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = { Constant.class, DateUtils.class, StringUtils.class })
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = { Constant.class, Code.class, DateUtils.class, StringUtils.class })
 public interface HldyKasiApiMapstruct
         extends BaseWriteMapstruct<HldyKasiApiItemDto, SchdulEntity>, BaseMapstruct<HldyKasiApiItemDto, SchdulEntity> {
 
