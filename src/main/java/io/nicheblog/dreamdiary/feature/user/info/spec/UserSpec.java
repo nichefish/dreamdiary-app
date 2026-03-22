@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.feature.user.info.spec;
 
+import io.nicheblog.dreamdiary.auth.intrfc.spec.BaseAuditSpec;
 import io.nicheblog.dreamdiary.feature.user.emplym.entity.UserEmplymEntity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.feature.user.profl.entity.UserProflEntity;
 import io.nicheblog.dreamdiary.global.Constant;
-import io.nicheblog.dreamdiary.global.intrfc.spec.BaseCrudSpec;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
@@ -29,7 +29,7 @@ import java.util.Map;
 @Component
 @Log4j2
 public class UserSpec
-        implements BaseCrudSpec<UserEntity> {
+        implements BaseAuditSpec<UserEntity> {
 
     /**
      * 인자별로 preset된 특정 검색 조건 목록을 반환한다. (override)

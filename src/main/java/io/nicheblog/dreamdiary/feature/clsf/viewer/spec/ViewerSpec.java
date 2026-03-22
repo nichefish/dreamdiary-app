@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.clsf.viewer.spec;
 
+import io.nicheblog.dreamdiary.auth.intrfc.spec.BaseAuditSpec;
 import io.nicheblog.dreamdiary.feature.clsf.viewer.entity.ViewerEntity;
-import io.nicheblog.dreamdiary.global.intrfc.spec.BaseCrudSpec;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,6 +14,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ViewerSpec
-        implements BaseCrudSpec<ViewerEntity> {
+        implements BaseAuditSpec<ViewerEntity> {
     //
 }

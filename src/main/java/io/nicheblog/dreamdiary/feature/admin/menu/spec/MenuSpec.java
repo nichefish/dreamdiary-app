@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.admin.menu.spec;
 
+import io.nicheblog.dreamdiary.auth.intrfc.spec.BaseAuditSpec;
 import io.nicheblog.dreamdiary.feature.admin.menu.entity.MenuEntity;
-import io.nicheblog.dreamdiary.global.intrfc.spec.BaseCrudSpec;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -21,7 +21,7 @@ import java.util.List;
  */
 @Component
 public class MenuSpec
-        implements BaseCrudSpec<MenuEntity> {
+        implements BaseAuditSpec<MenuEntity> {
 
     /**
      * 검색 조건 세팅 후 쿼리 후처리. (override)
