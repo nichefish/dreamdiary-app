@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.clsf.managt.spec;
 
+import io.nicheblog.dreamdiary.auth.intrfc.spec.BaseAuditSpec;
 import io.nicheblog.dreamdiary.feature.clsf.managt.entity.ManagtrEntity;
-import io.nicheblog.dreamdiary.global.intrfc.spec.BaseCrudSpec;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +16,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Log4j2
 public class ManagtrSpec
-        implements BaseCrudSpec<ManagtrEntity> {
+        implements BaseAuditSpec<ManagtrEntity> {
     //
 }

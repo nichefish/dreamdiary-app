@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.admin.tmplat.spec;
 
+import io.nicheblog.dreamdiary.auth.intrfc.spec.BaseAuditSpec;
 import io.nicheblog.dreamdiary.feature.admin.tmplat.entity.TmplatTxtEntity;
-import io.nicheblog.dreamdiary.global.intrfc.spec.BaseCrudSpec;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,6 +14,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class TmplatTxtSpec
-        implements BaseCrudSpec<TmplatTxtEntity> {
+        implements BaseAuditSpec<TmplatTxtEntity> {
     //
 }

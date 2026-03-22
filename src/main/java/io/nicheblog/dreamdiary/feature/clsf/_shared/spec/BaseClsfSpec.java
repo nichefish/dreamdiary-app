@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.clsf._shared.spec;
 
+import io.nicheblog.dreamdiary.auth.intrfc.spec.BaseAuditSpec;
 import io.nicheblog.dreamdiary.feature.board.notice.entity.NoticeEntity;
 import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagContentEntity;
-import io.nicheblog.dreamdiary.global.intrfc.spec.BaseCrudSpec;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -21,7 +21,7 @@ import java.util.Map;
  * @author nichefish
  */
 public interface BaseClsfSpec<Entity extends BaseClsfEntity>
-        extends BaseCrudSpec<Entity> {
+        extends BaseAuditSpec<Entity> {
 
     /**
      * default: 인자별로 구체적인 검색 조건을 설정하여 목록을 반환한다.
