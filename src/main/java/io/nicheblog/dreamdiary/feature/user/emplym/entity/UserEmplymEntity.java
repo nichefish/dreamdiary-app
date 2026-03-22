@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.feature.user.emplym.entity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -84,7 +84,7 @@ public class UserEmplymEntity
     /** 소속(회사) 코드 정보 (복합키 조인) */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula=@JoinFormula(value="'"+ Constant.CMPY_CD+"'", referencedColumnName="cl_cd")),
+            @JoinColumnOrFormula(formula=@JoinFormula(value="'"+ Code.CMPY_CD+"'", referencedColumnName="cl_cd")),
             @JoinColumnOrFormula(column=@JoinColumn(name="cmpy_cd", referencedColumnName="dtl_cd", insertable=false, updatable=false))
     })
     @Fetch(value= FetchMode.JOIN)
@@ -102,7 +102,7 @@ public class UserEmplymEntity
     /** 소속(팀) 코드 정보 (복합키 조인) */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula=@JoinFormula(value="'"+ Constant.TEAM_CD+"'", referencedColumnName="cl_cd")),
+            @JoinColumnOrFormula(formula=@JoinFormula(value="'"+Code.TEAM_CD+"'", referencedColumnName="cl_cd")),
             @JoinColumnOrFormula(column=@JoinColumn(name="team_cd", referencedColumnName="dtl_cd", insertable=false, updatable=false))
     })
     @Fetch(value= FetchMode.JOIN)
@@ -120,7 +120,7 @@ public class UserEmplymEntity
     /** 재직구분 코드 정보 (복합키 조인) */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula=@JoinFormula(value="'"+ Constant.RANK_CD+"'", referencedColumnName="cl_cd")),
+            @JoinColumnOrFormula(formula=@JoinFormula(value="'"+Code.RANK_CD+"'", referencedColumnName="cl_cd")),
             @JoinColumnOrFormula(column=@JoinColumn(name="emplym_cd", referencedColumnName="dtl_cd", insertable=false, updatable=false))
     })
     @Fetch(value= FetchMode.JOIN)
@@ -138,7 +138,7 @@ public class UserEmplymEntity
     /** 직급 코드 정보 (복합키 조인) */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumnsOrFormulas({
-        @JoinColumnOrFormula(formula=@JoinFormula(value="'"+ Constant.RANK_CD+"'", referencedColumnName="cl_cd")),
+        @JoinColumnOrFormula(formula=@JoinFormula(value="'"+ Code.RANK_CD+"'", referencedColumnName="cl_cd")),
         @JoinColumnOrFormula(column=@JoinColumn(name="rank_cd", referencedColumnName="dtl_cd", insertable=false, updatable=false))
     })
     @Fetch(value= FetchMode.JOIN)

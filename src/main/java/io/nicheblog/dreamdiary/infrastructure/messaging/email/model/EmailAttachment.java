@@ -1,11 +1,7 @@
 package io.nicheblog.dreamdiary.infrastructure.messaging.email.model;
 
 import io.nicheblog.dreamdiary.infrastructure.messaging.email.service.EmailService;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * EmailAttachment

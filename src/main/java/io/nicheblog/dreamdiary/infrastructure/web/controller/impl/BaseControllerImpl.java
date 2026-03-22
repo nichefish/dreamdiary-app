@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.infrastructure.web.controller.impl;
 
-import io.nicheblog.dreamdiary.infrastructure.Constant;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.BaseController;
 import org.springframework.web.bind.annotation.ModelAttribute;
 

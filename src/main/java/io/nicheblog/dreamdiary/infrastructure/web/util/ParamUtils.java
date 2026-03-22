@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.MapUtils;
@@ -182,9 +182,9 @@ public class ParamUtils {
         final HttpSession session = servletRequestAttribute.getRequest().getSession();
 
         // 내 글 보기 체크시 목록 돌아가기 버튼 보여지기 위해 값 저장
-        final boolean isMyPapr = !searchParam.isBackToList() && searchParam.isAction(Constant.ACTION_TY_MY_PAPR);
-        final boolean isBackToMyPapr = searchParam.isBackToList() && (Constant.ACTION_TY_MY_PAPR.equals(searchParam.getActionTyCd()));
-        if (isMyPapr || isBackToMyPapr) model.addAttribute(Constant.ACTION_TY_MY_PAPR, true);
+        final boolean isMyPapr = !searchParam.isBackToList() && searchParam.isAction(Code.ACTION_TY_MY_PAPR);
+        final boolean isBackToMyPapr = searchParam.isBackToList() && (Code.ACTION_TY_MY_PAPR.equals(searchParam.getActionTyCd()));
+        if (isMyPapr || isBackToMyPapr) model.addAttribute(Code.ACTION_TY_MY_PAPR, true);
 
         // 세션?에 목록 검색 인자 저장
         session.setAttribute("prevSearchParam", searchParam);

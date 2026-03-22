@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.infrastructure.log.actvty.controller;
 
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyDto;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;

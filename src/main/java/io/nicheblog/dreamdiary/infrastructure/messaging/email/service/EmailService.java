@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.infrastructure.messaging.email.service;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.log.sys.event.LogSysEvent;
 import io.nicheblog.dreamdiary.infrastructure.log.sys.handler.LogSysEventListener;

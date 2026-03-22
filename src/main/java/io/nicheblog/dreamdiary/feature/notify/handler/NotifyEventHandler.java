@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import io.nicheblog.dreamdiary.infrastructure.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.log.sys.event.LogSysEvent;
@@ -58,7 +58,7 @@ public class NotifyEventHandler {
             // msg
             final String msg = "새로운 공지사항이 등록되었습니다.";
             // url
-            final String param = "postNo=" + result.getPostNo() + "&boardDef=" + result.getContentType() + "&" + Constant.UTM_SOURCE + "=jandi";
+            final String param = "postNo=" + result.getPostNo() + "&boardDef=" + result.getContentType() + "&" + Code.UTM_SOURCE + "=jandi";
             final String fullUrl = Url.DOMAIN + Url.NOTICE_DTL + "?" + param;
             // 메세지 발송
             jandiApiService.sendMsg(trgetTopic, msg, title, fullUrl);
@@ -88,7 +88,7 @@ public class NotifyEventHandler {
             // msg
             final String msg = "새로운 글이 등록되었습니다.";
             // url
-            final String param = "postNo=" + result.getPostNo() + "&boardDef=" + result.getBoardDef() + "&" + Constant.UTM_SOURCE + "=jandi";
+            final String param = "postNo=" + result.getPostNo() + "&boardDef=" + result.getBoardDef() + "&" + Code.UTM_SOURCE + "=jandi";
             final String fullUrl = Url.DOMAIN + Url.BOARD_POST_DTL + "?" + param;
             // 메세지 발송
             jandiApiService.sendMsg(trgetTopic, msg, title, fullUrl);
@@ -114,7 +114,7 @@ public class NotifyEventHandler {
         String jandiRsltMsg;
         try {
             // title
-            final String schdulTyNm = dtlCdService.getDtlCdNm(Constant.SCHDUL_CD, result.getSchdulCd());
+            final String schdulTyNm = dtlCdService.getDtlCdNm(Code.SCHDUL_CD, result.getSchdulCd());
             String title = "[" + schdulTyNm + "] " + result.getBgnDt() + " / " + result.getSchdulNm();
             String prtcpntStr = result.getPrtcpntListStr();
             if (StringUtils.isNotEmpty(prtcpntStr)) {
@@ -123,7 +123,7 @@ public class NotifyEventHandler {
             // msg
             final String msg = "새로운 일정이 등록되었습니다.";
             // url
-            final String param = Constant.UTM_SOURCE + "=jandi";
+            final String param = Code.UTM_SOURCE + "=jandi";
             final String fullUrl = Url.DOMAIN + Url.SCHDUL_CAL + "?" + param;
             // 메세지 발송
             jandiApiService.sendMsg(trgetTopic, msg, title, fullUrl);

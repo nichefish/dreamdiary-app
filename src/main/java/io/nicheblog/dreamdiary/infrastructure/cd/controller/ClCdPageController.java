@@ -2,8 +2,9 @@ package io.nicheblog.dreamdiary.infrastructure.cd.controller;
 
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import io.nicheblog.dreamdiary.infrastructure.cd.model.ClCdDto;
 import io.nicheblog.dreamdiary.infrastructure.cd.model.ClCdSearchParam;
 import io.nicheblog.dreamdiary.infrastructure.cd.service.ClCdService;
@@ -78,7 +79,7 @@ public class ClCdPageController
         // 목록 검색 URL + 파라미터 모델에 추가
         ParamUtils.setModelAttrMap(searchParam, baseUrl, model);
         // 코드 데이터 모델에 추가
-        dtlCdService.setCdListToModel(Constant.CL_CTGR_CD, model);
+        dtlCdService.setCdListToModel(Code.CL_CTGR_CD, model);
 
         return "/view/feature/admin/cd/cl_cd_list";
     }

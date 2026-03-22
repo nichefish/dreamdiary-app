@@ -9,9 +9,10 @@ import io.nicheblog.dreamdiary.feature.board.post.model.BoardPostSearchParam;
 import io.nicheblog.dreamdiary.feature.board.post.service.BoardPostService;
 import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagService;
 import io.nicheblog.dreamdiary.feature.clsf.viewer.handler.ViewerEventListener;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import io.nicheblog.dreamdiary.infrastructure.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
@@ -123,7 +124,7 @@ public class BoardPostPageController
         final BoardDefDto boardDefInfo = boardDefService.getDtlDto(boardDef);
         dtlCdService.setCdListToModel(boardDefInfo.getCtgrClCd(), model);
         dtlCdService.setCdListToModel(Constant.MDFABLE_CD, model);
-        dtlCdService.setCdListToModel(Constant.JANDI_TOPIC_CD, model);
+        dtlCdService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
         // CmmUtils.setModelFlsysPath(model);
 
         return "/view/feature/board/post/board_post_reg_form";
@@ -217,7 +218,7 @@ public class BoardPostPageController
         final BoardDefDto boardDefInfo = boardDefService.getDtlDto(boardDef);
         dtlCdService.setCdListToModel(boardDefInfo.getCtgrClCd(), model);
         dtlCdService.setCdListToModel(Constant.MDFABLE_CD, model);
-        dtlCdService.setCdListToModel(Constant.JANDI_TOPIC_CD, model);
+        dtlCdService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
         // CmmUtils.setModelFlsysPath(model);
         
         return "/view/feature/board/post/board_post_reg_form";

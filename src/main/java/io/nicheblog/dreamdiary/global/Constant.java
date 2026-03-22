@@ -1,9 +1,7 @@
-package io.nicheblog.dreamdiary.infrastructure;
+package io.nicheblog.dreamdiary.global;
 
 import io.nicheblog.dreamdiary.auth.AuthConstant;
-import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.cd.CdConstant;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
 
@@ -24,7 +22,7 @@ import java.util.TimeZone;
  */
 @UtilityClass
 public final class Constant
-        implements AuthConstant, CdConstant {
+        implements AuthConstant {
 
     // 클래스 로딩 시에 한 번 계산하여 할당
     @Getter

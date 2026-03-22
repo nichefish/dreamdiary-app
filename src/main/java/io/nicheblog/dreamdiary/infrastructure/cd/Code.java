@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
  *
  * @author nichefish
  */
-public interface CdConstant {
+public interface Code {
 
     /** 디바이스 정보 */
     @AllArgsConstructor

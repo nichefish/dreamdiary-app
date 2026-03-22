@@ -1,9 +1,10 @@
 package io.nicheblog.dreamdiary.infrastructure.log.sys.entity;
 
 import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -76,7 +77,7 @@ public class LogSysEntity
     /** 작업 구분 코드 정보 (복합키 조인) */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula = @JoinFormula(value = "\'" + Constant.ACTVTY_CTGR_CD + "\'", referencedColumnName = "cl_cd")),
+            @JoinColumnOrFormula(formula = @JoinFormula(value = "\'" + Code.ACTVTY_CTGR_CD + "\'", referencedColumnName = "cl_cd")),
             @JoinColumnOrFormula(column = @JoinColumn(name = "actvty_ctgr_cd", referencedColumnName = "dtl_cd", insertable = false, updatable = false))
     })
     @Fetch(value = FetchMode.JOIN)

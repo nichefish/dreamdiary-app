@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.auth.security.model;
 
 import io.nicheblog.dreamdiary.feature.user.info.model.UserAuthRoleDto;
-import io.nicheblog.dreamdiary.infrastructure.Constant;
+import io.nicheblog.dreamdiary.global.Constant;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
