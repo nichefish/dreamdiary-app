@@ -9,9 +9,9 @@ import io.nicheblog.dreamdiary.feature.clsf.file.model.cmpstn.AtchFileCmpstnModu
 import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstnModule;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -89,7 +89,7 @@ public class SectnDto
     /** 수정권한 */
     @Builder.Default
     @Size(max = 50)
-    private String mdfable = Constant.MDFABLE_REGSTR;
+    private String mdfable = Code.MDFABLE_REGSTR;
 
     /** 수정 가능 여부 */
     @Builder.Default

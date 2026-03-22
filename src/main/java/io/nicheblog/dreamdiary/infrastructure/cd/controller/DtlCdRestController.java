@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.infrastructure.cd.controller;
 
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -53,7 +53,7 @@ public class DtlCdRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.DTL_CD_LIST_AJAX)
-    @Secured({Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> dtlCdListAjax(
             final @RequestParam("clCd") String clCd,
@@ -80,7 +80,7 @@ public class DtlCdRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(value = {Url.DTL_CD_REG_AJAX})
-    @Secured({Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> dtlCdRegAjax(
             final @Valid DtlCdDto dtlCd,
@@ -106,7 +106,7 @@ public class DtlCdRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(value = {Url.DTL_CD_MDF_AJAX})
-    @Secured({Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> dtlCdMdfAjax(
             final @Valid DtlCdDto dtlCd,
@@ -132,7 +132,7 @@ public class DtlCdRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.DTL_CD_DTL_AJAX)
-    @Secured({Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> dtlCdDtlAjax(
             final DtlCdKey key,
@@ -158,7 +158,7 @@ public class DtlCdRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
 /*    @PostMapping(Url.DTL_CD_USE_AJAX)
-    @Secured({Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> dtlCdUseAjax(
             final DtlCdKey key,
@@ -184,7 +184,7 @@ public class DtlCdRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.DTL_CD_DEL_AJAX)
-    @Secured({Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> dtlCdDelAjax(
             final DtlCdKey key,
@@ -210,7 +210,7 @@ public class DtlCdRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
 /*    @PostMapping(Url.DTL_CD_SORT_ORDR_AJAX)
-    @Secured({Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> dtlCdSortOrdrAjax(
             final @RequestBody DtlCdParam dtlCdParam,

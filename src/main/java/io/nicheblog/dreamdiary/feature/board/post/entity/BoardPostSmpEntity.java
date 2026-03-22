@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.feature.board.post.entity;
 
 import io.nicheblog.dreamdiary.feature.board.def.entity.BoardDefEntity;
 import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
@@ -76,7 +76,7 @@ public class BoardPostSmpEntity
     @Builder.Default
     @Column(name = "mdfable")
     @Comment("수정권한")
-    private String mdfable = Constant.MDFABLE_REGSTR;
+    private String mdfable = Code.MDFABLE_REGSTR;
 
     /** 게시판 정의 정보 */
     @ManyToOne(fetch = FetchType.LAZY)

@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.clsf.state.controller;
 
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.clsf.state.model.StateToggleDto;
 import io.nicheblog.dreamdiary.feature.clsf.state.service.StateService;
 import io.nicheblog.dreamdiary.feature.clsf.tag.handler.TagProcEventListener;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -47,7 +47,7 @@ public class StateRestController
      * @see TagProcEventListener
      */
     @PostMapping(value = {Url.STATES})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> stateAjax(
             final @RequestBody StateToggleDto stateToggle

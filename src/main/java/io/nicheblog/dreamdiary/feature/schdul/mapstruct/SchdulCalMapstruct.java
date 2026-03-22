@@ -14,13 +14,13 @@ import org.mapstruct.factory.Mappers;
 
 /**
  * SchdulCalMapstruct
- * <pre>
- *  일정(달력) MapStruct 기반 Mapper 인터페이스.
- * </pre>
- *
- * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {Constant.class, DateUtils.class, StringUtils.class, DatePtn.class}, builder = @Builder(disableBuilder = true))
+@Mapper(
+        componentModel = "spring",
+        unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        imports = {Constant.class, Code.class, DateUtils.class, StringUtils.class, DatePtn.class},
+        builder = @Builder(disableBuilder = true)
+)
 public interface SchdulCalMapstruct
         extends BaseWriteMapstruct<SchdulCalDto, SchdulEntity>, BaseReadMapstruct<SchdulCalDto, SchdulEntity> {
 
@@ -28,20 +28,19 @@ public interface SchdulCalMapstruct
 
     /**
      * SchdulEntity -> Dto 변환
+     * 달력에선 종료일자에 시간 데이터(23:59:59)를 붙여줘야 한다.
+     * 하루짜리 이벤트일 때만 allDay=true를 붙여준다.
      *
      * @param entity 변환할 Entity 객체
      * @return Dto -- 변환된 Dto 객체
      */
-    // 달력에선 종료일자에 시간 데이터(23:59:59)를 붙여줘야 한다.
-    // 하루짜리 이벤트일 때만 allDay=true를 붙여준다.
     @Mapping(target = "display", expression = "java(Code.SCHDUL_HLDY.equals(entity.getSchdulCd()) ? \"background\" : null)")
     @Mapping(target = "color", expression = "java(Code.SCHDUL_HLDY.equals(entity.getSchdulCd()) ? \"red\" : null)")
-    // @Mapping(target = "prtcpnt", expression = "java(entity.getPrtcpntStr())")
     @Mapping(target = "bgnDt", expression = "java(DateUtils.asStr(entity.getBgnDt(), DatePtn.DATE))")
     @Mapping(target = "endDt", expression = "java(DateUtils.asStr(entity.getEndDt(), DatePtn.ZDATETIME))")
     @Mapping(target = "start", expression = "java(DateUtils.asStr(entity.getBgnDt(), DatePtn.DATE))")
     @Mapping(target = "end", expression = "java(DateUtils.asStr(entity.getBgnDt(), DatePtn.ZDATETIME))")
-    @Mapping(target = "allDay", expression = "java(entity.getEndDt() == null ? true : DateUtils.isSameDay(entity.getBgnDt(), entity.getEndDt()) ? true : false)")
+    @Mapping(target = "allDay", expression = "java(entity.getEndDt() == null || DateUtils.isSameDay(entity.getBgnDt(), entity.getEndDt()))")
     SchdulCalDto toCalDto(final SchdulEntity entity) throws Exception;
 
     /** 
@@ -82,6 +81,7 @@ public interface SchdulCalMapstruct
                 dto.setClassName("text-dark" + (!dto.hasPassed() ? " blink" : ""));
                 break;
         }
+
         boolean isPrvt = "Y".equals(dto.getPrvtYn());
         if (isPrvt) title = "\uD83D\uDD07" + title;
         title += dto.hasPassed() ? " \uD83D\uDDF8" : " ⋯";

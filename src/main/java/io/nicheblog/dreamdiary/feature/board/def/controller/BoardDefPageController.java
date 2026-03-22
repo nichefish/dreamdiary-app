@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.board.def.controller;
 
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.feature.board.def.model.BoardDefDto;
@@ -54,7 +55,7 @@ public class BoardDefPageController
      * @return {@link String} -- 화면의 뷰 이름
      */
     @GetMapping(Url.BOARD_DEF_LIST)
-    @Secured({Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_MNGR})
     public String boardDefList(
             @ModelAttribute("searchParam") BoardDefSearchParam searchParam,
             final ModelMap model

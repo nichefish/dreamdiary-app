@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.feature.jrnl.todo.controller;
 
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.model.JrnlTodoDto;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.model.JrnlTodoSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.service.JrnlTodoService;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -49,7 +49,7 @@ public class JrnlTodoRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_TODOS})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlTodoListAjax(
             final JrnlTodoSearchParam searchParam
@@ -75,7 +75,7 @@ public class JrnlTodoRestController
             description = "저널 꿈 정보를 등록/수정한다."
     )
     @PostMapping(value = {Url.JRNL_TODOS, Url.JRNL_TODO})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlTodoRegAjax(
             final @PathVariable(value = "postNo", required = false) Integer postNo,
@@ -99,7 +99,7 @@ public class JrnlTodoRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_TODO})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlTodoDtlAjax(
             final @PathVariable("postNo") Integer postNo
@@ -121,7 +121,7 @@ public class JrnlTodoRestController
      * @see TagProcEventListener
      */
     @DeleteMapping(value = {Url.JRNL_TODO})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlTodoDelAjax(
             final @PathVariable("postNo") Integer postNo

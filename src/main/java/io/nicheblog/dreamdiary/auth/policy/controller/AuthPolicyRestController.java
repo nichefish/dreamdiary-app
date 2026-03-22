@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.auth.policy.controller;
 
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.auth.policy.model.AuthPolicyDto;
 import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyService;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -49,7 +49,7 @@ public class AuthPolicyRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.AUTH_POLICY_REG_AJAX)
-    @Secured(Constant.ROLE_MNGR)
+    @Secured(AuthConstant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> authPolicyRegAjax(
             final @Valid AuthPolicyDto authPolicy

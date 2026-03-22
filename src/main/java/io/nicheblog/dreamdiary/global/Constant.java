@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.global;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
@@ -21,8 +20,7 @@ import java.util.TimeZone;
  * @author nichefish
  */
 @UtilityClass
-public final class Constant
-        implements AuthConstant {
+public final class Constant {
 
     // 클래스 로딩 시에 한 번 계산하여 할당
     @Getter
@@ -40,6 +38,13 @@ public final class Constant
     public static final String SITE_NM = "dreamdiary";
     public static final String SITE_DESC = "'tis my site!";
     public static final String SITE_KEYWORDS = "dream, diary, journal";
+
+    /** 기본 계정 정보 */
+    public static final String SYSTEM_ACNT = "system";
+    public static final String SYSTEM_ACNT_NM = "시스템관리자";
+    public static final String SYSTEM_ADMIN_NM = "dreamdiary.io";
+    public static final String SYSTEM_EMAIL = SYSTEM_ACNT + "@" + SYSTEM_ADMIN_NM;
+    public static final String DEV_ACNT = "nichefish";
 
     /** blank avatar image url */
     public static final String BLANK_AVATAR_URL = "/metronic/assets/media/avatars/avatar_blank.png";

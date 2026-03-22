@@ -57,7 +57,7 @@ public class UserReqstVerificationEmailEventListener {
 
             final EmailSendParam emailSendParam = EmailSendParam.builder()
                     .recipientList(Collections.singletonList(new EmailAddress(userReqst.getEmail(), userReqst.getNickNm())))
-                    .sender(Constant.SYSTEM_EMAIL_ADDRESS)
+                    .sender(new EmailAddress(Constant.SYSTEM_EMAIL, Constant.SYSTEM_ADMIN_NM))
                     .subject("Dreamdiary 계정 신청 인증번호")
                     .tmplat("email/user_reqst_verification_code.ftlh")
                     .dataMap(Map.of("securityCode", securityCode, "recipientName", userReqst.getNickNm(), "authenticationUrl", verifyUrl))

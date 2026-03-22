@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.feature.schdul.controller;
 
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.feature.schdul.model.SchdulSearchParam;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cd.Code;
@@ -54,7 +54,7 @@ public class SchdulCalPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.SCHDUL_CAL)
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     public String schdulCal(
             @ModelAttribute("searchParam") SchdulSearchParam searchParam,
             final ModelMap model

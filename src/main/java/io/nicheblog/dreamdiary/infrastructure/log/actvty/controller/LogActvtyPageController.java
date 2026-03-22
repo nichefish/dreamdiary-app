@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.infrastructure.log.actvty.controller;
 
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -53,7 +54,7 @@ public class LogActvtyPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.LOG_ACTVTY_LIST)
-    @Secured(Constant.ROLE_MNGR)
+    @Secured(AuthConstant.ROLE_MNGR)
     public String logActvtyList(
             @ModelAttribute("searchParam") LogActvtySearchParam searchParam,
             final ModelMap model

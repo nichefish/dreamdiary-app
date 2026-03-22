@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.schdul.controller;
 
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.schdul.model.SchdulSearchParam;
 import io.nicheblog.dreamdiary.feature.schdul.service.SchdulCalService;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.intrfc.model.fullcalendar.BaseCalDto;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -49,7 +49,7 @@ public class SchdulCalRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.SCHDUL_CAL_LIST_AJAX)
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> schdulCalListAjax(
             final SchdulSearchParam searchParam

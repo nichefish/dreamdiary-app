@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.board.notice.controller;
 
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeDto;
@@ -62,7 +63,7 @@ public class NoticePageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.NOTICE_LIST)
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     public String noticeList(
             @ModelAttribute("searchParam") NoticeSearchParam searchParam,
             final ModelMap model
@@ -85,7 +86,7 @@ public class NoticePageController
         // 컨텐츠 타입에 맞는 태그 목록 조회
         model.addAttribute("tagList", tagService.getContentSpecificSizedTagList(ContentType.NOTICE));
         // 코드 정보 모델에 추가
-        dtlCdService.setCdListToModel(Constant.NOTICE_CTGR_CD, model);
+        dtlCdService.setCdListToModel(Code.NOTICE_CTGR_CD, model);
         // 목록 검색 URL + 파라미터 모델에 추가
         ParamUtils.setModelAttrMap(searchParam, baseUrl, model);
 
@@ -100,7 +101,7 @@ public class NoticePageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.NOTICE_REG_FORM)
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     public String noticeRegForm(
             final ModelMap model
     ) throws Exception {
@@ -115,7 +116,7 @@ public class NoticePageController
         model.addAttribute(Constant.FORM_MODE, "regist");
         // 코드 정보 모델에 추가
         dtlCdService.setCdListToModel(Code.NOTICE_CTGR_CD, model);
-        dtlCdService.setCdListToModel(Constant.MDFABLE_CD, model);
+        dtlCdService.setCdListToModel(Code.MDFABLE_CD, model);
         dtlCdService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
 
         return "/view/feature/board/notice/notice_reg_form";
@@ -130,7 +131,7 @@ public class NoticePageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @PostMapping(Url.NOTICE_REG_PREVIEW_POP)
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     public String noticeRegPreviewPop(
             final NoticeDto notice,
             final ModelMap model
@@ -157,7 +158,7 @@ public class NoticePageController
      * @see ViewerEventListener
      */
     @GetMapping(Url.NOTICE_DTL)
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     public String noticeDtl(
             final @RequestParam("postNo") Integer key,
             final ModelMap model
@@ -183,7 +184,7 @@ public class NoticePageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.NOTICE_MDF_FORM)
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     public String noticeMdfForm(
             final @RequestParam("postNo") Integer key,
             final ModelMap model
@@ -199,8 +200,8 @@ public class NoticePageController
         // 등록/수정 화면 플래그 세팅
         model.addAttribute(Constant.FORM_MODE, "modify");
         // 코드 정보 모델에 추가
-        dtlCdService.setCdListToModel(Constant.NOTICE_CTGR_CD, model);
-        dtlCdService.setCdListToModel(Constant.MDFABLE_CD, model);
+        dtlCdService.setCdListToModel(Code.NOTICE_CTGR_CD, model);
+        dtlCdService.setCdListToModel(Code.MDFABLE_CD, model);
         dtlCdService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
 
         return "/view/feature/board/notice/notice_reg_form";

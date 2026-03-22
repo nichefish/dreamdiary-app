@@ -8,8 +8,8 @@ import io.nicheblog.dreamdiary.feature.clsf.file.entity.embed.AtchFileEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.file.entity.embed.AtchFileEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbedModule;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.entity.Usable;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
@@ -96,7 +96,7 @@ public class SectnEntity
     @Builder.Default
     @Column(name = "mdfable")
     @Comment("수정권한")
-    private String mdfable = Constant.MDFABLE_REGSTR;
+    private String mdfable = Code.MDFABLE_REGSTR;
 
     /* ----- */
 

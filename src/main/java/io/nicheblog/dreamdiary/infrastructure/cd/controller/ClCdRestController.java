@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.infrastructure.cd.controller;
 
-import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -51,7 +51,7 @@ public class ClCdRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(value = {Url.CD_CLS})
-    @Secured({Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> clCdRegAjax(
             final @Valid ClCdDto clCd,
@@ -77,7 +77,7 @@ public class ClCdRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(value = {Url.CD_CL})
-    @Secured({Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> clCdMdfAjax(
             final @PathVariable("clCd") String clCd,
@@ -104,7 +104,7 @@ public class ClCdRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.CD_CL)
-    @Secured({Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> clCdDtlAjax(
             final @PathVariable("clCd") String clCd,
@@ -130,7 +130,7 @@ public class ClCdRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PatchMapping(Url.CD_CL)
-    @Secured({Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuPatchAjax(
             final @PathVariable("clCd") String clCd,
@@ -157,7 +157,7 @@ public class ClCdRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @DeleteMapping(Url.CD_CL)
-    @Secured({Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> clCdDelAjax(
             final @PathVariable("clCd") String clCd,

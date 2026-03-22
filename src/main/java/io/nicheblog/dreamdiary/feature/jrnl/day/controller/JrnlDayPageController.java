@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.jrnl.day.controller;
 
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDaySearchParam;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -45,7 +45,7 @@ public class JrnlDayPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.JRNL_DAY_MONTHLY)
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     public String jrnlDayMonthlyPage(
             final @ModelAttribute("searchParam") JrnlDaySearchParam searchParam,
             final ModelMap model
@@ -90,7 +90,7 @@ public class JrnlDayPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.JRNL_DAY_DAILY_VIEW)
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
     public String jrnlDayViewDailyPage(
             final @PathVariable("stdrdDt") String stdrdDt,
             final @ModelAttribute("searchParam") JrnlDaySearchParam searchParam,

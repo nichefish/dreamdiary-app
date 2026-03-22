@@ -113,7 +113,7 @@ public class EmailService {
      * @throws UnsupportedEncodingException 지원되지 않는 인코딩이 발견될 경우 발생하는 예외
      */
     public void setSender(final MimeMessageHelper helper, EmailAddress sender) throws MessagingException, UnsupportedEncodingException {
-        if (sender == null) sender = Constant.SYSTEM_EMAIL_ADDRESS;
+        if (sender == null) sender = new EmailAddress(Constant.SYSTEM_EMAIL, Constant.SYSTEM_ADMIN_NM);
         helper.setFrom(sender.getInternetAddress());
     }
 

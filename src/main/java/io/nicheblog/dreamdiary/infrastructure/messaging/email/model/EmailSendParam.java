@@ -29,7 +29,7 @@ public class EmailSendParam {
 
     /** 발신자 (홍길동<test@gmail.com>) */
     @Builder.Default
-    private EmailAddress sender = Constant.SYSTEM_EMAIL_ADDRESS;
+    private EmailAddress sender = new EmailAddress(Constant.SYSTEM_EMAIL, Constant.SYSTEM_ADMIN_NM);
 
     /** 수신자 Array(홍길동<test@gmail.com>) */
     private List<EmailAddress> recipientList;

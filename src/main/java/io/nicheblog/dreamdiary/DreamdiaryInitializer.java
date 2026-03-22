@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary;
 
+import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.auth.policy.model.AuthPolicyDto;
 import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyService;
 import io.nicheblog.dreamdiary.auth.security.entity.AuthRoleEntity;
@@ -121,10 +122,10 @@ public class DreamdiaryInitializer
      */
     public boolean regSystemAcnt() throws Exception {
 
-        final AuthRoleEntity authRoleEntityMngr = authService.getAuthRole(Constant.AUTH_MNGR);
+        final AuthRoleEntity authRoleEntityMngr = authService.getAuthRole(AuthConstant.AUTH_MNGR);
 
         final UserAuthRoleDto userAuthRole = UserAuthRoleDto.builder()
-                .authCd(Constant.AUTH_MNGR)
+                .authCd(AuthConstant.AUTH_MNGR)
                 .role(authRoleEntityMngr)
                 .build();
 

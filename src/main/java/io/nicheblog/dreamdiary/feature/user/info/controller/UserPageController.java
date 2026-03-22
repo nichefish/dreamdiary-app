@@ -1,5 +1,6 @@
  package io.nicheblog.dreamdiary.feature.user.info.controller;
 
+ import io.nicheblog.dreamdiary.auth.AuthConstant;
  import io.nicheblog.dreamdiary.auth.security.service.AuthRoleService;
  import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
  import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
@@ -62,7 +63,7 @@ public class UserPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.USER_LIST)
-    @Secured(Constant.ROLE_MNGR)
+    @Secured(AuthConstant.ROLE_MNGR)
     public String userList(
             @ModelAttribute("searchParam") UserSearchParam searchParam,
             final ModelMap model
@@ -84,7 +85,7 @@ public class UserPageController
         model.addAttribute("userList", userList.getContent());
         model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(userList));
         // 코드 정보 모델에 추가
-        dtlCdService.setCdListToModel(Constant.AUTH_CD, model);
+        dtlCdService.setCdListToModel(AuthConstant.AUTH_CD, model);
         dtlCdService.setCdListToModel(Code.TEAM_CD, model);
         dtlCdService.setCdListToModel(Code.EMPLYM_CD, model);
         dtlCdService.setCdListToModel(Code.RANK_CD, model);
@@ -101,7 +102,7 @@ public class UserPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.USER_REG_FORM)
-    @Secured(Constant.ROLE_MNGR)
+    @Secured(AuthConstant.ROLE_MNGR)
     public String userRegForm(
             final ModelMap model
     ) throws Exception {
@@ -120,7 +121,7 @@ public class UserPageController
         }};
         model.addAttribute("authRoleList", authRoleService.getListDto(searchParamMap));
         // 코드 정보 모델에 추가
-        dtlCdService.setCdListToModel(Constant.AUTH_CD, model);
+        dtlCdService.setCdListToModel(AuthConstant.AUTH_CD, model);
         dtlCdService.setCdListToModel(Code.TEAM_CD, model);
         dtlCdService.setCdListToModel(Code.EMPLYM_CD, model);
         dtlCdService.setCdListToModel(Code.RANK_CD, model);
@@ -137,7 +138,7 @@ public class UserPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.USER_DTL)
-    @Secured(Constant.ROLE_MNGR)
+    @Secured(AuthConstant.ROLE_MNGR)
     public String userDtl(
             final @RequestParam("userNo") Integer key,
             final ModelMap model
@@ -163,7 +164,7 @@ public class UserPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.USER_MDF_FORM)
-    @Secured(Constant.ROLE_MNGR)
+    @Secured(AuthConstant.ROLE_MNGR)
     public String userMdfForm(
             final @RequestParam("userNo") Integer key,
             final ModelMap model
@@ -184,7 +185,7 @@ public class UserPageController
         }};
         model.addAttribute("authRoleList", authRoleService.getListDto(searchParamMap));
         // 코드 정보 모델에 추가
-        dtlCdService.setCdListToModel(Constant.AUTH_CD, model);
+        dtlCdService.setCdListToModel(AuthConstant.AUTH_CD, model);
         dtlCdService.setCdListToModel(Code.TEAM_CD, model);
         dtlCdService.setCdListToModel(Code.EMPLYM_CD, model);
         dtlCdService.setCdListToModel(Code.RANK_CD, model);
