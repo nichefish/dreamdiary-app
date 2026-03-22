@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global.intrfc.entity;
+package io.nicheblog.dreamdiary.auth.intrfc.entity;
 
 import io.nicheblog.dreamdiary.auth.security.config.AuditConfig;
 import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;

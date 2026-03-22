@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.admin.menu.model;
 
+import io.nicheblog.dreamdiary.auth.intrfc.model.BaseAuditDto;
 import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstnModule;
-import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
 import lombok.Builder;

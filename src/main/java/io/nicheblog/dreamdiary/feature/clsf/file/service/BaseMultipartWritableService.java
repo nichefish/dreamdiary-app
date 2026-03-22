@@ -1,12 +1,12 @@
 package io.nicheblog.dreamdiary.feature.clsf.file.service;
 
+import io.nicheblog.dreamdiary.auth.intrfc.entity.BaseAuditEntity;
+import io.nicheblog.dreamdiary.auth.intrfc.model.BaseAuditDto;
 import io.nicheblog.dreamdiary.feature.clsf.file.entity.embed.AtchFileEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.file.exception.AtchFileUploadException;
 import io.nicheblog.dreamdiary.feature.clsf.file.model.cmpstn.AtchFileCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.file.model.cmpstn.AtchFileCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.file.utils.FileUtils;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
-import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;

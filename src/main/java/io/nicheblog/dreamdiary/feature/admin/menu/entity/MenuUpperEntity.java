@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.admin.menu.entity;
 
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
+import io.nicheblog.dreamdiary.auth.intrfc.entity.BaseAuditEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

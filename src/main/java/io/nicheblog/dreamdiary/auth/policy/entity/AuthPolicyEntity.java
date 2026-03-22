@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.auth.policy.entity;
 
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseAuditEntity;
+import io.nicheblog.dreamdiary.auth.intrfc.entity.BaseAuditEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
