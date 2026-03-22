@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nicheblog.dreamdiary.feature.user.info.model.emplym.UserEmplymDto;
 import io.nicheblog.dreamdiary.feature.user.info.model.profl.UserProflDto;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import lombok.experimental.UtilityClass;
@@ -34,8 +33,8 @@ public class UserReqstDtoTestFactory {
                 .userId(TestConstant.TEST_USER)
                 .password("test_password")
                 // 권한:: 운영 로직에선 변환 전 서비스단에서 할당하여 넣어줌.
-                // .authList(List.of(UserAuthRoleDto.builder().authCd(Constant.AUTH_USER).build()))
-                .authListStr(Constant.AUTH_USER)
+                // .authList(List.of(UserAuthRoleDto.builder().authCd(Code.AUTH_USER).build()))
+                .authListStr(Code.AUTH_USER)
                 .nickNm("test_nick_nm")
                 .emailId("test_email_id")
                 .emailDomain("test_email_domain")

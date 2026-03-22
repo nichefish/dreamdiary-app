@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.jrnl.day.repository.jpa;
 
+import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
 import io.nicheblog.dreamdiary.feature.jrnl.day.entity.JrnlDayEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.day.entity.JrnlDayEntityTestFactory;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.entity.JrnlDiaryEntity;
@@ -11,7 +12,6 @@ import io.nicheblog.dreamdiary.feature.jrnl.dream.repository.jpa.JrnlDreamReposi
 import io.nicheblog.dreamdiary.feature.jrnl.entry.entity.JrnlEntryEntity;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
-import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
