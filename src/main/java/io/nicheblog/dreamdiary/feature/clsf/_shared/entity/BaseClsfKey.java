@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.feature.clsf.shared.entity;
+package io.nicheblog.dreamdiary.feature.clsf._shared.entity;
 
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import lombok.*;

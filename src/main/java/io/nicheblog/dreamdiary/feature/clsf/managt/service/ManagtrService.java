@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.feature.clsf.managt.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.feature.clsf.managt.entity.ManagtrEntity;
 import io.nicheblog.dreamdiary.feature.clsf.managt.repository.jpa.ManagtrRepository;
 import io.nicheblog.dreamdiary.feature.clsf.managt.spec.ManagtrSpec;
-import io.nicheblog.dreamdiary.feature.clsf.shared.entity.BaseClsfKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;

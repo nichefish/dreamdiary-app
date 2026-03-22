@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.jrnl.entry.spec;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.shared.spec.BaseClsfSpec;
+import io.nicheblog.dreamdiary.feature.clsf._shared.spec.BaseClsfSpec;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.jrnl.day.entity.JrnlDaySmpEntity;

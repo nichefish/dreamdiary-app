@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.feature.chat.mapstruct.ChatMsgMapstruct;
 import io.nicheblog.dreamdiary.feature.chat.model.ChatMsgDto;
 import io.nicheblog.dreamdiary.feature.chat.repository.jpa.ChatMsgRepository;
 import io.nicheblog.dreamdiary.feature.chat.spec.ChatMsgSpec;
-import io.nicheblog.dreamdiary.feature.clsf.shared.service.BaseClsfService;
+import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

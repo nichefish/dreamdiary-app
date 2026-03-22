@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.clsf.comment.service;
 
+import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
 import io.nicheblog.dreamdiary.feature.clsf.comment.entity.CommentEntity;
 import io.nicheblog.dreamdiary.feature.clsf.comment.event.CommentCacheEvictEvent;
 import io.nicheblog.dreamdiary.feature.clsf.comment.mapstruct.CommentMapstruct;
@@ -7,7 +8,6 @@ import io.nicheblog.dreamdiary.feature.clsf.comment.model.CommentDto;
 import io.nicheblog.dreamdiary.feature.clsf.comment.repository.jpa.CommentRepository;
 import io.nicheblog.dreamdiary.feature.clsf.comment.spec.CommentSpec;
 import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableService;
-import io.nicheblog.dreamdiary.feature.clsf.shared.service.BaseClsfService;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;

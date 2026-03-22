@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.user.info.entity;
 
+import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
 import io.nicheblog.dreamdiary.feature.clsf.file.entity.embed.AtchFileEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.file.entity.embed.AtchFileEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.shared.entity.BaseClsfEntity;
 import io.nicheblog.dreamdiary.feature.user.emplym.entity.UserEmplymEntity;
 import io.nicheblog.dreamdiary.feature.user.emplym.mapstruct.UserEmplymMapstruct;
 import io.nicheblog.dreamdiary.feature.user.info.model.emplym.UserEmplymDto;

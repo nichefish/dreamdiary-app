@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.schdul.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.shared.service.BaseClsfService;
+import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
 import io.nicheblog.dreamdiary.feature.clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.feature.schdul.entity.SchdulEntity;
 import io.nicheblog.dreamdiary.feature.schdul.mapstruct.SchdulMapstruct;

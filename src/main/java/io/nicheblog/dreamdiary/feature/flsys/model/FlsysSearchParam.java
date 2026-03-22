@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.flsys.model;
 
-import io.nicheblog.dreamdiary.feature.clsf.shared.model.param.BaseClsfSearchParam;
+import io.nicheblog.dreamdiary.feature.clsf._shared.model.param.BaseClsfSearchParam;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 

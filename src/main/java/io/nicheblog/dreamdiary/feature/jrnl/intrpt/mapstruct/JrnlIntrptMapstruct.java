@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.jrnl.intrpt.mapstruct;
 
-import io.nicheblog.dreamdiary.feature.clsf.shared.mapstruct.BaseClsfMapstruct;
+import io.nicheblog.dreamdiary.feature.clsf._shared.mapstruct.BaseClsfMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.entity.JrnlDreamEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.entity.JrnlIntrptEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptDto;

@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.jrnl.sumry.mapstruct;
 
-import io.nicheblog.dreamdiary.feature.clsf.shared.mapstruct.BaseClsfMapstruct;
+import io.nicheblog.dreamdiary.feature.clsf._shared.mapstruct.BaseClsfMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.entity.JrnlSumryReviewEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryReviewDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;

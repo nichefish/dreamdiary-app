@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.jrnl.entry.service;
 
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.shared.service.BaseClsfService;
+import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
 import io.nicheblog.dreamdiary.feature.clsf.tag.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
