@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.feature.board.post.repository.jpa;
 
+import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
 import io.nicheblog.dreamdiary.feature.board.post.entity.BoardPostEntity;
 import io.nicheblog.dreamdiary.feature.board.post.entity.BoardPostEntityTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
-import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;

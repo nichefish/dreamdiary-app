@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.infrastructure.cd.mapstruct;
 
 import io.nicheblog.dreamdiary.global.TestConstant;
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseEntityTestFactoryHelper;
 import io.nicheblog.dreamdiary.infrastructure.cd.entity.ClCdEntity;
 import io.nicheblog.dreamdiary.infrastructure.cd.entity.ClCdEntityTestFactory;
 import io.nicheblog.dreamdiary.infrastructure.cd.model.ClCdDto;
 import io.nicheblog.dreamdiary.infrastructure.cd.model.ClCdDtoTestFactory;
-import io.nicheblog.dreamdiary.global.intrfc.entity.BaseEntityTestFactoryHelper;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
