@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.admin.menu.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.*;
 import io.nicheblog.dreamdiary.feature.admin.menu.service.MenuService;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -50,7 +50,7 @@ public class MenuRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.MENU_MAIN_LIST_AJAX)
-    @Secured({AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> mainMenuListAjax(
             final @ModelAttribute("searchParam") MenuSearchParam searchParam
@@ -73,7 +73,7 @@ public class MenuRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(value = {Url.MENUS, Url.MENU})
-    @Secured({AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuRegAjax(
             final @PathVariable(value = "menuNo", required = false) Integer menuNo,
@@ -97,7 +97,7 @@ public class MenuRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.MENU)
-    @Secured({AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuDtlAjax(
             final @PathVariable("menuNo") Integer menuNo
@@ -118,7 +118,7 @@ public class MenuRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PatchMapping(Url.MENU)
-    @Secured({AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuPatchAjax(
             final @PathVariable("menuNo") Integer menuNo,
@@ -140,7 +140,7 @@ public class MenuRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PutMapping(Url.MENUS_IDX)
-    @Secured({AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuSortOrdrAjax(
             final @RequestBody MenuParam menuParam
@@ -161,7 +161,7 @@ public class MenuRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @DeleteMapping(Url.MENU)
-    @Secured({AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuDelAjax(
             final @PathVariable("menuNo") Integer menuNo

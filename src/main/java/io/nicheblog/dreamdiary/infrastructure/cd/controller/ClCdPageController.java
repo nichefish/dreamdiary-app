@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.infrastructure.cd.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -58,7 +57,7 @@ public class ClCdPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.CL_CD_LIST)
-    @Secured({AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_MNGR})
     public String clCdList(
             @ModelAttribute("searchParam") ClCdSearchParam searchParam,
             final ModelMap model

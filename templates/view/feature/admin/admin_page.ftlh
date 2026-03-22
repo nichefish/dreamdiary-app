@@ -141,19 +141,19 @@
                             </td>
                             <td class="text-center">
                                 <div class="d-flex-center">
-                                    <#if (authRole.authCd! == Constant.AUTH_MNGR)>
+                                    <#if (authRole.authCd! == Code.AUTH_MNGR)>
                                         <!-- 관리자 -->
                                         <i class="bi bi-person-lines-fill text-info fs-2 me-2 opacity-75"
                                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="${authRole.authNm!"-"}"></i>
                                         <div class="text-info fw-bold">${authRole.authNm!}</div>
                                         <div class="badge badge-info ms-3">${authRole.authLevel!}</div>
-                                    <#elseif (authRole.authCd! == Constant.AUTH_USER)>
+                                    <#elseif (authRole.authCd! == Code.AUTH_USER)>
                                         <!-- 사용자 -->
                                         <i class="bi bi-people-fill me-2 fs-2"
                                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="${authRole.authNm!"-"}"></i>
                                         <div class="text-muted fw-bold">${authRole.authNm!}</div>
                                         <div class="badge badge-dark ms-3 opacity-50">${authRole.authLevel!}</div>
-                                    <#elseif (authRole.authCd! == Constant.AUTH_DEV)>
+                                    <#elseif (authRole.authCd! == Code.AUTH_DEV)>
                                         <!-- 사용자 -->
                                         <i class="bi bi-person-fill-gear text-info fs-2 me-2 opacity-75"
                                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="${authRole.authNm!"-"}"></i>

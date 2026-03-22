@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.admin.menu.adapter;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.exception.MenuNotExistsException;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.MenuDto;
@@ -8,6 +7,7 @@ import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.SiteAcsInfo;
 import io.nicheblog.dreamdiary.feature.admin.menu.service.MenuService;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import io.nicheblog.dreamdiary.infrastructure.freemarker.interceptor.FreemarkerInterceptor;
 import io.nicheblog.dreamdiary.infrastructure.freemarker.model.FreemarkerModelContext;
 import io.nicheblog.dreamdiary.infrastructure.freemarker.port.FreemarkerModelContributor;
@@ -53,9 +53,9 @@ public class MenuFreemarkerModelContributor
                 }
                 context.addObject("siteAcsInfo", acsInfo);
 
-                final String userMode = menuService.getIsMngrMenu(menuDto.getMenuNo()) ? AuthConstant.AUTH_MNGR : AuthConstant.AUTH_USER;
+                final String userMode = menuService.getIsMngrMenu(menuDto.getMenuNo()) ? Code.AUTH_MNGR : Code.AUTH_USER;
                 context.getSession().setAttribute("userMode", userMode);
-                context.addObject("isMngrMode", AuthConstant.AUTH_MNGR.equals(userMode));
+                context.addObject("isMngrMode", Code.AUTH_MNGR.equals(userMode));
             } catch (final MenuNotExistsException e) {
                 log.error(MessageUtils.getExceptionMsg(e));
             }

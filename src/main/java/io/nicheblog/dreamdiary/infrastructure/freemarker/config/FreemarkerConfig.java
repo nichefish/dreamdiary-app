@@ -122,6 +122,7 @@ public class FreemarkerConfig
         final TemplateHashModel statics = config.getStaticModels();
         sharedVariables.put("Statics", statics);
         sharedVariables.put("Constant", statics.get("io.nicheblog.dreamdiary.global.Constant"));
+        sharedVariables.put("Code", statics.get("io.nicheblog.dreamdiary.infrastructure.cd.Code"));
         sharedVariables.put("Url", statics.get("io.nicheblog.dreamdiary.global.Url"));
         // TODO: SiteMenu 빼기
         sharedVariables.put("SiteMenu", statics.get("io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu"));

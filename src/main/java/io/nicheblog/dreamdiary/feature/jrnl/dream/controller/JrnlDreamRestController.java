@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.feature.jrnl.dream.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamPostDto;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.service.JrnlDreamService;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -51,7 +51,7 @@ public class JrnlDreamRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_DREAMS})
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDreamListAjax(
             JrnlDreamSearchParam searchParam
@@ -80,7 +80,7 @@ public class JrnlDreamRestController
             description = "저널 꿈 정보를 등록/수정한다."
     )
     @PostMapping(value = {Url.JRNL_DREAMS, Url.JRNL_DREAM})
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDreamRegAjax(
             final @PathVariable(value = "postNo", required = false) Integer postNo,
@@ -106,7 +106,7 @@ public class JrnlDreamRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_DREAM})
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDreamDtlAjax(
             final @PathVariable("postNo") Integer key
@@ -128,7 +128,7 @@ public class JrnlDreamRestController
      * @see TagProcEventListener
      */
     @DeleteMapping(value = {Url.JRNL_DREAM})
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDreamDelAjax(
             final @PathVariable("postNo") Integer postNo

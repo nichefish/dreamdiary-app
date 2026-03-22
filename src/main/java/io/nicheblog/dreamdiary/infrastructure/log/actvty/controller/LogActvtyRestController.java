@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.infrastructure.log.actvty.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
@@ -49,7 +49,7 @@ public class LogActvtyRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.LOG_ACTVTY_DTL_AJAX)
-    @Secured(AuthConstant.ROLE_MNGR)
+    @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> logActvtyDtlAjax(
             final @RequestParam("logActvtyNo") Integer key,

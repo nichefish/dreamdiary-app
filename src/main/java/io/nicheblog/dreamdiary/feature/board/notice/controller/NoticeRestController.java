@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.feature.board.notice.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeDto;
 import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeSearchParam;
 import io.nicheblog.dreamdiary.feature.board.notice.service.NoticeService;
 import io.nicheblog.dreamdiary.feature.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.feature.clsf.viewer.handler.ViewerEventListener;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -84,7 +84,7 @@ public class NoticeRestController
      * @see TagProcEventListener ,ManagtrEventListener
      */
     @PostMapping(value = {Url.NOTICE_REG_AJAX, Url.NOTICE_MDF_AJAX})
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> noticeRegAjax(
             final @Valid NoticeDto notice,
@@ -108,7 +108,7 @@ public class NoticeRestController
      * @see ViewerEventListener
      */
     @GetMapping(Url.NOTICE)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> noticeDtlAjax(
             final @PathVariable("postNo") Integer key
@@ -130,7 +130,7 @@ public class NoticeRestController
      * @see TagProcEventListener
      */
     @DeleteMapping(Url.NOTICE)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> noticeDelAjax(
             final @PathVariable("postNo") Integer postNo
@@ -151,7 +151,7 @@ public class NoticeRestController
      * TODO: AOP 예외 처리
      */
     @GetMapping(Url.NOTICE_LIST_XLSX_DOWNLOAD)
-    @Secured(AuthConstant.ROLE_MNGR)
+    @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> noticeListXlsxDownload(
             final NoticeSearchParam searchParam

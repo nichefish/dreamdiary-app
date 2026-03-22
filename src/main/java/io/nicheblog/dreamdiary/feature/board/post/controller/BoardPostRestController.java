@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.feature.board.post.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.board.post.model.BoardPostDto;
 import io.nicheblog.dreamdiary.feature.board.post.service.BoardPostService;
 import io.nicheblog.dreamdiary.feature.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.feature.clsf.viewer.handler.ViewerEventListener;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -54,7 +54,7 @@ public class BoardPostRestController
      * @see ViewerEventListener
      */
     @PostMapping(value = {Url.BOARD_POST_REG_AJAX, Url.BOARD_POST_MDF_AJAX})
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardPostRegAjax(
             final @Valid BoardPostDto boardPost,
@@ -78,7 +78,7 @@ public class BoardPostRestController
      * @see ViewerEventListener
      */
     @GetMapping(Url.BOARD_POST_DTL_AJAX)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardPostDtlAjax(
             final @RequestParam("postNo") Integer postNo
@@ -100,7 +100,7 @@ public class BoardPostRestController
      * @see TagProcEventListener
      */
     @PostMapping(Url.BOARD_POST_DEL_AJAX)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardPostDelAjax(
             final Integer postNo

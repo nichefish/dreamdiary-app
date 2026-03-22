@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.admin.web.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.feature.flsys.model.FlsysSearchParam;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
@@ -49,7 +49,7 @@ public class NotionPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.NOTION_HOME)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String notionPage(
             @ModelAttribute("searchParam") FlsysSearchParam searchParam,
             final @RequestParam("notionPageId") @Nullable String notionPageIdParam,

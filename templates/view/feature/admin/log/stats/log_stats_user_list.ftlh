@@ -49,9 +49,9 @@
                         </td>
                         <td class="text-center">
                             ${user.authNm!"-"}
-                            <#if (user.authCd! == Constant.AUTH_MNGR)>
+                            <#if (user.authCd! == Code.AUTH_MNGR)>
                                 <i class="bi bi-person-lines-fill text-info ms-1 opacity-75"></i>   <!-- 관리자 -->
-                            <#elseif (user.authCd! == Constant.AUTH_USER)>
+                            <#elseif (user.authCd! == Code.AUTH_USER)>
                                 <i class="bi bi-people-fill ms-1"></i>        <!-- 사용자 -->
                             </#if>
                         </td>

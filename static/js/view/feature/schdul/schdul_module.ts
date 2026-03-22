@@ -89,7 +89,7 @@ dF.Schdul = (function(): dfModule {
          * 종료일자 토글 처리
          */
         schdulCd: function(obj): void {
-            if ($(obj).val() === "${Constant.SCHDUL_HLDY!}") {
+            if ($(obj).val() === "${Code.SCHDUL_HLDY!}") {
                 $("#endDt").val($("#startDt").val());
                 $("#endDtDiv").hide();
                 $("#endDtSpan").hide();

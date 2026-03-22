@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.infrastructure.log.sys.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -54,7 +53,7 @@ public class LogSysPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.LOG_SYS_LIST)
-    @Secured(AuthConstant.ROLE_MNGR)
+    @Secured(Constant.ROLE_MNGR)
     public String logSysList(
             @ModelAttribute("searchParam") LogSysSearchParam searchParam,
             final ModelMap model

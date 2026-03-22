@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.infrastructure.cache.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.model.CacheParam;
@@ -47,7 +47,7 @@ public class EhCacheRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.CACHE_ACTIVE_MAP_AJAX)
-    @Secured(AuthConstant.ROLE_MNGR)
+    @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> cacheActiveListAjax(
             final LogActvtyParam logParam
@@ -73,7 +73,7 @@ public class EhCacheRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.CACHE_ACTIVE_DTL_AJAX)
-    @Secured(AuthConstant.ROLE_MNGR)
+    @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> cacheActiveDtlAjax(
             final CacheParam cacheParam,
@@ -100,7 +100,7 @@ public class EhCacheRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.CACHE_EVICT_AJAX)
-    @Secured(AuthConstant.ROLE_MNGR)
+    @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> cacheEvictAjax(
             final CacheParam cacheParam,
@@ -127,7 +127,7 @@ public class EhCacheRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.CACHE_CLEAR_BY_NM_AJAX)
-    @Secured(AuthConstant.ROLE_MNGR)
+    @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> cacheClearByNmAjax(
             final CacheParam cacheParam,
@@ -153,7 +153,7 @@ public class EhCacheRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.CACHE_CLEAR_AJAX)
-    @Secured(AuthConstant.ROLE_MNGR)
+    @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> cacheClearAjax(
             final LogActvtyParam logParam

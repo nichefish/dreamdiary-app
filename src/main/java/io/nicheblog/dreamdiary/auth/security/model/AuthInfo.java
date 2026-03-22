@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.auth.security.model;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.user.info.model.profl.UserProflDto;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -102,14 +102,14 @@ public class AuthInfo
      * Getter :: 관리자 여부
      */
     public Boolean getIsMngr() {
-        return this.hasAuthority(AuthConstant.ROLE_MNGR);
+        return this.hasAuthority(Constant.ROLE_MNGR);
     }
 
     /**
      * Getter :: 개발자 여부
      */
     public Boolean getIsDev() {
-        return this.hasAuthority(AuthConstant.ROLE_DEV);
+        return this.hasAuthority(Constant.ROLE_DEV);
     }
 
     /**
@@ -133,7 +133,7 @@ public class AuthInfo
         return this.authList.stream()
                 .map(entity -> {
                     try {
-                        if (AuthConstant.AUTH_DEV.equals(entity.getAuthCd())) return new SimpleGrantedAuthority(AuthConstant.ROLE_MNGR);
+                        if (Code.AUTH_DEV.equals(entity.getAuthCd())) return new SimpleGrantedAuthority(Constant.ROLE_MNGR);
                         return new SimpleGrantedAuthority("ROLE_" + entity.getAuthCd());
                     } catch (final Exception e) {
                         throw new RuntimeException(e);
