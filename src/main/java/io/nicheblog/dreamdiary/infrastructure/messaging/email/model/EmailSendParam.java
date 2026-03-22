@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.infrastructure.messaging.email.model;
 
-import io.nicheblog.dreamdiary.feature.clsf.file.model.AtchFileDtlDto;
 import io.nicheblog.dreamdiary.infrastructure.Constant;
 import lombok.*;
 
@@ -36,7 +35,7 @@ public class EmailSendParam {
     private List<EmailAddress> recipientList;
 
     /** 첨부파일 목록 */
-    private List<AtchFileDtlDto> atchFileList;
+    private List<EmailAttachment> atchFileList;
 
     /** 데이터:: freemarker 템플릿 처리 */
     private Map<String, Object> dataMap;
