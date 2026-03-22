@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.feature.clsf.tag.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.shared.entity.BaseClsfKey;
+import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagEntity;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagSmpEntity;

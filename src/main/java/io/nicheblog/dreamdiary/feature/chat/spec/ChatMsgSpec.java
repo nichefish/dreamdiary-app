@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.chat.spec;
 
 import io.nicheblog.dreamdiary.feature.chat.entity.ChatMsgEntity;
-import io.nicheblog.dreamdiary.feature.clsf.shared.spec.BaseClsfSpec;
+import io.nicheblog.dreamdiary.feature.clsf._shared.spec.BaseClsfSpec;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;

@@ -1,8 +1,8 @@
-package io.nicheblog.dreamdiary.feature.clsf.shared.mapstruct;
+package io.nicheblog.dreamdiary.feature.clsf._shared.mapstruct;
 
-import io.nicheblog.dreamdiary.feature.clsf.shared.entity.BaseClsfEntity;
-import io.nicheblog.dreamdiary.feature.clsf.shared.mapstruct.helper.ClsfMapstructHelper;
-import io.nicheblog.dreamdiary.feature.clsf.shared.model.BaseClsfDto;
+import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
+import io.nicheblog.dreamdiary.feature.clsf._shared.mapstruct.helper.ClsfMapstructHelper;
+import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.MappingTarget;

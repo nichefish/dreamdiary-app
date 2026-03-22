@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.jrnl.sumry.spec;
 
-import io.nicheblog.dreamdiary.feature.clsf.shared.spec.BaseClsfSpec;
+import io.nicheblog.dreamdiary.feature.clsf._shared.spec.BaseClsfSpec;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.entity.JrnlSumryEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;

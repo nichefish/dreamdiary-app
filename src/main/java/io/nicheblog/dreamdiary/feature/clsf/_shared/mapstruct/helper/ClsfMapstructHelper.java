@@ -1,6 +1,8 @@
-package io.nicheblog.dreamdiary.feature.clsf.shared.mapstruct.helper;
+package io.nicheblog.dreamdiary.feature.clsf._shared.mapstruct.helper;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
+import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.comment.mapstruct.embed.CommentEmbedMapstruct;
@@ -21,8 +23,6 @@ import io.nicheblog.dreamdiary.feature.clsf.sectn.entity.embed.SectnEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.sectn.mapstruct.embed.SectnEmbedMapstruct;
 import io.nicheblog.dreamdiary.feature.clsf.sectn.model.cmpstn.SectnCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.sectn.model.cmpstn.SectnCmpstnModule;
-import io.nicheblog.dreamdiary.feature.clsf.shared.entity.BaseClsfEntity;
-import io.nicheblog.dreamdiary.feature.clsf.shared.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.feature.clsf.state.entity.embed.StateEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.state.mapstruct.embed.StateEmbedMapstruct;

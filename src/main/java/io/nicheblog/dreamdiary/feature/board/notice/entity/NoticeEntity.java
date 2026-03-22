@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.board.notice.entity;
 
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
 import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.file.entity.embed.AtchFileEmbed;
@@ -9,7 +10,6 @@ import io.nicheblog.dreamdiary.feature.clsf.managt.entity.embed.ManagtEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.managt.entity.embed.ManagtEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.sectn.entity.embed.SectnEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.sectn.entity.embed.SectnEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.shared.entity.BaseClsfEntity;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.viewer.entity.embed.ViewerEmbed;

@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.schdul.spec;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.shared.spec.BaseClsfSpec;
+import io.nicheblog.dreamdiary.feature.clsf._shared.spec.BaseClsfSpec;
 import io.nicheblog.dreamdiary.feature.schdul.entity.SchdulEntity;
 import io.nicheblog.dreamdiary.feature.schdul.entity.SchdulPrtcpntEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;

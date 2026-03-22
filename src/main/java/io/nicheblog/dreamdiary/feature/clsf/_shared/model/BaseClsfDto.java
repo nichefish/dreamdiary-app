@@ -1,6 +1,6 @@
-package io.nicheblog.dreamdiary.feature.clsf.shared.model;
+package io.nicheblog.dreamdiary.feature.clsf._shared.model;
 
-import io.nicheblog.dreamdiary.feature.clsf.shared.entity.BaseClsfKey;
+import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseAuditDto;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

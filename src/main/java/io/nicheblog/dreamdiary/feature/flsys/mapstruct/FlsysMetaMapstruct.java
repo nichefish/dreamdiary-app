@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.flsys.mapstruct;
 
-import io.nicheblog.dreamdiary.feature.clsf.shared.mapstruct.BaseClsfMapstruct;
+import io.nicheblog.dreamdiary.feature.clsf._shared.mapstruct.BaseClsfMapstruct;
 import io.nicheblog.dreamdiary.feature.flsys.entity.FlsysMetaEntity;
 import io.nicheblog.dreamdiary.feature.flsys.model.FlsysMetaDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;

@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.clsf.meta.handler;
 
+import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.feature.clsf.meta.entity.MetaContentEntity;
 import io.nicheblog.dreamdiary.feature.clsf.meta.entity.MetaEntity;
 import io.nicheblog.dreamdiary.feature.clsf.meta.event.JrnlMetaProcEvent;
@@ -8,7 +9,6 @@ import io.nicheblog.dreamdiary.feature.clsf.meta.model.MetaDto;
 import io.nicheblog.dreamdiary.feature.clsf.meta.model.cmpstn.MetaCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.meta.service.MetaContentService;
 import io.nicheblog.dreamdiary.feature.clsf.meta.service.MetaService;
-import io.nicheblog.dreamdiary.feature.clsf.shared.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.infrastructure.cache.event.EhCacheEvictEvent;
 import lombok.RequiredArgsConstructor;

@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.feature.chat.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.shared.model.param.BaseClsfSearchParam;
+import io.nicheblog.dreamdiary.feature.clsf._shared.model.param.BaseClsfSearchParam;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 

@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.clsf.viewer.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.shared.entity.BaseClsfKey;
+import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.feature.clsf.viewer.entity.ViewerEntity;
 import io.nicheblog.dreamdiary.feature.clsf.viewer.repository.jpa.ViewerRepository;
 import io.nicheblog.dreamdiary.feature.clsf.viewer.spec.ViewerSpec;

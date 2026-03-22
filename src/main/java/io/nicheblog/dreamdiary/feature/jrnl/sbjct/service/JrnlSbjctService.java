@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.jrnl.sbjct.service;
 
+import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
 import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.feature.clsf.managt.event.ManagtrAddEvent;
-import io.nicheblog.dreamdiary.feature.clsf.shared.service.BaseClsfService;
 import io.nicheblog.dreamdiary.feature.clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.feature.jrnl.sbjct.entity.JrnlSbjctEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.sbjct.mapstruct.JrnlSbjctMapstruct;

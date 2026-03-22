@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.clsf.tag.event;
 
-import io.nicheblog.dreamdiary.feature.clsf.shared.entity.BaseClsfKey;
+import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.feature.clsf.tag.handler.JrnlTagCacheUpdtEventListener;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;

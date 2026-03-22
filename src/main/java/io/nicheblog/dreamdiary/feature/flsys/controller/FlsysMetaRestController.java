@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.flsys.controller;
 
-import io.nicheblog.dreamdiary.feature.clsf.shared.entity.BaseClsfKey;
+import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.feature.flsys.model.FlsysMetaDto;
 import io.nicheblog.dreamdiary.feature.flsys.service.FlsysMetaService;
 import io.nicheblog.dreamdiary.global.Url;

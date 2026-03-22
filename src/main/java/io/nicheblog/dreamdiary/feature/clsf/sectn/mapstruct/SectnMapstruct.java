@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.clsf.sectn.mapstruct;
 
+import io.nicheblog.dreamdiary.feature.clsf._shared.mapstruct.BaseClsfMapstruct;
 import io.nicheblog.dreamdiary.feature.clsf.sectn.entity.SectnEntity;
 import io.nicheblog.dreamdiary.feature.clsf.sectn.mapstruct.embed.SectnEmbedMapstruct;
 import io.nicheblog.dreamdiary.feature.clsf.sectn.model.SectnDto;
-import io.nicheblog.dreamdiary.feature.clsf.shared.mapstruct.BaseClsfMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
