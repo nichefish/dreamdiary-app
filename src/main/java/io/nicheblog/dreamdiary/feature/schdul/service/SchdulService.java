@@ -239,7 +239,6 @@ public class SchdulService
 
     /**
      * 공휴일 정보를 다시 동기화하여 캐시에 갱신한다.
-     *
      */
     public void resyncHldyMap() throws Exception {
         final SchdulSearchParam param = SchdulSearchParam.builder().schdulCd(Constant.SCHDUL_HLDY).build();

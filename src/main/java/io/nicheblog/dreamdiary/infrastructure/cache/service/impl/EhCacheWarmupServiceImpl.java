@@ -1,14 +1,8 @@
 package io.nicheblog.dreamdiary.infrastructure.cache.service.impl;
 
 import io.nicheblog.dreamdiary.DreamdiaryInitializer;
-import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDaySearchParam;
-import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayMetaService;
-import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayService;
-import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayTagService;
-import io.nicheblog.dreamdiary.feature.jrnl.diary.service.JrnlDiaryTagService;
-import io.nicheblog.dreamdiary.feature.jrnl.dream.service.JrnlDreamTagService;
-import io.nicheblog.dreamdiary.feature.schdul.service.SchdulService;
-import io.nicheblog.dreamdiary.global.util.date.DateUtils;
+import io.nicheblog.dreamdiary.infrastructure.cache.port.CacheWarmupTask;
+import io.nicheblog.dreamdiary.infrastructure.cache.port.LoginCacheWarmupTask;
 import io.nicheblog.dreamdiary.infrastructure.cache.service.CacheWarmupService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -16,6 +10,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * CacheWarmupService
@@ -36,48 +31,17 @@ public class EhCacheWarmupServiceImpl
     @SuppressWarnings("unused")
     private CacheManager cacheManager;
 
-    private final JrnlDayService jrnlDayService;
-    private final JrnlDayTagService jrnlDayTagService;
-    private final JrnlDiaryTagService jrnlDiaryTagService;
-    private final JrnlDreamTagService jrnlDreamTagService;
-    private final JrnlDayMetaService jrnlDayMetaService;
-    private final SchdulService schdulService;
+    private final List<CacheWarmupTask> cacheWarmupTasks;
+    private final List<LoginCacheWarmupTask> loginCacheWarmupTasks;
 
     /**
      * 캐시 웜업
      */
+    @Override
     public void warmup() throws Exception {
-        // 태그 카테고리 맵 캐시 웜업
-        this.warmupTagCtgrMap();
-        // 메타 카테고리 맵 캐시 웜업
-        this.warmupMetaCtgrMap();
-        // 공휴일 맵 캐시 웜업
-        this.warmupHldyMap();
-    }
-
-    /**
-     * 태그 카테고리 맵 캐시 웜업
-     */
-    public void warmupTagCtgrMap() throws Exception {
-        // TODO: 사용자별 태그 캐시 웜업
-        jrnlDayTagService.getTagCtgrMap("nichefish");
-        jrnlDiaryTagService.getTagCtgrMap("nichefish");
-        jrnlDreamTagService.getTagCtgrMap("nichefish");
-    }
-
-    /**
-     * 메타 카테고리 맵 캐시 웜업
-     */
-    public void warmupMetaCtgrMap() throws Exception {
-        // TODO: 사용자별 메타 캐시 웜업
-        jrnlDayMetaService.getMetaCtgrMap("nichefish");
-    }
-
-    /**
-     * 공휴일 맵 캐시 웜업
-     */
-    public void warmupHldyMap() throws Exception {
-        schdulService.resyncHldyMap();
+        for (final CacheWarmupTask task : cacheWarmupTasks) {
+            task.warmup();
+        }
     }
 
     /**
@@ -85,10 +49,8 @@ public class EhCacheWarmupServiceImpl
      */
     @Override
     public void warmupOnLgn(final String userId) throws Exception {
-        final JrnlDaySearchParam param = JrnlDaySearchParam.builder()
-                .yy(DateUtils.getCurrYy())
-                .mnth(DateUtils.getCurrMnth())
-                .build();
-        jrnlDayService.getMyListDtoByYyMnthWithHldy(userId, param);
+        for (final LoginCacheWarmupTask task : loginCacheWarmupTasks) {
+            task.warmupOnLgn(userId);
+        }
     }
 }
