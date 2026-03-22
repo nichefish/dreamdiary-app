@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.jrnl.sbjct.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
@@ -65,7 +64,7 @@ public class JrnlSbjctPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.JRNL_SBJCT_LIST)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String jrnlSbjctList(
             @ModelAttribute("searchParam") JrnlSbjctSearchParam searchParam,
             final ModelMap model
@@ -103,7 +102,7 @@ public class JrnlSbjctPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.JRNL_SBJCT_REG_FORM)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String jrnlSbjctRegForm(
             final ModelMap model
     ) throws Exception {
@@ -133,7 +132,7 @@ public class JrnlSbjctPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @PostMapping(Url.JRNL_SBJCT_REG_PREVIEW_POP)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String jrnlSbjctRegPreviewPop(
             final @Valid JrnlSbjctDto jrnlSbjct,
             final ModelMap model
@@ -160,7 +159,7 @@ public class JrnlSbjctPageController
      * @see ViewerEventListener
      */
     @GetMapping(Url.JRNL_SBJCT_DTL)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String jrnlSbjctDtl(
             final @RequestParam("postNo") Integer key,
             final ModelMap model
@@ -186,7 +185,7 @@ public class JrnlSbjctPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.JRNL_SBJCT_MDF_FORM)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String jrnlSbjctMdfForm(
             final @RequestParam("postNo") Integer key,
             final ModelMap model

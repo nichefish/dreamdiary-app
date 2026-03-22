@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.board.def.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.board.def.model.BoardDefDto;
 import io.nicheblog.dreamdiary.feature.board.def.service.BoardDefService;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -48,7 +48,7 @@ public class BoardDefRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.BOARD_DEF_REG_AJAX)
-    @Secured({AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardDefRegAjax(
             final @Valid BoardDefDto boardDef
@@ -69,7 +69,7 @@ public class BoardDefRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.BOARD_DEF_DTL_AJAX)
-    @Secured({AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_MNGR})
     public ResponseEntity<AjaxResponse> boardDefDtlAjax(
             final @RequestParam("boardDef") String key
     ) throws Exception {
@@ -89,7 +89,7 @@ public class BoardDefRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.BOARD_DEF_MDF_ITEM_AJAX)
-    @Secured({AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardDefMdfItemAjax(
             final @Valid BoardDefDto boardDef
@@ -111,7 +111,7 @@ public class BoardDefRestController
      */
 /*
     @PostMapping(Url.BOARD_DEF_USE_AJAX)
-    @Secured({AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardDefUseAjax(
             final @RequestParam("boardDef") String boardDef,
@@ -137,7 +137,7 @@ public class BoardDefRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      *//*
     @PostMapping(Url.BOARD_DEF_SORT_ORDR_AJAX)
-    @Secured({AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardDefSortOrdrAjax(
             final @RequestBody BoardDefParam boardDefParam,
@@ -162,7 +162,7 @@ public class BoardDefRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.BOARD_DEF_DEL_AJAX)
-    @Secured({AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardDefDelAjax(
             final @RequestParam("boardDef") String boardDef

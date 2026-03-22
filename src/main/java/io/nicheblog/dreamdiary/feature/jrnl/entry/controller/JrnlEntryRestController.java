@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.feature.jrnl.entry.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.model.JrnlEntryDto;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.model.JrnlEntrySearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.service.JrnlEntryExportService;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.service.JrnlEntryService;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -56,7 +56,7 @@ public class JrnlEntryRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_ENTRIES})
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlEntryListAjax(
             JrnlEntrySearchParam searchParam
@@ -83,7 +83,7 @@ public class JrnlEntryRestController
             description = "저널 항목 정보를 등록/수정한다."
     )
     @PostMapping(value = {Url.JRNL_ENTRIES, Url.JRNL_ENTRY})
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlEntryRegAjax(
             final @PathVariable(value = "postNo", required = false) Integer postNo,
@@ -108,7 +108,7 @@ public class JrnlEntryRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_ENTRY})
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlEntryDtlAjax(
             final @PathVariable("postNo") Integer key
@@ -130,7 +130,7 @@ public class JrnlEntryRestController
      * @see TagProcEventListener
      */
     @DeleteMapping(value = {Url.JRNL_ENTRY})
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlEntryDelAjax(
             final @PathVariable("postNo") Integer postNo
@@ -152,7 +152,7 @@ public class JrnlEntryRestController
      * @see TagProcEventListener
      */
     @GetMapping(value = {Url.JRNL_ENTRY_EXPORT})
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<byte[]> jrnlEntryExportTxtAjax(
             final @PathVariable("postNo") Integer postNo

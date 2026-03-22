@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.jrnl.diary.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.service.JrnlDiaryService;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
@@ -42,7 +42,7 @@ public class JrnlDiaryPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.JRNL_DIARY_SEARCH)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String jrnlDiarySearch(
             final ModelMap model
     ) throws Exception {

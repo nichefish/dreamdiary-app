@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.user.my.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserPwChgParam;
 import io.nicheblog.dreamdiary.feature.user.my.service.UserMyService;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
@@ -51,7 +51,7 @@ public class UserMyRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.USER_MY_UPLOAD_PROFL_IMG_AJAX)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> uploadProflImgAjax(
             final MultipartHttpServletRequest request
@@ -70,7 +70,7 @@ public class UserMyRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.USER_MY_REMOVE_PROFL_IMG_AJAX)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> removeProflImgAjax(
             //
@@ -90,7 +90,7 @@ public class UserMyRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.USER_MY_PW_CF_AJAX)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> myPwChkAjax(
             final @RequestParam("currPw") @Nullable String currPw
@@ -111,7 +111,7 @@ public class UserMyRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.USER_MY_PW_CHG_AJAX)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> myPwChgAjax(
             final UserPwChgParam pwChgParam

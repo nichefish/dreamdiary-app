@@ -42,11 +42,11 @@
                         </td>
                         <td class="text-center hidden-table">
                             <#list user.authList![] as auth>
-                                <#if (auth.authCd! == Constant.AUTH_MNGR)>
+                                <#if (auth.authCd! == Code.AUTH_MNGR)>
                                     <i class="bi bi-person-lines-fill text-info ms-1 opacity-75"></i>   <!-- 관리자 -->
-                                <#elseif (auth.authCd! == Constant.AUTH_USER)>
+                                <#elseif (auth.authCd! == Code.AUTH_USER)>
                                     <i class="bi bi-people-fill ms-1"></i>        <!-- 사용자 -->
-                                <#elseif (auth.authCd! == Constant.AUTH_DEV)>
+                                <#elseif (auth.authCd! == Code.AUTH_DEV)>
                                     <i class="bi bi-person-fill-gear ms-1"></i>        <!-- 개발자 -->
                                 </#if>
                                 ${auth.authNm!}

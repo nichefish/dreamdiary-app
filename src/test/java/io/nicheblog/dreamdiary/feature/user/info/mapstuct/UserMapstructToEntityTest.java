@@ -14,8 +14,8 @@ import io.nicheblog.dreamdiary.feature.user.info.model.emplym.UserEmplymDto;
 import io.nicheblog.dreamdiary.feature.user.info.model.profl.UserProflDto;
 import io.nicheblog.dreamdiary.feature.user.profl.entity.UserProflEntity;
 import io.nicheblog.dreamdiary.feature.user.profl.model.UserProflDtoTestFactory;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -87,8 +87,8 @@ class UserMapstructToEntityTest {
         // 권한 관련 매핑 검증
         assertNotNull(entity.getAuthList(), "변환된 사용자 권한 목록은 null일 수 없습니다.");
         assertEquals(2, entity.getAuthList().size(), "사용자 권한 목록 크기가 일치하지 않습니다.");
-        assertEquals(Constant.AUTH_USER, entity.getAuthList().get(0).getAuthCd(), "사용자 권한 목록에서 권한 정보가 제대로 매핑되지 않았습니다.");
-        assertEquals(Constant.AUTH_MNGR, entity.getAuthList().get(1).getAuthCd(), "사용자 권한 목록에서 권한 정보가 제대로 매핑되지 않았습니다.");
+        assertEquals(Code.AUTH_USER, entity.getAuthList().get(0).getAuthCd(), "사용자 권한 목록에서 권한 정보가 제대로 매핑되지 않았습니다.");
+        assertEquals(Code.AUTH_MNGR, entity.getAuthList().get(1).getAuthCd(), "사용자 권한 목록에서 권한 정보가 제대로 매핑되지 않았습니다.");
     }
 
     /**

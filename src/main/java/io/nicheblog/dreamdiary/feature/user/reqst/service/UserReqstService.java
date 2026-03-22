@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.user.reqst.service;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserAuthRoleEntity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserStusEmbed;
@@ -10,6 +9,7 @@ import io.nicheblog.dreamdiary.feature.user.reqst.mapstruct.UserReqstMapstruct;
 import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDto;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -56,7 +56,7 @@ public class UserReqstService {
      */
     public void preRegist(final UserEntity registEntity) throws Exception {
         // userReqstEntity.setUserProflNo(this.userInfoReg(userReqstEntity, userReqst));
-        registEntity.setAuthList(List.of(new UserAuthRoleEntity(AuthConstant.AUTH_USER)));
+        registEntity.setAuthList(List.of(new UserAuthRoleEntity(Code.AUTH_USER)));
         registEntity.setPassword(passwordEncoder.encode(registEntity.getPassword()));
         registEntity.setAcntStus(UserStusEmbed.getReqstStus());
         registEntity.cascade();

@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.feature.user.profl.entity.UserProflEntityTestFact
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.Test;
@@ -93,8 +94,8 @@ class AuthInfoMapstructTest {
         // authList
         assertFalse(CollectionUtils.isEmpty(dto.getAuthList()));
         assertEquals(2, dto.getAuthList().size());
-        assertEquals(Constant.AUTH_USER, dto.getAuthList().get(0).getAuthCd());
-        assertEquals(Constant.AUTH_MNGR, dto.getAuthList().get(1).getAuthCd());
+        assertEquals(Code.AUTH_USER, dto.getAuthList().get(0).getAuthCd());
+        assertEquals(Code.AUTH_MNGR, dto.getAuthList().get(1).getAuthCd());
         // acntStus
         assertEquals("N", dto.getLockedYn());
         assertEquals("Y", dto.getNeedsPwReset());

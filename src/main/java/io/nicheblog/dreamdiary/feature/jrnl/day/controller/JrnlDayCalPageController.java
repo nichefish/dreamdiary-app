@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.jrnl.day.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDaySearchParam;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
@@ -43,7 +43,7 @@ public class JrnlDayCalPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.JRNL_DAY_CAL)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String jrnlDayCal(
             @ModelAttribute("searchParam") JrnlDaySearchParam searchParam,
             final ModelMap model

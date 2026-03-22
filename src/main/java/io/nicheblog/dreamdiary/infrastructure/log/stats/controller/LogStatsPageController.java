@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.infrastructure.log.stats.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.log.stats.model.LogStatsSearchParam;
@@ -53,7 +53,7 @@ public class LogStatsPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.LOG_STATS_USER_LIST)
-    @Secured(AuthConstant.ROLE_MNGR)
+    @Secured(Constant.ROLE_MNGR)
     public String logStatsUserList(
             @ModelAttribute("searchParam") LogStatsSearchParam searchParam,
             final ModelMap model

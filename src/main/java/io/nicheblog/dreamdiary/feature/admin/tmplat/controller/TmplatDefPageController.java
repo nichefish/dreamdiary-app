@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.admin.tmplat.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.feature.admin.tmplat.model.TmplatDefDto;
@@ -54,7 +53,7 @@ public class TmplatDefPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.TMPLAT_DEF_LIST)
-    @Secured({AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_MNGR})
     public String tmplatDefList(
             @ModelAttribute("searchParam") TmplatDefSearchParam searchParam,
             final ModelMap model

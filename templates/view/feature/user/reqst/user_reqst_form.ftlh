@@ -121,7 +121,7 @@
                     <div class="col-xl-2 col-form-label">
                         <i class="bi bi-people-fill me-1 blink-slow"></i>
                         <span class="fw-bold text-gray-600">사용자</span>
-                        <input type="hidden" name="authList[0].authCd" id="authCd" value="${Constant.AUTH_USER!}">
+                        <input type="hidden" name="authList[0].authCd" id="authCd" value="${Code.AUTH_USER!}">
                         <div id="authCd_validate_span"></div>
                     </div>
                 </div>

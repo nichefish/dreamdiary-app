@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.auth.policy.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.auth.policy.model.AuthPolicyDto;
 import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyService;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
@@ -45,7 +45,7 @@ public class AuthPolicyPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.AUTH_POLICY_FORM)
-    @Secured(AuthConstant.ROLE_MNGR)
+    @Secured(Constant.ROLE_MNGR)
     public String authPolicyForm(
             final ModelMap model
     ) throws Exception {

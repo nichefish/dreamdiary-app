@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.user.reqst.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDto;
 import io.nicheblog.dreamdiary.feature.user.reqst.service.UserReqstService;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -71,7 +71,7 @@ public class UserReqstRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.USER_REQST_CF_AJAX)
-    @Secured(AuthConstant.ROLE_MNGR)
+    @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> userCfAjax(
             final @RequestParam("userNo") Integer userNo
@@ -92,7 +92,7 @@ public class UserReqstRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.USER_REQST_UNCF_AJAX)
-    @Secured(AuthConstant.ROLE_MNGR)
+    @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> userUncfAjax(
             final @RequestParam("userNo") Integer userNo

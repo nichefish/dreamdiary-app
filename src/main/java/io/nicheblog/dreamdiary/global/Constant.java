@@ -39,6 +39,11 @@ public final class Constant {
     public static final String SITE_DESC = "'tis my site!";
     public static final String SITE_KEYWORDS = "dream, diary, journal";
 
+    /** 기본 권한 정보 */
+    public static final String ROLE_MNGR = "ROLE_MNGR";
+    public static final String ROLE_USER = "ROLE_USER";
+    public static final String ROLE_DEV = "ROLE_DEV";
+
     /** 기본 계정 정보 */
     public static final String SYSTEM_ACNT = "system";
     public static final String SYSTEM_ACNT_NM = "시스템관리자";

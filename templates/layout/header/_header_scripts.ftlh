@@ -25,9 +25,9 @@
                 if (!userModeSelect) return;
                 userModeSelect.addEventListener("change", function() {
                     let mode = this.value;
-                    if (mode === "${Constant.AUTH_USER!}") {
+                    if (mode === "${Code.AUTH_USER!}") {
                         location.replace("${Url.MAIN!}");
-                    } else if (mode === "${Constant.AUTH_MNGR!}") {
+                    } else if (mode === "${Code.AUTH_MNGR!}") {
                         location.replace("${Url.ADMIN_MAIN!}");
                     }
                 });

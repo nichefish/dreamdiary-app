@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.board.notice.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeDto;
@@ -63,7 +62,7 @@ public class NoticePageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.NOTICE_LIST)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String noticeList(
             @ModelAttribute("searchParam") NoticeSearchParam searchParam,
             final ModelMap model
@@ -101,7 +100,7 @@ public class NoticePageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.NOTICE_REG_FORM)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String noticeRegForm(
             final ModelMap model
     ) throws Exception {
@@ -131,7 +130,7 @@ public class NoticePageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @PostMapping(Url.NOTICE_REG_PREVIEW_POP)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String noticeRegPreviewPop(
             final NoticeDto notice,
             final ModelMap model
@@ -158,7 +157,7 @@ public class NoticePageController
      * @see ViewerEventListener
      */
     @GetMapping(Url.NOTICE_DTL)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String noticeDtl(
             final @RequestParam("postNo") Integer key,
             final ModelMap model
@@ -184,7 +183,7 @@ public class NoticePageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.NOTICE_MDF_FORM)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String noticeMdfForm(
             final @RequestParam("postNo") Integer key,
             final ModelMap model

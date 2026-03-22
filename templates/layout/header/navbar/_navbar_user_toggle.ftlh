@@ -38,9 +38,9 @@
                                data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-dismiss="click" title="사용자"></i>   <!-- 사용자 -->
                             사용자
                         </#if>
-                        <#if ((authInfo.authCd)! == Constant.AUTH_MNGR)>
+                        <#if ((authInfo.authCd)! == Code.AUTH_MNGR)>
                             <i class="bi bi-person-lines-fill text-info opacity-75"></i>   <!-- 관리자 -->
-                        <#elseif ((authInfo.authCd)! == Constant.AUTH_USER)>
+                        <#elseif ((authInfo.authCd)! == Code.AUTH_USER)>
                             <i class="bi bi-people-fill ms-1"></i>        <!-- 사용자 -->
                         </#if>
                     </span>

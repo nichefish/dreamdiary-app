@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.admin.web.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
@@ -81,7 +81,7 @@ public class MainPageController
      */
     @GetMapping(value = Url.API_ALIVE_CHECK)
     @ResponseBody
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public ResponseEntity<AjaxResponse> aliveCheck() {
 
         return ResponseEntity.ok(new AjaxResponse());

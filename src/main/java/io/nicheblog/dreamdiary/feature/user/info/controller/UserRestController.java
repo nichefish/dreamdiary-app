@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.feature.user.info.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserSearchParam;
 import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -89,7 +89,7 @@ public class UserRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(value = {Url.USER_REG_AJAX, Url.USER_MDF_AJAX})
-    @Secured(AuthConstant.ROLE_MNGR)
+    @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> userRegAjax(
             final @Valid UserDto user
@@ -111,7 +111,7 @@ public class UserRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.USER_PW_RESET_AJAX)
-    @Secured(AuthConstant.ROLE_MNGR)
+    @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> passwordResetAjax(
             final @RequestParam("userNo") Integer userNo
@@ -132,7 +132,7 @@ public class UserRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.USER_DEL_AJAX)
-    @Secured(AuthConstant.ROLE_MNGR)
+    @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> userDelAjax(
             final @RequestParam("userNo") Integer userNo
@@ -160,7 +160,7 @@ public class UserRestController
      * TODO: 더 일반화하기
      */
     @GetMapping(Url.USER_LIST_XLSX_DOWNLOAD)
-    @Secured(AuthConstant.ROLE_MNGR)
+    @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> userListXlsxDownload(
             final @ModelAttribute("searchParam") UserSearchParam searchParam

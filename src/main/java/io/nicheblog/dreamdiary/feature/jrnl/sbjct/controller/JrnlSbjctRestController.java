@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.feature.jrnl.sbjct.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.clsf.managt.handler.ManagtrEventListener;
 import io.nicheblog.dreamdiary.feature.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.feature.clsf.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.feature.jrnl.sbjct.model.JrnlSbjctDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sbjct.service.JrnlSbjctService;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -54,7 +54,7 @@ public class JrnlSbjctRestController
      * @see ManagtrEventListener
      */
     @PostMapping(value = {Url.JRNL_SBJCT_REG_AJAX, Url.JRNL_SBJCT_MDF_AJAX})
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSbjctRegAjax(
             final @Valid JrnlSbjctDto jrnlSbjct,
@@ -78,7 +78,7 @@ public class JrnlSbjctRestController
      * @see ViewerEventListener
      */
     @GetMapping(Url.JRNL_SBJCT_DTL_AJAX)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSbjctDtlAjax(
             final @RequestParam("postNo") Integer key
@@ -100,7 +100,7 @@ public class JrnlSbjctRestController
      * @see TagProcEventListener
      */
     @PostMapping(Url.JRNL_SBJCT_DEL_AJAX)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSbjctDelAjax(
             final @RequestParam("postNo") Integer postNo

@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.infrastructure.cd;
 
+import io.nicheblog.dreamdiary.auth.Auth;
 import io.nicheblog.dreamdiary.auth.Mdfable;
 import lombok.AllArgsConstructor;
 
@@ -13,6 +14,14 @@ import lombok.AllArgsConstructor;
  * @author nichefish
  */
 public interface Code {
+
+    /** 사용자 권한 코드 */
+    String AUTH_CD = "AUTH_CD";
+
+    /** AUTH */
+    String AUTH_MNGR = Auth.MNGR.name();
+    String AUTH_USER = Auth.USER.name();
+    String AUTH_DEV = Auth.DEV.name();
 
     /** 수정 권한 코드 */
     String MDFABLE_CD = "MDFABLE_CD";

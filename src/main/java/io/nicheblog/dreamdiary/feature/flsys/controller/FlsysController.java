@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.flsys.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.feature.clsf.file.utils.FileUtils;
@@ -59,7 +58,7 @@ public class FlsysController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.FLSYS_HOME)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String flsysList(
             final @ModelAttribute("searchParam") FlsysSearchParam searchParam,
             final @RequestParam("filePath") @Nullable String filePathParam,
@@ -86,7 +85,7 @@ public class FlsysController
      * @return 파일 시스템 정보를 담은 AjaxResponse 객체를 ResponseEntity로 반환
      */
     @GetMapping(value = Url.FLSYS_LIST_AJAX)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> flsysListAjax(
             final @RequestParam("filePath") String filePath
@@ -108,7 +107,7 @@ public class FlsysController
      * @param filePath 조회할 파일 경로
      */
     @GetMapping(Url.FLSYS_FILE_DOWNLOAD)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public void flsysFileDownload(
             final @RequestParam("filePath") String filePath
     ) throws Exception {

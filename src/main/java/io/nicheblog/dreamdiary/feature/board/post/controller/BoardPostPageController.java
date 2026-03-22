@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.board.post.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.feature.board.def.model.BoardDefDto;
@@ -66,7 +65,7 @@ public class BoardPostPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.BOARD_POST_LIST)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String boardPostList(
             @ModelAttribute("searchParam") BoardPostSearchParam searchParam,
             final @ModelAttribute("boardDef") String boardDef,
@@ -107,7 +106,7 @@ public class BoardPostPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(Url.BOARD_POST_REG_FORM)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String boardPostRegForm(
             final @ModelAttribute("boardDef") String boardDef,
             final ModelMap model
@@ -141,7 +140,7 @@ public class BoardPostPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @PostMapping(Url.BOARD_POST_REG_PREVIEW_POP)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String boardPostRegPreviewPop(
             final BoardPostDto boardPost,
             final @ModelAttribute("boardDef") String boardDef,
@@ -170,7 +169,7 @@ public class BoardPostPageController
      * @see ViewerEventListener
      */
     @GetMapping(value = Url.BOARD_POST_DTL)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String boardPostDtl(
             final Integer postNo,
             final @ModelAttribute("boardDef") String boardDef,
@@ -198,7 +197,7 @@ public class BoardPostPageController
      * @return {@link String} -- 화면 뷰 경로
      */
     @GetMapping(value = Url.BOARD_POST_MDF_FORM)
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String boardPostMdfForm(
             final Integer postNo,
             final @ModelAttribute("boardDef") String boardDef,

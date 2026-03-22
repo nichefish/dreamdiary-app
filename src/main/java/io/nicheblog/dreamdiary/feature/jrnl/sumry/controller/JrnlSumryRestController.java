@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.jrnl.sumry.controller;
 
-import io.nicheblog.dreamdiary.auth.AuthConstant;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
@@ -17,6 +16,7 @@ import io.nicheblog.dreamdiary.feature.jrnl.sumry.JrnlSumryTagType;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumrySearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.service.JrnlSumryService;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -66,7 +66,7 @@ public class JrnlSumryRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_SUMRIES})
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSumryListAjax(
             final JrnlSumrySearchParam searchParam
@@ -87,7 +87,7 @@ public class JrnlSumryRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_SUMRY})
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSumryDtlAjax(
             final @PathVariable("yy") Integer yy
@@ -109,7 +109,7 @@ public class JrnlSumryRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_SUMRY_DIARIES})
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSumryImprtcDiaryListAjax(
             final @PathVariable("yy") Integer yy,
@@ -136,7 +136,7 @@ public class JrnlSumryRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_SUMRY_DREAMS})
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSumryImprtcDreamListAjax(
             final @PathVariable("yy") Integer yy,
@@ -163,7 +163,7 @@ public class JrnlSumryRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_SUMRY_TAGS})
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSumryTagListAjax(
             final @PathVariable("yy") Integer yy,
@@ -191,7 +191,7 @@ public class JrnlSumryRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(value = {Url.JRNL_SUMRY_MAKE_AJAX})
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSumryMakeAjax(
             final @RequestParam("yy") Integer yy
@@ -210,7 +210,7 @@ public class JrnlSumryRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(value = {Url.JRNL_SUMRY_MAKE_TOTAL_AJAX})
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSumryMakeTotalAjax(
             //
@@ -230,7 +230,7 @@ public class JrnlSumryRestController
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(value = {Url.JRNL_SUMRY_DREAM_COMPT_AJAX})
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSumryDreamComptAjax(
             final @RequestParam("postNo") Integer postNo
@@ -251,7 +251,7 @@ public class JrnlSumryRestController
      * @see TagProcEventListener
      */
     @PostMapping(value = {Url.JRNL_SUMRY_REG_AJAX})
-    @Secured({AuthConstant.ROLE_USER, AuthConstant.ROLE_MNGR})
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSumryRegAjax(
             final @Valid JrnlSumryDto jrnlSumry

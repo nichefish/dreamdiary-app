@@ -8,15 +8,15 @@ import io.nicheblog.dreamdiary.feature.user.info.mapstruct.UserMapstruct;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.feature.user.profl.entity.UserProflEntity;
 import io.nicheblog.dreamdiary.feature.user.profl.entity.UserProflEntityTestFactory;
-import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseEntityTestFactoryHelper;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
-import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 
@@ -119,8 +119,8 @@ class UserMapstructToDtoTest {
         // 권한 관련 매핑 검증
         assertFalse(CollectionUtils.isEmpty(userDto.getAuthList()), "변환된 사용자 권한 목록 Dto는 null일 수 없습니다.");
         assertEquals(2, userDto.getAuthList().size(), "사용자 권한 목록 크기가 일치하지 않습니다.");
-        assertEquals(Constant.AUTH_USER, userDto.getAuthList().get(0).getAuthCd(), "사용자 권한 목록에서 권한 정보가 제대로 매핑되지 않았습니다.");
-        assertEquals(Constant.AUTH_MNGR, userDto.getAuthList().get(1).getAuthCd(), "사용자 권한 목록에서 권한 정보가 제대로 매핑되지 않았습니다.");
+        assertEquals(Code.AUTH_USER, userDto.getAuthList().get(0).getAuthCd(), "사용자 권한 목록에서 권한 정보가 제대로 매핑되지 않았습니다.");
+        assertEquals(Code.AUTH_MNGR, userDto.getAuthList().get(1).getAuthCd(), "사용자 권한 목록에서 권한 정보가 제대로 매핑되지 않았습니다.");
     }
 
     /**

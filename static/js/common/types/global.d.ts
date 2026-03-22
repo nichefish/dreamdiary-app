@@ -90,7 +90,12 @@ declare const Message: {
 declare const Constant: {
     [key: string]: string;
 };
-
+/**
+ * Constant : Spring Boot에서 정적으로 관리되는 상수들.
+ */
+declare const Code: {
+    [key: string]: string;
+};
 /**
  * AjaxResponse : Spring Boot에서 Ajax 요청에 반환되는 응답 객체
  */
