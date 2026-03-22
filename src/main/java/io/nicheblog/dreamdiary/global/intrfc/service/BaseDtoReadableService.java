@@ -6,7 +6,6 @@ import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
-import io.nicheblog.dreamdiary.infrastructure.web.util.ParamUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -57,7 +56,7 @@ public interface BaseDtoReadableService<Dto extends BaseCrudDto & Identifiable<K
     @Transactional(readOnly = true)
     default Page<Dto> getPageDto(final Map<String, Object> searchParamMap, final Pageable pageable) throws Exception {
         // searchParamMap에서 빈 값들 및 쓸모없는 값들 정리
-        final Map<String, Object> filteredSearchKey = ParamUtils.filterParamMap(searchParamMap);
+        final Map<String, Object> filteredSearchKey = CmmUtils.filterParamMap(searchParamMap);
 
         return this.pageEntityToDto(this.getPageEntity(filteredSearchKey, pageable));
     }
@@ -109,7 +108,7 @@ public interface BaseDtoReadableService<Dto extends BaseCrudDto & Identifiable<K
     @Transactional(readOnly = true)
     default List<Dto> getListDto(final Map<String, Object> searchParamMap) throws Exception {
         // searchParamMap에서 빈 값들 및 쓸모없는 값들 정리
-        final Map<String, Object> filteredSearchKey = ParamUtils.filterParamMap(searchParamMap);
+        final Map<String, Object> filteredSearchKey = CmmUtils.filterParamMap(searchParamMap);
         final List<Entity> retrievedListEntity = this.getListEntity(filteredSearchKey);
 
         return this.listEntityToDto(retrievedListEntity);
@@ -139,7 +138,7 @@ public interface BaseDtoReadableService<Dto extends BaseCrudDto & Identifiable<K
     @Transactional(readOnly = true)
     default List<Dto> getListDto(final Map<String, Object> searchParamMap, Sort sort) throws Exception {
         // searchParamMap에서 빈 값들 및 쓸모없는 값들 정리
-        final Map<String, Object> filteredSearchKey = ParamUtils.filterParamMap(searchParamMap);
+        final Map<String, Object> filteredSearchKey = CmmUtils.filterParamMap(searchParamMap);
         final List<Entity> retrievedListEntity = this.getListEntity(filteredSearchKey, sort);
 
         return this.listEntityToDto(retrievedListEntity);
