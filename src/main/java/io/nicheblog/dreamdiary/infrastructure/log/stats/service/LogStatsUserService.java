@@ -8,7 +8,6 @@ import io.nicheblog.dreamdiary.infrastructure.log.stats.mapstruct.LogStatsUserMa
 import io.nicheblog.dreamdiary.infrastructure.log.stats.model.LogStatsUserDto;
 import io.nicheblog.dreamdiary.infrastructure.log.stats.model.LogStatsUserIntrfc;
 import io.nicheblog.dreamdiary.infrastructure.log.stats.repository.jpa.LogStatsUserRepository;
-import io.nicheblog.dreamdiary.infrastructure.web.util.ParamUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -46,7 +45,7 @@ public class LogStatsUserService {
         // 목록 검색 (기본 조건 :: 당일 시작 ~ 당일 끝)
         if (!searchParamMap.containsKey("searchStartDt")) searchParamMap.put("searchStartDt", DateUtils.getCurrDateStr(DatePtn.DATE));
         // searchParamMap에서 빈 값들 및 쓸모없는 값들 정리
-        Map<String, Object> filteredSearchKey = ParamUtils.filterParamMap(searchParamMap);
+        Map<String, Object> filteredSearchKey = CmmUtils.filterParamMap(searchParamMap);
         return logStatsUserRepository.getStatsUserIntrfcList((Date) filteredSearchKey.get("searchStartDt"), (Date) filteredSearchKey.get("searchEndDt"));
     }
 
@@ -89,7 +88,7 @@ public class LogStatsUserService {
         // 목록 검색 (기본 조건 :: 당일 시작 ~ 당일 끝)
         if (!searchParamMap.containsKey("searchStartDt")) searchParamMap.put("searchStartDt", DateUtils.getCurrDateStr(DatePtn.DATE));
         // searchParamMap에서 빈 값들 및 쓸모없는 값들 정리
-        final Map<String, Object> filteredSearchKey = ParamUtils.filterParamMap(searchParamMap);
+        final Map<String, Object> filteredSearchKey = CmmUtils.filterParamMap(searchParamMap);
         return logStatsUserRepository.getStatsNotUserIntrfcList((Date) filteredSearchKey.get("searchStartDt"), (Date) filteredSearchKey.get("searchEndDt"));
     }
 

@@ -11,7 +11,6 @@ import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableSe
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
-import io.nicheblog.dreamdiary.infrastructure.web.util.ParamUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
@@ -80,7 +79,7 @@ public class CommentService
     @Transactional(readOnly = true)
     public Page<CommentDto> getPageDto(final Map<String, Object> searchParamMap, final Pageable pageable) throws Exception {
         // searchParamMap에서 빈 값들 및 쓸모없는 값들 정리
-        final Map<String, Object> filteredSearchKey = ParamUtils.filterParamMap(searchParamMap);
+        final Map<String, Object> filteredSearchKey = CmmUtils.filterParamMap(searchParamMap);
 
         Page<CommentEntity> entityList = this.getSelf().getPageEntity(filteredSearchKey, pageable);
         return mapstruct.toDtoPage(entityList);

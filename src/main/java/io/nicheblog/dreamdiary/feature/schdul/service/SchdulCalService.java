@@ -10,7 +10,6 @@ import io.nicheblog.dreamdiary.global.intrfc.model.fullcalendar.BaseCalDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.web.util.ParamUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -167,7 +166,7 @@ public class SchdulCalService {
      */
     public List<SchdulCalDto> getSchdulCalList(final SchdulSearchParam searchParam) throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
-        final Map<String, Object> filteredSearchKey = ParamUtils.filterParamMap(searchParamMap);
+        final Map<String, Object> filteredSearchKey = CmmUtils.filterParamMap(searchParamMap);
         // 일정 목록 검색
         final List<SchdulEntity> schdulEntityList = schdulRepository.findAll(schdulSpec.searchWith(filteredSearchKey));
         if (schdulEntityList.isEmpty()) return Collections.emptyList();
@@ -184,7 +183,7 @@ public class SchdulCalService {
     public List<SchdulCalDto> getPrvtCalList(final SchdulSearchParam searchParam) throws Exception {
         searchParam.setPrevOnly(true);
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
-        final Map<String, Object> filteredSearchKey = ParamUtils.filterParamMap(searchParamMap);
+        final Map<String, Object> filteredSearchKey = CmmUtils.filterParamMap(searchParamMap);
 
         // 일정 목록 검색
         final List<SchdulEntity> schdulEntityList = schdulRepository.findAll(schdulSpec.searchWith(filteredSearchKey));
