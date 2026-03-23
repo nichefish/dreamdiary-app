@@ -1,7 +1,7 @@
-package io.nicheblog.dreamdiary.auth.policy.controller;
+package io.nicheblog.dreamdiary.feature.admin.auth.policy.controller;
 
-import io.nicheblog.dreamdiary.auth.policy.model.AuthPolicyDto;
-import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyService;
+import io.nicheblog.dreamdiary.feature.admin.auth.policy.model.AuthPolicyDto;
+import io.nicheblog.dreamdiary.feature.admin.auth.policy.service.AuthPolicyService;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -58,6 +58,6 @@ public class AuthPolicyPageController
         final AuthPolicyDto authPolicy = authPolicyService.getDtlDto();
         model.addAttribute("authPolicy", authPolicy);
 
-        return "/view/auth/policy/auth_policy_reg_form";
+        return "/view/feature/admin/auth/policy/auth_policy_reg_form";
     }
 }

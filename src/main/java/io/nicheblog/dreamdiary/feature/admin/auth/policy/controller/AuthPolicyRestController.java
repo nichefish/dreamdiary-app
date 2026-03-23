@@ -1,7 +1,7 @@
-package io.nicheblog.dreamdiary.auth.policy.controller;
+package io.nicheblog.dreamdiary.feature.admin.auth.policy.controller;
 
-import io.nicheblog.dreamdiary.auth.policy.model.AuthPolicyDto;
-import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyService;
+import io.nicheblog.dreamdiary.feature.admin.auth.policy.model.AuthPolicyDto;
+import io.nicheblog.dreamdiary.feature.admin.auth.policy.service.AuthPolicyService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;

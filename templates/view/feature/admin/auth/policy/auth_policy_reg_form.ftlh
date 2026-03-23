@@ -95,9 +95,9 @@
 <!--end::Card-->
 
 <#--include::script modules-->
-<script type="text/javascript" src="/js/view/auth/policy/auth_policy_module.js"></script>
+<script type="text/javascript" src="/js/view/feature/admin/auth/policy/auth_policy_module.js"></script>
 
 <!--include::page scripts-->
-<script type="text/javascript" src="/js/view/auth/policy/auth_policy_reg_form.js"></script>
+<script type="text/javascript" src="/js/view/feature/admin/auth/policy/auth_policy_reg_form.js"></script>
 
 </@layout.layout>

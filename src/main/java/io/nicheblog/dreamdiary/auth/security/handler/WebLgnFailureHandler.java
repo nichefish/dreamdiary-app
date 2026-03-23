@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.auth.security.handler;
 
 import io.nicheblog.dreamdiary.auth.policy.entity.AuthPolicyEntity;
-import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyService;
+import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyQueryService;
 import io.nicheblog.dreamdiary.auth.security.exception.AccountDormantException;
 import io.nicheblog.dreamdiary.auth.security.exception.AccountNeedsPwResetException;
 import io.nicheblog.dreamdiary.auth.security.exception.DupIdLgnException;
@@ -48,7 +48,7 @@ public class WebLgnFailureHandler
         implements AuthenticationFailureHandler {
 
     private final AuthService authService;
-    private final AuthPolicyService authPolicyService;
+    private final AuthPolicyQueryService authPolicyQueryService;
     private final ApplicationEventPublisherWrapper publisher;
 
     /**
@@ -78,7 +78,7 @@ public class WebLgnFailureHandler
         }
         /* 비밀번호 불일치 */
         if (exception instanceof BadCredentialsException) {
-            final AuthPolicyEntity rsAuthPolicyEntity = authPolicyService.getDtlEntity();
+            final AuthPolicyEntity rsAuthPolicyEntity = authPolicyQueryService.getDtlEntity();
             final Integer lgnTryLmt = rsAuthPolicyEntity.getLgnTryLmt();
             // 로그인 실패 횟수 처리
             final Integer newLgnFailCnt = authService.applyLgnFailCnt(userId);
