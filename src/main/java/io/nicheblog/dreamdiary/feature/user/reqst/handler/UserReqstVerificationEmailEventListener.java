@@ -5,8 +5,8 @@ import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDto;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.ServerInfo;
 import io.nicheblog.dreamdiary.global.config.AsyncConfig;
+import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.infrastructure.messaging.email.event.EmailSendEvent;
-import io.nicheblog.dreamdiary.infrastructure.messaging.email.handler.EmailSendWorker;
 import io.nicheblog.dreamdiary.infrastructure.messaging.email.model.EmailAddress;
 import io.nicheblog.dreamdiary.infrastructure.messaging.email.model.EmailSendParam;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ import java.util.Map;
 @Log4j2
 public class UserReqstVerificationEmailEventListener {
 
-    private final EmailSendWorker emailSendWorker;
+    private final ApplicationEventPublisherWrapper publisher;
     private final ServerInfo serverInfo;
 
     /**
@@ -63,7 +63,7 @@ public class UserReqstVerificationEmailEventListener {
                     .dataMap(Map.of("securityCode", securityCode, "recipientName", userReqst.getNickNm(), "authenticationUrl", verifyUrl))
                     .build();
             final EmailSendEvent emailSendEvent = new EmailSendEvent(event.getSource(), emailSendParam);
-            emailSendWorker.offer(emailSendEvent);
+            publisher.publishAsyncEvent(emailSendEvent);
         } catch (Exception e) {
             log.error("Error handling UserReqstVerificationEmailSendEvent: {}", e.getMessage(), e);
         }

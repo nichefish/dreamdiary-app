@@ -18,6 +18,7 @@ import io.nicheblog.dreamdiary.feature.jrnl.entry.service.helper.JrnlEntryViewHe
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.entity.JrnlIntrptEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
+import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
@@ -27,6 +28,7 @@ import java.util.*;
  *
  * @author nichefish
  */
+@UtilityClass
 public final class JrnlDayViewHelper {
 
     /**

@@ -1,5 +1,7 @@
 package io.nicheblog.dreamdiary.global.util;
 
+import lombok.experimental.UtilityClass;
+
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
@@ -11,6 +13,7 @@ import java.util.UUID;
  *
  * @author nichefish
  */
+@UtilityClass
 public class UUIDUtils {
 
 	/**
