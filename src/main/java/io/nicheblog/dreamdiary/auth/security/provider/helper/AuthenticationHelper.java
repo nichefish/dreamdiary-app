@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.auth.security.provider.helper;
 
 import io.nicheblog.dreamdiary.auth.policy.entity.AuthPolicyEntity;
-import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyService;
+import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyQueryService;
 import io.nicheblog.dreamdiary.auth.security.exception.*;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLgnManager;
@@ -44,7 +44,7 @@ import java.util.List;
 public class AuthenticationHelper {
 
     private final UserService userService;
-    private final AuthPolicyService authPolicyService;
+    private final AuthPolicyQueryService authPolicyQueryService;
     private final PasswordEncoder passwordEncoder;
 
     /**
@@ -167,7 +167,7 @@ public class AuthenticationHelper {
      * @return {@link Boolean} -- 비밀번호가 만료되지 않은 경우 true
      */
     public Boolean isPwExpryValid(final AuthInfo authInfo) throws Exception {
-        final AuthPolicyEntity authPolicy = authPolicyService.getDtlEntity();
+        final AuthPolicyEntity authPolicy = authPolicyQueryService.getDtlEntity();
         final Integer pwChgDy = authPolicy.getPwChgDy();
         final Date pwExprDt = DateUtils.getDateAddDay(authInfo.getPwChgDt(), pwChgDy);
         final boolean isPwExprd = (pwExprDt == null || pwExprDt.compareTo(DateUtils.getCurrDate()) < 0);

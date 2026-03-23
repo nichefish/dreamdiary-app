@@ -1,7 +1,7 @@
-package io.nicheblog.dreamdiary.auth.policy.mapstruct;
+package io.nicheblog.dreamdiary.feature.admin.auth.policy.mapstruct;
 
 import io.nicheblog.dreamdiary.auth.policy.entity.AuthPolicyEntity;
-import io.nicheblog.dreamdiary.auth.policy.model.AuthPolicyDto;
+import io.nicheblog.dreamdiary.feature.admin.auth.policy.model.AuthPolicyDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import org.mapstruct.*;
