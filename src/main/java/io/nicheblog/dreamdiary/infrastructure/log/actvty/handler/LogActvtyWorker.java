@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.infrastructure.log.actvty.handler;
 
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.event.LogAnonActvtyEvent;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.service.LogActvtyService;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.service.LogActvtyWriteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,7 +28,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class LogActvtyWorker
         implements Runnable {
 
-    private final LogActvtyService logActvtyService;
+    private final LogActvtyWriteService logActvtyWriteService;
 
     /** 로그 queue */
     private static final BlockingQueue<Object> logActvtyQueue = new LinkedBlockingQueue<>();
@@ -53,12 +53,12 @@ public class LogActvtyWorker
                     // 이벤트로부터 securityContext를 가져온다.
                     SecurityContextHolder.setContext(event.getSecurityContext());
                     // 활동 로그 (로그인) 로깅 처리
-                    logActvtyService.regLogActvty(event.getLog());
+                    logActvtyWriteService.regLogActvty(event.getLog());
                 } else if (logEvent instanceof LogAnonActvtyEvent event) {
                     // 이벤트로부터 securityContext를 가져온다.
                     SecurityContextHolder.setContext(event.getSecurityContext());
                     // 활동 로그 (비로그인) 로깅 처리
-                    logActvtyService.regLogAnonActvty(event.getLog());
+                    logActvtyWriteService.regLogAnonActvty(event.getLog());
                 }
             } catch (final InterruptedException e) {
                 log.warn("log regist failed", e);

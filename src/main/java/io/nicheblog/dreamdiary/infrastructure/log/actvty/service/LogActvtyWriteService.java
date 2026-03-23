@@ -1,47 +1,28 @@
 package io.nicheblog.dreamdiary.infrastructure.log.actvty.service;
 
-import io.nicheblog.dreamdiary.global.ActiveProfile;
-import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoReadableService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.entity.LogActvtyEntity;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.mapstruct.LogActvtyMapstruct;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyDto;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.mapstruct.LogActvtyWriteMapstruct;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.repository.jpa.LogActvtyRepository;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.spec.LogActvtySpec;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 /**
- * LogActvtyService
+ * LogActvtyWriteService
  * <pre>
- *  활동 로그 관리 서비스 모듈.
+ *  활동 로그 적재 전용 서비스.
  * </pre>
  *
  * @author nichefish
  */
-@Service("logActvtyService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
-public class LogActvtyService
-        implements BaseDtoReadableService<LogActvtyDto, Integer, LogActvtyEntity> {
+public class LogActvtyWriteService {
 
-    @Getter
     private final LogActvtyRepository repository;
-    @Getter
-    private final LogActvtySpec spec;
-    @Getter
-    private final LogActvtyMapstruct mapstruct = LogActvtyMapstruct.INSTANCE;
-
-    public LogActvtyMapstruct getReadMapstruct() {
-        return this.mapstruct;
-    }
-    public LogActvtyMapstruct getWriteMapstruct() {
-        return this.mapstruct;
-    }
-
-    private final ActiveProfile activeProfile;
+    private final LogActvtyWriteMapstruct mapstruct = LogActvtyWriteMapstruct.INSTANCE;
 
     /**
      * 로그인 상태에서 활동 로그 등록
@@ -49,7 +30,7 @@ public class LogActvtyService
      * @param logParam 활동 로그 파라미터
      */
     public void regLogActvty(final LogActvtyParam logParam) throws Exception {
-        final LogActvtyEntity logActvty = mapstruct.paramToEntity(logParam);
+        final LogActvtyEntity logActvty = mapstruct.toEntity(logParam);
         log.info("isSuccess: {}, rsltMsg: {}", logParam.getRslt(), logParam.getRsltMsg());
         repository.save(logActvty);
     }
@@ -60,10 +41,10 @@ public class LogActvtyService
      * @param logParam 활동 로그 파라미터
      */
     public void regLogAnonActvty(final LogActvtyParam logParam) throws Exception {
-        final LogActvtyEntity logActvty = mapstruct.paramToEntity(logParam);
+        final LogActvtyEntity logActvty = mapstruct.toEntity(logParam);
         logActvty.setUserId(logParam.getUserId());
-        logActvty.setRslt(logParam.getRslt());               // 작업 결과
-        logActvty.setRsltMsg(logParam.getRsltMsg());            // 작업 결과 메세지
+        logActvty.setRslt(logParam.getRslt());
+        logActvty.setRsltMsg(logParam.getRsltMsg());
         repository.save(logActvty);
 
         log.info("isSuccess: {}, rsltMsg: {}", logParam.getRslt(), logParam.getRsltMsg());

@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.infrastructure.log.actvty.spec;
+package io.nicheblog.dreamdiary.infrastructure.log.sys.spec;
 
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;

@@ -1,17 +1,20 @@
-package io.nicheblog.dreamdiary.infrastructure.log.sys.model;
+package io.nicheblog.dreamdiary.feature.admin.log.actvty.model;
 
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
-import lombok.EqualsAndHashCode;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.LogType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.HashMap;
+
 /**
- * LogSysDto
+ * LogActvtyQueryDto
  * <pre>
- *  시스템 로그 Dto.
+ *  활동 로그 조회 전용 DTO.
  * </pre>
  *
  * @author nichefish
@@ -20,52 +23,64 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = false)
-public class LogSysDto
+public class LogActvtyQueryDto
         extends BaseCrudDto
         implements Identifiable<Integer> {
 
-    /** 로그 고유 번호 */
-    private Integer logSysNo;
-
+    /** 로그 고유 번호 (PK) */
+    private Integer logActvtyNo;
     /** 작업자 ID */
     private String userId;
-
     /** 작업자 이름 */
-    private String userNm;
-
+    private String logUserNm;
+    /** 권한코드 */
+    private String authCd;
+    /** 권한명 */
+    private String authNm;
     /** 작업일시 */
     private String logDt;
 
     /** 작업 구분 코드 (ex. 게시판, 공지사항, ...) (기능/모듈 단위) */
     private String actvtyCtgrCd;
-
     /** 작업 구분 코드 (ex. 게시판, 공지사항, ...) (기능/모듈 단위) */
     private String actvtyCtgrNm;
 
-    /** 작업 유형 코드 (조회, 검색, 제출, 처리...) */
-    private String actionTyCd;
+    /** trace ID */
+    private String traceId;
 
-    /** 작업 유형 코드 (조회, 검색, 제출, 처리...) */
-    private String actionTyNm;
-
+    /** HTTP 메소드 */
+    private String httpMethod;
     /** 작업 URL */
-    private String url;
+    private String requestUri;
+    /** 작업 파라미터 */
+    private String param;
+    /** 작업 파라미터 맵 */
+    private HashMap<String, String> paramMap;
+
+    /** 로그 타입 */
+    private LogType logType;
+
+    /** 시그니처 */
+    private String signature;
 
     /** 작업 내용 */
     private String cn;
 
+    /** 작업자 IP */
+    private String ipAddr;
+    /** 리퍼러 */
+    private String referer;
+
     /** 작업 결과 */
     private String rslt;
-
     /** 작업 결과 메세지 */
     private String rsltMsg;
-
     /** 익셉션 이름 */
     private String exceptionNm;
-
     /** 익셉션 메세지 */
     private String exceptionMsg;
+    /** 소요시간 (ms) */
+    private Long durationMs;
 
     /* ----- */
 
@@ -79,35 +94,22 @@ public class LogSysDto
     }
 
     /**
-     * 시스템 로그 상세 (DTL) Dto.
+     * Getter :: 작업자 여부
      */
-    @Getter
-    @Setter
-    @SuperBuilder(toBuilder = true)
-    @NoArgsConstructor
-    @EqualsAndHashCode(callSuper = true)
-    public static class DTL
-            extends LogSysDto {
-        //
+    public Boolean getIsActvtyUser() {
+        return AuthUtils.isRegstr(this.userId);
     }
 
     /**
-     * 시스템 로그 목록 조회 (LIST) Dto.
+     * Getter :: 작업 파라미터 = "null"은 표시하지 않음
      */
-    @Getter
-    @Setter
-    @SuperBuilder(toBuilder = true)
-    @NoArgsConstructor
-    @EqualsAndHashCode(callSuper = true)
-    public static class LIST
-            extends LogSysDto {
-        //
+    public String getParam() {
+        if ("null".equals(this.param)) return "-";
+        return this.param;
     }
-
-    /* ----- */
 
     @Override
     public Integer getKey() {
-        return this.logSysNo;
+        return this.logActvtyNo;
     }
 }

@@ -1,13 +1,13 @@
-package io.nicheblog.dreamdiary.infrastructure.log.stats.controller;
+package io.nicheblog.dreamdiary.feature.admin.log.stats.controller;
 
+import io.nicheblog.dreamdiary.feature.admin.log.stats.model.LogStatsUserQueryDto;
+import io.nicheblog.dreamdiary.feature.admin.log.stats.service.LogStatsUserQueryService;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.log.stats.model.LogStatsSearchParam;
-import io.nicheblog.dreamdiary.infrastructure.log.stats.model.LogStatsUserDto;
-import io.nicheblog.dreamdiary.infrastructure.log.stats.service.LogStatsUserService;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.util.ParamUtils;
 import lombok.Getter;
@@ -42,7 +42,7 @@ public class LogStatsPageController
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.LOG_STATS;        // 작업 카테고리 (로그 적재용)
 
-    private final LogStatsUserService logStatsUserService;
+    private final LogStatsUserQueryService logStatsUserQueryService;
 
     /**
      * 활동 로그 > 활동 로그 목록 (전체) 화면 조회
@@ -67,10 +67,10 @@ public class LogStatsPageController
         // 상세/수정 화면에서 목록 화면 복귀시 세션에 목록 검색 인자 저장해둔 거 있는지 체크
         searchParam = (LogStatsSearchParam) ParamUtils.checkPrevSearchParam(baseUrl, searchParam);
         // 목록 조회
-        final List<LogStatsUserDto> logStatsUserList = logStatsUserService.logStatsUserDtoList(searchParam, Pageable.unpaged());
+        final List<LogStatsUserQueryDto> logStatsUserList = logStatsUserQueryService.logStatsUserDtoList(searchParam, Pageable.unpaged());
         if (logStatsUserList != null) model.addAttribute("logStatsUserList", logStatsUserList);
-        final List<LogStatsUserDto> logStatsNotUserList = logStatsUserService.logStatsNotUserDtoList(searchParam, Pageable.unpaged());
-        if (logStatsUserList != null) model.addAttribute("logStatsNotUserList", logStatsNotUserList);
+        final List<LogStatsUserQueryDto> logStatsNotUserList = logStatsUserQueryService.logStatsNotUserDtoList(searchParam, Pageable.unpaged());
+        if (logStatsNotUserList != null) model.addAttribute("logStatsNotUserList", logStatsNotUserList);
         // 목록 검색 URL + 파라미터 모델에 추가
         ParamUtils.setModelAttrMap(searchParam, baseUrl, model);
 
