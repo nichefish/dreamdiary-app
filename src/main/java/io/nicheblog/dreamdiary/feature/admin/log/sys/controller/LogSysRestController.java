@@ -1,12 +1,12 @@
-package io.nicheblog.dreamdiary.infrastructure.log.actvty.controller;
+package io.nicheblog.dreamdiary.feature.admin.log.sys.controller;
 
+import io.nicheblog.dreamdiary.feature.admin.log.sys.model.LogSysQueryDto;
+import io.nicheblog.dreamdiary.feature.admin.log.sys.service.LogSysQueryService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyDto;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.service.LogActvtyService;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.Getter;
@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * LogActvtyRestController
+ * LogSysRestController
  * <pre>
- *  로그 관리 > 활동 로그 관리 API 컨트롤러.
+ *  시스템 로그 관리 API 컨트롤러.
  * </pre>
  *
  * @author nichefish
@@ -30,33 +30,33 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Log4j2
-public class LogActvtyRestController
+public class LogSysRestController
         extends BaseControllerImpl {
 
     @Getter
-    private final String baseUrl = Url.LOG_ACTVTY_LIST;             // 기본 URL
+    private final String baseUrl = Url.LOG_SYS_LIST;             // 기본 URL
     @Getter
-    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.LOG_ACTVTY;        // 작업 카테고리 (로그 적재용)
+    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.LOG_SYS;        // 작업 카테고리 (로그 적재용)
 
-    private final LogActvtyService logActvtyService;
+    private final LogSysQueryService logSysQueryService;
 
     /**
-     * 활동 로그 상세 조회 (Ajax)
+     * 시스템 로그 상세 조회 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
      * @param key 식별자
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.LOG_ACTVTY_DTL_AJAX)
-    @Secured(Constant.ROLE_MNGR)
+    @GetMapping(Url.LOG_SYS_DTL_AJAX)
+    @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> logActvtyDtlAjax(
-            final @RequestParam("logActvtyNo") Integer key,
+            final @RequestParam("logSysNo") Integer key,
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final LogActvtyDto rsDto = logActvtyService.getDtlDto(key);
+        final LogSysQueryDto rsDto = logSysQueryService.getDtlDto(key);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

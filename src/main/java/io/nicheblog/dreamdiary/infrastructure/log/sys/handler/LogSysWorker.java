@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.infrastructure.log.sys.handler;
 
 import io.nicheblog.dreamdiary.infrastructure.log.sys.event.LogSysEvent;
-import io.nicheblog.dreamdiary.infrastructure.log.sys.service.LogSysService;
+import io.nicheblog.dreamdiary.infrastructure.log.sys.service.LogSysWriteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,7 +19,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * </pre>
  *
  * @author nichefish
- * @see LogSysWorker
+ * @see LogSysEventListener
  */
 @Component
 @RequiredArgsConstructor
@@ -27,7 +27,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class LogSysWorker
         implements Runnable {
 
-    private final LogSysService logSysService;
+    private final LogSysWriteService logSysWriteService;
 
     /** 로그 queue */
     private static final BlockingQueue<LogSysEvent> logSysQueue = new LinkedBlockingQueue<>();
@@ -51,7 +51,7 @@ public class LogSysWorker
                 SecurityContextHolder.setContext(logEvent.getSecurityContext());
 
                 // 시스템 로그 로깅 처리
-                logSysService.regSysActvty(logEvent.getLog());
+                logSysWriteService.regSysActvty(logEvent.getLog());
             } catch (final InterruptedException e) {
                 log.warn("log regist failed", e);
                 Thread.currentThread().interrupt();
