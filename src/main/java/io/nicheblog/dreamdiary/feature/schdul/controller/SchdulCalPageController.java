@@ -9,7 +9,7 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cd.Code;
-import io.nicheblog.dreamdiary.infrastructure.cd.service.DtlCdService;
+import io.nicheblog.dreamdiary.infrastructure.cd.service.CdLookupService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import lombok.Getter;
@@ -42,7 +42,7 @@ public class SchdulCalPageController
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.SCHDUL;      // 작업 카테고리 (로그 적재용)
 
-    private final DtlCdService dtlCdService;
+    private final CdLookupService cdLookupService;
     private final UserService userService;
 
     /**
@@ -68,8 +68,8 @@ public class SchdulCalPageController
         final List<UserDto> crtdUserList = userService.getCrdtUserList(DateUtils.getCurrDateAddDayStr(-40), DateUtils.getCurrDateAddDayStr(40));
         model.addAttribute("crtdUserList", crtdUserList);
         // 코드 데이터 모델에 추가
-        dtlCdService.setCdListToModel(Code.SCHDUL_CD, model);
-        dtlCdService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
+        cdLookupService.setCdListToModel(Code.SCHDUL_CD, model);
+        cdLookupService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
 
         return "/view/feature/schdul/schdul_cal";
     }

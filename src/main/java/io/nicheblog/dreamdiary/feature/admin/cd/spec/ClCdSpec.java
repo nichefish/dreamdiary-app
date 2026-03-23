@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.infrastructure.cd.spec;
+package io.nicheblog.dreamdiary.feature.admin.cd.spec;
 
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 import io.nicheblog.dreamdiary.infrastructure.cd.entity.ClCdEntity;

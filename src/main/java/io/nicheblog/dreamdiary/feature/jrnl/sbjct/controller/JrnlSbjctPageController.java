@@ -12,7 +12,7 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.infrastructure.cd.Code;
-import io.nicheblog.dreamdiary.infrastructure.cd.service.DtlCdService;
+import io.nicheblog.dreamdiary.infrastructure.cd.service.CdLookupService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.PaginationInfo;
@@ -52,7 +52,7 @@ public class JrnlSbjctPageController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.NOTICE;      // 작업 카테고리 (로그 적재용)
 
     private final JrnlSbjctService jrnlSbjctService;
-    private final DtlCdService dtlCdService;
+    private final CdLookupService cdLookupService;
     private final TagService tagService;
 
     /**
@@ -87,7 +87,7 @@ public class JrnlSbjctPageController
         // 컨텐츠 타입에 맞는 태그 목록 조회
         model.addAttribute("tagList", tagService.getContentSpecificSizedTagList(ContentType.JRNL_SBJCT));
         // 코드 정보 모델에 추가
-        dtlCdService.setCdListToModel(Code.JRNL_SBJCT_CTGR_CD, model);
+        cdLookupService.setCdListToModel(Code.JRNL_SBJCT_CTGR_CD, model);
         // 목록 검색 URL + 파라미터 모델에 추가
         ParamUtils.setModelAttrMap(searchParam, baseUrl, model);
 
@@ -116,9 +116,9 @@ public class JrnlSbjctPageController
         // 등록/수정 화면 플래그 세팅
         model.addAttribute(Constant.FORM_MODE, "regist");
         // 코드 정보 모델에 추가
-        dtlCdService.setCdListToModel(Code.JRNL_SBJCT_CTGR_CD, model);
-        dtlCdService.setCdListToModel(Code.MDFABLE_CD, model);
-        dtlCdService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
+        cdLookupService.setCdListToModel(Code.JRNL_SBJCT_CTGR_CD, model);
+        cdLookupService.setCdListToModel(Code.MDFABLE_CD, model);
+        cdLookupService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
 
         return "/view/feature/jrnl/sbjct/jrnl_sbjct_reg_form";
     }
@@ -201,9 +201,9 @@ public class JrnlSbjctPageController
         // 등록/수정 화면 플래그 세팅
         model.addAttribute(Constant.FORM_MODE, "modify");
         // 코드 정보 모델에 추가
-        dtlCdService.setCdListToModel(Code.JRNL_SBJCT_CTGR_CD, model);
-        dtlCdService.setCdListToModel(Code.MDFABLE_CD, model);
-        dtlCdService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
+        cdLookupService.setCdListToModel(Code.JRNL_SBJCT_CTGR_CD, model);
+        cdLookupService.setCdListToModel(Code.MDFABLE_CD, model);
+        cdLookupService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
 
         return "/view/feature/jrnl/sbjct/jrnl_sbjct_reg_form";
     }

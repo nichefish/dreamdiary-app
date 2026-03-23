@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.infrastructure.cd.model;
+package io.nicheblog.dreamdiary.feature.admin.cd.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

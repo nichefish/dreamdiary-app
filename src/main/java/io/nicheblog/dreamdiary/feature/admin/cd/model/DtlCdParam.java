@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.infrastructure.cd.model;
+package io.nicheblog.dreamdiary.feature.admin.cd.model;
 
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseParam;
 import lombok.*;

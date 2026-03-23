@@ -1,14 +1,14 @@
-package io.nicheblog.dreamdiary.infrastructure.cd.controller;
+package io.nicheblog.dreamdiary.feature.admin.cd.controller;
 
+import io.nicheblog.dreamdiary.feature.admin.cd.model.ClCdDto;
+import io.nicheblog.dreamdiary.feature.admin.cd.model.ClCdSearchParam;
+import io.nicheblog.dreamdiary.feature.admin.cd.service.ClCdService;
 import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.infrastructure.cd.Code;
-import io.nicheblog.dreamdiary.infrastructure.cd.model.ClCdDto;
-import io.nicheblog.dreamdiary.infrastructure.cd.model.ClCdSearchParam;
-import io.nicheblog.dreamdiary.infrastructure.cd.service.ClCdService;
-import io.nicheblog.dreamdiary.infrastructure.cd.service.DtlCdService;
+import io.nicheblog.dreamdiary.infrastructure.cd.service.CdLookupService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.PaginationInfo;
@@ -46,7 +46,7 @@ public class ClCdPageController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.CD;        // 작업 카테고리 (로그 적재용)
 
     private final ClCdService clCdService;
-    private final DtlCdService dtlCdService;
+    private final CdLookupService cdLookupService;
 
     /**
      * 분류 코드(CL_CD) 관리(useYn=N 포함) 목록 화면 조회
@@ -79,7 +79,7 @@ public class ClCdPageController
         // 목록 검색 URL + 파라미터 모델에 추가
         ParamUtils.setModelAttrMap(searchParam, baseUrl, model);
         // 코드 데이터 모델에 추가
-        dtlCdService.setCdListToModel(Code.CL_CTGR_CD, model);
+        cdLookupService.setCdListToModel(Code.CL_CTGR_CD, model);
 
         return "/view/feature/admin/cd/cl_cd_list";
     }
