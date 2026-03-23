@@ -1,30 +1,30 @@
 package io.nicheblog.dreamdiary.global.intrfc.mapstruct.helper;
 
-import io.nicheblog.dreamdiary.auth.intrfc.entity.BaseAuditEntity;
-import io.nicheblog.dreamdiary.auth.intrfc.entity.BaseAuditRegEntity;
-import io.nicheblog.dreamdiary.auth.intrfc.model.BaseAuditDto;
-import io.nicheblog.dreamdiary.auth.intrfc.model.BaseAuditRegDto;
-import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
-import io.nicheblog.dreamdiary.global.util.date.DatePtn;
-import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import lombok.RequiredArgsConstructor;
+import lombok.experimental.UtilityClass;
 import org.mapstruct.MappingTarget;
-import org.springframework.stereotype.Component;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * MapstructHelper
  * <pre>
- *  Mapstruct에서 쓰는 공통 로직 분리
+ *  MapStruct 공통 후처리 helper.
  * </pre>
- *
- * @author nichefish
- * TODO: 모듈 수가 증가할 경우 Strategy 기반 분리 고려.
+ * 
+ * @author nichefish 
  */
-@Component
-@RequiredArgsConstructor
-public class MapstructHelper {
+@UtilityClass
+public final class MapstructHelper {
+
+    /** Auth 관련 MapStruct Helper의 FQCN */
+    private static final String AUTH_HELPER_FQCN = "io.nicheblog.dreamdiary.auth.intrfc.mapstruct.helper.AuthMapstructHelper";
+    /** helper resolve 여부 (double-checked locking용) */
+    private static volatile boolean authHelperResolved = false;
+    /** 캐싱된 mapAuditFields 메서드 */
+    private static Method authMapMethod;
 
     /**
      * Map Base-inheritted Fields (entity -> dto)
@@ -32,33 +32,66 @@ public class MapstructHelper {
      * @param entity 매핑할 Entity
      * @param dto 매핑 대상 Dto
      */
-    public static <Entity extends BaseCrudEntity, Dto extends BaseCrudDto> void mapBaseFields(final Entity entity, final @MappingTarget Dto dto) throws Exception {
+    public static <Entity extends BaseCrudEntity, Dto extends BaseCrudDto> void mapBaseFields(
+            final Entity entity,
+            final @MappingTarget Dto dto
+    ) throws Exception {
+        mapAuthFields(entity, dto);
+        // CLSF fields are handled by BaseClsfMapstruct.
+    }
 
-        // AUDIT_REG :: 공통 필드 매핑 로직
-        if (entity instanceof BaseAuditRegEntity && dto instanceof BaseAuditRegDto) {
-            final BaseAuditRegEntity baseEntity = ((BaseAuditEntity) entity);
-            final AuditorInfo regstrInfo = baseEntity.getRegstrInfo();
-            if (regstrInfo != null) {
-                // 작성자 이름
-                ((BaseAuditRegDto) dto).setRegstrNm(baseEntity.getRegstrInfo().getNickNm());
-                // 작성일사
-                ((BaseAuditRegDto) dto).setRegDt(DateUtils.asStr(baseEntity.getRegDt(), DatePtn.DATETIME));
-                // 작성자 여부
-                ((BaseAuditRegDto) dto).setIsRegstr(baseEntity.isRegstr());
+    /**
+     * AuthMapstructHelper의 mapAuditFields 메서드를 reflection으로 조회한다.
+     *
+     * <pre>
+     * 동작 방식:
+     * - 최초 호출 시 Class.forName + getMethod 수행
+     * - 이후 Method를 캐싱하여 재사용
+     * - 클래스 또는 메서드가 존재하지 않을 경우 null 반환
+     * </pre>
+     *
+     * @return mapAuditFields 메서드 또는 null (helper 미존재 시)
+     */
+    private static Method resolveAuthMapMethod() {
+        if (authHelperResolved) return authMapMethod;
+
+        synchronized (MapstructHelper.class) {
+            if (authHelperResolved) return authMapMethod;
+
+            try {
+                final Class<?> helperClass = Class.forName(AUTH_HELPER_FQCN);
+                authMapMethod = helperClass.getMethod("mapAuditFields", Object.class, Object.class);
+            } catch (final ReflectiveOperationException ignored) {
+                authMapMethod = null;
+            } finally {
+                authHelperResolved = true;
             }
         }
-        // AUDIT :: 공통 필드 매핑 로직
-        if (entity instanceof BaseAuditEntity baseEntity && dto instanceof BaseAuditDto) {
-            final AuditorInfo mdfusrInfo = baseEntity.getMdfusrInfo();
-            if (mdfusrInfo != null) {
-                // 수정자 이름
-                ((BaseAuditDto) dto).setMdfusrNm(baseEntity.getMdfusrInfo().getNickNm());
-                // 수정일시
-                ((BaseAuditDto) dto).setMdfDt(DateUtils.asStr(baseEntity.getMdfDt(), DatePtn.DATETIME));
-                // 수정자 여부
-                ((BaseAuditDto) dto).setIsMdfusr(baseEntity.isMdfusr());
-            }
+        return authMapMethod;
+    }
+
+    /**
+     * Auth 관련 audit 필드를 매핑한다. (AuthMapstructHelper가 존재할 경우에만 실행)
+     *
+     * @param entity source entity
+     * @param dto target dto
+     * @throws Exception helper 내부에서 발생한 예외 전달
+     */
+    private static <Entity extends BaseCrudEntity, Dto extends BaseCrudDto> void mapAuthFields(
+            final Entity entity,
+            final @MappingTarget Dto dto
+    ) throws Exception {
+        final Method method = resolveAuthMapMethod();
+        if (method == null) return;
+
+        try {
+            method.invoke(null, entity, dto);
+        } catch (final InvocationTargetException e) {
+            final Throwable cause = e.getTargetException();
+            if (cause instanceof Exception exception) throw exception;
+            throw new RuntimeException(cause);
+        } catch (final IllegalAccessException e) {
+            throw new RuntimeException("Unable to invoke auth mapstruct helper.", e);
         }
-        // CLSF :: BaseClsfMapstruct쪽에 정의
     }
 }
