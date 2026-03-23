@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.infrastructure;
+package io.nicheblog.dreamdiary.feature.admin.web;
 
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.util.JsonRestTemplate;

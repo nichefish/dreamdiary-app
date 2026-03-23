@@ -2,16 +2,15 @@ package io.nicheblog.dreamdiary.feature.clsf.state.adapter;
 
 import io.nicheblog.dreamdiary.feature.clsf.state.StateCd;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.state.JrnlState;
+import lombok.experimental.UtilityClass;
 
 /**
  * JrnlStateApplier
  *
  * @author nichefish
  */
+@UtilityClass
 public final class JrnlStateApplier {
-
-    /** 생성자 private */
-    private JrnlStateApplier() {}
 
     /**
      * 저널 상태 적용

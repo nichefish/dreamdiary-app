@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.infrastructure.log.actvty.aspect.helper;
 
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
+import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import org.aspectj.lang.JoinPoint;
 
@@ -16,6 +17,7 @@ import java.lang.reflect.Field;
  * @author nichefish
  */
 @Log4j2
+@UtilityClass
 public class LogActvtyAspectHelper {
 
     /**
