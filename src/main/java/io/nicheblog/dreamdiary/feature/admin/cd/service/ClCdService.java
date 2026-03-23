@@ -1,15 +1,15 @@
-package io.nicheblog.dreamdiary.infrastructure.cd.service;
+package io.nicheblog.dreamdiary.feature.admin.cd.service;
 
+import io.nicheblog.dreamdiary.feature.admin.cd.mapstruct.ClCdMapstruct;
+import io.nicheblog.dreamdiary.feature.admin.cd.model.ClCdDto;
+import io.nicheblog.dreamdiary.feature.admin.cd.model.ClCdPatchDto;
+import io.nicheblog.dreamdiary.feature.admin.cd.spec.ClCdSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoReadableService;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
-import io.nicheblog.dreamdiary.infrastructure.cache.util.RedisUtils;
 import io.nicheblog.dreamdiary.infrastructure.cd.entity.ClCdEntity;
-import io.nicheblog.dreamdiary.infrastructure.cd.mapstruct.ClCdMapstruct;
-import io.nicheblog.dreamdiary.infrastructure.cd.model.ClCdDto;
-import io.nicheblog.dreamdiary.infrastructure.cd.model.ClCdPatchDto;
 import io.nicheblog.dreamdiary.infrastructure.cd.repository.jpa.ClCdRepository;
-import io.nicheblog.dreamdiary.infrastructure.cd.spec.ClCdSpec;
+import io.nicheblog.dreamdiary.infrastructure.cd.service.CdLookupService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -50,6 +50,8 @@ public class ClCdService
         return context.getBean(this.getClass());
     }
 
+    private final CdLookupService cdLookupService;
+
     /**
      * 등록 후처리. (override)
      *
@@ -86,8 +88,7 @@ public class ClCdService
      * @param dto 캐시 처리할 엔티티
      */
     public void evictCache(final ClCdDto dto) throws Exception {
-        RedisUtils.deleteData("cdEntityListByClCd::clCd:" + dto.getClCd());
-        RedisUtils.deleteData("cdDtoListByClCd::clCd:" + dto.getClCd());
+        cdLookupService.evictClCdCache(dto.getClCd());
     }
 
     /**
@@ -115,7 +116,6 @@ public class ClCdService
      */
     @Override
     public void postSetUse(final ClCdEntity updateEntity) {
-        RedisUtils.deleteData("cdEntityListByClCd::clCd:" + updateEntity.getClCd());
-        RedisUtils.deleteData("cdDtoListByClCd::clCd:" + updateEntity.getClCd());
+        cdLookupService.evictClCdCache(updateEntity.getClCd());
     }
 }

@@ -39,7 +39,7 @@ import io.nicheblog.dreamdiary.feature.clsf.viewer.mapstruct.embed.ViewerEmbedMa
 import io.nicheblog.dreamdiary.feature.clsf.viewer.model.cmpstn.ViewerCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.viewer.model.cmpstn.ViewerCmpstnModule;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.cd.service.DtlCdService;
+import io.nicheblog.dreamdiary.infrastructure.cd.service.CdLookupService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.mapstruct.MappingTarget;
@@ -58,7 +58,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ClsfMapstructHelper {
 
-    private final DtlCdService dtlCdService;
+    private final CdLookupService cdLookupService;
 
     /**
      * Map Clsf Fields (entity -> dto)

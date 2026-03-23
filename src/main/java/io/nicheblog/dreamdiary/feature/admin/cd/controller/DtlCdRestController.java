@@ -1,13 +1,13 @@
-package io.nicheblog.dreamdiary.infrastructure.cd.controller;
+package io.nicheblog.dreamdiary.feature.admin.cd.controller;
 
+import io.nicheblog.dreamdiary.feature.admin.cd.model.DtlCdDto;
+import io.nicheblog.dreamdiary.feature.admin.cd.model.DtlCdSearchParam;
+import io.nicheblog.dreamdiary.feature.admin.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdKey;
-import io.nicheblog.dreamdiary.infrastructure.cd.model.DtlCdDto;
-import io.nicheblog.dreamdiary.infrastructure.cd.model.DtlCdSearchParam;
-import io.nicheblog.dreamdiary.infrastructure.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;

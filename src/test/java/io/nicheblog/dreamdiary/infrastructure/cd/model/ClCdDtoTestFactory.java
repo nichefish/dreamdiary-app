@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.infrastructure.cd.model;
 
+import io.nicheblog.dreamdiary.feature.admin.cd.model.ClCdDto;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import lombok.experimental.UtilityClass;
 import org.springframework.test.context.ActiveProfiles;

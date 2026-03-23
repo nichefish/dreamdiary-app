@@ -32,6 +32,23 @@ public interface DtlCdRepository
     List<DtlCdEntity> findByClCd(final String clCd);
 
     /**
+     * 분류코드 기준으로 사용중인 상세코드 목록을 조회.
+     *
+     * @param clCd 분류코드.
+     * @param useYn 사용여부.
+     * @return 상세코드 목록.
+     */
+    List<DtlCdEntity> findByClCdAndUseYnOrderByIdxAsc(final String clCd, final String useYn);
+
+    /**
+     * 사용중인 상세코드를 메모리 preload 용도로 조회.
+     *
+     * @param useYn 사용여부.
+     * @return 정렬된 상세코드 목록.
+     */
+    List<DtlCdEntity> findAllByUseYnOrderByClCdAscIdxAsc(final String useYn);
+
+    /**
      * 분류 코드로 '사용 중'인 상세 코드 목록 검색.
      *
      * @param clCd 분류 코드

@@ -9,7 +9,7 @@ import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.cd.Code;
-import io.nicheblog.dreamdiary.infrastructure.cd.service.DtlCdService;
+import io.nicheblog.dreamdiary.infrastructure.cd.service.CdLookupService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.log.sys.event.LogSysEvent;
 import io.nicheblog.dreamdiary.infrastructure.log.sys.handler.LogSysEventListener;
@@ -37,7 +37,7 @@ public class NotifyEventHandler {
 
     private final SchdulService schdulService;
     private final UserService userService;
-    private final DtlCdService dtlCdService;
+    private final CdLookupService cdLookupService;
     private final JandiApiService jandiApiService;
     private final ApplicationEventPublisherWrapper publisher;
 
@@ -114,7 +114,7 @@ public class NotifyEventHandler {
         String jandiRsltMsg;
         try {
             // title
-            final String schdulTyNm = dtlCdService.getDtlCdNm(Code.SCHDUL_CD, result.getSchdulCd());
+            final String schdulTyNm = cdLookupService.getDtlCdNm(Code.SCHDUL_CD, result.getSchdulCd());
             String title = "[" + schdulTyNm + "] " + result.getBgnDt() + " / " + result.getSchdulNm();
             String prtcpntStr = result.getPrtcpntListStr();
             if (StringUtils.isNotEmpty(prtcpntStr)) {

@@ -11,7 +11,7 @@ import io.nicheblog.dreamdiary.feature.clsf.managt.event.ManagtrAddEvent;
 import io.nicheblog.dreamdiary.feature.clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
-import io.nicheblog.dreamdiary.infrastructure.cd.service.DtlCdService;
+import io.nicheblog.dreamdiary.infrastructure.cd.service.CdLookupService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -53,7 +53,7 @@ public class BoardPostService
         return this.mapstruct;
     }
 
-    private final DtlCdService dtlCdService;
+    private final CdLookupService cdLookupService;
     private final ApplicationEventPublisherWrapper publisher;
 
     /**
@@ -69,7 +69,7 @@ public class BoardPostService
         for (BoardPostEntity entity : entityPage.getContent()) {
             final BoardPostDto listDto = mapstruct.toDto(entity);
             listDto.setRnum(CmmUtils.getPageRnum(entityPage, i));
-            final String ctgrNm = dtlCdService.getDtlCdNm(listDto.getCtgrClCd(), listDto.getCtgrCd());
+            final String ctgrNm = cdLookupService.getDtlCdNm(listDto.getCtgrClCd(), listDto.getCtgrCd());
             listDto.setCtgrNm(ctgrNm);
             dtoList.add(listDto);
             i++;
@@ -94,7 +94,7 @@ public class BoardPostService
         final List<BoardPostDto> dtoList = new ArrayList<>();
         for (BoardPostEntity entity : entityList) {
             final BoardPostDto listDto = mapstruct.toDto(entity);
-            final String ctgrNm = dtlCdService.getDtlCdNm(listDto.getCtgrClCd(), listDto.getCtgrCd());
+            final String ctgrNm = cdLookupService.getDtlCdNm(listDto.getCtgrClCd(), listDto.getCtgrCd());
             listDto.setCtgrNm(ctgrNm);
             dtoList.add(listDto);
         }
@@ -174,7 +174,7 @@ public class BoardPostService
     public BoardPostDto getDtlDto(final Integer key) throws Exception {
         final BoardPostEntity retrievedEntity = this.getDtlEntity(key);       // Entity 레벨 조회
         final BoardPostDto retrievedDto = mapstruct.toDto(retrievedEntity);
-        final String ctgrNm = dtlCdService.getDtlCdNm(retrievedDto.getCtgrClCd(), retrievedDto.getCtgrCd());
+        final String ctgrNm = cdLookupService.getDtlCdNm(retrievedDto.getCtgrClCd(), retrievedDto.getCtgrCd());
         retrievedDto.setCtgrNm(ctgrNm);
 
         return retrievedDto;

@@ -1,9 +1,9 @@
-package io.nicheblog.dreamdiary.infrastructure.cd.mapstruct;
+package io.nicheblog.dreamdiary.feature.admin.cd.mapstruct;
 
+import io.nicheblog.dreamdiary.feature.admin.cd.model.DtlCdDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
-import io.nicheblog.dreamdiary.infrastructure.cd.model.DtlCdDto;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
