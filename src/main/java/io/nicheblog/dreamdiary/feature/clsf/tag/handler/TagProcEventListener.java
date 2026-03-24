@@ -1,26 +1,26 @@
 package io.nicheblog.dreamdiary.feature.clsf.tag.handler;
 
 import io.nicheblog.dreamdiary.feature.clsf.tag.event.TagProcEvent;
-import io.nicheblog.dreamdiary.global.config.AsyncConfig;
+import io.nicheblog.dreamdiary.global.handler.CustomEventBus;
+import io.nicheblog.dreamdiary.global.handler.CustomEventHandler;
 import io.nicheblog.dreamdiary.infrastructure.cache.handler.EhCacheEvictEventListner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 /**
- * TagEventListener
+ * TagProcEventListener
  * <pre>
  *  태그 관련 이벤트 처리 핸들러.
  * </pre>
  *
  * @author nichefish
- * @see AsyncConfig
+ * @see CustomEventBus
  */
-@Component
+@Component("tagProcEventListener")
 @RequiredArgsConstructor
 @Log4j2
-public class TagProcEventListener {
+public class TagProcEventListener implements CustomEventHandler<TagProcEvent> {
 
     private final TagProcWorker tagProcWorker;
 
@@ -30,10 +30,17 @@ public class TagProcEventListener {
      * @param event 처리할 이벤트 객체
      * @see EhCacheEvictEventListner
      */
-    @EventListener
-    public void handleTagProcEvent(final TagProcEvent event) throws Exception {
-        log.debug("TagProcEventListener.handleTagProcEvent() - event : {}", event.toString());
-
+    @Override
+    public void handle(final TagProcEvent event) throws Exception {
+        log.debug("TagProcEventListener.handle() - event : {}", event.toString());
         tagProcWorker.handle(event);
+    }
+
+    /**
+     * 본 핸들러가 처리할 이벤트 타입.
+     */
+    @Override
+    public Class<TagProcEvent> getEventType() {
+        return TagProcEvent.class;
     }
 }

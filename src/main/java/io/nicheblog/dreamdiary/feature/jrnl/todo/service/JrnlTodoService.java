@@ -4,7 +4,6 @@ import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
-import io.nicheblog.dreamdiary.feature.clsf.tag.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.entity.JrnlTodoEntity;
@@ -103,8 +102,6 @@ public class JrnlTodoService
      */
     @Override
     public void postRegist(final JrnlTodoDto updatedDto) throws Exception {
-        // 태그 처리 :: 메인 로직과 분리
-        publisher.publishEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
         // 관련 캐시 삭제
         publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_TODO));
     }
@@ -116,8 +113,6 @@ public class JrnlTodoService
      */
     @Override
     public void postModify(final JrnlTodoDto postDto, final JrnlTodoDto updatedDto) throws Exception {
-        // 태그 처리 :: 메인 로직과 분리
-        publisher.publishEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
         // 관련 캐시 삭제
         publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_TODO));
     }
@@ -144,8 +139,6 @@ public class JrnlTodoService
      */
     @Override
     public void postDelete(final JrnlTodoDto deletedDto) throws Exception {
-        // 태그 처리 :: 메인 로직과 분리
-        publisher.publishEvent(new JrnlTagProcEvent(this, deletedDto.getClsfKey(), deletedDto.getYy(), deletedDto.getMnth(), deletedDto.tag));
         // 관련 캐시 삭제
         publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_TODO));
     }
