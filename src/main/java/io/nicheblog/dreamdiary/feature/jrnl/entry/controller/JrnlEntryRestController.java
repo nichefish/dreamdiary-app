@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.jrnl.entry.controller;
 
-import io.nicheblog.dreamdiary.feature.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.model.JrnlEntryDto;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.model.JrnlEntrySearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.service.JrnlEntryExportService;
@@ -76,7 +75,6 @@ public class JrnlEntryRestController
      *
      * @param jrnlEntry 등록/수정 처리할 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
      */
     @Operation(
             summary = "저널 항목 등록/수정",
@@ -127,7 +125,6 @@ public class JrnlEntryRestController
      *
      * @param postNo 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
      */
     @DeleteMapping(value = {Url.JRNL_ENTRY})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -149,7 +146,6 @@ public class JrnlEntryRestController
      *
      * @param postNo 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
      */
     @GetMapping(value = {Url.JRNL_ENTRY_EXPORT})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})

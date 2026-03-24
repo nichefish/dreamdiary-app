@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.clsf.file.entity.embed;
 
-import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.file.entity.AtchFileDtlEntity;
 import io.nicheblog.dreamdiary.feature.clsf.file.entity.AtchFileEntity;
 import lombok.*;
@@ -21,7 +20,7 @@ import java.util.List;
  * </pre>
  *
  * @author nichefish
- * @see CommentEmbedModule
+ * @see AtchFileEmbedModule
  */
 @Embeddable
 @Getter

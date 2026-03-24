@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.schdul.controller;
 
-import io.nicheblog.dreamdiary.feature.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.feature.schdul.model.SchdulDto;
 import io.nicheblog.dreamdiary.feature.schdul.service.SchdulService;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -46,7 +45,6 @@ public class SchdulRestController
      *
      * @param schdul 등록 처리할 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
      */
     @PostMapping(value = {Url.SCHDUL_REG_AJAX, Url.SCHDUL_MDF_AJAX})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})

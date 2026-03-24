@@ -26,7 +26,7 @@ public class EhCacheEvictWorker {
     /**
      * 캐시 evict 처리
      *
-     * @param event TagProcEvent
+     * @param event EhCacheEvictEvent
      */
     @Transactional
     public void handle(final EhCacheEvictEvent event) throws Exception {

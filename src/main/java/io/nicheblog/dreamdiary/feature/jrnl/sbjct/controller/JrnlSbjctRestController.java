@@ -1,7 +1,5 @@
 package io.nicheblog.dreamdiary.feature.jrnl.sbjct.controller;
 
-import io.nicheblog.dreamdiary.feature.clsf.managt.handler.ManagtrEventListener;
-import io.nicheblog.dreamdiary.feature.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.feature.clsf.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.feature.jrnl.sbjct.model.JrnlSbjctDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sbjct.service.JrnlSbjctService;
@@ -50,8 +48,6 @@ public class JrnlSbjctRestController
      * @param jrnlSbjct 등록/수정 처리할 객체
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
-     * @see ManagtrEventListener
      */
     @PostMapping(value = {Url.JRNL_SBJCT_REG_AJAX, Url.JRNL_SBJCT_MDF_AJAX})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -97,7 +93,6 @@ public class JrnlSbjctRestController
      *
      * @param postNo 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
      */
     @PostMapping(Url.JRNL_SBJCT_DEL_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})

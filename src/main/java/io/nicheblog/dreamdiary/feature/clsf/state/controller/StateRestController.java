@@ -2,7 +2,6 @@ package io.nicheblog.dreamdiary.feature.clsf.state.controller;
 
 import io.nicheblog.dreamdiary.feature.clsf.state.model.StateToggleDto;
 import io.nicheblog.dreamdiary.feature.clsf.state.service.StateService;
-import io.nicheblog.dreamdiary.feature.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
@@ -44,7 +43,6 @@ public class StateRestController
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
      */
     @PostMapping(value = {Url.STATES})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})

@@ -45,7 +45,7 @@ public class UserReqstWorker
     }
 
     /**
-     * 태그 Queue에서 TagProcEvent를 가져와 처리한다.
+     * UserReqst Queue에서 UserReqstEvent를 가져와 처리한다.
      */
     @Override
     public void run() {

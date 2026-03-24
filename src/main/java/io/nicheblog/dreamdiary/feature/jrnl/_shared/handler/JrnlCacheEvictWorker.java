@@ -59,7 +59,7 @@ public class JrnlCacheEvictWorker {
     /**
      * 태그 처리
      *
-     * @param event TagProcEvent
+     * @param event JrnlCacheEvictEvent
      */
     @Transactional
     public void handle(final JrnlCacheEvictEvent event) throws Exception {

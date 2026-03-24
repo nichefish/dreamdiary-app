@@ -1,7 +1,6 @@
 package io.nicheblog.dreamdiary.feature.jrnl.day.controller;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.feature.jrnl.day.JrnlDayViewType;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDaySearchParam;
@@ -78,7 +77,6 @@ public class JrnlDayRestController
      *
      * @param jrnlDay 등록/수정 처리할 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
      */
     @Operation(
             summary = "저널 일자 등록/수정",
@@ -134,7 +132,6 @@ public class JrnlDayRestController
      *
      * @param key 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
      */
     @DeleteMapping(value = {Url.JRNL_DAY})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
