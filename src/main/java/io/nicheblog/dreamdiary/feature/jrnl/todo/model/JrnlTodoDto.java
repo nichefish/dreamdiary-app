@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstnModule;
+import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlPeriodModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import lombok.*;
@@ -30,7 +31,7 @@ import javax.validation.constraints.Size;
 @ToString(callSuper = true)
 public class JrnlTodoDto
         extends BaseClsfDto
-        implements Identifiable<Integer>, CommentCmpstnModule, TagCmpstnModule {
+        implements Identifiable<Integer>, CommentCmpstnModule, TagCmpstnModule, JrnlPeriodModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default

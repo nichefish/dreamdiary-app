@@ -3,7 +3,6 @@ package io.nicheblog.dreamdiary.feature.jrnl.sbjct.service;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
 import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.feature.clsf.managt.event.ManagtrAddEvent;
-import io.nicheblog.dreamdiary.feature.clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.feature.jrnl.sbjct.entity.JrnlSbjctEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.sbjct.mapstruct.JrnlSbjctMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.sbjct.model.JrnlSbjctDto;
@@ -50,8 +49,6 @@ public class JrnlSbjctService
      */
     @Override
     public void postRegist(final JrnlSbjctDto updatedDto) throws Exception {
-        // 태그 처리 :: 메인 로직과 분리
-        publisher.publishEvent(new TagProcEvent(this, updatedDto.getClsfKey(), updatedDto.tag));
         // 조치자 추가 :: 메인 로직과 분리
         publisher.publishEvent(new ManagtrAddEvent(this, updatedDto.getClsfKey()));
         // 잔디 메세지 발송 :: 메인 로직과 분리
@@ -78,8 +75,6 @@ public class JrnlSbjctService
      */
     @Override
     public void postModify(final JrnlSbjctDto postDto, final JrnlSbjctDto updatedDto) throws Exception {
-        // 태그 처리 :: 메인 로직과 분리
-        publisher.publishEvent(new TagProcEvent(this, updatedDto.getClsfKey(), updatedDto.tag));
         // 조치자 추가 :: 메인 로직과 분리
         publisher.publishEvent(new ManagtrAddEvent(this, updatedDto.getClsfKey()));
         // 잔디 메세지 발송 :: 메인 로직과 분리
@@ -87,16 +82,5 @@ public class JrnlSbjctService
         //     String jandiRsltMsg = notifyService.notifyJrnlSbjctReg(trgetTopic, result, logParam);
         //     rsltMsg = rsltMsg + "\n" + jandiRsltMsg;
         // }
-    }
-
-    /**
-     * 삭제 후처리. (override)
-     *
-     * @param deletedDto - 삭제된 객체
-     */
-    @Override
-    public void postDelete(final JrnlSbjctDto deletedDto) throws Exception {
-        // 태그 처리 :: 메인 로직과 분리
-        publisher.publishEvent(new TagProcEvent(this, deletedDto.getClsfKey()));
     }
 }

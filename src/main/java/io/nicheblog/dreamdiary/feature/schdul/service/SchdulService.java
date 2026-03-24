@@ -2,7 +2,6 @@ package io.nicheblog.dreamdiary.feature.schdul.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
-import io.nicheblog.dreamdiary.feature.clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.feature.schdul.entity.SchdulEntity;
 import io.nicheblog.dreamdiary.feature.schdul.mapstruct.SchdulMapstruct;
 import io.nicheblog.dreamdiary.feature.schdul.model.SchdulDto;
@@ -92,8 +91,6 @@ public class SchdulService
      */
     @Override
     public void postRegist(final SchdulDto updatedDto) throws Exception {
-        // 태그 처리 :: 메인 로직과 분리
-        publisher.publishEvent(new TagProcEvent(this, updatedDto.getClsfKey(), updatedDto.tag));
         // 잔디 메세지 발송 :: 메인 로직과 분리
         // if (isSuccess && "Y".equals(jandiYn)) {
         //     String jandiRsltMsg = notifyService.notifySchdulReg(trgetTopic, result, logParam);
@@ -122,8 +119,6 @@ public class SchdulService
      */
     @Override
     public void postModify(final SchdulDto postDto, final SchdulDto updatedDto) throws Exception {
-        // 태그 처리 :: 메인 로직과 분리
-        publisher.publishEvent(new TagProcEvent(this, updatedDto.getClsfKey(), updatedDto.tag));
         // 잔디 메세지 발송 :: 메인 로직과 분리
         // if (isSuccess && "Y".equals(jandiYn)) {
         //     String jandiRsltMsg = notifyService.notifySchdulReg(trgetTopic, result, logParam);

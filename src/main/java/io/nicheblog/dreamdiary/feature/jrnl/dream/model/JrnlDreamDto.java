@@ -10,6 +10,7 @@ import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstnModule;
+import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlPeriodModule;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -38,7 +39,7 @@ import java.util.List;
 @ToString(callSuper = true)
 public class JrnlDreamDto
         extends BaseClsfDto
-        implements Identifiable<Integer>, AtchFileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, StateCmpstnModule, Comparable<JrnlDreamDto> {
+        implements Identifiable<Integer>, AtchFileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, StateCmpstnModule, JrnlPeriodModule, Comparable<JrnlDreamDto> {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default

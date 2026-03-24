@@ -3,7 +3,6 @@ package io.nicheblog.dreamdiary.feature.jrnl.sumry.service;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
-import io.nicheblog.dreamdiary.feature.clsf.tag.event.TagProcEvent;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.entity.JrnlSumryEntity;
@@ -153,8 +152,6 @@ public class JrnlSumryService
      */
     @Override
     public void postModify(final JrnlSumryDto postDto, final JrnlSumryDto updatedDto) throws Exception {
-        // 태그 처리
-        publisher.publishEvent(new TagProcEvent(this, updatedDto.getClsfKey(), updatedDto.tag));
         // 관련 캐시 삭제
         publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_SUMRY));
     }

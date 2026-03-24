@@ -2,7 +2,6 @@ package io.nicheblog.dreamdiary.feature.jrnl.entry.service;
 
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
-import io.nicheblog.dreamdiary.feature.clsf.tag.event.JrnlTagProcEvent;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.entity.JrnlEntryEntity;
@@ -93,8 +92,6 @@ public class JrnlEntryService
      */
     @Override
     public void postRegist(final JrnlEntryDto updatedDto) throws Exception {
-        // 태그 처리 :: 메인 로직과 분리
-        publisher.publishCustomEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
         // 관련 캐시 삭제
         publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_ENTRY));
     }
@@ -121,8 +118,6 @@ public class JrnlEntryService
         // 인덱스 재조정
         if (updatedDto.getIsIdxChanged()) this.getSelf().reorderIdx(updatedDto);
 
-        // 태그 처리 :: 메인 로직과 분리
-        publisher.publishCustomEvent(new JrnlTagProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.tag));
         // 관련 캐시 삭제
         publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_ENTRY));
     }
@@ -137,8 +132,6 @@ public class JrnlEntryService
         // 인덱스 재조정
         this.getSelf().reorderIdx(deletedDto);
 
-        // 태그 처리 :: 메인 로직과 분리
-        publisher.publishCustomEvent(new JrnlTagProcEvent(this, deletedDto.getClsfKey(), deletedDto.getYy(), deletedDto.getMnth()));
         // 관련 캐시 삭제
         publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_ENTRY));
     }
