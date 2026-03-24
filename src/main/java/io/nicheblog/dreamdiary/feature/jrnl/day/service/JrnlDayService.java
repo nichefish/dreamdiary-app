@@ -4,7 +4,6 @@ import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
-import io.nicheblog.dreamdiary.feature.clsf.meta.event.JrnlMetaProcEvent;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.state.JrnlStateMaps;
@@ -243,8 +242,6 @@ public class JrnlDayService
      */
     @Override
     public void postRegist(final JrnlDayDto updatedDto) throws Exception {
-        // 메타 처리 :: 메인 로직과 분리
-        publisher.publishCustomEvent(new JrnlMetaProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.meta));
         // 관련 캐시 삭제
         publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DAY));
     }
@@ -303,8 +300,6 @@ public class JrnlDayService
      */
     @Override
     public void postModify(final JrnlDayDto postDto, final JrnlDayDto updatedDto) throws Exception {
-        // 메타 처리 :: 메인 로직과 분리
-        publisher.publishCustomEvent(new JrnlMetaProcEvent(this, updatedDto.getClsfKey(), updatedDto.getYy(), updatedDto.getMnth(), updatedDto.meta));
         // 관련 캐시 삭제
         publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DAY));
     }
@@ -335,8 +330,6 @@ public class JrnlDayService
      */
     @Override
     public void postDelete(final JrnlDayDto deletedDto) throws Exception {
-        // 메타 처리 :: 메인 로직과 분리
-        publisher.publishCustomEvent(new JrnlMetaProcEvent(this, deletedDto.getClsfKey(), deletedDto.getYy(), deletedDto.getMnth(), deletedDto.meta));
         // 관련 캐시 삭제
         publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DAY));
     }
