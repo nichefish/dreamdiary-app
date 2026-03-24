@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.jrnl.dream.controller;
 
-import io.nicheblog.dreamdiary.feature.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.service.JrnlDreamExportService;
@@ -48,7 +47,6 @@ public class JrnlDreamExportController
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
      */
     @GetMapping(value = Url.JRNL_DREAMS_EXPORT, produces = "text/plain; charset=UTF-8")
     public ResponseEntity<byte[]> jrnlDreamExportTxt(

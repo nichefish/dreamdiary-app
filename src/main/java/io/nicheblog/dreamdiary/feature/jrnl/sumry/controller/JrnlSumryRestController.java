@@ -1,7 +1,6 @@
 package io.nicheblog.dreamdiary.feature.jrnl.sumry.controller;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayTagService;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiaryDto;
@@ -248,7 +247,6 @@ public class JrnlSumryRestController
      *
      * @param jrnlSumry 등록/수정 처리할 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
      */
     @PostMapping(value = {Url.JRNL_SUMRY_REG_AJAX})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})

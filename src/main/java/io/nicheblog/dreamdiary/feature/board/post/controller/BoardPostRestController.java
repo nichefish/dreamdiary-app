@@ -2,7 +2,6 @@ package io.nicheblog.dreamdiary.feature.board.post.controller;
 
 import io.nicheblog.dreamdiary.feature.board.post.model.BoardPostDto;
 import io.nicheblog.dreamdiary.feature.board.post.service.BoardPostService;
-import io.nicheblog.dreamdiary.feature.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.feature.clsf.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -50,8 +49,6 @@ public class BoardPostRestController
      * @param boardPost 등록/수정 처리할 게시물
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
-     * @see ViewerEventListener
      */
     @PostMapping(value = {Url.BOARD_POST_REG_AJAX, Url.BOARD_POST_MDF_AJAX})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -97,7 +94,6 @@ public class BoardPostRestController
      *
      * @param postNo 복합키 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
      */
     @PostMapping(Url.BOARD_POST_DEL_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})

@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.jrnl.todo.controller;
 
-import io.nicheblog.dreamdiary.feature.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.model.JrnlTodoDto;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.model.JrnlTodoSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.service.JrnlTodoService;
@@ -68,7 +67,6 @@ public class JrnlTodoRestController
      *
      * @param jrnlTodo 등록/수정 처리할 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
      */
     @Operation(
             summary = "저널 꿈 등록/수정",
@@ -118,7 +116,6 @@ public class JrnlTodoRestController
      *
      * @param postNo 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
      */
     @DeleteMapping(value = {Url.JRNL_TODO})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})

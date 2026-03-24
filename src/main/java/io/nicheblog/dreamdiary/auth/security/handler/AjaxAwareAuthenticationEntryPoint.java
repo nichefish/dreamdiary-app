@@ -26,7 +26,6 @@ import java.io.PrintWriter;
 public class AjaxAwareAuthenticationEntryPoint
         implements AuthenticationEntryPoint {
 
-
     /**
      * 인증되지 않은 요청이 감지되었을 때 호출되는 메서드.
      * AJAX 요청과 일반 요청을 구분하여 적절한 응답을 반환합니다.

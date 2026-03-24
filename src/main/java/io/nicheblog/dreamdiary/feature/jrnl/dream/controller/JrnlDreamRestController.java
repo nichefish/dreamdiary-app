@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.jrnl.dream.controller;
 
-import io.nicheblog.dreamdiary.feature.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamPostDto;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamSearchParam;
@@ -73,7 +72,6 @@ public class JrnlDreamRestController
      * @param jrnlDream 등록/수정 처리할 객체
      * @param request - Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
      */
     @Operation(
             summary = "저널 꿈 등록/수정",
@@ -125,7 +123,6 @@ public class JrnlDreamRestController
      *
      * @param postNo 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
      */
     @DeleteMapping(value = {Url.JRNL_DREAM})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})

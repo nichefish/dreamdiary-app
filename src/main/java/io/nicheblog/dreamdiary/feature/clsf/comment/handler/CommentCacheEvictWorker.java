@@ -42,7 +42,7 @@ public class CommentCacheEvictWorker {
     /**
      * 캐시 evict 처리
      *
-     * @param event TagProcEvent
+     * @param event CommentCacheEvictEvent
      */
     @Transactional
     public void handle(final CommentCacheEvictEvent event) throws Exception {

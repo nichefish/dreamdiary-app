@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.tag.event.JrnlTagCacheUpdtEvent;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
+import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagProcService;
 import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagService;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * </pre>
  *
  * @author nichefish
- * @see TagProcEventListener
+ * @see TagProcService
  **/
 @Component
 @RequiredArgsConstructor

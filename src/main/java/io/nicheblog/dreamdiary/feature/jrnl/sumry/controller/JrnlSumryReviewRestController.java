@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.jrnl.sumry.controller;
 
-import io.nicheblog.dreamdiary.feature.clsf.tag.handler.TagProcEventListener;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryReviewDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.service.JrnlSumryReviewService;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -67,7 +66,6 @@ public class JrnlSumryReviewRestController
      *
      * @param jrnlSumryReview 등록/수정 처리할 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
      */
     @PostMapping(value = {Url.JRNL_SUMRY_REVIEWS, Url.JRNL_SUMRY_REVIEW})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
@@ -92,7 +90,6 @@ public class JrnlSumryReviewRestController
      *
      * @param postNo 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     * @see TagProcEventListener
      */
     @DeleteMapping(value = {Url.JRNL_SUMRY_REVIEW})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
