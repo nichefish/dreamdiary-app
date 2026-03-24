@@ -2,7 +2,9 @@ package io.nicheblog.dreamdiary.feature.clsf._shared.service;
 
 import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
 import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
-import io.nicheblog.dreamdiary.feature.clsf._shared.service.helper.BaseClsfServiceHelper;
+import io.nicheblog.dreamdiary.feature.clsf._shared.service.helper.BaseClsfManagtHelper;
+import io.nicheblog.dreamdiary.feature.clsf._shared.service.helper.BaseClsfProcEventPublisher;
+import io.nicheblog.dreamdiary.feature.clsf._shared.service.helper.BaseClsfResponseHelper;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
@@ -43,19 +45,19 @@ public interface BaseClsfService<PostDto extends BaseClsfDto & Identifiable<Key>
         this.preRegist(registEntity);
 
         // managt 처리
-        BaseClsfServiceHelper.applyRegistManagt(registDto, registEntity);
+        BaseClsfManagtHelper.applyRegistManagt(registDto, registEntity);
 
         // insert
         final Entity updatedEntity = this.updt(registEntity);
         final Dto updatedDto = getReadMapstruct().toDto(updatedEntity);
 
         // 필수 후처리(등록/수정 공통): tag/meta 전달 + 태그 처리 이벤트 발행
-        BaseClsfServiceHelper.afterWrite(this, this.getPublisher(), registDto, updatedDto);
+        BaseClsfProcEventPublisher.afterWrite(this, this.getPublisher(), registDto, updatedDto);
 
         // optional: 등록 후처리(dto)
         this.postRegist(updatedDto);
 
-        return BaseClsfServiceHelper.newWriteResponse(updatedDto);
+        return BaseClsfResponseHelper.newWriteResponse(updatedDto);
     }
 
     /**
@@ -79,19 +81,19 @@ public interface BaseClsfService<PostDto extends BaseClsfDto & Identifiable<Key>
         getWriteMapstruct().updateFromDto(postDto, modifyEntity);
 
         // managt 처리
-        BaseClsfServiceHelper.applyModifyManagt(postDto, modifyEntity);
+        BaseClsfManagtHelper.applyModifyManagt(postDto, modifyEntity);
 
         // update
         final Entity updatedEntity = getRepository().saveAndFlush(modifyEntity);
         final Dto updatedDto = getReadMapstruct().toDto(updatedEntity);
 
         // 필수 후처리(등록/수정 공통): tag/meta 전달 + 태그 처리 이벤트 발행
-        BaseClsfServiceHelper.afterWrite(this, this.getPublisher(), postDto, updatedDto);
+        BaseClsfProcEventPublisher.afterWrite(this, this.getPublisher(), postDto, updatedDto);
 
         // optional: 수정 후처리(dto)
         this.postModify(postDto, updatedDto);
 
-        return BaseClsfServiceHelper.newWriteResponse(updatedDto);
+        return BaseClsfResponseHelper.newWriteResponse(updatedDto);
     }
 
     /**
@@ -113,16 +115,16 @@ public interface BaseClsfService<PostDto extends BaseClsfDto & Identifiable<Key>
         this.remove(deleteEntity);
 
         // 필수 후처리(삭제 공통): 태그 처리 이벤트 발행
-        BaseClsfServiceHelper.afterDelete(this, this.getPublisher(), deletedDto);
+        BaseClsfProcEventPublisher.afterDelete(this, this.getPublisher(), deletedDto);
 
         // optional: 삭제 후처리(dto)
         this.postDelete(deletedDto);
 
-        return BaseClsfServiceHelper.newDeleteResponse(deletedDto);
+        return BaseClsfResponseHelper.newDeleteResponse(deletedDto);
     }
 
     /**
-     * 구현체에서 명시적으로 publisher를 제공하고 싶을 때 override.
+     * Tag/Meta 이벤트가 필요한 구현체는 publisher를 override로 반드시 제공.
      */
     default ApplicationEventPublisherWrapper getPublisher() {
         return null;

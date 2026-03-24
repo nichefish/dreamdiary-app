@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.feature.clsf.meta.handler;
 
 import io.nicheblog.dreamdiary.feature.clsf.meta.event.MetaProcEvent;
-import io.nicheblog.dreamdiary.global.config.AsyncConfig;
+import io.nicheblog.dreamdiary.global.handler.CustomEventBus;
+import io.nicheblog.dreamdiary.global.handler.CustomEventHandler;
 import io.nicheblog.dreamdiary.infrastructure.cache.handler.EhCacheEvictEventListner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 /**
@@ -15,12 +15,12 @@ import org.springframework.stereotype.Component;
  * </pre>
  *
  * @author nichefish
- * @see AsyncConfig
+ * @see CustomEventBus
  */
-@Component
+@Component("metaProcEventListener")
 @RequiredArgsConstructor
 @Log4j2
-public class MetaProcEventListener {
+public class MetaProcEventListener implements CustomEventHandler<MetaProcEvent> {
 
     private final MetaProcWorker metaProcWorker;
 
@@ -30,10 +30,17 @@ public class MetaProcEventListener {
      * @param event 처리할 이벤트 객체
      * @see EhCacheEvictEventListner
      */
-    @EventListener
-    public void handleMetaProcEvent(final MetaProcEvent event) throws Exception {
-        log.debug("MetaProcEventListener.handleMetaProcEvent() - event : {}", event.toString());
-
+    @Override
+    public void handle(final MetaProcEvent event) throws Exception {
+        log.debug("MetaProcEventListener.handle() - event : {}", event.toString());
         metaProcWorker.handle(event);
+    }
+
+    /**
+     * 본 핸들러가 처리할 이벤트 타입.
+     */
+    @Override
+    public Class<MetaProcEvent> getEventType() {
+        return MetaProcEvent.class;
     }
 }
