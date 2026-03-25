@@ -1,8 +1,7 @@
 package io.nicheblog.dreamdiary.infrastructure.cache.handler;
 
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.config.AsyncConfig;
-import io.nicheblog.dreamdiary.infrastructure.cache.event.EhCacheEvictEvent;
+import io.nicheblog.dreamdiary.infrastructure.cache.event.LgnSuccessCacheWarmupEvent;
 import io.nicheblog.dreamdiary.infrastructure.cache.service.CacheWarmupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
@@ -32,9 +31,9 @@ public class LgnSuccessCacheWarmupEventListener {
      */
     @EventListener
     @Async
-    public void handleCacheWarmupEvent(final EhCacheEvictEvent event) throws Exception {
+    public void handleCacheWarmupEvent(final LgnSuccessCacheWarmupEvent event) throws Exception {
         SecurityContextHolder.setContext(event.getSecurityContext());
-        final String userId = AuthUtils.getLgnUserId();
+        final String userId = event.getUserId();
 
         cacheWarmupService.warmupOnLgn(userId);
     }
