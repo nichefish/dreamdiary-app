@@ -40,9 +40,12 @@ dF.DtlCd = (function(): dfModule {
          * Draggable 컴포넌트 init
          */
         initDraggable: function(): void {
-            const keyExtractor: Function = (item: HTMLElement) => ({ "clCd": $("#clCd").val(), "dtlCd": $(item).attr("id") });
+            const hasZone: boolean = !!document.querySelector(".draggable-zone-dtl-cd");
+            if (!hasZone) return;
+
+            const keyExtractor: Function = (item: HTMLElement) => ({ "clCd": $("#clCd").val(), "dtlCd": item.dataset.id || item.id });
             const url: string = Url.DTL_CD_SORT_ORDR_AJAX;
-            dF.DtlCd.swappable = cF.draggable.init("", keyExtractor, url);
+            dF.DtlCd.swappable = cF.draggable.init("-dtl-cd", keyExtractor, url);
         },
 
         /**
@@ -52,6 +55,7 @@ dF.DtlCd = (function(): dfModule {
             event.stopPropagation();
 
             const obj: Record<string, any> = { "clCd": $("#clCd").val() };
+            $("#cl_cd_dtl_modal").modal("hide");
             /* initialize form. */
             dF.DtlCd.initForm(obj);
         },
@@ -73,8 +77,8 @@ dF.DtlCd = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                $("#dtlCdRegForm #regYn").val("Y");
-                const url: string = Url.DTL_CD_REG_AJAX;
+                const regYn: string = String($("#dtlCdRegForm #regYn").val() || "Y").toUpperCase();
+                const url: string = regYn === "Y" ? Url.DTL_CD_REG_AJAX : Url.DTL_CD_MDF_AJAX;
                 const ajaxData: Record<string, any> = cF.util.getJsonFormData("#dtlCdRegForm");
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
@@ -89,7 +93,9 @@ dF.DtlCd = (function(): dfModule {
          * 수정 모달 호출
          * @param {string} dtlCd - 조회할 상세 코드.
          */
-        mdfModal: function(dtlCd: string) {
+        mdfModal: function(dtlCd: string): void {
+            event.stopPropagation();
+
             const url: string = Url.DTL_CD_DTL_AJAX;
             const ajaxData: Record<string, any> = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
@@ -99,6 +105,7 @@ dF.DtlCd = (function(): dfModule {
                 }
                 const { rsltObj } = res;
                 rsltObj.isMdf = true;
+                $("#cl_cd_dtl_modal").modal("hide");
                 /* initialize form. */
                 dF.DtlCd.initForm(rsltObj);
             });

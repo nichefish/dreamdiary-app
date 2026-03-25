@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.feature.admin.cd.mapstruct.DtlCdMapstruct;
 import io.nicheblog.dreamdiary.feature.admin.cd.model.DtlCdDto;
 import io.nicheblog.dreamdiary.feature.admin.cd.spec.DtlCdSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
+import io.nicheblog.dreamdiary.global.intrfc.service.BaseSortableService;
 import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
 import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdKey;
 import io.nicheblog.dreamdiary.infrastructure.cd.model.CdLookupItem;
@@ -19,6 +20,7 @@ import org.springframework.ui.ModelMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * DtlCdService
@@ -33,7 +35,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Log4j2
 public class DtlCdService
-        implements BaseDtoWritableService<DtlCdDto, DtlCdDto, DtlCdKey, DtlCdEntity> {
+        implements BaseDtoWritableService<DtlCdDto, DtlCdDto, DtlCdKey, DtlCdEntity>,
+                   BaseSortableService<DtlCdDto, DtlCdKey, DtlCdEntity> {
 
     @Getter
     private final DtlCdRepository repository;
@@ -84,6 +87,7 @@ public class DtlCdService
                             .dtlCd(item.getDtlCd())
                             .dtlCdNm(item.getDtlCdNm())
                             .dc(item.getDc())
+                            .idx(item.getIdx())
                             .useYn(item.getUseYn())
                             .protectedYn(item.getProtectedYn())
                             .build()
@@ -101,8 +105,25 @@ public class DtlCdService
     }
 
     @Override
-    public void postRegist(final DtlCdDto updatedDto) {
-        this.evictCache(updatedDto);
+    public void preRegist(final DtlCdDto registDto) {
+        if (StringUtils.isEmpty(registDto.getClCd())) return;
+        if (registDto.getIdx() != null && registDto.getIdx() > 0) return;
+
+        final List<DtlCdEntity> existingList = repository.findByClCd(registDto.getClCd());
+        int maxIdx = 0;
+        if (existingList != null) {
+            for (final DtlCdEntity entity : existingList) {
+                if (entity == null || entity.getIdx() == null) continue;
+                maxIdx = Math.max(maxIdx, entity.getIdx());
+            }
+        }
+        registDto.setIdx(maxIdx + 1);
+    }
+
+    @Override
+    public void postRegist(final DtlCdDto updatedDto) throws Exception {
+        this.normalizeIdxByClCd(updatedDto.getClCd());
+        this.evictCacheByClCd(updatedDto.getClCd());
     }
 
     @Override
@@ -111,8 +132,42 @@ public class DtlCdService
     }
 
     @Override
-    public void postDelete(final DtlCdDto deletedDto) {
-        this.evictCache(deletedDto);
+    public void postDelete(final DtlCdDto deletedDto) throws Exception {
+        this.normalizeIdxByClCd(deletedDto.getClCd());
+        this.evictCacheByClCd(deletedDto.getClCd());
+    }
+
+    @Override
+    public void postSortIdx(final List<DtlCdDto> idxs) throws Exception {
+        if (idxs == null || idxs.isEmpty()) return;
+        final DtlCdDto first = idxs.get(0);
+        if (first == null || StringUtils.isEmpty(first.getClCd())) return;
+
+        this.normalizeIdxByClCd(first.getClCd());
+        this.evictCacheByClCd(first.getClCd());
+    }
+
+    /**
+     * 분류코드 단위로 idx를 1부터 순차 재정렬한다.
+     */
+    @Transactional
+    public void normalizeIdxByClCd(final String clCd) {
+        if (StringUtils.isEmpty(clCd)) return;
+
+        final List<DtlCdEntity> entityList = repository.findByClCdOrderByIdxAscDtlCdAsc(clCd);
+        if (entityList == null || entityList.isEmpty()) return;
+
+        boolean hasChange = false;
+        int nextIdx = 1;
+        for (final DtlCdEntity entity : entityList) {
+            if (entity == null) continue;
+            if (!Objects.equals(entity.getIdx(), nextIdx)) {
+                entity.setIdx(nextIdx);
+                hasChange = true;
+            }
+            nextIdx++;
+        }
+        if (hasChange) repository.saveAllAndFlush(entityList);
     }
 
     /**
@@ -120,5 +175,12 @@ public class DtlCdService
      */
     public void evictCache(final DtlCdDto rslt) {
         cdLookupService.evictDtlCdCache(rslt.getClCd(), rslt.getDtlCd());
+    }
+
+    /**
+     * 분류코드 단위 코드 캐시 무효화.
+     */
+    public void evictCacheByClCd(final String clCd) {
+        cdLookupService.evictClCdCache(clCd);
     }
 }

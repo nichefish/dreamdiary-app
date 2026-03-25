@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.feature.admin.cd.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.nicheblog.dreamdiary.auth.intrfc.model.BaseAuditDto;
+import io.nicheblog.dreamdiary.global.intrfc.entity.Sortable;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdKey;
 import lombok.*;
@@ -26,7 +27,7 @@ import lombok.experimental.SuperBuilder;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DtlCdDto
         extends BaseAuditDto
-        implements Identifiable<DtlCdKey> {
+        implements Identifiable<DtlCdKey>, Sortable {
 
     /** 상세 코드 */
     private String dtlCd;
@@ -38,6 +39,9 @@ public class DtlCdDto
 
     /** 분류 코드 */
     private String clCd;
+
+    /** 정렬 순서 */
+    private Integer idx;
 
     /** 시스템 보호 여부 (Y/N) */
     @Builder.Default

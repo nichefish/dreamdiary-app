@@ -1,10 +1,9 @@
 <#--
- * 분류 코드(CL_CD) > 목록 화면
+ * 분류 코드(CL_CD) 목록 화면
  -->
 
 <#import "/layout/layout_default.ftlh" as layout >
 
-<#--toolbar::버튼 추가-->
 <#assign toolbar>
     <#include "/view/feature/admin/cd/_cl_cd_list_header.ftlh">
 </#assign>
@@ -12,11 +11,8 @@
 <@layout.layout toolbar=toolbar!"">
 
 <div class="card post">
-    <#--begin::Card body-->
     <div class="card-body">
-        <!--begin::Card Body-->
         <table class="table align-middle table-row-dashed fs-small gy-5 table-fixed hoverTable mb-3">
-            <#--begin::Table head-->
             <thead>
                 <tr class="text-start fw-bolder fs-7 text-uppercase gs-0 fw-bolder text-muted">
                     <th class="col-1 text-center wb-keepall cursor-help w-8 hidden-table">순번</th>
@@ -27,66 +23,38 @@
                     <th class="col-1 text-center wb-keepall">관리</th>
                 </tr>
             </thead>
-            <#--begin::Table body-->
-            <tbody class="draggable-zone">
-                <#--begin::목록-->
-                <#list clCdList![] as clCd>
-                    <tr class="cl-cd-item bg-hover-secondary" id="${clCd.clCd!}" data-use-yn="${clCd.useYn!}"
-                        onclick="dF.ClCd.dtlModal('${clCd.clCd!}');">
-                        <td class="text-center hidden-table">
-                            ${clCd.rnum!}
-                        </td>
-                        <td class="text-start px-6 cursor-pointer fw-bold text-gray-700">
-                            <#if clCd.clCtgrNm??>
-                                <span class="fw-bolder fs-2 ctgr-span ctgr-imprtc">
-                                    ${clCd.clCtgrNm!}
-                                </span>
-                            </#if>
-                            <span>${clCd.clCdNm!}</span>
-                            <span class="badge bg-light-info text-info ms-1">${clCd.clCd!}</span>
-                        </td>
-                        <td class="text-start ps-6 hidden-table">
-                            ${clCd.dc!}
-                        </td>
-                        <td class="text-center hidden-table">
-                            ${clCd.dtlCdCnt!0}
-                        </td>
-                        <td class="text-center hidden-table">
-                            <div class="badge <#if ((clCd.useYn)!"N") == "Y">badge-success<#else>badge-secondary btn-white</#if> cursor-pointer"
-                                 onclick="dF.ClCd.toggleUseAjax('${clCd.clCd}');"
-                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
-                                 title="클릭하여 사용 상태를&#10;변경합니다.">
-                                <i class="bi bi-check text-light blink-slow"></i><#if ((clCd.useYn)!"N") == "Y"><@spring.message 'txt.status.use'/><#else><@spring.message 'txt.status.unuse'/></#if>
-                            </div>
-                        </td>
-                        <td class="text-center hidden-table">
-                            <div class="badge badge-danger badge-outlined cursor-pointer"
-                                 onclick="dF.ClCd.delAjax('${clCd.clCd}');"
-                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
-                                 title="<@spring.message 'bs.tooltip.del'/>">
-                                <i class="bi bi-trash text-danger fs-7 blink-slow"></i>삭제
-                            </div>
-                        </td>
-                    </tr>
-                <#else>
-                    <tr>
-                        <td colspan=8" class="text-center"><@spring.message 'view.list.empty'/></td>
-                    </tr>
-                </#list>
+            <tbody id="cl_cd_list_div" class="draggable-zone">
+                <#-- Handlebars template renders here -->
             </tbody>
         </table>
     </div>
-    <#--begin::Card footer-->
+
     <div class="card-footer">
-        <#--pagination::begin-->
         <#include "/view/global/_pagination.ftlh">
-        <#--pagination::end-->
     </div>
 </div>
 
 <form name="procForm" id="procForm" method="get">
     <input type="hidden" name="clCd" id="clCd" />
 </form>
+
+<script id="cl_cd_list_data" type="application/json">
+[
+<#list clCdList![] as clCd>
+    {
+        "rnum": ${clCd.rnum!0},
+        "clCd": "${(clCd.clCd!'')?js_string}",
+        "clCdNm": "${(clCd.clCdNm!'')?js_string}",
+        "clCtgrNm": "${(clCd.clCtgrNm!'')?js_string}",
+        "dc": "${(clCd.dc!'')?js_string}",
+        "dtlCdCnt": ${clCd.dtlCdCnt!0},
+        "useYn": "${(clCd.useYn!'N')?js_string}"
+    }<#if clCd_has_next>,</#if>
+</#list>
+]
+</script>
+
+<#include "/view/feature/admin/cd/_cl_cd_list_template.hbs">
 
 <#--include::draggable-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
@@ -101,7 +69,6 @@
 <#include "/view/feature/admin/cd/_modal/_dtl_cd_reg_modal.ftlh">
 <script type="text/javascript" src="/js/view/feature/admin/cd/dtl_cd_module.js"></script>
 
-<!--include::page scripts-->
 <script type="text/javascript" src="/js/view/feature/admin/cd/cl_cd_list.js"></script>
 
 </@layout.layout>

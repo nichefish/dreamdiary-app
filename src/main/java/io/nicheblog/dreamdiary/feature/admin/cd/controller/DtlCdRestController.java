@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.admin.cd.controller;
 
 import io.nicheblog.dreamdiary.feature.admin.cd.model.DtlCdDto;
+import io.nicheblog.dreamdiary.feature.admin.cd.model.DtlCdParam;
 import io.nicheblog.dreamdiary.feature.admin.cd.model.DtlCdSearchParam;
 import io.nicheblog.dreamdiary.feature.admin.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -15,6 +16,7 @@ import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -61,7 +63,8 @@ public class DtlCdRestController
     ) throws Exception {
 
         final DtlCdSearchParam searchParam = DtlCdSearchParam.builder().clCd(clCd).build();
-        final List<DtlCdDto> dtlCdList = dtlCdService.getListDto(searchParam);
+        final Sort sort = Sort.by(Sort.Direction.ASC, "idx").and(Sort.by(Sort.Direction.ASC, "dtlCd"));
+        final List<DtlCdDto> dtlCdList = dtlCdService.getListDto(searchParam, sort);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -209,7 +212,7 @@ public class DtlCdRestController
      * @param logParam 로그 기록을 위한 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-/*    @PostMapping(Url.DTL_CD_SORT_ORDR_AJAX)
+    @PutMapping(Url.DTL_CD_SORT_ORDR_AJAX)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> dtlCdSortOrdrAjax(
@@ -217,13 +220,12 @@ public class DtlCdRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final ServiceResponse result = dtlCdService.idx(dtlCdParam.getSortOrdr());
+        final ServiceResponse result = dtlCdService.sortIdx(dtlCdParam.getIdxs());
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
-        // logParam.setCn("key: " + menuNo);
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
-        return ResponseEntity.ok(AjaxResponse.fromResponse(result, rsltMsg));
-    }*/
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
+    }
 }

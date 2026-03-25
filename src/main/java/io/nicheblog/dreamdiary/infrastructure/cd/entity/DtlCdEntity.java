@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.infrastructure.cd.entity;
 
 import io.nicheblog.dreamdiary.auth.intrfc.entity.BaseAuditEntity;
+import io.nicheblog.dreamdiary.global.intrfc.entity.Sortable;
 import io.nicheblog.dreamdiary.global.intrfc.entity.Usable;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -32,7 +33,7 @@ import javax.persistence.*;
 @Where(clause = "del_yn='N'")
 public class DtlCdEntity
         extends BaseAuditEntity
-        implements Usable {
+        implements Usable, Sortable {
 
     /** 상세 코드 */
     @Id

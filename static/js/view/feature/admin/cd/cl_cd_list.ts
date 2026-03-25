@@ -1,6 +1,6 @@
 /**
  * cl_cd_list.ts
- * 분류 코드 목록 페이지 스크립트
+ * CL_CD list page script
  *
  * @author nichefish
  */
@@ -8,14 +8,12 @@
 const Page: Page = (function(): Page {
     return {
         /**
-         * Page 객체 초기화
+         * Page initialize
          */
         init: function(): void {
-            /* initialize modules. */
             dF.ClCd.init();
+            dF.ClCd.renderListFromPageData();
 
-            // dF.ClCd.listAjax();
-            /* 모든 table 헤더에 클릭 이벤트를 설정한다. */
             cF.table.initSort();
         },
     }

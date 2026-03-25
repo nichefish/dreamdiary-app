@@ -4,7 +4,7 @@
  *
  * @author nichefish
  */
-if (typeof dF === 'undefined') { var dF = {} as any; }
+if (typeof dF === "undefined") { var dF = {} as any; }
 dF.ClCd = (function(): dfModule {
     return {
         initialized: false,
@@ -44,29 +44,58 @@ dF.ClCd = (function(): dfModule {
 
             // pageNo를 1로 설정
             const pageNoElmt: HTMLInputElement = document.querySelector("#listForm #pageNo");
-            if (pageNoElmt) pageNoElmt.value = '1';
+            if (pageNoElmt) pageNoElmt.value = "1";
             // submit
-            cF.form.blockUISubmit("#listForm", Url.CL_CD_LIST + "?actionTyCd=SEARCH");
+            cF.form.blockUISubmit("#listForm", `${Url.CL_CD_LIST}?actionTyCd=SEARCH`);
         },
 
-        listAjax: function() {
+        /**
+         * list load by ajax
+         */
+        listAjax: function(): void {
             const url: string = Url.CD_CLS;
-            cF.ajax.get(url, null, function(res: AjaxResponse): void {
+            const ajaxData: Record<string, any> = cF.util.getJsonFormData("#listForm");
+            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
-                cF.handlebars.template(res.rsltList, "cl_cd_list");
+                dF.ClCd.renderList(res.rsltList || []);
             });
         },
 
         /**
-         * 등록 모달 호출
+         * render list template
+         */
+        renderList: function(list: Record<string, any>[] = []): void {
+            cF.handlebars.template(list, "cl_cd_list");
+        },
+
+        /**
+         * render list from server-side page json
+         */
+        renderListFromPageData: function(): void {
+            const dataEl: HTMLElement | null = document.getElementById("cl_cd_list_data");
+            if (!dataEl) {
+                dF.ClCd.renderList([]);
+                return;
+            }
+
+            try {
+                const raw: string = dataEl.textContent || "[]";
+                const parsed: unknown = JSON.parse(raw);
+                dF.ClCd.renderList(Array.isArray(parsed) ? parsed : []);
+            } catch (e) {
+                console.error("failed to parse cl_cd_list_data", e);
+                dF.ClCd.renderList([]);
+            }
+        },
+
+        /**
+         * show register modal
          */
         regModal: function(): void {
             event.stopPropagation();
-
-            /* initialize form. */
             dF.ClCd.initForm({});
         },
 
@@ -75,12 +104,11 @@ dF.ClCd = (function(): dfModule {
          */
         submit: function(): void {
             event.stopPropagation();
-
             $("#clCdRegForm").submit();
         },
 
         /**
-         * 등록/수정 (Ajax)
+         * register / modify ajax
          */
         regAjax: function(): void {
             event.stopPropagation();
@@ -104,34 +132,34 @@ dF.ClCd = (function(): dfModule {
         },
 
         /**
-         * 상세 모달 호출
-         * @param {string} clCd - 조회할 분류 코드.
+         * show detail modal
+         * @param {string} clCd
          */
         dtlModal: function(clCd: string): void {
             event.stopPropagation();
+            $("#clCd").val(clCd);
 
             const url: string = cF.util.bindUrl(Url.CD_CL, { clCd });
-            cF.ajax.get(url, null, function(res: AjaxResponse) {
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
-                    return false;
+                    return;
                 }
                 cF.handlebars.modal(res.rsltObj, "cl_cd_dtl");
                 dF.ClCd.key = clCd;
-                /* init : Draggable */
                 dF.DtlCd.initDraggable();
             });
         },
 
         /**
-         * 수정 모달 호출
-         * @param {string} clCd - 조회할 분류 코드.
+         * show modify modal
+         * @param {string} clCd
          */
         mdfModal: function(clCd: string): void {
             event.stopPropagation();
 
             const url: string = cF.util.bindUrl(Url.CD_CL, { clCd });
-            const ajaxData: Record<string, any> = { "clCd": clCd };
+            const ajaxData: Record<string, any> = { clCd };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -139,36 +167,36 @@ dF.ClCd = (function(): dfModule {
                 }
                 const { rsltObj } = res;
                 rsltObj.isMdf = true;
-                /* initialize form. */
                 dF.ClCd.initForm(rsltObj);
-                $('#cl_cd_dtl_modal').modal('hide');
+                $("#cl_cd_dtl_modal").modal("hide");
             });
         },
 
         /**
-         * 사용 상태 변경 (Ajax)
+         * toggle useYn
+         * @param {string} clCd
          */
-        toggleUseAjax: function(clCd: string|number): void {
-            if (isNaN(Number(clCd))) return;
-
-            const item: HTMLElement = document.querySelector(`cl-cd-item[data-id='${clCd}']`);
-            if (!item) console.warn("item does not exists.");
-            const currentUseYn: string = item.dataset.useYn;
+        toggleUseAjax: function(clCd: string): void {
+            const item: HTMLElement | null = document.querySelector(`.cl-cd-item[data-cl-cd='${clCd}']`);
+            const currentUseYn: string = (item?.dataset?.useYn || "N").toUpperCase();
             const nextUseYn: string = currentUseYn === "Y" ? "N" : "Y";
 
-            const url: string = cF.util.bindUrl(Url.MENU, { clCd });
-            const ajaxData: Record<string, any> = { "useYn": nextUseYn };
+            const url: string = cF.util.bindUrl(Url.CD_CL, { clCd });
+            const ajaxData: Record<string, any> = { useYn: nextUseYn };
             cF.$ajax.patch(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
-                    if (cF.util.isNotEmpty(res.message)) return Swal.fire({ text: res.message });
+                    if (cF.util.isNotEmpty(res.message)) {
+                        Swal.fire({ text: res.message });
+                    }
+                    return;
                 }
                 cF.ui.blockUIReload();
             });
         },
 
         /**
-         * 미사용으로 변경 (Ajax)
-         * @param {string} clCd - 변경할 분류 코드.
+         * unused legacy API
+         * @param {string} clCd
          */
         unuseAjax: function(clCd: string): void {
             event.stopPropagation();
@@ -180,7 +208,7 @@ dF.ClCd = (function(): dfModule {
                 if (!result.value) return;
 
                 const url: string = Url.CL_CD_UNUSE_AJAX;
-                const ajaxData: Record<string, any> = { "clCd": clCd };
+                const ajaxData: Record<string, any> = { clCd };
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
@@ -191,8 +219,8 @@ dF.ClCd = (function(): dfModule {
         },
 
         /**
-         * 삭제 (Ajax)
-         * @param {string} clCd - 삭제할 분류 코드.
+         * delete ajax
+         * @param {string} clCd
          */
         delAjax: function(clCd: string): void {
             event.stopPropagation();
@@ -204,7 +232,7 @@ dF.ClCd = (function(): dfModule {
                 if (!result.value) return;
 
                 const url: string = cF.util.bindUrl(Url.CD_CL, { clCd });
-                cF.$ajax.post(url, null, function(res: AjaxResponse): void {
+                cF.$ajax.delete(url, null, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
                             if (res.rslt) cF.ui.blockUIReload();
@@ -214,7 +242,7 @@ dF.ClCd = (function(): dfModule {
         },
 
         /**
-         * 목록 화면으로 이동
+         * move to list
          */
         list: function(): void {
             const listUrl: string = `${Url.CL_CD_LIST}?isBackToList=Y`;
