@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.global.exception;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.StandardException;
 
 /**
  * DataRetrievalException
@@ -13,6 +14,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@StandardException
 public class DataRetrievalException
         extends BaseException {
 
@@ -22,30 +24,12 @@ public class DataRetrievalException
     /**
      * 생성자.
      *
-     * @param msg
-     * @param cause
+     * @param msg String
+     * @param cause Throwable
+     * @param key Object
      */
     public DataRetrievalException(final String msg, final Throwable cause, final Object key) {
         super(msg, cause);
         this.key = key;
-    }
-
-    /**
-     * 생성자.
-     *
-     * @param msg
-     * @param cause
-     */
-    public DataRetrievalException(final String msg, final Throwable cause) {
-        super(msg, cause);
-    }
-
-    /**
-     * 생성자.
-     *
-     * @param msg
-     */
-    public DataRetrievalException(final String msg) {
-        super(msg);
     }
 }

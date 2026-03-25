@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.clsf.file.exception;
 
 import io.nicheblog.dreamdiary.global.exception.BaseException;
+import lombok.experimental.StandardException;
 
 /**
  * AtchFileUploadException
@@ -10,25 +11,7 @@ import io.nicheblog.dreamdiary.global.exception.BaseException;
  *
  * @author nichefish
  */
+@StandardException
 public class AtchFileUploadException
         extends BaseException {
-
-    /**
-     * 생성자.
-     *
-     * @param msg
-     * @param cause
-     */
-    public AtchFileUploadException(final String msg, final Throwable cause) {
-        super(msg, cause);
-    }
-
-    /**
-     * 생성자.
-     *
-     * @param msg
-     */
-    public AtchFileUploadException(final String msg) {
-        super(msg);
-    }
 }

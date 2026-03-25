@@ -1,5 +1,7 @@
 package io.nicheblog.dreamdiary.global.exception;
 
+import lombok.experimental.StandardException;
+
 import java.util.HashMap;
 import java.util.List;
 
@@ -11,40 +13,18 @@ import java.util.List;
  *
  * @author nichefish
  */
+@StandardException
 public class BaseException
         extends RuntimeException {
 
     /** 결과 (목록) */
     private List<?> rsltList;
-
     /** 결과 (맵) */
     private HashMap<String, Object> rsltMap;
-
     /** 결과 (숫자) */
     private Integer rsltVal;
-
     /** 결과 (객체) */
     private Object rsltObj;
-
     /** 결과 (문자열) */
     private String rsltStr;
-
-    /**
-     * 생성자.
-     *
-     * @param msg
-     * @param cause
-     */
-    public BaseException(final String msg, final Throwable cause) {
-        super(msg, cause);
-    }
-
-    /**
-     * 생성자.
-     *
-     * @param msg
-     */
-    public BaseException(final String msg) {
-        super(msg);
-    }
 }
