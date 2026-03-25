@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.feature.jrnl.dream.service.strategy.JrnlDreamCach
 import io.nicheblog.dreamdiary.feature.jrnl.entry.service.strategy.JrnlEntryCacheEvictor;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.service.strategy.JrnlIntrptCacheEvictor;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.service.strategy.JrnlSumryCacheEvictor;
+import io.nicheblog.dreamdiary.feature.jrnl.sumry.service.strategy.JrnlSumryReviewCacheEvictor;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.service.strategy.JrnlTodoCacheEvictor;
 import io.nicheblog.dreamdiary.infrastructure.cache.service.CacheEvictor;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,7 @@ public class JrnlCacheEvictWorker {
     private final JrnlIntrptCacheEvictor jrnlIntrptCacheEvictor;
     private final JrnlTodoCacheEvictor jrnlTodoCacheEvictor;
     private final JrnlSumryCacheEvictor jrnlSumryCacheEvictor;
+    private final JrnlSumryReviewCacheEvictor jrnlSumryReviewCacheEvictor;
 
     // CacheEvictor를 매핑하는 Map
     private final Map<ContentType, CacheEvictor<JrnlCacheEvictEvent>> evictorMap = new HashMap<>();
@@ -54,6 +56,7 @@ public class JrnlCacheEvictWorker {
         evictorMap.put(ContentType.JRNL_INTRPT, jrnlIntrptCacheEvictor);
         evictorMap.put(ContentType.JRNL_TODO, jrnlTodoCacheEvictor);
         evictorMap.put(ContentType.JRNL_SUMRY, jrnlSumryCacheEvictor);
+        evictorMap.put(ContentType.JRNL_SUMRY_REVIEW, jrnlSumryReviewCacheEvictor);
     }
 
     /**
