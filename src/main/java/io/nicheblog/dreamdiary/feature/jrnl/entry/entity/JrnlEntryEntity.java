@@ -62,7 +62,16 @@ public class JrnlEntryEntity
 
     /** 제목 */
     @Column(name = "title")
-    protected String title;
+    private String title;
+
+    /** 글분류 코드 :: join을 제거하고 메모리 캐시 처리 */
+    @Column(name = "ctgr_cd", length = 50)
+    @Comment("저널 일기 글분류 코드 정보")
+    private String ctgrCd;
+
+    /** 글분류 코드 이름 :: join을 제거하고 메모리 캐시 처리 */
+    @Transient
+    private String ctgrNm;
 
     /* ----- */
 

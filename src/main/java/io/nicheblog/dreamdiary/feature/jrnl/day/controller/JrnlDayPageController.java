@@ -7,6 +7,8 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
+import io.nicheblog.dreamdiary.infrastructure.cd.service.CdLookupService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import lombok.Getter;
@@ -36,6 +38,8 @@ public class JrnlDayPageController
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
+    private final CdLookupService cdLookupService;
+
     /**
      * 저널 일자 (월간) 화면 조회
      * (사용자USER, 관리자MNGR만 접근 가능.)
@@ -57,14 +61,16 @@ public class JrnlDayPageController
 
         // URL 파라미터가 전부 존재한다면 그대로 페이지 렌더링
         if (searchParam.getYy() != null && searchParam.getMnth() != null) {
+            cdLookupService.setCdListToModel(Code.JRNL_ENTRY_CTGR_CD, model);
+
             return "/view/feature/jrnl/day/jrnl_day_monthly";
         }
 
-        // 요건 기본값 생성 (오늘 날짜 기반)
+        // 없으면 요건 기본값 생성 (오늘 날짜 기반)
         String defaultYy = searchParam.getYy() == null ? DateUtils.getCurrYyStr() : searchParam.getYy().toString();
         String defaultMnth = searchParam.getMnth() == null ? DateUtils.getCurrMnthStr() : searchParam.getMnth().toString();
 
-        // 없으면 redirect 로 URL 보정
+        // redirect 로 URL 보정
         return "redirect:" + Url.JRNL_DAY_MONTHLY + "?yy=" + defaultYy + "&mnth=" + defaultMnth;
     }
 
@@ -101,6 +107,7 @@ public class JrnlDayPageController
         model.addAttribute("menuLabel", SiteMenu.JRNL_DAY);
         model.addAttribute("pageNm", PageNm.DTL);
         model.addAttribute("stdrdDt", stdrdDt);
+        cdLookupService.setCdListToModel(Code.JRNL_ENTRY_CTGR_CD, model);
 
         return "/view/feature/jrnl/day/jrnl_day_view";
     }

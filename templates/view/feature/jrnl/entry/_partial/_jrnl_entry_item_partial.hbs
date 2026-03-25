@@ -5,18 +5,15 @@
 
 <script type="text/x-handlebars-template" id="jrnl_entry_item_partial" data-partial>
     <div class="d-flex align-items-center mt-2">
-        <div class="col col-md-1 w-5 text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder">
-            {{#ifYn entryResolvedYn}}
-                <span class="text-success"><@spring.message 'txt.diary'/></span>
-                <span class="position-relative d-inline-block">
-                  <i class="bi bi-book fs-4 text-success"></i>
-                </span>
-            {{else}}
-                <span><@spring.message 'txt.diary'/></span>
-                    <span class="position-relative d-inline-block">
-                    <i class="bi bi-book fs-4 pe-1"></i>
-                </span>
-            {{/ifYn}}
+        <div class="d-flex-align-center text-gray-700 fs-6 ps-1 ps-md-5 me-5 fw-bolder">
+            <span class="{{#ifYn entryResolvedYn}}text-success{{/ifYn}} me-2">
+                <@spring.message 'txt.diary'/>{{#if (exists ctgrCd)}}:{{/if}}
+                {{#if (exists ctgrCd)}}
+                    <span style=color:#287D94;">{{ctgrNm}}</span>
+                    <span class="text-muted fs-8 me-1">{{ctgrCd}}</span>
+                {{/if}}
+            </span>
+            <i class="bi bi-book fs-4 {{#ifYn entryResolvedYn}}text-success{{/ifYn}}"></i>
         </div>
         <div class="col-3 d-none d-md-flex align-items-center gap-2">
             {{> jrnl_diary_reg_btn_partial this}}

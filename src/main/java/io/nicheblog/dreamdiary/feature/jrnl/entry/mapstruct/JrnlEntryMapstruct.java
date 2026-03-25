@@ -47,6 +47,7 @@ public abstract class JrnlEntryMapstruct
     @Mapping(target = "jrnlDtWeekDay", expression = "java(entity.getJrnlDay() != null && entity.getJrnlDay().getJrnlDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJrnlDay().getJrnlDt()) : null)")
     @Mapping(target = "yy", source = "jrnlDay.yy")
     @Mapping(target = "mnth", source = "jrnlDay.mnth")
+    @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"JRNL_ENTRY_CTGR_CD\", entity.getCtgrCd()))")
     public abstract JrnlEntryDto toDto(final JrnlEntryEntity entity) throws Exception;
 
     /**
