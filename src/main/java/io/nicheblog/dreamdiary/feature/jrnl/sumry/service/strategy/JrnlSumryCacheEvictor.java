@@ -1,7 +1,6 @@
 package io.nicheblog.dreamdiary.feature.jrnl.sumry.service.strategy;
 
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
-import io.nicheblog.dreamdiary.feature.jrnl._shared.event.JrnlCacheEvictEvent;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.infrastructure.cache.service.CacheEvictor;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
@@ -22,19 +21,18 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Log4j2
 public class JrnlSumryCacheEvictor
-        implements CacheEvictor<JrnlCacheEvictEvent> {
+        implements CacheEvictor<JrnlCacheEvictParam> {
 
     /**
      * 해당 컨텐츠 타입 관련 캐시를 제거한다.
      *
-     * @param event 캐시 삭제 이벤트 객체
+     * @param param 캐시 삭제 파라미터 객체
      */
     @Override
     @Transactional
-    public void evict(final JrnlCacheEvictEvent event) throws Exception {
-        final ContentType refContentType = event.getContentType();
+    public void evict(final JrnlCacheEvictParam param) throws Exception {
+        final ContentType refContentType = ContentType.JRNL_SUMRY;
         try {
-            final JrnlCacheEvictParam param = event.getCacheEvictParam();
             final Integer postNo = param.getPostNo();
             // 목록 캐시 초기화
             EhCacheUtils.evictMyCacheAll("myJrnlSumryList");

@@ -1,12 +1,13 @@
 package io.nicheblog.dreamdiary.feature.clsf.tag.service;
 
 import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfKey;
+import io.nicheblog.dreamdiary.feature.clsf.tag.handler.JrnlTagCacheUpdtWorker;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagEntity;
-import io.nicheblog.dreamdiary.feature.clsf.tag.event.JrnlTagCacheUpdtEvent;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
-import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.global.util.TransactionHookUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -32,7 +33,7 @@ public class TagProcService {
 
     private final TagService tagService;
     private final TagContentService tagContentService;
-    private final ApplicationEventPublisherWrapper publisher;
+    private final JrnlTagCacheUpdtWorker jrnlTagCacheUpdtWorker;
 
     /**
      * 태그 처리.
@@ -92,7 +93,7 @@ public class TagProcService {
         if (yy != null && mnth != null) {
             final Map<Integer, Integer> tagCntChangeMap = entityList.stream()
                     .collect(Collectors.toMap(TagContentEntity::getRefTagNo, tagNo -> -1));
-            publisher.publishEvent(new JrnlTagCacheUpdtEvent(this, clsfKey, yy, mnth, tagCntChangeMap));
+            publishTagCacheUpdateAfterCommit(clsfKey, yy, mnth, tagCntChangeMap);
         }
     }
 
@@ -147,7 +148,25 @@ public class TagProcService {
         }
 
         if (!tagCntChangeMap.isEmpty() && yy != null && mnth != null) {
-            publisher.publishEvent(new JrnlTagCacheUpdtEvent(this, clsfKey, yy, mnth, tagCntChangeMap));
+            publishTagCacheUpdateAfterCommit(clsfKey, yy, mnth, tagCntChangeMap);
         }
+    }
+
+    /**
+     * 트랜잭션 commit 이후 태그 캐시 갱신 이벤트를 발행한다.
+     */
+    private void publishTagCacheUpdateAfterCommit(
+            final BaseClsfKey clsfKey,
+            final Integer yy,
+            final Integer mnth,
+            final Map<Integer, Integer> tagCntChangeMap
+    ) throws Exception {
+        final String cacheKey = AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth;
+        final String contentType = clsfKey.getContentType();
+        final Map<Integer, Integer> safeChangeMap = new HashMap<>(tagCntChangeMap);
+        TransactionHookUtils.runAfterCommitOrNow(
+                () -> jrnlTagCacheUpdtWorker.handle(contentType, cacheKey, safeChangeMap),
+                e -> log.error("Tag cache update failed [{}:{}:{}]: {}", contentType, yy, mnth, e.getMessage(), e)
+        );
     }
 }

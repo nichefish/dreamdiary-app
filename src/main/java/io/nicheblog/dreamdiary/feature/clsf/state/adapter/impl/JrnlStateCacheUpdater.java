@@ -27,8 +27,7 @@ public class JrnlStateCacheUpdater
     @Override
     public boolean supports(final ContentType contentType) {
         return switch (contentType) {
-            case JRNL_DAY,
-                 JRNL_ENTRY,
+            case JRNL_ENTRY,
                  JRNL_DIARY,
                  JRNL_DREAM,
                  JRNL_INTRPT -> true;
@@ -48,7 +47,9 @@ public class JrnlStateCacheUpdater
         updataCacheMap(toggle, cacheKey, isEnabled, contentType);
 
         final String evictCacheNm = this.getEvictCacheNm(contentType);
-        EhCacheUtils.evictCacheAll(evictCacheNm);
+        if (evictCacheNm != null) {
+            EhCacheUtils.evictCacheAll(evictCacheNm);
+        }
     }
 
     /**
@@ -87,7 +88,6 @@ public class JrnlStateCacheUpdater
      */
     private String getCacheMapNm(final ContentType contentType) {
         return switch (contentType) {
-            case JRNL_DAY -> "myDayStateMap";
             case JRNL_ENTRY -> "myEntryStateMap";
             case JRNL_DIARY -> "myDiaryStateMap";
             case JRNL_DREAM -> "myDreamStateMap";

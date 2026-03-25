@@ -82,6 +82,7 @@ public class JrnlCacheEvictParam {
     public static JrnlCacheEvictParam of(final JrnlDiaryPostDto dto) {
         return JrnlCacheEvictParam.builder()
                 .postNo(dto.getPostNo())
+                .jrnlDayNo(dto.getJrnlDayNo())
                 .jrnlEntryNo(dto.getJrnlEntryNo())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
@@ -97,6 +98,7 @@ public class JrnlCacheEvictParam {
     public static JrnlCacheEvictParam of(final JrnlDiaryDto dto) {
         return JrnlCacheEvictParam.builder()
                 .postNo(dto.getPostNo())
+                .jrnlDayNo(dto.getJrnlDayNo())
                 .jrnlEntryNo(dto.getJrnlEntryNo())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
@@ -127,6 +129,7 @@ public class JrnlCacheEvictParam {
     public static JrnlCacheEvictParam of(final JrnlIntrptDto dto) {
         return JrnlCacheEvictParam.builder()
                 .postNo(dto.getPostNo())
+                .jrnlDayNo(dto.getJrnlDayNo())
                 .jrnlDreamNo(dto.getJrnlDreamNo())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())

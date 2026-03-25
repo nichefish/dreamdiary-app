@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
 import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableService;
-import io.nicheblog.dreamdiary.feature.jrnl._shared.event.JrnlCacheEvictEvent;
+import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.entity.JrnlDreamEntity;
@@ -16,7 +16,6 @@ import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.repository.jpa.JrnlDreamRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.repository.mybatis.JrnlDreamMapper;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.spec.JrnlDreamSpec;
-import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -65,7 +64,7 @@ public class JrnlDreamService
         return this.mapstruct;
     }
 
-    private final ApplicationEventPublisherWrapper publisher;
+    private final JrnlCacheEvictWorker jrnlCacheEvictWorker;
 
     private final ApplicationContext context;
     private JrnlDreamService getSelf() {
@@ -121,7 +120,7 @@ public class JrnlDreamService
     @Override
     public void postRegist(final JrnlDreamDto updatedDto) throws Exception {
         // 관련 캐시 삭제
-        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DREAM));
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DREAM);
     }
 
     /**
@@ -148,7 +147,7 @@ public class JrnlDreamService
      */
     @Override
     public void preModify(final JrnlDreamPostDto modifyDto, final JrnlDreamEntity modifyEntity) throws Exception {
-        boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
+        final boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
         modifyDto.setIsIdxChanged(isIdxChanged);
     }
     
@@ -163,7 +162,7 @@ public class JrnlDreamService
         if (updatedDto.getIsIdxChanged()) this.getSelf().reorderIdx(updatedDto);
         
         // 관련 캐시 삭제
-        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DREAM));
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DREAM);
     }
 
     /**
@@ -177,7 +176,7 @@ public class JrnlDreamService
         this.getSelf().reorderIdx(deletedDto);
 
         // 관련 캐시 삭제
-        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DREAM));
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DREAM);
     }
 
     /**

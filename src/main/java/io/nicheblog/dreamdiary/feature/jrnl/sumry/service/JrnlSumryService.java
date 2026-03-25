@@ -3,18 +3,15 @@ package io.nicheblog.dreamdiary.feature.jrnl.sumry.service;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
-import io.nicheblog.dreamdiary.feature.jrnl._shared.event.JrnlCacheEvictEvent;
+import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.entity.JrnlSumryEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.mapstruct.JrnlSumryMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.repository.jpa.JrnlSumryRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.spec.JrnlSumrySpec;
-import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.cache.event.EhCacheEvictEvent;
-import io.nicheblog.dreamdiary.infrastructure.cache.handler.EhCacheEvictEventListner;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -56,9 +53,7 @@ public class JrnlSumryService
         return this.mapstruct;
     }
 
-    private final ApplicationEventPublisherWrapper publisher;
-
-    private final String JRNL_SUMRY = ContentType.JRNL_SUMRY.key;
+    private final JrnlCacheEvictWorker jrnlCacheEvictWorker;
 
     private final ApplicationContext context;
     private JrnlSumryService getSelf() {
@@ -153,7 +148,7 @@ public class JrnlSumryService
     @Override
     public void postModify(final JrnlSumryDto postDto, final JrnlSumryDto updatedDto) throws Exception {
         // 관련 캐시 삭제
-        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_SUMRY));
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_SUMRY);
     }
 
     /**
@@ -186,7 +181,6 @@ public class JrnlSumryService
      *
      * @param key 식별자
      * @return {@link boolean} -- 처리 성공 여부
-     * @see EhCacheEvictEventListner
      */
     @Transactional
     public boolean dreamCompt(final Integer key) throws Exception {
@@ -194,8 +188,14 @@ public class JrnlSumryService
         retrievedEntity.setDreamComptYn("Y");
         repository.save(retrievedEntity);
 
-        // 캐시 초기화
-        publisher.publishEvent(new EhCacheEvictEvent(this, key, JRNL_SUMRY));
+        // 관련 캐시 제거
+        jrnlCacheEvictWorker.evictAfterCommit(
+                JrnlCacheEvictParam.builder()
+                        .postNo(key)
+                        .yy(retrievedEntity.getYy())
+                        .build(),
+                ContentType.JRNL_SUMRY
+        );
 
         return true;
     }

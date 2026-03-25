@@ -1,11 +1,10 @@
 package io.nicheblog.dreamdiary.feature.clsf.comment.cache;
 
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.global.util.TransactionHookUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 
@@ -37,17 +36,10 @@ public class CommentCacheInvalidateWorker {
     public void invalidateAfterCommit(final Integer refPostNo, final ContentType refContentType) throws Exception {
         if (refPostNo == null || refContentType == null || ContentType.DEFAULT.equals(refContentType)) return;
 
-        if (TransactionSynchronizationManager.isSynchronizationActive() && TransactionSynchronizationManager.isActualTransactionActive()) {
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                @Override
-                public void afterCommit() {
-                    runSafely(refPostNo, refContentType);
-                }
-            });
-            return;
-        }
-
-        this.invalidate(refPostNo, refContentType);
+        TransactionHookUtils.runAfterCommitOrNow(
+                () -> this.invalidate(refPostNo, refContentType),
+                e -> log.error("Comment cache invalidation failed [{}:{}]: {}", refContentType, refPostNo, e.getMessage(), e)
+        );
     }
 
     /**
@@ -66,20 +58,5 @@ public class CommentCacheInvalidateWorker {
             return;
         }
         log.warn("No Comment cache invalidation strategy found for ContentType: {}", refContentType);
-    }
-
-    /**
-     * 캐시 무효화를 안전하게 실행한다.
-     * 주로 트랜잭션 afterCommit 콜백 내부에서 호출되며, 해당 시점에서 발생하는 예외는 트랜잭션에 영향을 줄 수 없으므로 예외를 외부로 전파하지 않고 로깅 후 종료한다.
-     *
-     * @param refPostNo      참조 대상 게시글 번호
-     * @param refContentType 콘텐츠 타입
-     */
-    private void runSafely(final Integer refPostNo, final ContentType refContentType) {
-        try {
-            this.invalidate(refPostNo, refContentType);
-        } catch (final Exception e) {
-            log.error("Comment cache invalidation failed [{}:{}]: {}", refContentType, refPostNo, e.getMessage(), e);
-        }
     }
 }

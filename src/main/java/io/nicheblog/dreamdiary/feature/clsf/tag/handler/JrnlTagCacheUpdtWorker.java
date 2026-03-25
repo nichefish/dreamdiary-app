@@ -1,8 +1,6 @@
 package io.nicheblog.dreamdiary.feature.clsf.tag.handler;
 
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.tag.event.JrnlTagCacheUpdtEvent;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagProcService;
 import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagService;
@@ -12,7 +10,6 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,25 +36,14 @@ public class JrnlTagCacheUpdtWorker {
     /**
      * 태그 처리
      *
-     * @param event JrnlTagCacheUpdtEvent
+     * @param contentType String
+     * @param cacheKey String
      */
     @Transactional
-    public void handle(JrnlTagCacheUpdtEvent event) throws Exception {
-        // 이벤트로부터 securityContext를 가져온다.
-        SecurityContextHolder.setContext(event.getSecurityContext());
-        
-        final Map<Integer, Integer> tagCntChangeMap = event.getTagCntChangeMap();
+    public void handle(final String contentType, final String cacheKey, final Map<Integer, Integer> tagCntChangeMap) throws Exception {
         if (MapUtils.isEmpty(tagCntChangeMap)) return;
 
-        final Integer yy = event.getYy();
-        final Integer mnth = event.getMnth();
-        final String cacheKey = AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth;
-        final String contentType = event.getClsfKey().getContentType();
-
-        // CountMap 캐시 업데이트 :: 메소드 분리
         updtSizedMapCache(contentType, cacheKey, tagCntChangeMap);
-
-        // SizedList 캐시 업데이트 :: 메소드 분리
         updtSizedListCache(contentType, cacheKey, tagCntChangeMap);
     }
 
@@ -68,18 +54,24 @@ public class JrnlTagCacheUpdtWorker {
      * @param cacheKey 캐시 키 (사용자별 YY-MM 식별자)
      * @param tagCntChangeMap 변경된 태그 개수 정보 (태그 ID → 증가/감소 값)
      */
-    private void updtSizedMapCache(final String contentType, final String cacheKey, final Map<Integer, Integer> tagCntChangeMap) {
+    private void updtSizedMapCache(
+            final String contentType,
+            final String cacheKey,
+            final Map<Integer, Integer> tagCntChangeMap
+    ) {
         final String cacheNm = this.getSizedTagMapCacheNmByContentType(contentType);
         final Cache cache = cacheManager.getCache(cacheNm);
         if (cache == null) return;
-        final ConcurrentHashMap<Integer, Integer> sizeMap = Objects.requireNonNullElseGet(cache.get(cacheKey, ConcurrentHashMap.class), ConcurrentHashMap::new);
 
-        // 한 번에 업데이트 (증가량/감소량 반영)
-        for (Map.Entry<Integer, Integer> entry : tagCntChangeMap.entrySet()) {
+        final ConcurrentHashMap<Integer, Integer> sizeMap = Objects.requireNonNullElseGet(
+                cache.get(cacheKey, ConcurrentHashMap.class),
+                ConcurrentHashMap::new
+        );
+
+        for (final Map.Entry<Integer, Integer> entry : tagCntChangeMap.entrySet()) {
             sizeMap.compute(entry.getKey(), (k, v) -> (v == null) ? entry.getValue() : v + entry.getValue());
         }
 
-        // 업데이트된 정보를 다시 캐시에 저장
         cache.put(cacheKey, sizeMap);
     }
 
@@ -93,20 +85,22 @@ public class JrnlTagCacheUpdtWorker {
     public void updtSizedListCache(final String contentType, final String cacheKey, final Map<Integer, Integer> tagCntChangeMap) throws Exception {
         final String sizedListCacheNm = this.getSizedTagListCacheNmByContentType(contentType);
         final Cache cache = cacheManager.getCache(sizedListCacheNm);
-        final List<TagDto> sizedTagList = Optional.ofNullable(cache.get(cacheKey, List.class)).map(list -> new ArrayList<>(list)).orElseGet(ArrayList::new);
+        if (cache == null) return;
 
-        // 기존 태그 목록에서 개수 변경 (Iterator 사용)
+        final List<TagDto> sizedTagList = Optional.ofNullable(cache.get(cacheKey, List.class))
+                .map(list -> new ArrayList<>(list))
+                .orElseGet(ArrayList::new);
+
         final Iterator<TagDto> iterator = sizedTagList.iterator();
         final Set<Integer> processedTags = new HashSet<>();
         while (iterator.hasNext()) {
             final TagDto tag = iterator.next();
             final Integer changeValue = tagCntChangeMap.get(tag.getTagNo());
-
             if (changeValue == null) continue;
 
             final int newSize = tag.getContentSize() + changeValue;
             if (newSize <= 0) {
-                iterator.remove(); // 안전한 삭제
+                iterator.remove();
             } else {
                 tag.setContentSize(newSize);
             }
@@ -119,7 +113,7 @@ public class JrnlTagCacheUpdtWorker {
             final Integer changeValue = entry.getValue();
 
             if (changeValue > 0 && !processedTags.contains(tagNo)) {
-                final TagDto tagDto = tagService.getDtlDto(tagNo); // 태그 정보 조회
+                final TagDto tagDto = tagService.getDtlDto(tagNo);
                 if (tagDto != null) {
                     tagDto.setContentSize(changeValue);
                     sizedTagList.add(tagDto);
@@ -131,9 +125,10 @@ public class JrnlTagCacheUpdtWorker {
         final String listCacheNm = this.getTagListCacheNmByContentType(contentType);
         final Cache listCache = cacheManager.getCache(listCacheNm);
         if (listCache != null) listCache.put(cacheKey, sizedTagList);
-        final Cache yyMnthlistCache = cacheManager.getCache(listCacheNm + "YyMnth");
-        if (yyMnthlistCache != null) yyMnthlistCache.put(cacheKey, sizedTagList);
-        // 기존 sizedList 캐시 초기화 (size에 따른 tagClass를 재계산해야 하므로)
+
+        final Cache yyMnthListCache = cacheManager.getCache(listCacheNm + "YyMnth");
+        if (yyMnthListCache != null) yyMnthListCache.put(cacheKey, sizedTagList);
+
         EhCacheUtils.evictCache(sizedListCacheNm, cacheKey);
     }
 
@@ -160,7 +155,7 @@ public class JrnlTagCacheUpdtWorker {
      * @param contentType 콘텐츠 유형 (String)
      * @return {@link String} -- 해당 콘텐츠 유형에 맞는 캐시 이름.
      */
-    private String getTagListCacheNmByContentType(final String  contentType) {
+    private String getTagListCacheNmByContentType(final String contentType) {
         if (ContentType.JRNL_DAY.key.equals(contentType)) {
             return "myJrnlDayTagList";
         } else if (ContentType.JRNL_DIARY.key.equals(contentType)) {
@@ -177,7 +172,7 @@ public class JrnlTagCacheUpdtWorker {
      * @param contentType 콘텐츠 유형 (String)
      * @return {@link String} -- 해당 콘텐츠 유형에 맞는 캐시 이름.
      */
-    private String getSizedTagListCacheNmByContentType(final String  contentType) {
+    private String getSizedTagListCacheNmByContentType(final String contentType) {
         if (ContentType.JRNL_DAY.key.equals(contentType)) {
             return "myJrnlDaySizedTagList";
         } else if (ContentType.JRNL_DIARY.key.equals(contentType)) {

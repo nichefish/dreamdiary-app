@@ -107,25 +107,4 @@ public class JrnlIntrptTagRestController
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withMap(tagGroupMap));
     }
-
-    /**
-     * 저널 일기 태그 상세 (해당 태그 꿈 목록) 조회 (Ajax)
-     * (사용자USER, 관리자MNGR만 접근 가능.)
-     *
-     * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @return {@link ResponseEntity} -- 처리 결과와 메시지
-     */
-    @GetMapping(value = {Url.JRNL_INTRPT_TAG})
-    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
-    @ResponseBody
-    public ResponseEntity<AjaxResponse> jrnlIntrptTagDtlAjax(
-            final JrnlIntrptSearchParam searchParam
-    ) throws Exception {
-
-        final List<JrnlIntrptDto> jrnlIntrptList = jrnlIntrptService.jrnlIntrptTagDtl(searchParam);
-        final boolean isSuccess = true;
-        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(jrnlIntrptList));
-    }
 }

@@ -2,11 +2,10 @@ package io.nicheblog.dreamdiary.feature.jrnl.day.service.strategy;
 
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.comment.cache.CommentCacheInvalidator;
-import io.nicheblog.dreamdiary.feature.jrnl._shared.event.JrnlCacheEvictEvent;
+import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayService;
-import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +23,7 @@ public class JrnlDayCommentCacheInvalidator
         implements CommentCacheInvalidator {
 
     private final JrnlDayService jrnlDayService;
-    private final ApplicationEventPublisherWrapper publisher;
+    private final JrnlCacheEvictWorker jrnlCacheEvictWorker;
 
     /**
      * 해당 ContentType을 이 전략이 처리할 수 있는지 여부를 반환한다.
@@ -47,6 +46,6 @@ public class JrnlDayCommentCacheInvalidator
     public void invalidate(final Integer refPostNo) throws Exception {
         final JrnlDayDto jrnlDayDto = jrnlDayService.getDtlDto(refPostNo);
         final JrnlCacheEvictParam param = JrnlCacheEvictParam.of(jrnlDayDto);
-        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, param, ContentType.JRNL_DAY));
+        jrnlCacheEvictWorker.evictAfterCommit(param, ContentType.JRNL_DAY);
     }
 }

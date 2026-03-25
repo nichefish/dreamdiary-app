@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
-import io.nicheblog.dreamdiary.feature.jrnl._shared.event.JrnlCacheEvictEvent;
+import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.entity.JrnlTodoEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.mapstruct.JrnlTodoMapstruct;
@@ -12,7 +12,6 @@ import io.nicheblog.dreamdiary.feature.jrnl.todo.model.JrnlTodoDto;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.model.JrnlTodoSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.repository.jpa.JrnlTodoRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.spec.JrnlTodoSpec;
-import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
@@ -52,7 +51,7 @@ public class JrnlTodoService
         return this.mapstruct;
     }
 
-    private final ApplicationEventPublisherWrapper publisher;
+    private final JrnlCacheEvictWorker jrnlCacheEvictWorker;
 
     private final ApplicationContext context;
     private JrnlTodoService getSelf() {
@@ -69,17 +68,6 @@ public class JrnlTodoService
     public List<JrnlTodoDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
 
-        return this.getSelf().getListDto(searchParam);
-    }
-
-    /**
-     * 특정 태그의 관련 일기 목록 조회 :: 캐시 처리
-     *
-     * @param searchParam 검색 조건이 담긴 파라미터 객체
-     * @return {@link List} -- 검색 결과 목록
-     */
-    @Cacheable(value="myJrnlTodoTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
-    public List<JrnlTodoDto> jrnlTodoTagDtl(final JrnlTodoSearchParam searchParam) throws Exception {
         return this.getSelf().getListDto(searchParam);
     }
 
@@ -103,7 +91,7 @@ public class JrnlTodoService
     @Override
     public void postRegist(final JrnlTodoDto updatedDto) throws Exception {
         // 관련 캐시 삭제
-        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_TODO));
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_TODO);
     }
 
     /**
@@ -114,7 +102,7 @@ public class JrnlTodoService
     @Override
     public void postModify(final JrnlTodoDto postDto, final JrnlTodoDto updatedDto) throws Exception {
         // 관련 캐시 삭제
-        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_TODO));
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_TODO);
     }
 
     /**
@@ -140,6 +128,6 @@ public class JrnlTodoService
     @Override
     public void postDelete(final JrnlTodoDto deletedDto) throws Exception {
         // 관련 캐시 삭제
-        publisher.publishEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_TODO));
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_TODO);
     }
 }
