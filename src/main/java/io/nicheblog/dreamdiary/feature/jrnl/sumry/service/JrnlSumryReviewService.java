@@ -33,7 +33,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Log4j2
 public class JrnlSumryReviewService
-        implements BaseClsfService<JrnlSumryReviewDto, JrnlSumryReviewDto, Integer, JrnlSumryReviewEntity> , BaseMultipartWritableService<JrnlSumryReviewDto, JrnlSumryReviewDto, Integer, JrnlSumryReviewEntity> {
+        implements BaseClsfService<JrnlSumryReviewDto, JrnlSumryReviewDto, Integer, JrnlSumryReviewEntity>, BaseMultipartWritableService<JrnlSumryReviewDto, JrnlSumryReviewDto, Integer, JrnlSumryReviewEntity> {
 
     @Getter
     private final JrnlSumryReviewRepository repository;
@@ -45,15 +45,15 @@ public class JrnlSumryReviewService
     public JrnlSumryReviewMapstruct getReadMapstruct() {
         return this.mapstruct;
     }
+
     public JrnlSumryReviewMapstruct getWriteMapstruct() {
         return this.mapstruct;
     }
 
     private final ApplicationEventPublisherWrapper publisher;
 
-    private final String JRNL_SUMRY = ContentType.JRNL_SUMRY.key;
-
     private final ApplicationContext context;
+
     private JrnlSumryReviewService getSelf() {
         return context.getBean(this.getClass());
     }
@@ -66,7 +66,6 @@ public class JrnlSumryReviewService
      */
     public List<JrnlSumryReviewDto> getMyListDto(final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
-
         return this.getSelf().getListDto(searchParam);
     }
 
@@ -77,7 +76,6 @@ public class JrnlSumryReviewService
      */
     @Override
     public void postRegist(final JrnlSumryReviewDto updatedDto) throws Exception {
-        // 관련 캐시 삭제
         publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_SUMRY_REVIEW));
     }
 
@@ -88,7 +86,18 @@ public class JrnlSumryReviewService
      */
     @Override
     public void postModify(final JrnlSumryReviewDto postDto, final JrnlSumryReviewDto updatedDto) throws Exception {
-        // 관련 캐시 삭제
-        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_SUMRY_REVIEW));
+        publisher.publishCustomEvent(
+                new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_SUMRY_REVIEW)
+        );
+    }
+
+    /**
+     * 삭제 후처리. (override)
+     *
+     * @param deletedDto - 등록된 객체
+     */
+    @Override
+    public void postDelete(final JrnlSumryReviewDto deletedDto) throws Exception {
+        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_SUMRY_REVIEW));
     }
 }

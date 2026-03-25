@@ -9,7 +9,11 @@ import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryReviewDto;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.model.JrnlTodoDto;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * JrnlCacheEvictParam
@@ -33,6 +37,8 @@ public class JrnlCacheEvictParam {
     private Integer jrnlEntryNo;
     /** 저널 꿈 번호 */
     private Integer jrnlDreamNo;
+    /** 저널 결산 번호 */
+    private Integer jrnlSumryNo;
     /** 년도 */
     private Integer yy;
     /** 월 */
@@ -81,7 +87,8 @@ public class JrnlCacheEvictParam {
                 .mnth(dto.getMnth())
                 .build();
     }
-        /**
+    
+    /**
      * 팩토리 메서드 패턴
      *
      * @param dto {@link JrnlDayDto}
@@ -148,6 +155,7 @@ public class JrnlCacheEvictParam {
     public static JrnlCacheEvictParam of(final JrnlSumryReviewDto dto) {
         return JrnlCacheEvictParam.builder()
                 .postNo(dto.getPostNo())
+                .jrnlSumryNo(dto.getJrnlSumryNo())
                 .yy(dto.getYy())
                 .build();
     }
