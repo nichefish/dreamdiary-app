@@ -1,14 +1,14 @@
 package io.nicheblog.dreamdiary.feature.clsf.comment.service;
 
+import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
+import io.nicheblog.dreamdiary.feature.clsf.comment.cache.CommentCacheInvalidateWorker;
 import io.nicheblog.dreamdiary.feature.clsf.comment.entity.CommentEntity;
-import io.nicheblog.dreamdiary.feature.clsf.comment.event.CommentCacheEvictEvent;
 import io.nicheblog.dreamdiary.feature.clsf.comment.mapstruct.CommentMapstruct;
 import io.nicheblog.dreamdiary.feature.clsf.comment.model.CommentDto;
 import io.nicheblog.dreamdiary.feature.clsf.comment.repository.jpa.CommentRepository;
 import io.nicheblog.dreamdiary.feature.clsf.comment.spec.CommentSpec;
 import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableService;
-import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.Getter;
@@ -48,7 +48,7 @@ public class CommentService
         return this.mapstruct;
     }
 
-    private final ApplicationEventPublisherWrapper publisher;
+    private final CommentCacheInvalidateWorker commentCacheInvalidateWorker;
 
     private final ApplicationContext context;
     private CommentService getSelf() {
@@ -92,7 +92,7 @@ public class CommentService
      */
     @Override
     public void postRegist(final CommentDto updatedDto) throws Exception {
-        publisher.publishCustomEvent(new CommentCacheEvictEvent(this, updatedDto.getRefPostNo(), updatedDto.getRefContentType()));
+        this.evictRelatedCache(updatedDto);
     }
 
     /**
@@ -102,7 +102,7 @@ public class CommentService
      */
     @Override
     public void postModify(final CommentDto postDto, final CommentDto updatedDto) throws Exception {
-        publisher.publishCustomEvent(new CommentCacheEvictEvent(this, updatedDto.getRefPostNo(), updatedDto.getRefContentType()));
+        this.evictRelatedCache(updatedDto);
     }
 
     /**
@@ -112,6 +112,16 @@ public class CommentService
      */
     @Override
     public void postDelete(final CommentDto deletedDto) throws Exception {
-        publisher.publishCustomEvent(new CommentCacheEvictEvent(this, deletedDto.getRefPostNo(), deletedDto.getRefContentType()));
+        this.evictRelatedCache(deletedDto);
+    }
+
+    /**
+     * 관련 캐시 초기화
+     *
+     * @param dto CommentDto
+     */
+    private void evictRelatedCache(final CommentDto dto) throws Exception {
+        final ContentType refContentType = ContentType.get(dto.getRefContentType());
+        commentCacheInvalidateWorker.invalidateAfterCommit(dto.getRefPostNo(), refContentType);
     }
 }
