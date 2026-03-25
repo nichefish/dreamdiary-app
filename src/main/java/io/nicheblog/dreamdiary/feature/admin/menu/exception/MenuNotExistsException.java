@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.admin.menu.exception;
 
 import io.nicheblog.dreamdiary.global.exception.BaseException;
+import lombok.experimental.StandardException;
 
 /**
  * MenuNotExistsException
@@ -10,25 +11,7 @@ import io.nicheblog.dreamdiary.global.exception.BaseException;
  *
  * @author nichefish
  */
+@StandardException
 public class MenuNotExistsException
         extends BaseException {
-
-    /**
-     * 생성자.
-     *
-     * @param msg 예외 메시지
-     * @param cause 이 예외의 원인
-     */
-    public MenuNotExistsException(final String msg, final Throwable cause) {
-        super(msg, cause);
-    }
-
-    /**
-     * 생성자.
-     *
-     * @param msg 예외 메시지
-     */
-    public MenuNotExistsException(final String msg) {
-        super(msg);
-    }
 }

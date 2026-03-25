@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.infrastructure.messaging.jandi.exception;
 
+import lombok.experimental.StandardException;
 import org.springframework.security.core.AuthenticationException;
 
 /**
@@ -10,17 +11,7 @@ import org.springframework.security.core.AuthenticationException;
  *
  * @author nichefish
  */
+@StandardException
 public class JandiException
         extends AuthenticationException {
-
-    public JandiException(
-            final String msg,
-            final Throwable cause
-    ) {
-        super(msg, cause);
-    }
-
-    public JandiException(final String msg) {
-        super(msg);
-    }
 }
