@@ -32,6 +32,14 @@ public interface DtlCdRepository
     List<DtlCdEntity> findByClCd(final String clCd);
 
     /**
+     * 분류코드 기준 상세코드 목록을 정렬 순서 기준으로 조회.
+     *
+     * @param clCd 분류코드.
+     * @return 상세코드 목록.
+     */
+    List<DtlCdEntity> findByClCdOrderByIdxAscDtlCdAsc(final String clCd);
+
+    /**
      * 분류코드 기준으로 사용중인 상세코드 목록을 조회.
      *
      * @param clCd 분류코드.
