@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
 import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableService;
-import io.nicheblog.dreamdiary.feature.jrnl._shared.event.JrnlCacheEvictEvent;
+import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.entity.JrnlIntrptEntity;
@@ -15,7 +15,6 @@ import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.repository.jpa.JrnlIntrptRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.repository.mybatis.JrnlIntrptMapper;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.spec.JrnlIntrptSpec;
-import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -64,7 +63,7 @@ public class JrnlIntrptService
         return this.mapstruct;
     }
     
-    private final ApplicationEventPublisherWrapper publisher;
+    private final JrnlCacheEvictWorker jrnlCacheEvictWorker;
 
     private final ApplicationContext context;
     private JrnlIntrptService getSelf() {
@@ -100,25 +99,6 @@ public class JrnlIntrptService
     }
 
     /**
-     * 특정 태그의 관련 일기 목록 조회 :: 캐시 처리
-     *
-     * @param searchParam 검색 조건이 담긴 파라미터 객체
-     * @return {@link List} -- 검색 결과 목록
-     */
-    @Cacheable(value="myJrnlIntrptTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
-    @SuppressWarnings("unchecked")
-    public List<JrnlIntrptDto> jrnlIntrptTagDtl(final JrnlIntrptSearchParam searchParam) throws Exception {
-        final List<JrnlIntrptDto> jrnlIntrptList = this.getSelf().getListDto(searchParam);
-        // 공휴일 정보 세팅
-        final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
-        for (final JrnlIntrptDto jrnlIntrpt : jrnlIntrptList) {
-            setHldyInfo(jrnlIntrpt, hldyMap);
-        }
-
-        return jrnlIntrptList;
-    }
-
-    /**
      * 등록 전처리. (override)
      *
      * @param registDto 등록할 객체
@@ -138,7 +118,7 @@ public class JrnlIntrptService
     @Override
     public void postRegist(final JrnlIntrptDto updatedDto) throws Exception {
         // 관련 캐시 삭제
-        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_INTRPT));
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_INTRPT);
     }
     
     /**
@@ -149,7 +129,7 @@ public class JrnlIntrptService
      */
     @Override
     public void preModify(final JrnlIntrptDto modifyDto, final JrnlIntrptEntity modifyEntity) throws Exception {
-        boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
+        final boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
         modifyDto.setIsIdxChanged(isIdxChanged);
     }
 
@@ -164,7 +144,7 @@ public class JrnlIntrptService
         if (updatedDto.getIsIdxChanged()) this.getSelf().reorderIdx(updatedDto);
 
         // 관련 캐시 삭제
-        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_INTRPT));
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_INTRPT);
     }
 
     /**
@@ -194,7 +174,7 @@ public class JrnlIntrptService
 
         // 태그 처리 :: 메인 로직과 분리
         // 관련 캐시 삭제
-        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_INTRPT));
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_INTRPT);
     }
 
     /**

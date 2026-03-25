@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.feature.jrnl.entry.service;
 
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
-import io.nicheblog.dreamdiary.feature.jrnl._shared.event.JrnlCacheEvictEvent;
+import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.entity.JrnlEntryEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.mapstruct.JrnlEntryMapstruct;
@@ -11,8 +11,6 @@ import io.nicheblog.dreamdiary.feature.jrnl.entry.repository.jpa.JrnlEntryReposi
 import io.nicheblog.dreamdiary.feature.jrnl.entry.repository.mybatis.JrnlEntryMapper;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.spec.JrnlEntrySpec;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptDto;
-import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
-import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -57,7 +55,7 @@ public class JrnlEntryService
     }
 
     private final JrnlEntryMapper jrnlEntryMapper;
-    private final ApplicationEventPublisherWrapper publisher;
+    private final JrnlCacheEvictWorker jrnlCacheEvictWorker;
 
     private final ApplicationContext context;
     private JrnlEntryService getSelf() {
@@ -87,7 +85,7 @@ public class JrnlEntryService
     @Override
     public void postRegist(final JrnlEntryDto updatedDto) throws Exception {
         // 관련 캐시 삭제
-        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_ENTRY));
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_ENTRY);
     }
     
     /**
@@ -98,7 +96,7 @@ public class JrnlEntryService
      */
     @Override
     public void preModify(final JrnlEntryDto modifyDto, final JrnlEntryEntity modifyEntity) throws Exception {
-        boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
+        final boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
         modifyDto.setIsIdxChanged(isIdxChanged);
     }
     
@@ -113,7 +111,7 @@ public class JrnlEntryService
         if (updatedDto.getIsIdxChanged()) this.getSelf().reorderIdx(updatedDto);
 
         // 관련 캐시 삭제
-        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_ENTRY));
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_ENTRY);
     }
 
     /**
@@ -127,7 +125,7 @@ public class JrnlEntryService
         this.getSelf().reorderIdx(deletedDto);
 
         // 관련 캐시 삭제
-        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_ENTRY));
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_ENTRY);
     }
 
     /**
@@ -154,7 +152,6 @@ public class JrnlEntryService
         int idx = 1;
         for (final JrnlEntryDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictCache("myJrnlEntryDtlDto", e.getPostNo());
         }
 
         jrnlEntryMapper.batchUpdateIdx(list);
@@ -194,7 +191,6 @@ public class JrnlEntryService
         int idx = 1;
         for (final JrnlEntryDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictCache("myJrnlEntryDtlDto", e.getPostNo());
         }
 
         jrnlEntryMapper.batchUpdateIdx(list);

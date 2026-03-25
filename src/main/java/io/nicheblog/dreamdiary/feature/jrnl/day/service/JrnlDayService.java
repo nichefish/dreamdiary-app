@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
-import io.nicheblog.dreamdiary.feature.jrnl._shared.event.JrnlCacheEvictEvent;
+import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.state.JrnlStateMaps;
 import io.nicheblog.dreamdiary.feature.jrnl.day.entity.JrnlDayEntity;
@@ -16,7 +16,6 @@ import io.nicheblog.dreamdiary.feature.jrnl.day.repository.mybatis.JrnlDayMapper
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.helper.JrnlDayViewHelper;
 import io.nicheblog.dreamdiary.feature.jrnl.day.spec.JrnlDaySpec;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiaryDto;
-import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
@@ -61,7 +60,7 @@ public class JrnlDayService
     }
 
     private final JrnlDayMapper jrnlDayMapper;
-    private final ApplicationEventPublisherWrapper publisher;
+    private final JrnlCacheEvictWorker jrnlCacheEvictWorker;
 
     private final ApplicationContext context;
     private JrnlDayService getSelf() {
@@ -243,7 +242,7 @@ public class JrnlDayService
     @Override
     public void postRegist(final JrnlDayDto updatedDto) throws Exception {
         // 관련 캐시 삭제
-        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DAY));
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DAY);
     }
 
     /**
@@ -301,7 +300,7 @@ public class JrnlDayService
     @Override
     public void postModify(final JrnlDayDto postDto, final JrnlDayDto updatedDto) throws Exception {
         // 관련 캐시 삭제
-        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DAY));
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DAY);
     }
 
     /**
@@ -331,7 +330,7 @@ public class JrnlDayService
     @Override
     public void postDelete(final JrnlDayDto deletedDto) throws Exception {
         // 관련 캐시 삭제
-        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DAY));
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DAY);
     }
 
     /**

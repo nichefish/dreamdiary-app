@@ -12,11 +12,13 @@ import io.nicheblog.dreamdiary.feature.clsf.state.repository.jpa.StateRepository
 import io.nicheblog.dreamdiary.feature.clsf.state.spec.StateSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
+import io.nicheblog.dreamdiary.global.util.TransactionHookUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -60,6 +62,7 @@ public class StateService
      * @param stateToggle StateToggleDto
      * @return ServiceResponse
      */
+    @Transactional
     public ServiceResponse toggle(final StateToggleDto stateToggle) throws Exception {
 
         final StateEntity existingEntity = this.getSelf().getDtlEntity(stateToggle);
@@ -74,9 +77,7 @@ public class StateService
         // 의미 전이 규칙 처리
         this.applyDerivedStates(stateToggle, isEnabled);
         // 캐시 처리
-        if (stateToggle.getCacheContext() != null) {
-            doCache(stateToggle, isEnabled);
-        }
+        this.scheduleCacheUpdateAfterCommit(stateToggle, isEnabled);
 
         return ServiceResponse.builder()
                 .rslt(true)
@@ -121,11 +122,28 @@ public class StateService
                     repository.save(StateEntity.of(collapsedToggle));
                 }
                 // 캐시 처리
-                if (stateToggle.getCacheContext() != null) {
-                    doCache(collapsedToggle, true);
-                }
+                this.scheduleCacheUpdateAfterCommit(collapsedToggle, true);
             }
         }
+    }
+
+    /**
+     * commit 이후 상태 캐시를 반영한다.
+     */
+    private void scheduleCacheUpdateAfterCommit(final StateToggleDto stateToggle, final Boolean isEnabled) throws Exception {
+        if (stateToggle.getCacheContext() == null) return;
+
+        TransactionHookUtils.runAfterCommitOrNow(
+                () -> doCache(stateToggle, isEnabled),
+                e -> log.error(
+                        "State cache update failed [{}:{}:{}]: {}",
+                        stateToggle.getContentType(),
+                        stateToggle.getPostNo(),
+                        stateToggle.getStateCd(),
+                        e.getMessage(),
+                        e
+                )
+        );
     }
 
     /**

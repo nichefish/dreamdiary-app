@@ -4,14 +4,13 @@ import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
 import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableService;
-import io.nicheblog.dreamdiary.feature.jrnl._shared.event.JrnlCacheEvictEvent;
+import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.entity.JrnlSumryReviewEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.mapstruct.JrnlSumryReviewMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryReviewDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.repository.jpa.JrnlSumryReviewRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.spec.JrnlSumryReviewSpec;
-import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +49,7 @@ public class JrnlSumryReviewService
         return this.mapstruct;
     }
 
-    private final ApplicationEventPublisherWrapper publisher;
+    private final JrnlCacheEvictWorker jrnlCacheEvictWorker;
 
     private final ApplicationContext context;
 
@@ -76,7 +75,7 @@ public class JrnlSumryReviewService
      */
     @Override
     public void postRegist(final JrnlSumryReviewDto updatedDto) throws Exception {
-        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_SUMRY_REVIEW));
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_SUMRY_REVIEW);
     }
 
     /**
@@ -86,9 +85,7 @@ public class JrnlSumryReviewService
      */
     @Override
     public void postModify(final JrnlSumryReviewDto postDto, final JrnlSumryReviewDto updatedDto) throws Exception {
-        publisher.publishCustomEvent(
-                new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_SUMRY_REVIEW)
-        );
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_SUMRY_REVIEW);
     }
 
     /**
@@ -98,6 +95,6 @@ public class JrnlSumryReviewService
      */
     @Override
     public void postDelete(final JrnlSumryReviewDto deletedDto) throws Exception {
-        publisher.publishCustomEvent(new JrnlCacheEvictEvent(this, JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_SUMRY_REVIEW));
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_SUMRY_REVIEW);
     }
 }
