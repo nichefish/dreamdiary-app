@@ -7,7 +7,6 @@ import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.entity.JrnlEntryEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.mapstruct.JrnlEntryMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.model.JrnlEntryDto;
-import io.nicheblog.dreamdiary.feature.jrnl.entry.model.JrnlEntrySearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.repository.jpa.JrnlEntryRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.repository.mybatis.JrnlEntryMapper;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.spec.JrnlEntrySpec;
@@ -18,7 +17,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.cache.annotation.Cacheable;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +38,9 @@ import java.util.Objects;
 @Log4j2
 public class JrnlEntryService
         implements BaseClsfService<JrnlEntryDto, JrnlEntryDto, Integer, JrnlEntryEntity> {
+
+    /** 동일 일자 내 첫 항목 등록 시 기본 카테고리 코드 */
+    private static final String FIRST_ENTRY_CTGR_CD = "SUMMARY";
 
     @Getter
     private final JrnlEntryRepository repository;
@@ -63,17 +65,6 @@ public class JrnlEntryService
     }
 
     /**
-     * 특정 태그의 관련 항목 목록 조회 :: 캐시 처리
-     *
-     * @param searchParam 검색 조건이 담긴 파라미터 객체
-     * @return {@link List} -- 검색 결과 목록
-     */
-    @Cacheable(value="myJrnlEntryTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
-    public List<JrnlEntryDto> jrnlEntryTagDtl(final JrnlEntrySearchParam searchParam) throws Exception {
-        return this.getSelf().getListDto(searchParam);
-    }
-
-    /**
      * 등록 전처리. (override)
      *
      * @param registDto 등록할 객체
@@ -81,7 +72,10 @@ public class JrnlEntryService
     @Override
     public void preRegist(final JrnlEntryDto registDto) throws Exception {
         // 인덱스(정렬순서) 처리
-        final Integer lastIndex = repository.findLastIndexByJrnlDay(registDto.getJrnlDayNo()).orElse(0);
+        final int lastIndex = repository.findLastIndexByJrnlDay(registDto.getJrnlDayNo()).orElse(0);
+        if (lastIndex == 0 && StringUtils.isBlank(registDto.getCtgrCd())) {
+            registDto.setCtgrCd(FIRST_ENTRY_CTGR_CD);
+        }
         registDto.setIdx(lastIndex + 1);
     }
 

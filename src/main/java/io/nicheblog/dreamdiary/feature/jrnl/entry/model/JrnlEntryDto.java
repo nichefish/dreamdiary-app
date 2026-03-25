@@ -42,10 +42,14 @@ public class JrnlEntryDto
     private String contentType = ContentType.JRNL_ENTRY.key;
 
     /** 제목 */
-    protected String title;
+    private String title;
+    /** 글분류 코드 :: join을 제거하고 메모리 캐시 처리 */
+    private String ctgrCd;
+    /** 글분류 코드 이름 :: join을 제거하고 메모리 캐시 처리 */
+    private String ctgrNm;
 
     /** 마크다운 처리된 내용 */
-    protected String markdownCn;
+    private String markdownCn;
 
     /** 인덱스 변경 여부 */
     @Builder.Default

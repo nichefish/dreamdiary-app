@@ -48,6 +48,18 @@
             </li>
         </ul>
         <div class="d-flex align-items-end mb-2">
+            <div class="mx-3">
+                <label for="entryCtgrFilter" class="me-2 text-muted">ENTRY CTGR</label>
+                <select id="entryCtgrFilter" class="form-select form-select-sm d-inline-block w-auto"
+                        multiple size="3"
+                        data-bs-toggle="tooltip" data-bs-placement="top" title="복수 선택 가능 (Ctrl/Cmd + 클릭)"
+                        onchange="dF.JrnlDay.changeEntryCtgr();">
+                    <option value="__NONE__">카테고리 없음</option>
+                    <#list JRNL_ENTRY_CTGR_CD![] as ctgr>
+                        <option value="${ctgr.dtlCd!}">[${ctgr.dtlCdNm!}]</option>
+                    </#list>
+                </select>
+            </div>
             <div class="mx-3"
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="일기 토글">
                 <label for="toggleDiaries" class="me-2 text-muted cursor-help">DIARIES</label>

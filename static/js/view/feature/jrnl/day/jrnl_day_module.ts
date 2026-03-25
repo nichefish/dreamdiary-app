@@ -12,6 +12,7 @@ dF.JrnlDay = (function(): dfModule {
         tagTagify: null,
         metaTagify: null,
         currentSearchParams: null,
+        ENTRY_CTGR_NONE: "__NONE__",
 
         /**
          * initializes module.
@@ -114,13 +115,28 @@ dF.JrnlDay = (function(): dfModule {
             const showDiaries = cF.util.getUrlParam("showDiaries") !== "false";
             const showDreams = cF.util.getUrlParam("showDreams") !== "false";
             const showTagCloud = cF.util.getUrlParam("showTagCloud") !== "false";
+            const rawEntryCtgr = cF.util.getUrlParam("entryCtgrCds") ?? cF.util.getUrlParam("entryCtgrCd") ?? "";
+            const entryCtgrCds: string[] = dF.JrnlDay.parseEntryCtgrCds(rawEntryCtgr);
 
-            dF.JrnlDay.currentSearchParams = { "viewType": "list", yy, mnth, showDiaries, showDreams, showTagCloud };
+            dF.JrnlDay.currentSearchParams = { "viewType": "list", yy, mnth, showDiaries, showDreams, showTagCloud, entryCtgrCds };
 
             // DOM에 상태 반영
             $("#toggleDiaries").prop("checked", showDiaries);
             $("#toggleDreams").prop("checked", showDreams);
             $("#toggleTagCloud").prop("checked", showTagCloud);
+            $("#entryCtgrFilter").val(entryCtgrCds);
+        },
+
+        /**
+         * URL 파라미터를 다중 카테고리 배열로 파싱
+         */
+        parseEntryCtgrCds: function(rawValue: string): string[] {
+            if (cF.util.isEmpty(rawValue)) return [];
+
+            return rawValue
+                .split(",")
+                .map((value: string): string => value.trim())
+                .filter((value: string): boolean => value.length > 0);
         },
 
         /**
@@ -147,6 +163,44 @@ dF.JrnlDay = (function(): dfModule {
         },
 
         /**
+         * 저널 항목 카테고리 필터 변경
+         */
+        changeEntryCtgr: function(): void {
+            if (!dF.JrnlDay.currentSearchParams) dF.JrnlDay.initSearchParams();
+
+            const selectedCtgrCds: string[] = ($("#entryCtgrFilter").val() as string[] | null) ?? [];
+            dF.JrnlDay.currentSearchParams.entryCtgrCds = selectedCtgrCds;
+            dF.JrnlDay.yyMnthListAjax();
+        },
+
+        /**
+         * 저널 항목 카테고리 필터 적용
+         */
+        filterByEntryCtgr: function(list: Record<string, any>[]): Record<string, any>[] {
+            if (!Array.isArray(list) || list.length === 0) return list;
+
+            const selectedCtgrCds: string[] = dF.JrnlDay.currentSearchParams?.entryCtgrCds ?? [];
+            if (!Array.isArray(selectedCtgrCds) || selectedCtgrCds.length === 0) return list;
+
+            const hasNoneCategory: boolean = selectedCtgrCds.includes(dF.JrnlDay.ENTRY_CTGR_NONE);
+            const ctgrSet: Set<string> = new Set(
+                selectedCtgrCds.filter((ctgrCd: string): boolean => ctgrCd !== dF.JrnlDay.ENTRY_CTGR_NONE)
+            );
+
+            return list.map((day: Record<string, any>): Record<string, any> => {
+                const jrnlEntryList: Record<string, any>[] = Array.isArray(day.jrnlEntryList) ? day.jrnlEntryList : [];
+                const filteredEntryList: Record<string, any>[] = jrnlEntryList.filter((entry: Record<string, any>): boolean => {
+                    const ctgrCd: string = (entry?.ctgrCd ?? "").trim();
+                    if (cF.util.isEmpty(ctgrCd)) return hasNoneCategory;
+
+                    return ctgrSet.has(ctgrCd);
+                });
+
+                return { ...day, jrnlEntryList: filteredEntryList };
+            });
+        },
+
+        /**
          * 년도-월 목록 조회 (Ajax)
          */
         yyMnthListAjax: function(): void {
@@ -169,19 +223,20 @@ dF.JrnlDay = (function(): dfModule {
                     return;
                 }
                 const { rsltList } = res;
+                const filteredList: Record<string, any>[] = dF.JrnlDay.filterByEntryCtgr(rsltList);
                 // 정렬 처리
                 const sortStr: string = $("#jrnl_aside #sort").val() as string;
                 if (sortStr === "ASC") {
                     $("#jrnl_aside #sortIcon").removeClass("bi-sort-numeric-up-alt").addClass("bi-sort-numeric-down");
                 } else {
                     $("#jrnl_aside #sortIcon").removeClass("bi-sort-numeric-down").addClass("bi-sort-numeric-up-alt");
-                    if (cF.util.isNotEmpty(rsltList)) rsltList.reverse();
+                    if (cF.util.isNotEmpty(filteredList)) filteredList.reverse();
                 }
                 $("#jrnl_diary_list_div").empty();
                 $("#jrnl_dream_list_div").empty();
                 cF.ui.closeModal();
                 const renderModel = {
-                    list: rsltList,
+                    list: filteredList,
                     showDiaries: dF.JrnlDay.currentSearchParams.showDiaries,
                     showDreams: dF.JrnlDay.currentSearchParams.showDreams
                 };

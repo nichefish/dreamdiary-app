@@ -34,6 +34,9 @@
         <div class="col-lg-2">
             <select name="ctgrCd" id="ctgrCd" class="form-select form-select-solid">
                 <option value="">--글분류--</option>
+                <#list JRNL_ENTRY_CTGR_CD![] as ctgr>
+                    <option value="${ctgr.dtlCd!}" {{#if (equals ctgrCd "${ctgr.dtlCd!}")}}selected{{/if}}>[${ctgr.dtlCdNm!}]</option>
+                </#list>
             </select>
         </div>
         <div class="col-lg-{{#if (exists postNo)}}9{{else}}10{{/if}}">
