@@ -70,43 +70,49 @@
 </div>
 <!--end::Advance form-->
 
-<div class="card post">
+<#--filter status-->
+<#include "/view/feature/jrnl/day/_filter/_jrnl_day_filter_status.ftlh">
+<div class="d-flex flex-column-fluid justify-content-between">
+    <#--begin::Tab-->
+    <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">
+        <li class="nav-item">
+            <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
+               onclick="Page.changeView(Url.JRNL_DAY_MONTHLY);">
+                <span class="nav-icon">
+                    <i class="bi bi-people"></i>
+                </span>
+                <span class="nav-text"><@spring.message 'txt.jrnl.day.view.list'/></span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link px-6 cursor-pointer active" data-bs-toggle="tab"
+               onclick="Page.changeView(Url.JRNL_DAY_CAL);">
+                <span class="nav-icon">
+                    <i class="bi bi-sort-down-alt"></i>
+                </span>
+                <span class="nav-text"><@spring.message 'txt.jrnl.day.view.cal'/></span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
+               onclick="Page.changeView(Url.JRNL_DAY_META_VIEW);">
+                <span class="nav-icon">
+                    <i class="bi bi-people"></i>
+                </span>
+                <span class="nav-text"><@spring.message 'txt.jrnl.day.view.meta'/></span>
+            </a>
+        </li>
+    </ul>
+    <#--keyword search (popup)-->
+    <#include "/view/feature/jrnl/day/_filter/_jrnl_day_keyword_search.ftlh">
+</div>
+<!--begin::Card-->
+<div class="card post" style="margin-top: 0 !important;">
     <#--begin::Card header-->
     <div class="card-header min-h-auto mb-7">
-        <#--begin::Tab-->
-        <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">
-            <li class="nav-item">
-                <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
-                   onclick="Page.changeView(Url.JRNL_DAY_MONTHLY);">
-                    <span class="nav-icon">
-                        <i class="bi bi-people"></i>
-                    </span>
-                    <span class="nav-text">목록 VIEW</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link px-6 cursor-pointer active" data-bs-toggle="tab"
-                   onclick="Page.changeView(Url.JRNL_DAY_CAL);">
-                    <span class="nav-icon">
-                        <i class="bi bi-sort-down-alt"></i>
-                    </span>
-                    <span class="nav-text">달력 VIEW</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
-                   onclick="Page.changeView(Url.JRNL_DAY_META_VIEW);">
-                    <span class="nav-icon">
-                        <i class="bi bi-people"></i>
-                    </span>
-                    <span class="nav-text">메타 VIEW</span>
-                </a>
-            </li>
-        </ul>
+        <!-- 태그 헤더 :: 파일 분리 -->
+        <#include "/view/feature/jrnl/day/tag/_jrnl_day_tag_header.ftlh">
     </div>
-
-    <!-- 태그 헤더 :: 파일 분리 -->
-    <#include "/view/feature/jrnl/day/tag/_jrnl_day_tag_header.ftlh">
 
     <#--begin::Card body-->
     <div class="card-body">

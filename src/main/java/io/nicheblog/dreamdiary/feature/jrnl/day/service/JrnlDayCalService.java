@@ -17,7 +17,6 @@ import io.nicheblog.dreamdiary.global.intrfc.model.fullcalendar.BaseCalDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +36,7 @@ import java.util.List;
 @Log4j2
 public class JrnlDayCalService {
 
-    private final JrnlDayService JrnlDayService;
+    private final JrnlDayQueryService jrnlDayQueryService;
     private final SchdulCalService schdulCalService;
 
     private final JrnlDayCalMapstruct dayCalMapstruct = JrnlDayCalMapstruct.INSTANCE;
@@ -56,11 +55,10 @@ public class JrnlDayCalService {
      * @return {@link List} -- 조회된 일정 및 휴가 목록
      */
     public List<BaseCalDto> getSchdulTotalCalList(final JrnlDaySearchParam searchParam) throws Exception {
-        final List<BaseCalDto> totalSchdulCalList = new ArrayList<>();
 
         // 저널 일자 복록 조회
         final List<BaseCalDto> jrnlDayCalList = this.getSelf().getMyCalListDto(searchParam);
-        totalSchdulCalList.addAll(jrnlDayCalList);
+        final List<BaseCalDto> totalSchdulCalList = new ArrayList<>(jrnlDayCalList);
 
         // 일정(공휴일, 행사) 달력 목록 검색
         final List<BaseCalDto> hldyCalList = schdulCalService.getHldyCalList(searchParam);
@@ -75,10 +73,9 @@ public class JrnlDayCalService {
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
      */
-    @Cacheable(value="myJrnlDayCalList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getYy() + \"_\" + #searchParam.getMnth()")
     public List<BaseCalDto> getMyCalListDto(final JrnlDaySearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
-        final List<JrnlDayDto> myJrnlDayList = JrnlDayService.getMyListDtoByYyMnthWithHldy(AuthUtils.getLgnUserId(), searchParam);
+        final List<JrnlDayDto> myJrnlDayList = jrnlDayQueryService.getMyYyMnthListDtoEnriched(searchParam);
 
         final List<BaseCalDto> jrnlCalEventList = new ArrayList<>();
         for (final JrnlDayDto jrnlDay: myJrnlDayList) {

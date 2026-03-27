@@ -113,7 +113,7 @@ dF.JrnlDream = (function(): dfModule {
          * 키워드 검색 팝업 호출
          */
         searchPopup: function(): void {
-            const keyword: string = (document.querySelector("#jrnl_aside #dreamKeyword") as HTMLInputElement)?.value;
+            const keyword: string = (document.querySelector("#dreamSearchKeyword") as HTMLInputElement)?.value;
             const url: string = `${Url.JRNL_DREAM_SEARCH}?searchKeywords=${keyword}`;
             const popupNm: string = "저널 꿈 검색";
             const options: string = 'width=1960,height=1440,top=0,left=270';

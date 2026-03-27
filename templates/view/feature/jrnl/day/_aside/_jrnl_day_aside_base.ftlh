@@ -1,5 +1,5 @@
 <#--
- * 저널 일자(jrnl_day) : ASIDE (우측 사이드바)
+ * jrnl_day: aside (right sidebar)
  * @included_in : jrnl_day_page.ftlh
  -->
 
@@ -14,7 +14,7 @@
      data-kt-drawer-toggle="#kt_app_aside_toggle">
 
     <#--begin::Aside wrapper-->
-    <div id="kt_app_aside_wrapper" class="hover-scroll-y px-5 mx-5 my-5"
+    <div id="kt_app_aside_wrapper" class="hover-scroll-y ps-5 pe-2 mx-5 my-5"
          data-kt-scroll="true"
          data-kt-scroll-activate="true"
          data-kt-scroll-height="auto"
@@ -28,7 +28,7 @@
             <#--begin::Card header-->
             <div id="jrnl_aside_header" class="card-header min-h-auto mb-5">
                 <h3 class="card-title text-gray-900 fw-bold fs-3">
-                    <i class="bi bi-filter fs-2 me-1"></i> Filters
+                    <i class="bi bi-filter fs-2 me-1"></i> <@spring.message 'txt.jrnl.day.filter'/>
                 </h3>
                 <#--begin::Toolbar-->
                 <div class="card-toolbar">
@@ -44,98 +44,50 @@
             <div id="jrnl_aside" class="card-body">
                 <input type="hidden" name="sort" id="sort">
 
-                <#--begin::row-->
-                <div class="mb-4 d-flex-between gap-4">
-                    <div class="col">
-                        <span class="text-gray-900 fs-h6 fw-bold d-inline-block ms-6 mb-1"><@spring.message 'txt.yy'/></span>
-                        <div class="d-flex">
-                            <div class="d-flex align-items-center me-2">
-                                <i id="left" class="bi bi-caret-left fs-2 cursor-pointer"
-                                   data-bs-toggle="tooltip" data-bs-placement="left" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.aside-prev'/>"></i>
-                            </div>
-                            <select name="yy" id="yy" class="form-select" aria-label="Select example"
-                                    onchange="dF.JrnlDayAside.changeYy();">
-                                <option value="">----</option>
-                                <#assign currYy = DateUtils.getCurrYy()?number />
-                                <#assign startYy = 2010 />
-                                <#list currYy..startYy as year>
-                                    <option value="${year}"><#if year == 2010>~</#if>${year}</option>
-                                </#list>
-                            </select>
+                <div class="d-flex flex-column gap-4">
+                    <!-- 년월 필터 부분 분리 -->
+                    <#include "/view/feature/jrnl/day/_aside/_jrnl_day_aside_yy_mnth_section.ftlh">
+                    <!-- separator -->
+                    <div class="separator"></div>
+                    <!-- 태그클라우드 필터 -->
+                    <div class="d-flex flex-column gap-2 px-2">
+                        <div class="d-flex align-items-center justify-content-between"
+                             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.aside-tagcloud-toggle'/>">
+                            <label for="toggleTagCloud" class="text-muted cursor-help mb-0">TAGCLOUD</label>
+                            <input type="checkbox" id="toggleTagCloud" class="form-check-input cursor-pointer m-0" onclick="dF.JrnlDay.toggleParam();" checked>
                         </div>
                     </div>
-                    <div class="col">
-                        <span class="text-gray-900 fs-h6 fw-bold d-inline-block ms-2 mb-1">월</span>
-                        <button type="button" class="btn btn-sm btn-outline btn-light-info blink-slow ms-6 ps-2 pe-1 py-0"
-                                onclick="dF.JrnlDayAside.today();"
-                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.aside-today'/>">
-                            TODAY
-                            <i class="bi bi-box-arrow-in-up-right"></i>
-                        </button>
-                        <div class="d-flex">
-                            <select name="mnth" id="mnth" class="form-select" aria-label="Select example"
-                                    onchange="dF.JrnlDayAside.changeMnth();">
-                                <option value="">--</option>
-                                <#list 1..12 as mnth>
-                                    <option value="${mnth}">${mnth}</option>
-                                </#list>
-                            </select>
-                            <div class="d-flex align-items-center ms-2">
-                                <i id="right" class="bi bi-caret-right fs-2 cursor-pointer"
-                                   data-bs-toggle="tooltip" data-bs-placement="left" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.aside-next'/>"></i>
+                    <!-- separator -->
+                    <div class="separator"></div>
+                    <!-- 일기 필터 -->
+                    <#include "/view/feature/jrnl/day/_aside/_jrnl_day_aside_diary_filter.ftlh">
+                    <!-- separator -->
+                    <div class="separator"></div>
+                    <!-- 꿈 필터 -->
+                    <#include "/view/feature/jrnl/day/_aside/_jrnl_day_aside_dream_filter.ftlh">
+                    <!-- separator -->
+                    <div class="separator"></div>
+                    <!-- 필터 -->
+                    <div class="accordion accordion-flush" id="jrnl_day_filter_accordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="jrnl_day_filter_heading_advanced">
+                                <button class="accordion-button collapsed fw-semibold" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#jrnl_day_filter_advanced"
+                                        aria-expanded="false" aria-controls="jrnl_day_filter_advanced">
+                                    <@spring.message 'txt.jrnl.day.filter.advanced'/>
+                                </button>
+                            </h2>
+                            <div id="jrnl_day_filter_advanced" class="accordion-collapse collapse"
+                                 aria-labelledby="jrnl_day_filter_heading_advanced"
+                                 data-bs-parent="#jrnl_day_filter_accordion">
+                                <div class="accordion-body pt-4">
+                                    <div class="text-muted fs-7">
+                                        <@spring.message 'txt.jrnl.day.filter.more'/>
+                                    </div>
+                                    <div class="mt-4" data-filter-slot="advanced"></div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <#--begin::row-->
-                <div class="px-8 mb-4 gap-1">
-                    <button type="button" class="btn btn-sm btn-outline btn-light-primary px-2 pt-1"
-                            onclick="dF.JrnlDayAside.pinpoint();"
-                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.aside-pin'/>">
-                        <i class="bi bi-bookmarks pe-0"></i>
-                    </button>
-                    <span class="mx-2">|</span>
-                    <span id="jrnl_aside_pinText" class="px-1 me-1">
-                        <span id="pinnedYy" class="text-muted text-underline-dotted">----</span>
-                        <span> / </span>
-                        <span id="pinnedMnth" class="text-muted text-underline-dotted">--</span>
-                        <i class="bi bi-pin-map fs-7"></i>
-                    </span>
-                    <button type="button" class="btn btn-sm btn-outline btn-light-primary px-2 pt-1"
-                            onclick="dF.JrnlDayAside.turnback();"
-                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.aside-turnback'/>">
-                        <i class="bi bi-reply-all pe-0"></i>
-                    </button>
-                </div>
-                <div class="separator my-6"></div>
-                <#--begin::row-->
-                <div class="mb-5">
-                    <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">
-                        <@spring.message 'txt.jrnl.diary.keyword.search'/>
-                    </span>
-                    <div class="d-flex gap-1">
-                        <input type="text" name="diaryKeyword" id="diaryKeyword" class="form-control"
-                               value="" placeholder="<@spring.message 'txt.jrnl.diary.keyword.search'/>" maxlength="200"/>
-                        <button type="button" id="jrnl_diary_search_btn" class="btn btn-sm btn-outline btn-light-primary px-4"
-                                onclick="dF.JrnlDiary.searchPopup();"
-                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.txt.jrnl.diary.keyword.search'/>">
-                            <i class="bi bi-search pe-0"></i>
-                        </button>
-                    </div>
-                </div>
-                <#--begin::row-->
-                <div class="mb-5">
-                    <span class="text-gray-900 fs-h6 fw-bold d-inline-block mb-1">
-                        <@spring.message 'txt.jrnl.dream.keyword.search'/>
-                    </span>
-                    <div class="d-flex gap-1">
-                        <input type="text" name="dreamKeyword" id="dreamKeyword" class="form-control"
-                               value="" placeholder="<@spring.message 'txt.jrnl.dream.keyword.search'/>" maxlength="200"/>
-                        <button type="button" id="jrnl_dream_search_btn" class="btn btn-sm btn-outline btn-light-primary px-4"
-                                onclick="dF.JrnlDream.searchPopup();"
-                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.txt.jrnl.dream.keyword.search'/>">
-                            <i class="bi bi-search pe-0"></i>
-                        </button>
                     </div>
                 </div>
             </div>
@@ -162,7 +114,7 @@
             </div>
             <!--end::Header-->
             <div id="jrnl_todo_list_div">
-                <!-- Handlebars templaate goes in here -->
+                <!-- Handlebars template goes in here -->
             </div>
         </div>
     </div>

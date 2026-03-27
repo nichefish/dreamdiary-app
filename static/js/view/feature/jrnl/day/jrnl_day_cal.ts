@@ -27,8 +27,8 @@ const Page: Page = (function(): Page {
             dF.JrnlDiaryTag.listAjax();
             dF.JrnlDreamTag.listAjax();
             // 일기/꿈 키워드 검색에 엔터키 처리
-            cF.util.enterKey("#diaryKeyword", dF.JrnlDiary.searchPopup);
-            cF.util.enterKey("#dreamKeyword", dF.JrnlDream.searchPopup);
+            cF.util.enterKey("#diarySearchKeyword", dF.JrnlDiary.searchPopup);
+            cF.util.enterKey("#dreamSearchKeyword", dF.JrnlDream.searchPopup);
 
             // 초기 일자 설정
             const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy");

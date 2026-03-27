@@ -44,7 +44,7 @@ public class JrnlStateCacheUpdater
     public void update(final StateToggleDto toggle, final String cacheKey, final Boolean isEnabled) {
         final ContentType contentType = toggle.getContentType();
 
-        updataCacheMap(toggle, cacheKey, isEnabled, contentType);
+        this.updataCacheMap(toggle, cacheKey, isEnabled, contentType);
 
         final String evictCacheNm = this.getEvictCacheNm(contentType);
         if (evictCacheNm != null) {
@@ -88,10 +88,10 @@ public class JrnlStateCacheUpdater
      */
     private String getCacheMapNm(final ContentType contentType) {
         return switch (contentType) {
-            case JRNL_ENTRY -> "myEntryStateMap";
-            case JRNL_DIARY -> "myDiaryStateMap";
-            case JRNL_DREAM -> "myDreamStateMap";
-            case JRNL_INTRPT -> "myIntrptStateMap";
+            case JRNL_ENTRY -> "jrnlEntryStateMapByUser";
+            case JRNL_DIARY -> "jrnlDiaryStateMapByUser";
+            case JRNL_DREAM -> "jrnlDreamStateMapByUser";
+            case JRNL_INTRPT -> "jrnlIntrptStateMapByUser";
             default -> throw new IllegalStateException("Unexpected value: " + contentType);
         };
     }

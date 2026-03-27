@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDaySearchParam;
-import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayService;
+import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayQueryService;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayTagService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -42,7 +42,7 @@ public class JrnlDayTagRestController
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
-    private final JrnlDayService jrnlDayService;
+    private final JrnlDayQueryService jrnlDayQueryService;
     private final JrnlDayTagService jrnlDayTagService;
 
     /**
@@ -108,7 +108,7 @@ public class JrnlDayTagRestController
     }
 
     /**
-     * 저널 일자 태그 상세 (해당 태그 꿈 목록) 조회 (Ajax)
+     * 저널 일자 태그 상세 (해당 태그 일자 목록) 조회 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
      * @param searchParam 검색 조건을 담은 파라미터 객체
@@ -117,13 +117,13 @@ public class JrnlDayTagRestController
     @GetMapping(value = {Url.JRNL_DAY_TAG})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> jrnlDayTagDtlAjax(
+    public ResponseEntity<AjaxResponse> jrnlDayListByTagNoAjax(
             final @PathVariable("tagNo") Integer tagNo,
             final JrnlDaySearchParam searchParam
     ) throws Exception {
 
         searchParam.setTagNo(tagNo);
-        final List<JrnlDayDto> jrnlDayList = jrnlDayService.jrnlDayTagDtl(searchParam);
+        final List<JrnlDayDto> jrnlDayList = jrnlDayQueryService.getMyListDtoByTagNoEnriched(searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

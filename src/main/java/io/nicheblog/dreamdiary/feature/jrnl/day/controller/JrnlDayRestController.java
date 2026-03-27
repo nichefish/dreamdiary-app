@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.feature.jrnl.day.controller;
 
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.jrnl.day.JrnlDayViewType;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDaySearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayCalService;
+import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayQueryService;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -42,6 +42,7 @@ public class JrnlDayRestController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
     private final JrnlDayService jrnlDayService;
+    private final JrnlDayQueryService jrnlDayQueryService;
     private final JrnlDayCalService jrnlDayCalService;
 
     /**
@@ -60,10 +61,10 @@ public class JrnlDayRestController
     ) throws Exception {
 
         final Object list = switch (viewType) {
-            case LIST -> jrnlDayService.getMyListDtoByYyMnthWithHldy(AuthUtils.getLgnUserId(), searchParam);
+            case LIST -> jrnlDayQueryService.getMyYyMnthListDtoEnriched(searchParam);
             case CAL -> jrnlDayCalService.getSchdulTotalCalList(searchParam);
-            case DAILY -> jrnlDayService.getMyStdrdDtoWithHldy(AuthUtils.getLgnUserId(), searchParam);
-            case SEARCH -> jrnlDayService.getMyListDtoByMetaNoWithHldy(AuthUtils.getLgnUserId(), searchParam);
+            case DAILY -> jrnlDayQueryService.getMyStdrdDaysDtoEnriched(searchParam);
+            case SEARCH -> jrnlDayQueryService.getMyListDtoByMetaNoEnriched(searchParam);
         };
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
@@ -119,7 +120,7 @@ public class JrnlDayRestController
             final @PathVariable("postNo") Integer key
     ) throws Exception {
 
-        final JrnlDayDto retrievedDto = jrnlDayService.getDtlDtoWithCacheWithHldy(key);
+        final JrnlDayDto retrievedDto = jrnlDayQueryService.getMyDtlDtoEnriched(key);
         final boolean isSuccess = (retrievedDto.getPostNo() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -141,7 +142,6 @@ public class JrnlDayRestController
     ) throws Exception {
 
         final ServiceResponse result = jrnlDayService.delete(key);
-        final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));

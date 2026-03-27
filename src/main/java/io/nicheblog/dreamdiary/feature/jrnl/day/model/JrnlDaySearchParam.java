@@ -4,6 +4,8 @@ import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 /**
  * JrnlDaySearchParam
  * <pre>
@@ -46,4 +48,35 @@ public class JrnlDaySearchParam
     private boolean showDreams;
     /** 태그클라우드 렌더링 여부 */
     private boolean showTagCloud;
+
+    /** 일기 키워드 */
+    private String diaryKeyword;
+    /** 꿈 키워드 */
+    private String dreamKeyword;
+    /** 엔티티 카테고리 코드 */
+    private List<String> entryCtgrCds;
+
+    /**
+     * 저널 일자 목록 Cache key suffix
+     */
+    public String toYyMnthKey() {
+        return yy + "_" + mnth;
+    }
+
+    /**
+     * 기본 파라미터 객체 반환
+     *
+     * @param userId 사용자 ID
+     * @param yy 년도
+     * @param mnth 월
+     * @return {@link JrnlDaySearchParam}
+     */
+    public static JrnlDaySearchParam getBaseParam(String userId, Integer yy, Integer mnth) {
+        return JrnlDaySearchParam.builder()
+                .regstrId(userId)
+                .yy(yy)
+                .mnth(mnth)
+                .sort("ASC")
+                .build();
+    }
 }
