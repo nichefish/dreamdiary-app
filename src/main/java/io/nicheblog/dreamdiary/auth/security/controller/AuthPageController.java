@@ -3,12 +3,12 @@ package io.nicheblog.dreamdiary.auth.security.controller;
 import io.nicheblog.dreamdiary.auth.jwt.provider.JwtTokenProvider;
 import io.nicheblog.dreamdiary.auth.security.exception.AlreadyAuthenticatedException;
 import io.nicheblog.dreamdiary.auth.security.exception.AuthenticationFailureException;
-import io.nicheblog.dreamdiary.domain.user.info.entity.UserEntity;
-import io.nicheblog.dreamdiary.domain.user.info.service.UserService;
-import io.nicheblog.dreamdiary.domain.user.reqst.service.UserReqstService;
-import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
+import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
+import io.nicheblog.dreamdiary.feature.user.reqst.service.UserReqstService;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.global.intrfc.controller.impl.BaseControllerImpl;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -29,9 +29,9 @@ public class AuthPageController
         extends BaseControllerImpl {
 
     @Getter
-    private final String baseUrl = Url.LGN_POLICY_FORM;             // 기본 URL
+    private final String baseUrl = Url.AUTH_POLICY_FORM;             // 기본 URL
     @Getter
-    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.LGN_POLICY;        // 작업 카테고리 (로그 적재용)
+    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.AUTH_POLICY;        // 작업 카테고리 (로그 적재용)
 
     private final UserService userService;
     private final UserReqstService userReqstService;

@@ -134,7 +134,7 @@ cF.tagify = (function(): Module {
          * @returns {Tagify} - 초기화된 Tagify 인스턴스. 카테고리 기능이 추가된 상태입니다.
          */
         initMeta: function(selector: string, ctgrMap: Record<string, any>, additionalOptions: Record<string, any> = {}): Tagify {
-            const tagify: Tagify = cF.tagify.init(selector, { ...additionalOptions, templates: { tag: metaTemplate } });
+            const tagify: Tagify = cF.tagify.init(selector, { ...additionalOptions, duplicates: true, templates: { tag: metaTemplate } });
 
             // tagify 스코프 설정
             const parts: string[] = selector.split(' ');

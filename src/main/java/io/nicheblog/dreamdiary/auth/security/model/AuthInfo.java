@@ -1,8 +1,9 @@
 package io.nicheblog.dreamdiary.auth.security.model;
 
-import io.nicheblog.dreamdiary.domain.user.info.model.profl.UserProflDto;
+import io.nicheblog.dreamdiary.feature.user.info.model.profl.UserProflDto;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -132,7 +133,7 @@ public class AuthInfo
         return this.authList.stream()
                 .map(entity -> {
                     try {
-                        if (Constant.AUTH_DEV.equals(entity.getAuthCd())) return new SimpleGrantedAuthority(Constant.ROLE_MNGR);
+                        if (Code.AUTH_DEV.equals(entity.getAuthCd())) return new SimpleGrantedAuthority(Constant.ROLE_MNGR);
                         return new SimpleGrantedAuthority("ROLE_" + entity.getAuthCd());
                     } catch (final Exception e) {
                         throw new RuntimeException(e);

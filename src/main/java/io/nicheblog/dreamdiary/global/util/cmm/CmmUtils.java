@@ -1,22 +1,22 @@
 package io.nicheblog.dreamdiary.global.util.cmm;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.global.validator.Regex;
+import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Component;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,12 +29,9 @@ import java.util.stream.Collectors;
  *
  * @author nichefish
  */
-@Component
+@UtilityClass
 @Log4j2
 public class CmmUtils {
-
-    /** 파라피터 관련 메소드 분리 및 합성 */
-    public static class Param extends ParamModule {}
 
     /**
      * 공통 > Object -> Map으로 변환
@@ -78,49 +75,6 @@ public class CmmUtils {
     }
 
     /**
-     * 공통 > dto의 property 값으로 paramString 생성
-     * 기본 :: 프로퍼티 그대로 변환
-     */
-    public String createQueryStringFromObject(final Object object) throws Exception {
-        // object -> hashMap
-        return createQueryStringFromObject(object, null);
-    }
-
-    /**
-     * 공통 > dto의 property 값으로 paramString 생성
-     * (SNAKE CASE 별도 처리 가능)
-     */
-    @SuppressWarnings("deprecation")
-    public String createQueryStringFromObject(final Object object, final String strategy) throws Exception {
-        // object -> hashMap
-        final ObjectMapper mapper = new ObjectMapper();
-        if ("SNAKE".equals(strategy)) {
-            mapper.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
-        }
-        final Map<String, Object> paramMap = mapper.convertValue(object, HashMap.class);
-        // map에서 value가 비어있는 key들을 걸러냄
-        final Map<String, Object> filteredParamMap = CmmUtils.Param.filterParamMap(paramMap);
-        // queryString으로 변환;
-        return createParamStringFromMap(filteredParamMap);
-    }
-
-
-    /**
-     * 공통 > map의 key-value값으로 paramString 생성
-     */
-    public String createParamStringFromMap(final Map<String, Object> paramMap) throws Exception {
-        final StringBuilder paramData = new StringBuilder();
-        for (final Map.Entry<String, Object> param : paramMap.entrySet()) {
-            if (!paramData.isEmpty()) paramData.append("&");
-            paramData.append(URLEncoder.encode(param.getKey(), StandardCharsets.UTF_8));
-            paramData.append("=");
-            paramData.append(URLEncoder.encode(String.valueOf(param.getValue()), StandardCharsets.UTF_8));
-        }
-        log.info("creating paramString... paramData: {}, paramString: {}", paramData, paramData.toString());
-        return paramData.toString();
-    }
-
-    /**
      * 공통 > html 태그 제거 (정규식)
      */
     public String removeHtmlTag(final String html) {
@@ -138,21 +92,6 @@ public class CmmUtils {
             put("yy", yy);
             put("mnth", mnth);
         }};
-    }
-
-    /**
-     * 쿼리스트링을 Map에 담아서 반환
-     */
-    public Map<String, String> queryStringToMap(final String queryString) {
-        log.info("queryString: {}", queryString);
-        if (StringUtils.isEmpty(queryString)) return null;
-
-        final Map<String, String> resultMap = new HashMap<>();
-        for (final String param : queryString.split("&")) {
-            final String[] pair = param.split("=");
-            resultMap.put(pair[0], (pair.length > 1) ? pair[1] : "");
-        }
-        return resultMap;
     }
 
     /**
@@ -188,6 +127,70 @@ public class CmmUtils {
     }
 
     /**
+     * cache key 생성용 문자열 정규화
+     *  - null 안전 처리
+     *  - 앞뒤 공백 제거
+     *  - key 구분자 충돌 방지 ('_' → '-')
+     *
+     * @param value String
+     */
+    public static String sanitize(final String value) {
+        if (value == null) return "";
+        return value.trim().replace('_', '-');
+    }
+
+    /**
+     * cache key 생성용 null-safe Integer 처리
+     * - null 값을 0으로 치환하여 key 생성 시 NPE 방지
+     *
+     * @param value Integer
+     */
+    public static int nullSafeInt(final Integer value) {
+        return value != null ? value : 0;
+    }
+
+    /**
+     * cache key 생성용 String 리스트 정규화
+     * - 리스트 순서에 영향을 받지 않는 deterministic key 생성
+     *
+     * @param source List<String>
+     */
+    public static String normalizeStringList(final List<String> source) {
+        if (CollectionUtils.isEmpty(source)) return "";
+        final List<String> copied = new ArrayList<>();
+        for (final String item : source) {
+            if (StringUtils.isBlank(item)) continue;
+            copied.add(item.trim());
+        }
+        if (copied.isEmpty()) return "";
+        Collections.sort(copied);
+        return String.join(",", copied);
+    }
+
+    /**
+     * cache key 생성용 Integer 리스트 정규화
+     * - 리스트 순서에 영향을 받지 않는 deterministic key 생성
+     *
+     * @param source List<Integer>
+     */
+    public static String normalizeIntegerList(final List<Integer> source) {
+        if (CollectionUtils.isEmpty(source)) return "";
+        final List<Integer> copied = new ArrayList<>();
+        for (final Integer item : source) {
+            if (item == null) continue;
+            copied.add(item);
+        }
+        if (copied.isEmpty()) return "";
+        Collections.sort(copied);
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < copied.size(); i++) {
+            if (i > 0) sb.append(',');
+            sb.append(copied.get(i));
+        }
+        return sb.toString();
+    }
+
+    /**
      * 문자열을 Set<String>으로 변환하는 유틸 함수
      *
      * @param valueStr String
@@ -220,5 +223,82 @@ public class CmmUtils {
         doc.select("li").prepend("\\n");
 
         return doc.text().replace("\\n", "\n").trim();
+    }
+
+    /**
+     * 공통 > 목록 검색 parameter 빈 값 걸러내고 정돈
+     *
+     * @param searchParam 필터링할 BaseSearchParam 객체
+     * @return {@link BaseSearchParam} -- 필터링된 BaseSearchParam 객체
+     */
+    public static BaseSearchParam filterParam(final BaseSearchParam searchParam) throws Exception {
+        final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
+        final Map<String, Object> filteredSearchKey = filterParamMap(searchParamMap);
+        return convertToParam(filteredSearchKey);
+    }
+
+    /**
+     * 공통 > Map -> Param으로 변환
+     *
+     * @param searchParamMap 변환할 파라미터 맵
+     * @return {@link BaseSearchParam} -- 변환된 BaseSearchParam 객체
+     */
+    public static BaseSearchParam convertToParam(final Map<String, Object> searchParamMap) throws Exception {
+        if (MapUtils.isEmpty(searchParamMap)) return new BaseSearchParam();
+        final ObjectMapper mapper = new ObjectMapper();
+        return mapper.convertValue(searchParamMap, BaseSearchParam.class);
+    }
+
+    /**
+     * 공통 > 목록 검색 parameterMap 빈 값 걸러내고 정돈.
+     *
+     * @param searchParamMap 필터링할 파라미터 맵
+     * @return {@link Map} -- 필터링된 파라미터 맵
+     */
+    public static Map<String, Object> filterParamMap(final Map<String, Object> searchParamMap) throws Exception {
+        final Map<String, Object> filteredSearchKey = new HashMap<>();
+        // 목록 검색에서 시작일, 종료일이 같은 날짜(문자열)로 넘어올 경우 searchEndDt를 23:59:59로 세팅
+        final Object searchStartDt = searchParamMap.get("searchStartDt");
+        if (searchStartDt instanceof String searchStartDtStr) {
+            if (StringUtils.isNotEmpty(searchStartDtStr)) {
+                final String searchEndDtStr = (String) searchParamMap.get("searchEndDt");
+                if (searchStartDtStr.equals(searchEndDtStr)) {
+                    final Date searchEndDt = DateUtils.asDate(searchEndDtStr);
+                    searchParamMap.put("searchEndDt", DateUtils.Parser.eDateParseStr(searchEndDt));
+                }
+            }
+        }
+        // Parameter 순차적으로 세팅
+        for (final String key : searchParamMap.keySet()) {
+            // pageNo, pageSize는 검색인자가 아니므로 여기 들어갈 필요가 없다.
+            if ("pageNo".equals(key)) continue;
+            if ("pageSize".equals(key)) continue;
+            // isBackToList 빼기
+            if ("isBackToList".equals(key)) continue;
+            final Object value = searchParamMap.get(key);
+            final String valueStr = String.valueOf(searchParamMap.get(key));
+            if (StringUtils.isNotEmpty(valueStr) && !"null".equals(valueStr)) {
+                // 날짜 파라미터 세팅 ("Dt"로 끝나는 입력값은 Date로 변환하여 Dt에 담음)
+                if (key.endsWith("Dt")) filteredSearchKey.put(key, DateUtils.asDate(value));
+                // searchEndDt 문자열 :: 끝에 강제로 23:59:59 붙여줌 (yyyy-MM-dd까지만 받기때문)
+                if (key.equals("searchEndDt")) {
+                    filteredSearchKey.put(key, DateUtils.Parser.eDateParse(value));
+                    continue;
+                }
+                // searchType + searchKeyword 매칭 (인덱스마다 자동 설정) (ex.searchType1 <- searchKeyword1)
+                if (key.startsWith("searchType")) {
+                    final String idx = key.replace("searchType", "");
+                    final String searchKeyword = String.valueOf(searchParamMap.get("searchKeyword" + idx));
+                    if (StringUtils.isNotEmpty(searchKeyword) && !"null".equals(searchKeyword)) {
+                        filteredSearchKey.put(valueStr, searchKeyword);
+                    }
+                    continue;
+                }
+                if (!"searchKeywords".equals(key) && key.startsWith("searchKeyword")) continue;
+                if (key.endsWith("Dt")) continue;
+                filteredSearchKey.put(key, value);
+            }
+        }
+        return filteredSearchKey;
     }
 }

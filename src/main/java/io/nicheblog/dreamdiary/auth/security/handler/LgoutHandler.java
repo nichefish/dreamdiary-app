@@ -2,10 +2,10 @@ package io.nicheblog.dreamdiary.auth.security.handler;
 
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLgnManager;
-import io.nicheblog.dreamdiary.extension.log.actvty.event.LogActvtyEvent;
-import io.nicheblog.dreamdiary.extension.log.actvty.handler.LogActvtyEventListener;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.event.LogActvtyEvent;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.handler.LogActvtyEventListener;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
