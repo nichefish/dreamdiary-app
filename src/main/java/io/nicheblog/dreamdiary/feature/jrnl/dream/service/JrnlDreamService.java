@@ -77,7 +77,7 @@ public class JrnlDreamService
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
      */
-    @Cacheable(value="myJrnlDreamList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.hashCode()")
+    @Cacheable(value="myJrnlDreamList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.toListCacheKey()")
     public List<JrnlDreamDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
 
@@ -91,7 +91,7 @@ public class JrnlDreamService
      * @param searchParam JrnlDreamSearchParam
      * @return {@link List} -- 해당 년도의 중요 목록
      */
-    @Cacheable(value="mySumryDreamList", key="#lgnUserId + \"_\" + #searchParam.getYy() + \"_\" + #searchParam.getStates()")
+    @Cacheable(value="mySumryDreamList", key="#lgnUserId + \"_\" + #searchParam.toSummaryCacheKey()")
     public List<JrnlDreamDto> getMySumryDreamList(final String lgnUserId, final JrnlDreamSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(lgnUserId);
         final List<JrnlDreamDto> mySumryDreamList = this.getSelf().getListDto(searchParam);

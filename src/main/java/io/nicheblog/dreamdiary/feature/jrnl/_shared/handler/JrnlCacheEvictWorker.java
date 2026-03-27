@@ -11,7 +11,6 @@ import io.nicheblog.dreamdiary.feature.jrnl.sumry.service.strategy.JrnlSumryCach
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.service.strategy.JrnlSumryReviewCacheEvictor;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.service.strategy.JrnlTodoCacheEvictor;
 import io.nicheblog.dreamdiary.global.util.TransactionHookUtils;
-import io.nicheblog.dreamdiary.infrastructure.cache.service.CacheEvictor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.context.SecurityContext;
@@ -47,7 +46,7 @@ public class JrnlCacheEvictWorker {
     private final JrnlSumryReviewCacheEvictor jrnlSumryReviewCacheEvictor;
 
     // CacheEvictor를 매핑하는 Map
-    private final Map<ContentType, CacheEvictor<JrnlCacheEvictParam>> evictorMap = new HashMap<>();
+    private final Map<ContentType, JrnlCacheEvictor> evictorMap = new HashMap<>();
 
     @PostConstruct
     private void initEvictorMap() {
@@ -114,7 +113,7 @@ public class JrnlCacheEvictWorker {
         try {
             SecurityContextHolder.setContext(securityContext);
 
-            final CacheEvictor<JrnlCacheEvictParam> evictor = evictorMap.get(contentType);
+            final JrnlCacheEvictor evictor = evictorMap.get(contentType);
             if (evictor == null) {
                 log.warn("No CacheEvictor found for ContentType: {}", contentType);
                 return;
