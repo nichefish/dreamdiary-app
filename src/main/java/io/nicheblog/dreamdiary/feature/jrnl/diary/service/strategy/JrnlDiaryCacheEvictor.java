@@ -49,6 +49,9 @@ public class JrnlDiaryCacheEvictor
             // jrnl_diary_tag
             EhCacheUtils.evictMyCacheAll("myJrnlDiaryTagCtgrMap");
             EhCacheUtils.evictMyCacheAll("myJrnlDiaryTagList");
+            EhCacheUtils.evictMyCacheAll("myJrnlDiaryTagListYyMnth");
+            EhCacheUtils.evictMyCacheAll("myJrnlDiarySizedTagList");
+            EhCacheUtils.evictMyCacheAll("myCountDiarySizeMap");
 
             // 태그 캐시 처리
             if (postNo != null) {
