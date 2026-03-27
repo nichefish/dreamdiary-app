@@ -1,28 +1,28 @@
-package io.nicheblog.dreamdiary.feature.jrnl.entry.service.strategy;
+package io.nicheblog.dreamdiary.feature.jrnl.intrpt.service.strategy;
 
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.comment.cache.CommentCacheInvalidator;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
-import io.nicheblog.dreamdiary.feature.jrnl.entry.model.JrnlEntryDto;
-import io.nicheblog.dreamdiary.feature.jrnl.entry.service.JrnlEntryService;
+import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptDto;
+import io.nicheblog.dreamdiary.feature.jrnl.intrpt.service.JrnlIntrptService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
- * CommentCacheInvalidator
+ * JrnlIntrptCommentCacheInvalidator
  * <pre>
- *  댓글 캐시 무효화 방식을 정의.
+ *  댓글 캐시 무효화 방식 정의.
  * </pre>
  *
  * @author nichefish
  */
 @Component
 @RequiredArgsConstructor
-public class JrnlEntryCommentCacheInvalidator
+public class JrnlIntrptCommentCacheInvalidator
         implements CommentCacheInvalidator {
 
-    private final JrnlEntryService jrnlEntryService;
+    private final JrnlIntrptService jrnlIntrptService;
     private final JrnlCacheEvictWorker jrnlCacheEvictWorker;
 
     /**
@@ -33,7 +33,7 @@ public class JrnlEntryCommentCacheInvalidator
      */
     @Override
     public boolean supports(final ContentType refContentType) {
-        return ContentType.JRNL_ENTRY.equals(refContentType);
+        return ContentType.JRNL_INTRPT.equals(refContentType);
     }
 
     /**
@@ -44,8 +44,8 @@ public class JrnlEntryCommentCacheInvalidator
      */
     @Override
     public void invalidate(final Integer refPostNo) throws Exception {
-        final JrnlEntryDto jrnlEntryDto = jrnlEntryService.getDtlDto(refPostNo);
-        final JrnlCacheEvictParam param = JrnlCacheEvictParam.of(jrnlEntryDto);
-        jrnlCacheEvictWorker.evictAfterCommit(param, ContentType.JRNL_ENTRY);
+        final JrnlIntrptDto jrnlIntrptDto = jrnlIntrptService.getDtlDto(refPostNo);
+        final JrnlCacheEvictParam param = JrnlCacheEvictParam.of(jrnlIntrptDto);
+        jrnlCacheEvictWorker.evictAfterCommit(param, ContentType.JRNL_INTRPT);
     }
 }

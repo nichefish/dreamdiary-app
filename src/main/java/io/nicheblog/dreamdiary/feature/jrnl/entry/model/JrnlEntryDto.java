@@ -2,8 +2,6 @@ package io.nicheblog.dreamdiary.feature.jrnl.entry.model;
 
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
-import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
@@ -35,7 +33,7 @@ import java.util.List;
 @ToString(callSuper = true)
 public class JrnlEntryDto
         extends BaseClsfDto
-        implements Identifiable<Integer>, StateCmpstnModule, CommentCmpstnModule, TagCmpstnModule, JrnlPeriodModule, Comparable<JrnlEntryDto> {
+        implements Identifiable<Integer>, StateCmpstnModule, TagCmpstnModule, JrnlPeriodModule, Comparable<JrnlEntryDto> {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -84,10 +82,10 @@ public class JrnlEntryDto
     @SneakyThrows
     @Override
     public int compareTo(final @NotNull JrnlEntryDto other) {
-        Date thisDate = DateUtils.asDate(this.getStdrdDt());
+        final Date thisDate = DateUtils.asDate(this.getStdrdDt());
         if (thisDate == null) return -1;
 
-        Date otherDate = DateUtils.asDate(other.getStdrdDt());
+        final Date otherDate = DateUtils.asDate(other.getStdrdDt());
         return thisDate.compareTo(otherDate);
     }
 
@@ -96,8 +94,6 @@ public class JrnlEntryDto
         return this.postNo;
     }
 
-    /** 위임 :: 댓글 정보 모듈 */
-    public CommentCmpstn comment;
     /** 위임 :: 태그 정보 모듈 */
     public TagCmpstn tag;
     /** 위임 :: 상태 정보 모듈 */

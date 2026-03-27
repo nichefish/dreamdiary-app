@@ -44,10 +44,10 @@ public class CommentDto
     private String contentType = CONTENT_TYPE;
 
     /** 내용 */
-    protected String cn;
+    private String cn;
 
     /** 마크다운 처리된 내용 */
-    protected String markdownCn;
+    private String markdownCn;
 
     /* ----- */
 

@@ -68,11 +68,11 @@ public class FlsysMetaEntity
 
     /** 제목 */
     @Column(name = "title")
-    protected String title;
+    private String title;
 
     /** 내용 */
     @Column(name = "cn")
-    protected String cn;
+    private String cn;
 
     /* ----- */
 
@@ -80,13 +80,13 @@ public class FlsysMetaEntity
     @Builder.Default
     @Column(name = "imprtc_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
     @Comment("중요 여부")
-    protected String imprtcYn = "N";
+    private String imprtcYn = "N";
 
     /** 상단고정 여부 (Y/N) */
     @Builder.Default
     @Column(name = "fxd_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
     @Comment("상단고정 여부")
-    protected String fxdYn = "N";
+    private String fxdYn = "N";
 
     /** 수정권한 */
     @Builder.Default

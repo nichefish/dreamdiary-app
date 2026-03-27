@@ -2,8 +2,6 @@ package io.nicheblog.dreamdiary.feature.jrnl.entry.entity;
 
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
-import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.state.entity.embed.StateEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
@@ -41,7 +39,7 @@ import java.util.List;
 @SQLDelete(sql = "UPDATE jrnl_entry SET del_yn = 'Y' WHERE post_no = ?")
 public class JrnlEntryEntity
         extends BaseClsfEntity
-        implements CommentEmbedModule, TagEmbedModule, StateEmbedModule {
+        implements TagEmbedModule, StateEmbedModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -105,9 +103,6 @@ public class JrnlEntryEntity
 
     /* ----- */
 
-    /** 위임 :: 댓글 정보 모듈 */
-    @Embedded
-    public CommentEmbed comment;
     /** 위임 :: 태그 정보 모듈 */
     @Embedded
     public TagEmbed tag;

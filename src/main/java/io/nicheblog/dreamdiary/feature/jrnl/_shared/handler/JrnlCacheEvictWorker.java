@@ -17,11 +17,12 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * JrnlCacheEvictWorker
@@ -58,6 +59,29 @@ public class JrnlCacheEvictWorker {
         evictorMap.put(ContentType.JRNL_TODO, jrnlTodoCacheEvictor);
         evictorMap.put(ContentType.JRNL_SUMRY, jrnlSumryCacheEvictor);
         evictorMap.put(ContentType.JRNL_SUMRY_REVIEW, jrnlSumryReviewCacheEvictor);
+        validateEvictorMap();
+    }
+
+    /**
+     * 전략 validation
+     */
+    private void validateEvictorMap() {
+        final Set<ContentType> requiredTypes = EnumSet.of(
+                ContentType.JRNL_DAY,
+                ContentType.JRNL_ENTRY,
+                ContentType.JRNL_DIARY,
+                ContentType.JRNL_DREAM,
+                ContentType.JRNL_INTRPT,
+                ContentType.JRNL_TODO,
+                ContentType.JRNL_SUMRY,
+                ContentType.JRNL_SUMRY_REVIEW
+        );
+
+        for (final ContentType requiredType : requiredTypes) {
+            if (!evictorMap.containsKey(requiredType) || evictorMap.get(requiredType) == null) {
+                throw new IllegalStateException("Missing Jrnl CacheEvictor mapping for ContentType: " + requiredType);
+            }
+        }
     }
 
     /**

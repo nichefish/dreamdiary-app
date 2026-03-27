@@ -47,42 +47,42 @@ public class JrnlSbjctDto
     private String contentType = CONTENT_TYPE.key;
 
        /** 제목 */
-    protected String title;
+    private String title;
 
     /** 내용 */
-    protected String cn;
+    private String cn;
 
     /** 마크다운 처리된 내용 */
-    protected String markdownCn;
+    private String markdownCn;
 
     /** 글분류 코드 */
     @Size(max = 50)
-    protected String ctgrClCd;
+    private String ctgrClCd;
 
     /** 글분류 코드 */
     @Size(max = 50)
-    protected String ctgrCd;
+    private String ctgrCd;
 
     /** 글분류 코드 이름 */
     @Size(max = 50)
-    protected String ctgrNm;
+    private String ctgrNm;
 
     /** 글분류 존재 여부 */
     @Builder.Default
-    protected Boolean hasCtgrNm = false;
+    private Boolean hasCtgrNm = false;
 
     /** 중요 여부 (Y/N) */
     @Builder.Default
-    protected String imprtcYn = "N";
+    private String imprtcYn = "N";
 
     /** 상단고정 여부 (Y/N) */
     @Builder.Default
-    protected String fxdYn = "N";
+    private String fxdYn = "N";
 
     /** 조회수 */
     @Builder.Default
     @Min(value = 0)
-    protected Integer hitCnt = 0;
+    private Integer hitCnt = 0;
 
     /** 수정권한 */
     @Builder.Default
