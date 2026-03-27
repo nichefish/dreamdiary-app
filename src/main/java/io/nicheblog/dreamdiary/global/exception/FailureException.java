@@ -1,5 +1,7 @@
 package io.nicheblog.dreamdiary.global.exception;
 
+import lombok.experimental.StandardException;
+
 /**
  * FailureException
  * <pre>
@@ -8,25 +10,7 @@ package io.nicheblog.dreamdiary.global.exception;
  *
  * @author nichefish
  */
+@StandardException
 public class FailureException
         extends BaseException {
-
-    /**
-     * 생성자.
-     *
-     * @param msg
-     * @param cause
-     */
-    public FailureException(final String msg, final Throwable cause) {
-        super(msg, cause);
-    }
-
-    /**
-     * 생성자.
-     *
-     * @param msg
-     */
-    public FailureException(final String msg) {
-        super(msg);
-    }
 }

@@ -11,6 +11,9 @@ package io.nicheblog.dreamdiary.global;
  */
 public interface AppUrl {
 
+    /** 로그인 관련 */
+    String APP_AUTH_LGN_FORM = Prefix.APP + "/auth/lgn-form.do";
+
     /** 메인 */
     String ROOT = "/";
     String DEVTOOLS = ".well-known/appspecific/com.chrome.devtools.json";
@@ -73,8 +76,8 @@ public interface AppUrl {
     String TAG_LIST = Prefix.APP + "/tag/list.do";
     String TAG_CLOUD_PAGE = Prefix.APP + "/tag/tag-cloud-page.do";
 
-    /** 로그인 정책 관리 */
-    String LGN_POLICY_FORM = Prefix.APP + "/lgn-policy/form.do";
+    /** 인증 정책 관리 */
+    String AUTH_POLICY_FORM = Prefix.APP + "/lgn-policy/form.do";
 
     /** 메뉴 관리 */
     String MENU_PAGE = Prefix.APP + "/menu/page.do";
@@ -114,15 +117,6 @@ public interface AppUrl {
     /* ---------- */
 
     String SCHDUL_CAL = Prefix.APP + "/schdul/cal.do";
-
-    String VCATN_PAPR_LIST = Prefix.APP + "/vcatn/papr/list.do";
-    String VCATN_PAPR_REG_FORM = Prefix.APP + "/vcatn/papr/reg-form.do";
-    String VCATN_PAPR_DTL = Prefix.APP + "/vcatn/papr/dtl.do";
-    String VCATN_PAPR_MDF_FORM = Prefix.APP + "/vcatn/papr/mdf-form.do";
-
-    String VCATN_SCHDUL_LIST = Prefix.APP + "/vcatn-schdul-list.do";
-
-    String VCATN_STATS_YY = Prefix.APP + "/vcatn-stats-yy.do";
 
     String USER_REQST_REG_FORM = Prefix.APP + "/user/reqst/form.do";
 

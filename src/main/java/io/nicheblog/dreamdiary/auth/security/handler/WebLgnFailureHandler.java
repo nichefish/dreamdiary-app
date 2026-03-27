@@ -1,20 +1,20 @@
 package io.nicheblog.dreamdiary.auth.security.handler;
 
+import io.nicheblog.dreamdiary.auth.policy.entity.AuthPolicyEntity;
+import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyQueryService;
 import io.nicheblog.dreamdiary.auth.security.exception.AccountDormantException;
 import io.nicheblog.dreamdiary.auth.security.exception.AccountNeedsPwResetException;
 import io.nicheblog.dreamdiary.auth.security.exception.DupIdLgnException;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
-import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.entity.LgnPolicyEntity;
-import io.nicheblog.dreamdiary.domain.admin.lgnPolicy.service.LgnPolicyService;
-import io.nicheblog.dreamdiary.extension.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.extension.log.actvty.event.LogAnonActvtyEvent;
-import io.nicheblog.dreamdiary.extension.log.actvty.handler.LogActvtyEventListener;
-import io.nicheblog.dreamdiary.extension.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
-import io.nicheblog.dreamdiary.global.handler.HttpMethodRequestWrapper;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.event.LogAnonActvtyEvent;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.handler.LogActvtyEventListener;
+import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.infrastructure.web.handler.HttpMethodRequestWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -48,7 +48,7 @@ public class WebLgnFailureHandler
         implements AuthenticationFailureHandler {
 
     private final AuthService authService;
-    private final LgnPolicyService lgnPolicyService;
+    private final AuthPolicyQueryService authPolicyQueryService;
     private final ApplicationEventPublisherWrapper publisher;
 
     /**
@@ -78,8 +78,8 @@ public class WebLgnFailureHandler
         }
         /* 비밀번호 불일치 */
         if (exception instanceof BadCredentialsException) {
-            final LgnPolicyEntity rsLgnPolicyEntity = lgnPolicyService.getDtlEntity();
-            final Integer lgnTryLmt = rsLgnPolicyEntity.getLgnTryLmt();
+            final AuthPolicyEntity rsAuthPolicyEntity = authPolicyQueryService.getDtlEntity();
+            final Integer lgnTryLmt = rsAuthPolicyEntity.getLgnTryLmt();
             // 로그인 실패 횟수 처리
             final Integer newLgnFailCnt = authService.applyLgnFailCnt(userId);
             if (newLgnFailCnt < lgnTryLmt) {

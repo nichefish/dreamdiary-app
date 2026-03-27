@@ -1,0 +1,32 @@
+package io.nicheblog.dreamdiary.feature.clsf._shared.mapstruct;
+
+import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
+import io.nicheblog.dreamdiary.feature.clsf._shared.mapstruct.helper.ClsfMapstructHelper;
+import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
+import org.mapstruct.AfterMapping;
+import org.mapstruct.MappingTarget;
+
+/**
+ * BaseClsfMapstruct
+ * <pre>
+ *  (공통/상속) MapStruct 기반 Mapper 인터페이스.
+ *  (clsf 기반 요소들 변환 로직 추가)
+ * <pre>
+ *
+ * @author nichefish
+ */
+public interface BaseClsfMapstruct<Dto extends BaseClsfDto, Entity extends BaseClsfEntity>
+        extends BaseReadMapstruct<Dto, Entity> {
+
+    /**
+     * default : ClsfEntity -> ClsfDto 요소들 매핑
+     *
+     * @param entity 매핑할 원본 Entity 객체
+     * @param dto 매핑 대상인 Dto 객체
+     */
+    @AfterMapping
+    default void mapClsfFields(final Entity entity, final @MappingTarget Dto dto) throws Exception {
+        ClsfMapstructHelper.mapClsfFields(entity, dto);
+    }
+}

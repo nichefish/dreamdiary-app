@@ -15,6 +15,7 @@
 
     <#--include::테스트 페이지 -->
     <#include "/layout/header/navbar/_navbar_btn_test_page.ftlh">
+    <#include "/layout/header/navbar/_navbar_btn_swagger.ftlh">
 
     <#--include::태그클라우드 -->
     <#include "/layout/header/navbar/_navbar_btn_tag_cloud.ftlh">
@@ -35,8 +36,8 @@
                  data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-dismiss="click" title="사용자/관리자 권한별로&#10;화면을 전환합니다.">
                 <select name="userMode" id="userMode" class="form-select form-select-solid fs-small fw-bolder form-select-sm opacity-hover mt-1 ps-3"
                     style="border-color:#86b7fe; outline: 0; box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25);">
-                    <option value="${(Constant.AUTH_USER)!}" <#if !isMngrMode>selected</#if>>사용자 모드</option>
-                    <option value="${(Constant.AUTH_MNGR)!}" <#if isMngrMode>selected</#if>>관리자 모드</option>
+                    <option value="${(Code.AUTH_USER)!}" <#if !isMngrMode>selected</#if>>사용자 모드</option>
+                    <option value="${(Code.AUTH_MNGR)!}" <#if isMngrMode>selected</#if>>관리자 모드</option>
                 </select>
             </div>
         </#if>

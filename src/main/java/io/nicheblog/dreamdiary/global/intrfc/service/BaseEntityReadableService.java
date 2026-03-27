@@ -65,7 +65,7 @@ public interface BaseEntityReadableService<Key extends Serializable, Entity exte
      */
     default List<Entity> getListEntity(final BaseSearchParam searchParam) throws Exception {
         final Map<String, Object> searchParamMap = CmmUtils.convertToMap(searchParam);
-        final Map<String, Object> filteredSearchKey = CmmUtils.Param.filterParamMap(searchParamMap);
+        final Map<String, Object> filteredSearchKey = CmmUtils.filterParamMap(searchParamMap);
 
         return this.getListEntity(filteredSearchKey);
     }
@@ -127,7 +127,7 @@ public interface BaseEntityReadableService<Key extends Serializable, Entity exte
      */
     @Transactional(readOnly = true)
     default Stream<Entity> getStreamEntity(final Map<String, Object> searchParamMap) throws Exception {
-        final Map<String, Object> filteredSearchKey = CmmUtils.Param.filterParamMap(searchParamMap);
+        final Map<String, Object> filteredSearchKey = CmmUtils.filterParamMap(searchParamMap);
 
         return getRepository().streamAllBy(getSpec().searchWith(filteredSearchKey));
     }
@@ -155,7 +155,7 @@ public interface BaseEntityReadableService<Key extends Serializable, Entity exte
      */
     @Transactional(readOnly = true)
     default Stream<Entity> getStreamEntity(final Map<String, Object> searchParamMap, Sort sort) throws Exception {
-        final Map<String, Object> filteredSearchKey = CmmUtils.Param.filterParamMap(searchParamMap);
+        final Map<String, Object> filteredSearchKey = CmmUtils.filterParamMap(searchParamMap);
 
         return getRepository().streamAllBy(getSpec().searchWith(filteredSearchKey), sort);
     }

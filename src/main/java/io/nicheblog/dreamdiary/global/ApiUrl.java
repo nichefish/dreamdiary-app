@@ -13,6 +13,20 @@ public interface ApiUrl {
 
     String API_ALIVE_CHECK = Prefix.API + "/alive-check";
 
+    /** 로그인 관련 */
+    String API_AUTH_LGN_PROC = Prefix.API + "/auth/lgn-proc";
+    String API_AUTH_LGN_PW_CHG = Prefix.API + "/auth/lgn-pw-chg";
+    String API_AUTH_LGOUT = Prefix.API + "/auth/lgout";
+    String API_AUTH_EXPIRE_SESSION = Prefix.API + "/auth/expire-session";
+    String API_AUTH_VERIFY = Prefix.API + "/auth/verify/{token}";
+    String API_AUTH_INFO = Prefix.API + "/auth/get-auth-info";
+
+    /** 소셜 로그인 팝업 */
+    String OAUTH2_GOOGLE = "/oauth2/authorization/google";
+    String OAUTH2_GOOGLE_REDIRECT_URI = "/login/oauth2/code/google";
+    String OAUTH2_NAVER = "/oauth2/authorization/naver";
+    String OAUTH2_NAVER_REDIRECT_URI = "/login/oauth2/code/naver";
+
     /** 저널 일자 */
     String JRNL_DAYS = Prefix.API + "/jrnl/days";
     String JRNL_DAY = Prefix.API + "/jrnl/day/{postNo}";
@@ -80,6 +94,10 @@ public interface ApiUrl {
     String JRNL_SUMRY_DREAM_COMPT_AJAX = Prefix.API + "/jrnl/sumry/dream-compt";
     String JRNL_SUMRY_REG_AJAX = Prefix.API + "/jrnl/sumry/reg";
 
+    /** 저널 결산 리뷰 */
+    String JRNL_SUMRY_REVIEWS = Prefix.API + "/jrnl/sumry/reviews";
+    String JRNL_SUMRY_REVIEW = Prefix.API + "/jrnl/sumry/review/{postNo}";
+
     /** 공지사항 */
     String NOTICE_REG_AJAX = Prefix.API + "/notice/reg";
     String NOTICE = Prefix.API + "/notice/{postNo}";
@@ -130,8 +148,8 @@ public interface ApiUrl {
     String TAG_PROPERTY_MDF_AJAX = Prefix.API + "/tag-property/tag-property-mdf";
     String TAG_PROPERTY_DEL_AJAX = Prefix.API + "/tag-property/tag-property-del";
 
-    /** 로그인 정책 관리 */
-    String LGN_POLICY_REG_AJAX = Prefix.API + "/lgn-policy/reg";
+    /** 인증 정책 관리 */
+    String AUTH_POLICY_REG_AJAX = Prefix.API + "/lgn-policy/reg";
 
     /** 메뉴 관리 */
     String MENU_MAIN_LIST_AJAX = Prefix.API + "/menu/menu-main-list";
@@ -211,9 +229,24 @@ public interface ApiUrl {
     String SCHDUL_MDF_AJAX = Prefix.API + "/schdul/cal-mdf";
     String SCHDUL_DEL_AJAX = Prefix.API + "/schdul/cal-del";
 
-    String USER_REQST_REG_AJAX = Prefix.APP + "/user/reqst/reqst-reg";
-    String USER_REQST_CF_AJAX = Prefix.APP + "/user/reqst/reqst-cf";
-    String USER_REQST_UNCF_AJAX = Prefix.APP + "/user/reqst/reqst-uncf";
+    String USER_REQST_REG_AJAX = Prefix.API + "/user/reqst/reqst-reg";
+    String USER_REQST_CF_AJAX = Prefix.API + "/user/reqst/reqst-cf";
+    String USER_REQST_UNCF_AJAX = Prefix.API + "/user/reqst/reqst-uncf";
+
+    String JANDI_CONNECT_WH = "https://wh.jandi.com/connect-api/webhook";
+
+    /** (API) 한국천문연구원 : 특일 정보 조회 */
+    String API_HLDY_GET = Prefix.API + "/hldy/get-hldy-info.do";
+    
+    /** (API) SNMP : 메세지 발신 */
+    String URL_API_SNMP_SEND_AJAX = Prefix.API +"/snmp/send";
+
+    /** (API) JANDI : 메세지 송수신 */
+    String API_JANDI_SND_MSG = Prefix.API + "/jandi/send-msg.do";
+    String API_JANDI_RCV_MSG = Prefix.API + "/jandi/receive-msg.do";
+
+    /** (API) NOTION */
+    String API_NOTION_GET = Prefix.API + "/notion/notion.do";
 
     /**
      * PREFIX 정의 정보

@@ -2,8 +2,8 @@ package io.nicheblog.dreamdiary.auth.security.mapstruct;
 
 import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
-import io.nicheblog.dreamdiary.domain.user.info.entity.UserEntity;
-import io.nicheblog.dreamdiary.domain.user.profl.mapstruct.UserProflMapstruct;
+import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
+import io.nicheblog.dreamdiary.feature.user.profl.mapstruct.UserProflMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;

@@ -1,0 +1,53 @@
+<#--
+ * 분류 코드(CL_CD) 목록 템플릿
+ * @included_in : cl_cd_list.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="cl_cd_list_template">
+    {{#each this}}
+        <tr class="cl-cd-item bg-hover-secondary"
+            id="{{clCd}}"
+            data-cl-cd="{{clCd}}"
+            data-use-yn="{{ifEmpty useYn 'N'}}"
+            onclick="dF.ClCd.dtlModal('{{clCd}}');">
+            <td class="text-center hidden-table">
+                {{rnum}}
+            </td>
+            <td class="text-start px-6 cursor-pointer fw-bold text-gray-700">
+                {{#if (exists clCtgrNm)}}
+                    <span class="fw-bolder fs-2 ctgr-span ctgr-imprtc">{{clCtgrNm}}</span>
+                {{/if}}
+                <span>{{clCdNm}}</span>
+                <span class="badge bg-light-info text-info ms-1">{{clCd}}</span>
+            </td>
+            <td class="text-start ps-6 hidden-table">
+                {{dc}}
+            </td>
+            <td class="text-center hidden-table">
+                {{ifEmpty dtlCdCnt 0}}
+            </td>
+            <td class="text-center hidden-table">
+                <div class="badge {{#ifYn useYn}}badge-success{{else}}badge-secondary btn-white{{/ifYn}} cursor-pointer"
+                     onclick="event.stopPropagation(); dF.ClCd.toggleUseAjax('{{clCd}}');"
+                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
+                     title="클릭하여 사용 상태를 변경합니다.">
+                    <i class="bi bi-check text-light blink-slow"></i>
+                    {{#ifYn useYn}}<@spring.message 'txt.status.use'/>{{else}}<@spring.message 'txt.status.unuse'/>{{/ifYn}}
+                </div>
+            </td>
+            <td class="text-center hidden-table">
+                <div class="badge badge-danger badge-outlined cursor-pointer"
+                     onclick="event.stopPropagation(); dF.ClCd.delAjax('{{clCd}}');"
+                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
+                     title="<@spring.message 'bs.tooltip.del'/>">
+                    <i class="bi bi-trash text-danger fs-7 blink-slow"></i>
+                    <@spring.message 'txt.comm.del'/>
+                </div>
+            </td>
+        </tr>
+    {{else}}
+        <tr>
+            <td colspan="6" class="text-center"><@spring.message 'view.list.empty'/></td>
+        </tr>
+    {{/each}}
+</script>
