@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
@@ -42,6 +43,7 @@ public class JrnlTagCacheUpdtWorker {
     @Transactional
     public void handle(final String contentType, final String cacheKey, final Map<Integer, Integer> tagCntChangeMap) throws Exception {
         if (MapUtils.isEmpty(tagCntChangeMap)) return;
+        if (StringUtils.isBlank(contentType) || StringUtils.isBlank(cacheKey)) return;
 
         updtSizedMapCache(contentType, cacheKey, tagCntChangeMap);
         updtSizedListCache(contentType, cacheKey, tagCntChangeMap);
@@ -60,16 +62,29 @@ public class JrnlTagCacheUpdtWorker {
             final Map<Integer, Integer> tagCntChangeMap
     ) {
         final String cacheNm = this.getSizedTagMapCacheNmByContentType(contentType);
-        final Cache cache = cacheManager.getCache(cacheNm);
-        if (cache == null) return;
+        final String sizedListCacheNm = this.getSizedTagListCacheNmByContentType(contentType);
+        final String listCacheNm = this.getTagListCacheNmByContentType(contentType);
+        if (StringUtils.isBlank(cacheNm) || StringUtils.isBlank(sizedListCacheNm) || StringUtils.isBlank(listCacheNm)) return;
 
-        final ConcurrentHashMap<Integer, Integer> sizeMap = Objects.requireNonNullElseGet(
-                cache.get(cacheKey, ConcurrentHashMap.class),
-                ConcurrentHashMap::new
-        );
+        final Cache cache = cacheManager.getCache(cacheNm);
+        if (cache == null) {
+            evictTagCachesByKey(cacheNm, sizedListCacheNm, listCacheNm, cacheKey);
+            return;
+        }
+
+        final ConcurrentHashMap<Integer, Integer> sizeMap = cache.get(cacheKey, ConcurrentHashMap.class);
+        if (sizeMap == null) {
+            // partial update를 금지하고 full reload가 일어나도록 key cache를 비운다.
+            evictTagCachesByKey(cacheNm, sizedListCacheNm, listCacheNm, cacheKey);
+            return;
+        }
 
         for (final Map.Entry<Integer, Integer> entry : tagCntChangeMap.entrySet()) {
-            sizeMap.compute(entry.getKey(), (k, v) -> (v == null) ? entry.getValue() : v + entry.getValue());
+            sizeMap.compute(entry.getKey(), (k, v) -> {
+                final int curr = (v == null) ? 0 : v;
+                final int next = curr + entry.getValue();
+                return (next <= 0) ? null : next;
+            });
         }
 
         cache.put(cacheKey, sizeMap);
@@ -84,12 +99,23 @@ public class JrnlTagCacheUpdtWorker {
      */
     public void updtSizedListCache(final String contentType, final String cacheKey, final Map<Integer, Integer> tagCntChangeMap) throws Exception {
         final String sizedListCacheNm = this.getSizedTagListCacheNmByContentType(contentType);
-        final Cache cache = cacheManager.getCache(sizedListCacheNm);
-        if (cache == null) return;
+        final String sizedMapCacheNm = this.getSizedTagMapCacheNmByContentType(contentType);
+        final String listCacheNm = this.getTagListCacheNmByContentType(contentType);
+        if (StringUtils.isBlank(sizedMapCacheNm) || StringUtils.isBlank(sizedListCacheNm) || StringUtils.isBlank(listCacheNm)) return;
 
-        final List<TagDto> sizedTagList = Optional.ofNullable(cache.get(cacheKey, List.class))
-                .map(list -> new ArrayList<>(list))
-                .orElseGet(ArrayList::new);
+        final Cache cache = cacheManager.getCache(sizedListCacheNm);
+        if (cache == null) {
+            evictTagCachesByKey(sizedMapCacheNm, sizedListCacheNm, listCacheNm, cacheKey);
+            return;
+        }
+
+        final List<TagDto> cachedSizedTagList = cache.get(cacheKey, List.class);
+        if (cachedSizedTagList == null) {
+            // miss 시 증분 갱신을 수행하면 "변경 태그만 남는" 상태가 생길 수 있다.
+            evictTagCachesByKey(sizedMapCacheNm, sizedListCacheNm, listCacheNm, cacheKey);
+            return;
+        }
+        final List<TagDto> sizedTagList = new ArrayList<>(cachedSizedTagList);
 
         final Iterator<TagDto> iterator = sizedTagList.iterator();
         final Set<Integer> processedTags = new HashSet<>();
@@ -122,7 +148,6 @@ public class JrnlTagCacheUpdtWorker {
         }
 
         // 변경된 태그 목록 캐시 저장
-        final String listCacheNm = this.getTagListCacheNmByContentType(contentType);
         final Cache listCache = cacheManager.getCache(listCacheNm);
         if (listCache != null) listCache.put(cacheKey, sizedTagList);
 
@@ -130,6 +155,21 @@ public class JrnlTagCacheUpdtWorker {
         if (yyMnthListCache != null) yyMnthListCache.put(cacheKey, sizedTagList);
 
         EhCacheUtils.evictCache(sizedListCacheNm, cacheKey);
+    }
+
+    /**
+     * 증분 갱신 전제조건이 맞지 않을 때, key 단위 캐시를 제거해 다음 조회에서 full rebuild 하도록 유도한다.
+     */
+    private void evictTagCachesByKey(
+            final String sizedMapCacheNm,
+            final String sizedListCacheNm,
+            final String listCacheNm,
+            final String cacheKey
+    ) {
+        EhCacheUtils.evictCache(sizedMapCacheNm, cacheKey);
+        EhCacheUtils.evictCache(sizedListCacheNm, cacheKey);
+        EhCacheUtils.evictCache(listCacheNm, cacheKey);
+        EhCacheUtils.evictCache(listCacheNm + "YyMnth", cacheKey);
     }
 
     /**

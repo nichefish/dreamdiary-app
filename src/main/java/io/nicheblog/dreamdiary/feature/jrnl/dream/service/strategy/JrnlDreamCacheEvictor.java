@@ -49,6 +49,9 @@ public class JrnlDreamCacheEvictor
             // jrnl_dream_tag
             EhCacheUtils.evictMyCacheAll("myJrnlDreamTagCtgrMap");
             EhCacheUtils.evictMyCacheAll("myJrnlDreamTagList");
+            EhCacheUtils.evictMyCacheAll("myJrnlDreamTagListYyMnth");
+            EhCacheUtils.evictMyCacheAll("myJrnlDreamSizedTagList");
+            EhCacheUtils.evictMyCacheAll("myCountDreamSizeMap");
             // 태그 캐시 처리
             EhCacheUtils.evictCache("tagContentEntityListByRef", postNo + "_JRNL_DREAM");
         } catch (final Exception e) {

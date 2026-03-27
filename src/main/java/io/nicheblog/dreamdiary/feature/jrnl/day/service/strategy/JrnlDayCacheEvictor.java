@@ -42,6 +42,9 @@ public class JrnlDayCacheEvictor
             // jrnl_day_tag
             EhCacheUtils.evictMyCacheAll("myJrnlDayTagCtgrMap");
             EhCacheUtils.evictMyCacheAll("myJrnlDayTagDtl");
+            EhCacheUtils.evictMyCacheAll("myJrnlDayTagList");
+            EhCacheUtils.evictMyCacheAll("myJrnlDaySizedTagList");
+            EhCacheUtils.evictMyCacheAll("myCountDaySizeMap");
             EhCacheUtils.evictCache("tagContentEntityListByRef", postNo + "_JRNL_DAY");
             // jrnl_day_meta
             EhCacheUtils.evictMyCacheAll("myJrnlDayMetaCtgrMap");
