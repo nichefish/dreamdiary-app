@@ -60,4 +60,5 @@
 ---
 
 ##  **[전체 변경 기록 보기 (@CHANGELOG.md)](docs/CHANGELOG.md)**
+##  **[개발 노트 보기 (@DEV_NOTES.md)](docs/DEV_NOTES.md)**
 ##  **[방향성 노트 보기 (@DESIGN_NOTES.md)](docs/DESIGN_NOTES.md)**
