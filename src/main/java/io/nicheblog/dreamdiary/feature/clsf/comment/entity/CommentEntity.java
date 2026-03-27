@@ -56,7 +56,7 @@ public class CommentEntity
 
     /** 내용 */
     @Column(name = "cn")
-    protected String cn;
+    private String cn;
 
     /* ----- */
 

@@ -63,10 +63,6 @@
 <#include "/view/feature/jrnl/tag/_jrnl_tag_list_modal.ftlh">
 <#include "/view/feature/clsf/tag/_partial/_tag_list_partial.hbs">
 
-<#--include::comment-->
-<#include "/view/feature/clsf/comment/_modal/_comment_reg_modal.ftlh">
-<script type="text/javascript" src="/js/view/feature/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
-
 <#--include::script modules-->
 <script type="text/javascript" src="/js/view/feature/jrnl/sumry/jrnl_sumry_module.js?${releaseDate!}"></script>
 

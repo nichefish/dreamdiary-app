@@ -2,8 +2,6 @@ package io.nicheblog.dreamdiary.feature.jrnl.todo.entity;
 
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
-import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.infrastructure.cd.Code;
@@ -35,7 +33,7 @@ import javax.persistence.*;
 @SQLDelete(sql = "UPDATE jrnl_todo SET del_yn = 'Y' WHERE post_no = ?")
 public class JrnlTodoEntity
         extends BaseClsfEntity
-        implements CommentEmbedModule, TagEmbedModule {
+        implements TagEmbedModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -65,11 +63,11 @@ public class JrnlTodoEntity
 
     /** 제목 */
     @Column(name = "title")
-    protected String title;
+    private String title;
 
     /** 내용 */
     @Column(name = "cn")
-    protected String cn;
+    private String cn;
 
     /* ----- */
 
@@ -77,18 +75,18 @@ public class JrnlTodoEntity
     @Builder.Default
     @Column(name = "imprtc_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
     @Comment("중요 여부")
-    protected String imprtcYn = "N";
+    private String imprtcYn = "N";
 
     /** 상단고정 여부 (Y/N) */
     @Builder.Default
     @Column(name = "fxd_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
     @Comment("상단고정 여부")
-    protected String fxdYn = "N";
+    private String fxdYn = "N";
 
     /** 조회수 */
     @Builder.Default
     @Column(name = "hit_cnt")
-    protected Integer hitCnt = 0;
+    private Integer hitCnt = 0;
 
     /** 수정권한 */
     @Builder.Default
@@ -114,9 +112,6 @@ public class JrnlTodoEntity
 
     /* ----- */
 
-    /** 위임 :: 댓글 정보 모듈 */
-    @Embedded
-    public CommentEmbed comment;
     /** 위임 :: 태그 정보 모듈 */
     @Embedded
     public TagEmbed tag;

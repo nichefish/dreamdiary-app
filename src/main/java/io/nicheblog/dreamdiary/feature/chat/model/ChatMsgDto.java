@@ -38,21 +38,21 @@ public class ChatMsgDto
     private Boolean isRegstr;
 
        /** 제목 */
-    protected String title;
+    private String title;
 
     /** 내용 */
-    protected String cn;
+    private String cn;
 
     /** 마크다운 처리된 내용 */
-    protected String markdownCn;
+    private String markdownCn;
 
     /** 중요 여부 (Y/N) */
     @Builder.Default
-    protected String imprtcYn = "N";
+    private String imprtcYn = "N";
 
     /** 상단고정 여부 (Y/N) */
     @Builder.Default
-    protected String fxdYn = "N";
+    private String fxdYn = "N";
 
     /* ----- */
 

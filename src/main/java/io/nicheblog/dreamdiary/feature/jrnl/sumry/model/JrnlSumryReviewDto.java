@@ -37,9 +37,9 @@ public class JrnlSumryReviewDto
     private String contentType = ContentType.JRNL_SUMRY_REVIEW.key;
 
     /** 제목 */
-    protected String title;
+    private String title;
     /** 내용 */
-    protected String cn;
+    private String cn;
     /** 마크다운 처리된 내용 */
     private String markdownCn;
 

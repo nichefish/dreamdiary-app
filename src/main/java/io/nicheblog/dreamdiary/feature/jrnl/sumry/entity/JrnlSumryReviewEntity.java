@@ -53,11 +53,11 @@ public class JrnlSumryReviewEntity
 
     /** 제목 */
     @Column(name = "title")
-    protected String title;
+    private String title;
 
     /** 내용 */
     @Column(name = "cn")
-    protected String cn;
+    private String cn;
 
     /* ----- */
 

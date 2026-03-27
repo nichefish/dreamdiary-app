@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.clsf.state.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.state.StateCd;
 import io.nicheblog.dreamdiary.feature.clsf.state.adapter.StateCacheUpdater;
-import io.nicheblog.dreamdiary.feature.clsf.state.adapter.impl.JrnlStateCacheUpdater;
 import io.nicheblog.dreamdiary.feature.clsf.state.entity.StateEntity;
 import io.nicheblog.dreamdiary.feature.clsf.state.mapstruct.StateMapstruct;
 import io.nicheblog.dreamdiary.feature.clsf.state.model.StateDto;
@@ -20,7 +20,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * StateService
@@ -43,7 +46,33 @@ public class StateService
     @Getter
     private final StateMapstruct mapstruct = StateMapstruct.INSTANCE;
 
-    private final List<JrnlStateCacheUpdater> cacheUpdaters;
+    private final List<StateCacheUpdater> cacheUpdaters;
+
+    /**
+     * 전략 validation
+     */
+    @PostConstruct
+    private void validateStateCacheUpdaters() {
+        final Set<ContentType> requiredTypes = EnumSet.of(
+                ContentType.JRNL_ENTRY,
+                ContentType.JRNL_DIARY,
+                ContentType.JRNL_DREAM,
+                ContentType.JRNL_INTRPT
+        );
+
+        for (final ContentType requiredType : requiredTypes) {
+            int supportsCount = 0;
+            for (final StateCacheUpdater updater : cacheUpdaters) {
+                if (updater.supports(requiredType)) supportsCount++;
+            }
+            if (supportsCount == 0) {
+                throw new IllegalStateException("Missing StateCacheUpdater for ContentType: " + requiredType);
+            }
+            if (supportsCount > 1) {
+                throw new IllegalStateException("Duplicate StateCacheUpdater mapping for ContentType: " + requiredType);
+            }
+        }
+    }
 
     public StateMapstruct getReadMapstruct() {
         return this.mapstruct;

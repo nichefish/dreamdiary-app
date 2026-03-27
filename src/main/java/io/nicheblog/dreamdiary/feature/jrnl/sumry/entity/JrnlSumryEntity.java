@@ -2,8 +2,6 @@ package io.nicheblog.dreamdiary.feature.jrnl.sumry.entity;
 
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
-import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbedModule;
 import lombok.*;
@@ -35,7 +33,7 @@ import java.util.List;
 @SQLDelete(sql = "UPDATE jrnl_sumry SET del_yn = 'Y' WHERE post_no = ?")
 public class JrnlSumryEntity
         extends BaseClsfEntity
-        implements CommentEmbedModule, TagEmbedModule {
+        implements TagEmbedModule {
 
     /** 저널 꿈 고유 번호 (PK) */
     @Id
@@ -53,11 +51,11 @@ public class JrnlSumryEntity
 
     /** 제목 */
     @Column(name = "title")
-    protected String title;
+    private String title;
 
     /** 내용 */
     @Column(name = "cn")
-    protected String cn;
+    private String cn;
 
     /* ----- */
 
@@ -104,9 +102,6 @@ public class JrnlSumryEntity
 
     /* ----- */
 
-    /** 위임 :: 댓글 정보 모듈 */
-    @Embedded
-    public CommentEmbed comment;
     /** 위임 :: 태그 정보 모듈 */
     @Embedded
     public TagEmbed tag;

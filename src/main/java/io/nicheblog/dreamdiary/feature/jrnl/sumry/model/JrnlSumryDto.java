@@ -2,8 +2,6 @@ package io.nicheblog.dreamdiary.feature.jrnl.sumry.model;
 
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
-import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.sectn.model.cmpstn.SectnCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.sectn.model.cmpstn.SectnCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
@@ -30,7 +28,7 @@ import java.util.List;
 @ToString(callSuper = true)
 public class JrnlSumryDto
         extends BaseClsfDto
-        implements Identifiable<Integer>, CommentCmpstnModule, TagCmpstnModule, SectnCmpstnModule {
+        implements Identifiable<Integer>, TagCmpstnModule, SectnCmpstnModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -67,8 +65,6 @@ public class JrnlSumryDto
         return this.postNo;
     }
 
-    /** 위임 :: 댓글 정보 모듈 */
-    public CommentCmpstn comment;
     /** 위임 :: 단락 정보 모듈 */
     public SectnCmpstn sectn;
     /** 위임 :: 태그 정보 모듈 */
