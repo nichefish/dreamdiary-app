@@ -57,8 +57,10 @@ public class WebSecurityAdapter {
     private final SessionRegistry sessionRegistry;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Value("${springdoc.api-docs.path:}")
+    @Value("${springdoc.api-docs.path:/v3/api-docs}")
     private String API_DOCS_PATH;
+    @Value("${springdoc.swagger-ui.path:/swagger-ui.html}")
+    private String SWAGGER_UI_PATH;
     @Value("${remember-me.key}")
     private String REMEMBER_ME_KEY;
     @Value("${remember-me.param}")
@@ -138,8 +140,8 @@ public class WebSecurityAdapter {
                 // OAUTH2 인증 관련 페이지
                 .antMatchers("/oauth2/authorization/**", "/login/oauth2/code/**")
                 .permitAll()
-                // Swagger
-                .antMatchers(API_DOCS_PATH)
+                // Swagger/OpenAPI docs and UI resources
+                .antMatchers(API_DOCS_PATH, API_DOCS_PATH + "/**", SWAGGER_UI_PATH, "/swagger-ui/**")
                 .permitAll()
                 // WebSocket 엔드포인트에 대한 접근 허용
                 .antMatchers("/chat/**")

@@ -15,6 +15,7 @@
 
     <#--include::테스트 페이지 -->
     <#include "/layout/header/navbar/_navbar_btn_test_page.ftlh">
+    <#include "/layout/header/navbar/_navbar_btn_swagger.ftlh">
 
     <#--include::태그클라우드 -->
     <#include "/layout/header/navbar/_navbar_btn_tag_cloud.ftlh">
