@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.jrnl._shared.adapter;
 
-import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDaySearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayMetaService;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayService;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayTagService;
@@ -40,13 +39,11 @@ public class JrnlCacheWarmupTask
      */
     @Override
     public void warmup() throws Exception {
-        // TODO: 사용자 기반 워밍업 필요
+        // 사용자 기반 워밍업
         jrnlDayTagService.getTagCtgrMap("nichefish");
+        jrnlDayMetaService.getMetaCtgrMap("nichefish");
         jrnlDiaryTagService.getTagCtgrMap("nichefish");
         jrnlDreamTagService.getTagCtgrMap("nichefish");
-
-        // TODO: 사용자 기반 워밍업 필요
-        jrnlDayMetaService.getMetaCtgrMap("nichefish");
     }
 
     /**
@@ -55,11 +52,7 @@ public class JrnlCacheWarmupTask
      */
     @Override
     public void warmupOnLgn(final String userId) throws Exception {
-        final JrnlDaySearchParam param = JrnlDaySearchParam.builder()
-                .yy(DateUtils.getCurrYy())
-                .mnth(DateUtils.getCurrMnth())
-                .build();
         // 로그인 시 해당 사용자의 월별 저널 목록(휴일 포함) 캐시 워밍업
-        jrnlDayService.getMyListDtoByYyMnthWithHldy(userId, param);
+        jrnlDayService.getCachedYyMnthListDtoByUser(userId, DateUtils.getCurrYy(), DateUtils.getCurrMnth());
     }
 }

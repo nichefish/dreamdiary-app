@@ -60,18 +60,17 @@
     <!-- 개인 -->
 
     <!-- 저널 일자 -->
-    <cache alias="myJrnlDayList" uses-template="defaultTemplate" />
-    <cache alias="myJrnlDayCalList" uses-template="defaultTemplate" />
-    <cache alias="myJrnlDayDtlDto" uses-template="defaultTemplate" />
+    <cache alias="jrnlDayYyMnthListByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlDayDtlDtoByUser" uses-template="defaultTemplate" />
+    <!-- 저널 일자: 태그 -->
     <cache alias="myJrnlDayTagList" uses-template="defaultTemplate" />
     <cache alias="myJrnlDaySizedTagList" uses-template="defaultTemplate" />
-    <cache alias="myJrnlDayTagCtgrMap" uses-template="defaultTemplate" />
-    <cache alias="myJrnlDayMetaCtgrMap" uses-template="defaultTemplate" />
+    <cache alias="jrnlDayTagCtgrMapByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlDayMetaCtgrMapByUser" uses-template="defaultTemplate" />
     <cache alias="myCountDaySizeMap" uses-template="defaultTemplate" />
-    <cache alias="myJrnlDayTagDtl" uses-template="defaultTemplate" />
 
     <!-- 저널 항목 -->
-    <cache alias="myEntryStateMap" uses-template="defaultTemplate" />
+    <cache alias="jrnlEntryStateMapByUser" uses-template="defaultTemplate" />
 
     <!-- 저널 일기 -->
     <cache alias="myJrnlDiaryList" uses-template="defaultTemplate" />
@@ -79,10 +78,10 @@
     <cache alias="myJrnlDiaryTagList" uses-template="defaultTemplate" />
     <cache alias="myJrnlDiaryTagListYyMnth" uses-template="defaultTemplate" />
     <cache alias="myJrnlDiarySizedTagList" uses-template="defaultTemplate" />
-    <cache alias="myJrnlDiaryTagCtgrMap" uses-template="defaultTemplate" />
+    <cache alias="jrnlDiaryTagCtgrMapByUser" uses-template="defaultTemplate" />
     <cache alias="myCountDiarySizeMap" uses-template="defaultTemplate" />
     <cache alias="mySumryDiaryList" uses-template="defaultTemplate" />
-    <cache alias="myDiaryStateMap" uses-template="defaultTemplate" />
+    <cache alias="jrnlDiaryStateMapByUser" uses-template="defaultTemplate" />
 
     <!-- 저널 꿈 -->
     <cache alias="myJrnlDreamList" uses-template="defaultTemplate" />
@@ -90,19 +89,19 @@
     <cache alias="myJrnlDreamTagList" uses-template="defaultTemplate" />
     <cache alias="myJrnlDreamTagListYyMnth" uses-template="defaultTemplate" />
     <cache alias="myJrnlDreamSizedTagList" uses-template="defaultTemplate" />
-    <cache alias="myJrnlDreamTagCtgrMap" uses-template="defaultTemplate" />
+    <cache alias="jrnlDreamTagCtgrMapByUser" uses-template="defaultTemplate" />
     <cache alias="myCountDreamSizeMap" uses-template="defaultTemplate" />
     <cache alias="mySumryDreamList" uses-template="defaultTemplate" />
-    <cache alias="myDreamStateMap" uses-template="defaultTemplate" />
+    <cache alias="jrnlDreamStateMapByUser" uses-template="defaultTemplate" />
 
     <cache alias="myJrnlIntrptList" uses-template="defaultTemplate" />
     <cache alias="myJrnlIntrptDtlDto" uses-template="defaultTemplate" />
     <cache alias="myJrnlIntrptTagList" uses-template="defaultTemplate" />
     <cache alias="myJrnlIntrptSizedTagList" uses-template="defaultTemplate" />
-    <cache alias="myJrnlIntrptTagCtgrMap" uses-template="defaultTemplate" />
+    <cache alias="jrnlIntrptTagCtgrMapByUser" uses-template="defaultTemplate" />
     <cache alias="myCountIntrptSizeMap" uses-template="defaultTemplate" />
     <cache alias="myImprtcIntrptList" uses-template="defaultTemplate" />
-    <cache alias="myIntrptStateMap" uses-template="defaultTemplate" />
+    <cache alias="jrnlIntrptStateMapByUser" uses-template="defaultTemplate" />
 
     <!-- 저널 할일 -->
     <cache alias="myJrnlTodoList" uses-template="defaultTemplate" />

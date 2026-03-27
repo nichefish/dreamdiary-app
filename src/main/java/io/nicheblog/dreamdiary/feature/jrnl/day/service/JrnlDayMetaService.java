@@ -53,19 +53,19 @@ public class JrnlDayMetaService
     }
 
     /**
-     * 메타 카테고리 맵을 반환합니다.
+     * 사용자별 메타 카테고리 맵을 반환합니다.
      *
      * @param userId 사용자 아이디
      * @return {@link Map} -- 메타 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵
      */
-    @Cacheable(value="myJrnlDayMetaCtgrMap", key="#userId")
+    @Cacheable(value="jrnlDayMetaCtgrMapByUser", key="#userId")
     public Map<String, List<String>> getMetaCtgrMap(final String userId) throws Exception {
         final HashMap<String, Object> paramMap = new HashMap<>() {{
             put("regstrId", userId);
         }};
 
-        final List<JrnlDayMetaEntity> tagList = this.getSelf().getListEntity(paramMap);
-        return tagList.stream()
+        final List<JrnlDayMetaEntity> metaList = this.getSelf().getListEntity(paramMap);
+        return metaList.stream()
                 .collect(Collectors.groupingBy(
                         JrnlDayMetaEntity::getMetaNm,
                         Collectors.mapping(tag -> {

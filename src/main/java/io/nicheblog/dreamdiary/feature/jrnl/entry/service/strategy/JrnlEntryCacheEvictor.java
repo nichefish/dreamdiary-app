@@ -39,7 +39,7 @@ public class JrnlEntryCacheEvictor
             final Integer mnth = param.getMnth();
             // jrnl_day
             if (jrnlDayNo != null) {
-                EhCacheUtils.evictMyCacheByKey("myJrnlDayDtlDto", jrnlDayNo);
+                EhCacheUtils.evictMyCacheByKey("jrnlDayDtlDtoByUser", jrnlDayNo);
             }
             this.evictMyJrnlDayYyMnthCaches(yy, mnth);
             // 태그 캐시 처리

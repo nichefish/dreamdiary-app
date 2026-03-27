@@ -90,7 +90,7 @@ dF.JrnlDiary = (function(): dfModule {
          * 키워드 검색 (Ajax)
          */
         searchPopup: function(): void {
-            const keyword: string = (document.querySelector("#jrnl_aside #diaryKeyword") as HTMLInputElement)?.value;
+            const keyword: string = (document.querySelector("#diarySearchKeyword") as HTMLInputElement)?.value;
             const url: string = `${Url.JRNL_DIARY_SEARCH}?searchKeywords=${keyword}`;
             const popupNm: string = "저널 일기 검색";
             const options: string = 'width=1960,height=1440,top=0,left=270';

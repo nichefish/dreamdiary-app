@@ -37,17 +37,16 @@ public class JrnlDayCacheEvictor
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();
             // jrnl_day
-            EhCacheUtils.evictMyCacheByKey("myJrnlDayDtlDto", postNo);
+            EhCacheUtils.evictMyCacheByKey("jrnlDayDtlDtoByUser", postNo);
             this.evictMyJrnlDayYyMnthCaches(yy, mnth);
             // jrnl_day_tag
-            EhCacheUtils.clearMyCache("myJrnlDayTagCtgrMap");
-            EhCacheUtils.clearMyCache("myJrnlDayTagDtl");
+            EhCacheUtils.clearMyCache("jrnlDayTagCtgrMapByUser");
             EhCacheUtils.clearMyCache("myJrnlDayTagList");
             EhCacheUtils.clearMyCache("myJrnlDaySizedTagList");
             EhCacheUtils.clearMyCache("myCountDaySizeMap");
             EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", postNo + "_JRNL_DAY");
             // jrnl_day_meta
-            EhCacheUtils.clearMyCache("myJrnlDayMetaCtgrMap");
+            EhCacheUtils.clearMyCache("jrnlDayMetaCtgrMapByUser");
             EhCacheUtils.evictCacheByKey("metaContentEntityListByRef", postNo + "_JRNL_DAY");
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);

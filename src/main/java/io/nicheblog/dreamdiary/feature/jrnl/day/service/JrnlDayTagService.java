@@ -168,12 +168,12 @@ public class JrnlDayTagService
     }
 
     /**
-     * 태그 카테고리 맵을 반환합니다.
+     * 사용자별 태그 카테고리 맵을 반환합니다.
      *
      * @param userId 사용자 아이디
      * @return {@link Map} -- 태그 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵
      */
-    @Cacheable(value="myJrnlDayTagCtgrMap", key="#userId")
+    @Cacheable(value="jrnlDayTagCtgrMapByUser", key="#userId")
     public Map<String, List<String>> getTagCtgrMap(final String userId) throws Exception {
         final HashMap<String, Object> paramMap = new HashMap<>() {{
             put("regstrId", userId);

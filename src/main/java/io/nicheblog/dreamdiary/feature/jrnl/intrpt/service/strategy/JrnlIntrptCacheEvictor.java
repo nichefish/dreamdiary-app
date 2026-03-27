@@ -47,11 +47,11 @@ public class JrnlIntrptCacheEvictor
             }
             // jrnl_day
             if (jrnlDayNo != null) {
-                EhCacheUtils.evictMyCacheByKey("myJrnlDayDtlDto", jrnlDayNo);
+                EhCacheUtils.evictMyCacheByKey("jrnlDayDtlDtoByUser", jrnlDayNo);
             }
             this.evictMyJrnlDayYyMnthCaches(yy, mnth);
             // jrnl_diary_tag
-            EhCacheUtils.clearMyCache("myJrnlIntrptTagCtgrMap");
+            EhCacheUtils.clearMyCache("jrnlIntrptTagCtgrMapByUser");
             // 태그 캐시 처리
             if (postNo != null) {
                 EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", postNo + "_JRNL_INTRPT");

@@ -22,6 +22,9 @@ dF.JrnlDayAside = (function(): dfModule {
             document.querySelector("#jrnl_aside #left")?.addEventListener("click", dF.JrnlDayAside.left);
             document.querySelector("#jrnl_aside #right")?.addEventListener("click", dF.JrnlDayAside.right);
 
+            cF.util.enterKey("#diaryFilterKeyword", dF.JrnlDay.applyKeywordFilters);
+            cF.util.enterKey("#dreamFilterKeyword", dF.JrnlDay.applyKeywordFilters);
+
             dF.JrnlDayAside.initialized = true;
             console.log("'dF.JrnlDayAside' module initialized.");
         },
@@ -133,8 +136,6 @@ dF.JrnlDayAside = (function(): dfModule {
             if (sort) dF.JrnlDay.currentSearchParams.sort = sort;
 
             // 목록 조회
-            $("#jrnl_aside #dreamKeyword").val("");
-            $("#jrnl_aside #diaryKeyword").val("");
             const isCalendar: boolean = Page?.calendar != null;
             if (isCalendar) {
                 Page.calDt = new Date(Number(yy), Number(mnth) - 1, 1);

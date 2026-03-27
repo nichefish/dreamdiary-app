@@ -13,9 +13,8 @@ import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDaySearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.day.repository.jpa.JrnlDayRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.day.repository.mybatis.JrnlDayMapper;
-import io.nicheblog.dreamdiary.feature.jrnl.day.service.helper.JrnlDayViewHelper;
+import io.nicheblog.dreamdiary.feature.jrnl.day.service.helper.JrnlDayStateMapHelper;
 import io.nicheblog.dreamdiary.feature.jrnl.day.spec.JrnlDaySpec;
-import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
@@ -29,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * JrnlDayService
@@ -68,114 +66,116 @@ public class JrnlDayService
     }
 
     /**
-     * 내 목록 조회 (dto level) :: 캐시 처리
+     * 내 년월 목록 조회 (dto level)
      *
-     * @param lgnUserId 사용자 ID
-     * @param searchParam 검색 조건이 담긴 파라미터 객체
+     * @param yy 년도
+     * @param mnth 월
      * @return {@link List} -- 조회된 목록
      */
-    @Cacheable(value="myJrnlDayList", key="#lgnUserId + \"_\" + #searchParam.getYy() + \"_\" + #searchParam.getMnth()")
-    public List<JrnlDayDto> getMyListDtoByYyMnth(final String lgnUserId, final JrnlDaySearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(lgnUserId);
+    public List<JrnlDayDto> getMyCachedYyMnthListDto(final Integer yy, final Integer mnth) throws Exception {
+        final String lgnUserId = AuthUtils.getLgnUserId();
+        return this.getSelf().getCachedYyMnthListDtoByUser(lgnUserId, yy, mnth);
+    }
 
-        final List<JrnlDayEntity> myJrnlDayEntityList = this.getSelf().getListEntity(searchParam);
+    /**
+     * 사용자 년월 목록 조회 (dto level) :: 캐시 처리
+     *
+     * @param userId 사용자 ID
+     * @param yy 년도
+     * @param mnth 월
+     * @return {@link List} -- 조회된 목록
+     */
+    @Transactional(readOnly = true)
+    @Cacheable(value = "jrnlDayYyMnthListByUser", key = "#userId + \"_\" + #yy + \"_\" + #mnth")
+    public List<JrnlDayDto> getCachedYyMnthListDtoByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
+        final JrnlDaySearchParam baseParam = JrnlDaySearchParam.getBaseParam(userId, yy, mnth);
+        final List<JrnlDayEntity> myJrnlDayEntityList = this.getListEntity(baseParam);
 
         // 1) stateMap 만들기
-        final JrnlStateMaps maps = JrnlDayViewHelper.makeJrnlStateMaps(myJrnlDayEntityList, searchParam);
-
-        // 2) 캐시에 저장
-        final String cacheKey = AuthUtils.getLgnUserId() + "_" + searchParam.getYy() + "_" + searchParam.getMnth();
-        EhCacheUtils.put("myEntryStateMap", cacheKey, maps.getEntryMap());
-        EhCacheUtils.put("myDiaryStateMap", cacheKey, maps.getDiaryMap());
-        EhCacheUtils.put("myDreamStateMap", cacheKey, maps.getDreamMap());
-        EhCacheUtils.put("myIntrptStateMap", cacheKey, maps.getIntrptMap());
+        final JrnlStateMaps maps = JrnlDayStateMapHelper.makeJrnlStateMaps(myJrnlDayEntityList);
+        // 2) stateMap 캐시에 저장
+        final String cacheKey = userId + "_" + yy + "_" + mnth;
+        EhCacheUtils.put("jrnlEntryStateMapByUser", cacheKey, maps.getEntryMap());
+        EhCacheUtils.put("jrnlDiaryStateMapByUser", cacheKey, maps.getDiaryMap());
+        EhCacheUtils.put("jrnlDreamStateMapByUser", cacheKey, maps.getDreamMap());
+        EhCacheUtils.put("jrnlIntrptStateMapByUser", cacheKey, maps.getIntrptMap());
 
         return mapstruct.toDtoList(myJrnlDayEntityList);
     }
 
     /**
-     * 내 목록 조회 (dto level) :: 캐시 처리
+     * 내 기준일 일자 목록 조회 (dto level)
      *
-     * @param lgnUserId 사용자 ID
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
      */
-    @SuppressWarnings("unchecked")
-    public List<JrnlDayDto> getMyListDtoByMetaNoWithHldy(String lgnUserId, JrnlDaySearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(lgnUserId);
-        searchParam.setSort("DESC");
+    @Transactional(readOnly = true)
+    public List<JrnlDayDto> getMyJrnlStdrdDays(final JrnlDaySearchParam searchParam) throws Exception {
+        if (searchParam == null) return List.of();
 
-        final List<JrnlDayDto> listDto = this.getSelf().getListDto(searchParam);
-
-        // 공휴일 정보 세팅
-        final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
-        JrnlDayViewHelper.setHldyInfo(listDto, hldyMap);
-
-        // resolved/collapse 상태 merge
-        JrnlDayViewHelper.mergeStates(listDto, searchParam);
-
-        return listDto;
+        searchParam.setRegstrId(AuthUtils.getLgnUserId());
+        searchParam.setSort("ASC");
+        final List<JrnlDayEntity> myJrnlStdrdDayEntityList = this.getListEntity(searchParam);
+        return mapstruct.toDtoList(myJrnlStdrdDayEntityList);
     }
 
     /**
-     * 내 기준일자 조회 (dto level) :: 캐시 처리
+     * 메타별 내 일자 목록 조회 (dto level)
      *
-     * @param lgnUserId 사용자 ID
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
      */
-    public List<JrnlDayDto> getMyJrnlStdrdDays(final String lgnUserId, final JrnlDaySearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(lgnUserId);
+    @Transactional(readOnly = true)
+    public List<JrnlDayDto> getMyListDtoByMetaNo(final JrnlDaySearchParam searchParam) throws Exception {
+        if (searchParam == null) return List.of();
 
+        searchParam.setRegstrId(AuthUtils.getLgnUserId());
+        searchParam.setSort("DESC");
         return this.getSelf().getListDto(searchParam);
     }
 
     /**
-     * 내 목록 조회 (dto level) + 공휴일 정보 추가
+     * 태그별 내 일자 목록 조회 (dto level)
      *
-     * @param lgnUserId 사용자 ID
      * @param searchParam 검색 조건이 담긴 파라미터 객체
-     * @return {@link List} -- 조회된 목록
+     * @return {@link List} -- 검색 결과 목록
      */
-    @SuppressWarnings("unchecked")
-    public List<JrnlDayDto> getMyListDtoByYyMnthWithHldy(final String lgnUserId, final JrnlDaySearchParam searchParam) throws Exception {
-        final List<JrnlDayDto> listDto = this.getSelf().getMyListDtoByYyMnth(lgnUserId, searchParam);
+    @Transactional(readOnly = true)
+    public List<JrnlDayDto> getMyListDtoByTagNo(final JrnlDaySearchParam searchParam) throws Exception {
+        if (searchParam == null) return List.of();
 
-        // 공휴일 정보 세팅
-        final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
-        JrnlDayViewHelper.setHldyInfo(listDto, hldyMap);
-
-        // 상태state merge
-        JrnlDayViewHelper.mergeStates(listDto, searchParam);
-        // 접힌 entry에 태그 요약 표시
-        JrnlDayViewHelper.applyEntryTagSummary(listDto, searchParam);
-
-        return listDto;
+        searchParam.setRegstrId(AuthUtils.getLgnUserId());
+        searchParam.setSort("DESC");
+        return this.getSelf().getListDto(searchParam);
     }
 
     /**
-     * 내 기준일자 조회 (dto level) + 공휴일 정보 추가
+     * 상세 조회 (dto level) :: 캐시 처리
      *
-     * @param lgnUserId 사용자 ID
-     * @param searchParam 검색 조건이 담긴 파라미터 객체
-     * @return {@link List} -- 조회된 목록
+     * @param key 식별자
+     * @return {@link JrnlDayDto} -- 조회된 객체
      */
-    @SuppressWarnings("unchecked")
-    public List<JrnlDayDto> getMyStdrdDtoWithHldy(final String lgnUserId, final JrnlDaySearchParam searchParam) throws Exception {
-        final List<JrnlDayDto> listDto = this.getSelf().getMyJrnlStdrdDays(lgnUserId, searchParam);
-
-        // 공휴일 정보 세팅
-        final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
-        JrnlDayViewHelper.setHldyInfo(listDto, hldyMap);
-
-        // 상태state merge
-        JrnlDayViewHelper.mergeStates(listDto, searchParam);
-        // 접힌 entry에 태그 요약 표시
-        JrnlDayViewHelper.applyEntryTagSummary(listDto, searchParam);
-
-        return listDto;
+    public JrnlDayDto getMyCachedDtlDto(final Integer key) throws Exception {
+        final String lgnUserId = AuthUtils.getLgnUserId();
+        return this.getSelf().getCachedDtlDtoByUser(lgnUserId, key);
     }
 
+    /**
+     * 상세 조회 (dto level) :: 캐시 처리
+     *
+     * @param userId 사용자 ID
+     * @param key 식별자
+     * @return {@link JrnlDayDto} -- 조회된 객체
+     */
+    @Cacheable(value = "jrnlDayDtlDtoByUser", key = "#userId + \"_\" + #key")
+    public JrnlDayDto getCachedDtlDtoByUser(final String userId, final Integer key) throws Exception {
+        final JrnlDayEntity retrievedEntity = this.getDtlEntity(key);
+        final JrnlDayDto retrieved = mapstruct.toDto(retrievedEntity);
+        // 권한 체크
+        if (!retrieved.getIsRegstr(userId)) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+
+        return retrieved;
+    }
 
     /**
      * 중복 체크 (정상시 true / 중복시 false)
@@ -211,19 +211,6 @@ public class JrnlDayService
     }
 
     /**
-     * 특정 태그의 관련 일자 목록 조회
-     *
-     * @param searchParam 검색 조건이 담긴 파라미터 객체
-     * @return {@link List} -- 검색 결과 목록
-     */
-    @Cacheable(value="myJrnlDayTagDtl", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getTagNo()")
-    public List<JrnlDayDto> jrnlDayTagDtl(final JrnlDaySearchParam searchParam) throws Exception {
-        searchParam.setSort("DESC");
-
-        return this.getSelf().getListDto(searchParam);
-    }
-
-    /**
      * 등록 전처리. (override)
      *
      * @param registDto 등록할 객체
@@ -243,42 +230,6 @@ public class JrnlDayService
     public void postRegist(final JrnlDayDto updatedDto) throws Exception {
         // 관련 캐시 삭제
         jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DAY);
-    }
-
-    /**
-     * 상세 조회 (dto level) :: 캐시 처리
-     *
-     * @param key 식별자
-     * @return {@link JrnlDiaryDto} -- 조회된 객체
-     */
-    @Cacheable(value="myJrnlDayDtlDto", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #key")
-    public JrnlDayDto getDtlDtoWithCache(final Integer key) throws Exception {
-        final JrnlDayEntity retrievedEntity = this.getSelf().getDtlEntity(key);
-        final JrnlDayDto retrieved = mapstruct.toDto(retrievedEntity);
-        // 권한 체크
-        if (!retrieved.getIsRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
-
-        return retrieved;
-    }
-
-    /**
-     * 상세 조회 (dto level) :: 공휴일 정보 추가
-     *
-     * @param key 식별자
-     * @return {@link JrnlDiaryDto} -- 조회된 객체
-     */
-    @SuppressWarnings("unchecked")
-    public JrnlDayDto getDtlDtoWithCacheWithHldy(final Integer key) throws Exception {
-        final JrnlDayDto retrieved = this.getSelf().getDtlDtoWithCache(key);
-
-        // 공휴일 정보 세팅
-        final Map<String, List<String>> hldyMap = (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
-        JrnlDayViewHelper.setHldyInfo(retrieved, hldyMap);
-
-        // resolved/collapse 상태 merge
-        JrnlDayViewHelper.mergeStates(retrieved);
-
-        return retrieved;
     }
 
     /**

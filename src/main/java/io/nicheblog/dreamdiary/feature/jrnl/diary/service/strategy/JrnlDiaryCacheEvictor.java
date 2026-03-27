@@ -43,11 +43,11 @@ public class JrnlDiaryCacheEvictor
             EhCacheUtils.evictMyCacheByKey("myJrnlDiaryDtlDto", postNo);
             // jrnl_day
             if (jrnlDayNo != null) {
-                EhCacheUtils.evictMyCacheByKey("myJrnlDayDtlDto", jrnlDayNo);
+                EhCacheUtils.evictMyCacheByKey("jrnlDayDtlDtoByUser", jrnlDayNo);
             }
             this.evictMyJrnlDayYyMnthCaches(yy, mnth);
             // jrnl_diary_tag
-            EhCacheUtils.clearMyCache("myJrnlDiaryTagCtgrMap");
+            EhCacheUtils.clearMyCache("jrnlDiaryTagCtgrMapByUser");
             EhCacheUtils.clearMyCache("myJrnlDiaryTagList");
             EhCacheUtils.clearMyCache("myJrnlDiaryTagListYyMnth");
             EhCacheUtils.clearMyCache("myJrnlDiarySizedTagList");

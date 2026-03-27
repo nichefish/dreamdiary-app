@@ -43,11 +43,11 @@ public class JrnlDreamCacheEvictor
             EhCacheUtils.evictMyCacheByKey("myJrnlDreamDtlDto", postNo);
             // jrnl_day
             if (jrnlDayNo != null) {
-                EhCacheUtils.evictMyCacheByKey("myJrnlDayDtlDto", jrnlDayNo);
+                EhCacheUtils.evictMyCacheByKey("jrnlDayDtlDtoByUser", jrnlDayNo);
             }
             this.evictMyJrnlDayYyMnthCaches(yy, mnth);
             // jrnl_dream_tag
-            EhCacheUtils.clearMyCache("myJrnlDreamTagCtgrMap");
+            EhCacheUtils.clearMyCache("jrnlDreamTagCtgrMapByUser");
             EhCacheUtils.clearMyCache("myJrnlDreamTagList");
             EhCacheUtils.clearMyCache("myJrnlDreamTagListYyMnth");
             EhCacheUtils.clearMyCache("myJrnlDreamSizedTagList");
