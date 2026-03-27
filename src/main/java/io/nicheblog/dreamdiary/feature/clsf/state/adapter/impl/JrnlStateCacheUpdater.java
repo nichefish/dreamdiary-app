@@ -48,7 +48,7 @@ public class JrnlStateCacheUpdater
 
         final String evictCacheNm = this.getEvictCacheNm(contentType);
         if (evictCacheNm != null) {
-            EhCacheUtils.evictCacheAll(evictCacheNm);
+            EhCacheUtils.evictMyCacheAll(evictCacheNm);
         }
     }
 

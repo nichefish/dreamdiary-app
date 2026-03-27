@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.global.validator.Regex;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -123,6 +124,70 @@ public class CmmUtils {
             strList.add(jArray.getJSONObject(i).getString("value"));
         }
         return strList;
+    }
+
+    /**
+     * cache key 생성용 문자열 정규화
+     *  - null 안전 처리
+     *  - 앞뒤 공백 제거
+     *  - key 구분자 충돌 방지 ('_' → '-')
+     *
+     * @param value String
+     */
+    public static String sanitize(final String value) {
+        if (value == null) return "";
+        return value.trim().replace('_', '-');
+    }
+
+    /**
+     * cache key 생성용 null-safe Integer 처리
+     * - null 값을 0으로 치환하여 key 생성 시 NPE 방지
+     *
+     * @param value Integer
+     */
+    public static int nullSafeInt(final Integer value) {
+        return value != null ? value : 0;
+    }
+
+    /**
+     * cache key 생성용 String 리스트 정규화
+     * - 리스트 순서에 영향을 받지 않는 deterministic key 생성
+     *
+     * @param source List<String>
+     */
+    public static String normalizeStringList(final List<String> source) {
+        if (CollectionUtils.isEmpty(source)) return "";
+        final List<String> copied = new ArrayList<>();
+        for (final String item : source) {
+            if (StringUtils.isBlank(item)) continue;
+            copied.add(item.trim());
+        }
+        if (copied.isEmpty()) return "";
+        Collections.sort(copied);
+        return String.join(",", copied);
+    }
+
+    /**
+     * cache key 생성용 Integer 리스트 정규화
+     * - 리스트 순서에 영향을 받지 않는 deterministic key 생성
+     *
+     * @param source List<Integer>
+     */
+    public static String normalizeIntegerList(final List<Integer> source) {
+        if (CollectionUtils.isEmpty(source)) return "";
+        final List<Integer> copied = new ArrayList<>();
+        for (final Integer item : source) {
+            if (item == null) continue;
+            copied.add(item);
+        }
+        if (copied.isEmpty()) return "";
+        Collections.sort(copied);
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < copied.size(); i++) {
+            if (i > 0) sb.append(',');
+            sb.append(copied.get(i));
+        }
+        return sb.toString();
     }
 
     /**

@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.jrnl.intrpt.model;
 
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
+import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -23,7 +24,6 @@ public class JrnlIntrptSearchParam
 
     /** 년도 */
     private Integer yy;
-
     /** 월 */
     private Integer mnth;
 
@@ -41,4 +41,23 @@ public class JrnlIntrptSearchParam
 
     /** 중요 여부 **/
     private String imprtcYn;
+
+    /**
+     * 목록 캐시 key suffix
+     */
+    public String toListCacheKey() {
+        final int keyYy = (yy != null) ? yy : 9999;
+        final int keyMnth = (mnth != null) ? mnth : 99;
+
+        return keyYy + "_" + keyMnth + "_"
+                + CmmUtils.sanitize(contentType) + "_"
+                + CmmUtils.nullSafeInt(jrnlDreamNo) + "_"
+                + CmmUtils.sanitize(dreamKeyword) + "_"
+                + CmmUtils.nullSafeInt(tagNo) + "_"
+                + CmmUtils.sanitize(imprtcYn) + "_"
+                + CmmUtils.sanitize(searchType) + "_"
+                + CmmUtils.sanitize(searchKeyword) + "_"
+                + CmmUtils.sanitize(searchStartDt) + "_"
+                + CmmUtils.sanitize(searchEndDt);
+    }
 }

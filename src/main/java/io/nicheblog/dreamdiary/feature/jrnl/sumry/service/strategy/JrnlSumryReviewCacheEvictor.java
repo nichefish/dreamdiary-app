@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.jrnl.sumry.service.strategy;
 
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictor;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
-import io.nicheblog.dreamdiary.infrastructure.cache.service.CacheEvictor;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Log4j2
 public class JrnlSumryReviewCacheEvictor
-        implements CacheEvictor<JrnlCacheEvictParam> {
+        implements JrnlCacheEvictor {
 
     /**
      * 해당 컨텐츠 타입 관련 캐시를 제거한다.

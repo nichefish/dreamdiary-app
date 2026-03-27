@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.jrnl.diary.model;
 
 import io.nicheblog.dreamdiary.feature.clsf.state.StateCd;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
+import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.collections4.CollectionUtils;
@@ -77,5 +78,34 @@ public class JrnlDiarySearchParam
         if (showRefrnc) states.add(StateCd.REFRNC.key);
 
         this.states = states;
+    }
+
+    /**
+     * 목록 캐시 key suffix
+     */
+    public String toListCacheKey() {
+        final int keyYy = (yy != null) ? yy : 9999;
+        final int keyMnth = (mnth != null) ? mnth : 99;
+
+        return keyYy + "_" + keyMnth + "_"
+                + CmmUtils.sanitize(contentType) + "_"
+                + CmmUtils.sanitize(sort) + "_"
+                + CmmUtils.nullSafeInt(jrnlDayNo) + "_"
+                + CmmUtils.normalizeStringList(searchKeywords) + "_"
+                + CmmUtils.nullSafeInt(tagNo) + "_"
+                + CmmUtils.normalizeIntegerList(tagNos) + "_"
+                + CmmUtils.normalizeStringList(states) + "_"
+                + CmmUtils.sanitize(searchType) + "_"
+                + CmmUtils.sanitize(searchKeyword) + "_"
+                + CmmUtils.sanitize(searchStartDt) + "_"
+                + CmmUtils.sanitize(searchEndDt);
+    }
+
+    /**
+     * summary 목록 캐시 key suffix
+     */
+    public String toSummaryCacheKey() {
+        final int keyYy = (yy != null) ? yy : 9999;
+        return keyYy + "_" + CmmUtils.normalizeStringList(states);
     }
 }

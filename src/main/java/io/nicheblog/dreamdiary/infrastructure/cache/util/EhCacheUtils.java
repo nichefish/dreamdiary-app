@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.infrastructure.cache.model.CacheParam;
 import io.nicheblog.dreamdiary.infrastructure.cache.service.CacheStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.SessionFactory;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -261,8 +263,130 @@ public class EhCacheUtils {
      * @param cacheName String
      */
     public static void evictMyCacheAll(final String cacheName) {
-        // TODO:
-        evictCacheAll(cacheName);
+        final Cache cache = cacheManager.getCache(cacheName);
+        if (cache == null) return;
+        final String lgnUserId = AuthUtils.getLgnUserId();
+        if (lgnUserId == null || lgnUserId.isBlank()) {
+            log.warn("Login user id is empty. Fallback to clear all for cache: {}", cacheName);
+            evictCacheAll(cacheName);
+            return;
+        }
+
+        final Object nativeCache = cache.getNativeCache();
+        int evictedCnt = 0;
+        if (nativeCache instanceof javax.cache.Cache<?, ?> ehCache) {
+            final List<Object> keysToEvict = new ArrayList<>();
+            ehCache.iterator().forEachRemaining(entry -> {
+                if (isMyScopeCacheKey(entry.getKey(), lgnUserId)) keysToEvict.add(entry.getKey());
+            });
+            for (final Object key : keysToEvict) {
+                cache.evict(key);
+                evictedCnt++;
+            }
+        } else if (nativeCache instanceof com.github.benmanes.caffeine.cache.Cache<?, ?> caffeineCache) {
+            final List<Object> keysToEvict = new ArrayList<>();
+            caffeineCache.asMap().keySet().forEach(key -> {
+                if (isMyScopeCacheKey(key, lgnUserId)) keysToEvict.add(key);
+            });
+            for (final Object key : keysToEvict) {
+                cache.evict(key);
+                evictedCnt++;
+            }
+        } else {
+            log.warn("Unsupported native cache type. Fallback to clear all for cache: {}", cacheName);
+            evictCacheAll(cacheName);
+            return;
+        }
+        log.debug("cache name {} user scoped clear done. userId={}, evicted={}", cacheName, lgnUserId, evictedCnt);
+    }
+
+    /**
+     * 현재 로그인 사용자 범위에서 key prefix로 캐시를 제거한다.
+     *
+     * @param cacheName 캐시 이름
+     * @param cacheKeyPrefix 사용자 prefix 이후 매칭할 key prefix
+     */
+    public static void evictMyCacheByPrefix(final String cacheName, final String cacheKeyPrefix) {
+        if (StringUtils.isEmpty(cacheKeyPrefix)) {
+            evictMyCacheAll(cacheName);
+            return;
+        }
+
+        final Cache cache = cacheManager.getCache(cacheName);
+        if (cache == null) return;
+
+        final String lgnUserId = AuthUtils.getLgnUserId();
+        if (StringUtils.isEmpty(lgnUserId)) {
+            log.warn("Login user id is empty. Fallback to clear all for cache: {}", cacheName);
+            evictCacheAll(cacheName);
+            return;
+        }
+
+        final String normalizedPrefix = stripTrailingUnderscore(cacheKeyPrefix.trim());
+        final String fullPrefix = lgnUserId + "_" + normalizedPrefix;
+        final Object nativeCache = cache.getNativeCache();
+        int evictedCnt = 0;
+        if (nativeCache instanceof javax.cache.Cache<?, ?> ehCache) {
+            final List<Object> keysToEvict = new ArrayList<>();
+            ehCache.iterator().forEachRemaining(entry -> {
+                final String keyStr = Objects.toString(entry.getKey(), "");
+                if (matchesPrefixBoundary(keyStr, fullPrefix)) keysToEvict.add(entry.getKey());
+            });
+            for (final Object key : keysToEvict) {
+                cache.evict(key);
+                evictedCnt++;
+            }
+        } else if (nativeCache instanceof com.github.benmanes.caffeine.cache.Cache<?, ?> caffeineCache) {
+            final List<Object> keysToEvict = new ArrayList<>();
+            caffeineCache.asMap().keySet().forEach(key -> {
+                final String keyStr = Objects.toString(key, "");
+                if (matchesPrefixBoundary(keyStr, fullPrefix)) keysToEvict.add(key);
+            });
+            for (final Object key : keysToEvict) {
+                cache.evict(key);
+                evictedCnt++;
+            }
+        } else {
+            log.warn("Unsupported native cache type. Fallback to clear all for cache: {}", cacheName);
+            evictCacheAll(cacheName);
+            return;
+        }
+        log.debug("cache name {} user prefix clear done. prefix={}, evicted={}", cacheName, fullPrefix, evictedCnt);
+    }
+
+    private static String stripTrailingUnderscore(final String value) {
+        if (value == null || value.isBlank()) return "";
+        int end = value.length();
+        while (end > 0 && value.charAt(end - 1) == '_') {
+            end--;
+        }
+        return value.substring(0, end);
+    }
+
+    private static boolean matchesPrefixBoundary(final String key, final String prefix) {
+        if (key == null || StringUtils.isEmpty(prefix)) return false;
+        return key.equals(prefix) || key.startsWith(prefix + "_");
+    }
+
+    private static boolean isMyScopeCacheKey(final Object cacheKey, final String lgnUserId) {
+        if (cacheKey == null || lgnUserId == null || lgnUserId.isBlank()) return false;
+
+        if (cacheKey instanceof SimpleKey simpleKey) {
+            try {
+                final Field paramsField = SimpleKey.class.getDeclaredField("params");
+                paramsField.setAccessible(true);
+                final Object[] params = (Object[]) paramsField.get(simpleKey);
+                if (params == null || params.length == 0) return false;
+
+                final String firstParam = Objects.toString(params[0], null);
+                return lgnUserId.equals(firstParam);
+            } catch (final NoSuchFieldException | IllegalAccessException e) {
+                log.debug("SimpleKey reflection failed: {}", e.getMessage());
+            }
+        }
+
+        final String keyStr = Objects.toString(cacheKey, "");
+        return lgnUserId.equals(keyStr) || keyStr.startsWith(lgnUserId + "_");
     }
 
     /**

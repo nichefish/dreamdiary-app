@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.jrnl.dream.service.strategy;
 
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictor;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
-import io.nicheblog.dreamdiary.infrastructure.cache.service.CacheEvictor;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Log4j2
 public class JrnlDreamCacheEvictor
-        implements CacheEvictor<JrnlCacheEvictParam> {
+        implements JrnlCacheEvictor {
 
     /**
      * 해당 컨텐츠 타입 관련 캐시를 제거한다.
@@ -38,13 +38,14 @@ public class JrnlDreamCacheEvictor
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();
             // jrnl_dream
-            EhCacheUtils.evictMyCacheAll("myJrnlDreamList");
-            EhCacheUtils.evictMyCacheAll("mySumryDreamList");
+            this.evictMyCacheByPeriodPrefix("myJrnlDreamList", yy, mnth);
+            this.evictMyCacheByYearPrefix("mySumryDreamList", yy);
             EhCacheUtils.evictMyCache("myJrnlDreamDtlDto", postNo);
             // jrnl_day
-            EhCacheUtils.evictMyCache("myJrnlDayDtlDto", jrnlDayNo);
-            this.evictMyCacheForPeriod("myJrnlDayList", yy, mnth);
-            this.evictMyCacheForPeriod("myJrnlDayCalList", yy, mnth);
+            if (jrnlDayNo != null) {
+                EhCacheUtils.evictMyCache("myJrnlDayDtlDto", jrnlDayNo);
+            }
+            this.evictMyDayPeriodCaches(yy, mnth);
             // jrnl_dream_tag
             EhCacheUtils.evictMyCacheAll("myJrnlDreamTagCtgrMap");
             EhCacheUtils.evictMyCacheAll("myJrnlDreamTagList");
