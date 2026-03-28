@@ -227,9 +227,9 @@ public class SchdulService
      * @param rslt 캐시 처리할 엔티티
      */
     public void evictCache(final SchdulEntity rslt) throws Exception {
-        EhCacheUtils.evictCacheAll("hldyEntityList");
-        EhCacheUtils.evictCacheAll("isHldy");
-        EhCacheUtils.evictCacheAll("isHldyOrWeekend");
+        EhCacheUtils.clearCache("hldyEntityList");
+        EhCacheUtils.clearCache("isHldy");
+        EhCacheUtils.clearCache("isHldyOrWeekend");
     }
 
     /**

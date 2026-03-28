@@ -39,14 +39,12 @@ public class EhCacheUtils {
     private final List<CacheStrategy> autowiredCacheStrategies;  // 자동으로 모든 전략이 주입됨
 
     private static CacheManager cacheManager;
-    private static SessionFactory sessionFactory;
     private static List<CacheStrategy> cacheStrategies;
 
     /** static 맥락에서 사용할 수 있도록 bean 주입 */
     @PostConstruct
     private void init() {
         cacheManager = manager;
-        sessionFactory = factory;
         cacheStrategies = autowiredCacheStrategies;
     }
 
@@ -184,7 +182,7 @@ public class EhCacheUtils {
      * @param cacheParam 캐시 이름과 키 정보를 포함한 객체
      */
     public static void evictCache(final CacheParam cacheParam) {
-        evictCache(cacheParam.getCacheName(), cacheParam.getCacheKey());
+        evictCacheByKey(cacheParam.getCacheName(), cacheParam.getCacheKey());
     }
 
     /**
@@ -193,7 +191,7 @@ public class EhCacheUtils {
      * @param cacheName 캐시의 이름
      * @param cacheKey  캐시에서 제거할 키
      */
-    public static void evictCache(final String cacheName, final Object cacheKey) {
+    public static void evictCacheByKey(final String cacheName, final Object cacheKey) {
         final Cache cache = cacheManager.getCache(cacheName);
         if (cache == null || cacheKey == null) {
             log.debug("cache name {} does not exists.", cacheName);
@@ -224,7 +222,7 @@ public class EhCacheUtils {
      * @param cacheName 캐시의 이름.
      * @param cacheKey  제거할 캐시 항목을 식별하는 키.
      */
-    public static void evictMyCache(final String cacheName, final Object cacheKey) {
+    public static void evictMyCacheByKey(final String cacheName, final Object cacheKey) {
         final Cache cache = cacheManager.getCache(cacheName);
         if (cache == null || cacheKey == null) {
             log.debug("cache name {} does not exists.", cacheName);
@@ -240,8 +238,8 @@ public class EhCacheUtils {
      *
      * @param cacheParam CacheParam
      */
-    public static void evictCacheAll(final CacheParam cacheParam) {
-        evictCacheAll(cacheParam.getCacheName());
+    public static void clearCache(final CacheParam cacheParam) {
+        clearCache(cacheParam.getCacheName());
     }
 
     /**
@@ -249,7 +247,7 @@ public class EhCacheUtils {
      *
      * @param cacheName 캐시의 이름
      */
-    public static void evictCacheAll(final String cacheName) {
+    public static void clearCache(final String cacheName) {
         final Cache cache = cacheManager.getCache(cacheName);
         if (cache == null) return;
 
@@ -262,13 +260,13 @@ public class EhCacheUtils {
      *
      * @param cacheName String
      */
-    public static void evictMyCacheAll(final String cacheName) {
+    public static void clearMyCache(final String cacheName) {
         final Cache cache = cacheManager.getCache(cacheName);
         if (cache == null) return;
         final String lgnUserId = AuthUtils.getLgnUserId();
         if (lgnUserId == null || lgnUserId.isBlank()) {
             log.warn("Login user id is empty. Fallback to clear all for cache: {}", cacheName);
-            evictCacheAll(cacheName);
+            clearCache(cacheName);
             return;
         }
 
@@ -294,7 +292,7 @@ public class EhCacheUtils {
             }
         } else {
             log.warn("Unsupported native cache type. Fallback to clear all for cache: {}", cacheName);
-            evictCacheAll(cacheName);
+            clearCache(cacheName);
             return;
         }
         log.debug("cache name {} user scoped clear done. userId={}, evicted={}", cacheName, lgnUserId, evictedCnt);
@@ -308,7 +306,7 @@ public class EhCacheUtils {
      */
     public static void evictMyCacheByPrefix(final String cacheName, final String cacheKeyPrefix) {
         if (StringUtils.isEmpty(cacheKeyPrefix)) {
-            evictMyCacheAll(cacheName);
+            clearMyCache(cacheName);
             return;
         }
 
@@ -318,7 +316,7 @@ public class EhCacheUtils {
         final String lgnUserId = AuthUtils.getLgnUserId();
         if (StringUtils.isEmpty(lgnUserId)) {
             log.warn("Login user id is empty. Fallback to clear all for cache: {}", cacheName);
-            evictCacheAll(cacheName);
+            clearCache(cacheName);
             return;
         }
 
@@ -348,12 +346,18 @@ public class EhCacheUtils {
             }
         } else {
             log.warn("Unsupported native cache type. Fallback to clear all for cache: {}", cacheName);
-            evictCacheAll(cacheName);
+            clearCache(cacheName);
             return;
         }
         log.debug("cache name {} user prefix clear done. prefix={}, evicted={}", cacheName, fullPrefix, evictedCnt);
     }
 
+    /**
+     * 문자열 끝에 붙은 '_'를 모두 제거한다.
+     * - prefix 기반 키 비교 시 "userId_" 같은 불완전한 경계값을 정규화하기 위함
+     *
+     * @param value String
+     */
     private static String stripTrailingUnderscore(final String value) {
         if (value == null || value.isBlank()) return "";
         int end = value.length();
@@ -363,11 +367,26 @@ public class EhCacheUtils {
         return value.substring(0, end);
     }
 
+    /**
+     * key가 prefix와 "경계 단위"로 매칭되는지 확인한다.
+     * 단순 startsWith가 아니라, "_“ 단위로 끊긴 prefix만 허용 (cache key namespace를 "_" 기반 계층 구조로 간주)
+     *
+     * @param key String
+     * @param prefix String
+     */
     private static boolean matchesPrefixBoundary(final String key, final String prefix) {
         if (key == null || StringUtils.isEmpty(prefix)) return false;
         return key.equals(prefix) || key.startsWith(prefix + "_");
     }
 
+    /**
+     * cacheKey가 특정 사용자(lgnUserId)의 scope에 속하는지 판단한다.
+     * - 캐시 키를 "userId 기반 namespace"로 간주하고 필터링
+     * - 동일 사용자 데이터만 선택적으로 invalidate / 조회하기 위함
+     *
+     * @param cacheKey Object
+     * @param lgnUserId String
+     */
     private static boolean isMyScopeCacheKey(final Object cacheKey, final String lgnUserId) {
         if (cacheKey == null || lgnUserId == null || lgnUserId.isBlank()) return false;
 
@@ -396,21 +415,5 @@ public class EhCacheUtils {
         cacheManager.getCacheNames()
                 .forEach(cacheName -> Objects.requireNonNull(cacheManager.getCache(cacheName)).clear());
         return true;
-    }
-
-    /**
-     * Hibernate Second Level 캐시 특정 엔티티 삭제
-     */
-    public static void clearL2Cache(final Class<?> clazz) {
-        final org.hibernate.Cache cache = sessionFactory.getCache();
-        cache.evictEntityData(clazz);
-    }
-
-    /**
-     * Hibernate Second Level 캐시 전체 삭제
-     */
-    public static void clearL2Cache() {
-        final org.hibernate.Cache cache = sessionFactory.getCache();
-        cache.evictAllRegions();
     }
 }

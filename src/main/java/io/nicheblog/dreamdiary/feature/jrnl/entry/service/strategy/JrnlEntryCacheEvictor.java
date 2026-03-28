@@ -39,12 +39,12 @@ public class JrnlEntryCacheEvictor
             final Integer mnth = param.getMnth();
             // jrnl_day
             if (jrnlDayNo != null) {
-                EhCacheUtils.evictMyCache("myJrnlDayDtlDto", jrnlDayNo);
+                EhCacheUtils.evictMyCacheByKey("myJrnlDayDtlDto", jrnlDayNo);
             }
-            this.evictMyDayPeriodCaches(yy, mnth);
+            this.evictMyJrnlDayYyMnthCaches(yy, mnth);
             // 태그 캐시 처리
             if (postNo != null) {
-                EhCacheUtils.evictCache("tagContentEntityListByRef", postNo + "_JRNL_ENTRY");
+                EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", postNo + "_JRNL_ENTRY");
             }
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);

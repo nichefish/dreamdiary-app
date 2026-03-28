@@ -211,7 +211,7 @@ public class JrnlDiaryService
         int idx = 1;
         for (final JrnlDiaryDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictCache("myJrnlDiaryDtlDto", e.getPostNo());
+            EhCacheUtils.evictCacheByKey("myJrnlDiaryDtlDto", e.getPostNo());
         }
 
         mapper.batchUpdateIdx(list);
@@ -251,7 +251,7 @@ public class JrnlDiaryService
         int idx = 1;
         for (final JrnlDiaryDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictCache("myJrnlDiaryDtlDto", e.getPostNo());
+            EhCacheUtils.evictCacheByKey("myJrnlDiaryDtlDto", e.getPostNo());
         }
 
         mapper.batchUpdateIdx(list);

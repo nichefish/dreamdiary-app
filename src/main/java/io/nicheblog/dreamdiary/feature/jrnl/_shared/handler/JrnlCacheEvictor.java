@@ -23,10 +23,10 @@ public interface JrnlCacheEvictor
      * @param yy - 삭제할 연도(문자열 형식)
      * @param mnth - 삭제할 월(문자열 형식)
      */
-    default void evictCacheForPeriod(final String cacheName, final Integer yy, final Integer mnth) {
-        EhCacheUtils.evictCache(cacheName, yy + "_" + mnth);
-        EhCacheUtils.evictCache(cacheName, yy + "_99");
-        EhCacheUtils.evictCache(cacheName, "9999_99");
+    default void evictYyMnthCache(final String cacheName, final Integer yy, final Integer mnth) {
+        EhCacheUtils.evictCacheByKey(cacheName, yy + "_" + mnth);
+        EhCacheUtils.evictCacheByKey(cacheName, yy + "_99");
+        EhCacheUtils.evictCacheByKey(cacheName, "9999_99");
     }
 
     /**
@@ -35,23 +35,10 @@ public interface JrnlCacheEvictor
      * @param cacheName - 삭제할 캐시 이름
      * @param yy - 삭제할 연도(문자열 형식)
      */
-    default void evictMyCacheForPeriod(final String cacheName, final Integer yy) {
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + yy);
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + yy + "_99");
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + "9999_99");
-    }
-
-    /**
-     * 사용자 캐시 이름에 대해서 기간 캐시 삭제
-     *
-     * @param cacheName - 삭제할 캐시 이름
-     * @param yy - 삭제할 연도(문자열 형식)
-     * @param mnth - 삭제할 월(문자열 형식)
-     */
-    default void evictMyCacheForPeriod(final String cacheName, final Integer yy, final Integer mnth) {
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth);
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + yy + "_99");
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + "9999_99");
+    default void evictMyYyCache(final String cacheName, final Integer yy) {
+        EhCacheUtils.evictCacheByKey(cacheName, AuthUtils.getLgnUserId() + "_" + yy);
+        EhCacheUtils.evictCacheByKey(cacheName, AuthUtils.getLgnUserId() + "_" + yy + "_99");
+        EhCacheUtils.evictCacheByKey(cacheName, AuthUtils.getLgnUserId() + "_" + "9999_99");
     }
 
     /**
@@ -61,10 +48,10 @@ public interface JrnlCacheEvictor
      * @param yy - 삭제할 연도(문자열 형식)
      * @param mnth - 삭제할 월(문자열 형식)
      */
-    default void evictMyCacheWithKeyForPeriod(final String cacheName, final String key, final String yy, final String mnth) {
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + yy + "_" + mnth);
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + yy + "_99");
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + "9999_99");
+    default void evictMyYyMnthCache(final String cacheName, final Integer yy, final Integer mnth) {
+        EhCacheUtils.evictCacheByKey(cacheName, AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth);
+        EhCacheUtils.evictCacheByKey(cacheName, AuthUtils.getLgnUserId() + "_" + yy + "_99");
+        EhCacheUtils.evictCacheByKey(cacheName, AuthUtils.getLgnUserId() + "_" + "9999_99");
     }
 
     /**
@@ -74,10 +61,23 @@ public interface JrnlCacheEvictor
      * @param yy - 삭제할 연도(문자열 형식)
      * @param mnth - 삭제할 월(문자열 형식)
      */
-    default void evictMyCacheWithKeyForPeriod(final String cacheName, final String key, final Integer yy, final Integer mnth) {
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + yy + "_" + mnth);
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + yy + "_99");
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + "9999_99");
+    default void evictMyYyMnthCacheByKey(final String cacheName, final String key, final String yy, final String mnth) {
+        EhCacheUtils.evictCacheByKey(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + yy + "_" + mnth);
+        EhCacheUtils.evictCacheByKey(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + yy + "_99");
+        EhCacheUtils.evictCacheByKey(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + "9999_99");
+    }
+
+    /**
+     * 사용자 캐시 이름에 대해서 기간 캐시 삭제
+     *
+     * @param cacheName - 삭제할 캐시 이름
+     * @param yy - 삭제할 연도(숫자 형식)
+     * @param mnth - 삭제할 월(숫자 형식)
+     */
+    default void evictMyYyMnthCacheByKey(final String cacheName, final String key, final Integer yy, final Integer mnth) {
+        EhCacheUtils.evictCacheByKey(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + yy + "_" + mnth);
+        EhCacheUtils.evictCacheByKey(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + yy + "_99");
+        EhCacheUtils.evictCacheByKey(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + "9999_99");
     }
 
     /**
@@ -87,14 +87,14 @@ public interface JrnlCacheEvictor
      * @param yy - 삭제할 연도(정수 형식)
      * @param mnth - 삭제할 월(정수 형식)
      */
-    default void evictMyCacheByPeriodPrefix(final String cacheName, final Integer yy, final Integer mnth) {
+    default void evictMyYnMnthCacheByPrefix(final String cacheName, final Integer yy, final Integer mnth) {
         if (yy != null && mnth != null) {
             EhCacheUtils.evictMyCacheByPrefix(cacheName, yy + "_" + mnth);
             EhCacheUtils.evictMyCacheByPrefix(cacheName, yy + "_99");
             EhCacheUtils.evictMyCacheByPrefix(cacheName, "9999_99");
             return;
         }
-        EhCacheUtils.evictMyCacheAll(cacheName);
+        EhCacheUtils.clearMyCache(cacheName);
     }
 
     /**
@@ -103,12 +103,12 @@ public interface JrnlCacheEvictor
      * @param cacheName - 삭제할 캐시 이름
      * @param yy - 삭제할 연도
      */
-    default void evictMyCacheByYearPrefix(final String cacheName, final Integer yy) {
+    default void evictMyYyCacheByYyPrefix(final String cacheName, final Integer yy) {
         if (yy != null) {
             EhCacheUtils.evictMyCacheByPrefix(cacheName, yy.toString());
             return;
         }
-        EhCacheUtils.evictMyCacheAll(cacheName);
+        EhCacheUtils.clearMyCache(cacheName);
     }
 
     /**
@@ -117,13 +117,13 @@ public interface JrnlCacheEvictor
      * @param yy - 삭제할 연도
      * @param mnth - 삭제할 월
      */
-    default void evictMyDayPeriodCaches(final Integer yy, final Integer mnth) {
+    default void evictMyJrnlDayYyMnthCaches(final Integer yy, final Integer mnth) {
         if (yy != null && mnth != null) {
-            this.evictMyCacheForPeriod("myJrnlDayList", yy, mnth);
-            this.evictMyCacheForPeriod("myJrnlDayCalList", yy, mnth);
+            this.evictMyYyMnthCache("myJrnlDayList", yy, mnth);
+            this.evictMyYyMnthCache("myJrnlDayCalList", yy, mnth);
             return;
         }
-        EhCacheUtils.evictMyCacheAll("myJrnlDayList");
-        EhCacheUtils.evictMyCacheAll("myJrnlDayCalList");
+        EhCacheUtils.clearMyCache("myJrnlDayList");
+        EhCacheUtils.clearMyCache("myJrnlDayCalList");
     }
 }

@@ -38,24 +38,24 @@ public class JrnlDiaryCacheEvictor
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();
             // jrnl_diary
-            this.evictMyCacheByPeriodPrefix("myJrnlDiaryList", yy, mnth);
-            this.evictMyCacheByYearPrefix("mySumryDiaryList", yy);
-            EhCacheUtils.evictMyCache("myJrnlDiaryDtlDto", postNo);
+            this.evictMyYnMnthCacheByPrefix("myJrnlDiaryList", yy, mnth);
+            this.evictMyYyCacheByYyPrefix("mySumryDiaryList", yy);
+            EhCacheUtils.evictMyCacheByKey("myJrnlDiaryDtlDto", postNo);
             // jrnl_day
             if (jrnlDayNo != null) {
-                EhCacheUtils.evictMyCache("myJrnlDayDtlDto", jrnlDayNo);
+                EhCacheUtils.evictMyCacheByKey("myJrnlDayDtlDto", jrnlDayNo);
             }
-            this.evictMyDayPeriodCaches(yy, mnth);
+            this.evictMyJrnlDayYyMnthCaches(yy, mnth);
             // jrnl_diary_tag
-            EhCacheUtils.evictMyCacheAll("myJrnlDiaryTagCtgrMap");
-            EhCacheUtils.evictMyCacheAll("myJrnlDiaryTagList");
-            EhCacheUtils.evictMyCacheAll("myJrnlDiaryTagListYyMnth");
-            EhCacheUtils.evictMyCacheAll("myJrnlDiarySizedTagList");
-            EhCacheUtils.evictMyCacheAll("myCountDiarySizeMap");
+            EhCacheUtils.clearMyCache("myJrnlDiaryTagCtgrMap");
+            EhCacheUtils.clearMyCache("myJrnlDiaryTagList");
+            EhCacheUtils.clearMyCache("myJrnlDiaryTagListYyMnth");
+            EhCacheUtils.clearMyCache("myJrnlDiarySizedTagList");
+            EhCacheUtils.clearMyCache("myCountDiarySizeMap");
 
             // 태그 캐시 처리
             if (postNo != null) {
-                EhCacheUtils.evictCache("tagContentEntityListByRef", postNo + "_JRNL_DIARY");
+                EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", postNo + "_JRNL_DIARY");
             }
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);

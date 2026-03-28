@@ -139,7 +139,7 @@ public class UserMyService {
         final UserEntity modified = userRepository.saveAndFlush(retrievedEntity);
 
         // 관련 캐시 삭제
-        EhCacheUtils.evictCache("auditorInfo", "userId:"+lgnUserId);
+        EhCacheUtils.evictCacheByKey("auditorInfo", lgnUserId);
 
         return modified.getUserNo() != null;
     }
@@ -158,7 +158,7 @@ public class UserMyService {
         final UserEntity updatedEntity = userRepository.saveAndFlush(retrievedEntity);
 
         // 관련 캐시 삭제
-        EhCacheUtils.evictCache("auditorInfo", "userId:"+lgnUserId);
+        EhCacheUtils.evictCacheByKey("auditorInfo", lgnUserId);
 
         return updatedEntity.getUserNo() != null;
     }

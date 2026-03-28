@@ -169,8 +169,8 @@ public class MenuService
      */
     @Override
     public void postRegist(final MenuDto updatedDto) throws Exception {
-        EhCacheUtils.evictCacheAll("userMenuList");
-        EhCacheUtils.evictCacheAll("mngrMenuList");
+        EhCacheUtils.clearCache("userMenuList");
+        EhCacheUtils.clearCache("mngrMenuList");
     }
 
     /**
@@ -180,10 +180,10 @@ public class MenuService
      */
     @Override
     public void postModify(final MenuPostDto postDto, final MenuDto updatedDto) throws Exception {
-        EhCacheUtils.evictCacheAll("userMenuList");
-        EhCacheUtils.evictCacheAll("mngrMenuList");
-        EhCacheUtils.evictCacheAll("isMngrMenu");
-        EhCacheUtils.evictCache("menuByLabel", updatedDto.getMenuLabel());
+        EhCacheUtils.clearCache("userMenuList");
+        EhCacheUtils.clearCache("mngrMenuList");
+        EhCacheUtils.clearCache("isMngrMenu");
+        EhCacheUtils.evictCacheByKey("menuByLabel", updatedDto.getMenuLabel());
     }
 
     /**
@@ -213,12 +213,12 @@ public class MenuService
     @Override
     public void postSetUse(final MenuEntity updateEntity) {
         if ("Y".equals(updateEntity.getMngrYn())) {
-            EhCacheUtils.evictCacheAll("mngrMenuList");
+            EhCacheUtils.clearCache("mngrMenuList");
         } else {
-            EhCacheUtils.evictCacheAll("userMenuList");
+            EhCacheUtils.clearCache("userMenuList");
         }
-        EhCacheUtils.evictCache("isMngrMenu", updateEntity.getMenuNo().toString());
-        EhCacheUtils.evictCache("menuByLabel", updateEntity.getMenuLabel());
+        EhCacheUtils.evictCacheByKey("isMngrMenu", updateEntity.getMenuNo().toString());
+        EhCacheUtils.evictCacheByKey("menuByLabel", updateEntity.getMenuLabel());
     }
 
     /**
@@ -226,8 +226,8 @@ public class MenuService
      */
     @Override
     public void postSortIdx(final List<MenuSortIdxDto> idxs) {
-        EhCacheUtils.evictCacheAll("mngrMenuList");
-        EhCacheUtils.evictCacheAll("userMenuList");
+        EhCacheUtils.clearCache("mngrMenuList");
+        EhCacheUtils.clearCache("userMenuList");
     }
 
     /**
@@ -260,8 +260,8 @@ public class MenuService
             }
         }
 
-        EhCacheUtils.evictCacheAll("userMenuList");
-        EhCacheUtils.evictCacheAll("mngrMenuList");
-        EhCacheUtils.evictCache("menuByLabel", deletedDto.getMenuLabel());
+        EhCacheUtils.clearCache("userMenuList");
+        EhCacheUtils.clearCache("mngrMenuList");
+        EhCacheUtils.evictCacheByKey("menuByLabel", deletedDto.getMenuLabel());
     }
 }

@@ -65,7 +65,7 @@ public class TagProcService {
 
         // 비저널 컨텐츠만 일반 분류 캐시 evict
         if (!isJrnl) {
-            EhCacheUtils.evictCache("tagContentEntityListByRef", clsfKey.getPostNo() + "_" + clsfKey.getContentType());
+            EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", clsfKey.getPostNo() + "_" + clsfKey.getContentType());
         }
 
         // 고아 태그 정리

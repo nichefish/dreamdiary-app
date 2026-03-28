@@ -37,9 +37,9 @@ public class JrnlTodoCacheEvictor
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();
             // jrnl_todo
-            this.evictMyCacheForPeriod("myJrnlTodoList", yy, mnth);
+            this.evictMyYyMnthCache("myJrnlTodoList", yy, mnth);
             // 태그 캐시 처리
-            EhCacheUtils.evictCache("tagContentEntityListByRef", postNo + "_JRNL_TODO");
+            EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", postNo + "_JRNL_TODO");
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);
             throw e;
