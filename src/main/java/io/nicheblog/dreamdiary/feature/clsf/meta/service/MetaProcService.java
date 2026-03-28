@@ -62,7 +62,7 @@ public class MetaProcService {
 
         // 비저널 컨텐츠만 일반 분류 캐시 evict
         if (!isJrnl) {
-            EhCacheUtils.evictCache("metaContentEntityListByRef", clsfKey.getPostNo() + "_" + clsfKey.getContentType());
+            EhCacheUtils.evictCacheByKey("metaContentEntityListByRef", clsfKey.getPostNo() + "_" + clsfKey.getContentType());
         }
 
         // 고아 메타 정리

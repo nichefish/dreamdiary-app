@@ -199,7 +199,7 @@ public class JrnlIntrptService
         int idx = 1;
         for (final JrnlIntrptDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictCache("myJrnlIntrptDtlDto", e.getPostNo());
+            EhCacheUtils.evictCacheByKey("myJrnlIntrptDtlDto", e.getPostNo());
         }
 
         mapper.batchUpdateIdx(list);
@@ -239,7 +239,7 @@ public class JrnlIntrptService
         int idx = 1;
         for (final JrnlIntrptDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictCache("myJrnlIntrptDtlDto", e.getPostNo());
+            EhCacheUtils.evictCacheByKey("myJrnlIntrptDtlDto", e.getPostNo());
         }
 
         mapper.batchUpdateIdx(list);

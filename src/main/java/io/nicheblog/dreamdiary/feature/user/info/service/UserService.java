@@ -281,6 +281,6 @@ public class UserService
      * @param rslt 캐시 삭제 판단에 필요한 객체
      */
     public void evictCache(final UserEntity rslt) {
-        EhCacheUtils.evictCache("auditorInfo", "userId:"+rslt.getUserId());
+        EhCacheUtils.evictCacheByKey("auditorInfo", rslt.getUserId());
     }
 }

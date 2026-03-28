@@ -154,7 +154,7 @@ public class JrnlTagCacheUpdtWorker {
         final Cache yyMnthListCache = cacheManager.getCache(listCacheNm + "YyMnth");
         if (yyMnthListCache != null) yyMnthListCache.put(cacheKey, sizedTagList);
 
-        EhCacheUtils.evictCache(sizedListCacheNm, cacheKey);
+        EhCacheUtils.evictCacheByKey(sizedListCacheNm, cacheKey);
     }
 
     /**
@@ -166,10 +166,10 @@ public class JrnlTagCacheUpdtWorker {
             final String listCacheNm,
             final String cacheKey
     ) {
-        EhCacheUtils.evictCache(sizedMapCacheNm, cacheKey);
-        EhCacheUtils.evictCache(sizedListCacheNm, cacheKey);
-        EhCacheUtils.evictCache(listCacheNm, cacheKey);
-        EhCacheUtils.evictCache(listCacheNm + "YyMnth", cacheKey);
+        EhCacheUtils.evictCacheByKey(sizedMapCacheNm, cacheKey);
+        EhCacheUtils.evictCacheByKey(sizedListCacheNm, cacheKey);
+        EhCacheUtils.evictCacheByKey(listCacheNm, cacheKey);
+        EhCacheUtils.evictCacheByKey(listCacheNm + "YyMnth", cacheKey);
     }
 
     /**

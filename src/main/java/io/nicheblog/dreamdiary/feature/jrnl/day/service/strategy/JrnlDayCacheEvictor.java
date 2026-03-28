@@ -37,18 +37,18 @@ public class JrnlDayCacheEvictor
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();
             // jrnl_day
-            EhCacheUtils.evictMyCache("myJrnlDayDtlDto", postNo);
-            this.evictMyDayPeriodCaches(yy, mnth);
+            EhCacheUtils.evictMyCacheByKey("myJrnlDayDtlDto", postNo);
+            this.evictMyJrnlDayYyMnthCaches(yy, mnth);
             // jrnl_day_tag
-            EhCacheUtils.evictMyCacheAll("myJrnlDayTagCtgrMap");
-            EhCacheUtils.evictMyCacheAll("myJrnlDayTagDtl");
-            EhCacheUtils.evictMyCacheAll("myJrnlDayTagList");
-            EhCacheUtils.evictMyCacheAll("myJrnlDaySizedTagList");
-            EhCacheUtils.evictMyCacheAll("myCountDaySizeMap");
-            EhCacheUtils.evictCache("tagContentEntityListByRef", postNo + "_JRNL_DAY");
+            EhCacheUtils.clearMyCache("myJrnlDayTagCtgrMap");
+            EhCacheUtils.clearMyCache("myJrnlDayTagDtl");
+            EhCacheUtils.clearMyCache("myJrnlDayTagList");
+            EhCacheUtils.clearMyCache("myJrnlDaySizedTagList");
+            EhCacheUtils.clearMyCache("myCountDaySizeMap");
+            EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", postNo + "_JRNL_DAY");
             // jrnl_day_meta
-            EhCacheUtils.evictMyCacheAll("myJrnlDayMetaCtgrMap");
-            EhCacheUtils.evictCache("metaContentEntityListByRef", postNo + "_JRNL_DAY");
+            EhCacheUtils.clearMyCache("myJrnlDayMetaCtgrMap");
+            EhCacheUtils.evictCacheByKey("metaContentEntityListByRef", postNo + "_JRNL_DAY");
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);
             throw e;

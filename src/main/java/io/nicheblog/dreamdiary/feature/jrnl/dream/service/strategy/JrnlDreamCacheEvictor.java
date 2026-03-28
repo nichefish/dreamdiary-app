@@ -38,22 +38,22 @@ public class JrnlDreamCacheEvictor
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();
             // jrnl_dream
-            this.evictMyCacheByPeriodPrefix("myJrnlDreamList", yy, mnth);
-            this.evictMyCacheByYearPrefix("mySumryDreamList", yy);
-            EhCacheUtils.evictMyCache("myJrnlDreamDtlDto", postNo);
+            this.evictMyYnMnthCacheByPrefix("myJrnlDreamList", yy, mnth);
+            this.evictMyYyCacheByYyPrefix("mySumryDreamList", yy);
+            EhCacheUtils.evictMyCacheByKey("myJrnlDreamDtlDto", postNo);
             // jrnl_day
             if (jrnlDayNo != null) {
-                EhCacheUtils.evictMyCache("myJrnlDayDtlDto", jrnlDayNo);
+                EhCacheUtils.evictMyCacheByKey("myJrnlDayDtlDto", jrnlDayNo);
             }
-            this.evictMyDayPeriodCaches(yy, mnth);
+            this.evictMyJrnlDayYyMnthCaches(yy, mnth);
             // jrnl_dream_tag
-            EhCacheUtils.evictMyCacheAll("myJrnlDreamTagCtgrMap");
-            EhCacheUtils.evictMyCacheAll("myJrnlDreamTagList");
-            EhCacheUtils.evictMyCacheAll("myJrnlDreamTagListYyMnth");
-            EhCacheUtils.evictMyCacheAll("myJrnlDreamSizedTagList");
-            EhCacheUtils.evictMyCacheAll("myCountDreamSizeMap");
+            EhCacheUtils.clearMyCache("myJrnlDreamTagCtgrMap");
+            EhCacheUtils.clearMyCache("myJrnlDreamTagList");
+            EhCacheUtils.clearMyCache("myJrnlDreamTagListYyMnth");
+            EhCacheUtils.clearMyCache("myJrnlDreamSizedTagList");
+            EhCacheUtils.clearMyCache("myCountDreamSizeMap");
             // 태그 캐시 처리
-            EhCacheUtils.evictCache("tagContentEntityListByRef", postNo + "_JRNL_DREAM");
+            EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", postNo + "_JRNL_DREAM");
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);
             throw e;
