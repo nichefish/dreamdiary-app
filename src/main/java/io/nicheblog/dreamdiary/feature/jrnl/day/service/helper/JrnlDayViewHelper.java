@@ -53,7 +53,7 @@ public final class JrnlDayViewHelper {
     public static void mergeStates(final JrnlDayDto jrnlDay) {
         if (jrnlDay == null) return;
 
-        final Object cacheKey = new org.springframework.cache.interceptor.SimpleKey(AuthUtils.requireUserId(AuthUtils.getLgnUserId()), jrnlDay.getYy(), jrnlDay.getMnth());
+        final Object cacheKey = new SimpleKey(AuthUtils.requireUserId(AuthUtils.getLgnUserId()), jrnlDay.getYy(), jrnlDay.getMnth());
 
         final Map<Integer, JrnlState> entryMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlEntryStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JrnlState> diaryMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlDiaryStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
