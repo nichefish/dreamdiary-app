@@ -78,7 +78,7 @@ public class JrnlDiaryService
      * @return {@link List} -- 조회된 목록
      */
     public List<JrnlDiaryDto> getMyListDto(final BaseSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.getLgnUserId());
+        searchParam.setRegstrId(AuthUtils.requireUserId(AuthUtils.getLgnUserId()));
 
         return this.getSelf().getListDto(searchParam);
     }
@@ -232,7 +232,12 @@ public class JrnlDiaryService
      */
     @Transactional(readOnly = true)
     public JrnlDiaryDto getDeletedDtlDto(final Integer key) throws Exception {
-        return mapper.getDeletedByPostNo(key);
+        final JrnlDiaryDto deleted = mapper.getDeletedByPostNo(key);
+        if (deleted == null) return null;
+        if (!AuthUtils.isRegstr(deleted.getRegstrId())) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
+        return deleted;
     }
 
     /**

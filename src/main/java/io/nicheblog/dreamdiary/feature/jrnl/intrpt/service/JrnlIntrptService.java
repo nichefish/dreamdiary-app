@@ -181,7 +181,12 @@ public class JrnlIntrptService
      */
     @Transactional(readOnly = true)
     public JrnlIntrptDto getDeletedDtlDto(final Integer key) throws Exception {
-        return mapper.getDeletedByPostNo(key);
+        final JrnlIntrptDto deleted = mapper.getDeletedByPostNo(key);
+        if (deleted == null) return null;
+        if (!AuthUtils.isRegstr(deleted.getRegstrId())) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
+        return deleted;
     }
     
     /**

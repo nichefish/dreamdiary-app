@@ -5,6 +5,7 @@
 
     <resultMap id="JrnlDreamMap" type="io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamDto">
         <id property="postNo" column="post_no"/>
+        <result property="regstrId" column="regstr_id"/>
         <result property="jrnlDayNo" column="jrnl_day_no"/>
         <result property="idx" column="idx"/>
         <result property="yy" column="yy"/>
@@ -16,6 +17,7 @@
         /* JrnlDreamMapper.getDeletedByPostNo */
         SELECT
             dream.post_no AS postNo,
+            dream.regstr_id AS regstr_id,
             dream.jrnl_day_no AS jrnlDayNo,
             dream.idx,
             day.yy AS yy,

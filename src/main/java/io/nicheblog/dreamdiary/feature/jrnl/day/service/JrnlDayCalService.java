@@ -74,7 +74,7 @@ public class JrnlDayCalService {
      * @return {@link List} -- 조회된 목록
      */
     public List<BaseCalDto> getMyCalListDto(final JrnlDaySearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.getLgnUserId());
+        searchParam.setRegstrId(AuthUtils.requireUserId(AuthUtils.getLgnUserId()));
         final List<JrnlDayDto> myJrnlDayList = jrnlDayQueryService.getMyYyMnthListDtoEnriched(searchParam);
 
         final List<BaseCalDto> jrnlCalEventList = new ArrayList<>();

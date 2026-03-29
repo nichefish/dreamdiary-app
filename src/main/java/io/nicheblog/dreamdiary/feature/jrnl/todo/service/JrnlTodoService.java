@@ -9,7 +9,6 @@ import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.entity.JrnlTodoEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.mapstruct.JrnlTodoMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.model.JrnlTodoDto;
-import io.nicheblog.dreamdiary.feature.jrnl.todo.model.JrnlTodoSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.repository.jpa.JrnlTodoRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.spec.JrnlTodoSpec;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
@@ -20,7 +19,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -66,7 +64,7 @@ public class JrnlTodoService
      * @return {@link List} -- 조회된 목록
      */
     public List<JrnlTodoDto> getMyListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
+        final String userId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
         return this.getSelf().getListDtoWithCacheByUser(userId, searchParam);
     }
 
@@ -138,7 +136,7 @@ public class JrnlTodoService
      * @return {@link JrnlTodoDto} -- 조회된 객체
      */
     public JrnlTodoDto getMyDtlDtoWithCache(final Integer key) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
+        final String userId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
         return this.getSelf().getDtlDtoWithCacheByUser(userId, key);
     }
 
