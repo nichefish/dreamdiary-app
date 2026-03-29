@@ -66,7 +66,7 @@ public class JrnlSumryReviewService
      * @return {@link List<JrnlSumryReviewDto>} -- 검색 조건에 맞는 결산 목록 Dto 리스트
      */
     public List<JrnlSumryReviewDto> getMyListDto(final BaseSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.getLgnUserId());
+        searchParam.setRegstrId(AuthUtils.requireUserId(AuthUtils.getLgnUserId()));
         return this.getSelf().getListDto(searchParam);
     }
 

@@ -74,7 +74,7 @@ public class JrnlDayService
      * @return {@link List} -- 조회된 목록
      */
     public List<JrnlDayDto> getMyCachedYyMnthListDto(final Integer yy, final Integer mnth) throws Exception {
-        final String lgnUserId = AuthUtils.getLgnUserId();
+        final String lgnUserId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
         return this.getSelf().getCachedYyMnthListDtoByUser(lgnUserId, yy, mnth);
     }
 
@@ -115,7 +115,7 @@ public class JrnlDayService
     public List<JrnlDayDto> getMyJrnlStdrdDays(final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        searchParam.setRegstrId(AuthUtils.getLgnUserId());
+        searchParam.setRegstrId(AuthUtils.requireUserId(AuthUtils.getLgnUserId()));
         searchParam.setSort("ASC");
         final List<JrnlDayEntity> myJrnlStdrdDayEntityList = this.getListEntity(searchParam);
         return mapstruct.toDtoList(myJrnlStdrdDayEntityList);
@@ -131,7 +131,7 @@ public class JrnlDayService
     public List<JrnlDayDto> getMyListDtoByMetaNo(final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        searchParam.setRegstrId(AuthUtils.getLgnUserId());
+        searchParam.setRegstrId(AuthUtils.requireUserId(AuthUtils.getLgnUserId()));
         searchParam.setSort("DESC");
         return this.getSelf().getListDto(searchParam);
     }
@@ -146,7 +146,7 @@ public class JrnlDayService
     public List<JrnlDayDto> getMyListDtoByTagNo(final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        searchParam.setRegstrId(AuthUtils.getLgnUserId());
+        searchParam.setRegstrId(AuthUtils.requireUserId(AuthUtils.getLgnUserId()));
         searchParam.setSort("DESC");
         return this.getSelf().getListDto(searchParam);
     }
@@ -158,7 +158,7 @@ public class JrnlDayService
      * @return {@link JrnlDayDto} -- 조회된 객체
      */
     public JrnlDayDto getMyCachedDtlDto(final Integer key) throws Exception {
-        final String lgnUserId = AuthUtils.getLgnUserId();
+        final String lgnUserId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
         return this.getSelf().getCachedDtlDtoByUser(lgnUserId, key);
     }
 
@@ -192,7 +192,7 @@ public class JrnlDayService
         if (isDtUnknown) return false;
 
         final Date jrnlDt = DateUtils.asDate(jrnlDay.getJrnlDt());
-        final String regstrId = AuthUtils.getLgnUserId();
+        final String regstrId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
         final Integer isDup = repository.countByJrnlDt(jrnlDt, regstrId);
 
         return isDup > 0;
@@ -207,7 +207,7 @@ public class JrnlDayService
     @Transactional(readOnly = true)
     public Integer getDupKey(final JrnlDayDto jrnlDay) throws Exception {
         final Date jrnlDt = DateUtils.asDate(jrnlDay.getJrnlDt());
-        final String regstrId = AuthUtils.getLgnUserId();
+        final String regstrId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
         final JrnlDayEntity existingEntity = repository.findByJrnlDt(jrnlDt, regstrId);
 
         return existingEntity.getPostNo();
@@ -311,6 +311,11 @@ public class JrnlDayService
      */
     @Transactional(readOnly = true)
     public JrnlDayDto getDeletedDtlDto(final Integer key) throws Exception {
-        return jrnlDayMapper.getDeletedByPostNo(key);
+        final JrnlDayDto deleted = jrnlDayMapper.getDeletedByPostNo(key);
+        if (deleted == null) return null;
+        if (!AuthUtils.isRegstr(deleted.getRegstrId())) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
+        return deleted;
     }
 }
