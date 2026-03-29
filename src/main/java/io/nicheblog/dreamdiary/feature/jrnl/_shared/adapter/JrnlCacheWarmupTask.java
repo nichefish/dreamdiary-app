@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayService;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayTagService;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.service.JrnlDiaryTagService;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.service.JrnlDreamTagService;
+import io.nicheblog.dreamdiary.feature.jrnl.intrpt.service.JrnlIntrptTagService;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.port.CacheWarmupTask;
 import io.nicheblog.dreamdiary.infrastructure.cache.port.LoginCacheWarmupTask;
@@ -33,6 +34,7 @@ public class JrnlCacheWarmupTask
     private final JrnlDiaryTagService jrnlDiaryTagService;
     private final JrnlDreamTagService jrnlDreamTagService;
     private final JrnlDayMetaService jrnlDayMetaService;
+    private final JrnlIntrptTagService jrnlIntrptTagService;
 
     /**
      * 캐시 웜업
@@ -44,6 +46,7 @@ public class JrnlCacheWarmupTask
         jrnlDayMetaService.getMetaCtgrMap("nichefish");
         jrnlDiaryTagService.getTagCtgrMap("nichefish");
         jrnlDreamTagService.getTagCtgrMap("nichefish");
+        jrnlIntrptTagService.getTagCtgrMap("nichefish");
     }
 
     /**
