@@ -102,6 +102,19 @@ public class AuthUtils {
     }
 
     /**
+     * userId 유효성 확인 (blank 불가)
+     *
+     * @param userId 사용자 ID
+     * @return {@link String} -- 검증된 사용자 ID
+     */
+    public static String requireUserId(final String userId) {
+        if (StringUtils.isBlank(userId)) {
+            throw new IllegalArgumentException("userId is required.");
+        }
+        return userId;
+    }
+
+    /**
      * 현재 로그인 중인 사용자 어이디를 반환한다.
      *
      * @return {@link String} -- 현재 로그인 중인 사용자 아이디

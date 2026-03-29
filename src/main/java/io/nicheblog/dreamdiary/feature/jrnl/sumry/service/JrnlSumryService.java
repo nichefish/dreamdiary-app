@@ -82,7 +82,7 @@ public class JrnlSumryService
      */
     @Cacheable(value="jrnlSumryListByUser", key="#userId")
     public List<JrnlSumryDto> getListDtoByUser(final String userId, final BaseSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(userId);
+        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
         return this.getSelf().getListDto(searchParam);
     }
 
@@ -112,13 +112,13 @@ public class JrnlSumryService
     })
     public Boolean makeYySumryByUser(final String userId, final Integer yy) throws Exception {
         // 해당 년도 저널 결산 정보 조회
-        final JrnlSumryEntity sumry = repository.findByYyAndRegstrId(yy, userId).orElse(new JrnlSumryEntity(yy));
+        final JrnlSumryEntity sumry = repository.findByYyAndRegstrId(yy, AuthUtils.requireUserId(userId)).orElse(new JrnlSumryEntity(yy));
 
         // 해당 년도 꿈 일자 조회해서 갱신
-        final Integer dreamDayCntByYy = repository.getDreamDayCntByYy(yy, userId);
+        final Integer dreamDayCntByYy = repository.getDreamDayCntByYy(yy, AuthUtils.requireUserId(userId));
         sumry.setDreamDayCnt(dreamDayCntByYy);
         // 해당 년도 꿈 조회해서 갱신
-        final Integer dreamCntByYy = repository.getDreamCntByYy(yy, userId);
+        final Integer dreamCntByYy = repository.getDreamCntByYy(yy, AuthUtils.requireUserId(userId));
         sumry.setDreamCnt(dreamCntByYy);
 
         repository.save(sumry);
@@ -138,7 +138,7 @@ public class JrnlSumryService
         final int startYy = 2011;
         for (int yy = startYy; yy <= currYy; yy++) {
             try {
-                this.makeYySumryByUser(userId, yy);
+                this.makeYySumryByUser(AuthUtils.requireUserId(userId), yy);
             } catch (final Exception e) {
                 log.warn("Error creating annual summary for {}", yy);
             }
@@ -166,10 +166,10 @@ public class JrnlSumryService
     public JrnlSumryDto getTotalSumryByUser(final String userId) {
         final JrnlSumryDto totalSumry = new JrnlSumryDto();
         // 해당 년도 꿈 일자 조회해서 갱신
-        final Integer dreamDayCntByYy = repository.getTotalDreamDayCnt(userId);
+        final Integer dreamDayCntByYy = repository.getTotalDreamDayCnt(AuthUtils.requireUserId(userId));
         totalSumry.setDreamDayCnt(dreamDayCntByYy);
         // 해당 년도 꿈 조회해서 갱신
-        final Integer dreamCntByYy = repository.getTotalDreamCnt(userId);
+        final Integer dreamCntByYy = repository.getTotalDreamCnt(AuthUtils.requireUserId(userId));
         totalSumry.setDreamCnt(dreamCntByYy);
 
         return totalSumry;
@@ -219,7 +219,7 @@ public class JrnlSumryService
 
     @Cacheable(value="jrnlSumryYyDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #yy)")
     public JrnlSumryDto getDtlDtoByYyByUser(final String userId, final Integer yy) throws Exception {
-        final Optional<JrnlSumryEntity> retrievedWrapper = repository.findByYyAndRegstrId(yy, userId);
+        final Optional<JrnlSumryEntity> retrievedWrapper = repository.findByYyAndRegstrId(yy, AuthUtils.requireUserId(userId));
         if (retrievedWrapper.isEmpty()) return null;
 
         return mapstruct.toDto(retrievedWrapper.get());

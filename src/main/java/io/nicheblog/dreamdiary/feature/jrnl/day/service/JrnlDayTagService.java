@@ -74,7 +74,7 @@ public class JrnlDayTagService
     @Cacheable(value="jrnlDayYyMnthTagListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #yy, #mnth)")
     public List<TagDto> getListDtoWithCacheByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
         final JrnlDaySearchParam searchParam = JrnlDaySearchParam.builder().yy(yy).mnth(mnth).build();
-        searchParam.setRegstrId(userId);
+        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
 
         return this.getSelf().getListDto(searchParam);
     }
@@ -106,7 +106,7 @@ public class JrnlDayTagService
         // 저널 꿈 태그 Dto 목록 조회
         final List<TagDto> tagList = this.getSelf().getListDtoWithCacheByUser(userId, yy, mnth);
 
-        final int maxSize = this.calcMaxSize(tagList, userId, yy, mnth);
+        final int maxSize = this.calcMaxSize(tagList, AuthUtils.requireUserId(userId), yy, mnth);
         final int MIN_SIZE = 2; // 최소 크기
         final int MAX_SIZE = 9; // 최대 크기
 
@@ -141,7 +141,7 @@ public class JrnlDayTagService
         final JrnlDayTagContentParam param = JrnlDayTagContentParam.builder()
                 .yy(yy)
                 .mnth(mnth)
-                .regstrId(userId)
+                .regstrId(AuthUtils.requireUserId(userId))
                 .build();
         final Map<Integer, Integer> tagCntMap = this.getSelf().countDaySizeMap(param);
 
@@ -193,7 +193,7 @@ public class JrnlDayTagService
      * @return {@link Map} -- 카테고리별로 그룹화된 태그 목록을 담은 Map
      */
     public Map<String, List<TagDto>> getDaySizedGroupListDtoByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
-        final List<TagDto> tagList = this.getSelf().getDaySizedListDtoByUser(userId, yy, mnth);
+        final List<TagDto> tagList = this.getSelf().getDaySizedListDtoByUser(AuthUtils.requireUserId(userId), yy, mnth);
 
         // 태그를 카테고리별로 그룹화하여 맵으로 반환
         return tagList.stream()
@@ -219,7 +219,7 @@ public class JrnlDayTagService
     @Cacheable(value="jrnlDayTagCtgrMapByUser", key="#userId")
     public Map<String, List<String>> getTagCtgrMapByUser(final String userId) throws Exception {
         final HashMap<String, Object> paramMap = new HashMap<>() {{
-            put("regstrId", userId);
+            put("regstrId", AuthUtils.requireUserId(userId));
         }};
 
         final List<JrnlDayTagEntity> tagList = this.getSelf().getListEntity(paramMap);

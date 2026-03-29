@@ -69,7 +69,7 @@ public class JrnlIntrptTagService
     @Cacheable(value="jrnlIntrptYyMnthTagListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #yy, #mnth)")
     public List<TagDto> getListDtoWithCacheByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
         final JrnlIntrptSearchParam searchParam = JrnlIntrptSearchParam.builder().yy(yy).mnth(mnth).build();
-        searchParam.setRegstrId(userId);
+        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
 
         return this.getSelf().getListDto(searchParam);
     }
@@ -101,7 +101,7 @@ public class JrnlIntrptTagService
         // 저널 꿈 태그 Dto 목록 조회
         final List<TagDto> tagList = this.getSelf().getListDtoWithCacheByUser(userId, yy, mnth);
 
-        final int maxSize = this.calcMaxSize(tagList, userId, yy, mnth);
+        final int maxSize = this.calcMaxSize(tagList, AuthUtils.requireUserId(userId), yy, mnth);
         final int MIN_SIZE = 2; // 최소 크기
         final int MAX_SIZE = 9; // 최대 크기
 
@@ -136,7 +136,7 @@ public class JrnlIntrptTagService
         final JrnlIntrptTagContentParam param = JrnlIntrptTagContentParam.builder()
                 .yy(yy)
                 .mnth(mnth)
-                .regstrId(userId)
+                .regstrId(AuthUtils.requireUserId(userId))
                 .build();
         final Map<Integer, Integer> tagCntMap = this.getSelf().countIntrptSizeMap(param);
 
@@ -180,7 +180,7 @@ public class JrnlIntrptTagService
      * @return {@link Map} -- 카테고리별로 그룹화된 태그 목록을 담은 Map
      */
     public Map<String, List<TagDto>> getIntrptSizedGroupListDtoByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
-        final List<TagDto> tagList = this.getSelf().getIntrptSizedListDtoByUser(userId, yy, mnth);
+        final List<TagDto> tagList = this.getSelf().getIntrptSizedListDtoByUser(AuthUtils.requireUserId(userId), yy, mnth);
 
         // 태그를 카테고리별로 그룹화하여 맵으로 반환
         return tagList.stream()
@@ -206,7 +206,7 @@ public class JrnlIntrptTagService
     @Cacheable(value="jrnlIntrptTagCtgrMapByUser", key="#userId")
     public Map<String, List<String>> getTagCtgrMapByUser(final String userId) throws Exception {
         final HashMap<String, Object> paramMap = new HashMap<>() {{
-            put("regstrId", userId);
+            put("regstrId", AuthUtils.requireUserId(userId));
         }};
 
         final List<JrnlIntrptTagEntity> tagList = this.getSelf().getListEntity(paramMap);
