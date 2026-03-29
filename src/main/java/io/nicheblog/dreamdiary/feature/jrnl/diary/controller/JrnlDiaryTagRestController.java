@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.jrnl.diary.controller;
 
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.service.JrnlDiaryTagService;
@@ -55,7 +54,7 @@ public class JrnlDiaryTagRestController
             //
     ) throws Exception {
 
-        final Map<String, List<String>> tagCtgrMap = jrnlDiaryTagService.getTagCtgrMap(AuthUtils.getLgnUserId());
+        final Map<String, List<String>> tagCtgrMap = jrnlDiaryTagService.getMyTagCtgrMap();
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -78,9 +77,9 @@ public class JrnlDiaryTagRestController
 
         List<TagDto> tagList;
         if (searchParam.hasYyMnth()) {
-            tagList = jrnlDiaryTagService.getDiarySizedListDto(AuthUtils.getLgnUserId(), searchParam.getYy(), searchParam.getMnth());
+            tagList = jrnlDiaryTagService.getMyDiarySizedListDto(searchParam.getYy(), searchParam.getMnth());
         } else {
-            tagList = jrnlDiaryTagService.getTagList(AuthUtils.getLgnUserId());
+            tagList = jrnlDiaryTagService.getMyTagList();
         }
 
         final boolean isSuccess = true;
@@ -103,7 +102,7 @@ public class JrnlDiaryTagRestController
             final @ModelAttribute("searchParam") TagSearchParam searchParam
     ) throws Exception {
 
-        final Map<String, List<TagDto>> tagGroupMap = jrnlDiaryTagService.getDiarySizedGroupListDto(AuthUtils.getLgnUserId(), searchParam.getYy(), searchParam.getMnth());
+        final Map<String, List<TagDto>> tagGroupMap = jrnlDiaryTagService.getMyDiarySizedGroupListDto(searchParam.getYy(), searchParam.getMnth());
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

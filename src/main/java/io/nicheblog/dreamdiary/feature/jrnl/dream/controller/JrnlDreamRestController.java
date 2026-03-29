@@ -58,7 +58,7 @@ public class JrnlDreamRestController
 
         if (searchParam.isEmpty()) throw new IllegalArgumentException("검색 조건 필요");
 
-        final List<JrnlDreamDto> jrnlDreamList = jrnlDreamService.getListDtoWithCache(searchParam);
+        final List<JrnlDreamDto> jrnlDreamList = jrnlDreamService.getMyListDto(searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -110,7 +110,7 @@ public class JrnlDreamRestController
             final @PathVariable("postNo") Integer key
     ) throws Exception {
 
-        final JrnlDreamDto retrievedDto = jrnlDreamService.getDtlDtoWithCache(key);
+        final JrnlDreamDto retrievedDto = jrnlDreamService.getMyDtlDtoWithCache(key);
         final boolean isSuccess = (retrievedDto.getPostNo() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

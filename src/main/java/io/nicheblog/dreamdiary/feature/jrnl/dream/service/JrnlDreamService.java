@@ -77,8 +77,7 @@ public class JrnlDreamService
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
      */
-    @Cacheable(value="myJrnlDreamList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.toListCacheKey()")
-    public List<JrnlDreamDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
+    public List<JrnlDreamDto> getMyListDto(final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
 
         return this.getSelf().getListDto(searchParam);
@@ -87,17 +86,28 @@ public class JrnlDreamService
     /**
      * 특정 년도의 중요 꿈 목록 조회 :: 캐시 처리
      *
-     * @param lgnUserId String
      * @param searchParam JrnlDreamSearchParam
      * @return {@link List} -- 해당 년도의 중요 목록
      */
-    @Cacheable(value="mySumryDreamList", key="#lgnUserId + \"_\" + #searchParam.toSummaryCacheKey()")
-    public List<JrnlDreamDto> getMySumryDreamList(final String lgnUserId, final JrnlDreamSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(lgnUserId);
-        final List<JrnlDreamDto> mySumryDreamList = this.getSelf().getListDto(searchParam);
-        Collections.sort(mySumryDreamList);
+    public List<JrnlDreamDto> getMySumryDreamList(final JrnlDreamSearchParam searchParam) throws Exception {
+        final String userId = AuthUtils.getLgnUserId();
+        return this.getSelf().getSumryDreamListByUser(userId, searchParam);
+    }
 
-        return mySumryDreamList;
+    /**
+     * 특정 년도의 중요 꿈 목록 조회 :: 캐시 처리
+     *
+     * @param userId 사용자 ID
+     * @param searchParam JrnlDreamSearchParam
+     * @return {@link List} -- 해당 년도의 중요 목록
+     */
+    @Cacheable(value="jrnlDreamYySumryStatedListByUser", key="#userId + \"_\" + #searchParam.toSummaryCacheKey()")
+    public List<JrnlDreamDto> getSumryDreamListByUser(final String userId, final JrnlDreamSearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(userId);
+        final List<JrnlDreamDto> jrnlDreamYySumryStatedListByUser = this.getSelf().getListDto(searchParam);
+        Collections.sort(jrnlDreamYySumryStatedListByUser);
+
+        return jrnlDreamYySumryStatedListByUser;
     }
 
     /**
@@ -129,14 +139,19 @@ public class JrnlDreamService
      * @param key 식별자
      * @return {@link JrnlDreamDto} -- 조회된 객체
      */
-    @Cacheable(value="myJrnlDreamDtlDto", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #key")
-    public JrnlDreamDto getDtlDtoWithCache(final Integer key) throws Exception {
+    @Cacheable(value="jrnlDreamDtlDtoByUser", key="#userId + \"_\" + #key")
+    public JrnlDreamDto getDtlDtoWithCacheByUser(final String userId, final Integer key) throws Exception {
         final JrnlDreamEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlDreamDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        if (!retrieved.getIsRegstr(userId)) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
 
         return retrieved;
+    }
+
+    public JrnlDreamDto getMyDtlDtoWithCache(final Integer key) throws Exception {
+        final String userId = AuthUtils.getLgnUserId();
+        return this.getSelf().getDtlDtoWithCacheByUser(userId, key);
     }
 
     /**
@@ -203,7 +218,7 @@ public class JrnlDreamService
         int idx = 1;
         for (final JrnlDreamDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictCacheByKey("myJrnlDreamDtlDto", e.getPostNo());
+            EhCacheUtils.evictMyCacheByKey("jrnlDreamDtlDtoByUser", e.getPostNo());
         }
 
         mapper.batchUpdateIdx(list);
@@ -243,7 +258,7 @@ public class JrnlDreamService
         int idx = 1;
         for (final JrnlDreamDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictCacheByKey("myJrnlDreamDtlDto", e.getPostNo());
+            EhCacheUtils.evictMyCacheByKey("jrnlDreamDtlDtoByUser", e.getPostNo());
         }
 
         mapper.batchUpdateIdx(list);

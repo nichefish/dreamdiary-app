@@ -41,9 +41,9 @@ public class JrnlDayCacheEvictor
             this.evictMyJrnlDayYyMnthCaches(yy, mnth);
             // jrnl_day_tag
             EhCacheUtils.clearMyCache("jrnlDayTagCtgrMapByUser");
-            EhCacheUtils.clearMyCache("myJrnlDayTagList");
-            EhCacheUtils.clearMyCache("myJrnlDaySizedTagList");
-            EhCacheUtils.clearMyCache("myCountDaySizeMap");
+            EhCacheUtils.clearMyCache("jrnlDayYyMnthTagListByUser");
+            EhCacheUtils.clearMyCache("jrnlDayYyMnthSizedTagListByUser");
+            EhCacheUtils.clearMyCache("jrnlDayCountMapByUser");
             EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", postNo + "_JRNL_DAY");
             // jrnl_day_meta
             EhCacheUtils.clearMyCache("jrnlDayMetaCtgrMapByUser");

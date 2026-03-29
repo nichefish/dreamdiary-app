@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.jrnl.day.service;
 
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.meta.model.MetaDto;
 import io.nicheblog.dreamdiary.feature.jrnl.day.entity.JrnlDayMetaEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.day.mapstruct.JrnlDayMetaMapstruct;
@@ -52,6 +53,17 @@ public class JrnlDayMetaService
         return context.getBean(this.getClass());
     }
 
+
+    /**
+     * 내 태그 카테고리 맵을 반환합니다.
+     *
+     * @return {@link Map} -- 태그 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵
+     */
+    public Map<String, List<String>> getMyMetaCtgrMap() throws Exception {
+        final String userId = AuthUtils.getLgnUserId();
+        return this.getSelf().getMetaCtgrMapByUser(userId);
+    }
+
     /**
      * 사용자별 메타 카테고리 맵을 반환합니다.
      *
@@ -59,7 +71,7 @@ public class JrnlDayMetaService
      * @return {@link Map} -- 메타 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵
      */
     @Cacheable(value="jrnlDayMetaCtgrMapByUser", key="#userId")
-    public Map<String, List<String>> getMetaCtgrMap(final String userId) throws Exception {
+    public Map<String, List<String>> getMetaCtgrMapByUser(final String userId) throws Exception {
         final HashMap<String, Object> paramMap = new HashMap<>() {{
             put("regstrId", userId);
         }};

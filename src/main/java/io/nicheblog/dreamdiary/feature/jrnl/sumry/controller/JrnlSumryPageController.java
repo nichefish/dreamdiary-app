@@ -56,14 +56,14 @@ public class JrnlSumryPageController
     public String jrnlSumryPage(
             @ModelAttribute("searchParam") JrnlSumrySearchParam searchParam,
             final ModelMap model
-    ) throws Exception {
+    ) {
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.JRNL_SUMRY);
         model.addAttribute("pageNm", PageNm.LIST);
 
         // 전체 통계 조회
-        final JrnlSumryDto totalSumry = jrnlSumryService.getTotalSumry();
+        final JrnlSumryDto totalSumry = jrnlSumryService.getMyTotalSumry();
         model.addAttribute("totalSumry", totalSumry);
 
         return "/view/feature/jrnl/sumry/jrnl_sumry_list";
@@ -83,7 +83,7 @@ public class JrnlSumryPageController
             final @PathVariable("yy") Integer yy,
             final @RequestParam("section") JrnlSumrySection section,
             final ModelMap model
-    ) throws Exception {
+    ) {
 
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.JRNL_SUMRY);

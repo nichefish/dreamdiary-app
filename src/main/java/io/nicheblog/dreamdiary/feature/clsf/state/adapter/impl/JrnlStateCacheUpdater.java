@@ -75,8 +75,8 @@ public class JrnlStateCacheUpdater
 
     private String getEvictCacheNm(final ContentType contentType) {
         return switch (contentType) {
-            case JRNL_DIARY -> "mySumryDiaryList";
-            case JRNL_DREAM -> "mySumryDreamList";
+            case JRNL_DIARY -> "jrnlDiaryYySumryStatedListByUser";
+            case JRNL_DREAM -> "jrnlDreamYySumryStatedListByUser";
             default -> null;
         };
     }

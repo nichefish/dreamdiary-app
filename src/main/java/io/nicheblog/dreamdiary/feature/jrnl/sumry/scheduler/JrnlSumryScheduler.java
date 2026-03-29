@@ -44,10 +44,11 @@ public class JrnlSumryScheduler {
 
         String rsltMsg = "";
         try {
+            // TODO: 사용자 전체 결산 생성
             // 결산 생성
-            jrnlSumryService.makeTotalYySumry();
+            jrnlSumryService.makeTotalYySumryByUser("nichefish");
             // 캐시 재생성 위해 조회
-            jrnlSumryService.getTotalSumry();
+            jrnlSumryService.getTotalSumryByUser("nichefish");
         } catch (final Exception e) {
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);

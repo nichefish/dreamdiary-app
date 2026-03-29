@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.jrnl.dream.controller;
 
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.service.JrnlDreamTagService;
@@ -55,7 +54,7 @@ public class JrnlDreamTagRestController
             //
     ) throws Exception {
 
-        final Map<String, List<String>> tagCtgrMap = jrnlDreamTagService.getTagCtgrMap(AuthUtils.getLgnUserId());
+        final Map<String, List<String>> tagCtgrMap = jrnlDreamTagService.getMyTagCtgrMap();
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -76,7 +75,7 @@ public class JrnlDreamTagRestController
             final @ModelAttribute("searchParam") TagSearchParam searchParam
     ) throws Exception {
 
-        final List<TagDto> tagList = jrnlDreamTagService.getDreamSizedListDto(searchParam.getYy(), searchParam.getMnth());
+        final List<TagDto> tagList = jrnlDreamTagService.getMyDreamSizedListDto(searchParam.getYy(), searchParam.getMnth());
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -97,7 +96,7 @@ public class JrnlDreamTagRestController
             final @ModelAttribute("searchParam") TagSearchParam searchParam
     ) throws Exception {
 
-        final Map<String, List<TagDto>> tagGroupMap = jrnlDreamTagService.getDreamSizedGroupListDto(searchParam.getYy(), searchParam.getMnth());
+        final Map<String, List<TagDto>> tagGroupMap = jrnlDreamTagService.getMyDreamSizedGroupListDto(searchParam.getYy(), searchParam.getMnth());
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

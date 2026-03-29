@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.jrnl.day.controller;
 
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
@@ -58,7 +57,7 @@ public class JrnlDayTagRestController
             //
     ) throws Exception {
 
-        final Map<String, List<String>> tagCtgrMap = jrnlDayTagService.getTagCtgrMap(AuthUtils.getLgnUserId());
+        final Map<String, List<String>> tagCtgrMap = jrnlDayTagService.getMyTagCtgrMap();
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -79,7 +78,7 @@ public class JrnlDayTagRestController
             final @ModelAttribute("searchParam") TagSearchParam searchParam
     ) throws Exception {
 
-        final List<TagDto> tagList = jrnlDayTagService.getDaySizedListDto(searchParam.getYy(), searchParam.getMnth());
+        final List<TagDto> tagList = jrnlDayTagService.getMyDaySizedListDto(searchParam.getYy(), searchParam.getMnth());
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -100,7 +99,7 @@ public class JrnlDayTagRestController
             @ModelAttribute("searchParam") TagSearchParam searchParam
     ) throws Exception {
 
-        final Map<String, List<TagDto>> tagGroupMap = jrnlDayTagService.getDaySizedGroupListDto(searchParam.getYy(), searchParam.getMnth());
+        final Map<String, List<TagDto>> tagGroupMap = jrnlDayTagService.getMyDaySizedGroupListDto(searchParam.getYy(), searchParam.getMnth());
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

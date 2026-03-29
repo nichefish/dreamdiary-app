@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.jrnl.sumry.controller;
 
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayTagService;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiaryDto;
@@ -93,7 +92,7 @@ public class JrnlSumryRestController
     ) throws Exception {
 
         // 객체 조회 및 모델에 추가
-        final JrnlSumryDto retrievedDto = jrnlSumryService.getDtlDtoByYy(yy);
+        final JrnlSumryDto retrievedDto = jrnlSumryService.getMyDtlDtoByYy(yy);
         final boolean isSuccess = (retrievedDto.getPostNo() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -120,11 +119,11 @@ public class JrnlSumryRestController
         // 중요 일기 목록 조회
         searchParam.setYy(yy);
         searchParam.resolveStates(showImprtc, showRefrnc);
-        final List<JrnlDiaryDto> mySumryDiaryList = jrnlDiaryService.getMySumryDiaryList(AuthUtils.getLgnUserId(), searchParam);
+        final List<JrnlDiaryDto> jrnlDiaryYySumryStatedListByUser = jrnlDiaryService.getMySumryDiaryList(searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(mySumryDiaryList));
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(jrnlDiaryYySumryStatedListByUser));
     }
 
     /**
@@ -147,7 +146,7 @@ public class JrnlSumryRestController
         // 중요 꿈 목록 조회
         searchParam.setYy(yy);
         searchParam.resolveStates(showImprtc, showRefrnc);
-        final List<JrnlDreamDto> imprtcDreamList = jrnlDreamService.getMySumryDreamList(AuthUtils.getLgnUserId(), searchParam);
+        final List<JrnlDreamDto> imprtcDreamList = jrnlDreamService.getMySumryDreamList(searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -172,9 +171,9 @@ public class JrnlSumryRestController
         // 태그 목록 조회
         List <TagDto> tagList = new ArrayList<>();
         switch(type) {
-            case DAY -> tagList = jrnlDayTagService.getDaySizedListDto(yy, 99);
-            case DIARY -> tagList = jrnlDiaryTagService.getDiarySizedListDto(AuthUtils.getLgnUserId(), yy, 99);
-            case DREAM -> tagList = jrnlDreamTagService.getDreamSizedListDto(yy, 99);
+            case DAY -> tagList = jrnlDayTagService.getMyDaySizedListDto(yy, 99);
+            case DIARY -> tagList = jrnlDiaryTagService.getMyDiarySizedListDto(yy, 99);
+            case DREAM -> tagList = jrnlDreamTagService.getMyDreamSizedListDto(yy, 99);
         }
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
@@ -196,7 +195,7 @@ public class JrnlSumryRestController
             final @RequestParam("yy") Integer yy
     ) throws Exception {
 
-        final boolean isSuccess = jrnlSumryService.makeYySumry(yy);
+        final boolean isSuccess = jrnlSumryService.makeMyYySumry(yy);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
@@ -215,7 +214,7 @@ public class JrnlSumryRestController
             //
     ) throws Exception {
 
-        final boolean isSuccess = jrnlSumryService.makeTotalYySumry();
+        final boolean isSuccess = jrnlSumryService.makeMyTotalYySumry();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));

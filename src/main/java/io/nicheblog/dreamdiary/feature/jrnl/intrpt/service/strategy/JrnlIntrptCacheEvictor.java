@@ -37,19 +37,13 @@ public class JrnlIntrptCacheEvictor
             final Integer jrnlDayNo = param.getJrnlDayNo();
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();
-            // jrnl_diary
-            this.evictMyYnMnthCacheByPrefix("myJrnlIntrptList", yy, mnth);
-            EhCacheUtils.evictMyCacheByKey("myJrnlIntrptDtlDto", postNo);
-            if (yy != null) {
-                this.evictMyYyCache("myImprtcIntrptList", yy);
-            } else {
-                EhCacheUtils.clearMyCache("myImprtcIntrptList");
-            }
             // jrnl_day
             if (jrnlDayNo != null) {
                 EhCacheUtils.evictMyCacheByKey("jrnlDayDtlDtoByUser", jrnlDayNo);
             }
             this.evictMyJrnlDayYyMnthCaches(yy, mnth);
+            // jrnl_intrpt
+            EhCacheUtils.evictMyCacheByKey("jrnlIntrptDtlDtoByUser", postNo);
             // jrnl_diary_tag
             EhCacheUtils.clearMyCache("jrnlIntrptTagCtgrMapByUser");
             // 태그 캐시 처리

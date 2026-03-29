@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.jrnl.day.controller;
 
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.meta.model.MetaDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayMetaService;
@@ -96,7 +95,7 @@ public class JrnlDayMetaRestController
             //
     ) throws Exception {
 
-        final Map<String, List<String>> metaCtgrMap = jrnlDayMetaService.getMetaCtgrMap(AuthUtils.getLgnUserId());
+        final Map<String, List<String>> metaCtgrMap = jrnlDayMetaService.getMyMetaCtgrMap();
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
