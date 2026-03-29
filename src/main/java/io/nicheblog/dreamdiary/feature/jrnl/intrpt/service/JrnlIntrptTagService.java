@@ -123,7 +123,7 @@ public class JrnlIntrptTagService
     /**
      * 최대 사용빈도 계산한 일기 태그 목록 조회
      *
-     * @param tagList 태그 목록 (List<TagDto>)
+     * @param tagList 태그 목록
      * @param yy 조회할 년도
      * @param mnth 조회할 월
      * @return {@link Integer} -- 태그 목록에서 계산된 최대 사용 빈도 (Integer)

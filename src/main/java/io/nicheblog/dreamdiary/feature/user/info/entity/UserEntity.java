@@ -166,7 +166,7 @@ public class UserEntity
     /* ----- */
 
     /**
-     * tagify 문자열로부터 List<useAcsIpEntity> 세팅
+     * tagify 문자열로부터 접속 가능 IP 목록 세팅
      *
      * @param authStr 쉼표(,)로 구분된 권한 정보 문자열
      */
@@ -180,7 +180,7 @@ public class UserEntity
     }
 
     /**
-     * tagify 문자열로부터 List<useAcsIpEntity> 세팅
+     * tagify 문자열로부터 접속 가능 IP 목록 세팅
      *
      * @param tagifyStr tagify 형식으로 전달된 IP 주소 문자열
      */

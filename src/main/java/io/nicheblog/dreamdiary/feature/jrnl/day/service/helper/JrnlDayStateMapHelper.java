@@ -25,7 +25,7 @@ public final class JrnlDayStateMapHelper {
 
     /**
      * JrnlDayEntity 리스트를 순회하여 각 postNo 기준의 JrnlState 맵(entry, diary, dream, intrpt)을 생성한다.
-     * @param myJrnlDayEntityList 조회된 JrnlDayEntity 리스트
+     * @param jrnlDayEntityList 조회된 JrnlDayEntity 리스트
      * @return {@link JrnlStateMaps}
      *  entryMap: entry postNo -> JrnlState
      *  diaryMap: diary postNo -> JrnlState

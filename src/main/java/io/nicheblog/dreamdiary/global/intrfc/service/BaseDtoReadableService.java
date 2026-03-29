@@ -62,7 +62,7 @@ public interface BaseDtoReadableService<Dto extends BaseCrudDto & Identifiable<K
     }
 
     /**
-     * default: 항목 페이징 목록 Page<Entity> -> Page<Dto> 변환
+     * default: 항목 페이징 목록 {@code Page<Entity>} -> {@code Page<Dto>} 변환
      *
      * @param entityPage 페이징 처리된 Entity 목록
      * @return {@link Page} -- 변환된 페이징 처리된 Dto 목록
@@ -145,7 +145,7 @@ public interface BaseDtoReadableService<Dto extends BaseCrudDto & Identifiable<K
     }
 
     /**
-     * default: 항목 목록 List<Entity> -> List<Dto> 변환
+     * default: 항목 목록 {@code List<Entity>} -> {@code List<Dto>} 변환
      *
      * @param entityList Entity 목록
      * @return {@link Page} -- 변환된 Dto 목록

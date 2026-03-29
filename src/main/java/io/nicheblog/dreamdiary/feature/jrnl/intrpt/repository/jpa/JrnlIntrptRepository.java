@@ -25,12 +25,11 @@ public interface JrnlIntrptRepository
     /**
      * 단건 조회 with EntityGraph
      * @param id Integer
-     * @return Optional<JrnlIntrptEntity>
+     * @return 저널 해석 객체
      */
     @EntityGraph(attributePaths = {"jrnlDream"})
     @NotNull
     Optional<JrnlIntrptEntity> findById(final @NotNull Integer id);
-
 
     /**
      * 해당 항목에서 해석 마지막 인덱스 조회

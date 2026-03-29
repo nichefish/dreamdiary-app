@@ -51,7 +51,7 @@ public class TagCmpstn
     /**
      * Tagify 형식의 문자열을 파싱하여 "value" 리스트로 반환하는 메서드.
      * Tagify (ex.) = [{"value":"123.123.123.123"},{"value":"234.234.234.234"}] 문자열 형식으로 넘어온댜.
-     * @return List<String> - 파싱된 문자열 값들의 리스트. 문자열이 비어 있을 경우 빈 리스트 반환.
+     * @return 파싱된 문자열 값들의 리스트. 문자열이 비어 있을 경우 빈 리스트 반환.
      */
     public List<String> getParsedTagStrList() {
         if (StringUtils.isEmpty(this.tagListStr)) return new ArrayList<>();
@@ -65,7 +65,7 @@ public class TagCmpstn
     /**
      * Tagify 형식의 문자열을 파싱하여 TagDto 리스트로 반환하는 메서드.
      * Tagify (ex.) = [{"value":"123.123.123.123"},{"value":"234.234.234.234"}] 문자열 형식으로 넘어온댜.
-     * @return List<TagDto> - 파싱된 TagDto 객체들의 리스트. 문자열이 비어 있을 경우 빈 리스트 반환.
+     * @return 파싱된 TagDto 객체들의 리스트. 문자열이 비어 있을 경우 빈 리스트 반환.
      */
     public List<TagDto> getParsedTagList() {
         if (StringUtils.isEmpty(this.tagListStr)) return new ArrayList<>();
@@ -129,7 +129,7 @@ public class TagCmpstn
 
     /**
      * Getter :: 태그 목록을 리스트로 반환.
-     * @return List<String> - 태그 이름의 리스트, 리스트가 비어 있을 경우 null 반환
+     * @return 태그 이름의 리스트, 리스트가 비어 있을 경우 null 반환
      */
     public List<String> getTagStrList() {
         if (CollectionUtils.isEmpty(this.list)) return null;
