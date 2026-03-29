@@ -101,7 +101,7 @@ public class JrnlDreamService
      * @param searchParam JrnlDreamSearchParam
      * @return {@link List} -- 해당 년도의 중요 목록
      */
-    @Cacheable(value="jrnlDreamYySumryStatedListByUser", key="#userId + \"_\" + #searchParam.toSummaryCacheKey()")
+    @Cacheable(value="jrnlDreamYySumryStatedListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #searchParam.toSummaryCacheKey())")
     public List<JrnlDreamDto> getSumryDreamListByUser(final String userId, final JrnlDreamSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(userId);
         final List<JrnlDreamDto> jrnlDreamYySumryStatedListByUser = this.getSelf().getListDto(searchParam);
@@ -139,7 +139,7 @@ public class JrnlDreamService
      * @param key 식별자
      * @return {@link JrnlDreamDto} -- 조회된 객체
      */
-    @Cacheable(value="jrnlDreamDtlDtoByUser", key="#userId + \"_\" + #key")
+    @Cacheable(value="jrnlDreamDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #key)")
     public JrnlDreamDto getDtlDtoWithCacheByUser(final String userId, final Integer key) throws Exception {
         final JrnlDreamEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlDreamDto retrieved = mapstruct.toDto(retrievedEntity);

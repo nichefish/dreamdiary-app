@@ -41,7 +41,7 @@ public class JrnlStateCacheUpdater
      * @param cacheKey 캐시 키
      * @param isEnabled 활성화 여부
      */
-    public void update(final StateToggleDto toggle, final String cacheKey, final Boolean isEnabled) {
+    public void update(final StateToggleDto toggle, final Object cacheKey, final Boolean isEnabled) {
         final ContentType contentType = toggle.getContentType();
 
         this.updataCacheMap(toggle, cacheKey, isEnabled, contentType);
@@ -60,7 +60,7 @@ public class JrnlStateCacheUpdater
      * @param isEnabled 활성화 여부
      */
     @SuppressWarnings("unchecked")
-    private void updataCacheMap(StateToggleDto toggle, String cacheKey, Boolean isEnabled, ContentType contentType) {
+    private void updataCacheMap(StateToggleDto toggle, Object cacheKey, Boolean isEnabled, ContentType contentType) {
         final String cacheMapNm = this.getCacheMapNm(contentType);
 
         final Map<Integer, JrnlState> map = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache(cacheMapNm, cacheKey);

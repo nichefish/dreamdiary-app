@@ -101,7 +101,7 @@ public class JrnlDiaryService
      * @param searchParam JrnlDiarySearchParam
      * @return {@link List} -- 해당 년도의 중요 목록
      */
-    @Cacheable(value="jrnlDiaryYySumryStatedListByUser", key="#userId + \"_\" + #searchParam.toSummaryCacheKey()")
+    @Cacheable(value="jrnlDiaryYySumryStatedListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #searchParam.toSummaryCacheKey())")
     public List<JrnlDiaryDto> getSumryDiaryListByUser(final String userId, final JrnlDiarySearchParam searchParam) throws Exception {
         searchParam.setRegstrId(userId);
         final List<JrnlDiaryDto> jrnlDiaryYySumryStatedListByUser = this.getSelf().getListDto(searchParam);
@@ -185,7 +185,7 @@ public class JrnlDiaryService
      * @param key 식별자
      * @return {@link JrnlDiaryDto} -- 조회된 객체
      */
-    @Cacheable(value="jrnlDiaryDtlDtoByUser", key="#userId + \"_\" + #key")
+    @Cacheable(value="jrnlDiaryDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #key)")
     public JrnlDiaryDto getDtlDtoWithCacheByUser(final String userId, final Integer key) throws Exception {
         final JrnlDiaryEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlDiaryDto retrieved = mapstruct.toDto(retrievedEntity);

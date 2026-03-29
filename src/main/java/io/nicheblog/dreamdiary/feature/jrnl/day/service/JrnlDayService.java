@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.interceptor.SimpleKey;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,7 +87,7 @@ public class JrnlDayService
      * @return {@link List} -- 조회된 목록
      */
     @Transactional(readOnly = true)
-    @Cacheable(value = "jrnlDayYyMnthListByUser", key = "#userId + \"_\" + #yy + \"_\" + #mnth")
+    @Cacheable(value = "jrnlDayYyMnthListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#userId, #yy, #mnth)")
     public List<JrnlDayDto> getCachedYyMnthListDtoByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
         final JrnlDaySearchParam baseParam = JrnlDaySearchParam.getBaseParam(userId, yy, mnth);
         final List<JrnlDayEntity> myJrnlDayEntityList = this.getListEntity(baseParam);
@@ -94,7 +95,7 @@ public class JrnlDayService
         // 1) stateMap 만들기
         final JrnlStateMaps maps = JrnlDayStateMapHelper.makeJrnlStateMaps(myJrnlDayEntityList);
         // 2) stateMap 캐시에 저장
-        final String cacheKey = userId + "_" + yy + "_" + mnth;
+        final SimpleKey cacheKey = new org.springframework.cache.interceptor.SimpleKey(userId, yy, mnth);
         EhCacheUtils.put("jrnlEntryStateMapByUser", cacheKey, maps.getEntryMap());
         EhCacheUtils.put("jrnlDiaryStateMapByUser", cacheKey, maps.getDiaryMap());
         EhCacheUtils.put("jrnlDreamStateMapByUser", cacheKey, maps.getDreamMap());
@@ -167,7 +168,7 @@ public class JrnlDayService
      * @param key 식별자
      * @return {@link JrnlDayDto} -- 조회된 객체
      */
-    @Cacheable(value = "jrnlDayDtlDtoByUser", key = "#userId + \"_\" + #key")
+    @Cacheable(value = "jrnlDayDtlDtoByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#userId, #key)")
     public JrnlDayDto getCachedDtlDtoByUser(final String userId, final Integer key) throws Exception {
         final JrnlDayEntity retrievedEntity = this.getDtlEntity(key);
         final JrnlDayDto retrieved = mapstruct.toDto(retrievedEntity);
