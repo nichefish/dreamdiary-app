@@ -76,7 +76,7 @@ public class JrnlTodoService
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
      */
-    @Cacheable(value="jrnlTodoListByUser", key="#userId + \"_\" + #searchParam.getYy() + \"_\" + #searchParam.getMnth()")
+    @Cacheable(value="jrnlTodoListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #searchParam.getYy(), #searchParam.getMnth())")
     public List<JrnlTodoDto> getListDtoWithCacheByUser(final String userId, final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(userId);
 
@@ -134,7 +134,7 @@ public class JrnlTodoService
      * @param key 식별자
      * @return {@link JrnlTodoDto} -- 조회된 객체
      */
-    @Cacheable(value="jrnlTodoDtlDtoByUser", key="#userId + \"_\" + #key")
+    @Cacheable(value="jrnlTodoDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #key)")
     public JrnlTodoDto getDtlDtoWithCacheByUser(final String userId, final Integer key) throws Exception {
         final JrnlTodoEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlTodoDto retrieved = mapstruct.toDto(retrievedEntity);

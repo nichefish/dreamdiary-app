@@ -66,7 +66,7 @@ public class JrnlDreamTagService
      * @param mnth 조회할 월
      * @return {@link List} -- 태그 목록
      */
-    @Cacheable(value="jrnlDreamYyMnthTagListByUser", key="#userId + \"_\" + #yy + \"_\" + #mnth")
+    @Cacheable(value="jrnlDreamYyMnthTagListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #yy, #mnth)")
     public List<TagDto> getListDtoWithCacheByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
         final JrnlDreamSearchParam searchParam = JrnlDreamSearchParam.builder().yy(yy).mnth(mnth).build();
         searchParam.setRegstrId(userId);
@@ -96,7 +96,7 @@ public class JrnlDreamTagService
      * @param mnth 조회할 월
      * @return {@link List} -- CSS 사이즈가 적용된 태그 목록
      */
-    @Cacheable(value="jrnlDreamYyMnthSizedTagListByUser", key="#userId + \"_\" + #yy + \"_\" + #mnth")
+    @Cacheable(value="jrnlDreamYyMnthSizedTagListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #yy, #mnth)")
     public List<TagDto> getDreamSizedListDtoByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
         // 저널 꿈 태그 Dto 목록 조회
         final List<TagDto> tagList = this.getSelf().getListDtoWithCacheByUser(userId, yy, mnth);
@@ -153,7 +153,7 @@ public class JrnlDreamTagService
      *
      * @return {@link Map} -- 카테고리별 태그 목록을 담은 Map
      */
-    @Cacheable(value="jrnlDreamCountMapByUser", key="#param.regstrId + \"_\" + #param.yy + \"_\" + #param.mnth")
+    @Cacheable(value="jrnlDreamCountMapByUser", key="new org.springframework.cache.interceptor.SimpleKey(#param.regstrId, #param.yy, #param.mnth)")
     public Map<Integer, Integer> countDreamSizeMap(final JrnlDreamTagContentParam param) {
         final List<TagContentCntDto> tagCountList = repository.countDreamSizeMap(param);
 

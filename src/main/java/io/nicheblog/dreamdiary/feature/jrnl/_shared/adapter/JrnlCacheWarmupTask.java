@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayTagService;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.service.JrnlDiaryTagService;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.service.JrnlDreamTagService;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.service.JrnlIntrptTagService;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.port.CacheWarmupTask;
 import io.nicheblog.dreamdiary.infrastructure.cache.port.LoginCacheWarmupTask;
@@ -42,11 +43,11 @@ public class JrnlCacheWarmupTask
     @Override
     public void warmup() throws Exception {
         // 사용자 기반 워밍업
-        jrnlDayTagService.getTagCtgrMapByUser("nichefish");
-        jrnlDayMetaService.getMetaCtgrMapByUser("nichefish");
-        jrnlDiaryTagService.getTagCtgrMapByUser("nichefish");
-        jrnlDreamTagService.getTagCtgrMapByUser("nichefish");
-        jrnlIntrptTagService.getTagCtgrMapByUser("nichefish");
+        jrnlDayTagService.getTagCtgrMapByUser(Constant.SYSTEM_ACNT);
+        jrnlDayMetaService.getMetaCtgrMapByUser(Constant.SYSTEM_ACNT);
+        jrnlDiaryTagService.getTagCtgrMapByUser(Constant.SYSTEM_ACNT);
+        jrnlDreamTagService.getTagCtgrMapByUser(Constant.SYSTEM_ACNT);
+        jrnlIntrptTagService.getTagCtgrMapByUser(Constant.SYSTEM_ACNT);
     }
 
     /**

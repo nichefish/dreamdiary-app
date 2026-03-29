@@ -46,9 +46,9 @@ public class JrnlSumryScheduler {
         try {
             // TODO: 사용자 전체 결산 생성
             // 결산 생성
-            jrnlSumryService.makeTotalYySumryByUser("nichefish");
+            jrnlSumryService.makeTotalYySumryByUser(Constant.SYSTEM_ACNT);
             // 캐시 재생성 위해 조회
-            jrnlSumryService.getTotalSumryByUser("nichefish");
+            jrnlSumryService.getTotalSumryByUser(Constant.SYSTEM_ACNT);
         } catch (final Exception e) {
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);

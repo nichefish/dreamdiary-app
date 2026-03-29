@@ -1,17 +1,18 @@
 package io.nicheblog.dreamdiary.feature.clsf.tag.service;
 
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfKey;
-import io.nicheblog.dreamdiary.feature.clsf.tag.handler.JrnlTagCacheUpdtWorker;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagEntity;
+import io.nicheblog.dreamdiary.feature.clsf.tag.handler.JrnlTagCacheUpdtWorker;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.util.TransactionHookUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.cache.interceptor.SimpleKey;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -161,7 +162,7 @@ public class TagProcService {
             final Integer mnth,
             final Map<Integer, Integer> tagCntChangeMap
     ) throws Exception {
-        final String cacheKey = AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth;
+        final Object cacheKey = new SimpleKey(AuthUtils.getLgnUserId(), yy, mnth);
         final String contentType = clsfKey.getContentType();
         final Map<Integer, Integer> safeChangeMap = new HashMap<>(tagCntChangeMap);
         TransactionHookUtils.runAfterCommitOrNow(

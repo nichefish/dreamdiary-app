@@ -66,7 +66,7 @@ public class JrnlIntrptTagService
      * @param mnth 조회할 월
      * @return {@link List} -- 태그 목록
      */
-    @Cacheable(value="jrnlIntrptYyMnthTagListByUser", key="#userId + \"_\" + #yy + \"_\" + #mnth")
+    @Cacheable(value="jrnlIntrptYyMnthTagListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #yy, #mnth)")
     public List<TagDto> getListDtoWithCacheByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
         final JrnlIntrptSearchParam searchParam = JrnlIntrptSearchParam.builder().yy(yy).mnth(mnth).build();
         searchParam.setRegstrId(userId);
@@ -96,7 +96,7 @@ public class JrnlIntrptTagService
      * @param mnth 조회할 월
      * @return {@link List} -- CSS 사이즈가 적용된 태그 목록
      */
-    @Cacheable(value="jrnlIntrptYyMnthSizedTagListByUser", key="#userId + \"_\" + #yy + \"_\" + #mnth")
+    @Cacheable(value="jrnlIntrptYyMnthSizedTagListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #yy, #mnth)")
     public List<TagDto> getIntrptSizedListDtoByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
         // 저널 꿈 태그 Dto 목록 조회
         final List<TagDto> tagList = this.getSelf().getListDtoWithCacheByUser(userId, yy, mnth);
@@ -154,7 +154,7 @@ public class JrnlIntrptTagService
      *
      * @return {@link Map} -- 카테고리별 태그 목록을 담은 Map
      */
-    @Cacheable(value="jrnlIntrptCountMapByUser", key="#param.regstrId + \"_\" + #param.yy + \"_\" + #param.mnth")
+    @Cacheable(value="jrnlIntrptCountMapByUser", key="new org.springframework.cache.interceptor.SimpleKey(#param.regstrId, #param.yy, #param.mnth)")
     public ConcurrentHashMap<Integer, Integer> countIntrptSizeMap(final JrnlIntrptTagContentParam param) {
         final List<TagContentCntDto> tagCountList = repository.countIntrptSizeMap(param);
 

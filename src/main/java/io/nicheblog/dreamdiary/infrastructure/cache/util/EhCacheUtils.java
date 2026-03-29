@@ -123,7 +123,7 @@ public class EhCacheUtils {
         if (cache == null) return null;
 
         // SimpleKey 변환 처리 (키가 없을 경우 대비)
-        if (cacheKey == null || Constant.SIMPLE_KEY.equals(cacheKey) || cacheKey instanceof SimpleKey) {
+        if (cacheKey == null || Constant.SIMPLE_KEY.equals(cacheKey)) {
             cacheKey = SimpleKey.EMPTY;
         }
 
@@ -168,7 +168,7 @@ public class EhCacheUtils {
      * @param cacheKey 캐시 엔트리를 식별하는 key
      * @param value    캐시에 저장할 객체
      */
-    public static void put(final String cacheNm, final String cacheKey, final Object value) {
+    public static void put(final String cacheNm, final Object cacheKey, final Object value) {
         final Cache cache = cacheManager.getCache(cacheNm);
         if (cache == null) return;
 
@@ -212,7 +212,12 @@ public class EhCacheUtils {
         if (cache == null) return;
 
         final String myCacheKey = AuthUtils.getLgnUserId();
+        if (myCacheKey == null || myCacheKey.isBlank()) {
+            log.warn("Login user id is empty. Skip user-scoped evict for cache: {}", cacheName);
+            return;
+        }
         cache.evict(myCacheKey);
+        cache.evict(new SimpleKey(myCacheKey));
         log.debug("cache name {} (key: {}) evicted.", cacheName, myCacheKey);
     }
 
@@ -228,9 +233,15 @@ public class EhCacheUtils {
             log.debug("cache name {} does not exists.", cacheName);
             return;
         }
-        final String myCacheKey = AuthUtils.getLgnUserId() + "_" + cacheKey;
-        cache.evict(myCacheKey);
-        log.debug("cache name {} (key: {}) evicted.", cacheName, myCacheKey);
+        final String lgnUserId = AuthUtils.getLgnUserId();
+        if (lgnUserId == null || lgnUserId.isBlank()) {
+            log.warn("Login user id is empty. Skip user-scoped evict for cache: {}", cacheName);
+            return;
+        }
+        final Object scopedKey = new SimpleKey(lgnUserId, cacheKey);
+        cache.evict(scopedKey);
+        cache.evict(lgnUserId + "_" + cacheKey); // fallback for legacy keys
+        log.debug("cache name {} (key: {}) evicted.", cacheName, scopedKey);
     }
 
     /**
@@ -265,8 +276,7 @@ public class EhCacheUtils {
         if (cache == null) return;
         final String lgnUserId = AuthUtils.getLgnUserId();
         if (lgnUserId == null || lgnUserId.isBlank()) {
-            log.warn("Login user id is empty. Fallback to clear all for cache: {}", cacheName);
-            clearCache(cacheName);
+            log.warn("Login user id is empty. Skip user-scoped clear for cache: {}", cacheName);
             return;
         }
 
@@ -291,8 +301,7 @@ public class EhCacheUtils {
                 evictedCnt++;
             }
         } else {
-            log.warn("Unsupported native cache type. Fallback to clear all for cache: {}", cacheName);
-            clearCache(cacheName);
+            log.warn("Unsupported native cache type. Skip user-scoped clear for cache: {}", cacheName);
             return;
         }
         log.debug("cache name {} user scoped clear done. userId={}, evicted={}", cacheName, lgnUserId, evictedCnt);
@@ -315,20 +324,25 @@ public class EhCacheUtils {
 
         final String lgnUserId = AuthUtils.getLgnUserId();
         if (StringUtils.isEmpty(lgnUserId)) {
-            log.warn("Login user id is empty. Fallback to clear all for cache: {}", cacheName);
-            clearCache(cacheName);
+            log.warn("Login user id is empty. Skip user-scoped prefix clear for cache: {}", cacheName);
             return;
         }
 
         final String normalizedPrefix = stripTrailingUnderscore(cacheKeyPrefix.trim());
         final String fullPrefix = lgnUserId + "_" + normalizedPrefix;
+        final String[] prefixParts = normalizedPrefix.isEmpty() ? new String[0] : normalizedPrefix.split("_");
         final Object nativeCache = cache.getNativeCache();
         int evictedCnt = 0;
         if (nativeCache instanceof javax.cache.Cache<?, ?> ehCache) {
             final List<Object> keysToEvict = new ArrayList<>();
             ehCache.iterator().forEachRemaining(entry -> {
-                final String keyStr = Objects.toString(entry.getKey(), "");
-                if (matchesPrefixBoundary(keyStr, fullPrefix)) keysToEvict.add(entry.getKey());
+                final Object keyObj = entry.getKey();
+                if (keyObj instanceof SimpleKey simpleKey) {
+                    if (matchesSimpleKeyPrefix(simpleKey, lgnUserId, prefixParts)) keysToEvict.add(keyObj);
+                    return;
+                }
+                final String keyStr = Objects.toString(keyObj, "");
+                if (matchesPrefixBoundary(keyStr, fullPrefix)) keysToEvict.add(keyObj);
             });
             for (final Object key : keysToEvict) {
                 cache.evict(key);
@@ -337,6 +351,10 @@ public class EhCacheUtils {
         } else if (nativeCache instanceof com.github.benmanes.caffeine.cache.Cache<?, ?> caffeineCache) {
             final List<Object> keysToEvict = new ArrayList<>();
             caffeineCache.asMap().keySet().forEach(key -> {
+                if (key instanceof SimpleKey simpleKey) {
+                    if (matchesSimpleKeyPrefix(simpleKey, lgnUserId, prefixParts)) keysToEvict.add(key);
+                    return;
+                }
                 final String keyStr = Objects.toString(key, "");
                 if (matchesPrefixBoundary(keyStr, fullPrefix)) keysToEvict.add(key);
             });
@@ -345,8 +363,7 @@ public class EhCacheUtils {
                 evictedCnt++;
             }
         } else {
-            log.warn("Unsupported native cache type. Fallback to clear all for cache: {}", cacheName);
-            clearCache(cacheName);
+            log.warn("Unsupported native cache type. Skip user-scoped prefix clear for cache: {}", cacheName);
             return;
         }
         log.debug("cache name {} user prefix clear done. prefix={}, evicted={}", cacheName, fullPrefix, evictedCnt);
@@ -391,21 +408,37 @@ public class EhCacheUtils {
         if (cacheKey == null || lgnUserId == null || lgnUserId.isBlank()) return false;
 
         if (cacheKey instanceof SimpleKey simpleKey) {
-            try {
-                final Field paramsField = SimpleKey.class.getDeclaredField("params");
-                paramsField.setAccessible(true);
-                final Object[] params = (Object[]) paramsField.get(simpleKey);
-                if (params == null || params.length == 0) return false;
-
-                final String firstParam = Objects.toString(params[0], null);
-                return lgnUserId.equals(firstParam);
-            } catch (final NoSuchFieldException | IllegalAccessException e) {
-                log.debug("SimpleKey reflection failed: {}", e.getMessage());
-            }
+            final Object[] params = getSimpleKeyParams(simpleKey);
+            if (params == null || params.length == 0) return false;
+            final String firstParam = Objects.toString(params[0], null);
+            return lgnUserId.equals(firstParam);
         }
 
         final String keyStr = Objects.toString(cacheKey, "");
         return lgnUserId.equals(keyStr) || keyStr.startsWith(lgnUserId + "_");
+    }
+
+    private static Object[] getSimpleKeyParams(final SimpleKey simpleKey) {
+        try {
+            final Field paramsField = SimpleKey.class.getDeclaredField("params");
+            paramsField.setAccessible(true);
+            return (Object[]) paramsField.get(simpleKey);
+        } catch (final NoSuchFieldException | IllegalAccessException e) {
+            log.debug("SimpleKey reflection failed: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    private static boolean matchesSimpleKeyPrefix(final SimpleKey simpleKey, final String lgnUserId, final String[] prefixParts) {
+        final Object[] params = getSimpleKeyParams(simpleKey);
+        if (params == null || params.length == 0) return false;
+        if (!lgnUserId.equals(Objects.toString(params[0], null))) return false;
+        if (prefixParts == null || prefixParts.length == 0) return true;
+        final String prefixToken = String.join("_", prefixParts);
+        final String joinedParams = Arrays.stream(params, 1, params.length)
+                .map(param -> Objects.toString(param, ""))
+                .collect(Collectors.joining("_"));
+        return matchesPrefixBoundary(joinedParams, prefixToken);
     }
 
     /**

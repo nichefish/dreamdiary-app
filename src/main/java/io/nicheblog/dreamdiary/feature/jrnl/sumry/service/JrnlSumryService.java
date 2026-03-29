@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.jrnl.sumry.service;
 
+import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
@@ -11,6 +12,7 @@ import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.repository.jpa.JrnlSumryRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.spec.JrnlSumrySpec;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.Getter;
@@ -106,7 +108,7 @@ public class JrnlSumryService
     @Caching(evict = {
             @CacheEvict(value="jrnlSumryTotalListByUser", key="#userId"),
             @CacheEvict(value="jrnlSumryListByUser", key="#userId"),
-            @CacheEvict(value="jrnlSumryYyDtlDtoByUser", key="#userId + \"_\" + #yy")
+            @CacheEvict(value="jrnlSumryYyDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #yy)")
     })
     public Boolean makeYySumryByUser(final String userId, final Integer yy) throws Exception {
         // 해당 년도 저널 결산 정보 조회
@@ -195,9 +197,13 @@ public class JrnlSumryService
         return this.getSelf().getSumryDtlByUser(userId, key);
     }
 
-    @Cacheable(value="jrnlSumryDtlDtoByUser", key="#userId + \"_\" + #key")
+    @Cacheable(value="jrnlSumryDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #key)")
     public JrnlSumryDto getSumryDtlByUser(final String userId, final Integer key) throws Exception {
-        return this.getSelf().getDtlDto(key);
+        final JrnlSumryDto retrieved = this.getSelf().getDtlDto(key);
+        if (retrieved != null && !retrieved.getIsRegstr(userId)) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
+        return retrieved;
     }
 
     /**
@@ -211,7 +217,7 @@ public class JrnlSumryService
         return this.getSelf().getDtlDtoByYyByUser(userId, yy);
     }
 
-    @Cacheable(value="jrnlSumryYyDtlDtoByUser", key="#userId + \"_\" + #yy")
+    @Cacheable(value="jrnlSumryYyDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #yy)")
     public JrnlSumryDto getDtlDtoByYyByUser(final String userId, final Integer yy) throws Exception {
         final Optional<JrnlSumryEntity> retrievedWrapper = repository.findByYyAndRegstrId(yy, userId);
         if (retrievedWrapper.isEmpty()) return null;

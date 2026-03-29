@@ -133,7 +133,7 @@ public class JrnlIntrptService
      * @param key 식별자
      * @return {@link JrnlIntrptDto} -- 조회된 객체
      */
-    @Cacheable(value="jrnlIntrptDtlDtoByUser", key="#userId + \"_\" + #key")
+    @Cacheable(value="jrnlIntrptDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #key)")
     public JrnlIntrptDto getDtlDtoWithCacheByUser(final String userId, final Integer key) throws Exception {
         final JrnlIntrptEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlIntrptDto retrieved = mapstruct.toDto(retrievedEntity);
