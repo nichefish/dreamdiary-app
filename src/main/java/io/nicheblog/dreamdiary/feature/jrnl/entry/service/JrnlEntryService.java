@@ -1,5 +1,7 @@
 package io.nicheblog.dreamdiary.feature.jrnl.entry.service;
 
+import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictWorker;
@@ -11,6 +13,7 @@ import io.nicheblog.dreamdiary.feature.jrnl.entry.repository.jpa.JrnlEntryReposi
 import io.nicheblog.dreamdiary.feature.jrnl.entry.repository.mybatis.JrnlEntryMapper;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.spec.JrnlEntrySpec;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptDto;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -96,6 +99,9 @@ public class JrnlEntryService
      */
     @Override
     public void preModify(final JrnlEntryDto modifyDto, final JrnlEntryEntity modifyEntity) throws Exception {
+        if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
         final boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
         modifyDto.setIsIdxChanged(isIdxChanged);
     }
@@ -115,10 +121,23 @@ public class JrnlEntryService
     }
 
     /**
+     * 삭제 전처리. (override)
+     *
+     * @param deletedDto - 삭제된 객체
+     */
+    @Override
+    public void preDelete(final JrnlEntryDto deletedDto) throws Exception {
+        if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
+    }
+
+    /**
      * 삭제 후처리. (override)
      *
      * @param deletedDto - 삭제된 객체
      */
+
     @Override
     public void postDelete(final JrnlEntryDto deletedDto) throws Exception {
         // 인덱스 재조정

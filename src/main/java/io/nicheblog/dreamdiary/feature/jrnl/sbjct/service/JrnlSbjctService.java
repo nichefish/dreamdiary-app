@@ -1,5 +1,7 @@
 package io.nicheblog.dreamdiary.feature.jrnl.sbjct.service;
 
+import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
 import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.feature.clsf.managt.event.ManagtrAddEvent;
@@ -9,6 +11,7 @@ import io.nicheblog.dreamdiary.feature.jrnl.sbjct.model.JrnlSbjctDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sbjct.repository.jpa.JrnlSbjctRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.sbjct.spec.JrnlSbjctSpec;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -69,6 +72,19 @@ public class JrnlSbjctService
     }
 
     /**
+     * 수정 전처리. (override)
+     *
+     * @param modifyDto - ?섏젙??媛앹껜
+     * @param modifyEntity - ?섏젙??媛앹껜
+     */
+    @Override
+    public void preModify(final JrnlSbjctDto modifyDto, final JrnlSbjctEntity modifyEntity) throws Exception {
+        if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
+    }
+
+    /**
      * 수정 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
@@ -82,5 +98,17 @@ public class JrnlSbjctService
         //     String jandiRsltMsg = notifyService.notifyJrnlSbjctReg(trgetTopic, result, logParam);
         //     rsltMsg = rsltMsg + "\n" + jandiRsltMsg;
         // }
+    }
+
+    /**
+     * 삭제 전처리. (override)
+     *
+     * @param deletedDto - 삭제될 객체
+     */
+    @Override
+    public void preDelete(final JrnlSbjctDto deletedDto) throws Exception {
+        if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
     }
 }

@@ -116,6 +116,9 @@ public interface BaseClsfService<PostDto extends BaseClsfDto & Identifiable<Key>
 
         final Dto deletedDto = getReadMapstruct().toDto(deleteEntity);
 
+        // optional: 삭제 전처리(dto)
+        this.preDelete(deletedDto);
+
         this.remove(deleteEntity);
 
         // 필수 후처리(삭제 공통): tag/meta 처리

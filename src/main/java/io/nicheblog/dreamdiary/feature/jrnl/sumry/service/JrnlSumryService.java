@@ -187,6 +187,19 @@ public class JrnlSumryService
     }
 
     /**
+     * 수정 전처리. (override)
+     *
+     * @param modifyDto 수정할 객체 (dto)
+     * @param modifyEntity 수정할 객체 (entity)
+     */
+    @Override
+    public void preModify(final JrnlSumryDto modifyDto, final JrnlSumryEntity modifyEntity) throws Exception {
+        if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
+    }
+
+    /**
      * 저널 결산 상세 정보 조회 (캐시 처리)
      *
      * @param key 식별자
@@ -234,6 +247,9 @@ public class JrnlSumryService
     @Transactional
     public boolean dreamCompt(final Integer key) throws Exception {
         final JrnlSumryEntity retrievedEntity = this.getDtlEntity(key);
+        if (!AuthUtils.isRegstr(retrievedEntity.getRegstrId())) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
         retrievedEntity.setDreamComptYn("Y");
         repository.save(retrievedEntity);
 
@@ -247,5 +263,17 @@ public class JrnlSumryService
         );
 
         return true;
+    }
+
+    /**
+     * 삭제 전처리. (override)
+     *
+     * @param deletedDto - 삭제된 객체
+     */
+    @Override
+    public void preDelete(final JrnlSumryDto deletedDto) throws Exception {
+        if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
     }
 }

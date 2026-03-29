@@ -238,10 +238,14 @@ public class JrnlDayService
     /**
      * 수정 전처리. (override)
      *
-     * @param modifyDto 등록할 객체
+     * @param modifyDto 수정할 객체 (dto)
+     * @param modifyEntity 수정할 객체 (entity)
      */
     @Override
-    public void preModify(final JrnlDayDto modifyDto) throws Exception {
+    public void preModify(final JrnlDayDto modifyDto, final JrnlDayEntity modifyEntity) throws Exception {
+        if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
         // 년도/월 세팅:: 메소드 분리
         this.setYyMnth(modifyDto);
     }
@@ -273,6 +277,18 @@ public class JrnlDayService
             jrnlDay.setAprxmtDt("");
             jrnlDay.setYy(Integer.valueOf(jrnlDay.getJrnlDt().substring(0, 4)));
             jrnlDay.setMnth(Integer.valueOf(jrnlDay.getJrnlDt().substring(5, 7)));
+        }
+    }
+
+    /**
+     * 삭제 전처리. (override)
+     *
+     * @param deletedDto - 삭제된 객체
+     */
+    @Override
+    public void preDelete(final JrnlDayDto deletedDto) throws Exception {
+        if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
         }
     }
 
