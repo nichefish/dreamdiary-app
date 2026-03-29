@@ -142,7 +142,7 @@ public interface BaseDtoWritableService<PostDto extends BaseCrudDto & Identifiab
      *
      * @param deletedDto - 삭제할 dto 객체
      */
-    default void preDelete(final PostDto deletedDto) throws Exception {
+    default void preDelete(final Dto deletedDto) throws Exception {
         // 기본 공백, 필요시 각 함수에서 Override
     }
 
@@ -180,6 +180,8 @@ public interface BaseDtoWritableService<PostDto extends BaseCrudDto & Identifiab
         if (deleteEntity == null) throw new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete"));
 
         final Dto deletedDto = getReadMapstruct().toDto(deleteEntity);
+
+        this.preDelete(deletedDto);
 
         this.remove(deleteEntity);
 

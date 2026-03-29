@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.jrnl.sumry.service;
 
+import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
@@ -12,6 +13,7 @@ import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryReviewDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.repository.jpa.JrnlSumryReviewRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.spec.JrnlSumryReviewSpec;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -86,6 +88,31 @@ public class JrnlSumryReviewService
     @Override
     public void postModify(final JrnlSumryReviewDto postDto, final JrnlSumryReviewDto updatedDto) throws Exception {
         jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_SUMRY_REVIEW);
+    }
+
+    /**
+     * 수정 전처리. (override)
+     *
+     * @param modifyDto - 수정할 객체. (dto)
+     * @param modifyEntity - 수정할 객체. (entity)
+     */
+    @Override
+    public void preModify(final JrnlSumryReviewDto modifyDto, final JrnlSumryReviewEntity modifyEntity) throws Exception {
+        if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
+    }
+
+    /**
+     * 삭제 전처리. (override)
+     *
+     * @param deletedDto - 등록된 객체
+     */
+    @Override
+    public void preDelete(final JrnlSumryReviewDto deletedDto) throws Exception {
+        if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
     }
 
     /**

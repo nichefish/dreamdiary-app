@@ -20,6 +20,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -96,6 +97,19 @@ public class JrnlTodoService
     }
 
     /**
+     * 수정 전처리. (override)
+     *
+     * @param modifyDto 수정할 객체 (dto)
+     * @param modifyEntity 수정할 객체 (entity)
+     */
+    @Override
+    public void preModify(final JrnlTodoDto modifyDto, final JrnlTodoEntity modifyEntity) throws Exception {
+        if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
+    }
+
+    /**
      * 등록 후처리. (override)
      *
      * @param updatedDto - 등록된 객체
@@ -141,6 +155,18 @@ public class JrnlTodoService
         // 권한 체크
         if (!retrieved.getIsRegstr(AuthUtils.requireUserId(userId))) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
         return retrieved;
+    }
+
+    /**
+     * 삭제 전처리. (override)
+     *
+     * @param deletedDto - 삭제된 객체
+     */
+    @Override
+    public void preDelete(final JrnlTodoDto deletedDto) throws Exception {
+        if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
     }
 
     /**

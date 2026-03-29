@@ -162,6 +162,9 @@ public class JrnlDreamService
      */
     @Override
     public void preModify(final JrnlDreamPostDto modifyDto, final JrnlDreamEntity modifyEntity) throws Exception {
+        if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
         final boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
         modifyDto.setIsIdxChanged(isIdxChanged);
     }
@@ -178,6 +181,18 @@ public class JrnlDreamService
         
         // 관련 캐시 삭제
         jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DREAM);
+    }
+
+    /**
+     * 삭제 전처리. (override)
+     *
+     * @param deletedDto - 삭제된 객체
+     */
+    @Override
+    public void preDelete(final JrnlDreamDto deletedDto) throws Exception {
+        if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
     }
 
     /**
