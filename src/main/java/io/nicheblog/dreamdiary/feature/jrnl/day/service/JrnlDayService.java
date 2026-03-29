@@ -96,7 +96,7 @@ public class JrnlDayService
         // 1) stateMap 만들기
         final JrnlStateMaps maps = JrnlDayStateMapHelper.makeJrnlStateMaps(myJrnlDayEntityList);
         // 2) stateMap 캐시에 저장
-        final SimpleKey cacheKey = new org.springframework.cache.interceptor.SimpleKey(userId, yy, mnth);
+        final SimpleKey cacheKey = new SimpleKey(userId, yy, mnth);
         EhCacheUtils.put("jrnlEntryStateMapByUser", cacheKey, maps.getEntryMap());
         EhCacheUtils.put("jrnlDiaryStateMapByUser", cacheKey, maps.getDiaryMap());
         EhCacheUtils.put("jrnlDreamStateMapByUser", cacheKey, maps.getDreamMap());

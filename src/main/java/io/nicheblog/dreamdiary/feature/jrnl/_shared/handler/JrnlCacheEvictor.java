@@ -124,10 +124,22 @@ public interface JrnlCacheEvictor
      */
     default void evictMyJrnlDayYyMnthCaches(final Integer yy, final Integer mnth) {
         if (yy != null && mnth != null) {
+            // Current journal month list cache and companion state maps share the same key scope.
+            this.evictMyYyMnthCache("jrnlDayYyMnthListByUser", yy, mnth);
+            this.evictMyYyMnthCache("jrnlEntryStateMapByUser", yy, mnth);
+            this.evictMyYyMnthCache("jrnlDiaryStateMapByUser", yy, mnth);
+            this.evictMyYyMnthCache("jrnlDreamStateMapByUser", yy, mnth);
+            this.evictMyYyMnthCache("jrnlIntrptStateMapByUser", yy, mnth);
+            // Legacy cache names kept as no-op-safe fallback during migration.
             this.evictMyYyMnthCache("myJrnlDayList", yy, mnth);
             this.evictMyYyMnthCache("myJrnlDayCalList", yy, mnth);
             return;
         }
+        EhCacheUtils.clearMyCache("jrnlDayYyMnthListByUser");
+        EhCacheUtils.clearMyCache("jrnlEntryStateMapByUser");
+        EhCacheUtils.clearMyCache("jrnlDiaryStateMapByUser");
+        EhCacheUtils.clearMyCache("jrnlDreamStateMapByUser");
+        EhCacheUtils.clearMyCache("jrnlIntrptStateMapByUser");
         EhCacheUtils.clearMyCache("myJrnlDayList");
         EhCacheUtils.clearMyCache("myJrnlDayCalList");
     }
