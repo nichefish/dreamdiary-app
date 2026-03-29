@@ -32,28 +32,28 @@ public final class JrnlDayStateMapHelper {
      *  dreamMap: dream postNo -> JrnlState
      *  intrptMap: intrpt postNo -> JrnlState
      */
-    public static JrnlStateMaps makeJrnlStateMaps(final List<JrnlDayEntity> myJrnlDayEntityList) {
+    public static JrnlStateMaps makeJrnlStateMaps(final List<JrnlDayEntity> jrnlDayEntityList) {
         final Map<Integer, JrnlState> entryMap = new HashMap<>();
         final Map<Integer, JrnlState> diaryMap = new HashMap<>();
         final Map<Integer, JrnlState> dreamMap = new HashMap<>();
         final Map<Integer, JrnlState> intrptMap = new HashMap<>();
 
-        if (CollectionUtils.isEmpty(myJrnlDayEntityList)) {
+        if (CollectionUtils.isEmpty(jrnlDayEntityList)) {
             return JrnlStateMaps.builder().entryMap(entryMap).diaryMap(diaryMap).dreamMap(dreamMap).intrptMap(intrptMap).build();
         }
 
-        for (final JrnlDayEntity day : myJrnlDayEntityList) {
-            final List<JrnlEntryEntity> myJrnlEntryList = day.getJrnlEntryList();
-            if (CollectionUtils.isNotEmpty(myJrnlEntryList)) {
-                for (final JrnlEntryEntity entry : myJrnlEntryList) {
+        for (final JrnlDayEntity day : jrnlDayEntityList) {
+            final List<JrnlEntryEntity> jrnlEntryList = day.getJrnlEntryList();
+            if (CollectionUtils.isNotEmpty(jrnlEntryList)) {
+                for (final JrnlEntryEntity entry : jrnlEntryList) {
                     final JrnlState entryState = JrnlState.builder()
                             .collapsed(entry.state.hasState(StateCd.COLLAPSED))
                             .build();
                     entryMap.put(entry.getPostNo(), entryState);
 
-                    final List<JrnlDiaryEntity> myJrnlDiaryList = entry.getJrnlDiaryList();
-                    if (CollectionUtils.isNotEmpty(myJrnlDiaryList)) {
-                        for (final JrnlDiaryEntity diary : myJrnlDiaryList) {
+                    final List<JrnlDiaryEntity> jrnlDiaryList = entry.getJrnlDiaryList();
+                    if (CollectionUtils.isNotEmpty(jrnlDiaryList)) {
+                        for (final JrnlDiaryEntity diary : jrnlDiaryList) {
                             final JrnlState diaryState = JrnlState.builder()
                                     .resolved(diary.state.hasState(StateCd.RESOLVED))
                                     .collapsed(diary.state.hasState(StateCd.COLLAPSED))
@@ -66,9 +66,9 @@ public final class JrnlDayStateMapHelper {
                 }
             }
 
-            final List<JrnlDreamEntity> myJrnlDreamList = day.getJrnlDreamList();
-            if (CollectionUtils.isNotEmpty(myJrnlDreamList)) {
-                for (final JrnlDreamEntity dream : myJrnlDreamList) {
+            final List<JrnlDreamEntity> jrnlDreamList = day.getJrnlDreamList();
+            if (CollectionUtils.isNotEmpty(jrnlDreamList)) {
+                for (final JrnlDreamEntity dream : jrnlDreamList) {
                     final JrnlState dreamState = JrnlState.builder()
                             .resolved(dream.state.hasState(StateCd.RESOLVED))
                             .collapsed(dream.state.hasState(StateCd.COLLAPSED))
@@ -77,9 +77,9 @@ public final class JrnlDayStateMapHelper {
                             .build();
                     dreamMap.put(dream.getPostNo(), dreamState);
 
-                    final List<JrnlIntrptEntity> myJrnlIntrptList = dream.getJrnlIntrptList();
-                    if (CollectionUtils.isNotEmpty(myJrnlIntrptList)) {
-                        for (final JrnlIntrptEntity intrpt : myJrnlIntrptList) {
+                    final List<JrnlIntrptEntity> jrnlIntrptList = dream.getJrnlIntrptList();
+                    if (CollectionUtils.isNotEmpty(jrnlIntrptList)) {
+                        for (final JrnlIntrptEntity intrpt : jrnlIntrptList) {
                             final JrnlState intrptState = JrnlState.builder()
                                     .resolved(intrpt.state.hasState(StateCd.RESOLVED))
                                     .collapsed(intrpt.state.hasState(StateCd.COLLAPSED))

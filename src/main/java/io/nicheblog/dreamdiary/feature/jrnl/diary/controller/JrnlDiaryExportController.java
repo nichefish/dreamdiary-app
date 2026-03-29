@@ -53,7 +53,7 @@ public class JrnlDiaryExportController
             final JrnlDiarySearchParam searchParam
     ) throws Exception {
 
-        final List<JrnlDiaryDto> jrnlDiaryList = jrnlDiaryService.getListDtoWithCache(searchParam);
+        final List<JrnlDiaryDto> jrnlDiaryList = jrnlDiaryService.getMyListDto(searchParam);
         final String text = jrnlDiaryExportService.buildTxt(jrnlDiaryList, searchParam);
         final byte[] bytes = text.getBytes(StandardCharsets.UTF_8);
         final String filename = "diaries_search_@" + DateUtils.getCurrDateStr(DatePtn.PDATE) + ".txt";

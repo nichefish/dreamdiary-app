@@ -42,11 +42,11 @@ public class JrnlCacheWarmupTask
     @Override
     public void warmup() throws Exception {
         // 사용자 기반 워밍업
-        jrnlDayTagService.getTagCtgrMap("nichefish");
-        jrnlDayMetaService.getMetaCtgrMap("nichefish");
-        jrnlDiaryTagService.getTagCtgrMap("nichefish");
-        jrnlDreamTagService.getTagCtgrMap("nichefish");
-        jrnlIntrptTagService.getTagCtgrMap("nichefish");
+        jrnlDayTagService.getTagCtgrMapByUser("nichefish");
+        jrnlDayMetaService.getMetaCtgrMapByUser("nichefish");
+        jrnlDiaryTagService.getTagCtgrMapByUser("nichefish");
+        jrnlDreamTagService.getTagCtgrMapByUser("nichefish");
+        jrnlIntrptTagService.getTagCtgrMapByUser("nichefish");
     }
 
     /**

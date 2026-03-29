@@ -30,7 +30,7 @@
         </resources>
     </cache>
 
-    <!-- ex) 인자를 이용한 공격 정의 목록 조회 (key:: {#attackType, #attackName, #detectEquip}) -->
+    <!-- ↓ 공통 -->
 
     <!-- 사용자 정보 -->
     <cache alias="auditorInfo" uses-template="defaultTemplate" />
@@ -54,64 +54,62 @@
 
     <!-- 휴일 정보 -->
     <cache alias="hldyEntityList" uses-template="defaultTemplate" />
+    <cache alias="hldyMap" uses-template="defaultTemplate" />
     <cache alias="isHldy" uses-template="defaultTemplate" />
     <cache alias="isHldyOrWeekend" uses-template="defaultTemplate" />
 
-    <!-- 개인 -->
+    <!-- ↓ 개인 -->
 
     <!-- 저널 일자 -->
     <cache alias="jrnlDayYyMnthListByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDayDtlDtoByUser" uses-template="defaultTemplate" />
     <!-- 저널 일자: 태그 -->
-    <cache alias="myJrnlDayTagList" uses-template="defaultTemplate" />
-    <cache alias="myJrnlDaySizedTagList" uses-template="defaultTemplate" />
+    <cache alias="jrnlDayYyMnthTagListByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlDayYyMnthSizedTagListByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDayTagCtgrMapByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDayMetaCtgrMapByUser" uses-template="defaultTemplate" />
-    <cache alias="myCountDaySizeMap" uses-template="defaultTemplate" />
+    <cache alias="jrnlDayCountMapByUser" uses-template="defaultTemplate" />
 
     <!-- 저널 항목 -->
     <cache alias="jrnlEntryStateMapByUser" uses-template="defaultTemplate" />
 
     <!-- 저널 일기 -->
-    <cache alias="myJrnlDiaryList" uses-template="defaultTemplate" />
-    <cache alias="myJrnlDiaryDtlDto" uses-template="defaultTemplate" />
-    <cache alias="myJrnlDiaryTagList" uses-template="defaultTemplate" />
-    <cache alias="myJrnlDiaryTagListYyMnth" uses-template="defaultTemplate" />
-    <cache alias="myJrnlDiarySizedTagList" uses-template="defaultTemplate" />
+    <cache alias="jrnlDiaryDtlDtoByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlDiaryTagListByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlDiaryYyMnthTagListByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlDiaryYyMnthSizedTagListByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDiaryTagCtgrMapByUser" uses-template="defaultTemplate" />
-    <cache alias="myCountDiarySizeMap" uses-template="defaultTemplate" />
-    <cache alias="mySumryDiaryList" uses-template="defaultTemplate" />
+    <cache alias="jrnlDiaryCountMapByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDiaryStateMapByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlDiaryYySumryStatedListByUser" uses-template="defaultTemplate" />
 
     <!-- 저널 꿈 -->
-    <cache alias="myJrnlDreamList" uses-template="defaultTemplate" />
-    <cache alias="myJrnlDreamDtlDto" uses-template="defaultTemplate" />
-    <cache alias="myJrnlDreamTagList" uses-template="defaultTemplate" />
-    <cache alias="myJrnlDreamTagListYyMnth" uses-template="defaultTemplate" />
-    <cache alias="myJrnlDreamSizedTagList" uses-template="defaultTemplate" />
+    <cache alias="jrnlDreamDtlDtoByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlDreamTagListByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlDreamYyMnthTagListByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlDreamYyMnthSizedTagListByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDreamTagCtgrMapByUser" uses-template="defaultTemplate" />
-    <cache alias="myCountDreamSizeMap" uses-template="defaultTemplate" />
-    <cache alias="mySumryDreamList" uses-template="defaultTemplate" />
+    <cache alias="jrnlDreamCountMapByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDreamStateMapByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlDreamYySumryStatedListByUser" uses-template="defaultTemplate" />
 
-    <cache alias="myJrnlIntrptList" uses-template="defaultTemplate" />
-    <cache alias="myJrnlIntrptDtlDto" uses-template="defaultTemplate" />
-    <cache alias="myJrnlIntrptTagList" uses-template="defaultTemplate" />
-    <cache alias="myJrnlIntrptSizedTagList" uses-template="defaultTemplate" />
+    <!-- 저널 해석 -->
+    <cache alias="jrnlIntrptDtlDtoByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlIntrptYyMnthTagListByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlIntrptYyMnthSizedTagListByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlIntrptTagCtgrMapByUser" uses-template="defaultTemplate" />
-    <cache alias="myCountIntrptSizeMap" uses-template="defaultTemplate" />
-    <cache alias="myImprtcIntrptList" uses-template="defaultTemplate" />
+    <cache alias="jrnlIntrptCountMapByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlIntrptStateMapByUser" uses-template="defaultTemplate" />
 
     <!-- 저널 할일 -->
-    <cache alias="myJrnlTodoList" uses-template="defaultTemplate" />
-    <cache alias="myJrnlTodoDtlDto" uses-template="defaultTemplate" />
+    <cache alias="jrnlTodoListByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlTodoDtlDtoByUser" uses-template="defaultTemplate" />
 
     <!-- 저널 결산 -->
-    <cache alias="myJrnlTotalSumry" uses-template="defaultTemplate" />
-    <cache alias="myJrnlSumryList" uses-template="defaultTemplate" />
-    <cache alias="myJrnlSumryDtl" uses-template="defaultTemplate" />
-    <cache alias="myJrnlSumryDtlByYy" uses-template="defaultTemplate" />
+    <cache alias="jrnlSumryTotalListByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlSumryListByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlSumryDtlDtoByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlSumryYyDtlDtoByUser" uses-template="defaultTemplate" />
 
     <!-- 태그 -->
     <cache alias="tagContentEntityListByRef" uses-template="defaultTemplate" />
@@ -120,9 +118,5 @@
     <!-- 메타 -->
     <cache alias="metaContentEntityListByRef" uses-template="defaultTemplate" />
     <cache alias="metaSmpDtlEntity" uses-template="defaultTemplate" />
-
-    <!-- 공휴일 정보 -->
-    <cache alias="hldyMap" uses-template="defaultTemplate" />
-
 </config>
 

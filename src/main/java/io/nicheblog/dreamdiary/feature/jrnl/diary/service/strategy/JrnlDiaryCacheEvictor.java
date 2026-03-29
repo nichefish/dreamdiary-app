@@ -38,9 +38,8 @@ public class JrnlDiaryCacheEvictor
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();
             // jrnl_diary
-            this.evictMyYnMnthCacheByPrefix("myJrnlDiaryList", yy, mnth);
-            this.evictMyYyCacheByYyPrefix("mySumryDiaryList", yy);
-            EhCacheUtils.evictMyCacheByKey("myJrnlDiaryDtlDto", postNo);
+            this.evictMyYyCacheByYyPrefix("jrnlDiaryYySumryStatedListByUser", yy);
+            EhCacheUtils.evictMyCacheByKey("jrnlDiaryDtlDtoByUser", postNo);
             // jrnl_day
             if (jrnlDayNo != null) {
                 EhCacheUtils.evictMyCacheByKey("jrnlDayDtlDtoByUser", jrnlDayNo);
@@ -48,10 +47,10 @@ public class JrnlDiaryCacheEvictor
             this.evictMyJrnlDayYyMnthCaches(yy, mnth);
             // jrnl_diary_tag
             EhCacheUtils.clearMyCache("jrnlDiaryTagCtgrMapByUser");
-            EhCacheUtils.clearMyCache("myJrnlDiaryTagList");
-            EhCacheUtils.clearMyCache("myJrnlDiaryTagListYyMnth");
-            EhCacheUtils.clearMyCache("myJrnlDiarySizedTagList");
-            EhCacheUtils.clearMyCache("myCountDiarySizeMap");
+            EhCacheUtils.clearMyCache("jrnlDiaryTagListByUser");
+            EhCacheUtils.clearMyCache("jrnlDiaryYyMnthTagListByUser");
+            EhCacheUtils.clearMyCache("jrnlDiaryYyMnthSizedTagListByUser");
+            EhCacheUtils.clearMyCache("jrnlDiaryCountMapByUser");
 
             // 태그 캐시 처리
             if (postNo != null) {

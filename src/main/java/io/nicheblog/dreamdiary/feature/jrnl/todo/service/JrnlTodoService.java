@@ -64,9 +64,21 @@ public class JrnlTodoService
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
      */
-    @Cacheable(value="myJrnlTodoList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getYy() + \"_\" + #searchParam.getMnth()")
-    public List<JrnlTodoDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.getLgnUserId());
+    public List<JrnlTodoDto> getMyListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
+        final String userId = AuthUtils.getLgnUserId();
+        return this.getSelf().getListDtoWithCacheByUser(userId, searchParam);
+    }
+
+    /**
+     * 목록 조회 (dto level) :: 캐시 처리
+     *
+     * @param userId 사용자 ID
+     * @param searchParam 검색 조건이 담긴 파라미터 객체
+     * @return {@link List} -- 조회된 목록
+     */
+    @Cacheable(value="jrnlTodoListByUser", key="#userId + \"_\" + #searchParam.getYy() + \"_\" + #searchParam.getMnth()")
+    public List<JrnlTodoDto> getListDtoWithCacheByUser(final String userId, final BaseSearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(userId);
 
         return this.getSelf().getListDto(searchParam);
     }
@@ -111,12 +123,23 @@ public class JrnlTodoService
      * @param key 식별자
      * @return {@link JrnlTodoDto} -- 조회된 객체
      */
-    @Cacheable(value="myJrnlTodoDtlDto", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #key")
-    public JrnlTodoDto getDtlDtoWithCache(final Integer key) throws Exception {
+    public JrnlTodoDto getMyDtlDtoWithCache(final Integer key) throws Exception {
+        final String userId = AuthUtils.getLgnUserId();
+        return this.getSelf().getDtlDtoWithCacheByUser(userId, key);
+    }
+
+    /**
+     * 상세 조회 (dto level) :: 캐시 처리
+     *
+     * @param key 식별자
+     * @return {@link JrnlTodoDto} -- 조회된 객체
+     */
+    @Cacheable(value="jrnlTodoDtlDtoByUser", key="#userId + \"_\" + #key")
+    public JrnlTodoDto getDtlDtoWithCacheByUser(final String userId, final Integer key) throws Exception {
         final JrnlTodoEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlTodoDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        if (!retrieved.getIsRegstr(userId)) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
         return retrieved;
     }
 

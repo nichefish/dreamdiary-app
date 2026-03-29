@@ -107,7 +107,7 @@ public class JrnlIntrptRestController
             final @PathVariable("postNo") Integer key
     ) throws Exception {
 
-        final JrnlIntrptDto retrievedDto = jrnlIntrptService.getDtlDto(key);
+        final JrnlIntrptDto retrievedDto = jrnlIntrptService.getMyDtlDtoWithCache(key);
         final boolean isSuccess = (retrievedDto.getPostNo() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

@@ -77,8 +77,7 @@ public class JrnlDiaryService
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
      */
-    @Cacheable(value="myJrnlDiaryList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.toListCacheKey()")
-    public List<JrnlDiaryDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
+    public List<JrnlDiaryDto> getMyListDto(final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.getLgnUserId());
 
         return this.getSelf().getListDto(searchParam);
@@ -87,17 +86,28 @@ public class JrnlDiaryService
     /**
      * 특정 년도의 중요 일기 목록 조회 :: 캐시 처리
      *
-     * @param lgnUserId String
      * @param searchParam JrnlDiarySearchParam
      * @return {@link List} -- 해당 년도의 중요 목록
      */
-    @Cacheable(value="mySumryDiaryList", key="#lgnUserId + \"_\" + #searchParam.toSummaryCacheKey()")
-    public List<JrnlDiaryDto> getMySumryDiaryList(final String lgnUserId, final JrnlDiarySearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(lgnUserId);
-        final List<JrnlDiaryDto> mySumryDiaryList = this.getSelf().getListDto(searchParam);
-        Collections.sort(mySumryDiaryList);
+    public List<JrnlDiaryDto> getMySumryDiaryList(final JrnlDiarySearchParam searchParam) throws Exception {
+        final String userId = AuthUtils.getLgnUserId();
+        return this.getSelf().getSumryDiaryListByUser(userId, searchParam);
+    }
 
-        return mySumryDiaryList;
+    /**
+     * 특정 년도의 중요 일기 목록 조회 :: 캐시 처리
+     *
+     * @param userId String
+     * @param searchParam JrnlDiarySearchParam
+     * @return {@link List} -- 해당 년도의 중요 목록
+     */
+    @Cacheable(value="jrnlDiaryYySumryStatedListByUser", key="#userId + \"_\" + #searchParam.toSummaryCacheKey()")
+    public List<JrnlDiaryDto> getSumryDiaryListByUser(final String userId, final JrnlDiarySearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(userId);
+        final List<JrnlDiaryDto> jrnlDiaryYySumryStatedListByUser = this.getSelf().getListDto(searchParam);
+        Collections.sort(jrnlDiaryYySumryStatedListByUser);
+
+        return jrnlDiaryYySumryStatedListByUser;
     }
 
     /**
@@ -164,12 +174,23 @@ public class JrnlDiaryService
      * @param key 식별자
      * @return {@link JrnlDiaryDto} -- 조회된 객체
      */
-    @Cacheable(value="myJrnlDiaryDtlDto", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #key")
-    public JrnlDiaryDto getDtlDtoWithCache(final Integer key) throws Exception {
+    public JrnlDiaryDto getMyDtlDtoWithCache(final Integer key) throws Exception {
+        final String userId = AuthUtils.getLgnUserId();
+        return this.getSelf().getDtlDtoWithCacheByUser(userId, key);
+    }
+
+    /**
+     * 상세 조회 (dto level) :: 캐시 처리
+     *
+     * @param key 식별자
+     * @return {@link JrnlDiaryDto} -- 조회된 객체
+     */
+    @Cacheable(value="jrnlDiaryDtlDtoByUser", key="#userId + \"_\" + #key")
+    public JrnlDiaryDto getDtlDtoWithCacheByUser(final String userId, final Integer key) throws Exception {
         final JrnlDiaryEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlDiaryDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        if (!retrieved.getIsRegstr(userId)) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
         return retrieved;
     }
 
@@ -211,7 +232,7 @@ public class JrnlDiaryService
         int idx = 1;
         for (final JrnlDiaryDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictCacheByKey("myJrnlDiaryDtlDto", e.getPostNo());
+            EhCacheUtils.evictMyCacheByKey("jrnlDiaryDtlDtoByUser", e.getPostNo());
         }
 
         mapper.batchUpdateIdx(list);
@@ -251,7 +272,7 @@ public class JrnlDiaryService
         int idx = 1;
         for (final JrnlDiaryDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictCacheByKey("myJrnlDiaryDtlDto", e.getPostNo());
+            EhCacheUtils.evictMyCacheByKey("jrnlDiaryDtlDtoByUser", e.getPostNo());
         }
 
         mapper.batchUpdateIdx(list);

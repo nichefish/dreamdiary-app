@@ -54,7 +54,7 @@ public class JrnlTodoRestController
             final JrnlTodoSearchParam searchParam
     ) throws Exception {
 
-        final List<JrnlTodoDto> jrnlTodoList = jrnlTodoService.getListDtoWithCache(searchParam);
+        final List<JrnlTodoDto> jrnlTodoList = jrnlTodoService.getMyListDtoWithCache(searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -103,7 +103,7 @@ public class JrnlTodoRestController
             final @PathVariable("postNo") Integer postNo
     ) throws Exception {
 
-        final JrnlTodoDto retrievedDto = jrnlTodoService.getDtlDtoWithCache(postNo);
+        final JrnlTodoDto retrievedDto = jrnlTodoService.getMyDtlDtoWithCache(postNo);
         final boolean isSuccess = (retrievedDto.getPostNo() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

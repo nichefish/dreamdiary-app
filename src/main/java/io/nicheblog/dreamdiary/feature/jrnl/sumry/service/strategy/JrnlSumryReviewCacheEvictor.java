@@ -39,10 +39,10 @@ public class JrnlSumryReviewCacheEvictor
 
             // Summary detail caches affected by review add/update/delete.
             if (jrnlSumryNo != null) {
-                EhCacheUtils.evictMyCacheByKey("myJrnlSumryDtl", jrnlSumryNo);
+                EhCacheUtils.evictMyCacheByKey("jrnlSumryDtlDtoByUser", jrnlSumryNo);
             }
             if (yy != null) {
-                EhCacheUtils.evictMyCacheByKey("myJrnlSumryDtlByYy", yy);
+                EhCacheUtils.evictMyCacheByKey("jrnlSumryYyDtlDtoByUser", yy);
             }
 
             // Review tag cache.
