@@ -72,6 +72,23 @@ public class UserEntity
     @Comment("비밀번호")
     private String password;
 
+    /** Refresh Token Hash */
+    @Column(name = "refresh_token_hash", length = 64)
+    @Comment("Refresh Token Hash")
+    private String refreshTokenHash;
+
+    /** Refresh Token 발생일시 */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "refresh_token_issued_at")
+    @Comment("Refresh Token 발생일시")
+    private java.util.Date refreshTokenIssuedAt;
+
+    /** Refresh Token 만료일시 */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "refresh_token_expires_at")
+    @Comment("Refresh Token 만료일시")
+    private java.util.Date refreshTokenExpiresAt;
+
     /** 사용자 권한 정보 */
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_no")

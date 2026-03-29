@@ -2,6 +2,8 @@ package io.nicheblog.dreamdiary.infrastructure.web.util;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -36,6 +38,8 @@ public class CookieUtils {
     }
 
     private static final Integer A_DAY = 60 * 60 * 24;
+    public static final String JWT_COOKIE_NAME = "jwt";
+    public static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
 
     /**
      * 공통 > 쿠키 생성
@@ -49,6 +53,40 @@ public class CookieUtils {
         cookie.setMaxAge(A_DAY);     //쿠키 유효 기간: 하루로 설정(60초 * 60분 * 24시간)
         cookie.setPath("/");            //모든 경로에서 접근 가능하도록 설정
         response.addCookie(cookie);
+    }
+
+    /**
+     * JWT 쿠키 설정
+     *
+     * @param jwt ?ㅼ젙??JWT ?좏겙 媛?
+     * @param maxAgeSec max-age (초). -1이면 세션 쿠키
+     */
+    public static void setJwtCookie(final String jwt, final int maxAgeSec) {
+        addHttpOnlyCookie(JWT_COOKIE_NAME, jwt, maxAgeSec);
+    }
+
+    /**
+     * Refresh Token 토큰 세팅
+     *
+     * @param refreshToken 리프레시 토큰 문자열
+     * @param maxAgeSec max-age (초)
+     */
+    public static void setRefreshTokenCookie(final String refreshToken, final int maxAgeSec) {
+        addHttpOnlyCookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, maxAgeSec);
+    }
+
+    /**
+     * JWT 토큰 삭제
+     */
+    public static void deleteJwtCookie() {
+        addHttpOnlyCookie(JWT_COOKIE_NAME, "", 0);
+    }
+
+    /**
+     * Refresh Token 삭제
+     */
+    public static void deleteRefreshTokenCookie() {
+        addHttpOnlyCookie(REFRESH_TOKEN_COOKIE_NAME, "", 0);
     }
 
     /**
@@ -155,5 +193,26 @@ public class CookieUtils {
                   cookie.setMaxAge(0);            // 유효시간을 0으로 설정
                   response.addCookie(cookie);     // 응답에 추가하여 만료시키기.
               });
+    }
+
+    /**
+     * HTTP 쿠키 세팅
+     * @param name 쿠키 이름
+     * @param value 값
+     * @param maxAgeSec 유효기간(초)
+     */
+    private static void addHttpOnlyCookie(final String name, final String value, final int maxAgeSec) {
+        if (response == null) return;
+
+        final boolean secure = request != null && request.isSecure();
+        final String safeValue = value == null ? "" : value;
+        final ResponseCookie cookie = ResponseCookie.from(name, safeValue)
+                .httpOnly(true)
+                .secure(secure)
+                .path("/")
+                .sameSite("Lax")
+                .maxAge(maxAgeSec)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 }

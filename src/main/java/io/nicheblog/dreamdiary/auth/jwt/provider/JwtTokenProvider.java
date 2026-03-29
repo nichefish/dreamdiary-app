@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.auth.security.provider.helper.AuthenticationHelpe
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -48,6 +49,13 @@ public class JwtTokenProvider {
     @Value("${spring.jwt.secret}")
     private String secretKey;
 
+    @Value("${spring.jwt.token-validity-seconds:3600}")
+    private long tokenValiditySeconds;
+
+    @Getter
+    @Value("${spring.jwt.access-token-validity-seconds:900}")
+    private long accessTokenValiditySeconds;
+
     @PostConstruct
     protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes(StandardCharsets.UTF_8));
@@ -78,11 +86,31 @@ public class JwtTokenProvider {
         claims.put("roles", roles);
         final Date now = DateUtils.getCurrDate();
         
-        final long tokenValidMillisecond = 1000L * 60 * 60;     // 1시간
+        final long tokenValidMillisecond = 1000L * tokenValiditySeconds;
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + tokenValidMillisecond))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+    }
+
+    /**
+     * Access Token 생성 (짧은 만료시간)
+     *
+     * @param userId 사용자 ID
+     * @param roles 권한
+     * @return {@link String} -- ?앹꽦??JWT ?좏겙 臾몄옄??
+     */
+    public String createAccessToken(final String userId, final List<String> roles) {
+        final Claims claims = Jwts.claims().setSubject(userId);
+        claims.put("roles", roles);
+        final Date now = DateUtils.getCurrDate();
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + 1000L * accessTokenValiditySeconds))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
