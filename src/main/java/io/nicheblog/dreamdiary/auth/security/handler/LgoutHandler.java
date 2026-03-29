@@ -1,11 +1,13 @@
 package io.nicheblog.dreamdiary.auth.security.handler;
 
+import io.nicheblog.dreamdiary.auth.jwt.service.RefreshTokenService;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLgnManager;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.handler.LogActvtyEventListener;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.infrastructure.web.util.CookieUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -29,6 +31,7 @@ public class LgoutHandler
         implements LogoutHandler {
 
     private final ApplicationEventPublisherWrapper publisher;
+    private final RefreshTokenService refreshTokenService;
 
     /**
      * 사용자 로그아웃 처리
@@ -48,12 +51,15 @@ public class LgoutHandler
         // 로그 적재
         publisher.publishAsyncEvent(new LogActvtyEvent(this, new LogActvtyParam(true)));
         // 중복 로그인 관리용 arrayList에서 로그인 아이디 제거
+        CookieUtils.deleteJwtCookie();
+        CookieUtils.deleteRefreshTokenCookie();
         if (authentication == null || authentication.getPrincipal() == null) return;
 
-        DupIdLgnManager.removeKey(((AuthInfo) authentication.getPrincipal()).getUserId());
+        final String userId = ((AuthInfo) authentication.getPrincipal()).getUserId();
+        DupIdLgnManager.removeKey(userId);
+        refreshTokenService.revoke(userId);
 
         // 쿠키에서 JWT 토큰 삭제
-        removeJwtFromCookie(httpServletResponse);
     }
 
     /**

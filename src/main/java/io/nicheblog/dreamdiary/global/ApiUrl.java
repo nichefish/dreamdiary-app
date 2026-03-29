@@ -17,6 +17,7 @@ public interface ApiUrl {
     String API_AUTH_LGN_PROC = Prefix.API + "/auth/lgn-proc";
     String API_AUTH_LGN_PW_CHG = Prefix.API + "/auth/lgn-pw-chg";
     String API_AUTH_LGOUT = Prefix.API + "/auth/lgout";
+    String API_AUTH_REFRESH = Prefix.API + "/auth/refresh";
     String API_AUTH_EXPIRE_SESSION = Prefix.API + "/auth/expire-session";
     String API_AUTH_VERIFY = Prefix.API + "/auth/verify/{token}";
     String API_AUTH_INFO = Prefix.API + "/auth/get-auth-info";
