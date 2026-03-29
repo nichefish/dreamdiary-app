@@ -73,7 +73,7 @@ public class JrnlDayMetaService
     @Cacheable(value="jrnlDayMetaCtgrMapByUser", key="#userId")
     public Map<String, List<String>> getMetaCtgrMapByUser(final String userId) throws Exception {
         final HashMap<String, Object> paramMap = new HashMap<>() {{
-            put("regstrId", userId);
+            put("regstrId", AuthUtils.requireUserId(userId));
         }};
 
         final List<JrnlDayMetaEntity> metaList = this.getSelf().getListEntity(paramMap);

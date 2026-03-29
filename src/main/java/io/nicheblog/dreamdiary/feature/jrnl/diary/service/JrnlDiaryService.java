@@ -103,7 +103,7 @@ public class JrnlDiaryService
      */
     @Cacheable(value="jrnlDiaryYySumryStatedListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #searchParam.toSummaryCacheKey())")
     public List<JrnlDiaryDto> getSumryDiaryListByUser(final String userId, final JrnlDiarySearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(userId);
+        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
         final List<JrnlDiaryDto> jrnlDiaryYySumryStatedListByUser = this.getSelf().getListDto(searchParam);
         Collections.sort(jrnlDiaryYySumryStatedListByUser);
 
@@ -190,7 +190,7 @@ public class JrnlDiaryService
         final JrnlDiaryEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlDiaryDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr(userId)) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        if (!retrieved.getIsRegstr(AuthUtils.requireUserId(userId))) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
         return retrieved;
     }
 

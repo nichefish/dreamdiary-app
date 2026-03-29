@@ -103,7 +103,7 @@ public class JrnlDreamService
      */
     @Cacheable(value="jrnlDreamYySumryStatedListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #searchParam.toSummaryCacheKey())")
     public List<JrnlDreamDto> getSumryDreamListByUser(final String userId, final JrnlDreamSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(userId);
+        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
         final List<JrnlDreamDto> jrnlDreamYySumryStatedListByUser = this.getSelf().getListDto(searchParam);
         Collections.sort(jrnlDreamYySumryStatedListByUser);
 
@@ -144,7 +144,7 @@ public class JrnlDreamService
         final JrnlDreamEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlDreamDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr(userId)) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        if (!retrieved.getIsRegstr(AuthUtils.requireUserId(userId))) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
 
         return retrieved;
     }

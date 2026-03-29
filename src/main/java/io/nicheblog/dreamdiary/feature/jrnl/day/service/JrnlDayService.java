@@ -89,6 +89,7 @@ public class JrnlDayService
     @Transactional(readOnly = true)
     @Cacheable(value = "jrnlDayYyMnthListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#userId, #yy, #mnth)")
     public List<JrnlDayDto> getCachedYyMnthListDtoByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
+        AuthUtils.requireUserId(userId);
         final JrnlDaySearchParam baseParam = JrnlDaySearchParam.getBaseParam(userId, yy, mnth);
         final List<JrnlDayEntity> myJrnlDayEntityList = this.getListEntity(baseParam);
 
@@ -170,6 +171,7 @@ public class JrnlDayService
      */
     @Cacheable(value = "jrnlDayDtlDtoByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#userId, #key)")
     public JrnlDayDto getCachedDtlDtoByUser(final String userId, final Integer key) throws Exception {
+        AuthUtils.requireUserId(userId);
         final JrnlDayEntity retrievedEntity = this.getDtlEntity(key);
         final JrnlDayDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
