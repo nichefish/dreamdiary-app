@@ -29,7 +29,7 @@ public class CmmController {
     /**
      * 인터페이스에서 정의된 Url들을 Map으로 반환
      *
-     * @return Map<String, String> - 상수들을 key-value 형태로 담은 Map
+     * @return 상수들을 key-value 형태로 담은 Map
      */
     @GetMapping("/cmm/get-url-map.do")
     public ResponseEntity<AjaxResponse> getUrlMap(
@@ -44,7 +44,7 @@ public class CmmController {
     /**
      * 인터페이스에서 정의된 상수들을 Map으로 반환
      *
-     * @return Map<String, String> - 상수들을 key-value 형태로 담은 Map
+     * @return 상수들을 key-value 형태로 담은 Map
      */
     @GetMapping("/cmm/get-constant-map.do")
     public ResponseEntity<AjaxResponse> getConstantMap(
@@ -59,7 +59,7 @@ public class CmmController {
     /**
      * 서버 정보를 반환
      *
-     * @return Map<String, String> - 상수들을 key-value 형태로 담은 Map
+     * @return 상수들을 key-value 형태로 담은 Map
      */
     @GetMapping("/cmm/get-server-info.do")
     public ResponseEntity<AjaxResponse> getServerInfo(

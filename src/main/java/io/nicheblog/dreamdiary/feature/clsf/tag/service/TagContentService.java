@@ -153,7 +153,7 @@ public class TagContentService
      * 특정 게시물에 대해 태그-컨텐츠 목록 추가.
      *
      * @param clsfKey 참조 복합키 정보 (BaseClsfKey)
-     * @param rsList  처리할 태그 엔티티 목록 (List<TagEntity>)
+     * @param rsList 처리할 태그 엔티티 목록
      * @return {@link List} -- 등록된 태그-컨텐츠 엔티티 목록
      */
     @Transactional

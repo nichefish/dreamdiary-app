@@ -27,9 +27,9 @@ public interface TagRepository
     /**
      * 태그명 + 카테고리명으로 조회
      *
-     * @param tagNm - 조회할 태그명
-     * @param ctgr - 조회할 카테고리명
-     * @return Optional<TagEntity> - 태그명과 카테고리명에 해당하는 TagEntity를 포함하는 Optional 객체
+     * @param tagNm 조회할 태그명
+     * @param ctgr 조회할 카테고리명
+     * @return 태그명과 카테고리명에 해당하는 TagEntity를 포함하는 Optional 객체
      */
     @Query(value = "SELECT * FROM tag t WHERE t.tag_nm = :tagNm AND t.ctgr = :ctgr AND t.del_yn = 'N'", nativeQuery = true)
     Optional<TagEntity> findByTagNmAndCtgr(final String tagNm, final String ctgr);
@@ -37,8 +37,8 @@ public interface TagRepository
     /**
      * 태그 번호로 조회
      *
-     * @param tagNos - 태그 번호 목록
-     * @return Optional<TagEntity> - 태그명과 카테고리명에 해당하는 TagEntity를 포함하는 Optional 객체
+     * @param tagNos 태그 번호 목록
+     * @return 태그명과 카테고리명에 해당하는 TagEntity를 포함하는 Optional 객체
      */
     List<TagEntity> findAllByTagNoIn(List<Integer> tagNos);
 

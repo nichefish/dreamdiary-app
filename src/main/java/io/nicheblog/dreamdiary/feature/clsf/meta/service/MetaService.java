@@ -154,7 +154,7 @@ public class MetaService
     /**
      * 최대 사용빈도 계산한 메타 목록 조회
      *
-     * @param metaList 메타 목록 (List<MetaDto>)
+     * @param metaList 메타 Dto 목록
      * @param contentType 조회할 컨텐츠 타입 (ContentType)
      * @return {@link Integer} -- 메타 목록에서 계산된 최대 사용 빈도 (Integer)
      */
@@ -166,7 +166,7 @@ public class MetaService
     /**
      * 최대 사용빈도 계산한 메타 목록 조회
      *
-     * @param metaList 메타 목록 (List<MetaDto>)
+     * @param metaList 메타 Dto 목록
      * @param contentType 조회할 컨텐츠 타입 (ContentType)
      * @return {@link Integer} -- 메타 목록에서 계산된 최대 사용 빈도 (Integer)
      */

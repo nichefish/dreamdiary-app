@@ -106,7 +106,7 @@ public final class Constant {
     /**
      * 리플렉션을 이용해 모든 인터페이스에서 정의된 상수들을 Map으로 반환
      *
-     * @return Map<String, String> - 상수들을 key-value 형태로 담은 Map
+     * @return 상수들을 key-value 형태로 담은 Map
      */
     public static Map<String, String> initConstantMap() {
         final Map<String, String> constantMap = new HashMap<>();

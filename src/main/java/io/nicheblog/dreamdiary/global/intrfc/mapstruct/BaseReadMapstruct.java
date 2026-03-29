@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * <pre>
  *  (공통/상속) MapStruct 기반 Mapper 인터페이스.
  *  (Entity -> ListDto 변환 메소드 추가.)
- * <pre>
+ * </pre>
  *
  * @author nichefish
  */

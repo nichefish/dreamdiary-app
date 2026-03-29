@@ -59,7 +59,7 @@ public class PaginationInfo {
     Boolean isLastPage = false;
 
     /**
-     * 생성자 :: Page<> 정보 매핑
+     * 생성자 :: {@code Page<?>} 정보 매핑
      * @param pageList 페이지 정보가 담긴 Page 객체
      */
     public PaginationInfo(final Page<?> pageList) {

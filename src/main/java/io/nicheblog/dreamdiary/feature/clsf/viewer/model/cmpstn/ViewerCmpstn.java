@@ -34,7 +34,7 @@ public class ViewerCmpstn
     /* ----- */
 
     /**
-     * 열람자 :: List<Dto> -> List<Entity> 반환
+     * 열람자 :: {@code List<Dto>} -> {@code List<Entity>} 반환
      * @return 변환된 ViewerEntity 객체의 리스트.
      *         리스트가 비어있거나 null인 경우 null을 반환합니다.
      */

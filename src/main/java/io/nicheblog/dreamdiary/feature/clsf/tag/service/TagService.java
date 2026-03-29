@@ -156,7 +156,7 @@ public class TagService
     /**
      * 최대 사용빈도 계산한 태그 목록 조회
      *
-     * @param tagList 태그 목록 (List<TagDto>)
+     * @param tagList 태그 Dto 목록
      * @param contentType 조회할 컨텐츠 타입 (ContentType)
      * @return {@link Integer} -- 태그 목록에서 계산된 최대 사용 빈도 (Integer)
      */
@@ -168,7 +168,7 @@ public class TagService
     /**
      * 최대 사용빈도 계산한 태그 목록 조회
      *
-     * @param tagList 태그 목록 (List<TagDto>)
+     * @param tagList 태그 Dto 목록
      * @param contentType 조회할 컨텐츠 타입 (ContentType)
      * @return {@link Integer} -- 태그 목록에서 계산된 최대 사용 빈도 (Integer)
      */
@@ -233,8 +233,8 @@ public class TagService
 
     /**
      * 태그 번호 목록으로 태그 목록 조회
-     * @param tagNos List<Integer>
-     * @return List<TagDto>
+     * @param tagNos 태그 번호 목록
+     * @return 태그 Dto 목록
      */
     public List<TagDto> getTagListByTagNos(final List<Integer> tagNos) {
         if (CollectionUtils.isEmpty(tagNos)) return Collections.emptyList();
