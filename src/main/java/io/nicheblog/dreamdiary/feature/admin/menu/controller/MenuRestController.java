@@ -154,6 +154,27 @@ public class MenuRestController
     }
 
     /**
+     * 관리자 > 메뉴 관리 > 서브메뉴 부모 이동/정렬 반영 (Ajax)
+     * (관리자MNGR만 접근 가능)
+     *
+     * @param moveParam 메뉴 이동 payload
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     */
+    @PutMapping(Url.MENUS_TREE)
+    @Secured({Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> menuTreeMoveAjax(
+            final @RequestBody MenuTreeMoveParam moveParam
+    ) throws Exception {
+
+        final ServiceResponse result = menuService.moveTree(moveParam);
+        final boolean isSuccess = result.getRslt();
+        final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
+    }
+
+    /**
      * 메뉴 관리 삭제 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
