@@ -30,9 +30,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * MenuService
@@ -154,7 +152,7 @@ public class MenuService
     }
 
     /**
-     * 메뉴를 사이트 접근 정보로 반환
+     * 메뉴를 사이트 접근 정보로 반환 (DTO → SiteAcsInfo 매핑)
      * @param menu 메뉴 정보
      * @return SiteAcsInfo
      */
@@ -228,6 +226,140 @@ public class MenuService
     public void postSortIdx(final List<MenuSortIdxDto> idxs) {
         EhCacheUtils.clearCache("mngrMenuList");
         EhCacheUtils.clearCache("userMenuList");
+    }
+
+    /**
+     * 서브메뉴 부모 이동 + 정렬 반영
+     *
+     * @param moveParam 이동 payload
+     * @return {@link ServiceResponse}
+     */
+    @Transactional
+    public ServiceResponse moveTree(final MenuTreeMoveParam moveParam) throws Exception {
+        if (moveParam == null || moveParam.getMovedMenuNo() == null) {
+            throw new BusinessException("Moved menu is required.");
+        }
+
+        final MenuEntity movedMenu = this.getDtlEntity(moveParam.getMovedMenuNo());
+        if (movedMenu == null) {
+            throw new MenuNotExistsException(MessageUtils.getExceptionMsg("MenuNotExistsException"));
+        }
+        if (!Code.MENU_TY_SUB.equals(movedMenu.getMenuTyCd())) {
+            throw new BusinessException("Only sub menus can be moved.");
+        }
+        if ("Y".equals(movedMenu.getProtectedYn())) {
+            throw new BusinessException(MessageUtils.getMessage("exception.MenuProtectedException"));
+        }
+        if (!Objects.equals(movedMenu.getUpperMenuNo(), moveParam.getSourceUpperMenuNo())) {
+            throw new BusinessException("Menu tree is stale. Reload and try again.");
+        }
+
+        final Integer targetUpperMenuNo = moveParam.getTargetUpperMenuNo();
+        if (targetUpperMenuNo == null) {
+            throw new BusinessException("Target parent menu is required.");
+        }
+
+        final MenuEntity targetParent = this.getDtlEntity(targetUpperMenuNo);
+        if (targetParent == null) {
+            throw new BusinessException("Target parent menu does not exist.");
+        }
+        if ("Y".equals(targetParent.getProtectedYn())) {
+            throw new BusinessException(MessageUtils.getMessage("exception.MenuProtectedException"));
+        }
+        if (!Code.MENU_TY_MAIN.equals(targetParent.getMenuTyCd()) && !Code.MENU_TY_SUB.equals(targetParent.getMenuTyCd())) {
+            throw new BusinessException("Target parent type is not movable.");
+        }
+        if (Code.MenuSubExtendTy.NO_SUB.name().equals(targetParent.getMenuSubExtendTyCd())) {
+            throw new BusinessException("Target parent does not allow sub menus.");
+        }
+        if (Objects.equals(movedMenu.getMenuNo(), targetUpperMenuNo) || this.isDescendantOf(targetUpperMenuNo, movedMenu.getMenuNo())) {
+            throw new BusinessException("A menu cannot be moved into its own descendant.");
+        }
+
+        final LinkedHashMap<Integer, MenuTreeMoveGroupDto> groupMap = this.normalizeMoveGroups(moveParam);
+        final MenuTreeMoveGroupDto targetGroup = groupMap.get(targetUpperMenuNo);
+        if (targetGroup == null || targetGroup.getItems() == null || targetGroup.getItems().stream().noneMatch(item -> Objects.equals(item.getMenuNo(), movedMenu.getMenuNo()))) {
+            throw new BusinessException("Moved menu is missing from the target group.");
+        }
+
+        for (final MenuTreeMoveGroupDto group : groupMap.values()) {
+            final Integer upperMenuNo = group.getUpperMenuNo();
+            final List<MenuTreeMoveItemDto> items = group.getItems();
+            if (upperMenuNo == null || items == null) continue;
+
+            for (int idx = 0; idx < items.size(); idx++) {
+                final MenuTreeMoveItemDto item = items.get(idx);
+                if (item == null || item.getMenuNo() == null) continue;
+
+                final MenuEntity menu = this.getDtlEntity(item.getMenuNo());
+                if (menu == null) {
+                    throw new BusinessException("Menu item does not exist.");
+                }
+                if (!Code.MENU_TY_SUB.equals(menu.getMenuTyCd())) {
+                    throw new BusinessException("Only sub menus can be included in tree move groups.");
+                }
+
+                menu.setUpperMenuNo(upperMenuNo);
+                menu.setIdx(idx);
+                this.updt(menu);
+            }
+        }
+
+        EhCacheUtils.clearCache("mngrMenuList");
+        EhCacheUtils.clearCache("userMenuList");
+
+        return ServiceResponse.builder()
+                .rslt(true)
+                .build();
+    }
+
+    /**
+     * 메뉴 트리 이동 요청의 그룹 데이터를 정규화한다.
+     * - null / invalid group 제거
+     * - source 그룹이 누락된 경우 보정하여 추가
+     *
+     * @param moveParam 이동 요청 파라미터
+     * @return upperMenuNo 기준으로 정렬된 그룹 맵
+     */
+    private LinkedHashMap<Integer, MenuTreeMoveGroupDto> normalizeMoveGroups(final MenuTreeMoveParam moveParam) {
+        final LinkedHashMap<Integer, MenuTreeMoveGroupDto> groupMap = new LinkedHashMap<>();
+        if (moveParam.getGroups() != null) {
+            for (final MenuTreeMoveGroupDto group : moveParam.getGroups()) {
+                if (group == null || group.getUpperMenuNo() == null) continue;
+                groupMap.put(group.getUpperMenuNo(), group);
+            }
+        }
+        if (moveParam.getSourceUpperMenuNo() != null && !groupMap.containsKey(moveParam.getSourceUpperMenuNo())) {
+            final MenuTreeMoveGroupDto sourceGroup = new MenuTreeMoveGroupDto();
+            sourceGroup.setUpperMenuNo(moveParam.getSourceUpperMenuNo());
+            groupMap.put(sourceGroup.getUpperMenuNo(), sourceGroup);
+        }
+
+        return groupMap;
+    }
+
+    /**
+     * 특정 메뉴가 주어진 조상 메뉴의 하위인지 여부를 검사한다.
+     * (트리 순환 방지용)
+     *
+     * @param menuNo 검사 대상 메뉴
+     * @param ancestorMenuNo 조상 후보 메뉴
+     * @return true: 하위 노드 / false: 아님
+     */
+    private boolean isDescendantOf(final Integer menuNo, final Integer ancestorMenuNo) throws Exception {
+        Integer currentMenuNo = menuNo;
+        while (currentMenuNo != null) {
+            if (Objects.equals(currentMenuNo, ancestorMenuNo)) {
+                return true;
+            }
+
+            final MenuEntity currentMenu = this.getDtlEntity(currentMenuNo);
+            if (currentMenu == null) {
+                return false;
+            }
+            currentMenuNo = currentMenu.getUpperMenuNo();
+        }
+        return false;
     }
 
     /**

@@ -17,7 +17,7 @@ const Page: Page = (function(): Page {
             Page.updtTree();
 
             /* init : Draggable */
-            dF.Menu.initDraggable("main");
+            dF.Menu.initMainDraggable();
         },
         /**
          * 트리 구조 데이터 리로드 및 새로 그리기
@@ -39,7 +39,7 @@ const Page: Page = (function(): Page {
                     KTMenu.createInstances();
                     Page.drawSubMenu(mainMenu);
                 });
-                dF.Menu.initDraggable("sub");
+                dF.Menu.initSubDraggable();
             });
         },
         /**
