@@ -68,6 +68,7 @@
     <cache alias="jrnlDayYyMnthSizedTagListByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDayTagCtgrMapByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDayMetaCtgrMapByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlDayMetaYyListByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDayCountMapByUser" uses-template="defaultTemplate" />
 
     <!-- 저널 항목 -->

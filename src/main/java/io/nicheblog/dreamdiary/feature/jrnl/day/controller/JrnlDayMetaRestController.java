@@ -81,6 +81,26 @@ public class JrnlDayMetaRestController
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
     }
 
+    /**
+     * 저널 일자 메타가 존재하는 연도 목록 조회 (Ajax)
+     *
+     * @param metaNo 메타 번호
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     */
+    @GetMapping(Url.JRNL_DAY_META_YYS)
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> jrnlDayMetaYyListAjax(
+            final @PathVariable("metaNo") Integer metaNo
+    ) {
+
+        final List<Integer> yyList = jrnlDayMetaService.getMyYyListByMetaNo(metaNo);
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(yyList));
+    }
+
 
     /**
      * 저널 일자 메타 카테고리 맵 조회 (Ajax)

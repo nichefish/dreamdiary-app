@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.QueryHint;
 import java.util.Date;
+import java.util.List;
 
 /**
  * JrnlDayRepository
@@ -49,4 +50,22 @@ public interface JrnlDayRepository
             "WHERE day.jrnlDt = :jrnlDt AND day.regstrId = :regstrId")
     @EntityGraph(value = "JrnlDayEntity.withTags", type = EntityGraph.EntityGraphType.LOAD)
     JrnlDayEntity findByJrnlDt(final @Param("jrnlDt") Date jrnlDt, final @Param("regstrId") String regstrId);
+
+    /**
+     * 메타가 기록된 연도 목록을 최신순으로 조회합니다.
+     *
+     * @param metaNo 메타 번호
+     * @param regstrId 사용자 ID
+     * @return 연도 목록
+     */
+    @Transactional(readOnly = true)
+    @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
+    @Query("SELECT DISTINCT day.yy " +
+            "FROM JrnlDayEntity day " +
+            "INNER JOIN day.meta.list metaContent " +
+            "WHERE metaContent.refMetaNo = :metaNo " +
+            "  AND metaContent.refContentType = 'JRNL_DAY' " +
+            "  AND metaContent.regstrId = :regstrId " +
+            "ORDER BY day.yy DESC")
+    List<Integer> findDistinctYysByMetaNoAndRegstrId(final @Param("metaNo") Integer metaNo, final @Param("regstrId") String regstrId);
 }
