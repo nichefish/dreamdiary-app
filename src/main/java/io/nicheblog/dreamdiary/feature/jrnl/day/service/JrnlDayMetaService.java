@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.feature.clsf.meta.model.MetaDto;
 import io.nicheblog.dreamdiary.feature.jrnl.day.entity.JrnlDayMetaEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.day.mapstruct.JrnlDayMetaMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.day.repository.jpa.JrnlDayMetaRepository;
+import io.nicheblog.dreamdiary.feature.jrnl.day.repository.jpa.JrnlDayRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.day.spec.JrnlDayMetaSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoReadableService;
 import lombok.Getter;
@@ -36,6 +37,7 @@ public class JrnlDayMetaService
 
     @Getter
     private final JrnlDayMetaRepository repository;
+    private final JrnlDayRepository jrnlDayRepository;
     @Getter
     private final JrnlDayMetaSpec spec;
     @Getter
@@ -62,6 +64,29 @@ public class JrnlDayMetaService
     public Map<String, List<String>> getMyMetaCtgrMap() throws Exception {
         final String userId = AuthUtils.getLgnUserId();
         return this.getSelf().getMetaCtgrMapByUser(userId);
+    }
+
+    /**
+     * 특정 메타가 존재하는 연도 목록을 반환합니다.
+     *
+     * @param metaNo 메타 번호
+     * @return 연도 목록
+     */
+    public List<Integer> getMyYyListByMetaNo(final Integer metaNo) {
+        final String userId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
+        return this.getSelf().getYyListByMetaNoAndUser(metaNo, userId);
+    }
+
+    /**
+     * 사용자 기준 특정 메타가 존재하는 연도 목록을 반환합니다.
+     *
+     * @param metaNo 메타 번호
+     * @param userId 사용자 ID
+     * @return 연도 목록
+     */
+    @Cacheable(value="jrnlDayMetaYyListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#metaNo, #userId)")
+    public List<Integer> getYyListByMetaNoAndUser(final Integer metaNo, final String userId) {
+        return jrnlDayRepository.findDistinctYysByMetaNoAndRegstrId(metaNo, AuthUtils.requireUserId(userId));
     }
 
     /**
