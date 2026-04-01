@@ -66,6 +66,7 @@
     <!-- 저널 일자: 태그 -->
     <cache alias="jrnlDayYyMnthTagListByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDayYyMnthSizedTagListByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlDayTagYyListByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDayTagCtgrMapByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDayMetaCtgrMapByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDayMetaYyListByUser" uses-template="defaultTemplate" />

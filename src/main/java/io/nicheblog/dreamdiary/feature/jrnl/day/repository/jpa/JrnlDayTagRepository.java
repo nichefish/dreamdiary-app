@@ -42,4 +42,21 @@ public interface JrnlDayTagRepository
             " AND (:#{#param.mnth} IS NULL OR day.mnth = :#{#param.mnth} OR :#{#param.mnth} = 99)" +
             "GROUP BY ct.refTagNo")
     List<TagContentCntDto> countDaySizeMap(final @Param("param") JrnlDayTagContentParam param);
+
+    /**
+     * 태그가 기록된 연도 목록을 최신순으로 조회합니다.
+     *
+     * @param tagNo 메타 번호
+     * @param regstrId 사용자 ID
+     * @return 연도 목록
+     */
+    @Transactional(readOnly = true)
+    @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
+    @Query("SELECT DISTINCT day.yy " +
+            "FROM JrnlDayTagContentEntity ct " +
+            "INNER JOIN FETCH JrnlDayEntity day ON ct.refPostNo = day.postNo " +
+            "WHERE ct.refTagNo = :tagNo " +
+            "  AND ct.regstrId = :regstrId " +
+            "ORDER BY day.yy DESC")
+    List<Integer> findDistinctYysByTagNoAndRegstrId(final @Param("tagNo") Integer tagNo, final @Param("regstrId") String regstrId);
 }

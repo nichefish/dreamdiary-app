@@ -35,6 +35,7 @@ public interface ApiUrl {
     String JRNL_DAY_TAGS = Prefix.API + "/jrnl/day/tags";
     String JRNL_DAY_TAG_GROUP_LIST = Prefix.API + "/jrnl/day/tag/group-list";
     String JRNL_DAY_TAG = Prefix.API + "/jrnl/day/tag/{tagNo}";
+    String JRNL_DAY_TAG_YYS = Prefix.API + "/jrnl/day/tag/{tagNo}/years";
     String JRNL_DAY_TAG_CTGR_MAP = Prefix.API + "/jrnl/day/tag/ctgr-map";
     /** 저널 일자 메타 */
     String JRNL_DAY_METAS = Prefix.API + "/jrnl/day/metas";

@@ -65,6 +65,29 @@ public class JrnlDayTagService
     }
 
     /**
+     * 특정 태그가 존재하는 연도 목록을 반환합니다.
+     *
+     * @param tagNo 태그 번호
+     * @return 연도 목록
+     */
+    public List<Integer> getMyYyListByTagNo(final Integer tagNo) {
+        final String userId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
+        return this.getSelf().getYyListByTagNoAndUser(tagNo, userId);
+    }
+
+    /**
+     * 사용자 기준 특정 태그가 존재하는 연도 목록을 반환합니다.
+     *
+     * @param tagNo 태그 번호
+     * @param userId 사용자 ID
+     * @return 연도 목록
+     */
+    @Cacheable(value="jrnlDayTagYyListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#tagNo, #userId)")
+    public List<Integer> getYyListByTagNoAndUser(final Integer tagNo, final String userId) {
+        return repository.findDistinctYysByTagNoAndRegstrId(tagNo, AuthUtils.requireUserId(userId));
+    }
+
+    /**
      * 지정된 연도와 월을 기준으로 태그 목록을 캐시 처리하여 반환합니다.
      *
      * @param yy 조회할 연도
