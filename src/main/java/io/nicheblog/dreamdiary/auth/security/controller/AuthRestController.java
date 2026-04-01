@@ -18,8 +18,10 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -71,14 +73,14 @@ public class AuthRestController {
         try {
             // JWT 검증 및 사용자 정보 추출
             final String jwtToken = jwtTokenProvider.resolveToken(request);
+            if (StringUtils.isBlank(jwtToken)) return unauthorizedAndInvalidate(request);
+
             final Authentication authentication = jwtTokenProvider.getDirectAuthentication(jwtToken);
             final AuthInfo authInfo = (AuthInfo) authentication.getPrincipal();
 
             return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(authInfo));
-        } catch (final JwtException jwtException) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(AjaxResponse.withAjaxResult(false, MessageUtils.getExceptionMsg("JwtException")));
+        } catch (final JwtException | AuthenticationException e) {
+            return unauthorizedAndInvalidate(request);
         } catch (final Exception e) {
             // 그 외 일반적인 예외 처리
             return ResponseEntity
@@ -104,9 +106,7 @@ public class AuthRestController {
         try {
             final String refreshToken = CookieUtils.getCookie(CookieUtils.REFRESH_TOKEN_COOKIE_NAME);
             if (StringUtils.isBlank(refreshToken)) {
-                return ResponseEntity
-                        .status(HttpStatus.UNAUTHORIZED)
-                        .body(AjaxResponse.withAjaxResult(false, MessageUtils.getExceptionMsg("AuthenticationFailureException")));
+                return unauthorizedAndInvalidate(request);
             }
 
             final RefreshTokenService.RefreshResult refreshResult = refreshTokenService.rotate(refreshToken);
@@ -125,10 +125,12 @@ public class AuthRestController {
             if (session != null) session.setAttribute("jwt", accessToken);
 
             return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS));
+        } catch (final JwtException | AuthenticationException e) {
+            return unauthorizedAndInvalidate(request);
         } catch (final Exception e) {
             return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(AjaxResponse.withAjaxResult(false, MessageUtils.getExceptionMsg("AuthenticationFailureException")));
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(AjaxResponse.withAjaxResult(false, MessageUtils.RSLT_FAILURE));
         }
     }
 
@@ -171,5 +173,32 @@ public class AuthRestController {
         if (session != null) session.invalidate();
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS));
+    }
+
+    /**
+     * 인증 무효화
+     *
+     * @param request HttpServletRequest
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     */
+    private ResponseEntity<AjaxResponse> unauthorizedAndInvalidate(final HttpServletRequest request) {
+        invalidateAuthentication(request);
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(AjaxResponse.withAjaxResult(false, MessageUtils.getExceptionMsg("AuthenticationFailureException")));
+    }
+
+    /**
+     * 인증 무효화
+     *
+     * @param request HttpServletRequest
+     */
+    private void invalidateAuthentication(final HttpServletRequest request) {
+        SecurityContextHolder.clearContext();
+        CookieUtils.deleteJwtCookie();
+        CookieUtils.deleteRefreshTokenCookie();
+
+        final HttpSession session = request.getSession(false);
+        if (session != null) session.invalidate();
     }
 }

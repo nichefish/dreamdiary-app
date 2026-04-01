@@ -97,7 +97,7 @@ public class AuthUtils {
      */
     public static String getLgnUserId() {
         final AuthInfo authInfo = getAuthenticatedUser();
-        assert authInfo != null;
+        if (authInfo == null) return null;
         return authInfo.getUserId();
     }
 
@@ -200,7 +200,6 @@ public class AuthUtils {
             ipType = Constant.REMOTE_ADDR;
             ipAddr = request.getRemoteAddr();
         }
-        log.info("ipAddr > {}: {}", ipType, ipAddr);
         return ipAddr;
     }
 
