@@ -33,6 +33,61 @@ dF.JrnlDayTag = (function(): dfModule {
         },
 
         /**
+         * 연도 선택 처리
+         * @param {string|number} yy
+         */
+        getSelectedYy: function(yy?: string|number): string {
+            if (yy != null && cF.util.isNotEmpty(String(yy))) return String(yy);
+
+            const currentSearchYy: string = dF.JrnlDay?.currentSearchParams?.yy;
+            if (cF.util.isNotEmpty(currentSearchYy)) return currentSearchYy;
+
+            const urlYy: string = cF.util.getUrlParam("yy");
+            if (cF.util.isNotEmpty(urlYy)) return urlYy;
+
+            return cF.date.getCurrYyStr();
+        },
+
+        /**
+         * 선택 연도 정합성 처리
+         * @param {string} selectedYy
+         * @param {(string|number)[]} yyList
+         */
+        normalizeSelectedYy: function(selectedYy: string, yyList: (string|number)[]): string {
+            if (yyList.length === 0) return selectedYy;
+
+            const matchedYy = yyList.find((yy: string|number): boolean => String(yy) === String(selectedYy));
+            if (matchedYy != null) return String(matchedYy);
+
+            return String(yyList[0]);
+        },
+
+        /**
+         * 연도 옵션 처리
+         * @param {string} selectedYy
+         * @param {(string|number)[]} yyList
+         */
+        getYearOptions: function(selectedYy: string, yyList: (string|number)[]): Record<string, any>[] {
+            return yyList.map((yy: string|number): Record<string, any> => ({
+                value: yy,
+                label: yy,
+                selected: String(yy) === String(selectedYy),
+            }));
+        },
+
+        getYyListAjax: function(tagNo: string|number, callback: (yyList: any[]) => void): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DAY_TAG_YYS, { tagNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    return;
+                }
+
+                callback(Array.isArray(res.rsltList) ? res.rsltList : []);
+            });
+        },
+
+        /**
          * 목록에 따른 일자 태그 조회 (Ajax)
          */
         listAjax: function(): void {
@@ -88,8 +143,8 @@ dF.JrnlDayTag = (function(): dfModule {
          * @param {string|number} tagNo - 조회할 태그 번호.
          * @param tagNm 태그 이름
          */
-        dtlModal: function(tagNo: string|number, tagNm: string): void {
-            event.stopPropagation();
+        dtlModal: function(tagNo: string|number, tagNm: string, yy?: string|number): void {
+            if (typeof event !== "undefined" && event) event.stopPropagation();
             if (isNaN(Number(tagNo))) return;
 
             ModalHistory.reset();
@@ -98,20 +153,41 @@ dF.JrnlDayTag = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = cF.util.bindUrl(Url.JRNL_DAY_TAG, { tagNo });
-            cF.ajax.get(url, null, function(res: AjaxResponse): void {
-                if (!res.rslt) {
-                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
-                    return;
-                }
-                cF.handlebars.modal(res.rsltList, "jrnl_day_tag_dtl");
-                document.querySelector("#jrnl_day_tag_dtl_modal .header_tag_nm").innerHTML = tagNm;
-                document.querySelector("#jrnl_day_tag_dtl_modal .header_tag_cnt").innerHTML = (res.rsltList?.length ?? 0).toString();
-                KTMenu.createInstances();
+            const preferredYy: string = dF.JrnlDayTag.getSelectedYy(yy);
+            dF.JrnlDayTag.getYyListAjax(tagNo, function(yyList: any[]): void {
+                const selectedYy: string = dF.JrnlDayTag.normalizeSelectedYy(preferredYy, yyList);
+                const url: string = cF.util.bindUrl(Url.JRNL_DAY_TAG, { tagNo });
+                cF.ajax.get(url, { yy: selectedYy }, function(res: AjaxResponse): void {
+                    if (!res.rslt) {
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        return;
+                    }
+                    cF.handlebars.modal({
+                        tagNo,
+                        yy: selectedYy,
+                        yearOptions: dF.JrnlDayTag.getYearOptions(selectedYy, yyList),
+                        list: res.rsltList
+                    }, "jrnl_day_tag_dtl");
+                    document.querySelector("#jrnl_day_tag_dtl_modal .header_tag_nm").innerHTML = tagNm;
+                    document.querySelector("#jrnl_day_tag_dtl_modal .header_tag_cnt").innerHTML = (res.rsltList?.length ?? 0).toString();
+                    KTMenu.createInstances();
 
-                /* modal history push */
-                ModalHistory.push(self, func, args);
+                    /* modal history push */
+                    ModalHistory.push(self, func, args);
+                });
             });
+        },
+
+        /**
+         * 년도 변경
+         * @param {string|number} tagNo
+         * @param {string|number} yy
+         */
+        changeYy: function(tagNo: string|number, yy: string|number): void {
+            if (isNaN(Number(tagNo))) return;
+
+            const tagNm: string = document.querySelector("#jrnl_day_tag_dtl_modal .header_tag_nm")?.textContent ?? "";
+            dF.JrnlDayTag.dtlModal(tagNo, tagNm, yy);
         },
 
         /**

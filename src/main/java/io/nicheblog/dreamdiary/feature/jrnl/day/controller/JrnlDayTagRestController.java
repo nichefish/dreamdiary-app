@@ -107,6 +107,26 @@ public class JrnlDayTagRestController
     }
 
     /**
+     * 저널 일자 태그가 존재하는 연도 목록 조회 (Ajax)
+     *
+     * @param tagNo 태그 번호
+     * @return {@link ResponseEntity} -- 처리 결과와 메시지
+     */
+    @GetMapping(Url.JRNL_DAY_TAG_YYS)
+    @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
+    @ResponseBody
+    public ResponseEntity<AjaxResponse> jrnlDayTagYyListAjax(
+            final @PathVariable("tagNo") Integer tagNo
+    ) {
+
+        final List<Integer> yyList = jrnlDayTagService.getMyYyListByTagNo(tagNo);
+        final boolean isSuccess = true;
+        final String rsltMsg = MessageUtils.RSLT_SUCCESS;
+
+        return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(yyList));
+    }
+
+    /**
      * 저널 일자 태그 상세 (해당 태그 일자 목록) 조회 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
