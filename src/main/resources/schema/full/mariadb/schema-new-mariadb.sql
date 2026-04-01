@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS schdul (
     bgn_dt DATETIME DEFAULT NULL COMMENT '시작일자',
     end_dt DATETIME DEFAULT NULL COMMENT '종료일자',
     prvt_yn CHAR(1) DEFAULT 'N' COMMENT '개인일정 여부 (Y/N)',
+    src VARCHAR(50) DEFAULT '출처',
     -- POST
     title VARCHAR(200) COMMENT '제목',
     cn LONGTEXT COMMENT '내용',
@@ -156,33 +157,6 @@ CREATE TABLE IF NOT EXISTS flsys_meta (
     --
     INDEX(file_path)
 );
-
--- -----------------------
-
--- 메뉴 (menu)
--- @extends: BaseAuditEntity
--- @implements: StateEmbed
-CREATE TABLE IF NOT EXISTS menu (
-    menu_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '메뉴 번호 (PK)',
-    upper_menu_no VARCHAR(10) COMMENT '상위 메뉴 번호',
-    menu_ty_cd VARCHAR(50) COMMENT '메뉴 구분코드',
-    mngr_yn CHAR(1) DEFAULT 'N' COMMENT '관리자 메뉴 여부 (Y/N)',
-    menu_nm VARCHAR(200) COMMENT '메뉴명',
-    menu_label VARCHAR(200) COMMENT '메뉴 라벨 (약어표시)',
-    url VARCHAR(500) COMMENT '연결 URL',
-    icon VARCHAR(1000) COMMENT '아이콘',
-    unread_cnt_nm VARCHAR(200) COMMENT '미열람 카운트 이름 (model)',
-    menu_sub_extend_ty_cd VARCHAR(50) COMMENT '하위메뉴 확장 유형 코드',
-    -- STATE
-    idx INT DEFAULT 0 COMMENT '정렬 순서',
-    use_yn CHAR(1) DEFAULT 'Y' COMMENT '사용 여부 (Y/N)',
-    -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
-    mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
-    mdf_dt DATETIME COMMENT '수정일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)'
-) COMMENT = '메뉴';
 
 -- -----------------------
 
