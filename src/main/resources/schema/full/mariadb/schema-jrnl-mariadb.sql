@@ -41,6 +41,8 @@ CREATE TABLE IF NOT EXISTS jrnl_entry (
     post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 항목 번호 (PK)',
     content_type VARCHAR(32) DEFAULT 'JRNL_ENTRY' COMMENT '컨텐츠 타입',
     --
+    jrnl_day_no INT COMMENT '저널 일자 번호',
+    --
     title VARCHAR(200) COMMENT '제목',
     ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
     idx INT DEFAULT 1 COMMENT '저널 항목 인덱스',
@@ -50,7 +52,9 @@ CREATE TABLE IF NOT EXISTS jrnl_entry (
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
     mdf_dt DATETIME COMMENT '수정일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)'
+    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    -- CONSTRAINT
+    INDEX (jrnl_day_no)
 ) COMMENT = '저널 항목';
 
 -- 저널 일기 (jrnl_diary)

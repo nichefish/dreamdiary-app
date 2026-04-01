@@ -17,7 +17,7 @@
     <#assign isNotTopMenu = (upperMenuNo != menu.upperMenuNo!?string) />
     <div class="menu-item" id="${menu.menuNo!}">
         <a href="${menu.url!}" class="menu-link <#if isNotTopMenu>text-inverse-light</#if>">
-            ${menu.icon?no_esc}
+            ${menu.icon!?no_esc}
             <span class="menu-title">${menu.menuNm!}</span>
             <!-- TODO: 새 글 갯수 표시. 1개 이상이면 표시. 5개 이상이면 깜빡임. -->
             <#if menu.unreadCntNm?? && menu.unreadCntNm != ''>
