@@ -95,7 +95,7 @@
         <div class="menu-sub menu-sub-accordion">
             <#list menu.subMenuList![] as subMenu>
                 <!--end:Menu item-->
-                <div class="menu-inner flex-column <#if subMenu?index gt 1>collapse" id="kt_app_sidebar_menu_${menu.menuNo!}_collapse</#if>">
+                <div class="menu-inner flex-column <#if subMenu?index gt 2>collapse" id="kt_app_sidebar_menu_${menu.menuNo!}_collapse</#if>">
                     <!--begin:Menu item-->
                     <div class="menu-item" id="${subMenu.menuNo!}">
                         <!--begin:Menu link-->
@@ -110,7 +110,7 @@
                     <!--end:Menu item-->
                 </div>
             </#list>
-            <#if menu.subMenuList?size gt 2>
+            <#if menu.subMenuList?size gt 3>
                 <div class="menu-item pt-0">
                     <div class="menu-content">
                         <a class="btn btn-flex btn-color-primary d-flex flex-stack fs-base p-0 ms-2 mb-2 toggle collapsible collapsed"
