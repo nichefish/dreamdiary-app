@@ -39,7 +39,8 @@ public interface JrnlDreamTagRepository
             "INNER JOIN FETCH JrnlDayEntity day ON diary.jrnlDayNo = day.postNo " +
             "WHERE ct.regstrId = :#{#param.regstrId} " +
             " AND (:#{#param.yy} IS NULL OR day.yy = :#{#param.yy} OR :#{#param.yy} = 9999) " +
-            " AND (:#{#param.mnth} IS NULL OR day.mnth = :#{#param.mnth} OR :#{#param.mnth} = 99)" +
+            " AND (:#{#param.mnth} IS NULL OR day.mnth = :#{#param.mnth} OR :#{#param.mnth} = 99) " +
+            " AND (:#{#param.weekStartDt} IS NULL OR day.weekStartDt = :#{T(io.nicheblog.dreamdiary.global.util.date.DateUtils).asDate(#param.weekStartDt)}) " +
             " GROUP BY ct.refTagNo")
     List<TagContentCntDto> countDreamSizeMap(final @Param("param") JrnlDreamTagContentParam param);
 }

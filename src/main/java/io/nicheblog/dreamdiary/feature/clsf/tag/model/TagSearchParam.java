@@ -32,6 +32,8 @@ public class TagSearchParam
     @Positive
     private Integer mnth;
 
+    private String weekStartDt;
+
     /** 관리 컨텐츠 타입 */
     private String refContentType;
 
@@ -50,5 +52,9 @@ public class TagSearchParam
         boolean hasYy = this.yy != null && this.yy > 0;
         boolean hasMnth = this.mnth != null && this.mnth > 0;
         return hasYy && hasMnth;
+    }
+
+    public Boolean hasWeekStartDt() {
+        return this.weekStartDt != null && !this.weekStartDt.isBlank();
     }
 }

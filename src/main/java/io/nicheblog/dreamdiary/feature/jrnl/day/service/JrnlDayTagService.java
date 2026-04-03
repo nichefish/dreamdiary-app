@@ -50,18 +50,15 @@ public class JrnlDayTagService
     public JrnlDayTagMapstruct getReadMapstruct() {
         return this.mapstruct;
     }
+
     public JrnlDayTagMapstruct getWriteMapstruct() {
         return this.mapstruct;
     }
 
     private final ApplicationContext context;
+
     private JrnlDayTagService getSelf() {
         return context.getBean(this.getClass());
-    }
-
-    public List<TagDto> getMyListDtoWithCache(final Integer yy, final Integer mnth) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getListDtoWithCacheByUser(userId, yy, mnth);
     }
 
     /**
@@ -82,7 +79,7 @@ public class JrnlDayTagService
      * @param userId 사용자 ID
      * @return 연도 목록
      */
-    @Cacheable(value="jrnlDayTagYyListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#tagNo, #userId)")
+    @Cacheable(value = "jrnlDayTagYyListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#tagNo, #userId)")
     public List<Integer> getYyListByTagNoAndUser(final Integer tagNo, final String userId) {
         return repository.findDistinctYysByTagNoAndRegstrId(tagNo, AuthUtils.requireUserId(userId));
     }
@@ -94,11 +91,23 @@ public class JrnlDayTagService
      * @param mnth 조회할 월
      * @return {@link List} -- 태그 목록
      */
-    @Cacheable(value="jrnlDayYyMnthTagListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #yy, #mnth)")
-    public List<TagDto> getListDtoWithCacheByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
+    @Cacheable(value = "jrnlDayYyMnthTagListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#userId, #yy, #mnth)")
+    public List<TagDto> getYyMnthListDtoWithCacheByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
         final JrnlDaySearchParam searchParam = JrnlDaySearchParam.builder().yy(yy).mnth(mnth).build();
         searchParam.setRegstrId(AuthUtils.requireUserId(userId));
+        return this.getSelf().getListDto(searchParam);
+    }
 
+    /**
+     * 주 시작일자를 기준으로 태그 목록을 캐시 처리하여 반환합니다.
+     *
+     * @param weekStartDt 주 시작일자
+     * @return {@link List} -- 태그 목록
+     */
+    @Cacheable(value = "jrnlDayWeeklyTagListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#userId, #weekStartDt)")
+    public List<TagDto> getWeeklyListDtoWithCacheByUser(final String userId, final String weekStartDt) throws Exception {
+        final JrnlDaySearchParam searchParam = JrnlDaySearchParam.builder().weekStartDt(weekStartDt).build();
+        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
         return this.getSelf().getListDto(searchParam);
     }
 
@@ -110,9 +119,21 @@ public class JrnlDayTagService
      * @param mnth 조회할 월
      * @return {@link List} -- CSS 사이즈가 적용된 태그 목록
      */
-    public List<TagDto> getMyDaySizedListDto(final Integer yy, final Integer mnth) throws Exception {
+    public List<TagDto> getMyYyMnthSizedListDto(final Integer yy, final Integer mnth) throws Exception {
         final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getDaySizedListDtoByUser(userId, yy, mnth);
+        return this.getSelf().getYyMnthSizedListDtoByUser(userId, yy, mnth);
+    }
+
+    /**
+     * css 사이즈 계산한 일자 태그 목록 조회
+     * 태그 1개 = 1. 그 외엔 2~9
+     *
+     * @param weekStartDt 주 시작일자
+     * @return {@link List} -- CSS 사이즈가 적용된 태그 목록
+     */
+    public List<TagDto> getMyWeeklySizedListDto(final String weekStartDt) throws Exception {
+        final String userId = AuthUtils.getLgnUserId();
+        return this.getSelf().getWeeklySizedListDtoByUser(userId, weekStartDt);
     }
 
     /**
@@ -124,28 +145,26 @@ public class JrnlDayTagService
      * @param mnth 조회할 월
      * @return {@link List} -- CSS 사이즈가 적용된 태그 목록
      */
-    @Cacheable(value="jrnlDayYyMnthSizedTagListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #yy, #mnth)")
-    public List<TagDto> getDaySizedListDtoByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
-        // 저널 꿈 태그 Dto 목록 조회
-        final List<TagDto> tagList = this.getSelf().getListDtoWithCacheByUser(userId, yy, mnth);
+    @Cacheable(value = "jrnlDayYyMnthSizedTagListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#userId, #yy, #mnth)")
+    public List<TagDto> getYyMnthSizedListDtoByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
+        final List<TagDto> tagList = this.getSelf().getYyMnthListDtoWithCacheByUser(userId, yy, mnth);
+        final int maxSize = this.calcMaxSize(tagList, AuthUtils.requireUserId(userId), yy, mnth, null);
+        return this.applyTagSizes(tagList, maxSize);
+    }
 
-        final int maxSize = this.calcMaxSize(tagList, AuthUtils.requireUserId(userId), yy, mnth);
-        final int MIN_SIZE = 2; // 최소 크기
-        final int MAX_SIZE = 9; // 최대 크기
-
-        return tagList.stream()
-                .peek(dto -> {
-                    final int size = dto.getContentSize();
-                    if (size == 1) {
-                        dto.setTagClass("ts-1");
-                    } else {
-                        final double ratio = (double) size / maxSize; // 사용 빈도의 비율 계산
-                        final int tagSize = (int) (MIN_SIZE + (MAX_SIZE - MIN_SIZE) * ratio);
-                        dto.setTagClass("ts-"+tagSize);
-                    }
-                })
-                .sorted()
-                .collect(Collectors.toList());
+    /**
+     * css 사이즈 계산한 일자 태그 목록 조회
+     * 태그 1개 = 1. 그 외엔 2~9
+     *
+     * @param userId 사용자 ID
+     * @param weekStartDt 주 시작일자
+     * @return {@link List} -- CSS 사이즈가 적용된 태그 목록
+     */
+    @Cacheable(value = "jrnlDayWeeklySizedTagListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#userId, #weekStartDt)")
+    public List<TagDto> getWeeklySizedListDtoByUser(final String userId, final String weekStartDt) throws Exception {
+        final List<TagDto> tagList = this.getSelf().getWeeklyListDtoWithCacheByUser(userId, weekStartDt);
+        final int maxSize = this.calcMaxSize(tagList, AuthUtils.requireUserId(userId), null, null, weekStartDt);
+        return this.applyTagSizes(tagList, maxSize);
     }
 
     /**
@@ -156,7 +175,13 @@ public class JrnlDayTagService
      * @param mnth 조회할 월
      * @return {@link Integer} -- 태그 목록에서 계산된 최대 사용 빈도 (Integer)
      */
-    public Integer calcMaxSize(final List<TagDto> tagList, final String userId, Integer yy, Integer mnth) {
+    public Integer calcMaxSize(
+            final List<TagDto> tagList,
+            final String userId,
+            final Integer yy,
+            final Integer mnth,
+            final String weekStartDt
+    ) {
         if (CollectionUtils.isEmpty(tagList)) return 0;
 
         int maxFrequency = 0;
@@ -164,6 +189,7 @@ public class JrnlDayTagService
         final JrnlDayTagContentParam param = JrnlDayTagContentParam.builder()
                 .yy(yy)
                 .mnth(mnth)
+                .weekStartDt(weekStartDt)
                 .regstrId(AuthUtils.requireUserId(userId))
                 .build();
         final Map<Integer, Integer> tagCntMap = this.getSelf().countDaySizeMap(param);
@@ -178,19 +204,44 @@ public class JrnlDayTagService
     }
 
     /**
+     * 태그 사이즈 적용
+     * @param tagList 태그 목록
+     * @param maxSize 최대 크기
+     * @return 사이즈 적용된 태그 Dto 목록
+     */
+    private List<TagDto> applyTagSizes(final List<TagDto> tagList, final int maxSize) {
+        final int minSize = 2;
+        final int maxTagSize = 9;
+
+        return tagList.stream()
+                .peek(dto -> {
+                    final int size = dto.getContentSize();
+                    if (size <= 1 || maxSize <= 1) {
+                        dto.setTagClass("ts-1");
+                        return;
+                    }
+
+                    final double ratio = (double) size / maxSize;
+                    final int tagSize = (int) (minSize + (maxTagSize - minSize) * ratio);
+                    dto.setTagClass("ts-" + tagSize);
+                })
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
+    /**
      * 일자 태그별 크기 맵 조회
      *
      * @return {@link Map} -- 카테고리별 태그 목록을 담은 Map
      */
-    @Cacheable(value="jrnlDayCountMapByUser", key="new org.springframework.cache.interceptor.SimpleKey(#param.regstrId, #param.yy, #param.mnth)")
+    @Cacheable(value = "jrnlDayCountMapByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#param.regstrId, #param.yy, #param.mnth, #param.weekStartDt)")
     public Map<Integer, Integer> countDaySizeMap(final JrnlDayTagContentParam param) {
         final List<TagContentCntDto> tagCountList = repository.countDaySizeMap(param);
 
-        // List를 태그 번호를 키로 하고, 태그 개수를 값으로 하는 Map으로 변환
         final ConcurrentMap<Integer, Integer> concurrentMap = tagCountList.stream()
                 .collect(Collectors.toConcurrentMap(
                         TagContentCntDto::getTagNo,
-                        dto -> dto.getCount().intValue()   // Long을 int로 변환
+                        dto -> dto.getCount().intValue()
                 ));
         return new ConcurrentHashMap<>(concurrentMap);
     }
@@ -202,9 +253,14 @@ public class JrnlDayTagService
      * @param mnth 조회할 월
      * @return {@link Map} -- 카테고리별로 그룹화된 태그 목록을 담은 Map
      */
-    public Map<String, List<TagDto>> getMyDaySizedGroupListDto(final Integer yy, final Integer mnth) throws Exception {
+    public Map<String, List<TagDto>> getMyYyMnthSizedGroupListDto(final Integer yy, final Integer mnth) throws Exception {
         final String userId = AuthUtils.getLgnUserId();
-        return this.getDaySizedGroupListDtoByUser(userId, yy, mnth);
+        return this.getYyMnthSizedGroupListDtoByUser(userId, yy, mnth);
+    }
+
+    public Map<String, List<TagDto>> getMyWeeklySizedGroupListDto(final String weekStartDt) throws Exception {
+        final String userId = AuthUtils.getLgnUserId();
+        return this.getWeeklySizedGroupListDtoByUser(userId, weekStartDt);
     }
 
     /**
@@ -215,12 +271,21 @@ public class JrnlDayTagService
      * @param mnth 조회할 월
      * @return {@link Map} -- 카테고리별로 그룹화된 태그 목록을 담은 Map
      */
-    public Map<String, List<TagDto>> getDaySizedGroupListDtoByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
-        final List<TagDto> tagList = this.getSelf().getDaySizedListDtoByUser(AuthUtils.requireUserId(userId), yy, mnth);
+    public Map<String, List<TagDto>> getYyMnthSizedGroupListDtoByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
+        final List<TagDto> tagList = this.getSelf().getYyMnthSizedListDtoByUser(AuthUtils.requireUserId(userId), yy, mnth);
+        return tagList.stream().collect(Collectors.groupingBy(TagDto::getCtgr));
+    }
 
-        // 태그를 카테고리별로 그룹화하여 맵으로 반환
-        return tagList.stream()
-                .collect(Collectors.groupingBy(TagDto::getCtgr));
+    /**
+     * 주 시작일자를 기준으로 태그 목록을 카테고리별로 그룹화하여 반환합니다.
+     *
+     * @param userId 사용자 ID
+     * @param weekStartDt 주 시작일자
+     * @return {@link Map} -- 카테고리별로 그룹화된 태그 목록을 담은 Map
+     */
+    public Map<String, List<TagDto>> getWeeklySizedGroupListDtoByUser(final String userId, final String weekStartDt) throws Exception {
+        final List<TagDto> tagList = this.getSelf().getWeeklySizedListDtoByUser(AuthUtils.requireUserId(userId), weekStartDt);
+        return tagList.stream().collect(Collectors.groupingBy(TagDto::getCtgr));
     }
 
     /**
@@ -239,7 +304,7 @@ public class JrnlDayTagService
      * @param userId 사용자 아이디
      * @return {@link Map} -- 태그 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵
      */
-    @Cacheable(value="jrnlDayTagCtgrMapByUser", key="#userId")
+    @Cacheable(value = "jrnlDayTagCtgrMapByUser", key = "#userId")
     public Map<String, List<String>> getTagCtgrMapByUser(final String userId) throws Exception {
         final HashMap<String, Object> paramMap = new HashMap<>() {{
             put("regstrId", AuthUtils.requireUserId(userId));
@@ -249,10 +314,7 @@ public class JrnlDayTagService
         return tagList.stream()
                 .collect(Collectors.groupingBy(
                         JrnlDayTagEntity::getTagNm,
-                        Collectors.mapping(tag -> {
-                            if (StringUtils.isBlank(tag.getCtgr())) return "";
-                            return tag.getCtgr();
-                        }, Collectors.toList())
+                        Collectors.mapping(tag -> StringUtils.defaultString(tag.getCtgr()), Collectors.toList())
                 ));
     }
 }

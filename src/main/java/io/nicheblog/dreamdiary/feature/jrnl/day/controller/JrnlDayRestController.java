@@ -64,6 +64,7 @@ public class JrnlDayRestController
             case LIST -> jrnlDayQueryService.getMyYyMnthListDtoEnriched(searchParam);
             case CAL -> jrnlDayCalService.getSchdulTotalCalList(searchParam);
             case DAILY -> jrnlDayQueryService.getMyStdrdDaysDtoEnriched(searchParam);
+            case WEEKLY -> jrnlDayQueryService.getMyWeeklyListDtoEnriched(searchParam);
             case SEARCH -> jrnlDayQueryService.getMyListDtoByMetaNoEnriched(searchParam);
         };
         final boolean isSuccess = true;

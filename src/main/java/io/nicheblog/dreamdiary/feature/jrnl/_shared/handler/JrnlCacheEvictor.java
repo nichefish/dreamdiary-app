@@ -143,4 +143,40 @@ public interface JrnlCacheEvictor
         EhCacheUtils.clearMyCache("myJrnlDayList");
         EhCacheUtils.clearMyCache("myJrnlDayCalList");
     }
+
+    /**
+     * 일 단위 주간 캐시 묶음 삭제
+     */
+    default void evictMyJrnlDayWeeklyCaches() {
+        EhCacheUtils.clearMyCache("jrnlDayWeeklyListByUser");
+        EhCacheUtils.clearMyCache("jrnlEntryWeeklyStateMapByUser");
+        EhCacheUtils.clearMyCache("jrnlDiaryWeeklyStateMapByUser");
+        EhCacheUtils.clearMyCache("jrnlDreamWeeklyStateMapByUser");
+        EhCacheUtils.clearMyCache("jrnlIntrptWeeklyStateMapByUser");
+    }
+
+    /**
+     * 일 단위 주간 캐시 묶음 삭제
+     *
+     * @param weekStartDts 삭제할 주 시작일자 목록
+     */
+    default void evictMyJrnlDayWeeklyCaches(final String... weekStartDts) {
+        if (weekStartDts == null || weekStartDts.length == 0) {
+            this.evictMyJrnlDayWeeklyCaches();
+            return;
+        }
+
+        boolean hasTarget = false;
+        for (final String weekStartDt : weekStartDts) {
+            if (weekStartDt == null || weekStartDt.isBlank()) continue;
+            hasTarget = true;
+            EhCacheUtils.evictMyCacheByKey("jrnlDayWeeklyListByUser", weekStartDt);
+            EhCacheUtils.evictMyCacheByKey("jrnlEntryWeeklyStateMapByUser", weekStartDt);
+            EhCacheUtils.evictMyCacheByKey("jrnlDiaryWeeklyStateMapByUser", weekStartDt);
+            EhCacheUtils.evictMyCacheByKey("jrnlDreamWeeklyStateMapByUser", weekStartDt);
+            EhCacheUtils.evictMyCacheByKey("jrnlIntrptWeeklyStateMapByUser", weekStartDt);
+        }
+
+        if (!hasTarget) this.evictMyJrnlDayWeeklyCaches();
+    }
 }

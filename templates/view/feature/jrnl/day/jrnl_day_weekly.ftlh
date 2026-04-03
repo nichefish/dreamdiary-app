@@ -1,89 +1,76 @@
 <#--
- * 저널 일자(jrnl_day) : 페이지
+ * 저널 일자(jrnl_day) : 페이지 (주간)
  -->
 
 <#import "/layout/layout_with_aside.ftlh" as layout >
 
-<#--toolbar::버튼 추가-->
 <#assign toolbar>
     <#include "/view/feature/jrnl/day/_jrnl_day_page_header.ftlh">
 </#assign>
 
 <@layout.layout toolbar=toolbar!"">
 
-<link rel="stylesheet" type="text/css" href="/css/jrnl.css?${releaseDate!}" />
-<div class="jrnl-day-monthly-page">
-    <#--filter status-->
-    <#include "/view/feature/jrnl/day/_filter/_jrnl_day_filter_status.ftlh">
-    <div class="d-flex flex-column-fluid justify-content-between align-items-start align-items-xl-center gap-4">
-        <#--begin::Tab-->
-        <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">
-            <li class="nav-item">
-                <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
-                   onclick="Page.changeView(Url.JRNL_DAY_WEEKLY);">
-                    <span class="nav-icon">
-                        <i class="bi bi-calendar-week"></i>
-                    </span>
-                    <span class="nav-text"><@spring.message 'txt.jrnl.day.view.week'/></span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
-                   onclick="Page.changeView(Url.JRNL_DAY_MONTHLY);">
-                    <span class="nav-icon">
-                        <i class="bi bi-people"></i>
-                    </span>
-                    <span class="nav-text"><@spring.message 'txt.jrnl.day.view.list'/></span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
-                   onclick="Page.changeView(Url.JRNL_DAY_CAL);">
-                    <span class="nav-icon">
-                        <i class="bi bi-sort-down-alt"></i>
-                    </span>
-                    <span class="nav-text"><@spring.message 'txt.jrnl.day.view.cal'/></span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link px-6 cursor-pointer active" data-bs-toggle="tab"
-                   onclick="Page.changeView(Url.JRNL_DAY_META_VIEW);">
-                    <span class="nav-icon">
-                        <i class="bi bi-people"></i>
-                    </span>
-                    <span class="nav-text"><@spring.message 'txt.jrnl.day.view.meta'/></span>
-                </a>
-            </li>
-        </ul>
-    </div>
-    <!--begin::Card-->
-    <div class="card post" style="margin-top: 0 !important;">
-        <#--begin::Card header-->
-        <div class="card-header min-h-auto mb-7">
-            <!-- 메타 헤더 :: 파일 분리 -->
-            <#include "/view/feature/jrnl/day/meta/_jrnl_day_meta_header.ftlh">
-        </div>
-        <#--begin::Card body-->
-        <div class="card-body">
-            <#--begin::form-->
-            <div id="jrnl_day_meta_config_div" class="d-flex-align-center mb-2 ps-2 min-h-42px">
-                <span class="text-muted">
-                    메타를 선택해 주세요.
-                </span>
-                <#--handlebars template goes in here-->
-            </div>
-            <#--begin::Table body-->
-            <div id="jrnl_day_meta_graph_div" class="border border-1 border-primary d-flex-align-center min-h-42px" style="min-height: 200px;">
-                graph goes in here
-                <#--handlebars template goes in here-->
-            </div>
-        </div>
-    </div>
-    <!--end::Card-->
+<script>
+    window.JRNL = {
+        stdrdDt: "${stdrdDt?js_string}"
+    };
+</script>
 
-    <#--include::aside-->
-    <#include "/view/feature/jrnl/day/_aside/_jrnl_day_aside_base.ftlh">
+<link rel="stylesheet" type="text/css" href="/css/jrnl.css?${releaseDate!}" />
+
+<div class="d-flex flex-column-fluid justify-content-between align-items-end flex-wrap gap-4">
+    <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">
+        <li class="nav-item">
+            <a class="nav-link px-6 cursor-pointer active" data-bs-toggle="tab"
+               onclick="Page.changeView(Url.JRNL_DAY_WEEKLY);">
+                <span class="nav-icon">
+                    <i class="bi bi-calendar-week"></i>
+                </span>
+                <span class="nav-text"><@spring.message 'txt.jrnl.day.view.week'/></span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
+               onclick="Page.changeView(Url.JRNL_DAY_MONTHLY);">
+                <span class="nav-icon">
+                    <i class="bi bi-view-stacked"></i>
+                </span>
+                <span class="nav-text"><@spring.message 'txt.jrnl.day.view.list'/></span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
+               onclick="Page.changeView(Url.JRNL_DAY_CAL);">
+                <span class="nav-icon">
+                    <i class="bi bi-calendar3"></i>
+                </span>
+                <span class="nav-text"><@spring.message 'txt.jrnl.day.view.cal'/></span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
+               onclick="Page.changeView(Url.JRNL_DAY_META_VIEW);">
+                <span class="nav-icon">
+                    <i class="bi bi-bar-chart-line"></i>
+                </span>
+                <span class="nav-text"><@spring.message 'txt.jrnl.day.view.meta'/></span>
+            </a>
+        </li>
+    </ul>
 </div>
+
+<div class="card post" style="margin-top: 0 !important;">
+    <div class="card-header min-h-auto mb-7 justify-content-between">
+        <#include "/view/feature/jrnl/day/tag/_jrnl_day_tag_header.ftlh">
+    </div>
+    <div class="card-body">
+        <div id="jrnl_day_list_div">
+            <#--handlebars template goes in here-->
+        </div>
+    </div>
+</div>
+
+<#include "/view/feature/jrnl/day/_aside/_jrnl_day_aside_base.ftlh">
 
 <#--include::tinymce-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
@@ -156,8 +143,6 @@
 
 <#--include::jrnl_day_meta_module-->
 <#include "/view/feature/jrnl/day/meta/_modal/_jrnl_day_meta_modal.ftlh">
-<#include "/view/feature/jrnl/day/meta/_modal/_jrnl_day_meta_list_template.hbs">
-<#include "/view/feature/jrnl/day/meta/_jrnl_day_meta_config.hbs">
 <script type="text/javascript" src="/js/view/feature/jrnl/day/meta/jrnl_day_meta_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_diary_tag_module-->
@@ -178,8 +163,6 @@
 <#include "/view/feature/clsf/tag/_partial/_tag_list_partial.hbs">
 <#include "/view/feature/clsf/tag/_partial/_tag_list_sized_partial.hbs">
 
-<#include "/view/feature/clsf/meta/_partial/_meta_list_partial.hbs">
-
 <#--include::comment-->
 <#include "/view/feature/clsf/comment/_modal/_comment_reg_modal.ftlh">
 <#include "/view/feature/clsf/comment/_partial/_comment_list_partial.hbs">
@@ -190,6 +173,6 @@
 <script type="text/javascript" src="/js/view/feature/clsf/state/state_module.js?${releaseDate!}"></script>
 
 <!--include::page scripts-->
-<script type="text/javascript" src="/js/view/feature/jrnl/day/jrnl_day_meta.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/feature/jrnl/day/jrnl_day_weekly.js?${releaseDate!}"></script>
 
 </@layout.layout>

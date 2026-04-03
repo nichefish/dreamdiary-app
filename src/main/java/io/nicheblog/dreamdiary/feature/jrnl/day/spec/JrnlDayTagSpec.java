@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * JrnlDayTagSpec
  * <pre>
- *  저널 일자 태그 목록 검색인자 세팅 Specification.
+ *  저널 일자 태그 목록 검색용 Specification.
  * </pre>
  *
  * @author nichefish
@@ -41,7 +41,6 @@ public class JrnlDayTagSpec
             final CriteriaQuery<?> query,
             final CriteriaBuilder builder
     ) {
-        // distinct
         query.distinct(true);
     }
 
@@ -92,8 +91,14 @@ public class JrnlDayTagSpec
                     final Integer mnth = (Integer) value;
                     if (mnth != 99) predicate.add(builder.equal(jrnlDayJoin.get(key), mnth));
                     continue;
+                case "weekStartDt":
+                    predicate.add(builder.equal(jrnlDayJoin.get(key), DateUtils.asDate(value)));
+                    continue;
                 case "regstrId":
-                    predicate.add(builder.equal(jrnlDayTagJoin.get("regstrId"), value));     // 등록자 ID 기준으로 조회
+                    predicate.add(builder.equal(jrnlDayTagJoin.get("regstrId"), value));
+                    continue;
+                default:
+                    continue;
             }
         }
 

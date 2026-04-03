@@ -171,7 +171,7 @@ public class JrnlSumryRestController
         // 태그 목록 조회
         List <TagDto> tagList = new ArrayList<>();
         switch(type) {
-            case DAY -> tagList = jrnlDayTagService.getMyDaySizedListDto(yy, 99);
+            case DAY -> tagList = jrnlDayTagService.getMyYyMnthSizedListDto(yy, 99);
             case DIARY -> tagList = jrnlDiaryTagService.getMyDiarySizedListDto(yy, 99);
             case DREAM -> tagList = jrnlDreamTagService.getMyDreamSizedListDto(yy, 99);
         }

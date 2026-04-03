@@ -76,7 +76,9 @@ public class JrnlDiaryTagRestController
     ) throws Exception {
 
         List<TagDto> tagList;
-        if (searchParam.hasYyMnth()) {
+        if (searchParam.hasWeekStartDt()) {
+            tagList = jrnlDiaryTagService.getMyWeeklySizedListDto(searchParam.getWeekStartDt());
+        } else if (searchParam.hasYyMnth()) {
             tagList = jrnlDiaryTagService.getMyDiarySizedListDto(searchParam.getYy(), searchParam.getMnth());
         } else {
             tagList = jrnlDiaryTagService.getMyTagList();
@@ -102,7 +104,9 @@ public class JrnlDiaryTagRestController
             final @ModelAttribute("searchParam") TagSearchParam searchParam
     ) throws Exception {
 
-        final Map<String, List<TagDto>> tagGroupMap = jrnlDiaryTagService.getMyDiarySizedGroupListDto(searchParam.getYy(), searchParam.getMnth());
+        final Map<String, List<TagDto>> tagGroupMap = searchParam.hasWeekStartDt()
+                ? jrnlDiaryTagService.getMyWeeklySizedGroupListDto(searchParam.getWeekStartDt())
+                : jrnlDiaryTagService.getMyDiarySizedGroupListDto(searchParam.getYy(), searchParam.getMnth());
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

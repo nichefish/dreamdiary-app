@@ -1,17 +1,17 @@
 /**
  * jrnl_day_aside_module.ts
- * 저널 일자 사이드 스크립트 모듈
+ * jrnl_day aside script module
  *
  * @author nichefish
  */
-if (typeof dF === 'undefined') { var dF = {} as any; }
+if (typeof dF === "undefined") { var dF = {} as any; }
 dF.JrnlDayAside = (function(): dfModule {
     return {
         initialized: false,
         pinpointSearchParams: null,
 
         /**
-         * JrnlDayAside 객체 초기화
+         * initialize module
          */
         init: function(): void {
             if (dF.JrnlDayAside.initialized) return;
@@ -25,25 +25,40 @@ dF.JrnlDayAside = (function(): dfModule {
             cF.util.enterKey("#diaryFilterKeyword", dF.JrnlDay.applyKeywordFilters);
             cF.util.enterKey("#dreamFilterKeyword", dF.JrnlDay.applyKeywordFilters);
 
+            dF.JrnlDayAside.syncWeekRangeLabel();
             dF.JrnlDayAside.initialized = true;
             console.log("'dF.JrnlDayAside' module initialized.");
         },
 
         /**
-         * 오늘 날짜로 가기
+         * move to the month containing today
          */
         today: function(): void {
-            const todayYy: string = cF.date.getCurrYyStr();
-            const todayMnth: string = cF.date.getCurrMnthStr();
-            dF.JrnlDay.currentSearchParams.yy = todayYy;
-            dF.JrnlDay.currentSearchParams.mnth = todayMnth;
-
-            // 재조회
-            dF.JrnlDayAside.yyMnth(todayYy, todayMnth);
+            dF.JrnlDayAside.todayMonth();
         },
 
         /**
-         * 년도 바꾸기
+         * move to the month containing today
+         */
+        todayMonth: function(): void {
+            const today: string = cF.date.getCurrDateStr(cF.date.ptnDate);
+            const yy: string = today.substring(0, 4);
+            const mnth: string = String(parseInt(today.substring(5, 7), 10));
+
+            dF.JrnlDay.initSearchParams();
+            dF.JrnlDay.currentSearchParams.stdrdDt = today;
+            dF.JrnlDayAside.yyMnth(yy, mnth, dF.JrnlDay.currentSearchParams.sort);
+        },
+
+        /**
+         * move to the week containing today
+         */
+        todayWeek: function(): void {
+            dF.JrnlDayAside.navigateToWeek(cF.date.getCurrDateStr(cF.date.ptnDate));
+        },
+
+        /**
+         * year select change
          */
         changeYy: function(): void {
             cF.handlebars.template(null, "jrnl_day_list");
@@ -52,151 +67,241 @@ dF.JrnlDayAside = (function(): dfModule {
             cF.handlebars.template([], "jrnl_dream_tag_list");
             dF.JrnlDream.inKeywordSearchMode = false;
 
-            // #yy 요소와 #mnth 요소 가져오기
-            const yyElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy");
+            const yyElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
             const selectedYear: string = yyElement.value;
             const sort: string = cF.util.getUrlParam("sort") ?? localStorage.getItem("jrnl_day_sort") ?? "DESC";
 
-            // 2010년은 전체 월로 바로 조회처리
             if (selectedYear === "2010") {
                 dF.JrnlDayAside.yyMnth(selectedYear, 99, sort);
             }
 
-            const mnthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth");
-            mnthElement.value = "";   // #mnth 값을 비움
+            const mnthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
+            mnthElement.value = "";
         },
 
         /**
-         * 년도 바꾸기 (모바일)
-         */
-        changeYyAtMobile: function(): void {
-            // #yy 요소와 #mnth 요소 가져오기
-            const yyMobileElement: HTMLSelectElement = document.querySelector("#jrnl_navbar #yy");
-            const yyElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy");
-            yyElement.value = yyMobileElement.value;
-            const mnthMobileElement: HTMLSelectElement = document.querySelector("#jrnl_navbar #mnth");
-            const mnthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth");
-            mnthElement.value = mnthMobileElement.value;
-
-            dF.JrnlDayAside.changeYy();
-        },
-
-        /**
-         * 월 바꾸기 (모바일)
-         */
-        changeMnthAtMobile: function(): void {
-            // #yy 요소와 #mnth 요소 가져오기
-            const yyElement: HTMLSelectElement = document.querySelector("#jrnl_navbar #yy");
-            const selectedYear: string = yyElement.value;
-            const mnthElement: HTMLSelectElement = document.querySelector("#jrnl_navbar #mnth");
-            const selectedMnth: string = mnthElement.value;
-            if (selectedMnth === "") return;
-            const sort: string = cF.util.getUrlParam("sort") ?? localStorage.getItem("jrnl_day_sort") ?? "DESC";
-
-            dF.JrnlDay.currentSearchParams.yy = selectedYear;
-            dF.JrnlDay.currentSearchParams.mnth = selectedMnth;
-            dF.JrnlDay.currentSearchParams.sort = sort;
-
-            // 재조회
-            dF.JrnlDay.yyMnthListAjax();
-        },
-
-        /**
-         * 월 바꾸기
+         * month select change
          */
         changeMnth: function(): void {
-            const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy");
+            const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
             const selectedYear: string = yearElement.value;
-            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth");
+            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
             const selectedMnth: string = monthElement.value;
             if (selectedMnth === "") return;
-            const sort: string = cF.util.getUrlParam("sort") ?? localStorage.getItem("jrnl_day_sort") ?? "DESC";
 
-            // 재조회
+            const sort: string = cF.util.getUrlParam("sort") ?? localStorage.getItem("jrnl_day_sort") ?? "DESC";
             dF.JrnlDayAside.yyMnth(selectedYear, selectedMnth, sort);
         },
 
         /**
-         * 년월 바꾸기
+         * year-month move
          * @param {string} yy
-         * @param {string} mnth
+         * @param {string|number} mnth
          * @param {string} [sort]
          */
-        yyMnth: function(yy, mnth, sort): void {``
-            const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy");
-            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth");
+        yyMnth: function(yy: string, mnth: string|number, sort?: string): void {
+            const mnthStr: string = String(mnth);
+            const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
+            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
             yearElement.value = yy;
-            monthElement.value = mnth;
+            monthElement.value = mnthStr;
 
             $("#jrnl_aside #jrnl_diary_reset_btn").remove();
             $("#jrnl_aside #jrnl_dream_reset_btn").remove();
 
+            dF.JrnlDay.initSearchParams();
             dF.JrnlDay.currentSearchParams.yy = yy;
-            dF.JrnlDay.currentSearchParams.mnth = mnth;
+            dF.JrnlDay.currentSearchParams.mnth = mnthStr;
+            dF.JrnlDay.currentSearchParams.stdrdDt = dF.JrnlDayAside.buildAnchorDateForMonth(yy, mnthStr);
             if (sort) dF.JrnlDay.currentSearchParams.sort = sort;
 
-            // 목록 조회
+            localStorage.setItem("jrnl_yy", yy);
+            localStorage.setItem("jrnl_mnth", mnthStr);
+            dF.JrnlDayAside.syncWeekRangeLabel(dF.JrnlDay.currentSearchParams.stdrdDt);
+
+            if (dF.JrnlDay.viewType === "WEEKLY") {
+                dF.JrnlDream.inKeywordSearchMode = false;
+                cF.ui.blockUIReplace(dF.JrnlDay.buildViewUrl(Url.JRNL_DAY_MONTHLY));
+                Layout.toPageTop();
+                return;
+            }
+
             const isCalendar: boolean = Page?.calendar != null;
             if (isCalendar) {
-                Page.calDt = new Date(Number(yy), Number(mnth) - 1, 1);
+                Page.calDt = new Date(Number(yy), Number(mnthStr) - 1, 1);
                 Page.calendar.gotoDate(Page.calDt);
                 Page.refreshEventList(Page.calDt);
             } else {
                 dF.JrnlDay.yyMnthListAjax();
             }
-            //
+
             dF.JrnlDream.inKeywordSearchMode = false;
-            // 페이지 상단으로 이동
             Layout.toPageTop();
         },
 
         /**
-         * left
+         * previous month
          */
         left: function(): void {
-            const yy: string = cF.util.getUrlParam("yy") ?? localStorage.getItem("jrnl_yy") ?? null;
-            if (cF.util.isEmpty(yy)) return;
-            const mnth: string = cF.util.getUrlParam("mnth") ?? localStorage.getItem("jrnl_mnth") ?? null;
-            if (cF.util.isEmpty(mnth)) return;
-            if (yy === "2010" && parseInt(mnth) === 1) return;
+            const yy: string = cF.util.getUrlParam("yy") ?? localStorage.getItem("jrnl_yy") ?? "";
+            const mnth: string = cF.util.getUrlParam("mnth") ?? localStorage.getItem("jrnl_mnth") ?? "";
+            if (cF.util.isEmpty(yy) || cF.util.isEmpty(mnth)) return;
+            if (yy === "2010" && parseInt(mnth, 10) === 1) return;
 
-            let toBeYy = yy, toBeMnth;
-            if (parseInt(mnth) === 1) {
-                // 1월일 경우, 이전 년도로 이동하고 12월로 설정
-                toBeYy = (parseInt(yy) - 1).toString(); // 이전 년도로
-                toBeMnth = "12";  // 12월로 설정
+            let toBeYy: string = yy;
+            let toBeMnth: string;
+            if (parseInt(mnth, 10) === 1) {
+                toBeYy = String(parseInt(yy, 10) - 1);
+                toBeMnth = "12";
             } else {
-                toBeMnth = (parseInt(mnth) - 1).toString(); // 월을 하나 감소시킴
+                toBeMnth = String(parseInt(mnth, 10) - 1);
             }
 
-            // 재조회
             dF.JrnlDayAside.yyMnth(toBeYy, toBeMnth);
         },
 
         /**
-         * right
+         * next month
          */
         right: function(): void {
-            const yy: string = cF.util.getUrlParam("yy") ?? localStorage.getItem("jrnl_yy") ?? null;
-            if (cF.util.isEmpty(yy)) return;
-            const mnth: string = cF.util.getUrlParam("mnth") ?? localStorage.getItem("jrnl_mnth") ?? null;
-            if (cF.util.isEmpty(mnth)) return;
-            if (yy === "2010" && parseInt(mnth) === 1) return;
+            const yy: string = cF.util.getUrlParam("yy") ?? localStorage.getItem("jrnl_yy") ?? "";
+            const mnth: string = cF.util.getUrlParam("mnth") ?? localStorage.getItem("jrnl_mnth") ?? "";
+            if (cF.util.isEmpty(yy) || cF.util.isEmpty(mnth)) return;
+            if (yy === "2010" && parseInt(mnth, 10) === 1) return;
 
-            let toBeYy = yy, toBeMnth;
-            if (parseInt(mnth) === 12) {
-                // 12월일 경우, 다음 년도로 이동하고 1월로 설정
-                toBeYy = (parseInt(yy) + 1).toString(); // 다음 년도로
-                toBeMnth = "1";  // 1월로 설정
+            let toBeYy: string = yy;
+            let toBeMnth: string;
+            if (parseInt(mnth, 10) === 12) {
+                toBeYy = String(parseInt(yy, 10) + 1);
+                toBeMnth = "1";
             } else {
-                toBeMnth = (parseInt(mnth) + 1).toString(); // 월을 하나 증기시킴
+                toBeMnth = String(parseInt(mnth, 10) + 1);
             }
 
             dF.JrnlDayAside.yyMnth(toBeYy, toBeMnth);
         },
 
         /**
-         * 현재 년/월을 저장한다.
+         * previous week
+         */
+        leftWeek: function(): void {
+            dF.JrnlDayAside.navigateWeek("prev");
+        },
+
+        /**
+         * next week
+         */
+        rightWeek: function(): void {
+            dF.JrnlDayAside.navigateWeek("next");
+        },
+
+        /**
+         * week move using anchor date
+         * @param {"prev"|"next"} type
+         */
+        navigateWeek: function(type: "prev"|"next"): void {
+            const anchorDate: string = dF.JrnlDayAside.getCurrentAnchorDate();
+            const nextDate: string = cF.date.navigateDateStr("week", anchorDate, type, cF.date.ptnDate) ?? anchorDate;
+            dF.JrnlDayAside.navigateToWeek(nextDate);
+        },
+
+        /**
+         * move to weekly view using anchor date
+         * @param {string} stdrdDt
+         */
+        navigateToWeek: function(stdrdDt: string): void {
+            if (cF.util.isEmpty(stdrdDt)) return;
+
+            if (dF.JrnlDay.viewType === "WEEKLY") {
+                dF.JrnlDayAside.setAnchorDateForCurrentView(stdrdDt);
+                return;
+            }
+
+            const yy: string = stdrdDt.substring(0, 4);
+            const mnth: string = String(parseInt(stdrdDt.substring(5, 7), 10));
+            const yearElement: HTMLSelectElement | null = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement | null;
+            const monthElement: HTMLSelectElement | null = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement | null;
+            if (yearElement) yearElement.value = yy;
+            if (monthElement) monthElement.value = mnth;
+
+            localStorage.setItem("jrnl_yy", yy);
+            localStorage.setItem("jrnl_mnth", mnth);
+
+            dF.JrnlDay.initSearchParams();
+            dF.JrnlDay.currentSearchParams.yy = yy;
+            dF.JrnlDay.currentSearchParams.mnth = mnth;
+            dF.JrnlDay.currentSearchParams.stdrdDt = stdrdDt;
+            dF.JrnlDayAside.syncWeekRangeLabel(stdrdDt);
+
+            cF.ui.blockUIReplace(dF.JrnlDay.buildViewUrl(Url.JRNL_DAY_WEEKLY));
+        },
+
+        /**
+         * resolve current anchor date
+         */
+        getCurrentAnchorDate: function(): string {
+            dF.JrnlDay.initSearchParams();
+            const currentParams: Record<string, any> = dF.JrnlDay.currentSearchParams ?? {};
+            if (cF.util.isNotEmpty(currentParams.stdrdDt)) return currentParams.stdrdDt;
+            if (dF.JrnlDay.viewType === "WEEKLY" && cF.util.isNotEmpty(Page?.stdrdDt)) return Page.stdrdDt;
+
+            const yy: string = currentParams.yy ?? cF.date.getCurrYyStr();
+            const mnth: string = currentParams.mnth ?? cF.date.getCurrMnthStr();
+            const currYy: string = cF.date.getCurrYyStr();
+            const currMnth: string = cF.date.getCurrMnthStr();
+            if (yy === currYy && String(parseInt(mnth, 10)) === String(parseInt(currMnth, 10))) {
+                return cF.date.getCurrDateStr(cF.date.ptnDate);
+            }
+
+            const parsedMonthNo: number = parseInt(mnth, 10);
+            const monthNo: number = (parsedMonthNo >= 1 && parsedMonthNo <= 12) ? parsedMonthNo : 1;
+            return `${yy}-${String(monthNo).padStart(2, "0")}-01`;
+        },
+
+        /**
+         * build anchor date inside target month
+         * @param {string} yy
+         * @param {string} mnth
+         * @param {number} [fallbackDay]
+         */
+        buildAnchorDateForMonth: function(yy: string, mnth: string, fallbackDay?: number): string {
+            const baseAnchor: string = dF.JrnlDayAside.getCurrentAnchorDate();
+            const baseDay: number = parseInt(baseAnchor?.substring(8, 10) ?? String(fallbackDay ?? 1), 10);
+            const parsedMonthNo: number = parseInt(mnth, 10);
+            const monthNo: number = (parsedMonthNo >= 1 && parsedMonthNo <= 12) ? parsedMonthNo : 1;
+            const lastDay: number = new Date(Number(yy), monthNo, 0).getDate();
+            const safeDay: string = String(Math.min(baseDay, lastDay)).padStart(2, "0");
+            return `${yy}-${String(monthNo).padStart(2, "0")}-${safeDay}`;
+        },
+
+        /**
+         * apply anchor date to active view
+         * @param {string} stdrdDt
+         */
+        setAnchorDateForCurrentView: function(stdrdDt: string): void {
+            if (cF.util.isEmpty(stdrdDt)) return;
+
+            const yy: string = stdrdDt.substring(0, 4);
+            const mnth: string = String(parseInt(stdrdDt.substring(5, 7), 10));
+            const yearElement: HTMLSelectElement | null = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement | null;
+            const monthElement: HTMLSelectElement | null = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement | null;
+            if (yearElement) yearElement.value = yy;
+            if (monthElement) monthElement.value = mnth;
+
+            localStorage.setItem("jrnl_yy", yy);
+            localStorage.setItem("jrnl_mnth", mnth);
+
+            dF.JrnlDay.initSearchParams();
+            dF.JrnlDay.currentSearchParams.yy = yy;
+            dF.JrnlDay.currentSearchParams.mnth = mnth;
+            dF.JrnlDay.currentSearchParams.stdrdDt = stdrdDt;
+            dF.JrnlDayAside.syncWeekRangeLabel(stdrdDt);
+
+            dF.JrnlDayAside.yyMnth(yy, mnth, dF.JrnlDay.currentSearchParams.sort);
+        },
+
+        /**
+         * save pinned yy/mnth
          */
         pinpoint: function(): void {
             const { yy, mnth } = dF.JrnlDay.currentSearchParams;
@@ -208,86 +313,108 @@ dF.JrnlDayAside = (function(): dfModule {
         },
 
         /**
-         * 저장된 저널 년/월로 돌아가기
+         * move back to pinned yy/mnth
          */
         turnback: function(): void {
-            const pinnedYy: string = localStorage.getItem("jrnl_pinned_yy");
-            const pinnedMnth: string = localStorage.getItem("jrnl_pinned_mnth");
+            const pinnedYy: string = localStorage.getItem("jrnl_pinned_yy") ?? "";
+            const pinnedMnth: string = localStorage.getItem("jrnl_pinned_mnth") ?? "";
+            if (cF.util.isEmpty(pinnedYy) || cF.util.isEmpty(pinnedMnth)) return;
 
             dF.JrnlDay.currentSearchParams.yy = pinnedYy;
             dF.JrnlDay.currentSearchParams.mnth = pinnedMnth;
+            dF.JrnlDay.currentSearchParams.stdrdDt = dF.JrnlDayAside.buildAnchorDateForMonth(pinnedYy, pinnedMnth, 1);
 
             dF.JrnlDayAside.yyMnth(pinnedYy, pinnedMnth);
         },
 
         /**
-         * 저널 일자 정렬
-         * @param {'ASC'|'DESC'} [toBe] - 정렬 방향 ("ASC" 또는 "DESC").
+         * sort current list
+         * @param {"ASC"|"DESC"} [toBe]
          */
         sort: function(toBe: string): void {
             const asIs: string = cF.util.getInputValue("#jrnl_aside #sort");
             if (toBe == null) toBe = (asIs !== "ASC") ? "ASC" : "DESC";
-            // 쿠키에 정렬 정보 저장
+
             localStorage.setItem("jrnl_day_sort", toBe);
-            // 정렬 값 설정
             $("#jrnl_aside #sort").val(toBe);
 
-            // 정렬 아이콘 변경
             if (toBe === "DESC") {
                 $("#jrnl_aside_header #sortIcon").removeClass("bi-sort-numeric-down").addClass("bi-sort-numeric-up-alt");
             } else {
                 $("#jrnl_aside_header #sortIcon").removeClass("bi-sort-numeric-up-alt").addClass("bi-sort-numeric-down");
             }
 
-            // 정렬 수행
-            const container: HTMLElement = document.querySelector('#jrnl_day_list_div'); // 모든 저널 일자를 포함하는 컨테이너
-            const days: HTMLElement[] = Array.from(container.querySelectorAll('.jrnl-day'))  as HTMLElement[]; // 모든 'jrnl-day' 요소를 배열로 변환
+            const container: HTMLElement = document.querySelector("#jrnl_day_list_div") as HTMLElement;
+            if (!container) return;
+
+            const days: HTMLElement[] = Array.from(container.querySelectorAll(".jrnl-day")) as HTMLElement[];
             days.sort((a: HTMLDivElement, b: HTMLDivElement): number => {
-                const dateA: Date = new Date(a.querySelector('.jrnl-day-header').getAttribute("data-date"));
-                const dateB: Date = new Date(b.querySelector('.jrnl-day-header').getAttribute("data-date"));
+                const dateA: Date = new Date(a.querySelector(".jrnl-day-header")?.getAttribute("data-date") ?? "");
+                const dateB: Date = new Date(b.querySelector(".jrnl-day-header")?.getAttribute("data-date") ?? "");
                 return (toBe === "ASC") ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
             });
 
-            // 컨테이너에서 모든 요소를 제거
             while (container.firstChild) {
                 container.removeChild(container.firstChild);
             }
 
-            // 정렬된 요소를 다시 컨테이너에 추가
             days.forEach((day: HTMLElement): void => {
                 container.appendChild(day);
             });
         },
 
         /**
-         * 페이지에 조회년월 세팅
+         * initialize yy/mnth state
          */
         initYyMnth: function(): void {
-            // 년도, 월 설정
-            const yy: string = cF.util.getUrlParam("yy") ?? localStorage.getItem("jrnl_yy");
-            const mnth: string = cF.util.getUrlParam("mnth") ?? localStorage.getItem("jrnl_mnth");
-            const sort: string = cF.util.getUrlParam("sort") ?? localStorage.getItem("jrnl_day_sort");
+            const yy: string = cF.util.getUrlParam("yy") ?? localStorage.getItem("jrnl_yy") ?? "";
+            const mnth: string = cF.util.getUrlParam("mnth") ?? localStorage.getItem("jrnl_mnth") ?? "";
+            const sort: string = cF.util.getUrlParam("sort") ?? localStorage.getItem("jrnl_day_sort") ?? "";
 
-            const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy");
-            yearElement.value = yy == null ? cF.date.getCurrYyStr() : yy;       // 아무 정보도 없을경우 전체 데이터 로딩을 막기 위해 올해 년도 세팅
-            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth");
+            const yearElement: HTMLSelectElement = document.querySelector("#jrnl_aside #yy") as HTMLSelectElement;
+            yearElement.value = yy === "" ? cF.date.getCurrYyStr() : yy;
+
+            const monthElement: HTMLSelectElement = document.querySelector("#jrnl_aside #mnth") as HTMLSelectElement;
             monthElement.value = mnth;
-            const sortElement: HTMLInputElement = document.querySelector("#jrnl_aside #sort") as HTMLInputElement | null;
-            if (sort != null && sortElement != null) sortElement.value = sort;
+
+            const sortElement: HTMLInputElement | null = document.querySelector("#jrnl_aside #sort") as HTMLInputElement | null;
+            if (sort !== "" && sortElement != null) sortElement.value = sort;
+
+            dF.JrnlDayAside.syncWeekRangeLabel();
         },
 
         /**
-         * 페이지에 핀 세팅
+         * update week range label
+         * @param {string} [stdrdDt]
+         */
+        syncWeekRangeLabel: function(stdrdDt?: string): void {
+            const labelElement: HTMLElement | null = document.querySelector("#jrnl_aside #jrnlAsideWeekRange");
+            if (labelElement == null) return;
+
+            const targetDate: string = stdrdDt ?? dF.JrnlDayAside.getCurrentAnchorDate();
+            if (cF.util.isEmpty(targetDate)) {
+                labelElement.textContent = "----";
+                return;
+            }
+
+            const weekStartDt: string = cF.date.getWeekdayDateStr(targetDate, 1, cF.date.ptnDate) ?? targetDate;
+            const weekEndDt: string = cF.date.getDateAddDayStr(weekStartDt, 6, cF.date.ptnDate) ?? weekStartDt;
+            labelElement.textContent = `${weekStartDt.substring(5)} ~ ${weekEndDt.substring(5)}`;
+        },
+
+        /**
+         * initialize pinned yy/mnth label
          */
         setPinnedYyMnth: function(): void {
-            const pinnedYy: string = localStorage.getItem("jrnl_pinned_yy");
+            const pinnedYy: string | null = localStorage.getItem("jrnl_pinned_yy");
             if (pinnedYy != null) {
                 document.querySelector("#jrnl_aside #pinnedYy")!.textContent = pinnedYy;
             }
-            const pinnedMnth: string = localStorage.getItem("jrnl_pinned_mnth");
+
+            const pinnedMnth: string | null = localStorage.getItem("jrnl_pinned_mnth");
             if (pinnedMnth != null) {
                 document.querySelector("#jrnl_aside #pinnedMnth")!.textContent = pinnedMnth;
             }
         },
-    }
+    };
 })();

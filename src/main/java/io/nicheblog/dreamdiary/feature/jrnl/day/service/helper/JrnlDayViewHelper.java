@@ -12,6 +12,7 @@ import io.nicheblog.dreamdiary.feature.jrnl.entry.service.helper.JrnlEntryViewHe
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.interceptor.SimpleKey;
 
 import java.util.*;
@@ -25,10 +26,10 @@ import java.util.*;
 public final class JrnlDayViewHelper {
 
     /**
-     * ?곹깭state merge
+     * 상태state merge
      *
-     * @param listDto ????쇱옄 紐⑸줉
-     * @param searchParam 寃???뚮씪誘명꽣
+     * @param listDto 저널 일자 목록
+     * @param searchParam 검색 파라미터
      */
     @SuppressWarnings("unchecked")
     public static void mergeStates(final List<JrnlDayDto> listDto, final JrnlDaySearchParam searchParam) {
@@ -45,9 +46,33 @@ public final class JrnlDayViewHelper {
     }
 
     /**
-     * ?곹깭state merge
+     * 주간 조회용 state merge
      *
-     * @param jrnlDay ????쇱옄
+     * @param listDto 일자 목록
+     * @param searchParam 검색 파라미터
+     */
+    @SuppressWarnings("unchecked")
+    public static void mergeWeeklyStates(final List<JrnlDayDto> listDto, final JrnlDaySearchParam searchParam) {
+        if (CollectionUtils.isEmpty(listDto) || searchParam == null) return;
+        if (StringUtils.isBlank(searchParam.getWeekStartDt())) return;
+
+        final Object cacheKey = new SimpleKey(
+                AuthUtils.requireUserId(AuthUtils.getLgnUserId()),
+                searchParam.getWeekStartDt()
+        );
+
+        final Map<Integer, JrnlState> entryMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlEntryWeeklyStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
+        final Map<Integer, JrnlState> diaryMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlDiaryWeeklyStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
+        final Map<Integer, JrnlState> dreamMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlDreamWeeklyStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
+        final Map<Integer, JrnlState> intrptMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlIntrptWeeklyStateMapByUser", cacheKey)).orElse(Collections.emptyMap());
+
+        JrnlDayViewHelper.applyStates(listDto, entryMap, diaryMap, dreamMap, intrptMap, searchParam);
+    }
+
+    /**
+     * 상태state merge
+     *
+     * @param jrnlDay 저널 일자
      */
     @SuppressWarnings("unchecked")
     public static void mergeStates(final JrnlDayDto jrnlDay) {
@@ -65,13 +90,13 @@ public final class JrnlDayViewHelper {
     }
 
     /**
-     * 罹먯떆????λ맂 ?곹깭 留?entry/diary/dream/intrpt)??湲곗??쇰줈 議고쉶??{@link JrnlDayDto} ?몃━ 援ъ“???곹깭瑜?諛섏쁺?쒕떎.
+     * 캐시에 저장된 상태 맵(entry/diary/dream/intrpt)을 기준으로 조회된 {@link JrnlDayDto} 트리 구조에 상태를 반영한다.
      *
-     * @param listDto 議고쉶??????쇱옄 紐⑸줉 DTO
-     * @param entryMap entry postNo ??{@link JrnlState} 留?
-     * @param diaryMap diary postNo ??{@link JrnlState} 留?
-     * @param dreamMap dream postNo ??{@link JrnlState} 留?
-     * @param intrptMap intrpt postNo ??{@link JrnlState} 留?
+     * @param listDto 조회된 저널 일자 목록 DTO
+     * @param entryMap entry postNo → {@link JrnlState} 맵
+     * @param diaryMap diary postNo → {@link JrnlState} 맵
+     * @param dreamMap dream postNo → {@link JrnlState} 맵
+     * @param intrptMap intrpt postNo → {@link JrnlState} 맵
      */
     public static void applyStates(
         final List<JrnlDayDto> listDto,
@@ -83,17 +108,18 @@ public final class JrnlDayViewHelper {
         for (JrnlDayDto day : listDto) {
             JrnlEntryViewHelper.applyStates(day.getJrnlEntryList(), entryMap, diaryMap);
             JrnlDreamViewHelper.applyStates(day.getJrnlDreamList(), dreamMap, intrptMap);
+            JrnlDreamViewHelper.applyStates(day.getJrnlElseDreamList(), dreamMap, intrptMap);
         }
     }
 
     /**
-     * 罹먯떆????λ맂 ?곹깭 留?entry/diary/dream/intrpt)??湲곗??쇰줈 議고쉶??{@link JrnlDayDto} ?몃━ 援ъ“???곹깭瑜?諛섏쁺?쒕떎.
+     * 캐시에 저장된 상태 맵(entry/diary/dream/intrpt)을 기준으로 조회된 {@link JrnlDayDto} 트리 구조에 상태를 반영한다.
      *
-     * @param listDto 議고쉶??????쇱옄 紐⑸줉 DTO
-     * @param entryMap entry postNo ??{@link JrnlState} 留?
-     * @param diaryMap diary postNo ??{@link JrnlState} 留?
-     * @param dreamMap dream postNo ??{@link JrnlState} 留?
-     * @param intrptMap intrpt postNo ??{@link JrnlState} 留?
+     * @param listDto 조회된 저널 일자 목록 DTO
+     * @param entryMap entry postNo → {@link JrnlState} 맵
+     * @param diaryMap diary postNo → {@link JrnlState} 맵
+     * @param dreamMap dream postNo → {@link JrnlState} 맵
+     * @param intrptMap intrpt postNo → {@link JrnlState} 맵
      * @param searchParam JrnlDaySearchParam
      */
     public static void applyStates(
@@ -112,14 +138,15 @@ public final class JrnlDayViewHelper {
 
             if (searchParam.isShowDreams()) {
                 JrnlDreamViewHelper.applyStates(day.getJrnlDreamList(), dreamMap, intrptMap);
+                JrnlDreamViewHelper.applyStates(day.getJrnlElseDreamList(), dreamMap, intrptMap);
             }
         }
     }
 
     /**
-     * Entry媛 collapsed ?곹깭??寃쎌슦, ?섏쐞 {@link JrnlDiaryDto} ?ㅼ뿉 ?ы븿???쒓렇瑜??섏쭛?섏뿬 以묐났 ?쒓굅??"?붿빟 ?쒓렇 紐⑸줉"??Entry??二쇱엥?쒕떎.
+     * Entry가 collapsed 상태일 경우, 하위 {@link JrnlDiaryDto} 들에 포함된 태그를 수집하여 중복 제거된 "요약 태그 목록"을 Entry에 주입한다.
      *
-     * @param listDto 議고쉶??????쇱옄 紐⑸줉 DTO
+     * @param listDto 조회된 저널 일자 목록 DTO
      */
     public static void applyEntryTagSummary(final List<JrnlDayDto> listDto, final JrnlDaySearchParam searchParam) {
         if (CollectionUtils.isEmpty(listDto)) return;

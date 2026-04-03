@@ -4,7 +4,6 @@
         xsi:schemaLocation="http://www.ehcache.org/v3
                             http://www.ehcache.org/schema/ehcache-core-3.7.xsd
                             http://www.ehcache.org/v3/jsr107
-                            http://www.ehcache.org/schema/ehcache-107-ext-3.7.xsd
                             http://www.ehcache.org/schema/ehcache-107-ext-3.7.xsd">
 
     <cache-template name="defaultTemplate">
@@ -62,10 +61,13 @@
 
     <!-- 저널 일자 -->
     <cache alias="jrnlDayYyMnthListByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlDayWeeklyListByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDayDtlDtoByUser" uses-template="defaultTemplate" />
     <!-- 저널 일자: 태그 -->
     <cache alias="jrnlDayYyMnthTagListByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlDayWeeklyTagListByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDayYyMnthSizedTagListByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlDayWeeklySizedTagListByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDayTagYyListByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDayTagCtgrMapByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDayMetaCtgrMapByUser" uses-template="defaultTemplate" />
@@ -74,25 +76,32 @@
 
     <!-- 저널 항목 -->
     <cache alias="jrnlEntryStateMapByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlEntryWeeklyStateMapByUser" uses-template="defaultTemplate" />
 
     <!-- 저널 일기 -->
     <cache alias="jrnlDiaryDtlDtoByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDiaryTagListByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDiaryYyMnthTagListByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlDiaryWeeklyTagListByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDiaryYyMnthSizedTagListByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlDiaryWeeklySizedTagListByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDiaryTagCtgrMapByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDiaryCountMapByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDiaryStateMapByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlDiaryWeeklyStateMapByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDiaryYySumryStatedListByUser" uses-template="defaultTemplate" />
 
     <!-- 저널 꿈 -->
     <cache alias="jrnlDreamDtlDtoByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDreamTagListByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDreamYyMnthTagListByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlDreamWeeklyTagListByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDreamYyMnthSizedTagListByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlDreamWeeklySizedTagListByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDreamTagCtgrMapByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDreamCountMapByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDreamStateMapByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlDreamWeeklyStateMapByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDreamYySumryStatedListByUser" uses-template="defaultTemplate" />
 
     <!-- 저널 해석 -->
@@ -102,6 +111,7 @@
     <cache alias="jrnlIntrptTagCtgrMapByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlIntrptCountMapByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlIntrptStateMapByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlIntrptWeeklyStateMapByUser" uses-template="defaultTemplate" />
 
     <!-- 저널 할일 -->
     <cache alias="jrnlTodoListByUser" uses-template="defaultTemplate" />

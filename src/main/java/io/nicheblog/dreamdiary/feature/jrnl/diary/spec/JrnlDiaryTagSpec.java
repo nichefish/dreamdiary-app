@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * JrnlDiaryTagSpec
  * <pre>
- *  저널 일기 태그 목록 검색인자 세팅 Specification.
+ *  저널 일기 태그 목록 검색용 Specification.
  * </pre>
  *
  * @author nichefish
@@ -43,7 +43,6 @@ public class JrnlDiaryTagSpec
             final CriteriaQuery<?> query,
             final CriteriaBuilder builder
     ) {
-        // distinct
         query.distinct(true);
     }
 
@@ -66,24 +65,21 @@ public class JrnlDiaryTagSpec
 
         final List<Predicate> predicate = new ArrayList<>();
 
-        // 태그 조인
-        final Join<JrnlDiaryTagEntity, JrnlDiaryTagContentEntity> JrnlDiaryTagJoin = root.join("jrnlDiaryTagList", JoinType.INNER);
-        final Join<JrnlDiaryTagContentEntity, JrnlDiarySmpEntity> JrnlDiaryJoin = JrnlDiaryTagJoin.join("jrnlDiary", JoinType.INNER);
-        final Join<JrnlDiarySmpEntity, JrnlEntrySmpEntity> jrnlEntryJoin = JrnlDiaryJoin.join("jrnlEntry", JoinType.INNER);
+        final Join<JrnlDiaryTagEntity, JrnlDiaryTagContentEntity> jrnlDiaryTagJoin = root.join("jrnlDiaryTagList", JoinType.INNER);
+        final Join<JrnlDiaryTagContentEntity, JrnlDiarySmpEntity> jrnlDiaryJoin = jrnlDiaryTagJoin.join("jrnlDiary", JoinType.INNER);
+        final Join<JrnlDiarySmpEntity, JrnlEntrySmpEntity> jrnlEntryJoin = jrnlDiaryJoin.join("jrnlEntry", JoinType.INNER);
         final Join<JrnlEntrySmpEntity, JrnlDaySmpEntity> jrnlDayJoin = jrnlEntryJoin.join("jrnlDay", JoinType.INNER);
         final Expression<Date> effectiveDtExp = builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"));
 
-        predicate.add(builder.equal(JrnlDiaryTagJoin.get("refContentType"), ContentType.JRNL_DIARY.key));
-        // 파라미터 비교
+        predicate.add(builder.equal(jrnlDiaryTagJoin.get("refContentType"), ContentType.JRNL_DIARY.key));
+
         for (final String key : searchParamMap.keySet()) {
             final Object value = searchParamMap.get(key);
             switch (key) {
                 case "searchStartDt":
-                    // 기간 검색
                     predicate.add(builder.greaterThanOrEqualTo(effectiveDtExp, DateUtils.asDate(value)));
                     continue;
                 case "searchEndDt":
-                    // 기간 검색
                     predicate.add(builder.lessThanOrEqualTo(effectiveDtExp, DateUtils.asDate(value)));
                     continue;
                 case "yy":
@@ -96,8 +92,14 @@ public class JrnlDiaryTagSpec
                     final Integer mnth = (Integer) value;
                     if (mnth != 99) predicate.add(builder.equal(jrnlDayJoin.get(key), mnth));
                     continue;
+                case "weekStartDt":
+                    predicate.add(builder.equal(jrnlDayJoin.get(key), DateUtils.asDate(value)));
+                    continue;
                 case "regstrId":
-                    predicate.add(builder.equal(JrnlDiaryTagJoin.get("regstrId"), value));     // 등록자 ID 기준으로 조회
+                    predicate.add(builder.equal(jrnlDiaryTagJoin.get("regstrId"), value));
+                    continue;
+                default:
+                    continue;
             }
         }
 

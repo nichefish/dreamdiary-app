@@ -37,11 +37,13 @@ public class JrnlIntrptCacheEvictor
             final Integer jrnlDayNo = param.getJrnlDayNo();
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();
+            final String weekStartDt = param.getWeekStartDt();
             // jrnl_day
             if (jrnlDayNo != null) {
                 EhCacheUtils.evictMyCacheByKey("jrnlDayDtlDtoByUser", jrnlDayNo);
             }
             this.evictMyJrnlDayYyMnthCaches(yy, mnth);
+            this.evictMyJrnlDayWeeklyCaches(weekStartDt);
             // jrnl_intrpt
             EhCacheUtils.evictMyCacheByKey("jrnlIntrptDtlDtoByUser", postNo);
             // jrnl_diary_tag

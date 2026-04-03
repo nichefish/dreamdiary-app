@@ -16,11 +16,13 @@ import io.nicheblog.dreamdiary.feature.jrnl.day.repository.mybatis.JrnlDayMapper
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.helper.JrnlDayStateMapHelper;
 import io.nicheblog.dreamdiary.feature.jrnl.day.spec.JrnlDaySpec;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.interceptor.SimpleKey;
 import org.springframework.context.ApplicationContext;
@@ -122,6 +124,50 @@ public class JrnlDayService
     }
 
     /**
+     * 내 주간 일자 목록 조회 (dto level) :: 캐시 처리
+     *
+     * @param searchParam 검색 조건이 담긴 파라미터 객체
+     * @return {@link List} -- 조회된 목록
+     */
+    public List<JrnlDayDto> getMyCachedWeeklyListDto(final JrnlDaySearchParam searchParam) throws Exception {
+        if (searchParam == null) return List.of();
+
+        final String lgnUserId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
+        final String weekStartDt = StringUtils.isNotBlank(searchParam.getWeekStartDt())
+                ? searchParam.getWeekStartDt()
+                : DateUtils.getWeekStartDateStr(searchParam.getStdrdDt());
+        if (StringUtils.isBlank(weekStartDt)) return List.of();
+        searchParam.setWeekStartDt(weekStartDt);
+
+        return this.getSelf().getCachedWeeklyListDtoByUser(lgnUserId, weekStartDt);
+    }
+
+    /**
+     * 사용자 주간 일자 목록 조회 (dto level) :: 캐시 처리
+     *
+     * @param userId 사용자 ID
+     * @param weekStartDt 주 시작일
+     * @return {@link List} -- 조회된 목록
+     */
+    @Transactional(readOnly = true)
+    @Cacheable(value = "jrnlDayWeeklyListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#userId, #weekStartDt)")
+    public List<JrnlDayDto> getCachedWeeklyListDtoByUser(final String userId, final String weekStartDt) throws Exception {
+        AuthUtils.requireUserId(userId);
+
+        final JrnlDaySearchParam baseParam = JrnlDaySearchParam.getBaseParam(userId, weekStartDt);
+        final List<JrnlDayEntity> myJrnlDayEntityList = this.getListEntity(baseParam);
+
+        final JrnlStateMaps maps = JrnlDayStateMapHelper.makeJrnlStateMaps(myJrnlDayEntityList);
+        final SimpleKey cacheKey = new SimpleKey(userId, weekStartDt);
+        EhCacheUtils.put("jrnlEntryWeeklyStateMapByUser", cacheKey, maps.getEntryMap());
+        EhCacheUtils.put("jrnlDiaryWeeklyStateMapByUser", cacheKey, maps.getDiaryMap());
+        EhCacheUtils.put("jrnlDreamWeeklyStateMapByUser", cacheKey, maps.getDreamMap());
+        EhCacheUtils.put("jrnlIntrptWeeklyStateMapByUser", cacheKey, maps.getIntrptMap());
+
+        return mapstruct.toDtoList(myJrnlDayEntityList);
+    }
+
+    /**
      * 메타별 내 일자 목록 조회 (dto level)
      *
      * @param searchParam 검색 조건이 담긴 파라미터 객체
@@ -220,8 +266,8 @@ public class JrnlDayService
      */
     @Override
     public void preRegist(final JrnlDayDto registDto) throws Exception {
-        // 년도/월 세팅:: 메소드 분리
-        this.setYyMnth(registDto);
+        // 기간 필드 세팅:: 메소드 분리
+        this.setPeriodFields(registDto);
     }
 
     /**
@@ -246,8 +292,9 @@ public class JrnlDayService
         if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
             throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
         }
-        // 년도/월 세팅:: 메소드 분리
-        this.setYyMnth(modifyDto);
+        modifyDto.setPrevWeekStartDt(DateUtils.asStr(modifyEntity.getWeekStartDt(), DatePtn.DATE));
+        // 기간 필드 세팅:: 메소드 분리
+        this.setPeriodFields(modifyDto);
     }
 
     /**
@@ -258,26 +305,29 @@ public class JrnlDayService
     @Override
     public void postModify(final JrnlDayDto postDto, final JrnlDayDto updatedDto) throws Exception {
         // 관련 캐시 삭제
-        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DAY);
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(postDto, updatedDto), ContentType.JRNL_DAY);
     }
 
     /**
-     * 날짜 기반으로 년도/월 항목 세팅 :: 메소드 분리
+     * 날짜 기반으로 기간 항목(연/월/주 시작일) 세팅 :: 메소드 분리
      *
-     * @param jrnlDay 날짜 기반으로 년도와 월을 설정할 {@link JrnlDayDto} 객체
+     * @param jrnlDay 날짜 기반으로 기간 필드를 설정할 {@link JrnlDayDto} 객체
      */
-    public void setYyMnth(final JrnlDayDto jrnlDay) throws Exception {
+    public void setPeriodFields(final JrnlDayDto jrnlDay) throws Exception {
+        final String stdrdDt;
         // 날짜미상여부 N시 대략일자 무효화
         if ("Y".equals(jrnlDay.getDtUnknownYn())) {
             jrnlDay.setJrnlDt("");
             jrnlDay.setYy(Integer.valueOf(jrnlDay.getAprxmtDt().substring(0, 4)));
             jrnlDay.setMnth(Integer.valueOf(jrnlDay.getAprxmtDt().substring(5, 7)));
-        }
-        if ("N".equals(jrnlDay.getDtUnknownYn())) {
+            stdrdDt = jrnlDay.getAprxmtDt();
+        } else {
             jrnlDay.setAprxmtDt("");
             jrnlDay.setYy(Integer.valueOf(jrnlDay.getJrnlDt().substring(0, 4)));
             jrnlDay.setMnth(Integer.valueOf(jrnlDay.getJrnlDt().substring(5, 7)));
+            stdrdDt = jrnlDay.getJrnlDt();
         }
+        jrnlDay.setWeekStartDt(DateUtils.getWeekStartDateStr(stdrdDt));
     }
 
     /**
