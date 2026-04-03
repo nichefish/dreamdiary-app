@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -358,21 +359,39 @@ public class DateUtils
 
     /**
      * 해당 주의 월요일 구하기
+     *
+     * @deprecated {@link #getWeekStartDate(Object)} 사용
      */
+    @Deprecated
     public static Date getFirstDayOfWeek(final Object date) throws Exception {
-        final Date asDate = asDate(date);
-        final Calendar calendar = Calendar.getInstance();
-        calendar.setTime(asDate);
-        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-        return calendar.getTime();
+        return getWeekStartDate(date);
     }
 
+    /**
+     * 현재 날짜가 포함된 주의 월요일 구하기
+     *
+     * @deprecated {@link #getWeekStartDate(Object)} 사용
+     */
+    @Deprecated
     public static Date getFirstDayOfCurrWeek() throws Exception {
-        final Date currDate = getCurrDate();
-        final Calendar calendar = Calendar.getInstance();
-        calendar.setTime(currDate);
-        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-        return calendar.getTime();
+        return getWeekStartDate(getCurrDate());
+    }
+
+    /**
+     * 해당 날짜가 포함된 주의 시작일(월요일) 반환
+     */
+    public static Date getWeekStartDate(final Object date) throws Exception {
+        final LocalDate localDate = asLocalDate(date);
+
+        final LocalDate weekStart = localDate.with(TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY));
+        return asDate(weekStart);
+    }
+
+    /**
+     * 해당 날짜가 포함된 주의 시작일(월요일) 문자열 반환
+     */
+    public static String getWeekStartDateStr(final Object date) throws Exception {
+        return asStr(getWeekStartDate(date), DatePtn.DATE);
     }
 
     /** 문자열이 날짜형식인지 체크 */

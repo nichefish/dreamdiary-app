@@ -33,6 +33,8 @@ public class JrnlDiarySearchParam
     private Integer yy;
     /** 월 */
     private Integer mnth;
+    /** 주 시작 일자 */
+    private String weekStartDt;
 
     /** 저널 일자 번호 */
     private Integer jrnlDayNo;
@@ -61,7 +63,7 @@ public class JrnlDiarySearchParam
     public boolean isEmpty() {
         final boolean hasKeyword = searchKeywords != null && searchKeywords.stream().anyMatch(k -> k != null && !k.trim().isEmpty());
         final boolean hasTagNos = CollectionUtils.isNotEmpty(tagNos) && tagNos.stream().anyMatch(Objects::nonNull);
-        final boolean hasDate = yy != null || mnth != null || jrnlDayNo != null;
+        final boolean hasDate = yy != null || mnth != null || weekStartDt != null || jrnlDayNo != null;
         final boolean hasTag = tagNo != null;
         final boolean hasState = CollectionUtils.isNotEmpty(states) && states.stream().anyMatch(StringUtils::isNotEmpty);
 
@@ -90,6 +92,7 @@ public class JrnlDiarySearchParam
         return keyYy + "_" + keyMnth + "_"
                 + CmmUtils.sanitize(contentType) + "_"
                 + CmmUtils.sanitize(sort) + "_"
+                + CmmUtils.sanitize(weekStartDt) + "_"
                 + CmmUtils.nullSafeInt(jrnlDayNo) + "_"
                 + CmmUtils.normalizeStringList(searchKeywords) + "_"
                 + CmmUtils.nullSafeInt(tagNo) + "_"

@@ -93,6 +93,13 @@ public class JrnlDayEntity
     @Comment("월")
     private Integer mnth;
 
+    /** 주 시작일자 (월요일 기준) */
+    @Column(name = "week_start_dt")
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = DateUtils.PTN_DATE)
+    @Comment("주 시작일자 (월요일 기준)")
+    private Date weekStartDt;
+
     /** 대략일자 (날짜미상시 해당일자 이후에 표기) */
     @Column(name = "aprxmt_dt")
     @Temporal(TemporalType.DATE)

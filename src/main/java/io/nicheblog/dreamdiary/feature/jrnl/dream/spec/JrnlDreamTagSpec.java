@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * JrnlDreamTagSpec
  * <pre>
- *  저널 꿈 태그 목록 검색인자 세팅 Specification.
+ *  꿈 태그 목록 검색용 Specification.
  * </pre>
  *
  * @author nichefish
@@ -42,7 +42,6 @@ public class JrnlDreamTagSpec
             final CriteriaQuery<?> query,
             final CriteriaBuilder builder
     ) {
-        // distinct
         query.distinct(true);
     }
 
@@ -65,23 +64,20 @@ public class JrnlDreamTagSpec
 
         final List<Predicate> predicate = new ArrayList<>();
 
-        // 태그 조인
         final Join<JrnlDreamTagEntity, JrnlDreamTagContentEntity> jrnlDreamTagJoin = root.join("jrnlDreamTagList", JoinType.INNER);
         final Join<JrnlDreamTagContentEntity, JrnlDreamSmpEntity> jrnlDreamJoin = jrnlDreamTagJoin.join("jrnlDream", JoinType.INNER);
         final Join<JrnlDreamSmpEntity, JrnlDaySmpEntity> jrnlDayJoin = jrnlDreamJoin.join("jrnlDay", JoinType.INNER);
         final Expression<Date> effectiveDtExp = builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"));
 
         predicate.add(builder.equal(jrnlDreamTagJoin.get("refContentType"), ContentType.JRNL_DREAM.key));
-        // 파라미터 비교
+
         for (final String key : searchParamMap.keySet()) {
             final Object value = searchParamMap.get(key);
             switch (key) {
                 case "searchStartDt":
-                    // 기간 검색
                     predicate.add(builder.greaterThanOrEqualTo(effectiveDtExp, DateUtils.asDate(value)));
                     continue;
                 case "searchEndDt":
-                    // 기간 검색
                     predicate.add(builder.lessThanOrEqualTo(effectiveDtExp, DateUtils.asDate(value)));
                     continue;
                 case "yy":
@@ -94,8 +90,14 @@ public class JrnlDreamTagSpec
                     final Integer mnth = (Integer) value;
                     if (mnth != 99) predicate.add(builder.equal(jrnlDayJoin.get(key), mnth));
                     continue;
+                case "weekStartDt":
+                    predicate.add(builder.equal(jrnlDayJoin.get(key), DateUtils.asDate(value)));
+                    continue;
                 case "regstrId":
-                    predicate.add(builder.equal(jrnlDreamTagJoin.get("regstrId"), value));     // 등록자 ID 기준으로 조회
+                    predicate.add(builder.equal(jrnlDreamTagJoin.get("regstrId"), value));
+                    continue;
+                default:
+                    continue;
             }
         }
 

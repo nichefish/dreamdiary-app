@@ -32,11 +32,14 @@ public class JrnlDiaryTagContentParam
     /** 태그 번호 */
     private Integer tagNo;
 
-    /** 년도 */
+    /** 연도 */
     private Integer yy;
 
     /** 월 */
     private Integer mnth;
+
+    /** 주 시작일 */
+    private String weekStartDt;
 
     /** 등록자 ID */
     private String regstrId;

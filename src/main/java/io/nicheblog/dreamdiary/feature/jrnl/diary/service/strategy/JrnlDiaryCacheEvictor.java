@@ -37,6 +37,7 @@ public class JrnlDiaryCacheEvictor
             final Integer jrnlDayNo = param.getJrnlDayNo();
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();
+            final String weekStartDt = param.getWeekStartDt();
             // jrnl_diary
             this.evictMyYyCacheByYyPrefix("jrnlDiaryYySumryStatedListByUser", yy);
             EhCacheUtils.evictMyCacheByKey("jrnlDiaryDtlDtoByUser", postNo);
@@ -45,11 +46,14 @@ public class JrnlDiaryCacheEvictor
                 EhCacheUtils.evictMyCacheByKey("jrnlDayDtlDtoByUser", jrnlDayNo);
             }
             this.evictMyJrnlDayYyMnthCaches(yy, mnth);
+            this.evictMyJrnlDayWeeklyCaches(weekStartDt);
             // jrnl_diary_tag
             EhCacheUtils.clearMyCache("jrnlDiaryTagCtgrMapByUser");
             EhCacheUtils.clearMyCache("jrnlDiaryTagListByUser");
             EhCacheUtils.clearMyCache("jrnlDiaryYyMnthTagListByUser");
+            EhCacheUtils.clearMyCache("jrnlDiaryWeeklyTagListByUser");
             EhCacheUtils.clearMyCache("jrnlDiaryYyMnthSizedTagListByUser");
+            EhCacheUtils.clearMyCache("jrnlDiaryWeeklySizedTagListByUser");
             EhCacheUtils.clearMyCache("jrnlDiaryCountMapByUser");
 
             // 태그 캐시 처리

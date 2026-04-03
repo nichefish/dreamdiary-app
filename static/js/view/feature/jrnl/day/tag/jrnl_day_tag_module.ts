@@ -48,6 +48,18 @@ dF.JrnlDayTag = (function(): dfModule {
             return cF.date.getCurrYyStr();
         },
 
+        getCurrentWeekStartDt: function(): string {
+            const currentWeekStartDt: string = dF.JrnlDay?.currentSearchParams?.weekStartDt;
+            if (cF.util.isNotEmpty(currentWeekStartDt)) return currentWeekStartDt;
+
+            if (dF.JrnlDay?.viewType === "WEEKLY" && cF.util.isNotEmpty(Page?.weekStartDt)) return Page.weekStartDt;
+
+            const stdrdDt: string = dF.JrnlDay?.currentSearchParams?.stdrdDt
+                ?? Page?.stdrdDt
+                ?? cF.date.getCurrDateStr(cF.date.ptnDate);
+            return cF.date.getWeekdayDateStr(stdrdDt, 1, cF.date.ptnDate) ?? stdrdDt;
+        },
+
         /**
          * 선택 연도 정합성 처리
          * @param {string} selectedYy
@@ -91,13 +103,20 @@ dF.JrnlDayTag = (function(): dfModule {
          * 목록에 따른 일자 태그 조회 (Ajax)
          */
         listAjax: function(): void {
-            const yy: string = cF.util.getUrlParam("yy") ?? localStorage.getItem("jrnl_yy") ?? "9999";
-            if (cF.util.isEmpty(yy)) return;
-            const mnth: string = cF.util.getUrlParam("mnth") ?? localStorage.getItem("jrnl_mnth") ?? "99";
-            if (cF.util.isEmpty(mnth)) return;
-
             const url: string = Url.JRNL_DAY_TAGS;
-            const ajaxData: Record<string, any> = { yy, mnth };
+            const ajaxData: Record<string, any> = {};
+            if (dF.JrnlDay?.viewType === "WEEKLY") {
+                const weekStartDt: string = dF.JrnlDayTag.getCurrentWeekStartDt();
+                if (cF.util.isEmpty(weekStartDt)) return;
+                ajaxData.weekStartDt = weekStartDt;
+            } else {
+                const yy: string = cF.util.getUrlParam("yy") ?? localStorage.getItem("jrnl_yy") ?? "9999";
+                if (cF.util.isEmpty(yy)) return;
+                const mnth: string = cF.util.getUrlParam("mnth") ?? localStorage.getItem("jrnl_mnth") ?? "99";
+                if (cF.util.isEmpty(mnth)) return;
+                ajaxData.yy = yy;
+                ajaxData.mnth = mnth;
+            }
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -153,6 +172,30 @@ dF.JrnlDayTag = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
+            if (dF.JrnlDay?.viewType === "WEEKLY") {
+                const weekStartDt: string = dF.JrnlDayTag.getCurrentWeekStartDt();
+                const url: string = cF.util.bindUrl(Url.JRNL_DAY_TAG, { tagNo });
+                cF.ajax.get(url, { weekStartDt }, function(res: AjaxResponse): void {
+                    if (!res.rslt) {
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        return;
+                    }
+                    cF.handlebars.modal({
+                        tagNo,
+                        list: res.rsltList,
+                        yy: weekStartDt,
+                        yearOptions: [{ value: weekStartDt, label: `Week ${weekStartDt}`, selected: true }],
+                    }, "jrnl_day_tag_dtl");
+                    document.querySelector("#jrnl_day_tag_dtl_modal .header_tag_nm").innerHTML = tagNm;
+                    document.querySelector("#jrnl_day_tag_dtl_modal .header_tag_cnt").innerHTML = (res.rsltList?.length ?? 0).toString();
+                    KTMenu.createInstances();
+
+                    /* modal history push */
+                    ModalHistory.push(self, func, args);
+                });
+                return;
+            }
+
             const preferredYy: string = dF.JrnlDayTag.getSelectedYy(yy);
             dF.JrnlDayTag.getYyListAjax(tagNo, function(yyList: any[]): void {
                 const selectedYy: string = dF.JrnlDayTag.normalizeSelectedYy(preferredYy, yyList);
@@ -166,7 +209,8 @@ dF.JrnlDayTag = (function(): dfModule {
                         tagNo,
                         yy: selectedYy,
                         yearOptions: dF.JrnlDayTag.getYearOptions(selectedYy, yyList),
-                        list: res.rsltList
+                        list: res.rsltList,
+                        weekMode: false,
                     }, "jrnl_day_tag_dtl");
                     document.querySelector("#jrnl_day_tag_dtl_modal .header_tag_nm").innerHTML = tagNm;
                     document.querySelector("#jrnl_day_tag_dtl_modal .header_tag_cnt").innerHTML = (res.rsltList?.length ?? 0).toString();

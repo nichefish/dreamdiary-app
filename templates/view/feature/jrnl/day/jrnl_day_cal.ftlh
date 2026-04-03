@@ -78,6 +78,15 @@
         <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">
             <li class="nav-item">
                 <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
+                   onclick="Page.changeView(Url.JRNL_DAY_WEEKLY);">
+                    <span class="nav-icon">
+                        <i class="bi bi-calendar-week"></i>
+                    </span>
+                    <span class="nav-text"><@spring.message 'txt.jrnl.day.view.week'/></span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
                    onclick="Page.changeView(Url.JRNL_DAY_MONTHLY);">
                     <span class="nav-icon">
                         <i class="bi bi-people"></i>

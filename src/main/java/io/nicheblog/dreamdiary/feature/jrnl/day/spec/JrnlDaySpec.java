@@ -107,6 +107,9 @@ public class JrnlDaySpec
                 case "stdrdDt":
                     predicate.add(builder.equal(effectiveDtExp, DateUtils.asDate(value)));
                     continue;
+                case "weekStartDt":
+                    predicate.add(builder.equal(root.get(key), DateUtils.asDate(value)));
+                    continue;
                 case "tagNo":
                     // 특정 태그된 일자만 조회
                     final Join<JrnlDayEntity, TagEmbed> tagJoin = root.join("tag", JoinType.INNER);

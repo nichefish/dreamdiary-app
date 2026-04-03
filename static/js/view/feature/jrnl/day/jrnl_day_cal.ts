@@ -176,7 +176,7 @@ const Page: Page = (function(): Page {
          * @param {string} url
          */
         changeView: function(url: string): void {
-            cF.ui.blockUIReplace(url);
+            cF.ui.blockUIReplace(dF.JrnlDay.buildViewUrl(url));
         },
     }
 })();

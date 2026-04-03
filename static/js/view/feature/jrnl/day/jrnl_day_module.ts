@@ -17,9 +17,9 @@ dF.JrnlDay = (function(): dfModule {
 
         /**
          * initializes module.
-         * @param {"LIST"|"CAL"|"DAILY"|"SEARCH"} viewType
+         * @param {"LIST"|"CAL"|"DAILY"|"WEEKLY"|"SEARCH"} viewType
          */
-        init: function(viewType: "LIST"|"CAL"|"DAILY"|"SEARCH"): void {
+        init: function(viewType: "LIST"|"CAL"|"DAILY"|"WEEKLY"|"SEARCH"): void {
             if (dF.JrnlDay.initialized) return;
 
             dF.JrnlDay.viewType = viewType;
@@ -47,10 +47,80 @@ dF.JrnlDay = (function(): dfModule {
                 case "DAILY":
                     location.reload();
                     break;
+                case "WEEKLY":
+                    Page.loadWeek(Page.stdrdDt);
+                    break;
             }
             cF.ui.unblockUI();
             /* modal history pop */
             ModalHistory.reset();
+        },
+
+        reloadByView: function(): void {
+            switch (dF.JrnlDay.viewType) {
+                case "LIST":
+                    dF.JrnlDay.yyMnthListAjax();
+                    break;
+                case "WEEKLY":
+                    Page.loadWeek(Page.stdrdDt);
+                    break;
+                default:
+                    dF.JrnlDay.refresh();
+                    break;
+            }
+        },
+
+        /**
+         * resolve anchor date for cross-view navigation
+         */
+        resolveAnchorDateForView: function(): string {
+            if (dF.JrnlDay.viewType === "WEEKLY" && cF.util.isNotEmpty(Page?.stdrdDt)) {
+                return Page.stdrdDt;
+            }
+
+            if (dF.JrnlDay.viewType === "CAL" && Page?.calDt instanceof Date) {
+                return cF.date.dateToStr(Page.calDt, cF.date.ptnDate) ?? "";
+            }
+
+            dF.JrnlDay.initSearchParams();
+            const currentParams: Record<string, any> = dF.JrnlDay.currentSearchParams ?? {};
+            if (cF.util.isNotEmpty(currentParams.stdrdDt)) return currentParams.stdrdDt;
+
+            const yy: string = currentParams.yy ?? localStorage.getItem("jrnl_yy") ?? cF.date.getCurrYyStr();
+            const mnth: string = currentParams.mnth ?? localStorage.getItem("jrnl_mnth") ?? cF.date.getCurrMnthStr();
+            return dF.JrnlDayAside.buildAnchorDateForMonth(yy, mnth, 1);
+        },
+
+        /**
+         * build view url with current period/filter state
+         * @param {string} baseUrl
+         */
+        buildViewUrl: function(baseUrl: string): string {
+            dF.JrnlDay.initSearchParams();
+
+            const currentParams: Record<string, any> = dF.JrnlDay.currentSearchParams ?? {};
+            const anchorDate: string = dF.JrnlDay.resolveAnchorDateForView();
+            const yy: string = anchorDate?.substring(0, 4) || currentParams.yy || cF.date.getCurrYyStr();
+            const mnth: string = anchorDate
+                ? String(parseInt(anchorDate.substring(5, 7), 10))
+                : (currentParams.mnth || cF.date.getCurrMnthStr());
+
+            const targetUrl: URL = new URL(baseUrl, window.location.origin);
+            targetUrl.searchParams.set("yy", yy);
+            targetUrl.searchParams.set("mnth", mnth);
+
+            if (cF.util.isNotEmpty(anchorDate)) targetUrl.searchParams.set("stdrdDt", anchorDate);
+            if (typeof currentParams.showDiaries === "boolean") targetUrl.searchParams.set("showDiaries", String(currentParams.showDiaries));
+            if (typeof currentParams.showDreams === "boolean") targetUrl.searchParams.set("showDreams", String(currentParams.showDreams));
+            if (typeof currentParams.showTagCloud === "boolean") targetUrl.searchParams.set("showTagCloud", String(currentParams.showTagCloud));
+            if (cF.util.isNotEmpty(currentParams.diaryKeyword)) targetUrl.searchParams.set("diaryKeyword", currentParams.diaryKeyword);
+            if (cF.util.isNotEmpty(currentParams.dreamKeyword)) targetUrl.searchParams.set("dreamKeyword", currentParams.dreamKeyword);
+            if (Array.isArray(currentParams.entryCtgrCds) && currentParams.entryCtgrCds.length > 0) {
+                targetUrl.searchParams.set("entryCtgrCds", currentParams.entryCtgrCds.join(","));
+            }
+            if (cF.util.isNotEmpty(currentParams.sort)) targetUrl.searchParams.set("sort", currentParams.sort);
+
+            return `${targetUrl.pathname}${targetUrl.search}${targetUrl.hash}`;
         },
 
         /**
@@ -120,11 +190,13 @@ dF.JrnlDay = (function(): dfModule {
             const entryCtgrCds: string[] = dF.JrnlDay.parseEntryCtgrCds(rawEntryCtgr);
             const diaryKeyword: string = cF.util.getUrlParam("diaryKeyword") ?? "";
             const dreamKeyword: string = cF.util.getUrlParam("dreamKeyword") ?? "";
+            const stdrdDt: string = cF.util.getUrlParam("stdrdDt") ?? "";
 
             dF.JrnlDay.currentSearchParams = {
                 "viewType": "list",
                 yy,
                 mnth,
+                stdrdDt,
                 showDiaries,
                 showDreams,
                 showTagCloud,
@@ -178,7 +250,7 @@ dF.JrnlDay = (function(): dfModule {
             window.history.replaceState(null, "", url.toString());
 
             // 재조회
-            dF.JrnlDay.yyMnthListAjax();
+            dF.JrnlDay.reloadByView();
         },
 
         /**
@@ -222,7 +294,7 @@ dF.JrnlDay = (function(): dfModule {
             dF.JrnlDay.currentSearchParams.diaryKeyword = diaryKeyword;
             dF.JrnlDay.currentSearchParams.dreamKeyword = dreamKeyword;
 
-            dF.JrnlDay.yyMnthListAjax();
+            dF.JrnlDay.reloadByView();
         },
 
         /**
@@ -281,7 +353,7 @@ dF.JrnlDay = (function(): dfModule {
                 selectElmt.prop("disabled", true);
                 selectElmt.val([]);
                 dF.JrnlDay.currentSearchParams.entryCtgrCds = [];
-                dF.JrnlDay.yyMnthListAjax();
+                dF.JrnlDay.reloadByView();
                 return;
             }
 
@@ -292,7 +364,7 @@ dF.JrnlDay = (function(): dfModule {
                 selectElmt.val(selectedCtgrCds);
             }
             dF.JrnlDay.currentSearchParams.entryCtgrCds = selectedCtgrCds;
-            dF.JrnlDay.yyMnthListAjax();
+            dF.JrnlDay.reloadByView();
         },
 
         /**
@@ -311,7 +383,7 @@ dF.JrnlDay = (function(): dfModule {
             if (!enabled) {
                 selectElmt.val([]);
                 dF.JrnlDay.currentSearchParams.entryCtgrCds = [];
-                dF.JrnlDay.yyMnthListAjax();
+                dF.JrnlDay.reloadByView();
                 return;
             }
 
@@ -321,7 +393,7 @@ dF.JrnlDay = (function(): dfModule {
                 selectElmt.val(selectedCtgrCds);
             }
             dF.JrnlDay.currentSearchParams.entryCtgrCds = selectedCtgrCds;
-            dF.JrnlDay.yyMnthListAjax();
+            dF.JrnlDay.reloadByView();
         },
 
         /**
@@ -476,8 +548,27 @@ dF.JrnlDay = (function(): dfModule {
          * @param {string} stdrdDt 기준 일자
          */
         openDetatched: function(stdrdDt: string): void {
-            const url: string = cF.util.bindUrl(Url.JRNL_DAY_DAILY_VIEW, { stdrdDt });
-            window.open(url, '_blank', 'noopener,noreferrer');
+            dF.JrnlDay.initSearchParams();
+
+            const currentParams: Record<string, any> = dF.JrnlDay.currentSearchParams ?? {};
+            const yy: string = stdrdDt.substring(0, 4);
+            const mnth: string = String(parseInt(stdrdDt.substring(5, 7), 10));
+            const targetUrl: URL = new URL(Url.JRNL_DAY_WEEKLY, window.location.origin);
+
+            targetUrl.searchParams.set("stdrdDt", stdrdDt);
+            targetUrl.searchParams.set("yy", yy);
+            targetUrl.searchParams.set("mnth", mnth);
+            if (typeof currentParams.showDiaries === "boolean") targetUrl.searchParams.set("showDiaries", String(currentParams.showDiaries));
+            if (typeof currentParams.showDreams === "boolean") targetUrl.searchParams.set("showDreams", String(currentParams.showDreams));
+            if (typeof currentParams.showTagCloud === "boolean") targetUrl.searchParams.set("showTagCloud", String(currentParams.showTagCloud));
+            if (cF.util.isNotEmpty(currentParams.diaryKeyword)) targetUrl.searchParams.set("diaryKeyword", currentParams.diaryKeyword);
+            if (cF.util.isNotEmpty(currentParams.dreamKeyword)) targetUrl.searchParams.set("dreamKeyword", currentParams.dreamKeyword);
+            if (Array.isArray(currentParams.entryCtgrCds) && currentParams.entryCtgrCds.length > 0) {
+                targetUrl.searchParams.set("entryCtgrCds", currentParams.entryCtgrCds.join(","));
+            }
+            if (cF.util.isNotEmpty(currentParams.sort)) targetUrl.searchParams.set("sort", currentParams.sort);
+
+            window.open(`${targetUrl.pathname}${targetUrl.search}${targetUrl.hash}`, '_blank', 'noopener,noreferrer');
         },
 
         /**

@@ -55,6 +55,18 @@ public class JrnlDayQueryService {
     }
 
     /**
+     * 주간 목록 조회 + enrich
+     *
+     * @param searchParam 조회 조건
+     * @return {@link List} -- 가공 완료된 DTO 목록
+     */
+    public List<JrnlDayDto> getMyWeeklyListDtoEnriched(final JrnlDaySearchParam searchParam) throws Exception {
+        final List<JrnlDayDto> listDto = jrnlDayService.getMyCachedWeeklyListDto(searchParam);
+        final List<JrnlDayDto> filteredList = JrnlDayFilterHelper.filterInMemory(listDto, searchParam);
+        return this.enrichWeeklyList(filteredList, searchParam);
+    }
+
+    /**
      * 메타 기준 조회 + enrich
      *
      * @param searchParam 조회 조건 (metaNo 포함)
@@ -101,6 +113,25 @@ public class JrnlDayQueryService {
         JrnlDayHldyHelper.setHldyInfo(listDto, getHldyMap());
         if (searchParam != null) {
             JrnlDayViewHelper.mergeStates(listDto, searchParam);
+            JrnlDayViewHelper.applyEntryTagSummary(listDto, searchParam);
+        }
+
+        return listDto;
+    }
+
+    /**
+     * 주간 목록 전용 enrich 처리
+     *
+     * @param listDto 조회 결과 리스트
+     * @param searchParam 조회 조건
+     * @return enrich 완료 리스트
+     */
+    private List<JrnlDayDto> enrichWeeklyList(final List<JrnlDayDto> listDto, final JrnlDaySearchParam searchParam) throws Exception {
+        if (listDto == null) return null;
+
+        JrnlDayHldyHelper.setHldyInfo(listDto, getHldyMap());
+        if (searchParam != null) {
+            JrnlDayViewHelper.mergeWeeklyStates(listDto, searchParam);
             JrnlDayViewHelper.applyEntryTagSummary(listDto, searchParam);
         }
 

@@ -29,6 +29,8 @@ public class JrnlDaySearchParam
     private Integer mnth;
     /** 기준일자 */
     private String stdrdDt;
+    /** 주 시작일자 */
+    private String weekStartDt;
 
     /** 컨텐츠 타입 */
     private String contentType;
@@ -76,6 +78,21 @@ public class JrnlDaySearchParam
                 .regstrId(userId)
                 .yy(yy)
                 .mnth(mnth)
+                .sort("ASC")
+                .build();
+    }
+
+    /**
+     * 기간 기준 기본 파라미터 객체 반환
+     *
+     * @param userId 사용자 ID
+     * @param weekStartDt 주 시작일
+     * @return {@link JrnlDaySearchParam}
+     */
+    public static JrnlDaySearchParam getBaseParam(final String userId, final String weekStartDt) {
+        return JrnlDaySearchParam.builder()
+                .regstrId(userId)
+                .weekStartDt(weekStartDt)
                 .sort("ASC")
                 .build();
     }

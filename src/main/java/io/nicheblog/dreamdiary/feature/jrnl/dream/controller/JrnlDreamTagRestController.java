@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * JrnlDreamTagRestController
  * <pre>
- *  저널 꿈 태그 API Controller.
+ *  꿈 태그 API Controller.
  * </pre>
  *
  * @author nichefish
@@ -35,9 +35,9 @@ public class JrnlDreamTagRestController
         extends BaseControllerImpl {
 
     @Getter
-    private final String baseUrl = Url.JRNL_DAY_MONTHLY;             // 기본 URL
+    private final String baseUrl = Url.JRNL_DAY_MONTHLY;
     @Getter
-    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
+    private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;
 
     private final JrnlDreamTagService jrnlDreamTagService;
 
@@ -50,10 +50,7 @@ public class JrnlDreamTagRestController
     @GetMapping(Url.JRNL_DREAM_TAG_CTGR_MAP)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> jrnlDreamTagCtgrMapAjax(
-            //
-    ) throws Exception {
-
+    public ResponseEntity<AjaxResponse> jrnlDreamTagCtgrMapAjax() throws Exception {
         final Map<String, List<String>> tagCtgrMap = jrnlDreamTagService.getMyTagCtgrMap();
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
@@ -75,7 +72,15 @@ public class JrnlDreamTagRestController
             final @ModelAttribute("searchParam") TagSearchParam searchParam
     ) throws Exception {
 
-        final List<TagDto> tagList = jrnlDreamTagService.getMyDreamSizedListDto(searchParam.getYy(), searchParam.getMnth());
+        final List<TagDto> tagList;
+        if (searchParam.hasWeekStartDt()) {
+            tagList = jrnlDreamTagService.getMyWeeklySizedListDto(searchParam.getWeekStartDt());
+        } else if (searchParam.hasYyMnth()) {
+            tagList = jrnlDreamTagService.getMyDreamSizedListDto(searchParam.getYy(), searchParam.getMnth());
+        } else {
+            tagList = jrnlDreamTagService.getMyTagList();
+        }
+
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -96,7 +101,9 @@ public class JrnlDreamTagRestController
             final @ModelAttribute("searchParam") TagSearchParam searchParam
     ) throws Exception {
 
-        final Map<String, List<TagDto>> tagGroupMap = jrnlDreamTagService.getMyDreamSizedGroupListDto(searchParam.getYy(), searchParam.getMnth());
+        final Map<String, List<TagDto>> tagGroupMap = searchParam.hasWeekStartDt()
+                ? jrnlDreamTagService.getMyWeeklySizedGroupListDto(searchParam.getWeekStartDt())
+                : jrnlDreamTagService.getMyDreamSizedGroupListDto(searchParam.getYy(), searchParam.getMnth());
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

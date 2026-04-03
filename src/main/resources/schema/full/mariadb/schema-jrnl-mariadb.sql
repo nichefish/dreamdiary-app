@@ -16,9 +16,10 @@ CREATE TABLE IF NOT EXISTS jrnl_day (
     --
     jrnl_dt DATE COMMENT '저널 일자',
     dt_unknown_yn CHAR(1) DEFAULT 'N' COMMENT '날짜미상 여부 (Y/N)',
+    aprxmt_dt DATE COMMENT '대략일자 (날짜미상시 해당일자 이후에 표기)',
     yy INT COMMENT '년도',
     mnth INT COMMENT '월',
-    aprxmt_dt DATE COMMENT '대략일자 (날짜미상시 해당일자 이후에 표기)',
+    week_start_dt DATE COMMENT '주 시작일자 (월요일 기준)',
     weather VARCHAR(500) COMMENT '날씨',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
@@ -30,7 +31,8 @@ CREATE TABLE IF NOT EXISTS jrnl_day (
     INDEX (jrnl_dt),
     INDEX (aprxmt_dt),
     INDEX (yy),
-    INDEX (yy, mnth)
+    INDEX (yy, mnth),
+    INDEX(week_start_dt)
 ) COMMENT = '저널 일자';
 
 -- 저널 항목 (jrnl_entry)

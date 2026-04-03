@@ -31,10 +31,10 @@ dF.JrnlDiary = (function(): dfModule {
 
         /**
          * initializes module.
-         * @param {"LIST"|"CAL"|"DAILY"|"SEARCH"} viewType
+         * @param {"LIST"|"CAL"|"DAILY"|"WEEKLY"|"SEARCH"} viewType
          * @return Promise<void>
          */
-        init: async function(viewType: "LIST"|"CAL"|"DAILY"|"SEARCH"): Promise<void> {
+        init: async function(viewType: "LIST"|"CAL"|"DAILY"|"WEEKLY"|"SEARCH"): Promise<void> {
             if (this.initPromise) return this.initPromise;
 
             /* initialize modules. */
@@ -62,6 +62,10 @@ dF.JrnlDiary = (function(): dfModule {
                     dF.JrnlDiaryTag.listAjax();     // 태그 refresh
                     break;
                 case "DAILY":
+                case "WEEKLY":
+                    Page.loadWeek(Page.stdrdDt);
+                    dF.JrnlDiaryTag.listAjax();
+                    break;
                 case "SEARCH":
                     location.reload();
                     break;
