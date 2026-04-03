@@ -32,6 +32,41 @@
     }
 }
 
+@media (max-width: 767.98px) {
+    body[data-app-hide-aside="true"] #kt_app_aside {
+        display: none !important;
+    }
+
+    body:not([data-app-hide-aside="true"]) #kt_app_aside {
+        display: flex !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1199.98px) {
+    body[data-app-hide-aside="true"] .app-wrapper,
+    body[data-app-hide-aside="true"] .app-main {
+        margin-right: 0 !important;
+    }
+
+    body[data-app-hide-aside="true"] .app-header,
+    body[data-app-hide-aside="true"] .app-toolbar,
+    body[data-app-hide-aside="true"] .app-footer {
+        right: 0 !important;
+    }
+
+    body[data-app-hide-aside="true"] #kt_app_aside {
+        display: none !important;
+        width: 0 !important;
+        margin-right: 0 !important;
+        transform: translateX(100%) !important;
+    }
+
+    body:not([data-app-hide-aside="true"]) #kt_app_aside {
+        display: flex !important;
+        transform: none !important;
+    }
+}
+
 /** ---- 모바일 버전 ---- */
 @media (max-width: 768px) {
     /* 사이드메뉴 배경색상 설정 */

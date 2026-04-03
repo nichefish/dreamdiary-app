@@ -18,3 +18,30 @@ html, body {
         }
     }
 }
+
+@media (max-width: 767.98px) {
+    html, body {
+        .app-engage {
+            right: 0.5rem !important;
+            bottom: 0.5rem !important;
+            gap: 0.25rem !important;
+
+            .app-engage-btn {
+                width: 2.25rem !important;
+                height: 2.25rem !important;
+                min-width: 2.25rem !important;
+                min-height: 2.25rem !important;
+                padding: 0.25rem 0.2rem !important;
+                font-size: 0.45rem !important;
+                line-height: 1.05 !important;
+                border-radius: 0.6rem !important;
+            }
+
+            .app-engage-btn i {
+                font-size: 0.8rem !important;
+                padding-top: 0 !important;
+                margin-bottom: 0.1rem !important;
+            }
+        }
+    }
+}

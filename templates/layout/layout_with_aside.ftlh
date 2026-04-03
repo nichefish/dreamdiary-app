@@ -91,6 +91,8 @@
         </div>
         <!--end::App-->
 
+        <button type="button" id="kt_app_aside_toggle" class="d-none" aria-hidden="true" tabindex="-1"></button>
+
         <#--include:: Engage-->
         <#include "/layout/engage/_engage.ftlh">
         <#--vue.js div-->
