@@ -214,7 +214,7 @@ public class JrnlDreamService
         int idx = 1;
         for (final JrnlDreamDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictMyCacheByKey("jrnlDreamDtlDtoByUser", e.getPostNo());
+            EhCacheUtils.evictUserCacheByKey("jrnlDreamDtlDtoByUser", e.getRegstrId(), e.getPostNo());
         }
 
         mapper.batchUpdateIdx(list);
@@ -254,7 +254,7 @@ public class JrnlDreamService
         int idx = 1;
         for (final JrnlDreamDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictMyCacheByKey("jrnlDreamDtlDtoByUser", e.getPostNo());
+            EhCacheUtils.evictUserCacheByKey("jrnlDreamDtlDtoByUser", e.getRegstrId(), e.getPostNo());
         }
 
         mapper.batchUpdateIdx(list);

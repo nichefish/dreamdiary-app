@@ -223,7 +223,7 @@ public class JrnlDiaryService
         int idx = 1;
         for (final JrnlDiaryDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictMyCacheByKey("jrnlDiaryDtlDtoByUser", e.getPostNo());
+            EhCacheUtils.evictUserCacheByKey("jrnlDiaryDtlDtoByUser", e.getRegstrId(), e.getPostNo());
         }
 
         mapper.batchUpdateIdx(list);
@@ -263,7 +263,7 @@ public class JrnlDiaryService
         int idx = 1;
         for (final JrnlDiaryDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictMyCacheByKey("jrnlDiaryDtlDtoByUser", e.getPostNo());
+            EhCacheUtils.evictUserCacheByKey("jrnlDiaryDtlDtoByUser", e.getRegstrId(), e.getPostNo());
         }
 
         mapper.batchUpdateIdx(list);
