@@ -110,4 +110,26 @@ public class MyJrnlDayService {
         final String lgnUserId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
         return jrnlDayService.getCachedDtlDtoByUser(lgnUserId, key);
     }
+
+    /**
+     * 중복 체크 (정상은 true / 중복은 false)
+     *
+     * @param jrnlDay 중복 여부를 확인할 객체
+     * @return {@link boolean} -- 정상은 true, 중복은 false 반환
+     */
+    public boolean dupChck(final JrnlDayDto jrnlDay) throws Exception {
+        final String userId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
+        return jrnlDayService.dupChckByUser(userId, jrnlDay);
+    }
+
+    /**
+     * 날짜 기준으로 중복된 기존 게시글 번호 반환
+     *
+     * @param jrnlDay 중복 여부를 확인할 객체
+     * @return {@link Integer} -- 중복되는 경우 해당 게시글 번호
+     */
+    public Integer getDupKey(final JrnlDayDto jrnlDay) throws Exception {
+        final String userId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
+        return jrnlDayService.getDupKeyByUser(userId, jrnlDay);
+    }
 }

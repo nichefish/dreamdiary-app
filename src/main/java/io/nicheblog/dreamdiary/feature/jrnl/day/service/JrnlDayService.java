@@ -199,12 +199,12 @@ public class JrnlDayService
      * @return {@link boolean} -- 정상 시 true, 중복 시 false 반환
      */
     @Transactional(readOnly = true)
-    public boolean dupChck(final JrnlDayDto jrnlDay) throws Exception {
+    public boolean dupChckByUser(final String userId, final JrnlDayDto jrnlDay) throws Exception {
         final boolean isDtUnknown = "Y".equals(jrnlDay.getDtUnknownYn());
         if (isDtUnknown) return false;
 
         final Date jrnlDt = DateUtils.asDate(jrnlDay.getJrnlDt());
-        final String regstrId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
+        final String regstrId = AuthUtils.requireUserId(userId);
         final Integer isDup = repository.countByJrnlDt(jrnlDt, regstrId);
 
         return isDup > 0;
@@ -217,9 +217,9 @@ public class JrnlDayService
      * @return {@link Integer} -- 중복되는 경우 해당하는 키값 (게시글 번호)
      */
     @Transactional(readOnly = true)
-    public Integer getDupKey(final JrnlDayDto jrnlDay) throws Exception {
+    public Integer getDupKeyByUser(final String userId, final JrnlDayDto jrnlDay) throws Exception {
         final Date jrnlDt = DateUtils.asDate(jrnlDay.getJrnlDt());
-        final String regstrId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
+        final String regstrId = AuthUtils.requireUserId(userId);
         final JrnlDayEntity existingEntity = repository.findByJrnlDt(jrnlDt, regstrId);
 
         return existingEntity.getPostNo();

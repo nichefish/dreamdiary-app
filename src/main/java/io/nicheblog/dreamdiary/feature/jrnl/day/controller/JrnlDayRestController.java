@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDaySearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayService;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.my.MyJrnlDayCalService;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.my.MyJrnlDayQueryService;
+import io.nicheblog.dreamdiary.feature.jrnl.day.service.my.MyJrnlDayService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
@@ -44,6 +45,7 @@ public class JrnlDayRestController
     private final JrnlDayService jrnlDayService;
     private final MyJrnlDayQueryService myJrnlDayQueryService;
     private final MyJrnlDayCalService myJrnlDayCalService;
+    private final MyJrnlDayService myJrnlDayService;
 
     /**
      * 저널 일자 목록 조회 (Ajax)
@@ -94,9 +96,9 @@ public class JrnlDayRestController
 
         boolean isReg = postNo == null;
         if (isReg) {
-            boolean isDup = jrnlDayService.dupChck(jrnlDay);
+            boolean isDup = myJrnlDayService.dupChck(jrnlDay);
             if (isDup) {
-                jrnlDay.setPostNo(jrnlDayService.getDupKey(jrnlDay));
+                jrnlDay.setPostNo(myJrnlDayService.getDupKey(jrnlDay));
                 isReg = false;      // 등록 대신 기존 데이터 수정
             }
         }
