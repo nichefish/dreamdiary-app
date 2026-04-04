@@ -28,7 +28,7 @@ public interface JrnlDiaryRepository
     /**
      * 단건 조회 with EntityGraph
      * @param id Integer
-     * @return Optional<JrnlIntrptEntity>
+     * @return 저널 일기 객체
      */
     @EntityGraph(attributePaths = {"jrnlEntry"})
     @NotNull

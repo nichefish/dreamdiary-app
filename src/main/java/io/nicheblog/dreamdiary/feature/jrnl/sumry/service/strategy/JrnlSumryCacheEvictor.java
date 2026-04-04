@@ -35,13 +35,13 @@ public class JrnlSumryCacheEvictor
         try {
             final Integer postNo = param.getPostNo();
             // 목록 캐시 초기화
-            EhCacheUtils.evictMyCacheAll("myJrnlSumryList");
-            EhCacheUtils.evictMyCacheAll("myJrnlTotalSumry");
+            EhCacheUtils.clearMyCache("jrnlSumryListByUser");
+            EhCacheUtils.clearMyCache("jrnlSumryTotalListByUser");
             // 상세 캐시 초기화
-            EhCacheUtils.evictMyCache("myJrnlSumryDtl", postNo);
-            EhCacheUtils.evictMyCache("myJrnlSumryDtlByYy", param.getYy());
+            EhCacheUtils.evictMyCacheByKey("jrnlSumryDtlDtoByUser", postNo);
+            EhCacheUtils.evictMyCacheByKey("jrnlSumryYyDtlDtoByUser", param.getYy());
             // 태그 캐시 처리
-            EhCacheUtils.evictCache("tagContentEntityListByRef", postNo + "_JRNL_SUMRY");
+            EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", postNo + "_JRNL_SUMRY");
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);
             throw e;

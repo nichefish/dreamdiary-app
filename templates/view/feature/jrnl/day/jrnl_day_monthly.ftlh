@@ -13,19 +13,28 @@
 
 <link rel="stylesheet" type="text/css" href="/css/jrnl.css?${releaseDate!}" />
 
-<!--begin::Card-->
-<div class="card post">
-    <#--begin::Card header-->
-    <div class="card-header min-h-auto mb-7 justify-content-between">
+<div class="jrnl-day-monthly-page">
+<#--filter status-->
+<#include "/view/feature/jrnl/day/_filter/_jrnl_day_filter_status.ftlh">
+    <div class="d-flex flex-column-fluid justify-content-between align-items-start align-items-xl-center gap-4">
         <#--begin::Tab-->
         <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">
+            <li class="nav-item">
+                <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
+                   onclick="Page.changeView(Url.JRNL_DAY_WEEKLY);">
+                    <span class="nav-icon">
+                        <i class="bi bi-calendar-week"></i>
+                    </span>
+                    <span class="nav-text"><@spring.message 'txt.jrnl.day.view.week'/></span>
+                </a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link px-6 cursor-pointer active" data-bs-toggle="tab"
                    onclick="Page.changeView(Url.JRNL_DAY_MONTHLY);">
                     <span class="nav-icon">
                         <i class="bi bi-people"></i>
                     </span>
-                    <span class="nav-text">목록 VIEW</span>
+                    <span class="nav-text"><@spring.message 'txt.jrnl.day.view.list'/></span>
                 </a>
             </li>
             <li class="nav-item">
@@ -34,7 +43,7 @@
                     <span class="nav-icon">
                         <i class="bi bi-sort-down-alt"></i>
                     </span>
-                    <span class="nav-text">달력 VIEW</span>
+                    <span class="nav-text"><@spring.message 'txt.jrnl.day.view.cal'/></span>
                 </a>
             </li>
             <li class="nav-item">
@@ -43,62 +52,41 @@
                     <span class="nav-icon">
                         <i class="bi bi-people"></i>
                     </span>
-                    <span class="nav-text">메타 VIEW</span>
+                    <span class="nav-text"><@spring.message 'txt.jrnl.day.view.meta'/></span>
                 </a>
             </li>
         </ul>
-        <div class="d-flex align-items-end mb-2">
-            <div class="mx-3">
-                <label for="entryCtgrFilter" class="me-2 text-muted">ENTRY CTGR</label>
-                <select id="entryCtgrFilter" class="form-select form-select-sm d-inline-block w-auto"
-                        multiple size="3"
-                        data-bs-toggle="tooltip" data-bs-placement="top" title="복수 선택 가능 (Ctrl/Cmd + 클릭)"
-                        onchange="dF.JrnlDay.changeEntryCtgr();">
-                    <option value="__NONE__">카테고리 없음</option>
-                    <#list JRNL_ENTRY_CTGR_CD![] as ctgr>
-                        <option value="${ctgr.dtlCd!}">[${ctgr.dtlCdNm!}]</option>
-                    </#list>
-                </select>
+        <#--keyword search (popup)-->
+        <#include "/view/feature/jrnl/day/_filter/_jrnl_day_keyword_search.ftlh">
+    </div>
+    <!--begin::Card-->
+    <div class="card post" style="margin-top: 0 !important;">
+        <#--begin::Card header-->
+        <div class="card-header min-h-auto mb-7 justify-content-between">
+            <!-- 태그 헤더 :: 파일 분리 -->
+            <#include "/view/feature/jrnl/day/tag/_jrnl_day_tag_header.ftlh">
+        </div>
+
+
+        <#--begin::Card body-->
+        <div class="card-body">
+            <#--begin::Table body-->
+            <div id="jrnl_day_list_div">
+                <#--handlebars template goes in here-->
             </div>
-            <div class="mx-3"
-                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="일기 토글">
-                <label for="toggleDiaries" class="me-2 text-muted cursor-help">DIARIES</label>
-                <input type="checkbox" id="toggleDiaries" class="form-check-input cursor-pointer" onclick="dF.JrnlDay.toggleParam();" checked>
+            <div id="jrnl_diary_list_div">
+                <#--handlebars template goes in here-->
             </div>
-            <div class="mx-3"
-                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="꿈 토글">
-                <label for="toggleDreams" class="me-2 text-muted cursor-help">DREAMS</label>
-                <input type="checkbox" id="toggleDreams" class="form-check-input cursor-pointer" onclick="dF.JrnlDay.toggleParam();" checked>
-            </div>
-            <div class="mx-3"
-                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="태그클라우드 토글">
-                <label for="toggleTagCloud" class="me-2 text-muted cursor-help">TAGCLOUD</label>
-                <input type="checkbox" id="toggleTagCloud" class="form-check-input cursor-pointer" onclick="dF.JrnlDay.toggleParam();" checked>
+            <div id="jrnl_dream_list_div">
+                <#--handlebars template goes in here-->
             </div>
         </div>
     </div>
+    <!--end::Card-->
 
-    <!-- 태그 헤더 :: 파일 분리 -->
-    <#include "/view/feature/jrnl/day/tag/_jrnl_day_tag_header.ftlh">
-
-    <#--begin::Card body-->
-    <div class="card-body">
-        <#--begin::Table body-->
-        <div id="jrnl_day_list_div">
-            <#--handlebars template goes in here-->
-        </div>
-        <div id="jrnl_diary_list_div">
-            <#--handlebars template goes in here-->
-        </div>
-        <div id="jrnl_dream_list_div">
-            <#--handlebars template goes in here-->
-        </div>
-    </div>
+    <#--include::aside-->
+    <#include "/view/feature/jrnl/day/_aside/_jrnl_day_aside_base.ftlh">
 </div>
-<!--end::Card-->
-
-<#--include::aside-->
-<#include "/view/feature/jrnl/day/_aside/_jrnl_day_aside_base.ftlh">
 
 <#--include::tinymce-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>

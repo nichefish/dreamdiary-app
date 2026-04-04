@@ -1,10 +1,7 @@
 package io.nicheblog.dreamdiary.feature.jrnl.intrpt.controller;
 
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagSearchParam;
-import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptDto;
-import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.service.JrnlIntrptService;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.service.JrnlIntrptTagService;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -59,7 +56,7 @@ public class JrnlIntrptTagRestController
             //
     ) throws Exception {
 
-        final Map<String, List<String>> tagCtgrMap = jrnlIntrptTagService.getTagCtgrMap(AuthUtils.getLgnUserId());
+        final Map<String, List<String>> tagCtgrMap = jrnlIntrptTagService.getMyTagCtgrMap();
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -80,7 +77,7 @@ public class JrnlIntrptTagRestController
             final @ModelAttribute("searchParam") TagSearchParam searchParam
     ) throws Exception {
 
-        final List<TagDto> tagList = jrnlIntrptTagService.getIntrptSizedListDto(searchParam.getYy(), searchParam.getMnth());
+        final List<TagDto> tagList = jrnlIntrptTagService.getMyIntrptSizedListDto(searchParam.getYy(), searchParam.getMnth());
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -101,7 +98,7 @@ public class JrnlIntrptTagRestController
             final @ModelAttribute("searchParam") TagSearchParam searchParam
     ) throws Exception {
 
-        final Map<String, List<TagDto>> tagGroupMap = jrnlIntrptTagService.getIntrptSizedGroupListDto(searchParam.getYy(), searchParam.getMnth());
+        final Map<String, List<TagDto>> tagGroupMap = jrnlIntrptTagService.getMyIntrptSizedGroupListDto(searchParam.getYy(), searchParam.getMnth());
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

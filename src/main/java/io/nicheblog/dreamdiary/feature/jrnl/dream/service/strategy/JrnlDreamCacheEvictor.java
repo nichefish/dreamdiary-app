@@ -37,23 +37,26 @@ public class JrnlDreamCacheEvictor
             final Integer jrnlDayNo = param.getJrnlDayNo();
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();
+            final String weekStartDt = param.getWeekStartDt();
             // jrnl_dream
-            this.evictMyCacheByPeriodPrefix("myJrnlDreamList", yy, mnth);
-            this.evictMyCacheByYearPrefix("mySumryDreamList", yy);
-            EhCacheUtils.evictMyCache("myJrnlDreamDtlDto", postNo);
+            this.evictMyYyCacheByYyPrefix("jrnlDreamYySumryStatedListByUser", yy);
+            EhCacheUtils.evictMyCacheByKey("jrnlDreamDtlDtoByUser", postNo);
             // jrnl_day
             if (jrnlDayNo != null) {
-                EhCacheUtils.evictMyCache("myJrnlDayDtlDto", jrnlDayNo);
+                EhCacheUtils.evictMyCacheByKey("jrnlDayDtlDtoByUser", jrnlDayNo);
             }
-            this.evictMyDayPeriodCaches(yy, mnth);
+            this.evictMyJrnlDayYyMnthCaches(yy, mnth);
+            this.evictMyJrnlDayWeeklyCaches(weekStartDt);
             // jrnl_dream_tag
-            EhCacheUtils.evictMyCacheAll("myJrnlDreamTagCtgrMap");
-            EhCacheUtils.evictMyCacheAll("myJrnlDreamTagList");
-            EhCacheUtils.evictMyCacheAll("myJrnlDreamTagListYyMnth");
-            EhCacheUtils.evictMyCacheAll("myJrnlDreamSizedTagList");
-            EhCacheUtils.evictMyCacheAll("myCountDreamSizeMap");
+            EhCacheUtils.clearMyCache("jrnlDreamTagCtgrMapByUser");
+            EhCacheUtils.clearMyCache("jrnlDreamTagListByUser");
+            EhCacheUtils.clearMyCache("jrnlDreamYyMnthTagListByUser");
+            EhCacheUtils.clearMyCache("jrnlDreamWeeklyTagListByUser");
+            EhCacheUtils.clearMyCache("jrnlDreamYyMnthSizedTagListByUser");
+            EhCacheUtils.clearMyCache("jrnlDreamWeeklySizedTagListByUser");
+            EhCacheUtils.clearMyCache("jrnlDreamCountMapByUser");
             // 태그 캐시 처리
-            EhCacheUtils.evictCache("tagContentEntityListByRef", postNo + "_JRNL_DREAM");
+            EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", postNo + "_JRNL_DREAM");
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);
             throw e;

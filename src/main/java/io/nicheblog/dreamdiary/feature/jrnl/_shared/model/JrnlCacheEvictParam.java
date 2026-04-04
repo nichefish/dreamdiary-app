@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryReviewDto;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.model.JrnlTodoDto;
+import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,7 +21,7 @@ import lombok.Setter;
  * <pre>
  *  저널 캐시 초기화 관련 필요 인자 파라미터 객체
  * </pre>
- * 
+ *
  * @author nichefish
  */
 @Getter
@@ -43,6 +44,10 @@ public class JrnlCacheEvictParam {
     private Integer yy;
     /** 월 */
     private Integer mnth;
+    /** 주 시작일자 */
+    private String weekStartDt;
+    /** 주 시작일자 (수정 전) */
+    private String prevWeekStartDt;
 
     /**
      * 팩토리 메서드 패턴
@@ -55,6 +60,24 @@ public class JrnlCacheEvictParam {
                 .postNo(dto.getPostNo())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
+                .weekStartDt(dto.getWeekStartDt())
+                .build();
+    }
+
+    /**
+     * 팩토리 메서드 패턴
+     *
+     * @param postDto {@link JrnlDayDto}
+     * @param updatedDto {@link JrnlDayDto}
+     * @return {@link JrnlCacheEvictParam}
+     */
+    public static JrnlCacheEvictParam of(final JrnlDayDto postDto, final JrnlDayDto updatedDto) {
+        return JrnlCacheEvictParam.builder()
+                .postNo(updatedDto.getPostNo())
+                .yy(updatedDto.getYy())
+                .mnth(updatedDto.getMnth())
+                .weekStartDt(updatedDto.getWeekStartDt())
+                .prevWeekStartDt(postDto.getPrevWeekStartDt())
                 .build();
     }
 
@@ -64,12 +87,13 @@ public class JrnlCacheEvictParam {
      * @param dto {@link JrnlEntryDto}
      * @return {@link JrnlCacheEvictParam}
      */
-    public static JrnlCacheEvictParam of(final JrnlEntryDto dto) {
+    public static JrnlCacheEvictParam of(final JrnlEntryDto dto) throws Exception {
         return JrnlCacheEvictParam.builder()
                 .postNo(dto.getPostNo())
                 .jrnlDayNo(dto.getJrnlDayNo())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
+                .weekStartDt(DateUtils.getWeekStartDateStr(dto.getStdrdDt()))
                 .build();
     }
 
@@ -88,20 +112,21 @@ public class JrnlCacheEvictParam {
                 .mnth(dto.getMnth())
                 .build();
     }
-    
+
     /**
      * 팩토리 메서드 패턴
      *
      * @param dto {@link JrnlDayDto}
      * @return {@link JrnlCacheEvictParam}
      */
-    public static JrnlCacheEvictParam of(final JrnlDiaryDto dto) {
+    public static JrnlCacheEvictParam of(final JrnlDiaryDto dto) throws Exception {
         return JrnlCacheEvictParam.builder()
                 .postNo(dto.getPostNo())
                 .jrnlDayNo(dto.getJrnlDayNo())
                 .jrnlEntryNo(dto.getJrnlEntryNo())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
+                .weekStartDt(DateUtils.getWeekStartDateStr(dto.getStdrdDt()))
                 .build();
     }
 
@@ -111,12 +136,13 @@ public class JrnlCacheEvictParam {
      * @param dto {@link JrnlDreamDto}
      * @return {@link JrnlCacheEvictParam}
      */
-    public static JrnlCacheEvictParam of(final JrnlDreamDto dto) {
+    public static JrnlCacheEvictParam of(final JrnlDreamDto dto) throws Exception {
         return JrnlCacheEvictParam.builder()
                 .postNo(dto.getPostNo())
                 .jrnlDayNo(dto.getJrnlDayNo())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
+                .weekStartDt(DateUtils.getWeekStartDateStr(dto.getStdrdDt()))
                 .build();
     }
 
@@ -126,13 +152,14 @@ public class JrnlCacheEvictParam {
      * @param dto {@link JrnlIntrptDto}
      * @return {@link JrnlCacheEvictParam}
      */
-    public static JrnlCacheEvictParam of(final JrnlIntrptDto dto) {
+    public static JrnlCacheEvictParam of(final JrnlIntrptDto dto) throws Exception {
         return JrnlCacheEvictParam.builder()
                 .postNo(dto.getPostNo())
                 .jrnlDayNo(dto.getJrnlDayNo())
                 .jrnlDreamNo(dto.getJrnlDreamNo())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
+                .weekStartDt(DateUtils.getWeekStartDateStr(dto.getStdrdDt()))
                 .build();
     }
 

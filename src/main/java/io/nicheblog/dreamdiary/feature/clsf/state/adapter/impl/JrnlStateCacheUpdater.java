@@ -41,14 +41,14 @@ public class JrnlStateCacheUpdater
      * @param cacheKey 캐시 키
      * @param isEnabled 활성화 여부
      */
-    public void update(final StateToggleDto toggle, final String cacheKey, final Boolean isEnabled) {
+    public void update(final StateToggleDto toggle, final Object cacheKey, final Boolean isEnabled) {
         final ContentType contentType = toggle.getContentType();
 
-        updataCacheMap(toggle, cacheKey, isEnabled, contentType);
+        this.updataCacheMap(toggle, cacheKey, isEnabled, contentType);
 
         final String evictCacheNm = this.getEvictCacheNm(contentType);
         if (evictCacheNm != null) {
-            EhCacheUtils.evictMyCacheAll(evictCacheNm);
+            EhCacheUtils.clearMyCache(evictCacheNm);
         }
     }
 
@@ -60,7 +60,7 @@ public class JrnlStateCacheUpdater
      * @param isEnabled 활성화 여부
      */
     @SuppressWarnings("unchecked")
-    private void updataCacheMap(StateToggleDto toggle, String cacheKey, Boolean isEnabled, ContentType contentType) {
+    private void updataCacheMap(StateToggleDto toggle, Object cacheKey, Boolean isEnabled, ContentType contentType) {
         final String cacheMapNm = this.getCacheMapNm(contentType);
 
         final Map<Integer, JrnlState> map = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache(cacheMapNm, cacheKey);
@@ -75,8 +75,8 @@ public class JrnlStateCacheUpdater
 
     private String getEvictCacheNm(final ContentType contentType) {
         return switch (contentType) {
-            case JRNL_DIARY -> "mySumryDiaryList";
-            case JRNL_DREAM -> "mySumryDreamList";
+            case JRNL_DIARY -> "jrnlDiaryYySumryStatedListByUser";
+            case JRNL_DREAM -> "jrnlDreamYySumryStatedListByUser";
             default -> null;
         };
     }
@@ -88,10 +88,10 @@ public class JrnlStateCacheUpdater
      */
     private String getCacheMapNm(final ContentType contentType) {
         return switch (contentType) {
-            case JRNL_ENTRY -> "myEntryStateMap";
-            case JRNL_DIARY -> "myDiaryStateMap";
-            case JRNL_DREAM -> "myDreamStateMap";
-            case JRNL_INTRPT -> "myIntrptStateMap";
+            case JRNL_ENTRY -> "jrnlEntryStateMapByUser";
+            case JRNL_DIARY -> "jrnlDiaryStateMapByUser";
+            case JRNL_DREAM -> "jrnlDreamStateMapByUser";
+            case JRNL_INTRPT -> "jrnlIntrptStateMapByUser";
             default -> throw new IllegalStateException("Unexpected value: " + contentType);
         };
     }

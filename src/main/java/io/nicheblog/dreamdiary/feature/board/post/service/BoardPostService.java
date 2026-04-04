@@ -56,7 +56,7 @@ public class BoardPostService
     private final ApplicationEventPublisherWrapper publisher;
 
     /**
-     * 목록 Page<Entity> -> Page<Dto> 변환 (override)
+     * 목록 {@code Page<Entity>} -> {@code Page<Dto>} 변환 (override)
      *
      * @param entityPage 페이징 처리된 Entity 목록
      * @return {@link Page} -- 변환된 페이징 처리된 Dto 목록

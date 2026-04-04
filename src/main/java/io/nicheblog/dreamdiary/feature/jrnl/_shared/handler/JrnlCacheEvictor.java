@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.infrastructure.cache.service.CacheEvictor;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
+import org.springframework.cache.interceptor.SimpleKey;
 
 /**
  * JrnlCacheEvictor
@@ -23,10 +24,10 @@ public interface JrnlCacheEvictor
      * @param yy - 삭제할 연도(문자열 형식)
      * @param mnth - 삭제할 월(문자열 형식)
      */
-    default void evictCacheForPeriod(final String cacheName, final Integer yy, final Integer mnth) {
-        EhCacheUtils.evictCache(cacheName, yy + "_" + mnth);
-        EhCacheUtils.evictCache(cacheName, yy + "_99");
-        EhCacheUtils.evictCache(cacheName, "9999_99");
+    default void evictYyMnthCache(final String cacheName, final Integer yy, final Integer mnth) {
+        EhCacheUtils.evictCacheByKey(cacheName, yy + "_" + mnth);
+        EhCacheUtils.evictCacheByKey(cacheName, yy + "_99");
+        EhCacheUtils.evictCacheByKey(cacheName, "9999_99");
     }
 
     /**
@@ -35,23 +36,11 @@ public interface JrnlCacheEvictor
      * @param cacheName - 삭제할 캐시 이름
      * @param yy - 삭제할 연도(문자열 형식)
      */
-    default void evictMyCacheForPeriod(final String cacheName, final Integer yy) {
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + yy);
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + yy + "_99");
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + "9999_99");
-    }
-
-    /**
-     * 사용자 캐시 이름에 대해서 기간 캐시 삭제
-     *
-     * @param cacheName - 삭제할 캐시 이름
-     * @param yy - 삭제할 연도(문자열 형식)
-     * @param mnth - 삭제할 월(문자열 형식)
-     */
-    default void evictMyCacheForPeriod(final String cacheName, final Integer yy, final Integer mnth) {
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + yy + "_" + mnth);
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + yy + "_99");
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + "9999_99");
+    default void evictMyYyCache(final String cacheName, final Integer yy) {
+        final String userId = AuthUtils.getLgnUserId();
+        EhCacheUtils.evictCacheByKey(cacheName, new SimpleKey(userId, yy));
+        EhCacheUtils.evictCacheByKey(cacheName, new SimpleKey(userId, yy, 99));
+        EhCacheUtils.evictCacheByKey(cacheName, new SimpleKey(userId, 9999, 99));
     }
 
     /**
@@ -61,10 +50,11 @@ public interface JrnlCacheEvictor
      * @param yy - 삭제할 연도(문자열 형식)
      * @param mnth - 삭제할 월(문자열 형식)
      */
-    default void evictMyCacheWithKeyForPeriod(final String cacheName, final String key, final String yy, final String mnth) {
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + yy + "_" + mnth);
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + yy + "_99");
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + "9999_99");
+    default void evictMyYyMnthCache(final String cacheName, final Integer yy, final Integer mnth) {
+        final String userId = AuthUtils.getLgnUserId();
+        EhCacheUtils.evictCacheByKey(cacheName, new SimpleKey(userId, yy, mnth));
+        EhCacheUtils.evictCacheByKey(cacheName, new SimpleKey(userId, yy, 99));
+        EhCacheUtils.evictCacheByKey(cacheName, new SimpleKey(userId, 9999, 99));
     }
 
     /**
@@ -74,10 +64,25 @@ public interface JrnlCacheEvictor
      * @param yy - 삭제할 연도(문자열 형식)
      * @param mnth - 삭제할 월(문자열 형식)
      */
-    default void evictMyCacheWithKeyForPeriod(final String cacheName, final String key, final Integer yy, final Integer mnth) {
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + yy + "_" + mnth);
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + yy + "_99");
-        EhCacheUtils.evictCache(cacheName, AuthUtils.getLgnUserId() + "_" + key + "_" + "9999_99");
+    default void evictMyYyMnthCacheByKey(final String cacheName, final String key, final String yy, final String mnth) {
+        final String userId = AuthUtils.getLgnUserId();
+        EhCacheUtils.evictCacheByKey(cacheName, new SimpleKey(userId, key, yy, mnth));
+        EhCacheUtils.evictCacheByKey(cacheName, new SimpleKey(userId, key, yy, "99"));
+        EhCacheUtils.evictCacheByKey(cacheName, new SimpleKey(userId, key, "9999", "99"));
+    }
+
+    /**
+     * 사용자 캐시 이름에 대해서 기간 캐시 삭제
+     *
+     * @param cacheName - 삭제할 캐시 이름
+     * @param yy - 삭제할 연도(숫자 형식)
+     * @param mnth - 삭제할 월(숫자 형식)
+     */
+    default void evictMyYyMnthCacheByKey(final String cacheName, final String key, final Integer yy, final Integer mnth) {
+        final String userId = AuthUtils.getLgnUserId();
+        EhCacheUtils.evictCacheByKey(cacheName, new SimpleKey(userId, key, yy, mnth));
+        EhCacheUtils.evictCacheByKey(cacheName, new SimpleKey(userId, key, yy, 99));
+        EhCacheUtils.evictCacheByKey(cacheName, new SimpleKey(userId, key, 9999, 99));
     }
 
     /**
@@ -87,14 +92,14 @@ public interface JrnlCacheEvictor
      * @param yy - 삭제할 연도(정수 형식)
      * @param mnth - 삭제할 월(정수 형식)
      */
-    default void evictMyCacheByPeriodPrefix(final String cacheName, final Integer yy, final Integer mnth) {
+    default void evictMyYnMnthCacheByPrefix(final String cacheName, final Integer yy, final Integer mnth) {
         if (yy != null && mnth != null) {
             EhCacheUtils.evictMyCacheByPrefix(cacheName, yy + "_" + mnth);
             EhCacheUtils.evictMyCacheByPrefix(cacheName, yy + "_99");
             EhCacheUtils.evictMyCacheByPrefix(cacheName, "9999_99");
             return;
         }
-        EhCacheUtils.evictMyCacheAll(cacheName);
+        EhCacheUtils.clearMyCache(cacheName);
     }
 
     /**
@@ -103,12 +108,12 @@ public interface JrnlCacheEvictor
      * @param cacheName - 삭제할 캐시 이름
      * @param yy - 삭제할 연도
      */
-    default void evictMyCacheByYearPrefix(final String cacheName, final Integer yy) {
+    default void evictMyYyCacheByYyPrefix(final String cacheName, final Integer yy) {
         if (yy != null) {
             EhCacheUtils.evictMyCacheByPrefix(cacheName, yy.toString());
             return;
         }
-        EhCacheUtils.evictMyCacheAll(cacheName);
+        EhCacheUtils.clearMyCache(cacheName);
     }
 
     /**
@@ -117,13 +122,61 @@ public interface JrnlCacheEvictor
      * @param yy - 삭제할 연도
      * @param mnth - 삭제할 월
      */
-    default void evictMyDayPeriodCaches(final Integer yy, final Integer mnth) {
+    default void evictMyJrnlDayYyMnthCaches(final Integer yy, final Integer mnth) {
         if (yy != null && mnth != null) {
-            this.evictMyCacheForPeriod("myJrnlDayList", yy, mnth);
-            this.evictMyCacheForPeriod("myJrnlDayCalList", yy, mnth);
+            // Current journal month list cache and companion state maps share the same key scope.
+            this.evictMyYyMnthCache("jrnlDayYyMnthListByUser", yy, mnth);
+            this.evictMyYyMnthCache("jrnlEntryStateMapByUser", yy, mnth);
+            this.evictMyYyMnthCache("jrnlDiaryStateMapByUser", yy, mnth);
+            this.evictMyYyMnthCache("jrnlDreamStateMapByUser", yy, mnth);
+            this.evictMyYyMnthCache("jrnlIntrptStateMapByUser", yy, mnth);
+            // Legacy cache names kept as no-op-safe fallback during migration.
+            this.evictMyYyMnthCache("myJrnlDayList", yy, mnth);
+            this.evictMyYyMnthCache("myJrnlDayCalList", yy, mnth);
             return;
         }
-        EhCacheUtils.evictMyCacheAll("myJrnlDayList");
-        EhCacheUtils.evictMyCacheAll("myJrnlDayCalList");
+        EhCacheUtils.clearMyCache("jrnlDayYyMnthListByUser");
+        EhCacheUtils.clearMyCache("jrnlEntryStateMapByUser");
+        EhCacheUtils.clearMyCache("jrnlDiaryStateMapByUser");
+        EhCacheUtils.clearMyCache("jrnlDreamStateMapByUser");
+        EhCacheUtils.clearMyCache("jrnlIntrptStateMapByUser");
+        EhCacheUtils.clearMyCache("myJrnlDayList");
+        EhCacheUtils.clearMyCache("myJrnlDayCalList");
+    }
+
+    /**
+     * 일 단위 주간 캐시 묶음 삭제
+     */
+    default void evictMyJrnlDayWeeklyCaches() {
+        EhCacheUtils.clearMyCache("jrnlDayWeeklyListByUser");
+        EhCacheUtils.clearMyCache("jrnlEntryWeeklyStateMapByUser");
+        EhCacheUtils.clearMyCache("jrnlDiaryWeeklyStateMapByUser");
+        EhCacheUtils.clearMyCache("jrnlDreamWeeklyStateMapByUser");
+        EhCacheUtils.clearMyCache("jrnlIntrptWeeklyStateMapByUser");
+    }
+
+    /**
+     * 일 단위 주간 캐시 묶음 삭제
+     *
+     * @param weekStartDts 삭제할 주 시작일자 목록
+     */
+    default void evictMyJrnlDayWeeklyCaches(final String... weekStartDts) {
+        if (weekStartDts == null || weekStartDts.length == 0) {
+            this.evictMyJrnlDayWeeklyCaches();
+            return;
+        }
+
+        boolean hasTarget = false;
+        for (final String weekStartDt : weekStartDts) {
+            if (weekStartDt == null || weekStartDt.isBlank()) continue;
+            hasTarget = true;
+            EhCacheUtils.evictMyCacheByKey("jrnlDayWeeklyListByUser", weekStartDt);
+            EhCacheUtils.evictMyCacheByKey("jrnlEntryWeeklyStateMapByUser", weekStartDt);
+            EhCacheUtils.evictMyCacheByKey("jrnlDiaryWeeklyStateMapByUser", weekStartDt);
+            EhCacheUtils.evictMyCacheByKey("jrnlDreamWeeklyStateMapByUser", weekStartDt);
+            EhCacheUtils.evictMyCacheByKey("jrnlIntrptWeeklyStateMapByUser", weekStartDt);
+        }
+
+        if (!hasTarget) this.evictMyJrnlDayWeeklyCaches();
     }
 }

@@ -53,7 +53,7 @@ public class JrnlDreamExportController
             final JrnlDreamSearchParam searchParam
     ) throws Exception {
 
-        final List<JrnlDreamDto> jrnlDreamList = jrnlDreamService.getListDtoWithCache(searchParam);
+        final List<JrnlDreamDto> jrnlDreamList = jrnlDreamService.getMyListDto(searchParam);
         final String text = jrnlDreamExportService.buildTxt(jrnlDreamList, searchParam);
         final byte[] bytes = text.getBytes(StandardCharsets.UTF_8);
         final String filename = "dreams_search_@" + DateUtils.getCurrDateStr(DatePtn.PDATE) + ".txt";

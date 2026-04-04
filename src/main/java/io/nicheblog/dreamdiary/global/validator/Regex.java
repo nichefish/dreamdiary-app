@@ -34,7 +34,7 @@ public interface Regex {
     /** 숫자 정규식 */
     String NUM_REGEX = "[\\d]+";
 
-    /** HTML 태그 (<>...</>로 묶인 영역) 정규식 */
+    /** HTML 태그 ({@code <>...</>}로 묶인 영역) 정규식 */
     String HTML_TAG_REGEX = "<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>";
 
     /* 공격 패턴 :: 아래 패턴과 일치하지 않아야 한다. */

@@ -9,6 +9,7 @@ public enum JrnlDayViewType {
     LIST,
     CAL,
     DAILY,
+    WEEKLY,
     SEARCH;
 
     /**

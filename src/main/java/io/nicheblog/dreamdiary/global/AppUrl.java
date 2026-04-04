@@ -27,6 +27,7 @@ public interface AppUrl {
 
     /** 저널 일자 (리스트) */
     String JRNL_DAY_MONTHLY = Prefix.APP + "/jrnl/day/monthly.do";
+    String JRNL_DAY_WEEKLY = Prefix.APP + "/jrnl/day/weekly.do";
     String JRNL_DAY_META_VIEW = Prefix.APP + "/jrnl/day/meta.do";
     String JRNL_DAY_DAILY_VIEW_TODAY = Prefix.APP + "/jrnl/day.do";
     String JRNL_DAY_DAILY_VIEW = Prefix.APP + "/jrnl/day/{stdrdDt}.do";
@@ -77,7 +78,7 @@ public interface AppUrl {
     String TAG_CLOUD_PAGE = Prefix.APP + "/tag/tag-cloud-page.do";
 
     /** 인증 정책 관리 */
-    String AUTH_POLICY_FORM = Prefix.APP + "/lgn-policy/form.do";
+    String AUTH_POLICY_FORM = Prefix.APP + "/auth/policy/form.do";
 
     /** 메뉴 관리 */
     String MENU_PAGE = Prefix.APP + "/menu/page.do";

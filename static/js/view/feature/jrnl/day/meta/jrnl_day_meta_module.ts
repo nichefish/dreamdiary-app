@@ -46,6 +46,61 @@ dF.JrnlDayMeta = (function(): dfModule {
         },
 
         /**
+         * 년도 선택 처리
+         * @param {string|number} yy
+         */
+        getSelectedYy: function(yy?: string|number): string {
+            if (yy != null && cF.util.isNotEmpty(String(yy))) return String(yy);
+
+            const currentSearchYy: string = dF.JrnlDay?.currentSearchParams?.yy;
+            if (cF.util.isNotEmpty(currentSearchYy)) return currentSearchYy;
+
+            const urlYy: string = cF.util.getUrlParam("yy");
+            if (cF.util.isNotEmpty(urlYy)) return urlYy;
+
+            return cF.date.getCurrYyStr();
+        },
+
+        /**
+         * 선택된 년도 정규화 처리
+         * @param {string} selectedYy
+         * @param {(string|number)[]} yyList
+         */
+        normalizeSelectedYy: function(selectedYy: string, yyList: (string|number)[]): string {
+            if (yyList.length === 0) return selectedYy;
+
+            const matchedYy = yyList.find((yy: string|number): boolean => String(yy) === String(selectedYy));
+            if (matchedYy != null) return String(matchedYy);
+
+            return String(yyList[0]);
+        },
+
+        /**
+         * 년도 옵션 처리
+         * @param {string} selectedYy
+         * @param {(string|number)[]} yyList
+         */
+        getYearOptions: function(selectedYy: string, yyList: (string|number)[]): Record<string, any>[] {
+            return yyList.map((yy: string|number): Record<string, any> => ({
+                value: yy,
+                label: yy,
+                selected: String(yy) === String(selectedYy),
+            }));
+        },
+
+        getYyListAjax: function(metaNo: string|number, callback: (yyList: any[]) => void): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DAY_META_YYS, { metaNo });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    return;
+                }
+
+                callback(Array.isArray(res.rsltList) ? res.rsltList : []);
+            });
+        },
+
+        /**
          * 목록에 따른 일자 태그 조회 (Ajax)
          */
         listAjax: function(): void {
@@ -63,7 +118,7 @@ dF.JrnlDayMeta = (function(): dfModule {
          * 메타 모달 호출
          * @param {string|number} metaNo - 조회할 메타 번호.
          */
-        modal: function(metaNo: string|number): void {
+        modal: function(metaNo: string|number, yy?: string|number): void {
             if (isNaN(Number(metaNo))) return;
 
             ModalHistory.reset();
@@ -72,18 +127,32 @@ dF.JrnlDayMeta = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = cF.util.bindUrl(Url.JRNL_DAYS);
-            const ajaxData: Record<string, any> = { viewType: "SEARCH", metaNo };
-            cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
-                if (!res.rslt) {
-                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
-                    return;
-                }
-                cF.handlebars.modal({ metaNo, list: res.rsltList }, "jrnl_day_meta");
+            const preferredYy: string = dF.JrnlDayMeta.getSelectedYy(yy);
+            dF.JrnlDayMeta.getYyListAjax(metaNo, function(yyList: any[]): void {
+                const selectedYy: string = dF.JrnlDayMeta.normalizeSelectedYy(preferredYy, yyList);
+                const url: string = cF.util.bindUrl(Url.JRNL_DAYS);
+                const ajaxData: Record<string, any> = { viewType: "SEARCH", metaNo, yy: selectedYy };
+                cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
+                    if (!res.rslt) {
+                        if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                        return;
+                    }
+                    cF.handlebars.modal({
+                        metaNo,
+                        yy: selectedYy,
+                        yearOptions: dF.JrnlDayMeta.getYearOptions(selectedYy, yyList),
+                        list: res.rsltList
+                    }, "jrnl_day_meta");
 
-                /* modal history push */
-                ModalHistory.push(self, func, args);
+                    /* modal history push */
+                    ModalHistory.push(self, func, args);
+                });
             });
+        },
+
+        changeYy: function(metaNo: string|number, yy: string|number): void {
+            if (isNaN(Number(metaNo))) return;
+            dF.JrnlDayMeta.modal(metaNo, yy);
         },
 
 

@@ -107,7 +107,7 @@ public interface BaseEntityReadableService<Key extends Serializable, Entity exte
     /* ----- */
 
     /**
-     * default: Stream<Entity> 조회
+     * default: {@code Stream<Entity>} 조회
      *
      * @param searchParam 검색 조건 파라미터
      * @return {@link Stream} -- 목록 (entity level)
@@ -120,7 +120,7 @@ public interface BaseEntityReadableService<Key extends Serializable, Entity exte
     }
 
     /**
-     * default: Stream<Entity> 조회
+     * default: {@code Stream<Entity>} 조회
      *
      * @param searchParamMap 검색 조건 파라미터 맵
      * @return {@link Stream} -- 목록 (entity level)
@@ -133,7 +133,7 @@ public interface BaseEntityReadableService<Key extends Serializable, Entity exte
     }
 
     /**
-     * default: Stream<Entity> (+정렬) 조회
+     * default: {@code Stream<Entity>} (+정렬) 조회
      *
      * @param searchParam 검색 조건 파라미터
      * @param sort 정렬
@@ -147,7 +147,7 @@ public interface BaseEntityReadableService<Key extends Serializable, Entity exte
     }
 
     /**
-     * default: Stream<Entity> 조회
+     * default: {@code Stream<Entity>} 조회
      *
      * @param searchParamMap 검색 조건 파라미터 맵
      * @param sort 정렬

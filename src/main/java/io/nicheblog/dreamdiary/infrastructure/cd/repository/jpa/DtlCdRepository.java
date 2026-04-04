@@ -3,11 +3,8 @@ package io.nicheblog.dreamdiary.infrastructure.cd.repository.jpa;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
 import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdKey;
-import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.QueryHint;
 import java.util.List;
 
 /**
@@ -27,7 +24,7 @@ public interface DtlCdRepository
      * 분류 코드로 상세 코드 목록 검색.
      *
      * @param clCd 검색할 분류 코드
-     * @return {@link Boolean} -- 분류 코드에 해당하는 상세 코드 목록 (List<DtlCdEntity>)
+     * @return {@link Boolean} -- 분류 코드에 해당하는 상세 코드 목록
      */
     List<DtlCdEntity> findByClCd(final String clCd);
 
@@ -55,18 +52,6 @@ public interface DtlCdRepository
      * @return 정렬된 상세코드 목록.
      */
     List<DtlCdEntity> findAllByUseYnOrderByClCdAscIdxAsc(final String useYn);
-
-    /**
-     * 분류 코드로 '사용 중'인 상세 코드 목록 검색.
-     *
-     * @param clCd 분류 코드
-     * @param useYn 사용 여부 (Y/N)
-     * @param sort 정렬 기준
-     * @return {@link List} -- 상세 코드 목록
-     */
-    @Transactional(readOnly = true)
-    @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    // List<DtlCdEntity> findByClCdAndStateUseYn(final String clCd, String useYn, final Sort sort);
 
     /**
      * 공통코드, 상세 코드로 상세 코드명 조회.

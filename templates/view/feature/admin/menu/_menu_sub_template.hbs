@@ -1,5 +1,5 @@
 <#--
- -- 메뉴(menu) > 하위메뉴 Template
+ -- menu(menu) > sub menu template
  -- @included_in : menu_page.ftlh
  -->
 
@@ -11,20 +11,22 @@
         {{/if}}
         <div class="d-flex align-items-center justify-content-between rounded">
             <div class="d-flex align-items-center">
-                 <div class="draggable-handle-sub cursor-move pt-1"
-                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="드래그하여&#10;항목을 이동합니다.">
-                    <i class="ki-duotone ki-abstract-14 fs-2x">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                    </i>
-                </div>
+                {{#unlessYn protectedYn}}
+                    <div class="draggable-handle-sub cursor-move pt-1"
+                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="Drag to move">
+                        <i class="ki-duotone ki-abstract-14 fs-2x">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                    </div>
+                {{/unlessYn}}
                 {{#if (exists icon)}}
                     <span class="ps-3 pe-0">
                         {{{icon}}}
                     </span>
                 {{else}}
                     <span class="ps-3 pe-0">
-                        ·
+                        -
                     </span>
                 {{/if}}
                 <div class="ms-3 mb-0 text-dark cursor-default text-underline-dotted">
@@ -50,7 +52,10 @@
                 </div>
             </div>
         </div>
-        <ul id="menu_sub_{{menuNo}}" class="sub-menu-list custom-scroll draggable-zone-sub">
+        <ul id="menu_sub_{{menuNo}}"
+            class="sub-menu-list custom-scroll {{#unlessYn protectedYn}}{{#if (equals menuSubExtendTyCd 'NO_SUB')}}{{else}}draggable-zone-sub{{/if}}{{/unlessYn}}"
+            data-parent-menu-no="{{menuNo}}"
+            data-parent-menu-ty="{{menuTyCd}}">
             <!-- sub-menu area -->
         </ul>
     </li>

@@ -1,11 +1,12 @@
 package io.nicheblog.dreamdiary.feature.jrnl._shared.adapter;
 
-import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDaySearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayMetaService;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayService;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayTagService;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.service.JrnlDiaryTagService;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.service.JrnlDreamTagService;
+import io.nicheblog.dreamdiary.feature.jrnl.intrpt.service.JrnlIntrptTagService;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.port.CacheWarmupTask;
 import io.nicheblog.dreamdiary.infrastructure.cache.port.LoginCacheWarmupTask;
@@ -34,19 +35,19 @@ public class JrnlCacheWarmupTask
     private final JrnlDiaryTagService jrnlDiaryTagService;
     private final JrnlDreamTagService jrnlDreamTagService;
     private final JrnlDayMetaService jrnlDayMetaService;
+    private final JrnlIntrptTagService jrnlIntrptTagService;
 
     /**
      * 캐시 웜업
      */
     @Override
     public void warmup() throws Exception {
-        // TODO: 사용자 기반 워밍업 필요
-        jrnlDayTagService.getTagCtgrMap("nichefish");
-        jrnlDiaryTagService.getTagCtgrMap("nichefish");
-        jrnlDreamTagService.getTagCtgrMap("nichefish");
-
-        // TODO: 사용자 기반 워밍업 필요
-        jrnlDayMetaService.getMetaCtgrMap("nichefish");
+        // 사용자 기반 워밍업
+        jrnlDayTagService.getTagCtgrMapByUser(Constant.SYSTEM_ACNT);
+        jrnlDayMetaService.getMetaCtgrMapByUser(Constant.SYSTEM_ACNT);
+        jrnlDiaryTagService.getTagCtgrMapByUser(Constant.SYSTEM_ACNT);
+        jrnlDreamTagService.getTagCtgrMapByUser(Constant.SYSTEM_ACNT);
+        jrnlIntrptTagService.getTagCtgrMapByUser(Constant.SYSTEM_ACNT);
     }
 
     /**
@@ -55,11 +56,7 @@ public class JrnlCacheWarmupTask
      */
     @Override
     public void warmupOnLgn(final String userId) throws Exception {
-        final JrnlDaySearchParam param = JrnlDaySearchParam.builder()
-                .yy(DateUtils.getCurrYy())
-                .mnth(DateUtils.getCurrMnth())
-                .build();
         // 로그인 시 해당 사용자의 월별 저널 목록(휴일 포함) 캐시 워밍업
-        jrnlDayService.getMyListDtoByYyMnthWithHldy(userId, param);
+        jrnlDayService.getCachedYyMnthListDtoByUser(userId, DateUtils.getCurrYy(), DateUtils.getCurrMnth());
     }
 }

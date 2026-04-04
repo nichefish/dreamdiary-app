@@ -5,6 +5,16 @@
 
 <script type="text/x-handlebars-template" id="jrnl_day_meta_modal_template">
     <div class="d-flex flex-column mb-4">
+        <div class="d-flex justify-content-start align-items-center gap-3 mb-4">
+            <label for="jrnl_day_meta_yy" class="form-label mb-0 fw-bold">년도</label>
+            <select id="jrnl_day_meta_yy"
+                    class="form-select form-select-sm w-auto"
+                    onchange="dF.JrnlDayMeta.changeYy({{metaNo}}, this.value);">
+                {{#each yearOptions}}
+                    <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+                {{/each}}
+            </select>
+        </div>
         {{#each list}}
             {{!-- 저장된 previousMnth 변수를 비교 --}}
             {{^if (equals mnth (lookup @root._locals "prevMnth"))}}

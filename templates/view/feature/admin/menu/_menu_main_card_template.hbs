@@ -1,5 +1,5 @@
 <#--
- -- 메뉴(menu) > 카드 Template
+ -- menu(menu) > main card template
  -- @included_in : menu_page.ftlh
  -->
 
@@ -11,7 +11,7 @@
                 <div class="d-flex align-items-center">
                     {{#unlessYn protectedYn}}
                         <div class="draggable-handle-main cursor-move pt-2"
-                             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="드래그하여&#10;항목을 이동합니다.">
+                             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="Drag to move">
                             <i class="ki-duotone ki-abstract-14 fs-2x">
                                 <span class="path1"></span>
                                 <span class="path2"></span>
@@ -41,7 +41,10 @@
                 </div>
             </div>
 
-            <ul id="menu_sub_{{menuNo}}" class="card-body ps-12 sub-menu-list custom-scroll draggable-zone-sub">
+            <ul id="menu_sub_{{menuNo}}"
+                class="card-body ps-12 sub-menu-list custom-scroll {{#unlessYn protectedYn}}{{#if (equals menuSubExtendTyCd 'NO_SUB')}}{{else}}draggable-zone-sub{{/if}}{{/unlessYn}}"
+                data-parent-menu-no="{{menuNo}}"
+                data-parent-menu-ty="{{menuTyCd}}">
                 <!-- sub-menu area -->
             </ul>
         </div>

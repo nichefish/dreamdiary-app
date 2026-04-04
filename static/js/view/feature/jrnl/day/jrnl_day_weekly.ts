@@ -1,0 +1,137 @@
+/**
+ * jrnl_day_weekly.ts
+ * 저널 주간 페이지 스크립트
+ *
+ * @author nichefish
+ */
+// @ts-ignore
+const Page: Page = (function(): Page {
+    return {
+        stdrdDt: null,
+        weekStartDt: null,
+        weekEndDt: null,
+
+        init: function(): void {
+            dF.JrnlDay.init('WEEKLY');
+            dF.JrnlDiary.init('WEEKLY');
+            dF.JrnlDream.init('WEEKLY');
+            // dF.JrnlTodo.init();
+            dF.Comment.modal.init({
+                "refreshFunc": function(): void {
+                    Page.loadWeek(Page.stdrdDt);
+                }
+            });
+            dF.State.init();
+
+            const stdrdDt: string = window.JRNL?.stdrdDt ?? cF.date.getCurrDateStr(cF.date.ptnDate);
+            Page.stdrdDt = stdrdDt;
+            Page.syncAsidePeriodState(stdrdDt);
+            dF.JrnlDayAside.init();
+
+            Page.loadWeek(stdrdDt);
+        },
+
+        changeView: function(url: string): void {
+            cF.ui.blockUIReplace(dF.JrnlDay.buildViewUrl(url));
+        },
+
+        syncAsidePeriodState: function(stdrdDt: string): void {
+            if (cF.util.isEmpty(stdrdDt)) return;
+
+            const yy: string = stdrdDt.substring(0, 4);
+            const mnth: string = String(parseInt(stdrdDt.substring(5, 7), 10));
+            localStorage.setItem("jrnl_yy", yy);
+            localStorage.setItem("jrnl_mnth", mnth);
+
+            dF.JrnlDay.initSearchParams();
+            dF.JrnlDay.currentSearchParams.yy = yy;
+            dF.JrnlDay.currentSearchParams.mnth = mnth;
+            dF.JrnlDay.currentSearchParams.stdrdDt = stdrdDt;
+            dF.JrnlDay.currentSearchParams.weekStartDt = cF.date.getWeekdayDateStr(stdrdDt, 1, cF.date.ptnDate) ?? stdrdDt;
+            dF.JrnlDay.currentSearchParams.sort = localStorage.getItem("jrnl_day_sort") ?? "DESC";
+
+            const yyElement: HTMLSelectElement | null = document.querySelector("#jrnl_aside #yy");
+            const mnthElement: HTMLSelectElement | null = document.querySelector("#jrnl_aside #mnth");
+            if (yyElement) yyElement.value = yy;
+            if (mnthElement) mnthElement.value = mnth;
+        },
+
+        toggleAside: function(): void {
+            const asideToggle: HTMLElement | null = document.querySelector("#kt_app_engage_primary_btn");
+            asideToggle?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+        },
+
+        loadWeek: function(stdrdDt: string): void {
+            Page.stdrdDt = stdrdDt;
+            Page.weekStartDt = cF.date.getWeekdayDateStr(stdrdDt, 1, cF.date.ptnDate) ?? stdrdDt;
+            Page.weekEndDt = cF.date.getDateAddDayStr(Page.weekStartDt, 6, cF.date.ptnDate) ?? Page.weekStartDt;
+            Page.syncAsidePeriodState(stdrdDt);
+            window.history.replaceState(null, "", dF.JrnlDay.buildViewUrl(window.location.pathname));
+
+            dF.JrnlDay.initSearchParams();
+            const searchParams: Record<string, any> = dF.JrnlDay.currentSearchParams ?? {};
+            const showDiaries: boolean = searchParams.showDiaries !== false;
+            const showDreams: boolean = searchParams.showDreams !== false;
+
+            const ajaxData: Record<string, any> = {
+                viewType: "weekly",
+                weekStartDt: Page.weekStartDt,
+                stdrdDt: Page.stdrdDt,
+                showDiaries,
+                showDreams,
+                diaryKeyword: searchParams.diaryKeyword ?? "",
+                dreamKeyword: searchParams.dreamKeyword ?? "",
+                entryCtgrCds: searchParams.entryCtgrCds ?? [],
+            };
+            cF.ajax.get(Url.JRNL_DAYS, ajaxData, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    return;
+                }
+
+                const sort: string = searchParams.sort ?? "DESC";
+                const weeklyList: Record<string, any>[] = Page.normalizeWeekDays(res.rsltList ?? [], sort);
+                cF.ui.closeModal();
+                cF.handlebars.template({
+                    list: weeklyList,
+                    showDiaries,
+                    showDreams
+                }, "jrnl_day_list");
+                $("#jrnl_tag_header").toggle(searchParams.showTagCloud !== false);
+                if (searchParams.showTagCloud !== false) {
+                    dF.JrnlDayTag.listAjax();
+                    if (showDiaries) dF.JrnlDiaryTag.listAjax();
+                    if (showDreams) dF.JrnlDreamTag.listAjax();
+                }
+                KTMenu.createInstances();
+            }, "block");
+        },
+
+        normalizeWeekDays: function(rsltList: Record<string, any>[], sort: string = "DESC"): Record<string, any>[] {
+            return (rsltList ?? [])
+                .map((day: Record<string, any>): Record<string, any> => {
+                const jrnlEntryList: Record<string, any>[] = Array.isArray(day?.jrnlEntryList) ? day.jrnlEntryList : [];
+                const jrnlDreamList: Record<string, any>[] = Array.isArray(day?.jrnlDreamList) ? day.jrnlDreamList : [];
+                const jrnlElseDreamList: Record<string, any>[] = Array.isArray(day?.jrnlElseDreamList) ? day.jrnlElseDreamList : [];
+
+                return {
+                    ...day,
+                    jrnlDtWeekDay: day?.jrnlDtWeekDay ?? cF.date.getDayweekStr(day?.stdrdDt, "KO"),
+                    tag: day?.tag ?? { list: [] },
+                    jrnlEntryList,
+                    jrnlDreamList,
+                    jrnlElseDreamList,
+                    hasDream: (jrnlDreamList.length + jrnlElseDreamList.length) > 0,
+                };
+                })
+                .sort((a: Record<string, any>, b: Record<string, any>): number => {
+                    const dateA: number = new Date(a?.stdrdDt ?? "").getTime();
+                    const dateB: number = new Date(b?.stdrdDt ?? "").getTime();
+                    return sort === "ASC" ? dateA - dateB : dateB - dateA;
+                });
+        }
+    }
+})();
+document.addEventListener("DOMContentLoaded", function(): void {
+    Page.init();
+});

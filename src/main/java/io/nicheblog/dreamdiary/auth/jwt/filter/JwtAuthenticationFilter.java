@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.auth.security.config.WebSecurityAdapter;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.infrastructure.web.util.CookieUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -85,6 +86,7 @@ public class JwtAuthenticationFilter
             session.setAttribute("authInfo", authInfo);
         } catch (final AuthenticationException e) {
             log.error("Authentication failed: {}", e.getMessage());
+            invalidateAuthentication(request);
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication failed: " + e.getMessage());
             return; // 필터 체인 중단
         } catch (final Exception e) {
@@ -94,5 +96,18 @@ public class JwtAuthenticationFilter
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    /**
+     * 인증 무효화
+     * @param request HttpServletRequest
+     */
+    private void invalidateAuthentication(final HttpServletRequest request) {
+        SecurityContextHolder.clearContext();
+        CookieUtils.deleteJwtCookie();
+        CookieUtils.deleteRefreshTokenCookie();
+
+        final HttpSession session = request.getSession(false);
+        if (session != null) session.invalidate();
     }
 }

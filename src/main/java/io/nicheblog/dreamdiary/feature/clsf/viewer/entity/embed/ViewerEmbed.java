@@ -46,7 +46,7 @@ public class ViewerEmbed
     /* ----- */
 
     /**
-     * 열람자 :: List<Entity> -> List<Dto> 반환
+     * 열람자 :: {@code List<Entity>} -> {@code List<Dto>} 반환
      * @return 변환된 ViewerDto 객체의 리스트.
      *         리스트가 비어있거나 null인 경우 null을 반환합니다.
      */

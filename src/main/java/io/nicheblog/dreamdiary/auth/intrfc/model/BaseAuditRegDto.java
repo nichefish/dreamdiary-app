@@ -56,8 +56,24 @@ public class BaseAuditRegDto
         return CryptoUtils.Mask.nameMasking(this.getRegstrId());
     }
 
+    /**
+     * 등록자 여부
+     *
+     * @return 등록자 여부
+     */
     public Boolean getIsRegstr() {
         if (StringUtils.isEmpty(this.regstrId)) return false;
         return this.regstrId.equals(AuthUtils.getLgnUserId());
+    }
+
+    /**
+     * 등록자 여부
+     *
+     * @param userId 사용자 ID
+     * @return 등록자 여부
+     */
+    public Boolean getIsRegstr(final String userId) {
+        if (StringUtils.isEmpty(this.regstrId)) return false;
+        return this.regstrId.equals(userId);
     }
 }

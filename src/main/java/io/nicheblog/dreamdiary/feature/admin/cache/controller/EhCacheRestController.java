@@ -135,7 +135,7 @@ public class EhCacheRestController
     ) {
 
         // 캐시 evict
-        EhCacheUtils.evictCacheAll(cacheParam);
+        EhCacheUtils.clearCache(cacheParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

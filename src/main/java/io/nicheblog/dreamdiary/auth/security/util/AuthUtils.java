@@ -97,8 +97,21 @@ public class AuthUtils {
      */
     public static String getLgnUserId() {
         final AuthInfo authInfo = getAuthenticatedUser();
-        assert authInfo != null;
+        if (authInfo == null) return null;
         return authInfo.getUserId();
+    }
+
+    /**
+     * userId 유효성 확인 (blank 불가)
+     *
+     * @param userId 사용자 ID
+     * @return {@link String} -- 검증된 사용자 ID
+     */
+    public static String requireUserId(final String userId) {
+        if (StringUtils.isBlank(userId)) {
+            throw new IllegalArgumentException("userId is required.");
+        }
+        return userId;
     }
 
     /**
@@ -187,7 +200,6 @@ public class AuthUtils {
             ipType = Constant.REMOTE_ADDR;
             ipAddr = request.getRemoteAddr();
         }
-        log.info("ipAddr > {}: {}", ipType, ipAddr);
         return ipAddr;
     }
 

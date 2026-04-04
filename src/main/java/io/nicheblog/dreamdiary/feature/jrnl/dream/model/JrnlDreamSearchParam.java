@@ -15,7 +15,7 @@ import java.util.Objects;
 /**
  * JrnlDreamSearchParam
  * <pre>
- *  저널 꿈 목록 검색 파라미터.
+ *  꿈 목록 검색 파라미터.
  * </pre>
  *
  * @author nichefish
@@ -29,15 +29,17 @@ import java.util.Objects;
 public class JrnlDreamSearchParam
         extends BaseSearchParam {
 
-    /** 년도 */
+    /** 연도 */
     private Integer yy;
     /** 월 */
     private Integer mnth;
+    /** 주 시작일 */
+    private String weekStartDt;
 
     /** 저널 일자 번호 */
     private Integer jrnlDayNo;
 
-    /** 컨텐츠 타입 */
+    /** 콘텐츠 타입 */
     private String contentType;
 
     /** 꿈 검색 키워드 */
@@ -51,17 +53,17 @@ public class JrnlDreamSearchParam
     @Builder.Default
     private String sort = "DESC";
 
-    /** 상태(중요, 참조..) **/
+    /** 상태(중요, 참조..) */
     private List<String> states;
 
     /**
-     * 파라미터 부재 판별
+     * 파라미터 유효성 체크
      * @return 인자 존재 여부
      */
     public boolean isEmpty() {
         final boolean hasKeyword = searchKeywords != null && searchKeywords.stream().anyMatch(k -> k != null && !k.trim().isEmpty());
         final boolean hasTagNos = CollectionUtils.isNotEmpty(tagNos) && tagNos.stream().anyMatch(Objects::nonNull);
-        final boolean hasDate = yy != null || mnth != null || jrnlDayNo != null;
+        final boolean hasDate = yy != null || mnth != null || weekStartDt != null || jrnlDayNo != null;
         final boolean hasTag = tagNo != null;
         final boolean hasState = CollectionUtils.isNotEmpty(states) && states.stream().anyMatch(StringUtils::isNotEmpty);
 
@@ -90,6 +92,7 @@ public class JrnlDreamSearchParam
         return keyYy + "_" + keyMnth + "_"
                 + CmmUtils.sanitize(contentType) + "_"
                 + CmmUtils.sanitize(sort) + "_"
+                + CmmUtils.sanitize(weekStartDt) + "_"
                 + CmmUtils.nullSafeInt(jrnlDayNo) + "_"
                 + CmmUtils.normalizeStringList(searchKeywords) + "_"
                 + CmmUtils.nullSafeInt(tagNo) + "_"

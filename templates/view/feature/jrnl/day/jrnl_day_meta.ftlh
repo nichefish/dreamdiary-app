@@ -12,20 +12,28 @@
 <@layout.layout toolbar=toolbar!"">
 
 <link rel="stylesheet" type="text/css" href="/css/jrnl.css?${releaseDate!}" />
-
-<!--begin::Card-->
-<div class="card post">
-    <#--begin::Card header-->
-    <div class="card-header min-h-auto mb-7">
+<div class="jrnl-day-monthly-page">
+    <#--filter status-->
+    <#include "/view/feature/jrnl/day/_filter/_jrnl_day_filter_status.ftlh">
+    <div class="d-flex flex-column-fluid justify-content-between align-items-start align-items-xl-center gap-4">
         <#--begin::Tab-->
         <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">
+            <li class="nav-item">
+                <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
+                   onclick="Page.changeView(Url.JRNL_DAY_WEEKLY);">
+                    <span class="nav-icon">
+                        <i class="bi bi-calendar-week"></i>
+                    </span>
+                    <span class="nav-text"><@spring.message 'txt.jrnl.day.view.week'/></span>
+                </a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link px-6 cursor-pointer" data-bs-toggle="tab"
                    onclick="Page.changeView(Url.JRNL_DAY_MONTHLY);">
                     <span class="nav-icon">
                         <i class="bi bi-people"></i>
                     </span>
-                    <span class="nav-text">목록 VIEW</span>
+                    <span class="nav-text"><@spring.message 'txt.jrnl.day.view.list'/></span>
                 </a>
             </li>
             <li class="nav-item">
@@ -34,7 +42,7 @@
                     <span class="nav-icon">
                         <i class="bi bi-sort-down-alt"></i>
                     </span>
-                    <span class="nav-text">달력 VIEW</span>
+                    <span class="nav-text"><@spring.message 'txt.jrnl.day.view.cal'/></span>
                 </a>
             </li>
             <li class="nav-item">
@@ -43,36 +51,39 @@
                     <span class="nav-icon">
                         <i class="bi bi-people"></i>
                     </span>
-                    <span class="nav-text">메타 VIEW</span>
+                    <span class="nav-text"><@spring.message 'txt.jrnl.day.view.meta'/></span>
                 </a>
             </li>
         </ul>
     </div>
-
-    <!-- 메타 헤더 :: 파일 분리 -->
-    <#include "/view/feature/jrnl/day/tag/_jrnl_day_meta_header.ftlh">
-
-    <div class="separator separator-dashed"></div>
-    <#--begin::Card body-->
-    <div class="card-body">
-        <#--begin::form-->
-        <div id="jrnl_day_meta_config_div" class="d-flex-align-center mb-2 ps-2 min-h-42px">
-            <span class="text-muted">
-                메타를 선택해 주세요.
-            </span>
-            <#--handlebars template goes in here-->
+    <!--begin::Card-->
+    <div class="card post" style="margin-top: 0 !important;">
+        <#--begin::Card header-->
+        <div class="card-header min-h-auto mb-7">
+            <!-- 메타 헤더 :: 파일 분리 -->
+            <#include "/view/feature/jrnl/day/meta/_jrnl_day_meta_header.ftlh">
         </div>
-        <#--begin::Table body-->
-        <div id="jrnl_day_meta_graph_div" class="border border-1 border-primary d-flex-align-center min-h-42px" style="min-height: 200px;">
-            graph goes in here
-            <#--handlebars template goes in here-->
+        <#--begin::Card body-->
+        <div class="card-body">
+            <#--begin::form-->
+            <div id="jrnl_day_meta_config_div" class="d-flex-align-center mb-2 ps-2 min-h-42px">
+                <span class="text-muted">
+                    메타를 선택해 주세요.
+                </span>
+                <#--handlebars template goes in here-->
+            </div>
+            <#--begin::Table body-->
+            <div id="jrnl_day_meta_graph_div" class="border border-1 border-primary d-flex-align-center min-h-42px" style="min-height: 200px;">
+                graph goes in here
+                <#--handlebars template goes in here-->
+            </div>
         </div>
     </div>
-</div>
-<!--end::Card-->
+    <!--end::Card-->
 
-<#--include::aside-->
-<#include "/view/feature/jrnl/day/_aside/_jrnl_day_aside_base.ftlh">
+    <#--include::aside-->
+    <#include "/view/feature/jrnl/day/_aside/_jrnl_day_aside_base.ftlh">
+</div>
 
 <#--include::tinymce-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>

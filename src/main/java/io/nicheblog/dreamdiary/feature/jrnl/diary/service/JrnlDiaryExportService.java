@@ -35,7 +35,7 @@ public class JrnlDiaryExportService {
      * 저널 일기 txt 다룬로드
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param jrnlDiaryList List<JrnlDiaryDto>
+     * @param jrnlDiaryList 저널 일기 목록
      * @param searchParam JrnlDiarySearchParam
      * @return 내보내기 txt
      */

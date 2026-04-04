@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.auth.security.provider;
 
 import io.nicheblog.dreamdiary.auth.jwt.provider.JwtTokenProvider;
+import io.nicheblog.dreamdiary.auth.jwt.service.RefreshTokenService;
 import io.nicheblog.dreamdiary.auth.security.exception.AuthenticationFailureException;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.provider.helper.AuthenticationHelper;
@@ -41,6 +42,7 @@ public class DreamdiaryAuthenticationProvider
 
     private final AuthService authService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenService refreshTokenService;
 
     private final AuthenticationHelper authenticationHelper;
 
@@ -64,16 +66,19 @@ public class DreamdiaryAuthenticationProvider
         final UsernamePasswordAuthenticationToken generatedAuthToken = authInfo.getAuthToken();
 
         // 인증 객체를 기반으로 JWT 생성, 임시로 세션에 저장
-        final String jwt = this.authenticateAndGenerateJwt(generatedAuthToken);
+        final String accessToken = this.authenticateAndGenerateAccessToken(generatedAuthToken);
+        final String refreshToken = refreshTokenService.issue(username);
         // 세션에 JWT 저장
         final ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         final HttpSession session = servletRequestAttribute.getRequest().getSession();
-        session.setAttribute("jwt", jwt);
+        session.setAttribute("jwt", accessToken);
         // HTTP 쿠키에 JWT 저장
-        CookieUtils.setJwtCookie(jwt); // 7일간 유지
+        CookieUtils.setJwtCookie(accessToken); // 7일간 유지
         // HttpServletResponse 응답 헤더에 JWT 세팅
+        CookieUtils.setJwtCookie(accessToken, (int) jwtTokenProvider.getAccessTokenValiditySeconds());
+        CookieUtils.setRefreshTokenCookie(refreshToken, (int) refreshTokenService.getRefreshTokenValiditySeconds());
         final HttpServletResponse response = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getResponse();
-        if (response != null) response.setHeader("Authorization", "Bearer " + jwt);
+        if (response != null) response.setHeader("Authorization", "Bearer " + accessToken);
 
         return generatedAuthToken;
     }
@@ -84,13 +89,13 @@ public class DreamdiaryAuthenticationProvider
      * @param authentication 인증 정보를 담고 있는 {@link Authentication} 객체.
      * @return {@link String} -- 생성된 JWT 토큰 문자열. 클라이언트에서 인증을 위한 목적으로 사용됩니다.
      */
-    public String authenticateAndGenerateJwt(final Authentication authentication) {
+    public String authenticateAndGenerateAccessToken(final Authentication authentication) {
         final String username = authentication.getName();
         final List<String> roles = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        return jwtTokenProvider.createToken(username, roles); // JWT 생성
+        return jwtTokenProvider.createAccessToken(username, roles);
     }
 
     /**

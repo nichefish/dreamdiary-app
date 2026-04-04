@@ -58,7 +58,7 @@ public class JrnlDiaryRestController
 
         if (searchParam.isEmpty()) throw new IllegalArgumentException("검색 조건 필요");
 
-        final List<JrnlDiaryDto> jrnlDiaryList = jrnlDiaryService.getListDtoWithCache(searchParam);
+        final List<JrnlDiaryDto> jrnlDiaryList = jrnlDiaryService.getMyListDto(searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -79,7 +79,7 @@ public class JrnlDiaryRestController
             final @PathVariable("postNo") Integer key
     ) throws Exception {
 
-        final JrnlDiaryDto retrievedDto = jrnlDiaryService.getDtlDtoWithCache(key);
+        final JrnlDiaryDto retrievedDto = jrnlDiaryService.getMyDtlDtoWithCache(key);
         final boolean isSuccess = (retrievedDto.getPostNo() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

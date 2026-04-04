@@ -17,6 +17,7 @@ public interface ApiUrl {
     String API_AUTH_LGN_PROC = Prefix.API + "/auth/lgn-proc";
     String API_AUTH_LGN_PW_CHG = Prefix.API + "/auth/lgn-pw-chg";
     String API_AUTH_LGOUT = Prefix.API + "/auth/lgout";
+    String API_AUTH_REFRESH = Prefix.API + "/auth/refresh";
     String API_AUTH_EXPIRE_SESSION = Prefix.API + "/auth/expire-session";
     String API_AUTH_VERIFY = Prefix.API + "/auth/verify/{token}";
     String API_AUTH_INFO = Prefix.API + "/auth/get-auth-info";
@@ -34,10 +35,12 @@ public interface ApiUrl {
     String JRNL_DAY_TAGS = Prefix.API + "/jrnl/day/tags";
     String JRNL_DAY_TAG_GROUP_LIST = Prefix.API + "/jrnl/day/tag/group-list";
     String JRNL_DAY_TAG = Prefix.API + "/jrnl/day/tag/{tagNo}";
+    String JRNL_DAY_TAG_YYS = Prefix.API + "/jrnl/day/tag/{tagNo}/years";
     String JRNL_DAY_TAG_CTGR_MAP = Prefix.API + "/jrnl/day/tag/ctgr-map";
     /** 저널 일자 메타 */
     String JRNL_DAY_METAS = Prefix.API + "/jrnl/day/metas";
     String JRNL_DAY_META = Prefix.API + "/jrnl/day/metas/{metaNo}";
+    String JRNL_DAY_META_YYS = Prefix.API + "/jrnl/day/metas/{metaNo}/years";
     String JRNL_DAY_META_CTGR_MAP = Prefix.API + "/jrnl/day/meta/ctgr-map";
 
     /** 저널 꿈 */
@@ -155,6 +158,7 @@ public interface ApiUrl {
     String MENU_MAIN_LIST_AJAX = Prefix.API + "/menu/menu-main-list";
     String MENUS = Prefix.API + "/menus";
     String MENUS_IDX = Prefix.API + "/menus/idx";
+    String MENUS_TREE = Prefix.API + "/menus/tree";
     String MENU = Prefix.API + "/menu/{menuNo}";
 
     /** 게시판 관리 */

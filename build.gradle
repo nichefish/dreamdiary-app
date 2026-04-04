@@ -22,7 +22,7 @@ plugins {
  * 프로젝트 정보
  */
 group = 'dreamdiary.io'
-version = '0.15.6'
+version = '0.16.0'
 
 /**
  * Java, Spring Boot 및 추가 설정
@@ -74,9 +74,7 @@ configurations {
         resolutionStrategy {
             eachDependency { DependencyResolveDetails details ->
                 /* log4j2 보안 문제로 인해 기본제공버전 대신 최신버전 적용 */
-                if (details.requested.group == 'org.apache.logging.log4j') {
-                    details.useVersion '2.17.1'
-                }
+                // log4j2 version is managed by log4j-bom (see gradle/dependencies.gradle)
                 if (details.requested.group == 'com.querydsl' && details.requested.name in ['querydsl-codegen', 'querydsl-core']) {
                     details.useVersion '4.4.0'
                 }
@@ -122,6 +120,14 @@ tasks.withType(JavaCompile).configureEach {
 /**
  * 프론트엔드 정적자원(ts,scss 등) 컴파일 및 빌드
  */
+tasks.withType(Javadoc).configureEach {
+    options.encoding = 'UTF-8'
+    if (options instanceof StandardJavadocDocletOptions) {
+        options.charSet = 'UTF-8'
+        options.docEncoding = 'UTF-8'
+    }
+}
+
 tasks.register('buildFrontend', NpmTask) {
     dependsOn npmInstall
     args = ['run', 'build']
@@ -132,6 +138,13 @@ tasks.register('buildFrontend', NpmTask) {
  */
 tasks.named('processResources') {
     dependsOn tasks.named('buildFrontend')
+}
+
+tasks.named('bootJar') {
+    dependsOn tasks.named('javadoc')
+    from("$buildDir/docs/javadoc") {
+        into 'BOOT-INF/classes/static/javadoc'
+    }
 }
 
 /**

@@ -23,5 +23,5 @@ public interface StateCacheUpdater {
      * @param cacheKey 캐시 키
      * @param isEnabled 활성화 여부
      */
-    void update(final StateToggleDto toggle, final String cacheKey, final Boolean isEnabled);
+    void update(final StateToggleDto toggle, final Object cacheKey, final Boolean isEnabled);
 }

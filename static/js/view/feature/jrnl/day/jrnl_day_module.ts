@@ -13,12 +13,13 @@ dF.JrnlDay = (function(): dfModule {
         metaTagify: null,
         currentSearchParams: null,
         ENTRY_CTGR_NONE: "__NONE__",
+        ENTRY_CTGR_DEFAULT: "SUMMARY",
 
         /**
          * initializes module.
-         * @param {"LIST"|"CAL"|"DAILY"|"SEARCH"} viewType
+         * @param {"LIST"|"CAL"|"DAILY"|"WEEKLY"|"SEARCH"} viewType
          */
-        init: function(viewType: "LIST"|"CAL"|"DAILY"|"SEARCH"): void {
+        init: function(viewType: "LIST"|"CAL"|"DAILY"|"WEEKLY"|"SEARCH"): void {
             if (dF.JrnlDay.initialized) return;
 
             dF.JrnlDay.viewType = viewType;
@@ -46,10 +47,80 @@ dF.JrnlDay = (function(): dfModule {
                 case "DAILY":
                     location.reload();
                     break;
+                case "WEEKLY":
+                    Page.loadWeek(Page.stdrdDt);
+                    break;
             }
             cF.ui.unblockUI();
             /* modal history pop */
             ModalHistory.reset();
+        },
+
+        reloadByView: function(): void {
+            switch (dF.JrnlDay.viewType) {
+                case "LIST":
+                    dF.JrnlDay.yyMnthListAjax();
+                    break;
+                case "WEEKLY":
+                    Page.loadWeek(Page.stdrdDt);
+                    break;
+                default:
+                    dF.JrnlDay.refresh();
+                    break;
+            }
+        },
+
+        /**
+         * resolve anchor date for cross-view navigation
+         */
+        resolveAnchorDateForView: function(): string {
+            if (dF.JrnlDay.viewType === "WEEKLY" && cF.util.isNotEmpty(Page?.stdrdDt)) {
+                return Page.stdrdDt;
+            }
+
+            if (dF.JrnlDay.viewType === "CAL" && Page?.calDt instanceof Date) {
+                return cF.date.dateToStr(Page.calDt, cF.date.ptnDate) ?? "";
+            }
+
+            dF.JrnlDay.initSearchParams();
+            const currentParams: Record<string, any> = dF.JrnlDay.currentSearchParams ?? {};
+            if (cF.util.isNotEmpty(currentParams.stdrdDt)) return currentParams.stdrdDt;
+
+            const yy: string = currentParams.yy ?? localStorage.getItem("jrnl_yy") ?? cF.date.getCurrYyStr();
+            const mnth: string = currentParams.mnth ?? localStorage.getItem("jrnl_mnth") ?? cF.date.getCurrMnthStr();
+            return dF.JrnlDayAside.buildAnchorDateForMonth(yy, mnth, 1);
+        },
+
+        /**
+         * build view url with current period/filter state
+         * @param {string} baseUrl
+         */
+        buildViewUrl: function(baseUrl: string): string {
+            dF.JrnlDay.initSearchParams();
+
+            const currentParams: Record<string, any> = dF.JrnlDay.currentSearchParams ?? {};
+            const anchorDate: string = dF.JrnlDay.resolveAnchorDateForView();
+            const yy: string = anchorDate?.substring(0, 4) || currentParams.yy || cF.date.getCurrYyStr();
+            const mnth: string = anchorDate
+                ? String(parseInt(anchorDate.substring(5, 7), 10))
+                : (currentParams.mnth || cF.date.getCurrMnthStr());
+
+            const targetUrl: URL = new URL(baseUrl, window.location.origin);
+            targetUrl.searchParams.set("yy", yy);
+            targetUrl.searchParams.set("mnth", mnth);
+
+            if (cF.util.isNotEmpty(anchorDate)) targetUrl.searchParams.set("stdrdDt", anchorDate);
+            if (typeof currentParams.showDiaries === "boolean") targetUrl.searchParams.set("showDiaries", String(currentParams.showDiaries));
+            if (typeof currentParams.showDreams === "boolean") targetUrl.searchParams.set("showDreams", String(currentParams.showDreams));
+            if (typeof currentParams.showTagCloud === "boolean") targetUrl.searchParams.set("showTagCloud", String(currentParams.showTagCloud));
+            if (cF.util.isNotEmpty(currentParams.diaryKeyword)) targetUrl.searchParams.set("diaryKeyword", currentParams.diaryKeyword);
+            if (cF.util.isNotEmpty(currentParams.dreamKeyword)) targetUrl.searchParams.set("dreamKeyword", currentParams.dreamKeyword);
+            if (Array.isArray(currentParams.entryCtgrCds) && currentParams.entryCtgrCds.length > 0) {
+                targetUrl.searchParams.set("entryCtgrCds", currentParams.entryCtgrCds.join(","));
+            }
+            if (cF.util.isNotEmpty(currentParams.sort)) targetUrl.searchParams.set("sort", currentParams.sort);
+
+            return `${targetUrl.pathname}${targetUrl.search}${targetUrl.hash}`;
         },
 
         /**
@@ -117,14 +188,32 @@ dF.JrnlDay = (function(): dfModule {
             const showTagCloud = cF.util.getUrlParam("showTagCloud") !== "false";
             const rawEntryCtgr = cF.util.getUrlParam("entryCtgrCds") ?? cF.util.getUrlParam("entryCtgrCd") ?? "";
             const entryCtgrCds: string[] = dF.JrnlDay.parseEntryCtgrCds(rawEntryCtgr);
+            const diaryKeyword: string = cF.util.getUrlParam("diaryKeyword") ?? "";
+            const dreamKeyword: string = cF.util.getUrlParam("dreamKeyword") ?? "";
+            const stdrdDt: string = cF.util.getUrlParam("stdrdDt") ?? "";
 
-            dF.JrnlDay.currentSearchParams = { "viewType": "list", yy, mnth, showDiaries, showDreams, showTagCloud, entryCtgrCds };
+            dF.JrnlDay.currentSearchParams = {
+                "viewType": "list",
+                yy,
+                mnth,
+                stdrdDt,
+                showDiaries,
+                showDreams,
+                showTagCloud,
+                entryCtgrCds,
+                diaryKeyword,
+                dreamKeyword
+            };
 
             // DOM에 상태 반영
             $("#toggleDiaries").prop("checked", showDiaries);
             $("#toggleDreams").prop("checked", showDreams);
             $("#toggleTagCloud").prop("checked", showTagCloud);
-            $("#entryCtgrFilter").val(entryCtgrCds);
+            dF.JrnlDay.currentSearchParams.entryCtgrCds = entryCtgrCds;
+            dF.JrnlDay.syncEntryCtgrState(showDiaries);
+            $("#diaryFilterKeyword").val(diaryKeyword);
+            $("#dreamFilterKeyword").val(dreamKeyword);
+            dF.JrnlDay.syncKeywordFilterState();
         },
 
         /**
@@ -150,6 +239,8 @@ dF.JrnlDay = (function(): dfModule {
             dF.JrnlDay.currentSearchParams.showDiaries = showDiaries;
             dF.JrnlDay.currentSearchParams.showDreams = showDreams;
             dF.JrnlDay.currentSearchParams.showTagCloud = showTagCloud;
+            dF.JrnlDay.syncEntryCtgrState(showDiaries);
+            dF.JrnlDay.syncKeywordFilterState();
 
             // URL 동기화
             const url: URL = new URL(window.location.href);
@@ -159,7 +250,121 @@ dF.JrnlDay = (function(): dfModule {
             window.history.replaceState(null, "", url.toString());
 
             // 재조회
-            dF.JrnlDay.yyMnthListAjax();
+            dF.JrnlDay.reloadByView();
+        },
+
+        /**
+         * diary/dream keyword filter state sync
+         */
+        syncKeywordFilterState: function(): void {
+            const showDiaries: boolean = dF.JrnlDay.currentSearchParams?.showDiaries === true;
+            const showDreams: boolean = dF.JrnlDay.currentSearchParams?.showDreams === true;
+            const diaryElmt = $("#diaryFilterKeyword");
+            const dreamElmt = $("#dreamFilterKeyword");
+
+            diaryElmt.prop("disabled", !showDiaries);
+            dreamElmt.prop("disabled", !showDreams);
+
+            if (!showDiaries) {
+                diaryElmt.val("");
+                dF.JrnlDay.currentSearchParams.diaryKeyword = "";
+            }
+            if (!showDreams) {
+                dreamElmt.val("");
+                dF.JrnlDay.currentSearchParams.dreamKeyword = "";
+            }
+        },
+
+        /**
+         * diary/dream keyword filter apply
+         */
+        applyKeywordFilters: function(): void {
+            if (!dF.JrnlDay.currentSearchParams) dF.JrnlDay.initSearchParams();
+
+            const showDiaries: boolean = dF.JrnlDay.currentSearchParams.showDiaries === true;
+            const showDreams: boolean = dF.JrnlDay.currentSearchParams.showDreams === true;
+
+            const diaryKeyword: string = showDiaries
+                ? String($("#diaryFilterKeyword").val() ?? "").trim()
+                : "";
+            const dreamKeyword: string = showDreams
+                ? String($("#dreamFilterKeyword").val() ?? "").trim()
+                : "";
+
+            dF.JrnlDay.currentSearchParams.diaryKeyword = diaryKeyword;
+            dF.JrnlDay.currentSearchParams.dreamKeyword = dreamKeyword;
+
+            dF.JrnlDay.reloadByView();
+        },
+
+        /**
+         * entry 카테고리 필터 상태 동기화
+         */
+        syncEntryCtgrState: function(showDiaries?: boolean): void {
+            const showDiaryFilter: boolean = (showDiaries ?? dF.JrnlDay.currentSearchParams?.showDiaries) === true;
+            const toggleElmt = $("#toggleEntryCtgr");
+            const selectElmt = $("#entryCtgrFilter");
+            const sectionElmt = $("#entryCtgrFilterSection");
+
+            if (!showDiaryFilter) {
+                if (sectionElmt.length) sectionElmt.addClass("d-none");
+                toggleElmt.prop("checked", false);
+                toggleElmt.prop("disabled", true);
+                selectElmt.prop("disabled", true);
+                selectElmt.val([]);
+                if (dF.JrnlDay.currentSearchParams) dF.JrnlDay.currentSearchParams.entryCtgrCds = [];
+                return;
+            }
+
+            if (sectionElmt.length) sectionElmt.removeClass("d-none");
+            toggleElmt.prop("disabled", false);
+            const enabled: boolean = toggleElmt.is(":checked");
+            selectElmt.prop("disabled", !enabled);
+
+            if (!enabled) {
+                selectElmt.val([]);
+                if (dF.JrnlDay.currentSearchParams) dF.JrnlDay.currentSearchParams.entryCtgrCds = [];
+                return;
+            }
+
+            let selectedCtgrCds: string[] = (selectElmt.val() as string[] | null) ?? [];
+            if (selectedCtgrCds.length === 0) {
+                selectedCtgrCds = [dF.JrnlDay.ENTRY_CTGR_DEFAULT];
+                selectElmt.val(selectedCtgrCds);
+            }
+            if (dF.JrnlDay.currentSearchParams) dF.JrnlDay.currentSearchParams.entryCtgrCds = selectedCtgrCds;
+        },
+
+        /**
+         * entry 카테고리 필터 토글
+         */
+        toggleEntryCtgr: function(): void {
+            if (!dF.JrnlDay.currentSearchParams) dF.JrnlDay.initSearchParams();
+
+            if (!dF.JrnlDay.currentSearchParams.showDiaries) {
+                dF.JrnlDay.syncEntryCtgrState(false);
+                return;
+            }
+
+            const enabled: boolean = $("#toggleEntryCtgr").is(":checked");
+            const selectElmt = $("#entryCtgrFilter");
+
+            if (!enabled) {
+                selectElmt.prop("disabled", true);
+                selectElmt.val([]);
+                dF.JrnlDay.currentSearchParams.entryCtgrCds = [];
+                dF.JrnlDay.reloadByView();
+                return;
+            }
+
+            selectElmt.prop("disabled", false);
+            let selectedCtgrCds: string[] = (selectElmt.val() as string[] | null) ?? [];
+            if (selectedCtgrCds.length === 0) {
+                selectedCtgrCds = [dF.JrnlDay.ENTRY_CTGR_DEFAULT];
+                selectElmt.val(selectedCtgrCds);
+            }
+            dF.JrnlDay.currentSearchParams.entryCtgrCds = selectedCtgrCds;
+            dF.JrnlDay.reloadByView();
         },
 
         /**
@@ -168,9 +373,27 @@ dF.JrnlDay = (function(): dfModule {
         changeEntryCtgr: function(): void {
             if (!dF.JrnlDay.currentSearchParams) dF.JrnlDay.initSearchParams();
 
-            const selectedCtgrCds: string[] = ($("#entryCtgrFilter").val() as string[] | null) ?? [];
+            if (!dF.JrnlDay.currentSearchParams.showDiaries) {
+                dF.JrnlDay.syncEntryCtgrState(false);
+                return;
+            }
+
+            const enabled: boolean = $("#toggleEntryCtgr").is(":checked");
+            const selectElmt = $("#entryCtgrFilter");
+            if (!enabled) {
+                selectElmt.val([]);
+                dF.JrnlDay.currentSearchParams.entryCtgrCds = [];
+                dF.JrnlDay.reloadByView();
+                return;
+            }
+
+            let selectedCtgrCds: string[] = (selectElmt.val() as string[] | null) ?? [];
+            if (selectedCtgrCds.length === 0) {
+                selectedCtgrCds = [dF.JrnlDay.ENTRY_CTGR_DEFAULT];
+                selectElmt.val(selectedCtgrCds);
+            }
             dF.JrnlDay.currentSearchParams.entryCtgrCds = selectedCtgrCds;
-            dF.JrnlDay.yyMnthListAjax();
+            dF.JrnlDay.reloadByView();
         },
 
         /**
@@ -201,6 +424,71 @@ dF.JrnlDay = (function(): dfModule {
         },
 
         /**
+         * diary/dream keyword filter apply (list-level)
+         */
+        filterByKeyword: function(list: Record<string, any>[]): Record<string, any>[] {
+            if (!Array.isArray(list) || list.length === 0) return list;
+
+            const diaryKeyword: string = String(dF.JrnlDay.currentSearchParams?.diaryKeyword ?? "").trim().toLowerCase();
+            const dreamKeyword: string = String(dF.JrnlDay.currentSearchParams?.dreamKeyword ?? "").trim().toLowerCase();
+            const filterDiaries: boolean = diaryKeyword.length > 0 && dF.JrnlDay.currentSearchParams?.showDiaries === true;
+            const filterDreams: boolean = dreamKeyword.length > 0 && dF.JrnlDay.currentSearchParams?.showDreams === true;
+
+            if (!filterDiaries && !filterDreams) return list;
+
+            const containsKeyword = (value: any, keyword: string): boolean => {
+                if (typeof value !== "string") return false;
+                return value.toLowerCase().includes(keyword);
+            };
+
+            return list
+                .map((day: Record<string, any>): Record<string, any> => {
+                    const nextDay = { ...day };
+
+                    if (filterDiaries) {
+                        const jrnlEntryList: Record<string, any>[] = Array.isArray(day.jrnlEntryList) ? day.jrnlEntryList : [];
+                        const filteredEntryList: Record<string, any>[] = jrnlEntryList
+                            .map((entry: Record<string, any>): Record<string, any> | null => {
+                                const jrnlDiaryList: Record<string, any>[] = Array.isArray(entry?.jrnlDiaryList) ? entry.jrnlDiaryList : [];
+                                const filteredDiaryList: Record<string, any>[] = jrnlDiaryList.filter((diary: Record<string, any>): boolean => {
+                                    return containsKeyword(diary?.cn, diaryKeyword);
+                                });
+                                if (filteredDiaryList.length === 0) return null;
+                                return { ...entry, jrnlDiaryList: filteredDiaryList };
+                            })
+                            .filter((entry): entry is Record<string, any> => entry !== null);
+                        nextDay.jrnlEntryList = filteredEntryList;
+                    }
+
+                    if (filterDreams) {
+                        const jrnlDreamList: Record<string, any>[] = Array.isArray(day.jrnlDreamList) ? day.jrnlDreamList : [];
+                        const jrnlElseDreamList: Record<string, any>[] = Array.isArray(day.jrnlElseDreamList) ? day.jrnlElseDreamList : [];
+                        nextDay.jrnlDreamList = jrnlDreamList.filter((dream: Record<string, any>): boolean => {
+                            return containsKeyword(dream?.cn, dreamKeyword);
+                        });
+                        nextDay.jrnlElseDreamList = jrnlElseDreamList.filter((dream: Record<string, any>): boolean => {
+                            return containsKeyword(dream?.cn, dreamKeyword);
+                        });
+                        nextDay.hasDream = (nextDay.jrnlDreamList.length + nextDay.jrnlElseDreamList.length) > 0;
+                    }
+
+                    return nextDay;
+                })
+                .filter((day: Record<string, any>): boolean => {
+                    if (filterDiaries) {
+                        const hasEntry: boolean = Array.isArray(day.jrnlEntryList) && day.jrnlEntryList.length > 0;
+                        if (!hasEntry) return false;
+                    }
+                    if (filterDreams) {
+                        const hasDream: boolean = (Array.isArray(day.jrnlDreamList) && day.jrnlDreamList.length > 0)
+                            || (Array.isArray(day.jrnlElseDreamList) && day.jrnlElseDreamList.length > 0);
+                        if (!hasDream) return false;
+                    }
+                    return true;
+                });
+        },
+
+        /**
          * 년도-월 목록 조회 (Ajax)
          */
         yyMnthListAjax: function(): void {
@@ -223,7 +511,7 @@ dF.JrnlDay = (function(): dfModule {
                     return;
                 }
                 const { rsltList } = res;
-                const filteredList: Record<string, any>[] = dF.JrnlDay.filterByEntryCtgr(rsltList);
+                const filteredList: Record<string, any>[] = rsltList;
                 // 정렬 처리
                 const sortStr: string = $("#jrnl_aside #sort").val() as string;
                 if (sortStr === "ASC") {
@@ -260,8 +548,27 @@ dF.JrnlDay = (function(): dfModule {
          * @param {string} stdrdDt 기준 일자
          */
         openDetatched: function(stdrdDt: string): void {
-            const url: string = cF.util.bindUrl(Url.JRNL_DAY_DAILY_VIEW, { stdrdDt });
-            window.open(url, '_blank', 'noopener,noreferrer');
+            dF.JrnlDay.initSearchParams();
+
+            const currentParams: Record<string, any> = dF.JrnlDay.currentSearchParams ?? {};
+            const yy: string = stdrdDt.substring(0, 4);
+            const mnth: string = String(parseInt(stdrdDt.substring(5, 7), 10));
+            const targetUrl: URL = new URL(Url.JRNL_DAY_WEEKLY, window.location.origin);
+
+            targetUrl.searchParams.set("stdrdDt", stdrdDt);
+            targetUrl.searchParams.set("yy", yy);
+            targetUrl.searchParams.set("mnth", mnth);
+            if (typeof currentParams.showDiaries === "boolean") targetUrl.searchParams.set("showDiaries", String(currentParams.showDiaries));
+            if (typeof currentParams.showDreams === "boolean") targetUrl.searchParams.set("showDreams", String(currentParams.showDreams));
+            if (typeof currentParams.showTagCloud === "boolean") targetUrl.searchParams.set("showTagCloud", String(currentParams.showTagCloud));
+            if (cF.util.isNotEmpty(currentParams.diaryKeyword)) targetUrl.searchParams.set("diaryKeyword", currentParams.diaryKeyword);
+            if (cF.util.isNotEmpty(currentParams.dreamKeyword)) targetUrl.searchParams.set("dreamKeyword", currentParams.dreamKeyword);
+            if (Array.isArray(currentParams.entryCtgrCds) && currentParams.entryCtgrCds.length > 0) {
+                targetUrl.searchParams.set("entryCtgrCds", currentParams.entryCtgrCds.join(","));
+            }
+            if (cF.util.isNotEmpty(currentParams.sort)) targetUrl.searchParams.set("sort", currentParams.sort);
+
+            window.open(`${targetUrl.pathname}${targetUrl.search}${targetUrl.hash}`, '_blank', 'noopener,noreferrer');
         },
 
         /**
