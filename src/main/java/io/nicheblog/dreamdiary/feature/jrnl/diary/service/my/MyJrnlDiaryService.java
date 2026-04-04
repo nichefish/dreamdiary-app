@@ -32,7 +32,7 @@ public class MyJrnlDiaryService {
      * @return {@link List} -- 조회된 목록
      */
     public List<JrnlDiaryDto> getMyListDto(final JrnlDiarySearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
+        final String userId = AuthUtils.requireLgnUserId();
         return jrnlDiaryService.getListDtoByUser(userId, searchParam);
     }
 
@@ -43,7 +43,7 @@ public class MyJrnlDiaryService {
      * @return {@link List} -- 해당 연도의중요 목록
      */
     public List<JrnlDiaryDto> getMySumryDiaryList(final JrnlDiarySearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
+        final String userId = AuthUtils.requireLgnUserId();
         return jrnlDiaryService.getSumryDiaryListByUser(userId, searchParam);
     }
 
@@ -54,7 +54,7 @@ public class MyJrnlDiaryService {
      * @return {@link JrnlDiaryDto} -- 조회된 객체
      */
     public JrnlDiaryDto getMyDtlDtoWithCache(final Integer key) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
+        final String userId = AuthUtils.requireLgnUserId();
         return jrnlDiaryService.getDtlDtoWithCacheByUser(userId, key);
     }
 }

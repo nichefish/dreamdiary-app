@@ -34,7 +34,7 @@ public class MyJrnlIntrptTagService {
      * @return {@link List} -- CSS 사이즈가 적용된 태그 목록
      */
     public List<TagDto> getMyIntrptSizedListDto(final Integer yy, final Integer mnth) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
+        final String userId = AuthUtils.requireLgnUserId();
         return jrnlIntrptTagService.getIntrptSizedListDtoByUser(userId, yy, mnth);
     }
 
@@ -47,7 +47,7 @@ public class MyJrnlIntrptTagService {
      * @return {@link List} -- CSS 사이즈가 적용된 태그 목록
      */
     public Map<String, List<TagDto>> getMyIntrptSizedGroupListDto(final Integer yy, final Integer mnth) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
+        final String userId = AuthUtils.requireLgnUserId();
         return jrnlIntrptTagService.getIntrptSizedGroupListDtoByUser(userId, yy, mnth);
     }
 
@@ -57,7 +57,7 @@ public class MyJrnlIntrptTagService {
      * @return {@link Map} -- 태그 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵
      */
     public Map<String, List<String>> getMyTagCtgrMap() throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
+        final String userId = AuthUtils.requireLgnUserId();
         return jrnlIntrptTagService.getTagCtgrMapByUser(userId);
     }
 }

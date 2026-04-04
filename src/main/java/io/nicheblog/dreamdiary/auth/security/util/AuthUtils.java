@@ -115,6 +115,15 @@ public class AuthUtils {
     }
 
     /**
+     * 현재 로그인 중인 사용자 아이디를 검증하여 반환한다.
+     *
+     * @return {@link String} -- 검증된 현재 로그인 사용자 아이디
+     */
+    public static String requireLgnUserId() {
+        return requireUserId(getLgnUserId());
+    }
+
+    /**
      * 현재 로그인 중인 사용자 어이디를 반환한다.
      *
      * @return {@link String} -- 현재 로그인 중인 사용자 아이디

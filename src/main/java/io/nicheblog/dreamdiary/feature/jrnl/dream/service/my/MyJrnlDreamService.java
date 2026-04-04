@@ -32,7 +32,7 @@ public class MyJrnlDreamService {
      * @return {@link List} -- 조회된 목록
      */
     public List<JrnlDreamDto> getMyListDto(final JrnlDreamSearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
+        final String userId = AuthUtils.requireLgnUserId();
         return jrnlDreamService.getListDtoByUser(userId, searchParam);
     }
 
@@ -43,7 +43,7 @@ public class MyJrnlDreamService {
      * @return {@link List} -- 해당 연도의중요 목록
      */
     public List<JrnlDreamDto> getMySumryDreamList(final JrnlDreamSearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
+        final String userId = AuthUtils.requireLgnUserId();
         return jrnlDreamService.getSumryDreamListByUser(userId, searchParam);
     }
 
@@ -54,7 +54,7 @@ public class MyJrnlDreamService {
      * @return {@link JrnlDreamDto} -- 조회된 객체
      */
     public JrnlDreamDto getMyDtlDtoWithCache(final Integer key) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
+        final String userId = AuthUtils.requireLgnUserId();
         return jrnlDreamService.getDtlDtoWithCacheByUser(userId, key);
     }
 }
