@@ -100,6 +100,12 @@ public class FileUtils
         return !Pattern.compile(ILLEGAL_EXP).matcher(fileName).find();
     }
 
+    public static void ensureDirectory(final String path) throws IOException {
+        final File directory = new File(path);
+        if (!directory.exists() && !directory.mkdirs()) throw new IOException(MessageUtils.getMessage("msg.rslt.mkdir-failed"));
+        log.info("Startup check completed. resource=directory path={} status=ready", path);
+    }
+
     /**
      * 파일 이름에 사용할 수 없는 캐릭터를 바꿔서 유효한 파일로 만든다.
      *

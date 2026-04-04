@@ -37,8 +37,13 @@ public class LogSysWriteService {
 
         final LogSysEntity logActvty = mapstruct.toEntity(logParam);
 
-        log.info("isSuccess: {}, rsltMsg: {}", logParam.getRslt(), logParam.getRsltMsg());
         final LogSysEntity rslt = repository.save(logActvty);
+        log.info(
+                "SYSTEM_LOG_SAVED category={} result={} message={}",
+                logParam.getActvtyCtgr(),
+                logParam.getRslt(),
+                logParam.getRsltMsg()
+        );
 
         return rslt.getLogSysNo() != null;
     }

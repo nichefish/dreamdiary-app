@@ -95,8 +95,7 @@ public class AtchFileDtlService
 
         // 파일 업로드 경로 생성
         final String fileUploadPath = Constant.UPFILE_PATH + DateUtils.getCurrDateStr(DatePtn.PDATE) + "/";
-        final File fileUploadDirectory = new File(fileUploadPath);
-        if (!fileUploadDirectory.exists() && !fileUploadDirectory.mkdirs()) throw new IOException(MessageUtils.getMessage("msg.rslt.mkdir-failed"));
+        FileUtils.ensureDirectory(fileUploadPath);
 
         // 파일 순회하며 업로드 처리
         final Iterator<String> fileNmIterator = multiRequest.getFileNames();
