@@ -1,8 +1,11 @@
 # Gradle 빌드 파일 및 IntelliJ 설정 무시
+/.claude/
 /.gradle/
 /.idea/
+/.vscode/
 /build/
 /node_modules/
+/.codex
 /*.log
 # 테스트 리소스 제외
 /src/test/resources/*
