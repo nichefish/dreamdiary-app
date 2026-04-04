@@ -34,7 +34,7 @@ public class FileConfig {
     private Set<String> imageExtensions;
 
     /**
-     * 빈 생성 시 한 번만 실행하여 문자열을 Set<String>으로 변환
+     * 빈 생성 시 한 번만 실행하여 문자열을 {@code Set<String>}으로 변환
      */
     @PostConstruct
     public void init() {

@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 /**
  * JrnlDreamTagService
  * <pre>
- *  저널 꿈 태그 서비스 모듈.
+ *  꿈 태그 서비스.
  * </pre>
  *
  * @author nichefish
@@ -50,13 +50,39 @@ public class JrnlDreamTagService
     public JrnlDreamTagMapstruct getReadMapstruct() {
         return this.mapstruct;
     }
+
     public JrnlDreamTagMapstruct getWriteMapstruct() {
         return this.mapstruct;
     }
 
     private final ApplicationContext context;
+
     private JrnlDreamTagService getSelf() {
         return context.getBean(this.getClass());
+    }
+
+    public List<TagDto> getMyTagList() throws Exception {
+        final String userId = AuthUtils.getLgnUserId();
+        return this.getSelf().getTagListByUser(userId);
+    }
+
+    @Cacheable(value = "jrnlDreamTagListByUser", key = "#userId")
+    public List<TagDto> getTagListByUser(final String userId) throws Exception {
+        final HashMap<String, Object> paramMap = new HashMap<>() {{
+            put("regstrId", AuthUtils.requireUserId(userId));
+        }};
+
+        return this.getSelf().getListDto(paramMap);
+    }
+
+    public List<TagDto> getMyListDtoWithCache(final Integer yy, final Integer mnth) throws Exception {
+        final String userId = AuthUtils.getLgnUserId();
+        return this.getSelf().getListDtoWithCacheByUser(userId, yy, mnth);
+    }
+
+    public List<TagDto> getMyWeeklyListDtoWithCache(final String weekStartDt) throws Exception {
+        final String userId = AuthUtils.getLgnUserId();
+        return this.getSelf().getWeeklyListDtoWithCacheByUser(userId, weekStartDt);
     }
 
     /**
@@ -66,10 +92,17 @@ public class JrnlDreamTagService
      * @param mnth 조회할 월
      * @return {@link List} -- 태그 목록
      */
-    @Cacheable(value="myJrnlDreamTagListYyMnth", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
-    public List<TagDto> getListDtoWithCache(final Integer yy, final Integer mnth) throws Exception {
+    @Cacheable(value = "jrnlDreamYyMnthTagListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#userId, #yy, #mnth)")
+    public List<TagDto> getListDtoWithCacheByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
         final JrnlDreamSearchParam searchParam = JrnlDreamSearchParam.builder().yy(yy).mnth(mnth).build();
+        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
+        return this.getSelf().getListDto(searchParam);
+    }
 
+    @Cacheable(value = "jrnlDreamWeeklyTagListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#userId, #weekStartDt)")
+    public List<TagDto> getWeeklyListDtoWithCacheByUser(final String userId, final String weekStartDt) throws Exception {
+        final JrnlDreamSearchParam searchParam = JrnlDreamSearchParam.builder().weekStartDt(weekStartDt).build();
+        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
         return this.getSelf().getListDto(searchParam);
     }
 
@@ -81,38 +114,48 @@ public class JrnlDreamTagService
      * @param mnth 조회할 월
      * @return {@link List} -- CSS 사이즈가 적용된 태그 목록
      */
-    @Cacheable(value="myJrnlDreamSizedTagList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy + \"_\" + #mnth")
-    public List<TagDto> getDreamSizedListDto(final Integer yy, final Integer mnth) throws Exception {
-        // 저널 꿈 태그 Dto 목록 조회
-        final List<TagDto> tagList = this.getSelf().getListDtoWithCache(yy, mnth);
+    public List<TagDto> getMyDreamSizedListDto(final Integer yy, final Integer mnth) throws Exception {
+        final String userId = AuthUtils.getLgnUserId();
+        return this.getSelf().getDreamSizedListDtoByUser(userId, yy, mnth);
+    }
 
-        final int maxSize = this.calcMaxSize(tagList, yy, mnth);
-        final int MIN_SIZE = 2; // 최소 크기
-        final int MAX_SIZE = 9; // 최대 크기
-        return tagList.stream()
-                .peek(dto -> {
-                    int size = dto.getContentSize();
-                    if (size == 1) {
-                        dto.setTagClass("ts-1");
-                    } else {
-                        final double ratio = (double) size / maxSize; // 사용 빈도의 비율 계산
-                        final int tagSize = (int) (MIN_SIZE + (MAX_SIZE - MIN_SIZE) * ratio);
-                        dto.setTagClass("ts-"+tagSize);
-                    }
-                })
-                .sorted()
-                .collect(Collectors.toList());
+    public List<TagDto> getMyWeeklySizedListDto(final String weekStartDt) throws Exception {
+        final String userId = AuthUtils.getLgnUserId();
+        return this.getSelf().getWeeklySizedListDtoByUser(userId, weekStartDt);
+    }
+
+    /**
+     * css 사이즈 계산한 태그 목록 조회
+     * 태그 1개 = 1. 그 외엔 2~9
+     *
+     * @param userId 사용자 ID
+     * @param yy 조회할 연도
+     * @param mnth 조회할 월
+     * @return {@link List} -- CSS 사이즈가 적용된 태그 목록
+     */
+    @Cacheable(value = "jrnlDreamYyMnthSizedTagListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#userId, #yy, #mnth)")
+    public List<TagDto> getDreamSizedListDtoByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
+        final List<TagDto> tagList = this.getSelf().getListDtoWithCacheByUser(userId, yy, mnth);
+        final int maxSize = this.calcMaxSize(tagList, AuthUtils.requireUserId(userId), yy, mnth, null);
+        return this.applyTagSizes(tagList, maxSize);
+    }
+
+    @Cacheable(value = "jrnlDreamWeeklySizedTagListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#userId, #weekStartDt)")
+    public List<TagDto> getWeeklySizedListDtoByUser(final String userId, final String weekStartDt) throws Exception {
+        final List<TagDto> tagList = this.getSelf().getWeeklyListDtoWithCacheByUser(userId, weekStartDt);
+        final int maxSize = this.calcMaxSize(tagList, AuthUtils.requireUserId(userId), null, null, weekStartDt);
+        return this.applyTagSizes(tagList, maxSize);
     }
 
     /**
      * 최대 사용빈도 계산한 꿈 태그 목록 조회
      *
-     * @param tagList 태그 목록 (List<TagDto>)
+     * @param tagList 태그 Dto 목록
      * @param yy 조회할 년도
      * @param mnth 조회할 월
      * @return {@link Integer} -- 태그 목록에서 계산된 최대 사용 빈도 (Integer)
      */
-    public Integer calcMaxSize(final List<TagDto> tagList, Integer yy, Integer mnth) {
+    public Integer calcMaxSize(final List<TagDto> tagList, final String userId, final Integer yy, final Integer mnth, final String weekStartDt) {
         if (CollectionUtils.isEmpty(tagList)) return 0;
 
         int maxFrequency = 0;
@@ -120,7 +163,8 @@ public class JrnlDreamTagService
         final JrnlDreamTagContentParam param = JrnlDreamTagContentParam.builder()
                 .yy(yy)
                 .mnth(mnth)
-                .regstrId(AuthUtils.getLgnUserId())
+                .weekStartDt(weekStartDt)
+                .regstrId(AuthUtils.requireUserId(userId))
                 .build();
         final Map<Integer, Integer> tagCntMap = this.getSelf().countDreamSizeMap(param);
 
@@ -133,20 +177,39 @@ public class JrnlDreamTagService
         return maxFrequency;
     }
 
+    private List<TagDto> applyTagSizes(final List<TagDto> tagList, final int maxSize) {
+        final int minSize = 2;
+        final int maxTagSize = 9;
+
+        return tagList.stream()
+                .peek(dto -> {
+                    final int size = dto.getContentSize();
+                    if (size <= 1 || maxSize <= 1) {
+                        dto.setTagClass("ts-1");
+                        return;
+                    }
+
+                    final double ratio = (double) size / maxSize;
+                    final int tagSize = (int) (minSize + (maxTagSize - minSize) * ratio);
+                    dto.setTagClass("ts-" + tagSize);
+                })
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
     /**
      * 꿈 태그별 크기 맵 조회
      *
      * @return {@link Map} -- 카테고리별 태그 목록을 담은 Map
      */
-    @Cacheable(value="myCountDreamSizeMap", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #param.yy + \"_\" + #param.mnth")
+    @Cacheable(value = "jrnlDreamCountMapByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#param.regstrId, #param.yy, #param.mnth, #param.weekStartDt)")
     public Map<Integer, Integer> countDreamSizeMap(final JrnlDreamTagContentParam param) {
         final List<TagContentCntDto> tagCountList = repository.countDreamSizeMap(param);
 
-        // List를 태그 번호를 키로 하고, 태그 개수를 값으로 하는 Map으로 변환
         final ConcurrentMap<Integer, Integer> concurrentMap = tagCountList.stream()
                 .collect(Collectors.toConcurrentMap(
                         TagContentCntDto::getTagNo,
-                        dto -> dto.getCount().intValue()   // Long을 int로 변환
+                        dto -> dto.getCount().intValue()
                 ));
         return new ConcurrentHashMap<>(concurrentMap);
     }
@@ -158,12 +221,42 @@ public class JrnlDreamTagService
      * @param mnth 조회할 월
      * @return {@link Map} -- 카테고리별로 그룹화된 태그 목록을 담은 Map
      */
-    public Map<String, List<TagDto>> getDreamSizedGroupListDto(final Integer yy, final Integer mnth) throws Exception {
-        final List<TagDto> tagList = this.getSelf().getDreamSizedListDto(yy, mnth);
+    public Map<String, List<TagDto>> getMyDreamSizedGroupListDto(final Integer yy, final Integer mnth) throws Exception {
+        final String userId = AuthUtils.getLgnUserId();
+        return this.getDreamSizedGroupListDtoByUser(userId, yy, mnth);
+    }
 
-        // 태그를 카테고리별로 그룹화하여 맵으로 반환
-        return tagList.stream()
-                .collect(Collectors.groupingBy(TagDto::getCtgr));
+    public Map<String, List<TagDto>> getMyWeeklySizedGroupListDto(final String weekStartDt) throws Exception {
+        final String userId = AuthUtils.getLgnUserId();
+        return this.getWeeklySizedGroupListDtoByUser(userId, weekStartDt);
+    }
+
+    /**
+     * 지정된 연도와 월을 기준으로 태그 목록을 카테고리별로 그룹화하여 반환합니다.
+     *
+     * @param userId 사용자 ID
+     * @param yy 조회할 연도
+     * @param mnth 조회할 월
+     * @return {@link Map} -- 카테고리별로 그룹화된 태그 목록을 담은 Map
+     */
+    public Map<String, List<TagDto>> getDreamSizedGroupListDtoByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
+        final List<TagDto> tagList = this.getSelf().getDreamSizedListDtoByUser(AuthUtils.requireUserId(userId), yy, mnth);
+        return tagList.stream().collect(Collectors.groupingBy(TagDto::getCtgr));
+    }
+
+    public Map<String, List<TagDto>> getWeeklySizedGroupListDtoByUser(final String userId, final String weekStartDt) throws Exception {
+        final List<TagDto> tagList = this.getSelf().getWeeklySizedListDtoByUser(AuthUtils.requireUserId(userId), weekStartDt);
+        return tagList.stream().collect(Collectors.groupingBy(TagDto::getCtgr));
+    }
+
+    /**
+     * 내 태그 카테고리 맵을 반환합니다.
+     *
+     * @return {@link Map} -- 태그 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵
+     */
+    public Map<String, List<String>> getMyTagCtgrMap() throws Exception {
+        final String userId = AuthUtils.getLgnUserId();
+        return this.getSelf().getTagCtgrMapByUser(userId);
     }
 
     /**
@@ -172,20 +265,17 @@ public class JrnlDreamTagService
      * @param userId 사용자 아이디
      * @return {@link Map} -- 태그 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵
      */
-    @Cacheable(value="myJrnlDreamTagCtgrMap", key="#userId")
-    public Map<String, List<String>> getTagCtgrMap(final String userId) throws Exception {
+    @Cacheable(value = "jrnlDreamTagCtgrMapByUser", key = "#userId")
+    public Map<String, List<String>> getTagCtgrMapByUser(final String userId) throws Exception {
         final HashMap<String, Object> paramMap = new HashMap<>() {{
-            put("regstrId", userId);
+            put("regstrId", AuthUtils.requireUserId(userId));
         }};
 
         final List<JrnlDreamTagEntity> tagList = this.getSelf().getListEntity(paramMap);
         return tagList.stream()
                 .collect(Collectors.groupingBy(
                         JrnlDreamTagEntity::getTagNm,
-                        Collectors.mapping(tag -> {
-                            if (StringUtils.isBlank(tag.getCtgr())) return "";
-                            return tag.getCtgr();
-                        }, Collectors.toList())
+                        Collectors.mapping(tag -> StringUtils.defaultString(tag.getCtgr()), Collectors.toList())
                 ));
     }
 }

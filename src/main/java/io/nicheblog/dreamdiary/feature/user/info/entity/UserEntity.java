@@ -72,6 +72,23 @@ public class UserEntity
     @Comment("비밀번호")
     private String password;
 
+    /** Refresh Token Hash */
+    @Column(name = "refresh_token_hash", length = 64)
+    @Comment("Refresh Token Hash")
+    private String refreshTokenHash;
+
+    /** Refresh Token 발생일시 */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "refresh_token_issued_at")
+    @Comment("Refresh Token 발생일시")
+    private java.util.Date refreshTokenIssuedAt;
+
+    /** Refresh Token 만료일시 */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "refresh_token_expires_at")
+    @Comment("Refresh Token 만료일시")
+    private java.util.Date refreshTokenExpiresAt;
+
     /** 사용자 권한 정보 */
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_no")
@@ -149,7 +166,7 @@ public class UserEntity
     /* ----- */
 
     /**
-     * tagify 문자열로부터 List<useAcsIpEntity> 세팅
+     * tagify 문자열로부터 접속 가능 IP 목록 세팅
      *
      * @param authStr 쉼표(,)로 구분된 권한 정보 문자열
      */
@@ -163,7 +180,7 @@ public class UserEntity
     }
 
     /**
-     * tagify 문자열로부터 List<useAcsIpEntity> 세팅
+     * tagify 문자열로부터 접속 가능 IP 목록 세팅
      *
      * @param tagifyStr tagify 형식으로 전달된 IP 주소 문자열
      */

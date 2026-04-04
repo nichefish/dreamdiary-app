@@ -6,8 +6,6 @@ import org.springframework.context.ApplicationEvent;
  * CustomEventHandler
  * {@link CustomEventBus} 전용 이벤트 핸들러 인터페이스.
  *
- * @param <T>
- *
  * @author nichefish
  */
 public interface CustomEventHandler<T extends ApplicationEvent> {

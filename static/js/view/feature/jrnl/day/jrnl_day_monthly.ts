@@ -22,12 +22,13 @@ const Page: Page = (function(): Page {
             dF.State.init();
 
             dF.JrnlDayAside.init();
+
             // 목록 조회
             dF.JrnlDay.yyMnthListAjax();
 
-            // 일기/꿈 키워드 검색에 엔터키 처리
-            cF.util.enterKey("#diaryKeyword", dF.JrnlDiary.searchPopup);
-            cF.util.enterKey("#dreamKeyword", dF.JrnlDream.searchPopup);
+            // 일기/꿈 키워드 검색창에 엔터키 처리
+            cF.util.enterKey("#diarySearchKeyword", dF.JrnlDiary.searchPopup);
+            cF.util.enterKey("#dreamSearchKeyword", dF.JrnlDream.searchPopup);
         },
 
         /**
@@ -36,7 +37,7 @@ const Page: Page = (function(): Page {
          * @param {string} url
          */
         changeView: function(url: string): void {
-            cF.ui.blockUIReplace(url);
+            cF.ui.blockUIReplace(dF.JrnlDay.buildViewUrl(url));
         },
     }
 })();

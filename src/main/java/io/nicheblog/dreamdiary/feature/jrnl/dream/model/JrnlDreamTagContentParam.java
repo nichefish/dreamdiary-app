@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.jrnl.dream.model;
 
+import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 /**
  * JrnlDreamTagContentParam
  * <pre>
- *  저널 꿈 태그-컨텐츠 목록 검색 파라미터.
+ *  꿈 태그-콘텐츠 목록 검색 파라미터.
  * </pre>
  *
  * @author nichefish
@@ -19,22 +20,26 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @ToString
-public class JrnlDreamTagContentParam {
+public class JrnlDreamTagContentParam
+        extends BaseSearchParam {
 
     /** 참조 글 번호 */
     private Integer refPostNo;
 
-    /** 참조 컨텐츠 타입 */
+    /** 참조 콘텐츠 타입 */
     private String refContentType;
 
     /** 태그 번호 */
     private Integer tagNo;
 
-    /** 년도 */
+    /** 연도 */
     private Integer yy;
 
     /** 월 */
     private Integer mnth;
+
+    /** 주 시작일 */
+    private String weekStartDt;
 
     /** 등록자 ID */
     private String regstrId;

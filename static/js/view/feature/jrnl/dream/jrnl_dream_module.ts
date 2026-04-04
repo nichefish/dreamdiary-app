@@ -31,10 +31,10 @@ dF.JrnlDream = (function(): dfModule {
 
         /**
          * initializes module.
-         * @param {"LIST"|"CAL"|"DAILY"|"SEARCH"} viewType
+         * @param {"LIST"|"CAL"|"DAILY"|"WEEKLY"|"SEARCH"} viewType
          * @return Promise<void>
          */
-        init: async function(viewType: "LIST"|"CAL"|"DAILY"|"SEARCH"): Promise<void> {
+        init: async function(viewType: "LIST"|"CAL"|"DAILY"|"WEEKLY"|"SEARCH"): Promise<void> {
             if (this.initPromise) return this.initPromise;
 
             /* initialize modules. */
@@ -62,6 +62,10 @@ dF.JrnlDream = (function(): dfModule {
                     dF.JrnlDreamTag.listAjax();     // 태그 refresh
                     break;
                 case "DAILY":
+                case "WEEKLY":
+                    Page.loadWeek(Page.stdrdDt);
+                    dF.JrnlDreamTag.listAjax();
+                    break;
                 case "SEARCH":
                     location.reload();
                     break;
@@ -113,7 +117,7 @@ dF.JrnlDream = (function(): dfModule {
          * 키워드 검색 팝업 호출
          */
         searchPopup: function(): void {
-            const keyword: string = (document.querySelector("#jrnl_aside #dreamKeyword") as HTMLInputElement)?.value;
+            const keyword: string = (document.querySelector("#dreamSearchKeyword") as HTMLInputElement)?.value;
             const url: string = `${Url.JRNL_DREAM_SEARCH}?searchKeywords=${keyword}`;
             const popupNm: string = "저널 꿈 검색";
             const options: string = 'width=1960,height=1440,top=0,left=270';

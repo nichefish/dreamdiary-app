@@ -36,19 +36,23 @@ public class JrnlDayCacheEvictor
             final Integer postNo = param.getPostNo();
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();
+            final String weekStartDt = param.getWeekStartDt();
+            final String prevWeekStartDt = param.getPrevWeekStartDt();
             // jrnl_day
-            EhCacheUtils.evictMyCache("myJrnlDayDtlDto", postNo);
-            this.evictMyDayPeriodCaches(yy, mnth);
+            EhCacheUtils.evictMyCacheByKey("jrnlDayDtlDtoByUser", postNo);
+            this.evictMyJrnlDayYyMnthCaches(yy, mnth);
+            this.evictMyJrnlDayWeeklyCaches(prevWeekStartDt, weekStartDt);
             // jrnl_day_tag
-            EhCacheUtils.evictMyCacheAll("myJrnlDayTagCtgrMap");
-            EhCacheUtils.evictMyCacheAll("myJrnlDayTagDtl");
-            EhCacheUtils.evictMyCacheAll("myJrnlDayTagList");
-            EhCacheUtils.evictMyCacheAll("myJrnlDaySizedTagList");
-            EhCacheUtils.evictMyCacheAll("myCountDaySizeMap");
-            EhCacheUtils.evictCache("tagContentEntityListByRef", postNo + "_JRNL_DAY");
+            EhCacheUtils.clearMyCache("jrnlDayTagCtgrMapByUser");
+            EhCacheUtils.clearMyCache("jrnlDayYyMnthTagListByUser");
+            EhCacheUtils.clearMyCache("jrnlDayWeeklyTagListByUser");
+            EhCacheUtils.clearMyCache("jrnlDayYyMnthSizedTagListByUser");
+            EhCacheUtils.clearMyCache("jrnlDayWeeklySizedTagListByUser");
+            EhCacheUtils.clearMyCache("jrnlDayCountMapByUser");
+            EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", postNo + "_JRNL_DAY");
             // jrnl_day_meta
-            EhCacheUtils.evictMyCacheAll("myJrnlDayMetaCtgrMap");
-            EhCacheUtils.evictCache("metaContentEntityListByRef", postNo + "_JRNL_DAY");
+            EhCacheUtils.clearMyCache("jrnlDayMetaCtgrMapByUser");
+            EhCacheUtils.evictCacheByKey("metaContentEntityListByRef", postNo + "_JRNL_DAY");
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);
             throw e;

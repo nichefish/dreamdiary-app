@@ -92,7 +92,7 @@ public class BoardDefService
      */
     @Override
     public void postRegist(final BoardDefDto updatedDto) throws Exception {
-        EhCacheUtils.evictCacheAll("boardDefMenuList");
+        EhCacheUtils.clearCache("boardDefMenuList");
     }
 
     /**
@@ -102,8 +102,8 @@ public class BoardDefService
      */
     @Override
     public void postModify(final BoardDefDto postDto, final BoardDefDto updatedDto) throws Exception {
-        EhCacheUtils.evictCacheAll("boardDefMenuList");
-        EhCacheUtils.evictCache("boardMenu", updatedDto.getBoardDef());
+        EhCacheUtils.clearCache("boardDefMenuList");
+        EhCacheUtils.evictCacheByKey("boardMenu", updatedDto.getBoardDef());
     }
 
     /**
@@ -113,7 +113,7 @@ public class BoardDefService
      */
     @Override
     public void postDelete(final BoardDefDto deletedDto) throws Exception {
-        EhCacheUtils.evictCacheAll("boardDefMenuList");
-        EhCacheUtils.evictCache("boardMenu", deletedDto.getBoardDef());
+        EhCacheUtils.clearCache("boardDefMenuList");
+        EhCacheUtils.evictCacheByKey("boardMenu", deletedDto.getBoardDef());
     }
 }

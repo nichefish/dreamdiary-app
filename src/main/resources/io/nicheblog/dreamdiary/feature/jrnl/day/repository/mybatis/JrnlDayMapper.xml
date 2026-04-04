@@ -8,6 +8,7 @@
         /* JrnlDayMapper.getDeletedByPostNo */
         SELECT
             day.post_no AS postNo,
+            day.regstr_id AS regstrId,
             day.yy AS yy,
             day.mnth AS mnth
         FROM jrnl_day day

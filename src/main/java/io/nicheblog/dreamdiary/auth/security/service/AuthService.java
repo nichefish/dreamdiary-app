@@ -149,7 +149,7 @@ public class AuthService
      * @return AuditorInfo
      */
     @Transactional(readOnly = true)
-    @Cacheable(cacheNames = "auditorInfo", key = "'userId:' + #userId", condition = "#userId!=null")
+    @Cacheable(cacheNames = "auditorInfo", key = "#userId", condition = "#userId!=null")
     public AuditorInfo getAuditorInfo(final String userId) {
         final Optional<UserEntity> userEntityWrapper = userRepository.findByUserId(userId);
         if (userEntityWrapper.isEmpty()) return null;

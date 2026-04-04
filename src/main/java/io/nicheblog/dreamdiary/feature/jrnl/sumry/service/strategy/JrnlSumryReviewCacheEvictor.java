@@ -39,15 +39,15 @@ public class JrnlSumryReviewCacheEvictor
 
             // Summary detail caches affected by review add/update/delete.
             if (jrnlSumryNo != null) {
-                EhCacheUtils.evictMyCache("myJrnlSumryDtl", jrnlSumryNo);
+                EhCacheUtils.evictMyCacheByKey("jrnlSumryDtlDtoByUser", jrnlSumryNo);
             }
             if (yy != null) {
-                EhCacheUtils.evictMyCache("myJrnlSumryDtlByYy", yy);
+                EhCacheUtils.evictMyCacheByKey("jrnlSumryYyDtlDtoByUser", yy);
             }
 
             // Review tag cache.
             if (reviewPostNo != null) {
-                EhCacheUtils.evictCache("tagContentEntityListByRef", reviewPostNo + "_JRNL_SUMRY_REVIEW");
+                EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", reviewPostNo + "_JRNL_SUMRY_REVIEW");
             }
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);

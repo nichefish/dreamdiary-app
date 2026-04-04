@@ -72,6 +72,10 @@ public class JrnlDayDto
     private Integer yy;
     /** 월 */
     private Integer mnth;
+    /** 주 시작일자 (월요일 기준) */
+    private String weekStartDt;
+    /** 이전 주 시작일자 */
+    private String prevWeekStartDt;
 
     /** 공휴일 여부 */
     private Boolean isHldy;

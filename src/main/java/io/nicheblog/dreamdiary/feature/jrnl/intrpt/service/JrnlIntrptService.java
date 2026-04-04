@@ -11,11 +11,9 @@ import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.entity.JrnlIntrptEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.mapstruct.JrnlIntrptMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptDto;
-import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.repository.jpa.JrnlIntrptRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.repository.mybatis.JrnlIntrptMapper;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.spec.JrnlIntrptSpec;
-import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
@@ -28,7 +26,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -71,34 +68,6 @@ public class JrnlIntrptService
     }
 
     /**
-     * 목록 조회 (dto level) :: 캐시 처리
-     *
-     * @param searchParam 검색 조건이 담긴 파라미터 객체
-     * @return {@link List} -- 조회된 목록
-     */
-    @Cacheable(value="myJrnlIntrptList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.toListCacheKey()")
-    public List<JrnlIntrptDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.getLgnUserId());
-
-        return this.getSelf().getListDto(searchParam);
-    }
-
-    /**
-     * 특정 년도의 중요 일기 목록 조회 :: 캐시 처리
-     *
-     * @param yy 조회할 년도
-     * @return {@link List} -- 해당 년도의 중요 목록
-     */
-    @Cacheable(value="myImprtcIntrptList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #yy")
-    public List<JrnlIntrptDto> getImprtcIntrptList(final Integer yy) throws Exception {
-        final JrnlIntrptSearchParam searchParam = JrnlIntrptSearchParam.builder().yy(yy).imprtcYn("Y").build();
-        final List<JrnlIntrptDto> dtoList = this.getSelf().getListDto(searchParam);
-        Collections.sort(dtoList);
-
-        return dtoList;
-    }
-
-    /**
      * 등록 전처리. (override)
      *
      * @param registDto 등록할 객체
@@ -129,6 +98,10 @@ public class JrnlIntrptService
      */
     @Override
     public void preModify(final JrnlIntrptDto modifyDto, final JrnlIntrptEntity modifyEntity) throws Exception {
+        if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
+
         final boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
         modifyDto.setIsIdxChanged(isIdxChanged);
     }
@@ -153,13 +126,36 @@ public class JrnlIntrptService
      * @param key 식별자
      * @return {@link JrnlIntrptDto} -- 조회된 객체
      */
-    @Cacheable(value="myJrnlIntrptDtlDto", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #key")
-    public JrnlIntrptDto getDtlDtoWithCache(final Integer key) throws Exception {
+    public JrnlIntrptDto getMyDtlDtoWithCache(final Integer key) throws Exception {
+        final String userId = AuthUtils.getLgnUserId();
+        return this.getSelf().getDtlDtoWithCacheByUser(userId, key);
+    }
+
+    /**
+     * 상세 조회 (dto level) :: 캐시 처리
+     *
+     * @param key 식별자
+     * @return {@link JrnlIntrptDto} -- 조회된 객체
+     */
+    @Cacheable(value="jrnlIntrptDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #key)")
+    public JrnlIntrptDto getDtlDtoWithCacheByUser(final String userId, final Integer key) throws Exception {
         final JrnlIntrptEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlIntrptDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        if (!retrieved.getIsRegstr(AuthUtils.requireUserId(userId))) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
         return retrieved;
+    }
+
+    /**
+     * 삭제 전처리. (override)
+     *
+     * @param deletedDto - 삭제된 객체
+     */
+    @Override
+    public void preDelete(final JrnlIntrptDto deletedDto) throws Exception {
+        if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
     }
 
     /**
@@ -185,7 +181,12 @@ public class JrnlIntrptService
      */
     @Transactional(readOnly = true)
     public JrnlIntrptDto getDeletedDtlDto(final Integer key) throws Exception {
-        return mapper.getDeletedByPostNo(key);
+        final JrnlIntrptDto deleted = mapper.getDeletedByPostNo(key);
+        if (deleted == null) return null;
+        if (!AuthUtils.isRegstr(deleted.getRegstrId())) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
+        return deleted;
     }
     
     /**
@@ -199,7 +200,7 @@ public class JrnlIntrptService
         int idx = 1;
         for (final JrnlIntrptDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictCache("myJrnlIntrptDtlDto", e.getPostNo());
+            EhCacheUtils.evictMyCacheByKey("jrnlIntrptDtlDtoByUser", e.getPostNo());
         }
 
         mapper.batchUpdateIdx(list);
@@ -239,7 +240,7 @@ public class JrnlIntrptService
         int idx = 1;
         for (final JrnlIntrptDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictCache("myJrnlIntrptDtlDto", e.getPostNo());
+            EhCacheUtils.evictMyCacheByKey("jrnlIntrptDtlDtoByUser", e.getPostNo());
         }
 
         mapper.batchUpdateIdx(list);

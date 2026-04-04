@@ -41,9 +41,9 @@ public class JrnlTagCacheUpdtWorker {
      * @param cacheKey String
      */
     @Transactional
-    public void handle(final String contentType, final String cacheKey, final Map<Integer, Integer> tagCntChangeMap) throws Exception {
+    public void handle(final String contentType, final Object cacheKey, final Map<Integer, Integer> tagCntChangeMap) throws Exception {
         if (MapUtils.isEmpty(tagCntChangeMap)) return;
-        if (StringUtils.isBlank(contentType) || StringUtils.isBlank(cacheKey)) return;
+        if (StringUtils.isBlank(contentType) || cacheKey == null) return;
 
         updtSizedMapCache(contentType, cacheKey, tagCntChangeMap);
         updtSizedListCache(contentType, cacheKey, tagCntChangeMap);
@@ -56,11 +56,8 @@ public class JrnlTagCacheUpdtWorker {
      * @param cacheKey 캐시 키 (사용자별 YY-MM 식별자)
      * @param tagCntChangeMap 변경된 태그 개수 정보 (태그 ID → 증가/감소 값)
      */
-    private void updtSizedMapCache(
-            final String contentType,
-            final String cacheKey,
-            final Map<Integer, Integer> tagCntChangeMap
-    ) {
+    @SuppressWarnings("unchecked")
+    private void updtSizedMapCache(final String contentType, final Object cacheKey, final Map<Integer, Integer> tagCntChangeMap) {
         final String cacheNm = this.getSizedTagMapCacheNmByContentType(contentType);
         final String sizedListCacheNm = this.getSizedTagListCacheNmByContentType(contentType);
         final String listCacheNm = this.getTagListCacheNmByContentType(contentType);
@@ -97,7 +94,8 @@ public class JrnlTagCacheUpdtWorker {
      * @param cacheKey 캐시 키 (사용자별 YY-MM 식별자)
      * @param tagCntChangeMap 변경된 태그 개수 정보 (태그 ID → 증가/감소 값)
      */
-    public void updtSizedListCache(final String contentType, final String cacheKey, final Map<Integer, Integer> tagCntChangeMap) throws Exception {
+    @SuppressWarnings("unchecked")
+    public void updtSizedListCache(final String contentType, final Object cacheKey, final Map<Integer, Integer> tagCntChangeMap) throws Exception {
         final String sizedListCacheNm = this.getSizedTagListCacheNmByContentType(contentType);
         final String sizedMapCacheNm = this.getSizedTagMapCacheNmByContentType(contentType);
         final String listCacheNm = this.getTagListCacheNmByContentType(contentType);
@@ -151,10 +149,7 @@ public class JrnlTagCacheUpdtWorker {
         final Cache listCache = cacheManager.getCache(listCacheNm);
         if (listCache != null) listCache.put(cacheKey, sizedTagList);
 
-        final Cache yyMnthListCache = cacheManager.getCache(listCacheNm + "YyMnth");
-        if (yyMnthListCache != null) yyMnthListCache.put(cacheKey, sizedTagList);
-
-        EhCacheUtils.evictCache(sizedListCacheNm, cacheKey);
+        EhCacheUtils.evictCacheByKey(sizedListCacheNm, cacheKey);
     }
 
     /**
@@ -164,12 +159,11 @@ public class JrnlTagCacheUpdtWorker {
             final String sizedMapCacheNm,
             final String sizedListCacheNm,
             final String listCacheNm,
-            final String cacheKey
+            final Object cacheKey
     ) {
-        EhCacheUtils.evictCache(sizedMapCacheNm, cacheKey);
-        EhCacheUtils.evictCache(sizedListCacheNm, cacheKey);
-        EhCacheUtils.evictCache(listCacheNm, cacheKey);
-        EhCacheUtils.evictCache(listCacheNm + "YyMnth", cacheKey);
+        EhCacheUtils.evictCacheByKey(sizedMapCacheNm, cacheKey);
+        EhCacheUtils.evictCacheByKey(sizedListCacheNm, cacheKey);
+        EhCacheUtils.evictCacheByKey(listCacheNm, cacheKey);
     }
 
     /**
@@ -180,11 +174,13 @@ public class JrnlTagCacheUpdtWorker {
      */
     public String getSizedTagMapCacheNmByContentType(final String contentType) {
         if (ContentType.JRNL_DAY.key.equals(contentType)) {
-            return "myCountDaySizeMap";
+            return "jrnlDayCountMapByUser";
         } else if (ContentType.JRNL_DIARY.key.equals(contentType)) {
-            return "myCountDiarySizeMap";
+            return "jrnlDiaryCountMapByUser";
         } else if (ContentType.JRNL_DREAM.key.equals(contentType)) {
-            return "myCountDreamSizeMap";
+            return "jrnlDreamCountMapByUser";
+        } else if (ContentType.JRNL_INTRPT.key.equals(contentType)) {
+            return "jrnlIntrptCountMapByUser";
         }
         return "";
     }
@@ -197,11 +193,13 @@ public class JrnlTagCacheUpdtWorker {
      */
     private String getTagListCacheNmByContentType(final String contentType) {
         if (ContentType.JRNL_DAY.key.equals(contentType)) {
-            return "myJrnlDayTagList";
+            return "jrnlDayYyMnthTagListByUser";
         } else if (ContentType.JRNL_DIARY.key.equals(contentType)) {
-            return "myJrnlDiaryTagList";
+            return "jrnlDiaryYyMnthTagListByUser";
         } else if (ContentType.JRNL_DREAM.key.equals(contentType)) {
-            return "myJrnlDreamTagList";
+            return "jrnlDreamYyMnthTagListByUser";
+        } else if (ContentType.JRNL_INTRPT.key.equals(contentType)) {
+            return "jrnlIntrptYyMnthTagListByUser";
         }
         return "";
     }
@@ -214,11 +212,13 @@ public class JrnlTagCacheUpdtWorker {
      */
     private String getSizedTagListCacheNmByContentType(final String contentType) {
         if (ContentType.JRNL_DAY.key.equals(contentType)) {
-            return "myJrnlDaySizedTagList";
+            return "jrnlDayYyMnthSizedTagListByUser";
         } else if (ContentType.JRNL_DIARY.key.equals(contentType)) {
-            return "myJrnlDiarySizedTagList";
+            return "jrnlDiaryYyMnthSizedTagListByUser";
         } else if (ContentType.JRNL_DREAM.key.equals(contentType)) {
-            return "myJrnlDreamSizedTagList";
+            return "jrnlDreamYyMnthSizedTagListByUser";
+        } else if (ContentType.JRNL_INTRPT.key.equals(contentType)) {
+            return "jrnlIntrptYyMnthSizedTagListByUser";
         }
         return "";
     }

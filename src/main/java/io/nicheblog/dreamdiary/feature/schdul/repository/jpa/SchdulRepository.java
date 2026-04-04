@@ -27,7 +27,7 @@ public interface SchdulRepository
      *
      * @param groupId - 조회할 일정 코드 또는 그룹 ID
      * @param date - 조회할 시작 날짜
-     * @return Optional<SchdulEntity> - 휴일에 해당하는 일정 정보가 포함된 `SchdulEntity` 객체의 Optional
+     * @return 휴일에 해당하는 일정 정보가 포함된 `SchdulEntity` 객체의 Optional
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))

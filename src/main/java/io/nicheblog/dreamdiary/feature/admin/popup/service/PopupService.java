@@ -44,7 +44,7 @@ public class PopupService
     // public Page<PopupDto> getActivePopupList() throws Exception {
     //     Page<PopupEntity> entityPage = popupRepository.findAll(popupSpec.getActives(), Pageable.unpaged());
 
-    //     // Page<Entity> -> Page<Dto>
+    //     // {@code Page<Entity>} -> {@code Page<Dto>}
     //     return this.pageEntityToDto(entityPage);
     // }
 }

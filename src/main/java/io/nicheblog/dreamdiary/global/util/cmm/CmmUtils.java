@@ -153,7 +153,7 @@ public class CmmUtils {
      * cache key 생성용 String 리스트 정규화
      * - 리스트 순서에 영향을 받지 않는 deterministic key 생성
      *
-     * @param source List<String>
+     * @param source  {@code List<String>}
      */
     public static String normalizeStringList(final List<String> source) {
         if (CollectionUtils.isEmpty(source)) return "";
@@ -171,7 +171,7 @@ public class CmmUtils {
      * cache key 생성용 Integer 리스트 정규화
      * - 리스트 순서에 영향을 받지 않는 deterministic key 생성
      *
-     * @param source List<Integer>
+     * @param source {@code Set<Integer>}
      */
     public static String normalizeIntegerList(final List<Integer> source) {
         if (CollectionUtils.isEmpty(source)) return "";
@@ -191,11 +191,11 @@ public class CmmUtils {
     }
 
     /**
-     * 문자열을 Set<String>으로 변환하는 유틸 함수
+     * 문자열을 {@code Set<String>}으로 변환하는 유틸 함수
      *
      * @param valueStr String
      * @param delimiter String
-     * @return Set<String>
+     * @return {@code Set<String>}
      */
     public static Set<String> parseToSet(final String valueStr, final String delimiter) {
         if (StringUtils.isEmpty(delimiter)) return parseToSet(valueStr, ",");

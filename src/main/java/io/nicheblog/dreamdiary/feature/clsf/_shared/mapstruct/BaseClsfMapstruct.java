@@ -12,7 +12,7 @@ import org.mapstruct.MappingTarget;
  * <pre>
  *  (공통/상속) MapStruct 기반 Mapper 인터페이스.
  *  (clsf 기반 요소들 변환 로직 추가)
- * <pre>
+ * </pre>
  *
  * @author nichefish
  */

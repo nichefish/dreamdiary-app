@@ -17,7 +17,7 @@
     <#assign isNotTopMenu = (upperMenuNo != menu.upperMenuNo!?string) />
     <div class="menu-item" id="${menu.menuNo!}">
         <a href="${menu.url!}" class="menu-link <#if isNotTopMenu>text-inverse-light</#if>">
-            ${menu.icon?no_esc}
+            ${menu.icon!?no_esc}
             <span class="menu-title">${menu.menuNm!}</span>
             <!-- TODO: 새 글 갯수 표시. 1개 이상이면 표시. 5개 이상이면 깜빡임. -->
             <#if menu.unreadCntNm?? && menu.unreadCntNm != ''>
@@ -95,7 +95,7 @@
         <div class="menu-sub menu-sub-accordion">
             <#list menu.subMenuList![] as subMenu>
                 <!--end:Menu item-->
-                <div class="menu-inner flex-column <#if subMenu?index gt 1>collapse" id="kt_app_sidebar_menu_${menu.menuNo!}_collapse</#if>">
+                <div class="menu-inner flex-column <#if subMenu?index gt 2>collapse" id="kt_app_sidebar_menu_${menu.menuNo!}_collapse</#if>">
                     <!--begin:Menu item-->
                     <div class="menu-item" id="${subMenu.menuNo!}">
                         <!--begin:Menu link-->
@@ -110,7 +110,7 @@
                     <!--end:Menu item-->
                 </div>
             </#list>
-            <#if menu.subMenuList?size gt 2>
+            <#if menu.subMenuList?size gt 3>
                 <div class="menu-item pt-0">
                     <div class="menu-content">
                         <a class="btn btn-flex btn-color-primary d-flex flex-stack fs-base p-0 ms-2 mb-2 toggle collapsible collapsed"

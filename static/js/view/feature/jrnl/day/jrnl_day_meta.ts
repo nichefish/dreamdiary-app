@@ -1,15 +1,12 @@
 /**
- * jrnl_day_cal.ts
- * 저널 달력 페이지 스크립트
+ * jrnl_day_meta.ts
+ * 저널 메타 페이지 스크립트
  *
  * @author nichefish
  */
 // @ts-ignore
 const Page: Page = (function(): Page {
     return {
-        calendar: null,
-        calDt: null,
-
         init: function(): void {
             /* initialize modules. */
             dF.JrnlDay.init('CAL');
@@ -21,13 +18,10 @@ const Page: Page = (function(): Page {
             });
             dF.State.init();
 
-            // 태그 조회
+            // 메타 조회
             dF.JrnlDayMeta.listAjax();
 
             dF.JrnlDayAside.init();
-            // 일기/꿈 키워드 검색에 엔터키 처리
-            cF.util.enterKey("#diaryKeyword", dF.JrnlDiary.searchPopup);
-            cF.util.enterKey("#dreamKeyword", dF.JrnlDream.searchPopup);
         },
 
         /**
@@ -36,7 +30,7 @@ const Page: Page = (function(): Page {
          * @param {string} url
          */
         changeView: function(url: string): void {
-            cF.ui.blockUIReplace(url);
+            cF.ui.blockUIReplace(dF.JrnlDay.buildViewUrl(url));
         },
     }
 })();

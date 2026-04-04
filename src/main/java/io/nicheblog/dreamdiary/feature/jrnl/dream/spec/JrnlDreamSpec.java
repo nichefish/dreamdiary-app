@@ -84,6 +84,7 @@ public class JrnlDreamSpec
         // expressions
         final Join<JrnlDreamEntity, JrnlDaySmpEntity> jrnlDayJoin = root.join("jrnlDay", JoinType.INNER);
         final Expression<Date> effectiveDtExp = builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"));
+        final String regstrId = resolveRegstrId(searchParamMap);
 
         // 파라미터 비교
         for (final String key : searchParamMap.keySet()) {
@@ -135,7 +136,7 @@ public class JrnlDreamSpec
                     // 특정 태그된 꿈만 조회
                     final Join<JrnlDreamEntity, TagEmbed> tagJoin = root.join("tag", JoinType.INNER);
                     final Join<TagEmbed, TagContentEntity> tagContentJoin = tagJoin.join("list", JoinType.INNER);
-                    predicate.add(builder.equal(tagContentJoin.get("regstrId"), AuthUtils.getLgnUserId()));
+                    predicate.add(builder.equal(tagContentJoin.get("regstrId"), regstrId));
                     predicate.add(builder.equal(tagContentJoin.get("refTagNo"), value));
                     predicate.add(builder.equal(tagContentJoin.get("refContentType"), ContentType.JRNL_DIARY.key));
                     continue;
@@ -151,7 +152,6 @@ public class JrnlDreamSpec
                         .toList();
 
                     if (tagNos.isEmpty()) break;
-                    final String userId = AuthUtils.getLgnUserId();
                     final Subquery<Long> sub = query.subquery(Long.class);
                     final Root<TagContentEntity> subRoot = sub.from(TagContentEntity.class);
 
@@ -160,7 +160,7 @@ public class JrnlDreamSpec
                         builder.and(
                             builder.equal(subRoot.get("refPostNo"), root.get("postNo")),
                             builder.equal(subRoot.get("refContentType"), ContentType.JRNL_DREAM.key),
-                            builder.equal(subRoot.get("regstrId"), userId),
+                            builder.equal(subRoot.get("regstrId"), regstrId),
                             subRoot.get("refTagNo").in(tagNos)
                         )
                     );
@@ -189,7 +189,7 @@ public class JrnlDreamSpec
                         )
                     );
 
-                    predicate.add(builder.equal(root.get("regstrId"), AuthUtils.getLgnUserId()));
+                    predicate.add(builder.equal(root.get("regstrId"), regstrId));
                     predicate.add(builder.exists(subquery));
                     break;
                 default:
@@ -203,5 +203,14 @@ public class JrnlDreamSpec
         }
 
         return predicate;
+    }
+
+    private String resolveRegstrId(final Map<String, Object> searchParamMap) {
+        final Object regstrId = searchParamMap.get("regstrId");
+        if (regstrId != null) {
+            final String regstrIdStr = regstrId.toString();
+            if (!regstrIdStr.isBlank()) return regstrIdStr;
+        }
+        return AuthUtils.getLgnUserId();
     }
 }

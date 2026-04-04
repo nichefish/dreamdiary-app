@@ -66,7 +66,7 @@ public final class Constant {
     public static final String IS_MBL = "IS_MBL";
 
     /** 스태틱 자원 경로 (인증 불필요) */
-    public static final String[] STATIC_PATHS = { "/static/**", "/css/**", "/js/**", "/media/**", "/font/**", "/lib/**", "/metronic/**", "/react/**", "/vue/**",  "/content/**", "/upfile/public/**" };
+    public static final String[] STATIC_PATHS = { "/static/**", "/javadoc/**", "/css/**", "/js/**", "/media/**", "/font/**", "/lib/**", "/metronic/**", "/react/**", "/vue/**",  "/content/**", "/upfile/public/**" };
 
     /** 파일업로드 기본 경로 */
     public static final String UPFILE_PATH = "file/upfile/";
@@ -106,7 +106,7 @@ public final class Constant {
     /**
      * 리플렉션을 이용해 모든 인터페이스에서 정의된 상수들을 Map으로 반환
      *
-     * @return Map<String, String> - 상수들을 key-value 형태로 담은 Map
+     * @return 상수들을 key-value 형태로 담은 Map
      */
     public static Map<String, String> initConstantMap() {
         final Map<String, String> constantMap = new HashMap<>();

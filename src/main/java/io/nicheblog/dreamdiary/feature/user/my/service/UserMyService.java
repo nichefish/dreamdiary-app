@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.user.my.service;
 
+import io.nicheblog.dreamdiary.auth.jwt.service.RefreshTokenService;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.file.model.AtchFileDtlDto;
 import io.nicheblog.dreamdiary.feature.clsf.file.utils.FileUtils;
@@ -32,6 +33,7 @@ public class UserMyService {
     private final UserService userService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenService refreshTokenService;
 
     /**
      * 비밀번호 만료시 비밀번호 변경 (미로그인 상태)
@@ -56,6 +58,7 @@ public class UserMyService {
         retrievedEntity.acntStus.setNeedsPwReset("N");
         retrievedEntity.acntStus.setPwChgDt(DateUtils.getCurrDate());
         final UserEntity modified = userRepository.saveAndFlush(retrievedEntity);
+        refreshTokenService.revoke(userId);
 
         return modified.getUserNo() != null;
     }
@@ -115,6 +118,7 @@ public class UserMyService {
         retrievedEntity.acntStus.setNeedsPwReset("N");
         retrievedEntity.acntStus.setPwChgDt(DateUtils.getCurrDate());
         final UserEntity modified = userRepository.saveAndFlush(retrievedEntity);
+        refreshTokenService.revoke(lgnUserId);
 
         return modified.getUserNo() != null;
     }
@@ -139,7 +143,7 @@ public class UserMyService {
         final UserEntity modified = userRepository.saveAndFlush(retrievedEntity);
 
         // 관련 캐시 삭제
-        EhCacheUtils.evictCache("auditorInfo", "userId:"+lgnUserId);
+        EhCacheUtils.evictCacheByKey("auditorInfo", lgnUserId);
 
         return modified.getUserNo() != null;
     }
@@ -158,7 +162,7 @@ public class UserMyService {
         final UserEntity updatedEntity = userRepository.saveAndFlush(retrievedEntity);
 
         // 관련 캐시 삭제
-        EhCacheUtils.evictCache("auditorInfo", "userId:"+lgnUserId);
+        EhCacheUtils.evictCacheByKey("auditorInfo", lgnUserId);
 
         return updatedEntity.getUserNo() != null;
     }

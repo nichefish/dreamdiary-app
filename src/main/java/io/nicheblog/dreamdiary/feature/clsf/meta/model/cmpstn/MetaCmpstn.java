@@ -53,7 +53,7 @@ public class MetaCmpstn
     /**
      * Metaify 형식의 문자열을 파싱하여 "value" 리스트로 반환하는 메서드.
      * Metaify (ex.) = [{"value":"123.123.123.123"},{"value":"234.234.234.234"}] 문자열 형식으로 넘어온댜.
-     * @return List<String> - 파싱된 문자열 값들의 리스트. 문자열이 비어 있을 경우 빈 리스트 반환.
+     * @return 파싱된 문자열 값들의 리스트. 문자열이 비어 있을 경우 빈 리스트 반환.
      */
     public List<String> getParsedMetaStrList() {
         if (StringUtils.isEmpty(this.metaListStr)) return new ArrayList<>();
@@ -67,7 +67,7 @@ public class MetaCmpstn
     /**
      * Metaify 형식의 문자열을 파싱하여 MetaDto 리스트로 반환하는 메서드.
      * Metaify (ex.) = [{"value":"123.123.123.123"},{"value":"234.234.234.234"}] 문자열 형식으로 넘어온댜.
-     * @return List<MetaDto> - 파싱된 MetaDto 객체들의 리스트. 문자열이 비어 있을 경우 빈 리스트 반환.
+     * @return 파싱된 MetaDto 객체들의 리스트. 문자열이 비어 있을 경우 빈 리스트 반환.
      */
     public List<MetaDto> getParsedMetaList() {
         if (StringUtils.isEmpty(this.metaListStr)) return new ArrayList<>();
@@ -124,7 +124,7 @@ public class MetaCmpstn
 
     /**
      * Getter :: 메타 목록을 리스트로 반환.
-     * @return List<String> - 메타 이름의 리스트, 리스트가 비어 있을 경우 null 반환
+     * @return 메타 이름의 리스트, 리스트가 비어 있을 경우 null 반환
      */
     public List<String> getMetaStrList() {
         if (CollectionUtils.isEmpty(this.list)) return null;

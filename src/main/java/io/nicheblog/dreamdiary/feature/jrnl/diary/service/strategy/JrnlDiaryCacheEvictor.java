@@ -37,25 +37,28 @@ public class JrnlDiaryCacheEvictor
             final Integer jrnlDayNo = param.getJrnlDayNo();
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();
+            final String weekStartDt = param.getWeekStartDt();
             // jrnl_diary
-            this.evictMyCacheByPeriodPrefix("myJrnlDiaryList", yy, mnth);
-            this.evictMyCacheByYearPrefix("mySumryDiaryList", yy);
-            EhCacheUtils.evictMyCache("myJrnlDiaryDtlDto", postNo);
+            this.evictMyYyCacheByYyPrefix("jrnlDiaryYySumryStatedListByUser", yy);
+            EhCacheUtils.evictMyCacheByKey("jrnlDiaryDtlDtoByUser", postNo);
             // jrnl_day
             if (jrnlDayNo != null) {
-                EhCacheUtils.evictMyCache("myJrnlDayDtlDto", jrnlDayNo);
+                EhCacheUtils.evictMyCacheByKey("jrnlDayDtlDtoByUser", jrnlDayNo);
             }
-            this.evictMyDayPeriodCaches(yy, mnth);
+            this.evictMyJrnlDayYyMnthCaches(yy, mnth);
+            this.evictMyJrnlDayWeeklyCaches(weekStartDt);
             // jrnl_diary_tag
-            EhCacheUtils.evictMyCacheAll("myJrnlDiaryTagCtgrMap");
-            EhCacheUtils.evictMyCacheAll("myJrnlDiaryTagList");
-            EhCacheUtils.evictMyCacheAll("myJrnlDiaryTagListYyMnth");
-            EhCacheUtils.evictMyCacheAll("myJrnlDiarySizedTagList");
-            EhCacheUtils.evictMyCacheAll("myCountDiarySizeMap");
+            EhCacheUtils.clearMyCache("jrnlDiaryTagCtgrMapByUser");
+            EhCacheUtils.clearMyCache("jrnlDiaryTagListByUser");
+            EhCacheUtils.clearMyCache("jrnlDiaryYyMnthTagListByUser");
+            EhCacheUtils.clearMyCache("jrnlDiaryWeeklyTagListByUser");
+            EhCacheUtils.clearMyCache("jrnlDiaryYyMnthSizedTagListByUser");
+            EhCacheUtils.clearMyCache("jrnlDiaryWeeklySizedTagListByUser");
+            EhCacheUtils.clearMyCache("jrnlDiaryCountMapByUser");
 
             // 태그 캐시 처리
             if (postNo != null) {
-                EhCacheUtils.evictCache("tagContentEntityListByRef", postNo + "_JRNL_DIARY");
+                EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", postNo + "_JRNL_DIARY");
             }
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);

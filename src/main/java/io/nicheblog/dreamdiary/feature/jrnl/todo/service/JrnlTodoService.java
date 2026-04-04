@@ -9,7 +9,6 @@ import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.entity.JrnlTodoEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.mapstruct.JrnlTodoMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.model.JrnlTodoDto;
-import io.nicheblog.dreamdiary.feature.jrnl.todo.model.JrnlTodoSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.repository.jpa.JrnlTodoRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.spec.JrnlTodoSpec;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
@@ -64,9 +63,21 @@ public class JrnlTodoService
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
      */
-    @Cacheable(value="myJrnlTodoList", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #searchParam.getYy() + \"_\" + #searchParam.getMnth()")
-    public List<JrnlTodoDto> getListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.getLgnUserId());
+    public List<JrnlTodoDto> getMyListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
+        final String userId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
+        return this.getSelf().getListDtoWithCacheByUser(userId, searchParam);
+    }
+
+    /**
+     * 목록 조회 (dto level) :: 캐시 처리
+     *
+     * @param userId 사용자 ID
+     * @param searchParam 검색 조건이 담긴 파라미터 객체
+     * @return {@link List} -- 조회된 목록
+     */
+    @Cacheable(value="jrnlTodoListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #searchParam.getYy(), #searchParam.getMnth())")
+    public List<JrnlTodoDto> getListDtoWithCacheByUser(final String userId, final BaseSearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
 
         return this.getSelf().getListDto(searchParam);
     }
@@ -81,6 +92,19 @@ public class JrnlTodoService
         // 인덱스(정렬순서) 처리
         final Integer lastIndex = repository.findLastIndexByYyMnth(registDto.getYy(), registDto.getMnth()).orElse(0);
         registDto.setIdx(lastIndex + 1);
+    }
+
+    /**
+     * 수정 전처리. (override)
+     *
+     * @param modifyDto 수정할 객체 (dto)
+     * @param modifyEntity 수정할 객체 (entity)
+     */
+    @Override
+    public void preModify(final JrnlTodoDto modifyDto, final JrnlTodoEntity modifyEntity) throws Exception {
+        if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
     }
 
     /**
@@ -111,13 +135,36 @@ public class JrnlTodoService
      * @param key 식별자
      * @return {@link JrnlTodoDto} -- 조회된 객체
      */
-    @Cacheable(value="myJrnlTodoDtlDto", key="T(io.nicheblog.dreamdiary.auth.security.util.AuthUtils).getLgnUserId() + \"_\" + #key")
-    public JrnlTodoDto getDtlDtoWithCache(final Integer key) throws Exception {
+    public JrnlTodoDto getMyDtlDtoWithCache(final Integer key) throws Exception {
+        final String userId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
+        return this.getSelf().getDtlDtoWithCacheByUser(userId, key);
+    }
+
+    /**
+     * 상세 조회 (dto level) :: 캐시 처리
+     *
+     * @param key 식별자
+     * @return {@link JrnlTodoDto} -- 조회된 객체
+     */
+    @Cacheable(value="jrnlTodoDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #key)")
+    public JrnlTodoDto getDtlDtoWithCacheByUser(final String userId, final Integer key) throws Exception {
         final JrnlTodoEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlTodoDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr()) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        if (!retrieved.getIsRegstr(AuthUtils.requireUserId(userId))) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
         return retrieved;
+    }
+
+    /**
+     * 삭제 전처리. (override)
+     *
+     * @param deletedDto - 삭제된 객체
+     */
+    @Override
+    public void preDelete(final JrnlTodoDto deletedDto) throws Exception {
+        if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
     }
 
     /**
