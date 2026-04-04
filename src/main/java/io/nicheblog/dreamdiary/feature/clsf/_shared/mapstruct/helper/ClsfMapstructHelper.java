@@ -8,6 +8,11 @@ import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbedMod
 import io.nicheblog.dreamdiary.feature.clsf.comment.mapstruct.embed.CommentEmbedMapstruct;
 import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstnModule;
+import io.nicheblog.dreamdiary.feature.clsf.history.entity.embed.HistoryEmbed;
+import io.nicheblog.dreamdiary.feature.clsf.history.entity.embed.HistoryEmbedModule;
+import io.nicheblog.dreamdiary.feature.clsf.history.mapstruct.embed.HistoryEmbedMapstruct;
+import io.nicheblog.dreamdiary.feature.clsf.history.model.cmpstn.HistoryCmpstn;
+import io.nicheblog.dreamdiary.feature.clsf.history.model.cmpstn.HistoryCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.managt.entity.embed.ManagtEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.managt.entity.embed.ManagtEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.managt.mapstruct.embed.ManagtEmbedMapstruct;
@@ -52,7 +57,7 @@ import org.springframework.stereotype.Component;
  * </pre>
  *
  * @author nichefish
- * TODO: 모듈 수가 증가할 경우 Strategy 기반 분리 고려.
+ * TODO: 모듈 수가 증가하면 Strategy 기반 분리 고려.
  */
 @Component
 @RequiredArgsConstructor
@@ -63,7 +68,7 @@ public class ClsfMapstructHelper {
     /**
      * Map Clsf Fields (entity -> dto)
      *
-     * @param entity 매핑할 Entity
+     * @param entity 매핑용 Entity
      * @param dto 매핑 대상 Dto
      */
     public static <Entity extends BaseClsfEntity, Dto extends BaseClsfDto> void mapClsfFields(final Entity entity, final @MappingTarget Dto dto) throws Exception {
@@ -107,7 +112,14 @@ public class ClsfMapstructHelper {
             ((MetaCmpstnModule) dto).setMeta(cmpstn);
         }
 
-        // 조치 :: 공통 필드 매핑 로직
+        // 이력 :: 공통 필드 매핑 로직
+        boolean usesHistoryModule = (entity instanceof HistoryEmbedModule && dto instanceof HistoryCmpstnModule);
+        if (usesHistoryModule) {
+            final HistoryEmbed embed = ((HistoryEmbedModule) entity).getHistory();
+            final HistoryCmpstn cmpstn = HistoryEmbedMapstruct.INSTANCE.toDto(embed);
+            ((HistoryCmpstnModule) dto).setHistory(cmpstn);
+        }
+
         boolean usesManagtModule = (entity instanceof ManagtEmbedModule && dto instanceof ManagtCmpstnModule);
         if (usesManagtModule) {
             final ManagtEmbed embed = ((ManagtEmbedModule) entity).getManagt();
@@ -129,14 +141,13 @@ public class ClsfMapstructHelper {
         }
     }
 
-    /** 
+    /**
      * 새 글 여부 처리 로직:: 메소드 분리
      *
      * @param entity 새 글 여부를 판단할 BaseClsfEntity 객체
      * @return 새 글이면 true, 그렇지 않으면 false
      */
-    public static <Entity extends BaseClsfEntity, Dto extends BaseClsfDto> Boolean determineIfNew(Entity entity) throws Exception {
-
+    public static <Entity extends BaseClsfEntity, Dto extends BaseClsfDto> Boolean determineIfNew(final Entity entity) throws Exception {
         if (((ManagtEmbedModule) entity).getManagt() == null || ((ManagtEmbedModule) entity).getManagt().getManagtDt() == null) return false;
         // 최종수정 이후 7일 지난 글은 새 글이 아님
         if (!((ManagtEmbedModule) entity).getManagt().getManagtDt().after(DateUtils.getCurrDateAddDay(-7))) return false;

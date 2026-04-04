@@ -48,3 +48,4 @@
 <#--include:: Handlebars template-->
 <#include "_jrnl_diary_reg_modal_header_template.hbs">
 <#include "_jrnl_diary_reg_modal_template.hbs">
+<#include "_jrnl_diary_history_modal.ftlh">

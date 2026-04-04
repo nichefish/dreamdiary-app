@@ -190,6 +190,26 @@ CREATE TABLE IF NOT EXISTS managtr (
 
 -- ---------- --
 
+-- 이력 (history)
+-- @extends: BaseAuditRegEntity
+CREATE TABLE history (
+    history_no INT AUTO_INCREMENT COMMENT '이력 번호 (PK)',
+    ref_post_no INT COMMENT '참조 글번호',
+    ref_content_type VARCHAR(255) COMMENT '참조 컨텐츠 타입',
+    cn LONGTEXT COMMENT '이력 내용 스냅샷',
+    history_type VARCHAR(20) NOT NULL DEFAULT 'CHANGE' COMMENT '이력 타입',
+    from_history_no INT COMMENT '복구 원본 이력 번호',
+    -- AUDIT
+    reg_id VARCHAR(50) COMMENT '등록자',
+    reg_dt DATETIME COMMENT '등록일시',
+    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부',
+
+    PRIMARY KEY (history_no),
+    INDEX(ref_post_no, ref_content_type)
+);
+
+-- ---------- --
+
 -- 열람자 (viewer)
 -- @extends: BaseAuditRegEntity
 CREATE TABLE IF NOT EXISTS viewer (

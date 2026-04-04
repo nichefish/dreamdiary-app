@@ -2,6 +2,9 @@ package io.nicheblog.dreamdiary.feature.clsf._shared.service;
 
 import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
 import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
+import io.nicheblog.dreamdiary.feature.clsf._shared.service.helper.BaseClsfHistoryHelper;
+import io.nicheblog.dreamdiary.feature.clsf.history.HistoryType;
+import io.nicheblog.dreamdiary.feature.clsf.history.model.HistoryActionModule;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.helper.BaseClsfManagtHelper;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.helper.BaseClsfProcPostProcessor;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
@@ -69,9 +72,13 @@ public interface BaseClsfService<PostDto extends BaseClsfDto & Identifiable<Key>
      */
     @Override
     @Transactional
+    @SuppressWarnings("unchecked")
     default ServiceResponse modify(final PostDto postDto) throws Exception {
         // Entity 먼저 조회
         final Entity modifyEntity = this.getDtlEntity(postDto.getKey());
+        final Entity historySnapshot = BaseClsfHistoryHelper.isHistoryModule(modifyEntity)
+                ? (Entity) modifyEntity.toBuilder().build()
+                : null;
 
         // optional: 수정 전처리(dto)
         this.preModify(postDto);
@@ -81,15 +88,23 @@ public interface BaseClsfService<PostDto extends BaseClsfDto & Identifiable<Key>
         // Dto -> 기존 Entity 반영
         getWriteMapstruct().updateFromDto(postDto, modifyEntity);
 
-        // managt 처리
+        // 이력 처리
         BaseClsfManagtHelper.applyModifyManagt(postDto, modifyEntity);
+        BaseClsfHistoryHelper.applyModifyHistory(historySnapshot, modifyEntity);
 
-        // update
         final Entity updatedEntity = getRepository().saveAndFlush(modifyEntity);
         final Dto updatedDto = getReadMapstruct().toDto(updatedEntity);
 
         // 필수 후처리(등록/수정 공통): tag/meta 전달 + 처리
         BaseClsfProcPostProcessor.afterWrite(postDto, updatedDto);
+        // 이력 후처리
+        final HistoryType historyType = postDto instanceof HistoryActionModule historyAction
+                ? historyAction.resolveHistoryType()
+                : HistoryType.CHANGE;
+        final Integer fromHistoryNo = postDto instanceof HistoryActionModule historyAction
+                ? historyAction.getFromHistoryNo()
+                : null;
+        BaseClsfHistoryHelper.publishHistoryEventIfSupported(this, historySnapshot, updatedEntity, historyType, fromHistoryNo);
 
         // optional: 수정 후처리(dto)
         this.postModify(postDto, updatedDto);

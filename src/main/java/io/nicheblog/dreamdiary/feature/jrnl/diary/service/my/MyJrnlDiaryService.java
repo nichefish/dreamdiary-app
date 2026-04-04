@@ -57,4 +57,5 @@ public class MyJrnlDiaryService {
         final String userId = AuthUtils.requireLgnUserId();
         return jrnlDiaryService.getDtlDtoWithCacheByUser(userId, key);
     }
+
 }

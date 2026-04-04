@@ -77,6 +77,7 @@
 <#include "/view/feature/jrnl/diary/_partial/_jrnl_diary_states_partial.hbs">
 <#include "/view/feature/jrnl/diary/_partial/_jrnl_diary_cn_partial.hbs">
 <script type="text/javascript" src="/js/view/feature/jrnl/diary/jrnl_diary_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/feature/jrnl/diary/jrnl_diary_hist_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_dream_module-->
 <#include "/view/feature/jrnl/dream/_modal/_jrnl_dream_reg_modal.ftlh">
