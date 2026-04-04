@@ -3,6 +3,8 @@ package io.nicheblog.dreamdiary.infrastructure.log.actvty.filter;
 import org.slf4j.MDC;
 
 import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -15,6 +17,9 @@ import java.util.UUID;
 public class TraceFilter
         implements Filter {
 
+    private static final String TRACE_ID = "traceId";
+    private static final String TRACE_HEADER = "X-Trace-Id";
+
     /**
      * 요청 전처리
      * @param req ServletRequest
@@ -25,14 +30,26 @@ public class TraceFilter
     public void doFilter(final ServletRequest req, final ServletResponse res, final FilterChain chain)
         throws IOException, ServletException {
 
-        final String traceId = UUID.randomUUID().toString();
-        MDC.put("traceId", traceId);
-        req.setAttribute("traceId", traceId);
+        final HttpServletRequest request = (HttpServletRequest) req;
+        final HttpServletResponse response = (HttpServletResponse) res;
+        final String traceId = resolveTraceId(request);
+
+        MDC.put(TRACE_ID, traceId);
+        request.setAttribute(TRACE_ID, traceId);
+        response.setHeader(TRACE_HEADER, traceId);
 
         try {
-            chain.doFilter(req, res);
+            chain.doFilter(request, response);
         } finally {
             MDC.clear();
         }
+    }
+
+    private String resolveTraceId(final HttpServletRequest request) {
+        final String inboundTraceId = request.getHeader(TRACE_HEADER);
+        if (inboundTraceId != null && !inboundTraceId.isBlank()) {
+            return inboundTraceId;
+        }
+        return UUID.randomUUID().toString();
     }
 }

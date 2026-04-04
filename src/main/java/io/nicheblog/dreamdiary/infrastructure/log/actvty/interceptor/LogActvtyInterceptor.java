@@ -43,6 +43,16 @@ public class LogActvtyInterceptor implements HandlerInterceptor {
     public boolean preHandle(final HttpServletRequest request, final @NotNull HttpServletResponse response, final @NotNull Object handler) throws Exception {
         // 시작 시간 저장
         request.setAttribute("startTime", System.currentTimeMillis());
+        if (handler instanceof HandlerMethod handlerMethod) {
+            log.info(
+                    "REQUEST_START method={} uri={} handler={} user={} ip={}",
+                    request.getMethod(),
+                    request.getRequestURI(),
+                    getHandlerSignature(handlerMethod),
+                    getUserIdForLog(),
+                    AuthUtils.getAcsIpAddr()
+            );
+        }
         // 반드시 true
         return true;
     }
@@ -63,7 +73,44 @@ public class LogActvtyInterceptor implements HandlerInterceptor {
         if (!(handler instanceof HandlerMethod handlerMethod)) return;
 
         final String traceId = MDC.get("traceId");
-        log.info("ACCESS traceId={} method={} url={} status={} duration={} user={}",  traceId,  request.getMethod(), request.getRequestURI(), response.getStatus(), duration, AuthUtils.getLgnUserId());
+        final String handlerSignature = getHandlerSignature(handlerMethod);
+        final String userId = getUserIdForLog();
+
+        if (ex != null) {
+            log.error(
+                    "REQUEST_FAILED method={} uri={} handler={} status={} durationMs={} user={} ip={}",
+                    request.getMethod(),
+                    request.getRequestURI(),
+                    handlerSignature,
+                    response.getStatus(),
+                    duration,
+                    userId,
+                    AuthUtils.getAcsIpAddr(),
+                    ex
+            );
+        } else if (response.getStatus() >= 400) {
+            log.warn(
+                    "REQUEST_END method={} uri={} handler={} status={} durationMs={} user={} ip={}",
+                    request.getMethod(),
+                    request.getRequestURI(),
+                    handlerSignature,
+                    response.getStatus(),
+                    duration,
+                    userId,
+                    AuthUtils.getAcsIpAddr()
+            );
+        } else {
+            log.info(
+                    "REQUEST_END method={} uri={} handler={} status={} durationMs={} user={} ip={}",
+                    request.getMethod(),
+                    request.getRequestURI(),
+                    handlerSignature,
+                    response.getStatus(),
+                    duration,
+                    userId,
+                    AuthUtils.getAcsIpAddr()
+            );
+        }
 
         final LogActvtyParam param = createLogParam(request, response, handlerMethod, ex, duration);
         if (param != null) {
@@ -130,9 +177,17 @@ public class LogActvtyInterceptor implements HandlerInterceptor {
         }
 
         // ===== 컨트롤러 메소드 정보 =====
-        final String signature = controllerClass.getSimpleName() + "." + handlerMethod.getMethod().getName();
-        param.setSignature(signature);
+        param.setSignature(getHandlerSignature(handlerMethod));
 
         return param;
+    }
+
+    private String getHandlerSignature(final HandlerMethod handlerMethod) {
+        return handlerMethod.getBeanType().getSimpleName() + "." + handlerMethod.getMethod().getName();
+    }
+
+    private String getUserIdForLog() {
+        final String userId = AuthUtils.getLgnUserId();
+        return userId == null ? "anonymous" : userId;
     }
 }

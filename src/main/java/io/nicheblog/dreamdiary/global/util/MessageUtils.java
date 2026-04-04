@@ -79,9 +79,7 @@ public class MessageUtils
     public static String getMessage(final String code) throws NoSuchMessageException {
         // test환경에서의 난해성 때문에 bean 주입 환경 외에는 예외 리턴 처리
         if (messageSource == null) return null;
-        final String msg = messageSource.getMessage(code, null, Locale.getDefault());
-        log.info("code: {}, msg: {}", code, msg);
-        return msg;
+        return messageSource.getMessage(code, null, Locale.getDefault());
     }
 
     /**
@@ -93,9 +91,7 @@ public class MessageUtils
      * @throws NoSuchMessageException 메시지가 존재하지 않는 경우 발생
      */
     public static String getMessage(final String code, final @Nullable Object[] args) throws NoSuchMessageException {
-        final String msg = messageSource.getMessage(code, args, Locale.getDefault());
-        log.info("code: {}, msg: {}", code, msg);
-        return msg;
+        return messageSource.getMessage(code, args, Locale.getDefault());
     }
 
     /**
