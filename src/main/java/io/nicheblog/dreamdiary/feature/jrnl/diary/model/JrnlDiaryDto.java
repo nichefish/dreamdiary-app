@@ -6,6 +6,9 @@ import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.file.model.cmpstn.AtchFileCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.file.model.cmpstn.AtchFileCmpstnModule;
+import io.nicheblog.dreamdiary.feature.clsf.history.model.HistoryDto;
+import io.nicheblog.dreamdiary.feature.clsf.history.model.cmpstn.HistoryCmpstn;
+import io.nicheblog.dreamdiary.feature.clsf.history.model.cmpstn.HistoryCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
@@ -18,6 +21,7 @@ import lombok.experimental.SuperBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * JrnlDiaryDto
@@ -35,7 +39,7 @@ import java.util.Date;
 @ToString(callSuper = true)
 public class JrnlDiaryDto
         extends BaseClsfDto
-        implements Identifiable<Integer>, AtchFileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, StateCmpstnModule, JrnlPeriodModule, Comparable<JrnlDiaryDto>  {
+        implements Identifiable<Integer>, AtchFileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, StateCmpstnModule, HistoryCmpstnModule, JrnlPeriodModule, Comparable<JrnlDiaryDto>  {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -118,4 +122,6 @@ public class JrnlDiaryDto
     public TagCmpstn tag;
     /** 위임 :: 상태 정보 모듈 */
     public StateCmpstn state;
+    public HistoryCmpstn history;
+    private List<HistoryDto> historyList;
 }

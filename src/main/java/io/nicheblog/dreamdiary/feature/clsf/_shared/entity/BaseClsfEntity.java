@@ -47,6 +47,6 @@ public class BaseClsfEntity
      * @return {@link BaseClsfKey} -- 글 번호와 콘텐츠 유형을 포함하는 복합키 객체
      */
     public BaseClsfKey getClsfKey() {
-        return new BaseClsfKey(this.postNo, this.contentType);
+        return new BaseClsfKey(this.getPostNo(), this.getContentType());
     }
 }

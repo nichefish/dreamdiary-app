@@ -6,6 +6,8 @@ import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.file.model.cmpstn.AtchFileCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.file.model.cmpstn.AtchFileCmpstnModule;
+import io.nicheblog.dreamdiary.feature.clsf.history.HistoryType;
+import io.nicheblog.dreamdiary.feature.clsf.history.model.HistoryActionModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
@@ -28,7 +30,7 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 public class JrnlDiaryPostDto
         extends BaseClsfDto
-        implements Identifiable<Integer>, AtchFileCmpstnModule, CommentCmpstnModule, TagCmpstnModule {
+        implements Identifiable<Integer>, AtchFileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, HistoryActionModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -61,6 +63,11 @@ public class JrnlDiaryPostDto
     private Boolean isEntryChanged = false;
     /** 이전 저널 항목 번호 */
     private Integer prevJrnlEntryNo;
+
+    @Builder.Default
+    private String historyType = HistoryType.CHANGE.key;
+
+    private Integer fromHistoryNo;
 
     /* ----- */
 
