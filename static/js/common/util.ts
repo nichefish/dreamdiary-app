@@ -262,8 +262,13 @@ cF.util = (function(): Module {
             textarea.value = text;
             textarea.style.position = 'fixed';
             textarea.style.opacity = '0';
+            textarea.style.left = '-9999px';
+            textarea.style.top = '0';
+            textarea.setAttribute('readonly', 'readonly');
             document.body.appendChild(textarea);
+            textarea.focus();
             textarea.select();
+            textarea.setSelectionRange(0, textarea.value.length);
             try {
                 document.execCommand('copy');
             } catch (e) {
@@ -271,6 +276,15 @@ cF.util = (function(): Module {
             } finally {
                 document.body.removeChild(textarea);
             }
+        },
+
+        /**
+         * clipboard API 실패 시 사용하는 복사 fallback
+         * @param {string} text - 복사할 내용
+         */
+        legacyCopy: async function (text: string): Promise<void> {
+            await cF.util.execCommandCopy(text);
+            Swal.fire({ icon: "success", text: "클립보드에 복사했습니다.", timer: 1500, showConfirmButton: false });
         },
 
         /**
