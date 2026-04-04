@@ -40,15 +40,16 @@ public class JrnlDayQueryService {
      */
     public List<JrnlDayDto> getYyMnthListDtoEnrichedByUser(final String userId, final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
+        final String resolvedUserId = AuthUtils.requireUserId(userId);
 
         final List<JrnlDayDto> listDto = jrnlDayService.getCachedYyMnthListDtoByUser(
-                AuthUtils.requireUserId(userId),
+                resolvedUserId,
                 searchParam.getYy(),
                 searchParam.getMnth()
         );
         final List<JrnlDayDto> filteredList = JrnlDayFilterHelper.filterInMemory(listDto, searchParam);
 
-        return this.enrichList(filteredList, searchParam);
+        return this.enrichList(resolvedUserId, filteredList, searchParam);
     }
 
     /**
@@ -59,8 +60,9 @@ public class JrnlDayQueryService {
      * @return {@link List} -- 가공 완료된 DTO 목록
      */
     public List<JrnlDayDto> getStdrdDaysDtoEnrichedByUser(final String userId, final JrnlDaySearchParam searchParam) throws Exception {
-        final List<JrnlDayDto> listDto = jrnlDayService.getJrnlStdrdDaysByUser(AuthUtils.requireUserId(userId), searchParam);
-        return this.enrichList(listDto, searchParam);
+        final String resolvedUserId = AuthUtils.requireUserId(userId);
+        final List<JrnlDayDto> listDto = jrnlDayService.getJrnlStdrdDaysByUser(resolvedUserId, searchParam);
+        return this.enrichList(resolvedUserId, listDto, searchParam);
     }
 
     /**
@@ -72,6 +74,7 @@ public class JrnlDayQueryService {
      */
     public List<JrnlDayDto> getWeeklyListDtoEnrichedByUser(final String userId, final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
+        final String resolvedUserId = AuthUtils.requireUserId(userId);
 
         final String weekStartDt = StringUtils.isNotBlank(searchParam.getWeekStartDt())
                 ? searchParam.getWeekStartDt()
@@ -79,9 +82,9 @@ public class JrnlDayQueryService {
         if (StringUtils.isBlank(weekStartDt)) return List.of();
         searchParam.setWeekStartDt(weekStartDt);
 
-        final List<JrnlDayDto> listDto = jrnlDayService.getCachedWeeklyListDtoByUser(AuthUtils.requireUserId(userId), weekStartDt);
+        final List<JrnlDayDto> listDto = jrnlDayService.getCachedWeeklyListDtoByUser(resolvedUserId, weekStartDt);
         final List<JrnlDayDto> filteredList = JrnlDayFilterHelper.filterInMemory(listDto, searchParam);
-        return this.enrichWeeklyList(filteredList, searchParam);
+        return this.enrichWeeklyList(resolvedUserId, filteredList, searchParam);
     }
 
     /**
@@ -92,8 +95,9 @@ public class JrnlDayQueryService {
      * @return {@link List} -- 가공 완료된 DTO 목록
      */
     public List<JrnlDayDto> getListDtoByMetaNoEnrichedByUser(final String userId, final JrnlDaySearchParam searchParam) throws Exception {
-        final List<JrnlDayDto> listDto = jrnlDayService.getListDtoByMetaNoAndUser(AuthUtils.requireUserId(userId), searchParam);
-        return this.enrichList(listDto, searchParam);
+        final String resolvedUserId = AuthUtils.requireUserId(userId);
+        final List<JrnlDayDto> listDto = jrnlDayService.getListDtoByMetaNoAndUser(resolvedUserId, searchParam);
+        return this.enrichList(resolvedUserId, listDto, searchParam);
     }
 
     /**
@@ -104,8 +108,9 @@ public class JrnlDayQueryService {
      * @return {@link List} -- 가공 완료된 DTO 목록
      */
     public List<JrnlDayDto> getListDtoByTagNoEnrichedByUser(final String userId, final JrnlDaySearchParam searchParam) throws Exception {
-        final List<JrnlDayDto> listDto = jrnlDayService.getListDtoByTagNoAndUser(AuthUtils.requireUserId(userId), searchParam);
-        return this.enrichList(listDto, searchParam);
+        final String resolvedUserId = AuthUtils.requireUserId(userId);
+        final List<JrnlDayDto> listDto = jrnlDayService.getListDtoByTagNoAndUser(resolvedUserId, searchParam);
+        return this.enrichList(resolvedUserId, listDto, searchParam);
     }
 
     /**
@@ -116,8 +121,9 @@ public class JrnlDayQueryService {
      * @return {@link JrnlDayDto} -- 가공 완료된 DTO
      */
     public JrnlDayDto getDtlDtoEnrichedByUser(final String userId, final Integer key) throws Exception {
-        final JrnlDayDto retrieved = jrnlDayService.getCachedDtlDtoByUser(AuthUtils.requireUserId(userId), key);
-        return this.enrichDetail(retrieved);
+        final String resolvedUserId = AuthUtils.requireUserId(userId);
+        final JrnlDayDto retrieved = jrnlDayService.getCachedDtlDtoByUser(resolvedUserId, key);
+        return this.enrichDetail(resolvedUserId, retrieved);
     }
 
     /**
@@ -128,12 +134,12 @@ public class JrnlDayQueryService {
      * @param searchParam 조회 조건
      * @return enrich 완료 리스트
      */
-    private List<JrnlDayDto> enrichList(final List<JrnlDayDto> listDto, final JrnlDaySearchParam searchParam) throws Exception {
+    private List<JrnlDayDto> enrichList(final String userId, final List<JrnlDayDto> listDto, final JrnlDaySearchParam searchParam) throws Exception {
         if (listDto == null) return null;
 
         JrnlDayHldyHelper.setHldyInfo(listDto, getHldyMap());
         if (searchParam != null) {
-            JrnlDayViewHelper.mergeStates(listDto, searchParam);
+            JrnlDayViewHelper.mergeStates(userId, listDto, searchParam);
             JrnlDayViewHelper.applyEntryTagSummary(listDto, searchParam);
         }
 
@@ -147,12 +153,12 @@ public class JrnlDayQueryService {
      * @param searchParam 조회 조건
      * @return enrich 완료 리스트
      */
-    private List<JrnlDayDto> enrichWeeklyList(final List<JrnlDayDto> listDto, final JrnlDaySearchParam searchParam) throws Exception {
+    private List<JrnlDayDto> enrichWeeklyList(final String userId, final List<JrnlDayDto> listDto, final JrnlDaySearchParam searchParam) throws Exception {
         if (listDto == null) return null;
 
         JrnlDayHldyHelper.setHldyInfo(listDto, getHldyMap());
         if (searchParam != null) {
-            JrnlDayViewHelper.mergeWeeklyStates(listDto, searchParam);
+            JrnlDayViewHelper.mergeWeeklyStates(userId, listDto, searchParam);
             JrnlDayViewHelper.applyEntryTagSummary(listDto, searchParam);
         }
 
@@ -165,11 +171,11 @@ public class JrnlDayQueryService {
      * @param retrieved 조회 결과
      * @return enrich 완료 DTO
      */
-    private JrnlDayDto enrichDetail(final JrnlDayDto retrieved) throws Exception {
+    private JrnlDayDto enrichDetail(final String userId, final JrnlDayDto retrieved) throws Exception {
         if (retrieved == null) return null;
 
         JrnlDayHldyHelper.setHldyInfo(retrieved, getHldyMap());
-        JrnlDayViewHelper.mergeStates(retrieved);
+        JrnlDayViewHelper.mergeStates(userId, retrieved);
 
         return retrieved;
     }
