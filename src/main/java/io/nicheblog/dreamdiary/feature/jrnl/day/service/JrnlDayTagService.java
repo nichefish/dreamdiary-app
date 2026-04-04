@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  *
  * @author nichefish
  */
-@Service("jrnlDayTagService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class JrnlDayTagService
@@ -59,17 +59,6 @@ public class JrnlDayTagService
 
     private JrnlDayTagService getSelf() {
         return context.getBean(this.getClass());
-    }
-
-    /**
-     * 특정 태그가 존재하는 연도 목록을 반환합니다.
-     *
-     * @param tagNo 태그 번호
-     * @return 연도 목록
-     */
-    public List<Integer> getMyYyListByTagNo(final Integer tagNo) {
-        final String userId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
-        return this.getSelf().getYyListByTagNoAndUser(tagNo, userId);
     }
 
     /**
@@ -109,31 +98,6 @@ public class JrnlDayTagService
         final JrnlDaySearchParam searchParam = JrnlDaySearchParam.builder().weekStartDt(weekStartDt).build();
         searchParam.setRegstrId(AuthUtils.requireUserId(userId));
         return this.getSelf().getListDto(searchParam);
-    }
-
-    /**
-     * css 사이즈 계산한 일자 태그 목록 조회
-     * 태그 1개 = 1. 그 외엔 2~9
-     *
-     * @param yy 조회할 연도
-     * @param mnth 조회할 월
-     * @return {@link List} -- CSS 사이즈가 적용된 태그 목록
-     */
-    public List<TagDto> getMyYyMnthSizedListDto(final Integer yy, final Integer mnth) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getYyMnthSizedListDtoByUser(userId, yy, mnth);
-    }
-
-    /**
-     * css 사이즈 계산한 일자 태그 목록 조회
-     * 태그 1개 = 1. 그 외엔 2~9
-     *
-     * @param weekStartDt 주 시작일자
-     * @return {@link List} -- CSS 사이즈가 적용된 태그 목록
-     */
-    public List<TagDto> getMyWeeklySizedListDto(final String weekStartDt) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getWeeklySizedListDtoByUser(userId, weekStartDt);
     }
 
     /**
@@ -249,23 +213,6 @@ public class JrnlDayTagService
     /**
      * 지정된 연도와 월을 기준으로 태그 목록을 카테고리별로 그룹화하여 반환합니다.
      *
-     * @param yy 조회할 연도
-     * @param mnth 조회할 월
-     * @return {@link Map} -- 카테고리별로 그룹화된 태그 목록을 담은 Map
-     */
-    public Map<String, List<TagDto>> getMyYyMnthSizedGroupListDto(final Integer yy, final Integer mnth) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getYyMnthSizedGroupListDtoByUser(userId, yy, mnth);
-    }
-
-    public Map<String, List<TagDto>> getMyWeeklySizedGroupListDto(final String weekStartDt) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getWeeklySizedGroupListDtoByUser(userId, weekStartDt);
-    }
-
-    /**
-     * 지정된 연도와 월을 기준으로 태그 목록을 카테고리별로 그룹화하여 반환합니다.
-     *
      * @param userId 사용자 ID
      * @param yy 조회할 연도
      * @param mnth 조회할 월
@@ -286,16 +233,6 @@ public class JrnlDayTagService
     public Map<String, List<TagDto>> getWeeklySizedGroupListDtoByUser(final String userId, final String weekStartDt) throws Exception {
         final List<TagDto> tagList = this.getSelf().getWeeklySizedListDtoByUser(AuthUtils.requireUserId(userId), weekStartDt);
         return tagList.stream().collect(Collectors.groupingBy(TagDto::getCtgr));
-    }
-
-    /**
-     * 내 태그 카테고리 맵을 반환합니다.
-     *
-     * @return {@link Map} -- 태그 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵
-     */
-    public Map<String, List<String>> getMyTagCtgrMap() throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getTagCtgrMapByUser(userId);
     }
 
     /**

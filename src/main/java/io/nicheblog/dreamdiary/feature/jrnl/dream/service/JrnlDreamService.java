@@ -16,7 +16,6 @@ import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.repository.jpa.JrnlDreamRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.repository.mybatis.JrnlDreamMapper;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.spec.JrnlDreamSpec;
-import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
@@ -72,30 +71,7 @@ public class JrnlDreamService
     }
 
     /**
-     * 목록 조회 (dto level) :: 캐시 처리
-     *
-     * @param searchParam 검색 조건이 담긴 파라미터 객체
-     * @return {@link List} -- 조회된 목록
-     */
-    public List<JrnlDreamDto> getMyListDto(final BaseSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUserId(AuthUtils.getLgnUserId()));
-
-        return this.getSelf().getListDto(searchParam);
-    }
-
-    /**
-     * 특정 년도의 중요 꿈 목록 조회 :: 캐시 처리
-     *
-     * @param searchParam JrnlDreamSearchParam
-     * @return {@link List} -- 해당 년도의 중요 목록
-     */
-    public List<JrnlDreamDto> getMySumryDreamList(final JrnlDreamSearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getSumryDreamListByUser(userId, searchParam);
-    }
-
-    /**
-     * 특정 년도의 중요 꿈 목록 조회 :: 캐시 처리
+     * 사용자별 특정 년도의 중요 꿈 목록 조회 :: 캐시 처리
      *
      * @param userId 사용자 ID
      * @param searchParam JrnlDreamSearchParam
@@ -108,6 +84,11 @@ public class JrnlDreamService
         Collections.sort(jrnlDreamYySumryStatedListByUser);
 
         return jrnlDreamYySumryStatedListByUser;
+    }
+
+    public List<JrnlDreamDto> getListDtoByUser(final String userId, final JrnlDreamSearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
+        return this.getSelf().getListDto(searchParam);
     }
 
     /**
@@ -147,11 +128,6 @@ public class JrnlDreamService
         if (!retrieved.getIsRegstr(AuthUtils.requireUserId(userId))) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
 
         return retrieved;
-    }
-
-    public JrnlDreamDto getMyDtlDtoWithCache(final Integer key) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getDtlDtoWithCacheByUser(userId, key);
     }
 
     /**

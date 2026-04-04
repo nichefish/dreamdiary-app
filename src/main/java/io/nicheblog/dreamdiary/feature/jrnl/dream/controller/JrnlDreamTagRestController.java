@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.feature.jrnl.dream.controller;
 
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagSearchParam;
-import io.nicheblog.dreamdiary.feature.jrnl.dream.service.JrnlDreamTagService;
+import io.nicheblog.dreamdiary.feature.jrnl.dream.service.my.MyJrnlDreamTagService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -39,7 +39,7 @@ public class JrnlDreamTagRestController
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;
 
-    private final JrnlDreamTagService jrnlDreamTagService;
+    private final MyJrnlDreamTagService myJrnlDreamTagService;
 
     /**
      * 저널 꿈 태그 카테고리 맵 조회 (Ajax)
@@ -51,7 +51,7 @@ public class JrnlDreamTagRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDreamTagCtgrMapAjax() throws Exception {
-        final Map<String, List<String>> tagCtgrMap = jrnlDreamTagService.getMyTagCtgrMap();
+        final Map<String, List<String>> tagCtgrMap = myJrnlDreamTagService.getMyTagCtgrMap();
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -74,11 +74,11 @@ public class JrnlDreamTagRestController
 
         final List<TagDto> tagList;
         if (searchParam.hasWeekStartDt()) {
-            tagList = jrnlDreamTagService.getMyWeeklySizedListDto(searchParam.getWeekStartDt());
+            tagList = myJrnlDreamTagService.getMyWeeklySizedListDto(searchParam.getWeekStartDt());
         } else if (searchParam.hasYyMnth()) {
-            tagList = jrnlDreamTagService.getMyDreamSizedListDto(searchParam.getYy(), searchParam.getMnth());
+            tagList = myJrnlDreamTagService.getMyDreamSizedListDto(searchParam.getYy(), searchParam.getMnth());
         } else {
-            tagList = jrnlDreamTagService.getMyTagList();
+            tagList = myJrnlDreamTagService.getMyTagList();
         }
 
         final boolean isSuccess = true;
@@ -102,8 +102,8 @@ public class JrnlDreamTagRestController
     ) throws Exception {
 
         final Map<String, List<TagDto>> tagGroupMap = searchParam.hasWeekStartDt()
-                ? jrnlDreamTagService.getMyWeeklySizedGroupListDto(searchParam.getWeekStartDt())
-                : jrnlDreamTagService.getMyDreamSizedGroupListDto(searchParam.getYy(), searchParam.getMnth());
+                ? myJrnlDreamTagService.getMyWeeklySizedGroupListDto(searchParam.getWeekStartDt())
+                : myJrnlDreamTagService.getMyDreamSizedGroupListDto(searchParam.getYy(), searchParam.getMnth());
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

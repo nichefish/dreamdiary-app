@@ -61,11 +61,6 @@ public class JrnlDreamTagService
         return context.getBean(this.getClass());
     }
 
-    public List<TagDto> getMyTagList() throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getTagListByUser(userId);
-    }
-
     @Cacheable(value = "jrnlDreamTagListByUser", key = "#userId")
     public List<TagDto> getTagListByUser(final String userId) throws Exception {
         final HashMap<String, Object> paramMap = new HashMap<>() {{
@@ -75,19 +70,10 @@ public class JrnlDreamTagService
         return this.getSelf().getListDto(paramMap);
     }
 
-    public List<TagDto> getMyListDtoWithCache(final Integer yy, final Integer mnth) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getListDtoWithCacheByUser(userId, yy, mnth);
-    }
-
-    public List<TagDto> getMyWeeklyListDtoWithCache(final String weekStartDt) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getWeeklyListDtoWithCacheByUser(userId, weekStartDt);
-    }
-
     /**
-     * 지정된 연도와 월을 기준으로 태그 목록을 캐시 처리하여 반환합니다.
+     * 지정된 연도와 월을 기준으로 태그 목록을 조회하고 캐싱하여 반환합니다.
      *
+     * @param userId 사용자 ID
      * @param yy 조회할 연도
      * @param mnth 조회할 월
      * @return {@link List} -- 태그 목록
@@ -99,29 +85,18 @@ public class JrnlDreamTagService
         return this.getSelf().getListDto(searchParam);
     }
 
+    /**
+     * 주간 기준으로 태그 목록을 조회하고 캐싱하여 반환합니다.
+     *
+     * @param userId 사용자 ID
+     * @param weekStartDt 주 시작일
+     * @return {@link List} -- 주간 기준 태그 목록
+     */
     @Cacheable(value = "jrnlDreamWeeklyTagListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#userId, #weekStartDt)")
     public List<TagDto> getWeeklyListDtoWithCacheByUser(final String userId, final String weekStartDt) throws Exception {
         final JrnlDreamSearchParam searchParam = JrnlDreamSearchParam.builder().weekStartDt(weekStartDt).build();
         searchParam.setRegstrId(AuthUtils.requireUserId(userId));
         return this.getSelf().getListDto(searchParam);
-    }
-
-    /**
-     * css 사이즈 계산한 태그 목록 조회
-     * 태그 1개 = 1. 그 외엔 2~9
-     *
-     * @param yy 조회할 연도
-     * @param mnth 조회할 월
-     * @return {@link List} -- CSS 사이즈가 적용된 태그 목록
-     */
-    public List<TagDto> getMyDreamSizedListDto(final Integer yy, final Integer mnth) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getDreamSizedListDtoByUser(userId, yy, mnth);
-    }
-
-    public List<TagDto> getMyWeeklySizedListDto(final String weekStartDt) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getWeeklySizedListDtoByUser(userId, weekStartDt);
     }
 
     /**
@@ -140,6 +115,14 @@ public class JrnlDreamTagService
         return this.applyTagSizes(tagList, maxSize);
     }
 
+    /**
+     * css 사이즈 계산한 태그 목록 조회
+     * 태그 1개 = 1. 그 외엔 2~9
+     *
+     * @param userId 사용자 ID
+     * @param weekStartDt 주 시작일
+     * @return {@link List} -- CSS 사이즈가 적용된 태그 목록
+     */
     @Cacheable(value = "jrnlDreamWeeklySizedTagListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#userId, #weekStartDt)")
     public List<TagDto> getWeeklySizedListDtoByUser(final String userId, final String weekStartDt) throws Exception {
         final List<TagDto> tagList = this.getSelf().getWeeklyListDtoWithCacheByUser(userId, weekStartDt);
@@ -177,6 +160,13 @@ public class JrnlDreamTagService
         return maxFrequency;
     }
 
+    /**
+     * 태그 사용 빈도를 기반으로 CSS 클래스(ts-1 ~ ts-9)를 계산하여 적용한다.
+     *
+     * @param tagList 태그 목록
+     * @param maxSize 최대 사용 빈도
+     * @return {@link List} -- CSS 클래스가 적용된 태그 목록
+     */
     private List<TagDto> applyTagSizes(final List<TagDto> tagList, final int maxSize) {
         final int minSize = 2;
         final int maxTagSize = 9;
@@ -217,23 +207,6 @@ public class JrnlDreamTagService
     /**
      * 지정된 연도와 월을 기준으로 태그 목록을 카테고리별로 그룹화하여 반환합니다.
      *
-     * @param yy 조회할 연도
-     * @param mnth 조회할 월
-     * @return {@link Map} -- 카테고리별로 그룹화된 태그 목록을 담은 Map
-     */
-    public Map<String, List<TagDto>> getMyDreamSizedGroupListDto(final Integer yy, final Integer mnth) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getDreamSizedGroupListDtoByUser(userId, yy, mnth);
-    }
-
-    public Map<String, List<TagDto>> getMyWeeklySizedGroupListDto(final String weekStartDt) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getWeeklySizedGroupListDtoByUser(userId, weekStartDt);
-    }
-
-    /**
-     * 지정된 연도와 월을 기준으로 태그 목록을 카테고리별로 그룹화하여 반환합니다.
-     *
      * @param userId 사용자 ID
      * @param yy 조회할 연도
      * @param mnth 조회할 월
@@ -250,17 +223,7 @@ public class JrnlDreamTagService
     }
 
     /**
-     * 내 태그 카테고리 맵을 반환합니다.
-     *
-     * @return {@link Map} -- 태그 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵
-     */
-    public Map<String, List<String>> getMyTagCtgrMap() throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getTagCtgrMapByUser(userId);
-    }
-
-    /**
-     * 태그 카테고리 맵을 반환합니다.
+     * 꿈 태그 카테고리 맵을 반환합니다.
      *
      * @param userId 사용자 아이디
      * @return {@link Map} -- 태그 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵

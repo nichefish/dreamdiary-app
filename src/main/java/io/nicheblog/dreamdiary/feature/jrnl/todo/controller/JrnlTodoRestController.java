@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.feature.jrnl.todo.controller;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.model.JrnlTodoDto;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.model.JrnlTodoSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.service.JrnlTodoService;
+import io.nicheblog.dreamdiary.feature.jrnl.todo.service.my.MyJrnlTodoService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
@@ -39,6 +40,7 @@ public class JrnlTodoRestController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
     private final JrnlTodoService jrnlTodoService;
+    private final MyJrnlTodoService myJrnlTodoService;
 
     /**
      * 저널 할일 목록 조회 (Ajax)
@@ -54,7 +56,7 @@ public class JrnlTodoRestController
             final JrnlTodoSearchParam searchParam
     ) throws Exception {
 
-        final List<JrnlTodoDto> jrnlTodoList = jrnlTodoService.getMyListDtoWithCache(searchParam);
+        final List<JrnlTodoDto> jrnlTodoList = myJrnlTodoService.getMyListDtoWithCache(searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -103,7 +105,7 @@ public class JrnlTodoRestController
             final @PathVariable("postNo") Integer postNo
     ) throws Exception {
 
-        final JrnlTodoDto retrievedDto = jrnlTodoService.getMyDtlDtoWithCache(postNo);
+        final JrnlTodoDto retrievedDto = myJrnlTodoService.getMyDtlDtoWithCache(postNo);
         final boolean isSuccess = (retrievedDto.getPostNo() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.feature.jrnl.diary.controller;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiarySearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.service.JrnlDiaryExportService;
-import io.nicheblog.dreamdiary.feature.jrnl.diary.service.JrnlDiaryService;
+import io.nicheblog.dreamdiary.feature.jrnl.diary.service.my.MyJrnlDiaryService;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -38,7 +38,7 @@ public class JrnlDiaryExportController
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
-    private final JrnlDiaryService jrnlDiaryService;
+    private final MyJrnlDiaryService myJrnlDiaryService;
     private final JrnlDiaryExportService jrnlDiaryExportService;
 
     /**
@@ -53,7 +53,7 @@ public class JrnlDiaryExportController
             final JrnlDiarySearchParam searchParam
     ) throws Exception {
 
-        final List<JrnlDiaryDto> jrnlDiaryList = jrnlDiaryService.getMyListDto(searchParam);
+        final List<JrnlDiaryDto> jrnlDiaryList = myJrnlDiaryService.getMyListDto(searchParam);
         final String text = jrnlDiaryExportService.buildTxt(jrnlDiaryList, searchParam);
         final byte[] bytes = text.getBytes(StandardCharsets.UTF_8);
         final String filename = "diaries_search_@" + DateUtils.getCurrDateStr(DatePtn.PDATE) + ".txt";

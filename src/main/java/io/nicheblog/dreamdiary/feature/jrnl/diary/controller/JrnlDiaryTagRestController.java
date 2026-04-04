@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.feature.jrnl.diary.controller;
 
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagSearchParam;
-import io.nicheblog.dreamdiary.feature.jrnl.diary.service.JrnlDiaryTagService;
+import io.nicheblog.dreamdiary.feature.jrnl.diary.service.my.MyJrnlDiaryTagService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -39,7 +39,7 @@ public class JrnlDiaryTagRestController
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
-    private final JrnlDiaryTagService jrnlDiaryTagService;
+    private final MyJrnlDiaryTagService myJrnlDiaryTagService;
 
     /**
      * 저널 일기 태그 카테고리 맵 조회 (Ajax)
@@ -54,7 +54,7 @@ public class JrnlDiaryTagRestController
             //
     ) throws Exception {
 
-        final Map<String, List<String>> tagCtgrMap = jrnlDiaryTagService.getMyTagCtgrMap();
+        final Map<String, List<String>> tagCtgrMap = myJrnlDiaryTagService.getMyTagCtgrMap();
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -77,11 +77,11 @@ public class JrnlDiaryTagRestController
 
         List<TagDto> tagList;
         if (searchParam.hasWeekStartDt()) {
-            tagList = jrnlDiaryTagService.getMyWeeklySizedListDto(searchParam.getWeekStartDt());
+            tagList = myJrnlDiaryTagService.getMyWeeklySizedListDto(searchParam.getWeekStartDt());
         } else if (searchParam.hasYyMnth()) {
-            tagList = jrnlDiaryTagService.getMyDiarySizedListDto(searchParam.getYy(), searchParam.getMnth());
+            tagList = myJrnlDiaryTagService.getMyDiarySizedListDto(searchParam.getYy(), searchParam.getMnth());
         } else {
-            tagList = jrnlDiaryTagService.getMyTagList();
+            tagList = myJrnlDiaryTagService.getMyTagList();
         }
 
         final boolean isSuccess = true;
@@ -105,8 +105,8 @@ public class JrnlDiaryTagRestController
     ) throws Exception {
 
         final Map<String, List<TagDto>> tagGroupMap = searchParam.hasWeekStartDt()
-                ? jrnlDiaryTagService.getMyWeeklySizedGroupListDto(searchParam.getWeekStartDt())
-                : jrnlDiaryTagService.getMyDiarySizedGroupListDto(searchParam.getYy(), searchParam.getMnth());
+                ? myJrnlDiaryTagService.getMyWeeklySizedGroupListDto(searchParam.getWeekStartDt())
+                : myJrnlDiaryTagService.getMyDiarySizedGroupListDto(searchParam.getYy(), searchParam.getMnth());
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
