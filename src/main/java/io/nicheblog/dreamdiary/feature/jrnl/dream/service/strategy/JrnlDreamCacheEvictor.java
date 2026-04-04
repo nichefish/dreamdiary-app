@@ -33,28 +33,29 @@ public class JrnlDreamCacheEvictor
     public void evict(final JrnlCacheEvictParam param) throws Exception {
         final ContentType refContentType = ContentType.JRNL_DREAM;
         try {
+            final String userId = param.getRegstrId();
             final Integer postNo = param.getPostNo();
             final Integer jrnlDayNo = param.getJrnlDayNo();
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();
             final String weekStartDt = param.getWeekStartDt();
             // jrnl_dream
-            this.evictMyYyCacheByYyPrefix("jrnlDreamYySumryStatedListByUser", yy);
-            EhCacheUtils.evictMyCacheByKey("jrnlDreamDtlDtoByUser", postNo);
+            this.evictMyYyCacheByYyPrefix(userId, "jrnlDreamYySumryStatedListByUser", yy);
+            EhCacheUtils.evictUserCacheByKey("jrnlDreamDtlDtoByUser", userId, postNo);
             // jrnl_day
             if (jrnlDayNo != null) {
-                EhCacheUtils.evictMyCacheByKey("jrnlDayDtlDtoByUser", jrnlDayNo);
+                EhCacheUtils.evictUserCacheByKey("jrnlDayDtlDtoByUser", userId, jrnlDayNo);
             }
-            this.evictMyJrnlDayYyMnthCaches(yy, mnth);
-            this.evictMyJrnlDayWeeklyCaches(weekStartDt);
+            this.evictMyJrnlDayYyMnthCaches(userId, yy, mnth);
+            this.evictMyJrnlDayWeeklyCaches(userId, weekStartDt);
             // jrnl_dream_tag
-            EhCacheUtils.clearMyCache("jrnlDreamTagCtgrMapByUser");
-            EhCacheUtils.clearMyCache("jrnlDreamTagListByUser");
-            EhCacheUtils.clearMyCache("jrnlDreamYyMnthTagListByUser");
-            EhCacheUtils.clearMyCache("jrnlDreamWeeklyTagListByUser");
-            EhCacheUtils.clearMyCache("jrnlDreamYyMnthSizedTagListByUser");
-            EhCacheUtils.clearMyCache("jrnlDreamWeeklySizedTagListByUser");
-            EhCacheUtils.clearMyCache("jrnlDreamCountMapByUser");
+            EhCacheUtils.clearUserCache("jrnlDreamTagCtgrMapByUser", userId);
+            EhCacheUtils.clearUserCache("jrnlDreamTagListByUser", userId);
+            EhCacheUtils.clearUserCache("jrnlDreamYyMnthTagListByUser", userId);
+            EhCacheUtils.clearUserCache("jrnlDreamWeeklyTagListByUser", userId);
+            EhCacheUtils.clearUserCache("jrnlDreamYyMnthSizedTagListByUser", userId);
+            EhCacheUtils.clearUserCache("jrnlDreamWeeklySizedTagListByUser", userId);
+            EhCacheUtils.clearUserCache("jrnlDreamCountMapByUser", userId);
             // 태그 캐시 처리
             EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", postNo + "_JRNL_DREAM");
         } catch (final Exception e) {
