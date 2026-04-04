@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.feature.jrnl.day.controller;
 import io.nicheblog.dreamdiary.feature.clsf.meta.model.MetaDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayMetaService;
+import io.nicheblog.dreamdiary.feature.jrnl.day.service.my.MyJrnlDayMetaService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -39,6 +40,7 @@ public class JrnlDayMetaRestController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
     private final JrnlDayMetaService jrnlDayMetaService;
+    private final MyJrnlDayMetaService myJrnlDayMetaService;
 
     /**
      * 저널 일자 메타 전체 목록 조회 (Ajax)
@@ -94,7 +96,7 @@ public class JrnlDayMetaRestController
             final @PathVariable("metaNo") Integer metaNo
     ) {
 
-        final List<Integer> yyList = jrnlDayMetaService.getMyYyListByMetaNo(metaNo);
+        final List<Integer> yyList = myJrnlDayMetaService.getMyYyListByMetaNo(metaNo);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -115,7 +117,7 @@ public class JrnlDayMetaRestController
             //
     ) throws Exception {
 
-        final Map<String, List<String>> metaCtgrMap = jrnlDayMetaService.getMyMetaCtgrMap();
+        final Map<String, List<String>> metaCtgrMap = myJrnlDayMetaService.getMyMetaCtgrMap();
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

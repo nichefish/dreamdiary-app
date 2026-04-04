@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamPostDto;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.service.JrnlDreamService;
+import io.nicheblog.dreamdiary.feature.jrnl.dream.service.my.MyJrnlDreamService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
@@ -41,6 +42,7 @@ public class JrnlDreamRestController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
     private final JrnlDreamService jrnlDreamService;
+    private final MyJrnlDreamService myJrnlDreamService;
 
     /**
      * 저널 꿈 목록 조회 (Ajax)
@@ -58,7 +60,7 @@ public class JrnlDreamRestController
 
         if (searchParam.isEmpty()) throw new IllegalArgumentException("검색 조건 필요");
 
-        final List<JrnlDreamDto> jrnlDreamList = jrnlDreamService.getMyListDto(searchParam);
+        final List<JrnlDreamDto> jrnlDreamList = myJrnlDreamService.getMyListDto(searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -110,7 +112,7 @@ public class JrnlDreamRestController
             final @PathVariable("postNo") Integer key
     ) throws Exception {
 
-        final JrnlDreamDto retrievedDto = jrnlDreamService.getMyDtlDtoWithCache(key);
+        final JrnlDreamDto retrievedDto = myJrnlDreamService.getMyDtlDtoWithCache(key);
         final boolean isSuccess = (retrievedDto.getPostNo() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

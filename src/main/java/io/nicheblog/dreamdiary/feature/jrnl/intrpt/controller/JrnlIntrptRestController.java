@@ -3,6 +3,7 @@ package io.nicheblog.dreamdiary.feature.jrnl.intrpt.controller;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptDto;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.service.JrnlIntrptService;
+import io.nicheblog.dreamdiary.feature.jrnl.intrpt.service.my.MyJrnlIntrptService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
@@ -40,6 +41,7 @@ public class JrnlIntrptRestController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
     private final JrnlIntrptService jrnlIntrptService;
+    private final MyJrnlIntrptService myJrnlIntrptService;
 
     /**
      * 저널 해석 목록 조회 (Ajax)
@@ -55,7 +57,7 @@ public class JrnlIntrptRestController
             JrnlIntrptSearchParam searchParam
     ) throws Exception {
 
-        final List<JrnlIntrptDto> jrnlIntrptList = jrnlIntrptService.getListDto(searchParam);
+        final List<JrnlIntrptDto> jrnlIntrptList = myJrnlIntrptService.getMyListDto(searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -107,7 +109,7 @@ public class JrnlIntrptRestController
             final @PathVariable("postNo") Integer key
     ) throws Exception {
 
-        final JrnlIntrptDto retrievedDto = jrnlIntrptService.getMyDtlDtoWithCache(key);
+        final JrnlIntrptDto retrievedDto = myJrnlIntrptService.getMyDtlDtoWithCache(key);
         final boolean isSuccess = (retrievedDto.getPostNo() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

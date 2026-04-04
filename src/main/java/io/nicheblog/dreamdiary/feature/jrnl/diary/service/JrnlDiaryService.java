@@ -16,7 +16,6 @@ import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiarySearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.repository.jpa.JrnlDiaryRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.repository.mybatis.JrnlDiaryMapper;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.spec.JrnlDiarySpec;
-import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
@@ -72,30 +71,7 @@ public class JrnlDiaryService
     }
 
     /**
-     * 목록 조회 (dto level) :: 캐시 처리
-     *
-     * @param searchParam 검색 조건이 담긴 파라미터 객체
-     * @return {@link List} -- 조회된 목록
-     */
-    public List<JrnlDiaryDto> getMyListDto(final BaseSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUserId(AuthUtils.getLgnUserId()));
-
-        return this.getSelf().getListDto(searchParam);
-    }
-
-    /**
-     * 특정 년도의 중요 일기 목록 조회 :: 캐시 처리
-     *
-     * @param searchParam JrnlDiarySearchParam
-     * @return {@link List} -- 해당 년도의 중요 목록
-     */
-    public List<JrnlDiaryDto> getMySumryDiaryList(final JrnlDiarySearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getSumryDiaryListByUser(userId, searchParam);
-    }
-
-    /**
-     * 특정 년도의 중요 일기 목록 조회 :: 캐시 처리
+     * 사용자별 특정 년도의 일기 목록 조회 :: 캐시 처리
      *
      * @param userId String
      * @param searchParam JrnlDiarySearchParam
@@ -108,6 +84,11 @@ public class JrnlDiaryService
         Collections.sort(jrnlDiaryYySumryStatedListByUser);
 
         return jrnlDiaryYySumryStatedListByUser;
+    }
+
+    public List<JrnlDiaryDto> getListDtoByUser(final String userId, final JrnlDiarySearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
+        return this.getSelf().getListDto(searchParam);
     }
 
     /**
@@ -170,17 +151,6 @@ public class JrnlDiaryService
 
         // 관련 캐시 삭제
         jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DIARY);
-    }
-
-    /**
-     * 상세 조회 (dto level) :: 캐시 처리
-     *
-     * @param key 식별자
-     * @return {@link JrnlDiaryDto} -- 조회된 객체
-     */
-    public JrnlDiaryDto getMyDtlDtoWithCache(final Integer key) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getDtlDtoWithCacheByUser(userId, key);
     }
 
     /**

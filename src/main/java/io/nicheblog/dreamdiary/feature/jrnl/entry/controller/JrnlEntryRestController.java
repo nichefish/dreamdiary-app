@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.feature.jrnl.entry.model.JrnlEntryDto;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.model.JrnlEntrySearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.service.JrnlEntryExportService;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.service.JrnlEntryService;
+import io.nicheblog.dreamdiary.feature.jrnl.entry.service.my.MyJrnlEntryService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
@@ -45,6 +46,7 @@ public class JrnlEntryRestController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
     private final JrnlEntryService jrnlEntryService;
+    private final MyJrnlEntryService myJrnlEntryService;
     private final JrnlEntryExportService jrnlEntryExportService;
 
     /**
@@ -61,7 +63,7 @@ public class JrnlEntryRestController
             JrnlEntrySearchParam searchParam
     ) throws Exception {
 
-        final List<JrnlEntryDto> jrnlEntryList = jrnlEntryService.getListDto(searchParam);
+        final List<JrnlEntryDto> jrnlEntryList = myJrnlEntryService.getMyListDto(searchParam);
 
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
@@ -112,7 +114,7 @@ public class JrnlEntryRestController
             final @PathVariable("postNo") Integer key
     ) throws Exception {
 
-        final JrnlEntryDto retrievedDto = jrnlEntryService.getDtlDto(key);
+        final JrnlEntryDto retrievedDto = myJrnlEntryService.getMyDtlDtoWithCache(key);
         final boolean isSuccess = (retrievedDto.getPostNo() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -154,7 +156,7 @@ public class JrnlEntryRestController
             final @PathVariable("postNo") Integer postNo
     ) throws Exception {
 
-        final JrnlEntryDto retrievedDto = jrnlEntryService.getDtlDto(postNo);
+        final JrnlEntryDto retrievedDto = myJrnlEntryService.getMyDtlDtoWithCache(postNo);
         final String text = jrnlEntryExportService.buildTxt(retrievedDto);
         final byte[] bytes = text.getBytes(StandardCharsets.UTF_8);
         final String filename = "entry_" + DateUtils.asStr(retrievedDto.getStdrdDt(), DatePtn.PDATE) + "_@" + DateUtils.getCurrDateStr(DatePtn.PDATE) + ".txt";

@@ -12,12 +12,10 @@ import io.nicheblog.dreamdiary.feature.jrnl.dream.mapstruct.JrnlDreamCalMapstruc
 import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamCalDto;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.model.JrnlEntryDto;
-import io.nicheblog.dreamdiary.feature.schdul.service.SchdulCalService;
 import io.nicheblog.dreamdiary.global.intrfc.model.fullcalendar.BaseCalDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -37,45 +35,20 @@ import java.util.List;
 public class JrnlDayCalService {
 
     private final JrnlDayQueryService jrnlDayQueryService;
-    private final SchdulCalService schdulCalService;
 
     private final JrnlDayCalMapstruct dayCalMapstruct = JrnlDayCalMapstruct.INSTANCE;
     private final JrnlDiaryCalMapstruct diaryCalMapstruct = JrnlDiaryCalMapstruct.INSTANCE;
     private final JrnlDreamCalMapstruct dreamCalMapstruct = JrnlDreamCalMapstruct.INSTANCE;
 
-    private final ApplicationContext context;
-    private JrnlDayCalService getSelf() {
-        return context.getBean(this.getClass());
-    }
-
     /**
-     * 전체 목록 (저널 일자 및 휴가) 데이터 조회
-     *
-     * @param searchParam 검색 조건이 담긴 파라미터 객체
-     * @return {@link List} -- 조회된 일정 및 휴가 목록
-     */
-    public List<BaseCalDto> getSchdulTotalCalList(final JrnlDaySearchParam searchParam) throws Exception {
-
-        // 저널 일자 복록 조회
-        final List<BaseCalDto> jrnlDayCalList = this.getSelf().getMyCalListDto(searchParam);
-        final List<BaseCalDto> totalSchdulCalList = new ArrayList<>(jrnlDayCalList);
-
-        // 일정(공휴일, 행사) 달력 목록 검색
-        final List<BaseCalDto> hldyCalList = schdulCalService.getHldyCalList(searchParam);
-        totalSchdulCalList.addAll(hldyCalList);
-
-        return totalSchdulCalList;
-    }
-
-    /**
-     * 내 목록 조회 (dto level) :: 캐시 처리
+     * 달력 목록 조회 (dto level)
      *
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
      */
-    public List<BaseCalDto> getMyCalListDto(final JrnlDaySearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUserId(AuthUtils.getLgnUserId()));
-        final List<JrnlDayDto> myJrnlDayList = jrnlDayQueryService.getMyYyMnthListDtoEnriched(searchParam);
+    public List<BaseCalDto> getCalListDtoByUser(final String userId, final JrnlDaySearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
+        final List<JrnlDayDto> myJrnlDayList = jrnlDayQueryService.getYyMnthListDtoEnrichedByUser(userId, searchParam);
 
         final List<BaseCalDto> jrnlCalEventList = new ArrayList<>();
         for (final JrnlDayDto jrnlDay: myJrnlDayList) {
@@ -99,7 +72,7 @@ public class JrnlDayCalService {
             final List<JrnlDreamDto> myDreamList = jrnlDay.getJrnlDreamList();
             if (CollectionUtils.isNotEmpty(myDreamList)) {
                 for (final JrnlDreamDto jrnlDreamDto : myDreamList) {
-                    final JrnlDreamCalDto dreamCalDto = dreamCalMapstruct.toCalDto(jrnlDreamDto);  // 필요시 mapstruct에서 변환
+                    final JrnlDreamCalDto dreamCalDto = dreamCalMapstruct.toCalDto(jrnlDreamDto);
                     jrnlCalEventList.add(dreamCalDto);
                 }
             }
@@ -107,12 +80,10 @@ public class JrnlDayCalService {
 
         // 날짜와 타입(JrnlDay, JrnlDiary, JrnlDream) 기준으로 정렬
         jrnlCalEventList.sort((event1, event2) -> {
-            // 날짜 비교
             final int dateComparison = event1.getStart().compareTo(event2.getStart());
             if (dateComparison != 0) {
-                return dateComparison;  // 날짜가 다르면 날짜 기준으로 정렬
+                return dateComparison;
             }
-            // 날짜가 같으면 타입에 따라 정렬 (JrnlDay, JrnlDiary, JrnlDream 순)
             return compareEventType(event1, event2);
         });
 
@@ -120,7 +91,7 @@ public class JrnlDayCalService {
     }
 
     /**
-     * 이벤트 타입 비교 메서드 (JrnlDay, JrnlDiary, JrnlDream 순)
+     * 이벤트 타입 비교 메서드(JrnlDay, JrnlDiary, JrnlDream)
      * @param event1 BaseCalDto
      * @param event2 BaseCalDto
      */
@@ -137,8 +108,8 @@ public class JrnlDayCalService {
      */
     private int getEventTypePriority(final BaseCalDto event) {
         if (event instanceof JrnlDayCalDto) return 1;
-        if (event instanceof JrnlDiaryCalDto) return 3;  // JrnlDiary
-        if (event instanceof JrnlDreamCalDto) return 4;  // JrnlDream
-        return 2;  // 기타 경우
+        if (event instanceof JrnlDiaryCalDto) return 3;
+        if (event instanceof JrnlDreamCalDto) return 4;
+        return 2;
     }
 }

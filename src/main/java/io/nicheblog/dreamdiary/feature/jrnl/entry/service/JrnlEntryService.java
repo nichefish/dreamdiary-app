@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.entity.JrnlEntryEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.mapstruct.JrnlEntryMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.model.JrnlEntryDto;
+import io.nicheblog.dreamdiary.feature.jrnl.entry.model.JrnlEntrySearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.repository.jpa.JrnlEntryRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.repository.mybatis.JrnlEntryMapper;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.spec.JrnlEntrySpec;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,6 +65,28 @@ public class JrnlEntryService
     private final ApplicationContext context;
     private JrnlEntryService getSelf() {
         return context.getBean(this.getClass());
+    }
+
+    public List<JrnlEntryDto> getListDtoByUser(final String userId, final JrnlEntrySearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
+        return this.getSelf().getListDto(searchParam);
+    }
+
+    /**
+     * 상세 조회 (dto level) :: 캐시 처리
+     *
+     * @param userId 사용자 ID
+     * @param key 일련번호
+     * @return {@link JrnlEntryDto} -- 조회된 객체
+     */
+    @Cacheable(value="jrnlEntryDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #key)")
+    public JrnlEntryDto getDtlDtoWithCacheByUser(final String userId, final Integer key) throws Exception {
+        final JrnlEntryEntity retrievedEntity = this.getSelf().getDtlEntity(key);
+        final JrnlEntryDto retrieved = mapstruct.toDto(retrievedEntity);
+        if (!retrieved.getIsRegstr(AuthUtils.requireUserId(userId))) {
+            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        }
+        return retrieved;
     }
 
     /**

@@ -9,9 +9,9 @@ import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.entity.JrnlTodoEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.mapstruct.JrnlTodoMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.model.JrnlTodoDto;
+import io.nicheblog.dreamdiary.feature.jrnl.todo.model.JrnlTodoSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.repository.jpa.JrnlTodoRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.spec.JrnlTodoSpec;
-import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -60,23 +60,12 @@ public class JrnlTodoService
     /**
      * 목록 조회 (dto level) :: 캐시 처리
      *
-     * @param searchParam 검색 조건이 담긴 파라미터 객체
-     * @return {@link List} -- 조회된 목록
-     */
-    public List<JrnlTodoDto> getMyListDtoWithCache(final BaseSearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
-        return this.getSelf().getListDtoWithCacheByUser(userId, searchParam);
-    }
-
-    /**
-     * 목록 조회 (dto level) :: 캐시 처리
-     *
      * @param userId 사용자 ID
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
      */
     @Cacheable(value="jrnlTodoListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #searchParam.getYy(), #searchParam.getMnth())")
-    public List<JrnlTodoDto> getListDtoWithCacheByUser(final String userId, final BaseSearchParam searchParam) throws Exception {
+    public List<JrnlTodoDto> getListDtoWithCacheByUser(final String userId, final JrnlTodoSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.requireUserId(userId));
 
         return this.getSelf().getListDto(searchParam);
@@ -127,17 +116,6 @@ public class JrnlTodoService
     public void postModify(final JrnlTodoDto postDto, final JrnlTodoDto updatedDto) throws Exception {
         // 관련 캐시 삭제
         jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_TODO);
-    }
-
-    /**
-     * 상세 조회 (dto level) :: 캐시 처리
-     *
-     * @param key 식별자
-     * @return {@link JrnlTodoDto} -- 조회된 객체
-     */
-    public JrnlTodoDto getMyDtlDtoWithCache(final Integer key) throws Exception {
-        final String userId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
-        return this.getSelf().getDtlDtoWithCacheByUser(userId, key);
     }
 
     /**

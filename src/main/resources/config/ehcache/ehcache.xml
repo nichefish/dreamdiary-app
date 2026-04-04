@@ -75,6 +75,7 @@
     <cache alias="jrnlDayCountMapByUser" uses-template="defaultTemplate" />
 
     <!-- 저널 항목 -->
+    <cache alias="jrnlEntryDtlDtoByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlEntryStateMapByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlEntryWeeklyStateMapByUser" uses-template="defaultTemplate" />
 

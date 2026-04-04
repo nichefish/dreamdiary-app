@@ -3,9 +3,9 @@ package io.nicheblog.dreamdiary.feature.jrnl.day.controller;
 import io.nicheblog.dreamdiary.feature.jrnl.day.JrnlDayViewType;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDaySearchParam;
-import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayCalService;
-import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayQueryService;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayService;
+import io.nicheblog.dreamdiary.feature.jrnl.day.service.my.MyJrnlDayCalService;
+import io.nicheblog.dreamdiary.feature.jrnl.day.service.my.MyJrnlDayQueryService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
@@ -42,8 +42,8 @@ public class JrnlDayRestController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
     private final JrnlDayService jrnlDayService;
-    private final JrnlDayQueryService jrnlDayQueryService;
-    private final JrnlDayCalService jrnlDayCalService;
+    private final MyJrnlDayQueryService myJrnlDayQueryService;
+    private final MyJrnlDayCalService myJrnlDayCalService;
 
     /**
      * 저널 일자 목록 조회 (Ajax)
@@ -61,11 +61,11 @@ public class JrnlDayRestController
     ) throws Exception {
 
         final Object list = switch (viewType) {
-            case LIST -> jrnlDayQueryService.getMyYyMnthListDtoEnriched(searchParam);
-            case CAL -> jrnlDayCalService.getSchdulTotalCalList(searchParam);
-            case DAILY -> jrnlDayQueryService.getMyStdrdDaysDtoEnriched(searchParam);
-            case WEEKLY -> jrnlDayQueryService.getMyWeeklyListDtoEnriched(searchParam);
-            case SEARCH -> jrnlDayQueryService.getMyListDtoByMetaNoEnriched(searchParam);
+            case LIST -> myJrnlDayQueryService.getMyYyMnthListDtoEnriched(searchParam);
+            case CAL -> myJrnlDayCalService.getSchdulTotalCalList(searchParam);
+            case DAILY -> myJrnlDayQueryService.getMyStdrdDaysDtoEnriched(searchParam);
+            case WEEKLY -> myJrnlDayQueryService.getMyWeeklyListDtoEnriched(searchParam);
+            case SEARCH -> myJrnlDayQueryService.getMyListDtoByMetaNoEnriched(searchParam);
         };
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
@@ -121,7 +121,7 @@ public class JrnlDayRestController
             final @PathVariable("postNo") Integer key
     ) throws Exception {
 
-        final JrnlDayDto retrievedDto = jrnlDayQueryService.getMyDtlDtoEnriched(key);
+        final JrnlDayDto retrievedDto = myJrnlDayQueryService.getMyDtlDtoEnriched(key);
         final boolean isSuccess = (retrievedDto.getPostNo() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
