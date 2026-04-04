@@ -32,7 +32,7 @@ public class MyJrnlTodoService {
      * @return {@link List} -- 조회된 목록
      */
     public List<JrnlTodoDto> getMyListDtoWithCache(final JrnlTodoSearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
+        final String userId = AuthUtils.requireLgnUserId();
         return jrnlTodoService.getListDtoWithCacheByUser(userId, searchParam);
     }
 
@@ -43,7 +43,7 @@ public class MyJrnlTodoService {
      * @return {@link JrnlTodoDto} -- 조회된 객체
      */
     public JrnlTodoDto getMyDtlDtoWithCache(final Integer key) throws Exception {
-        final String userId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
+        final String userId = AuthUtils.requireLgnUserId();
         return jrnlTodoService.getDtlDtoWithCacheByUser(userId, key);
     }
 }

@@ -35,7 +35,7 @@ public class MyJrnlDayService {
      * @return {@link List} -- 조회된 목록
      */
     public List<JrnlDayDto> getMyCachedYyMnthListDto(final Integer yy, final Integer mnth) throws Exception {
-        final String lgnUserId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
+        final String lgnUserId = AuthUtils.requireLgnUserId();
         return jrnlDayService.getCachedYyMnthListDtoByUser(lgnUserId, yy, mnth);
     }
 
@@ -49,7 +49,7 @@ public class MyJrnlDayService {
     public List<JrnlDayDto> getMyJrnlStdrdDays(final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        final String userId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
+        final String userId = AuthUtils.requireLgnUserId();
         return jrnlDayService.getJrnlStdrdDaysByUser(userId, searchParam);
     }
 
@@ -62,7 +62,7 @@ public class MyJrnlDayService {
     public List<JrnlDayDto> getMyCachedWeeklyListDto(final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        final String lgnUserId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
+        final String lgnUserId = AuthUtils.requireLgnUserId();
         final String weekStartDt = StringUtils.isNotBlank(searchParam.getWeekStartDt())
                 ? searchParam.getWeekStartDt()
                 : io.nicheblog.dreamdiary.global.util.date.DateUtils.getWeekStartDateStr(searchParam.getStdrdDt());
@@ -82,7 +82,7 @@ public class MyJrnlDayService {
     public List<JrnlDayDto> getMyListDtoByMetaNo(final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        final String userId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
+        final String userId = AuthUtils.requireLgnUserId();
         return jrnlDayService.getListDtoByMetaNoAndUser(userId, searchParam);
     }
 
@@ -96,7 +96,7 @@ public class MyJrnlDayService {
     public List<JrnlDayDto> getMyListDtoByTagNo(final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        final String userId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
+        final String userId = AuthUtils.requireLgnUserId();
         return jrnlDayService.getListDtoByTagNoAndUser(userId, searchParam);
     }
 
@@ -107,7 +107,7 @@ public class MyJrnlDayService {
      * @return {@link JrnlDayDto} -- 조회된 객체
      */
     public JrnlDayDto getMyCachedDtlDto(final Integer key) throws Exception {
-        final String lgnUserId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
+        final String lgnUserId = AuthUtils.requireLgnUserId();
         return jrnlDayService.getCachedDtlDtoByUser(lgnUserId, key);
     }
 
@@ -118,7 +118,7 @@ public class MyJrnlDayService {
      * @return {@link boolean} -- 정상은 true, 중복은 false 반환
      */
     public boolean dupChck(final JrnlDayDto jrnlDay) throws Exception {
-        final String userId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
+        final String userId = AuthUtils.requireLgnUserId();
         return jrnlDayService.dupChckByUser(userId, jrnlDay);
     }
 
@@ -129,7 +129,7 @@ public class MyJrnlDayService {
      * @return {@link Integer} -- 중복되는 경우 해당 게시글 번호
      */
     public Integer getDupKey(final JrnlDayDto jrnlDay) throws Exception {
-        final String userId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
+        final String userId = AuthUtils.requireLgnUserId();
         return jrnlDayService.getDupKeyByUser(userId, jrnlDay);
     }
 }
