@@ -128,6 +128,13 @@ public class JrnlDayPageController
             final @ModelAttribute("searchParam") JrnlDaySearchParam searchParam,
             final ModelMap model
     ) {
-        return "redirect:" + Url.JRNL_DAY_WEEKLY + "?stdrdDt=" + stdrdDt;
+
+        /* 사이트 메뉴 설정 */
+        model.addAttribute("menuLabel", SiteMenu.JRNL_DAY);
+        model.addAttribute("pageNm", PageNm.DTL);
+        model.addAttribute("stdrdDt", stdrdDt);
+        cdLookupService.setCdListToModel(Code.JRNL_ENTRY_CTGR_CD, model);
+
+        return "/view/feature/jrnl/day/jrnl_day_view";
     }
 }

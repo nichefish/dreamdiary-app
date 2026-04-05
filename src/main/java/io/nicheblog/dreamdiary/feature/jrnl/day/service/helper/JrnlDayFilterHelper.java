@@ -29,8 +29,6 @@ public final class JrnlDayFilterHelper {
 
         final boolean showDiaries = searchParam.isShowDiaries();
         final boolean showDreams = searchParam.isShowDreams();
-        final String stdrdDt = StringUtils.trimToEmpty(searchParam.getStdrdDt());
-        final boolean filterStdrdDt = StringUtils.isNotEmpty(stdrdDt);
 
         final String diaryKeyword = StringUtils.defaultString(searchParam.getDiaryKeyword()).trim().toLowerCase();
         final String dreamKeyword = StringUtils.defaultString(searchParam.getDreamKeyword()).trim().toLowerCase();
@@ -54,10 +52,6 @@ public final class JrnlDayFilterHelper {
 
         final List<JrnlDayDto> result = new ArrayList<>();
         for (final JrnlDayDto day : listDto) {
-            if (filterStdrdDt) {
-                final String dayStdrdDt = StringUtils.trimToEmpty(day.getStdrdDt());
-                if (!stdrdDt.equals(dayStdrdDt)) continue;
-            }
             List<JrnlEntryDto> filteredEntries = day.getJrnlEntryList();
             if (filterEntryCtgr || filterDiaries) {
                 filteredEntries = new ArrayList<>();

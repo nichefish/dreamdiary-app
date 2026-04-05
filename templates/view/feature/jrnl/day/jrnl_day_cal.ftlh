@@ -70,7 +70,7 @@
 </div>
 <!--end::Advance form-->
 
-<div class="jrnl-day-monthly-page">
+<div class="jrnl-day-calendar-page">
     <#--filter status-->
     <#include "/view/feature/jrnl/day/_filter/_jrnl_day_filter_status.ftlh">
     <div class="d-flex flex-column-fluid justify-content-between align-items-start align-items-xl-center gap-4">

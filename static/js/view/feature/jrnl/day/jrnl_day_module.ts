@@ -209,6 +209,8 @@ dF.JrnlDay = (function(): dfModule {
             $("#toggleDiaries").prop("checked", showDiaries);
             $("#toggleDreams").prop("checked", showDreams);
             $("#toggleTagCloud").prop("checked", showTagCloud);
+            $("#toggleEntryCtgr").prop("checked", entryCtgrCds.length > 0);
+            $("#entryCtgrFilter").val(entryCtgrCds);
             dF.JrnlDay.currentSearchParams.entryCtgrCds = entryCtgrCds;
             dF.JrnlDay.syncEntryCtgrState(showDiaries);
             $("#diaryFilterKeyword").val(diaryKeyword);
