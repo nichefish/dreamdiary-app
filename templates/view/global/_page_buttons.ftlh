@@ -16,7 +16,7 @@
     <#elseif post.mdfable??>
         <!-- 1. mdfable 항목 사용시 -->
         <!-- 수정권한에 따라 수정 권한 부여 -->
-        <#if post.mdfable! == (Constant.MDFABLE_MNGR)>
+        <#if post.mdfable! == (Code.MDFABLE_MNGR)>
             <#if isMngr!false>
                 <button type="button" class="btn btn-sm btn-light btn-active-primary me-2"
                         onclick="${func!}"
@@ -24,13 +24,13 @@
                     <i class="bi bi-pencil-square"></i>(관리자+)수정
                 </button>
             </#if>
-        <#elseif post.mdfable! == (Constant.MDFABLE_USER)>
+        <#elseif post.mdfable! == (Code.MDFABLE_USER)>
             <button type="button" class="btn btn-sm btn-light btn-active-primary me-2"
                     onclick="${func!}"
                     data-bs-toggle="tooltip" data-bs-placement="top" title="<@spring.message 'bs.tooltip.page.mdf'/>">
                 <i class="bi bi-pencil-square"></i>(사용자+)수정
             </button>
-        <#elseif post.mdfable! == (Constant.MDFABLE_ALL)>
+        <#elseif post.mdfable! == (Code.MDFABLE_ALL)>
             <button type="button" class="btn btn-sm btn-light btn-active-primary me-2"
                     onclick="${func!}"
                     data-bs-toggle="tooltip" data-bs-placement="top" title="<@spring.message 'bs.tooltip.page.mdf'/>">

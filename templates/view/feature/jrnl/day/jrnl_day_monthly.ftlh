@@ -14,8 +14,8 @@
 <link rel="stylesheet" type="text/css" href="/css/jrnl.css?${releaseDate!}" />
 
 <div class="jrnl-day-monthly-page">
-<#--filter status-->
-<#include "/view/feature/jrnl/day/_filter/_jrnl_day_filter_status.ftlh">
+    <#--filter status-->
+    <#include "/view/feature/jrnl/day/_filter/_jrnl_day_filter_status.ftlh">
     <div class="d-flex flex-column-fluid justify-content-between align-items-start align-items-xl-center gap-4">
         <#--begin::Tab-->
         <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">

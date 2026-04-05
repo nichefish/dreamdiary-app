@@ -322,10 +322,12 @@ dF.JrnlDiary = (function(): dfModule {
             if (isNaN(Number(postNo))) return;
 
             const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
-                const cn: HTMLDivElement = item.querySelector("div.jrnl-diary-cn");
+                const wrapper: HTMLDivElement = item.querySelector("div.jrnl-diary-cn");
+                const cn: HTMLDivElement = item.querySelector("div.jrnl-diary-cn .cn");
                 if (!cn) return console.warn("cn not found.");
 
-                cn.classList.toggle("bg-secondary", res.rsltSts === "ON");
+                wrapper?.classList.remove("bg-secondary");
+                cn.classList.toggle("imprtc", res.rsltSts === "ON");
             }
             this.toggleStateAjax(postNo, "IMPRTC", { onOffFunc });
         },
@@ -338,10 +340,12 @@ dF.JrnlDiary = (function(): dfModule {
             if (isNaN(Number(postNo))) return;
 
             const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
+                const wrapper: HTMLDivElement = item.querySelector("div.jrnl-diary-cn");
                 const cn: HTMLDivElement = item.querySelector("div.jrnl-diary-cn .cn");
                 if (!cn) return console.warn("cn not found.");
 
-                cn.classList.toggle("bg-secondary", res.rsltSts === "ON");
+                wrapper?.classList.remove("bg-secondary");
+                cn.classList.toggle("refrnc", res.rsltSts === "ON");
             }
             this.toggleStateAjax(postNo, "REFRNC", { onOffFunc });
         },
@@ -424,14 +428,17 @@ dF.JrnlDiary = (function(): dfModule {
 
             if (!profile) throw new Error(`Unknown render profile: ${profileName}`);
 
+            const hasState = (targetState: string): boolean =>
+                Array.isArray(diary.state?.list) && diary.state.list.some((state: any): boolean => state?.stateCd === targetState);
+
             return {
                 ...diary,
                 view: profile,
                 cnClass: [
                     'cn',
-                    profile.collapsed && diary.state?.list?.includes('COLLAPSED') ? 'collapsed' : null,
-                    diary.state?.list?.includes('IMPRTC') ? 'border-1 border-danger' : null,
-                    diary.state?.list?.includes('REFRNC') ? 'border-1 border-warning' : null
+                    profile.collapsed && hasState('COLLAPSED') ? 'collapsed' : null,
+                    hasState('IMPRTC') ? 'imprtc' : null,
+                    hasState('REFRNC') ? 'refrnc' : null
                 ].filter(Boolean).join(' ')
             };
         }

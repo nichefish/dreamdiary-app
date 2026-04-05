@@ -121,7 +121,7 @@
                 <#include "/view/feature/clsf/file/_atch_file_page_reg_area.ftlh">
 
                 <!-- #include:: component:: 파일시스템 참조 -->
-                <#include "/view/global/_common/flsys/_flsys_reg_area.ftlh">
+                <#include "/view/feature/flsys/_flsys_reg_area.ftlh">
 
                 <!-- #include:: component:: 태그 태그 -->
                 <#include "/view/feature/clsf/tag/_tag_page_reg_area.ftlh">
@@ -177,7 +177,7 @@
 
 <#--include::comment-->
 <#include "/view/feature/clsf/comment/_modal/_comment_reg_modal.ftlh">
-<#include "/view/feature/clsf/comment/_comment_list_partial.hbs">
+<#include "/view/feature/clsf/comment/_partial/_comment_list_partial.hbs">
 <script type="text/javascript" src="/js/view/feature/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
 
 <#--include::script modules-->

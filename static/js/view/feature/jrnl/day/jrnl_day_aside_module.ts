@@ -297,6 +297,11 @@ dF.JrnlDayAside = (function(): dfModule {
             dF.JrnlDay.currentSearchParams.stdrdDt = stdrdDt;
             dF.JrnlDayAside.syncWeekRangeLabel(stdrdDt);
 
+            if (dF.JrnlDay.viewType === "WEEKLY") {
+                Page.loadWeek(stdrdDt);
+                return;
+            }
+
             dF.JrnlDayAside.yyMnth(yy, mnth, dF.JrnlDay.currentSearchParams.sort);
         },
 
