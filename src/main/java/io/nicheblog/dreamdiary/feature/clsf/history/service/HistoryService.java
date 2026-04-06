@@ -99,6 +99,14 @@ public class HistoryService {
         return true;
     }
 
+    @Transactional
+    public boolean deleteAllHistory(final BaseClsfKey refKey) {
+        if (refKey == null || refKey.getPostNo() == null || refKey.getContentType() == null) return false;
+
+        historyRepository.deleteAllByRefPostNoAndRefContentType(refKey.getPostNo(), refKey.getContentType());
+        return true;
+    }
+
     private String buildPreview(final String cn) {
         if (StringUtils.isBlank(cn)) return "";
         final String plainText = CmmUtils.htmlToText(cn).replaceAll("\\s+", " ").trim();

@@ -60,7 +60,6 @@
 <#include "/view/feature/jrnl/diary/_partial/_jrnl_diary_states_partial.hbs">
 <#include "/view/feature/jrnl/diary/_partial/_jrnl_diary_cn_search_partial.hbs">
 <script type="text/javascript" src="/js/view/feature/jrnl/diary/jrnl_diary_module.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/js/view/feature/jrnl/diary/jrnl_diary_hist_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_dream_module-->
 <#include "/view/feature/jrnl/dream/_modal/_jrnl_dream_reg_modal.ftlh">
@@ -99,6 +98,7 @@
 
 <#--include::comment-->
 <#include "/view/feature/clsf/comment/_modal/_comment_reg_modal.ftlh">
+<#include "/view/feature/clsf/history/_history_modal.ftlh">
 <#include "/view/feature/clsf/comment/_partial/_comment_list_partial.hbs">
 <#include "/view/feature/clsf/comment/_partial/_comment_reg_btn_partial.hbs">
 <script type="text/javascript" src="/js/view/feature/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>

@@ -69,9 +69,6 @@ public interface ApiUrl {
     /** 저널 일기 */
     String JRNL_DIARIES = Prefix.API + "/jrnl/diaries";
     String JRNL_DIARY = Prefix.API + "/jrnl/diary/{postNo}";
-    String JRNL_DIARY_HISTORIES = Prefix.API + "/jrnl/diary/{postNo}/histories";
-    String JRNL_DIARY_HISTORY = Prefix.API + "/jrnl/diary/{postNo}/histories/{historyNo}";
-    String JRNL_DIARY_HISTORY_RESTORE = Prefix.API + "/jrnl/diary/{postNo}/histories/{historyNo}/restore";
     String JRNL_DIARIES_EXPORT = Prefix.API + "/jrnl/diaries/export";
     /** 저널 일기 태그 */
     String JRNL_DIARY_TAGS = Prefix.API + "/jrnl/diary/tags";
@@ -135,6 +132,12 @@ public interface ApiUrl {
     /** 댓글 */
     String COMMENTS = Prefix.API + "/comments";
     String COMMENT = Prefix.API + "/comment/{postNo}";
+
+    /** 이력 */
+    String HISTORIES = Prefix.API + "/history/{contentType}/{postNo}";
+    String HISTORY = Prefix.API + "/history/{contentType}/{postNo}/{historyNo}";
+    String HISTORY_RESTORE = Prefix.API + "/history/{contentType}/{postNo}/{historyNo}/restore";
+    String HISTORY_CLEAR = Prefix.API + "/history/{contentType}/{postNo}/clear";
 
     /** 단락 */
     String SECTNS = Prefix.API + "/sectns";
