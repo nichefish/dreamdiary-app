@@ -559,7 +559,7 @@ dF.JrnlDay = (function(): dfModule {
          * @param {string} stdrdDt 湲곗? ?쇱옄
          * @return {string}
          */
-        buildWeeklyViewUrl: function(stdrdDt: string): string {
+        buildWeeklyViewUrl: function(stdrdDt: string, targetDt?: string): string {
             dF.JrnlDay.initSearchParams();
 
             const currentParams: Record<string, any> = dF.JrnlDay.currentSearchParams ?? {};
@@ -570,6 +570,7 @@ dF.JrnlDay = (function(): dfModule {
             targetUrl.searchParams.set("stdrdDt", stdrdDt);
             targetUrl.searchParams.set("yy", yy);
             targetUrl.searchParams.set("mnth", mnth);
+            if (cF.util.isNotEmpty(targetDt)) targetUrl.searchParams.set("target", targetDt);
             if (typeof currentParams.showDiaries === "boolean") targetUrl.searchParams.set("showDiaries", String(currentParams.showDiaries));
             if (typeof currentParams.showDreams === "boolean") targetUrl.searchParams.set("showDreams", String(currentParams.showDreams));
             if (typeof currentParams.showTagCloud === "boolean") targetUrl.searchParams.set("showTagCloud", String(currentParams.showTagCloud));

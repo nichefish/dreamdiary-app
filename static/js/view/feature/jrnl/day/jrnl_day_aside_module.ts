@@ -9,6 +9,7 @@ dF.JrnlDayAside = (function(): dfModule {
     return {
         initialized: false,
         pinpointSearchParams: null,
+        weekNavRequestKey: null,
 
         /**
          * initialize module
@@ -25,7 +26,11 @@ dF.JrnlDayAside = (function(): dfModule {
             cF.util.enterKey("#diaryFilterKeyword", dF.JrnlDay.applyKeywordFilters);
             cF.util.enterKey("#dreamFilterKeyword", dF.JrnlDay.applyKeywordFilters);
 
-            dF.JrnlDayAside.syncWeekRangeLabel();
+            if (dF.JrnlDay.viewType === "WEEKLY") {
+                dF.JrnlDayAside.syncWeekRangeLabel();
+            } else {
+                dF.JrnlDayAside.syncWeekNavigator();
+            }
             dF.JrnlDayAside.initialized = true;
             console.log("'dF.JrnlDayAside' module initialized.");
         },
@@ -117,7 +122,7 @@ dF.JrnlDayAside = (function(): dfModule {
 
             localStorage.setItem("jrnl_yy", yy);
             localStorage.setItem("jrnl_mnth", mnthStr);
-            dF.JrnlDayAside.syncWeekRangeLabel(dF.JrnlDay.currentSearchParams.stdrdDt);
+            dF.JrnlDayAside.syncWeekNavigator(dF.JrnlDay.currentSearchParams.stdrdDt);
 
             if (dF.JrnlDay.viewType === "WEEKLY") {
                 dF.JrnlDream.inKeywordSearchMode = false;
@@ -201,7 +206,8 @@ dF.JrnlDayAside = (function(): dfModule {
          */
         navigateWeek: function(type: "prev"|"next"): void {
             const anchorDate: string = dF.JrnlDayAside.getCurrentAnchorDate();
-            const nextDate: string = cF.date.navigateDateStr("week", anchorDate, type, cF.date.ptnDate) ?? anchorDate;
+            const currentWeekStartDt: string = cF.date.getWeekdayDateStr(anchorDate, 1, cF.date.ptnDate) ?? anchorDate;
+            const nextDate: string = cF.date.navigateDateStr("week", currentWeekStartDt, type, cF.date.ptnDate) ?? currentWeekStartDt;
             dF.JrnlDayAside.navigateToWeek(nextDate);
         },
 
@@ -231,9 +237,24 @@ dF.JrnlDayAside = (function(): dfModule {
             dF.JrnlDay.currentSearchParams.yy = yy;
             dF.JrnlDay.currentSearchParams.mnth = mnth;
             dF.JrnlDay.currentSearchParams.stdrdDt = stdrdDt;
-            dF.JrnlDayAside.syncWeekRangeLabel(stdrdDt);
+            dF.JrnlDayAside.syncWeekNavigator(stdrdDt);
 
             cF.ui.blockUIReplace(dF.JrnlDay.buildViewUrl(Url.JRNL_DAY_WEEKLY));
+        },
+
+        /**
+         * move to selected week day
+         * @param {string} stdrdDt
+         */
+        navigateToWeekDay: function(stdrdDt: string): void {
+            if (cF.util.isEmpty(stdrdDt)) return;
+
+            if (dF.JrnlDay.viewType === "WEEKLY") {
+                dF.JrnlDayAside.setAnchorDateForCurrentView(stdrdDt);
+                return;
+            }
+
+            cF.ui.blockUIReplace(dF.JrnlDay.buildWeeklyViewUrl(stdrdDt, stdrdDt));
         },
 
         /**
@@ -295,10 +316,10 @@ dF.JrnlDayAside = (function(): dfModule {
             dF.JrnlDay.currentSearchParams.yy = yy;
             dF.JrnlDay.currentSearchParams.mnth = mnth;
             dF.JrnlDay.currentSearchParams.stdrdDt = stdrdDt;
-            dF.JrnlDayAside.syncWeekRangeLabel(stdrdDt);
+            dF.JrnlDayAside.syncWeekNavigator(stdrdDt);
 
             if (dF.JrnlDay.viewType === "WEEKLY") {
-                Page.loadWeek(stdrdDt);
+                Page.loadWeek(stdrdDt, stdrdDt);
                 return;
             }
 
@@ -385,7 +406,11 @@ dF.JrnlDayAside = (function(): dfModule {
             const sortElement: HTMLInputElement | null = document.querySelector("#jrnl_aside #sort") as HTMLInputElement | null;
             if (sort !== "" && sortElement != null) sortElement.value = sort;
 
-            dF.JrnlDayAside.syncWeekRangeLabel();
+            if (dF.JrnlDay.viewType === "WEEKLY") {
+                dF.JrnlDayAside.syncWeekRangeLabel();
+            } else {
+                dF.JrnlDayAside.syncWeekNavigator();
+            }
         },
 
         /**
@@ -405,6 +430,97 @@ dF.JrnlDayAside = (function(): dfModule {
             const weekStartDt: string = cF.date.getWeekdayDateStr(targetDate, 1, cF.date.ptnDate) ?? targetDate;
             const weekEndDt: string = cF.date.getDateAddDayStr(weekStartDt, 6, cF.date.ptnDate) ?? weekStartDt;
             labelElement.textContent = `${weekStartDt.substring(5)} ~ ${weekEndDt.substring(5)}`;
+        },
+
+        /**
+         * sync week range label + week day buttons
+         * @param {string} [stdrdDt]
+         * @param {Record<string, any>[]} [weeklyList]
+         */
+        syncWeekNavigator: function(stdrdDt?: string, weeklyList?: Record<string, any>[]): void {
+            const targetDate: string = stdrdDt ?? dF.JrnlDayAside.getCurrentAnchorDate();
+            dF.JrnlDayAside.syncWeekRangeLabel(targetDate);
+
+            if (cF.util.isEmpty(targetDate)) {
+                dF.JrnlDayAside.renderWeekNavigator("", []);
+                return;
+            }
+
+            if (Array.isArray(weeklyList)) {
+                dF.JrnlDayAside.renderWeekNavigator(targetDate, weeklyList);
+                return;
+            }
+
+            dF.JrnlDayAside.loadWeekNavigator(targetDate);
+        },
+
+        /**
+         * fetch week day availability for week navigation
+         * @param {string} stdrdDt
+         */
+        loadWeekNavigator: function(stdrdDt: string): void {
+            if (cF.util.isEmpty(stdrdDt)) return;
+
+            const weekStartDt: string = cF.date.getWeekdayDateStr(stdrdDt, 1, cF.date.ptnDate) ?? stdrdDt;
+            const requestKey: string = `${weekStartDt}:${stdrdDt}`;
+            dF.JrnlDayAside.weekNavRequestKey = requestKey;
+            dF.JrnlDayAside.renderWeekNavigator(stdrdDt, null);
+
+            cF.ajax.get(Url.JRNL_DAYS, {
+                viewType: "weekly",
+                weekStartDt,
+                stdrdDt,
+            }, function(res: AjaxResponse): void {
+                if (dF.JrnlDayAside.weekNavRequestKey !== requestKey) return;
+
+                if (!res.rslt) {
+                    dF.JrnlDayAside.renderWeekNavigator(stdrdDt, []);
+                    return;
+                }
+
+                dF.JrnlDayAside.renderWeekNavigator(stdrdDt, Array.isArray(res.rsltList) ? res.rsltList : []);
+            });
+        },
+
+        /**
+         * render week navigation buttons
+         * @param {string} stdrdDt
+         * @param {Record<string, any>[]|null} weeklyList
+         */
+        renderWeekNavigator: function(stdrdDt: string, weeklyList: Record<string, any>[]|null): void {
+            const container: HTMLElement | null = document.querySelector("#jrnl_aside #jrnlAsideWeekDays");
+            if (container == null) return;
+
+            if (cF.util.isEmpty(stdrdDt)) {
+                container.innerHTML = "";
+                return;
+            }
+
+            const weekStartDt: string = cF.date.getWeekdayDateStr(stdrdDt, 1, cF.date.ptnDate) ?? stdrdDt;
+            const weekDayLabels: string[] = ["월", "화", "수", "목", "금", "토", "일"];
+            const dayMap: Map<string, Record<string, any>> = new Map<string, Record<string, any>>();
+            const loaded: boolean = Array.isArray(weeklyList);
+
+            if (loaded) {
+                weeklyList.forEach((day: Record<string, any>): void => {
+                    const dateKey: string = day?.stdrdDt ?? "";
+                    if (cF.util.isNotEmpty(dateKey)) dayMap.set(dateKey, day);
+                });
+            }
+
+            container.innerHTML = weekDayLabels.map((label: string, idx: number): string => {
+                const dateStr: string = cF.date.getDateAddDayStr(weekStartDt, idx, cF.date.ptnDate) ?? weekStartDt;
+                const hasDay: boolean = loaded && dayMap.has(dateStr);
+                const isActive: boolean = dateStr === stdrdDt;
+                const disabledAttr: string = hasDay ? "" : " disabled";
+                const activeClass: string = isActive ? " is-active" : "";
+                const onClickAttr: string = hasDay ? ` onclick="dF.JrnlDayAside.navigateToWeekDay('${dateStr}');"` : "";
+
+                return `<button type="button" class="jrnl-aside-week-day${activeClass}"${disabledAttr}${onClickAttr}>`
+                    + `<span class="jrnl-aside-week-day__label">${label}</span>`
+                    + `<span class="jrnl-aside-week-day__date">${dateStr.substring(8, 10)}</span>`
+                    + `</button>`;
+            }).join("");
         },
 
         /**
