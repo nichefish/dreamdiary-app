@@ -10,6 +10,7 @@ const Page: Page = (function(): Page {
         stdrdDt: null,
         weekStartDt: null,
         weekEndDt: null,
+        targetDt: null,
 
         init: function(): void {
             dF.JrnlDay.init('WEEKLY');
@@ -24,11 +25,13 @@ const Page: Page = (function(): Page {
             dF.State.init();
 
             const stdrdDt: string = window.JRNL?.stdrdDt ?? cF.date.getCurrDateStr(cF.date.ptnDate);
+            const targetDt: string = cF.util.getUrlParam("target") ?? "";
             Page.stdrdDt = stdrdDt;
+            Page.targetDt = cF.util.isNotEmpty(targetDt) ? targetDt : stdrdDt;
             Page.syncAsidePeriodState(stdrdDt);
             dF.JrnlDayAside.init();
 
-            Page.loadWeek(stdrdDt);
+            Page.loadWeek(stdrdDt, cF.util.isNotEmpty(targetDt) ? targetDt : undefined);
         },
 
         changeView: function(url: string): void {
@@ -61,12 +64,14 @@ const Page: Page = (function(): Page {
             asideToggle?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
         },
 
-        loadWeek: function(stdrdDt: string): void {
+        loadWeek: function(stdrdDt: string, targetDt?: string): void {
+            const historyTargetDt: string = targetDt ?? cF.util.getUrlParam("target") ?? "";
             Page.stdrdDt = stdrdDt;
+            Page.targetDt = targetDt ?? stdrdDt;
             Page.weekStartDt = cF.date.getWeekdayDateStr(stdrdDt, 1, cF.date.ptnDate) ?? stdrdDt;
             Page.weekEndDt = cF.date.getDateAddDayStr(Page.weekStartDt, 6, cF.date.ptnDate) ?? Page.weekStartDt;
             Page.syncAsidePeriodState(stdrdDt);
-            window.history.replaceState(null, "", dF.JrnlDay.buildViewUrl(window.location.pathname));
+            window.history.replaceState(null, "", dF.JrnlDay.buildWeeklyViewUrl(stdrdDt, historyTargetDt));
 
             dF.JrnlDay.initSearchParams();
             const searchParams: Record<string, any> = dF.JrnlDay.currentSearchParams ?? {};
@@ -97,6 +102,7 @@ const Page: Page = (function(): Page {
                     showDiaries,
                     showDreams
                 }, "jrnl_day_list");
+                dF.JrnlDayAside.syncWeekNavigator(stdrdDt, weeklyList);
                 $("#jrnl_tag_header").toggle(searchParams.showTagCloud !== false);
                 if (searchParams.showTagCloud !== false) {
                     dF.JrnlDayTag.listAjax();
@@ -104,7 +110,20 @@ const Page: Page = (function(): Page {
                     if (showDreams) dF.JrnlDreamTag.listAjax();
                 }
                 KTMenu.createInstances();
+                Page.scrollToTarget(Page.targetDt);
             }, "block");
+        },
+
+        scrollToTarget: function(targetDt?: string): void {
+            const safeTargetDt: string = targetDt ?? Page.stdrdDt;
+            if (cF.util.isEmpty(safeTargetDt)) return;
+
+            const targetElement: HTMLElement | null = document.querySelector(`.jrnl-day[data-stdrd-dt="${safeTargetDt}"]`);
+            if (targetElement == null) return;
+
+            window.requestAnimationFrame(function(): void {
+                targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+            });
         },
 
         normalizeWeekDays: function(rsltList: Record<string, any>[], sort: string = "DESC"): Record<string, any>[] {
