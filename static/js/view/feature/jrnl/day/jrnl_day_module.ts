@@ -550,6 +550,16 @@ dF.JrnlDay = (function(): dfModule {
          * @param {string} stdrdDt 기준 일자
          */
         openDetatched: function(stdrdDt: string): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DAY_DAILY_VIEW, { stdrdDt });
+            window.open(url, '_blank', 'noopener,noreferrer');
+        },
+
+        /**
+         * build weekly view url with current filter state
+         * @param {string} stdrdDt 湲곗? ?쇱옄
+         * @return {string}
+         */
+        buildWeeklyViewUrl: function(stdrdDt: string): string {
             dF.JrnlDay.initSearchParams();
 
             const currentParams: Record<string, any> = dF.JrnlDay.currentSearchParams ?? {};
@@ -570,7 +580,15 @@ dF.JrnlDay = (function(): dfModule {
             }
             if (cF.util.isNotEmpty(currentParams.sort)) targetUrl.searchParams.set("sort", currentParams.sort);
 
-            window.open(`${targetUrl.pathname}${targetUrl.search}${targetUrl.hash}`, '_blank', 'noopener,noreferrer');
+            return `${targetUrl.pathname}${targetUrl.search}${targetUrl.hash}`;
+        },
+
+        /**
+         * 주간 뷰로 이동
+         * @param {string} stdrdDt 湲곗? ?쇱옄
+         */
+        moveToWeeklyView: function(stdrdDt: string): void {
+            cF.ui.blockUIReplace(dF.JrnlDay.buildWeeklyViewUrl(stdrdDt));
         },
 
         /**
