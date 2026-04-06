@@ -26,6 +26,14 @@
                     <i class="bi bi-window-stack fs-8"></i>
                 </div>
             </div>
+            <div class="menu-item px-3 my-1 cursor-pointer"
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.comm.go-to-weekly-view'/>">
+                <div class="menu-link flex-stack px-3" onclick="dF.JrnlDay.moveToWeeklyView('{{stdrdDt}}');">
+                    <@spring.message "txt.comm.go-to-weekly-view"/>
+                    <i class="bi bi-calendar-week fs-8"></i>
+                </div>
+            </div>
+            <div class="separator my-2"></div>
             <!--begin::Menu item-->
             <div class="menu-item px-3 my-1 cursor-pointer"
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.day"/> <@spring.message 'bs.tooltip.modal.mdf'/>">
