@@ -6,6 +6,8 @@ import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.file.entity.embed.AtchFileEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.file.entity.embed.AtchFileEmbedModule;
+import io.nicheblog.dreamdiary.feature.clsf.history.entity.embed.HistoryEmbed;
+import io.nicheblog.dreamdiary.feature.clsf.history.entity.embed.HistoryEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.state.entity.embed.StateEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
@@ -39,7 +41,7 @@ import javax.persistence.*;
 @SQLDelete(sql = "UPDATE jrnl_intrpt SET del_yn = 'Y' WHERE post_no = ?")
 public class JrnlIntrptEntity
         extends BaseClsfEntity
-        implements AtchFileEmbedModule, CommentEmbedModule, TagEmbedModule, StateEmbedModule {
+        implements AtchFileEmbedModule, CommentEmbedModule, TagEmbedModule, StateEmbedModule, HistoryEmbedModule {
 
     /** 저널 해석 고유 번호 (PK) */
     @Id
@@ -95,4 +97,6 @@ public class JrnlIntrptEntity
     /** 위임 :: 상태 정보 모듈 */
     @Embedded
     public StateEmbed state;
+    @Embedded
+    public HistoryEmbed history;
 }

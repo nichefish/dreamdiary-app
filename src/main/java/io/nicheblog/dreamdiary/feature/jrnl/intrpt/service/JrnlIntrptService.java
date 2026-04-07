@@ -4,7 +4,9 @@ import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
+import io.nicheblog.dreamdiary.feature.clsf._shared.service.helper.BaseClsfHistoryHelper;
 import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableService;
+import io.nicheblog.dreamdiary.feature.clsf.history.HistoryType;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
@@ -139,6 +141,29 @@ public class JrnlIntrptService
         // 권한 체크
         if (!retrieved.getIsRegstr(AuthUtils.requireUserId(userId))) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
         return retrieved;
+    }
+
+    @Transactional
+    public JrnlIntrptDto updtCn(
+            final Integer key,
+            final String updatedCn,
+            final HistoryType historyType,
+            final Integer fromHistoryNo
+    ) throws Exception {
+        final JrnlIntrptEntity restoreEntity = this.getSelf().getDtlEntity(key);
+        final JrnlIntrptEntity historySnapshot = BaseClsfHistoryHelper.isHistoryModule(restoreEntity)
+                ? restoreEntity.toBuilder().build()
+                : null;
+
+        restoreEntity.setCn(updatedCn);
+        BaseClsfHistoryHelper.applyModifyHistory(historySnapshot, restoreEntity);
+
+        final JrnlIntrptEntity updatedEntity = getRepository().saveAndFlush(restoreEntity);
+        BaseClsfHistoryHelper.publishHistoryEventIfSupported(this, historySnapshot, updatedEntity, historyType, fromHistoryNo);
+
+        final JrnlIntrptDto updatedDto = getReadMapstruct().toDto(updatedEntity);
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_INTRPT);
+        return updatedDto;
     }
 
     /**
