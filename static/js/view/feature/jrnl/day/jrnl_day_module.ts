@@ -12,8 +12,8 @@ dF.JrnlDay = (function(): dfModule {
         tagTagify: null,
         metaTagify: null,
         currentSearchParams: null,
+        ENTRY_CTGR_ALL: "__ALL__",
         ENTRY_CTGR_NONE: "__NONE__",
-        ENTRY_CTGR_DEFAULT: "SUMMARY",
 
         /**
          * initializes module.
@@ -113,6 +113,7 @@ dF.JrnlDay = (function(): dfModule {
             if (typeof currentParams.showDiaries === "boolean") targetUrl.searchParams.set("showDiaries", String(currentParams.showDiaries));
             if (typeof currentParams.showDreams === "boolean") targetUrl.searchParams.set("showDreams", String(currentParams.showDreams));
             if (typeof currentParams.showTagCloud === "boolean") targetUrl.searchParams.set("showTagCloud", String(currentParams.showTagCloud));
+            if (currentParams.showEntryCtgr === false) targetUrl.searchParams.set("showEntryCtgr", "false");
             if (cF.util.isNotEmpty(currentParams.diaryKeyword)) targetUrl.searchParams.set("diaryKeyword", currentParams.diaryKeyword);
             if (cF.util.isNotEmpty(currentParams.dreamKeyword)) targetUrl.searchParams.set("dreamKeyword", currentParams.dreamKeyword);
             if (Array.isArray(currentParams.entryCtgrCds) && currentParams.entryCtgrCds.length > 0) {
@@ -186,6 +187,7 @@ dF.JrnlDay = (function(): dfModule {
             const showDiaries = cF.util.getUrlParam("showDiaries") !== "false";
             const showDreams = cF.util.getUrlParam("showDreams") !== "false";
             const showTagCloud = cF.util.getUrlParam("showTagCloud") !== "false";
+            const showEntryCtgr = cF.util.getUrlParam("showEntryCtgr") !== "false";
             const rawEntryCtgr = cF.util.getUrlParam("entryCtgrCds") ?? cF.util.getUrlParam("entryCtgrCd") ?? "";
             const entryCtgrCds: string[] = dF.JrnlDay.parseEntryCtgrCds(rawEntryCtgr);
             const diaryKeyword: string = cF.util.getUrlParam("diaryKeyword") ?? "";
@@ -200,6 +202,7 @@ dF.JrnlDay = (function(): dfModule {
                 showDiaries,
                 showDreams,
                 showTagCloud,
+                showEntryCtgr,
                 entryCtgrCds,
                 diaryKeyword,
                 dreamKeyword
@@ -209,9 +212,13 @@ dF.JrnlDay = (function(): dfModule {
             $("#toggleDiaries").prop("checked", showDiaries);
             $("#toggleDreams").prop("checked", showDreams);
             $("#toggleTagCloud").prop("checked", showTagCloud);
-            $("#toggleEntryCtgr").prop("checked", entryCtgrCds.length > 0);
-            $("#entryCtgrFilter").val(entryCtgrCds);
-            dF.JrnlDay.currentSearchParams.entryCtgrCds = entryCtgrCds;
+            $("#toggleEntryCtgr").prop("checked", showEntryCtgr);
+            if (showEntryCtgr && entryCtgrCds.length === 0) {
+                const allCds: string[] = dF.JrnlDay.getSelectableEntryCtgrCds();
+                dF.JrnlDay.currentSearchParams.entryCtgrCds = dF.JrnlDay.syncEntryCtgrSelectUi(allCds);
+            } else {
+                dF.JrnlDay.currentSearchParams.entryCtgrCds = dF.JrnlDay.syncEntryCtgrSelectUi(entryCtgrCds);
+            }
             dF.JrnlDay.syncEntryCtgrState(showDiaries);
             $("#diaryFilterKeyword").val(diaryKeyword);
             $("#dreamFilterKeyword").val(dreamKeyword);
@@ -228,6 +235,88 @@ dF.JrnlDay = (function(): dfModule {
                 .split(",")
                 .map((value: string): string => value.trim())
                 .filter((value: string): boolean => value.length > 0);
+        },
+
+        getSelectableEntryCtgrCds: function(): string[] {
+            return $("#entryCtgrFilter").find("option").map(function(): string {
+                return String($(this).val() ?? "").trim();
+            }).get().filter((value: string): boolean => {
+                return value.length > 0
+                    && value !== dF.JrnlDay.ENTRY_CTGR_ALL
+                    && value !== dF.JrnlDay.ENTRY_CTGR_NONE;
+            });
+        },
+
+        normalizeEntryCtgrCds: function(selectedCtgrCds: string[] = [], emptyFallback: string[] = []): string[] {
+            const selectableCtgrCds: string[] = dF.JrnlDay.getSelectableEntryCtgrCds();
+            const uniqueSelectedCtgrCds: string[] = Array.from(new Set(
+                (selectedCtgrCds ?? [])
+                    .map((value: string): string => String(value ?? "").trim())
+                    .filter((value: string): boolean => value.length > 0)
+            ));
+            const selectedRealCtgrCds: string[] = uniqueSelectedCtgrCds.filter((value: string): boolean => {
+                return selectableCtgrCds.includes(value);
+            });
+
+            if (selectedRealCtgrCds.length === selectableCtgrCds.length && selectableCtgrCds.length > 0) {
+                return selectableCtgrCds;
+            }
+
+            if (uniqueSelectedCtgrCds.includes(dF.JrnlDay.ENTRY_CTGR_ALL) && selectedRealCtgrCds.length === 0) {
+                return selectableCtgrCds;
+            }
+
+            if (uniqueSelectedCtgrCds.includes(dF.JrnlDay.ENTRY_CTGR_NONE) && selectedRealCtgrCds.length === 0) {
+                return [dF.JrnlDay.ENTRY_CTGR_NONE];
+            }
+
+            if (selectedRealCtgrCds.length === 0) return [...emptyFallback];
+
+            return selectedRealCtgrCds;
+        },
+
+        syncEntryCtgrSelectUi: function(selectedCtgrCds: string[] = []): string[] {
+            const selectableCtgrCds: string[] = dF.JrnlDay.getSelectableEntryCtgrCds();
+            const normalizedCtgrCds: string[] = dF.JrnlDay.normalizeEntryCtgrCds(selectedCtgrCds);
+            const isAllSelected: boolean = selectableCtgrCds.length > 0
+                && normalizedCtgrCds.length === selectableCtgrCds.length
+                && selectableCtgrCds.every((ctgrCd: string): boolean => normalizedCtgrCds.includes(ctgrCd));
+            const uiSelectedCtgrCds: string[] = isAllSelected
+                ? [dF.JrnlDay.ENTRY_CTGR_ALL, ...selectableCtgrCds]
+                : normalizedCtgrCds.filter((value: string): boolean => value !== dF.JrnlDay.ENTRY_CTGR_NONE);
+
+            $("#entryCtgrFilter").val(uiSelectedCtgrCds);
+            return normalizedCtgrCds;
+        },
+
+        isAllEntryCtgrSelected: function(selectedCtgrCds?: string[]): boolean {
+            const selectableCtgrCds: string[] = dF.JrnlDay.getSelectableEntryCtgrCds();
+            const normalizedCtgrCds: string[] = dF.JrnlDay.normalizeEntryCtgrCds(
+                selectedCtgrCds ?? dF.JrnlDay.currentSearchParams?.entryCtgrCds ?? []
+            );
+
+            return selectableCtgrCds.length > 0
+                && normalizedCtgrCds.length === selectableCtgrCds.length
+                && selectableCtgrCds.every((ctgrCd: string): boolean => normalizedCtgrCds.includes(ctgrCd));
+        },
+
+        handleEntryCtgrMouseDown: function(event: MouseEvent): boolean {
+            const target = event.target as HTMLElement | null;
+            if (!(target instanceof HTMLOptionElement) || target.value !== dF.JrnlDay.ENTRY_CTGR_ALL) return true;
+
+            event.preventDefault();
+
+            if (!dF.JrnlDay.currentSearchParams) dF.JrnlDay.initSearchParams();
+
+            const nextCtgrCds: string[] = dF.JrnlDay.isAllEntryCtgrSelected()
+                ? [dF.JrnlDay.ENTRY_CTGR_NONE]
+                : dF.JrnlDay.getSelectableEntryCtgrCds();
+
+            dF.JrnlDay.currentSearchParams.entryCtgrCds = nextCtgrCds;
+            dF.JrnlDay.syncEntryCtgrSelectUi(nextCtgrCds);
+            dF.JrnlDay.changeEntryCtgr();
+
+            return false;
         },
 
         /**
@@ -329,12 +418,12 @@ dF.JrnlDay = (function(): dfModule {
                 return;
             }
 
-            let selectedCtgrCds: string[] = (selectElmt.val() as string[] | null) ?? [];
+            let selectedCtgrCds: string[] = dF.JrnlDay.currentSearchParams?.entryCtgrCds ?? [];
             if (selectedCtgrCds.length === 0) {
-                selectedCtgrCds = [dF.JrnlDay.ENTRY_CTGR_DEFAULT];
-                selectElmt.val(selectedCtgrCds);
+                selectedCtgrCds = dF.JrnlDay.getSelectableEntryCtgrCds();
             }
-            if (dF.JrnlDay.currentSearchParams) dF.JrnlDay.currentSearchParams.entryCtgrCds = selectedCtgrCds;
+            const normalizedCtgrCds: string[] = dF.JrnlDay.syncEntryCtgrSelectUi(selectedCtgrCds);
+            if (dF.JrnlDay.currentSearchParams) dF.JrnlDay.currentSearchParams.entryCtgrCds = normalizedCtgrCds;
         },
 
         /**
@@ -355,17 +444,25 @@ dF.JrnlDay = (function(): dfModule {
                 selectElmt.prop("disabled", true);
                 selectElmt.val([]);
                 dF.JrnlDay.currentSearchParams.entryCtgrCds = [];
+                dF.JrnlDay.currentSearchParams.showEntryCtgr = false;
+                const url: URL = new URL(window.location.href);
+                url.searchParams.set("showEntryCtgr", "false");
+                url.searchParams.delete("entryCtgrCds");
+                window.history.replaceState(null, "", url.toString());
                 dF.JrnlDay.reloadByView();
                 return;
             }
 
             selectElmt.prop("disabled", false);
-            let selectedCtgrCds: string[] = (selectElmt.val() as string[] | null) ?? [];
+            dF.JrnlDay.currentSearchParams.showEntryCtgr = true;
+            let selectedCtgrCds: string[] = dF.JrnlDay.currentSearchParams.entryCtgrCds ?? [];
             if (selectedCtgrCds.length === 0) {
-                selectedCtgrCds = [dF.JrnlDay.ENTRY_CTGR_DEFAULT];
-                selectElmt.val(selectedCtgrCds);
+                selectedCtgrCds = dF.JrnlDay.getSelectableEntryCtgrCds();
             }
-            dF.JrnlDay.currentSearchParams.entryCtgrCds = selectedCtgrCds;
+            dF.JrnlDay.currentSearchParams.entryCtgrCds = dF.JrnlDay.syncEntryCtgrSelectUi(selectedCtgrCds);
+            const urlOn: URL = new URL(window.location.href);
+            urlOn.searchParams.delete("showEntryCtgr");
+            window.history.replaceState(null, "", urlOn.toString());
             dF.JrnlDay.reloadByView();
         },
 
@@ -389,12 +486,13 @@ dF.JrnlDay = (function(): dfModule {
                 return;
             }
 
-            let selectedCtgrCds: string[] = (selectElmt.val() as string[] | null) ?? [];
-            if (selectedCtgrCds.length === 0) {
-                selectedCtgrCds = [dF.JrnlDay.ENTRY_CTGR_DEFAULT];
-                selectElmt.val(selectedCtgrCds);
-            }
+            const rawSelectedCtgrCds: string[] = (selectElmt.val() as string[] | null) ?? [];
+            const selectedCtgrCds: string[] = dF.JrnlDay.normalizeEntryCtgrCds(
+                rawSelectedCtgrCds,
+                [dF.JrnlDay.ENTRY_CTGR_NONE]
+            );
             dF.JrnlDay.currentSearchParams.entryCtgrCds = selectedCtgrCds;
+            dF.JrnlDay.syncEntryCtgrSelectUi(selectedCtgrCds);
             dF.JrnlDay.reloadByView();
         },
 
@@ -407,10 +505,15 @@ dF.JrnlDay = (function(): dfModule {
             const selectedCtgrCds: string[] = dF.JrnlDay.currentSearchParams?.entryCtgrCds ?? [];
             if (!Array.isArray(selectedCtgrCds) || selectedCtgrCds.length === 0) return list;
 
+            // 선택이 비어 있으면 __NONE__ 으로 해석하고, 실제 카테고리만 필터링합니다.
             const hasNoneCategory: boolean = selectedCtgrCds.includes(dF.JrnlDay.ENTRY_CTGR_NONE);
             const ctgrSet: Set<string> = new Set(
-                selectedCtgrCds.filter((ctgrCd: string): boolean => ctgrCd !== dF.JrnlDay.ENTRY_CTGR_NONE)
+                selectedCtgrCds.filter((ctgrCd: string): boolean => {
+                    return ctgrCd !== dF.JrnlDay.ENTRY_CTGR_NONE && ctgrCd !== dF.JrnlDay.ENTRY_CTGR_ALL;
+                })
             );
+
+            if (!hasNoneCategory && ctgrSet.size === 0) return list;
 
             return list.map((day: Record<string, any>): Record<string, any> => {
                 const jrnlEntryList: Record<string, any>[] = Array.isArray(day.jrnlEntryList) ? day.jrnlEntryList : [];
@@ -574,6 +677,7 @@ dF.JrnlDay = (function(): dfModule {
             if (typeof currentParams.showDiaries === "boolean") targetUrl.searchParams.set("showDiaries", String(currentParams.showDiaries));
             if (typeof currentParams.showDreams === "boolean") targetUrl.searchParams.set("showDreams", String(currentParams.showDreams));
             if (typeof currentParams.showTagCloud === "boolean") targetUrl.searchParams.set("showTagCloud", String(currentParams.showTagCloud));
+            if (currentParams.showEntryCtgr === false) targetUrl.searchParams.set("showEntryCtgr", "false");
             if (cF.util.isNotEmpty(currentParams.diaryKeyword)) targetUrl.searchParams.set("diaryKeyword", currentParams.diaryKeyword);
             if (cF.util.isNotEmpty(currentParams.dreamKeyword)) targetUrl.searchParams.set("dreamKeyword", currentParams.dreamKeyword);
             if (Array.isArray(currentParams.entryCtgrCds) && currentParams.entryCtgrCds.length > 0) {

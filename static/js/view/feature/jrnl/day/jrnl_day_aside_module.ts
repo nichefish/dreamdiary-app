@@ -126,6 +126,8 @@ dF.JrnlDayAside = (function(): dfModule {
 
             if (dF.JrnlDay.viewType === "WEEKLY") {
                 dF.JrnlDream.inKeywordSearchMode = false;
+                // buildViewUrl → resolveAnchorDateForView가 Page.stdrdDt를 우선 참조하므로, 목적지 날짜로 미리 동기화해야 올바른 월로 이동한다.
+                Page.stdrdDt = dF.JrnlDay.currentSearchParams.stdrdDt;
                 cF.ui.blockUIReplace(dF.JrnlDay.buildViewUrl(Url.JRNL_DAY_MONTHLY));
                 Layout.toPageTop();
                 return;
@@ -219,7 +221,7 @@ dF.JrnlDayAside = (function(): dfModule {
             if (cF.util.isEmpty(stdrdDt)) return;
 
             if (dF.JrnlDay.viewType === "WEEKLY") {
-                dF.JrnlDayAside.setAnchorDateForCurrentView(stdrdDt);
+                dF.JrnlDayAside.setAnchorDateForCurrentView(stdrdDt, false);
                 return;
             }
 
@@ -250,7 +252,7 @@ dF.JrnlDayAside = (function(): dfModule {
             if (cF.util.isEmpty(stdrdDt)) return;
 
             if (dF.JrnlDay.viewType === "WEEKLY") {
-                dF.JrnlDayAside.setAnchorDateForCurrentView(stdrdDt);
+                dF.JrnlDayAside.setAnchorDateForCurrentView(stdrdDt, true);
                 return;
             }
 
@@ -298,8 +300,9 @@ dF.JrnlDayAside = (function(): dfModule {
         /**
          * apply anchor date to active view
          * @param {string} stdrdDt
+         * @param {boolean} [useTarget]
          */
-        setAnchorDateForCurrentView: function(stdrdDt: string): void {
+        setAnchorDateForCurrentView: function(stdrdDt: string, useTarget?: boolean): void {
             if (cF.util.isEmpty(stdrdDt)) return;
 
             const yy: string = stdrdDt.substring(0, 4);
@@ -319,7 +322,7 @@ dF.JrnlDayAside = (function(): dfModule {
             dF.JrnlDayAside.syncWeekNavigator(stdrdDt);
 
             if (dF.JrnlDay.viewType === "WEEKLY") {
-                Page.loadWeek(stdrdDt, stdrdDt);
+                Page.loadWeek(stdrdDt, useTarget ? stdrdDt : undefined);
                 return;
             }
 

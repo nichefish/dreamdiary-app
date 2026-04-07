@@ -13,13 +13,14 @@
         <div class="d-flex align-items-center justify-content-between">
             <label for="entryCtgrFilter" class="text-muted mb-0">- ENTRY CATEGORIES</label>
             <input type="checkbox" id="toggleEntryCtgr" class="form-check-input cursor-pointer m-0"
-                   onclick="dF.JrnlDay.toggleEntryCtgr();">
+                   onclick="dF.JrnlDay.toggleEntryCtgr();" checked>
         </div>
         <select id="entryCtgrFilter" class="form-select form-select-sm w-100"
                 multiple size="4"
                 data-bs-toggle="tooltip" data-bs-placement="top" title="<@spring.message 'bs.tooltip.select.multi'/>"
+                onmousedown="return dF.JrnlDay.handleEntryCtgrMouseDown(event);"
                 onchange="dF.JrnlDay.changeEntryCtgr();">
-            <option value="__NONE__"><@spring.message 'txt.ctgr.none'/></option>
+            <option value="__ALL__"><@spring.message 'txt.ctgr.all'/></option>
             <#list JRNL_ENTRY_CTGR_CD![] as ctgr>
                 <option value="${ctgr.dtlCd!}">[${ctgr.dtlCdNm!}]</option>
             </#list>
