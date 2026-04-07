@@ -6,6 +6,8 @@ import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.file.entity.embed.AtchFileEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.file.entity.embed.AtchFileEmbedModule;
+import io.nicheblog.dreamdiary.feature.clsf.history.entity.embed.HistoryEmbed;
+import io.nicheblog.dreamdiary.feature.clsf.history.entity.embed.HistoryEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.state.entity.embed.StateEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
@@ -43,7 +45,7 @@ import java.util.List;
 @SQLDelete(sql = "UPDATE jrnl_dream SET del_yn = 'Y' WHERE post_no = ?")
 public class JrnlDreamEntity
         extends BaseClsfEntity
-        implements AtchFileEmbedModule, CommentEmbedModule, TagEmbedModule, StateEmbedModule {
+        implements AtchFileEmbedModule, CommentEmbedModule, TagEmbedModule, StateEmbedModule, HistoryEmbedModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -136,4 +138,7 @@ public class JrnlDreamEntity
     /** 위임 :: 상태 정보 모듈 */
     @Embedded
     public StateEmbed state;
+    /** 위임 :: 이력 정보 모듈 */
+    @Embedded
+    public HistoryEmbed history;
 }

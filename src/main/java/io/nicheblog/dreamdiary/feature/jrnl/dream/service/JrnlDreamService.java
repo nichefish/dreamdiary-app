@@ -4,6 +4,8 @@ import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
+import io.nicheblog.dreamdiary.feature.clsf._shared.service.helper.BaseClsfHistoryHelper;
+import io.nicheblog.dreamdiary.feature.clsf.history.HistoryType;
 import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
@@ -183,6 +185,38 @@ public class JrnlDreamService
 
         // 관련 캐시 삭제
         jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DREAM);
+    }
+
+    /**
+     * 내용 수정 (이력 생성 포함).
+     *
+     * @param key 식별자
+     * @param updatedCn 수정할 내용
+     * @param historyType 이력 타입
+     * @param fromHistoryNo 복구 원본 이력 번호 (복구 시)
+     * @return {@link JrnlDreamDto} -- 수정된 객체
+     */
+    @Transactional
+    public JrnlDreamDto updtCn(
+            final Integer key,
+            final String updatedCn,
+            final HistoryType historyType,
+            final Integer fromHistoryNo
+    ) throws Exception {
+        final JrnlDreamEntity restoreEntity = this.getSelf().getDtlEntity(key);
+        final JrnlDreamEntity historySnapshot = BaseClsfHistoryHelper.isHistoryModule(restoreEntity)
+                ? restoreEntity.toBuilder().build()
+                : null;
+
+        restoreEntity.setCn(updatedCn);
+        BaseClsfHistoryHelper.applyModifyHistory(historySnapshot, restoreEntity);
+
+        final JrnlDreamEntity updatedEntity = getRepository().saveAndFlush(restoreEntity);
+        BaseClsfHistoryHelper.publishHistoryEventIfSupported(this, historySnapshot, updatedEntity, historyType, fromHistoryNo);
+
+        final JrnlDreamDto updatedDto = getReadMapstruct().toDto(updatedEntity);
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DREAM);
+        return updatedDto;
     }
 
     /**
