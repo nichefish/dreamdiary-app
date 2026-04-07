@@ -27,6 +27,15 @@
                 </div>
             </div>
             <!--end::Menu item-->
+            <div class="menu-item px-3 my-1 cursor-pointer"
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
+                 title="{{#if (exists history.historyTriggeredAt)}}<@spring.message 'txt.history'/>{{else}}<@spring.message 'txt.history.empty'/>{{/if}}">
+                <div class="menu-link flex-stack px-3 {{#unless (exists history.historyTriggeredAt)}}disabled text-muted{{/unless}}"
+                     {{#if (exists history.historyTriggeredAt)}}onclick="dF.History.modal.open('JRNL_INTRPT', {{postNo}});"{{/if}}>
+                    <@spring.message 'txt.history'/>
+                    <i class="bi bi-clock-history fs-8"></i>
+                </div>
+            </div>
             <!--begin::Menu item-->
             <div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-end">
                 <a href="#" class="menu-link px-3">

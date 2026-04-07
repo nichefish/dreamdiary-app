@@ -137,6 +137,9 @@ CREATE TABLE IF NOT EXISTS jrnl_intrpt (
     imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
     -- ATCH_FILE
     atch_file_no INT COMMENT '첨부파일 번호',
+    -- history
+    history_triggered_by VARCHAR(20) COMMENT '최종 이력 트리거 발생자',
+    history_triggered_at DATETIME COMMENT '최종 이력 트리거 발생일시',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
