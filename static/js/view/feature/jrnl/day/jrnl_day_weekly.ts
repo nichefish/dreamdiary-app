@@ -27,9 +27,11 @@ const Page: Page = (function(): Page {
             const stdrdDt: string = window.JRNL?.stdrdDt ?? cF.date.getCurrDateStr(cF.date.ptnDate);
             const targetDt: string = cF.util.getUrlParam("target") ?? "";
             Page.stdrdDt = stdrdDt;
-            Page.targetDt = cF.util.isNotEmpty(targetDt) ? targetDt : stdrdDt;
+            Page.targetDt = cF.util.isNotEmpty(targetDt) ? targetDt : null;
             Page.syncAsidePeriodState(stdrdDt);
             dF.JrnlDayAside.init();
+            cF.util.enterKey("#diarySearchKeyword", dF.JrnlDiary.searchPopup);
+            cF.util.enterKey("#dreamSearchKeyword", dF.JrnlDream.searchPopup);
 
             Page.loadWeek(stdrdDt, cF.util.isNotEmpty(targetDt) ? targetDt : undefined);
         },
@@ -65,13 +67,13 @@ const Page: Page = (function(): Page {
         },
 
         loadWeek: function(stdrdDt: string, targetDt?: string): void {
-            const historyTargetDt: string = targetDt ?? cF.util.getUrlParam("target") ?? "";
+            const resolvedTargetDt: string|undefined = cF.util.isNotEmpty(targetDt) ? targetDt : undefined;
             Page.stdrdDt = stdrdDt;
-            Page.targetDt = targetDt ?? stdrdDt;
+            Page.targetDt = resolvedTargetDt ?? null;
             Page.weekStartDt = cF.date.getWeekdayDateStr(stdrdDt, 1, cF.date.ptnDate) ?? stdrdDt;
             Page.weekEndDt = cF.date.getDateAddDayStr(Page.weekStartDt, 6, cF.date.ptnDate) ?? Page.weekStartDt;
             Page.syncAsidePeriodState(stdrdDt);
-            window.history.replaceState(null, "", dF.JrnlDay.buildWeeklyViewUrl(stdrdDt, historyTargetDt));
+            window.history.replaceState(null, "", dF.JrnlDay.buildWeeklyViewUrl(stdrdDt, resolvedTargetDt));
 
             dF.JrnlDay.initSearchParams();
             const searchParams: Record<string, any> = dF.JrnlDay.currentSearchParams ?? {};
@@ -115,10 +117,9 @@ const Page: Page = (function(): Page {
         },
 
         scrollToTarget: function(targetDt?: string): void {
-            const safeTargetDt: string = targetDt ?? Page.stdrdDt;
-            if (cF.util.isEmpty(safeTargetDt)) return;
+            if (cF.util.isEmpty(targetDt)) return;
 
-            const targetElement: HTMLElement | null = document.querySelector(`.jrnl-day[data-stdrd-dt="${safeTargetDt}"]`);
+            const targetElement: HTMLElement | null = document.querySelector(`.jrnl-day[data-stdrd-dt="${targetDt}"]`);
             if (targetElement == null) return;
 
             window.requestAnimationFrame(function(): void {
