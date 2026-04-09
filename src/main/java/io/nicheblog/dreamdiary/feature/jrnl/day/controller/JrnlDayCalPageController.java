@@ -6,6 +6,8 @@ import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDaySearchParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
+import io.nicheblog.dreamdiary.infrastructure.cd.service.CdLookupService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import lombok.Getter;
@@ -34,6 +36,8 @@ public class JrnlDayCalPageController
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
+    private final CdLookupService cdLookupService;
+
     /**
      * 저널 달력 화면 조회
      * (사용자USER, 관리자MNGR만 접근 가능.)
@@ -55,6 +59,7 @@ public class JrnlDayCalPageController
 
         // URL 파라미터가 전부 존재한다면 그대로 페이지 렌더링
         if (searchParam.getYy() != null && searchParam.getMnth() != null) {
+            cdLookupService.setCdListToModel(Code.TEXT_CLASS_CD, model);
             return "/view/feature/jrnl/day/jrnl_day_cal";
         }
 

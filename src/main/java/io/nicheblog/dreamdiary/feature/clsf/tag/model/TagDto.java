@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.clsf.tag.model;
 
+import io.nicheblog.dreamdiary.global.type.TextClass;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.*;
@@ -55,6 +56,18 @@ public class TagDto
     /** 글자 크기 클래스 */
     private String tagClass;
 
+    /** 태그 시각 의미 */
+    @Builder.Default
+    private TextClass textSemantic = TextClass.DEFAULT;
+
+    /** 렌더링 시 적용할 text class */
+    @Builder.Default
+    private String textClassCd = TextClass.DEFAULT.getKey();
+
+    /** Bootstrap text class for rendering */
+    @Builder.Default
+    private String textClass = "";
+
     /* ----- */
 
     /**
@@ -75,7 +88,7 @@ public class TagDto
      */
     public TagDto(final String tagNm, final String ctgr) {
         this.tagNm = tagNm;
-        this.ctgr =  StringUtils.isEmpty(ctgr) ? "" : ctgr;
+        this.ctgr = StringUtils.isEmpty(ctgr) ? "" : ctgr;
     }
 
     /**
@@ -98,8 +111,8 @@ public class TagDto
     @SneakyThrows
     @Override
     public int compareTo(final @NotNull TagDto other) {
-        String thisTagNm = this.getTagNm();
-        String otherTagNm = other.getTagNm();
+        final String thisTagNm = this.getTagNm();
+        final String otherTagNm = other.getTagNm();
         return thisTagNm.compareTo(otherTagNm);
     }
 

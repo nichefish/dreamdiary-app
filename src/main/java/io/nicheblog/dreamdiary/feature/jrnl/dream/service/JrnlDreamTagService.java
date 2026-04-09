@@ -1,8 +1,10 @@
 package io.nicheblog.dreamdiary.feature.jrnl.dream.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagContentCntDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
+import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagProfileService;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.entity.JrnlDreamTagEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.mapstruct.JrnlDreamTagMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamSearchParam;
@@ -56,6 +58,7 @@ public class JrnlDreamTagService
     }
 
     private final ApplicationContext context;
+    private final TagProfileService tagProfileService;
 
     private JrnlDreamTagService getSelf() {
         return context.getBean(this.getClass());
@@ -112,7 +115,7 @@ public class JrnlDreamTagService
     public List<TagDto> getDreamSizedListDtoByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
         final List<TagDto> tagList = this.getSelf().getListDtoWithCacheByUser(userId, yy, mnth);
         final int maxSize = this.calcMaxSize(tagList, AuthUtils.requireUserId(userId), yy, mnth, null);
-        return this.applyTagSizes(tagList, maxSize);
+        return this.applyTagSizes(tagList, maxSize, ContentType.JRNL_DREAM);
     }
 
     /**
@@ -127,7 +130,7 @@ public class JrnlDreamTagService
     public List<TagDto> getWeeklySizedListDtoByUser(final String userId, final String weekStartDt) throws Exception {
         final List<TagDto> tagList = this.getSelf().getWeeklyListDtoWithCacheByUser(userId, weekStartDt);
         final int maxSize = this.calcMaxSize(tagList, AuthUtils.requireUserId(userId), null, null, weekStartDt);
-        return this.applyTagSizes(tagList, maxSize);
+        return this.applyTagSizes(tagList, maxSize, ContentType.JRNL_DREAM);
     }
 
     /**
@@ -167,11 +170,11 @@ public class JrnlDreamTagService
      * @param maxSize 최대 사용 빈도
      * @return {@link List} -- CSS 클래스가 적용된 태그 목록
      */
-    private List<TagDto> applyTagSizes(final List<TagDto> tagList, final int maxSize) {
+    private List<TagDto> applyTagSizes(final List<TagDto> tagList, final int maxSize, final ContentType contentType) {
         final int minSize = 2;
         final int maxTagSize = 9;
 
-        return tagList.stream()
+        final List<TagDto> sizedTagList = tagList.stream()
                 .peek(dto -> {
                     final int size = dto.getContentSize();
                     if (size <= 1 || maxSize <= 1) {
@@ -185,6 +188,9 @@ public class JrnlDreamTagService
                 })
                 .sorted()
                 .collect(Collectors.toList());
+
+        tagProfileService.applyVisualSemantic(sizedTagList, contentType);
+        return sizedTagList;
     }
 
     /**

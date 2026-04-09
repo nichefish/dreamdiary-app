@@ -7,7 +7,7 @@
     <span class="py-2 me-3 cursor-pointer opacity-hover"
           onclick="{{module}}.select({{tagNo}}, '{{tagNm}}');"
           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "view.tag.content-list"/>">
-        <span class="{{tagClass}}">
+        <span class="{{tagClass}} {{textClass}}">
             {{#if (exists ctgr)}}
                 <span class="fs-7 text-noti">[{{ctgr}}]</span>
             {{/if}}

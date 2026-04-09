@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS comment (
     mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
     -- ATCH_FILE
     atch_file_no INT COMMENT '첨부파일 번호',
+    visual_semantic VARCHAR(30) NOT NULL DEFAULT 'DEFAULT' COMMENT '시각 의미',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -122,6 +123,25 @@ CREATE TABLE IF NOT EXISTS tag_property (
     INDEX (content_type),
     INDEX (tag_no, content_type)
 ) COMMENT = '태그-컨텐츠';
+
+-- 태그 프로필 (tag_profile)
+-- @extends: BaseAuditEntity
+CREATE TABLE IF NOT EXISTS tag_profile (
+    tag_profile_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '태그 프로필 번호 (PK)',
+    tag_no INT NOT NULL COMMENT '태그 번호',
+    content_type VARCHAR(50) NOT NULL COMMENT '컨텐츠 타입',
+    --
+    cn LONGTEXT COMMENT '내용',
+    text_semantic VARCHAR(30) NOT NULL DEFAULT 'DEFAULT' COMMENT '시각 의미',
+    -- AUDIT
+    regstr_id VARCHAR(20) COMMENT '등록자 ID',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    -- CONSTRAINT
+    FOREIGN KEY (tag_no) REFERENCES tag(tag_no),
+    UNIQUE KEY uk_tag_profile (tag_no, content_type, regstr_id),
+    INDEX (content_type)
+) COMMENT = '태그 프로필';
 
 -- 메타 (meta)
 -- @extends: BaseCrudEntity

@@ -150,6 +150,8 @@ public interface ApiUrl {
     /** 태그 */
     String TAGS = Prefix.API + "/tags";
     String TAG_DTL_AJAX = Prefix.API + "/tag/tag-dtl";
+    String TAG_PROFILES = Prefix.API + "/tag/profiles";
+    String TAG_PROFILE = Prefix.API + "/tag-profile/{tagProfileNo}";
 
     /** 태그 속성 */
     String TAG_PROPERTY_REG_AJAX = Prefix.API + "/tag-property/tag-property-reg";

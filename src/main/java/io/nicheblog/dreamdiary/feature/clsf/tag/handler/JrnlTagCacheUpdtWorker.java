@@ -2,6 +2,7 @@ package io.nicheblog.dreamdiary.feature.clsf.tag.handler;
 
 import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
+import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagProfileService;
 import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagProcService;
 import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagService;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
@@ -32,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JrnlTagCacheUpdtWorker {
 
     private final TagService tagService;
+    private final TagProfileService tagProfileService;
     private final CacheManager cacheManager;
 
     /**
@@ -146,6 +148,8 @@ public class JrnlTagCacheUpdtWorker {
         }
 
         // 변경된 태그 목록 캐시 저장
+        tagProfileService.applyVisualSemantic(sizedTagList, contentType);
+
         final Cache listCache = cacheManager.getCache(listCacheNm);
         if (listCache != null) listCache.put(cacheKey, sizedTagList);
 

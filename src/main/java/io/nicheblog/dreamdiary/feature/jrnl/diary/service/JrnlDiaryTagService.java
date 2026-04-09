@@ -1,8 +1,10 @@
 package io.nicheblog.dreamdiary.feature.jrnl.diary.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagContentCntDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
+import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagProfileService;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.entity.JrnlDiaryTagEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.mapstruct.JrnlDiaryTagMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiarySearchParam;
@@ -56,6 +58,7 @@ public class JrnlDiaryTagService
     }
 
     private final ApplicationContext context;
+    private final TagProfileService tagProfileService;
 
     private JrnlDiaryTagService getSelf() {
         return context.getBean(this.getClass());
@@ -110,14 +113,14 @@ public class JrnlDiaryTagService
     public List<TagDto> getDiarySizedListDtoByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
         final List<TagDto> tagList = this.getSelf().getListDtoWithCacheByUser(userId, yy, mnth);
         final int maxSize = this.calcMaxSize(tagList, AuthUtils.requireUserId(userId), yy, mnth, null);
-        return this.applyTagSizes(tagList, maxSize);
+        return this.applyTagSizes(tagList, maxSize, ContentType.JRNL_DIARY);
     }
 
     @Cacheable(value = "jrnlDiaryWeeklySizedTagListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#userId, #weekStartDt)")
     public List<TagDto> getWeeklySizedListDtoByUser(final String userId, final String weekStartDt) throws Exception {
         final List<TagDto> tagList = this.getSelf().getWeeklyListDtoWithCacheByUser(userId, weekStartDt);
         final int maxSize = this.calcMaxSize(tagList, AuthUtils.requireUserId(userId), null, null, weekStartDt);
-        return this.applyTagSizes(tagList, maxSize);
+        return this.applyTagSizes(tagList, maxSize, ContentType.JRNL_DIARY);
     }
 
     /**
@@ -150,11 +153,11 @@ public class JrnlDiaryTagService
         return maxFrequency;
     }
 
-    private List<TagDto> applyTagSizes(final List<TagDto> tagList, final int maxSize) {
+    private List<TagDto> applyTagSizes(final List<TagDto> tagList, final int maxSize, final ContentType contentType) {
         final int minSize = 2;
         final int maxTagSize = 9;
 
-        return tagList.stream()
+        final List<TagDto> sizedTagList = tagList.stream()
                 .peek(dto -> {
                     final int size = dto.getContentSize();
                     if (size <= 1 || maxSize <= 1) {
@@ -168,6 +171,9 @@ public class JrnlDiaryTagService
                 })
                 .sorted()
                 .collect(Collectors.toList());
+
+        tagProfileService.applyVisualSemantic(sizedTagList, contentType);
+        return sizedTagList;
     }
 
     /**
