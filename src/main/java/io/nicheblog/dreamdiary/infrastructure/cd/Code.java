@@ -57,6 +57,9 @@ public interface Code {
         public final String desc;
     }
 
+    /** 텍스트 클래스 코드 */
+    String TEXT_CLASS_CD = "TEXT_CLASS_CD";
+
     /** 소속(팀) 코드 */
     String TEAM_CD = "TEAM_CD";
 

@@ -1,8 +1,10 @@
 package io.nicheblog.dreamdiary.feature.jrnl.intrpt.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagContentCntDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
+import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagProfileService;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.entity.JrnlIntrptTagEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.mapstruct.JrnlIntrptTagMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptSearchParam;
@@ -55,6 +57,7 @@ public class JrnlIntrptTagService
     }
 
     private final ApplicationContext context;
+    private final TagProfileService tagProfileService;
     private JrnlIntrptTagService getSelf() {
         return context.getBean(this.getClass());
     }
@@ -92,7 +95,7 @@ public class JrnlIntrptTagService
         final int MIN_SIZE = 2; // 최소 크기
         final int MAX_SIZE = 9; // 최대 크기
 
-        return tagList.stream()
+        final List<TagDto> sizedTagList = tagList.stream()
                 .peek(dto -> {
                     int size = dto.getContentSize();
                     if (size == 1) {
@@ -105,6 +108,9 @@ public class JrnlIntrptTagService
                 })
                 .sorted()
                 .collect(Collectors.toList());
+
+        tagProfileService.applyVisualSemantic(sizedTagList, ContentType.JRNL_INTRPT);
+        return sizedTagList;
     }
 
     /**

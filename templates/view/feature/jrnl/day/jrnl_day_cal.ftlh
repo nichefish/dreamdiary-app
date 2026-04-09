@@ -202,6 +202,7 @@
 
 <#--include::tags-->
 <#include "/view/feature/jrnl/tag/_jrnl_tag_list_modal.ftlh">
+<#include "/view/feature/clsf/tag/_modal/_tag_profile_modal.ftlh">
 <#include "/view/feature/clsf/tag/_partial/_tag_list_partial.hbs">
 <#include "/view/feature/clsf/tag/_partial/_tag_list_sized_partial.hbs">
 
