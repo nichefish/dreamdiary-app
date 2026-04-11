@@ -153,12 +153,6 @@ public interface ApiUrl {
     String TAG_PROFILES = Prefix.API + "/tag/profiles";
     String TAG_PROFILE = Prefix.API + "/tag-profile/{tagProfileNo}";
 
-    /** 태그 속성 */
-    String TAG_PROPERTY_REG_AJAX = Prefix.API + "/tag-property/tag-property-reg";
-    String TAG_PROPERTY_DTL_AJAX = Prefix.API + "/tag-property/tag-property-dtl";
-    String TAG_PROPERTY_MDF_AJAX = Prefix.API + "/tag-property/tag-property-mdf";
-    String TAG_PROPERTY_DEL_AJAX = Prefix.API + "/tag-property/tag-property-del";
-
     /** 인증 정책 관리 */
     String AUTH_POLICY_REG_AJAX = Prefix.API + "/lgn-policy/reg";
 

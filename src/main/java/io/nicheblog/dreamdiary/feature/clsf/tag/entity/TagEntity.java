@@ -9,7 +9,6 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
 
 import javax.persistence.*;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.util.List;
@@ -57,14 +56,6 @@ public class TagEntity
     @BatchSize(size = 10)
     @NotFound(action = NotFoundAction.IGNORE)
     private List<TagContentEntity> tagContentList;
-
-    /** 태그 속성 */
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "tag_no", insertable = false, updatable = false)
-    @Fetch(FetchMode.SELECT)
-    @BatchSize(size = 10)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private List<TagPropertyEntity> propertyList;
 
     /* ----- */
 

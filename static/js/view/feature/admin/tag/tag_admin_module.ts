@@ -65,15 +65,6 @@ dF.TagAdmin = (function(): dfModule {
             });
         },
 
-        /**
-         * 속성 추가 모달 호출
-         * @param {string|number} tagNo - 속성을 추가할 태그 번호.
-         */
-        addPropertyModal: function(tagNo: string|number): void {
-            if (isNaN(Number(tagNo))) return;
-
-            cF.handlebars.modal({}, "tag_property_reg");
-        }
     }
 })();
 document.addEventListener("DOMContentLoaded", function(): void {

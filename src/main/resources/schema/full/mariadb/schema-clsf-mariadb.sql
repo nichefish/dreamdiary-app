@@ -107,23 +107,6 @@ CREATE TABLE IF NOT EXISTS tag_content (
     INDEX (ref_post_no, ref_content_type, regstr_id)
 ) COMMENT = '태그-컨텐츠';
 
--- 태그 속성 (tag_property)
--- @extends: BaseCrudEntity
-CREATE TABLE IF NOT EXISTS tag_property (
-    tag_property_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '태그 속성 번호 (PK)',
-    tag_no INT COMMENT '태그 번호',
-    content_type VARCHAR(30) COMMENT '컨텐츠 타입',
-    --
-    css_class VARCHAR(20) COMMENT 'CSS 클래스',
-    css_style VARCHAR(500) COMMENT '스타일시트',
-    -- AUDIT
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
-    -- CONSTRAINT
-    FOREIGN KEY (tag_no) REFERENCES tag(tag_no),
-    INDEX (content_type),
-    INDEX (tag_no, content_type)
-) COMMENT = '태그-컨텐츠';
-
 -- 태그 프로필 (tag_profile)
 -- @extends: BaseAuditEntity
 CREATE TABLE IF NOT EXISTS tag_profile (
