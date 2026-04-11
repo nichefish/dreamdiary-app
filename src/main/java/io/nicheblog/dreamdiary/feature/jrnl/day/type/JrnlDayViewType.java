@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.feature.jrnl.day;
+package io.nicheblog.dreamdiary.feature.jrnl.day.type;
 
 /**
  * JrnlDayViewType

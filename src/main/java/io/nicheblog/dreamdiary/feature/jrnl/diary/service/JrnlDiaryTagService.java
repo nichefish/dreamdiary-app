@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.jrnl.diary.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagContentCntDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagProfileService;

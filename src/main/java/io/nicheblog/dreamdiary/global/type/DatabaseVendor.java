@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.global;
+package io.nicheblog.dreamdiary.global.type;
 
 import lombok.RequiredArgsConstructor;
 

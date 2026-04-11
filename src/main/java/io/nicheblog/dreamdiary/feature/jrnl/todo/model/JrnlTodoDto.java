@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.jrnl.todo.model;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlPeriodModule;

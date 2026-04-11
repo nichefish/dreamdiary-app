@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.jrnl.day.controller;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
-import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDaySearchParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;

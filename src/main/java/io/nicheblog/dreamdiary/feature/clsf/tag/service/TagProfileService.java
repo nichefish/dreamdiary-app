@@ -1,16 +1,16 @@
 package io.nicheblog.dreamdiary.feature.clsf.tag.service;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagProfileEntity;
 import io.nicheblog.dreamdiary.feature.clsf.tag.mapstruct.TagProfileMapstruct;
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagProfileDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
-import io.nicheblog.dreamdiary.global.type.TextClass;
+import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagProfileDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.repository.jpa.TagProfileRepository;
 import io.nicheblog.dreamdiary.feature.clsf.tag.spec.TagProfileSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
+import io.nicheblog.dreamdiary.global.type.TextClass;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -21,11 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Locale;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**

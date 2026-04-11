@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.jrnl.day;
 
+import io.nicheblog.dreamdiary.feature.jrnl.day.type.JrnlDayViewType;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;

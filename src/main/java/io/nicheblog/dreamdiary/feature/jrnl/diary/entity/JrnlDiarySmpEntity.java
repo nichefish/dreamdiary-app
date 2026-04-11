@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.jrnl.diary.entity;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.entity.JrnlEntrySmpEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

@@ -1,12 +1,12 @@
 package io.nicheblog.dreamdiary.feature.clsf.state.adapter.impl;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.state.adapter.JrnlStateApplier;
 import io.nicheblog.dreamdiary.feature.clsf.state.adapter.StateCacheUpdater;
 import io.nicheblog.dreamdiary.feature.clsf.state.model.CacheContext;
 import io.nicheblog.dreamdiary.feature.clsf.state.model.StateToggleDto;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.state.JrnlState;
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.interceptor.SimpleKey;

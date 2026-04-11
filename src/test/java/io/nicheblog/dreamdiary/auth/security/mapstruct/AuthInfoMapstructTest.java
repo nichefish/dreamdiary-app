@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.auth.security.mapstruct;
 
-import io.nicheblog.dreamdiary.auth.Auth;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
+import io.nicheblog.dreamdiary.auth.type.Auth;
 import io.nicheblog.dreamdiary.feature.user.info.entity.*;
 import io.nicheblog.dreamdiary.feature.user.info.model.profl.UserProflDto;
 import io.nicheblog.dreamdiary.feature.user.profl.entity.UserProflEntity;

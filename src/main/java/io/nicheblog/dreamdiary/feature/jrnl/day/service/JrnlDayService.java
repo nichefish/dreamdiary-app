@@ -2,8 +2,8 @@ package io.nicheblog.dreamdiary.feature.jrnl.day.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.state.JrnlStateMaps;
@@ -22,15 +22,14 @@ import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.interceptor.SimpleKey;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

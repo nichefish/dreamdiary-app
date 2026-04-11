@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.feature.report.xlsx;
+package io.nicheblog.dreamdiary.feature.report.xlsx.type;
 
 import io.nicheblog.dreamdiary.feature.report.xlsx.util.XlsxStyleUtils;
 import lombok.RequiredArgsConstructor;

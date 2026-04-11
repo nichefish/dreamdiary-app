@@ -10,11 +10,7 @@ import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryReviewDto;
 import io.nicheblog.dreamdiary.feature.jrnl.todo.model.JrnlTodoDto;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * JrnlCacheEvictParam

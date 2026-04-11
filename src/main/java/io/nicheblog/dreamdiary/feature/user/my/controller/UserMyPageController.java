@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.user.my.controller;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
-import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
 import io.nicheblog.dreamdiary.global.Constant;

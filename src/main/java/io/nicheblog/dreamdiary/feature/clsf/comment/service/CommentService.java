@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.clsf.comment.service;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.comment.cache.CommentCacheInvalidateWorker;
 import io.nicheblog.dreamdiary.feature.clsf.comment.entity.CommentEntity;
 import io.nicheblog.dreamdiary.feature.clsf.comment.mapstruct.CommentMapstruct;

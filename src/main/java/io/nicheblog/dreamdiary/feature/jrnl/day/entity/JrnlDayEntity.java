@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.jrnl.day.entity;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.meta.entity.embed.MetaEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.meta.entity.embed.MetaEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;

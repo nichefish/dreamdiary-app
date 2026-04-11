@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.infrastructure.messaging.jandi.model;
 
-import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.JandiTopic;
+import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.type.JandiTopic;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

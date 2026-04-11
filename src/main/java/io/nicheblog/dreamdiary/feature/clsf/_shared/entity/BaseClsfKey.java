@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.clsf._shared.entity;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import lombok.*;
 
 import java.io.Serializable;

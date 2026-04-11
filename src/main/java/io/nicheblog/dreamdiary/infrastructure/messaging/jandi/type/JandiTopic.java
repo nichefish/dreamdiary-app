@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.infrastructure.messaging.jandi;
+package io.nicheblog.dreamdiary.infrastructure.messaging.jandi.type;
 
 import lombok.RequiredArgsConstructor;
 

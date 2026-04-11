@@ -1,15 +1,18 @@
 package io.nicheblog.dreamdiary.infrastructure.cd;
 
-import io.nicheblog.dreamdiary.auth.Auth;
-import io.nicheblog.dreamdiary.auth.Mdfable;
-import lombok.AllArgsConstructor;
+import io.nicheblog.dreamdiary.auth.type.Auth;
+import io.nicheblog.dreamdiary.auth.type.Mdfable;
+import io.nicheblog.dreamdiary.feature.schdul.Schdul;
+import io.nicheblog.dreamdiary.feature.user.emplym.Emplym;
+import io.nicheblog.dreamdiary.feature.user.emplym.Rank;
+import io.nicheblog.dreamdiary.global.type.Device;
+import io.nicheblog.dreamdiary.global.type.UtmParam;
 
 /**
- * CdConstant
+ * Code
  * <pre>
  *  공통으로 사용하는 코드성 데이터 정의
  * </pre>
- * TODO: enum으로 점진적 변환쓰
  *
  * @author nichefish
  */
@@ -33,12 +36,6 @@ public interface Code {
     String MDFABLE_ALL = Mdfable.ALL.name();
 
     /** 디바이스 정보 */
-    @AllArgsConstructor
-    enum Device {
-        PC,
-        MOBILE,
-        TABLET;
-    }
     String DVC_PC = Device.PC.name();
     String DVC_MOBILE = Device.MOBILE.name();
     String DVC_TABLET = Device.TABLET.name();
@@ -48,14 +45,6 @@ public interface Code {
 
     /** 하위메뉴 확장 유형 코드 */
     String MENU_SUB_EXTEND_TY_CD = "MENU_SUB_EXTEND_TY_CD";
-    @AllArgsConstructor
-    enum MenuSubExtendTy {
-        EXTEND("우측으로 확장"),
-        LIST("하단에 목록 표시"),
-        NO_SUB("하위메뉴 없음");
-
-        public final String desc;
-    }
 
     /** 텍스트 클래스 코드 */
     String TEXT_CLASS_CD = "TEXT_CLASS_CD";
@@ -64,30 +53,9 @@ public interface Code {
     String TEAM_CD = "TEAM_CD";
 
     /** 재직 구분 코드 */
-    @AllArgsConstructor
-    enum Emplym {
-        EMPLYM("재직"),
-        FREE("프리랜서");
-
-        public final String desc;
-    }
     String EMPLYM_CD = "EMPLYM_CD";
     String EMPLYM_FREE = Emplym.FREE.name();
 
-    @AllArgsConstructor
-    enum Rank {
-        INTN("인턴"),
-        STAFF("사원"),
-        DAERI("대리"),
-        GWJANG("과장"),
-        CHJANG("차장"),
-        BJANG("부장"),
-        SLJANG("실장"),
-        DRCTR("이사"),
-        PRSDNT("사장");
-
-        public final String desc;
-    }
     String RANK_CD = "JOB_TITLE_CD";       // 직급 코드
     String RANK_STAFF = Rank.STAFF.name();           // 직급:사원
 
@@ -110,28 +78,8 @@ public interface Code {
 
     /** 꿈 결산 구분 코드 */
     String JRNL_SUMRY_TY_CD = "JRNL_SUMRY_TY_CD";
-    @AllArgsConstructor
-    enum JrnlSumryTy {
-        DREAM("꿈"),
-        DIARY("일기");
-
-        public final String desc;
-    }
 
     /** 일정 분류 코드 */
-    @AllArgsConstructor
-    enum Schdul {
-        HLDY("공휴일"),
-        CEREMONY("행사"),
-        TLCMMT("재택근무"),
-        OUTDT("외근"),
-        INDT("내부일정"),
-        VCATN("휴가"),
-        BRTHDY("생일"),
-        ETC("기타");
-
-        public final String desc;
-    }
     String SCHDUL_CD = "SCHDUL_CD";       // 일정 구분 코드
     String SCHDUL_HLDY = Schdul.HLDY.name();
     String SCHDUL_CEREMONY = Schdul.CEREMONY.name();
@@ -142,28 +90,6 @@ public interface Code {
     String SCHDUL_BRTHDY = Schdul.BRTHDY.name();
     String SCHDUL_ETC = Schdul.ETC.name();
 
-    /** 휴가 분류 코드 */
-    @AllArgsConstructor
-    enum Vcatn {
-        ANNUAL("연차"),
-        AM_HALF("오전반차"),
-        PM_HALF("오후반차"),
-        PBLEN("공가"),
-        CTSNN("경조휴가"),
-        UNPAID("무급휴가"),
-        MNSTR("생리휴가");
-
-        public final String desc;
-    }
-    String VCATN_CD = "VCATN_CD";
-    String VCATN_ANNUAL = Vcatn.ANNUAL.name();
-    String VCATN_AM_HALF = Vcatn.AM_HALF.name();
-    String VCATN_PM_HALF = Vcatn.PM_HALF.name();
-    String VCATN_PBLEN = Vcatn.PBLEN.name();
-    String VCATN_CTSNN = Vcatn.CTSNN.name();
-    String VCATN_UNPAID = Vcatn.UNPAID.name();
-    String VCATN_MNSTR = Vcatn.MNSTR.name();
-
     /** 활동 구분 코드 (로그) */
     String ACTION_TY_SEARCH = "SEARCH";
     String ACTION_TY_MY_PAPR = "MY_PAPR";
@@ -172,17 +98,6 @@ public interface Code {
     String ACTION_TY_DOWNLOAD = "DOWNLOAD";
 
     /** UTM 파라미터 코드 */
-    @AllArgsConstructor
-    enum UtmParam {
-        UTM_SOURCE("utm_source", "등록자"),
-        UTM_MEDIUM("utm_medium", "관리자"),
-        UTM_CAMPAIGN("utm_campaign", "사용자"),
-        UTM_TERM("utm_term", "사용자"),
-        UTM_CONTENT( "utm_content", "전체");
-
-        public final String key;
-        public final String desc;
-    }
     String UTM_SOURCE = UtmParam.UTM_SOURCE.key;
     String UTM_MEDIUM = UtmParam.UTM_MEDIUM.key;
     String UTM_CAMPAIGN = UtmParam.UTM_CAMPAIGN.key;
@@ -193,12 +108,4 @@ public interface Code {
 
     /* 소속(회사) 코드 */
     String CMPY_CD = "CMPY_CD";
-
-    @AllArgsConstructor
-    enum CMPY {
-        AA("aa"),
-        BB("bb");
-
-        public final String desc;
-    }
 }
