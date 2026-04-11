@@ -23,7 +23,7 @@
             {{> jrnl_entry_toggle_btn_partial this}}
         </div>
     </div>
-    <div class="jrnl-entry-item" data-id="{{postNo}}" data-collapsed="{{hasState state 'COLLAPSED'}}">
+    <div class="jrnl-entry-item" data-id="{{postNo}}" data-stdrd-dt="{{stdrdDt}}" data-yy="{{yy}}" data-mnth="{{mnth}}" data-collapsed="{{hasState state 'COLLAPSED'}}">
         <div class="jrnl-entry-cn {{#if (hasState state 'COLLAPSED')}}collapsed{{/if}}">
             {{#each jrnlDiaryList}}
                 {{> jrnl_diary_item_partial this}}

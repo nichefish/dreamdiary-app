@@ -16,7 +16,6 @@ import io.nicheblog.dreamdiary.global.util.TransactionHookUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.cache.interceptor.SimpleKey;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -121,13 +120,9 @@ public class StateService
      * @param isEnabled Boolean
      */
     public void doCache(final StateToggleDto stateToggle, final Boolean isEnabled) throws Exception {
-        final Integer yy = stateToggle.getCacheContext().getYy();
-        final Integer mnth = stateToggle.getCacheContext().getMnth();
-        final Object cacheKey = new SimpleKey(AuthUtils.getLgnUserId(), yy, mnth);
-
         for (final StateCacheUpdater updater : cacheUpdaters) {
             if (updater.supports(stateToggle.getContentType())) {
-                updater.update(stateToggle, cacheKey, isEnabled);
+                updater.update(stateToggle, isEnabled);
                 break;
             }
         }
