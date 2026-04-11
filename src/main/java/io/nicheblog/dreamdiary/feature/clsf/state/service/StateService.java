@@ -1,7 +1,6 @@
 package io.nicheblog.dreamdiary.feature.clsf.state.service;
 
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.state.StateCd;
 import io.nicheblog.dreamdiary.feature.clsf.state.adapter.StateCacheUpdater;
 import io.nicheblog.dreamdiary.feature.clsf.state.entity.StateEntity;

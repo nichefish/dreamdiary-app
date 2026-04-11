@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.clsf.tag.model;
 
-import io.nicheblog.dreamdiary.global.type.TextClass;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
+import io.nicheblog.dreamdiary.global.type.TextClass;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.StringUtils;

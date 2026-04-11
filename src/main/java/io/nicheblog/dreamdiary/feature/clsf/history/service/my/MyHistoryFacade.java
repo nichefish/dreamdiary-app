@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.clsf.history.service.my;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.history.model.HistoryDto;
 import io.nicheblog.dreamdiary.feature.clsf.history.service.HistoryFacade;
 import lombok.RequiredArgsConstructor;

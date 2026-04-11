@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.jrnl.diary.entity;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.jrnl.day.entity.JrnlDayEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.day.entity.JrnlDaySmpEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.entity.JrnlEntryEntity;

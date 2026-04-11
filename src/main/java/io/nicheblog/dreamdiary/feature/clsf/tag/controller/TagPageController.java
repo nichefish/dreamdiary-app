@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.clsf.tag.controller;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
-import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagSearchParam;
 import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagService;
 import io.nicheblog.dreamdiary.global.Constant;

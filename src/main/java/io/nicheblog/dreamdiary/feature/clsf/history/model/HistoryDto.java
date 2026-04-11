@@ -3,11 +3,7 @@ package io.nicheblog.dreamdiary.feature.clsf.history.model;
 import io.nicheblog.dreamdiary.auth.intrfc.model.BaseAuditRegDto;
 import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.feature.clsf.history.HistoryType;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.Positive;

@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.clsf.history.service;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.history.HistoryType;
 import io.nicheblog.dreamdiary.feature.clsf.history.model.HistoryDto;
 import io.nicheblog.dreamdiary.feature.clsf.history.service.strategy.HistoryStrategy;

@@ -1,12 +1,12 @@
 package io.nicheblog.dreamdiary.feature.jrnl.day.controller;
 
-import io.nicheblog.dreamdiary.feature.jrnl.day.JrnlDayViewType;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDaySearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.JrnlDayService;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.my.MyJrnlDayCalService;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.my.MyJrnlDayQueryService;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.my.MyJrnlDayService;
+import io.nicheblog.dreamdiary.feature.jrnl.day.type.JrnlDayViewType;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;

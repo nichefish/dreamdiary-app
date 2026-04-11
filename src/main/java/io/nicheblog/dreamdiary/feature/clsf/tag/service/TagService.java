@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.clsf.tag.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagEntity;
 import io.nicheblog.dreamdiary.feature.clsf.tag.mapstruct.TagMapstruct;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;

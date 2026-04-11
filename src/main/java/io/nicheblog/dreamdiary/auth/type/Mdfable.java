@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.auth;
+package io.nicheblog.dreamdiary.auth.type;
 
 import lombok.RequiredArgsConstructor;
 

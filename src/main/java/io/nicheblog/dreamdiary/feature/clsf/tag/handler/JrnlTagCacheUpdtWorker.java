@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.clsf.tag.handler;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
-import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagProfileService;
 import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagProcService;
+import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagProfileService;
 import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagService;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.RequiredArgsConstructor;

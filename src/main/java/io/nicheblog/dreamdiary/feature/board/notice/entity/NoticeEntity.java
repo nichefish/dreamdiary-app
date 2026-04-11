@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.board.notice.entity;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.file.entity.embed.AtchFileEmbed;

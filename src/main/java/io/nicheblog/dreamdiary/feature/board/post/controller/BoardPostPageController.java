@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.board.post.controller;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
-import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.feature.board.def.model.BoardDefDto;
 import io.nicheblog.dreamdiary.feature.board.def.service.BoardDefService;
 import io.nicheblog.dreamdiary.feature.board.post.model.BoardPostDto;

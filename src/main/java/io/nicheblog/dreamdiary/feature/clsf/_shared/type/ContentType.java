@@ -1,4 +1,4 @@
-package io.nicheblog.dreamdiary.feature.clsf;
+package io.nicheblog.dreamdiary.feature.clsf._shared.type;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
