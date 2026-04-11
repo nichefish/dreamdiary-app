@@ -183,10 +183,10 @@ dF.JrnlEntry = (function(): dfModule {
         toggleStateAjax: function(postNo: string|number, stateCd: string, { onOffFunc }): void {
             if (isNaN(Number(postNo))) return;
 
-            const cacheContext = { yy: cF.util.getUrlParam("yy"), mnth: cF.util.getUrlParam("mnth") };
+            const item = document.querySelector(`.jrnl-entry-item[data-id='${postNo}']`) as HTMLElement;
+            const cacheContext = dF.State.resolveJrnlCacheContext(item);
             const payload = { postNo, contentType: "JRNL_ENTRY", stateCd, cacheContext };
             dF.State.toggleAjax(payload, function(res: AjaxResponse): void {
-                const item = document.querySelector(`.jrnl-entry-item[data-id='${postNo}']`) as HTMLElement;
                 if (!item) return;
                 const lowerStateCd: string = stateCd.toLowerCase();
                 const icon: HTMLElement = item.querySelector(`.icon-${lowerStateCd}`);

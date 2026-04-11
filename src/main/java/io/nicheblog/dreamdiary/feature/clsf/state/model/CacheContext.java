@@ -16,10 +16,12 @@ import javax.validation.constraints.Positive;
 @AllArgsConstructor
 public class CacheContext {
 
-    /** 글 번호 */
+    /** 연도 */
     @Positive
     private Integer yy;
-    /** 컨텐츠 타입 */
+    /** 월 */
     @Positive
     private Integer mnth;
+    /** 주 시작일 */
+    private String weekStartDt;
 }
