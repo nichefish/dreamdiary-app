@@ -132,7 +132,7 @@ public class TagProfileService
     public TagProfileEntity getDtlEntity(final Integer key) throws Exception {
         final String regstrId = AuthUtils.requireLgnUserId();
         return repository.findByTagProfileNoAndRegstrId(key, regstrId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("exception.EntityNotFoundException"));
     }
 
     @Override

@@ -5,7 +5,6 @@ import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
@@ -177,7 +176,7 @@ public interface BaseDtoWritableService<PostDto extends BaseCrudDto & Identifiab
         final ServiceResponse response = new ServiceResponse();
 
         final Entity deleteEntity = this.getDtlEntity(key);
-        if (deleteEntity == null) throw new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete"));
+        if (deleteEntity == null) throw new EntityNotFoundException("exception.EntityNotFoundException.to-delete");
 
         final Dto deletedDto = getReadMapstruct().toDto(deleteEntity);
 

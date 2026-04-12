@@ -10,7 +10,6 @@ import io.nicheblog.dreamdiary.feature.clsf.history.model.HistoryActionModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
@@ -126,7 +125,7 @@ public interface BaseClsfService<PostDto extends BaseClsfDto & Identifiable<Key>
     default ServiceResponse delete(final Key key) throws Exception {
         final Entity deleteEntity = this.getDtlEntity(key);
         if (deleteEntity == null) {
-            throw new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete"));
+            throw new EntityNotFoundException("exception.EntityNotFoundException.to-delete");
         }
 
         final Dto deletedDto = getReadMapstruct().toDto(deleteEntity);

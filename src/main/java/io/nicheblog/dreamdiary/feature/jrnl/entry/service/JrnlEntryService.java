@@ -14,7 +14,6 @@ import io.nicheblog.dreamdiary.feature.jrnl.entry.repository.jpa.JrnlEntryReposi
 import io.nicheblog.dreamdiary.feature.jrnl.entry.repository.mybatis.JrnlEntryMapper;
 import io.nicheblog.dreamdiary.feature.jrnl.entry.spec.JrnlEntrySpec;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptDto;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -84,7 +83,7 @@ public class JrnlEntryService
         final JrnlEntryEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlEntryDto retrieved = mapstruct.toDto(retrievedEntity);
         if (!retrieved.getIsRegstr(AuthUtils.requireUserId(userId))) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         return retrieved;
     }
@@ -124,7 +123,7 @@ public class JrnlEntryService
     @Override
     public void preModify(final JrnlEntryDto modifyDto, final JrnlEntryEntity modifyEntity) throws Exception {
         if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         final boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
         modifyDto.setIsIdxChanged(isIdxChanged);
@@ -152,7 +151,7 @@ public class JrnlEntryService
     @Override
     public void preDelete(final JrnlEntryDto deletedDto) throws Exception {
         if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
 
@@ -182,7 +181,7 @@ public class JrnlEntryService
         final JrnlEntryDto deleted = jrnlEntryMapper.getDeletedByPostNo(key);
         if (deleted == null) return null;
         if (!AuthUtils.isRegstr(deleted.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         return deleted;
     }
