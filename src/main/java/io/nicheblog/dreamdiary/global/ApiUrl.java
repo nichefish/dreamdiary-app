@@ -34,8 +34,8 @@ public interface ApiUrl {
     /** 저널 일자 태그 */
     String JRNL_DAY_TAGS = Prefix.API + "/jrnl/day/tags";
     String JRNL_DAY_TAG_GROUP_LIST = Prefix.API + "/jrnl/day/tag/group-list";
-    String JRNL_DAY_TAG = Prefix.API + "/jrnl/day/tag/{tagNo}";
-    String JRNL_DAY_TAG_YYS = Prefix.API + "/jrnl/day/tag/{tagNo}/years";
+    String JRNL_DAY_TAG = Prefix.API + "/jrnl/day/tag/{tagId}";
+    String JRNL_DAY_TAG_YYS = Prefix.API + "/jrnl/day/tag/{tagId}/years";
     String JRNL_DAY_TAG_CTGR_MAP = Prefix.API + "/jrnl/day/tag/ctgr-map";
     /** 저널 일자 메타 */
     String JRNL_DAY_METAS = Prefix.API + "/jrnl/day/metas";
@@ -58,7 +58,7 @@ public interface ApiUrl {
     /** 저널 해석 태그 */
     String JRNL_INTRPT_TAGS = Prefix.API + "/jrnl/intrpt/tags";
     String JRNL_INTRPT_TAG_GROUP_LIST_AJAX = Prefix.API + "/jrnl/intrpt/tag/group-list";
-    String JRNL_INTRPT_TAG = Prefix.API + "/jrnl/intrpt/tag/{tagNo}";
+    String JRNL_INTRPT_TAG = Prefix.API + "/jrnl/intrpt/tag/{tagId}";
     String JRNL_INTRPT_TAG_CTGR_MAP = Prefix.API + "/jrnl/intrpt/tag/ctgr-map";
 
     /** 저널 챕터 */
@@ -155,7 +155,7 @@ public interface ApiUrl {
     String TAGS = Prefix.API + "/tags";
     String TAG_DTL_AJAX = Prefix.API + "/tag/tag-dtl";
     String TAG_PROFILES = Prefix.API + "/tag/profiles";
-    String TAG_PROFILE = Prefix.API + "/tag-profile/{tagProfileNo}";
+    String TAG_PROFILE = Prefix.API + "/tag-profile/{id}";
 
     /** 인증 정책 관리 */
     String AUTH_POLICY_REG_AJAX = Prefix.API + "/lgn-policy/reg";

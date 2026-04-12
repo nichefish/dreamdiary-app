@@ -30,6 +30,7 @@ public interface JrnlDiaryTagMapstruct
      */
     @Override
     @Named("toDto")
+    @Mapping(target = "ctgr", expression = "java(entity.getCtgr())")
     TagDto toDto(final JrnlDiaryTagEntity entity) throws Exception;
 
     /**

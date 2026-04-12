@@ -31,31 +31,39 @@ public interface TagRepository
      * @param ctgr 조회할 카테고리명
      * @return 태그명과 카테고리명에 해당하는 TagEntity를 포함하는 Optional 객체
      */
-    @Query(value = "SELECT * FROM tag t WHERE t.tag_nm = :tagNm AND t.ctgr = :ctgr AND t.del_yn = 'N'", nativeQuery = true)
+    @Query(value = "SELECT t.* " +
+        "FROM tag t " +
+        "LEFT JOIN tag_category tc ON tc.id = t.tag_category_id AND tc.del_yn = 'N' " +
+        "WHERE t.tag_nm = :tagNm " +
+        "  AND t.del_yn = 'N' " +
+        "  AND ( " +
+        "       ((:ctgr IS NULL OR :ctgr = '') AND t.tag_category_id IS NULL) " +
+        "       OR tc.ctgr_nm = :ctgr " +
+        "  )", nativeQuery = true)
     Optional<TagEntity> findByTagNmAndCtgr(final String tagNm, final String ctgr);
 
     /**
-     * 태그 번호로 조회
+     * 태그 ID로 조회
      *
-     * @param tagNos 태그 번호 목록
+     * @param ids 태그 ID 목록
      * @return 태그명과 카테고리명에 해당하는 TagEntity를 포함하는 Optional 객체
      */
-    List<TagEntity> findAllByTagNoIn(List<Integer> tagNos);
+    List<TagEntity> findAllByIdIn(List<Integer> ids);
 
     /**
      * 컨텐츠 타입별 태그 개수 조회
      *
-     * @param tagNo - 조회할 태그 번호
+     * @param tagId - 조회할 태그 ID
      * @param refContentType - 조회할 컨텐츠 타입 (필터링 조건, null 또는 빈 문자열일 경우 조건 무시)
-     * @return Integer - 태그 번호와 컨텐츠 타입에 해당하는 태그 개수
+     * @return Integer - 태그 ID와 컨텐츠 타입에 해당하는 태그 개수
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    @Query("SELECT COUNT(ct.tagContentNo) " +
+    @Query("SELECT COUNT(ct.id) " +
             "FROM TagContentEntity ct " +
-            "INNER JOIN fetch TagEntity tag ON tag.tagNo = ct.refTagNo " +
-            "WHERE ct.refTagNo = :tagNo " +
+            "INNER JOIN fetch TagEntity tag ON tag.id = ct.tagId " +
+            "WHERE ct.tagId = :tagId " +
             " AND (:refContentType IS NULL OR :refContentType = '' OR ct.refContentType = :refContentType)" +
             " AND (ct.regstrId = :regstrId)")
-    Integer countTagSize(final @Param("tagNo") Integer tagNo, final @Param("refContentType") String refContentType, final String regstrId);
+    Integer countTagSize(final @Param("tagId") Integer tagId, final @Param("refContentType") String refContentType, final String regstrId);
 }

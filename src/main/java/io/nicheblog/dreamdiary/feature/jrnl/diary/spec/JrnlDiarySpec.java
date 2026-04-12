@@ -135,25 +135,25 @@ public class JrnlDiarySpec
 
                     predicate.add(builder.and(likeList.toArray(new Predicate[0])));
                     continue;
-                case "tagNo":
+                case "tagId":
                     // 특정 태그된 일기만 검색
                     final Join<JrnlDiaryEntity, TagEmbed> tagJoin = root.join("tag", JoinType.INNER);
                     final Join<TagEmbed, TagContentEntity> tagContentJoin = tagJoin.join("list", JoinType.INNER);
                     predicate.add(builder.equal(tagContentJoin.get("regstrId"), regstrId));
-                    predicate.add(builder.equal(tagContentJoin.get("refTagNo"), value));
+                    predicate.add(builder.equal(tagContentJoin.get("tagId"), value));
                     predicate.add(builder.equal(tagContentJoin.get("refContentType"), ContentType.JRNL_DIARY.key));
                     continue;
-                case "tagNos":
+                case "tagIds":
                     // 태그 exists 검색
                     if (!(value instanceof List<?> rawList)) continue;
                     if (CollectionUtils.isEmpty(rawList)) continue;
 
-                    final List<Integer> tagNos = rawList.stream()
+                    final List<Integer> tagIds = rawList.stream()
                         .filter(Objects::nonNull)
                         .map(o -> (Integer) o)
                         .toList();
 
-                    if (tagNos.isEmpty()) break;
+                    if (tagIds.isEmpty()) break;
                     final Subquery<Long> sub = query.subquery(Long.class);
                     final Root<TagContentEntity> subRoot = sub.from(TagContentEntity.class);
 
@@ -163,7 +163,7 @@ public class JrnlDiarySpec
                             builder.equal(subRoot.get("refPostNo"), root.get("postNo")),
                             builder.equal(subRoot.get("refContentType"), ContentType.JRNL_DIARY.key),
                             builder.equal(subRoot.get("regstrId"), regstrId),
-                            subRoot.get("refTagNo").in(tagNos)
+                            subRoot.get("tagId").in(tagIds)
                         )
                     );
 

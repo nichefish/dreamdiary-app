@@ -36,8 +36,8 @@ public class JrnlChapterSearchParam
     /** 항목 키워드 */
     private String dreamKeyword;
 
-    /** 태그 번호 */
-    private Integer tagNo;
+    /** 태그 ID */
+    private Integer tagId;
 
     /** 중요 여부 **/
     private String imprtcYn;

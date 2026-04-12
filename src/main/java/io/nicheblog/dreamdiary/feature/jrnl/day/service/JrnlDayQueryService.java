@@ -113,12 +113,12 @@ public class JrnlDayQueryService {
      * 태그 기준 조회 + enrich
      *
      * @param userId 조회 사용자 ID
-     * @param searchParam 조회 조건 (tagNo 포함)
+     * @param searchParam 조회 조건 (tagId 포함)
      * @return {@link List} -- 가공 완료된 DTO 목록
      */
-    public List<JrnlDayDto> getListDtoByTagNoEnrichedByUser(final String userId, final JrnlDaySearchParam searchParam) throws Exception {
+    public List<JrnlDayDto> getListDtoByTagIdEnrichedByUser(final String userId, final JrnlDaySearchParam searchParam) throws Exception {
         final String resolvedUserId = AuthUtils.requireUserId(userId);
-        final List<JrnlDayDto> listDto = jrnlDayService.getListDtoByTagNoAndUser(resolvedUserId, searchParam);
+        final List<JrnlDayDto> listDto = jrnlDayService.getListDtoByTagIdAndUser(resolvedUserId, searchParam);
         return this.enrichList(resolvedUserId, listDto, searchParam);
     }
 

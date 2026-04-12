@@ -9,7 +9,7 @@
             <label for="jrnl_day_tag_yy" class="form-label mb-0 fw-bold">년도</label>
             <select id="jrnl_day_tag_yy"
                     class="form-select form-select-sm w-auto"
-                    onchange="dF.JrnlDayTag.changeYy({{tagNo}}, this.value);">
+                    onchange="dF.JrnlDayTag.changeYy({{id}}, this.value);">
                 {{#each yearOptions}}
                     <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
                 {{/each}}

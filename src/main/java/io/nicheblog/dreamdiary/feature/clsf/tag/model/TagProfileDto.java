@@ -25,15 +25,12 @@ public class TagProfileDto
         implements Identifiable<Integer> {
 
     /** 태그 프로필 번호 (PK) */
-    private Integer tagProfileNo;
-
-    /** 참조 태그 번호 */
-    private Integer tagNo;
-
+    private Integer id;
+    /** 태그 번호 */
+    private Integer tagId;
     /** 참조 컨텐츠 타입 */
     private String contentType;
-
-    /** 해석 본문 */
+    /** 본문 */
     private String cn;
 
     /** 시각 의미 */
@@ -48,6 +45,7 @@ public class TagProfileDto
 
     @Override
     public Integer getKey() {
-        return this.tagProfileNo;
+        return this.id;
     }
+
 }

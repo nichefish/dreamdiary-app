@@ -30,6 +30,7 @@ public interface TagMapstruct
      */
     @Override
     @Named("toDto")
+    @Mapping(target = "ctgr", expression = "java(entity.getCtgr())")
     @Mapping(target = "tagContentList", expression = "java(TagContentMapstruct.INSTANCE.toDtoList(entity.getTagContentList()))")
     TagDto toDto(final TagEntity entity) throws Exception;
 
@@ -39,6 +40,7 @@ public interface TagMapstruct
      * @param entity 변환할 Entity 객체
      * @return Dto -- 변환된 Dto 객체
      */
+    @Mapping(target = "ctgr", expression = "java(entity.getCtgr())")
     TagDto toDto(final TagSmpEntity entity) throws Exception;
 
     /**

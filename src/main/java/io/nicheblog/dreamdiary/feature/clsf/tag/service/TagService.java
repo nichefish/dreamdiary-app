@@ -2,10 +2,12 @@ package io.nicheblog.dreamdiary.feature.clsf.tag.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagCategoryEntity;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagEntity;
 import io.nicheblog.dreamdiary.feature.clsf.tag.mapstruct.TagMapstruct;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagSearchParam;
+import io.nicheblog.dreamdiary.feature.clsf.tag.repository.jpa.TagCategoryRepository;
 import io.nicheblog.dreamdiary.feature.clsf.tag.repository.jpa.TagRepository;
 import io.nicheblog.dreamdiary.feature.clsf.tag.spec.TagSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
@@ -41,6 +43,7 @@ public class TagService
     private final TagSpec spec;
     @Getter
     private final TagMapstruct mapstruct = TagMapstruct.INSTANCE;
+    private final TagCategoryRepository tagCategoryRepository;
     private final TagProfileService tagProfileService;
 
     public TagMapstruct getReadMapstruct() {
@@ -182,7 +185,7 @@ public class TagService
         int maxFrequency = 0;
         for (final TagDto tag : tagList) {
             // 캐싱 처리 위해 셀프 프록시
-            final Integer tagSize = this.countTagSize(tag.getTagNo(), contentType, AuthUtils.getLgnUserId());
+            final Integer tagSize = this.countTagSize(tag.getId(), contentType, AuthUtils.getLgnUserId());
             tag.setContentSize(tagSize);
             maxFrequency = Math.max(maxFrequency, tagSize);
         }
@@ -192,13 +195,13 @@ public class TagService
     /**
      * 최대 사용빈도 계산한 태그 목록 조회
      *
-     * @param tagNo 태그 번호
+     * @param tagId 태그 ID
      * @param contentType 조회할 컨텐츠 타입 (ContentType)
      * @return {@link Integer} -- 태그 목록에서 계산된 최대 사용 빈도 (Integer)
      */
     @Transactional(readOnly = true)
-    public Integer countTagSize(final Integer tagNo, final String contentType, final String regstrId) {
-        return repository.countTagSize(tagNo, contentType, regstrId);
+    public Integer countTagSize(final Integer tagId, final String contentType, final String regstrId) {
+        return repository.countTagSize(tagId, contentType, regstrId);
     }
 
     /**
@@ -217,10 +220,13 @@ public class TagService
                     if (existingTag.isPresent()) {
                         TagEntity tagEntity = existingTag.get();
                         tagEntity.setDelYn("N");
+                        this.syncCategory(tagEntity);
                         return tagEntity;
                     }
                     // 기존 데이터가 없으면 새 객체 생성
-                    return new TagEntity(tag.getTagNm(), tag.getCtgr());
+                    final TagEntity tagEntity = new TagEntity(tag.getTagNm(), tag.getCtgr());
+                    this.syncCategory(tagEntity);
+                    return tagEntity;
                 })
                 .collect(Collectors.toList());
 
@@ -237,14 +243,38 @@ public class TagService
     }
 
     /**
-     * 태그 번호 목록으로 태그 목록 조회
-     * @param tagNos 태그 번호 목록
+     * 태그 ID 목록으로 태그 목록 조회
+     * @param tagIds 태그 ID 목록
      * @return 태그 Dto 목록
      */
-    public List<TagDto> getTagListByTagNos(final List<Integer> tagNos) {
-        if (CollectionUtils.isEmpty(tagNos)) return Collections.emptyList();
+    public List<TagDto> getTagListByIds(final List<Integer> tagIds) {
+        if (CollectionUtils.isEmpty(tagIds)) return Collections.emptyList();
 
-        final List<TagEntity> tagEntityList = repository.findAllByTagNoIn(tagNos);
+        final List<TagEntity> tagEntityList = repository.findAllByIdIn(tagIds);
         return mapstruct.toDtoList(tagEntityList);
+    }
+
+    public List<TagDto> getTagListByTagIds(final List<Integer> tagIds) {
+        return this.getTagListByIds(tagIds);
+    }
+
+    private void syncCategory(final TagEntity tagEntity) {
+        if (tagEntity == null) return;
+
+        final String ctgr = Optional.ofNullable(tagEntity.getCtgr())
+                .map(String::trim)
+                .orElse("");
+        if (ctgr.isEmpty()) {
+            tagEntity.setTagCategoryId(null);
+            tagEntity.setTagCategory(null);
+            return;
+        }
+
+        final TagCategoryEntity tagCategory = tagCategoryRepository.findByCtgrNm(ctgr)
+                .orElseGet(() -> tagCategoryRepository.saveAndFlush(new TagCategoryEntity(ctgr)));
+
+        tagEntity.setCtgr(ctgr);
+        tagEntity.setTagCategoryId(tagCategory.getId());
+        tagEntity.setTagCategory(tagCategory);
     }
 }

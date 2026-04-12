@@ -17,8 +17,8 @@
         <div class="col-10">
             <#list tagList![] as tag>
                 <#--검색에서 선택된 태그인지 여부 체크-->
-                <#list searchParam.tags![] as tagNo>
-                    <#assign ifSelected = tag.tagNo == tagNo>
+                <#list searchParam.tags![] as tagId>
+                    <#assign ifSelected = tag.id == tagId>
                     <#if ifSelected>
                         <#assign isTagSelected = true>
                         <#break> <#--이 줄은 작동하지 않지만 isTagSelected를 true로 설정 -->
@@ -29,7 +29,7 @@
                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'view.tag.filter-current-active'/>"></i>
                 </#if>
                 <span class="py-2 me-3 cursor-pointer opacity-hover"
-                      onclick="dF.Tag.filter('${tag.tagNo!}');"
+                      onclick="dF.Tag.filter('${tag.id!}');"
                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'view.tag.filter-set'/>">
                     <span class="${tag.tagClass!}">
                         <#if tag.ctgr != ""><span class="fs-7 text-noti">[${tag.ctgr!}]</span></#if>

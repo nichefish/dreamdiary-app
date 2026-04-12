@@ -41,7 +41,7 @@ public class JrnlDiaryExportService {
      */
     public String buildTxt(final List<JrnlDiaryDto> jrnlDiaryList, final JrnlDiarySearchParam searchParam) {
 
-        final List<TagDto> tagList = tagService.getTagListByTagNos(searchParam.getTagNos());
+        final List<TagDto> tagList = tagService.getTagListByIds(searchParam.getTagIds());
 
         final StringBuilder sb = new StringBuilder();
         // =========================

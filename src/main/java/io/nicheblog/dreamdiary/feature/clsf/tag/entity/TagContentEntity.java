@@ -29,25 +29,24 @@ import javax.persistence.Table;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE tag_content SET del_yn = 'Y' WHERE tag_content_no = ?")
+@SQLDelete(sql = "UPDATE tag_content SET del_yn = 'Y' WHERE id = ?")
 public class TagContentEntity
         extends BaseAuditRegEntity {
 
-    /** 태그-컨텐츠 번호 (PK) */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "tag_content_no")
-    @Comment("태그-컨텐츠 번호 (PK)")
-    private Integer tagContentNo;
+    @Column(name = "id")
+    @Comment("태그-컨텐츠 ID (PK)")
+    private Integer id;
 
-    /** 참조 태그 번호 */
-    @Column(name = "ref_tag_no")
-    @Comment("참조 태그 번호")
-    private Integer refTagNo;
+    /** 태그 ID */
+    @Column(name = "tag_id")
+    @Comment("태그 ID")
+    private Integer tagId;
 
-    /** 참조 글 번호 */
+    /** 참조 글 ID. */
     @Column(name = "ref_post_no")
-    @Comment("참조 글 번호")
+    @Comment("참조 글 ID")
     private Integer refPostNo;
 
     /** 참조 컨텐츠 타입 */
@@ -57,7 +56,7 @@ public class TagContentEntity
 
     /** 태그 정보 */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "ref_tag_no", referencedColumnName = "tag_no", updatable = false, insertable = false)
+    @JoinColumn(name = "tag_id", referencedColumnName = "id", updatable = false, insertable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private TagSmpEntity tag;
 
@@ -74,11 +73,11 @@ public class TagContentEntity
     /**
      * 생성자.
      *
-     * @param refTagNo - 참조 태그 번호
+     * @param tagId - 태그 ID
      * @param clsfKey - 게시글 번호와 컨텐츠 타입 정보를 포함하는 분류 키 객체
      */
-    public TagContentEntity(final Integer refTagNo, final BaseClsfKey clsfKey) {
-        this.refTagNo = refTagNo;
+    public TagContentEntity(final Integer tagId, final BaseClsfKey clsfKey) {
+        this.tagId = tagId;
         this.refPostNo = clsfKey.getPostNo();
         this.refContentType = clsfKey.getContentType();
     }

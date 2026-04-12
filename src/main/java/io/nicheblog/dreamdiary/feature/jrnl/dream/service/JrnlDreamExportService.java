@@ -41,7 +41,7 @@ public class JrnlDreamExportService {
      */
     public String buildTxt(final List<JrnlDreamDto> jrnlDreamList, final JrnlDreamSearchParam searchParam) {
 
-        final List<TagDto> tagList = tagService.getTagListByTagNos(searchParam.getTagNos());
+        final List<TagDto> tagList = tagService.getTagListByIds(searchParam.getTagIds());
 
         final StringBuilder sb = new StringBuilder();
         // =========================

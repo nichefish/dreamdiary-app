@@ -6,16 +6,16 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.Comment;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * TagSmpEntity
  * <pre>
- *  태그 간소화 Entity. (순환참조 방지 위해 연관관계 제거)
+ *  태그 간소화 Entity.
  * </pre>
  *
  * @author nichefish
@@ -28,24 +28,42 @@ import javax.persistence.*;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE tag SET del_yn = 'Y' WHERE tag_no = ?")
+@SQLDelete(sql = "UPDATE tag SET del_yn = 'Y' WHERE id = ?")
 public class TagSmpEntity
         extends BaseCrudEntity {
 
-    /** 태그 번호 (PK) */
+    /** 태그 ID (PK). */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "tag_no")
-    @Comment("태그 번호 (PK)")
-    private Integer tagNo;
+    @Column(name = "id")
+    @Comment("태그 ID (PK)")
+    private Integer id;
 
     /** 태그 카테고리 */
-    @Column(name = "ctgr")
-    @Comment("태그 카테고리")
+    @Transient
     private String ctgr;
 
-    /** 태그 */
+    /** 태그 카테고리 ID */
+    @Column(name = "tag_category_id")
+    @Comment("태그 카테고리 ID")
+    private Integer tagCategoryId;
+
+    /** 태그 카테고리 */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tag_category_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private TagCategoryEntity tagCategory;
+
+    /** 태그 이름 */
     @Column(name = "tag_nm")
-    @Comment("태그")
+    @Comment("태그 이름")
     private String tagNm;
+
+    public String getCtgr() {
+        if (this.tagCategory != null && this.tagCategory.getCtgrNm() != null) {
+            return this.tagCategory.getCtgrNm();
+        }
+        return this.ctgr == null ? "" : this.ctgr;
+    }
+
 }

@@ -67,13 +67,13 @@ public class JrnlDayTagService
     /**
      * 사용자 기준 특정 태그가 존재하는 연도 목록을 반환합니다.
      *
-     * @param tagNo 태그 번호
+     * @param tagId 태그 ID
      * @param userId 사용자 ID
      * @return 연도 목록
      */
-    @Cacheable(value = "jrnlDayTagYyListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#tagNo, #userId)")
-    public List<Integer> getYyListByTagNoAndUser(final Integer tagNo, final String userId) {
-        return repository.findDistinctYysByTagNoAndRegstrId(tagNo, AuthUtils.requireUserId(userId));
+    @Cacheable(value = "jrnlDayTagYyListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#tagId, #userId)")
+    public List<Integer> getYyListByTagIdAndUser(final Integer tagId, final String userId) {
+        return repository.findDistinctYysByTagIdAndRegstrId(tagId, AuthUtils.requireUserId(userId));
     }
 
     /**
@@ -162,7 +162,7 @@ public class JrnlDayTagService
         final Map<Integer, Integer> tagCntMap = this.getSelf().countDaySizeMap(param);
 
         for (final TagDto tag : tagList) {
-            final Integer daySize = tagCntMap.getOrDefault(tag.getTagNo(), 0);
+            final Integer daySize = tagCntMap.getOrDefault(tag.getId(), 0);
             tag.setContentSize(daySize);
             maxFrequency = Math.max(maxFrequency, daySize);
         }
@@ -210,7 +210,7 @@ public class JrnlDayTagService
 
         final ConcurrentMap<Integer, Integer> concurrentMap = tagCountList.stream()
                 .collect(Collectors.toConcurrentMap(
-                        TagContentCntDto::getTagNo,
+                        TagContentCntDto::getTagId,
                         dto -> dto.getCount().intValue()
                 ));
         return new ConcurrentHashMap<>(concurrentMap);

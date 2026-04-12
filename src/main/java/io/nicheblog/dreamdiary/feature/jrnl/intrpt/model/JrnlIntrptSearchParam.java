@@ -36,28 +36,9 @@ public class JrnlIntrptSearchParam
     /** 항목 키워드 */
     private String dreamKeyword;
 
-    /** 태그 번호 */
-    private Integer tagNo;
+    /** 태그 ID */
+    private Integer tagId;
 
     /** 중요 여부 **/
     private String imprtcYn;
-
-    /**
-     * 목록 캐시 key suffix
-     */
-    public String toListCacheKey() {
-        final int keyYy = (yy != null) ? yy : 9999;
-        final int keyMnth = (mnth != null) ? mnth : 99;
-
-        return keyYy + "_" + keyMnth + "_"
-                + CmmUtils.sanitize(contentType) + "_"
-                + CmmUtils.nullSafeInt(jrnlDreamNo) + "_"
-                + CmmUtils.sanitize(dreamKeyword) + "_"
-                + CmmUtils.nullSafeInt(tagNo) + "_"
-                + CmmUtils.sanitize(imprtcYn) + "_"
-                + CmmUtils.sanitize(searchType) + "_"
-                + CmmUtils.sanitize(searchKeyword) + "_"
-                + CmmUtils.sanitize(searchStartDt) + "_"
-                + CmmUtils.sanitize(searchEndDt);
-    }
 }

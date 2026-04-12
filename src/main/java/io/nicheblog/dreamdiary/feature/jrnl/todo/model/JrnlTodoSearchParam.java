@@ -30,8 +30,8 @@ public class JrnlTodoSearchParam
     /** 컨텐츠 타입 */
     private String contentType;
 
-    /** 태그 번호 */
-    private Integer tagNo;
+    /** 태그 ID */
+    private Integer tagId;
 
     /** 중요 여부 **/
     private String imprtcYn;

@@ -31,6 +31,13 @@ public interface TagContentRepository
             "WHERE ct.refPostNo = :#{#param.refPostNo} " +
             "  AND ct.refContentType = :#{#param.refContentType} " +
             "  AND ct.regstrId = :#{#param.regstrId} " +
-            "  AND EXISTS (SELECT 1 FROM TagEntity t WHERE t.tagNo = ct.refTagNo AND t.tagNm = :#{#param.tagNm} AND (t.ctgr = :#{#param.ctgr} OR (t.ctgr IS NULL AND :#{#param.ctgr} IS NULL)))")
+            "  AND EXISTS (SELECT 1 FROM TagEntity t " +
+            "               LEFT JOIN t.tagCategory tc " +
+            "               WHERE t.id = ct.tagId " +
+            "                 AND t.tagNm = :#{#param.tagNm} " +
+            "                 AND ( " +
+            "                      ((:#{#param.ctgr} IS NULL OR :#{#param.ctgr} = '') AND t.tagCategoryId IS NULL) " +
+            "                      OR tc.ctgrNm = :#{#param.ctgr} " +
+            "                 ))")
     void deleteObsoleteTagContents(final @Param("param") TagContentParam param);
 }

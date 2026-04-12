@@ -41,11 +41,10 @@ public class TagProfileRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> tagProfileDtlAjax(
-            final @RequestParam("tagNo") Integer tagNo,
+            final @RequestParam("tagId") Integer tagId,
             final @RequestParam("contentType") String contentType
     ) throws Exception {
-
-        final TagProfileDto tagProfile = tagProfileService.getDtoByRefOrNew(tagNo, contentType);
+        final TagProfileDto tagProfile = tagProfileService.getDtoByRefOrNew(tagId, contentType);
         return ResponseEntity.ok(
                 AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS)
                         .withObj(tagProfile)
@@ -72,11 +71,11 @@ public class TagProfileRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> tagProfileDelAjax(
-            final @PathVariable("tagProfileNo") Integer tagProfileNo
+            final @PathVariable("id") Integer id
     ) throws Exception {
 
-        final TagProfileDto existing = tagProfileService.getDtlDto(tagProfileNo);
-        final ServiceResponse result = tagProfileService.delete(tagProfileNo);
+        final TagProfileDto existing = tagProfileService.getDtlDto(id);
+        final ServiceResponse result = tagProfileService.delete(id);
         if (Boolean.TRUE.equals(result.getRslt()) && existing != null) {
             tagProfileService.evictTagCloudCaches(existing.getContentType());
         }

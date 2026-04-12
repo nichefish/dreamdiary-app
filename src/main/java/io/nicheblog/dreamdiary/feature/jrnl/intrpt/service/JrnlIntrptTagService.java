@@ -134,7 +134,7 @@ public class JrnlIntrptTagService
         final Map<Integer, Integer> tagCntMap = this.getSelf().countIntrptSizeMap(param);
 
         for (final TagDto tag : tagList) {
-            final Integer diarySize = tagCntMap.getOrDefault(tag.getTagNo(), 0);
+            final Integer diarySize = tagCntMap.getOrDefault(tag.getId(), 0);
             tag.setContentSize(diarySize);
             maxFrequency = Math.max(maxFrequency, diarySize);
         }
@@ -151,10 +151,10 @@ public class JrnlIntrptTagService
     public ConcurrentHashMap<Integer, Integer> countIntrptSizeMap(final JrnlIntrptTagContentParam param) {
         final List<TagContentCntDto> tagCountList = repository.countIntrptSizeMap(param);
 
-        // List를 태그 번호를 키로 하고, 태그 개수를 값으로 하는 Map으로 변환
+        // List를 태그 ID를 키로 하고, 태그 개수를 값으로 하는 Map으로 변환
         final ConcurrentMap<Integer, Integer> concurrentMap = tagCountList.stream()
                 .collect(Collectors.toConcurrentMap(
-                        TagContentCntDto::getTagNo,
+                        TagContentCntDto::getTagId,
                         dto -> dto.getCount().intValue()   // Long을 int로 변환
                 ));
         return new ConcurrentHashMap<>(concurrentMap);

@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * TagDto
  * <pre>
- *  태그 Dto.
+ *  태그 DTO.
  * </pre>
  *
  * @author nichefish
@@ -30,51 +30,44 @@ public class TagDto
         extends BaseCrudDto
         implements Identifiable<Integer>, Comparable<TagDto> {
 
-    /** 태그 번호 (PK) */
+    /** 태그 ID (PK) */
     @Positive
-    private Integer tagNo;
+    private Integer id;
 
     /** 태그 카테고리 */
     @Builder.Default
     @Size(max = 50)
     private String ctgr = "";
 
-    /** 태그 */
+    /** 태그 이름 */
     @Size(max = 50)
     private String tagNm;
 
-    /** 게시물 태그 목록 (=게시물 리스트) */
+    /** 태그-컨텐츠 목록 */
     private List<TagContentDto> tagContentList;
 
-    /** 게시물 목록 (게시물 태그 목록을 글 목록으로 정제한 버전) */
+    /** 게시물 목록 */
     private List<?> contentList;
 
     /** 태그 크기 (=컨텐츠 개수) */
     @Builder.Default
     private Integer contentSize = 0;
 
-    /** 글자 크기 클래스 */
+    /** 태그 CSS 클래스 */
     private String tagClass;
 
     /** 태그 시각 의미 */
     @Builder.Default
     private TextClass textSemantic = TextClass.DEFAULT;
 
-    /** 렌더링 시 적용할 text class */
+    /** 렌더링용 text class 코드 */
     @Builder.Default
     private String textClassCd = TextClass.DEFAULT.getKey();
 
-    /** Bootstrap text class for rendering */
+    /** Bootstrap text class */
     @Builder.Default
     private String textClass = "";
 
-    /* ----- */
-
-    /**
-     * 생성자.
-     *
-     * @param tagNm - 생성할 태그의 이름
-     */
     public TagDto(final String tagNm) {
         this.tagNm = tagNm;
         this.ctgr = "";
@@ -97,9 +90,9 @@ public class TagDto
      * @param tagNm - 생성할 태그 번호
      * @param ctgr - 생성할 태그의 카테고리
      */
-    public TagDto(final Integer tagNo, final String tagNm, final String ctgr) {
+    public TagDto(final Integer tagId, final String tagNm, final String ctgr) {
         this(tagNm, ctgr);
-        this.tagNo = tagNo;
+        this.id = tagId;
     }
 
     /**
@@ -111,13 +104,12 @@ public class TagDto
     @SneakyThrows
     @Override
     public int compareTo(final @NotNull TagDto other) {
-        final String thisTagNm = this.getTagNm();
-        final String otherTagNm = other.getTagNm();
-        return thisTagNm.compareTo(otherTagNm);
+        return this.getTagNm().compareTo(other.getTagNm());
     }
 
     @Override
     public Integer getKey() {
-        return this.tagNo;
+        return this.id;
     }
+
 }

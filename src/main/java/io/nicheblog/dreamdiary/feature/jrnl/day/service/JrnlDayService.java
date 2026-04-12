@@ -164,7 +164,7 @@ public class JrnlDayService
      * @return {@link List} -- 검색 결과 목록
      */
     @Transactional(readOnly = true)
-    public List<JrnlDayDto> getListDtoByTagNoAndUser(final String userId, final JrnlDaySearchParam searchParam) throws Exception {
+    public List<JrnlDayDto> getListDtoByTagIdAndUser(final String userId, final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
         searchParam.setRegstrId(AuthUtils.requireUserId(userId));

@@ -30,24 +30,24 @@ public interface JrnlDayTagRepository
      * 년도/월별 저널 일자 태그 개수 맵 조회
      *
      * @param param - 삭제할 대상의 파라미터 (게시글 번호, 컨텐츠 타입, 태그 이름, 카테고리 포함)
-     * @return Integer - 태그 번호와 컨텐츠 타입에 해당하는 태그 개수
+     * @return Integer - 태그 ID와 컨텐츠 타입에 해당하는 태그 개수
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    @Query("SELECT new io.nicheblog.dreamdiary.feature.clsf.tag.model.TagContentCntDto(ct.refTagNo, COUNT(ct.tagContentNo)) " +
+    @Query("SELECT new io.nicheblog.dreamdiary.feature.clsf.tag.model.TagContentCntDto(ct.tagId, COUNT(ct.id)) " +
             "FROM JrnlDayTagContentEntity ct " +
             "INNER JOIN FETCH JrnlDayEntity day ON ct.refPostNo = day.postNo " +
             "WHERE ct.regstrId = :#{#param.regstrId} " +
             " AND (:#{#param.yy} IS NULL OR day.yy = :#{#param.yy} OR :#{#param.yy} = 9999) " +
             " AND (:#{#param.mnth} IS NULL OR day.mnth = :#{#param.mnth} OR :#{#param.mnth} = 99) " +
             " AND (:#{#param.weekStartDt} IS NULL OR day.weekStartDt = :#{T(io.nicheblog.dreamdiary.global.util.date.DateUtils).asDate(#param.weekStartDt)}) " +
-            "GROUP BY ct.refTagNo")
+            "GROUP BY ct.tagId")
     List<TagContentCntDto> countDaySizeMap(final @Param("param") JrnlDayTagContentParam param);
 
     /**
      * 태그가 기록된 연도 목록을 최신순으로 조회합니다.
      *
-     * @param tagNo 메타 번호
+     * @param tagId 태그 ID
      * @param regstrId 사용자 ID
      * @return 연도 목록
      */
@@ -56,8 +56,8 @@ public interface JrnlDayTagRepository
     @Query("SELECT DISTINCT day.yy " +
             "FROM JrnlDayTagContentEntity ct " +
             "INNER JOIN FETCH JrnlDayEntity day ON ct.refPostNo = day.postNo " +
-            "WHERE ct.refTagNo = :tagNo " +
+            "WHERE ct.tagId = :tagId " +
             "  AND ct.regstrId = :regstrId " +
             "ORDER BY day.yy DESC")
-    List<Integer> findDistinctYysByTagNoAndRegstrId(final @Param("tagNo") Integer tagNo, final @Param("regstrId") String regstrId);
+    List<Integer> findDistinctYysByTagIdAndRegstrId(final @Param("tagId") Integer tagId, final @Param("regstrId") String regstrId);
 }

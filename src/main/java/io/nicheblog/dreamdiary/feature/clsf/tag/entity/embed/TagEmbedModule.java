@@ -23,15 +23,15 @@ public interface TagEmbedModule {
     /** Setter */
     void setTag(TagEmbed embed);
     
-    /** 태그 번호 목록 */
-    default List<Integer> getTagNoList() {
+    /** 태그 ID 목록 */
+    default List<Integer> getTagIdList() {
         if (this.getTag() == null) return new ArrayList<>();
 
         final List<TagContentEntity> tagList = this.getTag().getList();
         if (CollectionUtils.isEmpty(tagList)) return new ArrayList<>();
         
         return tagList.stream()
-                .map(TagContentEntity::getRefTagNo)
+                .map(TagContentEntity::getTagId)
                 .toList();        
     }
 }

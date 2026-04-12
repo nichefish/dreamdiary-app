@@ -5,7 +5,7 @@
 
 <script type="text/x-handlebars-template" id="tag_list_sized_partial" data-partial>
     <span class="py-2 me-3 cursor-pointer opacity-hover"
-          onclick="{{module}}.select({{tagNo}}, '{{tagNm}}');"
+          onclick="{{module}}.select({{id}}, '{{tagNm}}');"
           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "view.tag.content-list"/>">
         <span class="{{tagClass}} {{textClass}}">
             {{#if (exists ctgr)}}

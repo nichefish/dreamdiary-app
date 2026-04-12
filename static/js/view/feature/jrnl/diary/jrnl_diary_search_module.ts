@@ -48,14 +48,14 @@ dF.JrnlDiarySearch = (function(): dfModule {
          */
         initTag: function(): void {
             const params: URLSearchParams = new URLSearchParams(window.location.search);
-            const tagNos: string[] = params.getAll("tagNos");
-            if (tagNos.length > 0) {
-                tagNos.forEach((tagNo: string): void => {
+            const tagIds: string[] = params.getAll("tagIds");
+            if (tagIds.length > 0) {
+                tagIds.forEach((tagId: string): void => {
                     const tag = dF.JrnlDiaryTag.list.find(
-                        (t: any): boolean => t.tagNo === Number(tagNo)
+                        (t: any): boolean => t.id === Number(tagId)
                     );
                     if (!tag) return;
-                    dF.JrnlDiarySearch.select(tagNo, tag.tagNm);
+                    dF.JrnlDiarySearch.select(tagId, tag.tagNm);
                 });
             }
         },
@@ -149,24 +149,24 @@ dF.JrnlDiarySearch = (function(): dfModule {
 
         /**
          * 태그 선택
-         * @param {string|number} tagNo - 조회할 태그 번호.
+         * @param {string|number} tagId - 조회할 태그 ID.
          * @param tagNm 태그 이름
          */
-        select: function(tagNo: string|number, tagNm: string): void {
+        select: function(tagId: string|number, tagNm: string): void {
             const inputContainer: HTMLElement = document.getElementById("jrnlTagNoHiddenContainer");
             const input: HTMLInputElement = document.createElement("input");
             input.type = "hidden";
-            input.name = "tagNos"
-            input.value = tagNo as string;
+            input.name = "tagIds"
+            input.value = tagId as string;
             inputContainer.appendChild(input);
 
             const tagContainer: HTMLElement = document.getElementById("tagDisplay");
             const tagBadge: HTMLDivElement = document.createElement("div");
             tagBadge.className = "badge badge-light-primary tag-wrapper fw-lighter d-flex align-items-center gap-2 px-3 py-2 text-primary";
-            tagBadge.dataset.value = tagNo as string;
+            tagBadge.dataset.value = tagId as string;
             tagBadge.innerHTML = `
                 #${tagNm}
-                <i class="bi bi-x cursor-pointer" onclick="dF.JrnlDiarySearch.removeTag('${tagNo}')"></i>
+                <i class="bi bi-x cursor-pointer" onclick="dF.JrnlDiarySearch.removeTag('${tagId}')"></i>
             `;
             tagContainer.appendChild(tagBadge);
             $("#msgDisplay").empty();
@@ -179,7 +179,7 @@ dF.JrnlDiarySearch = (function(): dfModule {
          */
         removeTag: function(value: string): void {
             // hidden input 제거
-            $("#jrnlTagNoHiddenContainer input[name='tagNos']")
+            $("#jrnlTagNoHiddenContainer input[name='tagIds']")
                 .filter(function (): boolean {
                     return $(this).val() === value;
                 })
@@ -210,7 +210,7 @@ dF.JrnlDiarySearch = (function(): dfModule {
             });
             $("#msgDisplay").empty();
             const hasKeyword: boolean = Array.isArray(ajaxData["searchKeywords"]) ? ajaxData["searchKeywords"]?.some(k => cF.util.isNotEmpty(k?.trim())) : cF.util.isNotEmpty(ajaxData["searchKeywords"]);
-            const hasTag: boolean = Array.isArray(ajaxData["tagNos"]) ? ajaxData["tagNos"].length > 0 : !!ajaxData["tagNos"];
+            const hasTag: boolean = Array.isArray(ajaxData["tagIds"]) ? ajaxData["tagIds"].length > 0 : !!ajaxData["tagIds"];
             if (!hasKeyword && !hasTag) {
                 $("#msgDisplay").text("검색 조건을 하나 이상 입력하세요.");
                 cF.handlebars.template([], "jrnl_diary_search");
@@ -290,7 +290,7 @@ dF.JrnlDiarySearch = (function(): dfModule {
             const ajaxData: Record<string, any> = dF.JrnlDiarySearch.currentSearchParams;
             $("#msgDisplay").empty();
             const hasKeyword: boolean = Array.isArray(ajaxData["searchKeywords"]) ? ajaxData["searchKeywords"]?.some(k => cF.util.isNotEmpty(k?.trim())) : cF.util.isNotEmpty(ajaxData["searchKeywords"]);
-            const hasTag: boolean = Array.isArray(ajaxData["tagNos"]) ? ajaxData["tagNos"].length > 0 : !!ajaxData["tagNos"];
+            const hasTag: boolean = Array.isArray(ajaxData["tagIds"]) ? ajaxData["tagIds"].length > 0 : !!ajaxData["tagIds"];
             if (!hasKeyword && !hasTag) {
                 $("#msgDisplay").text("검색 조건을 하나 이상 입력하세요.");
                 return;

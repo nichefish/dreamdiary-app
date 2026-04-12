@@ -45,9 +45,9 @@ public class JrnlDiarySearchParam
     /** 일기 검색 키워드 */
     private List<String> searchKeywords;
 
-    /** 태그 번호 */
-    private Integer tagNo;
-    private List<Integer> tagNos;
+    /** 태그 ID */
+    private Integer tagId;
+    private List<Integer> tagIds;
 
     /** 정렬 */
     @Builder.Default
@@ -62,12 +62,12 @@ public class JrnlDiarySearchParam
      */
     public boolean isEmpty() {
         final boolean hasKeyword = searchKeywords != null && searchKeywords.stream().anyMatch(k -> k != null && !k.trim().isEmpty());
-        final boolean hasTagNos = CollectionUtils.isNotEmpty(tagNos) && tagNos.stream().anyMatch(Objects::nonNull);
+        final boolean hasTagIds = CollectionUtils.isNotEmpty(tagIds) && tagIds.stream().anyMatch(Objects::nonNull);
         final boolean hasDate = yy != null || mnth != null || weekStartDt != null || jrnlDayNo != null;
-        final boolean hasTag = tagNo != null;
+        final boolean hasTag = tagId != null;
         final boolean hasState = CollectionUtils.isNotEmpty(states) && states.stream().anyMatch(StringUtils::isNotEmpty);
 
-        return !(hasKeyword || hasTagNos || hasDate || hasTag || hasState);
+        return !(hasKeyword || hasTagIds || hasDate || hasTag || hasState);
     }
 
     /**
@@ -80,28 +80,6 @@ public class JrnlDiarySearchParam
         if (showRefrnc) states.add(StateCd.REFRNC.key);
 
         this.states = states;
-    }
-
-    /**
-     * 목록 캐시 key suffix
-     */
-    public String toListCacheKey() {
-        final int keyYy = (yy != null) ? yy : 9999;
-        final int keyMnth = (mnth != null) ? mnth : 99;
-
-        return keyYy + "_" + keyMnth + "_"
-                + CmmUtils.sanitize(contentType) + "_"
-                + CmmUtils.sanitize(sort) + "_"
-                + CmmUtils.sanitize(weekStartDt) + "_"
-                + CmmUtils.nullSafeInt(jrnlDayNo) + "_"
-                + CmmUtils.normalizeStringList(searchKeywords) + "_"
-                + CmmUtils.nullSafeInt(tagNo) + "_"
-                + CmmUtils.normalizeIntegerList(tagNos) + "_"
-                + CmmUtils.normalizeStringList(states) + "_"
-                + CmmUtils.sanitize(searchType) + "_"
-                + CmmUtils.sanitize(searchKeyword) + "_"
-                + CmmUtils.sanitize(searchStartDt) + "_"
-                + CmmUtils.sanitize(searchEndDt);
     }
 
     /**

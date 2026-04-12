@@ -29,8 +29,8 @@ public class JrnlIntrptTagContentParam
     /** 참조 컨텐츠 타입 */
     private String refContentType;
 
-    /** 태그 번호 */
-    private Integer tagNo;
+    /** 태그 ID */
+    private Integer tagId;
 
     /** 년도 */
     private Integer yy;

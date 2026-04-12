@@ -68,11 +68,11 @@ class TagContentRepositoryTest {
 
         // When::
         final TagContentEntity registered = tagContentRepository.save(tagContentEntity);
-        final Integer key = registered.getTagContentNo();
+        final Integer key = registered.getId();
         final TagContentEntity retrieved = tagContentRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
-        assertNotNull(retrieved.getTagContentNo(), "저장된 엔티티의 key 값이 없습니다.");
+        assertNotNull(retrieved.getId(), "저장된 엔티티의 key 값이 없습니다.");
     }
 }

@@ -164,7 +164,7 @@ public final class JrnlDayViewHelper {
                     if (CollectionUtils.isEmpty(tagList)) continue;
 
                     for (final TagContentDto tag : tagList) {
-                        tagMap.putIfAbsent(tag.getRefTagNo(), tag);
+                        tagMap.putIfAbsent(tag.getTagId(), tag);
                     }
                 }
 

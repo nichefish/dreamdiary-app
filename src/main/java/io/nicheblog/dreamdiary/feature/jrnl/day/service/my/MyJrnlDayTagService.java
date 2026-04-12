@@ -28,12 +28,12 @@ public class MyJrnlDayTagService {
     /**
      * 특정 태그가 존재하는 연도 목록을 반환합니다.
      *
-     * @param tagNo 태그 번호
+     * @param tagId 태그 ID
      * @return 연도 목록
      */
-    public List<Integer> getMyYyListByTagNo(final Integer tagNo) {
+    public List<Integer> getMyYyListByTagId(final Integer tagId) {
         final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDayTagService.getYyListByTagNoAndUser(tagNo, userId);
+        return jrnlDayTagService.getYyListByTagIdAndUser(tagId, userId);
     }
 
     /**

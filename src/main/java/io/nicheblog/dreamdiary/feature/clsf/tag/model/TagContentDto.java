@@ -28,11 +28,11 @@ public class TagContentDto
 
     /** 태그-컨텐츠 번호 (PK) */
     @Positive
-    private Integer tagContentNo;
+    private Integer id;
 
     /** 참조 태그 번호 */
     @Positive
-    private Integer refTagNo;
+    private Integer tagId;
 
     /** 참조 글 번호 */
     @Positive
@@ -64,13 +64,12 @@ public class TagContentDto
     @SneakyThrows
     @Override
     public int compareTo(final @NotNull TagContentDto compare) {
-        String thisTagNm = this.getTagNm();
-        String otherTagNm = compare.getTagNm();
-        return thisTagNm.compareTo(otherTagNm);
+        return this.getTagNm().compareTo(compare.getTagNm());
     }
 
     @Override
     public Integer getKey() {
-        return this.tagContentNo;
+        return this.id;
     }
+
 }

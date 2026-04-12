@@ -107,12 +107,12 @@ public class JrnlChapterSpec
                     // 내용 like 검색
                     predicate.add(builder.like(root.get("cn"), "%" + value + "%"));
                     continue;
-                case "tagNo":
+                case "tagId":
                     // 특정 태그된 항목만 조회
                     final Join<JrnlChapterEntity, TagEmbed> tagJoin = root.join("tag", JoinType.INNER);
                     final Join<TagEmbed, TagContentEntity> tagContentJoin = tagJoin.join("list", JoinType.INNER);
                     predicate.add(builder.equal(tagContentJoin.get("regstrId"), regstrId));
-                    predicate.add(builder.equal(tagContentJoin.get("refTagNo"), value));
+                    predicate.add(builder.equal(tagContentJoin.get("tagId"), value));
                     continue;
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색
