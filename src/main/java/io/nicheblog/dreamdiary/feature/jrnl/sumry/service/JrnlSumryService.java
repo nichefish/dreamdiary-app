@@ -12,7 +12,6 @@ import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.repository.jpa.JrnlSumryRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.spec.JrnlSumrySpec;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -155,7 +154,7 @@ public class JrnlSumryService
     @Override
     public void preModify(final JrnlSumryDto modifyDto, final JrnlSumryEntity modifyEntity) throws Exception {
         if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
 
@@ -169,7 +168,7 @@ public class JrnlSumryService
     public JrnlSumryDto getSumryDtlByUser(final String userId, final Integer key) throws Exception {
         final JrnlSumryDto retrieved = this.getSelf().getDtlDto(key);
         if (retrieved != null && !retrieved.getIsRegstr(userId)) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         return retrieved;
     }
@@ -198,7 +197,7 @@ public class JrnlSumryService
     public boolean dreamCompt(final Integer key) throws Exception {
         final JrnlSumryEntity retrievedEntity = this.getDtlEntity(key);
         if (!AuthUtils.isRegstr(retrievedEntity.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         retrievedEntity.setDreamComptYn("Y");
         repository.save(retrievedEntity);
@@ -223,7 +222,7 @@ public class JrnlSumryService
     @Override
     public void preDelete(final JrnlSumryDto deletedDto) throws Exception {
         if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
 }

@@ -12,7 +12,6 @@ import io.nicheblog.dreamdiary.feature.user.info.repository.jpa.UserRepository;
 import io.nicheblog.dreamdiary.feature.user.info.spec.UserSpec;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.Getter;
@@ -81,7 +80,7 @@ public class UserService
     public UserEntity getDtlEntity(final String userId) throws Exception {
         final Optional<UserEntity> retrievedWrapper = repository.findByUserId(userId);
 
-        return Objects.requireNonNull(retrievedWrapper.orElseThrow(() -> new EntityNotFoundException(MessageUtils.getExceptionMsg("UsernameNotFoundException"))));
+        return Objects.requireNonNull(retrievedWrapper.orElseThrow(() -> new EntityNotFoundException("exception.UsernameNotFoundException")));
     }
 
     /* ----- */
@@ -141,7 +140,7 @@ public class UserService
     public ServiceResponse passwordReset(final Integer key) throws Exception {
         // Entity 레벨 조회
         final UserEntity retrievedEntity = this.getDtlEntity(key);
-        if (retrievedEntity == null) throw new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException"));
+        if (retrievedEntity == null) throw new EntityNotFoundException("exception.EntityNotFoundException");
 
         // 로그인 설정 조회 (cachable)
         final AuthPolicyEntity authPolicy = authPolicyQueryService.getDtlEntity();
@@ -217,7 +216,7 @@ public class UserService
     public ServiceResponse userLock(final Integer key) throws Exception {
         // Entity 레벨 조회
         final UserEntity retrievedEntity = this.getDtlEntity(key);
-        if (retrievedEntity == null) throw new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException"));
+        if (retrievedEntity == null) throw new EntityNotFoundException("exception.EntityNotFoundException");
 
         // lockedYn 플래그 업데이트
         retrievedEntity.acntStus.setLockedYn("Y");
@@ -236,7 +235,7 @@ public class UserService
     public ServiceResponse userUnlock(final Integer key) throws Exception {
         // Entity 레벨 조회
         final UserEntity retrievedEntity = this.getDtlEntity(key);
-        if (retrievedEntity == null) throw new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException"));
+        if (retrievedEntity == null) throw new EntityNotFoundException("exception.EntityNotFoundException");
 
         // lockedYn 플래그 + 최종접속일 업데이트
         retrievedEntity.acntStus.setLockedYn("N");

@@ -3,7 +3,6 @@ package io.nicheblog.dreamdiary.auth.jwt.service;
 import io.nicheblog.dreamdiary.auth.security.exception.AuthenticationFailureException;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.feature.user.info.repository.jpa.UserRepository;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -63,7 +62,7 @@ public class RefreshTokenService {
     public String issue(final String userId) {
         if (StringUtils.isBlank(userId)) throw new IllegalArgumentException("userId is required.");
         final UserEntity user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new AuthenticationFailureException(MessageUtils.getExceptionMsg("AuthenticationFailureException")));
+                .orElseThrow(() -> new AuthenticationFailureException("exception.AuthenticationFailureException"));
         return issueForUser(user);
     }
 
@@ -78,28 +77,28 @@ public class RefreshTokenService {
     @Transactional
     public RefreshResult rotate(final String refreshToken) {
         if (StringUtils.isBlank(refreshToken)) {
-            throw new AuthenticationFailureException(MessageUtils.getExceptionMsg("AuthenticationFailureException"));
+            throw new AuthenticationFailureException("exception.AuthenticationFailureException");
         }
 
         final String userId = extractUserId(refreshToken);
         final UserEntity user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new AuthenticationFailureException(MessageUtils.getExceptionMsg("AuthenticationFailureException")));
+                .orElseThrow(() -> new AuthenticationFailureException("exception.AuthenticationFailureException"));
 
         if (user.getRefreshTokenHash() == null || user.getRefreshTokenExpiresAt() == null) {
             revoke(user);
-            throw new AuthenticationFailureException(MessageUtils.getExceptionMsg("AuthenticationFailureException"));
+            throw new AuthenticationFailureException("exception.AuthenticationFailureException");
         }
 
         final Date now = DateUtils.getCurrDate();
         if (user.getRefreshTokenExpiresAt().before(now)) {
             revoke(user);
-            throw new AuthenticationFailureException(MessageUtils.getExceptionMsg("AuthenticationFailureException"));
+            throw new AuthenticationFailureException("exception.AuthenticationFailureException");
         }
 
         final String hashed = hashToken(refreshToken);
         if (!secureEquals(hashed, user.getRefreshTokenHash())) {
             revoke(user);
-            throw new AuthenticationFailureException(MessageUtils.getExceptionMsg("AuthenticationFailureException"));
+            throw new AuthenticationFailureException("exception.AuthenticationFailureException");
         }
 
         final String newToken = issueForUser(user);
@@ -166,18 +165,18 @@ public class RefreshTokenService {
      */
     private String extractUserId(final String refreshToken) {
         final int idx = refreshToken.indexOf(DELIMITER);
-        if (idx <= 0) throw new AuthenticationFailureException(MessageUtils.getExceptionMsg("AuthenticationFailureException"));
+        if (idx <= 0) throw new AuthenticationFailureException("exception.AuthenticationFailureException");
 
         final String encodedUser = refreshToken.substring(0, idx);
         try {
             final byte[] decoded = BASE64_URL_DECODER.decode(encodedUser);
             final String userId = new String(decoded, StandardCharsets.UTF_8);
             if (StringUtils.isBlank(userId)) {
-                throw new AuthenticationFailureException(MessageUtils.getExceptionMsg("AuthenticationFailureException"));
+                throw new AuthenticationFailureException("exception.AuthenticationFailureException");
             }
             return userId;
         } catch (final IllegalArgumentException e) {
-            throw new AuthenticationFailureException(MessageUtils.getExceptionMsg("AuthenticationFailureException"));
+            throw new AuthenticationFailureException("exception.AuthenticationFailureException");
         }
     }
 

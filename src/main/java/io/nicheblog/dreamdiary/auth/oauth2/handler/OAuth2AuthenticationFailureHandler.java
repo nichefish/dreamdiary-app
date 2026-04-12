@@ -66,7 +66,7 @@ public class OAuth2AuthenticationFailureHandler
         request.removeAttribute("userId");
         request.removeAttribute("needsPwReset");
         final String userId = request.getParameter("userId");
-        final String errorMsg = exception.getMessage();
+        final String errorMsg = MessageUtils.getExceptionMsg(exception);
         /* 존재하지 않는 계정 제외하고 로그인 실패 로그 저장 */
         if (!(exception instanceof InternalAuthenticationServiceException) && !(exception instanceof DupIdLgnException)) {
             final LogActvtyParam logParam = new LogActvtyParam(userId, false, errorMsg, ActvtyCtgr.LGN);

@@ -79,7 +79,7 @@ public class MessageUtils
     public static String getMessage(final String code) throws NoSuchMessageException {
         // test환경에서의 난해성 때문에 bean 주입 환경 외에는 예외 리턴 처리
         if (messageSource == null) return null;
-        return messageSource.getMessage(code, null, Locale.getDefault());
+        return messageSource.getMessage(code, null, code, Locale.getDefault());
     }
 
     /**
@@ -91,7 +91,8 @@ public class MessageUtils
      * @throws NoSuchMessageException 메시지가 존재하지 않는 경우 발생
      */
     public static String getMessage(final String code, final @Nullable Object[] args) throws NoSuchMessageException {
-        return messageSource.getMessage(code, args, Locale.getDefault());
+        if (messageSource == null) return code;
+        return messageSource.getMessage(code, args, code, Locale.getDefault());
     }
 
     /**
@@ -145,19 +146,18 @@ public class MessageUtils
      * @return {@link String} -- 예외 메시지
      */
     public static String getExceptionMsg(final Throwable e) {
-        final String exceptionNm = getExceptionNm(e);
-        final String bundleKey = RSLT_EXCEPTION + "." + exceptionNm;
-
-        final String rsltMsg = getMessage(bundleKey);
-        // messageBundle에 정의된 값이 실제로 존재하는 경우
-        if (!bundleKey.equals(rsltMsg)) return rsltMsg;
-        // 정의가 없으면 raw message 사용 (200자 제한)
-        final String msg = e.getMessage();
-        if (StringUtils.isNotEmpty(msg)) {
+        final String msg = StringUtils.trimToNull(e.getMessage());
+        if (msg != null) {
+            final String resolvedMsg = getMessage(msg);
+            if (!msg.equals(resolvedMsg)) return resolvedMsg;
             if (msg.length() > 200) return msg.substring(0, 200) + "...";
             return msg;
         }
-        // 그것도 없으면 기본 메시지
+
+        final String exceptionNm = getExceptionNm(e);
+        final String bundleKey = RSLT_EXCEPTION + "." + exceptionNm;
+        final String rsltMsg = getMessage(bundleKey);
+        if (!bundleKey.equals(rsltMsg)) return rsltMsg;
         return "Unexpected error occurred.";
     }
 

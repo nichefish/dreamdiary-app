@@ -17,7 +17,6 @@ import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.repository.jpa.JrnlIntrptRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.repository.mybatis.JrnlIntrptMapper;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.spec.JrnlIntrptSpec;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.Getter;
@@ -107,7 +106,7 @@ public class JrnlIntrptService
     @Override
     public void preModify(final JrnlIntrptDto modifyDto, final JrnlIntrptEntity modifyEntity) throws Exception {
         if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
 
         final boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
@@ -139,7 +138,7 @@ public class JrnlIntrptService
         final JrnlIntrptEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlIntrptDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr(AuthUtils.requireUserId(userId))) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        if (!retrieved.getIsRegstr(AuthUtils.requireUserId(userId))) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         return retrieved;
     }
 
@@ -174,7 +173,7 @@ public class JrnlIntrptService
     @Override
     public void preDelete(final JrnlIntrptDto deletedDto) throws Exception {
         if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
 
@@ -204,7 +203,7 @@ public class JrnlIntrptService
         final JrnlIntrptDto deleted = mapper.getDeletedByPostNo(key);
         if (deleted == null) return null;
         if (!AuthUtils.isRegstr(deleted.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         return deleted;
     }

@@ -11,7 +11,6 @@ import io.nicheblog.dreamdiary.feature.jrnl.sbjct.model.JrnlSbjctDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sbjct.repository.jpa.JrnlSbjctRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.sbjct.spec.JrnlSbjctSpec;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -80,7 +79,7 @@ public class JrnlSbjctService
     @Override
     public void preModify(final JrnlSbjctDto modifyDto, final JrnlSbjctEntity modifyEntity) throws Exception {
         if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
 
@@ -108,7 +107,7 @@ public class JrnlSbjctService
     @Override
     public void preDelete(final JrnlSbjctDto deletedDto) throws Exception {
         if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
 }

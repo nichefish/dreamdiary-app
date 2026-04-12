@@ -15,7 +15,6 @@ import io.nicheblog.dreamdiary.feature.jrnl.day.repository.jpa.JrnlDayRepository
 import io.nicheblog.dreamdiary.feature.jrnl.day.repository.mybatis.JrnlDayMapper;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.helper.JrnlDayStateMapHelper;
 import io.nicheblog.dreamdiary.feature.jrnl.day.spec.JrnlDaySpec;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
@@ -186,7 +185,7 @@ public class JrnlDayService
         final JrnlDayEntity retrievedEntity = this.getDtlEntity(key);
         final JrnlDayDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr(userId)) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        if (!retrieved.getIsRegstr(userId)) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
 
         return retrieved;
     }
@@ -255,7 +254,7 @@ public class JrnlDayService
     @Override
     public void preModify(final JrnlDayDto modifyDto, final JrnlDayEntity modifyEntity) throws Exception {
         if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         modifyDto.setPrevWeekStartDt(DateUtils.asStr(modifyEntity.getWeekStartDt(), DatePtn.DATE));
         // 기간 필드 세팅:: 메소드 분리
@@ -303,7 +302,7 @@ public class JrnlDayService
     @Override
     public void preDelete(final JrnlDayDto deletedDto) throws Exception {
         if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
 
@@ -329,7 +328,7 @@ public class JrnlDayService
         final JrnlDayDto deleted = jrnlDayMapper.getDeletedByPostNo(key);
         if (deleted == null) return null;
         if (!AuthUtils.isRegstr(deleted.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         return deleted;
     }

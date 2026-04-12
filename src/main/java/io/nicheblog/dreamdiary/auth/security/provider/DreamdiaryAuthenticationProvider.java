@@ -6,7 +6,6 @@ import io.nicheblog.dreamdiary.auth.security.exception.AuthenticationFailureExce
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.provider.helper.AuthenticationHelper;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.web.util.CookieUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -62,7 +61,7 @@ public class DreamdiaryAuthenticationProvider
 
         // 인증 객체 생성
         final Boolean isValidated = authenticationHelper.validateAuth(authentication, authInfo);
-        if (!isValidated) throw new AuthenticationFailureException(MessageUtils.getExceptionMsg("AuthenticationFailureException"));
+        if (!isValidated) throw new AuthenticationFailureException("exception.AuthenticationFailureException");
         final UsernamePasswordAuthenticationToken generatedAuthToken = authInfo.getAuthToken();
 
         // 인증 객체를 기반으로 JWT 생성, 임시로 세션에 저장
