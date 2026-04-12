@@ -7,7 +7,7 @@ import io.nicheblog.dreamdiary.feature.clsf.meta.entity.embed.MetaEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.entity.JrnlDreamEntity;
-import io.nicheblog.dreamdiary.feature.jrnl.entry.entity.JrnlEntryEntity;
+import io.nicheblog.dreamdiary.feature.jrnl.chapter.entity.JrnlChapterEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -112,15 +112,15 @@ public class JrnlDayEntity
     @Comment("날씨")
     private String weather;
 
-    /** 저널 항목 목록 */
+    /** 저널 챕터 목록 */
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "jrnl_day_no", referencedColumnName = "post_no", insertable = false, updatable = false)
     @Fetch(FetchMode.SUBSELECT)
     @BatchSize(size = 10)
     @OrderBy("idx ASC")
     @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("저널 항목 목록")
-    private List<JrnlEntryEntity> jrnlEntryList;
+    @Comment("저널 챕터 목록")
+    private List<JrnlChapterEntity> jrnlChapterList;
 
     /** 저널 꿈 목록 */
     @OneToMany(fetch = FetchType.LAZY)

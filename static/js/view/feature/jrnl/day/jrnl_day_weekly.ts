@@ -88,7 +88,7 @@ const Page: Page = (function(): Page {
                 showDreams,
                 diaryKeyword: searchParams.diaryKeyword ?? "",
                 dreamKeyword: searchParams.dreamKeyword ?? "",
-                entryCtgrCds: searchParams.entryCtgrCds ?? [],
+                chapterCtgrCds: searchParams.chapterCtgrCds ?? [],
             };
             cF.ajax.get(Url.JRNL_DAYS, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
@@ -130,7 +130,7 @@ const Page: Page = (function(): Page {
         normalizeWeekDays: function(rsltList: Record<string, any>[], sort: string = "DESC"): Record<string, any>[] {
             return (rsltList ?? [])
                 .map((day: Record<string, any>): Record<string, any> => {
-                const jrnlEntryList: Record<string, any>[] = Array.isArray(day?.jrnlEntryList) ? day.jrnlEntryList : [];
+                const jrnlChapterList: Record<string, any>[] = Array.isArray(day?.jrnlChapterList) ? day.jrnlChapterList : [];
                 const jrnlDreamList: Record<string, any>[] = Array.isArray(day?.jrnlDreamList) ? day.jrnlDreamList : [];
                 const jrnlElseDreamList: Record<string, any>[] = Array.isArray(day?.jrnlElseDreamList) ? day.jrnlElseDreamList : [];
 
@@ -138,7 +138,7 @@ const Page: Page = (function(): Page {
                     ...day,
                     jrnlDtWeekDay: day?.jrnlDtWeekDay ?? cF.date.getDayweekStr(day?.stdrdDt, "KO"),
                     tag: day?.tag ?? { list: [] },
-                    jrnlEntryList,
+                    jrnlChapterList,
                     jrnlDreamList,
                     jrnlElseDreamList,
                     hasDream: (jrnlDreamList.length + jrnlElseDreamList.length) > 0,

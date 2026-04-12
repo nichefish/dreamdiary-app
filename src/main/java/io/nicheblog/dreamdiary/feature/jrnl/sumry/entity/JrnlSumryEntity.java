@@ -79,7 +79,7 @@ public class JrnlSumryEntity
     @Column(name = "dream_cnt")
     private Integer dreamCnt;
 
-    /** 저널 항목 목록 */
+    /** 저널 리뷰 목록 */
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "jrnl_sumry_no", referencedColumnName = "post_no", insertable = false, updatable = false)
     @Fetch(FetchMode.SUBSELECT)

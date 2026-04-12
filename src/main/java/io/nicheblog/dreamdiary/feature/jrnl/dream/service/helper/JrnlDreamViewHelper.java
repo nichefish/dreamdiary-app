@@ -19,11 +19,11 @@ import java.util.Map;
 public class JrnlDreamViewHelper {
 
     /**
-     * 캐시에 저장된 상태 맵(entry/diary)을 기준으로 조회된 {@link JrnlDreamDto} 트리 구조에 상태를 반영한다.
+     * 캐시에 저장된 상태 맵을 기준으로 조회된 {@link JrnlDreamDto} 트리 구조에 상태를 반영한다.
      *
      * @param listDto 조회된 저널 일자 목록 DTO
-     * @param dreamMap entry postNo → {@link JrnlState} 맵
-     * @param intrptMap diary postNo → {@link JrnlState} 맵
+     * @param dreamMap dream postNo → {@link JrnlState} 맵
+     * @param intrptMap intrpt postNo → {@link JrnlState} 맵
      */
     public static void applyStates(List<JrnlDreamDto> listDto, Map<Integer, JrnlState> dreamMap, Map<Integer, JrnlState> intrptMap) {
         if (CollectionUtils.isEmpty(listDto)) return;

@@ -1,6 +1,6 @@
 /**
  * jrnl_intrpt_module.ts
- * 저널 항목 스크립트 모듈
+ * 저널 해석 스크립트 모듈
  *
  * @author nichefish
  */

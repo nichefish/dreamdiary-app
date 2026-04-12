@@ -140,7 +140,7 @@ public class JrnlDayQueryService {
         JrnlDayHldyHelper.setHldyInfo(listDto, getHldyMap());
         if (searchParam != null) {
             JrnlDayViewHelper.mergeStates(userId, listDto, searchParam);
-            JrnlDayViewHelper.applyEntryTagSummary(listDto, searchParam);
+            JrnlDayViewHelper.applyChapterTagSummary(listDto, searchParam);
         }
 
         return listDto;
@@ -159,7 +159,7 @@ public class JrnlDayQueryService {
         JrnlDayHldyHelper.setHldyInfo(listDto, getHldyMap());
         if (searchParam != null) {
             JrnlDayViewHelper.mergeWeeklyStates(userId, listDto, searchParam);
-            JrnlDayViewHelper.applyEntryTagSummary(listDto, searchParam);
+            JrnlDayViewHelper.applyChapterTagSummary(listDto, searchParam);
         }
 
         return listDto;

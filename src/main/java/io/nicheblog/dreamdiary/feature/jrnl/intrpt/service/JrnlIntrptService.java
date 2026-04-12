@@ -244,7 +244,7 @@ public class JrnlIntrptService
         // 혹시 이미 포함되어 있으면 제거
         list.removeIf(e -> Objects.equals(e.getPostNo(), postNo));
 
-        // entryNo 변경
+        // chapterNo 변경
         target.setJrnlDreamNo(jrnlDreamNo);
 
         // targetIdx 보정 (upper bound)
@@ -272,7 +272,7 @@ public class JrnlIntrptService
      */
     @Transactional
     public void reorderIdx(final JrnlIntrptDto updatedDto) throws Exception {
-        // 1단계: 현재 entry 그룹 정리 (기존 idx 값을 normalization하여 안정화)
+        // 1단계: 현재 chapter 그룹 정리 (기존 idx 값을 normalization하여 안정화)
         normalize(updatedDto.getJrnlDreamNo());
         // 2단계: 해당 group에 새 위치로 target 삽입
         insert(updatedDto.getJrnlDreamNo(), updatedDto.getPostNo(), updatedDto.getIdx());

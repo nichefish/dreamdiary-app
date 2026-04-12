@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.jrnl.diary.entity;
 
 import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.jrnl.entry.entity.JrnlEntrySmpEntity;
+import io.nicheblog.dreamdiary.feature.jrnl.chapter.entity.JrnlChapterSmpEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
@@ -49,18 +49,18 @@ public class JrnlDiarySmpEntity {
 
     /* ----- */
 
-    /** 저널 항목 번호  */
-    @Column(name = "jrnl_entry_no")
-    @Comment("저널 항목 번호")
-    private Integer jrnlEntryNo;
+    /** 저널 챕터 번호  */
+    @Column(name = "jrnl_chapter_no")
+    @Comment("저널 챕터 번호")
+    private Integer jrnlChapterNo;
 
-    /** 저널 항목 정보 */
+    /** 저널 챕터 정보 */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "jrnl_entry_no", referencedColumnName = "post_no", insertable = false, updatable = false)
+    @JoinColumn(name = "jrnl_chapter_no", referencedColumnName = "post_no", insertable = false, updatable = false)
     @Fetch(FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("저널 항목 정보")
-    private JrnlEntrySmpEntity jrnlEntry;
+    @Comment("저널 챕터 정보")
+    private JrnlChapterSmpEntity jrnlChapter;
 
     /** 순번 */
     @Column(name = "idx", columnDefinition = "INT DEFAULT 1")

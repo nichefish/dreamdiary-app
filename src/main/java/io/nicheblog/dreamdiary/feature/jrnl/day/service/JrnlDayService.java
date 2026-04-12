@@ -91,7 +91,7 @@ public class JrnlDayService
         final JrnlStateMaps maps = JrnlDayStateMapHelper.makeJrnlStateMaps(myJrnlDayEntityList);
         // 2) stateMap 캐시에 저장
         final SimpleKey cacheKey = new SimpleKey(resolvedUserId, yy, mnth);
-        EhCacheUtils.put("jrnlEntryStateMapByUser", cacheKey, maps.getEntryMap());
+        EhCacheUtils.put("jrnlChapterStateMapByUser", cacheKey, maps.getChapterMap());
         EhCacheUtils.put("jrnlDiaryStateMapByUser", cacheKey, maps.getDiaryMap());
         EhCacheUtils.put("jrnlDreamStateMapByUser", cacheKey, maps.getDreamMap());
         EhCacheUtils.put("jrnlIntrptStateMapByUser", cacheKey, maps.getIntrptMap());
@@ -134,7 +134,7 @@ public class JrnlDayService
 
         final JrnlStateMaps maps = JrnlDayStateMapHelper.makeJrnlStateMaps(myJrnlDayEntityList);
         final SimpleKey cacheKey = new SimpleKey(resolvedUserId, weekStartDt);
-        EhCacheUtils.put("jrnlEntryWeeklyStateMapByUser", cacheKey, maps.getEntryMap());
+        EhCacheUtils.put("jrnlChapterWeeklyStateMapByUser", cacheKey, maps.getChapterMap());
         EhCacheUtils.put("jrnlDiaryWeeklyStateMapByUser", cacheKey, maps.getDiaryMap());
         EhCacheUtils.put("jrnlDreamWeeklyStateMapByUser", cacheKey, maps.getDreamMap());
         EhCacheUtils.put("jrnlIntrptWeeklyStateMapByUser", cacheKey, maps.getIntrptMap());

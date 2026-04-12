@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.strategy.JrnlDayCacheEvictor;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.service.strategy.JrnlDiaryCacheEvictor;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.service.strategy.JrnlDreamCacheEvictor;
-import io.nicheblog.dreamdiary.feature.jrnl.entry.service.strategy.JrnlEntryCacheEvictor;
+import io.nicheblog.dreamdiary.feature.jrnl.chapter.service.strategy.JrnlChapterCacheEvictor;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.service.strategy.JrnlIntrptCacheEvictor;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.service.strategy.JrnlSumryCacheEvictor;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.service.strategy.JrnlSumryReviewCacheEvictor;
@@ -35,7 +35,7 @@ import java.util.Set;
 public class JrnlCacheEvictWorker {
 
     private final JrnlDayCacheEvictor jrnlDayCacheEvictor;
-    private final JrnlEntryCacheEvictor jrnlEntryCacheEvictor;
+    private final JrnlChapterCacheEvictor jrnlChapterCacheEvictor;
     private final JrnlDiaryCacheEvictor jrnlDiaryCacheEvictor;
     private final JrnlDreamCacheEvictor jrnlDreamCacheEvictor;
     private final JrnlIntrptCacheEvictor jrnlIntrptCacheEvictor;
@@ -49,7 +49,7 @@ public class JrnlCacheEvictWorker {
     @PostConstruct
     private void initEvictorMap() {
         evictorMap.put(ContentType.JRNL_DAY, jrnlDayCacheEvictor);
-        evictorMap.put(ContentType.JRNL_ENTRY, jrnlEntryCacheEvictor);
+        evictorMap.put(ContentType.JRNL_CHAPTER, jrnlChapterCacheEvictor);
         evictorMap.put(ContentType.JRNL_DIARY, jrnlDiaryCacheEvictor);
         evictorMap.put(ContentType.JRNL_DREAM, jrnlDreamCacheEvictor);
         evictorMap.put(ContentType.JRNL_INTRPT, jrnlIntrptCacheEvictor);
@@ -65,7 +65,7 @@ public class JrnlCacheEvictWorker {
     private void validateEvictorMap() {
         final Set<ContentType> requiredTypes = EnumSet.of(
                 ContentType.JRNL_DAY,
-                ContentType.JRNL_ENTRY,
+                ContentType.JRNL_CHAPTER,
                 ContentType.JRNL_DIARY,
                 ContentType.JRNL_DREAM,
                 ContentType.JRNL_INTRPT,

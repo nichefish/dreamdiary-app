@@ -31,7 +31,7 @@ public class JrnlStateCacheUpdater
     @Override
     public boolean supports(final ContentType contentType) {
         return switch (contentType) {
-            case JRNL_ENTRY,
+            case JRNL_CHAPTER,
                  JRNL_DIARY,
                  JRNL_DREAM,
                  JRNL_INTRPT -> true;
@@ -125,7 +125,7 @@ public class JrnlStateCacheUpdater
 
     private String getMonthlyCacheMapNm(final ContentType contentType) {
         return switch (contentType) {
-            case JRNL_ENTRY -> "jrnlEntryStateMapByUser";
+            case JRNL_CHAPTER -> "jrnlChapterStateMapByUser";
             case JRNL_DIARY -> "jrnlDiaryStateMapByUser";
             case JRNL_DREAM -> "jrnlDreamStateMapByUser";
             case JRNL_INTRPT -> "jrnlIntrptStateMapByUser";
@@ -135,7 +135,7 @@ public class JrnlStateCacheUpdater
 
     private String getWeeklyCacheMapNm(final ContentType contentType) {
         return switch (contentType) {
-            case JRNL_ENTRY -> "jrnlEntryWeeklyStateMapByUser";
+            case JRNL_CHAPTER -> "jrnlChapterWeeklyStateMapByUser";
             case JRNL_DIARY -> "jrnlDiaryWeeklyStateMapByUser";
             case JRNL_DREAM -> "jrnlDreamWeeklyStateMapByUser";
             case JRNL_INTRPT -> "jrnlIntrptWeeklyStateMapByUser";

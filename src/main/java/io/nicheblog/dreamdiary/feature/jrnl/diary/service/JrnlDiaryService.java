@@ -100,7 +100,7 @@ public class JrnlDiaryService
     @Override
     public void preRegist(final JrnlDiaryPostDto registDto) throws Exception {
         // 인덱스(정렬순서) 처리
-        final Integer lastIndex = repository.findLastIndexByJrnlEntry(registDto.getJrnlEntryNo()).orElse(0);
+        final Integer lastIndex = repository.findLastIndexByJrnlChapter(registDto.getJrnlChapterNo()).orElse(0);
         registDto.setIdx(lastIndex + 1);
     }
 
@@ -129,10 +129,10 @@ public class JrnlDiaryService
 
         final boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
         modifyDto.setIsIdxChanged(isIdxChanged);
-        final boolean isEntryChanged = !Objects.equals(modifyDto.getJrnlEntryNo(), modifyEntity.getJrnlEntry().getPostNo());
-        modifyDto.setIsEntryChanged(isEntryChanged);
-        if (isEntryChanged) {
-            modifyDto.setPrevJrnlEntryNo(modifyEntity.getJrnlEntry().getPostNo());
+        final boolean isChapterChanged = !Objects.equals(modifyDto.getJrnlChapterNo(), modifyEntity.getJrnlChapter().getPostNo());
+        modifyDto.setIsChapterChanged(isChapterChanged);
+        if (isChapterChanged) {
+            modifyDto.setPrevJrnlChapterNo(modifyEntity.getJrnlChapter().getPostNo());
         }
     }
 
@@ -144,8 +144,8 @@ public class JrnlDiaryService
     @Override
     public void postModify(final JrnlDiaryPostDto postDto, final JrnlDiaryDto updatedDto) throws Exception {
         // 인덱스 재조정 ('이동' 포함)
-        if (postDto.getIsEntryChanged()) {
-            this.getSelf().reorderWhenEntryChanged(postDto);
+        if (postDto.getIsChapterChanged()) {
+            this.getSelf().reorderWhenChapterChanged(postDto);
         } else if (postDto.getIsIdxChanged()) {
             this.getSelf().reorderIdx(postDto);
         }
@@ -212,7 +212,7 @@ public class JrnlDiaryService
     @Override
     public void postDelete(final JrnlDiaryDto deletedDto) throws Exception {
         // 인덱스 재조정
-        this.getSelf().normalize(deletedDto.getJrnlEntryNo());
+        this.getSelf().normalize(deletedDto.getJrnlChapterNo());
         
         // 관련 캐시 삭제
         jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DIARY);
@@ -237,11 +237,11 @@ public class JrnlDiaryService
     /**
      * 해당 그룹 전체를 idx = 1부터 다시 정렬한다.
      *
-     * @param jrnlEntryNo 정렬을 수행할 상위 키
+     * @param jrnlChapterNo 정렬을 수행할 상위 키
      */
     @Transactional
-    public void normalize(final Integer jrnlEntryNo) {
-        final List<JrnlDiaryDto> list = mapper.findAllForReorder(jrnlEntryNo);
+    public void normalize(final Integer jrnlChapterNo) {
+        final List<JrnlDiaryDto> list = mapper.findAllForReorder(jrnlChapterNo);
         if (CollectionUtils.isEmpty(list)) return;
 
         int idx = 1;
@@ -256,13 +256,13 @@ public class JrnlDiaryService
     /**
      * 대상 상위 키에 엔티티를 특정 위치에 삽입 후 재정렬한다.
      *
-     * @param jrnlEntryNo 정렬을 수행할 상위 키
+     * @param jrnlChapterNo 정렬을 수행할 상위 키
      * @param postNo 게시물 PK
      * @param targetIdx 삽입할 목표 위치(1-based). null이면 맨 뒤에 삽입됨
      */
     @Transactional
-    public void insert(final Integer jrnlEntryNo, final Integer postNo, Integer targetIdx) throws Exception {
-        final List<JrnlDiaryDto> list = mapper.findAllForReorder(jrnlEntryNo);
+    public void insert(final Integer jrnlChapterNo, final Integer postNo, Integer targetIdx) throws Exception {
+        final List<JrnlDiaryDto> list = mapper.findAllForReorder(jrnlChapterNo);
 
         // target 조회
         final JrnlDiaryEntity targetEntity = getDtlEntity(postNo);
@@ -272,8 +272,8 @@ public class JrnlDiaryService
         // 혹시 이미 포함되어 있으면 제거
         list.removeIf(e -> Objects.equals(e.getPostNo(), postNo));
 
-        // entryNo 변경
-        target.setJrnlEntryNo(jrnlEntryNo);
+        // chapterNo 변경
+        target.setJrnlChapterNo(jrnlChapterNo);
 
         // targetIdx 보정 (upper bound)
         final int maxIdx = list.size() + 1;
@@ -294,16 +294,16 @@ public class JrnlDiaryService
     }
 
     /**
-     * entryNo가 바뀌었을 때 엔트리 이동 + 정렬 처리
+     * chapterNo가 바뀌었을 때 챕터 이동 + 정렬 처리
      *
      * @param updatedDto 업데이트된 객체
      */
     @Transactional
-    public void reorderWhenEntryChanged(final JrnlDiaryPostDto updatedDto) throws Exception {
-        // 1) 기존 entry 그룹 정리 (삭제처리와 동일한 효과)
-        normalize(updatedDto.getPrevJrnlEntryNo());
-        // 2) 새 entry 그룹에 삽입
-        insert(updatedDto.getJrnlEntryNo(), updatedDto.getPostNo(), updatedDto.getIdx());
+    public void reorderWhenChapterChanged(final JrnlDiaryPostDto updatedDto) throws Exception {
+        // 1) 기존 chapter 그룹 정리 (삭제처리와 동일한 효과)
+        normalize(updatedDto.getPrevJrnlChapterNo());
+        // 2) 새 chapter 그룹에 삽입
+        insert(updatedDto.getJrnlChapterNo(), updatedDto.getPostNo(), updatedDto.getIdx());
     }
 
     /**
@@ -313,10 +313,10 @@ public class JrnlDiaryService
      */
     @Transactional
     public void reorderIdx(final JrnlDiaryPostDto updatedDto) throws Exception {
-        // 1단계: 현재 entry 그룹 정리 (기존 idx 값을 normalization하여 안정화)
-        normalize(updatedDto.getJrnlEntryNo());
+        // 1단계: 현재 chapter 그룹 정리 (기존 idx 값을 normalization하여 안정화)
+        normalize(updatedDto.getJrnlChapterNo());
         // 2단계: 해당 group에 새 위치로 target 삽입
-        insert(updatedDto.getJrnlEntryNo(), updatedDto.getPostNo(), updatedDto.getIdx());
+        insert(updatedDto.getJrnlChapterNo(), updatedDto.getPostNo(), updatedDto.getIdx());
     }
 
     /**

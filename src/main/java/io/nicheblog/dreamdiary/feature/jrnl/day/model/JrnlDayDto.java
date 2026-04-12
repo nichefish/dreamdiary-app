@@ -8,8 +8,8 @@ import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlPeriodModule;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamDto;
-import io.nicheblog.dreamdiary.feature.jrnl.entry.model.JrnlEntryDto;
-import io.nicheblog.dreamdiary.feature.jrnl.entry.model.JrnlEntrySmpDto;
+import io.nicheblog.dreamdiary.feature.jrnl.chapter.model.JrnlChapterDto;
+import io.nicheblog.dreamdiary.feature.jrnl.chapter.model.JrnlChapterSmpDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
@@ -86,10 +86,10 @@ public class JrnlDayDto
     @Size(max = 100, message = "날씨 정보는 100자 이하로 입력해야 합니다.")
     private String weather;
 
-    /** 저널 항목 목록 */
-    private List<JrnlEntryDto> jrnlEntryList;
-    /** 저널 항목 목록 */
-    private List<JrnlEntrySmpDto> entryList;
+    /** 저널 챕터 목록 */
+    private List<JrnlChapterDto> jrnlChapterList;
+    /** 저널 챕터 목록 */
+    private List<JrnlChapterSmpDto> chapterList;
 
     /** 저널 꿈 목록 */
     private List<JrnlDreamDto> jrnlDreamList;

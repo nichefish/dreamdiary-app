@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiaryPostDto;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamDto;
-import io.nicheblog.dreamdiary.feature.jrnl.entry.model.JrnlEntryDto;
+import io.nicheblog.dreamdiary.feature.jrnl.chapter.model.JrnlChapterDto;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryReviewDto;
@@ -32,8 +32,8 @@ public class JrnlCacheEvictParam {
     private Integer postNo;
     /** 저널 일자 번호 */
     private Integer jrnlDayNo;
-    /** 저널 항목 번호 */
-    private Integer jrnlEntryNo;
+    /** 저널 챕터 번호 */
+    private Integer jrnlChapterNo;
     /** 저널 꿈 번호 */
     private Integer jrnlDreamNo;
     /** 저널 결산 번호 */
@@ -84,10 +84,10 @@ public class JrnlCacheEvictParam {
     /**
      * 팩토리 메서드 패턴
      *
-     * @param dto {@link JrnlEntryDto}
+     * @param dto {@link JrnlChapterDto}
      * @return {@link JrnlCacheEvictParam}
      */
-    public static JrnlCacheEvictParam of(final JrnlEntryDto dto) throws Exception {
+    public static JrnlCacheEvictParam of(final JrnlChapterDto dto) throws Exception {
         return JrnlCacheEvictParam.builder()
                 .regstrId(dto.getRegstrId())
                 .postNo(dto.getPostNo())
@@ -109,7 +109,7 @@ public class JrnlCacheEvictParam {
                 .regstrId(dto.getRegstrId())
                 .postNo(dto.getPostNo())
                 .jrnlDayNo(dto.getJrnlDayNo())
-                .jrnlEntryNo(dto.getJrnlEntryNo())
+                .jrnlChapterNo(dto.getJrnlChapterNo())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
                 .build();
@@ -126,7 +126,7 @@ public class JrnlCacheEvictParam {
                 .regstrId(dto.getRegstrId())
                 .postNo(dto.getPostNo())
                 .jrnlDayNo(dto.getJrnlDayNo())
-                .jrnlEntryNo(dto.getJrnlEntryNo())
+                .jrnlChapterNo(dto.getJrnlChapterNo())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
                 .weekStartDt(DateUtils.getWeekStartDateStr(dto.getStdrdDt()))

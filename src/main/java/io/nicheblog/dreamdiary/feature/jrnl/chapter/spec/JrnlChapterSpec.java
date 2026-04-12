@@ -1,0 +1,138 @@
+package io.nicheblog.dreamdiary.feature.jrnl.chapter.spec;
+
+import io.nicheblog.dreamdiary.feature.clsf._shared.spec.BaseClsfSpec;
+import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagContentEntity;
+import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
+import io.nicheblog.dreamdiary.feature.jrnl.day.entity.JrnlDaySmpEntity;
+import io.nicheblog.dreamdiary.feature.jrnl.chapter.entity.JrnlChapterEntity;
+import io.nicheblog.dreamdiary.global.util.date.DateUtils;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
+
+import javax.persistence.criteria.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * JrnlChapterSpec
+ * <pre>
+ *  저널 챕터 목록 검색인자 세팅 Specification.
+ * </pre>
+ *
+ * @author nichefish
+ */
+@Component
+@Log4j2
+public class JrnlChapterSpec
+        implements BaseClsfSpec<JrnlChapterEntity> {
+
+    /**
+     * 검색 조건 세팅 후 쿼리 후처리. (override)
+     * 
+     * @param root 조회할 엔티티의 Root 객체
+     * @param query - CriteriaQuery 객체
+     * @param builder CriteriaBuilder 객체
+     */
+    @Override
+    public void postQuery(
+            final Root<JrnlChapterEntity> root,
+            final CriteriaQuery<?> query,
+            final CriteriaBuilder builder
+    ) {
+        // 정렬 순서 변경
+        final List<Order> order = new ArrayList<>();
+        final Join<JrnlChapterEntity, JrnlDaySmpEntity> jrnlDayJoin = root.join("jrnlDay", JoinType.INNER);
+        order.add(builder.desc(builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"))));
+        order.add(builder.asc(root.get("idx")));
+        query.orderBy(order);
+        // distinct
+        query.distinct(true);
+    }
+
+    /**
+     * 인자별로 구체적인 검색 조건을 세팅한다. (override)
+     *
+     * @param searchParamMap 검색 파라미터 맵
+     * @param root 검색할 엔티티의 Root 객체
+     * @param query - CriteriaQuery 객체
+     * @param builder 검색 조건을 생성하는 CriteriaBuilder 객체
+     * @return {@link List} -- 설정된 검색 조건(Predicate) 리스트
+     */
+    @Override
+    public List<Predicate> getPredicateWithParams(
+            final Map<String, Object> searchParamMap,
+            final Root<JrnlChapterEntity> root,
+            final CriteriaQuery<?> query,
+            final CriteriaBuilder builder
+    ) throws Exception {
+
+        final List<Predicate> predicate = new ArrayList<>();
+
+        // expressions
+        final Join<JrnlChapterEntity, JrnlDaySmpEntity> jrnlDayJoin = root.join("jrnlDay", JoinType.INNER);
+        final Expression<Date> effectiveDtExp = builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"));
+        final String regstrId = resolveRegstrId(searchParamMap);
+
+        // 파라미터 비교
+        for (final String key : searchParamMap.keySet()) {
+            if ("sort".equals(key)) continue;  // "sort" 파라미터는 건너뜀
+
+            final Object value = searchParamMap.get(key);
+            switch (key) {
+                case "searchStartDt":
+                    // 기간 검색
+                    predicate.add(builder.greaterThanOrEqualTo(effectiveDtExp, DateUtils.asDate(value)));
+                    continue;
+                case "searchEndDt":
+                    // 기간 검색
+                    predicate.add(builder.lessThanOrEqualTo(effectiveDtExp, DateUtils.asDate(value)));
+                    continue;
+                case "yy":
+                    // 9999 = 모든 년
+                    final Integer yy = (Integer) value;
+                    if (yy != 9999) predicate.add(builder.equal(jrnlDayJoin.get(key), yy));
+                    continue;
+                case "mnth":
+                    // 99 = 모든 월
+                    final Integer mnth = (Integer) value;
+                    if (mnth != 99) predicate.add(builder.equal(jrnlDayJoin.get(key), mnth));
+                    continue;
+                case "jrnlDayNo":
+                    // 99 = 모든 월
+                    predicate.add(builder.equal(jrnlDayJoin.get("postNo"), value));
+                    continue;
+                case "dreamKeyword":
+                    // 내용 like 검색
+                    predicate.add(builder.like(root.get("cn"), "%" + value + "%"));
+                    continue;
+                case "tagNo":
+                    // 특정 태그된 항목만 조회
+                    final Join<JrnlChapterEntity, TagEmbed> tagJoin = root.join("tag", JoinType.INNER);
+                    final Join<TagEmbed, TagContentEntity> tagContentJoin = tagJoin.join("list", JoinType.INNER);
+                    predicate.add(builder.equal(tagContentJoin.get("regstrId"), regstrId));
+                    predicate.add(builder.equal(tagContentJoin.get("refTagNo"), value));
+                    continue;
+                default:
+                    // default :: 조건 파라미터에 대해 equal 검색
+                    try {
+                        predicate.add(builder.equal(root.get(key), value));
+                    } catch (final Exception e) {
+                        log.info("unable to locate attribute '{}' while trying root.get(key).", key);
+                    }
+            }
+        }
+
+        return predicate;
+    }
+
+    private String resolveRegstrId(final Map<String, Object> searchParamMap) {
+        final Object regstrId = searchParamMap.get("regstrId");
+        if (regstrId != null) {
+            final String regstrIdStr = regstrId.toString();
+            if (!regstrIdStr.isBlank()) return regstrIdStr;
+        }
+        throw new IllegalArgumentException("regstrId is required.");
+    }
+}
