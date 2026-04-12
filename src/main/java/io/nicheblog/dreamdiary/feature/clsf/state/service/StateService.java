@@ -53,7 +53,7 @@ public class StateService
     @PostConstruct
     private void validateStateCacheUpdaters() {
         final Set<ContentType> requiredTypes = EnumSet.of(
-                ContentType.JRNL_ENTRY,
+                ContentType.JRNL_CHAPTER,
                 ContentType.JRNL_DIARY,
                 ContentType.JRNL_DREAM,
                 ContentType.JRNL_INTRPT

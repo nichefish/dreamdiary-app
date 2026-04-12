@@ -32,18 +32,18 @@ public class JrnlIntrptSmpEntity {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
-    private static final ContentType CONTENT_TYPE = ContentType.JRNL_ENTRY;
+    private static final ContentType CONTENT_TYPE = ContentType.JRNL_INTRPT;
 
-    /** 저널 항목 고유 번호 (PK) */
+    /** 저널 해석 고유 번호 (PK) */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_no")
-    @Comment("저널 항목 고유 번호")
+    @Comment("저널 해석 고유 번호")
     private Integer postNo;
 
     /** 컨텐츠 타입 */
     @Builder.Default
-    @Column(name = "content_type", columnDefinition = "VARCHAR(50) DEFAULT 'JRNL_ENTRY'")
+    @Column(name = "content_type", columnDefinition = "VARCHAR(50) DEFAULT 'JRNL_INTRPT'")
     @Comment("컨텐츠 타입")
     private String contentType = CONTENT_TYPE.key;
 

@@ -121,7 +121,7 @@ public interface JrnlCacheEvictor
         if (yy != null && mnth != null) {
             // Current journal month list cache and companion state maps share the same key scope.
             this.evictMyYyMnthCache(userId, "jrnlDayYyMnthListByUser", yy, mnth);
-            this.evictMyYyMnthCache(userId, "jrnlEntryStateMapByUser", yy, mnth);
+            this.evictMyYyMnthCache(userId, "jrnlChapterStateMapByUser", yy, mnth);
             this.evictMyYyMnthCache(userId, "jrnlDiaryStateMapByUser", yy, mnth);
             this.evictMyYyMnthCache(userId, "jrnlDreamStateMapByUser", yy, mnth);
             this.evictMyYyMnthCache(userId, "jrnlIntrptStateMapByUser", yy, mnth);
@@ -131,7 +131,7 @@ public interface JrnlCacheEvictor
             return;
         }
         EhCacheUtils.clearUserCache("jrnlDayYyMnthListByUser", userId);
-        EhCacheUtils.clearUserCache("jrnlEntryStateMapByUser", userId);
+        EhCacheUtils.clearUserCache("jrnlChapterStateMapByUser", userId);
         EhCacheUtils.clearUserCache("jrnlDiaryStateMapByUser", userId);
         EhCacheUtils.clearUserCache("jrnlDreamStateMapByUser", userId);
         EhCacheUtils.clearUserCache("jrnlIntrptStateMapByUser", userId);
@@ -144,7 +144,7 @@ public interface JrnlCacheEvictor
      */
     default void evictMyJrnlDayWeeklyCaches(final String userId) {
         EhCacheUtils.clearUserCache("jrnlDayWeeklyListByUser", userId);
-        EhCacheUtils.clearUserCache("jrnlEntryWeeklyStateMapByUser", userId);
+        EhCacheUtils.clearUserCache("jrnlChapterWeeklyStateMapByUser", userId);
         EhCacheUtils.clearUserCache("jrnlDiaryWeeklyStateMapByUser", userId);
         EhCacheUtils.clearUserCache("jrnlDreamWeeklyStateMapByUser", userId);
         EhCacheUtils.clearUserCache("jrnlIntrptWeeklyStateMapByUser", userId);
@@ -166,7 +166,7 @@ public interface JrnlCacheEvictor
             if (weekStartDt == null || weekStartDt.isBlank()) continue;
             hasTarget = true;
             EhCacheUtils.evictUserCacheByKey("jrnlDayWeeklyListByUser", userId, weekStartDt);
-            EhCacheUtils.evictUserCacheByKey("jrnlEntryWeeklyStateMapByUser", userId, weekStartDt);
+            EhCacheUtils.evictUserCacheByKey("jrnlChapterWeeklyStateMapByUser", userId, weekStartDt);
             EhCacheUtils.evictUserCacheByKey("jrnlDiaryWeeklyStateMapByUser", userId, weekStartDt);
             EhCacheUtils.evictUserCacheByKey("jrnlDreamWeeklyStateMapByUser", userId, weekStartDt);
             EhCacheUtils.evictUserCacheByKey("jrnlIntrptWeeklyStateMapByUser", userId, weekStartDt);

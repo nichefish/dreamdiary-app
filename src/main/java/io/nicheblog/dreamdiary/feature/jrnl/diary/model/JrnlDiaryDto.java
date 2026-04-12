@@ -56,8 +56,8 @@ public class JrnlDiaryDto
 
     /** 저널 일자 번호 */
     private Integer jrnlDayNo;
-    /** 저널 항목 번호 */
-    private Integer jrnlEntryNo;
+    /** 저널 챕터 번호 */
+    private Integer jrnlChapterNo;
     /** 저널 기준일자 */
     private String stdrdDt;
     /** 저널 기준일자 */
@@ -83,11 +83,11 @@ public class JrnlDiaryDto
     /** 인덱스 변경 여부 */
     @Builder.Default
     private Boolean isIdxChanged = false;
-    /** 저널 항목 변경 여부 */
+    /** 저널 챕터 변경 여부 */
     @Builder.Default
-    private Boolean isEntryChanged = false;
-    /** 이전 저널 항목 번호 */
-    private Integer prevJrnlEntryNo;
+    private Boolean isChapterChanged = false;
+    /** 이전 저널 챕터 번호 */
+    private Integer prevJrnlChapterNo;
 
     /* ----- */
 

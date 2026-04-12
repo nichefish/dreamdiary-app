@@ -12,7 +12,7 @@ import io.nicheblog.dreamdiary.feature.clsf.state.entity.embed.StateEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbedModule;
-import io.nicheblog.dreamdiary.feature.jrnl.entry.entity.JrnlEntryEntity;
+import io.nicheblog.dreamdiary.feature.jrnl.chapter.entity.JrnlChapterEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
@@ -70,11 +70,11 @@ public class JrnlDiaryEntity
 
     /* ----- */
 
-    /** 저널 항목 정보 */
+    /** 저널 챕터 정보 */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "jrnl_entry_no", nullable = false)
-    @Comment("저널 항목 정보")
-    private JrnlEntryEntity jrnlEntry;
+    @JoinColumn(name = "jrnl_chapter_no", nullable = false)
+    @Comment("저널 챕터 정보")
+    private JrnlChapterEntity jrnlChapter;
 
     /** 순번 */
     @Column(name = "idx", columnDefinition = "INT DEFAULT 1")
@@ -85,14 +85,14 @@ public class JrnlDiaryEntity
     @Transient
     private Boolean isIdxChanged = false;
 
-    /** 저널 항목 변경 여부 */
+    /** 저널 챕터 변경 여부 */
     @Builder.Default
     @Transient
-    private Boolean isEntryChanged = false;
+    private Boolean isChapterChanged = false;
 
-    /** 이전 저널 항목 번호 */
+    /** 이전 저널 챕터 번호 */
     @Transient
-    private Integer prevJrnlEntryNo;
+    private Integer prevJrnlChapterNo;
 
     /* ----- */
 

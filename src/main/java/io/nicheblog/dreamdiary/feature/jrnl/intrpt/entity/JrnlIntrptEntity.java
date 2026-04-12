@@ -52,7 +52,7 @@ public class JrnlIntrptEntity
 
     /** 컨텐츠 타입 */
     @Builder.Default
-    @Column(name = "content_type", columnDefinition = "VARCHAR(50) DEFAULT 'JRNL_ENTRY'")
+    @Column(name = "content_type", columnDefinition = "VARCHAR(50) DEFAULT 'JRNL_INTRPT'")
     @Comment("컨텐츠 타입")
     private String contentType = ContentType.JRNL_INTRPT.key;
 

@@ -9,19 +9,19 @@
         <label for="toggleDiaries" class="text-muted cursor-help mb-0">DIARIES</label>
         <input type="checkbox" id="toggleDiaries" class="form-check-input cursor-pointer m-0" onclick="dF.JrnlDay.toggleParam();" checked>
     </div>
-    <div id="entryCtgrFilterSection" class="d-flex flex-column ps-3 gap-1">
+    <div id="chapterCtgrFilterSection" class="d-flex flex-column ps-3 gap-1">
         <div class="d-flex align-items-center justify-content-between">
-            <label for="entryCtgrFilter" class="text-muted mb-0">- ENTRY CATEGORIES</label>
-            <input type="checkbox" id="toggleEntryCtgr" class="form-check-input cursor-pointer m-0"
-                   onclick="dF.JrnlDay.toggleEntryCtgr();" checked>
+            <label for="chapterCtgrFilter" class="text-muted mb-0">- CHAPTER CATEGORIES</label>
+            <input type="checkbox" id="toggleChapterCtgr" class="form-check-input cursor-pointer m-0"
+                   onclick="dF.JrnlDay.toggleChapterCtgr();" checked>
         </div>
-        <select id="entryCtgrFilter" class="form-select form-select-sm w-100"
+        <select id="chapterCtgrFilter" class="form-select form-select-sm w-100"
                 multiple size="4"
                 data-bs-toggle="tooltip" data-bs-placement="top" title="<@spring.message 'bs.tooltip.select.multi'/>"
-                onmousedown="return dF.JrnlDay.handleEntryCtgrMouseDown(event);"
-                onchange="dF.JrnlDay.changeEntryCtgr();">
+                onmousedown="return dF.JrnlDay.handleChapterCtgrMouseDown(event);"
+                onchange="dF.JrnlDay.changeChapterCtgr();">
             <option value="__ALL__"><@spring.message 'txt.ctgr.all'/></option>
-            <#list JRNL_ENTRY_CTGR_CD![] as ctgr>
+            <#list JRNL_CHAPTER_CTGR_CD![] as ctgr>
                 <option value="${ctgr.dtlCd!}">[${ctgr.dtlCdNm!}]</option>
             </#list>
         </select>

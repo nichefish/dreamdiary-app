@@ -1,0 +1,39 @@
+<#--
+ * 저널 챕터(jrnl_chapter) 목록 조회 partial
+ * @see handlebars.ts
+ -->
+
+<script type="text/x-handlebars-template" id="jrnl_chapter_item_partial" data-partial>
+    <div class="d-flex align-items-center mt-2">
+        <div class="d-flex-align-center text-gray-700 fs-6 ps-1 ps-md-5 me-5 fw-bolder">
+            <span class="{{#ifYn chapterResolvedYn}}text-success{{/ifYn}} me-2">
+                <@spring.message 'txt.diary'/>{{#if (exists ctgrCd)}}:{{/if}}
+                {{#if (exists ctgrCd)}}
+                    <span style=color:#287D94;">{{ctgrNm}}</span>
+                    <span class="text-muted fs-8 me-1">{{ctgrCd}}</span>
+                {{/if}}
+            </span>
+            <i class="bi bi-book fs-4 {{#ifYn chapterResolvedYn}}text-success{{/ifYn}}"></i>
+        </div>
+        <div class="col-3 d-none d-md-flex align-items-center gap-2">
+            {{> jrnl_diary_reg_btn_partial this}}
+            {{> jrnl_chapter_copy_btn_partial this}}
+            {{> jrnl_chapter_export_btn_partial this}}
+            {{> jrnl_chapter_context_btn_partial this}}
+            {{> jrnl_chapter_toggle_btn_partial this}}
+        </div>
+    </div>
+    <div class="jrnl-chapter-item" data-id="{{postNo}}" data-stdrd-dt="{{stdrdDt}}" data-yy="{{yy}}" data-mnth="{{mnth}}" data-collapsed="{{hasState state 'COLLAPSED'}}">
+        <div class="jrnl-chapter-cn {{#if (hasState state 'COLLAPSED')}}collapsed{{/if}}">
+            {{#each jrnlDiaryList}}
+                {{> jrnl_diary_item_partial this}}
+            {{/each}}
+        </div>
+        <div class="tags jrnl-chapter-tags ms-2 mt-3 {{#unless (hasState state 'COLLAPSED')}}d-none{{/unless}}">
+            <i class="bi bi-tag"></i>
+            {{#tag.list}}
+                {{> tag_list_partial this module="dF.JrnlDiaryTag"}}
+            {{/tag.list}}
+        </div>
+    </div>
+</script>

@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.jrnl.day.entity.JrnlDaySmpEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.entity.JrnlDiarySmpEntity;
-import io.nicheblog.dreamdiary.feature.jrnl.entry.entity.JrnlEntrySmpEntity;
+import io.nicheblog.dreamdiary.feature.jrnl.chapter.entity.JrnlChapterSmpEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
@@ -48,8 +48,8 @@ public class JrnlDiarySpec
     ) {
         // 정렬 순서 변경
         final List<Order> order = new ArrayList<>();
-        final Join<JrnlDiaryEntity, JrnlEntrySmpEntity> jrnlEntryJoin = root.join("jrnlEntry", JoinType.INNER);
-        final Join<JrnlEntrySmpEntity, JrnlDaySmpEntity> jrnlDayJoin = jrnlEntryJoin.join("jrnlDay", JoinType.INNER);
+        final Join<JrnlDiaryEntity, JrnlChapterSmpEntity> jrnlChapterJoin = root.join("jrnlChapter", JoinType.INNER);
+        final Join<JrnlChapterSmpEntity, JrnlDaySmpEntity> jrnlDayJoin = jrnlChapterJoin.join("jrnlDay", JoinType.INNER);
         final String sort = String.valueOf(searchParamMap.getOrDefault("sort", "desc")).toLowerCase();
         final Expression<Date> dateExp = builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"));
         if ("desc".equals(sort)) {
@@ -57,7 +57,7 @@ public class JrnlDiarySpec
         } else {
             order.add(builder.asc(dateExp));
         }
-        order.add(builder.asc(jrnlEntryJoin.get("idx")));
+        order.add(builder.asc(jrnlChapterJoin.get("idx")));
         order.add(builder.asc(root.get("idx")));
         query.orderBy(order);
         // distinct
@@ -84,8 +84,8 @@ public class JrnlDiarySpec
         final List<Predicate> predicate = new ArrayList<>();
 
         // expressions
-        final Join<JrnlDiarySmpEntity, JrnlEntrySmpEntity> jrnlEntryJoin = root.join("jrnlEntry", JoinType.INNER);
-        final Join<JrnlEntrySmpEntity, JrnlDaySmpEntity> jrnlDayJoin = jrnlEntryJoin.join("jrnlDay", JoinType.INNER);
+        final Join<JrnlDiarySmpEntity, JrnlChapterSmpEntity> jrnlChapterJoin = root.join("jrnlChapter", JoinType.INNER);
+        final Join<JrnlChapterSmpEntity, JrnlDaySmpEntity> jrnlDayJoin = jrnlChapterJoin.join("jrnlDay", JoinType.INNER);
         final Expression<Date> effectiveDtExp = builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"));
         final String regstrId = resolveRegstrId(searchParamMap);
 

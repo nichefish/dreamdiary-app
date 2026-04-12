@@ -51,26 +51,26 @@
                     </div>
 
                     <div class="flex-row">
-                        {{#each jrnlEntryList}}
+                        {{#each jrnlChapterList}}
                             <div class="d-flex align-items-center mt-2">
                                 <div class="col col-md-1 w-5 text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder ">
-                                    {{#ifYn entryResolvedYn}}
-                                        <span class="text-success"><@spring.message 'txt.entry'/></span>
+                                    {{#ifYn chapterResolvedYn}}
+                                        <span class="text-success"><@spring.message 'txt.chapter'/></span>
                                         <span class="position-relative d-inline-block">
                                           <i class="bi bi-book fs-4 text-success"></i>
                                         </span>
                                     {{else}}
-                                        <@spring.message 'txt.entry'/>
+                                        <@spring.message 'txt.chapter'/>
                                         <i class="bi bi-book fs-4 pe-1"></i>
                                     {{/ifYn}}
                                 </div>
                                 <div class="col-3 d-none d-md-flex align-items-center gap-2">
                                     {{> jrnl_diary_reg_btn_partial this}}
-                                    {{> jrnl_entry_context_btn_partial this}}
-                                    {{> jrnl_entry_toggle_btn_partial this}}
+                                    {{> jrnl_chapter_context_btn_partial this}}
+                                    {{> jrnl_chapter_toggle_btn_partial this}}
                                 </div>
                             </div>
-                            <div class="jrnl-entry jrnl-item" data-id={{postNo}}>
+                            <div class="jrnl-chapter jrnl-item" data-id={{postNo}}>
                                 {{#each jrnlDiaryList}}
                                     <div class="jrnl-diary-item" data-id={{postNo}} data-collapsed="{{collapsedYn}}" data-resolved="{{resolvedYn}}" data-imprtc="{{imprtcYn}}">
                                         <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">

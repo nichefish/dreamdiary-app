@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * JrnlIntrptDto
  * <pre>
- *  저널 항목 Dto.
+ *  저널 해석 Dto.
  * </pre>
  *
  * @author nichefish

@@ -140,8 +140,8 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     }
 }
 
-.jrnl-entry-item {
-    .jrnl-entry-cn {
+.jrnl-chapter-item {
+    .jrnl-chapter-cn {
         &.collapsed {
             margin-left: 90px;
             margin-top: 20px;
@@ -158,20 +158,20 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
             display: none !important;
         }
     }
-    .jrnl-entry-tags {
+    .jrnl-chapter-tags {
         margin-left: 90px !important;
         margin-top: 12px;
         margin-bottom: 15px;
     }
 
-    .jrnl-entry-cn.collapsed,
-    .jrnl-entry-tags:not(.d-none) {
+    .jrnl-chapter-cn.collapsed,
+    .jrnl-chapter-tags:not(.d-none) {
         transition: background-color 0.2s ease, box-shadow 0.2s ease, padding-left 0.2s ease;
     }
 
     &:has(.jrnl-diary-cn .cn.imprtc) {
-        .jrnl-entry-cn.collapsed,
-        .jrnl-entry-tags:not(.d-none) {
+        .jrnl-chapter-cn.collapsed,
+        .jrnl-chapter-tags:not(.d-none) {
             background: #fff5f5;
             box-shadow: inset 2px 0 0 #ef4444;
             padding-left: 0.85rem;
@@ -179,8 +179,8 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     }
 
     &:has(.jrnl-diary-cn .cn.refrnc) {
-        .jrnl-entry-cn.collapsed,
-        .jrnl-entry-tags:not(.d-none) {
+        .jrnl-chapter-cn.collapsed,
+        .jrnl-chapter-tags:not(.d-none) {
             background: #fffcec;
             box-shadow: inset 2px 0 0 #f59e0b;
             padding-left: 0.85rem;
@@ -188,8 +188,8 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     }
 
     &:has(.jrnl-diary-cn .cn.imprtc):has(.jrnl-diary-cn .cn.refrnc) {
-        .jrnl-entry-cn.collapsed,
-        .jrnl-entry-tags:not(.d-none) {
+        .jrnl-chapter-cn.collapsed,
+        .jrnl-chapter-tags:not(.d-none) {
             background: #fff8ef;
             box-shadow: inset 2px 0 0 #ef4444, inset 6px 0 0 #f59e0b;
             padding-left: 1.1rem;
@@ -197,7 +197,7 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     }
 }
 
-.jrnl-entry-item[data-collapsed="N"] .jrnl-entry-tags {
+.jrnl-chapter-item[data-collapsed="N"] .jrnl-chapter-tags {
     display: none;
 }
 

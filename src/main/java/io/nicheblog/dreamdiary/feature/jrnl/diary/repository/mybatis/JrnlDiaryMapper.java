@@ -34,8 +34,8 @@ public interface JrnlDiaryMapper {
     /**
      * 인덱스 갱신용 전체 목록 조회
      *
-     * @param jrnlEntryNo 상위 키값
+     * @param jrnlChapterNo 상위 키값
      * @return Integer -- 업데이트된 행 개수
      */
-    List<JrnlDiaryDto> findAllForReorder(final @Param("jrnlEntryNo") Integer jrnlEntryNo);
+    List<JrnlDiaryDto> findAllForReorder(final @Param("jrnlChapterNo") Integer jrnlChapterNo);
 }

@@ -6,8 +6,8 @@ import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDaySearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.service.helper.JrnlDreamViewHelper;
-import io.nicheblog.dreamdiary.feature.jrnl.entry.model.JrnlEntryDto;
-import io.nicheblog.dreamdiary.feature.jrnl.entry.service.helper.JrnlEntryViewHelper;
+import io.nicheblog.dreamdiary.feature.jrnl.chapter.model.JrnlChapterDto;
+import io.nicheblog.dreamdiary.feature.jrnl.chapter.service.helper.JrnlChapterViewHelper;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
@@ -36,12 +36,12 @@ public final class JrnlDayViewHelper {
 
         final Object cacheKey = new SimpleKey(userId, searchParam.getYy(), searchParam.getMnth());
 
-        final Map<Integer, JrnlState> entryMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlEntryStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
+        final Map<Integer, JrnlState> chapterMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlChapterStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JrnlState> diaryMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlDiaryStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JrnlState> dreamMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlDreamStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JrnlState> intrptMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlIntrptStateMapByUser", cacheKey)).orElse(Collections.emptyMap());
 
-        JrnlDayViewHelper.applyStates(listDto, entryMap, diaryMap, dreamMap, intrptMap, searchParam);
+        JrnlDayViewHelper.applyStates(listDto, chapterMap, diaryMap, dreamMap, intrptMap, searchParam);
     }
 
     /**
@@ -60,12 +60,12 @@ public final class JrnlDayViewHelper {
                 searchParam.getWeekStartDt()
         );
 
-        final Map<Integer, JrnlState> entryMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlEntryWeeklyStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
+        final Map<Integer, JrnlState> chapterMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlChapterWeeklyStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JrnlState> diaryMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlDiaryWeeklyStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JrnlState> dreamMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlDreamWeeklyStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JrnlState> intrptMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlIntrptWeeklyStateMapByUser", cacheKey)).orElse(Collections.emptyMap());
 
-        JrnlDayViewHelper.applyStates(listDto, entryMap, diaryMap, dreamMap, intrptMap, searchParam);
+        JrnlDayViewHelper.applyStates(listDto, chapterMap, diaryMap, dreamMap, intrptMap, searchParam);
     }
 
     /**
@@ -79,43 +79,43 @@ public final class JrnlDayViewHelper {
 
         final Object cacheKey = new SimpleKey(userId, jrnlDay.getYy(), jrnlDay.getMnth());
 
-        final Map<Integer, JrnlState> entryMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlEntryStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
+        final Map<Integer, JrnlState> chapterMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlChapterStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JrnlState> diaryMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlDiaryStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JrnlState> dreamMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlDreamStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JrnlState> intrptMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlIntrptStateMapByUser", cacheKey)).orElse(Collections.emptyMap());
 
         final List<JrnlDayDto> listDto = List.of(jrnlDay);
-        JrnlDayViewHelper.applyStates(listDto, entryMap, diaryMap, dreamMap, intrptMap);
+        JrnlDayViewHelper.applyStates(listDto, chapterMap, diaryMap, dreamMap, intrptMap);
     }
 
     /**
-     * 캐시에 저장된 상태 맵(entry/diary/dream/intrpt)을 기준으로 조회된 {@link JrnlDayDto} 트리 구조에 상태를 반영한다.
+     * 캐시에 저장된 상태 맵(chapter/diary/dream/intrpt)을 기준으로 조회된 {@link JrnlDayDto} 트리 구조에 상태를 반영한다.
      *
      * @param listDto 조회된 저널 일자 목록 DTO
-     * @param entryMap entry postNo → {@link JrnlState} 맵
+     * @param chapterMap chapter postNo → {@link JrnlState} 맵
      * @param diaryMap diary postNo → {@link JrnlState} 맵
      * @param dreamMap dream postNo → {@link JrnlState} 맵
      * @param intrptMap intrpt postNo → {@link JrnlState} 맵
      */
     public static void applyStates(
         final List<JrnlDayDto> listDto,
-        final Map<Integer, JrnlState> entryMap,
+        final Map<Integer, JrnlState> chapterMap,
         final Map<Integer, JrnlState> diaryMap,
         final Map<Integer, JrnlState> dreamMap,
         final Map<Integer, JrnlState> intrptMap
     ) {
         for (JrnlDayDto day : listDto) {
-            JrnlEntryViewHelper.applyStates(day.getJrnlEntryList(), entryMap, diaryMap);
+            JrnlChapterViewHelper.applyStates(day.getJrnlChapterList(), chapterMap, diaryMap);
             JrnlDreamViewHelper.applyStates(day.getJrnlDreamList(), dreamMap, intrptMap);
             JrnlDreamViewHelper.applyStates(day.getJrnlElseDreamList(), dreamMap, intrptMap);
         }
     }
 
     /**
-     * 캐시에 저장된 상태 맵(entry/diary/dream/intrpt)을 기준으로 조회된 {@link JrnlDayDto} 트리 구조에 상태를 반영한다.
+     * 캐시에 저장된 상태 맵(chapter/diary/dream/intrpt)을 기준으로 조회된 {@link JrnlDayDto} 트리 구조에 상태를 반영한다.
      *
      * @param listDto 조회된 저널 일자 목록 DTO
-     * @param entryMap entry postNo → {@link JrnlState} 맵
+     * @param chapterMap chapter postNo → {@link JrnlState} 맵
      * @param diaryMap diary postNo → {@link JrnlState} 맵
      * @param dreamMap dream postNo → {@link JrnlState} 맵
      * @param intrptMap intrpt postNo → {@link JrnlState} 맵
@@ -123,7 +123,7 @@ public final class JrnlDayViewHelper {
      */
     public static void applyStates(
         final List<JrnlDayDto> listDto,
-        final Map<Integer, JrnlState> entryMap,
+        final Map<Integer, JrnlState> chapterMap,
         final Map<Integer, JrnlState> diaryMap,
         final Map<Integer, JrnlState> dreamMap,
         final Map<Integer, JrnlState> intrptMap,
@@ -132,7 +132,7 @@ public final class JrnlDayViewHelper {
         for (JrnlDayDto day : listDto) {
 
             if (searchParam.isShowDiaries()) {
-                JrnlEntryViewHelper.applyStates(day.getJrnlEntryList(), entryMap, diaryMap);
+                JrnlChapterViewHelper.applyStates(day.getJrnlChapterList(), chapterMap, diaryMap);
             }
 
             if (searchParam.isShowDreams()) {
@@ -147,19 +147,19 @@ public final class JrnlDayViewHelper {
      *
      * @param listDto 조회된 저널 일자 목록 DTO
      */
-    public static void applyEntryTagSummary(final List<JrnlDayDto> listDto, final JrnlDaySearchParam searchParam) {
+    public static void applyChapterTagSummary(final List<JrnlDayDto> listDto, final JrnlDaySearchParam searchParam) {
         if (CollectionUtils.isEmpty(listDto)) return;
         if (!searchParam.isShowDiaries()) return;
 
         for (final JrnlDayDto day : listDto) {
-            if (CollectionUtils.isEmpty(day.getJrnlEntryList())) continue;
+            if (CollectionUtils.isEmpty(day.getJrnlChapterList())) continue;
 
-            for (final JrnlEntryDto entry : day.getJrnlEntryList()) {
-                if (CollectionUtils.isEmpty(entry.getJrnlDiaryList())) continue;
+            for (final JrnlChapterDto chapter : day.getJrnlChapterList()) {
+                if (CollectionUtils.isEmpty(chapter.getJrnlDiaryList())) continue;
 
                 final Map<Integer, TagContentDto> tagMap = new LinkedHashMap<>();
 
-                for (final JrnlDiaryDto diary : entry.getJrnlDiaryList()) {
+                for (final JrnlDiaryDto diary : chapter.getJrnlDiaryList()) {
                     final List<TagContentDto> tagList = diary.getTag().getList();
                     if (CollectionUtils.isEmpty(tagList)) continue;
 
@@ -168,7 +168,7 @@ public final class JrnlDayViewHelper {
                     }
                 }
 
-                entry.getTag().setList(new ArrayList<>(tagMap.values()));
+                chapter.getTag().setList(new ArrayList<>(tagMap.values()));
             }
         }
     }

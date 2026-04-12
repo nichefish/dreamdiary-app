@@ -56,7 +56,7 @@ public class JrnlDaySearchParam
     /** 꿈 키워드 */
     private String dreamKeyword;
     /** 엔티티 카테고리 코드 */
-    private List<String> entryCtgrCds;
+    private List<String> chapterCtgrCds;
 
     /**
      * 저널 일자 목록 Cache key suffix

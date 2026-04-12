@@ -25,7 +25,7 @@ public enum ContentType {
     JRNL_DAY("JRNL_DAY", "저널 일자", "calendar3"),
     JRNL_DREAM("JRNL_DREAM", "저널 꿈", "moon-stars"),
     JRNL_INTRPT("JRNL_INTRPT", "저널 해석", "book"),
-    JRNL_ENTRY("JRNL_ENTRY", "저널 꿈", "book"),
+    JRNL_CHAPTER("JRNL_CHAPTER", "저널 챕터", "book"),
     JRNL_DIARY("JRNL_DIARY", "저널 일기", "book"),
     JRNL_SBJCT("JRNL_SBJCT", "저널 주제"),
     JRNL_SUMRY("JRNL_SUMRY", "저널 결산"),

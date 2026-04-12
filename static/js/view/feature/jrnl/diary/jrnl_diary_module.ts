@@ -105,18 +105,19 @@ dF.JrnlDiary = (function(): dfModule {
          * 등록 모달 호출
          * @param {Object} param - 파라미터 객체
          * @param {string|number} param.jrnlDayNo - 저널 일자 번호.
-         * @param {string|number} param.jrnlEntryNo - 저널 항목 번호.
+         * @param {string|number} param.jrnlChapterNo - 저널 챕터 번호.
          * @param {string} param.stdrdDt - 기준 날짜.
          * @param {string} param.jrnlDtWeekDay - 기준 날짜 요일.
          */
-        regModal: function({ jrnlDayNo, jrnlEntryNo, stdrdDt, jrnlDtWeekDay }: { jrnlDayNo: string | number; jrnlEntryNo: string | number; stdrdDt: string; jrnlDtWeekDay: string; }): void {
-            if (isNaN(Number(jrnlEntryNo))) return;
+        regModal: function({ jrnlDayNo, jrnlChapterNo, stdrdDt, jrnlDtWeekDay }: { jrnlDayNo: string | number; jrnlChapterNo: string | number; stdrdDt: string; jrnlDtWeekDay: string; }): void {
+            if (isNaN(Number(jrnlDayNo))) return;
+            if (isNaN(Number(jrnlChapterNo))) return;
 
             const url: string = cF.util.bindUrl(Url.JRNL_DAY, { postNo: jrnlDayNo });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) return;
-                const entryList = res.rsltObj.entryList;
-                const obj: Record<string, any> = { jrnlDayNo: jrnlDayNo, jrnlEntryNo: jrnlEntryNo, stdrdDt: stdrdDt, jrnlDtWeekDay: jrnlDtWeekDay, entryList: entryList };
+                const chapterList = res.rsltObj.chapterList;
+                const obj: Record<string, any> = { jrnlDayNo: jrnlDayNo, jrnlChapterNo: jrnlChapterNo, stdrdDt: stdrdDt, jrnlDtWeekDay: jrnlDtWeekDay, chapterList: chapterList };
                 /* initialize form. */
                 dF.JrnlDiary.initForm(obj);
             });
@@ -214,8 +215,8 @@ dF.JrnlDiary = (function(): dfModule {
                 const url: string = cF.util.bindUrl(Url.JRNL_DAY, { postNo: rsltObj.jrnlDayNo });
                 cF.ajax.get(url, null, function(res: AjaxResponse): void {
                     if (!res.rslt) return;
-                    const entryList = res.rsltObj.entryList;
-                    const obj: Record<string, any> = { ...rsltObj, entryList: entryList };
+                    const chapterList = res.rsltObj.chapterList;
+                    const obj: Record<string, any> = { ...rsltObj, chapterList: chapterList };
                     /* initialize form. */
                     dF.JrnlDiary.initForm(obj);
 
@@ -244,7 +245,7 @@ dF.JrnlDiary = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            dF.JrnlDay.refresh();
+                            dF.JrnlDiary.refresh();
                         });
                 }, "block");
             });

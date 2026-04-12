@@ -12,7 +12,7 @@
                 </div>
                 <div class="col-3 d-none d-md-flex align-items-center gap-2">
                     {{#if ../showDiaries}}
-                        {{> jrnl_entry_reg_btn_partial this}}
+                        {{> jrnl_chapter_reg_btn_partial this}}
                     {{/if}}
                     {{#if ../showDreams}}
                         {{> jrnl_dream_reg_btn_partial this}}
@@ -36,8 +36,8 @@
             </div>
             <div class="jrnl-day-cn row p-5">
                 {{#if ../showDiaries}}
-                    {{#each jrnlEntryList}}
-                        {{> jrnl_entry_item_partial this}}
+                    {{#each jrnlChapterList}}
+                        {{> jrnl_chapter_item_partial this}}
                     {{/each}}
                 {{/if}}
                 {{#if ../showDreams}}
