@@ -31,8 +31,18 @@ public class LogActvtyWriteService {
      */
     public void regLogActvty(final LogActvtyParam logParam) throws Exception {
         final LogActvtyEntity logActvty = mapstruct.toEntity(logParam);
-        log.info("isSuccess: {}, rsltMsg: {}", logParam.getRslt(), logParam.getRsltMsg());
         repository.save(logActvty);
+        log.info(
+                "ACTIVITY_LOG_SAVED user={} category={} type={} method={} uri={} status={} result={} message={}",
+                logParam.getUserId(),
+                logParam.getActvtyCtgr(),
+                logParam.getLogType(),
+                logParam.getHttpMethod(),
+                logParam.getRequestUri(),
+                logParam.getHttpStatus(),
+                logParam.getRslt(),
+                logParam.getRsltMsg()
+        );
     }
 
     /**
@@ -47,6 +57,16 @@ public class LogActvtyWriteService {
         logActvty.setRsltMsg(logParam.getRsltMsg());
         repository.save(logActvty);
 
-        log.info("isSuccess: {}, rsltMsg: {}", logParam.getRslt(), logParam.getRsltMsg());
+        log.info(
+                "ACTIVITY_LOG_SAVED user={} category={} type={} method={} uri={} status={} result={} message={}",
+                logParam.getUserId(),
+                logParam.getActvtyCtgr(),
+                logParam.getLogType(),
+                logParam.getHttpMethod(),
+                logParam.getRequestUri(),
+                logParam.getHttpStatus(),
+                logParam.getRslt(),
+                logParam.getRsltMsg()
+        );
     }
 }

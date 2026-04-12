@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiaryPostDto;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiarySearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.service.JrnlDiaryService;
+import io.nicheblog.dreamdiary.feature.jrnl.diary.service.my.MyJrnlDiaryService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
@@ -41,6 +42,7 @@ public class JrnlDiaryRestController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
     private final JrnlDiaryService jrnlDiaryService;
+    private final MyJrnlDiaryService myJrnlDiaryService;
 
     /**
      * 저널 일기 목록 조회 (Ajax)
@@ -58,7 +60,7 @@ public class JrnlDiaryRestController
 
         if (searchParam.isEmpty()) throw new IllegalArgumentException("검색 조건 필요");
 
-        final List<JrnlDiaryDto> jrnlDiaryList = jrnlDiaryService.getMyListDto(searchParam);
+        final List<JrnlDiaryDto> jrnlDiaryList = myJrnlDiaryService.getMyListDto(searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -79,7 +81,7 @@ public class JrnlDiaryRestController
             final @PathVariable("postNo") Integer key
     ) throws Exception {
 
-        final JrnlDiaryDto retrievedDto = jrnlDiaryService.getMyDtlDtoWithCache(key);
+        final JrnlDiaryDto retrievedDto = myJrnlDiaryService.getMyDtlDtoWithCache(key);
         final boolean isSuccess = (retrievedDto.getPostNo() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

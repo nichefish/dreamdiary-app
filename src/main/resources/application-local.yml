@@ -9,6 +9,11 @@ server:
     port: ${SERVER_PORT:18081}
 
 spring:
+    datasource:
+        primary:
+            driver-class-name: org.mariadb.jdbc.Driver
+            jdbc-url: ${JDBC_URL}
+
     devtools:
         add-properties: true
         livereload:

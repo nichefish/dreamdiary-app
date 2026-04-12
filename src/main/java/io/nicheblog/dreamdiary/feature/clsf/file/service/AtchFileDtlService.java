@@ -9,7 +9,6 @@ import io.nicheblog.dreamdiary.feature.clsf.file.spec.AtchFileDtlSpec;
 import io.nicheblog.dreamdiary.feature.clsf.file.utils.FileUtils;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.UUIDUtils;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -28,7 +27,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -95,8 +93,7 @@ public class AtchFileDtlService
 
         // 파일 업로드 경로 생성
         final String fileUploadPath = Constant.UPFILE_PATH + DateUtils.getCurrDateStr(DatePtn.PDATE) + "/";
-        final File fileUploadDirectory = new File(fileUploadPath);
-        if (!fileUploadDirectory.exists() && !fileUploadDirectory.mkdirs()) throw new IOException(MessageUtils.getMessage("msg.rslt.mkdir-failed"));
+        FileUtils.ensureDirectory(fileUploadPath);
 
         // 파일 순회하며 업로드 처리
         final Iterator<String> fileNmIterator = multiRequest.getFileNames();

@@ -2,19 +2,21 @@ package io.nicheblog.dreamdiary.feature.jrnl.intrpt.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
+import io.nicheblog.dreamdiary.feature.clsf._shared.service.helper.BaseClsfHistoryHelper;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableService;
+import io.nicheblog.dreamdiary.feature.clsf.history.HistoryType;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.entity.JrnlIntrptEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.mapstruct.JrnlIntrptMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptDto;
+import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.repository.jpa.JrnlIntrptRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.repository.mybatis.JrnlIntrptMapper;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.spec.JrnlIntrptSpec;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.Getter;
@@ -67,6 +69,11 @@ public class JrnlIntrptService
         return context.getBean(this.getClass());
     }
 
+    public List<JrnlIntrptDto> getListDtoByUser(final String userId, final JrnlIntrptSearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
+        return this.getSelf().getListDto(searchParam);
+    }
+
     /**
      * 등록 전처리. (override)
      *
@@ -99,7 +106,7 @@ public class JrnlIntrptService
     @Override
     public void preModify(final JrnlIntrptDto modifyDto, final JrnlIntrptEntity modifyEntity) throws Exception {
         if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
 
         final boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
@@ -126,24 +133,36 @@ public class JrnlIntrptService
      * @param key 식별자
      * @return {@link JrnlIntrptDto} -- 조회된 객체
      */
-    public JrnlIntrptDto getMyDtlDtoWithCache(final Integer key) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getDtlDtoWithCacheByUser(userId, key);
-    }
-
-    /**
-     * 상세 조회 (dto level) :: 캐시 처리
-     *
-     * @param key 식별자
-     * @return {@link JrnlIntrptDto} -- 조회된 객체
-     */
     @Cacheable(value="jrnlIntrptDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #key)")
     public JrnlIntrptDto getDtlDtoWithCacheByUser(final String userId, final Integer key) throws Exception {
         final JrnlIntrptEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlIntrptDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr(AuthUtils.requireUserId(userId))) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        if (!retrieved.getIsRegstr(AuthUtils.requireUserId(userId))) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         return retrieved;
+    }
+
+    @Transactional
+    public JrnlIntrptDto updtCn(
+            final Integer key,
+            final String updatedCn,
+            final HistoryType historyType,
+            final Integer fromHistoryNo
+    ) throws Exception {
+        final JrnlIntrptEntity restoreEntity = this.getSelf().getDtlEntity(key);
+        final JrnlIntrptEntity historySnapshot = BaseClsfHistoryHelper.isHistoryModule(restoreEntity)
+                ? restoreEntity.toBuilder().build()
+                : null;
+
+        restoreEntity.setCn(updatedCn);
+        BaseClsfHistoryHelper.applyModifyHistory(historySnapshot, restoreEntity);
+
+        final JrnlIntrptEntity updatedEntity = getRepository().saveAndFlush(restoreEntity);
+        BaseClsfHistoryHelper.publishHistoryEventIfSupported(this, historySnapshot, updatedEntity, historyType, fromHistoryNo);
+
+        final JrnlIntrptDto updatedDto = getReadMapstruct().toDto(updatedEntity);
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_INTRPT);
+        return updatedDto;
     }
 
     /**
@@ -154,7 +173,7 @@ public class JrnlIntrptService
     @Override
     public void preDelete(final JrnlIntrptDto deletedDto) throws Exception {
         if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
 
@@ -184,7 +203,7 @@ public class JrnlIntrptService
         final JrnlIntrptDto deleted = mapper.getDeletedByPostNo(key);
         if (deleted == null) return null;
         if (!AuthUtils.isRegstr(deleted.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         return deleted;
     }
@@ -200,7 +219,7 @@ public class JrnlIntrptService
         int idx = 1;
         for (final JrnlIntrptDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictMyCacheByKey("jrnlIntrptDtlDtoByUser", e.getPostNo());
+            EhCacheUtils.evictUserCacheByKey("jrnlIntrptDtlDtoByUser", e.getRegstrId(), e.getPostNo());
         }
 
         mapper.batchUpdateIdx(list);
@@ -225,7 +244,7 @@ public class JrnlIntrptService
         // 혹시 이미 포함되어 있으면 제거
         list.removeIf(e -> Objects.equals(e.getPostNo(), postNo));
 
-        // entryNo 변경
+        // chapterNo 변경
         target.setJrnlDreamNo(jrnlDreamNo);
 
         // targetIdx 보정 (upper bound)
@@ -240,7 +259,7 @@ public class JrnlIntrptService
         int idx = 1;
         for (final JrnlIntrptDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictMyCacheByKey("jrnlIntrptDtlDtoByUser", e.getPostNo());
+            EhCacheUtils.evictUserCacheByKey("jrnlIntrptDtlDtoByUser", e.getRegstrId(), e.getPostNo());
         }
 
         mapper.batchUpdateIdx(list);
@@ -253,7 +272,7 @@ public class JrnlIntrptService
      */
     @Transactional
     public void reorderIdx(final JrnlIntrptDto updatedDto) throws Exception {
-        // 1단계: 현재 entry 그룹 정리 (기존 idx 값을 normalization하여 안정화)
+        // 1단계: 현재 chapter 그룹 정리 (기존 idx 값을 normalization하여 안정화)
         normalize(updatedDto.getJrnlDreamNo());
         // 2단계: 해당 group에 새 위치로 target 삽입
         insert(updatedDto.getJrnlDreamNo(), updatedDto.getPostNo(), updatedDto.getIdx());

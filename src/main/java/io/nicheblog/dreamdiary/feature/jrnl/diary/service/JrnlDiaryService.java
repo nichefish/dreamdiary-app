@@ -2,9 +2,13 @@ package io.nicheblog.dreamdiary.feature.jrnl.diary.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
+import io.nicheblog.dreamdiary.feature.clsf._shared.service.helper.BaseClsfHistoryHelper;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableService;
+import io.nicheblog.dreamdiary.feature.clsf.history.HistoryType;
+import io.nicheblog.dreamdiary.feature.clsf.related.service.RelatedContentService;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
@@ -16,8 +20,6 @@ import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiarySearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.repository.jpa.JrnlDiaryRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.repository.mybatis.JrnlDiaryMapper;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.spec.JrnlDiarySpec;
-import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.Getter;
@@ -65,6 +67,7 @@ public class JrnlDiaryService
     }
 
     private final JrnlCacheEvictWorker jrnlCacheEvictWorker;
+    private final RelatedContentService relatedContentService;
 
     private final ApplicationContext context;
     private JrnlDiaryService getSelf() {
@@ -72,30 +75,7 @@ public class JrnlDiaryService
     }
 
     /**
-     * 목록 조회 (dto level) :: 캐시 처리
-     *
-     * @param searchParam 검색 조건이 담긴 파라미터 객체
-     * @return {@link List} -- 조회된 목록
-     */
-    public List<JrnlDiaryDto> getMyListDto(final BaseSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUserId(AuthUtils.getLgnUserId()));
-
-        return this.getSelf().getListDto(searchParam);
-    }
-
-    /**
-     * 특정 년도의 중요 일기 목록 조회 :: 캐시 처리
-     *
-     * @param searchParam JrnlDiarySearchParam
-     * @return {@link List} -- 해당 년도의 중요 목록
-     */
-    public List<JrnlDiaryDto> getMySumryDiaryList(final JrnlDiarySearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getSumryDiaryListByUser(userId, searchParam);
-    }
-
-    /**
-     * 특정 년도의 중요 일기 목록 조회 :: 캐시 처리
+     * 사용자별 특정 년도의 일기 목록 조회 :: 캐시 처리
      *
      * @param userId String
      * @param searchParam JrnlDiarySearchParam
@@ -110,6 +90,11 @@ public class JrnlDiaryService
         return jrnlDiaryYySumryStatedListByUser;
     }
 
+    public List<JrnlDiaryDto> getListDtoByUser(final String userId, final JrnlDiarySearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
+        return this.getSelf().getListDto(searchParam);
+    }
+
     /**
      * 등록 전처리. (override)
      *
@@ -118,7 +103,7 @@ public class JrnlDiaryService
     @Override
     public void preRegist(final JrnlDiaryPostDto registDto) throws Exception {
         // 인덱스(정렬순서) 처리
-        final Integer lastIndex = repository.findLastIndexByJrnlEntry(registDto.getJrnlEntryNo()).orElse(0);
+        final Integer lastIndex = repository.findLastIndexByJrnlChapter(registDto.getJrnlChapterNo()).orElse(0);
         registDto.setIdx(lastIndex + 1);
     }
 
@@ -142,15 +127,15 @@ public class JrnlDiaryService
     @Override
     public void preModify(final JrnlDiaryPostDto modifyDto, final JrnlDiaryEntity modifyEntity) throws Exception {
         if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
 
         final boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
         modifyDto.setIsIdxChanged(isIdxChanged);
-        final boolean isEntryChanged = !Objects.equals(modifyDto.getJrnlEntryNo(), modifyEntity.getJrnlEntry().getPostNo());
-        modifyDto.setIsEntryChanged(isEntryChanged);
-        if (isEntryChanged) {
-            modifyDto.setPrevJrnlEntryNo(modifyEntity.getJrnlEntry().getPostNo());
+        final boolean isChapterChanged = !Objects.equals(modifyDto.getJrnlChapterNo(), modifyEntity.getJrnlChapter().getPostNo());
+        modifyDto.setIsChapterChanged(isChapterChanged);
+        if (isChapterChanged) {
+            modifyDto.setPrevJrnlChapterNo(modifyEntity.getJrnlChapter().getPostNo());
         }
     }
 
@@ -162,8 +147,8 @@ public class JrnlDiaryService
     @Override
     public void postModify(final JrnlDiaryPostDto postDto, final JrnlDiaryDto updatedDto) throws Exception {
         // 인덱스 재조정 ('이동' 포함)
-        if (postDto.getIsEntryChanged()) {
-            this.getSelf().reorderWhenEntryChanged(postDto);
+        if (postDto.getIsChapterChanged()) {
+            this.getSelf().reorderWhenChapterChanged(postDto);
         } else if (postDto.getIsIdxChanged()) {
             this.getSelf().reorderIdx(postDto);
         }
@@ -178,24 +163,36 @@ public class JrnlDiaryService
      * @param key 식별자
      * @return {@link JrnlDiaryDto} -- 조회된 객체
      */
-    public JrnlDiaryDto getMyDtlDtoWithCache(final Integer key) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getDtlDtoWithCacheByUser(userId, key);
-    }
-
-    /**
-     * 상세 조회 (dto level) :: 캐시 처리
-     *
-     * @param key 식별자
-     * @return {@link JrnlDiaryDto} -- 조회된 객체
-     */
     @Cacheable(value="jrnlDiaryDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #key)")
     public JrnlDiaryDto getDtlDtoWithCacheByUser(final String userId, final Integer key) throws Exception {
         final JrnlDiaryEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlDiaryDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr(AuthUtils.requireUserId(userId))) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        if (!retrieved.getIsRegstr(AuthUtils.requireUserId(userId))) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         return retrieved;
+    }
+
+    @Transactional
+    public JrnlDiaryDto updtCn(
+            final Integer key,
+            final String updatedCn,
+            final HistoryType historyType,
+            final Integer fromHistoryNo
+    ) throws Exception {
+        final JrnlDiaryEntity restoreEntity = this.getSelf().getDtlEntity(key);
+        final JrnlDiaryEntity historySnapshot = BaseClsfHistoryHelper.isHistoryModule(restoreEntity)
+                ? restoreEntity.toBuilder().build()
+                : null;
+
+        restoreEntity.setCn(updatedCn);
+        BaseClsfHistoryHelper.applyModifyHistory(historySnapshot, restoreEntity);
+
+        final JrnlDiaryEntity updatedEntity = getRepository().saveAndFlush(restoreEntity);
+        BaseClsfHistoryHelper.publishHistoryEventIfSupported(this, historySnapshot, updatedEntity, historyType, fromHistoryNo);
+
+        final JrnlDiaryDto updatedDto = getReadMapstruct().toDto(updatedEntity);
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DIARY);
+        return updatedDto;
     }
 
     /**
@@ -206,7 +203,7 @@ public class JrnlDiaryService
     @Override
     public void preDelete(final JrnlDiaryDto deletedDto) throws Exception {
         if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
 
@@ -218,9 +215,12 @@ public class JrnlDiaryService
     @Override
     public void postDelete(final JrnlDiaryDto deletedDto) throws Exception {
         // 인덱스 재조정
-        this.getSelf().normalize(deletedDto.getJrnlEntryNo());
+        this.getSelf().normalize(deletedDto.getJrnlChapterNo());
         
         // 관련 캐시 삭제
+        // 관련글 soft-delete
+        relatedContentService.deleteAllByRef(new BaseClsfKey(deletedDto.getPostNo(), ContentType.JRNL_DIARY), deletedDto.getRegstrId());
+
         jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DIARY);
     }
 
@@ -235,7 +235,7 @@ public class JrnlDiaryService
         final JrnlDiaryDto deleted = mapper.getDeletedByPostNo(key);
         if (deleted == null) return null;
         if (!AuthUtils.isRegstr(deleted.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         return deleted;
     }
@@ -243,17 +243,17 @@ public class JrnlDiaryService
     /**
      * 해당 그룹 전체를 idx = 1부터 다시 정렬한다.
      *
-     * @param jrnlEntryNo 정렬을 수행할 상위 키
+     * @param jrnlChapterNo 정렬을 수행할 상위 키
      */
     @Transactional
-    public void normalize(final Integer jrnlEntryNo) {
-        final List<JrnlDiaryDto> list = mapper.findAllForReorder(jrnlEntryNo);
+    public void normalize(final Integer jrnlChapterNo) {
+        final List<JrnlDiaryDto> list = mapper.findAllForReorder(jrnlChapterNo);
         if (CollectionUtils.isEmpty(list)) return;
 
         int idx = 1;
         for (final JrnlDiaryDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictMyCacheByKey("jrnlDiaryDtlDtoByUser", e.getPostNo());
+            EhCacheUtils.evictUserCacheByKey("jrnlDiaryDtlDtoByUser", e.getRegstrId(), e.getPostNo());
         }
 
         mapper.batchUpdateIdx(list);
@@ -262,13 +262,13 @@ public class JrnlDiaryService
     /**
      * 대상 상위 키에 엔티티를 특정 위치에 삽입 후 재정렬한다.
      *
-     * @param jrnlEntryNo 정렬을 수행할 상위 키
+     * @param jrnlChapterNo 정렬을 수행할 상위 키
      * @param postNo 게시물 PK
      * @param targetIdx 삽입할 목표 위치(1-based). null이면 맨 뒤에 삽입됨
      */
     @Transactional
-    public void insert(final Integer jrnlEntryNo, final Integer postNo, Integer targetIdx) throws Exception {
-        final List<JrnlDiaryDto> list = mapper.findAllForReorder(jrnlEntryNo);
+    public void insert(final Integer jrnlChapterNo, final Integer postNo, Integer targetIdx) throws Exception {
+        final List<JrnlDiaryDto> list = mapper.findAllForReorder(jrnlChapterNo);
 
         // target 조회
         final JrnlDiaryEntity targetEntity = getDtlEntity(postNo);
@@ -278,8 +278,8 @@ public class JrnlDiaryService
         // 혹시 이미 포함되어 있으면 제거
         list.removeIf(e -> Objects.equals(e.getPostNo(), postNo));
 
-        // entryNo 변경
-        target.setJrnlEntryNo(jrnlEntryNo);
+        // chapterNo 변경
+        target.setJrnlChapterNo(jrnlChapterNo);
 
         // targetIdx 보정 (upper bound)
         final int maxIdx = list.size() + 1;
@@ -293,23 +293,23 @@ public class JrnlDiaryService
         int idx = 1;
         for (final JrnlDiaryDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictMyCacheByKey("jrnlDiaryDtlDtoByUser", e.getPostNo());
+            EhCacheUtils.evictUserCacheByKey("jrnlDiaryDtlDtoByUser", e.getRegstrId(), e.getPostNo());
         }
 
         mapper.batchUpdateIdx(list);
     }
 
     /**
-     * entryNo가 바뀌었을 때 엔트리 이동 + 정렬 처리
+     * chapterNo가 바뀌었을 때 챕터 이동 + 정렬 처리
      *
      * @param updatedDto 업데이트된 객체
      */
     @Transactional
-    public void reorderWhenEntryChanged(final JrnlDiaryPostDto updatedDto) throws Exception {
-        // 1) 기존 entry 그룹 정리 (삭제처리와 동일한 효과)
-        normalize(updatedDto.getPrevJrnlEntryNo());
-        // 2) 새 entry 그룹에 삽입
-        insert(updatedDto.getJrnlEntryNo(), updatedDto.getPostNo(), updatedDto.getIdx());
+    public void reorderWhenChapterChanged(final JrnlDiaryPostDto updatedDto) throws Exception {
+        // 1) 기존 chapter 그룹 정리 (삭제처리와 동일한 효과)
+        normalize(updatedDto.getPrevJrnlChapterNo());
+        // 2) 새 chapter 그룹에 삽입
+        insert(updatedDto.getJrnlChapterNo(), updatedDto.getPostNo(), updatedDto.getIdx());
     }
 
     /**
@@ -319,10 +319,10 @@ public class JrnlDiaryService
      */
     @Transactional
     public void reorderIdx(final JrnlDiaryPostDto updatedDto) throws Exception {
-        // 1단계: 현재 entry 그룹 정리 (기존 idx 값을 normalization하여 안정화)
-        normalize(updatedDto.getJrnlEntryNo());
+        // 1단계: 현재 chapter 그룹 정리 (기존 idx 값을 normalization하여 안정화)
+        normalize(updatedDto.getJrnlChapterNo());
         // 2단계: 해당 group에 새 위치로 target 삽입
-        insert(updatedDto.getJrnlEntryNo(), updatedDto.getPostNo(), updatedDto.getIdx());
+        insert(updatedDto.getJrnlChapterNo(), updatedDto.getPostNo(), updatedDto.getIdx());
     }
 
     /**

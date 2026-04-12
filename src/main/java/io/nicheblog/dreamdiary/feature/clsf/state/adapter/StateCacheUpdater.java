@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.clsf.state.adapter;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.state.model.StateToggleDto;
 
 /**
@@ -20,8 +20,7 @@ public interface StateCacheUpdater {
     /**
      * 캐시 업데이트
      * @param toggle 전달된 toggle 객체
-     * @param cacheKey 캐시 키
      * @param isEnabled 활성화 여부
      */
-    void update(final StateToggleDto toggle, final Object cacheKey, final Boolean isEnabled);
+    void update(final StateToggleDto toggle, final Boolean isEnabled);
 }

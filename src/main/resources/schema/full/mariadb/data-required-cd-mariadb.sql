@@ -60,6 +60,19 @@ INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('MENU_
 INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('MENU_SUB_EXTEND_TY_CD', 'EXTEND', '우측으로 확장', '우측으로 확장', '2');
 INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('MENU_SUB_EXTEND_TY_CD', 'COLLAPSE', '글접기', '글접기', '3');
 INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('MENU_SUB_EXTEND_TY_CD', 'BOARD', '일반게시판', '일반게시판', '4');
+-- -----------------------
 
-
-
+-- text class code group
+INSERT IGNORE INTO cmm_cl_cd (cl_cd, cl_cd_nm, cl_ctgr_cd, dc) VALUES ('TEXT_CLASS_CD', 'Text Class', 'SYS', 'text semantic code');
+-- text class detail codes
+INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('TEXT_CLASS_CD', 'DEFAULT', 'DEFAULT', '', '1');
+INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('TEXT_CLASS_CD', 'SUCCESS', 'SUCCESS', 'text-success', '2');
+INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('TEXT_CLASS_CD', 'INFO', 'INFO', 'text-info', '3');
+INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('TEXT_CLASS_CD', 'WARNING', 'WARNING', 'text-warning', '4');
+INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('TEXT_CLASS_CD', 'DANGER', 'DANGER', 'text-danger', '5');
+INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('TEXT_CLASS_CD', 'PRIMARY', 'PRIMARY', 'text-primary', '6');
+INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('TEXT_CLASS_CD', 'SECONDARY', 'SECONDARY', 'text-secondary', '7');
+INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('TEXT_CLASS_CD', 'DARK', 'DARK', 'text-dark', '8');
+INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('TEXT_CLASS_CD', 'MUTED', 'MUTED', 'text-muted', '9');
+INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('TEXT_CLASS_CD', 'DIALOG', 'DIALOG', 'text-dialog', '10');
+INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('TEXT_CLASS_CD', 'NOTI', 'NOTI', 'text-noti', '11');

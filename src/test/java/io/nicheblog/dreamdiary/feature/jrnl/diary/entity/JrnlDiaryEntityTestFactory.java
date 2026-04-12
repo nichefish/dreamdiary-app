@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.jrnl.diary.entity;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.jrnl.day.entity.JrnlDayEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.day.entity.JrnlDaySmpEntity;
-import io.nicheblog.dreamdiary.feature.jrnl.entry.entity.JrnlEntryEntity;
+import io.nicheblog.dreamdiary.feature.jrnl.chapter.entity.JrnlChapterEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.experimental.UtilityClass;
 import org.springframework.test.context.ActiveProfiles;
@@ -29,7 +29,7 @@ public class JrnlDiaryEntityTestFactory {
                 .contentType(ContentType.JRNL_DIARY.key)
                 .title("test_title")
                 .cn("test_cn")
-                .jrnlEntry(JrnlEntryEntity.builder()
+                .jrnlChapter(JrnlChapterEntity.builder()
                         .jrnlDayNo(jrnlDayEntity != null ? jrnlDayEntity.getPostNo() : null)
                         .jrnlDay(toSmpEntity(jrnlDayEntity))
                         .build())
@@ -46,7 +46,7 @@ public class JrnlDiaryEntityTestFactory {
                 .contentType(ContentType.JRNL_DIARY.key)
                 .title("test_title")
                 .cn("test_cn")
-                .jrnlEntry(JrnlEntryEntity.builder().jrnlDay(jrnlDay).build())
+                .jrnlChapter(JrnlChapterEntity.builder().jrnlDay(jrnlDay).build())
                 .build();
     }
 

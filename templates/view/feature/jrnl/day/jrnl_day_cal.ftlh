@@ -70,9 +70,7 @@
 </div>
 <!--end::Advance form-->
 
-<div class="jrnl-day-monthly-page">
-    <#--filter status-->
-    <#include "/view/feature/jrnl/day/_filter/_jrnl_day_filter_status.ftlh">
+<div class="jrnl-day-calendar-page">
     <div class="d-flex flex-column-fluid justify-content-between align-items-start align-items-xl-center gap-4">
         <#--begin::Tab-->
         <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">
@@ -114,7 +112,7 @@
             </li>
         </ul>
         <#--keyword search (popup)-->
-        <#include "/view/feature/jrnl/day/_filter/_jrnl_day_keyword_search.ftlh">
+        <#include "/view/feature/jrnl/day/_jrnl_day_keyword_search.ftlh">
     </div>
     <!--begin::Card-->
     <div class="card post" style="margin-top: 0 !important;">
@@ -202,6 +200,7 @@
 
 <#--include::tags-->
 <#include "/view/feature/jrnl/tag/_jrnl_tag_list_modal.ftlh">
+<#include "/view/feature/clsf/tag/_modal/_tag_profile_modal.ftlh">
 <#include "/view/feature/clsf/tag/_partial/_tag_list_partial.hbs">
 <#include "/view/feature/clsf/tag/_partial/_tag_list_sized_partial.hbs">
 
@@ -209,9 +208,11 @@
 
 <#--include::comment-->
 <#include "/view/feature/clsf/comment/_modal/_comment_reg_modal.ftlh">
+<#include "/view/feature/clsf/history/_history_modal.ftlh">
 <#include "/view/feature/clsf/comment/_partial/_comment_list_partial.hbs">
 <#include "/view/feature/clsf/comment/_partial/_comment_reg_btn_partial.hbs">
 <script type="text/javascript" src="/js/view/feature/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/feature/clsf/related/related_content_module.js?${releaseDate!}"></script>
 
 <#--include::state-->
 <script type="text/javascript" src="/js/view/feature/clsf/state/state_module.js?${releaseDate!}"></script>

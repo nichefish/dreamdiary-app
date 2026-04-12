@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.feature.board.notice.controller;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
-import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeDto;
 import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeSearchParam;
 import io.nicheblog.dreamdiary.feature.board.notice.service.NoticeService;
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagService;
 import io.nicheblog.dreamdiary.feature.clsf.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.global.Constant;

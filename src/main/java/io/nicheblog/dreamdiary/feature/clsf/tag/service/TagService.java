@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.clsf.tag.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagEntity;
 import io.nicheblog.dreamdiary.feature.clsf.tag.mapstruct.TagMapstruct;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
@@ -41,6 +41,7 @@ public class TagService
     private final TagSpec spec;
     @Getter
     private final TagMapstruct mapstruct = TagMapstruct.INSTANCE;
+    private final TagProfileService tagProfileService;
 
     public TagMapstruct getReadMapstruct() {
         return this.mapstruct;
@@ -107,7 +108,7 @@ public class TagService
         final int maxSize = this.calcMaxSize(tagList, contentType);
         final int MIN_SIZE = 2; // 최소 크기
         final int MAX_SIZE = 9; // 최대 크기
-        return tagList.stream()
+        final List<TagDto> sizedTagList = tagList.stream()
                 .peek(dto -> {
                     final int size = dto.getContentSize();
                     if (size == 1) {
@@ -120,6 +121,8 @@ public class TagService
                 })
                 .sorted()
                 .collect(Collectors.toList());
+        tagProfileService.applyVisualSemantic(sizedTagList, contentType);
+        return sizedTagList;
     }
 
     /**
@@ -138,7 +141,7 @@ public class TagService
         final int maxSize = this.calcMaxSize(tagList, refContentType);
         final int MIN_SIZE = 2; // 최소 크기
         final int MAX_SIZE = 9; // 최대 크기
-        return tagList.stream()
+        final List<TagDto> sizedTagList = tagList.stream()
                 .peek(dto -> {
                     final int size = dto.getContentSize();
                     if (size == 1) {
@@ -151,6 +154,8 @@ public class TagService
                 })
                 .sorted()
                 .collect(Collectors.toList());
+        tagProfileService.applyVisualSemantic(sizedTagList, refContentType);
+        return sizedTagList;
     }
 
     /**

@@ -5,7 +5,6 @@ import io.nicheblog.dreamdiary.feature.clsf.meta.entity.MetaContentEntity;
 import io.nicheblog.dreamdiary.feature.clsf.meta.entity.MetaEntity;
 import io.nicheblog.dreamdiary.feature.clsf.meta.model.MetaDto;
 import io.nicheblog.dreamdiary.feature.clsf.meta.model.cmpstn.MetaCmpstn;
-import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -30,7 +29,6 @@ public class MetaProcService {
 
     private final MetaService metaService;
     private final MetaContentService metaContentService;
-    private final ApplicationEventPublisherWrapper publisher;
 
     /**
      * 메타 처리.

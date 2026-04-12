@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.clsf.comment.cache;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.global.util.TransactionHookUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

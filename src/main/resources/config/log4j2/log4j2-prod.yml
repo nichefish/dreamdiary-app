@@ -73,3 +73,29 @@ Configuration:
                     level: info
                   - ref: RollingFile_WARN_Appender
                     level: warn
+            - name: p6spy
+              additivity: false
+              level: info
+              AppenderRef:
+                  - ref: Console_Appender
+                  - ref: File_INFO_Appender
+                    level: info
+                  - ref: File_WARN_Appender
+                    level: warn
+                  - ref: RollingFile_INFO_Appender
+                    level: info
+                  - ref: RollingFile_WARN_Appender
+                    level: warn
+            - name: com.p6spy
+              additivity: false
+              level: info
+              AppenderRef:
+                  - ref: Console_Appender
+                  - ref: File_INFO_Appender
+                    level: info
+                  - ref: File_WARN_Appender
+                    level: warn
+                  - ref: RollingFile_INFO_Appender
+                    level: info
+                  - ref: RollingFile_WARN_Appender
+                    level: warn

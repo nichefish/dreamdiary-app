@@ -2,9 +2,13 @@ package io.nicheblog.dreamdiary.feature.jrnl.dream.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
+import io.nicheblog.dreamdiary.feature.clsf._shared.service.helper.BaseClsfHistoryHelper;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableService;
+import io.nicheblog.dreamdiary.feature.clsf.history.HistoryType;
+import io.nicheblog.dreamdiary.feature.clsf.related.service.RelatedContentService;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
@@ -16,8 +20,6 @@ import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.repository.jpa.JrnlDreamRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.repository.mybatis.JrnlDreamMapper;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.spec.JrnlDreamSpec;
-import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.Getter;
@@ -65,6 +67,7 @@ public class JrnlDreamService
     }
 
     private final JrnlCacheEvictWorker jrnlCacheEvictWorker;
+    private final RelatedContentService relatedContentService;
 
     private final ApplicationContext context;
     private JrnlDreamService getSelf() {
@@ -72,30 +75,7 @@ public class JrnlDreamService
     }
 
     /**
-     * 목록 조회 (dto level) :: 캐시 처리
-     *
-     * @param searchParam 검색 조건이 담긴 파라미터 객체
-     * @return {@link List} -- 조회된 목록
-     */
-    public List<JrnlDreamDto> getMyListDto(final BaseSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUserId(AuthUtils.getLgnUserId()));
-
-        return this.getSelf().getListDto(searchParam);
-    }
-
-    /**
-     * 특정 년도의 중요 꿈 목록 조회 :: 캐시 처리
-     *
-     * @param searchParam JrnlDreamSearchParam
-     * @return {@link List} -- 해당 년도의 중요 목록
-     */
-    public List<JrnlDreamDto> getMySumryDreamList(final JrnlDreamSearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getSumryDreamListByUser(userId, searchParam);
-    }
-
-    /**
-     * 특정 년도의 중요 꿈 목록 조회 :: 캐시 처리
+     * 사용자별 특정 년도의 중요 꿈 목록 조회 :: 캐시 처리
      *
      * @param userId 사용자 ID
      * @param searchParam JrnlDreamSearchParam
@@ -108,6 +88,11 @@ public class JrnlDreamService
         Collections.sort(jrnlDreamYySumryStatedListByUser);
 
         return jrnlDreamYySumryStatedListByUser;
+    }
+
+    public List<JrnlDreamDto> getListDtoByUser(final String userId, final JrnlDreamSearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
+        return this.getSelf().getListDto(searchParam);
     }
 
     /**
@@ -144,14 +129,9 @@ public class JrnlDreamService
         final JrnlDreamEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlDreamDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr(AuthUtils.requireUserId(userId))) throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+        if (!retrieved.getIsRegstr(AuthUtils.requireUserId(userId))) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
 
         return retrieved;
-    }
-
-    public JrnlDreamDto getMyDtlDtoWithCache(final Integer key) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getDtlDtoWithCacheByUser(userId, key);
     }
 
     /**
@@ -163,7 +143,7 @@ public class JrnlDreamService
     @Override
     public void preModify(final JrnlDreamPostDto modifyDto, final JrnlDreamEntity modifyEntity) throws Exception {
         if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         final boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
         modifyDto.setIsIdxChanged(isIdxChanged);
@@ -191,7 +171,7 @@ public class JrnlDreamService
     @Override
     public void preDelete(final JrnlDreamDto deletedDto) throws Exception {
         if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
 
@@ -206,7 +186,42 @@ public class JrnlDreamService
         this.getSelf().reorderIdx(deletedDto);
 
         // 관련 캐시 삭제
+        // 관련글 soft-delete
+        relatedContentService.deleteAllByRef(new BaseClsfKey(deletedDto.getPostNo(), ContentType.JRNL_DREAM), deletedDto.getRegstrId());
+
         jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DREAM);
+    }
+
+    /**
+     * 내용 수정 (이력 생성 포함).
+     *
+     * @param key 식별자
+     * @param updatedCn 수정할 내용
+     * @param historyType 이력 타입
+     * @param fromHistoryNo 복구 원본 이력 번호 (복구 시)
+     * @return {@link JrnlDreamDto} -- 수정된 객체
+     */
+    @Transactional
+    public JrnlDreamDto updtCn(
+            final Integer key,
+            final String updatedCn,
+            final HistoryType historyType,
+            final Integer fromHistoryNo
+    ) throws Exception {
+        final JrnlDreamEntity restoreEntity = this.getSelf().getDtlEntity(key);
+        final JrnlDreamEntity historySnapshot = BaseClsfHistoryHelper.isHistoryModule(restoreEntity)
+                ? restoreEntity.toBuilder().build()
+                : null;
+
+        restoreEntity.setCn(updatedCn);
+        BaseClsfHistoryHelper.applyModifyHistory(historySnapshot, restoreEntity);
+
+        final JrnlDreamEntity updatedEntity = getRepository().saveAndFlush(restoreEntity);
+        BaseClsfHistoryHelper.publishHistoryEventIfSupported(this, historySnapshot, updatedEntity, historyType, fromHistoryNo);
+
+        final JrnlDreamDto updatedDto = getReadMapstruct().toDto(updatedEntity);
+        jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DREAM);
+        return updatedDto;
     }
 
     /**
@@ -220,7 +235,7 @@ public class JrnlDreamService
         final JrnlDreamDto deleted = mapper.getDeletedByPostNo(key);
         if (deleted == null) return null;
         if (!AuthUtils.isRegstr(deleted.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         return deleted;
     }
@@ -238,7 +253,7 @@ public class JrnlDreamService
         int idx = 1;
         for (final JrnlDreamDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictMyCacheByKey("jrnlDreamDtlDtoByUser", e.getPostNo());
+            EhCacheUtils.evictUserCacheByKey("jrnlDreamDtlDtoByUser", e.getRegstrId(), e.getPostNo());
         }
 
         mapper.batchUpdateIdx(list);
@@ -263,7 +278,7 @@ public class JrnlDreamService
         // 혹시 이미 포함되어 있으면 제거
         list.removeIf(e -> Objects.equals(e.getPostNo(), postNo));
 
-        // entryNo 변경
+        // chapterNo 변경
         target.setJrnlDayNo(jrnlDayNo);
 
         // targetIdx 보정 (upper bound)
@@ -278,7 +293,7 @@ public class JrnlDreamService
         int idx = 1;
         for (final JrnlDreamDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictMyCacheByKey("jrnlDreamDtlDtoByUser", e.getPostNo());
+            EhCacheUtils.evictUserCacheByKey("jrnlDreamDtlDtoByUser", e.getRegstrId(), e.getPostNo());
         }
 
         mapper.batchUpdateIdx(list);
@@ -291,7 +306,7 @@ public class JrnlDreamService
      */
     @Transactional
     public void reorderIdx(final JrnlDreamDto updatedDto) throws Exception {
-        // 1단계: 현재 entry 그룹 정리 (기존 idx 값을 normalization하여 안정화)
+        // 1단계: 현재 chapter 그룹 정리 (기존 idx 값을 normalization하여 안정화)
         normalize(updatedDto.getJrnlDayNo());
         // 2단계: 해당 group에 새 위치로 target 삽입
         insert(updatedDto.getJrnlDayNo(), updatedDto.getPostNo(), updatedDto.getIdx());

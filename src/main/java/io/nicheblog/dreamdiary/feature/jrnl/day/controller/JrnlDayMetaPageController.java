@@ -1,10 +1,12 @@
 package io.nicheblog.dreamdiary.feature.jrnl.day.controller;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
-import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDaySearchParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
+import io.nicheblog.dreamdiary.infrastructure.cd.Code;
+import io.nicheblog.dreamdiary.infrastructure.cd.service.CdLookupService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import lombok.Getter;
@@ -33,6 +35,8 @@ public class JrnlDayMetaPageController
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
+    private final CdLookupService cdLookupService;
+
     /**
      * 저널 일자 메타 화면 조회
      * (사용자USER, 관리자MNGR만 접근 가능.)
@@ -51,6 +55,7 @@ public class JrnlDayMetaPageController
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.JRNL_DAY);
         model.addAttribute("pageNm", PageNm.PAGE);
+        cdLookupService.setCdListToModel(Code.TEXT_CLASS_CD, model);
 
         return "/view/feature/jrnl/day/jrnl_day_meta";
     }

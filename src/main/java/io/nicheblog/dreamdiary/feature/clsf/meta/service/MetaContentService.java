@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.clsf.meta.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfKey;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.meta.entity.MetaContentEntity;
 import io.nicheblog.dreamdiary.feature.clsf.meta.entity.MetaEntity;
 import io.nicheblog.dreamdiary.feature.clsf.meta.entity.MetaSmpEntity;

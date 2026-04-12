@@ -34,7 +34,7 @@ class JrnlDayCacheEvictorTest {
                     new SimpleKey("nichefish", 2026, 3)
             ));
             ehCacheUtils.verify(() -> EhCacheUtils.evictCacheByKey(
-                    "jrnlEntryStateMapByUser",
+                    "jrnlChapterStateMapByUser",
                     new SimpleKey("nichefish", 2026, 3)
             ));
             ehCacheUtils.verify(() -> EhCacheUtils.evictCacheByKey(

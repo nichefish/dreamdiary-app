@@ -8,7 +8,6 @@ import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
 import io.nicheblog.dreamdiary.feature.user.reqst.mapstruct.UserReqstMapstruct;
 import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDto;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -100,7 +99,7 @@ public class UserReqstService {
     public ServiceResponse cf(final Integer key) throws Exception {
         // Entity 레벨 조회
         final UserEntity retrievedEntity = userService.getDtlEntity(key);
-        if (retrievedEntity == null) throw new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException"));
+        if (retrievedEntity == null) throw new EntityNotFoundException("exception.EntityNotFoundException");
 
         // lockedYn 플래그 업데이트
         retrievedEntity.acntStus.setCfYn("Y");
@@ -123,7 +122,7 @@ public class UserReqstService {
     public ServiceResponse uncf(final Integer key) throws Exception {
         // Entity 레벨 조회
         final UserEntity retrievedEntity = userService.getDtlEntity(key);
-        if (retrievedEntity == null) throw new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException"));
+        if (retrievedEntity == null) throw new EntityNotFoundException("exception.EntityNotFoundException");
 
         // lockedYn 플래그 업데이트
         retrievedEntity.acntStus.setCfYn("N");

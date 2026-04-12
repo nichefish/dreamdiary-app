@@ -57,3 +57,13 @@ Configuration:
             level: info
             AppenderRef:
               - ref: Console_Appender
+          - name: p6spy
+            additivity: false
+            level: info
+            AppenderRef:
+              - ref: Console_Appender
+          - name: com.p6spy
+            additivity: false
+            level: info
+            AppenderRef:
+              - ref: Console_Appender

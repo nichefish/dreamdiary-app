@@ -6,7 +6,7 @@
     <resultMap id="JrnlDiaryMap" type="io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiaryDto">
         <id property="postNo" column="post_no"/>
         <result property="regstrId" column="regstr_id"/>
-        <result property="jrnlEntryNo" column="jrnl_entry_no"/>
+        <result property="jrnlChapterNo" column="jrnl_chapter_no"/>
         <result property="jrnlDayNo" column="jrnl_day_no"/>
         <result property="idx" column="idx"/>
         <result property="yy" column="yy"/>
@@ -19,14 +19,14 @@
         SELECT
             diary.post_no AS postNo,
             diary.regstr_id AS regstr_id,
-            diary.jrnl_entry_no AS jrnlEntryNo,
+            diary.jrnl_chapter_no AS jrnlChapterNo,
             diary.idx,
             day.post_no AS jrnlDayNo,
             day.yy AS yy,
             day.mnth AS mnth
         FROM jrnl_diary diary
-            LEFT JOIN jrnl_entry entry ON diary.jrnl_day_no = entry.post_no
-            LEFT JOIN jrnl_day day ON entry.jrnl_day_no = day.post_no
+            LEFT JOIN jrnl_chapter chapter ON diary.jrnl_day_no = chapter.post_no
+            LEFT JOIN jrnl_day day ON chapter.jrnl_day_no = day.post_no
         WHERE diary.post_no = #{postNo}
     </select>
 
@@ -35,7 +35,7 @@
         /* JrnlDiaryMapper.findAllForReorder */
         SELECT *
         FROM jrnl_diary
-        WHERE jrnl_entry_no = #{jrnlEntryNo} AND del_yn = 'N'
+        WHERE jrnl_chapter_no = #{jrnlChapterNo} AND del_yn = 'N'
         ORDER BY idx
     </select>
 

@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.feature.jrnl.sumry.controller;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
-import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
-import io.nicheblog.dreamdiary.feature.jrnl.sumry.JrnlSumrySection;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumrySearchParam;
-import io.nicheblog.dreamdiary.feature.jrnl.sumry.service.JrnlSumryService;
+import io.nicheblog.dreamdiary.feature.jrnl.sumry.service.my.MyJrnlSumryService;
+import io.nicheblog.dreamdiary.feature.jrnl.sumry.type.JrnlSumrySection;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.infrastructure.cd.Code;
@@ -40,7 +40,7 @@ public class JrnlSumryPageController
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
-    private final JrnlSumryService jrnlSumryService;
+    private final MyJrnlSumryService myJrnlSumryService;
     private final CdLookupService cdLookupService;
 
     /**
@@ -63,7 +63,7 @@ public class JrnlSumryPageController
         model.addAttribute("pageNm", PageNm.LIST);
 
         // 전체 통계 조회
-        final JrnlSumryDto totalSumry = jrnlSumryService.getMyTotalSumry();
+        final JrnlSumryDto totalSumry = myJrnlSumryService.getMyTotalSumry();
         model.addAttribute("totalSumry", totalSumry);
 
         return "/view/feature/jrnl/sumry/jrnl_sumry_list";

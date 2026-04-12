@@ -1,11 +1,15 @@
 package io.nicheblog.dreamdiary.feature.jrnl.diary.model;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.file.model.cmpstn.AtchFileCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.file.model.cmpstn.AtchFileCmpstnModule;
+import io.nicheblog.dreamdiary.feature.clsf.history.model.HistoryDto;
+import io.nicheblog.dreamdiary.feature.clsf.history.model.cmpstn.HistoryCmpstn;
+import io.nicheblog.dreamdiary.feature.clsf.history.model.cmpstn.HistoryCmpstnModule;
+import io.nicheblog.dreamdiary.feature.clsf.related.model.RelatedContentDto;
 import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
@@ -18,6 +22,7 @@ import lombok.experimental.SuperBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * JrnlDiaryDto
@@ -35,7 +40,7 @@ import java.util.Date;
 @ToString(callSuper = true)
 public class JrnlDiaryDto
         extends BaseClsfDto
-        implements Identifiable<Integer>, AtchFileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, StateCmpstnModule, JrnlPeriodModule, Comparable<JrnlDiaryDto>  {
+        implements Identifiable<Integer>, AtchFileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, StateCmpstnModule, HistoryCmpstnModule, JrnlPeriodModule, Comparable<JrnlDiaryDto>  {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -52,8 +57,8 @@ public class JrnlDiaryDto
 
     /** 저널 일자 번호 */
     private Integer jrnlDayNo;
-    /** 저널 항목 번호 */
-    private Integer jrnlEntryNo;
+    /** 저널 챕터 번호 */
+    private Integer jrnlChapterNo;
     /** 저널 기준일자 */
     private String stdrdDt;
     /** 저널 기준일자 */
@@ -79,11 +84,11 @@ public class JrnlDiaryDto
     /** 인덱스 변경 여부 */
     @Builder.Default
     private Boolean isIdxChanged = false;
-    /** 저널 항목 변경 여부 */
+    /** 저널 챕터 변경 여부 */
     @Builder.Default
-    private Boolean isEntryChanged = false;
-    /** 이전 저널 항목 번호 */
-    private Integer prevJrnlEntryNo;
+    private Boolean isChapterChanged = false;
+    /** 이전 저널 챕터 번호 */
+    private Integer prevJrnlChapterNo;
 
     /* ----- */
 
@@ -118,4 +123,8 @@ public class JrnlDiaryDto
     public TagCmpstn tag;
     /** 위임 :: 상태 정보 모듈 */
     public StateCmpstn state;
+    public HistoryCmpstn history;
+    private List<HistoryDto> historyList;
+    @Builder.Default
+    private List<RelatedContentDto> relatedContentList = List.of();
 }

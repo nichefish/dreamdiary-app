@@ -1,8 +1,8 @@
  package io.nicheblog.dreamdiary.feature.user.info.controller;
 
  import io.nicheblog.dreamdiary.auth.security.service.AuthRoleService;
- import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
- import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
+ import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+ import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
  import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
  import io.nicheblog.dreamdiary.feature.user.info.model.UserSearchParam;
  import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
@@ -30,7 +30,7 @@
  import java.util.HashMap;
  import java.util.Map;
 
-/**
+ /**
  * UserPageController
  * <pre>
  *  사용자 관리 > 계정 및 권한 관리 페이지 컨트롤러.

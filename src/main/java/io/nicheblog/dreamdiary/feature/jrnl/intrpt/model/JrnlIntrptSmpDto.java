@@ -21,7 +21,7 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 public class JrnlIntrptSmpDto {
 
-    /** 저널 항목 번호 */
+    /** 저널 해석 번호 */
     private Integer postNo;
     /** 제목 */
     private String title;

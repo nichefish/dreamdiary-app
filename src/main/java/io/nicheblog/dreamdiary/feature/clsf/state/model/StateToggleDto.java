@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.clsf.state.model;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.state.StateCd;
 import lombok.*;
 

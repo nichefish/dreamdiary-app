@@ -61,10 +61,10 @@ public interface ApiUrl {
     String JRNL_INTRPT_TAG = Prefix.API + "/jrnl/intrpt/tag/{tagNo}";
     String JRNL_INTRPT_TAG_CTGR_MAP = Prefix.API + "/jrnl/intrpt/tag/ctgr-map";
 
-    /** 저널 항목 */
-    String JRNL_ENTRIES = Prefix.API + "/jrnl/entries";
-    String JRNL_ENTRY = Prefix.API + "/jrnl/entry/{postNo}";
-    String JRNL_ENTRY_EXPORT = Prefix.API + "/jrnl/entry/{postNo}/export";
+    /** 저널 챕터 */
+    String JRNL_CHAPTERS = Prefix.API + "/jrnl/chapters";
+    String JRNL_CHAPTER = Prefix.API + "/jrnl/chapter/{postNo}";
+    String JRNL_CHAPTER_EXPORT = Prefix.API + "/jrnl/chapter/{postNo}/export";
 
     /** 저널 일기 */
     String JRNL_DIARIES = Prefix.API + "/jrnl/diaries";
@@ -133,6 +133,16 @@ public interface ApiUrl {
     String COMMENTS = Prefix.API + "/comments";
     String COMMENT = Prefix.API + "/comment/{postNo}";
 
+    /** 이력 */
+    String HISTORIES = Prefix.API + "/history/{contentType}/{postNo}";
+    String HISTORY = Prefix.API + "/history/{contentType}/{postNo}/{historyNo}";
+    String HISTORY_RESTORE = Prefix.API + "/history/{contentType}/{postNo}/{historyNo}/restore";
+    String HISTORY_CLEAR = Prefix.API + "/history/{contentType}/{postNo}/clear";
+
+    /** 관련글 */
+    String RELATEDS = Prefix.API + "/related/{contentType}/{postNo}";
+    String RELATED = Prefix.API + "/related/{relatedContentNo}";
+
     /** 단락 */
     String SECTNS = Prefix.API + "/sectns";
     String SECTN = Prefix.API + "/sectn/{postNo}";
@@ -144,12 +154,8 @@ public interface ApiUrl {
     /** 태그 */
     String TAGS = Prefix.API + "/tags";
     String TAG_DTL_AJAX = Prefix.API + "/tag/tag-dtl";
-
-    /** 태그 속성 */
-    String TAG_PROPERTY_REG_AJAX = Prefix.API + "/tag-property/tag-property-reg";
-    String TAG_PROPERTY_DTL_AJAX = Prefix.API + "/tag-property/tag-property-dtl";
-    String TAG_PROPERTY_MDF_AJAX = Prefix.API + "/tag-property/tag-property-mdf";
-    String TAG_PROPERTY_DEL_AJAX = Prefix.API + "/tag-property/tag-property-del";
+    String TAG_PROFILES = Prefix.API + "/tag/profiles";
+    String TAG_PROFILE = Prefix.API + "/tag-profile/{tagProfileNo}";
 
     /** 인증 정책 관리 */
     String AUTH_POLICY_REG_AJAX = Prefix.API + "/lgn-policy/reg";

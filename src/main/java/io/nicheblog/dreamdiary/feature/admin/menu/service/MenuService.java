@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.admin.menu.service;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.entity.MenuEntity;
 import io.nicheblog.dreamdiary.feature.admin.menu.exception.MenuNotExistsException;
 import io.nicheblog.dreamdiary.feature.admin.menu.mapstruct.MenuMapstruct;
@@ -8,6 +7,8 @@ import io.nicheblog.dreamdiary.feature.admin.menu.model.*;
 import io.nicheblog.dreamdiary.feature.admin.menu.repository.jpa.MenuRepository;
 import io.nicheblog.dreamdiary.feature.admin.menu.repository.mybatis.MenuMapper;
 import io.nicheblog.dreamdiary.feature.admin.menu.spec.MenuSpec;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.MenuSubExtendTy;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.global.exception.BusinessException;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoReadableService;
@@ -269,7 +270,7 @@ public class MenuService
         if (!Code.MENU_TY_MAIN.equals(targetParent.getMenuTyCd()) && !Code.MENU_TY_SUB.equals(targetParent.getMenuTyCd())) {
             throw new BusinessException("Target parent type is not movable.");
         }
-        if (Code.MenuSubExtendTy.NO_SUB.name().equals(targetParent.getMenuSubExtendTyCd())) {
+        if (MenuSubExtendTy.NO_SUB.name().equals(targetParent.getMenuSubExtendTyCd())) {
             throw new BusinessException("Target parent does not allow sub menus.");
         }
         if (Objects.equals(movedMenu.getMenuNo(), targetUpperMenuNo) || this.isDescendantOf(targetUpperMenuNo, movedMenu.getMenuNo())) {

@@ -2,8 +2,8 @@ package io.nicheblog.dreamdiary.feature.jrnl.sumry.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
@@ -12,8 +12,6 @@ import io.nicheblog.dreamdiary.feature.jrnl.sumry.mapstruct.JrnlSumryReviewMapst
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryReviewDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.repository.jpa.JrnlSumryReviewRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.spec.JrnlSumryReviewSpec;
-import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -59,14 +57,8 @@ public class JrnlSumryReviewService
         return context.getBean(this.getClass());
     }
 
-    /**
-     * 저널 결산 정뵤 목록 조회 :: 캐시 사용 위해 구현체로 pullUp
-     *
-     * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @return {@link List<JrnlSumryReviewDto>} -- 검색 조건에 맞는 결산 목록 Dto 리스트
-     */
-    public List<JrnlSumryReviewDto> getMyListDto(final BaseSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUserId(AuthUtils.getLgnUserId()));
+    public List<JrnlSumryReviewDto> getListDtoByUser(final String userId, final io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
         return this.getSelf().getListDto(searchParam);
     }
 
@@ -99,7 +91,7 @@ public class JrnlSumryReviewService
     @Override
     public void preModify(final JrnlSumryReviewDto modifyDto, final JrnlSumryReviewEntity modifyEntity) throws Exception {
         if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
 
@@ -111,7 +103,7 @@ public class JrnlSumryReviewService
     @Override
     public void preDelete(final JrnlSumryReviewDto deletedDto) throws Exception {
         if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
 

@@ -56,6 +56,7 @@ public class DreamdiaryApplication {
             if (profile == null) throw new IllegalStateException(MessageUtils.getMessage("msg.rslt.profile-not-set"));
 
             setDotEnvPropertiesByFileNm("config/env/.env." + profile);
+            log.info("Boot environment prepared. application={} profile={} port={}", "dreamdiary", profile, resolveServerPort());
         } catch (final Exception e) {
             log.error("Failed to load .env file for profile '{}'", System.getProperty("spring.profiles.active"), e);
         }
@@ -70,5 +71,11 @@ public class DreamdiaryApplication {
         final Dotenv dotenv = Dotenv.configure().filename(fileName).load();
         dotenv.entries().forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));
         log.info("Loaded {} file successfully.", fileName);
+    }
+
+    private static String resolveServerPort() {
+        final String port = System.getProperty("server.port");
+        if (port != null && !port.isBlank()) return port;
+        return System.getProperty("server.port", "8080");
     }
 }

@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.flsys.controller;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
-import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.feature.clsf.file.utils.FileUtils;
 import io.nicheblog.dreamdiary.feature.flsys.model.FlsysDto;
 import io.nicheblog.dreamdiary.feature.flsys.model.FlsysSearchParam;

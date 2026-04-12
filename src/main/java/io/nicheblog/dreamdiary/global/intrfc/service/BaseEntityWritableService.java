@@ -3,7 +3,6 @@ package io.nicheblog.dreamdiary.global.intrfc.service;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.Usable;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
@@ -154,7 +153,7 @@ public interface BaseEntityWritableService<Key extends Serializable, Entity exte
     @Transactional
     default void remove(final Key key) throws Exception {
         final Entity entity = this.getDtlEntity(key);
-        if (entity == null) throw new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete"));
+        if (entity == null) throw new EntityNotFoundException("exception.EntityNotFoundException.to-delete");
 
         this.remove(entity);
     }

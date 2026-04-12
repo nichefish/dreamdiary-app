@@ -16,7 +16,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class JrnlStateMaps {
     /** 항목 상태 맵 */
-    private Map<Integer, JrnlState> entryMap;
+    private Map<Integer, JrnlState> chapterMap;
     /** 일기 상태 맵 */
     private Map<Integer, JrnlState> diaryMap;
     /** 꿈 상태 맵 */

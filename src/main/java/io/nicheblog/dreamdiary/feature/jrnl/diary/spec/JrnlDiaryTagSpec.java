@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.feature.jrnl.diary.spec;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.jrnl.day.entity.JrnlDaySmpEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.entity.JrnlDiarySmpEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.entity.JrnlDiaryTagContentEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.entity.JrnlDiaryTagEntity;
-import io.nicheblog.dreamdiary.feature.jrnl.entry.entity.JrnlEntrySmpEntity;
+import io.nicheblog.dreamdiary.feature.jrnl.chapter.entity.JrnlChapterSmpEntity;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
@@ -67,8 +67,8 @@ public class JrnlDiaryTagSpec
 
         final Join<JrnlDiaryTagEntity, JrnlDiaryTagContentEntity> jrnlDiaryTagJoin = root.join("jrnlDiaryTagList", JoinType.INNER);
         final Join<JrnlDiaryTagContentEntity, JrnlDiarySmpEntity> jrnlDiaryJoin = jrnlDiaryTagJoin.join("jrnlDiary", JoinType.INNER);
-        final Join<JrnlDiarySmpEntity, JrnlEntrySmpEntity> jrnlEntryJoin = jrnlDiaryJoin.join("jrnlEntry", JoinType.INNER);
-        final Join<JrnlEntrySmpEntity, JrnlDaySmpEntity> jrnlDayJoin = jrnlEntryJoin.join("jrnlDay", JoinType.INNER);
+        final Join<JrnlDiarySmpEntity, JrnlChapterSmpEntity> jrnlChapterJoin = jrnlDiaryJoin.join("jrnlChapter", JoinType.INNER);
+        final Join<JrnlChapterSmpEntity, JrnlDaySmpEntity> jrnlDayJoin = jrnlChapterJoin.join("jrnlDay", JoinType.INNER);
         final Expression<Date> effectiveDtExp = builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"));
 
         predicate.add(builder.equal(jrnlDiaryTagJoin.get("refContentType"), ContentType.JRNL_DIARY.key));

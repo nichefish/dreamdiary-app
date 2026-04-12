@@ -55,28 +55,6 @@ public class JrnlDayMetaService
         return context.getBean(this.getClass());
     }
 
-
-    /**
-     * 내 태그 카테고리 맵을 반환합니다.
-     *
-     * @return {@link Map} -- 태그 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵
-     */
-    public Map<String, List<String>> getMyMetaCtgrMap() throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getMetaCtgrMapByUser(userId);
-    }
-
-    /**
-     * 특정 메타가 존재하는 연도 목록을 반환합니다.
-     *
-     * @param metaNo 메타 번호
-     * @return 연도 목록
-     */
-    public List<Integer> getMyYyListByMetaNo(final Integer metaNo) {
-        final String userId = AuthUtils.requireUserId(AuthUtils.getLgnUserId());
-        return this.getSelf().getYyListByMetaNoAndUser(metaNo, userId);
-    }
-
     /**
      * 사용자 기준 특정 메타가 존재하는 연도 목록을 반환합니다.
      *
