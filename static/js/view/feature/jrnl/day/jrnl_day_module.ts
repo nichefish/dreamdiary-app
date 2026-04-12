@@ -214,7 +214,7 @@ dF.JrnlDay = (function(): dfModule {
             $("#toggleTagCloud").prop("checked", showTagCloud);
             $("#toggleChapterCtgr").prop("checked", showChapterCtgr);
             if (showChapterCtgr && chapterCtgrCds.length === 0) {
-                const allCds: string[] = [...dF.JrnlDay.getSelectableChapterCtgrCds(), dF.JrnlDay.CHAPTER_CTGR_NONE];
+                const allCds: string[] = dF.JrnlDay.getSelectableChapterCtgrCds();
                 dF.JrnlDay.currentSearchParams.chapterCtgrCds = dF.JrnlDay.syncChapterCtgrSelectUi(allCds);
             } else {
                 dF.JrnlDay.currentSearchParams.chapterCtgrCds = dF.JrnlDay.syncChapterCtgrSelectUi(chapterCtgrCds);
@@ -254,18 +254,16 @@ dF.JrnlDay = (function(): dfModule {
                     .map((value: string): string => String(value ?? "").trim())
                     .filter((value: string): boolean => value.length > 0)
             ));
-            const hasAllOption: boolean = uniqueSelectedCtgrCds.includes(dF.JrnlDay.CHAPTER_CTGR_ALL);
             const selectedRealCtgrCds: string[] = uniqueSelectedCtgrCds.filter((value: string): boolean => {
                 return selectableCtgrCds.includes(value);
             });
-            const allWithNoneCtgrCds: string[] = [...selectableCtgrCds, dF.JrnlDay.CHAPTER_CTGR_NONE];
 
-            if (selectableCtgrCds.length > 0 && (hasAllOption || selectedRealCtgrCds.length === selectableCtgrCds.length)) {
-                return allWithNoneCtgrCds;
+            if (selectedRealCtgrCds.length === selectableCtgrCds.length && selectableCtgrCds.length > 0) {
+                return selectableCtgrCds;
             }
 
-            if (hasAllOption && selectedRealCtgrCds.length === 0) {
-                return allWithNoneCtgrCds;
+            if (uniqueSelectedCtgrCds.includes(dF.JrnlDay.CHAPTER_CTGR_ALL) && selectedRealCtgrCds.length === 0) {
+                return selectableCtgrCds;
             }
 
             if (uniqueSelectedCtgrCds.includes(dF.JrnlDay.CHAPTER_CTGR_NONE) && selectedRealCtgrCds.length === 0) {
@@ -281,8 +279,7 @@ dF.JrnlDay = (function(): dfModule {
             const selectableCtgrCds: string[] = dF.JrnlDay.getSelectableChapterCtgrCds();
             const normalizedCtgrCds: string[] = dF.JrnlDay.normalizeChapterCtgrCds(selectedCtgrCds);
             const isAllSelected: boolean = selectableCtgrCds.length > 0
-                && normalizedCtgrCds.includes(dF.JrnlDay.CHAPTER_CTGR_NONE)
-                && normalizedCtgrCds.length === selectableCtgrCds.length + 1
+                && normalizedCtgrCds.length === selectableCtgrCds.length
                 && selectableCtgrCds.every((ctgrCd: string): boolean => normalizedCtgrCds.includes(ctgrCd));
             const uiSelectedCtgrCds: string[] = isAllSelected
                 ? [dF.JrnlDay.CHAPTER_CTGR_ALL, ...selectableCtgrCds]
@@ -299,8 +296,7 @@ dF.JrnlDay = (function(): dfModule {
             );
 
             return selectableCtgrCds.length > 0
-                && normalizedCtgrCds.includes(dF.JrnlDay.CHAPTER_CTGR_NONE)
-                && normalizedCtgrCds.length === selectableCtgrCds.length + 1
+                && normalizedCtgrCds.length === selectableCtgrCds.length
                 && selectableCtgrCds.every((ctgrCd: string): boolean => normalizedCtgrCds.includes(ctgrCd));
         },
 
@@ -314,7 +310,7 @@ dF.JrnlDay = (function(): dfModule {
 
             const nextCtgrCds: string[] = dF.JrnlDay.isAllChapterCtgrSelected()
                 ? [dF.JrnlDay.CHAPTER_CTGR_NONE]
-                : [...dF.JrnlDay.getSelectableChapterCtgrCds(), dF.JrnlDay.CHAPTER_CTGR_NONE];
+                : dF.JrnlDay.getSelectableChapterCtgrCds();
 
             dF.JrnlDay.currentSearchParams.chapterCtgrCds = nextCtgrCds;
             dF.JrnlDay.syncChapterCtgrSelectUi(nextCtgrCds);
@@ -424,7 +420,7 @@ dF.JrnlDay = (function(): dfModule {
 
             let selectedCtgrCds: string[] = dF.JrnlDay.currentSearchParams?.chapterCtgrCds ?? [];
             if (selectedCtgrCds.length === 0) {
-                selectedCtgrCds = [...dF.JrnlDay.getSelectableChapterCtgrCds(), dF.JrnlDay.CHAPTER_CTGR_NONE];
+                selectedCtgrCds = dF.JrnlDay.getSelectableChapterCtgrCds();
             }
             const normalizedCtgrCds: string[] = dF.JrnlDay.syncChapterCtgrSelectUi(selectedCtgrCds);
             if (dF.JrnlDay.currentSearchParams) dF.JrnlDay.currentSearchParams.chapterCtgrCds = normalizedCtgrCds;
@@ -461,7 +457,7 @@ dF.JrnlDay = (function(): dfModule {
             dF.JrnlDay.currentSearchParams.showChapterCtgr = true;
             let selectedCtgrCds: string[] = dF.JrnlDay.currentSearchParams.chapterCtgrCds ?? [];
             if (selectedCtgrCds.length === 0) {
-                selectedCtgrCds = [...dF.JrnlDay.getSelectableChapterCtgrCds(), dF.JrnlDay.CHAPTER_CTGR_NONE];
+                selectedCtgrCds = dF.JrnlDay.getSelectableChapterCtgrCds();
             }
             dF.JrnlDay.currentSearchParams.chapterCtgrCds = dF.JrnlDay.syncChapterCtgrSelectUi(selectedCtgrCds);
             const urlOn: URL = new URL(window.location.href);
@@ -523,7 +519,7 @@ dF.JrnlDay = (function(): dfModule {
                 const jrnlChapterList: Record<string, any>[] = Array.isArray(day.jrnlChapterList) ? day.jrnlChapterList : [];
                 const filteredChapterList: Record<string, any>[] = jrnlChapterList.filter((chapter: Record<string, any>): boolean => {
                     const ctgrCd: string = (chapter?.ctgrCd ?? "").trim();
-                    if (cF.util.isEmpty(ctgrCd)) return hasNoneCategory;
+                    if (cF.util.isEmpty(ctgrCd)) return true;
 
                     return ctgrSet.has(ctgrCd);
                 });
