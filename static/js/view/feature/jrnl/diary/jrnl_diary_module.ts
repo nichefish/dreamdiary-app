@@ -266,11 +266,10 @@ dF.JrnlDiary = (function(): dfModule {
             dF.State.toggleAjax(payload, function(res: AjaxResponse): void {
                 if (!item) return;
                 const lowerStateCd: string = stateCd.toLowerCase();
+                item.dataset[lowerStateCd] = res.rsltSts === "ON" ? "Y" : "N";
                 const icon: HTMLElement = item.querySelector(`.icon-${lowerStateCd}`);
-                if (!icon) console.warn("icon not found.");
                 icon?.classList.toggle("d-none", res.rsltSts !== "ON");
                 const chk: HTMLInputElement = item.querySelector(`.diary-context-${lowerStateCd}-check`);
-                if (!chk) console.warn("chk not found.");
                 if (chk) chk.checked = res.rsltSts === "ON";
                 onOffFunc(res, item);
             });
@@ -288,6 +287,7 @@ dF.JrnlDiary = (function(): dfModule {
                 if (!cn) return console.warn("cn not found.");
 
                 cn?.classList.toggle("collapsed", res.rsltSts === "ON");
+                item.classList.toggle("is-collapsed", res.rsltSts === "ON");
             }
             this.toggleStateAjax(postNo, "COLLAPSED", { onOffFunc });
         },
@@ -304,6 +304,8 @@ dF.JrnlDiary = (function(): dfModule {
                     const cn: HTMLDivElement = item.querySelector("div.jrnl-diary-cn .cn");
                     if (!cn) console.warn("cn not found.");
                     cn?.classList.add("collapsed");
+                    item.dataset.collapsed = "Y";
+                    item.classList.add("is-collapsed");
 
                     const collapsedChk: HTMLInputElement = item.querySelector(".diary-context-collapsed-check");
                     if (collapsedChk) collapsedChk.checked = true;
@@ -371,10 +373,12 @@ dF.JrnlDiary = (function(): dfModule {
             const isCollapsed: boolean = content.classList.contains("collapsed");
             if (isCollapsed) {
                 content.classList.remove("collapsed");
-                icon?.classList.replace("bi-chevron-down", "bi-chevron-up");
+                item.classList.remove("is-collapsed");
+                icon?.classList.replace("bi-arrows-expand", "bi-arrows-collapse");
             } else {
                 content.classList.add("collapsed");
-                icon?.classList.replace("bi-chevron-up", "bi-chevron-down");
+                item.classList.add("is-collapsed");
+                icon?.classList.replace("bi-arrows-collapse", "bi-arrows-expand");
             }
         },
 

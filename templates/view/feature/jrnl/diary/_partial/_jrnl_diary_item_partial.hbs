@@ -4,8 +4,16 @@
  -->
 
 <script type="text/x-handlebars-template" id="jrnl_diary_item_partial" data-partial>
-    <div class="jrnl-diary-item" data-id="{{postNo}}" data-stdrd-dt="{{stdrdDt}}" data-yy="{{yy}}" data-mnth="{{mnth}}" data-collapsed="{{collapsedYn}}" data-resolved="{{resolvedYn}}" data-imprtc="{{imprtcYn}}" data-refrnc="{{refrncYn}}">
-        <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
+    <div class="jrnl-diary-item {{#if (hasState state 'COLLAPSED')}}is-collapsed{{/if}}"
+         data-id="{{postNo}}"
+         data-stdrd-dt="{{stdrdDt}}"
+         data-yy="{{yy}}"
+         data-mnth="{{mnth}}"
+         data-collapsed="{{#if (hasState state 'COLLAPSED')}}Y{{else}}N{{/if}}"
+         data-resolved="{{#if (hasState state 'RESOLVED')}}Y{{else}}N{{/if}}"
+         data-imprtc="{{#if (hasState state 'IMPRTC')}}Y{{else}}N{{/if}}"
+         data-refrnc="{{#if (hasState state 'REFRNC')}}Y{{else}}N{{/if}}">
+        <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 ps-5 me-2 h-75" style="width:85px;">
             <div class="d-flex flex-column align-items-center">
                 <span class="jrnl-diary-idx {{#if (hasState state 'RESOLVED')}}text-success{{/if}}">
                     # {{idx}}
@@ -14,7 +22,6 @@
             </div>
         </div>
         <div class="col">
-            {{> jrnl_diary_states_partial this}}
             <div class="jrnl-diary-cn p-2">
                 {{> jrnl_diary_cn_partial this}}
             </div>
