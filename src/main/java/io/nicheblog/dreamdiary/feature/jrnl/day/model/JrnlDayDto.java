@@ -7,9 +7,10 @@ import io.nicheblog.dreamdiary.feature.clsf.meta.model.cmpstn.MetaCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlPeriodModule;
-import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamDto;
+import io.nicheblog.dreamdiary.feature.jrnl.chapter.model.JrnlChapterCtgrHintDto;
 import io.nicheblog.dreamdiary.feature.jrnl.chapter.model.JrnlChapterDto;
 import io.nicheblog.dreamdiary.feature.jrnl.chapter.model.JrnlChapterSmpDto;
+import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
@@ -90,6 +91,8 @@ public class JrnlDayDto
     private List<JrnlChapterDto> jrnlChapterList;
     /** 저널 챕터 목록 */
     private List<JrnlChapterSmpDto> chapterList;
+    /** 챕터 필터로 숨겨진 카테고리 목록 */
+    private List<JrnlChapterCtgrHintDto> hiddenChapterCtgrList;
 
     /** 저널 꿈 목록 */
     private List<JrnlDreamDto> jrnlDreamList;
