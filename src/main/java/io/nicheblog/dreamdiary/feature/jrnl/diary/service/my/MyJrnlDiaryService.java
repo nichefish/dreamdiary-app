@@ -1,6 +1,10 @@
 package io.nicheblog.dreamdiary.feature.jrnl.diary.service.my;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfKey;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf.related.model.RelatedContentDto;
+import io.nicheblog.dreamdiary.feature.clsf.related.service.RelatedContentQueryService;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiarySearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.service.JrnlDiaryService;
@@ -8,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * MyJrnlDiaryService
@@ -24,6 +30,7 @@ import java.util.List;
 public class MyJrnlDiaryService {
 
     private final JrnlDiaryService jrnlDiaryService;
+    private final RelatedContentQueryService relatedContentQueryService;
 
     /**
      * 목록 조회 (dto level) :: 캐시 처리
@@ -33,7 +40,9 @@ public class MyJrnlDiaryService {
      */
     public List<JrnlDiaryDto> getMyListDto(final JrnlDiarySearchParam searchParam) throws Exception {
         final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDiaryService.getListDtoByUser(userId, searchParam);
+        final List<JrnlDiaryDto> listDto = jrnlDiaryService.getListDtoByUser(userId, searchParam);
+        this.mergeRelatedContents(userId, listDto);
+        return listDto;
     }
 
     /**
@@ -44,7 +53,9 @@ public class MyJrnlDiaryService {
      */
     public List<JrnlDiaryDto> getMySumryDiaryList(final JrnlDiarySearchParam searchParam) throws Exception {
         final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDiaryService.getSumryDiaryListByUser(userId, searchParam);
+        final List<JrnlDiaryDto> listDto = jrnlDiaryService.getSumryDiaryListByUser(userId, searchParam);
+        this.mergeRelatedContents(userId, listDto);
+        return listDto;
     }
 
     /**
@@ -55,7 +66,26 @@ public class MyJrnlDiaryService {
      */
     public JrnlDiaryDto getMyDtlDtoWithCache(final Integer key) throws Exception {
         final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDiaryService.getDtlDtoWithCacheByUser(userId, key);
+        final JrnlDiaryDto retrieved = jrnlDiaryService.getDtlDtoWithCacheByUser(userId, key);
+        this.mergeRelatedContents(userId, retrieved == null ? List.of() : List.of(retrieved));
+        return retrieved;
+    }
+
+    private void mergeRelatedContents(final String userId, final List<JrnlDiaryDto> listDto) throws Exception {
+        if (listDto == null || listDto.isEmpty()) return;
+
+        final List<BaseClsfKey> refKeyList = new ArrayList<>();
+        listDto.stream()
+                .filter(dto -> dto != null && dto.getPostNo() != null)
+                .forEach(dto -> refKeyList.add(new BaseClsfKey(dto.getPostNo(), ContentType.JRNL_DIARY)));
+
+        final Map<String, List<RelatedContentDto>> relatedMap = relatedContentQueryService.getRelatedContentMapByRefs(refKeyList, userId);
+        for (final JrnlDiaryDto jrnlDiary : listDto) {
+            if (jrnlDiary == null || jrnlDiary.getPostNo() == null) continue;
+            jrnlDiary.setRelatedContentList(
+                    relatedMap.getOrDefault(String.format("%s:%d", ContentType.JRNL_DIARY.key, jrnlDiary.getPostNo()), List.of())
+            );
+        }
     }
 
 }

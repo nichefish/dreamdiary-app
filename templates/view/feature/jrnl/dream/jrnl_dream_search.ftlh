@@ -103,6 +103,7 @@
 <#include "/view/feature/clsf/comment/_partial/_comment_list_partial.hbs">
 <#include "/view/feature/clsf/comment/_partial/_comment_reg_btn_partial.hbs">
 <script type="text/javascript" src="/js/view/feature/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/feature/clsf/related/related_content_module.js?${releaseDate!}"></script>
 
 <#--include::state-->
 <script type="text/javascript" src="/js/view/feature/clsf/state/state_module.js?${releaseDate!}"></script>

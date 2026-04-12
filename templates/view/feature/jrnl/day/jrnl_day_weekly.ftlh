@@ -19,7 +19,7 @@
 <link rel="stylesheet" type="text/css" href="/css/jrnl.css?${releaseDate!}" />
 
 <div class="jrnl-day-weekly-page">
-    <div class="d-flex flex-column-fluid justify-content-between align-items-end flex-wrap gap-4">
+    <div class="d-flex flex-column-fluid justify-content-between align-items-start align-items-xl-center gap-4">
         <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">
             <li class="nav-item">
                 <a class="nav-link px-6 cursor-pointer active" data-bs-toggle="tab"
@@ -174,6 +174,7 @@
 <#include "/view/feature/clsf/comment/_partial/_comment_list_partial.hbs">
 <#include "/view/feature/clsf/comment/_partial/_comment_reg_btn_partial.hbs">
 <script type="text/javascript" src="/js/view/feature/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/feature/clsf/related/related_content_module.js?${releaseDate!}"></script>
 
 <#--include::state-->
 <script type="text/javascript" src="/js/view/feature/clsf/state/state_module.js?${releaseDate!}"></script>

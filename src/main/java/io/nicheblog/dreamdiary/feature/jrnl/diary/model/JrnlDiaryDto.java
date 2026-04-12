@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.feature.clsf.file.model.cmpstn.AtchFileCmpstnModu
 import io.nicheblog.dreamdiary.feature.clsf.history.model.HistoryDto;
 import io.nicheblog.dreamdiary.feature.clsf.history.model.cmpstn.HistoryCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.history.model.cmpstn.HistoryCmpstnModule;
+import io.nicheblog.dreamdiary.feature.clsf.related.model.RelatedContentDto;
 import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
@@ -124,4 +125,6 @@ public class JrnlDiaryDto
     public StateCmpstn state;
     public HistoryCmpstn history;
     private List<HistoryDto> historyList;
+    @Builder.Default
+    private List<RelatedContentDto> relatedContentList = List.of();
 }

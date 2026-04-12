@@ -5,6 +5,8 @@
  */
 declare const Swal: {
     fire: Function;
+    getPopup: Function;
+    showValidationMessage: Function;
 };
 declare interface SwalResult<T = any> {
     readonly isConfirmed: boolean

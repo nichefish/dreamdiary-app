@@ -1,6 +1,10 @@
 package io.nicheblog.dreamdiary.feature.jrnl.dream.service.my;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfKey;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf.related.model.RelatedContentDto;
+import io.nicheblog.dreamdiary.feature.clsf.related.service.RelatedContentQueryService;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.service.JrnlDreamService;
@@ -8,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * MyJrnlDreamService
@@ -24,6 +30,7 @@ import java.util.List;
 public class MyJrnlDreamService {
 
     private final JrnlDreamService jrnlDreamService;
+    private final RelatedContentQueryService relatedContentQueryService;
 
     /**
      * 목록 조회 (dto level) :: 캐시 처리
@@ -33,7 +40,9 @@ public class MyJrnlDreamService {
      */
     public List<JrnlDreamDto> getMyListDto(final JrnlDreamSearchParam searchParam) throws Exception {
         final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDreamService.getListDtoByUser(userId, searchParam);
+        final List<JrnlDreamDto> listDto = jrnlDreamService.getListDtoByUser(userId, searchParam);
+        this.mergeRelatedContents(userId, listDto);
+        return listDto;
     }
 
     /**
@@ -44,7 +53,9 @@ public class MyJrnlDreamService {
      */
     public List<JrnlDreamDto> getMySumryDreamList(final JrnlDreamSearchParam searchParam) throws Exception {
         final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDreamService.getSumryDreamListByUser(userId, searchParam);
+        final List<JrnlDreamDto> listDto = jrnlDreamService.getSumryDreamListByUser(userId, searchParam);
+        this.mergeRelatedContents(userId, listDto);
+        return listDto;
     }
 
     /**
@@ -55,6 +66,25 @@ public class MyJrnlDreamService {
      */
     public JrnlDreamDto getMyDtlDtoWithCache(final Integer key) throws Exception {
         final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDreamService.getDtlDtoWithCacheByUser(userId, key);
+        final JrnlDreamDto retrieved = jrnlDreamService.getDtlDtoWithCacheByUser(userId, key);
+        this.mergeRelatedContents(userId, retrieved == null ? List.of() : List.of(retrieved));
+        return retrieved;
+    }
+
+    private void mergeRelatedContents(final String userId, final List<JrnlDreamDto> listDto) throws Exception {
+        if (listDto == null || listDto.isEmpty()) return;
+
+        final List<BaseClsfKey> refKeyList = new ArrayList<>();
+        listDto.stream()
+                .filter(dto -> dto != null && dto.getPostNo() != null)
+                .forEach(dto -> refKeyList.add(new BaseClsfKey(dto.getPostNo(), ContentType.JRNL_DREAM)));
+
+        final Map<String, List<RelatedContentDto>> relatedMap = relatedContentQueryService.getRelatedContentMapByRefs(refKeyList, userId);
+        for (final JrnlDreamDto jrnlDream : listDto) {
+            if (jrnlDream == null || jrnlDream.getPostNo() == null) continue;
+            jrnlDream.setRelatedContentList(
+                    relatedMap.getOrDefault(String.format("%s:%d", ContentType.JRNL_DREAM.key, jrnlDream.getPostNo()), List.of())
+            );
+        }
     }
 }

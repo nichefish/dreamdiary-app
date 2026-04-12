@@ -2,11 +2,13 @@ package io.nicheblog.dreamdiary.feature.jrnl.diary.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.helper.BaseClsfHistoryHelper;
 import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.feature.clsf.history.HistoryType;
+import io.nicheblog.dreamdiary.feature.clsf.related.service.RelatedContentService;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
@@ -65,6 +67,7 @@ public class JrnlDiaryService
     }
 
     private final JrnlCacheEvictWorker jrnlCacheEvictWorker;
+    private final RelatedContentService relatedContentService;
 
     private final ApplicationContext context;
     private JrnlDiaryService getSelf() {
@@ -215,6 +218,9 @@ public class JrnlDiaryService
         this.getSelf().normalize(deletedDto.getJrnlChapterNo());
         
         // 관련 캐시 삭제
+        // 관련글 soft-delete
+        relatedContentService.deleteAllByRef(new BaseClsfKey(deletedDto.getPostNo(), ContentType.JRNL_DIARY), deletedDto.getRegstrId());
+
         jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DIARY);
     }
 
