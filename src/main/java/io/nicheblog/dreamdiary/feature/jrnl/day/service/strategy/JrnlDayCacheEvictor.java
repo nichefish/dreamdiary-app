@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.jrnl.day.service.strategy;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictor;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
@@ -33,25 +33,26 @@ public class JrnlDayCacheEvictor
     public void evict(final JrnlCacheEvictParam param) throws Exception {
         final ContentType refContentType = ContentType.JRNL_DAY;
         try {
+            final String userId = param.getRegstrId();
             final Integer postNo = param.getPostNo();
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();
             final String weekStartDt = param.getWeekStartDt();
             final String prevWeekStartDt = param.getPrevWeekStartDt();
             // jrnl_day
-            EhCacheUtils.evictMyCacheByKey("jrnlDayDtlDtoByUser", postNo);
-            this.evictMyJrnlDayYyMnthCaches(yy, mnth);
-            this.evictMyJrnlDayWeeklyCaches(prevWeekStartDt, weekStartDt);
+            EhCacheUtils.evictUserCacheByKey("jrnlDayDtlDtoByUser", userId, postNo);
+            this.evictMyJrnlDayYyMnthCaches(userId, yy, mnth);
+            this.evictMyJrnlDayWeeklyCaches(userId, prevWeekStartDt, weekStartDt);
             // jrnl_day_tag
-            EhCacheUtils.clearMyCache("jrnlDayTagCtgrMapByUser");
-            EhCacheUtils.clearMyCache("jrnlDayYyMnthTagListByUser");
-            EhCacheUtils.clearMyCache("jrnlDayWeeklyTagListByUser");
-            EhCacheUtils.clearMyCache("jrnlDayYyMnthSizedTagListByUser");
-            EhCacheUtils.clearMyCache("jrnlDayWeeklySizedTagListByUser");
-            EhCacheUtils.clearMyCache("jrnlDayCountMapByUser");
+            EhCacheUtils.clearUserCache("jrnlDayTagCtgrMapByUser", userId);
+            EhCacheUtils.clearUserCache("jrnlDayYyMnthTagListByUser", userId);
+            EhCacheUtils.clearUserCache("jrnlDayWeeklyTagListByUser", userId);
+            EhCacheUtils.clearUserCache("jrnlDayYyMnthSizedTagListByUser", userId);
+            EhCacheUtils.clearUserCache("jrnlDayWeeklySizedTagListByUser", userId);
+            EhCacheUtils.clearUserCache("jrnlDayCountMapByUser", userId);
             EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", postNo + "_JRNL_DAY");
             // jrnl_day_meta
-            EhCacheUtils.clearMyCache("jrnlDayMetaCtgrMapByUser");
+            EhCacheUtils.clearUserCache("jrnlDayMetaCtgrMapByUser", userId);
             EhCacheUtils.evictCacheByKey("metaContentEntityListByRef", postNo + "_JRNL_DAY");
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);

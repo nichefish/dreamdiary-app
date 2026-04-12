@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.schdul.mapstruct;
 
+import io.nicheblog.dreamdiary.feature.schdul.Schdul;
 import io.nicheblog.dreamdiary.feature.schdul.entity.SchdulEntity;
 import io.nicheblog.dreamdiary.feature.schdul.model.SchdulCalDto;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -51,7 +52,7 @@ public interface SchdulCalMapstruct
      */
     @AfterMapping
     default void mapCalFields(final SchdulEntity entity, @MappingTarget SchdulCalDto dto) throws Exception {
-        Code.Schdul schdulTy = Code.Schdul.valueOf(dto.getSchdulCd());
+        Schdul schdulTy = Schdul.valueOf(dto.getSchdulCd());
         String title = dto.getTitle();
         switch (schdulTy) {
             case HLDY:

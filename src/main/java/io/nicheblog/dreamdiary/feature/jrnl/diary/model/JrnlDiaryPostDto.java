@@ -1,11 +1,13 @@
 package io.nicheblog.dreamdiary.feature.jrnl.diary.model;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.file.model.cmpstn.AtchFileCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.file.model.cmpstn.AtchFileCmpstnModule;
+import io.nicheblog.dreamdiary.feature.clsf.history.HistoryType;
+import io.nicheblog.dreamdiary.feature.clsf.history.model.HistoryActionModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
@@ -28,7 +30,7 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 public class JrnlDiaryPostDto
         extends BaseClsfDto
-        implements Identifiable<Integer>, AtchFileCmpstnModule, CommentCmpstnModule, TagCmpstnModule {
+        implements Identifiable<Integer>, AtchFileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, HistoryActionModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -43,8 +45,8 @@ public class JrnlDiaryPostDto
 
     /** 저널 일자 번호 */
     private Integer jrnlDayNo;
-    /** 저널 항목 번호 */
-    private Integer jrnlEntryNo;
+    /** 저널 챕터 번호 */
+    private Integer jrnlChapterNo;
     /** 저널 기준일자 */
     private Integer yy;
     /** 저널 기준일자 */
@@ -56,11 +58,16 @@ public class JrnlDiaryPostDto
     /** 인덱스 변경 여부 */
     @Builder.Default
     private Boolean isIdxChanged = false;
-    /** 저널 항목 변경 여부 */
+    /** 저널 챕터 변경 여부 */
     @Builder.Default
-    private Boolean isEntryChanged = false;
-    /** 이전 저널 항목 번호 */
-    private Integer prevJrnlEntryNo;
+    private Boolean isChapterChanged = false;
+    /** 이전 저널 챕터 번호 */
+    private Integer prevJrnlChapterNo;
+
+    @Builder.Default
+    private String historyType = HistoryType.CHANGE.key;
+
+    private Integer fromHistoryNo;
 
     /* ----- */
 

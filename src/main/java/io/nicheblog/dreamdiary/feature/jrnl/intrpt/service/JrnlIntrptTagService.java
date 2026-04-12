@@ -1,8 +1,10 @@
 package io.nicheblog.dreamdiary.feature.jrnl.intrpt.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagContentCntDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
+import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagProfileService;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.entity.JrnlIntrptTagEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.mapstruct.JrnlIntrptTagMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.model.JrnlIntrptSearchParam;
@@ -55,6 +57,7 @@ public class JrnlIntrptTagService
     }
 
     private final ApplicationContext context;
+    private final TagProfileService tagProfileService;
     private JrnlIntrptTagService getSelf() {
         return context.getBean(this.getClass());
     }
@@ -78,19 +81,6 @@ public class JrnlIntrptTagService
      * css 사이즈 계산한 일기 태그 목록 조회
      * 태그 1개 = 1. 그 외엔 2~9
      *
-     * @param yy 조회할 연도
-     * @param mnth 조회할 월
-     * @return {@link List} -- CSS 사이즈가 적용된 태그 목록
-     */
-    public List<TagDto> getMyIntrptSizedListDto(final Integer yy, final Integer mnth) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getIntrptSizedListDtoByUser(userId, yy, mnth);
-    }
-
-    /**
-     * css 사이즈 계산한 일기 태그 목록 조회
-     * 태그 1개 = 1. 그 외엔 2~9
-     *
      * @param userId 사용자 ID
      * @param yy 조회할 연도
      * @param mnth 조회할 월
@@ -105,7 +95,7 @@ public class JrnlIntrptTagService
         final int MIN_SIZE = 2; // 최소 크기
         final int MAX_SIZE = 9; // 최대 크기
 
-        return tagList.stream()
+        final List<TagDto> sizedTagList = tagList.stream()
                 .peek(dto -> {
                     int size = dto.getContentSize();
                     if (size == 1) {
@@ -118,6 +108,9 @@ public class JrnlIntrptTagService
                 })
                 .sorted()
                 .collect(Collectors.toList());
+
+        tagProfileService.applyVisualSemantic(sizedTagList, ContentType.JRNL_INTRPT);
+        return sizedTagList;
     }
 
     /**
@@ -167,11 +160,6 @@ public class JrnlIntrptTagService
         return new ConcurrentHashMap<>(concurrentMap);
     }
 
-    public Map<String, List<TagDto>> getMyIntrptSizedGroupListDto(final Integer yy, final Integer mnth) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getIntrptSizedGroupListDtoByUser(userId, yy, mnth);
-    }
-
     /**
      * 지정된 연도와 월을 기준으로 태그 목록을 카테고리별로 그룹화하여 반환합니다.
      *
@@ -185,16 +173,6 @@ public class JrnlIntrptTagService
         // 태그를 카테고리별로 그룹화하여 맵으로 반환
         return tagList.stream()
                 .collect(Collectors.groupingBy(TagDto::getCtgr));
-    }
-
-    /**
-     * 내 태그 카테고리 맵을 반환합니다.
-     *
-     * @return {@link Map} -- 태그 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵
-     */
-    public Map<String, List<String>> getMyTagCtgrMap() throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getTagCtgrMapByUser(userId);
     }
 
     /**

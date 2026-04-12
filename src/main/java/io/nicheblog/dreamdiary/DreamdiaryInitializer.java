@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.auth.security.entity.AuthRoleEntity;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
 import io.nicheblog.dreamdiary.feature.admin.auth.policy.model.AuthPolicyDto;
 import io.nicheblog.dreamdiary.feature.admin.auth.policy.service.AuthPolicyService;
+import io.nicheblog.dreamdiary.feature.clsf.file.utils.FileUtils;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserAuthRoleDto;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
@@ -25,8 +26,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -60,28 +59,27 @@ public class DreamdiaryInitializer
     @Override
     public void run(final String... args) throws Exception {
 
-        log.info("DreamdiaryApplication init... activeProfile: {}", activeProfile.getActive());
+        log.info("Application initialization started. profile={}", activeProfile.getActive());
 
         this.regSystemAcntIfEmpty();
         // 인증 정책 부재시 등록 :: 메소드 분리
         this.regAuthPolicyIfEmpty();
 
         // 파일 관련 기본 폴더 생성
-        final File fileDirectory = new File("file/");
-        if (!fileDirectory.exists() && !fileDirectory.mkdirs()) throw new IOException(MessageUtils.getMessage("msg.rslt.mkdir-failed"));
-        final File upfileDirectory = new File("file/upfile/");
-        if (!upfileDirectory.exists() && !upfileDirectory.mkdirs()) throw new IOException(MessageUtils.getMessage("msg.rslt.mkdir-failed"));
-        final File reportDirectory = new File("file/report/");
-        if (!reportDirectory.exists() && !reportDirectory.mkdirs()) throw new IOException(MessageUtils.getMessage("msg.rslt.mkdir-failed"));
+        FileUtils.ensureDirectory("file/");
+        FileUtils.ensureDirectory("file/upfile/");
+        FileUtils.ensureDirectory("file/report/");
 
         // 캐시 웜업:: 초기 로딩 속도를 희생하여 미리 캐싱 처리함으로써 실행속도 상승
         publisher.publishAsyncEvent(new CacheWarmupEvent(this));
+        log.info("Startup task queued. task=cacheWarmup");
 
         // 시스템 재기동 로그 적재:: 운영 환경 이외에는 적재하지 않음
         if (activeProfile.isProd()) {
             final LogSysParam logParam = new LogSysParam(true, MessageUtils.getMessage("msg.rslt.system-restarted"), ActvtyCtgr.SYSTEM);
             publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
         }
+        log.info("Application initialization completed. profile={}", activeProfile.getActive());
     }
 
     /**
@@ -99,14 +97,17 @@ public class DreamdiaryInitializer
                 // 시스템계정 존재여부 체크
                 authService.loadUserByUsername(Constant.SYSTEM_ACNT);
                 systemAcntExists = true;
+                log.info("Startup check completed. resource=systemAccount status=exists");
             } catch (final UsernameNotFoundException e) {
                 // 시스템 계정 부재시 등록:: 메소드 분리
                 isSuccess = this.regSystemAcnt();
                 rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+                log.info("Startup action completed. resource=systemAccount status={} detail={}", isSuccess ? "created" : "failed", rsltMsg);
             }
         } catch (final Exception e) {
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);
+            log.error("Startup action failed. resource=systemAccount detail={}", rsltMsg, e);
         } finally {
             // 시스템 계정 등록 처리했을 경우 로그 적재
             if (!systemAcntExists) {
@@ -158,14 +159,17 @@ public class DreamdiaryInitializer
             final AuthPolicyDto rsAuthPolicy = authPolicyService.getDtlDto();
             if (rsAuthPolicy != null) {
                 authPolicyExists = true;
+                log.info("Startup check completed. resource=authPolicy status=exists");
                 return;
             }
             // 인증 정책 부재시 등록:: 메소드 분리
             isSuccess = this.regAuthPolicy();
             rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
+            log.info("Startup action completed. resource=authPolicy status={} detail={}", isSuccess ? "created" : "failed", rsltMsg);
         } catch (final Exception e) {
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);
+            log.error("Startup action failed. resource=authPolicy detail={}", rsltMsg, e);
         } finally {
             // 인증 정책 등록 처리했을 경우 로그 적재
             if (!authPolicyExists) {

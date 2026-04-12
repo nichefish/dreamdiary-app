@@ -47,24 +47,27 @@
     </div>
 </div>
 <div class="mt-0">
-    <div class="d-flex-between align-items-center pe-3">
-    <span class="text-gray-900 fs-h6 fw-bold d-inline-block ms-6 mb-2">Week</span>
-    <button type="button" class="btn btn-sm btn-outline btn-light-info blink-slow ms-6 ps-2 pe-1 py-0"
-            onclick="dF.JrnlDayAside.todayWeek();"
-            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.aside-today'/>">
-        TODAY
-        <i class="bi bi-box-arrow-in-up-right"></i>
-    </button>
+    <div class="d-flex-between align-items-center pe-3 mb-2">
+        <div class="d-flex align-items-center flex-wrap gap-2">
+            <span class="text-gray-900 fs-h6 fw-bold d-inline-block ms-6">Week</span>
+            <div class="btn btn-sm btn-light-primary py-1 px-3 pe-none fs-8">
+                <span id="jrnlAsideWeekRange" class="fw-semibold">----</span>
+            </div>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline btn-light-info blink-slow ms-6 ps-2 pe-1 py-0"
+                onclick="dF.JrnlDayAside.todayWeek();"
+                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.aside-today'/>">
+            TODAY
+            <i class="bi bi-box-arrow-in-up-right"></i>
+        </button>
     </div>
-    <div class="d-flex align-items-center justify-items-between gap-2">
+    <div class="jrnl-aside-week-nav d-flex align-items-center gap-2">
         <div class="d-flex align-items-center me-2 cursor-pointer"
              onclick="dF.JrnlDayAside.leftWeek();"
              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.aside-prev-week'/>">
             <i class="bi bi-caret-left fs-2"></i>
         </div>
-        <div class="btn btn-sm btn-light-primary flex-grow-1 py-1">
-            <span id="jrnlAsideWeekRange" class="fw-semibold">----</span>
-        </div>
+        <div id="jrnlAsideWeekDays" class="jrnl-aside-week-days flex-grow-1" aria-label="Weekly navigation"></div>
         <div class="d-flex align-items-center me-2 cursor-pointer"
              onclick="dF.JrnlDayAside.rightWeek();"
              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.jrnl.aside-next-week'/>">

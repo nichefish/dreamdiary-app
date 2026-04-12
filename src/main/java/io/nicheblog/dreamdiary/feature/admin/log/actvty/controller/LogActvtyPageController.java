@@ -2,8 +2,8 @@ package io.nicheblog.dreamdiary.feature.admin.log.actvty.controller;
 
 import io.nicheblog.dreamdiary.feature.admin.log.actvty.model.LogActvtyQueryDto;
 import io.nicheblog.dreamdiary.feature.admin.log.actvty.service.LogActvtyQueryService;
-import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
-import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;

@@ -1,6 +1,5 @@
 package io.nicheblog.dreamdiary.feature.jrnl.day.spec;
 
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf._shared.spec.BaseClsfSpec;
 import io.nicheblog.dreamdiary.feature.clsf.meta.entity.MetaContentEntity;
 import io.nicheblog.dreamdiary.feature.clsf.meta.entity.embed.MetaEmbed;
@@ -84,6 +83,7 @@ public class JrnlDaySpec
         // 파라미터 비교
         for (final String key : searchParamMap.keySet()) {
             if ("sort".equals(key)) continue;  // "sort" 파라미터는 건너뜀
+            if ("regstrId".equals(key)) continue;
 
             final Object value = searchParamMap.get(key);
             switch (key) {
@@ -143,6 +143,6 @@ public class JrnlDaySpec
             final String regstrIdStr = regstrId.toString();
             if (!regstrIdStr.isBlank()) return regstrIdStr;
         }
-        return AuthUtils.getLgnUserId();
+        throw new IllegalArgumentException("regstrId is required. searchParamMapKeys=" + searchParamMap.keySet());
     }
 }

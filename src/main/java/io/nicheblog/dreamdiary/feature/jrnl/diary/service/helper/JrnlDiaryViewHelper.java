@@ -18,10 +18,10 @@ import java.util.Map;
 public class JrnlDiaryViewHelper {
 
     /**
-     * 캐시에 저장된 상태 맵(entry/diary)을 기준으로 조회된 {@link JrnlDiaryDto} 트리 구조에 상태를 반영한다.
+     * 캐시에 저장된 상태 맵(diary)을 기준으로 조회된 {@link JrnlDiaryDto} 트리 구조에 상태를 반영한다.
      *
      * @param listDto 조회된 저널 일자 목록 DTO
-     * @param diaryMap entry postNo → {@link JrnlState} 맵
+     * @param diaryMap diary postNo → {@link JrnlState} 맵
      */
     public static void applyStates(List<JrnlDiaryDto> listDto, Map<Integer, JrnlState> diaryMap) {
         if (CollectionUtils.isEmpty(listDto)) return;

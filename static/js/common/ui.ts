@@ -100,6 +100,26 @@ cF.ui = (function(): Module {
         },
 
         /**
+         * 팝업창 여부 판단
+         */
+        isPopupWindow: function(): boolean {
+            return !!window.opener && window.opener !== window;
+        },
+
+        /**
+         * 팝업창 닫기 confirm
+         * @param {string?} msg
+         */
+        confirmClosePopup: function(msg?: string): void {
+            const closeMsg: string = [msg, Message.get("view.cnfm.close")]
+                .filter((text: string): boolean => cF.util.isNotEmpty(text))
+                .join("\n");
+            cF.ui.swalOrConfirm(closeMsg, function(): void {
+                window.close();
+            });
+        },
+
+        /**
          * 요청 중 blockUI를 적용합니다.
          * 서버에서 응답 쿠키를 생성할 때까지 blockUI를 유지합니다.
          * @dependency blockUI (optional)

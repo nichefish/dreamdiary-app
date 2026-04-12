@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.feature.admin.menu.adapter;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.menu.exception.MenuNotExistsException;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.MenuDto;
-import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
 import io.nicheblog.dreamdiary.feature.admin.menu.model.SiteAcsInfo;
 import io.nicheblog.dreamdiary.feature.admin.menu.service.MenuService;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import io.nicheblog.dreamdiary.infrastructure.freemarker.interceptor.FreemarkerInterceptor;

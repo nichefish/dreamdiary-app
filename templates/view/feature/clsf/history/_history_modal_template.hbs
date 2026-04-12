@@ -1,0 +1,82 @@
+<#--
+ * common history modal template
+ -->
+
+<script type="text/x-handlebars-template" id="clsf_history_modal_template">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div class="fs-7 text-muted">
+            <@spring.message 'txt.history.triggered-at'/>:
+            <span class="text-gray-700">{{ifEmpty historyTriggeredAt "-"}}</span>
+        </div>
+        {{#if historyList.length}}
+        <button type="button"
+                class="btn btn-sm btn-light-danger"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="<@spring.message 'bs.tooltip.history.clear'/>"
+                onclick="dF.History.modal.clear('{{contentType}}', {{postNo}});">
+            <i class="bi bi-trash3"></i>
+            <span><@spring.message 'txt.history.clear'/></span>
+        </button>
+        {{/if}}
+    </div>
+
+    <div class="d-flex flex-column gap-4">
+        {{#each historyList}}
+            <div class="card card-bordered shadow-sm">
+                <div class="card-body py-4 px-5">
+                    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+                        <div class="flex-grow-1">
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                                {{#if (equals historyType "RESTORE")}}
+                                    <span class="badge badge-light-warning text-warning"><@spring.message 'txt.history.restore'/></span>
+                                {{else}}
+                                    <span class="badge badge-light-primary text-primary"><@spring.message 'txt.history.change'/></span>
+                                {{/if}}
+                                <span class="badge badge-light-dark text-dark"># {{historyNo}}</span>
+                                {{#if fromHistoryNo}}
+                                    <span class="fs-8 text-muted"><@spring.message 'txt.history.from-no'/> # {{fromHistoryNo}}</span>
+                                {{/if}}
+                            </div>
+                            <div class="d-flex flex-wrap gap-4 fs-7">
+                                <div>
+                                    <span class="text-muted"><@spring.message 'txt.reg-dt'/>:</span>
+                                    <span class="fw-semibold text-dark ms-1">{{ifEmpty regDt "-"}}</span>
+                                </div>
+                                <div>
+                                    <span class="text-muted"><@spring.message 'txt.regstr'/>:</span>
+                                    <span class="fw-semibold text-dark ms-1">{{ifEmpty regstrNm "-"}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="button"
+                                    class="btn btn-sm btn-light-primary"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    title="<@spring.message 'bs.tooltip.history.restore'/>"
+                                    onclick="dF.History.modal.restore('{{../contentType}}', {{../postNo}}, {{historyNo}});">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                                <span><@spring.message 'txt.comm.restore'/></span>
+                            </button>
+                            <button type="button"
+                                    class="btn btn-sm btn-light-danger"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    title="<@spring.message 'bs.tooltip.history.delete'/>"
+                                    onclick="dF.History.modal.remove('{{../contentType}}', {{../postNo}}, {{historyNo}});">
+                                <i class="bi bi-trash"></i>
+                                <span><@spring.message 'txt.comm.del'/></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="jrnl-history-preview fs-7 text-gray-700">{{ifEmpty previewCn "-"}}</div>
+                </div>
+            </div>
+        {{else}}
+            <div class="d-flex-center min-h-150px text-muted">
+                <@spring.message 'txt.history.empty'/>
+            </div>
+        {{/each}}
+    </div>
+</script>

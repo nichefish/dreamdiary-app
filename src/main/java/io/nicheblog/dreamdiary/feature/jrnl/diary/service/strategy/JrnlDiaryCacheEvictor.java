@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.jrnl.diary.service.strategy;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictor;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
@@ -33,28 +33,29 @@ public class JrnlDiaryCacheEvictor
     public void evict(final JrnlCacheEvictParam param) throws Exception {
         final ContentType refContentType = ContentType.JRNL_DIARY;
         try {
+            final String userId = param.getRegstrId();
             final Integer postNo = param.getPostNo();
             final Integer jrnlDayNo = param.getJrnlDayNo();
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();
             final String weekStartDt = param.getWeekStartDt();
             // jrnl_diary
-            this.evictMyYyCacheByYyPrefix("jrnlDiaryYySumryStatedListByUser", yy);
-            EhCacheUtils.evictMyCacheByKey("jrnlDiaryDtlDtoByUser", postNo);
+            this.evictMyYyCacheByYyPrefix(userId, "jrnlDiaryYySumryStatedListByUser", yy);
+            EhCacheUtils.evictUserCacheByKey("jrnlDiaryDtlDtoByUser", userId, postNo);
             // jrnl_day
             if (jrnlDayNo != null) {
-                EhCacheUtils.evictMyCacheByKey("jrnlDayDtlDtoByUser", jrnlDayNo);
+                EhCacheUtils.evictUserCacheByKey("jrnlDayDtlDtoByUser", userId, jrnlDayNo);
             }
-            this.evictMyJrnlDayYyMnthCaches(yy, mnth);
-            this.evictMyJrnlDayWeeklyCaches(weekStartDt);
+            this.evictMyJrnlDayYyMnthCaches(userId, yy, mnth);
+            this.evictMyJrnlDayWeeklyCaches(userId, weekStartDt);
             // jrnl_diary_tag
-            EhCacheUtils.clearMyCache("jrnlDiaryTagCtgrMapByUser");
-            EhCacheUtils.clearMyCache("jrnlDiaryTagListByUser");
-            EhCacheUtils.clearMyCache("jrnlDiaryYyMnthTagListByUser");
-            EhCacheUtils.clearMyCache("jrnlDiaryWeeklyTagListByUser");
-            EhCacheUtils.clearMyCache("jrnlDiaryYyMnthSizedTagListByUser");
-            EhCacheUtils.clearMyCache("jrnlDiaryWeeklySizedTagListByUser");
-            EhCacheUtils.clearMyCache("jrnlDiaryCountMapByUser");
+            EhCacheUtils.clearUserCache("jrnlDiaryTagCtgrMapByUser", userId);
+            EhCacheUtils.clearUserCache("jrnlDiaryTagListByUser", userId);
+            EhCacheUtils.clearUserCache("jrnlDiaryYyMnthTagListByUser", userId);
+            EhCacheUtils.clearUserCache("jrnlDiaryWeeklyTagListByUser", userId);
+            EhCacheUtils.clearUserCache("jrnlDiaryYyMnthSizedTagListByUser", userId);
+            EhCacheUtils.clearUserCache("jrnlDiaryWeeklySizedTagListByUser", userId);
+            EhCacheUtils.clearUserCache("jrnlDiaryCountMapByUser", userId);
 
             // 태그 캐시 처리
             if (postNo != null) {

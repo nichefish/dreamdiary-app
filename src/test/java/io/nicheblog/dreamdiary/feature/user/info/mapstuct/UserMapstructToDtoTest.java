@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.user.info.mapstuct;
 
-import io.nicheblog.dreamdiary.auth.Auth;
+import io.nicheblog.dreamdiary.auth.type.Auth;
 import io.nicheblog.dreamdiary.feature.user.emplym.entity.UserEmplymEntity;
 import io.nicheblog.dreamdiary.feature.user.emplym.entity.UserEmplymEntityTestFactory;
 import io.nicheblog.dreamdiary.feature.user.info.entity.*;

@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.feature.jrnl.dream.controller;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamSearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.service.JrnlDreamExportService;
-import io.nicheblog.dreamdiary.feature.jrnl.dream.service.JrnlDreamService;
+import io.nicheblog.dreamdiary.feature.jrnl.dream.service.my.MyJrnlDreamService;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -38,7 +38,7 @@ public class JrnlDreamExportController
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JRNL;        // 작업 카테고리 (로그 적재용)
 
-    private final JrnlDreamService jrnlDreamService;
+    private final MyJrnlDreamService myJrnlDreamService;
     private final JrnlDreamExportService jrnlDreamExportService;
 
     /**
@@ -53,7 +53,7 @@ public class JrnlDreamExportController
             final JrnlDreamSearchParam searchParam
     ) throws Exception {
 
-        final List<JrnlDreamDto> jrnlDreamList = jrnlDreamService.getMyListDto(searchParam);
+        final List<JrnlDreamDto> jrnlDreamList = myJrnlDreamService.getMyListDto(searchParam);
         final String text = jrnlDreamExportService.buildTxt(jrnlDreamList, searchParam);
         final byte[] bytes = text.getBytes(StandardCharsets.UTF_8);
         final String filename = "dreams_search_@" + DateUtils.getCurrDateStr(DatePtn.PDATE) + ".txt";

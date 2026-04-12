@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.feature.jrnl._shared.handler;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.strategy.JrnlDayCacheEvictor;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.service.strategy.JrnlDiaryCacheEvictor;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.service.strategy.JrnlDreamCacheEvictor;
-import io.nicheblog.dreamdiary.feature.jrnl.entry.service.strategy.JrnlEntryCacheEvictor;
+import io.nicheblog.dreamdiary.feature.jrnl.chapter.service.strategy.JrnlChapterCacheEvictor;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.service.strategy.JrnlIntrptCacheEvictor;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.service.strategy.JrnlSumryCacheEvictor;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.service.strategy.JrnlSumryReviewCacheEvictor;
@@ -13,8 +13,6 @@ import io.nicheblog.dreamdiary.feature.jrnl.todo.service.strategy.JrnlTodoCacheE
 import io.nicheblog.dreamdiary.global.util.TransactionHookUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -37,7 +35,7 @@ import java.util.Set;
 public class JrnlCacheEvictWorker {
 
     private final JrnlDayCacheEvictor jrnlDayCacheEvictor;
-    private final JrnlEntryCacheEvictor jrnlEntryCacheEvictor;
+    private final JrnlChapterCacheEvictor jrnlChapterCacheEvictor;
     private final JrnlDiaryCacheEvictor jrnlDiaryCacheEvictor;
     private final JrnlDreamCacheEvictor jrnlDreamCacheEvictor;
     private final JrnlIntrptCacheEvictor jrnlIntrptCacheEvictor;
@@ -51,7 +49,7 @@ public class JrnlCacheEvictWorker {
     @PostConstruct
     private void initEvictorMap() {
         evictorMap.put(ContentType.JRNL_DAY, jrnlDayCacheEvictor);
-        evictorMap.put(ContentType.JRNL_ENTRY, jrnlEntryCacheEvictor);
+        evictorMap.put(ContentType.JRNL_CHAPTER, jrnlChapterCacheEvictor);
         evictorMap.put(ContentType.JRNL_DIARY, jrnlDiaryCacheEvictor);
         evictorMap.put(ContentType.JRNL_DREAM, jrnlDreamCacheEvictor);
         evictorMap.put(ContentType.JRNL_INTRPT, jrnlIntrptCacheEvictor);
@@ -67,7 +65,7 @@ public class JrnlCacheEvictWorker {
     private void validateEvictorMap() {
         final Set<ContentType> requiredTypes = EnumSet.of(
                 ContentType.JRNL_DAY,
-                ContentType.JRNL_ENTRY,
+                ContentType.JRNL_CHAPTER,
                 ContentType.JRNL_DIARY,
                 ContentType.JRNL_DREAM,
                 ContentType.JRNL_INTRPT,
@@ -91,36 +89,26 @@ public class JrnlCacheEvictWorker {
     public void evictAfterCommit(final JrnlCacheEvictParam param, final ContentType contentType) throws Exception {
         if (param == null || contentType == null || ContentType.DEFAULT.equals(contentType)) return;
 
-        final SecurityContext capturedSecurityContext = SecurityContextHolder.getContext();
         TransactionHookUtils.runAfterCommitOrNow(
-                () -> this.evict(capturedSecurityContext, param, contentType),
+                () -> this.evict(param, contentType),
                 e -> log.error("Journal cache invalidation failed [{}:{}]: {}", contentType, param.getPostNo(), e.getMessage(), e)
         );
     }
 
     /**
      * evict
-     * @param securityContext SecurityContext
      * @param cacheEvictParam JrnlCacheEvictParam
      * @param contentType ContentType
      */
     public void evict(
-            final SecurityContext securityContext,
             final JrnlCacheEvictParam cacheEvictParam,
             final ContentType contentType
     ) throws Exception {
-        final SecurityContext previousSecurityContext = SecurityContextHolder.getContext();
-        try {
-            SecurityContextHolder.setContext(securityContext);
-
-            final JrnlCacheEvictor evictor = evictorMap.get(contentType);
-            if (evictor == null) {
-                log.warn("No CacheEvictor found for ContentType: {}", contentType);
-                return;
-            }
-            evictor.evict(cacheEvictParam);
-        } finally {
-            SecurityContextHolder.setContext(previousSecurityContext);
+        final JrnlCacheEvictor evictor = evictorMap.get(contentType);
+        if (evictor == null) {
+            log.warn("No CacheEvictor found for ContentType: {}", contentType);
+            return;
         }
+        evictor.evict(cacheEvictParam);
     }
 }

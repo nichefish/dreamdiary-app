@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.feature.clsf._shared.mapstruct.BaseClsfMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.day.entity.JrnlDayEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.mapstruct.JrnlDreamMapstruct;
-import io.nicheblog.dreamdiary.feature.jrnl.entry.mapstruct.JrnlEntryMapstruct;
+import io.nicheblog.dreamdiary.feature.jrnl.chapter.mapstruct.JrnlChapterMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -23,7 +23,7 @@ import org.mapstruct.*;
     componentModel = "spring",
     unmappedTargetPolicy = ReportingPolicy.IGNORE,
     imports = { DateUtils.class, DatePtn.class, StringUtils.class },
-    uses = { JrnlDreamMapstruct.class, JrnlEntryMapstruct.class },
+    uses = { JrnlDreamMapstruct.class, JrnlChapterMapstruct.class },
     builder = @Builder(disableBuilder = true)
 )
 public abstract class JrnlDayMapstruct
@@ -68,6 +68,6 @@ public abstract class JrnlDayMapstruct
     @Mapping(target = "aprxmtDt", expression = "java(DateUtils.asStr(entity.getAprxmtDt(), DatePtn.DATE))")
     @Mapping(target = "stdrdDt", expression = "java(DateUtils.asStr(\"Y\".equals(entity.getDtUnknownYn()) ? entity.getAprxmtDt() : entity.getJrnlDt(), DatePtn.DATE))")
     @Mapping(target = "weekStartDt", expression = "java(DateUtils.asStr(entity.getWeekStartDt(), DatePtn.DATE))")
-    @Mapping(target = "entryList", source = "jrnlEntryList")
+    @Mapping(target = "chapterList", source = "jrnlChapterList")
     public abstract JrnlDayDto toDto(final JrnlDayEntity entity) throws Exception;
 }

@@ -510,16 +510,15 @@ cF.date = (function(): Module {
                 case "week":
                     // 이전주, 다음주
                     return cF.date.getDateStrAddDay(stdrdDate, (type === "prev") ? -7 : 7);
-                case "month":
-                    // 이전월, 다음월
-                    if (type === "prev") {
-                        date.setMonth(date.getMonth() - 1);
-                        date.setDate(1); // 첫 날로 설정
-                    } else {
-                        date.setMonth(date.getMonth() + 1);
-                        date.setDate(1); // 첫 날로 설정
-                    }
+                case "month": {
+                    // 이전월, 다음월 (오버플로 방지: 날짜를 먼저 1일로 고정 후 월 변경)
+                    const originalDay: number = date.getDate();
+                    date.setDate(1);
+                    date.setMonth(date.getMonth() + (type === "prev" ? -1 : 1));
+                    const lastDay: number = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+                    date.setDate(Math.min(originalDay, lastDay));
                     return date;
+                }
                 case "year":
                     // 작년, 내년
                     const newYear: number = date.getFullYear() + (type === "prev" ? -1 : 1);

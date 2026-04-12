@@ -5,14 +5,14 @@
 
 <script type="text/x-handlebars-template" id="jrnl_day_list_template">
     {{#each list}}
-        <div class="jrnl-day">
+        <div class="jrnl-day" id="jrnl-day-{{stdrdDt}}" data-stdrd-dt="{{stdrdDt}}">
             <div class="jrnl-day-header" data-date="{{stdrdDt}}">
                 <div class="col-12 col-md-1 d-flex flex-wrap align-items-center fs-5 fw-bold">
                     {{> jrnl_day_stdrd_dt_partial this}}
                 </div>
                 <div class="col-3 d-none d-md-flex align-items-center gap-2">
                     {{#if ../showDiaries}}
-                        {{> jrnl_entry_reg_btn_partial this}}
+                        {{> jrnl_chapter_reg_btn_partial this}}
                     {{/if}}
                     {{#if ../showDreams}}
                         {{> jrnl_dream_reg_btn_partial this}}
@@ -36,8 +36,19 @@
             </div>
             <div class="jrnl-day-cn row p-5">
                 {{#if ../showDiaries}}
-                    {{#each jrnlEntryList}}
-                        {{> jrnl_entry_item_partial this}}
+                    {{#if (exists hiddenChapterCtgrList)}}
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="d-flex flex-wrap align-items-center gap-2 ps-1 ps-md-5">
+                                <span class="badge badge-light-warning text-warning fw-semibold">CHAPTER FILTER</span>
+                                <span class="text-muted fs-7">숨겨진 카테고리:</span>
+                                {{#each hiddenChapterCtgrList}}
+                                    <span class="badge badge-light-secondary text-muted">{{ctgrNm}} {{ctgrCd}}</span>
+                                {{/each}}
+                            </div>
+                        </div>
+                    {{/if}}
+                    {{#each jrnlChapterList}}
+                        {{> jrnl_chapter_item_partial this}}
                     {{/each}}
                 {{/if}}
                 {{#if ../showDreams}}
@@ -55,6 +66,17 @@
                     {{#each jrnlElseDreamList}}
                         {{> jrnl_dream_item_partial this}}
                     {{/each}}
+                {{else}}
+                    {{#if hasDream}}
+                        <div class="d-flex align-items-center mt-2">
+                            <div class="col ps-1 ps-md-5">
+                                <span class="badge badge-light-secondary text-muted fw-normal">
+                                    <i class="bi bi-moon-stars me-1"></i>
+                                    꿈 숨김
+                                </span>
+                            </div>
+                        </div>
+                    {{/if}}
                 {{/if}}
             </div>
         </div>

@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.jrnl.sumry.entity;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import lombok.experimental.UtilityClass;
 import org.springframework.test.context.ActiveProfiles;
 

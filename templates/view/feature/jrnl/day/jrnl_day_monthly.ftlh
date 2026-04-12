@@ -14,8 +14,6 @@
 <link rel="stylesheet" type="text/css" href="/css/jrnl.css?${releaseDate!}" />
 
 <div class="jrnl-day-monthly-page">
-<#--filter status-->
-<#include "/view/feature/jrnl/day/_filter/_jrnl_day_filter_status.ftlh">
     <div class="d-flex flex-column-fluid justify-content-between align-items-start align-items-xl-center gap-4">
         <#--begin::Tab-->
         <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">
@@ -57,7 +55,7 @@
             </li>
         </ul>
         <#--keyword search (popup)-->
-        <#include "/view/feature/jrnl/day/_filter/_jrnl_day_keyword_search.ftlh">
+        <#include "/view/feature/jrnl/day/_jrnl_day_keyword_search.ftlh">
     </div>
     <!--begin::Card-->
     <div class="card post" style="margin-top: 0 !important;">
@@ -99,28 +97,28 @@
 <script type="text/javascript" src="/js/common/helper/fullcalendar.js?${releaseDate!}"></script>
 
 <#--include::jrnl_day_module-->
+<#include "/view/feature/jrnl/day/_jrnl_day_list_template.hbs">
 <#include "/view/feature/jrnl/day/_modal/_jrnl_day_reg_modal.ftlh">
 <#include "/view/feature/jrnl/day/_modal/_jrnl_day_dtl_modal.ftlh">
-<#include "/view/feature/jrnl/day/_jrnl_day_list_template.hbs">
 <#include "/view/feature/jrnl/day/_partial/_jrnl_day_stdrd_dt_partial.hbs">
 <#include "/view/feature/jrnl/day/_partial/_jrnl_day_context_btn_partial.hbs">
 <#include "/view/feature/jrnl/day/_partial/_jrnl_day_meta_btn_partial.hbs">
 <script type="text/javascript" src="/js/view/feature/jrnl/day/jrnl_day_module.js?${releaseDate!}"></script>
 
-<#--include::jrnl_entry_module-->
-<#include "/view/feature/jrnl/entry/_modal/_jrnl_entry_reg_modal.ftlh">
-<#include "/view/feature/jrnl/entry/_jrnl_entry_list_template.hbs">
-<#include "/view/feature/jrnl/entry/_partial/_jrnl_entry_item_partial.hbs">
-<#include "/view/feature/jrnl/entry/_partial/_jrnl_entry_reg_btn_partial.hbs">
-<#include "/view/feature/jrnl/entry/_partial/_jrnl_entry_copy_btn_partial.hbs">
-<#include "/view/feature/jrnl/entry/_partial/_jrnl_entry_export_btn_partial.hbs">
-<#include "/view/feature/jrnl/entry/_partial/_jrnl_entry_context_btn_partial.hbs">
-<#include "/view/feature/jrnl/entry/_partial/_jrnl_entry_toggle_btn_partial.hbs">
-<script type="text/javascript" src="/js/view/feature/jrnl/entry/jrnl_entry_module.js?${releaseDate!}"></script>
+<#--include::jrnl_chapter_module-->
+<#include "/view/feature/jrnl/chapter/_jrnl_chapter_list_template.hbs">
+<#include "/view/feature/jrnl/chapter/_modal/_jrnl_chapter_reg_modal.ftlh">
+<#include "/view/feature/jrnl/chapter/_partial/_jrnl_chapter_item_partial.hbs">
+<#include "/view/feature/jrnl/chapter/_partial/_jrnl_chapter_reg_btn_partial.hbs">
+<#include "/view/feature/jrnl/chapter/_partial/_jrnl_chapter_copy_btn_partial.hbs">
+<#include "/view/feature/jrnl/chapter/_partial/_jrnl_chapter_export_btn_partial.hbs">
+<#include "/view/feature/jrnl/chapter/_partial/_jrnl_chapter_context_btn_partial.hbs">
+<#include "/view/feature/jrnl/chapter/_partial/_jrnl_chapter_toggle_btn_partial.hbs">
+<script type="text/javascript" src="/js/view/feature/jrnl/chapter/jrnl_chapter_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_diary_module-->
-<#include "/view/feature/jrnl/diary/_modal/_jrnl_diary_reg_modal.ftlh">
 <#include "/view/feature/jrnl/diary/_jrnl_diary_list_template.hbs">
+<#include "/view/feature/jrnl/diary/_modal/_jrnl_diary_reg_modal.ftlh">
 <#include "/view/feature/jrnl/diary/_partial/_jrnl_diary_item_partial.hbs">
 <#include "/view/feature/jrnl/diary/_partial/_jrnl_diary_reg_btn_partial.hbs">
 <#include "/view/feature/jrnl/diary/_partial/_jrnl_diary_copy_btn_partial.hbs">
@@ -131,8 +129,8 @@
 <script type="text/javascript" src="/js/view/feature/jrnl/diary/jrnl_diary_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_dream_module-->
-<#include "/view/feature/jrnl/dream/_modal/_jrnl_dream_reg_modal.ftlh">
 <#include "/view/feature/jrnl/dream/_jrnl_dream_list_template.hbs">
+<#include "/view/feature/jrnl/dream/_modal/_jrnl_dream_reg_modal.ftlh">
 <#include "/view/feature/jrnl/dream/_partial/_jrnl_dream_item_partial.hbs">
 <#include "/view/feature/jrnl/dream/_partial/_jrnl_dream_reg_btn_partial.hbs">
 <#include "/view/feature/jrnl/dream/_partial/_jrnl_dream_copy_btn_partial.hbs">
@@ -143,8 +141,8 @@
 <script type="text/javascript" src="/js/view/feature/jrnl/dream/jrnl_dream_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_intrpt_module-->
-<#include "/view/feature/jrnl/intrpt/_modal/_jrnl_intrpt_reg_modal.ftlh">
 <#include "/view/feature/jrnl/intrpt/_jrnl_intrpt_list_template.hbs">
+<#include "/view/feature/jrnl/intrpt/_modal/_jrnl_intrpt_reg_modal.ftlh">
 <#include "/view/feature/jrnl/intrpt/_partial/_jrnl_intrpt_item_partial.hbs">
 <#include "/view/feature/jrnl/intrpt/_partial/_jrnl_intrpt_copy_btn_partial.hbs">
 <#include "/view/feature/jrnl/intrpt/_partial/_jrnl_intrpt_context_btn_partial.hbs">
@@ -157,8 +155,8 @@
 <script type="text/javascript" src="/js/view/feature/jrnl/todo/jrnl_todo_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_day_tag_module-->
-<#include "/view/feature/jrnl/day/tag/_modal/_jrnl_day_tag_dtl_modal.ftlh">
 <#include "/view/feature/jrnl/day/tag/_jrnl_day_tag_list_template.hbs">
+<#include "/view/feature/jrnl/day/tag/_modal/_jrnl_day_tag_dtl_modal.ftlh">
 <script type="text/javascript" src="/js/view/feature/jrnl/day/tag/jrnl_day_tag_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_day_meta_module-->
@@ -174,22 +172,25 @@
 <script type="text/javascript" src="/js/view/feature/jrnl/dream/tag/jrnl_dream_tag_module.js?${releaseDate!}"></script>
 
 <#--include::jrnl_intrpt_tag_module-->
-<#include "/view/feature/jrnl/intrpt/tag/_modal/_jrnl_intrpt_tag_dtl_modal.ftlh">
 <#include "/view/feature/jrnl/intrpt/tag/_jrnl_intrpt_tag_list_template.hbs">
+<#include "/view/feature/jrnl/intrpt/tag/_modal/_jrnl_intrpt_tag_dtl_modal.ftlh">
 <script type="text/javascript" src="/js/view/feature/jrnl/intrpt/tag/jrnl_intrpt_tag_module.js?${releaseDate!}"></script>
 
 <#--include::tags-->
 <#include "/view/feature/jrnl/tag/_jrnl_tag_list_modal.ftlh">
+<#include "/view/feature/clsf/tag/_modal/_tag_profile_modal.ftlh">
 <#include "/view/feature/clsf/tag/_partial/_tag_list_partial.hbs">
 <#include "/view/feature/clsf/tag/_partial/_tag_list_sized_partial.hbs">
 
 <#include "/view/feature/clsf/meta/_partial/_meta_list_partial.hbs">
 
 <#--include::comment-->
+<#include "/view/feature/clsf/history/_history_modal.ftlh">
 <#include "/view/feature/clsf/comment/_modal/_comment_reg_modal.ftlh">
 <#include "/view/feature/clsf/comment/_partial/_comment_list_partial.hbs">
 <#include "/view/feature/clsf/comment/_partial/_comment_reg_btn_partial.hbs">
 <script type="text/javascript" src="/js/view/feature/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/feature/clsf/related/related_content_module.js?${releaseDate!}"></script>
 
 <#--include::state-->
 <script type="text/javascript" src="/js/view/feature/clsf/state/state_module.js?${releaseDate!}"></script>

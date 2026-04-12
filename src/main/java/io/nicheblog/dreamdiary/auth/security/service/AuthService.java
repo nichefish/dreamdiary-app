@@ -7,7 +7,6 @@ import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.repository.jpa.AuthRoleRepository;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.feature.user.info.repository.jpa.UserRepository;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -51,7 +50,7 @@ public class AuthService
     @Transactional(readOnly = true)
     public AuthInfo loadUserByUsername(final String userId) throws UsernameNotFoundException {
         final Optional<UserEntity> rsWrapper = userRepository.findByUserId(userId);
-        if (rsWrapper.isEmpty()) throw new UsernameNotFoundException(MessageUtils.getExceptionMsg("UsernameNotFoundException"));
+        if (rsWrapper.isEmpty()) throw new UsernameNotFoundException("exception.UsernameNotFoundException");
         final UserEntity rsUser = rsWrapper.get();
 
         // TODO: 사용자 프로필 정보 존재여부 체크
@@ -72,7 +71,7 @@ public class AuthService
      */
     public AuthInfo loadUserByEmail(final String email) throws Exception {
         final Optional<UserEntity> rsWrapper = userRepository.findByEmail(email);
-        if (rsWrapper.isEmpty()) throw new UsernameNotFoundException(MessageUtils.getExceptionMsg("UsernameNotFoundException"));
+        if (rsWrapper.isEmpty()) throw new UsernameNotFoundException("exception.UsernameNotFoundException");
         final UserEntity rsUser = rsWrapper.get();
 
         return AuthInfoMapstruct.INSTANCE.toDto(rsUser);

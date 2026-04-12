@@ -63,8 +63,7 @@ dF.JrnlDream = (function(): dfModule {
                     break;
                 case "DAILY":
                 case "WEEKLY":
-                    Page.loadWeek(Page.stdrdDt);
-                    dF.JrnlDreamTag.listAjax();
+                    dF.JrnlDay.refresh();
                     break;
                 case "SEARCH":
                     location.reload();
@@ -246,17 +245,16 @@ dF.JrnlDream = (function(): dfModule {
         toggleStateAjax: function(postNo: string|number, stateCd: string, { onOffFunc }): void {
             if (isNaN(Number(postNo))) return;
 
-            const cacheContext = { yy: cF.util.getUrlParam("yy"), mnth: cF.util.getUrlParam("mnth") };
+            const item = document.querySelector(`.jrnl-dream-item[data-id='${postNo}']`) as HTMLElement;
+            const cacheContext = dF.State.resolveJrnlCacheContext(item);
             const payload = { postNo, contentType: "JRNL_DREAM", stateCd, cacheContext };
             dF.State.toggleAjax(payload, function(res: AjaxResponse): void {
-                const item = document.querySelector(`.jrnl-dream-item[data-id='${postNo}']`) as HTMLElement;
                 if (!item) return;
                 const lowerStateCd: string = stateCd.toLowerCase();
+                item.dataset[lowerStateCd] = res.rsltSts === "ON" ? "Y" : "N";
                 const icon: HTMLElement = item.querySelector(`.icon-${lowerStateCd}`);
-                if (!icon) console.warn("icon not found.");
                 icon?.classList.toggle("d-none", res.rsltSts !== "ON");
                 const chk: HTMLInputElement = item.querySelector(`.dream-context-${lowerStateCd}-check`);
-                if (!chk) console.warn("chk not found.");
                 if (chk) chk.checked = res.rsltSts === "ON";
                 onOffFunc(res, item);
             });
@@ -274,6 +272,7 @@ dF.JrnlDream = (function(): dfModule {
                 if (!cn) return console.warn("cn not found.");
 
                 cn?.classList.toggle("collapsed", res.rsltSts === "ON");
+                item.classList.toggle("is-collapsed", res.rsltSts === "ON");
             }
             this.toggleStateAjax(postNo, "COLLAPSED", { onOffFunc });
         },
@@ -290,6 +289,8 @@ dF.JrnlDream = (function(): dfModule {
                     const cn: HTMLDivElement = item.querySelector("div.jrnl-dream-cn .cn");
                     if (!cn) console.warn("cn not found.");
                     cn?.classList.add("collapsed");
+                    item.dataset.collapsed = "Y";
+                    item.classList.add("is-collapsed");
 
                     const collapsedChk: HTMLInputElement = item.querySelector(".dream-context-collapsed-check");
                     if (collapsedChk) collapsedChk.checked = true;
@@ -309,7 +310,7 @@ dF.JrnlDream = (function(): dfModule {
                 const cn: HTMLDivElement = item.querySelector("div.jrnl-dream-cn .cn");
                 if (!cn) return console.warn("cn not found.");
 
-                cn.classList.toggle("bg-secondary", res.rsltSts === "ON");
+                cn.classList.toggle("imprtc", res.rsltSts === "ON");
             }
             this.toggleStateAjax(postNo, "IMPRTC", { onOffFunc });
         },
@@ -325,7 +326,7 @@ dF.JrnlDream = (function(): dfModule {
                 const cn: HTMLDivElement = item.querySelector("div.jrnl-dream-cn .cn");
                 if (!cn) return console.warn("cn not found.");
 
-                cn.classList.toggle("bg-secondary", res.rsltSts === "ON");
+                cn.classList.toggle("refrnc", res.rsltSts === "ON");
             }
             this.toggleStateAjax(postNo, "REFRNC", { onOffFunc });
         },
@@ -404,11 +405,13 @@ dF.JrnlDream = (function(): dfModule {
             const isCollapsed: boolean = content.classList.contains("collapsed");
             if (isCollapsed) {
                 content.classList.remove("collapsed");
-                icon?.classList.replace("bi-chevron-down", "bi-chevron-up");
+                item.classList.remove("is-collapsed");
+                icon?.classList.replace("bi-arrows-expand", "bi-arrows-collapse");
                 collapsedIds.delete(id);
             } else {
                 content.classList.add("collapsed");
-                icon?.classList.replace("bi-chevron-up", "bi-chevron-down");
+                item.classList.add("is-collapsed");
+                icon?.classList.replace("bi-arrows-collapse", "bi-arrows-expand");
                 collapsedIds.add(id);
             }
 
@@ -427,7 +430,8 @@ dF.JrnlDream = (function(): dfModule {
                 if (!icon) console.log("icon not found.");
                 if (id && collapsedIds.has(id)) {
                     content?.classList.add("collapsed");
-                    icon?.classList.replace("bi-chevron-up", "bi-chevron-down");
+                    item.closest(".jrnl-dream-item")?.classList.add("is-collapsed");
+                    icon?.classList.replace("bi-arrows-collapse", "bi-arrows-expand");
                 }
             });
         },

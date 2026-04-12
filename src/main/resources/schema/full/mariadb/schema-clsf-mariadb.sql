@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS comment (
     mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
     -- ATCH_FILE
     atch_file_no INT COMMENT '첨부파일 번호',
+    visual_semantic VARCHAR(30) NOT NULL DEFAULT 'DEFAULT' COMMENT '시각 의미',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -106,22 +107,24 @@ CREATE TABLE IF NOT EXISTS tag_content (
     INDEX (ref_post_no, ref_content_type, regstr_id)
 ) COMMENT = '태그-컨텐츠';
 
--- 태그 속성 (tag_property)
--- @extends: BaseCrudEntity
-CREATE TABLE IF NOT EXISTS tag_property (
-    tag_property_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '태그 속성 번호 (PK)',
-    tag_no INT COMMENT '태그 번호',
-    content_type VARCHAR(30) COMMENT '컨텐츠 타입',
+-- 태그 프로필 (tag_profile)
+-- @extends: BaseAuditEntity
+CREATE TABLE IF NOT EXISTS tag_profile (
+    tag_profile_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '태그 프로필 번호 (PK)',
+    tag_no INT NOT NULL COMMENT '태그 번호',
+    content_type VARCHAR(50) NOT NULL COMMENT '컨텐츠 타입',
     --
-    css_class VARCHAR(20) COMMENT 'CSS 클래스',
-    css_style VARCHAR(500) COMMENT '스타일시트',
+    cn LONGTEXT COMMENT '내용',
+    text_semantic VARCHAR(30) NOT NULL DEFAULT 'DEFAULT' COMMENT '시각 의미',
     -- AUDIT
+    regstr_id VARCHAR(20) COMMENT '등록자 ID',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
     -- CONSTRAINT
     FOREIGN KEY (tag_no) REFERENCES tag(tag_no),
-    INDEX (content_type),
-    INDEX (tag_no, content_type)
-) COMMENT = '태그-컨텐츠';
+    UNIQUE KEY uk_tag_profile (tag_no, content_type, regstr_id),
+    INDEX (content_type)
+) COMMENT = '태그 프로필';
 
 -- 메타 (meta)
 -- @extends: BaseCrudEntity
@@ -190,6 +193,26 @@ CREATE TABLE IF NOT EXISTS managtr (
 
 -- ---------- --
 
+-- 이력 (history)
+-- @extends: BaseAuditRegEntity
+CREATE TABLE history (
+    history_no INT AUTO_INCREMENT COMMENT '이력 번호 (PK)',
+    ref_post_no INT COMMENT '참조 글번호',
+    ref_content_type VARCHAR(255) COMMENT '참조 컨텐츠 타입',
+    cn LONGTEXT COMMENT '이력 내용 스냅샷',
+    history_type VARCHAR(20) NOT NULL DEFAULT 'CHANGE' COMMENT '이력 타입',
+    from_history_no INT COMMENT '복구 원본 이력 번호',
+    -- AUDIT
+    reg_id VARCHAR(50) COMMENT '등록자',
+    reg_dt DATETIME COMMENT '등록일시',
+    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부',
+
+    PRIMARY KEY (history_no),
+    INDEX(ref_post_no, ref_content_type)
+);
+
+-- ---------- --
+
 -- 열람자 (viewer)
 -- @extends: BaseAuditRegEntity
 CREATE TABLE IF NOT EXISTS viewer (
@@ -205,3 +228,28 @@ CREATE TABLE IF NOT EXISTS viewer (
     INDEX (ref_post_no, ref_content_type),
     CONSTRAINT UC_user_post UNIQUE (regstr_id, ref_post_no, ref_content_type)  -- 유니크 제약 추가
 ) COMMENT = '열람자';
+
+-- ---------- --
+
+-- 관련글 (related)
+-- @extends: BaseAuditRegEntity
+CREATE TABLE IF NOT EXISTS related_content (
+    related_content_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '관련글 번호 (PK)',
+    left_post_no INT NOT NULL COMMENT '좌측 글 번호',
+    left_content_type VARCHAR(30) NOT NULL COMMENT '좌측 컨텐츠 타입',
+    right_post_no INT NOT NULL COMMENT '우측 글 번호',
+    right_content_type VARCHAR(30) NOT NULL COMMENT '우측 컨텐츠 타입',
+    relation_type VARCHAR(30) NOT NULL COMMENT '관계 타입',
+    reason VARCHAR(255) COMMENT '관계 사유',
+    origin_type VARCHAR(20) NOT NULL DEFAULT 'MANUAL' COMMENT '관계 생성 출처',
+    -- AUDIT
+    regstr_id VARCHAR(20) COMMENT '등록자 ID',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    -- CONSTRAINT
+    UNIQUE KEY uk_related_content_pair (left_content_type, left_post_no, right_content_type, right_post_no, regstr_id),
+    INDEX idx_related_content_left (left_post_no, left_content_type, regstr_id),
+    INDEX idx_related_content_right (right_post_no, right_content_type, regstr_id),
+    INDEX idx_related_content_type (relation_type),
+    INDEX idx_related_content_origin (origin_type)
+) COMMENT = '관련글';

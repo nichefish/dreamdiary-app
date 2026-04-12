@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.admin.tmplat.controller;
 
-import io.nicheblog.dreamdiary.feature.admin.menu.SiteMenu;
-import io.nicheblog.dreamdiary.feature.admin.menu.model.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
+import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.feature.admin.tmplat.model.TmplatDefDto;
 import io.nicheblog.dreamdiary.feature.admin.tmplat.model.TmplatDefSearchParam;
 import io.nicheblog.dreamdiary.feature.admin.tmplat.service.TmplatDefService;

@@ -1,8 +1,7 @@
 package io.nicheblog.dreamdiary.feature.jrnl.dream.spec;
 
-import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.spec.BaseClsfSpec;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.state.entity.StateEntity;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
@@ -211,6 +210,6 @@ public class JrnlDreamSpec
             final String regstrIdStr = regstrId.toString();
             if (!regstrIdStr.isBlank()) return regstrIdStr;
         }
-        return AuthUtils.getLgnUserId();
+        throw new IllegalArgumentException("regstrId is required.");
     }
 }

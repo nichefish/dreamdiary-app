@@ -136,7 +136,7 @@ dF.JrnlDreamTag = (function(): dfModule {
          * 태그 검색 팝업 호출
          * @param {string|number} tagNo - 조회할 태그 번호.
          */
-        select: function(tagNo: string|number): void {
+        openSearch: function(tagNo: string|number): void {
             let url: string = `${Url.JRNL_DREAM_SEARCH}?tagNos=${tagNo}`;
             if (dF.JrnlDay?.viewType === "WEEKLY") {
                 const weekStartDt: string = dF.JrnlDreamTag.getCurrentWeekStartDt();
@@ -147,6 +147,17 @@ dF.JrnlDreamTag = (function(): dfModule {
             const options: string = "width=1960,height=1440,top=0,left=270";
             const popup: Window = cF.ui.openPopup(url, popupNm, options);
             if (popup) popup.focus();
+        },
+
+        select: function(tagNo: string|number, tagNm?: string): void {
+            if (dF.JrnlDayTag?.isContextMenuEnabled?.()) {
+                dF.JrnlDayTag.openContextMenu(tagNo, tagNm ?? "", function(): void {
+                    dF.JrnlDreamTag.openSearch(tagNo);
+                }, "JRNL_DREAM");
+                return;
+            }
+
+            dF.JrnlDreamTag.openSearch(tagNo);
         },
     };
 })();

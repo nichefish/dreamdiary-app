@@ -52,7 +52,7 @@ class JrnlDiaryMapstructTest {
 
         // Then::
         assertNotNull(jrnlDiaryDto, "변환된 저널 일기 Dto는 null일 수 없습니다.");
-        assertEquals(DateUtils.asStr(jrnlDiaryEntity.getJrnlEntry().getJrnlDay().getJrnlDt(), DatePtn.DATE), jrnlDiaryDto.getStdrdDt(), "기준일자가 제대로 산정되지 않았습니다.");
+        assertEquals(DateUtils.asStr(jrnlDiaryEntity.getJrnlChapter().getJrnlDay().getJrnlDt(), DatePtn.DATE), jrnlDiaryDto.getStdrdDt(), "기준일자가 제대로 산정되지 않았습니다.");
     }
 
     /**

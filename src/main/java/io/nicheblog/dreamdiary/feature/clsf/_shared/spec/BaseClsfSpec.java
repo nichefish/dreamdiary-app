@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,9 +42,12 @@ public interface BaseClsfSpec<Entity extends BaseClsfEntity>
             List<Predicate> predicate = new ArrayList<>();
             try {
                 // basePredicte 먼저 처리 후 나머지에 대해 처리
-                basePredicate = getBasePredicate(searchParamMap, root, query, builder);
-                clsfPredicate = getClsfPredicate(searchParamMap, root, query, builder);
-                predicate = getPredicateWithParams(searchParamMap, root, query, builder);
+                final Map<String, Object> baseSearchParamMap = new HashMap<>(searchParamMap);
+                final Map<String, Object> clsfSearchParamMap = new HashMap<>(searchParamMap);
+                final Map<String, Object> customSearchParamMap = new HashMap<>(searchParamMap);
+                basePredicate = getBasePredicate(baseSearchParamMap, root, query, builder);
+                clsfPredicate = getClsfPredicate(clsfSearchParamMap, root, query, builder);
+                predicate = getPredicateWithParams(customSearchParamMap, root, query, builder);
             } catch (final Exception e) {
                 e.printStackTrace();
             }

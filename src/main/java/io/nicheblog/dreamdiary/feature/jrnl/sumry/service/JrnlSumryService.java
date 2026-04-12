@@ -2,8 +2,8 @@ package io.nicheblog.dreamdiary.feature.jrnl.sumry.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.entity.JrnlSumryEntity;
@@ -12,9 +12,7 @@ import io.nicheblog.dreamdiary.feature.jrnl.sumry.model.JrnlSumryDto;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.repository.jpa.JrnlSumryRepository;
 import io.nicheblog.dreamdiary.feature.jrnl.sumry.spec.JrnlSumrySpec;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -69,39 +67,10 @@ public class JrnlSumryService
      * @param searchParam 검색 조건을 담은 파라미터 객체
      * @return {@link List<JrnlSumryDto>} -- 검색 조건에 맞는 결산 목록 Dto 리스트
      */
-    public List<JrnlSumryDto> getMyListDto(final BaseSearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getListDtoByUser(userId, searchParam);
-    }
-
-    /**
-     * 저널 결산 정뵤 목록 조회 :: 캐시 사용 위해 구현체로 pullUp
-     *
-     * @param searchParam 검색 조건을 담은 파라미터 객체
-     * @return {@link List<JrnlSumryDto>} -- 검색 조건에 맞는 결산 목록 Dto 리스트
-     */
     @Cacheable(value="jrnlSumryListByUser", key="#userId")
     public List<JrnlSumryDto> getListDtoByUser(final String userId, final BaseSearchParam searchParam) throws Exception {
         searchParam.setRegstrId(AuthUtils.requireUserId(userId));
         return this.getSelf().getListDto(searchParam);
-    }
-
-    /**
-     * 년도를 받아서 해당 년도 저널 결산 정보 생성
-     *
-     * @return {@link Boolean} -- 결산 생성 성공 여부 (항상 true 반환)
-     */
-    public Boolean makeMyYySumry(final Integer yy) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().makeYySumryByUser(userId, yy);
-    }
-
-    public Boolean makeMyTotalYySumry() throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        final Boolean result = this.getSelf().makeTotalYySumryByUser(userId);
-        EhCacheUtils.clearMyCache("jrnlSumryDtlDtoByUser");
-        EhCacheUtils.clearMyCache("jrnlSumryYyDtlDtoByUser");
-        return result;
     }
 
     @Transactional
@@ -152,16 +121,6 @@ public class JrnlSumryService
      *
      * @return {@link JrnlSumryDto} -- 총 결산 정보가 담긴 Dto 객체
      */
-    public JrnlSumryDto getMyTotalSumry() {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getTotalSumryByUser(userId);
-    }
-
-    /**
-     * 관련 정보를 취합하여 총 저널 결산 정보를 생성합니다. (캐시 처리)
-     *
-     * @return {@link JrnlSumryDto} -- 총 결산 정보가 담긴 Dto 객체
-     */
     @Cacheable(value="jrnlSumryTotalListByUser", key="#userId")
     public JrnlSumryDto getTotalSumryByUser(final String userId) {
         final JrnlSumryDto totalSumry = new JrnlSumryDto();
@@ -195,7 +154,7 @@ public class JrnlSumryService
     @Override
     public void preModify(final JrnlSumryDto modifyDto, final JrnlSumryEntity modifyEntity) throws Exception {
         if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
 
@@ -205,16 +164,11 @@ public class JrnlSumryService
      * @param key 식별자
      * @return {@link JrnlSumryDto} -- 조회된 결산 정보가 담긴 Dto 객체
      */
-    public JrnlSumryDto getMySumryDtl(final Integer key) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getSumryDtlByUser(userId, key);
-    }
-
     @Cacheable(value="jrnlSumryDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #key)")
     public JrnlSumryDto getSumryDtlByUser(final String userId, final Integer key) throws Exception {
         final JrnlSumryDto retrieved = this.getSelf().getDtlDto(key);
         if (retrieved != null && !retrieved.getIsRegstr(userId)) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         return retrieved;
     }
@@ -225,11 +179,6 @@ public class JrnlSumryService
      * @param yy 조회할 년도
      * @return {@link JrnlSumryDto} -- 조회된 결산 정보가 담긴 Dto 객체, 없을 경우 null 반환
      */
-    public JrnlSumryDto getMyDtlDtoByYy(final Integer yy) throws Exception {
-        final String userId = AuthUtils.getLgnUserId();
-        return this.getSelf().getDtlDtoByYyByUser(userId, yy);
-    }
-
     @Cacheable(value="jrnlSumryYyDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #yy)")
     public JrnlSumryDto getDtlDtoByYyByUser(final String userId, final Integer yy) throws Exception {
         final Optional<JrnlSumryEntity> retrievedWrapper = repository.findByYyAndRegstrId(yy, AuthUtils.requireUserId(userId));
@@ -248,7 +197,7 @@ public class JrnlSumryService
     public boolean dreamCompt(final Integer key) throws Exception {
         final JrnlSumryEntity retrievedEntity = this.getDtlEntity(key);
         if (!AuthUtils.isRegstr(retrievedEntity.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         retrievedEntity.setDreamComptYn("Y");
         repository.save(retrievedEntity);
@@ -273,7 +222,7 @@ public class JrnlSumryService
     @Override
     public void preDelete(final JrnlSumryDto deletedDto) throws Exception {
         if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
-            throw new NotAuthorizedException(MessageUtils.getMessage("msg.rslt.access-not-authorized"));
+            throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
 }

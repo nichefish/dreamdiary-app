@@ -2,8 +2,8 @@ package io.nicheblog.dreamdiary.feature.report.xlsx.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nicheblog.dreamdiary.feature.clsf.file.utils.FileUtils;
-import io.nicheblog.dreamdiary.feature.report.xlsx.XlsxCellStyle;
-import io.nicheblog.dreamdiary.feature.report.xlsx.XlsxType;
+import io.nicheblog.dreamdiary.feature.report.xlsx.type.XlsxCellStyle;
+import io.nicheblog.dreamdiary.feature.report.xlsx.type.XlsxType;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

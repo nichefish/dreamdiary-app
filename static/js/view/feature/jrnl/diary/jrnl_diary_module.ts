@@ -63,8 +63,7 @@ dF.JrnlDiary = (function(): dfModule {
                     break;
                 case "DAILY":
                 case "WEEKLY":
-                    Page.loadWeek(Page.stdrdDt);
-                    dF.JrnlDiaryTag.listAjax();
+                    dF.JrnlDay.refresh();
                     break;
                 case "SEARCH":
                     location.reload();
@@ -106,18 +105,19 @@ dF.JrnlDiary = (function(): dfModule {
          * 등록 모달 호출
          * @param {Object} param - 파라미터 객체
          * @param {string|number} param.jrnlDayNo - 저널 일자 번호.
-         * @param {string|number} param.jrnlEntryNo - 저널 항목 번호.
+         * @param {string|number} param.jrnlChapterNo - 저널 챕터 번호.
          * @param {string} param.stdrdDt - 기준 날짜.
          * @param {string} param.jrnlDtWeekDay - 기준 날짜 요일.
          */
-        regModal: function({ jrnlDayNo, jrnlEntryNo, stdrdDt, jrnlDtWeekDay }: { jrnlDayNo: string | number; jrnlEntryNo: string | number; stdrdDt: string; jrnlDtWeekDay: string; }): void {
-            if (isNaN(Number(jrnlEntryNo))) return;
+        regModal: function({ jrnlDayNo, jrnlChapterNo, stdrdDt, jrnlDtWeekDay }: { jrnlDayNo: string | number; jrnlChapterNo: string | number; stdrdDt: string; jrnlDtWeekDay: string; }): void {
+            if (isNaN(Number(jrnlDayNo))) return;
+            if (isNaN(Number(jrnlChapterNo))) return;
 
             const url: string = cF.util.bindUrl(Url.JRNL_DAY, { postNo: jrnlDayNo });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) return;
-                const entryList = res.rsltObj.entryList;
-                const obj: Record<string, any> = { jrnlDayNo: jrnlDayNo, jrnlEntryNo: jrnlEntryNo, stdrdDt: stdrdDt, jrnlDtWeekDay: jrnlDtWeekDay, entryList: entryList };
+                const chapterList = res.rsltObj.chapterList;
+                const obj: Record<string, any> = { jrnlDayNo: jrnlDayNo, jrnlChapterNo: jrnlChapterNo, stdrdDt: stdrdDt, jrnlDtWeekDay: jrnlDtWeekDay, chapterList: chapterList };
                 /* initialize form. */
                 dF.JrnlDiary.initForm(obj);
             });
@@ -215,8 +215,8 @@ dF.JrnlDiary = (function(): dfModule {
                 const url: string = cF.util.bindUrl(Url.JRNL_DAY, { postNo: rsltObj.jrnlDayNo });
                 cF.ajax.get(url, null, function(res: AjaxResponse): void {
                     if (!res.rslt) return;
-                    const entryList = res.rsltObj.entryList;
-                    const obj: Record<string, any> = { ...rsltObj, entryList: entryList };
+                    const chapterList = res.rsltObj.chapterList;
+                    const obj: Record<string, any> = { ...rsltObj, chapterList: chapterList };
                     /* initialize form. */
                     dF.JrnlDiary.initForm(obj);
 
@@ -245,7 +245,7 @@ dF.JrnlDiary = (function(): dfModule {
                         .then(function(): void {
                             if (!res.rslt) return;
 
-                            dF.JrnlDay.refresh();
+                            dF.JrnlDiary.refresh();
                         });
                 }, "block");
             });
@@ -260,17 +260,16 @@ dF.JrnlDiary = (function(): dfModule {
         toggleStateAjax: function(postNo: string|number, stateCd: string, { onOffFunc }): void {
             if (isNaN(Number(postNo))) return;
 
-            const cacheContext = { yy: cF.util.getUrlParam("yy"), mnth: cF.util.getUrlParam("mnth") };
+            const item = document.querySelector(`.jrnl-diary-item[data-id='${postNo}']`) as HTMLElement;
+            const cacheContext = dF.State.resolveJrnlCacheContext(item);
             const payload = { postNo, contentType: "JRNL_DIARY", stateCd, cacheContext };
             dF.State.toggleAjax(payload, function(res: AjaxResponse): void {
-                const item = document.querySelector(`.jrnl-diary-item[data-id='${postNo}']`) as HTMLElement;
                 if (!item) return;
                 const lowerStateCd: string = stateCd.toLowerCase();
+                item.dataset[lowerStateCd] = res.rsltSts === "ON" ? "Y" : "N";
                 const icon: HTMLElement = item.querySelector(`.icon-${lowerStateCd}`);
-                if (!icon) console.warn("icon not found.");
                 icon?.classList.toggle("d-none", res.rsltSts !== "ON");
                 const chk: HTMLInputElement = item.querySelector(`.diary-context-${lowerStateCd}-check`);
-                if (!chk) console.warn("chk not found.");
                 if (chk) chk.checked = res.rsltSts === "ON";
                 onOffFunc(res, item);
             });
@@ -288,6 +287,7 @@ dF.JrnlDiary = (function(): dfModule {
                 if (!cn) return console.warn("cn not found.");
 
                 cn?.classList.toggle("collapsed", res.rsltSts === "ON");
+                item.classList.toggle("is-collapsed", res.rsltSts === "ON");
             }
             this.toggleStateAjax(postNo, "COLLAPSED", { onOffFunc });
         },
@@ -304,6 +304,8 @@ dF.JrnlDiary = (function(): dfModule {
                     const cn: HTMLDivElement = item.querySelector("div.jrnl-diary-cn .cn");
                     if (!cn) console.warn("cn not found.");
                     cn?.classList.add("collapsed");
+                    item.dataset.collapsed = "Y";
+                    item.classList.add("is-collapsed");
 
                     const collapsedChk: HTMLInputElement = item.querySelector(".diary-context-collapsed-check");
                     if (collapsedChk) collapsedChk.checked = true;
@@ -322,10 +324,12 @@ dF.JrnlDiary = (function(): dfModule {
             if (isNaN(Number(postNo))) return;
 
             const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
-                const cn: HTMLDivElement = item.querySelector("div.jrnl-diary-cn");
+                const wrapper: HTMLDivElement = item.querySelector("div.jrnl-diary-cn");
+                const cn: HTMLDivElement = item.querySelector("div.jrnl-diary-cn .cn");
                 if (!cn) return console.warn("cn not found.");
 
-                cn.classList.toggle("bg-secondary", res.rsltSts === "ON");
+                wrapper?.classList.remove("bg-secondary");
+                cn.classList.toggle("imprtc", res.rsltSts === "ON");
             }
             this.toggleStateAjax(postNo, "IMPRTC", { onOffFunc });
         },
@@ -338,10 +342,12 @@ dF.JrnlDiary = (function(): dfModule {
             if (isNaN(Number(postNo))) return;
 
             const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
+                const wrapper: HTMLDivElement = item.querySelector("div.jrnl-diary-cn");
                 const cn: HTMLDivElement = item.querySelector("div.jrnl-diary-cn .cn");
                 if (!cn) return console.warn("cn not found.");
 
-                cn.classList.toggle("bg-secondary", res.rsltSts === "ON");
+                wrapper?.classList.remove("bg-secondary");
+                cn.classList.toggle("refrnc", res.rsltSts === "ON");
             }
             this.toggleStateAjax(postNo, "REFRNC", { onOffFunc });
         },
@@ -367,10 +373,12 @@ dF.JrnlDiary = (function(): dfModule {
             const isCollapsed: boolean = content.classList.contains("collapsed");
             if (isCollapsed) {
                 content.classList.remove("collapsed");
-                icon?.classList.replace("bi-chevron-down", "bi-chevron-up");
+                item.classList.remove("is-collapsed");
+                icon?.classList.replace("bi-arrows-expand", "bi-arrows-collapse");
             } else {
                 content.classList.add("collapsed");
-                icon?.classList.replace("bi-chevron-up", "bi-chevron-down");
+                item.classList.add("is-collapsed");
+                icon?.classList.replace("bi-arrows-collapse", "bi-arrows-expand");
             }
         },
 
@@ -424,14 +432,17 @@ dF.JrnlDiary = (function(): dfModule {
 
             if (!profile) throw new Error(`Unknown render profile: ${profileName}`);
 
+            const hasState = (targetState: string): boolean =>
+                Array.isArray(diary.state?.list) && diary.state.list.some((state: any): boolean => state?.stateCd === targetState);
+
             return {
                 ...diary,
                 view: profile,
                 cnClass: [
                     'cn',
-                    profile.collapsed && diary.state?.list?.includes('COLLAPSED') ? 'collapsed' : null,
-                    diary.state?.list?.includes('IMPRTC') ? 'border-1 border-danger' : null,
-                    diary.state?.list?.includes('REFRNC') ? 'border-1 border-warning' : null
+                    profile.collapsed && hasState('COLLAPSED') ? 'collapsed' : null,
+                    hasState('IMPRTC') ? 'imprtc' : null,
+                    hasState('REFRNC') ? 'refrnc' : null
                 ].filter(Boolean).join(' ')
             };
         }

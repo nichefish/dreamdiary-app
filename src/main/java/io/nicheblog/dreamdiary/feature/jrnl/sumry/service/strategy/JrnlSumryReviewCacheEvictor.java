@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.jrnl.sumry.service.strategy;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.handler.JrnlCacheEvictor;
 import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlCacheEvictParam;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
@@ -33,16 +33,17 @@ public class JrnlSumryReviewCacheEvictor
     public void evict(final JrnlCacheEvictParam param) throws Exception {
         final ContentType refContentType = ContentType.JRNL_SUMRY_REVIEW;
         try {
+            final String userId = param.getRegstrId();
             final Integer reviewPostNo = param.getPostNo();
             final Integer jrnlSumryNo = param.getJrnlSumryNo();
             final Integer yy = param.getYy();
 
             // Summary detail caches affected by review add/update/delete.
             if (jrnlSumryNo != null) {
-                EhCacheUtils.evictMyCacheByKey("jrnlSumryDtlDtoByUser", jrnlSumryNo);
+                EhCacheUtils.evictUserCacheByKey("jrnlSumryDtlDtoByUser", userId, jrnlSumryNo);
             }
             if (yy != null) {
-                EhCacheUtils.evictMyCacheByKey("jrnlSumryYyDtlDtoByUser", yy);
+                EhCacheUtils.evictUserCacheByKey("jrnlSumryYyDtlDtoByUser", userId, yy);
             }
 
             // Review tag cache.

@@ -74,9 +74,10 @@
     <cache alias="jrnlDayMetaYyListByUser" uses-template="defaultTemplate" />
     <cache alias="jrnlDayCountMapByUser" uses-template="defaultTemplate" />
 
-    <!-- 저널 항목 -->
-    <cache alias="jrnlEntryStateMapByUser" uses-template="defaultTemplate" />
-    <cache alias="jrnlEntryWeeklyStateMapByUser" uses-template="defaultTemplate" />
+    <!-- 저널 챕터 -->
+    <cache alias="jrnlChapterDtlDtoByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlChapterStateMapByUser" uses-template="defaultTemplate" />
+    <cache alias="jrnlChapterWeeklyStateMapByUser" uses-template="defaultTemplate" />
 
     <!-- 저널 일기 -->
     <cache alias="jrnlDiaryDtlDtoByUser" uses-template="defaultTemplate" />

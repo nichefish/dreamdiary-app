@@ -1,11 +1,15 @@
 package io.nicheblog.dreamdiary.feature.jrnl.dream.model;
 
-import io.nicheblog.dreamdiary.feature.clsf.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.file.model.cmpstn.AtchFileCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.file.model.cmpstn.AtchFileCmpstnModule;
+import io.nicheblog.dreamdiary.feature.clsf.history.model.HistoryDto;
+import io.nicheblog.dreamdiary.feature.clsf.history.model.cmpstn.HistoryCmpstn;
+import io.nicheblog.dreamdiary.feature.clsf.history.model.cmpstn.HistoryCmpstnModule;
+import io.nicheblog.dreamdiary.feature.clsf.related.model.RelatedContentDto;
 import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
@@ -39,7 +43,7 @@ import java.util.List;
 @ToString(callSuper = true)
 public class JrnlDreamDto
         extends BaseClsfDto
-        implements Identifiable<Integer>, AtchFileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, StateCmpstnModule, JrnlPeriodModule, Comparable<JrnlDreamDto> {
+        implements Identifiable<Integer>, AtchFileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, StateCmpstnModule, HistoryCmpstnModule, JrnlPeriodModule, Comparable<JrnlDreamDto> {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -128,4 +132,9 @@ public class JrnlDreamDto
     public TagCmpstn tag;
     /** 위임 :: 상태 정보 모듈 */
     public StateCmpstn state;
+    /** 위임 :: 이력 정보 모듈 */
+    public HistoryCmpstn history;
+    private List<HistoryDto> historyList;
+    @Builder.Default
+    private List<RelatedContentDto> relatedContentList = List.of();
 }

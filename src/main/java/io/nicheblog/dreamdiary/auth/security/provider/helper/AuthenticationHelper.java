@@ -7,7 +7,6 @@ import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLgnManager;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
-import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -58,7 +57,7 @@ public class AuthenticationHelper {
     public Boolean validateAuth(final Authentication authentication, final AuthInfo authInfo) throws Exception {
 
         // 계정 존재여부 체크
-        if (authentication == null || authInfo == null) throw new InternalAuthenticationServiceException(MessageUtils.getExceptionMsg("Exception"));
+        if (authentication == null || authInfo == null) throw new InternalAuthenticationServiceException("exception.Exception");
 
         // 중복 로그인 '확인'(기존 아이디 끊기) 후 들어왔을 시 바로 패스 :: 메소드 분리
         final String username = authentication.getName();
@@ -66,7 +65,7 @@ public class AuthenticationHelper {
 
         // password 일치여부 체크
         final String password = (String) authentication.getCredentials();
-        if (!passwordEncoder.matches(password, authInfo.getPassword())) throw new BadCredentialsException(MessageUtils.getExceptionMsg("BadCredentialsException"));
+        if (!passwordEncoder.matches(password, authInfo.getPassword())) throw new BadCredentialsException("exception.BadCredentialsException");
 
         authInfo.nullifyPasswordInfo();
         return this.validateAuth(authInfo);
@@ -80,32 +79,32 @@ public class AuthenticationHelper {
      * @return {@link Boolean} -- 인증 체크 성공 여부
      */
     public Boolean validateAuth(final AuthInfo authInfo) throws Exception {
-        if (authInfo == null) throw new UsernameNotFoundException(MessageUtils.getExceptionMsg("UsernameNotFoundException"));
+        if (authInfo == null) throw new UsernameNotFoundException("exception.UsernameNotFoundException");
 
         final String username = authInfo.getUsername();
 
         // 승인여부 체크
-        if (!"Y".equals(authInfo.getCfYn())) throw new AccountNotCfException(MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider.AccountNotCfException"));
+        if (!"Y".equals(authInfo.getCfYn())) throw new AccountNotCfException("AbstractUserDetailsAuthenticationProvider.AccountNotCfException");
 
         // 장기간 미로그인여부 체크 :: 시스템계정"system"은 제외
-        if (userService.isDormant(username)) throw new AccountDormantException(MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider.AccountDormantException"));
+        if (userService.isDormant(username)) throw new AccountDormantException("AbstractUserDetailsAuthenticationProvider.AccountDormantException");
 
         // 잠금여부 체크
-        if ("Y".equals(authInfo.getLockedYn())) throw new LockedException(MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider.LockedException"));
+        if ("Y".equals(authInfo.getLockedYn())) throw new LockedException("AbstractUserDetailsAuthenticationProvider.LockedException");
 
         // 접속IP 체크 :: 메소드 분리
-        if (!this.isAcsIpValid(authInfo)) throw new AcsIpNotAllowedException(MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider.AcsIpNotAllowedException"));
+        if (!this.isAcsIpValid(authInfo)) throw new AcsIpNotAllowedException("AbstractUserDetailsAuthenticationProvider.AcsIpNotAllowedException");
 
         // 비밀번호 만료 여부 체크
-        if (!this.isPwExpryValid(authInfo)) throw new CredentialsExpiredException(MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider.CredentialsExpiredException"));
+        if (!this.isPwExpryValid(authInfo)) throw new CredentialsExpiredException("AbstractUserDetailsAuthenticationProvider.CredentialsExpiredException");
 
         // 비밀번호 변경 필요 여부 체크
         final boolean needsPwReset = "Y".equals(authInfo.getNeedsPwReset());
-        if (needsPwReset) throw new AccountNeedsPwResetException(MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider.AccountNeedsPwResetException"));
+        if (needsPwReset) throw new AccountNeedsPwResetException("AbstractUserDetailsAuthenticationProvider.AccountNeedsPwResetException");
 
         // 중복 로그인 체크 :: 세션 attribute 훑어서 "lgnId" 비교
         final boolean isDupLgn = DupIdLgnManager.isDupIdLgn(username);
-        if (isDupLgn) throw new DupIdLgnException(MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider.DupIdLgnException"));
+        if (isDupLgn) throw new DupIdLgnException("AbstractUserDetailsAuthenticationProvider.DupIdLgnException");
 
         return true;
     }

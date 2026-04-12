@@ -33,9 +33,9 @@
             </label>
         </div>
         <div class="col-lg-1">
-            <select name="jrnlEntryNo" id="jrnlEntryNo" class="form-select form-select-solid">
-                {{#each entryList}}
-                    <option value="{{postNo}}" {{selectedIf (equals postNo ../jrnlEntryNo)}}>{{idx}} {{title}}</option>
+            <select name="jrnlChapterNo" id="jrnlChapterNo" class="form-select form-select-solid">
+                {{#each chapterList}}
+                    <option value="{{postNo}}" {{selectedIf (equals postNo ../jrnlChapterNo)}}>{{idx}} {{title}}</option>
                 {{/each}}
             </select>
         </div>

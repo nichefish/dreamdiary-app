@@ -6,7 +6,7 @@ import io.nicheblog.dreamdiary.feature.jrnl._shared.state.JrnlStateMaps;
 import io.nicheblog.dreamdiary.feature.jrnl.day.entity.JrnlDayEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.dream.entity.JrnlDreamEntity;
-import io.nicheblog.dreamdiary.feature.jrnl.entry.entity.JrnlEntryEntity;
+import io.nicheblog.dreamdiary.feature.jrnl.chapter.entity.JrnlChapterEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.intrpt.entity.JrnlIntrptEntity;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
@@ -27,29 +27,29 @@ public final class JrnlDayStateMapHelper {
      * JrnlDayEntity 리스트를 순회하여 각 postNo 기준의 JrnlState 맵(entry, diary, dream, intrpt)을 생성한다.
      * @param jrnlDayEntityList 조회된 JrnlDayEntity 리스트
      * @return {@link JrnlStateMaps}
-     *  entryMap: entry postNo -> JrnlState
+     *  chapterMap: entry postNo -> JrnlState
      *  diaryMap: diary postNo -> JrnlState
      *  dreamMap: dream postNo -> JrnlState
      *  intrptMap: intrpt postNo -> JrnlState
      */
     public static JrnlStateMaps makeJrnlStateMaps(final List<JrnlDayEntity> jrnlDayEntityList) {
-        final Map<Integer, JrnlState> entryMap = new HashMap<>();
+        final Map<Integer, JrnlState> chapterMap = new HashMap<>();
         final Map<Integer, JrnlState> diaryMap = new HashMap<>();
         final Map<Integer, JrnlState> dreamMap = new HashMap<>();
         final Map<Integer, JrnlState> intrptMap = new HashMap<>();
 
         if (CollectionUtils.isEmpty(jrnlDayEntityList)) {
-            return JrnlStateMaps.builder().entryMap(entryMap).diaryMap(diaryMap).dreamMap(dreamMap).intrptMap(intrptMap).build();
+            return JrnlStateMaps.builder().chapterMap(chapterMap).diaryMap(diaryMap).dreamMap(dreamMap).intrptMap(intrptMap).build();
         }
 
         for (final JrnlDayEntity day : jrnlDayEntityList) {
-            final List<JrnlEntryEntity> jrnlEntryList = day.getJrnlEntryList();
-            if (CollectionUtils.isNotEmpty(jrnlEntryList)) {
-                for (final JrnlEntryEntity entry : jrnlEntryList) {
+            final List<JrnlChapterEntity> jrnlChapterList = day.getJrnlChapterList();
+            if (CollectionUtils.isNotEmpty(jrnlChapterList)) {
+                for (final JrnlChapterEntity entry : jrnlChapterList) {
                     final JrnlState entryState = JrnlState.builder()
                             .collapsed(entry.state.hasState(StateCd.COLLAPSED))
                             .build();
-                    entryMap.put(entry.getPostNo(), entryState);
+                    chapterMap.put(entry.getPostNo(), entryState);
 
                     final List<JrnlDiaryEntity> jrnlDiaryList = entry.getJrnlDiaryList();
                     if (CollectionUtils.isNotEmpty(jrnlDiaryList)) {
@@ -90,6 +90,6 @@ public final class JrnlDayStateMapHelper {
                 }
             }
         }
-        return JrnlStateMaps.builder().entryMap(entryMap).diaryMap(diaryMap).dreamMap(dreamMap).intrptMap(intrptMap).build();
+        return JrnlStateMaps.builder().chapterMap(chapterMap).diaryMap(diaryMap).dreamMap(dreamMap).intrptMap(intrptMap).build();
     }
 }

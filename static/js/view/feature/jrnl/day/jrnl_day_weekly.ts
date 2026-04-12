@@ -10,6 +10,7 @@ const Page: Page = (function(): Page {
         stdrdDt: null,
         weekStartDt: null,
         weekEndDt: null,
+        targetDt: null,
 
         init: function(): void {
             dF.JrnlDay.init('WEEKLY');
@@ -24,11 +25,15 @@ const Page: Page = (function(): Page {
             dF.State.init();
 
             const stdrdDt: string = window.JRNL?.stdrdDt ?? cF.date.getCurrDateStr(cF.date.ptnDate);
+            const targetDt: string = cF.util.getUrlParam("target") ?? "";
             Page.stdrdDt = stdrdDt;
+            Page.targetDt = cF.util.isNotEmpty(targetDt) ? targetDt : null;
             Page.syncAsidePeriodState(stdrdDt);
             dF.JrnlDayAside.init();
+            cF.util.enterKey("#diarySearchKeyword", dF.JrnlDiary.searchPopup);
+            cF.util.enterKey("#dreamSearchKeyword", dF.JrnlDream.searchPopup);
 
-            Page.loadWeek(stdrdDt);
+            Page.loadWeek(stdrdDt, cF.util.isNotEmpty(targetDt) ? targetDt : undefined);
         },
 
         changeView: function(url: string): void {
@@ -61,12 +66,14 @@ const Page: Page = (function(): Page {
             asideToggle?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
         },
 
-        loadWeek: function(stdrdDt: string): void {
+        loadWeek: function(stdrdDt: string, targetDt?: string): void {
+            const resolvedTargetDt: string|undefined = cF.util.isNotEmpty(targetDt) ? targetDt : undefined;
             Page.stdrdDt = stdrdDt;
+            Page.targetDt = resolvedTargetDt ?? null;
             Page.weekStartDt = cF.date.getWeekdayDateStr(stdrdDt, 1, cF.date.ptnDate) ?? stdrdDt;
             Page.weekEndDt = cF.date.getDateAddDayStr(Page.weekStartDt, 6, cF.date.ptnDate) ?? Page.weekStartDt;
             Page.syncAsidePeriodState(stdrdDt);
-            window.history.replaceState(null, "", dF.JrnlDay.buildViewUrl(window.location.pathname));
+            window.history.replaceState(null, "", dF.JrnlDay.buildWeeklyViewUrl(stdrdDt, resolvedTargetDt));
 
             dF.JrnlDay.initSearchParams();
             const searchParams: Record<string, any> = dF.JrnlDay.currentSearchParams ?? {};
@@ -81,7 +88,7 @@ const Page: Page = (function(): Page {
                 showDreams,
                 diaryKeyword: searchParams.diaryKeyword ?? "",
                 dreamKeyword: searchParams.dreamKeyword ?? "",
-                entryCtgrCds: searchParams.entryCtgrCds ?? [],
+                chapterCtgrCds: searchParams.chapterCtgrCds ?? [],
             };
             cF.ajax.get(Url.JRNL_DAYS, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
@@ -97,6 +104,7 @@ const Page: Page = (function(): Page {
                     showDiaries,
                     showDreams
                 }, "jrnl_day_list");
+                dF.JrnlDayAside.syncWeekNavigator(stdrdDt, weeklyList);
                 $("#jrnl_tag_header").toggle(searchParams.showTagCloud !== false);
                 if (searchParams.showTagCloud !== false) {
                     dF.JrnlDayTag.listAjax();
@@ -104,13 +112,25 @@ const Page: Page = (function(): Page {
                     if (showDreams) dF.JrnlDreamTag.listAjax();
                 }
                 KTMenu.createInstances();
+                Page.scrollToTarget(Page.targetDt);
             }, "block");
+        },
+
+        scrollToTarget: function(targetDt?: string): void {
+            if (cF.util.isEmpty(targetDt)) return;
+
+            const targetElement: HTMLElement | null = document.querySelector(`.jrnl-day[data-stdrd-dt="${targetDt}"]`);
+            if (targetElement == null) return;
+
+            window.requestAnimationFrame(function(): void {
+                targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+            });
         },
 
         normalizeWeekDays: function(rsltList: Record<string, any>[], sort: string = "DESC"): Record<string, any>[] {
             return (rsltList ?? [])
                 .map((day: Record<string, any>): Record<string, any> => {
-                const jrnlEntryList: Record<string, any>[] = Array.isArray(day?.jrnlEntryList) ? day.jrnlEntryList : [];
+                const jrnlChapterList: Record<string, any>[] = Array.isArray(day?.jrnlChapterList) ? day.jrnlChapterList : [];
                 const jrnlDreamList: Record<string, any>[] = Array.isArray(day?.jrnlDreamList) ? day.jrnlDreamList : [];
                 const jrnlElseDreamList: Record<string, any>[] = Array.isArray(day?.jrnlElseDreamList) ? day.jrnlElseDreamList : [];
 
@@ -118,7 +138,7 @@ const Page: Page = (function(): Page {
                     ...day,
                     jrnlDtWeekDay: day?.jrnlDtWeekDay ?? cF.date.getDayweekStr(day?.stdrdDt, "KO"),
                     tag: day?.tag ?? { list: [] },
-                    jrnlEntryList,
+                    jrnlChapterList,
                     jrnlDreamList,
                     jrnlElseDreamList,
                     hasDream: (jrnlDreamList.length + jrnlElseDreamList.length) > 0,

@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.feature.clsf._shared.mapstruct.BaseClsfMapstruct;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.entity.JrnlDiaryEntity;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiaryDto;
 import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiaryPostDto;
-import io.nicheblog.dreamdiary.feature.jrnl.entry.entity.JrnlEntryEntity;
+import io.nicheblog.dreamdiary.feature.jrnl.chapter.entity.JrnlChapterEntity;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
@@ -44,7 +44,7 @@ public abstract class JrnlDiaryMapstruct
      */
     @Override
     @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
-    @Mapping(target = "jrnlEntry", source = "jrnlEntryNo", qualifiedByName = "mapJrnlEntry")
+    @Mapping(target = "jrnlChapter", source = "jrnlChapterNo", qualifiedByName = "mapJrnlChapter")
     public abstract JrnlDiaryEntity toEntity(final JrnlDiaryPostDto dto) throws Exception;
 
     /**
@@ -56,7 +56,7 @@ public abstract class JrnlDiaryMapstruct
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
-    @Mapping(target = "jrnlEntry", source = "jrnlEntryNo", qualifiedByName = "mapJrnlEntry")
+    @Mapping(target = "jrnlChapter", source = "jrnlChapterNo", qualifiedByName = "mapJrnlChapter")
     public abstract void updateFromDto(final JrnlDiaryPostDto dto, final @MappingTarget JrnlDiaryEntity entity) throws Exception;
 
     /**
@@ -66,24 +66,24 @@ public abstract class JrnlDiaryMapstruct
      * @return Dto -- 변환된 Dto 객체
      */
     @Named("toDto")
-    @Mapping(target = "jrnlEntryNo", source = "jrnlEntry.postNo")
-    @Mapping(target = "jrnlDayNo", source = "jrnlEntry.jrnlDayNo")
-    @Mapping(target = "stdrdDt", expression = "java(entity.getJrnlEntry().getJrnlDay() != null ? DateUtils.asStr(\"Y\".equals(entity.getJrnlEntry().getJrnlDay().getDtUnknownYn()) ? entity.getJrnlEntry().getJrnlDay().getAprxmtDt() : entity.getJrnlEntry().getJrnlDay().getJrnlDt(), DatePtn.DATE) : null)")
-    @Mapping(target = "dtUnknownYn", expression = "java(entity.getJrnlEntry().getJrnlDay() != null ? entity.getJrnlEntry().getJrnlDay().getDtUnknownYn() : \"N\")")
-    @Mapping(target = "jrnlDtWeekDay", expression = "java(entity.getJrnlEntry().getJrnlDay() != null && entity.getJrnlEntry().getJrnlDay().getJrnlDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJrnlEntry().getJrnlDay().getJrnlDt()) : null)")
-    @Mapping(target = "yy", source = "jrnlEntry.jrnlDay.yy")
-    @Mapping(target = "mnth", source = "jrnlEntry.jrnlDay.mnth")
+    @Mapping(target = "jrnlChapterNo", source = "jrnlChapter.postNo")
+    @Mapping(target = "jrnlDayNo", source = "jrnlChapter.jrnlDayNo")
+    @Mapping(target = "stdrdDt", expression = "java(entity.getJrnlChapter().getJrnlDay() != null ? DateUtils.asStr(\"Y\".equals(entity.getJrnlChapter().getJrnlDay().getDtUnknownYn()) ? entity.getJrnlChapter().getJrnlDay().getAprxmtDt() : entity.getJrnlChapter().getJrnlDay().getJrnlDt(), DatePtn.DATE) : null)")
+    @Mapping(target = "dtUnknownYn", expression = "java(entity.getJrnlChapter().getJrnlDay() != null ? entity.getJrnlChapter().getJrnlDay().getDtUnknownYn() : \"N\")")
+    @Mapping(target = "jrnlDtWeekDay", expression = "java(entity.getJrnlChapter().getJrnlDay() != null && entity.getJrnlChapter().getJrnlDay().getJrnlDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJrnlChapter().getJrnlDay().getJrnlDt()) : null)")
+    @Mapping(target = "yy", source = "jrnlChapter.jrnlDay.yy")
+    @Mapping(target = "mnth", source = "jrnlChapter.jrnlDay.mnth")
     @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
     public abstract JrnlDiaryDto toDto(final JrnlDiaryEntity entity) throws Exception;
 
     /**
-     * jrnlEntryNo로부터 JrnlEntryEntity 객체 생성
-     * @param jrnlEntryNo jrnlEntryNo
-     * @return JrnlEntryEntity
+     * jrnlChapterNo로부터 JrnlChapterEntity 객체 생성
+     * @param jrnlChapterNo jrnlChapterNo
+     * @return JrnlChapterEntity
      */
-    @Named("mapJrnlEntry")
-    protected JrnlEntryEntity mapJrnlEntry(final Integer jrnlEntryNo) {
-        if (jrnlEntryNo == null) return null;
-        return em.getReference(JrnlEntryEntity.class, jrnlEntryNo);
+    @Named("mapJrnlChapter")
+    protected JrnlChapterEntity mapJrnlChapter(final Integer jrnlChapterNo) {
+        if (jrnlChapterNo == null) return null;
+        return em.getReference(JrnlChapterEntity.class, jrnlChapterNo);
     }
 }
