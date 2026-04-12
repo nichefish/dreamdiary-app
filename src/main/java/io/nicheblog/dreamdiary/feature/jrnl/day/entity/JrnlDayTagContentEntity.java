@@ -30,22 +30,22 @@ import javax.persistence.Table;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "ref_content_type='JRNL_DAY' AND del_yn='N'")
-@SQLDelete(sql = "UPDATE tag_content SET del_yn = 'Y' WHERE tag_content_no = ?")
+@SQLDelete(sql = "UPDATE tag_content SET del_yn = 'Y' WHERE id = ?")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class JrnlDayTagContentEntity
         extends BaseAuditRegEntity {
 
-    /** 태그-컨텐츠 번호 (PK) */
+    /** 태그-컨텐츠 ID (PK) */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "tag_content_no")
-    @Comment("태그-컨텐츠 번호 (PK)")
-    private Integer tagContentNo;
+    @Column(name = "id")
+    @Comment("Tag content ID (PK)")
+    private Integer id;
 
-    /** 참조 태그 번호 */
-    @Column(name = "ref_tag_no")
-    @Comment("참조 태그 번호")
-    private Integer refTagNo;
+    /** 태그 ID */
+    @Column(name = "tag_id")
+    @Comment("태그 ID")
+    private Integer tagId;
 
     /** 참조 글 번호 */
     @Column(name = "ref_post_no")
@@ -59,7 +59,7 @@ public class JrnlDayTagContentEntity
 
     /** 태그 정보 */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "ref_tag_no", referencedColumnName = "tag_no", updatable = false, insertable = false)
+    @JoinColumn(name = "tag_id", referencedColumnName = "id", updatable = false, insertable = false)
     @Fetch(FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     private TagSmpEntity tag;
@@ -79,4 +79,5 @@ public class JrnlDayTagContentEntity
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("저널 일자 정보")
     private JrnlDaySmpEntity jrnlDay;
+
 }

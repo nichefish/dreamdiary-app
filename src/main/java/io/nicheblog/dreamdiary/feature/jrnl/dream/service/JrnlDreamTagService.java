@@ -155,7 +155,7 @@ public class JrnlDreamTagService
         final Map<Integer, Integer> tagCntMap = this.getSelf().countDreamSizeMap(param);
 
         for (final TagDto tag : tagList) {
-            final Integer dreamSize = tagCntMap.getOrDefault(tag.getTagNo(), 0);
+            final Integer dreamSize = tagCntMap.getOrDefault(tag.getId(), 0);
             tag.setContentSize(dreamSize);
             maxFrequency = Math.max(maxFrequency, dreamSize);
         }
@@ -204,7 +204,7 @@ public class JrnlDreamTagService
 
         final ConcurrentMap<Integer, Integer> concurrentMap = tagCountList.stream()
                 .collect(Collectors.toConcurrentMap(
-                        TagContentCntDto::getTagNo,
+                        TagContentCntDto::getTagId,
                         dto -> dto.getCount().intValue()
                 ));
         return new ConcurrentHashMap<>(concurrentMap);

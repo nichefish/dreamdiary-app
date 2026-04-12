@@ -21,14 +21,14 @@ dF.Tag = (function(): dfModule {
 
         /**
          * 상세 모달 호출
-         * @param {string|number} tagNo - 조회할 태그 번호.
+         * @param {string|number} id - 조회할 태그 ID.
          */
-        dtlModal: function(tagNo: string|number): void {
+        dtlModal: function(id: string|number): void {
             event.stopPropagation();
-            if (isNaN(Number(tagNo))) return;
+            if (isNaN(Number(id))) return;
 
             const url: string = Url.TAG_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "tagNo": tagNo };
+            const ajaxData: Record<string, any> = { id };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -104,17 +104,17 @@ dF.Tag = (function(): dfModule {
 
         /**
          * 태그로 글 목록 필터링
-         * @param {string|number} tagNo - 필터링할 태그 번호.
+         * @param {string|number} id - 필터링할 태그 ID.
          */
-        filter: function(tagNo: string|number): void {
-            if (isNaN(Number(tagNo))) return;
+        filter: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
             const pageNoElement: HTMLInputElement = document.querySelector("#listForm #pageNo") as HTMLInputElement;
             const tagsElement: HTMLInputElement = document.querySelector("#listForm #tags") as HTMLInputElement;
             if (!pageNoElement || !tagsElement) return;
 
             pageNoElement.value = "1";
-            tagsElement.value = tagNo.toString();
+            tagsElement.value = id.toString();
 
             const listUrl: string = $("#listForm").data("url");
             const url: string = `${listUrl!}?actionTyCd=SEARCH`;

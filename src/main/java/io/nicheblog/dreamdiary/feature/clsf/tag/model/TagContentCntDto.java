@@ -7,19 +7,19 @@ import lombok.Setter;
 /**
  * TagContentCntDto
  * <pre>
- *  태그 번호 - 갯수 맵 Dto.
+ *  태그 ID - 개수 매핑 DTO.
  * </pre>
- * 
- * @author nichefish 
+ *
+ * @author nichefish
  */
 @Getter
 @Setter
 @AllArgsConstructor
 public class TagContentCntDto {
-    
-    /** 태그 번호 */
-    private Integer tagNo;
 
+    /** 태그 ID */
+    private Integer tagId;
     /** 개수 */
     private Long count;
+
 }

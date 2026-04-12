@@ -113,17 +113,17 @@ public class JrnlDayTagRestController
     /**
      * 저널 일자 태그가 존재하는 연도 목록 조회 (Ajax)
      *
-     * @param tagNo 태그 번호
+     * @param tagId 태그 ID
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.JRNL_DAY_TAG_YYS)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayTagYyListAjax(
-            final @PathVariable("tagNo") Integer tagNo
+            final @PathVariable("tagId") Integer tagId
     ) {
 
-        final List<Integer> yyList = myJrnlDayTagService.getMyYyListByTagNo(tagNo);
+        final List<Integer> yyList = myJrnlDayTagService.getMyYyListByTagId(tagId);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -140,13 +140,13 @@ public class JrnlDayTagRestController
     @GetMapping(value = {Url.JRNL_DAY_TAG})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> jrnlDayListByTagNoAjax(
-            final @PathVariable("tagNo") Integer tagNo,
+    public ResponseEntity<AjaxResponse> jrnlDayListByTagIdAjax(
+            final @PathVariable("tagId") Integer tagId,
             final JrnlDaySearchParam searchParam
     ) throws Exception {
 
-        searchParam.setTagNo(tagNo);
-        final List<JrnlDayDto> jrnlDayList = myJrnlDayQueryService.getMyListDtoByTagNoEnriched(searchParam);
+        searchParam.setTagId(tagId);
+        final List<JrnlDayDto> jrnlDayList = myJrnlDayQueryService.getMyListDtoByTagIdEnriched(searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

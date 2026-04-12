@@ -29,8 +29,8 @@ public class JrnlDreamTagContentParam
     /** 참조 콘텐츠 타입 */
     private String refContentType;
 
-    /** 태그 번호 */
-    private Integer tagNo;
+    /** 태그 ID */
+    private Integer tagId;
 
     /** 연도 */
     private Integer yy;

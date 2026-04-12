@@ -89,8 +89,8 @@ public class TagContentService
         final List<TagContentEntity> entityList = this.getSelf().getListEntity(param);
         return entityList.stream()
                 .peek(entity -> {
-                    final Integer tagNo = entity.getRefTagNo();
-                    final TagSmpEntity tag = this.getSelf().getTagSmpDtlEntity(tagNo);
+                    final Integer tagId = entity.getTagId();
+                    final TagSmpEntity tag = this.getSelf().getTagSmpDtlEntity(tagId);
                     entity.setTag(tag);
                     entity.setTagNm(tag.getTagNm());
                     entity.setCtgr(tag.getCtgr());
@@ -101,12 +101,12 @@ public class TagContentService
     /**
      * 태그 조회
      *
-     * @param tagNo 태그 번호
+     * @param tagId 태그 ID
      * @return {@link List} -- 태그 목록
      */
-    @Cacheable(value = "tagSmpDtlEntity", key = "#tagNo.toString()")
-    public TagSmpEntity getTagSmpDtlEntity(final Integer tagNo) {
-        final Optional<TagSmpEntity> rsWrapper = tagSmpRepository.findById(tagNo);
+    @Cacheable(value = "tagSmpDtlEntity", key = "#tagId.toString()")
+    public TagSmpEntity getTagSmpDtlEntity(final Integer tagId) {
+        final Optional<TagSmpEntity> rsWrapper = tagSmpRepository.findById(tagId);
 
         return rsWrapper.orElse(null);
     }
@@ -123,7 +123,7 @@ public class TagContentService
         if (CollectionUtils.isEmpty(entityList)) return new ArrayList<>();
 
         return entityList.stream()
-                .map(tag -> new TagDto(tag.getRefTagNo(), tag.getTagNm(), tag.getCtgr()))
+                .map(tag -> new TagDto(tag.getTagId(), tag.getTagNm(), tag.getCtgr()))
                 .collect(Collectors.toList());
     }
 
@@ -159,7 +159,7 @@ public class TagContentService
     @Transactional
     public List<TagContentEntity> addTagContents(final BaseClsfKey clsfKey, final List<TagEntity> rsList) throws Exception {
         final List<TagContentEntity> tagContentList = rsList.stream()
-                .map(tag -> new TagContentEntity(tag.getTagNo(), clsfKey))
+                .map(tag -> new TagContentEntity(tag.getId(), clsfKey))
                 .collect(Collectors.toList());
         return this.registAll(tagContentList);
     }

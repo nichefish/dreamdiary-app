@@ -121,7 +121,7 @@ public class JrnlTagCacheUpdtWorker {
         final Set<Integer> processedTags = new HashSet<>();
         while (iterator.hasNext()) {
             final TagDto tag = iterator.next();
-            final Integer changeValue = tagCntChangeMap.get(tag.getTagNo());
+            final Integer changeValue = tagCntChangeMap.get(tag.getId());
             if (changeValue == null) continue;
 
             final int newSize = tag.getContentSize() + changeValue;
@@ -130,16 +130,16 @@ public class JrnlTagCacheUpdtWorker {
             } else {
                 tag.setContentSize(newSize);
             }
-            processedTags.add(tag.getTagNo());
+            processedTags.add(tag.getId());
         }
 
         // 새로 추가해야 할 태그 처리
         for (final Map.Entry<Integer, Integer> entry : tagCntChangeMap.entrySet()) {
-            final Integer tagNo = entry.getKey();
+            final Integer tagId = entry.getKey();
             final Integer changeValue = entry.getValue();
 
-            if (changeValue > 0 && !processedTags.contains(tagNo)) {
-                final TagDto tagDto = tagService.getDtlDto(tagNo);
+            if (changeValue > 0 && !processedTags.contains(tagId)) {
+                final TagDto tagDto = tagService.getDtlDto(tagId);
                 if (tagDto != null) {
                     tagDto.setContentSize(changeValue);
                     sizedTagList.add(tagDto);

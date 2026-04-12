@@ -87,17 +87,17 @@ public class MyJrnlDayService {
     }
 
     /**
-     * 태그번호별 일자 목록 조회 (dto level)
+     * 태그 ID별 일자 목록 조회 (dto level)
      *
      * @param searchParam 검색조건을 담고 있는 파라미터 객체
      * @return {@link List} -- 검색 결과 목록
      */
     @Transactional(readOnly = true)
-    public List<JrnlDayDto> getMyListDtoByTagNo(final JrnlDaySearchParam searchParam) throws Exception {
+    public List<JrnlDayDto> getMyListDtoByTagId(final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
         final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDayService.getListDtoByTagNoAndUser(userId, searchParam);
+        return jrnlDayService.getListDtoByTagIdAndUser(userId, searchParam);
     }
 
     /**

@@ -21,15 +21,15 @@ public interface TagProfileRepository
         extends BaseStreamRepository<TagProfileEntity, Integer> {
 
     /**
-     * 태그 번호 + 컨텐츠 타입으로 프로필 단건 조회.
+     * 태그 ID + 컨텐츠 타입으로 프로필 단건 조회.
      *
-     * @param tagNo 태그 번호
+     * @param tagId 태그 ID
      * @param contentType 컨텐츠 타입
      * @return {@link Optional} -- 조회된 TagProfileEntity
      */
-    Optional<TagProfileEntity> findByTagNoAndContentTypeAndRegstrId(final Integer tagNo, final String contentType, final String regstrId);
+    Optional<TagProfileEntity> findByTagIdAndContentTypeAndRegstrId(final Integer tagId, final String contentType, final String regstrId);
 
-    List<TagProfileEntity> findAllByTagNoInAndContentTypeAndRegstrId(final Collection<Integer> tagNoList, final String contentType, final String regstrId);
+    List<TagProfileEntity> findAllByTagIdInAndContentTypeAndRegstrId(final Collection<Integer> tagIdList, final String contentType, final String regstrId);
 
-    Optional<TagProfileEntity> findByTagProfileNoAndRegstrId(final Integer tagProfileNo, final String regstrId);
+    Optional<TagProfileEntity> findByIdAndRegstrId(final Integer id, final String regstrId);
 }

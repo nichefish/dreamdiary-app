@@ -65,10 +65,10 @@ public class JrnlDiaryTagService
     }
 
     /**
-     * 태그 번호-태그 이름 맵을 반환합니다.
+     * 태그 ID-태그 이름 맵을 반환합니다.
      *
      * @param userId 사용자 아이디
-     * @return {@link Map} -- 태그 번호를 키로 하고, 태그 이름을 값으로 가지는 맵
+     * @return {@link Map} -- 태그 ID를 키로 하고, 태그 이름을 값으로 가지는 맵
      */
     @Cacheable(value = "jrnlDiaryTagListByUser", key = "#userId")
     public List<TagDto> getTagListByUser(final String userId) throws Exception {
@@ -145,7 +145,7 @@ public class JrnlDiaryTagService
         final Map<Integer, Integer> tagCntMap = this.getSelf().countDiarySizeMap(param);
 
         for (final TagDto tag : tagList) {
-            final Integer diarySize = tagCntMap.getOrDefault(tag.getTagNo(), 0);
+            final Integer diarySize = tagCntMap.getOrDefault(tag.getId(), 0);
             tag.setContentSize(diarySize);
             maxFrequency = Math.max(maxFrequency, diarySize);
         }
@@ -187,7 +187,7 @@ public class JrnlDiaryTagService
 
         final ConcurrentMap<Integer, Integer> concurrentMap = tagCountList.stream()
                 .collect(Collectors.toConcurrentMap(
-                        TagContentCntDto::getTagNo,
+                        TagContentCntDto::getTagId,
                         dto -> dto.getCount().intValue()
                 ));
         return new ConcurrentHashMap<>(concurrentMap);

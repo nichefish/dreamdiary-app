@@ -39,8 +39,8 @@ public class JrnlDaySearchParam
     @Builder.Default
     private String sort = "ASC";
 
-    /** 태그 번호 */
-    private Integer tagNo;
+    /** 태그 ID */
+    private Integer tagId;
     /** 메타 번호 */
     private Integer metaNo;
 

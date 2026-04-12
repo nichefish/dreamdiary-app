@@ -30,6 +30,7 @@ public interface JrnlIntrptTagMapstruct
      */
     @Override
     @Named("toDto")
+    @Mapping(target = "ctgr", expression = "java(entity.getCtgr())")
     TagDto toDto(final JrnlIntrptTagEntity entity) throws Exception;
 
     /**

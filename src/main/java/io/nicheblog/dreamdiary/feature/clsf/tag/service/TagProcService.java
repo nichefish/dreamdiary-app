@@ -93,7 +93,7 @@ public class TagProcService {
 
         if (yy != null && mnth != null) {
             final Map<Integer, Integer> tagCntChangeMap = entityList.stream()
-                    .collect(Collectors.toMap(TagContentEntity::getRefTagNo, tagNo -> -1));
+                    .collect(Collectors.toMap(TagContentEntity::getTagId, tagId -> -1));
             publishTagCacheUpdateAfterCommit(clsfKey, yy, mnth, tagCntChangeMap);
         }
     }
@@ -136,7 +136,7 @@ public class TagProcService {
         if (CollectionUtils.isNotEmpty(obsoleteTagSet)) {
             tagContentService.delObsoleteTagContents(clsfKey, new ArrayList<>(obsoleteTagSet));
             for (final TagDto tag : obsoleteTagSet) {
-                tagCntChangeMap.put(tag.getTagNo(), -1);
+                tagCntChangeMap.put(tag.getId(), -1);
             }
         }
 
@@ -144,7 +144,7 @@ public class TagProcService {
         if (CollectionUtils.isNotEmpty(createdTagList)) {
             final List<TagContentEntity> registeredList = tagContentService.addTagContents(clsfKey, createdTagList);
             for (final TagContentEntity tag : registeredList) {
-                tagCntChangeMap.put(tag.getRefTagNo(), 1);
+                tagCntChangeMap.put(tag.getTagId(), 1);
             }
         }
 

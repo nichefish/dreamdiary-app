@@ -62,17 +62,17 @@ public class TagRestController
      * 태그별 글 목록 화면 조회 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param tagNo 태그 식별자
+     * @param id 태그 ID
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.TAG_DTL_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> TagDtlAjax(
-            final @RequestParam("tagNo") Integer tagNo
+            final @RequestParam(value = "id", required = false) Integer id
     ) throws Exception {
 
-        final TagDto tagDto = tagService.getDtlDto(tagNo);
+        final TagDto tagDto = tagService.getDtlDto(id);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

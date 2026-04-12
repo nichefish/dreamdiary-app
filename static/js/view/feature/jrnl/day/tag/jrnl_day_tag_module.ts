@@ -94,8 +94,8 @@ dF.JrnlDayTag = (function(): dfModule {
             }));
         },
 
-        getYyListAjax: function(tagNo: string|number, callback: (yyList: any[]) => void): void {
-            const url: string = cF.util.bindUrl(Url.JRNL_DAY_TAG_YYS, { tagNo });
+        getYyListAjax: function(tagId: string|number, callback: (yyList: any[]) => void): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DAY_TAG_YYS, { tagId });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -344,7 +344,7 @@ dF.JrnlDayTag = (function(): dfModule {
             return { left, top };
         },
 
-        openContextMenu: function(tagNo: string|number, tagNm: string, onSearch: () => void, contentType: string = "JRNL_DAY"): void {
+        openContextMenu: function(tagId: string|number, tagNm: string, onSearch: () => void, contentType: string = "JRNL_DAY"): void {
             if (!dF.JrnlDayTag.isContextMenuEnabled()) {
                 onSearch();
                 return;
@@ -355,7 +355,7 @@ dF.JrnlDayTag = (function(): dfModule {
             dF.JrnlDayTag.highlightContextAnchor(anchorEl);
 
             const menuEl: HTMLElement = dF.JrnlDayTag.ensureContextMenu();
-            dF.JrnlDayTag.contextMenuState = { tagNo, tagNm, onSearch, contentType, anchorEl };
+            dF.JrnlDayTag.contextMenuState = { tagId, tagNm, onSearch, contentType, anchorEl };
             dF.JrnlDayTag.bindContextMenuEvents();
 
             menuEl.style.display = "block";
@@ -384,7 +384,7 @@ dF.JrnlDayTag = (function(): dfModule {
             dF.JrnlDayTag.hideContextMenu();
 
             if (!currentState) return;
-            dF.JrnlDayTag.profileModal(currentState.tagNo, currentState.contentType, currentState.tagNm);
+            dF.JrnlDayTag.profileModal(currentState.tagId, currentState.contentType, currentState.tagNm);
         },
 
         getContentTypeLabel: function(contentType: string): string {
@@ -424,11 +424,11 @@ dF.JrnlDayTag = (function(): dfModule {
             dF.JrnlDayTag.syncProfileTextClassSelectStyle();
         },
 
-        profileModal: function(tagNo: string|number, contentType: string, tagNm: string): void {
-            if (isNaN(Number(tagNo)) || cF.util.isEmpty(contentType)) return;
+        profileModal: function(tagId: string|number, contentType: string, tagNm: string): void {
+            if (isNaN(Number(tagId)) || cF.util.isEmpty(contentType)) return;
 
             const url: string = Url.TAG_PROFILES;
-            const ajaxData: Record<string, any> = { tagNo, contentType };
+            const ajaxData: Record<string, any> = { tagId, contentType };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -437,23 +437,23 @@ dF.JrnlDayTag = (function(): dfModule {
 
                 const viewModel: Record<string, any> = {
                     ...(res.rsltObj ?? {}),
-                    tagNo: res.rsltObj?.tagNo ?? Number(tagNo),
+                    tagId: res.rsltObj?.tagId ?? Number(tagId),
                     contentType: res.rsltObj?.contentType ?? contentType,
                     tagNm,
                     contentTypeLabel: dF.JrnlDayTag.getContentTypeLabel(contentType),
                 };
                 cF.handlebars.modal(viewModel, "tag_profile");
                 dF.JrnlDayTag.initProfileTextClassForm();
-                $("#tag_profile_del_btn").toggleClass("d-none", cF.util.isEmpty(viewModel.tagProfileNo));
+                $("#tag_profile_del_btn").toggleClass("d-none", cF.util.isEmpty(viewModel.id));
             });
         },
 
         submitProfile: function(): void {
             const ajaxData: Record<string, any> = dF.JrnlDayTag.getProfileFormData();
-            if (isNaN(Number(ajaxData.tagNo)) || cF.util.isEmpty(ajaxData.contentType)) return;
+            if (isNaN(Number(ajaxData.tagId)) || cF.util.isEmpty(ajaxData.contentType)) return;
 
             Swal.fire({
-                text: Message.get(cF.util.isEmpty(ajaxData.tagProfileNo) ? "view.cnfm.reg" : "view.cnfm.mdf"),
+                text: Message.get(cF.util.isEmpty(ajaxData.id) ? "view.cnfm.reg" : "view.cnfm.mdf"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
@@ -470,8 +470,8 @@ dF.JrnlDayTag = (function(): dfModule {
         },
 
         deleteProfileAjax: function(): void {
-            const tagProfileNo: string = cF.util.getInputValue("#tagProfileForm [name='tagProfileNo']");
-            if (isNaN(Number(tagProfileNo))) return;
+            const id: string = cF.util.getInputValue("#tagProfileForm [name='id']");
+            if (isNaN(Number(id))) return;
 
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
@@ -479,7 +479,7 @@ dF.JrnlDayTag = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = cF.util.bindUrl(Url.TAG_PROFILE, { tagProfileNo });
+                const url: string = cF.util.bindUrl(Url.TAG_PROFILE, { id });
                 cF.$ajax.delete(url, null, function(res: AjaxResponse): boolean {
                     Swal.fire({ text: res.message }).then(function(): void {
                         if (!res.rslt) return;
@@ -493,28 +493,28 @@ dF.JrnlDayTag = (function(): dfModule {
 
         /**
          * 상세 모달 호출
-         * @param {string|number} tagNo - 조회할 태그 번호.
+         * @param {string|number} tagId - 조회할 태그 ID.
          * @param tagNm 태그 이름
          */
-        select: function(tagNo: string|number, tagNm: string): void {
+        select: function(tagId: string|number, tagNm: string): void {
             if (dF.JrnlDayTag.isContextMenuEnabled()) {
-                dF.JrnlDayTag.openContextMenu(tagNo, tagNm, function(): void {
-                    dF.JrnlDayTag.dtlModal(tagNo, tagNm);
+                dF.JrnlDayTag.openContextMenu(tagId, tagNm, function(): void {
+                    dF.JrnlDayTag.dtlModal(tagId, tagNm);
                 }, "JRNL_DAY");
                 return;
             }
 
-            dF.JrnlDayTag.dtlModal(tagNo, tagNm);
+            dF.JrnlDayTag.dtlModal(tagId, tagNm);
         },
 
         /**
          * 상세 모달 호출
-         * @param {string|number} tagNo - 조회할 태그 번호.
+         * @param {string|number} tagId - 조회할 태그 ID.
          * @param tagNm 태그 이름
          */
-        dtlModal: function(tagNo: string|number, tagNm: string, yy?: string|number): void {
+        dtlModal: function(tagId: string|number, tagNm: string, yy?: string|number): void {
             if (typeof event !== "undefined" && event) event.stopPropagation();
-            if (isNaN(Number(tagNo))) return;
+            if (isNaN(Number(tagId))) return;
 
             ModalHistory.reset();
 
@@ -524,14 +524,14 @@ dF.JrnlDayTag = (function(): dfModule {
 
             if (dF.JrnlDay?.viewType === "WEEKLY") {
                 const weekStartDt: string = dF.JrnlDayTag.getCurrentWeekStartDt();
-                const url: string = cF.util.bindUrl(Url.JRNL_DAY_TAG, { tagNo });
+                const url: string = cF.util.bindUrl(Url.JRNL_DAY_TAG, { tagId });
                 cF.ajax.get(url, { weekStartDt }, function(res: AjaxResponse): void {
                     if (!res.rslt) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return;
                     }
                     cF.handlebars.modal({
-                        tagNo,
+                        id: tagId,
                         list: res.rsltList,
                         yy: weekStartDt,
                         yearOptions: [{ value: weekStartDt, label: `Week ${weekStartDt}`, selected: true }],
@@ -547,16 +547,16 @@ dF.JrnlDayTag = (function(): dfModule {
             }
 
             const preferredYy: string = dF.JrnlDayTag.getSelectedYy(yy);
-            dF.JrnlDayTag.getYyListAjax(tagNo, function(yyList: any[]): void {
+            dF.JrnlDayTag.getYyListAjax(tagId, function(yyList: any[]): void {
                 const selectedYy: string = dF.JrnlDayTag.normalizeSelectedYy(preferredYy, yyList);
-                const url: string = cF.util.bindUrl(Url.JRNL_DAY_TAG, { tagNo });
+                const url: string = cF.util.bindUrl(Url.JRNL_DAY_TAG, { tagId });
                 cF.ajax.get(url, { yy: selectedYy }, function(res: AjaxResponse): void {
                     if (!res.rslt) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return;
                     }
                     cF.handlebars.modal({
-                        tagNo,
+                        id: tagId,
                         yy: selectedYy,
                         yearOptions: dF.JrnlDayTag.getYearOptions(selectedYy, yyList),
                         list: res.rsltList,
@@ -574,14 +574,14 @@ dF.JrnlDayTag = (function(): dfModule {
 
         /**
          * 년도 변경
-         * @param {string|number} tagNo
+         * @param {string|number} tagId
          * @param {string|number} yy
          */
-        changeYy: function(tagNo: string|number, yy: string|number): void {
-            if (isNaN(Number(tagNo))) return;
+        changeYy: function(tagId: string|number, yy: string|number): void {
+            if (isNaN(Number(tagId))) return;
 
             const tagNm: string = document.querySelector("#jrnl_day_tag_dtl_modal .header_tag_nm")?.textContent ?? "";
-            dF.JrnlDayTag.dtlModal(tagNo, tagNm, yy);
+            dF.JrnlDayTag.dtlModal(tagId, tagNm, yy);
         },
 
         /**

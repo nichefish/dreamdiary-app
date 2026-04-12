@@ -29,11 +29,11 @@ public interface JrnlDreamTagRepository
      * 년도/월별 저널 꿈 태그 개수 맵 조회
      *
      * @param param - 삭제할 대상의 파라미터 (게시글 번호, 컨텐츠 타입, 태그 이름, 카테고리 포함)
-     * @return {@link Integer} -- 태그 번호와 년도, 월에 해당하는 태그 개수
+     * @return {@link Integer} -- 태그 ID와 년도, 월에 해당하는 태그 개수
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    @Query("SELECT new io.nicheblog.dreamdiary.feature.clsf.tag.model.TagContentCntDto(ct.refTagNo, COUNT(ct.tagContentNo)) " +
+    @Query("SELECT new io.nicheblog.dreamdiary.feature.clsf.tag.model.TagContentCntDto(ct.tagId, COUNT(ct.id)) " +
             "FROM JrnlDreamTagContentEntity ct " +
             "INNER JOIN FETCH JrnlDreamEntity diary ON ct.refPostNo = diary.postNo " +
             "INNER JOIN FETCH JrnlDayEntity day ON diary.jrnlDayNo = day.postNo " +
@@ -41,6 +41,6 @@ public interface JrnlDreamTagRepository
             " AND (:#{#param.yy} IS NULL OR day.yy = :#{#param.yy} OR :#{#param.yy} = 9999) " +
             " AND (:#{#param.mnth} IS NULL OR day.mnth = :#{#param.mnth} OR :#{#param.mnth} = 99) " +
             " AND (:#{#param.weekStartDt} IS NULL OR day.weekStartDt = :#{T(io.nicheblog.dreamdiary.global.util.date.DateUtils).asDate(#param.weekStartDt)}) " +
-            " GROUP BY ct.refTagNo")
+            " GROUP BY ct.tagId")
     List<TagContentCntDto> countDreamSizeMap(final @Param("param") JrnlDreamTagContentParam param);
 }

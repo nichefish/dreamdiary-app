@@ -32,7 +32,6 @@ public interface BaseClsfSpec<Entity extends BaseClsfEntity>
      */
     @Override
     default Specification<Entity> searchWith(final Map<String, Object> searchParamMap) {
-        // filter
         searchParamMap.remove("backToList");
         searchParamMap.remove("actvtyCtgr");
 
@@ -78,25 +77,25 @@ public interface BaseClsfSpec<Entity extends BaseClsfEntity>
         final List<String> keysToRemove = new ArrayList<>();
 
         for (final String key : searchParamMap.keySet()) {
-            switch(key) {
-                // 태그 모듈
+            switch (key) {
                 case "tags":
                     try {
-                        List<Integer> refTagNoList = (List<Integer>) searchParamMap.get(key);
-                        if (CollectionUtils.isEmpty(refTagNoList)) continue;
-                        // 태그 검색
-                        Join<NoticeEntity, TagContentEntity> tagContentJoin = root.join("tag").join("list", JoinType.INNER);
-                        Expression<String> tagContentExp = tagContentJoin.get("refTagNo");
-                        predicate.add(tagContentExp.in(refTagNoList)); // IN 절 사용
+                        final List<Integer> tagIdList = (List<Integer>) searchParamMap.get(key);
+                        if (CollectionUtils.isEmpty(tagIdList)) continue;
+
+                        final Join<NoticeEntity, TagContentEntity> tagContentJoin = root.join("tag").join("list", JoinType.INNER);
+                        final Expression<Integer> tagContentExp = tagContentJoin.get("tagId");
+                        predicate.add(tagContentExp.in(tagIdList));
                     } catch (final Exception e) {
                         e.printStackTrace();
                     }
-                    keysToRemove.add(key);      // 처리된 키 저장
+                    keysToRemove.add(key);
                     continue;
-                // TODO:
+                default:
+                    break;
             }
         }
-        keysToRemove.forEach(searchParamMap::remove);       // 처리된 키를 searchParamMap에서 제거
+        keysToRemove.forEach(searchParamMap::remove);
 
         return predicate;
     }

@@ -23,7 +23,7 @@ public interface MetaEmbedModule {
     /** Setter */
     void setMeta(MetaEmbed embed);
     
-    /** 태그 번호 목록 */
+    /** 메타 ID 목록 */
     default List<Integer> getMetaNoList() {
         if (this.getMeta() == null) return new ArrayList<>();
 

@@ -115,10 +115,10 @@ dF.JrnlDiaryTag = (function(): dfModule {
 
         /**
          * 태그 검색 팝업 호출
-         * @param {string|number} tagNo - 조회할 태그 번호.
+         * @param {string|number} tagId - 조회할 태그 ID.
          */
-        openSearch: function(tagNo: string|number): void {
-            let url: string = `${Url.JRNL_DIARY_SEARCH}?tagNos=${tagNo}`;
+        openSearch: function(tagId: string|number): void {
+            let url: string = `${Url.JRNL_DIARY_SEARCH}?tagIds=${tagId}`;
             if (dF.JrnlDay?.viewType === "WEEKLY") {
                 const weekStartDt: string = dF.JrnlDiaryTag.getCurrentWeekStartDt();
                 if (cF.util.isNotEmpty(weekStartDt)) url += `&weekStartDt=${encodeURIComponent(weekStartDt)}`;
@@ -130,15 +130,15 @@ dF.JrnlDiaryTag = (function(): dfModule {
             if (popup) popup.focus();
         },
 
-        select: function(tagNo: string|number, tagNm?: string): void {
+        select: function(tagId: string|number, tagNm?: string): void {
             if (dF.JrnlDayTag?.isContextMenuEnabled?.()) {
-                dF.JrnlDayTag.openContextMenu(tagNo, tagNm ?? "", function(): void {
-                    dF.JrnlDiaryTag.openSearch(tagNo);
+                dF.JrnlDayTag.openContextMenu(tagId, tagNm ?? "", function(): void {
+                    dF.JrnlDiaryTag.openSearch(tagId);
                 }, "JRNL_DIARY");
                 return;
             }
 
-            dF.JrnlDiaryTag.openSearch(tagNo);
+            dF.JrnlDiaryTag.openSearch(tagId);
         },
     };
 })();

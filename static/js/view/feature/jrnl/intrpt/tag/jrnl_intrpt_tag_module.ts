@@ -76,28 +76,28 @@ dF.JrnlIntrptTag = (function(): dfModule {
 
         /**
          * 태그 선택
-         * @param {string|number} tagNo - 조회할 태그 번호.
+         * @param {string|number} tagId - 조회할 태그 ID.
          * @param tagNm 태그 이름
          */
-        select: function(tagNo: string|number, tagNm: string): void {
+        select: function(tagId: string|number, tagNm: string): void {
             if (dF.JrnlDayTag?.isContextMenuEnabled?.()) {
-                dF.JrnlDayTag.openContextMenu(tagNo, tagNm, function(): void {
-                    dF.JrnlIntrptTag.dtlModal(tagNo, tagNm);
+                dF.JrnlDayTag.openContextMenu(tagId, tagNm, function(): void {
+                    dF.JrnlIntrptTag.dtlModal(tagId, tagNm);
                 }, "JRNL_INTRPT");
                 return;
             }
 
-            dF.JrnlIntrptTag.dtlModal(tagNo, tagNm);
+            dF.JrnlIntrptTag.dtlModal(tagId, tagNm);
         },
 
         /**
          * 상세 모달 호출
-         * @param {string|number} tagNo - 조회할 태그 번호.
+         * @param {string|number} tagId - 조회할 태그 ID.
          * @param tagNm 태그 이름
          */
-        dtlModal: function(tagNo: string|number, tagNm: string): void {
+        dtlModal: function(tagId: string|number, tagNm: string): void {
             event.stopPropagation();
-            if (isNaN(Number(tagNo))) return;
+            if (isNaN(Number(tagId))) return;
 
             // 기존에 열린 모달이 있으면 닫기
             const openModals: NodeList = document.querySelectorAll('.modal.show'); // 열린 모달을 찾기
@@ -109,7 +109,7 @@ dF.JrnlIntrptTag = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = cF.util.bindUrl(Url.JRNL_INTRPT_TAG, { tagNo });
+            const url: string = cF.util.bindUrl(Url.JRNL_INTRPT_TAG, { tagId });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });

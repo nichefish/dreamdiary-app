@@ -56,26 +56,26 @@ public class TagProfileService
     /* ----- */
 
     /**
-     * 태그 번호 + 컨텐츠 타입으로 프로필 단건 조회.
+     * 태그 ID + 컨텐츠 타입으로 프로필 단건 조회.
      *
-     * @param refTagNo 참조 태그 번호
-     * @param refContentType 참조 컨텐츠 타입
+     * @param tagId 태그 ID
+     * @param contentType 컨텐츠 타입
      * @return {@link Optional} -- 조회된 TagProfileDto
      */
-    public Optional<TagProfileDto> getDtoByTagNoAndContentType(final Integer refTagNo, final String refContentType) throws Exception {
+    public Optional<TagProfileDto> getDtoByTagIdAndContentType(final Integer tagId, final String contentType) throws Exception {
         final String regstrId = AuthUtils.requireLgnUserId();
-        final Optional<TagProfileEntity> entityOpt = repository.findByTagNoAndContentTypeAndRegstrId(refTagNo, refContentType, regstrId);
+        final Optional<TagProfileEntity> entityOpt = repository.findByTagIdAndContentTypeAndRegstrId(tagId, contentType, regstrId);
         if (entityOpt.isEmpty()) return Optional.empty();
 
         final TagProfileDto dto = mapstruct.toDto(entityOpt.get());
         return Optional.of(this.normalizeTextSemantic(dto));
     }
 
-    public TagProfileDto getDtoByRefOrNew(final Integer refTagNo, final String refContentType) throws Exception {
-        return this.getDtoByTagNoAndContentType(refTagNo, refContentType)
+    public TagProfileDto getDtoByRefOrNew(final Integer tagId, final String contentType) throws Exception {
+        return this.getDtoByTagIdAndContentType(tagId, contentType)
                 .orElseGet(() -> TagProfileDto.builder()
-                        .tagNo(refTagNo)
-                        .contentType(refContentType)
+                        .tagId(tagId)
+                        .contentType(contentType)
                         .textClass(TextClass.DEFAULT)
                         .textClassCd(TextClass.DEFAULT.getKey())
                         .build());
@@ -93,23 +93,23 @@ public class TagProfileService
         final String regstrId = AuthUtils.getLgnUserId();
         if (StringUtils.isBlank(regstrId)) return;
 
-        final List<Integer> tagNoList = tagList.stream()
-                .map(TagDto::getTagNo)
+        final List<Integer> tagIdList = tagList.stream()
+                .map(TagDto::getId)
                 .filter(Objects::nonNull)
                 .distinct()
                 .toList();
-        if (CollectionUtils.isEmpty(tagNoList)) return;
+        if (CollectionUtils.isEmpty(tagIdList)) return;
 
-        final Map<Integer, TextClass> semanticMap = repository.findAllByTagNoInAndContentTypeAndRegstrId(tagNoList, contentType, regstrId)
+        final Map<Integer, TextClass> semanticMap = repository.findAllByTagIdInAndContentTypeAndRegstrId(tagIdList, contentType, regstrId)
                 .stream()
                 .collect(Collectors.toMap(
-                        TagProfileEntity::getTagNo,
+                        TagProfileEntity::getTagId,
                         profile -> TextClass.getOrDefault(profile.getTextClass()),
                         (left, right) -> left
                 ));
 
         tagList.forEach(tag -> {
-            final TextClass semantic = semanticMap.getOrDefault(tag.getTagNo(), TextClass.DEFAULT);
+            final TextClass semantic = semanticMap.getOrDefault(tag.getId(), TextClass.DEFAULT);
             tag.setTextSemantic(semantic);
             tag.setTextClassCd(semantic.getKey());
             tag.setTextClass(toCssTextClass(tag.getTextClassCd()));
@@ -120,18 +120,18 @@ public class TagProfileService
     public ServiceResponse upsert(final TagProfileDto tagProfile) throws Exception {
         this.normalizeTextSemantic(tagProfile);
 
-        if (tagProfile.getTagProfileNo() == null) {
-            this.getDtoByTagNoAndContentType(tagProfile.getTagNo(), tagProfile.getContentType())
-                    .ifPresent(existing -> tagProfile.setTagProfileNo(existing.getTagProfileNo()));
+        if (tagProfile.getId() == null) {
+            this.getDtoByTagIdAndContentType(tagProfile.getTagId(), tagProfile.getContentType())
+                    .ifPresent(existing -> tagProfile.setId(existing.getId()));
         }
 
-        return tagProfile.getTagProfileNo() == null ? this.regist(tagProfile) : this.modify(tagProfile);
+        return tagProfile.getId() == null ? this.regist(tagProfile) : this.modify(tagProfile);
     }
 
     @Override
     public TagProfileEntity getDtlEntity(final Integer key) throws Exception {
         final String regstrId = AuthUtils.requireLgnUserId();
-        return repository.findByTagProfileNoAndRegstrId(key, regstrId)
+        return repository.findByIdAndRegstrId(key, regstrId)
                 .orElseThrow(() -> new EntityNotFoundException("exception.EntityNotFoundException"));
     }
 
@@ -140,7 +140,7 @@ public class TagProfileService
         final String regstrId = AuthUtils.getLgnUserId();
         if (StringUtils.isBlank(regstrId)) return null;
 
-        return repository.findByTagProfileNoAndRegstrId(key, regstrId).orElse(null);
+        return repository.findByIdAndRegstrId(key, regstrId).orElse(null);
     }
 
     @Override
