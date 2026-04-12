@@ -152,6 +152,10 @@ cF.ajax = (function(): Module {
 
         switch(statusCode) {
             case 401: {
+                if (cF.ui.isPopupWindow()) {
+                    cF.ui.confirmClosePopup(msg);
+                    return;
+                }
                 cF.ui.swalOrConfirm(msg + "\n" + Message.get("view.auth.redirect-to-lgn-form"), function(): void {
                     window.location.href = lgnFormUrl;
                 }, function(): void {
