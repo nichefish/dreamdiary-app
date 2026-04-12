@@ -139,6 +139,10 @@ public interface ApiUrl {
     String HISTORY_RESTORE = Prefix.API + "/history/{contentType}/{postNo}/{historyNo}/restore";
     String HISTORY_CLEAR = Prefix.API + "/history/{contentType}/{postNo}/clear";
 
+    /** 관련글 */
+    String RELATEDS = Prefix.API + "/related/{contentType}/{postNo}";
+    String RELATED = Prefix.API + "/related/{relatedContentNo}";
+
     /** 단락 */
     String SECTNS = Prefix.API + "/sectns";
     String SECTN = Prefix.API + "/sectn/{postNo}";

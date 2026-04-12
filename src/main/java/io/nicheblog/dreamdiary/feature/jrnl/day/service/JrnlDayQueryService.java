@@ -1,11 +1,18 @@
 package io.nicheblog.dreamdiary.feature.jrnl.day.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
+import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfKey;
+import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.clsf.related.model.RelatedContentDto;
+import io.nicheblog.dreamdiary.feature.clsf.related.service.RelatedContentQueryService;
+import io.nicheblog.dreamdiary.feature.jrnl.chapter.model.JrnlChapterDto;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto;
 import io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDaySearchParam;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.helper.JrnlDayFilterHelper;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.helper.JrnlDayHldyHelper;
 import io.nicheblog.dreamdiary.feature.jrnl.day.service.helper.JrnlDayViewHelper;
+import io.nicheblog.dreamdiary.feature.jrnl.diary.model.JrnlDiaryDto;
+import io.nicheblog.dreamdiary.feature.jrnl.dream.model.JrnlDreamDto;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +20,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +38,7 @@ import java.util.Map;
 public class JrnlDayQueryService {
 
     private final JrnlDayService jrnlDayService;
+    private final RelatedContentQueryService relatedContentQueryService;
 
     /**
      * 연월기준 목록 조회 + enrich
@@ -142,6 +151,7 @@ public class JrnlDayQueryService {
             JrnlDayViewHelper.mergeStates(userId, listDto, searchParam);
             JrnlDayViewHelper.applyChapterTagSummary(listDto, searchParam);
         }
+        this.mergeRelatedContents(userId, listDto);
 
         return listDto;
     }
@@ -161,6 +171,7 @@ public class JrnlDayQueryService {
             JrnlDayViewHelper.mergeWeeklyStates(userId, listDto, searchParam);
             JrnlDayViewHelper.applyChapterTagSummary(listDto, searchParam);
         }
+        this.mergeRelatedContents(userId, listDto);
 
         return listDto;
     }
@@ -176,8 +187,83 @@ public class JrnlDayQueryService {
 
         JrnlDayHldyHelper.setHldyInfo(retrieved, getHldyMap());
         JrnlDayViewHelper.mergeStates(userId, retrieved);
+        this.mergeRelatedContents(userId, List.of(retrieved));
 
         return retrieved;
+    }
+
+    private void mergeRelatedContents(final String userId, final List<JrnlDayDto> listDto) throws Exception {
+        if (listDto == null || listDto.isEmpty()) return;
+
+        final List<BaseClsfKey> refKeyList = new ArrayList<>();
+        for (final JrnlDayDto jrnlDay : listDto) {
+            if (jrnlDay == null) continue;
+
+            final List<JrnlChapterDto> jrnlChapterList = jrnlDay.getJrnlChapterList();
+            if (jrnlChapterList != null) {
+                for (final JrnlChapterDto jrnlChapter : jrnlChapterList) {
+                    if (jrnlChapter == null || jrnlChapter.getJrnlDiaryList() == null) continue;
+
+                    for (final JrnlDiaryDto jrnlDiary : jrnlChapter.getJrnlDiaryList()) {
+                        if (jrnlDiary == null || jrnlDiary.getPostNo() == null) continue;
+                        refKeyList.add(new BaseClsfKey(jrnlDiary.getPostNo(), ContentType.JRNL_DIARY));
+                    }
+                }
+            }
+
+            this.collectDreamRefKeys(refKeyList, jrnlDay.getJrnlDreamList());
+            this.collectDreamRefKeys(refKeyList, jrnlDay.getJrnlElseDreamList());
+        }
+
+        final Map<String, List<RelatedContentDto>> relatedMap = relatedContentQueryService.getRelatedContentMapByRefs(refKeyList, userId);
+
+        for (final JrnlDayDto jrnlDay : listDto) {
+            if (jrnlDay == null) continue;
+
+            final List<JrnlChapterDto> jrnlChapterList = jrnlDay.getJrnlChapterList();
+            if (jrnlChapterList != null) {
+                for (final JrnlChapterDto jrnlChapter : jrnlChapterList) {
+                    if (jrnlChapter == null || jrnlChapter.getJrnlDiaryList() == null) continue;
+
+                    for (final JrnlDiaryDto jrnlDiary : jrnlChapter.getJrnlDiaryList()) {
+                        if (jrnlDiary == null || jrnlDiary.getPostNo() == null) continue;
+                        jrnlDiary.setRelatedContentList(this.getRelatedList(relatedMap, ContentType.JRNL_DIARY.key, jrnlDiary.getPostNo()));
+                    }
+                }
+            }
+
+            this.applyDreamRelatedContents(relatedMap, jrnlDay.getJrnlDreamList());
+            this.applyDreamRelatedContents(relatedMap, jrnlDay.getJrnlElseDreamList());
+        }
+    }
+
+    private void collectDreamRefKeys(final List<BaseClsfKey> refKeyList, final List<JrnlDreamDto> jrnlDreamList) {
+        if (jrnlDreamList == null) return;
+
+        for (final JrnlDreamDto jrnlDream : jrnlDreamList) {
+            if (jrnlDream == null || jrnlDream.getPostNo() == null) continue;
+            refKeyList.add(new BaseClsfKey(jrnlDream.getPostNo(), ContentType.JRNL_DREAM));
+        }
+    }
+
+    private void applyDreamRelatedContents(
+            final Map<String, List<RelatedContentDto>> relatedMap,
+            final List<JrnlDreamDto> jrnlDreamList
+    ) {
+        if (jrnlDreamList == null) return;
+
+        for (final JrnlDreamDto jrnlDream : jrnlDreamList) {
+            if (jrnlDream == null || jrnlDream.getPostNo() == null) continue;
+            jrnlDream.setRelatedContentList(this.getRelatedList(relatedMap, ContentType.JRNL_DREAM.key, jrnlDream.getPostNo()));
+        }
+    }
+
+    private List<RelatedContentDto> getRelatedList(
+            final Map<String, List<RelatedContentDto>> relatedMap,
+            final String contentType,
+            final Integer postNo
+    ) {
+        return relatedMap.getOrDefault(String.format("%s:%d", contentType, postNo), List.of());
     }
 
     /**
