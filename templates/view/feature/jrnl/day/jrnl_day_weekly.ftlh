@@ -19,8 +19,6 @@
 <link rel="stylesheet" type="text/css" href="/css/jrnl.css?${releaseDate!}" />
 
 <div class="jrnl-day-weekly-page">
-    <#--filter status-->
-    <#include "/view/feature/jrnl/day/_filter/_jrnl_day_filter_status.ftlh">
     <div class="d-flex flex-column-fluid justify-content-between align-items-end flex-wrap gap-4">
         <ul class="nav nav-tabs nav-tabs-line ps-5 mt-5">
             <li class="nav-item">
@@ -61,7 +59,7 @@
             </li>
         </ul>
         <#--keyword search (popup)-->
-        <#include "/view/feature/jrnl/day/_filter/_jrnl_day_keyword_search.ftlh">
+        <#include "/view/feature/jrnl/day/_jrnl_day_keyword_search.ftlh">
     </div>
 </div>
 
