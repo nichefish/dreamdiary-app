@@ -26,20 +26,33 @@ public class TagProfileDto
 
     /** 태그 프로필 번호 (PK) */
     private Integer id;
-    /** 태그 번호 */
+    /** 태그 ID */
     private Integer tagId;
+    /** 태그 카테고리명 */
+    private String ctgr;
+    /** 태그 카테고리 ID */
+    private Integer tagCategoryId;
     /** 참조 컨텐츠 타입 */
     private String contentType;
     /** 본문 */
     private String cn;
 
-    /** 시각 의미 */
-    @Builder.Default
-    private TextClass textClass = TextClass.DEFAULT;
+    /** 개별 태그 시각 의미 ({@code null} = 카테고리/기본 색 상속) */
+    private TextClass textClass;
 
-    /** 렌더링 시 적용할 text class */
+    /** 개별 렌더링용 text class 코드 ({@code null} 또는 빈 문자열 = 상속) */
+    private String textClassCd;
+
+    /** 카테고리 프로필 ID */
+    private Integer categoryProfileId;
+
+    /** 카테고리 시각 의미 */
     @Builder.Default
-    private String textClassCd = TextClass.DEFAULT.getKey();
+    private TextClass categoryTextClass = TextClass.DEFAULT;
+
+    /** 카테고리 렌더링 시 적용할 text class */
+    @Builder.Default
+    private String categoryTextClassCd = TextClass.DEFAULT.getKey();
 
     /* ----- */
 

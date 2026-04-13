@@ -130,9 +130,9 @@ dF.JrnlDiaryTag = (function(): dfModule {
             if (popup) popup.focus();
         },
 
-        select: function(tagId: string|number, tagNm?: string): void {
+        select: function(tagId: string|number, tagNm?: string, ctgr: string = ""): void {
             if (dF.JrnlDayTag?.isContextMenuEnabled?.()) {
-                dF.JrnlDayTag.openContextMenu(tagId, tagNm ?? "", function(): void {
+                dF.JrnlDayTag.openContextMenu(tagId, tagNm ?? "", ctgr, function(): void {
                     dF.JrnlDiaryTag.openSearch(tagId);
                 }, "JRNL_DIARY");
                 return;

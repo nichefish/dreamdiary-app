@@ -31,7 +31,7 @@
                 <span class="py-2 me-3 cursor-pointer opacity-hover"
                       onclick="dF.Tag.filter('${tag.id!}');"
                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'view.tag.filter-set'/>">
-                    <span class="${tag.tagClass!}">
+                    <span class="${tag.tagClass!} ${tag.textClass!}">
                         <#if tag.ctgr != ""><span class="fs-7 text-noti">[${tag.ctgr!}]</span></#if>
                         <span class="em_${tag.tagNm!} <#if isTagSelected!false>fw-bolder text-underline-dotted</#if>">
                             ${tag.tagNm!}

@@ -56,8 +56,11 @@ public class TagProfileEntity
     @Comment("프로필 본문")
     private String cn;
 
+    /**
+     * 개별 태그 시각 의미. {@code null}이면 카테고리 프로필(또는 전역 기본) 색을 상속한다.
+     */
     @Enumerated(EnumType.STRING)
-    @Column(name = "text_class", length = 30, nullable = false)
-    @Comment("시각 의미")
+    @Column(name = "text_class", length = 30, nullable = true)
+    @Comment("시각 의미 (NULL=카테고리/기본 상속)")
     private TextClass textClass;
 }

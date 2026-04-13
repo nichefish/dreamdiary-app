@@ -169,6 +169,7 @@ public class JrnlIntrptTagService
      */
     public Map<String, List<TagDto>> getIntrptSizedGroupListDtoByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
         final List<TagDto> tagList = this.getSelf().getIntrptSizedListDtoByUser(AuthUtils.requireUserId(userId), yy, mnth);
+        tagProfileService.applyVisualSemantic(tagList, ContentType.JRNL_INTRPT);
 
         // 태그를 카테고리별로 그룹화하여 맵으로 반환
         return tagList.stream()

@@ -203,11 +203,13 @@ public class JrnlDiaryTagService
      */
     public Map<String, List<TagDto>> getDiarySizedGroupListDtoByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
         final List<TagDto> tagList = this.getSelf().getDiarySizedListDtoByUser(AuthUtils.requireUserId(userId), yy, mnth);
+        tagProfileService.applyVisualSemantic(tagList, ContentType.JRNL_DIARY);
         return tagList.stream().collect(Collectors.groupingBy(TagDto::getCtgr));
     }
 
     public Map<String, List<TagDto>> getWeeklySizedGroupListDtoByUser(final String userId, final String weekStartDt) throws Exception {
         final List<TagDto> tagList = this.getSelf().getWeeklySizedListDtoByUser(AuthUtils.requireUserId(userId), weekStartDt);
+        tagProfileService.applyVisualSemantic(tagList, ContentType.JRNL_DIARY);
         return tagList.stream().collect(Collectors.groupingBy(TagDto::getCtgr));
     }
 

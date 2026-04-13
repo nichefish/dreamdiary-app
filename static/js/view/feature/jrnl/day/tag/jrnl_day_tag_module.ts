@@ -344,7 +344,7 @@ dF.JrnlDayTag = (function(): dfModule {
             return { left, top };
         },
 
-        openContextMenu: function(tagId: string|number, tagNm: string, onSearch: () => void, contentType: string = "JRNL_DAY"): void {
+        openContextMenu: function(tagId: string|number, tagNm: string, ctgr: string, onSearch: () => void, contentType: string = "JRNL_DAY"): void {
             if (!dF.JrnlDayTag.isContextMenuEnabled()) {
                 onSearch();
                 return;
@@ -355,7 +355,7 @@ dF.JrnlDayTag = (function(): dfModule {
             dF.JrnlDayTag.highlightContextAnchor(anchorEl);
 
             const menuEl: HTMLElement = dF.JrnlDayTag.ensureContextMenu();
-            dF.JrnlDayTag.contextMenuState = { tagId, tagNm, onSearch, contentType, anchorEl };
+            dF.JrnlDayTag.contextMenuState = { tagId, tagNm, ctgr, onSearch, contentType, anchorEl };
             dF.JrnlDayTag.bindContextMenuEvents();
 
             menuEl.style.display = "block";
@@ -384,7 +384,7 @@ dF.JrnlDayTag = (function(): dfModule {
             dF.JrnlDayTag.hideContextMenu();
 
             if (!currentState) return;
-            dF.JrnlDayTag.profileModal(currentState.tagId, currentState.contentType, currentState.tagNm);
+            dF.JrnlDayTag.profileModal(currentState.tagId, currentState.contentType, currentState.tagNm, currentState.ctgr);
         },
 
         getContentTypeLabel: function(contentType: string): string {
@@ -405,26 +405,53 @@ dF.JrnlDayTag = (function(): dfModule {
             return data;
         },
 
-        syncProfileTextClassSelectStyle: function(): void {
-            const selectEl: HTMLSelectElement | null = document.querySelector("#tagTextClassCd");
+        syncProfileTextClassSelectStyle: function(selector: string, previewSelector?: string): void {
+            const selectEl: HTMLSelectElement | null = document.querySelector(selector);
             if (!selectEl) return;
 
             const selectedOption: HTMLOptionElement | undefined = selectEl.selectedOptions?.[0];
-            const textClass: string = selectedOption?.dataset.textClass ?? "";
+            let textClass: string = selectedOption?.dataset.textClass ?? "";
+            if (selector === "#tagTextClassCd" && selectEl.value === "") {
+                const catSel: HTMLSelectElement | null = document.querySelector("#tagCategoryTextClassCd");
+                const catOpt: HTMLOptionElement | undefined = catSel?.selectedOptions?.[0];
+                textClass = catOpt?.dataset.textClass ?? "";
+            }
             selectEl.className = `form-select form-select-solid ${textClass}`.trim();
+
+            if (!previewSelector) return;
+            const previewEl: HTMLElement | null = document.querySelector(previewSelector);
+            if (!previewEl) return;
+
+            previewEl.className = textClass;
         },
 
         initProfileTextClassForm: function(): void {
-            const selectEl: HTMLSelectElement | null = document.querySelector("#tagTextClassCd");
-            if (!selectEl) return;
+            const selectorPairs: { select: string; preview: string }[] = [
+                { select: "#tagCategoryTextClassCd", preview: "#tagCategoryColorPreview" },
+                { select: "#tagTextClassCd", preview: "#tagColorPreview" },
+            ];
+            selectorPairs.forEach(function(pair: { select: string; preview: string }): void {
+                const selectEl: HTMLSelectElement | null = document.querySelector(pair.select);
+                if (!selectEl) return;
 
-            selectEl.addEventListener("change", function(): void {
-                dF.JrnlDayTag.syncProfileTextClassSelectStyle();
+                selectEl.addEventListener("change", function(): void {
+                    dF.JrnlDayTag.syncProfileTextClassSelectStyle(pair.select, pair.preview);
+                });
+                dF.JrnlDayTag.syncProfileTextClassSelectStyle(pair.select, pair.preview);
             });
-            dF.JrnlDayTag.syncProfileTextClassSelectStyle();
+
+            const catSel: HTMLSelectElement | null = document.querySelector("#tagCategoryTextClassCd");
+            if (catSel) {
+                catSel.addEventListener("change", function(): void {
+                    const indSel: HTMLSelectElement | null = document.querySelector("#tagTextClassCd");
+                    if (indSel && indSel.value === "") {
+                        dF.JrnlDayTag.syncProfileTextClassSelectStyle("#tagTextClassCd", "#tagColorPreview");
+                    }
+                });
+            }
         },
 
-        profileModal: function(tagId: string|number, contentType: string, tagNm: string): void {
+        profileModal: function(tagId: string|number, contentType: string, tagNm: string, ctgr?: string): void {
             if (isNaN(Number(tagId)) || cF.util.isEmpty(contentType)) return;
 
             const url: string = Url.TAG_PROFILES;
@@ -438,8 +465,10 @@ dF.JrnlDayTag = (function(): dfModule {
                 const viewModel: Record<string, any> = {
                     ...(res.rsltObj ?? {}),
                     tagId: res.rsltObj?.tagId ?? Number(tagId),
+                    tagCategoryId: res.rsltObj?.tagCategoryId,
                     contentType: res.rsltObj?.contentType ?? contentType,
                     tagNm,
+                    ctgr: res.rsltObj?.ctgr ?? ctgr ?? "",
                     contentTypeLabel: dF.JrnlDayTag.getContentTypeLabel(contentType),
                 };
                 cF.handlebars.modal(viewModel, "tag_profile");
@@ -496,9 +525,9 @@ dF.JrnlDayTag = (function(): dfModule {
          * @param {string|number} tagId - 조회할 태그 ID.
          * @param tagNm 태그 이름
          */
-        select: function(tagId: string|number, tagNm: string): void {
+        select: function(tagId: string|number, tagNm: string, ctgr: string = ""): void {
             if (dF.JrnlDayTag.isContextMenuEnabled()) {
-                dF.JrnlDayTag.openContextMenu(tagId, tagNm, function(): void {
+                dF.JrnlDayTag.openContextMenu(tagId, tagNm, ctgr, function(): void {
                     dF.JrnlDayTag.dtlModal(tagId, tagNm);
                 }, "JRNL_DAY");
                 return;
