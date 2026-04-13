@@ -27,7 +27,8 @@ public enum TextClass {
     DARK("DARK", "text-dark"),
     MUTED("MUTED", "text-muted"),
     DIALOG("DIALOG", "text-dialog"),
-    NOTI("NOTI", "text-noti");
+    NOTI("NOTI", "text-noti"),
+    BURNT("BURNT", "text-burnt");
 
     private final String key;
     private final String textClass;

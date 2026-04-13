@@ -179,6 +179,20 @@
     color: #c269da !important;
 }
 
+/* burnt text semantic */
+.text-burnt {
+    color: #92400e !important;
+
+    &:hover {
+        color: #b45309 !important;
+    }
+
+    &:active,
+    &.active {
+        color: #78350f !important;
+    }
+}
+
 /* textarea 대체용 text-div (simple) */
 .div-textarea-smp {
     overflow-y: auto;
