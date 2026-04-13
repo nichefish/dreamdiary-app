@@ -24,14 +24,14 @@ public interface MetaEmbedModule {
     void setMeta(MetaEmbed embed);
     
     /** 메타 ID 목록 */
-    default List<Integer> getMetaNoList() {
+    default List<Integer> getMetaIdList() {
         if (this.getMeta() == null) return new ArrayList<>();
 
         final List<MetaContentEntity> metaList = this.getMeta().getList();
         if (CollectionUtils.isEmpty(metaList)) return new ArrayList<>();
         
         return metaList.stream()
-                .map(MetaContentEntity::getRefMetaNo)
+                .map(MetaContentEntity::getMetaId)
                 .toList();        
     }
 }

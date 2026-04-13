@@ -25,7 +25,7 @@ public interface HistoryStrategy<Dto extends BaseClsfDto> {
             final Integer key,
             final String cn,
             final HistoryType historyType,
-            final Integer fromHistoryNo
+            final Integer fromHistoryId
     ) throws Exception;
 
     default Dto applyHistoryList(final Dto currentDto, final List<HistoryDto> historyList) {

@@ -34,7 +34,7 @@ public class JrnlDreamSmpEntity {
     @Builder.Default
     private static final ContentType CONTENT_TYPE = ContentType.JRNL_DREAM;
 
-    /** 저널 꿈 고유 번호 (PK) */
+    /** 저널 꿈 고유 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_no")

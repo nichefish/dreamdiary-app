@@ -76,7 +76,7 @@ public class AtchFileDtlService
      */
     public List<AtchFileDtlDto> getPageDto(final Integer atchFileNo) throws Exception {
         final Map<String, Object> paramMap = new HashMap<>() {{
-            put("atchFileNo", atchFileNo);
+            put("atchFileId", atchFileNo);
         }};
 
         return this.getSelf().getListDto(paramMap);
@@ -162,7 +162,7 @@ public class AtchFileDtlService
 
         atchFileList.stream()
                 .peek(atchFileDtl -> {
-                    String atchCtrl = multiRequest.getParameter("atchCtrl" + atchFileDtl.getAtchFileDtlNo());
+                    String atchCtrl = multiRequest.getParameter("atchCtrl" + atchFileDtl.getId());
                     if ("D".equals(atchCtrl)) atchFileDtl.setDelYn("Y");
                     // TODO: 실제 파일 삭제?
                 });

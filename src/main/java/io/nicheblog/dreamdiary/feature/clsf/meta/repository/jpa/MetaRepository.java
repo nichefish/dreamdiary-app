@@ -36,17 +36,17 @@ public interface MetaRepository
     /**
      * 컨텐츠 타입별 메타 개수 조회
      *
-     * @param metaNo 조회할 메타 번호
+     * @param metaId 조회할 메타 ID
      * @param refContentType 조회할 컨텐츠 타입 (필터링 조건, null 또는 빈 문자열일 경우 조건 무시)
      * @return 메타 번호와 컨텐츠 타입에 해당하는 메타 개수
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    @Query("SELECT COUNT(ct.metaContentNo) " +
+    @Query("SELECT COUNT(ct.id) " +
             "FROM MetaContentEntity ct " +
-            "INNER JOIN fetch MetaEntity meta ON meta.metaNo = ct.refMetaNo " +
-            "WHERE ct.refMetaNo = :metaNo " +
+            "INNER JOIN fetch MetaEntity meta ON meta.id = ct.metaId " +
+            "WHERE ct.metaId = :metaId " +
             " AND (:refContentType IS NULL OR :refContentType = '' OR ct.refContentType = :refContentType)" +
             " AND (ct.regstrId = :regstrId)")
-    Integer countMetaSize(final @Param("metaNo") Integer metaNo, final @Param("refContentType") String refContentType, final String regstrId);
+    Integer countMetaSize(final @Param("metaId") Integer metaId, final @Param("refContentType") String refContentType, final String regstrId);
 }

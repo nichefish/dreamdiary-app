@@ -29,9 +29,9 @@ public class MetaDto
         extends BaseCrudDto
         implements Identifiable<Integer>, Comparable<MetaDto> {
 
-    /** 메타 번호 (PK) */
+    /** 메타 ID */
     @Positive
-    private Integer metaNo;
+    private Integer id;
 
     /** 태그 카테고리 */
     @Builder.Default
@@ -99,9 +99,9 @@ public class MetaDto
      * @param metaNm - 생성할 메타 번호
      * @param value - 생성할 메타의 값
      */
-    public MetaDto(final Integer metaNo, final String metaNm, final String value) {
+    public MetaDto(final Integer id, final String metaNm, final String value) {
         this(metaNm, value);
-        this.metaNo = metaNo;
+        this.id = id;
     }
 
     /**
@@ -120,6 +120,6 @@ public class MetaDto
 
     @Override
     public Integer getKey() {
-        return this.metaNo;
+        return this.id;
     }
 }

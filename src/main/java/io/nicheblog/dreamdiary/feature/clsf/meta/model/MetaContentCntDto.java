@@ -17,8 +17,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class MetaContentCntDto {
     
-    /** 메타 번호 */
-    private Integer metaNo;
+    /** 메타 ID */
+    private Integer metaId;
 
     /** 개수 */
     private Long count;

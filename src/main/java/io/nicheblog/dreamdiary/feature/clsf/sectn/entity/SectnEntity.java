@@ -43,7 +43,7 @@ public class SectnEntity
     @Builder.Default
     private static final ContentType CONTENT_TYPE = ContentType.SECTN;
 
-    /** 내용 번호 (PK) */
+    /** 내용 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_no")

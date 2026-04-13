@@ -58,13 +58,13 @@ public class JrnlDayMetaService
     /**
      * 사용자 기준 특정 메타가 존재하는 연도 목록을 반환합니다.
      *
-     * @param metaNo 메타 번호
+     * @param metaId 메타 ID
      * @param userId 사용자 ID
      * @return 연도 목록
      */
-    @Cacheable(value="jrnlDayMetaYyListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#metaNo, #userId)")
-    public List<Integer> getYyListByMetaNoAndUser(final Integer metaNo, final String userId) {
-        return jrnlDayRepository.findDistinctYysByMetaNoAndRegstrId(metaNo, AuthUtils.requireUserId(userId));
+    @Cacheable(value="jrnlDayMetaYyListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#metaId, #userId)")
+    public List<Integer> getYyListByMetaIdAndUser(final Integer metaId, final String userId) {
+        return jrnlDayRepository.findDistinctYysByMetaIdAndRegstrId(metaId, AuthUtils.requireUserId(userId));
     }
 
     /**

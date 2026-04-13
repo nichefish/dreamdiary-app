@@ -175,7 +175,7 @@ public class MetaService
         int maxFrequency = 0;
         for (final MetaDto meta : metaList) {
             // 캐싱 처리 위해 셀프 프록시
-            final Integer metaSize = this.countMetaSize(meta.getMetaNo(), contentType, AuthUtils.getLgnUserId());
+            final Integer metaSize = this.countMetaSize(meta.getId(), contentType, AuthUtils.getLgnUserId());
             meta.setContentSize(metaSize);
             maxFrequency = Math.max(maxFrequency, metaSize);
         }
@@ -185,13 +185,13 @@ public class MetaService
     /**
      * 최대 사용빈도 계산한 메타 목록 조회
      *
-     * @param metaNo 메타 번호
+     * @param metaId 메타 ID
      * @param contentType 조회할 컨텐츠 타입 (ContentType)
      * @return {@link Integer} -- 메타 목록에서 계산된 최대 사용 빈도 (Integer)
      */
     @Transactional(readOnly = true)
-    public Integer countMetaSize(final Integer metaNo, final String contentType, final String regstrId) {
-        return repository.countMetaSize(metaNo, contentType, regstrId);
+    public Integer countMetaSize(final Integer metaId, final String contentType, final String regstrId) {
+        return repository.countMetaSize(metaId, contentType, regstrId);
     }
 
     /**

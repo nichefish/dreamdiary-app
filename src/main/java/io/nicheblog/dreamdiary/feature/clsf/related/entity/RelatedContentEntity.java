@@ -28,15 +28,15 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE related_content SET del_yn = 'Y' WHERE related_content_no = ?")
+@SQLDelete(sql = "UPDATE related_content SET del_yn = 'Y' WHERE id = ?")
 public class RelatedContentEntity
         extends BaseAuditRegEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "related_content_no")
-    @Comment("관련글 번호 (PK)")
-    private Integer relatedContentNo;
+    @Column(name = "id")
+    @Comment("관련글 ID")
+    private Integer id;
 
     @Column(name = "left_post_no", nullable = false)
     @Comment("좌측 글 번호")

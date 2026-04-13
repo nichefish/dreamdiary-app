@@ -29,16 +29,16 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE managtr SET del_yn = 'Y' WHERE managtr_no = ?")
+@SQLDelete(sql = "UPDATE managtr SET del_yn = 'Y' WHERE id = ?")
 public class ManagtrEntity
         extends BaseAuditRegEntity {
 
-    /** 조치자 번호 (PK) */
+    /** 조치자 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "managtr_no")
-    @Comment("조치자 번호 (PK)")
-    private Integer managtrNo;
+    @Column(name = "id")
+    @Comment("조치자 ID")
+    private Integer id;
 
     /** 참조 글번호 */
     @Column(name = "ref_post_no")

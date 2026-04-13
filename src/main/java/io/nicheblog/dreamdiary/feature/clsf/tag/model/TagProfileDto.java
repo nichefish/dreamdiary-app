@@ -24,7 +24,7 @@ public class TagProfileDto
         extends BaseCrudDto
         implements Identifiable<Integer> {
 
-    /** 태그 프로필 번호 (PK) */
+    /** 태그 프로필 ID */
     private Integer id;
     /** 태그 ID */
     private Integer tagId;

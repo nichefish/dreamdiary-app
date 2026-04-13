@@ -28,12 +28,12 @@ import javax.persistence.*;
 public class AuthPolicyEntity
         extends BaseAuditEntity {
 
-    /** 인증 정책 번호 (PK) */
+    /** 인증 정책 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "auth_policy_no")
+    @Column(name = "id")
     @Comment("인증 정책 번호 (key)")
-    private Integer authPolicyNo;
+    private Integer id;
 
     /** 로그인 최대 시도 횟수 */
     @Column(name = "lgn_try_lmt")

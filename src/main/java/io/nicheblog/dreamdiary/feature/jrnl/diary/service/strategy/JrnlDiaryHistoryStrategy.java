@@ -40,9 +40,9 @@ public class JrnlDiaryHistoryStrategy implements HistoryStrategy<JrnlDiaryDto> {
             final Integer key,
             final String cn,
             final HistoryType historyType,
-            final Integer fromHistoryNo
+            final Integer fromHistoryId
     ) throws Exception {
-        return jrnlDiaryService.updtCn(key, cn, historyType, fromHistoryNo);
+        return jrnlDiaryService.updtCn(key, cn, historyType, fromHistoryId);
     }
 
     @Override

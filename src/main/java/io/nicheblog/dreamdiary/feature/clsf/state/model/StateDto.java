@@ -27,9 +27,9 @@ public class StateDto
         extends BaseCrudDto
         implements Identifiable<Integer> {
 
-    /** 상태 번호 (PK) */
+    /** 상태 ID */
     @Positive
-    private Integer stateNo;
+    private Integer id;
 
     /** 상태 코드 */
     @Size(max = 50)
@@ -45,7 +45,7 @@ public class StateDto
 
     @Override
     public Integer getKey() {
-        return this.stateNo;
+        return this.id;
     }
 
     public StateDto(final StateCd stateCd) {

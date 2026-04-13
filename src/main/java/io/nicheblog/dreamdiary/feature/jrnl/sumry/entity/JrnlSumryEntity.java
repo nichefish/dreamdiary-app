@@ -35,7 +35,7 @@ public class JrnlSumryEntity
         extends BaseClsfEntity
         implements TagEmbedModule {
 
-    /** 저널 꿈 고유 번호 (PK) */
+    /** 저널 꿈 고유 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_no")

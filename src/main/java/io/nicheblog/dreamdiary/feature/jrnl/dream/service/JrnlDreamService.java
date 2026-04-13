@@ -198,7 +198,7 @@ public class JrnlDreamService
      * @param key 식별자
      * @param updatedCn 수정할 내용
      * @param historyType 이력 타입
-     * @param fromHistoryNo 복구 원본 이력 번호 (복구 시)
+     * @param fromHistoryId 복구 원본 이력 번호 (복구 시)
      * @return {@link JrnlDreamDto} -- 수정된 객체
      */
     @Transactional
@@ -206,7 +206,7 @@ public class JrnlDreamService
             final Integer key,
             final String updatedCn,
             final HistoryType historyType,
-            final Integer fromHistoryNo
+            final Integer fromHistoryId
     ) throws Exception {
         final JrnlDreamEntity restoreEntity = this.getSelf().getDtlEntity(key);
         final JrnlDreamEntity historySnapshot = BaseClsfHistoryHelper.isHistoryModule(restoreEntity)
@@ -217,7 +217,7 @@ public class JrnlDreamService
         BaseClsfHistoryHelper.applyModifyHistory(historySnapshot, restoreEntity);
 
         final JrnlDreamEntity updatedEntity = getRepository().saveAndFlush(restoreEntity);
-        BaseClsfHistoryHelper.publishHistoryEventIfSupported(this, historySnapshot, updatedEntity, historyType, fromHistoryNo);
+        BaseClsfHistoryHelper.publishHistoryEventIfSupported(this, historySnapshot, updatedEntity, historyType, fromHistoryId);
 
         final JrnlDreamDto updatedDto = getReadMapstruct().toDto(updatedEntity);
         jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_DREAM);

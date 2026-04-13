@@ -158,8 +158,8 @@ public class RelatedContentService {
     }
 
     @Transactional
-    public boolean delete(final Integer relatedContentNo) {
-        final RelatedContentEntity entity = repository.findById(relatedContentNo)
+    public boolean delete(final Integer relatedContentId) {
+        final RelatedContentEntity entity = repository.findById(relatedContentId)
                 .orElseThrow(() -> new EntityNotFoundException("exception.EntityNotFoundException.to-delete"));
 
         if (!AuthUtils.isRegstr(entity.getRegstrId())) {

@@ -25,7 +25,7 @@ public class LogSysParam
         extends BaseParam {
 
     /** 로그 고유 ID */
-    private Integer logSysNo;
+    private Integer id;
 
     /** 작업자 ID = 시스템 계정 */
     @Builder.Default

@@ -35,7 +35,7 @@ public class HistoryEventListener {
             final String cn = this.resolveHistoryCn(detector, event);
             if (event.getEntitySnapshot() != null && StringUtils.isBlank(cn)) return;
 
-            historyService.addHistory(event.getAfterEntity().getClsfKey(), cn, event.getHistoryType(), event.getFromHistoryNo());
+            historyService.addHistory(event.getAfterEntity().getClsfKey(), cn, event.getHistoryType(), event.getFromHistoryId());
         } finally {
             SecurityContextHolder.setContext(previousSecurityContext);
         }

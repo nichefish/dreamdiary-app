@@ -28,16 +28,16 @@ import javax.persistence.*;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE meta SET del_yn = 'Y' WHERE meta_no = ?")
+@SQLDelete(sql = "UPDATE meta SET del_yn = 'Y' WHERE id = ?")
 public class MetaSmpEntity
         extends BaseCrudEntity {
 
-    /** 메타 번호 (PK) */
+    /** 메타 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "meta_no")
-    @Comment("메타 번호 (PK)")
-    private Integer metaNo;
+    @Column(name = "id")
+    @Comment("메타 ID")
+    private Integer id;
 
     /** 메타 카테고리 */
     @Column(name = "ctgr")

@@ -32,13 +32,13 @@ public class MenuDto
         extends BaseAuditDto
         implements Identifiable<Integer>, StateCmpstnModule {
 
-    /** 메뉴 번호 (PK)  */
+    /** 메뉴 ID  */
     @Positive
-    private Integer menuNo;
+    private Integer id;
 
     /** 상위 메뉴 번호 */
     @Positive
-    private Integer upperMenuNo;
+    private Integer upperMenuId;
 
     /** 메뉴 구분 코드 (루트"ROOT", 대메뉴"MAIN", 중-소메뉴"SUB") */
     @Size(max = 50)
@@ -126,7 +126,7 @@ public class MenuDto
 
     @Override
     public Integer getKey() {
-        return this.menuNo;
+        return this.id;
     }
 
     /** 위임 :: 상태 관리 모듈 */

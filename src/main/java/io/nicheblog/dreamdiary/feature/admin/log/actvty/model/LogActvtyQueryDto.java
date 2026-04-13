@@ -27,8 +27,8 @@ public class LogActvtyQueryDto
         extends BaseCrudDto
         implements Identifiable<Integer> {
 
-    /** 로그 고유 번호 (PK) */
-    private Integer logActvtyNo;
+    /** 로그 고유 ID */
+    private Integer id;
     /** 작업자 ID */
     private String userId;
     /** 작업자 이름 */
@@ -110,6 +110,6 @@ public class LogActvtyQueryDto
 
     @Override
     public Integer getKey() {
-        return this.logActvtyNo;
+        return this.id;
     }
 }

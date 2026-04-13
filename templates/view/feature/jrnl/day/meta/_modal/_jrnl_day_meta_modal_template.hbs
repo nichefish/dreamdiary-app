@@ -9,7 +9,7 @@
             <label for="jrnl_day_meta_yy" class="form-label mb-0 fw-bold">년도</label>
             <select id="jrnl_day_meta_yy"
                     class="form-select form-select-sm w-auto"
-                    onchange="dF.JrnlDayMeta.changeYy({{metaNo}}, this.value);">
+                    onchange="dF.JrnlDayMeta.changeYy({{metaId}}, this.value);">
                 {{#each yearOptions}}
                     <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
                 {{/each}}
@@ -24,7 +24,7 @@
             <div class="d-flex align-items-center gap-2">
                 {{> jrnl_day_stdrd_dt_partial this}}
                 {{#each meta.list}}
-                    {{#if (equals refMetaNo ../../metaNo)}}
+                    {{#if (equals metaId ../../metaId)}}
                         <div>
                         {{#if (exists ctgr)}}<span class="text-noti pe-1">[{{ctgr}}]</span>{{/if}} {{metaNm}}{{#if (exists label)}} - <span>{{label}}</span>{{/if}} <span class="text-dialog">: {{value}}{{unit}}</span>
                         </div>

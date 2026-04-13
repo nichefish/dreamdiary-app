@@ -144,12 +144,12 @@ public class MenuService
     /**
      * 주어진 메뉴 번호가 관리자 메뉴인지 여부를 반환합니다.
      *
-     * @param menuNo 메뉴 번호
+     * @param id 메뉴 번호
      * @return Boolean 관리자 메뉴인 경우 true, 그렇지 않은 경우 false
      */
-    @Cacheable(value="isMngrMenu", key="#menuNo.toString()")
-    public Boolean getIsMngrMenu(final Integer menuNo) {
-        return "Y".equals(menuMapper.getMngrYn(menuNo));
+    @Cacheable(value="isMngrMenu", key="#id.toString()")
+    public Boolean getIsMngrMenu(final Integer id) {
+        return "Y".equals(menuMapper.getMngrYn(id));
     }
 
     /**
@@ -216,7 +216,7 @@ public class MenuService
         } else {
             EhCacheUtils.clearCache("userMenuList");
         }
-        EhCacheUtils.evictCacheByKey("isMngrMenu", updateEntity.getMenuNo().toString());
+        EhCacheUtils.evictCacheByKey("isMngrMenu", updateEntity.getId().toString());
         EhCacheUtils.evictCacheByKey("menuByLabel", updateEntity.getMenuLabel());
     }
 
@@ -237,11 +237,11 @@ public class MenuService
      */
     @Transactional
     public ServiceResponse moveTree(final MenuTreeMoveParam moveParam) throws Exception {
-        if (moveParam == null || moveParam.getMovedMenuNo() == null) {
+        if (moveParam == null || moveParam.getMovedId() == null) {
             throw new BusinessException("Moved menu is required.");
         }
 
-        final MenuEntity movedMenu = this.getDtlEntity(moveParam.getMovedMenuNo());
+        final MenuEntity movedMenu = this.getDtlEntity(moveParam.getMovedId());
         if (movedMenu == null) {
             throw new MenuNotExistsException(MessageUtils.getExceptionMsg("MenuNotExistsException"));
         }
@@ -251,16 +251,16 @@ public class MenuService
         if ("Y".equals(movedMenu.getProtectedYn())) {
             throw new BusinessException(MessageUtils.getMessage("exception.MenuProtectedException"));
         }
-        if (!Objects.equals(movedMenu.getUpperMenuNo(), moveParam.getSourceUpperMenuNo())) {
+        if (!Objects.equals(movedMenu.getUpperMenuId(), moveParam.getSourceUpperMenuId())) {
             throw new BusinessException("Menu tree is stale. Reload and try again.");
         }
 
-        final Integer targetUpperMenuNo = moveParam.getTargetUpperMenuNo();
-        if (targetUpperMenuNo == null) {
+        final Integer targetUpperMenuId = moveParam.getTargetUpperMenuId();
+        if (targetUpperMenuId == null) {
             throw new BusinessException("Target parent menu is required.");
         }
 
-        final MenuEntity targetParent = this.getDtlEntity(targetUpperMenuNo);
+        final MenuEntity targetParent = this.getDtlEntity(targetUpperMenuId);
         if (targetParent == null) {
             throw new BusinessException("Target parent menu does not exist.");
         }
@@ -273,26 +273,26 @@ public class MenuService
         if (MenuSubExtendTy.NO_SUB.name().equals(targetParent.getMenuSubExtendTyCd())) {
             throw new BusinessException("Target parent does not allow sub menus.");
         }
-        if (Objects.equals(movedMenu.getMenuNo(), targetUpperMenuNo) || this.isDescendantOf(targetUpperMenuNo, movedMenu.getMenuNo())) {
+        if (Objects.equals(movedMenu.getId(), targetUpperMenuId) || this.isDescendantOf(targetUpperMenuId, movedMenu.getId())) {
             throw new BusinessException("A menu cannot be moved into its own descendant.");
         }
 
         final LinkedHashMap<Integer, MenuTreeMoveGroupDto> groupMap = this.normalizeMoveGroups(moveParam);
-        final MenuTreeMoveGroupDto targetGroup = groupMap.get(targetUpperMenuNo);
-        if (targetGroup == null || targetGroup.getItems() == null || targetGroup.getItems().stream().noneMatch(item -> Objects.equals(item.getMenuNo(), movedMenu.getMenuNo()))) {
+        final MenuTreeMoveGroupDto targetGroup = groupMap.get(targetUpperMenuId);
+        if (targetGroup == null || targetGroup.getItems() == null || targetGroup.getItems().stream().noneMatch(item -> Objects.equals(item.getId(), movedMenu.getId()))) {
             throw new BusinessException("Moved menu is missing from the target group.");
         }
 
         for (final MenuTreeMoveGroupDto group : groupMap.values()) {
-            final Integer upperMenuNo = group.getUpperMenuNo();
+            final Integer upperMenuId = group.getUpperMenuId();
             final List<MenuTreeMoveItemDto> items = group.getItems();
-            if (upperMenuNo == null || items == null) continue;
+            if (upperMenuId == null || items == null) continue;
 
             for (int idx = 0; idx < items.size(); idx++) {
                 final MenuTreeMoveItemDto item = items.get(idx);
-                if (item == null || item.getMenuNo() == null) continue;
+                if (item == null || item.getId() == null) continue;
 
-                final MenuEntity menu = this.getDtlEntity(item.getMenuNo());
+                final MenuEntity menu = this.getDtlEntity(item.getId());
                 if (menu == null) {
                     throw new BusinessException("Menu item does not exist.");
                 }
@@ -300,7 +300,7 @@ public class MenuService
                     throw new BusinessException("Only sub menus can be included in tree move groups.");
                 }
 
-                menu.setUpperMenuNo(upperMenuNo);
+                menu.setUpperMenuId(upperMenuId);
                 menu.setIdx(idx);
                 this.updt(menu);
             }
@@ -320,20 +320,20 @@ public class MenuService
      * - source 그룹이 누락된 경우 보정하여 추가
      *
      * @param moveParam 이동 요청 파라미터
-     * @return upperMenuNo 기준으로 정렬된 그룹 맵
+     * @return upperMenuId 기준으로 정렬된 그룹 맵
      */
     private LinkedHashMap<Integer, MenuTreeMoveGroupDto> normalizeMoveGroups(final MenuTreeMoveParam moveParam) {
         final LinkedHashMap<Integer, MenuTreeMoveGroupDto> groupMap = new LinkedHashMap<>();
         if (moveParam.getGroups() != null) {
             for (final MenuTreeMoveGroupDto group : moveParam.getGroups()) {
-                if (group == null || group.getUpperMenuNo() == null) continue;
-                groupMap.put(group.getUpperMenuNo(), group);
+                if (group == null || group.getUpperMenuId() == null) continue;
+                groupMap.put(group.getUpperMenuId(), group);
             }
         }
-        if (moveParam.getSourceUpperMenuNo() != null && !groupMap.containsKey(moveParam.getSourceUpperMenuNo())) {
+        if (moveParam.getSourceUpperMenuId() != null && !groupMap.containsKey(moveParam.getSourceUpperMenuId())) {
             final MenuTreeMoveGroupDto sourceGroup = new MenuTreeMoveGroupDto();
-            sourceGroup.setUpperMenuNo(moveParam.getSourceUpperMenuNo());
-            groupMap.put(sourceGroup.getUpperMenuNo(), sourceGroup);
+            sourceGroup.setUpperMenuId(moveParam.getSourceUpperMenuId());
+            groupMap.put(sourceGroup.getUpperMenuId(), sourceGroup);
         }
 
         return groupMap;
@@ -343,22 +343,22 @@ public class MenuService
      * 특정 메뉴가 주어진 조상 메뉴의 하위인지 여부를 검사한다.
      * (트리 순환 방지용)
      *
-     * @param menuNo 검사 대상 메뉴
+     * @param id 검사 대상 메뉴
      * @param ancestorMenuNo 조상 후보 메뉴
      * @return true: 하위 노드 / false: 아님
      */
-    private boolean isDescendantOf(final Integer menuNo, final Integer ancestorMenuNo) throws Exception {
-        Integer currentMenuNo = menuNo;
-        while (currentMenuNo != null) {
-            if (Objects.equals(currentMenuNo, ancestorMenuNo)) {
+    private boolean isDescendantOf(final Integer id, final Integer ancestorMenuId) throws Exception {
+        Integer currentMenuId = id;
+        while (currentMenuId != null) {
+            if (Objects.equals(currentMenuId, ancestorMenuId)) {
                 return true;
             }
 
-            final MenuEntity currentMenu = this.getDtlEntity(currentMenuNo);
+            final MenuEntity currentMenu = this.getDtlEntity(currentMenuId);
             if (currentMenu == null) {
                 return false;
             }
-            currentMenuNo = currentMenu.getUpperMenuNo();
+            currentMenuId = currentMenu.getUpperMenuId();
         }
         return false;
     }
@@ -385,11 +385,11 @@ public class MenuService
     public void postDelete(final MenuDto deletedDto) throws Exception {
         // 서브메뉴 삭제. (재귀)
         final Map<String, Object> searchParamMap = new HashMap<>();
-        searchParamMap.put("upperMenuNo", deletedDto.getMenuNo());
+        searchParamMap.put("upperMenuId", deletedDto.getId());
         final List<MenuEntity> subMenuList = this.getSelf().getListEntity(searchParamMap);
         if (CollectionUtils.isNotEmpty(subMenuList)) {
             for (final MenuEntity subMenu : subMenuList) {
-                this.getSelf().delete(subMenu.getMenuNo());
+                this.getSelf().delete(subMenu.getId());
             }
         }
 

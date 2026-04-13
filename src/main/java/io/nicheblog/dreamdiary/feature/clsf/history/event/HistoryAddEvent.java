@@ -15,7 +15,7 @@ public class HistoryAddEvent
     private final BaseClsfEntity entitySnapshot;
     private final BaseClsfEntity afterEntity;
     private final HistoryType historyType;
-    private final Integer fromHistoryNo;
+    private final Integer fromHistoryId;
 
     public HistoryAddEvent(final Object source, final BaseClsfEntity entitySnapshot, final BaseClsfEntity afterEntity) {
         this(source, entitySnapshot, afterEntity, HistoryType.CHANGE, null);
@@ -26,13 +26,13 @@ public class HistoryAddEvent
             final BaseClsfEntity entitySnapshot,
             final BaseClsfEntity afterEntity,
             final HistoryType historyType,
-            final Integer fromHistoryNo
+            final Integer fromHistoryId
     ) {
         super(source);
         this.securityContext = SecurityContextHolder.getContext();
         this.entitySnapshot = entitySnapshot;
         this.afterEntity = afterEntity;
         this.historyType = historyType != null ? historyType : HistoryType.CHANGE;
-        this.fromHistoryNo = fromHistoryNo;
+        this.fromHistoryId = fromHistoryId;
     }
 }

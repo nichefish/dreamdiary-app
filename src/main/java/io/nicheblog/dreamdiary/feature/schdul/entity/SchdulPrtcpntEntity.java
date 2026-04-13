@@ -30,20 +30,20 @@ import javax.persistence.Table;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE schdul_prtcpnt SET del_yn = 'Y' WHERE schdul_prtcpnt_no = ?")
+@SQLDelete(sql = "UPDATE schdul_prtcpnt SET del_yn = 'Y' WHERE id = ?")
 public class SchdulPrtcpntEntity
         extends BaseCrudEntity {
 
-    /** 일정 참여자 번호 (PK) */
+    /** 일정 참여자 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "schdul_prtcpnt_no")
-    @Comment("일정 참여자 번호 (PK)")
-    private Integer schdulPrtcpntNo;
+    @Column(name = "id")
+    @Comment("일정 참여자 ID")
+    private Integer id;
 
     /** 일정 정보 */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "ref_post_no", referencedColumnName = "post_no")
+    @JoinColumn(name = "schdul_id", referencedColumnName = "post_no")
     @Fetch(FetchMode.JOIN)
     @Comment("일정 정보")
     private SchdulEntity schdul;

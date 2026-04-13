@@ -36,7 +36,7 @@ import java.util.List;
 public class AuditorInfo
         implements Serializable {
 
-    /** 사용자 번호 (PK) */
+    /** 사용자 ID */
     @Id
     @Column(name = "user_no", length = 20, insertable = false, updatable = false)
     private Integer userNo;

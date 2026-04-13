@@ -36,10 +36,10 @@ public class HistoryController {
     public ResponseEntity<AjaxResponse> clsfHistoryRestoreAjax(
             final @PathVariable("contentType") String contentType,
             final @PathVariable("postNo") Integer postNo,
-            final @PathVariable("historyNo") Integer historyNo
+            final @PathVariable("historyId") Integer historyId
     ) throws Exception {
         final ContentType resolvedContentType = ContentType.get(contentType);
-        final BaseClsfDto restoredDto = myHistoryFacade.restoreMyHistory(resolvedContentType, postNo, historyNo);
+        final BaseClsfDto restoredDto = myHistoryFacade.restoreMyHistory(resolvedContentType, postNo, historyId);
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(restoredDto));
     }
 
@@ -49,10 +49,10 @@ public class HistoryController {
     public ResponseEntity<AjaxResponse> clsfHistoryDeleteAjax(
             final @PathVariable("contentType") String contentType,
             final @PathVariable("postNo") Integer postNo,
-            final @PathVariable("historyNo") Integer historyNo
+            final @PathVariable("historyId") Integer historyId
     ) throws Exception {
         final ContentType resolvedContentType = ContentType.get(contentType);
-        final boolean deleted = myHistoryFacade.deleteMyHistory(resolvedContentType, postNo, historyNo);
+        final boolean deleted = myHistoryFacade.deleteMyHistory(resolvedContentType, postNo, historyId);
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(deleted, deleted ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE));
     }
 

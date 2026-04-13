@@ -23,7 +23,7 @@ import javax.validation.constraints.Pattern;
 public class UserProflDto
         extends BaseCrudDto {
 
-    /** 사용자 정보 고유 ID (PK) */
+    /** 사용자 정보 고유 ID */
     private Integer userProflNo;
 
     /** 생년월일 */

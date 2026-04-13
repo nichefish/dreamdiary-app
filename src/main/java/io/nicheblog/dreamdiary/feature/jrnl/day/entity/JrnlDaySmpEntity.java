@@ -32,11 +32,11 @@ import java.util.Date;
 @SQLDelete(sql = "UPDATE jrnl_day SET del_yn = 'Y' WHERE post_no = ?")
 public class JrnlDaySmpEntity {
 
-    /** 저널 일자 고유 번호 (PK) */
+    /** 저널 일자 고유 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_no")
-    @Comment("저널 일자 고유 번호 (PK)")
+    @Comment("저널 일자 고유 ID")
     private Integer postNo;
 
     /** 필수: 컨텐츠 타입 */

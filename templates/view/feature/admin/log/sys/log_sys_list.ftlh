@@ -94,7 +94,7 @@
 <!--end::Card-->
 
 <form name="procForm" id="procForm" method="get">
-    <input type="hidden" name="logSysNo" id="logSysNo" />
+    <input type="hidden" name="logSysId" id="logSysId" />
 </form>
 
 <#--include::log_actvty_module-->

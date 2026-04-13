@@ -79,11 +79,11 @@ public class AtchFileRestController
     @GetMapping(Url.FILE_INFO_LIST_AJAX)
     @ResponseBody
     public ResponseEntity<AjaxResponse> getFileList(
-            final @RequestParam("atchFileNo") @Nullable Integer atchFileNo,
+            final @RequestParam("atchFileId") @Nullable Integer atchFileId,
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final List<AtchFileDtlDto> fileList = atchFileDtlService.getPageDto(atchFileNo);
+        final List<AtchFileDtlDto> fileList = atchFileDtlService.getPageDto(atchFileId);
         final boolean isSuccess = (fileList != null);
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
@@ -106,12 +106,12 @@ public class AtchFileRestController
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
     public ResponseEntity<AjaxResponse> fileDownload(
-            final @RequestParam("atchFileDtlNo") @Nullable Integer atchFileDtlNo,
+            final @RequestParam("atchFileDtlId") @Nullable Integer atchFileDtlId,
             final LogActvtyParam logParam
     ) throws Exception {
 
         // 파일 정보 조회
-        final AtchFileDtlEntity atchFileDtl = atchFileDtlService.getDtlEntity(atchFileDtlNo);
+        final AtchFileDtlEntity atchFileDtl = atchFileDtlService.getDtlEntity(atchFileDtlId);
         final String orgnFileNm = atchFileDtl.getOrgnFileNm();
         // 파일 다운로드 처리
         final File file = new File(atchFileDtl.getFileStrePath(), atchFileDtl.getStreFileNm());
@@ -144,7 +144,7 @@ public class AtchFileRestController
         // 파일 영역 처리 후 업로드 정보 받아서 반환
         final AtchFileDtlDto atchfileDtl = FileUtils.uploadDtlFile(request);
         assert atchfileDtl != null;
-        final boolean isSuccess = (atchfileDtl.getAtchFileDtlNo() != null);
+        final boolean isSuccess = (atchfileDtl.getId() != null);
         final String rsltMsg =  isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
         // 로그 관련 세팅

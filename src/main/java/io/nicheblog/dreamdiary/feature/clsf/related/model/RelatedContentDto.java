@@ -29,7 +29,7 @@ public class RelatedContentDto
         implements Identifiable<Integer> {
 
     @Positive
-    private Integer relatedContentNo;
+    private Integer id;
 
     @Positive
     private Integer leftPostNo;
@@ -60,6 +60,6 @@ public class RelatedContentDto
 
     @Override
     public Integer getKey() {
-        return this.relatedContentNo;
+        return this.id;
     }
 }

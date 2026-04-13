@@ -27,8 +27,8 @@ dF.JrnlDayMeta = (function(): dfModule {
 
                 e.preventDefault();
 
-                const metaNo: string = metaElmt.getAttribute("id").replace("meta-no-", "");
-                dF.JrnlDayMeta.modal(metaNo);
+                const metaId: string = metaElmt.getAttribute("id").replace("meta-id-", "");
+                dF.JrnlDayMeta.modal(metaId);
             });
 
             dF.JrnlDayMeta.initialized = true;
@@ -88,8 +88,8 @@ dF.JrnlDayMeta = (function(): dfModule {
             }));
         },
 
-        getYyListAjax: function(metaNo: string|number, callback: (yyList: any[]) => void): void {
-            const url: string = cF.util.bindUrl(Url.JRNL_DAY_META_YYS, { metaNo });
+        getYyListAjax: function(metaId: string|number, callback: (yyList: any[]) => void): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DAY_META_YYS, { id: metaId });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -116,10 +116,10 @@ dF.JrnlDayMeta = (function(): dfModule {
 
         /**
          * 메타 모달 호출
-         * @param {string|number} metaNo - 조회할 메타 번호.
+         * @param {string|number} metaId - 조회할 메타 ID.
          */
-        modal: function(metaNo: string|number, yy?: string|number): void {
-            if (isNaN(Number(metaNo))) return;
+        modal: function(metaId: string|number, yy?: string|number): void {
+            if (isNaN(Number(metaId))) return;
 
             ModalHistory.reset();
 
@@ -128,17 +128,17 @@ dF.JrnlDayMeta = (function(): dfModule {
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
             const preferredYy: string = dF.JrnlDayMeta.getSelectedYy(yy);
-            dF.JrnlDayMeta.getYyListAjax(metaNo, function(yyList: any[]): void {
+            dF.JrnlDayMeta.getYyListAjax(metaId, function(yyList: any[]): void {
                 const selectedYy: string = dF.JrnlDayMeta.normalizeSelectedYy(preferredYy, yyList);
                 const url: string = cF.util.bindUrl(Url.JRNL_DAYS);
-                const ajaxData: Record<string, any> = { viewType: "SEARCH", metaNo, yy: selectedYy };
+                const ajaxData: Record<string, any> = { viewType: "SEARCH", metaId, yy: selectedYy };
                 cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                     if (!res.rslt) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         return;
                     }
                     cF.handlebars.modal({
-                        metaNo,
+                        metaId,
                         yy: selectedYy,
                         yearOptions: dF.JrnlDayMeta.getYearOptions(selectedYy, yyList),
                         list: res.rsltList
@@ -150,14 +150,14 @@ dF.JrnlDayMeta = (function(): dfModule {
             });
         },
 
-        changeYy: function(metaNo: string|number, yy: string|number): void {
-            if (isNaN(Number(metaNo))) return;
-            dF.JrnlDayMeta.modal(metaNo, yy);
+        changeYy: function(metaId: string|number, yy: string|number): void {
+            if (isNaN(Number(metaId))) return;
+            dF.JrnlDayMeta.modal(metaId, yy);
         },
 
 
-        select: function(metaNo: string|number): void {
-            const url: string = cF.util.bindUrl(Url.JRNL_DAY_META, { metaNo });
+        select: function(metaId: string|number): void {
+            const url: string = cF.util.bindUrl(Url.JRNL_DAY_META, { id: metaId });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });

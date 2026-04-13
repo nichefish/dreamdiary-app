@@ -204,7 +204,7 @@ public class FileUtils
             final AtchFileEntity rslt = getUploadedFile(multiRequest, atchFileNo);
             if (rslt == null) return null;
 
-            return rslt.getAtchFileNo();
+            return rslt.getId();
         } catch (final Exception e) {
             MessageUtils.alertMessage("파일 업로드에 실패했습니다.");
         }
@@ -238,7 +238,7 @@ public class FileUtils
 
         return atchFileList.stream()
                 .peek(atchFileDtl -> {
-                    String atchCtrl = multiRequest.getParameter("atchCtrl" + atchFileDtl.getAtchFileDtlNo());
+                    String atchCtrl = multiRequest.getParameter("atchCtrl" + atchFileDtl.getId());
                     if ("D".equals(atchCtrl)) atchFileDtl.setDelYn("Y");
                     // TODO: 실제 파일 삭제?
                 })

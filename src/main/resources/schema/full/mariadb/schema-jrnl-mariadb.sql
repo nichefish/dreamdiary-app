@@ -11,7 +11,7 @@
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS jrnl_day (
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 일자 번호 (PK)',
+    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 일자 ID',
     content_type VARCHAR(32) DEFAULT 'JRNL_DAY' COMMENT '컨텐츠 타입',
     --
     jrnl_dt DATE COMMENT '저널 일자',
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS jrnl_day (
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS jrnl_chapter (
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 챕터 번호 (PK)',
+    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 챕터 ID',
     content_type VARCHAR(32) DEFAULT 'JRNL_CHAPTER' COMMENT '컨텐츠 타입',
     --
     jrnl_day_no INT COMMENT '저널 일자 번호',
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS jrnl_chapter (
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS jrnl_diary (
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 일기 번호 (PK)',
+    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 일기 ID',
     content_type VARCHAR(32) DEFAULT 'JRNL_DIARY' COMMENT '컨텐츠 타입',
     --
     jrnl_chapter_no INT COMMENT '저널 챕터 번호',
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS jrnl_diary (
     cn LONGTEXT COMMENT '내용',
     idx INT DEFAULT 1 COMMENT '저널 일기 인덱스',
     -- ATCH_FILE
-    atch_file_no INT COMMENT '첨부파일 번호',
+    atch_file_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS jrnl_diary (
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS jrnl_dream (
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 꿈 번호 (PK)',
+    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 꿈 ID',
     content_type VARCHAR(32) DEFAULT 'JRNL_DREAM' COMMENT '컨텐츠 타입',
     --
     jrnl_day_no INT COMMENT '저널 일자 번호',
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS jrnl_dream (
     resolved_yn CHAR(1) DEFAULT 'N' COMMENT '정리완료 여부 (Y/N)',
     collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)',
     -- ATCH_FILE
-    atch_file_no INT COMMENT '첨부파일 번호',
+    atch_file_id INT COMMENT '첨부파일 번호',
     -- history
     history_triggered_by VARCHAR(20) COMMENT '최종 이력 트리거 발생자',
     history_triggered_at DATETIME COMMENT '최종 이력 트리거 발생일시',
@@ -123,7 +123,7 @@ CREATE TABLE IF NOT EXISTS jrnl_dream (
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS jrnl_intrpt (
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 해석 번호 (PK)',
+    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 해석 ID',
     content_type VARCHAR(32) DEFAULT 'JRNL_INTRPT' COMMENT '컨텐츠 타입',
     --
     jrnl_dream_no INT COMMENT '저널 꿈 번호',
@@ -136,7 +136,7 @@ CREATE TABLE IF NOT EXISTS jrnl_intrpt (
     -- POST
     imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
     -- ATCH_FILE
-    atch_file_no INT COMMENT '첨부파일 번호',
+    atch_file_id INT COMMENT '첨부파일 번호',
     -- history
     history_triggered_by VARCHAR(20) COMMENT '최종 이력 트리거 발생자',
     history_triggered_at DATETIME COMMENT '최종 이력 트리거 발생일시',
@@ -155,7 +155,7 @@ CREATE TABLE IF NOT EXISTS jrnl_intrpt (
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS jrnl_todo (
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 결산 번호 (PK)',
+    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 결산 ID',
     content_type VARCHAR(32) DEFAULT 'JRNL_TODO' COMMENT '컨텐츠 타입',
     --
     idx INT DEFAULT 1 COMMENT '저널 일기 인덱스',
@@ -170,7 +170,7 @@ CREATE TABLE IF NOT EXISTS jrnl_todo (
     imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
     mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
     -- ATCH_FILE
-    atch_file_no INT COMMENT '첨부파일 번호',
+    atch_file_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -184,7 +184,7 @@ CREATE TABLE IF NOT EXISTS jrnl_todo (
 -- @implements: TagEmbed, CommentEmbed
 CREATE TABLE IF NOT EXISTS jrnl_sbjct(
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 번호 (PK)',
+    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
     content_type VARCHAR(30) COMMENT '게시판 코드 (PK)',
     -- POST
     title VARCHAR(200) COMMENT '제목',
@@ -195,7 +195,7 @@ CREATE TABLE IF NOT EXISTS jrnl_sbjct(
     hit_cnt INT DEFAULT 0 COMMENT '조회수',
     mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
     -- ATCH_FILE
-    atch_file_no INT COMMENT '첨부파일 번호',
+    atch_file_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -209,7 +209,7 @@ CREATE TABLE IF NOT EXISTS jrnl_sbjct(
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS jrnl_sumry (
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 결산 번호 (PK)',
+    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 결산 ID',
     content_type VARCHAR(32) DEFAULT 'JRNL_SUMRY' COMMENT '컨텐츠 타입',
     --
     yy INT UNIQUE COMMENT '결산 년도',
@@ -217,7 +217,7 @@ CREATE TABLE IF NOT EXISTS jrnl_sumry (
     dream_cnt INT DEFAULT 0 COMMENT '꿈 개수',
     dream_compt_yn CHAR(1) DEFAULT 'N' COMMENT '꿈 기록 완료 여부',
     -- ATCH_FILE
-    atch_file_no INT COMMENT '첨부파일 번호',
+    atch_file_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -231,7 +231,7 @@ CREATE TABLE IF NOT EXISTS jrnl_sumry (
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS jrnl_sumry_review (
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 결산 리뷰 번호 (PK)',
+    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 결산 리뷰 ID',
     content_type VARCHAR(32) DEFAULT 'JRNL_SUMRY_REVIEW' COMMENT '컨텐츠 타입',
     --
     jrnl_sumry_no INT COMMENT '저널 결산 번호',
@@ -245,7 +245,7 @@ CREATE TABLE IF NOT EXISTS jrnl_sumry_review (
     hit_cnt INT DEFAULT 0 COMMENT '조회수',
     mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
     -- ATCH_FILE
-    atch_file_no INT COMMENT '첨부파일 번호',
+    atch_file_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',

@@ -34,11 +34,11 @@ import javax.persistence.Table;
 public class TagCategoryEntity
         extends BaseCrudEntity {
 
-    /** 태그 카테고리 ID (PK) */
+    /** 태그 카테고리 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    @Comment("태그 카테고리 ID (PK)")
+    @Comment("태그 카테고리 ID")
     private Integer id;
 
     /** 태그 카테고리 이름 */

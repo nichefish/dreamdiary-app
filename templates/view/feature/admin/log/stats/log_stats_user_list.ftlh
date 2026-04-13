@@ -134,7 +134,7 @@
 <!--end::Card-->
 
 <form name="procForm" id="procForm" method="get">
-    <input type="hidden" name="logActvtyNo" id="logActvtyNo" />
+    <input type="hidden" name="logActvtyId" id="logActvtyId" />
 </form>
 
 <!--include::page scripts-->

@@ -19,7 +19,7 @@
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                   title="사용자 포탈에 표시되는&#10;'게시판' 대메뉴 번호입니다.&#10;게시판 메뉴 번호 작성시&#10;해당 번호 아래에 둘 것을&#10;권장합니다.">
                 ※ 현재 게시판 상위메뉴 번호 : </span>
-            <span class="text-noti ls-1 text-decoration-underline">${SiteMenu.BOARD.menuNo!}</span>
+            <span class="text-noti ls-1 text-decoration-underline">${SiteMenu.BOARD.id!}</span>
         </div>
     </div>
     <#--begin::Card body-->

@@ -73,7 +73,7 @@
 </div>
 
 <form name="procForm" id="procForm" method="get">
-    <input type="hidden" name="logSysNo" id="logSysNo" />
+    <input type="hidden" name="logSysId" id="logSysId" />
 </form>
 
 <#include "/view/global/_common//flsys/_flsys_list_template.hbs">

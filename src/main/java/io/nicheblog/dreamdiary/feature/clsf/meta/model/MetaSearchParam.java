@@ -33,7 +33,7 @@ public class MetaSearchParam
     private Integer mnth;
 
     /** 참조 메타 번호 */
-    private Integer refMetaNo;
+    private Integer metaId;
 
     /** 관리 컨텐츠 타입 */
     private String refContentType;

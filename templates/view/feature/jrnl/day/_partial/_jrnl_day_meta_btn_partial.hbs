@@ -8,8 +8,8 @@
         <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" data-bs-html="true" data-bs-custom-class="meta-tooltip" data-bs-sanitize="false"
                 title="{{#each meta.list}}
-                    <div id='meta-no-{{refMetaNo}}' class='cursor-pointer btn btn-sm btn-bg-light btn-active-color-primary meta-item' data-meta-no='{{refMetaNo}}'
-                         onclick='alert({{refMetaNo}})'>
+                    <div id='meta-id-{{metaId}}' class='cursor-pointer btn btn-sm btn-bg-light btn-active-color-primary meta-item' data-meta-id='{{metaId}}'
+                         onclick='alert({{metaId}})'>
                         {{#if (exists ctgr)}}<span class='text-noti pe-1'>[{{ctgr}}]</span>{{/if}} {{metaNm}}{{#if (exists label)}} - <span>{{label}}</span>{{/if}}: <span class='text-dialog'>{{value}}{{unit}}</span>
                     </div>
                 {{/each}}">

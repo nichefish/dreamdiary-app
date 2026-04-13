@@ -29,9 +29,9 @@ public class TmplatTxtDto
         extends BaseAuditDto
         implements Identifiable<Integer>, StateCmpstnModule {
 
-    /** 고유 ID (PK) */
+    /** 고유 ID */
     @Positive
-    private Integer tmplatTxtNo;
+    private Integer id;
 
     /** 템플릿 정의 코드 */
     @Size(max = 50)
@@ -65,7 +65,7 @@ public class TmplatTxtDto
 
     @Override
     public Integer getKey() {
-        return this.tmplatTxtNo;
+        return this.id;
     }
 
     /** 위임 :: 상태 관리 모듈 */

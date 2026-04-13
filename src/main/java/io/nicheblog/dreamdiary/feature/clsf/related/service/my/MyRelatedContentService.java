@@ -39,7 +39,7 @@ public class MyRelatedContentService {
         );
     }
 
-    public boolean deleteMyRelation(final Integer relatedContentNo) {
-        return relatedContentService.delete(relatedContentNo);
+    public boolean deleteMyRelation(final Integer relatedContentId) {
+        return relatedContentService.delete(relatedContentId);
     }
 }

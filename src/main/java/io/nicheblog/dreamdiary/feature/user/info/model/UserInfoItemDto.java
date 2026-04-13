@@ -19,7 +19,7 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class UserInfoItemDto {
 
-    /** 사용자 정보 추가정보 고유 ID (PK) */
+    /** 사용자 정보 추가정보 고유 ID */
     private Integer userInfoItemNo;
 
     /** 항목 이름 */

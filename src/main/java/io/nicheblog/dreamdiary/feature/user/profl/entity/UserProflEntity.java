@@ -35,11 +35,11 @@ import java.util.Date;
 public class UserProflEntity
         extends BaseCrudEntity {
 
-    /** 사용자 프로필 정보 번호 (PK) */
+    /** 사용자 프로필 정보 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_profl_no")
-    @Comment("사용자 프로필 정보 번호 (PK)")
+    @Comment("사용자 프로필 정보 ID")
     private Integer userProflNo;
 
     /** 사용자 정보 */

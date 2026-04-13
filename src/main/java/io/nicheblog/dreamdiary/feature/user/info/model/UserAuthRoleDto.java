@@ -24,7 +24,7 @@ import lombok.experimental.SuperBuilder;
 public class UserAuthRoleDto
         extends BaseCrudDto {
 
-    /** 사용자 권한 번호 (PK) */
+    /** 사용자 권한 ID */
     private Integer userAuthRoleNo;
 
     /** 권한 코드 */

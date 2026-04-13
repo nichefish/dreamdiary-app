@@ -129,14 +129,14 @@ dF.RelatedContent = (function(): dfModule {
         },
 
         upsertItemBySource: function(source: RelatedSource, item: RelatedContentItem): void {
-            const relatedContentNo: number = Number(item?.relatedContentNo ?? 0);
-            if (!Number.isInteger(relatedContentNo) || relatedContentNo <= 0) return;
+            const relatedContentId: number = Number(item?.relatedContentId ?? 0);
+            if (!Number.isInteger(relatedContentId) || relatedContentId <= 0) return;
 
             dF.RelatedContent.ensureSectionsBySource(source).forEach(function(section: HTMLElement): void {
                 const listElmt: HTMLElement | null = dF.RelatedContent.getListElmt(section);
                 if (!(listElmt instanceof HTMLElement)) return;
 
-                const selector: string = `.related-content-item[data-related-content-no="${relatedContentNo}"]`;
+                const selector: string = `.related-content-item[data-related-content-id="${relatedContentId}"]`;
                 const itemHtml: string = dF.RelatedContent.renderItem(item);
                 const existedElmt = listElmt.querySelector(selector);
 
@@ -149,9 +149,9 @@ dF.RelatedContent = (function(): dfModule {
             });
         },
 
-        removeItemBySource: function(source: RelatedSource, relatedContentNo: number): void {
+        removeItemBySource: function(source: RelatedSource, relatedContentId: number): void {
             dF.RelatedContent.getSectionsBySource(source).forEach(function(section: HTMLElement): void {
-                section.querySelectorAll(`.related-content-item[data-related-content-no="${relatedContentNo}"]`).forEach(function(itemElmt: Element): void {
+                section.querySelectorAll(`.related-content-item[data-related-content-id="${relatedContentId}"]`).forEach(function(itemElmt: Element): void {
                     itemElmt.remove();
                 });
 
@@ -164,7 +164,7 @@ dF.RelatedContent = (function(): dfModule {
         },
 
         renderItem: function(item: RelatedContentItem): string {
-            const relatedContentNo: number = Number(item?.relatedContentNo ?? 0);
+            const relatedContentId: number = Number(item?.relatedContentId ?? 0);
             const targetPostNo: number = Number(item?.targetPostNo ?? 0);
             const targetContentType: string = String(item?.targetContentType ?? "").trim();
             const contentTypeLabel: string = dF.RelatedContent.CONTENT_TYPE_LABEL_MAP[targetContentType] ?? targetContentType;
@@ -172,7 +172,7 @@ dF.RelatedContent = (function(): dfModule {
             const reason: string = String(item?.reason ?? "").trim();
 
             return [
-                `<div class="related-content-item rounded border border-gray-300 bg-light px-4 py-3 mb-3" data-related-content-no="${relatedContentNo}">`,
+                `<div class="related-content-item rounded border border-gray-300 bg-light px-4 py-3 mb-3" data-related-content-id="${relatedContentId}">`,
                 '    <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap">',
                 '        <div class="flex-grow-1">',
                 `            <div class="text-muted fs-8 mb-2">${contentTypeLabel} #${targetPostNo}</div>`,
@@ -183,7 +183,7 @@ dF.RelatedContent = (function(): dfModule {
                 '        </div>',
                 '        <div class="d-flex align-items-center gap-2">',
                 `            <button type="button" class="btn btn-xxs btn-light-primary btn-outlined" onclick="dF.RelatedContent.openTarget('${targetContentType}', ${targetPostNo});">열기</button>`,
-                `            <button type="button" class="btn btn-xxs btn-light-danger btn-outlined" onclick="dF.RelatedContent.deleteAjax(${relatedContentNo}, this);">삭제</button>`,
+                `            <button type="button" class="btn btn-xxs btn-light-danger btn-outlined" onclick="dF.RelatedContent.deleteAjax(${relatedContentId}, this);">삭제</button>`,
                 '        </div>',
                 '    </div>',
                 '</div>'
@@ -471,8 +471,8 @@ dF.RelatedContent = (function(): dfModule {
             });
         },
 
-        deleteAjax: function(relatedContentNo: number, btn: HTMLElement): void {
-            if (!Number.isInteger(Number(relatedContentNo)) || Number(relatedContentNo) <= 0) return;
+        deleteAjax: function(relatedContentId: number, btn: HTMLElement): void {
+            if (!Number.isInteger(Number(relatedContentId)) || Number(relatedContentId) <= 0) return;
 
             const section: HTMLElement | null = dF.RelatedContent.getSection(btn);
             const source: RelatedSource | null = dF.RelatedContent.getSource(section);
@@ -483,11 +483,11 @@ dF.RelatedContent = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = cF.util.bindUrl(Url.RELATED, { relatedContentNo });
+                const url: string = cF.util.bindUrl(Url.RELATED, { relatedContentId });
                 cF.$ajax.delete(url, null, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message }).then(function(): void {
                         if (!res.rslt || !source) return;
-                        dF.RelatedContent.removeItemBySource(source, relatedContentNo);
+                        dF.RelatedContent.removeItemBySource(source, relatedContentId);
                     });
                 });
             });

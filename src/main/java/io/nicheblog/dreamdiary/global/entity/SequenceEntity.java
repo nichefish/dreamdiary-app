@@ -25,7 +25,7 @@ import java.io.Serializable;
 public class SequenceEntity
         implements Serializable {
 
-    /** 시퀀스 번호 (PK) */
+    /** 시퀀스 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "seqId")

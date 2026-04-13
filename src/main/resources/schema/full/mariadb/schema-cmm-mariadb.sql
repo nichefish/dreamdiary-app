@@ -64,8 +64,8 @@ CREATE TABLE IF NOT EXISTS cmm_dtl_cd (
 -- @extends: BaseAuditEntity
 -- @implements: StateEmbed
 CREATE TABLE IF NOT EXISTS menu (
-    menu_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '메뉴 번호 (PK)',
-    upper_menu_no VARCHAR(10) COMMENT '상위 메뉴 번호',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '메뉴 ID',
+    upper_menu_id VARCHAR(10) COMMENT '상위 메뉴 번호',
     menu_ty_cd VARCHAR(50) COMMENT '메뉴 구분코드',
     mngr_yn CHAR(1) DEFAULT 'N' COMMENT '관리자 메뉴 여부 (Y/N)',
     menu_nm VARCHAR(200) COMMENT '메뉴명',
@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS menu (
 -- 인증 정책 (auth_policy)
 -- @extends: BaseAuditEntity
 CREATE TABLE IF NOT EXISTS auth_policy (
-    auth_policy_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '인증 정책 번호 (PK)',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '인증 정책 ID',
     lgn_try_lmt INT COMMENT '로그인 시도 제한 횟수',
     pw_chg_dy INT COMMENT '패스워드 변경 주기',
     lgn_lock_dy INT COMMENT '계정 잠금 주기',
@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS auth_policy (
 -- 첨부파일 (atch_file)
 -- @extends: BaseCrudEntity
 CREATE TABLE IF NOT EXISTS atch_file (
-    atch_file_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '첨부파일 번호 (PK)',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '첨부파일 ID',
     -- AUDIT
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)'
 ) COMMENT = '첨부파일';
@@ -116,8 +116,8 @@ CREATE TABLE IF NOT EXISTS atch_file (
 -- 첨부파일 상세 (atch_file_dtl)
 -- @extends: BaseCrudEntity
 CREATE TABLE IF NOT EXISTS atch_file_dtl (
-    atch_file_dtl_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '첨부파일 상세 번호 (PK)',
-    atch_file_no INT COMMENT '첨부파일 번호',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '첨부파일 상세 ID',
+    atch_file_id INT COMMENT '첨부파일 번호',
     file_sn INT COMMENT '파일 순번',
     orgn_file_nm VARCHAR(200) COMMENT '원본파일명',
     stre_file_nm VARCHAR(200) COMMENT '저장파일명',
@@ -128,7 +128,7 @@ CREATE TABLE IF NOT EXISTS atch_file_dtl (
     -- AUDIT
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
     -- CONSTRAINT
-    FOREIGN KEY(atch_file_no) REFERENCES atch_file (atch_file_no)
+    FOREIGN KEY(atch_file_id) REFERENCES atch_file (id)
 ) COMMENT = '첨부파일 상세';
 
 -- -----------------------
@@ -136,7 +136,7 @@ CREATE TABLE IF NOT EXISTS atch_file_dtl (
 -- 활동 로그 (log_actvty)
 -- @extends: BaseCrudEntity
 CREATE TABLE IF NOT EXISTS log_actvty (
-    log_actvty_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '활동 로그 번호 (PK)',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '활동 로그 ID',
     log_dt DATETIME COMMENT '로그 기록 일시',
     user_id VARCHAR(20) COMMENT '로그 사용자 ID',
     trace_id VARCHAR(64) COMMENT 'Trace ID',
@@ -168,7 +168,7 @@ CREATE TABLE IF NOT EXISTS log_actvty (
 -- 시스템 로그 (log_sys)
 -- @extends: BaseCrudEntity
 CREATE TABLE IF NOT EXISTS log_sys (
-    log_sys_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '시스템 로그 번호 (PK)',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '시스템 로그 ID',
     log_dt DATETIME COMMENT '로그 날짜 및 시간',
     user_id VARCHAR(20) COMMENT '로그 기록 사용자 ID',
     actvty_ctgr_cd VARCHAR(50) COMMENT '활동 카테고리 코드',

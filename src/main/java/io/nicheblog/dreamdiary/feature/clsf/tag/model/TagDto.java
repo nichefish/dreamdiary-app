@@ -30,7 +30,7 @@ public class TagDto
         extends BaseCrudDto
         implements Identifiable<Integer>, Comparable<TagDto> {
 
-    /** 태그 ID (PK) */
+    /** 태그 ID */
     @Positive
     private Integer id;
 

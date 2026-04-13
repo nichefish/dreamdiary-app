@@ -27,8 +27,8 @@ import javax.validation.constraints.Size;
 public class AuthPolicyDto
         extends BaseAuditDto {
 
-    /** 인증 정책 고유 번호 (PK) */
-    private Integer authPolicyNo;
+    /** 인증 정책 고유 ID */
+    private Integer id;
 
     /** 로그인 최대 시도 횟수 */
     @Positive

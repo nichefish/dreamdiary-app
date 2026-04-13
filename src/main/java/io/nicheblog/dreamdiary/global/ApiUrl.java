@@ -39,8 +39,8 @@ public interface ApiUrl {
     String JRNL_DAY_TAG_CTGR_MAP = Prefix.API + "/jrnl/day/tag/ctgr-map";
     /** 저널 일자 메타 */
     String JRNL_DAY_METAS = Prefix.API + "/jrnl/day/metas";
-    String JRNL_DAY_META = Prefix.API + "/jrnl/day/metas/{metaNo}";
-    String JRNL_DAY_META_YYS = Prefix.API + "/jrnl/day/metas/{metaNo}/years";
+    String JRNL_DAY_META = Prefix.API + "/jrnl/day/metas/{id}";
+    String JRNL_DAY_META_YYS = Prefix.API + "/jrnl/day/metas/{id}/years";
     String JRNL_DAY_META_CTGR_MAP = Prefix.API + "/jrnl/day/meta/ctgr-map";
 
     /** 저널 꿈 */
@@ -135,13 +135,13 @@ public interface ApiUrl {
 
     /** 이력 */
     String HISTORIES = Prefix.API + "/history/{contentType}/{postNo}";
-    String HISTORY = Prefix.API + "/history/{contentType}/{postNo}/{historyNo}";
-    String HISTORY_RESTORE = Prefix.API + "/history/{contentType}/{postNo}/{historyNo}/restore";
+    String HISTORY = Prefix.API + "/history/{contentType}/{postNo}/{historyId}";
+    String HISTORY_RESTORE = Prefix.API + "/history/{contentType}/{postNo}/{historyId}/restore";
     String HISTORY_CLEAR = Prefix.API + "/history/{contentType}/{postNo}/clear";
 
     /** 관련글 */
     String RELATEDS = Prefix.API + "/related/{contentType}/{postNo}";
-    String RELATED = Prefix.API + "/related/{relatedContentNo}";
+    String RELATED = Prefix.API + "/related/{relatedContentId}";
 
     /** 단락 */
     String SECTNS = Prefix.API + "/sectns";
@@ -165,7 +165,7 @@ public interface ApiUrl {
     String MENUS = Prefix.API + "/menus";
     String MENUS_IDX = Prefix.API + "/menus/idx";
     String MENUS_TREE = Prefix.API + "/menus/tree";
-    String MENU = Prefix.API + "/menu/{menuNo}";
+    String MENU = Prefix.API + "/menu/{id}";
 
     /** 게시판 관리 */
     String BOARD_DEF_REG_AJAX = Prefix.API + "/board/def/board-def-reg";

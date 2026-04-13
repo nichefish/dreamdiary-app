@@ -11,7 +11,7 @@
 -- @implements: TagEmbed, CommentEmbed, ManagtEmbed, ViewerEmbed
 CREATE TABLE IF NOT EXISTS notice (
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 번호 (PK)',
+    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
     content_type VARCHAR(32) DEFAULT 'NOTICE' COMMENT '컨텐츠 타입',
     --
     popup_yn CHAR(1) DEFAULT 'N' COMMENT '팝업 여부 (Y/N)',
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS notice (
     managtr_id VARCHAR(20) COMMENT '작업자 ID',
     managt_dt DATETIME COMMENT '작업일시',
     -- ATCH_FILE
-    atch_file_no INT COMMENT '첨부파일 번호',
+    atch_file_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS notice (
 -- @implements: TagEmbed, CommentEmbed
 CREATE TABLE IF NOT EXISTS schdul (
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 번호 (PK)',
+    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
     content_type VARCHAR(32) DEFAULT 'SCHDUL' COMMENT '컨텐츠 타입',
     --
     schdul_cd VARCHAR(30) COMMENT '일정 코드',
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS schdul (
     hit_cnt INT DEFAULT 0 COMMENT '조회수',
     mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
     -- ATCH_FILE
-    atch_file_no INT COMMENT '첨부파일 번호',
+    atch_file_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -72,21 +72,21 @@ CREATE TABLE IF NOT EXISTS schdul (
 -- 일정 참여자 (schdul_prtcpnt)
 -- @extends: BaseCrudEntity
 CREATE TABLE IF NOT EXISTS schdul_prtcpnt (
-    schdul_prtcpnt_no INT PRIMARY KEY AUTO_INCREMENT COMMENT '일정 참여자 번호 (PK)',
-    ref_post_no INT COMMENT '참초 글번호',
+    id INT PRIMARY KEY AUTO_INCREMENT COMMENT '일정 참여자 ID',
+    schdul_id INT COMMENT '일정 ID',
     user_id VARCHAR(30) COMMENT '일정 참여자 ID',
     -- AUDIT
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
     -- CONSTRAINT
-    CONSTRAINT fk_schdul_prtcpnt FOREIGN KEY (ref_post_no) REFERENCES schdul (post_no),
-    INDEX (ref_post_no)
+    CONSTRAINT fk_schdul_prtcpnt FOREIGN KEY (schdul_id) REFERENCES schdul (post_no),
+    INDEX (schdul_id)
 ) COMMENT = '일정 참여자';
 
 -- 템플릿 정의 정보
 -- @extends: BaseAuditEntity
 -- @implements: StateEmbed
 CREATE TABLE IF NOT EXISTS tmplat_def (
-    tmplat_def_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '템플릿 정의 번호 (PK)',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '템플릿 정의 ID',
     tmplat_def_cd VARCHAR(50) COMMENT '템플릿 정의 코드',
     title VARCHAR(200) COMMENT '이름',
     -- STATE
@@ -106,14 +106,14 @@ CREATE TABLE IF NOT EXISTS tmplat_def (
 -- @extends: BaseAuditEntity
 -- @implements: StateEmbed
 CREATE TABLE IF NOT EXISTS tmplat_txt (
-    tmplat_txt_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '템플릿(텍스트) 번호 (PK)',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '템플릿(텍스트) ID',
     tmplat_def_cd VARCHAR(50) COMMENT '템플릿 정의 코드',
     -- ctgr_cd VARCHAR(50) COMMENT '글분류 코드',
     title VARCHAR(200) COMMENT '이름',
     cn LONGTEXT COMMENT '내용',
     default_yn CHAR(1) DEFAULT 'N' COMMENT '기본 템플릿 여부',
     -- ATCH_FILE
-    atch_file_no INT COMMENT '첨부파일 번호',
+    atch_file_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS tmplat_txt (
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS flsys_meta (
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 번호 (PK)',
+    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
     content_type VARCHAR(32) DEFAULT 'FLSYS_META' COMMENT '컨텐츠 타입',
     --
     file_path VARCHAR(500) UNIQUE COMMENT '파일 경로',
@@ -147,7 +147,7 @@ CREATE TABLE IF NOT EXISTS flsys_meta (
     managtr_id VARCHAR(20) COMMENT '작업자 ID',
     managt_dt DATETIME COMMENT '작업일시',
     -- ATCH_FILE
-    atch_file_no INT COMMENT '첨부파일 번호',
+    atch_file_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -163,7 +163,7 @@ CREATE TABLE IF NOT EXISTS flsys_meta (
 -- 채팅 메세지
 -- @extends: BasePostEntity
 CREATE TABLE IF NOT EXISTS chat_msg (
-    post_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '글 번호 (PK)',
+    post_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
     content_type VARCHAR(30) DEFAULT 'CHAT' COMMENT '게시판 코드 (PK)',
     -- POST
     title VARCHAR(200) COMMENT '제목',
@@ -171,7 +171,7 @@ CREATE TABLE IF NOT EXISTS chat_msg (
     imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
     fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
     -- ATCH_FILE
-    atch_file_no INT COMMENT '첨부파일 번호',
+    atch_file_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',

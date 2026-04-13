@@ -32,12 +32,12 @@ dF.History.modal = (function(): Module {
             return cF.util.bindUrl(Url.HISTORIES, { contentType, postNo });
         },
 
-        restoreUrl: function(contentType: string, postNo: string|number, historyNo: string|number): string {
-            return cF.util.bindUrl(Url.HISTORY_RESTORE, { contentType, postNo, historyNo });
+        restoreUrl: function(contentType: string, postNo: string|number, historyId: string|number): string {
+            return cF.util.bindUrl(Url.HISTORY_RESTORE, { contentType, postNo, historyId });
         },
 
-        deleteUrl: function(contentType: string, postNo: string|number, historyNo: string|number): string {
-            return cF.util.bindUrl(Url.HISTORY, { contentType, postNo, historyNo });
+        deleteUrl: function(contentType: string, postNo: string|number, historyId: string|number): string {
+            return cF.util.bindUrl(Url.HISTORY, { contentType, postNo, historyId });
         },
 
         clearUrl: function(contentType: string, postNo: string|number): string {
@@ -76,10 +76,10 @@ dF.History.modal = (function(): Module {
          * restore history item
          * @param {string} contentType
          * @param {string|number} postNo
-         * @param {string|number} historyNo
+         * @param {string|number} historyId
          */
-        restore: function(contentType: string, postNo: string|number, historyNo: string|number): void {
-            if (cF.util.isEmpty(contentType) || isNaN(Number(postNo)) || isNaN(Number(historyNo))) return;
+        restore: function(contentType: string, postNo: string|number, historyId: string|number): void {
+            if (cF.util.isEmpty(contentType) || isNaN(Number(postNo)) || isNaN(Number(historyId))) return;
 
             Swal.fire({
                 text: Message.get("view.cnfm.restore"),
@@ -87,7 +87,7 @@ dF.History.modal = (function(): Module {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = dF.History.modal.restoreUrl(contentType, postNo, historyNo);
+                const url: string = dF.History.modal.restoreUrl(contentType, postNo, historyId);
                 cF.$ajax.post(url, null, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
@@ -104,10 +104,10 @@ dF.History.modal = (function(): Module {
          * delete history item
          * @param {string} contentType
          * @param {string|number} postNo
-         * @param {string|number} historyNo
+         * @param {string|number} historyId
          */
-        remove: function(contentType: string, postNo: string|number, historyNo: string|number): void {
-            if (cF.util.isEmpty(contentType) || isNaN(Number(postNo)) || isNaN(Number(historyNo))) return;
+        remove: function(contentType: string, postNo: string|number, historyId: string|number): void {
+            if (cF.util.isEmpty(contentType) || isNaN(Number(postNo)) || isNaN(Number(historyId))) return;
 
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
@@ -115,7 +115,7 @@ dF.History.modal = (function(): Module {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = dF.History.modal.deleteUrl(contentType, postNo, historyNo);
+                const url: string = dF.History.modal.deleteUrl(contentType, postNo, historyId);
                 cF.$ajax.delete(url, null, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {

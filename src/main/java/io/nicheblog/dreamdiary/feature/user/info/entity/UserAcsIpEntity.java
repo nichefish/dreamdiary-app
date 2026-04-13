@@ -33,11 +33,11 @@ import javax.persistence.Table;
 public class UserAcsIpEntity
         extends BaseCrudEntity {
 
-    /** 사용자 정보 접속가능 IP 번호 (PK) */
+    /** 사용자 정보 접속가능 IP ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_acs_ip_no")
-    @Comment("사용자 정보 접속가능 IP 번호 (PK)")
+    @Comment("사용자 정보 접속가능 IP ID")
     private Integer userAcsIpNo;
 
     /** 사용자 정보 */

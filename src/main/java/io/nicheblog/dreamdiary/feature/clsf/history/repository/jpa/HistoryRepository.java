@@ -21,7 +21,7 @@ public interface HistoryRepository
 
     List<HistoryEntity> findAllByRefPostNoAndRefContentTypeOrderByRegDtDesc(Integer refPostNo, String refContentType);
 
-    Optional<HistoryEntity> findByHistoryNoAndRefPostNoAndRefContentType(Integer historyNo, Integer refPostNo, String refContentType);
+    Optional<HistoryEntity> findByIdAndRefPostNoAndRefContentType(Integer id, Integer refPostNo, String refContentType);
 
     void deleteAllByRefPostNoAndRefContentType(Integer refPostNo, String refContentType);
 }

@@ -53,7 +53,7 @@ public class MenuFreemarkerModelContributor
                 }
                 context.addObject("siteAcsInfo", acsInfo);
 
-                final String userMode = menuService.getIsMngrMenu(menuDto.getMenuNo()) ? Code.AUTH_MNGR : Code.AUTH_USER;
+                final String userMode = menuService.getIsMngrMenu(menuDto.getId()) ? Code.AUTH_MNGR : Code.AUTH_USER;
                 context.getSession().setAttribute("userMode", userMode);
                 context.addObject("isMngrMode", Code.AUTH_MNGR.equals(userMode));
             } catch (final MenuNotExistsException e) {

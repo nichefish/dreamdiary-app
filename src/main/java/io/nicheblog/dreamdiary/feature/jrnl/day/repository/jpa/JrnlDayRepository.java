@@ -54,7 +54,7 @@ public interface JrnlDayRepository
     /**
      * 메타가 기록된 연도 목록을 최신순으로 조회합니다.
      *
-     * @param metaNo 메타 번호
+     * @param metaId 메타 ID
      * @param regstrId 사용자 ID
      * @return 연도 목록
      */
@@ -63,9 +63,9 @@ public interface JrnlDayRepository
     @Query("SELECT DISTINCT day.yy " +
             "FROM JrnlDayEntity day " +
             "INNER JOIN day.meta.list metaContent " +
-            "WHERE metaContent.refMetaNo = :metaNo " +
+            "WHERE metaContent.metaId = :metaId " +
             "  AND metaContent.refContentType = 'JRNL_DAY' " +
             "  AND metaContent.regstrId = :regstrId " +
             "ORDER BY day.yy DESC")
-    List<Integer> findDistinctYysByMetaNoAndRegstrId(final @Param("metaNo") Integer metaNo, final @Param("regstrId") String regstrId);
+    List<Integer> findDistinctYysByMetaIdAndRegstrId(final @Param("metaId") Integer metaId, final @Param("regstrId") String regstrId);
 }

@@ -12,7 +12,7 @@ public interface HistoryActionModule {
 
     String getHistoryType();
 
-    Integer getFromHistoryNo();
+    Integer getFromHistoryId();
 
     default HistoryType resolveHistoryType() {
         return HistoryType.from(this.getHistoryType());

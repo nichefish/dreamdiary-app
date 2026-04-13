@@ -27,16 +27,16 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE history SET del_yn = 'Y' WHERE history_no = ?")
+@SQLDelete(sql = "UPDATE history SET del_yn = 'Y' WHERE id = ?")
 public class HistoryEntity
         extends BaseAuditRegEntity {
 
-    /** 이력 번호 (PK) */
+    /** 이력 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "history_no")
-    @Comment("이력 번호 (PK)")
-    private Integer historyNo;
+    @Column(name = "id")
+    @Comment("이력 ID")
+    private Integer id;
 
     /** 참조 글번호 */
     @Column(name = "ref_post_no")
@@ -58,9 +58,9 @@ public class HistoryEntity
     @Comment("이력 타입")
     private String historyType = HistoryType.CHANGE.key;
 
-    @Column(name = "from_history_no")
+    @Column(name = "from_history_id")
     @Comment("복구 원본 이력 번호")
-    private Integer fromHistoryNo;
+    private Integer fromHistoryId;
 
     /* ----- */
 
@@ -91,11 +91,11 @@ public class HistoryEntity
      * @param refKey 글 번호와 컨텐츠 타입을 포함하는 참조 복합키 객체
      * @param cn 변경내용
      * @param historyType 이력 타입
-     * @param fromHistoryNo 이력 복구 번호
+     * @param fromHistoryId 이력 복구 번호
      */
-    public HistoryEntity(final BaseClsfKey refKey, final String cn, final HistoryType historyType, final Integer fromHistoryNo) {
+    public HistoryEntity(final BaseClsfKey refKey, final String cn, final HistoryType historyType, final Integer fromHistoryId) {
         this(refKey, cn);
         this.historyType = historyType != null ? historyType.key : HistoryType.CHANGE.key;
-        this.fromHistoryNo = fromHistoryNo;
+        this.fromHistoryId = fromHistoryId;
     }
 }
