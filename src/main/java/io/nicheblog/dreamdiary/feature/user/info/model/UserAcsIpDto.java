@@ -17,7 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserAcsIpDto {
 
-    /** 사용자 접속 IP 고유 번호 (PK) */
+    /** 사용자 접속 IP 고유 ID */
     private Integer userAcsIpNo;
 
     /** 사용자 번호 (FK) */

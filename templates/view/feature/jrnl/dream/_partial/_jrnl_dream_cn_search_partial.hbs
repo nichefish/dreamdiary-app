@@ -35,7 +35,7 @@
                 <div class="related-content-list">
                     {{#each relatedContentList}}
                         <div class="related-content-item rounded border border-gray-300 bg-light px-4 py-3 mb-3"
-                             data-related-content-no="{{relatedContentNo}}">
+                             data-related-content-id="{{id}}">
                             <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap">
                                 <div class="flex-grow-1">
                                     <div class="text-muted fs-8 mb-2">{{targetContentType}} <span>#</span>{{targetPostNo}}</div>
@@ -48,7 +48,7 @@
                                     <button type="button" class="btn btn-xxs btn-light-primary btn-outlined"
                                             onclick="dF.RelatedContent.openTarget('{{targetContentType}}', {{targetPostNo}});">열기</button>
                                     <button type="button" class="btn btn-xxs btn-light-danger btn-outlined"
-                                            onclick="dF.RelatedContent.deleteAjax({{relatedContentNo}}, this);">삭제</button>
+                                            onclick="dF.RelatedContent.deleteAjax({{id}}, this);">삭제</button>
                                 </div>
                             </div>
                         </div>

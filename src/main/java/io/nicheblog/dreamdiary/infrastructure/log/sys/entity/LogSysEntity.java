@@ -40,12 +40,12 @@ public class LogSysEntity
         extends BaseCrudEntity
         implements Serializable {
 
-    /** 로그 고유 번호 (PK) */
+    /** 로그 고유 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "log_sys_no")
-    @Comment("로그 고유 번호 (PK)")
-    private Integer logSysNo;
+    @Column(name = "id")
+    @Comment("로그 고유 ID")
+    private Integer id;
 
     /** 작업자 ID */
     @Builder.Default

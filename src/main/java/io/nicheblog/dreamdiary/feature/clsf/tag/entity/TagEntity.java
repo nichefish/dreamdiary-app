@@ -35,7 +35,7 @@ public class TagEntity extends BaseCrudEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    @Comment("태그 ID (PK)")
+    @Comment("태그 ID")
     private Integer id;
 
     @Transient

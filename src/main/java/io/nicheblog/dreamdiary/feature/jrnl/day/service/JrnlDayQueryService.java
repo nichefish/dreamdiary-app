@@ -100,12 +100,12 @@ public class JrnlDayQueryService {
      * 메타 기준 조회 + enrich
      *
      * @param userId 조회 사용자 ID
-     * @param searchParam 조회 조건 (metaNo 포함)
+     * @param searchParam 조회 조건 (metaId 포함)
      * @return {@link List} -- 가공 완료된 DTO 목록
      */
-    public List<JrnlDayDto> getListDtoByMetaNoEnrichedByUser(final String userId, final JrnlDaySearchParam searchParam) throws Exception {
+    public List<JrnlDayDto> getListDtoByMetaIdEnrichedByUser(final String userId, final JrnlDaySearchParam searchParam) throws Exception {
         final String resolvedUserId = AuthUtils.requireUserId(userId);
-        final List<JrnlDayDto> listDto = jrnlDayService.getListDtoByMetaNoAndUser(resolvedUserId, searchParam);
+        final List<JrnlDayDto> listDto = jrnlDayService.getListDtoByMetaIdAndUser(resolvedUserId, searchParam);
         return this.enrichList(resolvedUserId, listDto, searchParam);
     }
 

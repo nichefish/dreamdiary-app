@@ -24,7 +24,7 @@ public class LogSysQueryDto
         implements Identifiable<Integer> {
 
     /** 로그 고유 번호 */
-    private Integer logSysNo;
+    private Integer id;
 
     /** 작업자 ID */
     private String userId;
@@ -78,6 +78,6 @@ public class LogSysQueryDto
 
     @Override
     public Integer getKey() {
-        return this.logSysNo;
+        return this.id;
     }
 }

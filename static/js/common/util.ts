@@ -143,9 +143,9 @@ cF.util = (function(): Module {
          * @param {string|number} atchFileDtlNo - 첨부 파일 상세 번호.
          * TODO: URL 외부에서 주입하기?
          */
-        fileDownload: function(atchFileNo: string|number, atchFileDtlNo: string|number): void {
-            const inputs: string = "<input type='hidden' name='atchFileNo' value='" + atchFileNo + "'>" +
-                           "<input type='hidden' name='atchFileDtlNo' value='" + atchFileDtlNo + "'>";
+        fileDownload: function(atchFileId: string|number, atchFileDtlId: string|number): void {
+            const inputs: string = "<input type='hidden' name='atchFileId' value='" + atchFileId + "'>" +
+                           "<input type='hidden' name='atchFileDtlId' value='" + atchFileDtlId + "'>";
             const form: HTMLFormElement = document.createElement("form");
             form.action = "/file/file-download.do";
             form.method = "POST"; // POST 방식으로 설정

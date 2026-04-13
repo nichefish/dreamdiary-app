@@ -41,8 +41,8 @@ public class JrnlDaySearchParam
 
     /** 태그 ID */
     private Integer tagId;
-    /** 메타 번호 */
-    private Integer metaNo;
+    /** 메타 ID */
+    private Integer metaId;
 
     /** 일기 렌더링 여부 */
     private boolean showDiaries;

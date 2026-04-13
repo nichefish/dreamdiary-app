@@ -23,8 +23,8 @@ import lombok.experimental.SuperBuilder;
 public class AuthPolicyQueryDto
         extends BaseAuditDto {
 
-    /** 인증 정책 고유 번호 (PK) */
-    private Integer authPolicyNo;
+    /** 인증 정책 고유 ID */
+    private Integer id;
 
     /** 로그인 최대 시도 횟수 */
     private Integer lgnTryLmt;

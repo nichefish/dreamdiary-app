@@ -36,11 +36,11 @@ import javax.persistence.*;
 public class TagProfileEntity
         extends BaseAuditRegEntity {
 
-    /** 태그 프로필 ID (PK) */
+    /** 태그 프로필 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    @Comment("태그 프로필 ID (PK)")
+    @Comment("태그 프로필 ID")
     private Integer id;
 
     /** 태그 ID */

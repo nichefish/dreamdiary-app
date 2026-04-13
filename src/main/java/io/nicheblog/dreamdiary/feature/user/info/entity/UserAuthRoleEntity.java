@@ -38,11 +38,11 @@ public class UserAuthRoleEntity
         if (this.roleInfo != null) this.authNm = this.roleInfo.getAuthNm();
     }
 
-    /** 사용자-권한 번호 (PK) */
+    /** 사용자-권한 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_auth_role_no")
-    @Comment("사용자 권한 번호 (PK)")
+    @Comment("사용자 권한 ID")
     private Integer userAuthRoleNo;
 
     /** 권한 코드 */

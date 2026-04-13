@@ -5,7 +5,7 @@
 
 <script type="text/x-handlebars-template" id="menu_main_card_template">
     <li class="menu-item col-4 list-unstyled p-5 sortable-item draggable-main" style="{{borderColor}}"
-        data-id="{{menuNo}}" data-type="{{menuTyCd}}" data-upper-menu-no="{{upperMenuNo}}" data-idx="{{idx}}" data-use-yn="{{useYn}}">
+        data-id="{{id}}" data-type="{{menuTyCd}}" data-upper-menu-id="{{upperMenuId}}" data-idx="{{idx}}" data-use-yn="{{useYn}}">
         <div class="card shadow">
             <div class="card-header pt-2">
                 <div class="d-flex align-items-center">
@@ -41,9 +41,9 @@
                 </div>
             </div>
 
-            <ul id="menu_sub_{{menuNo}}"
+            <ul id="menu_sub_{{id}}"
                 class="card-body ps-12 sub-menu-list custom-scroll {{#unlessYn protectedYn}}{{#if (equals menuSubExtendTyCd 'NO_SUB')}}{{else}}draggable-zone-sub{{/if}}{{/unlessYn}}"
-                data-parent-menu-no="{{menuNo}}"
+                data-parent-menu-id="{{id}}"
                 data-parent-menu-ty="{{menuTyCd}}">
                 <!-- sub-menu area -->
             </ul>

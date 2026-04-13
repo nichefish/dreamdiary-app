@@ -52,7 +52,7 @@ public class LogActvtyRestController
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> logActvtyDtlAjax(
-            final @RequestParam("logActvtyNo") Integer key,
+            final @RequestParam("logActvtyId") Integer key,
             final LogActvtyParam logParam
     ) throws Exception {
 

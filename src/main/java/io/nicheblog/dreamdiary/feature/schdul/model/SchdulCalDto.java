@@ -45,7 +45,7 @@ public class SchdulCalDto
 
     /* ----- */
 
-    /** 일정 고유 번호 (PK) */
+    /** 일정 고유 ID */
     @JsonProperty("id")
     private String postNo;
 

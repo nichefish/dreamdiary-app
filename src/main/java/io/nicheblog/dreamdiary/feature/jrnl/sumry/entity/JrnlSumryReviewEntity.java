@@ -37,7 +37,7 @@ public class JrnlSumryReviewEntity
         extends BaseClsfEntity
         implements CommentEmbedModule, TagEmbedModule, AtchFileEmbedModule {
 
-    /** 저널 꿈 고유 번호 (PK) */
+    /** 저널 꿈 고유 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_no")

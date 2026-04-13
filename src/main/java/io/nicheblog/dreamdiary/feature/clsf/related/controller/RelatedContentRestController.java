@@ -63,7 +63,7 @@ public class RelatedContentRestController
 
         final RelatedContentDto savedDto = myRelatedContentService.saveMyRelation(relatedContent);
         final ServiceResponse result = ServiceResponse.builder()
-                .rslt(savedDto.getRelatedContentNo() != null)
+                .rslt(savedDto.getId() != null)
                 .rsltObj(savedDto)
                 .build();
 
@@ -74,9 +74,9 @@ public class RelatedContentRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> relatedContentDeleteAjax(
-            final @PathVariable("relatedContentNo") Integer relatedContentNo
+            final @PathVariable("relatedContentId") Integer relatedContentId
     ) {
-        final boolean deleted = myRelatedContentService.deleteMyRelation(relatedContentNo);
+        final boolean deleted = myRelatedContentService.deleteMyRelation(relatedContentId);
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(deleted, deleted ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE));
     }
 }

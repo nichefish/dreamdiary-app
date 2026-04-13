@@ -147,7 +147,7 @@ public class JrnlIntrptService
             final Integer key,
             final String updatedCn,
             final HistoryType historyType,
-            final Integer fromHistoryNo
+            final Integer fromHistoryId
     ) throws Exception {
         final JrnlIntrptEntity restoreEntity = this.getSelf().getDtlEntity(key);
         final JrnlIntrptEntity historySnapshot = BaseClsfHistoryHelper.isHistoryModule(restoreEntity)
@@ -158,7 +158,7 @@ public class JrnlIntrptService
         BaseClsfHistoryHelper.applyModifyHistory(historySnapshot, restoreEntity);
 
         final JrnlIntrptEntity updatedEntity = getRepository().saveAndFlush(restoreEntity);
-        BaseClsfHistoryHelper.publishHistoryEventIfSupported(this, historySnapshot, updatedEntity, historyType, fromHistoryNo);
+        BaseClsfHistoryHelper.publishHistoryEventIfSupported(this, historySnapshot, updatedEntity, historyType, fromHistoryId);
 
         final JrnlIntrptDto updatedDto = getReadMapstruct().toDto(updatedEntity);
         jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(updatedDto), ContentType.JRNL_INTRPT);

@@ -29,21 +29,21 @@ import javax.persistence.Table;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE meta_content SET del_yn = 'Y' WHERE meta_content_no = ?")
+@SQLDelete(sql = "UPDATE meta_content SET del_yn = 'Y' WHERE id = ?")
 public class MetaContentEntity
         extends BaseAuditRegEntity {
 
-    /** 메타-컨텐츠 번호 (PK) */
+    /** 메타-컨텐츠 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "meta_content_no")
-    @Comment("메타-컨텐츠 번호 (PK)")
-    private Integer metaContentNo;
+    @Column(name = "id")
+    @Comment("메타-컨텐츠 ID")
+    private Integer id;
 
-    /** 참조 메타 번호 */
-    @Column(name = "ref_meta_no")
-    @Comment("참조 메타 번호")
-    private Integer refMetaNo;
+    /** 메타 ID */
+    @Column(name = "meta_id")
+    @Comment("메타 ID")
+    private Integer metaId;
 
     /** 참조 글 번호 */
     @Column(name = "ref_post_no")
@@ -57,7 +57,7 @@ public class MetaContentEntity
 
     /** 메타 정보 */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "ref_meta_no", referencedColumnName = "meta_no", updatable = false, insertable = false)
+    @JoinColumn(name = "meta_id", referencedColumnName = "id", updatable = false, insertable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private MetaSmpEntity meta;
 
@@ -88,12 +88,12 @@ public class MetaContentEntity
     /**
      * 생성자.
      *
-     * @param refMetaNo - 참조 메타 번호
+     * @param metaId - 메타 ID
      * @param clsfKey - 게시글 번호와 컨텐츠 타입 정보를 포함하는 분류 키 객체
      * @param value - 값
      */
-    public MetaContentEntity(final Integer refMetaNo, final BaseClsfKey clsfKey, final String value, final String unit) {
-        this.refMetaNo = refMetaNo;
+    public MetaContentEntity(final Integer metaId, final BaseClsfKey clsfKey, final String value, final String unit) {
+        this.metaId = metaId;
         this.refPostNo = clsfKey.getPostNo();
         this.refContentType = clsfKey.getContentType();
         this.value = value;

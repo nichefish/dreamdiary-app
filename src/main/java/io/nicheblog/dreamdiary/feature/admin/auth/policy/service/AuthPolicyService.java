@@ -74,7 +74,7 @@ public class AuthPolicyService {
         final AuthPolicyEntity updated = repository.save(retrievedEntity);
 
         return ServiceResponse.builder()
-                .rslt(updated.getAuthPolicyNo() != null)
+                .rslt(updated.getId() != null)
                 .rsltObj(mapstruct.toDto(updated))
                 .build();
     }

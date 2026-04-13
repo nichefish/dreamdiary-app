@@ -27,9 +27,9 @@ import javax.validation.constraints.Size;
 public class ManagtrDto
         extends BaseAuditRegDto {
 
-    /** 조치자 번호 (PK) */
+    /** 조치자 ID */
     @Positive
-    private Integer managtrNo;
+    private Integer id;
 
     /** 참조 글 번호 */
     @Positive

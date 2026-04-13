@@ -34,7 +34,7 @@ import java.util.List;
 public class LogStatsUserEntity
         extends BaseCrudEntity {
 
-    /** 사용자 번호 (PK) */
+    /** 사용자 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_no")

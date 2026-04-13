@@ -31,13 +31,13 @@ import java.util.List;
 public class AtchFileEmbed
         implements Serializable {
 
-    /** 첨부파일 번호 */
-    @Column(name = "atch_file_no")
-    private Integer atchFileNo;
+    /** 첨부파일 번호 (FK) */
+    @Column(name = "atch_file_id")
+    private Integer atchFileId;
 
     /** 첨부파일 정보 */
     @OneToOne
-    @JoinColumn(name = "atch_file_no", referencedColumnName = "atch_file_no", insertable = false, updatable = false)
+    @JoinColumn(name = "atch_file_id", referencedColumnName = "id", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private AtchFileEntity atchFileInfo;
 

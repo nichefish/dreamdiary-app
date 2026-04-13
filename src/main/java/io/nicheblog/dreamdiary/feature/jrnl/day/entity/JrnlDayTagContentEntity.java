@@ -35,11 +35,11 @@ import javax.persistence.Table;
 public class JrnlDayTagContentEntity
         extends BaseAuditRegEntity {
 
-    /** 태그-컨텐츠 ID (PK) */
+    /** 태그-컨텐츠 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    @Comment("Tag content ID (PK)")
+    @Comment("Tag content ID")
     private Integer id;
 
     /** 태그 ID */

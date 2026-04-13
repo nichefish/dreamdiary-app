@@ -24,8 +24,8 @@ import lombok.experimental.SuperBuilder;
 public class ViewerDto
         extends BaseAuditRegDto {
 
-    /** 조치자 번호 (PK) */
-    private Integer managtrNo;
+    /** 조치자 ID */
+    private Integer id;
 
     /** 참조 글 번호 */
     private Integer refPostNo;

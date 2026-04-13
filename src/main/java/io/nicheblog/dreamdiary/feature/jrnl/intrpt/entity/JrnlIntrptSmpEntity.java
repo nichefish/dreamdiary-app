@@ -34,7 +34,7 @@ public class JrnlIntrptSmpEntity {
     @Builder.Default
     private static final ContentType CONTENT_TYPE = ContentType.JRNL_INTRPT;
 
-    /** 저널 해석 고유 번호 (PK) */
+    /** 저널 해석 고유 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_no")

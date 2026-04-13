@@ -34,7 +34,7 @@
             <tbody class="text-gray-600">
                 <#list logActvtyList![] as log>
                     <tr class="cursor-pointer <#if log.isJobUser!false>bg-fxd-list</#if>"
-                        onclick="dF.LogActvty.dtlModal('${log.logActvtyNo!}');">
+                        onclick="dF.LogActvty.dtlModal('${log.id!}');">
                         <td class="text-center hidden-table">${log.rnum!}</td>
                         <td class="text-center">
                             ${log.logDt!"-"}
@@ -103,7 +103,7 @@
 <!--end::Card-->
 
 <form name="procForm" id="procForm" method="get">
-    <input type="hidden" name="logActvtyNo" id="logActvtyNo" />
+    <input type="hidden" name="logActvtyId" id="logActvtyId" />
 </form>
 
 <#--include::log_actvty_module-->

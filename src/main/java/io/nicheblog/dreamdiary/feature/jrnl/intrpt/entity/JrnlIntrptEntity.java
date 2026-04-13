@@ -43,7 +43,7 @@ public class JrnlIntrptEntity
         extends BaseClsfEntity
         implements AtchFileEmbedModule, CommentEmbedModule, TagEmbedModule, StateEmbedModule, HistoryEmbedModule {
 
-    /** 저널 해석 고유 번호 (PK) */
+    /** 저널 해석 고유 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_no")

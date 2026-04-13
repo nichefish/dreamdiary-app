@@ -38,7 +38,7 @@ dF.Menu = (function(): dfModule {
          * 메인 Draggable 컴포넌트 init
          */
         initMainDraggable: function(): void {
-            const keyExtractor: Function = (item: HTMLElement): Object => ({ "menuNo": Number(item.dataset.id) });
+            const keyExtractor: Function = (item: HTMLElement): Object => ({ "id": Number(item.dataset.id) });
             dF.Menu.mainSwappable = cF.draggable.init("-main", keyExtractor, Url.MENUS_IDX);
         },
 
@@ -82,22 +82,22 @@ dF.Menu = (function(): dfModule {
          * 특정 트리 그룹(부모 메뉴 기준)의 정렬 상태를 서버 전송용 payload로 구성한다.
          * @param container 그룹 컨테이너 (부모 메뉴 기준)
          * @param itemSelector 정렬 대상 selector
-         * @returns upperMenuNo + 정렬된 item 리스트
+         * @returns upperMenuId + 정렬된 item 리스트
          */
         buildTreeGroupPayload: function(container: HTMLElement, itemSelector: string): Record<string, any> | null {
             if (!container) return null;
 
-            const upperMenuNo: number = Number(container.dataset.parentMenuNo);
-            if (isNaN(upperMenuNo)) return null;
+            const upperMenuId: number = Number(container.dataset.parentMenuId);
+            if (isNaN(upperMenuId)) return null;
 
             const items: Record<string, number>[] = dF.Menu.getSortableChildren(container, itemSelector)
                 .map((item: HTMLElement, idx: number): Record<string, number> => ({
-                    "menuNo": Number(item.dataset.id),
+                    "id": Number(item.dataset.id),
                     "idx": idx,
                 }));
 
             return {
-                "upperMenuNo": upperMenuNo,
+                "upperMenuId": upperMenuId,
                 "items": items,
             };
         },
@@ -108,7 +108,7 @@ dF.Menu = (function(): dfModule {
          * @param movedItem 이동된 요소
          * @param sourceContainer 기존 컨테이너
          * @param targetContainer 이동된 컨테이너
-         * @param sortedOrder 캡처된 최종 정렬 순서 (menuNo string 배열)
+         * @param sortedOrder 캡처된 최종 정렬 순서 (id string 배열)
          */
         sortSubTreeByOrder: function(
             movedItem: HTMLElement,
@@ -117,37 +117,37 @@ dF.Menu = (function(): dfModule {
             sortedOrder: string[]
         ): void {
             const itemSelector: string = ".sortable-item.draggable-sub";
-            const movedMenuNo: number = Number(movedItem.dataset.id);
-            const sourceUpperMenuNo: number = Number(movedItem.dataset.upperMenuNo);
-            const targetUpperMenuNo: number = Number(targetContainer?.dataset.parentMenuNo);
-            if (isNaN(movedMenuNo) || isNaN(sourceUpperMenuNo) || isNaN(targetUpperMenuNo)) return;
+            const movedId: number = Number(movedItem.dataset.id);
+            const sourceUpperMenuId: number = Number(movedItem.dataset.upperMenuId);
+            const targetUpperMenuId: number = Number(targetContainer?.dataset.parentMenuId);
+            if (isNaN(movedId) || isNaN(sourceUpperMenuId) || isNaN(targetUpperMenuId)) return;
 
             const groups: Record<string, any>[] = [];
 
             // target 그룹: sortedOrder 그대로 사용 (DOM 안 읽음)
             const targetItems: Record<string, number>[] = sortedOrder.map(
                 (id: string, idx: number): Record<string, number> => ({
-                    "menuNo": Number(id),
+                    "id": Number(id),
                     "idx": idx,
                 })
             );
-            groups.push({ "upperMenuNo": targetUpperMenuNo, "items": targetItems });
+            groups.push({ "upperMenuId": targetUpperMenuId, "items": targetItems });
 
             // 부모가 바뀐 경우: source 그룹도 추가 (movedItem 제외하고 DOM 읽기)
             if (sourceContainer !== targetContainer) {
                 const sourceItems: Record<string, number>[] = dF.Menu.getSortableChildren(sourceContainer, itemSelector)
-                    .filter((el: HTMLElement): boolean => Number(el.dataset.id) !== movedMenuNo)
+                    .filter((el: HTMLElement): boolean => Number(el.dataset.id) !== movedId)
                     .map((el: HTMLElement, idx: number): Record<string, number> => ({
-                        "menuNo": Number(el.dataset.id),
+                        "id": Number(el.dataset.id),
                         "idx": idx,
                     }));
-                groups.push({ "upperMenuNo": sourceUpperMenuNo, "items": sourceItems });
+                groups.push({ "upperMenuId": sourceUpperMenuId, "items": sourceItems });
             }
 
             const ajaxData: Record<string, any> = {
-                "movedMenuNo": movedMenuNo,
-                "sourceUpperMenuNo": sourceUpperMenuNo,
-                "targetUpperMenuNo": targetUpperMenuNo,
+                "movedId": movedId,
+                "sourceUpperMenuId": sourceUpperMenuId,
+                "targetUpperMenuId": targetUpperMenuId,
                 "groups": groups,
             };
 
@@ -237,10 +237,10 @@ dF.Menu = (function(): dfModule {
         /**
          * 등록 모달 호출
          */
-        regModal: function(menuTyCd: string, upperMenuNo: number, upperMenuNm: string): void {
+        regModal: function(menuTyCd: string, upperMenuId: number, upperMenuNm: string): void {
             event.stopPropagation();
 
-            const obj: Record<string, any> = { "menuTyCd": menuTyCd, "upperMenuNo": upperMenuNo, "upperMenuNm": upperMenuNm };
+            const obj: Record<string, any> = { "menuTyCd": menuTyCd, "upperMenuId": upperMenuId, "upperMenuNm": upperMenuNm };
             /* initialize form. */
             dF.Menu.initForm(obj);
         },
@@ -285,9 +285,9 @@ dF.Menu = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const menuNo = cF.util.getInputValue("#menuRegForm #menuNo");
-                const isMdf: boolean = cF.util.isNotEmpty(menuNo);
-                const url: string = isMdf ? cF.util.bindUrl(Url.MENU, { menuNo }) : Url.MENUS;
+                const id = cF.util.getInputValue("#menuRegForm #id");
+                const isMdf: boolean = cF.util.isNotEmpty(id);
+                const url: string = isMdf ? cF.util.bindUrl(Url.MENU, { id }) : Url.MENUS;
                 const ajaxData: Record<string, any> = cF.util.getJsonFormData("#menuRegForm");
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
@@ -301,10 +301,10 @@ dF.Menu = (function(): dfModule {
         /**
          * 수정 모달 호출
          */
-        mdfModal: function(menuNo: string|number): void {
-            if (isNaN(Number(menuNo))) return;
+        mdfModal: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
-            const url: string = cF.util.bindUrl(Url.MENU, { menuNo });
+            const url: string = cF.util.bindUrl(Url.MENU, { id });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -319,15 +319,15 @@ dF.Menu = (function(): dfModule {
         /**
          * 사용 상태 변경 (Ajax)
          */
-        toggleUseAjax: function(menuNo: string|number): void {
-            if (isNaN(Number(menuNo))) return;
+        toggleUseAjax: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
-            const item: HTMLElement = document.querySelector(`li.menu-item[data-id='${menuNo}']`);
+            const item: HTMLElement = document.querySelector(`li.menu-item[data-id='${id}']`);
             if (!item) console.warn("item does not exists.");
             const currentUseYn: string = item.dataset.useYn;
             const nextUseYn: string = currentUseYn === "Y" ? "N" : "Y";
 
-            const url: string = cF.util.bindUrl(Url.MENU, { menuNo });
+            const url: string = cF.util.bindUrl(Url.MENU, { id });
             const ajaxData: Record<string, any> = { "useYn": nextUseYn };
             cF.$ajax.patch(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
@@ -339,10 +339,10 @@ dF.Menu = (function(): dfModule {
 
         /**
          * 삭제 (Ajax)
-         * @param {string|number} menuNo - 메뉴 번호.
+         * @param {string|number} id - 메뉴 번호.
          */
-        delAjax: function(menuNo: number): void {
-            if (isNaN(Number(menuNo))) return;
+        delAjax: function(id: number): void {
+            if (isNaN(Number(id))) return;
 
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
@@ -350,7 +350,7 @@ dF.Menu = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = cF.util.bindUrl(Url.MENU, { menuNo });
+                const url: string = cF.util.bindUrl(Url.MENU, { id });
                 cF.$ajax.delete(url, null, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {

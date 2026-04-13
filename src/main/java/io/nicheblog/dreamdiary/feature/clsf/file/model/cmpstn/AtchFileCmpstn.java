@@ -25,8 +25,8 @@ import java.util.List;
 public class AtchFileCmpstn
         implements Serializable {
 
-    /** 첨부파일 번호 */
-    private Integer atchFileNo;
+    /** 첨부파일 번호 (FK) */
+    private Integer atchFileId;
     /** 첨부파일 정보 */
     private AtchFileDto atchFileInfo;
 

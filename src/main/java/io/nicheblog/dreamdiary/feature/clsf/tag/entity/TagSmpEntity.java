@@ -32,11 +32,11 @@ import javax.persistence.Table;
 public class TagSmpEntity
         extends BaseCrudEntity {
 
-    /** 태그 ID (PK). */
+    /** 태그 ID. */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    @Comment("태그 ID (PK)")
+    @Comment("태그 ID")
     private Integer id;
 
     /** 태그 카테고리 */

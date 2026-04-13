@@ -32,20 +32,20 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE atch_file SET del_yn = 'Y' WHERE atch_file_no = ?")
+@SQLDelete(sql = "UPDATE atch_file SET del_yn = 'Y' WHERE id = ?")
 public class AtchFileEntity
         extends BaseCrudEntity {
 
-    /** 첨부파일 번호 (PK) */
+    /** 첨부파일 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "atch_file_no", length = 20)
-    private Integer atchFileNo;
+    @Column(name = "id", length = 20)
+    private Integer id;
 
     /** 첨부파일 상세 목록 */
     @Builder.Default
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "atch_file_no")
+    @JoinColumn(name = "atch_file_id")
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 10)
     @OrderBy("fileSn ASC")

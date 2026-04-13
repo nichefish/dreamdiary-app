@@ -149,7 +149,7 @@ public class JrnlDayService
      * @return {@link List} -- 조회된 목록
      */
     @Transactional(readOnly = true)
-    public List<JrnlDayDto> getListDtoByMetaNoAndUser(final String userId, final JrnlDaySearchParam searchParam) throws Exception {
+    public List<JrnlDayDto> getListDtoByMetaIdAndUser(final String userId, final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
         searchParam.setRegstrId(AuthUtils.requireUserId(userId));

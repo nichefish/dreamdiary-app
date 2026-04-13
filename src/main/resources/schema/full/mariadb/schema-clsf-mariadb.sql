@@ -12,7 +12,7 @@
 -- @implements: CommentEmbed
 CREATE TABLE IF NOT EXISTS comment (
     -- CLSF
-    post_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '댓글 번호 (PK)',
+    post_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '댓글 ID',
     content_type VARCHAR(32) DEFAULT 'COMMENT' COMMENT '컨텐츠 타입',
     --
     ref_post_no INT COMMENT '참조 글 번호',
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS comment (
     hit_cnt INT DEFAULT 0 COMMENT '조회수',
     mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정 권한 범위',
     -- ATCH_FILE
-    atch_file_no INT COMMENT '첨부파일 번호',
+    atch_file_id INT COMMENT '첨부파일 번호',
     visual_semantic VARCHAR(30) NOT NULL DEFAULT 'DEFAULT' COMMENT '시각 의미',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS comment (
 -- @implements: SectnEmbed
 CREATE TABLE IF NOT EXISTS sectn (
     -- CLSF
-    post_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '단락 번호 (PK)',
+    post_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '단락 ID',
     content_type VARCHAR(32) DEFAULT 'SECTN' COMMENT '컨텐츠 타입',
     --
     ref_post_no INT COMMENT '참조 글 번호',
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS sectn (
     hit_cnt INT DEFAULT 0 COMMENT '조회수',
     mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정 권한 범위',
     -- ATCH_FILE
-    atch_file_no INT COMMENT '첨부파일 번호',
+    atch_file_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS sectn (
 -- 태그(tag)
 -- @extends: BaseCrudEntity
 CREATE TABLE IF NOT EXISTS tag (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '태그 ID (PK)',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '태그 ID',
     tag_nm VARCHAR(64) COMMENT '태그명',
     tag_category_id INT COMMENT '태그 카테고리 ID',
     tag_category_key INT AS (IFNULL(tag_category_id, 0)) PERSISTENT,
@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS tag (
 -- 태그 카테고리(tag_category)
 -- @extends: BaseCrudEntity
 CREATE TABLE IF NOT EXISTS tag_category (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '태그 카테고리 ID (PK)',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '태그 카테고리 ID',
     ctgr_nm VARCHAR(100) COMMENT '태그 카테고리명',
     -- AUDIT
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
@@ -110,7 +110,7 @@ ALTER TABLE tag
 -- 태그-컨텐츠(tag_content)
 -- @extends: BaseCrudEntity
 CREATE TABLE IF NOT EXISTS tag_content (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '태그-컨텐츠 ID (PK)',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '태그-컨텐츠 ID',
     tag_id INT COMMENT '태그 ID',
     ref_post_no INT COMMENT '참조 글 번호',
     ref_content_type VARCHAR(30) COMMENT '참조 컨텐츠 타입',
@@ -128,7 +128,7 @@ CREATE TABLE IF NOT EXISTS tag_content (
 -- 태그 프로필(tag_profile)
 -- @extends: BaseAuditRegEntity
 CREATE TABLE IF NOT EXISTS tag_profile (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '태그 프로필 ID (PK)',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '태그 프로필 ID',
     tag_id INT NOT NULL COMMENT '태그 ID',
     content_type VARCHAR(50) NOT NULL COMMENT '컨텐츠 타입',
     --
@@ -147,7 +147,7 @@ CREATE TABLE IF NOT EXISTS tag_profile (
 -- 태그 카테고리 프로필(tag_category_profile)
 -- @extends: BaseAuditRegEntity
 CREATE TABLE IF NOT EXISTS tag_category_profile (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '태그 카테고리 프로필 ID (PK)',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '태그 카테고리 프로필 ID',
     tag_category_id INT NOT NULL COMMENT '태그 카테고리 ID',
     content_type VARCHAR(50) NOT NULL COMMENT '컨텐츠 타입',
     --
@@ -165,7 +165,7 @@ CREATE TABLE IF NOT EXISTS tag_category_profile (
 -- 메타(meta)
 -- @extends: BaseCrudEntity
 CREATE TABLE IF NOT EXISTS meta (
-    meta_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '메타 번호 (PK)',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '메타 ID',
     meta_nm VARCHAR(64) COMMENT '메타명',
     ctgr VARCHAR(100) COMMENT '카테고리',
     label VARCHAR(100) COMMENT '라벨',
@@ -180,8 +180,8 @@ CREATE TABLE IF NOT EXISTS meta (
 -- 메타-컨텐츠(meta_content)
 -- @extends: BaseCrudEntity
 CREATE TABLE IF NOT EXISTS meta_content (
-    meta_content_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '메타-컨텐츠 번호 (PK)',
-    ref_meta_no INT COMMENT '참조 메타 번호',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '메타-컨텐츠 ID',
+    meta_id INT COMMENT '메타 ID',
     ref_post_no INT COMMENT '참조 글 번호',
     ref_content_type VARCHAR(30) COMMENT '참조 컨텐츠 타입',
     value VARCHAR(64) COMMENT '메타 값',
@@ -191,7 +191,7 @@ CREATE TABLE IF NOT EXISTS meta_content (
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
     -- CONSTRAINT
-    FOREIGN KEY (ref_meta_no) REFERENCES meta(meta_no),
+    FOREIGN KEY (meta_id) REFERENCES meta(id),
     INDEX (ref_content_type),
     INDEX (ref_post_no, ref_content_type),
     INDEX (ref_post_no, ref_content_type, regstr_id)
@@ -202,7 +202,7 @@ CREATE TABLE IF NOT EXISTS meta_content (
 -- 상태(state)
 -- @extends: BaseCrudEntity
 CREATE TABLE IF NOT EXISTS state (
-    state_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '상태 번호 (PK)',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '상태 ID',
     ref_post_no INT COMMENT '참조 글 번호',
     ref_content_type VARCHAR(30) COMMENT '참조 컨텐츠 타입',
     --
@@ -216,7 +216,7 @@ CREATE TABLE IF NOT EXISTS state (
 -- 조치자(managtr)
 -- @extends: BaseAuditRegEntity
 CREATE TABLE IF NOT EXISTS managtr (
-    managtr_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '조치자 번호 (PK)',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '조치자 ID',
     ref_post_no INT COMMENT '참조 글 번호',
     ref_content_type VARCHAR(30) COMMENT '참조 컨텐츠 타입',
     -- AUDIT
@@ -232,18 +232,18 @@ CREATE TABLE IF NOT EXISTS managtr (
 -- 이력(history)
 -- @extends: BaseAuditRegEntity
 CREATE TABLE history (
-    history_no INT AUTO_INCREMENT COMMENT '이력 번호 (PK)',
+    id INT AUTO_INCREMENT COMMENT '이력 ID',
     ref_post_no INT COMMENT '참조 글 번호',
     ref_content_type VARCHAR(255) COMMENT '참조 컨텐츠 타입',
     cn LONGTEXT COMMENT '이력 내용 요약',
     history_type VARCHAR(20) NOT NULL DEFAULT 'CHANGE' COMMENT '이력 타입',
-    from_history_no INT COMMENT '복구 원본 이력 번호',
+    from_history_id INT COMMENT '복구 원본 이력 번호',
     -- AUDIT
     reg_id VARCHAR(50) COMMENT '등록자 ID',
     reg_dt DATETIME COMMENT '등록 일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
 
-    PRIMARY KEY (history_no),
+    PRIMARY KEY (id),
     INDEX(ref_post_no, ref_content_type)
 );
 
@@ -252,7 +252,7 @@ CREATE TABLE history (
 -- 열람자(viewer)
 -- @extends: BaseAuditRegEntity
 CREATE TABLE IF NOT EXISTS viewer (
-    viewer_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '열람자 번호 (PK)',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '열람자 ID',
     ref_post_no INT COMMENT '참조 글 번호',
     ref_content_type VARCHAR(30) COMMENT '참조 컨텐츠 타입',
     lst_visit_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '최종 방문 일시',
@@ -270,7 +270,7 @@ CREATE TABLE IF NOT EXISTS viewer (
 -- 관련글(related_content)
 -- @extends: BaseAuditRegEntity
 CREATE TABLE IF NOT EXISTS related_content (
-    related_content_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '관련글 번호 (PK)',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '관련글 ID',
     left_post_no INT NOT NULL COMMENT '좌측 글 번호',
     left_content_type VARCHAR(30) NOT NULL COMMENT '좌측 컨텐츠 타입',
     right_post_no INT NOT NULL COMMENT '우측 글 번호',

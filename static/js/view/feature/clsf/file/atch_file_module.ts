@@ -91,8 +91,8 @@ dF.AtchFile = (function(): dfModule {
          * 기존 첨부파일 삭제 플래그 세팅
          * @param {string|number} atchFileDtlNo - 첨부파일 상세 번호.
          */
-        delExistingFile: function(atchFileDtlNo: string|number): void {
-            if (isNaN(Number(atchFileDtlNo))) return;
+        delExistingFile: function(atchFileDtlId: string|number): void {
+            if (isNaN(Number(atchFileDtlId))) return;
 
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
@@ -100,8 +100,8 @@ dF.AtchFile = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                $("#atchCtrl" + atchFileDtlNo).val("D");
-                $("div#itemContainer"+atchFileDtlNo).hide();
+                $("#atchCtrl" + atchFileDtlId).val("D");
+                $("div#itemContainer"+atchFileDtlId).hide();
             });
         }
     }

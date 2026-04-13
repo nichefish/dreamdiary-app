@@ -100,10 +100,10 @@ public interface BaseClsfService<PostDto extends BaseClsfDto & Identifiable<Key>
         final HistoryType historyType = postDto instanceof HistoryActionModule historyAction
                 ? historyAction.resolveHistoryType()
                 : HistoryType.CHANGE;
-        final Integer fromHistoryNo = postDto instanceof HistoryActionModule historyAction
-                ? historyAction.getFromHistoryNo()
+        final Integer fromHistoryId = postDto instanceof HistoryActionModule historyAction
+                ? historyAction.getFromHistoryId()
                 : null;
-        BaseClsfHistoryHelper.publishHistoryEventIfSupported(this, historySnapshot, updatedEntity, historyType, fromHistoryNo);
+        BaseClsfHistoryHelper.publishHistoryEventIfSupported(this, historySnapshot, updatedEntity, historyType, fromHistoryId);
 
         // optional: 수정 후처리(dto)
         this.postModify(postDto, updatedDto);

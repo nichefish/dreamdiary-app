@@ -38,7 +38,7 @@ public final class BaseClsfHistoryHelper {
             final Entity beforeEntity,
             final Entity updatedEntity,
         final HistoryType historyType,
-        final Integer fromHistoryNo
+        final Integer fromHistoryId
     ) {
         if (!isHistoryModule(updatedEntity)) return;
 
@@ -49,7 +49,7 @@ public final class BaseClsfHistoryHelper {
                 beforeEntity,
                 updatedEntity,
                 historyType,
-                fromHistoryNo
+                fromHistoryId
         ));
     }
 

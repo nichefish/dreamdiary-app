@@ -41,7 +41,7 @@ public class CommentEntity
     @Builder.Default
     private static final ContentType CONTENT_TYPE = ContentType.COMMENT;
 
-    /** 댓글 번호 (PK) */
+    /** 댓글 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_no")

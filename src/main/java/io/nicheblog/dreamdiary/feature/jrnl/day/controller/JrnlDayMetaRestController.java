@@ -73,10 +73,10 @@ public class JrnlDayMetaRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayMetaDtlAjax(
-            final @PathVariable("metaNo") Integer metaNo
+            final @PathVariable("id") Integer id
     ) throws Exception {
 
-        final MetaDto retrievedDto = jrnlDayMetaService.getDtlDto(metaNo);
+        final MetaDto retrievedDto = jrnlDayMetaService.getDtlDto(id);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -86,17 +86,17 @@ public class JrnlDayMetaRestController
     /**
      * 저널 일자 메타가 존재하는 연도 목록 조회 (Ajax)
      *
-     * @param metaNo 메타 번호
+     * @param id 메타 ID
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.JRNL_DAY_META_YYS)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayMetaYyListAjax(
-            final @PathVariable("metaNo") Integer metaNo
+            final @PathVariable("id") Integer id
     ) {
 
-        final List<Integer> yyList = myJrnlDayMetaService.getMyYyListByMetaNo(metaNo);
+        final List<Integer> yyList = myJrnlDayMetaService.getMyYyListByMetaId(id);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

@@ -30,22 +30,22 @@ import javax.persistence.Table;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "ref_content_type='JRNL_DAY' AND del_yn='N'")
-@SQLDelete(sql = "UPDATE meta_content SET del_yn = 'Y' WHERE meta_content_no = ?")
+@SQLDelete(sql = "UPDATE meta_content SET del_yn = 'Y' WHERE id = ?")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class JrnlDayMetaContentEntity
         extends BaseAuditRegEntity {
 
-    /** 메타-컨텐츠 번호 (PK) */
+    /** 메타-컨텐츠 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "meta_content_no")
-    @Comment("메타-컨텐츠 번호 (PK)")
-    private Integer metaContentNo;
+    @Column(name = "id")
+    @Comment("메타-컨텐츠 ID")
+    private Integer id;
 
-    /** 참조 메타 번호 */
-    @Column(name = "ref_meta_no")
-    @Comment("참조 메타 번호")
-    private Integer refMetaNo;
+    /** 메타 ID */
+    @Column(name = "meta_id")
+    @Comment("메타 ID")
+    private Integer metaId;
 
     /** 참조 글 번호 */
     @Column(name = "ref_post_no")
@@ -59,7 +59,7 @@ public class JrnlDayMetaContentEntity
 
     /** 메타 정보 */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "ref_meta_no", referencedColumnName = "meta_no", updatable = false, insertable = false)
+    @JoinColumn(name = "meta_id", referencedColumnName = "id", updatable = false, insertable = false)
     @Fetch(FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     private MetaSmpEntity meta;

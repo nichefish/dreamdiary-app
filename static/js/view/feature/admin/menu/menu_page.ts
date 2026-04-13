@@ -50,9 +50,9 @@ const Page: Page = (function(): Page {
             const subMenuList = upperMenu.subMenuList;
             if (!Array.isArray(subMenuList) || subMenuList.length <1) return;
 
-            const menuNo = upperMenu.menuNo;
+            const id = upperMenu.id;
             subMenuList.forEach(function(subMenu): void {
-                cF.handlebars.appendTo(subMenu, "menu_sub", "menu_sub_"+menuNo);
+                cF.handlebars.appendTo(subMenu, "menu_sub", "menu_sub_"+id);
                 KTMenu.createInstances();
                 Page.drawSubMenu(subMenu);
             });

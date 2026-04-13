@@ -9,7 +9,7 @@
 -- 사용자 계정 정보 (user)
 -- @extends: BaseAtchEntity
 CREATE TABLE IF NOT EXISTS user (
-    user_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 고유 번호 (PK)',
+    user_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 고유 ID',
     -- ACCOUNT_BASIC_INFO
     user_id VARCHAR(20) COMMENT '로그인 ID',
     password VARCHAR(64) COMMENT '비밀번호',
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS user (
     reqst_yn CHAR(1) DEFAULT 'N' COMMENT '외부신청 여부 (Y/N)',
     cf_yn CHAR(1) DEFAULT 'N' COMMENT '사용자 승인 여부 (Y/N)',
     -- ATCH_FILE
-    atch_file_no INT COMMENT '첨부파일 번호',
+    atch_file_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS auth_role (
 -- 사용자 권한 (user_auth_role)
 -- @extends: BaseCrudEntity
 CREATE TABLE IF NOT EXISTS user_auth_role (
-    user_auth_role_no INT PRIMARY KEY AUTO_INCREMENT COMMENT '사용자 권한 번호 (PK)',
+    user_auth_role_no INT PRIMARY KEY AUTO_INCREMENT COMMENT '사용자 권한 ID',
     user_no INT COMMENT '사용자 고유 번호',
     auth_cd VARCHAR(50) COMMENT '권한 코드',
     -- AUDIT
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS user_auth_role (
 -- 사용자 계정 정보 :: 접속 IP (user_acs_ip)
 -- @extends: BaseCrudEntity
 CREATE TABLE IF NOT EXISTS user_acs_ip (
-    user_acs_ip_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 접속 IP 고유 번호 (PK)',
+    user_acs_ip_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 접속 IP 고유 ID',
     user_no INT COMMENT '사용자 고유 번호',
     acs_ip VARCHAR(20) COMMENT '접속 IP',
     -- AUDIT
@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS user_acs_ip (
 -- 사용자 프로필 정보 (user_profl)
 -- @extends: BaseAtchEntity
 CREATE TABLE IF NOT EXISTS user_profl (
-    user_profl_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 프로필 고유 번호 (PK)',
+    user_profl_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 프로필 고유 ID',
     user_no INT COMMENT '사용자 고유 번호',
     addr VARCHAR(500) COMMENT '주소',
     zipcode VARCHAR(20) COMMENT '우편번호',
@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS user_profl (
     lunar_yn CHAR(1) DEFAULT 'N' COMMENT '음력 여부 (Y/N)',
     profl_cn VARCHAR(2000) COMMENT '프로필(자기소개)',
     -- ATCH_FILE
-    atch_file_no INT COMMENT '첨부파일 번호',
+    atch_file_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS user_profl (
 -- 사용자 인사정보 (user_emplym)
 -- @extends: BaseAtchEntity
 CREATE TABLE IF NOT EXISTS user_emplym (
-    user_emplym_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 인사정보 고유 번호 (PK)',
+    user_emplym_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 인사정보 고유 ID',
     user_no INT COMMENT '사용자 고유 번호',
     user_nm VARCHAR(50) COMMENT '직원명',
     emplym_cttpc VARCHAR(20) COMMENT '연락처',        -- 기본 연락처
@@ -139,7 +139,7 @@ CREATE TABLE IF NOT EXISTS user_emplym (
     acnt_no VARCHAR(50) COMMENT '급여 계좌번호',
     emplym_cn VARCHAR(2000) COMMENT '인사정보 비고',
     -- ATCH_FILE
-    atch_file_no INT COMMENT '첨부파일 번호',
+    atch_file_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',

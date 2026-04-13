@@ -70,27 +70,27 @@ public class HistoryFacade {
             final ContentType contentType,
             final String userId,
             final Integer key,
-            final Integer historyNo
+            final Integer historyId
     ) throws Exception {
         final HistoryStrategy<Dto> strategy = this.getRequiredStrategy(contentType);
         final Dto currentDto = strategy.getOwnedDto(userId, key);
-        final Optional<HistoryDto> history = historyService.getHistory(currentDto.getClsfKey(), historyNo);
+        final Optional<HistoryDto> history = historyService.getHistory(currentDto.getClsfKey(), historyId);
         if (history.isEmpty()) {
             throw new IllegalArgumentException("복구할 이력이 없습니다.");
         }
 
-        return strategy.updtCn(key, history.get().getCn(), HistoryType.RESTORE, historyNo);
+        return strategy.updtCn(key, history.get().getCn(), HistoryType.RESTORE, historyId);
     }
 
     public <Dto extends BaseClsfDto> boolean deleteHistoryByUser(
             final ContentType contentType,
             final String userId,
             final Integer key,
-            final Integer historyNo
+            final Integer historyId
     ) throws Exception {
         final HistoryStrategy<Dto> strategy = this.getRequiredStrategy(contentType);
         final Dto currentDto = strategy.getOwnedDto(userId, key);
-        return historyService.deleteHistory(currentDto.getClsfKey(), historyNo);
+        return historyService.deleteHistory(currentDto.getClsfKey(), historyId);
     }
 
     public <Dto extends BaseClsfDto> boolean deleteAllHistoryByUser(

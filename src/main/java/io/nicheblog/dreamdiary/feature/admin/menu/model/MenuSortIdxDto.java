@@ -23,14 +23,14 @@ public class MenuSortIdxDto
         implements Identifiable<Integer>, Sortable {
 
     /** 메뉴 번호 */
-    private Integer menuNo;
+    private Integer id;
     /** 상위 메뉴 번호 (계층 보호/검증용) */
-    private Integer upperMenuNo;
+    private Integer upperMenuId;
     /** idx */
     private Integer idx;
 
     @Override
     public Integer getKey() {
-        return this.menuNo;
+        return this.id;
     }
 }

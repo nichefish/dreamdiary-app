@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS board_def (
 -- @implements: TagEmbed, CommentEmbed, ManagtEmbed, ViewerEmbed
 CREATE TABLE IF NOT EXISTS board_post(
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 번호 (PK)',
+    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
     content_type VARCHAR(30) COMMENT '게시판 코드 (PK)',
     -- POST
     title VARCHAR(200) COMMENT '제목',
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS board_post(
     managtr_id VARCHAR(20) COMMENT '작업자 ID',
     managt_dt DATETIME COMMENT '작업일시',
     -- ATCH_FILE
-    atch_file_no INT COMMENT '첨부파일 번호',
+    atch_file_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',

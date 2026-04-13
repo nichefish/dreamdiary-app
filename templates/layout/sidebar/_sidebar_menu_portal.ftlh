@@ -4,7 +4,7 @@
  -->
 <#import "/layout/sidebar/_sidebar_menu_template.ftlh" as menu >
 
-<#assign upperMenuNo = (siteAcsInfo.upperMenuNo)!>
+<#assign upperMenuId = (siteAcsInfo.upperMenuId)!>
 
 <!--begin::sidebar menu-->
 <div class="app-sidebar-menu overflow-hidden flex-column-fluid">
@@ -28,10 +28,10 @@
                 <#list userMenuList![] as userMenu>
                     <#list userMenu.subMenuList![] as subMenu>
                         <#if subMenu.menuSubExtendTyCd == "NO_SUB">
-                            <@menu.noSubMenu upperMenuNo=upperMenuNo menu=subMenu />
+                            <@menu.noSubMenu upperMenuId=upperMenuId menu=subMenu />
                         </#if>
                         <#if subMenu.menuSubExtendTyCd == "LIST">
-                            <@menu.listSubMenu upperMenuNo=upperMenuNo menu=subMenu />
+                            <@menu.listSubMenu upperMenuId=upperMenuId menu=subMenu />
                         </#if>
                         <#if subMenu.menuSubExtendTyCd == "EXTEND">
                             <div>${menu.menuNm!}</div>
@@ -40,11 +40,11 @@
                             </#list>
                         </#if>
                         <#if subMenu.menuSubExtendTyCd == "COLLAPSE">
-                            <@menu.collapseSubMenu upperMenuNo=upperMenuNo menu=subMenu />
+                            <@menu.collapseSubMenu upperMenuId=upperMenuId menu=subMenu />
                         </#if>
                         <#if subMenu.menuSubExtendTyCd == "BOARD">
                             <!-- BOARD -->
-                            <@menu.boardMenu upperMenuNo=upperMenuNo menu=subMenu />
+                            <@menu.boardMenu upperMenuId=upperMenuId menu=subMenu />
                         </#if>
                     </#list>
                 </#list>

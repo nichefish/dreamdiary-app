@@ -34,7 +34,7 @@ public class UserDto
         extends BaseClsfDto
         implements Identifiable<Integer>, AtchFileCmpstnModule {
 
-    /** 사용자 고유 번호 (PK) */
+    /** 사용자 고유 ID */
     private Integer userNo;
     /** 아이디 */
     @NotEmpty

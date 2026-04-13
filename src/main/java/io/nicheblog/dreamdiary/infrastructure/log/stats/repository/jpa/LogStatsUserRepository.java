@@ -34,7 +34,7 @@ public interface LogStatsUserRepository
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    @Query("SELECT t.userId as userId, u.nickNm as userNm, count(t.logActvtyNo) as actvtyCnt " +
+    @Query("SELECT t.userId as userId, u.nickNm as userNm, count(t.id) as actvtyCnt " +
             "FROM LogActvtyEntity t " +
             "INNER JOIN FETCH UserEntity u ON t.userId = u.userId " +
             "WHERE t.logDt between :searchStartDt and :searchEndDt and u.nickNm != null " +
@@ -54,7 +54,7 @@ public interface LogStatsUserRepository
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    @Query("SELECT t.userId as userId, u.nickNm as userNm, count(t.logActvtyNo) as actvtyCnt " +
+    @Query("SELECT t.userId as userId, u.nickNm as userNm, count(t.id) as actvtyCnt " +
             "FROM LogActvtyEntity t " +
             "LEFT JOIN FETCH UserEntity u ON t.userId = u.userId " +
             "WHERE t.logDt between :searchStartDt and :searchEndDt and u.nickNm is null " +

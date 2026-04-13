@@ -30,22 +30,22 @@ import java.util.List;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE menu SET del_yn = 'Y' WHERE menu_no = ?")
+@SQLDelete(sql = "UPDATE menu SET del_yn = 'Y' WHERE id = ?")
 public class MenuEntity
         extends BaseAuditEntity
         implements Usable, Sortable {
 
-    /** 메뉴 번호 (PK) */
+    /** 메뉴 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "menu_no")
-    @Comment("메뉴 번호 (PK)")
-    private Integer menuNo;
+    @Column(name = "id")
+    @Comment("메뉴 ID")
+    private Integer id;
 
     /** 상위메뉴 ID */
-    @Column(name = "upper_menu_no")
+    @Column(name = "upper_menu_id")
     @Comment("상위 메뉴 번호")
-    private Integer upperMenuNo;
+    private Integer upperMenuId;
 
     /** 메뉴 구분 코드 */
     @Column(name = "menu_ty_cd")
@@ -126,7 +126,7 @@ public class MenuEntity
 
     /** 셀프 참조 :: 상위메뉴 조회 */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "upper_menu_no", referencedColumnName = "menu_no", insertable = false, updatable = false)
+    @JoinColumn(name = "upper_menu_id", referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(value = FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("상위메뉴 조회")
@@ -134,7 +134,7 @@ public class MenuEntity
 
     /** 셀프 참조 :: 하위메뉴 목록 조회 */
     @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "upper_menu_no", referencedColumnName = "menu_no", insertable = false, updatable = false)
+    @JoinColumn(name = "upper_menu_id", referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 10)
     @OrderBy("idx ASC")

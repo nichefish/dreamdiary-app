@@ -26,7 +26,7 @@ public class TagContentDto
         extends BaseCrudDto
         implements Identifiable<Integer>, Comparable<TagContentDto> {
 
-    /** 태그-컨텐츠 번호 (PK) */
+    /** 태그-컨텐츠 ID */
     @Positive
     private Integer id;
 

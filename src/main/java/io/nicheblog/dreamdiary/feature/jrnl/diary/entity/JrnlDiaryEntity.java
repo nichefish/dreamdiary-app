@@ -47,7 +47,7 @@ public class JrnlDiaryEntity
     @Builder.Default
     private static final ContentType CONTENT_TYPE = ContentType.JRNL_DIARY;
 
-    /** 저널 꿈 고유 번호 (PK) */
+    /** 저널 꿈 고유 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_no")

@@ -25,9 +25,9 @@ import javax.validation.constraints.Size;
 public class HistoryDto
         extends BaseAuditRegDto {
 
-    /** 이력 번호 (PK) */
+    /** 이력 ID */
     @Positive
-    private Integer historyNo;
+    private Integer id;
 
     /** 참조 글 번호 */
     @Positive
@@ -42,7 +42,7 @@ public class HistoryDto
     @Builder.Default
     private String historyType = HistoryType.CHANGE.key;
 
-    private Integer fromHistoryNo;
+    private Integer fromHistoryId;
 
     private String previewCn;
 

@@ -26,8 +26,8 @@ public class AtchFileDto
         extends BaseCrudDto
         implements Identifiable<Integer> {
 
-    /** 첨부파일 번호 (PK) */
-    private Integer atchFileNo;
+    /** 첨부파일 ID */
+    private Integer id;
 
     /** 첨부파일 목록 */
     private List<AtchFileDtlDto> atchFileList;
@@ -36,6 +36,6 @@ public class AtchFileDto
 
     @Override
     public Integer getKey() {
-        return this.atchFileNo;
+        return this.id;
     }
 }

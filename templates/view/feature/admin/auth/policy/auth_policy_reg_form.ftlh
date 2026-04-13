@@ -11,7 +11,7 @@
     <div class="card-body">
         <#--begin::Form-->
         <form name="authPolicyForm" id="authPolicyForm" class="form">
-            <input type="hidden" name="authPolicyNo" value="${authPolicy.authPolicyNo!}">
+            <input type="hidden" name="id" value="${authPolicy.id!}">
             <#--begin::Row-->
             <div class="row mb-4">
                 <div class="col-xl-2 col-form-label fs-6 fw-bold">

@@ -51,12 +51,12 @@ public class LogActvtyEntity
     // 장치 정보 (모바일 또는 데스크톱, 화면 해상도 등)
     // 클릭 이벤트 (링크, 버튼, 이미지 등)
 
-    /** 로그 고유 번호 (PK) */
+    /** 로그 고유 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "log_actvty_no")
+    @Column(name = "id")
     @Comment("로그 고유 ID (key)")
-    private Integer logActvtyNo;
+    private Integer id;
 
     /** 작업자 ID */
     @CreatedBy

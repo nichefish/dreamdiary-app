@@ -46,11 +46,11 @@ public class UserEmplymEntity
         if (this.rankCdInfo != null) this.rankNm = this.rankCdInfo.getDtlCdNm();
     }
 
-    /** 사용자 인사정보 번호 (PK) */
+    /** 사용자 인사정보 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_emplym_no")
-    @Comment("사용자 인사정보 번호 (PK)")
+    @Comment("사용자 인사정보 ID")
     private Integer userEmplymNo;
 
     /** 사용자 정보 (FK) */

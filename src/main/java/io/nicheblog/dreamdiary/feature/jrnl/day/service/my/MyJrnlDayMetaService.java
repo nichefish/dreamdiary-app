@@ -37,11 +37,11 @@ public class MyJrnlDayMetaService {
     /**
      * 특정 메타가 존재하는 연도 목록을 반환합니다.
      *
-     * @param metaNo 메타 번호
+     * @param metaId 메타 ID
      * @return 연도 목록
      */
-    public List<Integer> getMyYyListByMetaNo(final Integer metaNo) {
+    public List<Integer> getMyYyListByMetaId(final Integer metaId) {
         final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDayMetaService.getYyListByMetaNoAndUser(metaNo, userId);
+        return jrnlDayMetaService.getYyListByMetaIdAndUser(metaId, userId);
     }
 }

@@ -67,7 +67,7 @@ public class JrnlDiaryPostDto
     @Builder.Default
     private String historyType = HistoryType.CHANGE.key;
 
-    private Integer fromHistoryNo;
+    private Integer fromHistoryId;
 
     /* ----- */
 

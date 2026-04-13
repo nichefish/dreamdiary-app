@@ -51,14 +51,14 @@ public class HistoryService {
      * @param refKey 게시물 복합 키
      * @param cn 작업 시점 내용 스냅샷
      * @param historyType 이력 타입
-     * @param fromHistoryNo 복구 원본 이력 번호
+     * @param fromHistoryId 복구 원본 이력 번호
      */
     @Transactional
-    public void addHistory(final BaseClsfKey refKey, final String cn, final HistoryType historyType, final Integer fromHistoryNo) {
+    public void addHistory(final BaseClsfKey refKey, final String cn, final HistoryType historyType, final Integer fromHistoryId) {
         if (refKey == null || refKey.getPostNo() == null || refKey.getContentType() == null) return;
         if (AuthUtils.getLgnUserId() == null) return;
 
-        final HistoryEntity history = new HistoryEntity(refKey, cn, historyType, fromHistoryNo);
+        final HistoryEntity history = new HistoryEntity(refKey, cn, historyType, fromHistoryId);
         historyRepository.save(history);
     }
 
@@ -77,10 +77,10 @@ public class HistoryService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<HistoryDto> getHistory(final BaseClsfKey refKey, final Integer historyNo) throws Exception {
-        if (refKey == null || refKey.getPostNo() == null || refKey.getContentType() == null || historyNo == null) return Optional.empty();
+    public Optional<HistoryDto> getHistory(final BaseClsfKey refKey, final Integer historyId) throws Exception {
+        if (refKey == null || refKey.getPostNo() == null || refKey.getContentType() == null || historyId == null) return Optional.empty();
 
-        final Optional<HistoryEntity> history = historyRepository.findByHistoryNoAndRefPostNoAndRefContentType(historyNo, refKey.getPostNo(), refKey.getContentType());
+        final Optional<HistoryEntity> history = historyRepository.findByIdAndRefPostNoAndRefContentType(historyId, refKey.getPostNo(), refKey.getContentType());
         if (history.isEmpty()) return Optional.empty();
 
         final HistoryDto dto = historyMapstruct.toDto(history.get());
@@ -89,10 +89,10 @@ public class HistoryService {
     }
 
     @Transactional
-    public boolean deleteHistory(final BaseClsfKey refKey, final Integer historyNo) {
-        if (refKey == null || refKey.getPostNo() == null || refKey.getContentType() == null || historyNo == null) return false;
+    public boolean deleteHistory(final BaseClsfKey refKey, final Integer historyId) {
+        if (refKey == null || refKey.getPostNo() == null || refKey.getContentType() == null || historyId == null) return false;
 
-        final Optional<HistoryEntity> history = historyRepository.findByHistoryNoAndRefPostNoAndRefContentType(historyNo, refKey.getPostNo(), refKey.getContentType());
+        final Optional<HistoryEntity> history = historyRepository.findByIdAndRefPostNoAndRefContentType(historyId, refKey.getPostNo(), refKey.getContentType());
         if (history.isEmpty()) return false;
 
         historyRepository.delete(history.get());

@@ -36,16 +36,16 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE viewer SET del_yn = 'Y' WHERE viewer_no = ?")
+@SQLDelete(sql = "UPDATE viewer SET del_yn = 'Y' WHERE id = ?")
 public class ViewerEntity
         extends BaseAuditRegEntity {
 
-    /** 열람자 번호 (PK) */
+    /** 열람자 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "viewer_no")
-    @Comment("열람자 번호 (PK)")
-    private Integer viewerNo;
+    @Column(name = "id")
+    @Comment("열람자 ID")
+    private Integer id;
 
     /** 참조 글번호 */
     @Column(name = "ref_post_no")

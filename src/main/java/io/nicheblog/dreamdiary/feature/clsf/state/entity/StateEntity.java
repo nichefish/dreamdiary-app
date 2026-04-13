@@ -31,12 +31,12 @@ import javax.persistence.*;
 public class StateEntity
         extends BaseCrudEntity {
 
-    /** 상태 번호 (PK) */
+    /** 상태 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "state_no")
-    @Comment("상태 번호 (PK)")
-    private Integer stateNo;
+    @Column(name = "id")
+    @Comment("상태 ID")
+    private Integer id;
 
     /** 참조 글 번호 */
     @Column(name = "ref_post_no")

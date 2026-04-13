@@ -45,7 +45,7 @@ public class JrnlSbjctEntity
     @Builder.Default
     private static final ContentType CONTENT_TYPE = ContentType.JRNL_SBJCT;
 
-    /** 저널 주제 고유 번호 (PK) */
+    /** 저널 주제 고유 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_no")

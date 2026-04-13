@@ -43,14 +43,14 @@ dF.LogActvty = (function(): dfModule {
 
         /**
          * 상세 모달 호출
-         * @param {string|number} logActvtyNo - 조회할 로그 번호.
+         * @param {string|number} logActvtyId - 조회할 로그 번호.
          */
-        dtlModal: function(logActvtyNo: string|number): void {
+        dtlModal: function(logActvtyId: string|number): void {
             event.stopPropagation();
-            if (isNaN(Number(logActvtyNo))) return;
+            if (isNaN(Number(logActvtyId))) return;
 
             const url: string = Url.LOG_ACTVTY_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "logActvtyNo": logActvtyNo };
+            const ajaxData: Record<string, any> = { "logActvtyId": logActvtyId };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });

@@ -20,11 +20,11 @@ import lombok.Setter;
 @EqualsAndHashCode(of = {"userId"})
 public class SchdulPrtcpntDto {
 
-    /** 일정 참여자 번호 (PK) */
-    private Integer schdulPrtcpntNo;
+    /** 일정 참여자 ID */
+    private Integer id;
 
-    /** 참조 글 번호 */
-    private Integer refPostNo;
+    /** 일정 ID */
+    private Integer schdulId;
 
     /** 참석자 ID */
     private String userId;

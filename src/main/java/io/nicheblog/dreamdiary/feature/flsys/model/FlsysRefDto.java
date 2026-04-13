@@ -22,7 +22,7 @@ import javax.validation.constraints.Size;
 @EqualsAndHashCode
 public class FlsysRefDto {
 
-    /** 사용자 고유 ID (PK) */
+    /** 사용자 고유 ID */
     @Positive
     private Integer flsysRefNo;
 

@@ -90,8 +90,8 @@ public class MetaContentService
         final List<MetaContentEntity> entityList = this.getSelf().getListEntity(param);
         return entityList.stream()
                 .peek(entity -> {
-                    final Integer metaNo = entity.getRefMetaNo();
-                    final MetaSmpEntity meta = this.getSelf().getMetaSmpDtlEntity(metaNo);
+                    final Integer metaId = entity.getMetaId();
+                    final MetaSmpEntity meta = this.getSelf().getMetaSmpDtlEntity(metaId);
                     entity.setMeta(meta);
                     entity.setMetaNm(meta.getMetaNm());
                     entity.setCtgr(meta.getCtgr());
@@ -103,12 +103,12 @@ public class MetaContentService
     /**
      * 메타 조회
      *
-     * @param metaNo 메타 번호
+     * @param metaId 메타 ID
      * @return {@link List} -- 메타 목록
      */
-    @Cacheable(value = "metaSmpDtlEntity", key = "#metaNo.toString()")
-    public MetaSmpEntity getMetaSmpDtlEntity(final Integer metaNo) {
-        final Optional<MetaSmpEntity> rsWrapper = metaSmpRepository.findById(metaNo);
+    @Cacheable(value = "metaSmpDtlEntity", key = "#metaId.toString()")
+    public MetaSmpEntity getMetaSmpDtlEntity(final Integer metaId) {
+        final Optional<MetaSmpEntity> rsWrapper = metaSmpRepository.findById(metaId);
 
         return rsWrapper.orElse(null);
     }
@@ -126,7 +126,7 @@ public class MetaContentService
 
         return entityList.stream()
                 .map(meta -> MetaDto.builder()
-                        .metaNo(meta.getRefMetaNo())
+                        .id(meta.getMetaId())
                         .metaNm(meta.getMetaNm())
                         .ctgr(meta.getCtgr())
                         .value(meta.getValue())
@@ -167,13 +167,13 @@ public class MetaContentService
     @Transactional
     public List<MetaContentEntity> addMetaContents(final BaseClsfKey clsfKey, final List<MetaEntity> rsList) throws Exception {
         final List<MetaContentEntity> metaContentList = rsList.stream()
-                .map(meta -> new MetaContentEntity(meta.getMetaNo(), clsfKey, meta.getValue(), meta.getUnit()))
+                .map(meta -> new MetaContentEntity(meta.getId(), clsfKey, meta.getValue(), meta.getUnit()))
                 .collect(Collectors.toList());
         return this.registAll(metaContentList);
     }
 
-    public List<MetaContentDto> getMyListDtoByRefMetaNo(Integer refMetaNo, String lgnUserId) throws Exception {
+    public List<MetaContentDto> getMyListDtoByMetaId(final Integer metaId, final String lgnUserId) throws Exception {
 
-        return this.getSelf().getListDto(MetaSearchParam.builder().refMetaNo(refMetaNo).lgnUserId(lgnUserId).build());
+        return this.getSelf().getListDto(MetaSearchParam.builder().metaId(metaId).lgnUserId(lgnUserId).build());
     }
 }

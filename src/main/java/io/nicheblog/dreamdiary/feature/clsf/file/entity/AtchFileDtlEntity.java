@@ -30,23 +30,23 @@ import javax.persistence.*;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE atch_file_dtl SET del_yn = 'Y' WHERE atch_file_dtl_no = ?")
+@SQLDelete(sql = "UPDATE atch_file_dtl SET del_yn = 'Y' WHERE id = ?")
 public class AtchFileDtlEntity
         extends BaseCrudEntity {
 
-    /** 첨부파일 상세 번호 (PK) */
+    /** 첨부파일 상세 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "atch_file_dtl_no")
-    private Integer atchFileDtlNo;
+    @Column(name = "id")
+    private Integer id;
 
-    /** 첨부파일 정보 */
-    @Column(name = "atch_file_no")
-    private Integer atchFileNo;
+    /** 첨부파일 번호 (FK) */
+    @Column(name = "atch_file_id")
+    private Integer atchFileId;
 
     /** 첨부파일 정보 */
     @ManyToOne
-    @JoinColumn(name = "atch_file_no", insertable = false, updatable = false)
+    @JoinColumn(name = "atch_file_id", insertable = false, updatable = false)
     private AtchFileEntity atchFileInfo;
 
     /** 파일 순번 */

@@ -26,13 +26,13 @@ public class MetaContentDto
         extends BaseCrudDto
         implements Identifiable<Integer>, Comparable<MetaContentDto> {
 
-    /** 메타-컨텐츠 번호 (PK) */
+    /** 메타-컨텐츠 ID */
     @Positive
-    private Integer metaContentNo;
+    private Integer id;
 
-    /** 참조 메타 번호 */
+    /** 메타 ID */
     @Positive
-    private Integer refMetaNo;
+    private Integer metaId;
 
     /** 참조 글 번호 */
     @Positive
@@ -80,6 +80,6 @@ public class MetaContentDto
 
     @Override
     public Integer getKey() {
-        return this.metaContentNo;
+        return this.id;
     }
 }

@@ -40,19 +40,19 @@ public class MyHistoryFacade {
     public <Dto extends BaseClsfDto> Dto restoreMyHistory(
             final ContentType contentType,
             final Integer key,
-            final Integer historyNo
+            final Integer historyId
     ) throws Exception {
         final String userId = AuthUtils.requireLgnUserId();
-        return historyFacade.restoreHistoryByUser(contentType, userId, key, historyNo);
+        return historyFacade.restoreHistoryByUser(contentType, userId, key, historyId);
     }
 
     public boolean deleteMyHistory(
             final ContentType contentType,
             final Integer key,
-            final Integer historyNo
+            final Integer historyId
     ) throws Exception {
         final String userId = AuthUtils.requireLgnUserId();
-        return historyFacade.deleteHistoryByUser(contentType, userId, key, historyNo);
+        return historyFacade.deleteHistoryByUser(contentType, userId, key, historyId);
     }
 
     public boolean deleteAllMyHistory(

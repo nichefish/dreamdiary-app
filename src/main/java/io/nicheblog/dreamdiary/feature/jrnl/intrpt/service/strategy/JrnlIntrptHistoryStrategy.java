@@ -40,9 +40,9 @@ public class JrnlIntrptHistoryStrategy implements HistoryStrategy<JrnlIntrptDto>
             final Integer key,
             final String cn,
             final HistoryType historyType,
-            final Integer fromHistoryNo
+            final Integer fromHistoryId
     ) throws Exception {
-        return jrnlIntrptService.updtCn(key, cn, historyType, fromHistoryNo);
+        return jrnlIntrptService.updtCn(key, cn, historyType, fromHistoryId);
     }
 
     @Override

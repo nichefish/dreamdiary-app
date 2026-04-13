@@ -117,12 +117,12 @@ public class JrnlDaySpec
                     predicate.add(builder.equal(tagContentJoin.get("regstrId"), regstrId));
                     predicate.add(builder.equal(tagContentJoin.get("tagId"), value));
                     continue;
-                case "metaNo":
+                case "metaId":
                     // 특정 메타 지칭된 일자만 조회
                     final Join<JrnlDayEntity, MetaEmbed> metaJoin = root.join("meta", JoinType.INNER);
                     final Join<MetaEmbed, MetaContentEntity> metaContentJoin = metaJoin.join("list", JoinType.INNER);
                     predicate.add(builder.equal(metaContentJoin.get("regstrId"), regstrId));
-                    predicate.add(builder.equal(metaContentJoin.get("refMetaNo"), value));
+                    predicate.add(builder.equal(metaContentJoin.get("metaId"), value));
                     continue;
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색

@@ -55,11 +55,11 @@ public class UserEntity
                 .collect(Collectors.toList());
     }
     
-    /** 사용자 번호 (PK) */
+    /** 사용자 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_no")
-    @Comment("사용자 번호 (PK)")
+    @Comment("사용자 ID")
     private Integer userNo;
 
     /** 사용자 아이디 */

@@ -67,7 +67,7 @@ public class JrnlDayRestController
             case CAL -> myJrnlDayCalService.getSchdulTotalCalList(searchParam);
             case DAILY -> myJrnlDayQueryService.getMyStdrdDaysDtoEnriched(searchParam);
             case WEEKLY -> myJrnlDayQueryService.getMyWeeklyListDtoEnriched(searchParam);
-            case SEARCH -> myJrnlDayQueryService.getMyListDtoByMetaNoEnriched(searchParam);
+            case SEARCH -> myJrnlDayQueryService.getMyListDtoByMetaIdEnriched(searchParam);
         };
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;

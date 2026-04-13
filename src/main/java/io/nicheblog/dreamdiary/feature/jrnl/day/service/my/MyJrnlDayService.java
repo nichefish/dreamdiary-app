@@ -79,11 +79,11 @@ public class MyJrnlDayService {
      * @return {@link List} -- 조회된 목록
      */
     @Transactional(readOnly = true)
-    public List<JrnlDayDto> getMyListDtoByMetaNo(final JrnlDaySearchParam searchParam) throws Exception {
+    public List<JrnlDayDto> getMyListDtoByMetaId(final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
         final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDayService.getListDtoByMetaNoAndUser(userId, searchParam);
+        return jrnlDayService.getListDtoByMetaIdAndUser(userId, searchParam);
     }
 
     /**
