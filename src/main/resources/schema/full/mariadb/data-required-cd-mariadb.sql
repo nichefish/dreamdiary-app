@@ -76,3 +76,4 @@ INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('TEXT_
 INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('TEXT_CLASS_CD', 'MUTED', 'MUTED', 'text-muted', '9');
 INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('TEXT_CLASS_CD', 'DIALOG', 'DIALOG', 'text-dialog', '10');
 INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('TEXT_CLASS_CD', 'NOTI', 'NOTI', 'text-noti', '11');
+INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('TEXT_CLASS_CD', 'BURNT', 'BURNT', 'text-burnt', '12');
