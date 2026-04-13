@@ -226,6 +226,7 @@ public class JrnlDayTagService
      */
     public Map<String, List<TagDto>> getYyMnthSizedGroupListDtoByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
         final List<TagDto> tagList = this.getSelf().getYyMnthSizedListDtoByUser(AuthUtils.requireUserId(userId), yy, mnth);
+        tagProfileService.applyVisualSemantic(tagList, ContentType.JRNL_DAY);
         return tagList.stream().collect(Collectors.groupingBy(TagDto::getCtgr));
     }
 
@@ -238,6 +239,7 @@ public class JrnlDayTagService
      */
     public Map<String, List<TagDto>> getWeeklySizedGroupListDtoByUser(final String userId, final String weekStartDt) throws Exception {
         final List<TagDto> tagList = this.getSelf().getWeeklySizedListDtoByUser(AuthUtils.requireUserId(userId), weekStartDt);
+        tagProfileService.applyVisualSemantic(tagList, ContentType.JRNL_DAY);
         return tagList.stream().collect(Collectors.groupingBy(TagDto::getCtgr));
     }
 

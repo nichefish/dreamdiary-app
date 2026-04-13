@@ -79,9 +79,9 @@ dF.JrnlIntrptTag = (function(): dfModule {
          * @param {string|number} tagId - 조회할 태그 ID.
          * @param tagNm 태그 이름
          */
-        select: function(tagId: string|number, tagNm: string): void {
+        select: function(tagId: string|number, tagNm: string, ctgr: string = ""): void {
             if (dF.JrnlDayTag?.isContextMenuEnabled?.()) {
-                dF.JrnlDayTag.openContextMenu(tagId, tagNm, function(): void {
+                dF.JrnlDayTag.openContextMenu(tagId, tagNm, ctgr, function(): void {
                     dF.JrnlIntrptTag.dtlModal(tagId, tagNm);
                 }, "JRNL_INTRPT");
                 return;

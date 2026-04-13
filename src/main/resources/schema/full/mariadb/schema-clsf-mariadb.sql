@@ -126,14 +126,14 @@ CREATE TABLE IF NOT EXISTS tag_content (
 ) COMMENT = '태그-컨텐츠';
 
 -- 태그 프로필(tag_profile)
--- @extends: BaseAuditEntity
+-- @extends: BaseAuditRegEntity
 CREATE TABLE IF NOT EXISTS tag_profile (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '태그 프로필 ID (PK)',
     tag_id INT NOT NULL COMMENT '태그 ID',
     content_type VARCHAR(50) NOT NULL COMMENT '컨텐츠 타입',
     --
     cn LONGTEXT COMMENT '내용',
-    text_semantic VARCHAR(30) NOT NULL DEFAULT 'DEFAULT' COMMENT '시각 의미',
+    text_class VARCHAR(30) NULL COMMENT '시각 의미 (NULL=카테고리/기본 상속)',
     -- AUDIT
     regstr_id VARCHAR(20) COMMENT '등록자 ID',
     reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
@@ -143,6 +143,24 @@ CREATE TABLE IF NOT EXISTS tag_profile (
     UNIQUE KEY uk_tag_profile (tag_id, content_type, regstr_id),
     INDEX (content_type)
 ) COMMENT = '태그 프로필';
+
+-- 태그 카테고리 프로필(tag_category_profile)
+-- @extends: BaseAuditRegEntity
+CREATE TABLE IF NOT EXISTS tag_category_profile (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '태그 카테고리 프로필 ID (PK)',
+    tag_category_id INT NOT NULL COMMENT '태그 카테고리 ID',
+    content_type VARCHAR(50) NOT NULL COMMENT '컨텐츠 타입',
+    --
+    text_class VARCHAR(30) NOT NULL DEFAULT 'DEFAULT' COMMENT '시각 의미',
+    -- AUDIT
+    regstr_id VARCHAR(20) COMMENT '등록자 ID',
+    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
+    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    -- CONSTRAINT
+    FOREIGN KEY (tag_category_id) REFERENCES tag_category(id),
+    UNIQUE KEY uk_tag_category_profile (tag_category_id, content_type, regstr_id),
+    INDEX (content_type)
+) COMMENT = '태그 카테고리 프로필';
 
 -- 메타(meta)
 -- @extends: BaseCrudEntity

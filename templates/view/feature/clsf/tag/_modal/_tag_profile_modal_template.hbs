@@ -5,27 +5,57 @@
 <script type="text/x-handlebars-template" id="tag_profile_modal_template">
     <form id="tagProfileForm" method="post">
         <input type="hidden" name="id" value="{{id}}">
+        <input type="hidden" name="categoryProfileId" value="{{categoryProfileId}}">
         <input type="hidden" name="tagId" value="{{tagId}}">
+        <input type="hidden" name="tagCategoryId" value="{{tagCategoryId}}">
         <input type="hidden" name="contentType" value="{{contentType}}">
 
-        <div class="d-flex align-items-center gap-2 mb-4">
+        <div class="d-flex align-items-center gap-2 mb-5">
             <span class="badge badge-light-primary">{{contentTypeLabel}}</span>
-            <span class="fs-6 fw-bold text-primary"># {{tagNm}}</span>
+            {{#if (exists ctgr)}}
+                <span class="fs-7 text-noti">[{{ctgr}}]</span>
+            {{/if}}
+            <span class="fs-6 fw-bold text-primary"><span>#</span>{{tagNm}}</span>
         </div>
 
-        <div class="mb-4">
-            <label for="tagTextClassCd" class="form-label fw-bold">태그클라우드 표시 색상</label>
-            <select id="tagTextClassCd" name="textClassCd" class="form-select form-select-solid">
-                <#list TEXT_CLASS_CD![] as item>
-                    <option value="${item.dtlCd!}"
-                            data-text-class="${item.dc!}"
-                            class="${item.dc!}"
-                            {{#if (equals textClassCd "${item.dtlCd!}")}}selected{{/if}}>
-                        ${item.dtlCdNm!}
+        <div class="row">
+            <div class="col-6 mb-3 {{#if tagCategoryId}}{{else}}opacity-50{{/if}}" {{#if tagCategoryId}}{{else}}style="filter: grayscale(1); pointer-events: none;" aria-disabled="true"{{/if}}>
+                <label for="tagCategoryTextClassCd" class="form-label fw-bold">
+                    <span id="tagCategoryColorPreview">{{#if tagCategoryId}}[{{ctgr}}]{{/if}}</span> 카테고리 태그 색상
+                </label>
+                <select id="tagCategoryTextClassCd" name="categoryTextClassCd" class="form-select form-select-solid" {{#if tagCategoryId}}{{else}}disabled{{/if}}>
+                    <#list TEXT_CLASS_CD![] as item>
+                        <option value="${item.dtlCd!}"
+                                data-text-class="${item.dc!}"
+                                class="${item.dc!}"
+                                {{#if (equals categoryTextClassCd "${item.dtlCd!}")}}selected{{/if}}>
+                            ${item.dtlCdNm!}
+                        </option>
+                    </#list>
+                </select>
+                {{#if tagCategoryId}}{{else}}
+                    <div class="fs-8 text-muted mt-1 fw-bold">이 태그는 카테고리가 없어 설정할 수 없습니다.</div>
+                {{/if}}
+            </div>
+
+            <div class="col-6 mb-4">
+                <label for="tagTextClassCd" class="form-label fw-bold"><span id="tagColorPreview"><span>#</span>{{tagNm}}</span> 개별 태그 색상</label>
+                <select id="tagTextClassCd" name="textClassCd" class="form-select form-select-solid">
+                    <option value="" data-text-class="" class="" {{#unless textClassCd}}selected{{/unless}}>
+                        {{#if tagCategoryId}}카테고리와 동일 (상속){{else}}기본 (카테고리 없음){{/if}}
                     </option>
-                </#list>
-            </select>
+                    <#list TEXT_CLASS_CD![] as item>
+                        <option value="${item.dtlCd!}"
+                                data-text-class="${item.dc!}"
+                                class="${item.dc!}"
+                                {{#if (equals textClassCd "${item.dtlCd!}")}}selected{{/if}}>
+                            ${item.dtlCdNm!}
+                        </option>
+                    </#list>
+                </select>
+            </div>
         </div>
+
 
         <label for="tagProfileCn" class="form-label fw-bold">프로필</label>
         <textarea id="tagProfileCn" name="cn" class="form-control" rows="10"

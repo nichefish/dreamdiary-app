@@ -34,6 +34,9 @@ public class TagDto
     @Positive
     private Integer id;
 
+    /** 태그 카테고리 ID */
+    private Integer tagCategoryId;
+
     /** 태그 카테고리 */
     @Builder.Default
     @Size(max = 50)

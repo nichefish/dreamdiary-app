@@ -47,6 +47,6 @@ public interface TagProfileMapstruct
      * @param entity 업데이트할 대상 Entity 객체
      */
     @Override
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
     void updateFromDto(final TagProfileDto dto, final @MappingTarget TagProfileEntity entity) throws Exception;
 }
