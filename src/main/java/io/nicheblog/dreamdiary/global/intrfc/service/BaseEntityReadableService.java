@@ -52,7 +52,7 @@ public interface BaseEntityReadableService<Key extends Serializable, Entity exte
      * @return {@link Page} -- 페이징 처리된 목록 (entity level)
      */
     default Page<Entity> getPageEntity(final Map<String, Object> searchParamMap, final Pageable pageable) throws Exception {
-        return getRepository().findAll(getSpec().searchWith(searchParamMap), pageable);
+        return getRepository().findAll(getSpec().searchWith(this.normalizeIdAliasKeys(searchParamMap)), pageable);
     }
 
     /* ----- */
@@ -77,7 +77,7 @@ public interface BaseEntityReadableService<Key extends Serializable, Entity exte
      * @return {@link List} -- 목록 (entity level)
      */
     default List<Entity> getListEntity(final Map<String, Object> searchParamMap) throws Exception {
-        return getRepository().findAll(getSpec().searchWith(searchParamMap));
+        return getRepository().findAll(getSpec().searchWith(this.normalizeIdAliasKeys(searchParamMap)));
     }
 
     /**
@@ -101,7 +101,7 @@ public interface BaseEntityReadableService<Key extends Serializable, Entity exte
      * @return {@link List} -- 목록 (entity level)
      */
     default List<Entity> getListEntity(final Map<String, Object> searchParamMap, Sort sort) throws Exception {
-        return getRepository().findAll(getSpec().searchWith(searchParamMap), sort);
+        return getRepository().findAll(getSpec().searchWith(this.normalizeIdAliasKeys(searchParamMap)), sort);
     }
 
     /* ----- */
@@ -127,7 +127,7 @@ public interface BaseEntityReadableService<Key extends Serializable, Entity exte
      */
     @Transactional(readOnly = true)
     default Stream<Entity> getStreamEntity(final Map<String, Object> searchParamMap) throws Exception {
-        final Map<String, Object> filteredSearchKey = CmmUtils.filterParamMap(searchParamMap);
+        final Map<String, Object> filteredSearchKey = CmmUtils.filterParamMap(this.normalizeIdAliasKeys(searchParamMap));
 
         return getRepository().streamAllBy(getSpec().searchWith(filteredSearchKey));
     }
@@ -155,7 +155,7 @@ public interface BaseEntityReadableService<Key extends Serializable, Entity exte
      */
     @Transactional(readOnly = true)
     default Stream<Entity> getStreamEntity(final Map<String, Object> searchParamMap, Sort sort) throws Exception {
-        final Map<String, Object> filteredSearchKey = CmmUtils.filterParamMap(searchParamMap);
+        final Map<String, Object> filteredSearchKey = CmmUtils.filterParamMap(this.normalizeIdAliasKeys(searchParamMap));
 
         return getRepository().streamAllBy(getSpec().searchWith(filteredSearchKey), sort);
     }
@@ -180,5 +180,20 @@ public interface BaseEntityReadableService<Key extends Serializable, Entity exte
      */
     default Entity findDtlEntity(final Key key) throws Exception {
         return getRepository().findById(key).orElse(null);
+    }
+
+    /**
+     * fast-break 전환: legacy 검색 키(id/refId)를 id/refId로 정규화한다.
+     */
+    private Map<String, Object> normalizeIdAliasKeys(final Map<String, Object> searchParamMap) {
+        if (searchParamMap == null || searchParamMap.isEmpty()) return searchParamMap;
+
+        if (!searchParamMap.containsKey("id") && searchParamMap.containsKey("id")) {
+            searchParamMap.put("id", searchParamMap.get("id"));
+        }
+        if (!searchParamMap.containsKey("refId") && searchParamMap.containsKey("refId")) {
+            searchParamMap.put("refId", searchParamMap.get("refId"));
+        }
+        return searchParamMap;
     }
 }

@@ -22,7 +22,7 @@ import lombok.experimental.SuperBuilder;
 public class JrnlDayTagContentParam {
 
     /** 참조 글 번호 */
-    private Integer refPostNo;
+    private Integer refId;
 
     /** 참조 컨텐츠 타입 */
     private String refContentType;
@@ -41,4 +41,5 @@ public class JrnlDayTagContentParam {
 
     /** 등록자 ID */
     private String regstrId;
+
 }

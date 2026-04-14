@@ -79,7 +79,6 @@ public class JrnlDreamSpec
     ) throws Exception {
 
         final List<Predicate> predicate = new ArrayList<>();
-
         // expressions
         final Join<JrnlDreamEntity, JrnlDaySmpEntity> jrnlDayJoin = root.join("jrnlDay", JoinType.INNER);
         final Expression<Date> effectiveDtExp = builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"));
@@ -109,9 +108,9 @@ public class JrnlDreamSpec
                     final Integer mnth = (Integer) value;
                     if (mnth != 99) predicate.add(builder.equal(jrnlDayJoin.get(key), mnth));
                     continue;
-                case "jrnlDayNo":
+                case "jrnlDayId":
                     // 99 = 모든 월
-                    predicate.add(builder.equal(jrnlDayJoin.get("postNo"), value));
+                    predicate.add(builder.equal(jrnlDayJoin.get("id"), value));
                     continue;
                 case "searchKeywords":
                     // 내용 like 검색
@@ -154,10 +153,10 @@ public class JrnlDreamSpec
                     final Subquery<Long> sub = query.subquery(Long.class);
                     final Root<TagContentEntity> subRoot = sub.from(TagContentEntity.class);
 
-                    sub.select(subRoot.get("refPostNo"));
+                    sub.select(subRoot.get("refId"));
                     sub.where(
                         builder.and(
-                            builder.equal(subRoot.get("refPostNo"), root.get("postNo")),
+                            builder.equal(subRoot.get("refId"), root.get("id")),
                             builder.equal(subRoot.get("refContentType"), ContentType.JRNL_DREAM.key),
                             builder.equal(subRoot.get("regstrId"), regstrId),
                             subRoot.get("tagId").in(tagIds)
@@ -179,10 +178,10 @@ public class JrnlDreamSpec
                         .filter(StringUtils::isNotEmpty)
                         .toList();
 
-                    subquery.select(stateRoot.get("refPostNo"));
+                    subquery.select(stateRoot.get("refId"));
                     subquery.where(
                         builder.and(
-                            builder.equal(stateRoot.get("refPostNo"), root.get("postNo")),
+                            builder.equal(stateRoot.get("refId"), root.get("id")),
                             builder.equal(stateRoot.get("refContentType"), ContentType.JRNL_DREAM.key),
                             stateRoot.get("stateCd").in(states)
                         )
@@ -212,4 +211,5 @@ public class JrnlDreamSpec
         }
         throw new IllegalArgumentException("regstrId is required.");
     }
+
 }

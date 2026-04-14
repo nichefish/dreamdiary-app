@@ -162,7 +162,7 @@ public class BoardPostPageController
      * 게시판 게시물 상세 화면 조회
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param postNo 복합키 식별자
+     * @param id 복합키 식별자
      * @param boardDef 게시판 정의
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
@@ -171,7 +171,7 @@ public class BoardPostPageController
     @GetMapping(value = Url.BOARD_POST_DTL)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String boardPostDtl(
-            final Integer postNo,
+            final Integer id,
             final @ModelAttribute("boardDef") String boardDef,
             final ModelMap model
     ) throws Exception {
@@ -181,7 +181,7 @@ public class BoardPostPageController
         model.addAttribute("pageNm", PageNm.DTL);
 
         // 객체 조회 및 모델에 추가
-        final BoardPostDto rsDto = boardPostService.viewDtlPage(postNo);
+        final BoardPostDto rsDto = boardPostService.viewDtlPage(id);
         model.addAttribute("post", rsDto);
 
         return "/view/feature/board/post/board_post_dtl";
@@ -191,7 +191,7 @@ public class BoardPostPageController
      * 게시판 게시물 수정 화면 조회
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param postNo 복합키 식별자
+     * @param id 복합키 식별자
      * @param boardDef 게시판 정의
      * @param model 뷰에 데이터를 전달하기 위한 ModelMap 객체
      * @return {@link String} -- 화면 뷰 경로
@@ -199,7 +199,7 @@ public class BoardPostPageController
     @GetMapping(value = Url.BOARD_POST_MDF_FORM)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String boardPostMdfForm(
-            final Integer postNo,
+            final Integer id,
             final @ModelAttribute("boardDef") String boardDef,
             final ModelMap model
     ) throws Exception {
@@ -209,7 +209,7 @@ public class BoardPostPageController
         model.addAttribute("pageNm", PageNm.MDF);
 
         // 객체 조회 및 모델에 추가
-        final BoardPostDto rsDto = boardPostService.getDtlDto(postNo);
+        final BoardPostDto rsDto = boardPostService.getDtlDto(id);
         model.addAttribute("post", rsDto);
         // 등록/수정 화면 플래그 세팅
         // 등록/수정 화면 플래그 세팅

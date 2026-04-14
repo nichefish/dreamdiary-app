@@ -24,7 +24,7 @@ public class TagContentParam
         extends BaseSearchParam {
 
     /** 참조 글 번호 */
-    private Integer refPostNo;
+    private Integer refId;
 
     /** 참조 컨텐츠 타입 */
     private String refContentType;
@@ -37,4 +37,5 @@ public class TagContentParam
 
     /** 등록자 ID */
     private String regstrId;
+
 }

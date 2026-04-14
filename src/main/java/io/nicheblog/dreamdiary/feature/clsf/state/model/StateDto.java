@@ -37,7 +37,7 @@ public class StateDto
 
     /** 참조 글 번호 */
     @Positive
-    private Integer refPostNo;
+    private Integer refId;
 
     /** 참조 컨텐츠 타입 */
     @Size(max = 50)

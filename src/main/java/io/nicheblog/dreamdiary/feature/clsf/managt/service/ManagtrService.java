@@ -41,7 +41,7 @@ public class ManagtrService {
     public Boolean hasAlreadyVisited(final BaseClsfKey refKey) {
         final Map<String, Object> searchParamMap = new HashedMap<>() {{
             put("regstrId", AuthUtils.getLgnUsername());
-            put("refPostNo", refKey.getPostNo());
+            put("refId", refKey.getId());
             put("refContentType", refKey.getContentType());
         }};
         final List<ManagtrEntity> managtrList = managtrRepository.findAll(managtrSpec.searchWith(searchParamMap));

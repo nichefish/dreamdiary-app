@@ -20,13 +20,13 @@
         {{/tag.list}}
         </div>
     {{/if}}
-    {{#if (exists postNo)}}
+    {{#if (exists id)}}
         <div class="related-content-anchor"
-             data-post-no="{{postNo}}"
+             data-post-no="{{id}}"
              data-content-type="JRNL_DIARY"></div>
         {{#if relatedContentList.length}}
             <div class="related-content-box mt-4 pt-4 border-top border-gray-200"
-                 data-post-no="{{postNo}}"
+                 data-post-no="{{id}}"
                  data-content-type="JRNL_DIARY">
                 <div class="d-flex align-items-center gap-2 mb-3 text-gray-700">
                     <i class="bi bi-link-45deg"></i>

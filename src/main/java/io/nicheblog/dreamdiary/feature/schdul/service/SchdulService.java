@@ -161,7 +161,7 @@ public class SchdulService
         final SchdulDto updatedDto = mapstruct.toDto(updatedEntity);
 
         return ServiceResponse.builder()
-                .rslt(updatedEntity.getPostNo() != null)
+                .rslt(updatedEntity.getId() != null)
                 .rsltObj(updatedDto)
                 .build();
     }

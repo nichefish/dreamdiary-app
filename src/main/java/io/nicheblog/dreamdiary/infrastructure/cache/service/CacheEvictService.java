@@ -15,7 +15,7 @@ public interface CacheEvictService {
      * 관련 캐시 삭제
      * 
      * @param refContentType - 캐시를 삭제할 컨텐츠 타입
-     * @param refPostNo - 캐시를 삭제할 게시글 번호
+     * @param refId - 캐시를 삭제할 게시글 번호
      */
-    void evictClsfCache(final String refContentType, final Integer refPostNo) throws Exception;
+    void evictClsfCache(final String refContentType, final Integer refId) throws Exception;
 }

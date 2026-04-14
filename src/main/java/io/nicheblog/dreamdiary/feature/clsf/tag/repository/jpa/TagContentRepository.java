@@ -28,7 +28,7 @@ public interface TagContentRepository
      */
     @Modifying
     @Query("DELETE FROM TagContentEntity ct " +
-            "WHERE ct.refPostNo = :#{#param.refPostNo} " +
+            "WHERE ct.refId = :#{#param.refId} " +
             "  AND ct.refContentType = :#{#param.refContentType} " +
             "  AND ct.regstrId = :#{#param.regstrId} " +
             "  AND EXISTS (SELECT 1 FROM TagEntity t " +

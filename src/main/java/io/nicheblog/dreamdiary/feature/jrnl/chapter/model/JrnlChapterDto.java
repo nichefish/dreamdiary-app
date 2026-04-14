@@ -56,7 +56,7 @@ public class JrnlChapterDto
     /* ----- */
 
     /** 저널 일자 번호 */
-    private Integer jrnlDayNo;
+    private Integer jrnlDayId;
     /** 저널 기준일자 */
     private String stdrdDt;
     /** 저널 일자 요일 */
@@ -91,7 +91,7 @@ public class JrnlChapterDto
 
     @Override
     public Integer getKey() {
-        return this.postNo;
+        return this.id;
     }
 
     /** 위임 :: 태그 정보 모듈 */

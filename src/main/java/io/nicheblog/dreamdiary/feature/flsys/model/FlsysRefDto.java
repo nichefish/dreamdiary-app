@@ -28,7 +28,7 @@ public class FlsysRefDto {
 
     /** 글 번호 */
     @Positive
-    private String postNo;
+    private String id;
 
     /** 컨텐츠 타입 */
     @Size(max = 50)

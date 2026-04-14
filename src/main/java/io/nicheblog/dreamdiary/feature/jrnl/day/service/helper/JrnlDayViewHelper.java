@@ -92,10 +92,10 @@ public final class JrnlDayViewHelper {
      * 캐시에 저장된 상태 맵(chapter/diary/dream/intrpt)을 기준으로 조회된 {@link JrnlDayDto} 트리 구조에 상태를 반영한다.
      *
      * @param listDto 조회된 저널 일자 목록 DTO
-     * @param chapterMap chapter postNo → {@link JrnlState} 맵
-     * @param diaryMap diary postNo → {@link JrnlState} 맵
-     * @param dreamMap dream postNo → {@link JrnlState} 맵
-     * @param intrptMap intrpt postNo → {@link JrnlState} 맵
+     * @param chapterMap chapter id → {@link JrnlState} 맵
+     * @param diaryMap diary id → {@link JrnlState} 맵
+     * @param dreamMap dream id → {@link JrnlState} 맵
+     * @param intrptMap intrpt id → {@link JrnlState} 맵
      */
     public static void applyStates(
         final List<JrnlDayDto> listDto,
@@ -115,10 +115,10 @@ public final class JrnlDayViewHelper {
      * 캐시에 저장된 상태 맵(chapter/diary/dream/intrpt)을 기준으로 조회된 {@link JrnlDayDto} 트리 구조에 상태를 반영한다.
      *
      * @param listDto 조회된 저널 일자 목록 DTO
-     * @param chapterMap chapter postNo → {@link JrnlState} 맵
-     * @param diaryMap diary postNo → {@link JrnlState} 맵
-     * @param dreamMap dream postNo → {@link JrnlState} 맵
-     * @param intrptMap intrpt postNo → {@link JrnlState} 맵
+     * @param chapterMap chapter id → {@link JrnlState} 맵
+     * @param diaryMap diary id → {@link JrnlState} 맵
+     * @param dreamMap dream id → {@link JrnlState} 맵
+     * @param intrptMap intrpt id → {@link JrnlState} 맵
      * @param searchParam JrnlDaySearchParam
      */
     public static void applyStates(

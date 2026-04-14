@@ -96,7 +96,7 @@ public class JrnlChapterService
     @Override
     public void preRegist(final JrnlChapterDto registDto) throws Exception {
         // 인덱스(정렬순서) 처리
-        final int lastIndex = repository.findLastIndexByJrnlDay(registDto.getJrnlDayNo()).orElse(0);
+        final int lastIndex = repository.findLastIndexByJrnlDay(registDto.getJrnlDayId()).orElse(0);
         if (lastIndex == 0 && StringUtils.isBlank(registDto.getCtgrCd())) {
             registDto.setCtgrCd(FIRST_CHAPTER_CTGR_CD);
         }
@@ -178,7 +178,7 @@ public class JrnlChapterService
      */
     @Transactional(readOnly = true)
     public JrnlChapterDto getDeletedDtlDto(final Integer key) throws Exception {
-        final JrnlChapterDto deleted = jrnlChapterMapper.getDeletedByPostNo(key);
+        final JrnlChapterDto deleted = jrnlChapterMapper.getDeletedById(key);
         if (deleted == null) return null;
         if (!AuthUtils.isRegstr(deleted.getRegstrId())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
@@ -189,11 +189,11 @@ public class JrnlChapterService
     /**
      * 해당 그룹 전체를 idx = 1부터 다시 정렬한다.
      *
-     * @param jrnlDayNo 정렬을 수행할 상위 키
+     * @param jrnlDayId 정렬을 수행할 상위 키
      */
     @Transactional
-    public void normalize(final Integer jrnlDayNo) {
-        final List<JrnlChapterDto> list = jrnlChapterMapper.findAllForReorder(jrnlDayNo);
+    public void normalize(final Integer jrnlDayId) {
+        final List<JrnlChapterDto> list = jrnlChapterMapper.findAllForReorder(jrnlDayId);
         if (CollectionUtils.isEmpty(list)) return;
 
         int idx = 1;
@@ -207,24 +207,24 @@ public class JrnlChapterService
     /**
      * 대상 상위 키에 엔티티를 특정 위치에 삽입 후 재정렬한다.
      *
-     * @param jrnlDayNo 정렬을 수행할 상위 키
-     * @param postNo 게시물 PK
+     * @param jrnlDayId 정렬을 수행할 상위 키
+     * @param id 게시물 PK
      * @param targetIdx 삽입할 목표 위치(1-based). null이면 맨 뒤에 삽입됨
      */
     @Transactional
-    public void insert(final Integer jrnlDayNo, final Integer postNo, Integer targetIdx) throws Exception {
-        final List<JrnlChapterDto> list = jrnlChapterMapper.findAllForReorder(jrnlDayNo);
+    public void insert(final Integer jrnlDayId, final Integer id, Integer targetIdx) throws Exception {
+        final List<JrnlChapterDto> list = jrnlChapterMapper.findAllForReorder(jrnlDayId);
 
         // target 조회
-        final JrnlChapterEntity targetEntity = findDtlEntity(postNo);
+        final JrnlChapterEntity targetEntity = findDtlEntity(id);
         final JrnlChapterDto target = mapstruct.toDto(targetEntity);
         if (target == null) return;
 
         // 혹시 이미 포함되어 있으면 제거
-        list.removeIf(e -> Objects.equals(e.getPostNo(), postNo));
+        list.removeIf(e -> Objects.equals(e.getId(), id));
 
         // chapterNo 변경
-        target.setJrnlDayNo(jrnlDayNo);
+        target.setJrnlDayId(jrnlDayId);
 
         // targetIdx 보정 (upper bound)
         final int maxIdx = list.size() + 1;
@@ -251,8 +251,8 @@ public class JrnlChapterService
     @Transactional
     public void reorderIdx(final JrnlChapterDto updatedDto) throws Exception {
         // 1단계: 현재 chapter 그룹 정리 (기존 idx 값을 normalization하여 안정화)
-        normalize(updatedDto.getJrnlDayNo());
+        normalize(updatedDto.getJrnlDayId());
         // 2단계: 해당 group에 새 위치로 target 삽입
-        insert(updatedDto.getJrnlDayNo(), updatedDto.getPostNo(), updatedDto.getIdx());
+        insert(updatedDto.getJrnlDayId(), updatedDto.getId(), updatedDto.getIdx());
     }
 }

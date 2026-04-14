@@ -28,7 +28,7 @@ public interface MetaContentRepository
      */
     @Modifying
     @Query("DELETE FROM MetaContentEntity ct " +
-            "WHERE ct.refPostNo = :#{#param.refPostNo} " +
+            "WHERE ct.refId = :#{#param.refId} " +
             "  AND ct.refContentType = :#{#param.refContentType} " +
             "  AND ct.regstrId = :#{#param.regstrId} " +
             "  AND EXISTS (SELECT 1 FROM MetaEntity t WHERE t.id = ct.metaId AND t.metaNm = :#{#param.metaNm} AND (t.ctgr = :#{#param.ctgr} OR (t.ctgr IS NULL AND :#{#param.ctgr} IS NULL)))")

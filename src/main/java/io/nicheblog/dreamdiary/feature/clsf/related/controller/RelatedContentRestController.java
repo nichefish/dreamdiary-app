@@ -43,10 +43,10 @@ public class RelatedContentRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> relatedContentListAjax(
             final @PathVariable("contentType") String contentType,
-            final @PathVariable("postNo") Integer postNo
+            final @PathVariable("id") Integer id
     ) throws Exception {
         final ContentType resolvedContentType = ContentType.get(contentType);
-        final List<RelatedContentDto> relatedList = myRelatedContentService.getMyListDto(resolvedContentType, postNo);
+        final List<RelatedContentDto> relatedList = myRelatedContentService.getMyListDto(resolvedContentType, id);
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withList(relatedList));
     }
 
@@ -55,10 +55,10 @@ public class RelatedContentRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> relatedContentRegAjax(
             final @PathVariable("contentType") String contentType,
-            final @PathVariable("postNo") Integer postNo,
+            final @PathVariable("id") Integer id,
             final @RequestBody @Valid RelatedContentPostDto relatedContent
     ) throws Exception {
-        relatedContent.setSrcPostNo(postNo);
+        relatedContent.setSrcId(id);
         relatedContent.setSrcContentType(contentType);
 
         final RelatedContentDto savedDto = myRelatedContentService.saveMyRelation(relatedContent);

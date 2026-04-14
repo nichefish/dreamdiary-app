@@ -45,9 +45,9 @@ public class TagContentEntity
     private Integer tagId;
 
     /** 참조 글 ID. */
-    @Column(name = "ref_post_no")
+    @Column(name = "ref_id")
     @Comment("참조 글 ID")
-    private Integer refPostNo;
+    private Integer refId;
 
     /** 참조 컨텐츠 타입 */
     @Column(name = "ref_content_type")
@@ -78,7 +78,7 @@ public class TagContentEntity
      */
     public TagContentEntity(final Integer tagId, final BaseClsfKey clsfKey) {
         this.tagId = tagId;
-        this.refPostNo = clsfKey.getPostNo();
+        this.refId = clsfKey.getId();
         this.refContentType = clsfKey.getContentType();
     }
 }

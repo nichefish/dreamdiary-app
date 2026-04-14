@@ -4,13 +4,13 @@
 <mapper namespace="io.nicheblog.dreamdiary.feature.clsf.sectn.repository.mybatis.SectnMapper">
 
     <!-- 삭제 데이터 조회 -->
-    <select id="getDeletedByPostNo" resultType="io.nicheblog.dreamdiary.feature.clsf.sectn.model.SectnDto">
-        /* SectnMapper.getDeletedByPostNo */
+    <select id="getDeletedById" resultType="io.nicheblog.dreamdiary.feature.clsf.sectn.model.SectnDto">
+        /* SectnMapper.getDeletedById */
         SELECT
-            sectn.post_no AS postNo,
-            sectn.ref_post_no AS refPostNo,
+            sectn.id AS id,
+            sectn.ref_id AS refId,
             sectn.ref_content_type AS refContentType
         FROM sectn sectn
-        WHERE sectn.post_no = #{postNo}
+        WHERE sectn.id = #{id}
     </select>
 </mapper>

@@ -37,7 +37,7 @@ import javax.persistence.Table;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE board_post SET del_yn = 'Y' WHERE post_no = ?")
+@SQLDelete(sql = "UPDATE board_post SET del_yn = 'Y' WHERE id = ?")
 public class BoardPostEntity
         extends BaseClsfEntity
         implements AtchFileEmbedModule, CommentEmbedModule, TagEmbedModule, ManagtEmbedModule, ViewerEmbedModule {
@@ -45,9 +45,9 @@ public class BoardPostEntity
     /** 글 번호 */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "post_no")
+    @Column(name = "id")
     @Comment("글 번호")
-    private Integer postNo;
+    private Integer id;
 
     /** 컨텐츠 타입 :: Override */
     @Column(name = "content_type")

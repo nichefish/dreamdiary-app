@@ -5,10 +5,10 @@
 
 <script type="text/x-handlebars-template" id="jrnl_sumry_diary_list_template">
     {{#each this}}
-        <div class="jrnl-diary-item" data-id="{{postNo}}">
+        <div class="jrnl-diary-item" data-id="{{id}}">
             <div class="col-12 col-md-1 d-flex flex-wrap align-items-center fs-5 fw-bold">
                 {{> jrnl_day_stdrd_dt_partial this}}
-                {{> jrnl_day_context_btn_partial this postNo=this.jrnlDayNo}}
+                {{> jrnl_day_context_btn_partial this id=this.jrnlDayId}}
             </div>
             <div class="col p-2 jrnl-diary-cn">
                 {{> jrnl_diary_cn_partial this collapse="collapse-4"}}

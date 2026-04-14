@@ -20,7 +20,7 @@
             <!--begin::Menu item-->
             <div class="menu-item px-3 my-1 cursor-pointer"
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.sumry.review"/> <@spring.message 'bs.tooltip.modal.mdf'/>">
-                <div class="menu-link flex-stack px-3" onclick="dF.JrnlSumryReview.mdfModal({{postNo}}, '{{stdrdDt}}');">
+                <div class="menu-link flex-stack px-3" onclick="dF.JrnlSumryReview.mdfModal({{id}}, '{{stdrdDt}}');">
                     <@spring.message 'txt.comm.edit'/>
                     <i class="bi bi-pencil-square fs-8"></i>
                 </div>
@@ -30,7 +30,7 @@
             <!--begin::Menu item-->
             <div class="menu-item px-3 my-1 cursor-pointer"
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.sumry.review"/> <@spring.message 'bs.tooltip.del'/>">
-                <div class="menu-link flex-stack px-3 text-danger" onclick="dF.JrnlSumryReview.delAjax({{postNo}});">
+                <div class="menu-link flex-stack px-3 text-danger" onclick="dF.JrnlSumryReview.delAjax({{id}});">
                     <@spring.message 'txt.comm.del'/>
                     <i class="bi bi-trash text-danger p-0 fs-8"></i>
                 </div>

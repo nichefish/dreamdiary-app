@@ -52,7 +52,7 @@
 </div>
 
 <form name="procForm" id="procForm" method="get">
-    <input type="hidden" name="postNo" id="postNo" value="${post.postNo!}" />
+    <input type="hidden" name="id" id="id" value="${post.id!}" />
 </form>
 
 </@layout.layout>

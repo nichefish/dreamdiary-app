@@ -40,9 +40,9 @@ public class FlsysRefEntity
     private Integer flsysRefNo;
 
     /** 글 번호 */
-    @Column(name = "ref_post_no")
+    @Column(name = "ref_id")
     @Comment("글 번호")
-    private Integer refPostNo;
+    private Integer refId;
 
     /** 게시판 분류 코드 */
     @Column(name = "ref_content_type")

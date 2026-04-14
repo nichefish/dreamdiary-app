@@ -87,12 +87,12 @@ class JrnlDayRepositoryTest {
 
         // When:: 데이터를 등록한다.
         final JrnlDayEntity registered = jrnlDayRepository.save(jrnlDayEntity);
-        final Integer key = registered.getPostNo();
+        final Integer key = registered.getId();
         final JrnlDayEntity retrieved = jrnlDayRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
-        assertNotNull(retrieved.getPostNo(), "저장된 엔티티의 key 값이 없습니다.");
+        assertNotNull(retrieved.getId(), "저장된 엔티티의 key 값이 없습니다.");
         // audit
         assertNotNull(retrieved.getRegDt(), "등록일자 audit 처리가 되지 않았습니다.");
         assertNotNull(retrieved.getRegstrId(),  "등록자 audit 처리가 되지 않았습니다.");
@@ -106,7 +106,7 @@ class JrnlDayRepositoryTest {
     public void testModify() throws Exception {
         // Given:: 수정할 데이터를 등록한다.
         final JrnlDayEntity registered = jrnlDayRepository.save(jrnlDayEntity);
-        final Integer key = registered.getPostNo();
+        final Integer key = registered.getId();
 
         // When:: 등록된 데이터를 조회해서, 값을 변경하여 저장한다.
         final JrnlDayEntity toModify = jrnlDayRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
@@ -115,7 +115,7 @@ class JrnlDayRepositoryTest {
 
         // Then::
         assertNotNull(modified, "저장한 데이터를 조회할 수 없습니다.");
-        assertNotNull(modified.getPostNo(), "저장된 엔티티의 key 값이 없습니다.");
+        assertNotNull(modified.getId(), "저장된 엔티티의 key 값이 없습니다.");
         // audit
         assertNotNull(modified.getMdfDt(), "수정일자 audit 처리가 되지 않았습니다.");
         assertNotNull(modified.getMdfusrId(),  "수정자 audit 처리가 되지 않았습니다.");
@@ -131,7 +131,7 @@ class JrnlDayRepositoryTest {
     public void testDelete() throws Exception {
         // Given:: 삭제할 데이터를 등록한다.
         final JrnlDayEntity registered = jrnlDayRepository.save(jrnlDayEntity);
-        final Integer key = registered.getPostNo();
+        final Integer key = registered.getId();
 
         // When:: 삭제할 데이터를 조회해서, 삭제한다.
         final JrnlDayEntity toDelete = jrnlDayRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete")));
@@ -172,7 +172,7 @@ class JrnlDayRepositoryTest {
 
         // Then::
         assertNotNull(retrieved, "메소드가 제대로 실행되지 않았습니다.");
-        assertEquals(result.getPostNo(), retrieved.getPostNo(), "날짜를 이용한 조회에 실패했습니다.");
+        assertEquals(result.getId(), retrieved.getId(), "날짜를 이용한 조회에 실패했습니다.");
     }
 
     /**
@@ -183,22 +183,22 @@ class JrnlDayRepositoryTest {
     public void testGetDreamList() throws Exception {
         // Given::
         final JrnlDayEntity registered = jrnlDayRepository.save(jrnlDayEntity);
-        final Integer jrnlDayNo = registered.getPostNo();
+        final Integer jrnlDayId = registered.getId();
 
         testEntityManager.clear();
 
         // When::
         // 저널 꿈 regist
         final JrnlDreamEntity jrnlDream = JrnlDreamEntityTestFactory.create();
-        jrnlDream.setJrnlDayNo(jrnlDayNo);
+        jrnlDream.setJrnlDayId(jrnlDayId);
         jrnlDreamRepository.save(jrnlDream);
 
-        final JrnlDayEntity retrieved = jrnlDayRepository.findById(jrnlDayNo).orElseThrow(() -> new EntityNotFoundException("저널 일자를 찾을 수 없습니다."));
+        final JrnlDayEntity retrieved = jrnlDayRepository.findById(jrnlDayId).orElseThrow(() -> new EntityNotFoundException("저널 일자를 찾을 수 없습니다."));
         final List<JrnlChapterEntity> chapterList = retrieved.getJrnlChapterList();
 
         // Then::
         assertNotNull(retrieved);
-        assertNotNull(jrnlDayNo);
+        assertNotNull(jrnlDayId);
         // jrnlDream
         assertNotNull(retrieved.getJrnlDreamList());
     }
@@ -211,25 +211,25 @@ class JrnlDayRepositoryTest {
     public void testGetDiaryList() throws Exception {
         // Given::
         final JrnlDayEntity registered = jrnlDayRepository.save(jrnlDayEntity);
-        final Integer jrnlDayNo = registered.getPostNo();
+        final Integer jrnlDayId = registered.getId();
 
         testEntityManager.clear();
 
         // When::
         // 저널 꿈 regist
         final JrnlChapterEntity jrnlChapter = testEntityManager.persistFlushFind(
-                JrnlChapterEntity.builder().jrnlDayNo(jrnlDayNo).title("test_entry").idx(1).build()
+                JrnlChapterEntity.builder().jrnlDayId(jrnlDayId).title("test_entry").idx(1).build()
         );
         final JrnlDiaryEntity jrnlDiary = JrnlDiaryEntityTestFactory.create();
         jrnlDiary.setJrnlChapter(jrnlChapter);
         jrnlDiaryRepository.save(jrnlDiary);
 
-        final JrnlDayEntity retrieved = jrnlDayRepository.findById(jrnlDayNo).orElseThrow(() -> new EntityNotFoundException("저널 일자를 찾을 수 없습니다."));
+        final JrnlDayEntity retrieved = jrnlDayRepository.findById(jrnlDayId).orElseThrow(() -> new EntityNotFoundException("저널 일자를 찾을 수 없습니다."));
         final List<JrnlChapterEntity> chapterList = retrieved.getJrnlChapterList();
 
         // Then::
         assertNotNull(retrieved);
-        assertNotNull(jrnlDayNo);
+        assertNotNull(jrnlDayId);
         // jrnlDiary
         assertNotNull(chapterList);
     }

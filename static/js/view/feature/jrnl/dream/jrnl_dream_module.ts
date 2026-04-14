@@ -127,14 +127,14 @@ dF.JrnlDream = (function(): dfModule {
         /**
          * 등록 모달 호출
          * @param {Object} param - 파라미터 객체
-         * @param {string|number} param.jrnlDayNo - 저널 일자 번호.
+         * @param {string|number} param.jrnlDayId - 저널 일자 번호.
          * @param {string} param.stdrdDt - 기준 날짜.
          * @param {string} param.jrnlDtWeekDay - 기준 날짜 요일.
          */
-        regModal: function({ jrnlDayNo, stdrdDt, jrnlDtWeekDay }: { jrnlDayNo: string | number; stdrdDt: string; jrnlDtWeekDay: string; }): void {
-            if (isNaN(Number(jrnlDayNo))) return;
+        regModal: function({ jrnlDayId, stdrdDt, jrnlDtWeekDay }: { jrnlDayId: string | number; stdrdDt: string; jrnlDtWeekDay: string; }): void {
+            if (isNaN(Number(jrnlDayId))) return;
 
-            const obj: Record<string, any> = { jrnlDayNo: jrnlDayNo, stdrdDt: stdrdDt, jrnlDtWeekDay: jrnlDtWeekDay };
+            const obj: Record<string, any> = { jrnlDayId: jrnlDayId, stdrdDt: stdrdDt, jrnlDtWeekDay: jrnlDtWeekDay };
             /* initialize form. */
             dF.JrnlDream.initForm(obj);
         },
@@ -151,15 +151,15 @@ dF.JrnlDream = (function(): dfModule {
          * 등록 (Ajax)
          */
         regAjax: function(): void {
-            const postNo: string = cF.util.getInputValue("#jrnlDreamRegForm [name='postNo']");
-            const isMdf: boolean = cF.util.isNotEmpty(postNo);
+            const id: string = cF.util.getInputValue("#jrnlDreamRegForm [name='id']");
+            const isMdf: boolean = cF.util.isNotEmpty(id);
             Swal.fire({
                 text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = isMdf ? cF.util.bindUrl(Url.JRNL_DREAM, { postNo }) : Url.JRNL_DREAMS;
+                const url: string = isMdf ? cF.util.bindUrl(Url.JRNL_DREAM, { id }) : Url.JRNL_DREAMS;
                 const ajaxData: FormData = new FormData(document.getElementById("jrnlDreamRegForm") as HTMLFormElement);
                 cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
@@ -174,10 +174,10 @@ dF.JrnlDream = (function(): dfModule {
 
         /**
          * 상세 모달 호출
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          */
-        dtlModal: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        dtlModal: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
             // 기존에 열린 모달이 있으면 닫기
             const openModals: NodeList = document.querySelectorAll('.modal.show'); // 열린 모달을 찾기
@@ -189,7 +189,7 @@ dF.JrnlDream = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = cF.util.bindUrl(Url.JRNL_DREAM, { postNo });
+            const url: string = cF.util.bindUrl(Url.JRNL_DREAM, { id });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -206,10 +206,10 @@ dF.JrnlDream = (function(): dfModule {
 
         /**
          * 수정 모달 호출
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          */
-        mdfModal: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        mdfModal: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
             // 기존에 열린 모달이 있으면 닫기
             const openModals: NodeList = document.querySelectorAll('.modal.show'); // 열린 모달을 찾기
@@ -221,7 +221,7 @@ dF.JrnlDream = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = cF.util.bindUrl(Url.JRNL_DREAM, { postNo });
+            const url: string = cF.util.bindUrl(Url.JRNL_DREAM, { id });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -238,16 +238,16 @@ dF.JrnlDream = (function(): dfModule {
 
         /**
          * 상태 토글 (Ajax)
-         * @param postNo
+         * @param id
          * @param stateCd
          * @param {object} object
          */
-        toggleStateAjax: function(postNo: string|number, stateCd: string, { onOffFunc }): void {
-            if (isNaN(Number(postNo))) return;
+        toggleStateAjax: function(id: string|number, stateCd: string, { onOffFunc }): void {
+            if (isNaN(Number(id))) return;
 
-            const item = document.querySelector(`.jrnl-dream-item[data-id='${postNo}']`) as HTMLElement;
+            const item = document.querySelector(`.jrnl-dream-item[data-id='${id}']`) as HTMLElement;
             const cacheContext = dF.State.resolveJrnlCacheContext(item);
-            const payload = { postNo, contentType: "JRNL_DREAM", stateCd, cacheContext };
+            const payload = { id, contentType: "JRNL_DREAM", stateCd, cacheContext };
             dF.State.toggleAjax(payload, function(res: AjaxResponse): void {
                 if (!item) return;
                 const lowerStateCd: string = stateCd.toLowerCase();
@@ -262,10 +262,10 @@ dF.JrnlDream = (function(): dfModule {
 
         /**
          * 글 접기/펼치기 토글. (Ajax)
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          */
-        collapseAjax: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        collapseAjax: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
             const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
                 const cn: HTMLDivElement = item.querySelector("div.jrnl-dream-cn .cn");
@@ -274,15 +274,15 @@ dF.JrnlDream = (function(): dfModule {
                 cn?.classList.toggle("collapsed", res.rsltSts === "ON");
                 item.classList.toggle("is-collapsed", res.rsltSts === "ON");
             }
-            this.toggleStateAjax(postNo, "COLLAPSED", { onOffFunc });
+            this.toggleStateAjax(id, "COLLAPSED", { onOffFunc });
         },
 
         /**
          * 정리완료 토글. (Ajax)
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          */
-        resolveAjax: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        resolveAjax: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
             const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
                 if (res.rsltSts === "ON") {
@@ -296,15 +296,15 @@ dF.JrnlDream = (function(): dfModule {
                     if (collapsedChk) collapsedChk.checked = true;
                 }
             }
-            this.toggleStateAjax(postNo, "RESOLVED", { onOffFunc });
+            this.toggleStateAjax(id, "RESOLVED", { onOffFunc });
         },
 
         /**
          * 중요여부 토글. (Ajax)
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          */
-        imprtcAjax: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        imprtcAjax: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
             const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
                 const cn: HTMLDivElement = item.querySelector("div.jrnl-dream-cn .cn");
@@ -312,15 +312,15 @@ dF.JrnlDream = (function(): dfModule {
 
                 cn.classList.toggle("imprtc", res.rsltSts === "ON");
             }
-            this.toggleStateAjax(postNo, "IMPRTC", { onOffFunc });
+            this.toggleStateAjax(id, "IMPRTC", { onOffFunc });
         },
 
         /**
          * 참조 여부 토글. (Ajax)
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          */
-        refrncAjax: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        refrncAjax: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
             const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
                 const cn: HTMLDivElement = item.querySelector("div.jrnl-dream-cn .cn");
@@ -328,15 +328,15 @@ dF.JrnlDream = (function(): dfModule {
 
                 cn.classList.toggle("refrnc", res.rsltSts === "ON");
             }
-            this.toggleStateAjax(postNo, "REFRNC", { onOffFunc });
+            this.toggleStateAjax(id, "REFRNC", { onOffFunc });
         },
 
         /**
          * 삭제 (Ajax)
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          */
-        delAjax: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        delAjax: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
@@ -344,7 +344,7 @@ dF.JrnlDream = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = cF.util.bindUrl(Url.JRNL_DREAM, { postNo });
+                const url: string = cF.util.bindUrl(Url.JRNL_DREAM, { id });
                 cF.$ajax.delete(url, null, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
@@ -357,19 +357,19 @@ dF.JrnlDream = (function(): dfModule {
         },
 
         /**
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          * @param {'Y'|'N'} collapsedYn - 글접기 여부.
          */
-        collapse: function(postNo: string|number, collapsedYn: 'Y'|'N'): void {
-            if (isNaN(Number(postNo))) return;
+        collapse: function(id: string|number, collapsedYn: 'Y'|'N'): void {
+            if (isNaN(Number(id))) return;
 
             const url: string = Url.JRNL_DREAM_SET_COLLAPSE_AJAX;
-            const ajaxData: Record<string, any> = { postNo, collapsedYn };
+            const ajaxData: Record<string, any> = { id, collapsedYn };
             cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) return;
 
                 // 찾아서 해당 그것만 collapse 추가 제거.
-                const item: HTMLElement = document.querySelector(`.jrnl-dream-cn[data-id='${postNo}']`);
+                const item: HTMLElement = document.querySelector(`.jrnl-dream-cn[data-id='${id}']`);
                 if (!item) return console.log("item not found.");
 
                 const content: HTMLElement = item.querySelector(".cn");
@@ -385,13 +385,12 @@ dF.JrnlDream = (function(): dfModule {
 
         /**
          * toggle
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          * @param {HTMLElement} trigger - 클릭 버튼 객체
          */
-        toggle: function(postNo: string|number, trigger: HTMLElement): void {
-            if (isNaN(Number(postNo))) return;
+        toggle: function(id: string|number, trigger: HTMLElement): void {
+            if (isNaN(Number(id))) return;
 
-            const id: string = String(postNo);
             const item: HTMLElement = trigger.closest(`.jrnl-dream-item[data-id='${id}']`);
             if (!item) return console.log("item not found.");
 
@@ -438,13 +437,13 @@ dF.JrnlDream = (function(): dfModule {
 
         /**
          * copy
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          * @deprecated
          */
-        copy: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        copy: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
-            const url: string = cF.util.bindUrl(Url.JRNL_DREAM, { postNo });
+            const url: string = cF.util.bindUrl(Url.JRNL_DREAM, { id });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });

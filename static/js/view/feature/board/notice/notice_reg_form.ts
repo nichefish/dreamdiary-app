@@ -40,9 +40,9 @@ const Page: Page = (function(): Page {
          * 새로고침 함수 :: 페이지별 특성에 따라 별도로 세팅
          */
         refreshFunc: function(): void {
-            const refPostNo = $("#noticeRegForm [name='postNo']").val();
+            const refId = $("#noticeRegForm [name='id']").val();
             const refContentType = $("#noticeRegForm [name='contentType']").val();
-            dF.Sectn.listAjax({ refPostNo, refContentType });
+            dF.Sectn.listAjax({ refId, refContentType });
             $("#sectn_reg_modal").modal("hide");
             dF.Sectn.initDraggable({
                 refreshFunc: Page.refreshFunc

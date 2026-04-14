@@ -50,7 +50,7 @@
                             <div class="row d-flex align-items-center justify-content-between">
                                 <div class="col-xl-8 col-12 d-flex flex-column">
                                     <div class="my-1">
-                                        <a href="${Url.BOARD_POST_DTL!}?boardDef=${post.boardDef!}&postNo=${post.postNo!}&notionPageId=${post.notionPageId!}"
+                                        <a href="${Url.BOARD_POST_DTL!}?boardDef=${post.boardDef!}&id=${post.id!}&notionPageId=${post.notionPageId!}"
                                            class="title-fxd vertical-middle text-underline-dotted <#if (((post.imprtcYn)!"N") == "Y")!false>fw-bold</#if>"
                                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.page.dtl'/>">
                                             <#if (post.ctgrNm!"") != "">
@@ -107,7 +107,7 @@
                             <div class="row d-flex align-items-center justify-content-between align-items-center">
                                 <div class="col-xl-8 col-12 d-flex flex-column">
                                     <div class="my-1">
-                                        <a href="${Url.BOARD_POST_DTL!}?boardDef=${post.boardDef!}&postNo=${post.postNo!}&notionPageId=${post.notionPageId!}"
+                                        <a href="${Url.BOARD_POST_DTL!}?boardDef=${post.boardDef!}&id=${post.id!}&notionPageId=${post.notionPageId!}"
                                            class="text-dark vertical-middle text-underline-dotted <#if (((post.imprtcYn)!"N") == "Y")!false>fw-bold text-danger</#if>"
                                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.page.dtl'/>">
                                             <#if (post.ctgrNm!"") != "">
@@ -171,7 +171,7 @@
 </div>
 
 <form name="procForm" id="procForm" method="get">
-    <input type="hidden" name="postNo" id="postNo" value=""/>
+    <input type="hidden" name="id" id="id" value=""/>
     <input type="hidden" name="boardDef" id="boardDef" value="${boardDef!}"/>
 </form>
 

@@ -73,7 +73,7 @@ class JrnlDreamServiceTest {
         final JrnlDreamDto result = (JrnlDreamDto) registResult.getRsltObj();
 
                 // Then::
-        assertNotNull(result.getPostNo(), "등록이 정상적으로 이루어지지 않았습니다.");
+        assertNotNull(result.getId(), "등록이 정상적으로 이루어지지 않았습니다.");
     }
 
     /**
@@ -93,7 +93,7 @@ class JrnlDreamServiceTest {
         final JrnlDreamDto modified = (JrnlDreamDto) modifyResult.getRsltObj();
 
         // Then::
-        assertNotNull(modified.getPostNo(), "수정이 정상적으로 이루어지지 않았습니다.");
+        assertNotNull(modified.getId(), "수정이 정상적으로 이루어지지 않았습니다.");
         assertEquals("test", modified.getCn(), "수정이 정상적으로 이루어지지 않았습니다.");
     }
 

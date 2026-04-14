@@ -22,7 +22,7 @@ import lombok.experimental.SuperBuilder;
 public class JrnlIntrptSmpDto {
 
     /** 저널 해석 번호 */
-    private Integer postNo;
+    private Integer id;
     /** 제목 */
     private String title;
     /** 순번 */

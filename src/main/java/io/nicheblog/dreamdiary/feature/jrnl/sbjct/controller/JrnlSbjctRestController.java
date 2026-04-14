@@ -77,7 +77,7 @@ public class JrnlSbjctRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSbjctDtlAjax(
-            final @RequestParam("postNo") Integer key
+            final @RequestParam("id") Integer key
     ) throws Exception {
 
         final JrnlSbjctDto retrievedDto = jrnlSbjctService.viewDtlPage(key);
@@ -91,17 +91,17 @@ public class JrnlSbjctRestController
      * 저널 주제 삭제 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param postNo 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.JRNL_SBJCT_DEL_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSbjctDelAjax(
-            final @RequestParam("postNo") Integer postNo
+            final @RequestParam("id") Integer id
     ) throws Exception {
 
-        final ServiceResponse result = jrnlSbjctService.delete(postNo);
+        final ServiceResponse result = jrnlSbjctService.delete(id);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

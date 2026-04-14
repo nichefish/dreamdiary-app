@@ -4,8 +4,8 @@
  -->
 
 <script type="text/x-handlebars-template" id="jrnl_dream_reg_modal_header_template">
-    <input type="hidden" name="postNo" value="{{postNo}}">
-    <input type="hidden" name="jrnlDayNo" value="{{jrnlDayNo}}">
+    <input type="hidden" name="id" value="{{id}}">
+    <input type="hidden" name="jrnlDayId" value="{{jrnlDayId}}">
 
     <#--begin::Row-->
     <div class="row d-flex mb-8">
@@ -35,12 +35,12 @@
                 <option value="">--글분류--</option>
             </select>
         </div>
-        <div class="col-lg-{{#if (exists postNo)}}9{{else}}10{{/if}}">
+        <div class="col-lg-{{#if (exists id)}}9{{else}}10{{/if}}">
             <input type="text" name="title" id="title" class="form-control"
                    value="{{title}}" placeholder="제목" maxlength="100" />
             <div id="title_validate_span"></div>
         </div>
-        {{#if (exists postNo)}}
+        {{#if (exists id)}}
             {{^ifYn elseDreamYn}}
                 <div class="col-1 d-flex ps-0">
                     <div class="d-flex-center p-2 fw-bold fs-5 text-gray-600">#</div>

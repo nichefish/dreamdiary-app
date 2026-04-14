@@ -72,7 +72,7 @@ class JrnlSbjctServiceTest {
         final JrnlSbjctDto registered = (JrnlSbjctDto) registResult.getRsltObj();
 
         // Then::
-        assertNotNull(registered.getPostNo(), "등록이 정상적으로 이루어지지 않았습니다.");
+        assertNotNull(registered.getId(), "등록이 정상적으로 이루어지지 않았습니다.");
     }
 
     /**
@@ -92,7 +92,7 @@ class JrnlSbjctServiceTest {
         final JrnlSbjctDto modified = (JrnlSbjctDto) modifyResult.getRsltObj();
 
         // Then::
-        assertNotNull(modified.getPostNo(), "수정이 정상적으로 이루어지지 않았습니다.");
+        assertNotNull(modified.getId(), "수정이 정상적으로 이루어지지 않았습니다.");
         assertEquals("test", modified.getCn(), "수정이 정상적으로 이루어지지 않았습니다.");
     }
 

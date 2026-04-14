@@ -19,9 +19,9 @@ import java.util.Optional;
 public interface HistoryRepository
         extends BaseStreamRepository<HistoryEntity, Integer> {
 
-    List<HistoryEntity> findAllByRefPostNoAndRefContentTypeOrderByRegDtDesc(Integer refPostNo, String refContentType);
+    List<HistoryEntity> findAllByRefIdAndRefContentTypeOrderByRegDtDesc(Integer refId, String refContentType);
 
-    Optional<HistoryEntity> findByIdAndRefPostNoAndRefContentType(Integer id, Integer refPostNo, String refContentType);
+    Optional<HistoryEntity> findByIdAndRefIdAndRefContentType(Integer id, Integer refId, String refContentType);
 
-    void deleteAllByRefPostNoAndRefContentType(Integer refPostNo, String refContentType);
+    void deleteAllByRefIdAndRefContentType(Integer refId, String refContentType);
 }

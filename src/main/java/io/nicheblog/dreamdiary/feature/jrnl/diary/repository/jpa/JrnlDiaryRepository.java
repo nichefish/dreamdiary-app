@@ -37,13 +37,13 @@ public interface JrnlDiaryRepository
     /**
      * 해당 항목에서 일기 마지막 인덱스 조회
      *
-     * @param jrnlChapterNo 조회할 항목 번호
+     * @param jrnlChapterId 조회할 항목 번호
      * @return {@link Optional} -- 해당 일자에서 일기의 마지막 인덱스
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     @Query("SELECT MAX(diary.idx) " +
             "FROM JrnlDiaryEntity diary " +
-            "WHERE diary.jrnlChapter.postNo = :jrnlChapterNo")
-    Optional<Integer> findLastIndexByJrnlChapter(final @Param("jrnlChapterNo") Integer jrnlChapterNo);
+            "WHERE diary.jrnlChapter.id = :jrnlChapterId")
+    Optional<Integer> findLastIndexByJrnlChapter(final @Param("jrnlChapterId") Integer jrnlChapterId);
 }

@@ -103,7 +103,7 @@ public class JrnlDiaryService
     @Override
     public void preRegist(final JrnlDiaryPostDto registDto) throws Exception {
         // 인덱스(정렬순서) 처리
-        final Integer lastIndex = repository.findLastIndexByJrnlChapter(registDto.getJrnlChapterNo()).orElse(0);
+        final Integer lastIndex = repository.findLastIndexByJrnlChapter(registDto.getJrnlChapterId()).orElse(0);
         registDto.setIdx(lastIndex + 1);
     }
 
@@ -132,10 +132,10 @@ public class JrnlDiaryService
 
         final boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
         modifyDto.setIsIdxChanged(isIdxChanged);
-        final boolean isChapterChanged = !Objects.equals(modifyDto.getJrnlChapterNo(), modifyEntity.getJrnlChapter().getPostNo());
+        final boolean isChapterChanged = !Objects.equals(modifyDto.getJrnlChapterId(), modifyEntity.getJrnlChapter().getId());
         modifyDto.setIsChapterChanged(isChapterChanged);
         if (isChapterChanged) {
-            modifyDto.setPrevJrnlChapterNo(modifyEntity.getJrnlChapter().getPostNo());
+            modifyDto.setPrevJrnlChapterId(modifyEntity.getJrnlChapter().getId());
         }
     }
 
@@ -215,11 +215,11 @@ public class JrnlDiaryService
     @Override
     public void postDelete(final JrnlDiaryDto deletedDto) throws Exception {
         // 인덱스 재조정
-        this.getSelf().normalize(deletedDto.getJrnlChapterNo());
+        this.getSelf().normalize(deletedDto.getJrnlChapterId());
         
         // 관련 캐시 삭제
         // 관련글 soft-delete
-        relatedContentService.deleteAllByRef(new BaseClsfKey(deletedDto.getPostNo(), ContentType.JRNL_DIARY), deletedDto.getRegstrId());
+        relatedContentService.deleteAllByRef(new BaseClsfKey(deletedDto.getId(), ContentType.JRNL_DIARY), deletedDto.getRegstrId());
 
         jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DIARY);
     }
@@ -232,7 +232,7 @@ public class JrnlDiaryService
      */
     @Transactional(readOnly = true)
     public JrnlDiaryDto getDeletedDtlDto(final Integer key) throws Exception {
-        final JrnlDiaryDto deleted = mapper.getDeletedByPostNo(key);
+        final JrnlDiaryDto deleted = mapper.getDeletedById(key);
         if (deleted == null) return null;
         if (!AuthUtils.isRegstr(deleted.getRegstrId())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
@@ -243,17 +243,17 @@ public class JrnlDiaryService
     /**
      * 해당 그룹 전체를 idx = 1부터 다시 정렬한다.
      *
-     * @param jrnlChapterNo 정렬을 수행할 상위 키
+     * @param jrnlChapterId 정렬을 수행할 상위 키
      */
     @Transactional
-    public void normalize(final Integer jrnlChapterNo) {
-        final List<JrnlDiaryDto> list = mapper.findAllForReorder(jrnlChapterNo);
+    public void normalize(final Integer jrnlChapterId) {
+        final List<JrnlDiaryDto> list = mapper.findAllForReorder(jrnlChapterId);
         if (CollectionUtils.isEmpty(list)) return;
 
         int idx = 1;
         for (final JrnlDiaryDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictUserCacheByKey("jrnlDiaryDtlDtoByUser", e.getRegstrId(), e.getPostNo());
+            EhCacheUtils.evictUserCacheByKey("jrnlDiaryDtlDtoByUser", e.getRegstrId(), e.getId());
         }
 
         mapper.batchUpdateIdx(list);
@@ -262,24 +262,24 @@ public class JrnlDiaryService
     /**
      * 대상 상위 키에 엔티티를 특정 위치에 삽입 후 재정렬한다.
      *
-     * @param jrnlChapterNo 정렬을 수행할 상위 키
-     * @param postNo 게시물 PK
+     * @param jrnlChapterId 정렬을 수행할 상위 키
+     * @param id 게시물 PK
      * @param targetIdx 삽입할 목표 위치(1-based). null이면 맨 뒤에 삽입됨
      */
     @Transactional
-    public void insert(final Integer jrnlChapterNo, final Integer postNo, Integer targetIdx) throws Exception {
-        final List<JrnlDiaryDto> list = mapper.findAllForReorder(jrnlChapterNo);
+    public void insert(final Integer jrnlChapterId, final Integer id, Integer targetIdx) throws Exception {
+        final List<JrnlDiaryDto> list = mapper.findAllForReorder(jrnlChapterId);
 
         // target 조회
-        final JrnlDiaryEntity targetEntity = getDtlEntity(postNo);
+        final JrnlDiaryEntity targetEntity = getDtlEntity(id);
         final JrnlDiaryDto target = mapstruct.toDto(targetEntity);
         if (target == null) return;
 
         // 혹시 이미 포함되어 있으면 제거
-        list.removeIf(e -> Objects.equals(e.getPostNo(), postNo));
+        list.removeIf(e -> Objects.equals(e.getId(), id));
 
         // chapterNo 변경
-        target.setJrnlChapterNo(jrnlChapterNo);
+        target.setJrnlChapterId(jrnlChapterId);
 
         // targetIdx 보정 (upper bound)
         final int maxIdx = list.size() + 1;
@@ -293,7 +293,7 @@ public class JrnlDiaryService
         int idx = 1;
         for (final JrnlDiaryDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictUserCacheByKey("jrnlDiaryDtlDtoByUser", e.getRegstrId(), e.getPostNo());
+            EhCacheUtils.evictUserCacheByKey("jrnlDiaryDtlDtoByUser", e.getRegstrId(), e.getId());
         }
 
         mapper.batchUpdateIdx(list);
@@ -307,9 +307,9 @@ public class JrnlDiaryService
     @Transactional
     public void reorderWhenChapterChanged(final JrnlDiaryPostDto updatedDto) throws Exception {
         // 1) 기존 chapter 그룹 정리 (삭제처리와 동일한 효과)
-        normalize(updatedDto.getPrevJrnlChapterNo());
+        normalize(updatedDto.getPrevJrnlChapterId());
         // 2) 새 chapter 그룹에 삽입
-        insert(updatedDto.getJrnlChapterNo(), updatedDto.getPostNo(), updatedDto.getIdx());
+        insert(updatedDto.getJrnlChapterId(), updatedDto.getId(), updatedDto.getIdx());
     }
 
     /**
@@ -320,9 +320,9 @@ public class JrnlDiaryService
     @Transactional
     public void reorderIdx(final JrnlDiaryPostDto updatedDto) throws Exception {
         // 1단계: 현재 chapter 그룹 정리 (기존 idx 값을 normalization하여 안정화)
-        normalize(updatedDto.getJrnlChapterNo());
+        normalize(updatedDto.getJrnlChapterId());
         // 2단계: 해당 group에 새 위치로 target 삽입
-        insert(updatedDto.getJrnlChapterNo(), updatedDto.getPostNo(), updatedDto.getIdx());
+        insert(updatedDto.getJrnlChapterId(), updatedDto.getId(), updatedDto.getIdx());
     }
 
     /**

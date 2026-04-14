@@ -29,15 +29,15 @@ public class JrnlCacheEvictParam {
     /** 등록자 ID */
     private String regstrId;
     /** 글 번호 */
-    private Integer postNo;
+    private Integer id;
     /** 저널 일자 번호 */
-    private Integer jrnlDayNo;
+    private Integer jrnlDayId;
     /** 저널 챕터 번호 */
-    private Integer jrnlChapterNo;
+    private Integer jrnlChapterId;
     /** 저널 꿈 번호 */
-    private Integer jrnlDreamNo;
+    private Integer jrnlDreamId;
     /** 저널 결산 번호 */
-    private Integer jrnlSumryNo;
+    private Integer jrnlSumryId;
     /** 년도 */
     private Integer yy;
     /** 월 */
@@ -56,7 +56,7 @@ public class JrnlCacheEvictParam {
     public static JrnlCacheEvictParam of(final JrnlDayDto dto) {
         return JrnlCacheEvictParam.builder()
                 .regstrId(dto.getRegstrId())
-                .postNo(dto.getPostNo())
+                .id(dto.getId())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
                 .weekStartDt(dto.getWeekStartDt())
@@ -73,7 +73,7 @@ public class JrnlCacheEvictParam {
     public static JrnlCacheEvictParam of(final JrnlDayDto postDto, final JrnlDayDto updatedDto) {
         return JrnlCacheEvictParam.builder()
                 .regstrId(updatedDto.getRegstrId())
-                .postNo(updatedDto.getPostNo())
+                .id(updatedDto.getId())
                 .yy(updatedDto.getYy())
                 .mnth(updatedDto.getMnth())
                 .weekStartDt(updatedDto.getWeekStartDt())
@@ -90,8 +90,8 @@ public class JrnlCacheEvictParam {
     public static JrnlCacheEvictParam of(final JrnlChapterDto dto) throws Exception {
         return JrnlCacheEvictParam.builder()
                 .regstrId(dto.getRegstrId())
-                .postNo(dto.getPostNo())
-                .jrnlDayNo(dto.getJrnlDayNo())
+                .id(dto.getId())
+                .jrnlDayId(dto.getJrnlDayId())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
                 .weekStartDt(DateUtils.getWeekStartDateStr(dto.getStdrdDt()))
@@ -107,9 +107,9 @@ public class JrnlCacheEvictParam {
     public static JrnlCacheEvictParam of(final JrnlDiaryPostDto dto) {
         return JrnlCacheEvictParam.builder()
                 .regstrId(dto.getRegstrId())
-                .postNo(dto.getPostNo())
-                .jrnlDayNo(dto.getJrnlDayNo())
-                .jrnlChapterNo(dto.getJrnlChapterNo())
+                .id(dto.getId())
+                .jrnlDayId(dto.getJrnlDayId())
+                .jrnlChapterId(dto.getJrnlChapterId())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
                 .build();
@@ -124,9 +124,9 @@ public class JrnlCacheEvictParam {
     public static JrnlCacheEvictParam of(final JrnlDiaryDto dto) throws Exception {
         return JrnlCacheEvictParam.builder()
                 .regstrId(dto.getRegstrId())
-                .postNo(dto.getPostNo())
-                .jrnlDayNo(dto.getJrnlDayNo())
-                .jrnlChapterNo(dto.getJrnlChapterNo())
+                .id(dto.getId())
+                .jrnlDayId(dto.getJrnlDayId())
+                .jrnlChapterId(dto.getJrnlChapterId())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
                 .weekStartDt(DateUtils.getWeekStartDateStr(dto.getStdrdDt()))
@@ -142,8 +142,8 @@ public class JrnlCacheEvictParam {
     public static JrnlCacheEvictParam of(final JrnlDreamDto dto) throws Exception {
         return JrnlCacheEvictParam.builder()
                 .regstrId(dto.getRegstrId())
-                .postNo(dto.getPostNo())
-                .jrnlDayNo(dto.getJrnlDayNo())
+                .id(dto.getId())
+                .jrnlDayId(dto.getJrnlDayId())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
                 .weekStartDt(DateUtils.getWeekStartDateStr(dto.getStdrdDt()))
@@ -159,9 +159,9 @@ public class JrnlCacheEvictParam {
     public static JrnlCacheEvictParam of(final JrnlIntrptDto dto) throws Exception {
         return JrnlCacheEvictParam.builder()
                 .regstrId(dto.getRegstrId())
-                .postNo(dto.getPostNo())
-                .jrnlDayNo(dto.getJrnlDayNo())
-                .jrnlDreamNo(dto.getJrnlDreamNo())
+                .id(dto.getId())
+                .jrnlDayId(dto.getJrnlDayId())
+                .jrnlDreamId(dto.getJrnlDreamId())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
                 .weekStartDt(DateUtils.getWeekStartDateStr(dto.getStdrdDt()))
@@ -177,7 +177,7 @@ public class JrnlCacheEvictParam {
     public static JrnlCacheEvictParam of(final JrnlSumryDto dto) {
         return JrnlCacheEvictParam.builder()
                 .regstrId(dto.getRegstrId())
-                .postNo(dto.getPostNo())
+                .id(dto.getId())
                 .yy(dto.getYy())
                 .build();
     }
@@ -191,8 +191,8 @@ public class JrnlCacheEvictParam {
     public static JrnlCacheEvictParam of(final JrnlSumryReviewDto dto) {
         return JrnlCacheEvictParam.builder()
                 .regstrId(dto.getRegstrId())
-                .postNo(dto.getPostNo())
-                .jrnlSumryNo(dto.getJrnlSumryNo())
+                .id(dto.getId())
+                .jrnlSumryId(dto.getJrnlSumryId())
                 .yy(dto.getYy())
                 .build();
     }
@@ -206,9 +206,11 @@ public class JrnlCacheEvictParam {
     public static JrnlCacheEvictParam of(final JrnlTodoDto dto) {
         return JrnlCacheEvictParam.builder()
                 .regstrId(dto.getRegstrId())
-                .postNo(dto.getPostNo())
+                .id(dto.getId())
+                .id(dto.getId())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
                 .build();
     }
+
 }

@@ -31,7 +31,7 @@ public class BaseClsfEntity
      * !상속받은 클래스에서 실제 매핑 구성하기 (auto_increment 또는 테이블 생성 전략(for 복합키))
      */
     @Transient
-    protected Integer postNo;
+    protected Integer id;
 
     /**
      * 게시판 분류 코드
@@ -47,6 +47,6 @@ public class BaseClsfEntity
      * @return {@link BaseClsfKey} -- 글 번호와 콘텐츠 유형을 포함하는 복합키 객체
      */
     public BaseClsfKey getClsfKey() {
-        return new BaseClsfKey(this.getPostNo(), this.getContentType());
+        return new BaseClsfKey(this.getId(), this.getContentType());
     }
 }

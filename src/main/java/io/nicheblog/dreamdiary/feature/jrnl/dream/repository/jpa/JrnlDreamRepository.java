@@ -26,14 +26,14 @@ public interface JrnlDreamRepository
     /**
      * 해당 일자에서 꿈 마지막 인덱스 조회
      *
-     * @param jrnlDayNo 조회할 일자 번호
+     * @param jrnlDayId 조회할 일자 번호
      * @return {@link Optional} -- 해당 일자에서 꿈의 마지막 인덱스
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     @Query("SELECT MAX(dream.idx) " +
             "FROM JrnlDreamEntity dream " +
-            "INNER JOIN FETCH JrnlDayEntity day ON dream.jrnlDayNo = day.postNo " +
-            "WHERE dream.jrnlDayNo = :jrnlDayNo AND (dream.elseDreamYn IS NULL OR dream.elseDreamYn = 'N')")
-    Optional<Integer> findLastIndexByJrnlDay(final @Param("jrnlDayNo") Integer jrnlDayNo);
+            "INNER JOIN FETCH JrnlDayEntity day ON dream.jrnlDayId = day.id " +
+            "WHERE dream.jrnlDayId = :jrnlDayId AND (dream.elseDreamYn IS NULL OR dream.elseDreamYn = 'N')")
+    Optional<Integer> findLastIndexByJrnlDay(final @Param("jrnlDayId") Integer jrnlDayId);
 }

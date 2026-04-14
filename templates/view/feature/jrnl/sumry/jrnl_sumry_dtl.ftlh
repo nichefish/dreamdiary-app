@@ -80,7 +80,7 @@
 </div>
 
 <form name="procForm" id="procForm" method="get">
-    <input type="hidden" name="postNo" id="postNo" value="" />
+    <input type="hidden" name="id" id="id" value="" />
     <input type="hidden" name="yy" id="yy" value="" />
     <input type="hidden" name="mnth" id="mnth" value="99" />
 </form>

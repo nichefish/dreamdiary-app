@@ -45,7 +45,7 @@ public class JrnlDreamPostDto
     /* ----- */
 
     /** 저널 일자 번호 */
-    private Integer jrnlDayNo;
+    private Integer jrnlDayId;
     /** 저널 기준일자 */
     private Integer yy;
     /** 저널 기준일자 */
@@ -70,7 +70,7 @@ public class JrnlDreamPostDto
 
     @Override
     public Integer getKey() {
-        return this.postNo;
+        return this.id;
     }
 
     /** 위임 :: 첨부파일 모듈 */

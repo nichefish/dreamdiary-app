@@ -35,7 +35,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE flsys_meta SET del_yn = 'Y' WHERE post_no = ?")
+@SQLDelete(sql = "UPDATE flsys_meta SET del_yn = 'Y' WHERE id = ?")
 public class FlsysMetaEntity
         extends BaseClsfEntity
         implements CommentEmbedModule, TagEmbedModule, ManagtEmbedModule, ViewerEmbedModule {
@@ -47,9 +47,9 @@ public class FlsysMetaEntity
     /** 글 번호 */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "post_no")
+    @Column(name = "id")
     @Comment("글 번호")
-    private Integer postNo;
+    private Integer id;
 
     /** 컨텐츠 타입 */
     @Builder.Default

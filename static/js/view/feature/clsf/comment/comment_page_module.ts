@@ -66,42 +66,42 @@ dF.Comment.page = (function(): dfModule {
 
         /**
          * 댓글 수정 폼 생성
-         * @param {string|number} postNo - 댓글 번호.
+         * @param {string|number} id - 댓글 번호.
          */
-        mdfForm: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        mdfForm: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
-            $("#commentDtlSpan" + postNo).hide();
-            const str: string = $("#commentMdfTemplate").html().replace(/__INDEX__/g, String(postNo));
-            $("#commentSpan" + postNo).append(str);
-            $("#commentMdfCn" + postNo).html($("#commentCnSpanDiv" + postNo).html());
-            $("#showMdfBtnDiv" + postNo).hide();
-            $("#mdfSaveBtnDiv" + postNo).show();
+            $("#commentDtlSpan" + id).hide();
+            const str: string = $("#commentMdfTemplate").html().replace(/__INDEX__/g, String(id));
+            $("#commentSpan" + id).append(str);
+            $("#commentMdfCn" + id).html($("#commentCnSpanDiv" + id).html());
+            $("#showMdfBtnDiv" + id).hide();
+            $("#mdfSaveBtnDiv" + id).show();
             cF.validate.validateForm("#commentPageMdfForm", dF.Comment.page.mdfAjax);
         },
 
         /**
          * 댓글 수정 폼 닫기
-         * @param {string|number} postNo - 댓글 번호.
+         * @param {string|number} id - 댓글 번호.
          */
-        closeMdfForm: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        closeMdfForm: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
-            $("#commentDtlSpan" + postNo).show();
-            $("#commentSpan" + postNo).empty();
-            $("#commentMdfCn" + postNo).empty();
-            $("#showMdfBtnDiv" + postNo).show();
-            $("#mdfSaveBtnDiv" + postNo).hide();
+            $("#commentDtlSpan" + id).show();
+            $("#commentSpan" + id).empty();
+            $("#commentMdfCn" + id).empty();
+            $("#showMdfBtnDiv" + id).show();
+            $("#mdfSaveBtnDiv" + id).hide();
         },
 
         /**
          * 댓글 수정 (Ajax)
-         * @param {string|number} postNo - 댓글 번호.
+         * @param {string|number} id - 댓글 번호.
          */
-        mdfAjax: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        mdfAjax: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
-            if (cF.util.isEmpty($("#commentMdfCn" + postNo), "value")) {
+            if (cF.util.isEmpty($("#commentMdfCn" + id), "value")) {
                 Swal.fire("댓글 내용을 입력해주세요.");
                 return;
             }
@@ -111,8 +111,8 @@ dF.Comment.page = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = cF.util.bindUrl(Url.COMMENT, { postNo });
-                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#commentPageMdfForm" + postNo);
+                const url: string = cF.util.bindUrl(Url.COMMENT, { id });
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#commentPageMdfForm" + id);
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
@@ -124,17 +124,17 @@ dF.Comment.page = (function(): dfModule {
 
         /**
          * 댓글 삭제 (Ajax)
-         * @param {string|number} postNo - 댓글 번호.
+         * @param {string|number} id - 댓글 번호.
          */
-        delAjax: function(postNo: string | number): void {
-            if (isNaN(Number(postNo))) return;
+        delAjax: function(id: string | number): void {
+            if (isNaN(Number(id))) return;
 
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
-                const url: string = cF.util.bindUrl(Url.COMMENT, { postNo });
+                const url: string = cF.util.bindUrl(Url.COMMENT, { id });
                 const ajaxData: Record<string, any> = { "actvtyCtgrCd": "${actvtyCtgrCd!}" };
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })

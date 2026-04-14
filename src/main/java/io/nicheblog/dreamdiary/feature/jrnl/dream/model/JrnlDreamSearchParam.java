@@ -37,7 +37,7 @@ public class JrnlDreamSearchParam
     private String weekStartDt;
 
     /** 저널 일자 번호 */
-    private Integer jrnlDayNo;
+    private Integer jrnlDayId;
 
     /** 콘텐츠 타입 */
     private String contentType;
@@ -63,7 +63,7 @@ public class JrnlDreamSearchParam
     public boolean isEmpty() {
         final boolean hasKeyword = searchKeywords != null && searchKeywords.stream().anyMatch(k -> k != null && !k.trim().isEmpty());
         final boolean hasTagIds = CollectionUtils.isNotEmpty(tagIds) && tagIds.stream().anyMatch(Objects::nonNull);
-        final boolean hasDate = yy != null || mnth != null || weekStartDt != null || jrnlDayNo != null;
+        final boolean hasDate = yy != null || mnth != null || weekStartDt != null || jrnlDayId != null;
         final boolean hasTag = tagId != null;
         final boolean hasState = CollectionUtils.isNotEmpty(states) && states.stream().anyMatch(StringUtils::isNotEmpty);
 

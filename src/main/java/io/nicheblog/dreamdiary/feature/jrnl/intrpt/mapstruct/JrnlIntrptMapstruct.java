@@ -43,7 +43,7 @@ public abstract class JrnlIntrptMapstruct
      */
     @Override
     @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
-    @Mapping(target = "jrnlDream", source = "jrnlDreamNo", qualifiedByName = "mapJrnlDream")
+    @Mapping(target = "jrnlDream", source = "jrnlDreamId", qualifiedByName = "mapJrnlDream")
     public abstract JrnlIntrptEntity toEntity(final JrnlIntrptDto dto) throws Exception;
 
     /**
@@ -55,7 +55,7 @@ public abstract class JrnlIntrptMapstruct
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
-    @Mapping(target = "jrnlDream", source = "jrnlDreamNo", qualifiedByName = "mapJrnlDream")
+    @Mapping(target = "jrnlDream", source = "jrnlDreamId", qualifiedByName = "mapJrnlDream")
     public abstract void updateFromDto(final JrnlIntrptDto dto, final @MappingTarget JrnlIntrptEntity entity) throws Exception;
 
     /**
@@ -66,8 +66,8 @@ public abstract class JrnlIntrptMapstruct
      */
     @Override
     @Named("toDto")
-    @Mapping(target = "jrnlDreamNo", source = "jrnlDream.postNo")
-    @Mapping(target = "jrnlDayNo", source = "jrnlDream.jrnlDayNo")
+    @Mapping(target = "jrnlDreamId", source = "jrnlDream.id")
+    @Mapping(target = "jrnlDayId", source = "jrnlDream.jrnlDayId")
     @Mapping(target = "stdrdDt", expression = "java((entity.getJrnlDream() != null && entity.getJrnlDream().getJrnlDay() != null) ? DateUtils.asStr(\"Y\".equals(entity.getJrnlDream().getJrnlDay().getDtUnknownYn()) ? entity.getJrnlDream().getJrnlDay().getAprxmtDt() : entity.getJrnlDream().getJrnlDay().getJrnlDt(), DatePtn.DATE) : null)")
     @Mapping(target = "jrnlDtWeekDay", expression = "java((entity.getJrnlDream() != null && entity.getJrnlDream().getJrnlDay() != null) && entity.getJrnlDream().getJrnlDay().getJrnlDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJrnlDream().getJrnlDay().getJrnlDt()) : null)")
     @Mapping(target = "yy", source = "jrnlDream.jrnlDay.yy")
@@ -76,13 +76,13 @@ public abstract class JrnlIntrptMapstruct
     public abstract JrnlIntrptDto toDto(final JrnlIntrptEntity entity) throws Exception;
 
     /**
-     * jrnlDreamNo로부터 JrnlDreamEntity 객체 생성
-     * @param jrnlDreamNo JrnlDreamNo
+     * jrnlDreamId로부터 JrnlDreamEntity 객체 생성
+     * @param jrnlDreamId JrnlDreamId
      * @return JrnlDreamEntity
      */
     @Named("mapJrnlDream")
-    protected JrnlDreamEntity mapJrnlDream(final Integer jrnlDreamNo) {
-        if (jrnlDreamNo == null) return null;
-        return em.getReference(JrnlDreamEntity.class, jrnlDreamNo);
+    protected JrnlDreamEntity mapJrnlDream(final Integer jrnlDreamId) {
+        if (jrnlDreamId == null) return null;
+        return em.getReference(JrnlDreamEntity.class, jrnlDreamId);
     }
 }

@@ -34,7 +34,7 @@ dF.Schdul = (function(): dfModule {
          * Custom SubmitHandler
          */
         submitHandler: function(): void {
-            const isReg: boolean = ($("#schdulRegForm #postNo").val() === "");
+            const isReg: boolean = ($("#schdulRegForm #id").val() === "");
             Swal.fire({
                 text: isReg ? Message.get("view.cnfm.reg") : Message.get("view.cnfm.mdf"),
                 showCancelButton: true,
@@ -122,14 +122,14 @@ dF.Schdul = (function(): dfModule {
 
         /**
          * 상세 모달 호출
-         * @param {string|number} postNo - 조회할 글 번호.
+         * @param {string|number} id - 조회할 글 번호.
          */
-        dtlModal: function(postNo: string|number): void {
+        dtlModal: function(id: string|number): void {
             event.stopPropagation();
-            if (isNaN(Number(postNo))) return;
+            if (isNaN(Number(id))) return;
 
             const url: string = Url.SCHDUL_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "postNo": postNo };
+            const ajaxData: Record<string, any> = { "id": id };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -137,7 +137,7 @@ dF.Schdul = (function(): dfModule {
                 }
                 const obj: Record<string, any> = res.rsltObj;
                 cF.handlebars.template(obj, "schdul_dtl", "modal");
-                dF.Schdul.key = obj.postNo;
+                dF.Schdul.key = obj.id;
             });
         },
 
@@ -149,7 +149,7 @@ dF.Schdul = (function(): dfModule {
             if (isNaN(Number(key))) return;
 
             const url: string = Url.SCHDUL_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "postNo": key };
+            const ajaxData: Record<string, any> = { "id": key };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -187,7 +187,7 @@ dF.Schdul = (function(): dfModule {
                 if (!result.value) return;
 
                 const url: string = Url.SCHDUL_DEL_AJAX;
-                const ajaxData: Record<string, any> = { "postNo" : key };
+                const ajaxData: Record<string, any> = { "id" : key };
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {

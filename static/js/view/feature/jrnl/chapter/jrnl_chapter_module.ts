@@ -41,14 +41,14 @@ dF.JrnlChapter = (function(): dfModule {
         /**
          * 등록 모달 호출
          * @param {Object} param - 파라미터 객체
-         * @param {string|number} param.jrnlDayNo - 저널 일자 번호.
+         * @param {string|number} param.jrnlDayId - 저널 일자 번호.
          * @param {string} param.stdrdDt - 기준 날짜.
          * @param {string} param.jrnlDtWeekDay - 기준 날짜 요일.
          */
-        regModal: function({ jrnlDayNo, stdrdDt, jrnlDtWeekDay }: { jrnlDayNo: string | number; stdrdDt: string; jrnlDtWeekDay: string; }): void {
-            if (isNaN(Number(jrnlDayNo))) return;
+        regModal: function({ jrnlDayId, stdrdDt, jrnlDtWeekDay }: { jrnlDayId: string | number; stdrdDt: string; jrnlDtWeekDay: string; }): void {
+            if (isNaN(Number(jrnlDayId))) return;
 
-            const obj: Record<string, any> = { jrnlDayNo: jrnlDayNo, stdrdDt: stdrdDt, jrnlDtWeekDay: jrnlDtWeekDay };
+            const obj: Record<string, any> = { jrnlDayId: jrnlDayId, stdrdDt: stdrdDt, jrnlDtWeekDay: jrnlDtWeekDay };
             /* initialize form. */
             dF.JrnlChapter.initForm(obj);
         },
@@ -64,15 +64,15 @@ dF.JrnlChapter = (function(): dfModule {
          * 등록 (Ajax)
          */
         regAjax: function(): void {
-            const postNo: string = cF.util.getInputValue("#jrnlChapterRegForm [name='postNo']");
-            const isMdf: boolean = cF.util.isNotEmpty(postNo);
+            const id: string = cF.util.getInputValue("#jrnlChapterRegForm [name='id']");
+            const isMdf: boolean = cF.util.isNotEmpty(id);
             Swal.fire({
                 text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = isMdf ? cF.util.bindUrl(Url.JRNL_CHAPTER, { postNo }) : Url.JRNL_CHAPTERS;
+                const url: string = isMdf ? cF.util.bindUrl(Url.JRNL_CHAPTER, { id }) : Url.JRNL_CHAPTERS;
                 const ajaxData: FormData = new FormData(document.getElementById("jrnlChapterRegForm") as HTMLFormElement);
                 cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
@@ -87,10 +87,10 @@ dF.JrnlChapter = (function(): dfModule {
 
         /**
          * 상세 모달 호출
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          */
-        dtlModal: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        dtlModal: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
             // 기존에 열린 모달이 있으면 닫기
             const openModals: NodeList = document.querySelectorAll('.modal.show'); // 열린 모달을 찾기
@@ -102,7 +102,7 @@ dF.JrnlChapter = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = cF.util.bindUrl(Url.JRNL_CHAPTER, { postNo });
+            const url: string = cF.util.bindUrl(Url.JRNL_CHAPTER, { id });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -119,10 +119,10 @@ dF.JrnlChapter = (function(): dfModule {
 
         /**
          * 수정 모달 호출
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          */
-        mdfModal: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        mdfModal: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
             // 기존에 열린 모달이 있으면 닫기
             const openModals: NodeList = document.querySelectorAll('.modal.show'); // 열린 모달을 찾기
@@ -134,7 +134,7 @@ dF.JrnlChapter = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = cF.util.bindUrl(Url.JRNL_CHAPTER, { postNo });
+            const url: string = cF.util.bindUrl(Url.JRNL_CHAPTER, { id });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -151,10 +151,10 @@ dF.JrnlChapter = (function(): dfModule {
 
         /**
          * 삭제 (Ajax)
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          */
-        delAjax: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        delAjax: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
@@ -162,7 +162,7 @@ dF.JrnlChapter = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = cF.util.bindUrl(Url.JRNL_CHAPTER, { postNo });
+                const url: string = cF.util.bindUrl(Url.JRNL_CHAPTER, { id });
                 cF.$ajax.delete(url, null, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
@@ -176,16 +176,16 @@ dF.JrnlChapter = (function(): dfModule {
 
         /**
          * 상태 토글 (Ajax)
-         * @param postNo
+         * @param id
          * @param stateCd
          * @param {object} object
          */
-        toggleStateAjax: function(postNo: string|number, stateCd: string, { onOffFunc }): void {
-            if (isNaN(Number(postNo))) return;
+        toggleStateAjax: function(id: string|number, stateCd: string, { onOffFunc }): void {
+            if (isNaN(Number(id))) return;
 
-            const item = document.querySelector(`.jrnl-chapter-item[data-id='${postNo}']`) as HTMLElement;
+            const item = document.querySelector(`.jrnl-chapter-item[data-id='${id}']`) as HTMLElement;
             const cacheContext = dF.State.resolveJrnlCacheContext(item);
-            const payload = { postNo, contentType: "JRNL_CHAPTER", stateCd, cacheContext };
+            const payload = { id: id, contentType: "JRNL_CHAPTER", stateCd, cacheContext };
             dF.State.toggleAjax(payload, function(res: AjaxResponse): void {
                 if (!item) return;
                 const lowerStateCd: string = stateCd.toLowerCase();
@@ -213,10 +213,10 @@ dF.JrnlChapter = (function(): dfModule {
 
         /**
          * 글 접기/펼치기 토글. (Ajax)
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          */
-        collapseAjax: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        collapseAjax: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
             const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
                 const cn: HTMLDivElement = item.querySelector("div.jrnl-chapter-cn");
@@ -224,17 +224,17 @@ dF.JrnlChapter = (function(): dfModule {
 
                 cn?.classList.toggle("collapsed", res.rsltSts === "ON");
             }
-            this.toggleStateAjax(postNo, "COLLAPSED", { onOffFunc });
+            this.toggleStateAjax(id, "COLLAPSED", { onOffFunc });
         },
 
         /**
          * toggle
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          */
-        toggle: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        toggle: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
-            const item = document.querySelector(`.jrnl-chapter-item[data-id='${postNo}']`) as HTMLElement;
+            const item = document.querySelector(`.jrnl-chapter-item[data-id='${id}']`) as HTMLElement;
             if (!item) return console.warn("item not found.");
 
             const cn: HTMLDivElement = item.querySelector("div.jrnl-chapter-cn");
@@ -244,7 +244,7 @@ dF.JrnlChapter = (function(): dfModule {
             const shouldCollapse: boolean = cn && !cn.classList.contains("collapsed");
             const diaries: NodeListOf<HTMLElement> = item.querySelectorAll(".jrnl-diary-cn");
             const tagDiv = item.querySelector(".jrnl-chapter-tags");
-            const icon: HTMLElement = document.querySelector(`#chapter-toggle-icon-${postNo}`);
+            const icon: HTMLElement = document.querySelector(`#chapter-toggle-icon-${id}`);
             if (!icon) console.log("icon not found.");
             if (shouldCollapse) {
                 // 전체 접기
@@ -271,13 +271,13 @@ dF.JrnlChapter = (function(): dfModule {
 
         /**
          * copy
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          * @deprecated
          */
-        copy: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        copy: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
-            const url: string = cF.util.bindUrl(Url.JRNL_CHAPTER, { postNo });
+            const url: string = cF.util.bindUrl(Url.JRNL_CHAPTER, { id });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -315,10 +315,10 @@ dF.JrnlChapter = (function(): dfModule {
         /**
          * 검색 결과 txt 다운로드
          */
-        exportTxt: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        exportTxt: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
-            window.location.href = cF.util.bindUrl(Url.JRNL_CHAPTER_EXPORT, {postNo});
+            window.location.href = cF.util.bindUrl(Url.JRNL_CHAPTER_EXPORT, { id });
         }
     }
 })();

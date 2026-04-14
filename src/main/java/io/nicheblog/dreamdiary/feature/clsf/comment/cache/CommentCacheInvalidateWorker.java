@@ -66,16 +66,16 @@ public class CommentCacheInvalidateWorker {
      * 트랜잭션이 활성 상태일 경우, {@code afterCommit()} 시점에 invalidate가 실행되도록 등록한다.
      * 트랜잭션이 없거나 비활성 상태일 경우 즉시 invalidate를 수행한다.
      *
-     * @param refPostNo      참조 대상 게시글 번호
+     * @param refId      참조 대상 게시글 번호
      * @param refContentType 콘텐츠 타입 (전략 선택 기준)
      * @throws Exception invalidate 실행 중 발생 가능한 예외 (즉시 실행 경로에서만 전파됨)
      */
-    public void invalidateAfterCommit(final Integer refPostNo, final ContentType refContentType) throws Exception {
-        if (refPostNo == null || refContentType == null || ContentType.DEFAULT.equals(refContentType)) return;
+    public void invalidateAfterCommit(final Integer refId, final ContentType refContentType) throws Exception {
+        if (refId == null || refContentType == null || ContentType.DEFAULT.equals(refContentType)) return;
 
         TransactionHookUtils.runAfterCommitOrNow(
-                () -> this.invalidate(refPostNo, refContentType),
-                e -> log.error("Comment cache invalidation failed [{}:{}]: {}", refContentType, refPostNo, e.getMessage(), e)
+                () -> this.invalidate(refId, refContentType),
+                e -> log.error("Comment cache invalidation failed [{}:{}]: {}", refContentType, refId, e.getMessage(), e)
         );
     }
 
@@ -83,15 +83,15 @@ public class CommentCacheInvalidateWorker {
      * 콘텐츠 타입에 맞는 캐시 무효화 전략을 선택하여 실행한다.
      * 등록된 {@link CommentCacheInvalidator} 목록을 순회하며, {@code supports(ContentType)} 조건을 만족하는 첫 번째 전략을 실행한다.
      *
-     * @param refPostNo      참조 대상 게시글 번호
+     * @param refId      참조 대상 게시글 번호
      * @param refContentType 콘텐츠 타입
      * @throws Exception 전략 실행 중 발생 가능한 예외
      */
-    public void invalidate(final Integer refPostNo, final ContentType refContentType) throws Exception {
+    public void invalidate(final Integer refId, final ContentType refContentType) throws Exception {
         for (final CommentCacheInvalidator strategy : strategies) {
             if (!strategy.supports(refContentType)) continue;
 
-            strategy.invalidate(refPostNo);
+            strategy.invalidate(refId);
             return;
         }
         log.warn("No Comment cache invalidation strategy found for ContentType: {}", refContentType);

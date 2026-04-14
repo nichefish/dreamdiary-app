@@ -233,13 +233,13 @@ dF.JrnlSumry = (function(): dfModule {
 
         /**
          * 꿈 기록 완료 처리 (Ajax)
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          */
-        comptAjax: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        comptAjax: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
             const url: string = Url.JRNL_SUMRY_DREAM_COMPT_AJAX;
-            const ajaxData: Record<string, any> = { "postNo": postNo };
+            const ajaxData: Record<string, any> = { id };
             cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
                     .then(function(): void {

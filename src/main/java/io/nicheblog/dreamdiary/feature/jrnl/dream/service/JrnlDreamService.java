@@ -103,7 +103,7 @@ public class JrnlDreamService
     @Override
     public void preRegist(final JrnlDreamPostDto registDto) throws Exception {
         // 인덱스(정렬순서) 처리
-        final Integer lastIndex = repository.findLastIndexByJrnlDay(registDto.getJrnlDayNo()).orElse(0);
+        final Integer lastIndex = repository.findLastIndexByJrnlDay(registDto.getJrnlDayId()).orElse(0);
         registDto.setIdx(lastIndex + 1);
     }
 
@@ -187,7 +187,7 @@ public class JrnlDreamService
 
         // 관련 캐시 삭제
         // 관련글 soft-delete
-        relatedContentService.deleteAllByRef(new BaseClsfKey(deletedDto.getPostNo(), ContentType.JRNL_DREAM), deletedDto.getRegstrId());
+        relatedContentService.deleteAllByRef(new BaseClsfKey(deletedDto.getId(), ContentType.JRNL_DREAM), deletedDto.getRegstrId());
 
         jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DREAM);
     }
@@ -232,7 +232,7 @@ public class JrnlDreamService
      */
     @Transactional(readOnly = true)
     public JrnlDreamDto getDeletedDtlDto(final Integer key) throws Exception {
-        final JrnlDreamDto deleted = mapper.getDeletedByPostNo(key);
+        final JrnlDreamDto deleted = mapper.getDeletedById(key);
         if (deleted == null) return null;
         if (!AuthUtils.isRegstr(deleted.getRegstrId())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
@@ -243,17 +243,17 @@ public class JrnlDreamService
     /**
      * 해당 그룹 전체를 idx = 1부터 다시 정렬한다.
      *
-     * @param jrnlDayNo 정렬을 수행할 상위 키
+     * @param jrnlDayId 정렬을 수행할 상위 키
      */
     @Transactional
-    public void normalize(final Integer jrnlDayNo) {
-        final List<JrnlDreamDto> list = mapper.findAllForReorder(jrnlDayNo);
+    public void normalize(final Integer jrnlDayId) {
+        final List<JrnlDreamDto> list = mapper.findAllForReorder(jrnlDayId);
         if (CollectionUtils.isEmpty(list)) return;
 
         int idx = 1;
         for (final JrnlDreamDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictUserCacheByKey("jrnlDreamDtlDtoByUser", e.getRegstrId(), e.getPostNo());
+            EhCacheUtils.evictUserCacheByKey("jrnlDreamDtlDtoByUser", e.getRegstrId(), e.getId());
         }
 
         mapper.batchUpdateIdx(list);
@@ -262,24 +262,24 @@ public class JrnlDreamService
     /**
      * 대상 상위 키에 엔티티를 특정 위치에 삽입 후 재정렬한다.
      *
-     * @param jrnlDayNo 정렬을 수행할 상위 키
-     * @param postNo 게시물 PK
+     * @param jrnlDayId 정렬을 수행할 상위 키
+     * @param id 게시물 PK
      * @param targetIdx 삽입할 목표 위치(1-based). null이면 맨 뒤에 삽입됨
      */
     @Transactional
-    public void insert(final Integer jrnlDayNo, final Integer postNo, Integer targetIdx) throws Exception {
-        final List<JrnlDreamDto> list = mapper.findAllForReorder(jrnlDayNo);
+    public void insert(final Integer jrnlDayId, final Integer id, Integer targetIdx) throws Exception {
+        final List<JrnlDreamDto> list = mapper.findAllForReorder(jrnlDayId);
 
         // target 조회
-        final JrnlDreamEntity targetEntity = findDtlEntity(postNo);
+        final JrnlDreamEntity targetEntity = findDtlEntity(id);
         final JrnlDreamDto target = mapstruct.toDto(targetEntity);
         if (target == null) return;
 
         // 혹시 이미 포함되어 있으면 제거
-        list.removeIf(e -> Objects.equals(e.getPostNo(), postNo));
+        list.removeIf(e -> Objects.equals(e.getId(), id));
 
         // chapterNo 변경
-        target.setJrnlDayNo(jrnlDayNo);
+        target.setJrnlDayId(jrnlDayId);
 
         // targetIdx 보정 (upper bound)
         final int maxIdx = list.size() + 1;
@@ -293,7 +293,7 @@ public class JrnlDreamService
         int idx = 1;
         for (final JrnlDreamDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictUserCacheByKey("jrnlDreamDtlDtoByUser", e.getRegstrId(), e.getPostNo());
+            EhCacheUtils.evictUserCacheByKey("jrnlDreamDtlDtoByUser", e.getRegstrId(), e.getId());
         }
 
         mapper.batchUpdateIdx(list);
@@ -307,9 +307,9 @@ public class JrnlDreamService
     @Transactional
     public void reorderIdx(final JrnlDreamDto updatedDto) throws Exception {
         // 1단계: 현재 chapter 그룹 정리 (기존 idx 값을 normalization하여 안정화)
-        normalize(updatedDto.getJrnlDayNo());
+        normalize(updatedDto.getJrnlDayId());
         // 2단계: 해당 group에 새 위치로 target 삽입
-        insert(updatedDto.getJrnlDayNo(), updatedDto.getPostNo(), updatedDto.getIdx());
+        insert(updatedDto.getJrnlDayId(), updatedDto.getId(), updatedDto.getIdx());
     }
 
     /**

@@ -27,7 +27,7 @@ import java.util.Date;
 @Table(
     name = "viewer",
     uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"regstr_id", "ref_post_no", "ref_content_type"})  // 한 참조글당 viewer entity는 한 개만 존재
+        @UniqueConstraint(columnNames = {"regstr_id", "ref_id", "ref_content_type"})  // 한 참조글당 viewer entity는 한 개만 존재
     }
 )
 @Getter
@@ -48,9 +48,9 @@ public class ViewerEntity
     private Integer id;
 
     /** 참조 글번호 */
-    @Column(name = "ref_post_no")
+    @Column(name = "ref_id")
     @Comment("글번호")
-    private Integer refPostNo;
+    private Integer refId;
 
     /** 참조 컨텐츠 타입 */
     @Column(name = "ref_content_type")
@@ -71,7 +71,7 @@ public class ViewerEntity
      * @param refKey 글 번호와 컨텐츠 타입을 포함하는 참조 복합키 객체
      */
     public ViewerEntity(final BaseClsfKey refKey) {
-        this.refPostNo = refKey.getPostNo();
+        this.refId = refKey.getId();
         this.refContentType = refKey.getContentType();
     }
 }

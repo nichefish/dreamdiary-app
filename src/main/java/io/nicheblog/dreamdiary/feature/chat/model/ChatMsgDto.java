@@ -58,6 +58,6 @@ public class ChatMsgDto
 
     @Override
     public Integer getKey() {
-        return this.postNo;
+        return this.id;
     }
 }

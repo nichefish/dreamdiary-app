@@ -23,10 +23,10 @@ public class HistoryController {
     @ResponseBody
     public ResponseEntity<AjaxResponse> clsfHistoryListAjax(
             final @PathVariable("contentType") String contentType,
-            final @PathVariable("postNo") Integer postNo
+            final @PathVariable("id") Integer id
     ) throws Exception {
         final ContentType resolvedContentType = ContentType.get(contentType);
-        final BaseClsfDto retrievedDto = myHistoryFacade.getMyHistoryTarget(resolvedContentType, postNo);
+        final BaseClsfDto retrievedDto = myHistoryFacade.getMyHistoryTarget(resolvedContentType, id);
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(retrievedDto));
     }
 
@@ -35,11 +35,11 @@ public class HistoryController {
     @ResponseBody
     public ResponseEntity<AjaxResponse> clsfHistoryRestoreAjax(
             final @PathVariable("contentType") String contentType,
-            final @PathVariable("postNo") Integer postNo,
+            final @PathVariable("id") Integer id,
             final @PathVariable("historyId") Integer historyId
     ) throws Exception {
         final ContentType resolvedContentType = ContentType.get(contentType);
-        final BaseClsfDto restoredDto = myHistoryFacade.restoreMyHistory(resolvedContentType, postNo, historyId);
+        final BaseClsfDto restoredDto = myHistoryFacade.restoreMyHistory(resolvedContentType, id, historyId);
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(true, MessageUtils.RSLT_SUCCESS).withObj(restoredDto));
     }
 
@@ -48,11 +48,11 @@ public class HistoryController {
     @ResponseBody
     public ResponseEntity<AjaxResponse> clsfHistoryDeleteAjax(
             final @PathVariable("contentType") String contentType,
-            final @PathVariable("postNo") Integer postNo,
+            final @PathVariable("id") Integer id,
             final @PathVariable("historyId") Integer historyId
     ) throws Exception {
         final ContentType resolvedContentType = ContentType.get(contentType);
-        final boolean deleted = myHistoryFacade.deleteMyHistory(resolvedContentType, postNo, historyId);
+        final boolean deleted = myHistoryFacade.deleteMyHistory(resolvedContentType, id, historyId);
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(deleted, deleted ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE));
     }
 
@@ -61,10 +61,10 @@ public class HistoryController {
     @ResponseBody
     public ResponseEntity<AjaxResponse> clsfHistoryClearAjax(
             final @PathVariable("contentType") String contentType,
-            final @PathVariable("postNo") Integer postNo
+            final @PathVariable("id") Integer id
     ) throws Exception {
         final ContentType resolvedContentType = ContentType.get(contentType);
-        final boolean deleted = myHistoryFacade.deleteAllMyHistory(resolvedContentType, postNo);
+        final boolean deleted = myHistoryFacade.deleteAllMyHistory(resolvedContentType, id);
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(deleted, deleted ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE));
     }
 }

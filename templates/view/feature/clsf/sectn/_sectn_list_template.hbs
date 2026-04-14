@@ -11,7 +11,7 @@
         <div class="draggable-zone">
             {{#each this}}
                 <!--begin::accordion Item-->
-                <div id="{{postNo}}" class="row d-flex align-items-center mb-4 sortable-item draggable">
+                <div id="{{id}}" class="row d-flex align-items-center mb-4 sortable-item draggable">
                     <!--begin::accordion item header-->
                     <div class="accordion-header py-3 d-flex align-items-center gap-2 {{#ifYn deprcYn}}collapsed{{/ifYn}}" data-bs-toggle="collapse" data-bs-target="#kt_accordion_sectn_item_{{@index}}">
                         <!--begin::sort handle icon-->
@@ -46,7 +46,7 @@
                         </div>
                         <div class="col-1 py-3 w-50px">
                             <button type="button" class="btn btn-light-primary btn-outlined ms-2 py-1 px-3 h-30px cursor-pointer"
-                                    onclick="dF.Comment.modal.regModal({{postNo}}, '{{contentType}}');"
+                                    onclick="dF.Comment.modal.regModal({{id}}, '{{contentType}}');"
                                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.comment'/> <@spring.message "bs.tooltip.modal.reg"/>">
                                 <i class="bi bi-chat-left-dots p-0"></i>
                             </button>
@@ -56,12 +56,12 @@
                         </div>
                         <div class="col-1 py-3 w-125px">
                             <button type="button" class="btn btn-light-primary btn-outlined ms-2 py-1 px-3 h-30px cursor-pointer"
-                                    onclick="dF.Sectn.mdfModal({{postNo}});"
+                                    onclick="dF.Sectn.mdfModal({{id}});"
                                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="단락 <@spring.message 'bs.tooltip.modal.mdf'/>">
                                 <i class="bi bi-pencil-square p-0"></i>
                             </button>
                             <button type="button" class="btn btn-light-danger btn-outlined ms-2 py-1 px-3 h-30px cursor-pointer"
-                                    onclick="dF.Sectn.delAjax({{postNo}});"
+                                    onclick="dF.Sectn.delAjax({{id}});"
                                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="단락 <@spring.message 'bs.tooltip.del'/>">
                                 <i class="bi bi-trash p-0"></i>
                             </button>

@@ -28,7 +28,7 @@ public class ViewerDto
     private Integer id;
 
     /** 참조 글 번호 */
-    private Integer refPostNo;
+    private Integer refId;
 
     /** 참조 컨텐츠 타입 */
     private String refContentType;
@@ -40,7 +40,7 @@ public class ViewerDto
      * @param refKey 글 번호와 컨텐츠 타입을 포함하는 참조 복합키 객체
      */
     public ViewerDto(final BaseClsfKey refKey) {
-        this.refPostNo = refKey.getPostNo();
+        this.refId = refKey.getId();
         this.refContentType = refKey.getContentType();
     }
 }

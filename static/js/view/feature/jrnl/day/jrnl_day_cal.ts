@@ -51,7 +51,7 @@ const Page: Page = (function(): Page {
                         break;
                     case "JRNL_DIARY":
                     case "JRNL_DREAM":
-                        dF.JrnlDay.dtlModal(event.extendedProps.jrnlDayNo);
+                        dF.JrnlDay.dtlModal(event.extendedProps.jrnlDayId);
                         break;
                     default:
                         break;

@@ -26,7 +26,7 @@ import javax.persistence.*;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE chat_msg SET del_yn = 'Y' WHERE post_no = ?")
+@SQLDelete(sql = "UPDATE chat_msg SET del_yn = 'Y' WHERE id = ?")
 public class ChatMsgEntity
         extends BaseClsfEntity {
 
@@ -37,9 +37,9 @@ public class ChatMsgEntity
     /** 글 번호 :: 복합키 사용, 시퀀스 생성 로직을 위해 재정의 */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "post_no")
+    @Column(name = "id")
     @Comment("글번호 (key)")
-    private Integer postNo;
+    private Integer id;
 
     /** 컨텐츠 타입 */
     @Builder.Default

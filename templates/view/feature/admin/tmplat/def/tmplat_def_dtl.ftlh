@@ -88,7 +88,7 @@
             <#--페이지:: 버튼: 수정하기-->
             <@component.post_btn_modify "Page.mdfForm();" post isMngr />
             <#--페이지:: 버튼: 삭제하기-->
-            <@component.post_btn_delete "Page.delAjax(${post.postNo});" post isMngr />
+            <@component.post_btn_delete "Page.delAjax(${post.id});" post isMngr />
             <#--페이지:: 버튼: 목록으로 가기-->
             <@component.post_btn_toList "Page.list();" />
         </div>
@@ -100,7 +100,7 @@
 </div>
 
 <form name="procForm" id="procForm" method="get">
-    <input type="hidden" name="postNo" id="postNo" value="${tmplat.postNo!}" />
+    <input type="hidden" name="id" id="id" value="${tmplat.id!}" />
 </form>
 
 <#--include::tmplat_def_module-->

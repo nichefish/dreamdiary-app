@@ -60,7 +60,7 @@ public class MetaProcService {
 
         // 비저널 컨텐츠만 일반 분류 캐시 evict
         if (!isJrnl) {
-            EhCacheUtils.evictCacheByKey("metaContentEntityListByRef", clsfKey.getPostNo() + "_" + clsfKey.getContentType());
+            EhCacheUtils.evictCacheByKey("metaContentEntityListByRef", clsfKey.getId() + "_" + clsfKey.getContentType());
         }
 
         // 고아 메타 정리
@@ -75,7 +75,7 @@ public class MetaProcService {
         if (clsfKey == null) return;
 
         final Map<String, Object> searchParamMap = new HashMap<>();
-        searchParamMap.put("refPostNo", clsfKey.getPostNo());
+        searchParamMap.put("refId", clsfKey.getId());
         searchParamMap.put("refContentType", clsfKey.getContentType());
 
         final List<MetaContentEntity> entityList = metaContentService.getListEntity(searchParamMap);

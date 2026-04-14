@@ -26,11 +26,11 @@ public interface RelatedContentRepository
     @Query("SELECT rc " +
             "FROM RelatedContentEntity rc " +
             "WHERE rc.regstrId = :regstrId " +
-            "  AND ((rc.leftPostNo = :postNo AND rc.leftContentType = :contentType) " +
-            "    OR (rc.rightPostNo = :postNo AND rc.rightContentType = :contentType)) " +
+            "  AND ((rc.leftId = :id AND rc.leftContentType = :contentType) " +
+            "    OR (rc.rightId = :id AND rc.rightContentType = :contentType)) " +
             "ORDER BY rc.regDt DESC")
     List<RelatedContentEntity> findAllByRef(
-            final @Param("postNo") Integer postNo,
+            final @Param("id") Integer id,
             final @Param("contentType") String contentType,
             final @Param("regstrId") String regstrId
     );
@@ -38,25 +38,25 @@ public interface RelatedContentRepository
     @Query("SELECT rc " +
             "FROM RelatedContentEntity rc " +
             "WHERE rc.regstrId = :regstrId " +
-            "  AND (rc.leftPostNo IN :postNoSet OR rc.rightPostNo IN :postNoSet) " +
+            "  AND (rc.leftId IN :idSet OR rc.rightId IN :idSet) " +
             "ORDER BY rc.regDt DESC")
-    List<RelatedContentEntity> findAllByAnyRefPostNoIn(
-            final @Param("postNoSet") Set<Integer> postNoSet,
+    List<RelatedContentEntity> findAllByAnyRefIdIn(
+            final @Param("idSet") Set<Integer> idSet,
             final @Param("regstrId") String regstrId
     );
 
     @Query(value = "SELECT * " +
             "FROM related_content rc " +
-            "WHERE rc.left_post_no = :leftPostNo " +
+            "WHERE rc.left_id = :leftId " +
             "  AND rc.left_content_type = :leftContentType " +
-            "  AND rc.right_post_no = :rightPostNo " +
+            "  AND rc.right_id = :rightId " +
             "  AND rc.right_content_type = :rightContentType " +
             "  AND rc.regstr_id = :regstrId " +
             "LIMIT 1", nativeQuery = true)
     Optional<RelatedContentEntity> findAnyByPair(
-            final @Param("leftPostNo") Integer leftPostNo,
+            final @Param("leftId") Integer leftId,
             final @Param("leftContentType") String leftContentType,
-            final @Param("rightPostNo") Integer rightPostNo,
+            final @Param("rightId") Integer rightId,
             final @Param("rightContentType") String rightContentType,
             final @Param("regstrId") String regstrId
     );
@@ -65,10 +65,10 @@ public interface RelatedContentRepository
     @Query("UPDATE RelatedContentEntity rc " +
             "SET rc.delYn = 'Y' " +
             "WHERE rc.regstrId = :regstrId " +
-            "  AND ((rc.leftPostNo = :postNo AND rc.leftContentType = :contentType) " +
-            "    OR (rc.rightPostNo = :postNo AND rc.rightContentType = :contentType))")
+            "  AND ((rc.leftId = :id AND rc.leftContentType = :contentType) " +
+            "    OR (rc.rightId = :id AND rc.rightContentType = :contentType))")
     int softDeleteAllByRef(
-            final @Param("postNo") Integer postNo,
+            final @Param("id") Integer id,
             final @Param("contentType") String contentType,
             final @Param("regstrId") String regstrId
     );

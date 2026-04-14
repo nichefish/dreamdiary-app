@@ -11,7 +11,7 @@
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS jrnl_day (
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 일자 ID',
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 일자 ID',
     content_type VARCHAR(32) DEFAULT 'JRNL_DAY' COMMENT '컨텐츠 타입',
     --
     jrnl_dt DATE COMMENT '저널 일자',
@@ -40,10 +40,10 @@ CREATE TABLE IF NOT EXISTS jrnl_day (
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS jrnl_chapter (
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 챕터 ID',
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 챕터 ID',
     content_type VARCHAR(32) DEFAULT 'JRNL_CHAPTER' COMMENT '컨텐츠 타입',
     --
-    jrnl_day_no INT COMMENT '저널 일자 번호',
+    jrnl_day_id INT COMMENT '저널 일자 번호',
     --
     title VARCHAR(200) COMMENT '제목',
     ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS jrnl_chapter (
     mdf_dt DATETIME COMMENT '수정일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
     -- CONSTRAINT
-    INDEX (jrnl_day_no)
+    INDEX (jrnl_day_id)
 ) COMMENT = '저널 챕터';
 
 -- 저널 일기 (jrnl_diary)
@@ -64,10 +64,10 @@ CREATE TABLE IF NOT EXISTS jrnl_chapter (
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS jrnl_diary (
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 일기 ID',
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 일기 ID',
     content_type VARCHAR(32) DEFAULT 'JRNL_DIARY' COMMENT '컨텐츠 타입',
     --
-    jrnl_chapter_no INT COMMENT '저널 챕터 번호',
+    jrnl_chapter_id INT COMMENT '저널 챕터 번호',
     --
     title VARCHAR(200) COMMENT '제목',
     cn LONGTEXT COMMENT '내용',
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS jrnl_diary (
     mdf_dt DATETIME COMMENT '수정일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
     -- CONSTRAINT
-    INDEX (jrnl_chapter_no)
+    INDEX (jrnl_chapter_id)
 ) COMMENT = '저널 일기';
 
 -- 저널 꿈 (jrnl_dream)
@@ -89,10 +89,10 @@ CREATE TABLE IF NOT EXISTS jrnl_diary (
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS jrnl_dream (
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 꿈 ID',
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 꿈 ID',
     content_type VARCHAR(32) DEFAULT 'JRNL_DREAM' COMMENT '컨텐츠 타입',
     --
-    jrnl_day_no INT COMMENT '저널 일자 번호',
+    jrnl_day_id INT COMMENT '저널 일자 번호',
     --
     title VARCHAR(200) COMMENT '제목',
     cn LONGTEXT COMMENT '내용',
@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS jrnl_dream (
     mdf_dt DATETIME COMMENT '수정일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
     -- CONSTRAINT
-    INDEX (jrnl_day_no)
+    INDEX (jrnl_day_id)
 ) COMMENT = '저널 꿈';
 
 -- 저널 해석 (jrnl_intrpt)
@@ -123,10 +123,10 @@ CREATE TABLE IF NOT EXISTS jrnl_dream (
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS jrnl_intrpt (
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 해석 ID',
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 해석 ID',
     content_type VARCHAR(32) DEFAULT 'JRNL_INTRPT' COMMENT '컨텐츠 타입',
     --
-    jrnl_dream_no INT COMMENT '저널 꿈 번호',
+    jrnl_dream_id INT COMMENT '저널 꿈 번호',
     --
     title VARCHAR(200) COMMENT '제목',
     cn LONGTEXT COMMENT '내용',
@@ -147,7 +147,7 @@ CREATE TABLE IF NOT EXISTS jrnl_intrpt (
     mdf_dt DATETIME COMMENT '수정일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
     -- CONSTRAINT
-    INDEX (jrnl_dream_no)
+    INDEX (jrnl_dream_id)
 ) COMMENT = '저널 해석';
 
 -- 저널 할일 (jrnl_todo)
@@ -155,7 +155,7 @@ CREATE TABLE IF NOT EXISTS jrnl_intrpt (
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS jrnl_todo (
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 결산 ID',
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 결산 ID',
     content_type VARCHAR(32) DEFAULT 'JRNL_TODO' COMMENT '컨텐츠 타입',
     --
     idx INT DEFAULT 1 COMMENT '저널 일기 인덱스',
@@ -184,7 +184,7 @@ CREATE TABLE IF NOT EXISTS jrnl_todo (
 -- @implements: TagEmbed, CommentEmbed
 CREATE TABLE IF NOT EXISTS jrnl_sbjct(
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
     content_type VARCHAR(30) COMMENT '게시판 코드 (PK)',
     -- POST
     title VARCHAR(200) COMMENT '제목',
@@ -209,7 +209,7 @@ CREATE TABLE IF NOT EXISTS jrnl_sbjct(
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS jrnl_sumry (
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 결산 ID',
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 결산 ID',
     content_type VARCHAR(32) DEFAULT 'JRNL_SUMRY' COMMENT '컨텐츠 타입',
     --
     yy INT UNIQUE COMMENT '결산 년도',
@@ -231,10 +231,10 @@ CREATE TABLE IF NOT EXISTS jrnl_sumry (
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS jrnl_sumry_review (
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 결산 리뷰 ID',
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 결산 리뷰 ID',
     content_type VARCHAR(32) DEFAULT 'JRNL_SUMRY_REVIEW' COMMENT '컨텐츠 타입',
     --
-    jrnl_sumry_no INT COMMENT '저널 결산 번호',
+    jrnl_sumry_id INT COMMENT '저널 결산 번호',
     idx INT DEFAULT 1 COMMENT '저널 결산 리뷰 인덱스',
     -- POST
     title VARCHAR(200) COMMENT '제목',

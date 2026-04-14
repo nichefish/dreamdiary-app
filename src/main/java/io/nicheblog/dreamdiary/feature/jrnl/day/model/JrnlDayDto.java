@@ -137,7 +137,7 @@ public class JrnlDayDto
 
     @Override
     public Integer getKey() {
-        return this.postNo;
+        return this.id;
     }
 
     /** 위임 :: 태그 정보 모듈 */

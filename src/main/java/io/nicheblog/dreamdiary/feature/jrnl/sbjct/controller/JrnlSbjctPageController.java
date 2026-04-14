@@ -161,7 +161,7 @@ public class JrnlSbjctPageController
     @GetMapping(Url.JRNL_SBJCT_DTL)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String jrnlSbjctDtl(
-            final @RequestParam("postNo") Integer key,
+            final @RequestParam("id") Integer key,
             final ModelMap model
     ) throws Exception {
 
@@ -187,7 +187,7 @@ public class JrnlSbjctPageController
     @GetMapping(Url.JRNL_SBJCT_MDF_FORM)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String jrnlSbjctMdfForm(
-            final @RequestParam("postNo") Integer key,
+            final @RequestParam("id") Integer key,
             final ModelMap model
     ) throws Exception {
 

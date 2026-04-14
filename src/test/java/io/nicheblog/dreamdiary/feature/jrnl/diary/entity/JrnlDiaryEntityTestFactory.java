@@ -30,7 +30,7 @@ public class JrnlDiaryEntityTestFactory {
                 .title("test_title")
                 .cn("test_cn")
                 .jrnlChapter(JrnlChapterEntity.builder()
-                        .jrnlDayNo(jrnlDayEntity != null ? jrnlDayEntity.getPostNo() : null)
+                        .jrnlDayId(jrnlDayEntity != null ? jrnlDayEntity.getId() : null)
                         .jrnlDay(toSmpEntity(jrnlDayEntity))
                         .build())
                 .build();
@@ -61,7 +61,7 @@ public class JrnlDiaryEntityTestFactory {
     private static JrnlDaySmpEntity toSmpEntity(final JrnlDayEntity jrnlDayEntity) {
         if (jrnlDayEntity == null) return null;
         return JrnlDaySmpEntity.builder()
-                .postNo(jrnlDayEntity.getPostNo())
+                .id(jrnlDayEntity.getId())
                 .contentType(jrnlDayEntity.getContentType())
                 .jrnlDt(jrnlDayEntity.getJrnlDt())
                 .dtUnknownYn(jrnlDayEntity.getDtUnknownYn())

@@ -21,7 +21,7 @@ public class NoticeDtoTestFactory {
      */
     public static NoticeDto create() throws Exception {
         return NoticeDto.builder()
-                .postNo(0)
+                .id(0)
                 .contentType(ContentType.NOTICE.key)
                 .title("test_title")
                 .cn("test_cn")

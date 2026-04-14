@@ -66,7 +66,7 @@ public class TagProcService {
 
         // 비저널 컨텐츠만 일반 분류 캐시 evict
         if (!isJrnl) {
-            EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", clsfKey.getPostNo() + "_" + clsfKey.getContentType());
+            EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", clsfKey.getId() + "_" + clsfKey.getContentType());
         }
 
         // 고아 태그 정리
@@ -85,7 +85,7 @@ public class TagProcService {
         if (clsfKey == null) return;
 
         final Map<String, Object> searchParamMap = new HashMap<>();
-        searchParamMap.put("refPostNo", clsfKey.getPostNo());
+        searchParamMap.put("refId", clsfKey.getId());
         searchParamMap.put("refContentType", clsfKey.getContentType());
 
         final List<TagContentEntity> entityList = tagContentService.getListEntity(searchParamMap);

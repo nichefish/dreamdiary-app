@@ -64,14 +64,14 @@
 
             /**
              * 상세 모달 호출
-             * @param {string|number} postNo - 조회할 글 번호.
+             * @param {string|number} id - 조회할 글 번호.
              */
-            dtlModal: function(postNo) {
+            dtlModal: function(id) {
                 event.stopPropagation();
-                if (isNaN(postNo)) return;
+                if (isNaN(id)) return;
 
                 const url = "${Url.FLSYS_META_DTL_AJAX!}";
-                const ajaxData = { "postNo": postNo };
+                const ajaxData = { "id": id };
                 cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -84,11 +84,11 @@
             /**
              * 수정 모달 호출
              */
-            mdfModal: function(postNo) {
-                if (isNaN(postNo)) return;
+            mdfModal: function(id) {
+                if (isNaN(id)) return;
 
                 const url = "${Url.FLSYS_META_DTL_AJAX!}";
-                const ajaxData = { "postNo": postNo };
+                const ajaxData = { "id": id };
                 cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -98,15 +98,15 @@
                     /* initialize form. */
                     FlsysMeta.initForm(rsltObj);
                     $("#flsys_meta_dtl_modal").modal("hide");
-                    FlsysMeta.key = postNo;
+                    FlsysMeta.key = id;
                 });
             },
 
             /**
              * 삭제 (Ajax)
              */
-            delAjax: function(postNo) {
-                if (isNaN(postNo)) return;
+            delAjax: function(id) {
+                if (isNaN(id)) return;
 
                 Swal.fire({
                     text: <@spring.message 'view.cnfm.del'/>,
@@ -114,7 +114,7 @@
                 }).then(function(result) {
                     if (!result.value) return;
                     const url = "${Url.FLSYS_META_DEL_AJAX!}";
-                    const ajaxData = { "postNo": postNo };
+                    const ajaxData = { "id": id };
                     cF.ajax.get(url, ajaxData, function(res) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                         if (res.rslt) Flsys.flsysListAjax(Flsys.currPath);

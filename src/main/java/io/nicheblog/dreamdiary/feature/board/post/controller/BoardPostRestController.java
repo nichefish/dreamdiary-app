@@ -70,7 +70,7 @@ public class BoardPostRestController
      * 게시판 게시물 상세 조회 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param postNo 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @see ViewerEventListener
      */
@@ -78,10 +78,10 @@ public class BoardPostRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardPostDtlAjax(
-            final @RequestParam("postNo") Integer postNo
+            final @RequestParam("id") Integer id
     ) throws Exception {
 
-        final BoardPostDto retrievedDto = boardPostService.viewDtlPage(postNo);
+        final BoardPostDto retrievedDto = boardPostService.viewDtlPage(id);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -92,17 +92,17 @@ public class BoardPostRestController
      * 게시판 게시물 삭제 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param postNo 복합키 식별자
+     * @param id 복합키 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.BOARD_POST_DEL_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> boardPostDelAjax(
-            final Integer postNo
+            final @RequestParam("id") Integer id
     ) throws Exception {
 
-        final ServiceResponse result = boardPostService.delete(postNo);
+        final ServiceResponse result = boardPostService.delete(id);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

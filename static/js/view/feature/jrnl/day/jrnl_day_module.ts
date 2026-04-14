@@ -779,8 +779,8 @@ dF.JrnlDay = (function(): dfModule {
          * 등록/수정 처리 (Ajax)
          */
         regAjax: function(): void {
-            const postNo: string = cF.util.getInputValue("#jrnlDayRegForm [name='postNo']");
-            const isMdf: boolean = cF.util.isNotEmpty(postNo);
+            const id: string = cF.util.getInputValue("#jrnlDayRegForm [name='id']");
+            const isMdf: boolean = cF.util.isNotEmpty(id);
 
             // 등록 클릭시 입력 중이던 메타 추가
             if (dF.JrnlDay.metaTagify?.draft?.value) {
@@ -797,7 +797,7 @@ dF.JrnlDay = (function(): dfModule {
                 }).then(function(result: SwalResult): void {
                     if (!result.value) return;
 
-                    const url: string = isMdf ? cF.util.bindUrl(Url.JRNL_DAY, { postNo }) : Url.JRNL_DAYS;
+                    const url: string = isMdf ? cF.util.bindUrl(Url.JRNL_DAY, { id }) : Url.JRNL_DAYS;
                     const ajaxData: FormData = new FormData(document.getElementById("jrnlDayRegForm") as HTMLFormElement);
                     cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                         Swal.fire({ text: res.message })
@@ -814,10 +814,10 @@ dF.JrnlDay = (function(): dfModule {
 
         /**
          * 상세 모달 호출
-         * @param {string|number} postNo 글 번호.
+         * @param {string|number} id 글 번호.
          */
-        dtlModal: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        dtlModal: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
             // 기존에 열린 모달이 있으면 닫기
             const openModals: NodeList = document.querySelectorAll('.modal.show'); // 열린 모달을 찾기
@@ -829,7 +829,7 @@ dF.JrnlDay = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = cF.util.bindUrl(Url.JRNL_DAY, { postNo });
+            const url: string = cF.util.bindUrl(Url.JRNL_DAY, { id });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -846,10 +846,10 @@ dF.JrnlDay = (function(): dfModule {
 
         /**
          * 수정 모달 호출
-         * @param {string|number} postNo 글 번호.
+         * @param {string|number} id 글 번호.
          */
-        mdfModal: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        mdfModal: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
             // 기존에 열린 모달이 있으면 닫기
             const openModals: NodeList = document.querySelectorAll('.modal.show'); // 열린 모달을 찾기
@@ -861,7 +861,7 @@ dF.JrnlDay = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = cF.util.bindUrl(Url.JRNL_DAY, { postNo })
+            const url: string = cF.util.bindUrl(Url.JRNL_DAY, { id })
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -878,10 +878,10 @@ dF.JrnlDay = (function(): dfModule {
 
         /**
          * 삭제 (Ajax)
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          */
-        delAjax: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        delAjax: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
@@ -889,7 +889,7 @@ dF.JrnlDay = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = cF.util.bindUrl(Url.JRNL_DAY, { postNo });
+                const url: string = cF.util.bindUrl(Url.JRNL_DAY, { id });
                 cF.$ajax.delete(url, null, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {

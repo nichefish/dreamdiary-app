@@ -31,7 +31,7 @@ public class JrnlDreamDtoTestFactory {
      */
     public static JrnlDreamDto createWithKey(final Integer key) throws Exception {
         return JrnlDreamDto.builder()
-                .postNo(key)
+                .id(key)
                 .contentType(ContentType.JRNL_DREAM.key)
                 .build();
     }
@@ -51,7 +51,7 @@ public class JrnlDreamDtoTestFactory {
      */
     public static JrnlDreamPostDto createPostWithKey(final Integer key) throws Exception {
         return JrnlDreamPostDto.builder()
-                .postNo(key)
+                .id(key)
                 .contentType(ContentType.JRNL_DREAM.key)
                 .build();
     }

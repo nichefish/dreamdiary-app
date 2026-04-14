@@ -24,13 +24,13 @@ import java.util.Map;
 public final class JrnlDayStateMapHelper {
 
     /**
-     * JrnlDayEntity 리스트를 순회하여 각 postNo 기준의 JrnlState 맵(entry, diary, dream, intrpt)을 생성한다.
+     * JrnlDayEntity 리스트를 순회하여 각 id 기준의 JrnlState 맵(entry, diary, dream, intrpt)을 생성한다.
      * @param jrnlDayEntityList 조회된 JrnlDayEntity 리스트
      * @return {@link JrnlStateMaps}
-     *  chapterMap: entry postNo -> JrnlState
-     *  diaryMap: diary postNo -> JrnlState
-     *  dreamMap: dream postNo -> JrnlState
-     *  intrptMap: intrpt postNo -> JrnlState
+     *  chapterMap: entry id -> JrnlState
+     *  diaryMap: diary id -> JrnlState
+     *  dreamMap: dream id -> JrnlState
+     *  intrptMap: intrpt id -> JrnlState
      */
     public static JrnlStateMaps makeJrnlStateMaps(final List<JrnlDayEntity> jrnlDayEntityList) {
         final Map<Integer, JrnlState> chapterMap = new HashMap<>();
@@ -49,7 +49,7 @@ public final class JrnlDayStateMapHelper {
                     final JrnlState entryState = JrnlState.builder()
                             .collapsed(entry.state.hasState(StateCd.COLLAPSED))
                             .build();
-                    chapterMap.put(entry.getPostNo(), entryState);
+                    chapterMap.put(entry.getId(), entryState);
 
                     final List<JrnlDiaryEntity> jrnlDiaryList = entry.getJrnlDiaryList();
                     if (CollectionUtils.isNotEmpty(jrnlDiaryList)) {
@@ -60,7 +60,7 @@ public final class JrnlDayStateMapHelper {
                                     .imprtc(diary.state.hasState(StateCd.IMPRTC))
                                     .refrnc(diary.state.hasState(StateCd.REFRNC))
                                     .build();
-                            diaryMap.put(diary.getPostNo(), diaryState);
+                            diaryMap.put(diary.getId(), diaryState);
                         }
                     }
                 }
@@ -75,7 +75,7 @@ public final class JrnlDayStateMapHelper {
                             .imprtc(dream.state.hasState(StateCd.IMPRTC))
                             .refrnc(dream.state.hasState(StateCd.REFRNC))
                             .build();
-                    dreamMap.put(dream.getPostNo(), dreamState);
+                    dreamMap.put(dream.getId(), dreamState);
 
                     final List<JrnlIntrptEntity> jrnlIntrptList = dream.getJrnlIntrptList();
                     if (CollectionUtils.isNotEmpty(jrnlIntrptList)) {
@@ -84,7 +84,7 @@ public final class JrnlDayStateMapHelper {
                                     .resolved(intrpt.state.hasState(StateCd.RESOLVED))
                                     .collapsed(intrpt.state.hasState(StateCd.COLLAPSED))
                                     .build();
-                            intrptMap.put(intrpt.getPostNo(), intrptState);
+                            intrptMap.put(intrpt.getId(), intrptState);
                         }
                     }
                 }

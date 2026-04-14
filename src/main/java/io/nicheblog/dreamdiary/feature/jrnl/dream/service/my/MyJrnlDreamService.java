@@ -76,14 +76,14 @@ public class MyJrnlDreamService {
 
         final List<BaseClsfKey> refKeyList = new ArrayList<>();
         listDto.stream()
-                .filter(dto -> dto != null && dto.getPostNo() != null)
-                .forEach(dto -> refKeyList.add(new BaseClsfKey(dto.getPostNo(), ContentType.JRNL_DREAM)));
+                .filter(dto -> dto != null && dto.getId() != null)
+                .forEach(dto -> refKeyList.add(new BaseClsfKey(dto.getId(), ContentType.JRNL_DREAM)));
 
         final Map<String, List<RelatedContentDto>> relatedMap = relatedContentQueryService.getRelatedContentMapByRefs(refKeyList, username);
         for (final JrnlDreamDto jrnlDream : listDto) {
-            if (jrnlDream == null || jrnlDream.getPostNo() == null) continue;
+            if (jrnlDream == null || jrnlDream.getId() == null) continue;
             jrnlDream.setRelatedContentList(
-                    relatedMap.getOrDefault(String.format("%s:%d", ContentType.JRNL_DREAM.key, jrnlDream.getPostNo()), List.of())
+                    relatedMap.getOrDefault(String.format("%s:%d", ContentType.JRNL_DREAM.key, jrnlDream.getId()), List.of())
             );
         }
     }

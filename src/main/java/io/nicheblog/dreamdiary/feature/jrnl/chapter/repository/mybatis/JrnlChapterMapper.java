@@ -20,10 +20,10 @@ public interface JrnlChapterMapper {
 
     /**
      * 삭제된 데이터 정보 조회
-     * @param postNo 조회할 게시글 번호 (삭제된 데이터)
+     * @param id 조회할 게시글 번호 (삭제된 데이터)
      * @return {@link JrnlIntrptDto} -- 삭제된 저널 일기 데이터
      */
-    JrnlChapterDto getDeletedByPostNo(final @Param("postNo") Integer postNo);
+    JrnlChapterDto getDeletedById(final @Param("id") Integer id);
 
     /**
      * 인덱스 갱신
@@ -35,8 +35,8 @@ public interface JrnlChapterMapper {
     /**
      * 인덱스 갱신용 전체 목록 조회
      *
-     * @param jrnlDayNo 상위 키값
+     * @param jrnlDayId 상위 키값
      * @return Integer -- 업데이트된 행 개수
      */
-    List<JrnlChapterDto> findAllForReorder(final @Param("jrnlDayNo") Integer jrnlDayNo);
+    List<JrnlChapterDto> findAllForReorder(final @Param("jrnlDayId") Integer jrnlDayId);
 }

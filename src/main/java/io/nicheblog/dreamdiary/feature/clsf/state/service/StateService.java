@@ -135,7 +135,7 @@ public class StateService
         if (StateCd.RESOLVED.equals(stateToggle.getStateCd())) {
             if (isEnabled) {
                 final StateToggleDto collapsedToggle = StateToggleDto.builder()
-                        .postNo(stateToggle.getPostNo())
+                        .id(stateToggle.getId())
                         .contentType(stateToggle.getContentType())
                         .stateCd(StateCd.COLLAPSED)
                         .cacheContext(stateToggle.getCacheContext())
@@ -162,7 +162,7 @@ public class StateService
                 e -> log.error(
                         "State cache update failed [{}:{}:{}]: {}",
                         stateToggle.getContentType(),
-                        stateToggle.getPostNo(),
+                        stateToggle.getId(),
                         stateToggle.getStateCd(),
                         e.getMessage(),
                         e
@@ -176,6 +176,6 @@ public class StateService
      * @return StateEntity 상태
      */
     public StateEntity getDtlEntity(StateToggleDto stateToggle) throws Exception {
-        return repository.findByRefPostNoAndRefContentTypeAndStateCd(stateToggle.getPostNo(), stateToggle.getContentType().key, stateToggle.getStateCd().key);
+        return repository.findByRefIdAndRefContentTypeAndStateCd(stateToggle.getId(), stateToggle.getContentType().key, stateToggle.getStateCd().key);
     }
 }

@@ -29,16 +29,16 @@
                     </div>
                     <#if comment.isRegstr!false>
                         <div class="d-flex align-items-center py-1">
-                            <div id="showMdfBtnDiv${comment.postNo!}">
+                            <div id="showMdfBtnDiv${comment.id!}">
                                 <a href="javascript:void(0);" class="btn btn-sm btn-flex btn-light-primary btn-icon mx-1"
-                                   onclick="dF.Comment.page.mdfForm('${comment.postNo!}');"
+                                   onclick="dF.Comment.page.mdfForm('${comment.id!}');"
                                    data-bs-toggle="tooltip" title="<@spring.message 'txt.comment'/> 수정 폼을 호출합니다." data-bs-dismiss="click">
                                     <span class="svg-icon svg-icon-7">
                                         <i class="fas fa-solid fa-pen"></i>
                                     </span>
                                 </a>
                                 <a href="javascript:void(0);" class="btn btn-sm btn-flex btn-light-danger btn-icon"
-                                   onclick="dF.Comment.page.delAjax(${comment.postNo!});"
+                                   onclick="dF.Comment.page.delAjax(${comment.id!});"
                                    data-bs-toggle="tooltip" title="<@spring.message 'txt.comment'/>을 삭제합니다." data-bs-dismiss="click">
                                 <span class="svg-icon svg-icon-7">
                                     <i class="fas fa-trash-alt"></i>
@@ -49,24 +49,24 @@
                     </#if>
                 </div>
                 <div class="row">
-                    <div id="commentSpan${comment.postNo!}" class="col fs-5 fw-normal text-gray-800">
-                        <div id="commentDtlSpan${comment.postNo!}" class="fs-6 col-form-label">
-                            <div id="commentCnSpanDiv${comment.postNo!}" class="div-textarea-smp">
+                    <div id="commentSpan${comment.id!}" class="col fs-5 fw-normal text-gray-800">
+                        <div id="commentDtlSpan${comment.id!}" class="fs-6 col-form-label">
+                            <div id="commentCnSpanDiv${comment.id!}" class="div-textarea-smp">
                                 ${comment.cn!}
                             </div>
                         </div>
                     </div>
                     <!-- 가리고 숨기고를 반복하는 곳은 style로 선언해야 한다. -->
-                    <div id="mdfSaveBtnDiv${comment.postNo!}" class="col-1 text-center fs-5 fw-normal text-gray-800 w-125px"
+                    <div id="mdfSaveBtnDiv${comment.id!}" class="col-1 text-center fs-5 fw-normal text-gray-800 w-125px"
                          style="display:none;">
                         <button type="button" class="btn btn-sm btn-primary me-2 mb-2"
-                                onclick="dF.Comment.page.mdfAjax('${comment.postNo!}');"
+                                onclick="dF.Comment.page.mdfAjax('${comment.id!}');"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.comment'/>을 수정합니다.">
                             <i class="bi bi-pencil-square"></i>
                             저장
                         </button>
                         <button type="button" class="btn btn-sm btn-secondary me-2"
-                                onclick="dF.Comment.page.closeMdfForm('${comment.postNo!}');"
+                                onclick="dF.Comment.page.closeMdfForm('${comment.id!}');"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.comment'/> 수정 영역을 닫습니다.">
                             닫기
                         </button>
@@ -112,8 +112,8 @@
     <div class="fs-6 fw-bold col-form-label p-0">
         <#--begin::Form-->
         <form name="commentPageMdfForm" id="commentPageMdfForm__INDEX__" class="form">
-            <input type="hidden" name="postNo" id="postNo__INDEX__" value="__INDEX__"/>
-            <input type="hidden" name="refPostNo" value="${post.postNo!}" />
+            <input type="hidden" name="id" id="id__INDEX__" value="__INDEX__"/>
+            <input type="hidden" name="refId" value="${post.id!}" />
             <input type="hidden" name="refContentType" value="${post.contentType!}" />
             <input type="hidden" name="actvtyCtgrCd" value="${actvtyCtgrCd!}" >
             <div class="row">

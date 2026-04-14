@@ -4,13 +4,13 @@
 <mapper namespace="io.nicheblog.dreamdiary.feature.clsf.comment.repository.mybatis.CommentMapper">
 
     <!-- 삭제 데이터 조회 -->
-    <select id="getDeletedByPostNo" resultType="io.nicheblog.dreamdiary.feature.clsf.comment.model.CommentDto">
-        /* SectnMapper.getDeletedByPostNo */
+    <select id="getDeletedById" resultType="io.nicheblog.dreamdiary.feature.clsf.comment.model.CommentDto">
+        /* CommentMapper.getDeletedById */
         SELECT
-            comment.post_no AS postNo,
-            comment.ref_post_no AS refPostNo,
+            comment.id AS id,
+            comment.ref_id AS refId,
             comment.ref_content_type AS refContentType
         FROM comment comment
-        WHERE comment.post_no = #{postNo}
+        WHERE comment.id = #{id}
     </select>
 </mapper>

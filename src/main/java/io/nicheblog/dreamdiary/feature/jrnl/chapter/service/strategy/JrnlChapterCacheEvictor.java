@@ -34,23 +34,23 @@ public class JrnlChapterCacheEvictor
         final ContentType refContentType = ContentType.JRNL_CHAPTER;
         try {
             final String username = param.getRegstrId();
-            final Integer postNo = param.getPostNo();
-            final Integer jrnlDayNo = param.getJrnlDayNo();
+            final Integer id = param.getId();
+            final Integer jrnlDayId = param.getJrnlDayId();
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();
             final String weekStartDt = param.getWeekStartDt();
-            if (postNo != null) {
-                EhCacheUtils.evictUserCacheByKey("jrnlChapterDtlDtoByUser", username, postNo);
+            if (id != null) {
+                EhCacheUtils.evictUserCacheByKey("jrnlChapterDtlDtoByUser", username, id);
             }
             // jrnl_day
-            if (jrnlDayNo != null) {
-                EhCacheUtils.evictUserCacheByKey("jrnlDayDtlDtoByUser", username, jrnlDayNo);
+            if (jrnlDayId != null) {
+                EhCacheUtils.evictUserCacheByKey("jrnlDayDtlDtoByUser", username, jrnlDayId);
             }
             this.evictMyJrnlDayYyMnthCaches(username, yy, mnth);
             this.evictMyJrnlDayWeeklyCaches(username, weekStartDt);
             // 태그 캐시 처리
-            if (postNo != null) {
-                EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", postNo + "_JRNL_CHAPTER");
+            if (id != null) {
+                EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", id + "_JRNL_CHAPTER");
             }
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);

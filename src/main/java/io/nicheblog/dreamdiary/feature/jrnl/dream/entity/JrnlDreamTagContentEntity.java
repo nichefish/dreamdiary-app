@@ -47,9 +47,9 @@ public class JrnlDreamTagContentEntity
     private Integer tagId;
 
     /** 참조 글 번호 */
-    @Column(name = "ref_post_no")
+    @Column(name = "ref_id")
     @Comment("참조 글 번호")
-    private Integer refPostNo;
+    private Integer refId;
 
     /** 참조 컨텐츠 타입 */
     @Column(name = "ref_content_type")
@@ -73,7 +73,7 @@ public class JrnlDreamTagContentEntity
 
     /** 참조 컨텐츠 (저널 꿈)  */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "ref_post_no", referencedColumnName = "post_no", insertable = false, updatable = false)
+    @JoinColumn(name = "ref_id", referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("저널 꿈 정보")

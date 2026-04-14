@@ -73,7 +73,6 @@ public class JrnlIntrptSpec
     ) throws Exception {
 
         final List<Predicate> predicate = new ArrayList<>();
-
         // expressions
         final Join<JrnlIntrptSmpEntity, JrnlDreamSmpEntity> jrnlDreamJoin = root.join("jrnlDream", JoinType.INNER);
         final Join<JrnlDreamSmpEntity, JrnlDaySmpEntity> jrnlDayJoin = jrnlDreamJoin.join("jrnlDay", JoinType.INNER);
@@ -104,9 +103,13 @@ public class JrnlIntrptSpec
                     final Integer mnth = (Integer) value;
                     if (mnth != 99) predicate.add(builder.equal(jrnlDayJoin.get(key), mnth));
                     continue;
-                case "jrnlDayNo":
+                case "jrnlDayId":
                     // 99 = 모든 월
-                    predicate.add(builder.equal(jrnlDayJoin.get("postNo"), value));
+                    predicate.add(builder.equal(jrnlDayJoin.get("id"), value));
+                    continue;
+                case "jrnlDreamId":
+                    // 꿈 id alias 검색
+                    predicate.add(builder.equal(jrnlDreamJoin.get("id"), value));
                     continue;
                 case "diaryKeyword":
                     // 내용 like 검색
@@ -140,4 +143,5 @@ public class JrnlIntrptSpec
         }
         throw new IllegalArgumentException("regstrId is required.");
     }
+
 }

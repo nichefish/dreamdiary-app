@@ -34,17 +34,17 @@ public class JrnlDreamCacheEvictor
         final ContentType refContentType = ContentType.JRNL_DREAM;
         try {
             final String username = param.getRegstrId();
-            final Integer postNo = param.getPostNo();
-            final Integer jrnlDayNo = param.getJrnlDayNo();
+            final Integer id = param.getId();
+            final Integer jrnlDayId = param.getJrnlDayId();
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();
             final String weekStartDt = param.getWeekStartDt();
             // jrnl_dream
             this.evictMyYyCacheByYyPrefix(username, "jrnlDreamYySumryStatedListByUser", yy);
-            EhCacheUtils.evictUserCacheByKey("jrnlDreamDtlDtoByUser", username, postNo);
+            EhCacheUtils.evictUserCacheByKey("jrnlDreamDtlDtoByUser", username, id);
             // jrnl_day
-            if (jrnlDayNo != null) {
-                EhCacheUtils.evictUserCacheByKey("jrnlDayDtlDtoByUser", username, jrnlDayNo);
+            if (jrnlDayId != null) {
+                EhCacheUtils.evictUserCacheByKey("jrnlDayDtlDtoByUser", username, jrnlDayId);
             }
             this.evictMyJrnlDayYyMnthCaches(username, yy, mnth);
             this.evictMyJrnlDayWeeklyCaches(username, weekStartDt);
@@ -57,7 +57,7 @@ public class JrnlDreamCacheEvictor
             EhCacheUtils.clearUserCache("jrnlDreamWeeklySizedTagListByUser", username);
             EhCacheUtils.clearUserCache("jrnlDreamCountMapByUser", username);
             // 태그 캐시 처리
-            EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", postNo + "_JRNL_DREAM");
+            EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", id + "_JRNL_DREAM");
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);
             throw e;

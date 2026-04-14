@@ -59,12 +59,12 @@ class JrnlDiaryRepositoryTest {
 
         // When::
         final JrnlDiaryEntity registered = jrnlDiaryRepository.save(jrnlDiaryEntity);
-        final Integer key = registered.getPostNo();
+        final Integer key = registered.getId();
         final JrnlDiaryEntity retrieved = jrnlDiaryRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
-        assertNotNull(retrieved.getPostNo(), "저장된 엔티티의 key 값이 없습니다.");
+        assertNotNull(retrieved.getId(), "저장된 엔티티의 key 값이 없습니다.");
         // audit
         assertNotNull(retrieved.getRegDt(), "등록일자 audit 처리가 되지 않았습니다.");
         assertNotNull(retrieved.getRegstrId(),  "등록자 audit 처리가 되지 않았습니다.");
@@ -78,7 +78,7 @@ class JrnlDiaryRepositoryTest {
     public void testModify() throws Exception {
         // Given::
         JrnlDiaryEntity registered = jrnlDiaryRepository.save(jrnlDiaryEntity);
-        Integer key = registered.getPostNo();
+        Integer key = registered.getId();
 
         // When::
         JrnlDiaryEntity toModify = jrnlDiaryRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
@@ -87,7 +87,7 @@ class JrnlDiaryRepositoryTest {
 
         // Then::
         assertNotNull(modified, "저장한 데이터를 조회할 수 없습니다.");
-        assertNotNull(modified.getPostNo(), "저장된 엔티티의 key 값이 없습니다.");
+        assertNotNull(modified.getId(), "저장된 엔티티의 key 값이 없습니다.");
         // audit
         assertNotNull(modified.getMdfDt(), "수정일자 audit 처리가 되지 않았습니다.");
         assertNotNull(modified.getMdfusrId(),  "수정자 audit 처리가 되지 않았습니다.");
@@ -103,7 +103,7 @@ class JrnlDiaryRepositoryTest {
     public void testDelete() throws Exception {
         // Given::
         final JrnlDiaryEntity registered = jrnlDiaryRepository.save(jrnlDiaryEntity);
-        final Integer key = registered.getPostNo();
+        final Integer key = registered.getId();
 
         // When::
         final JrnlDiaryEntity toDelete = jrnlDiaryRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete")));

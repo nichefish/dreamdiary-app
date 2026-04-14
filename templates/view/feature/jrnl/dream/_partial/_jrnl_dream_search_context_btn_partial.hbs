@@ -32,7 +32,7 @@
             <div class="menu-item px-3 my-1 cursor-pointer"
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.intrpt"/> <@spring.message 'bs.tooltip.modal.reg'/>">
                 <div class="menu-link flex-stack px-3"
-                     onclick="dF.JrnlIntrpt.regModal({ jrnlDayNo: {{jrnlDayNo}}, jrnlDreamNo: {{postNo}}, stdrdDt: '{{stdrdDt}}', jrnlDtWeekDay: '{{jrnlDtWeekDay}}' });">
+                     onclick="dF.JrnlIntrpt.regModal({ jrnlDayId: {{jrnlDayId}}, jrnlDreamId: {{id}}, stdrdDt: '{{stdrdDt}}', jrnlDtWeekDay: '{{jrnlDtWeekDay}}' });">
                     <@spring.message 'txt.jrnl.intrpt.reg'/>
                     <i class="bi bi-layers-half fs-8"></i>
                 </div>
@@ -42,7 +42,7 @@
             <!--begin::Menu item-->
             <div class="menu-item px-3 my-1 cursor-pointer"
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.dream"/> <@spring.message 'bs.tooltip.modal.mdf'/>">
-                <div class="menu-link flex-stack px-3" onclick="dF.JrnlDream.mdfModal({{postNo}}, '{{stdrdDt}}');">
+                <div class="menu-link flex-stack px-3" onclick="dF.JrnlDream.mdfModal({{id}}, '{{stdrdDt}}');">
                     <@spring.message 'txt.comm.edit'/>
                     <i class="bi bi-pencil-square fs-8"></i>
                 </div>
@@ -52,7 +52,7 @@
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                  title="{{#if (exists history.historyTriggeredAt)}}<@spring.message 'txt.history'/>{{else}}<@spring.message 'txt.history.empty'/>{{/if}}">
                 <div class="menu-link flex-stack px-3 {{#unless (exists history.historyTriggeredAt)}}disabled text-muted{{/unless}}"
-                     {{#if (exists history.historyTriggeredAt)}}onclick="dF.History.modal.open('JRNL_DREAM', {{postNo}});"{{/if}}>
+                     {{#if (exists history.historyTriggeredAt)}}onclick="dF.History.modal.open('JRNL_DREAM', {{id}});"{{/if}}>
                     <@spring.message 'txt.history'/>
                     <i class="bi bi-clock-history fs-8"></i>
                 </div>
@@ -60,7 +60,7 @@
             {{^ifYn elseDreamYn}}
                 <div class="menu-item px-3 my-1 cursor-pointer"
                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="관련글 추가">
-                    <div class="menu-link flex-stack px-3" onclick="dF.RelatedContent.openAddModalBySource('JRNL_DREAM', {{postNo}});">
+                    <div class="menu-link flex-stack px-3" onclick="dF.RelatedContent.openAddModalBySource('JRNL_DREAM', {{id}});">
                         관련글 추가
                         <i class="bi bi-link-45deg fs-8"></i>
                     </div>
@@ -83,7 +83,7 @@
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.resolved'/>">
                                 <!--begin::Input-->
                                 <input class="form-check-input w-30px h-20px cursor-pointer diary-context-resolved-check" type="checkbox" value="1" {{#if (hasState state 'RESOLVED')}}checked="checked"{{/if}}
-                                       onclick="dF.JrnlDream.resolveAjax({{postNo}});">
+                                       onclick="dF.JrnlDream.resolveAjax({{id}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
                                 <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.resolved'/></span>
@@ -104,7 +104,7 @@
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.imprtc'/>">
                                 <!--begin::Input-->
                                 <input class="form-check-input w-30px h-20px cursor-pointer dream-context-imprtc-check" type="checkbox" value="1" {{#if (hasState state 'IMPRTC')}}checked="checked"{{/if}}
-                                       onclick="dF.JrnlDream.imprtcAjax({{postNo}});">
+                                       onclick="dF.JrnlDream.imprtcAjax({{id}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
                                 <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.imprtc'/></span>
@@ -122,7 +122,7 @@
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.status.refrnc'/>">
                                 <!--begin::Input-->
                                 <input class="form-check-input w-30px h-20px cursor-pointer dream-context-refrnc-check" type="checkbox" value="1" {{#if (hasState state 'REFRNC')}}checked="checked"{{/if}}
-                                       onclick="dF.JrnlDream.refrncAjax({{postNo}});">
+                                       onclick="dF.JrnlDream.refrncAjax({{id}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
                                 <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.refrnc'/></span>
@@ -140,7 +140,7 @@
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.status.collapsed'/>">
                                 <!--begin::Input-->
                                 <input class="form-check-input w-30px h-20px cursor-pointer diary-context-collapsed-check" type="checkbox" value="1" {{#if (hasState state 'COLLAPSED')}}checked="checked"{{/if}}
-                                       onclick="dF.JrnlDream.collapseAjax({{postNo}});">
+                                       onclick="dF.JrnlDream.collapseAjax({{id}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
                                 <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.collapsed'/></span>
@@ -160,7 +160,7 @@
             <!--begin::Menu item-->
             <div class="menu-item px-3 my-1 cursor-pointer"
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.dream"/> <@spring.message 'bs.tooltip.del'/>">
-                <div class="menu-link flex-stack px-3 text-danger" onclick="dF.JrnlDream.delAjax({{postNo}});">
+                <div class="menu-link flex-stack px-3 text-danger" onclick="dF.JrnlDream.delAjax({{id}});">
                     <@spring.message 'txt.comm.del'/>
                     <i class="bi bi-trash text-danger p-0 fs-8"></i>
                 </div>

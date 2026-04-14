@@ -32,7 +32,7 @@ import javax.persistence.*;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE comment SET del_yn = 'Y' WHERE post_no = ?")
+@SQLDelete(sql = "UPDATE comment SET del_yn = 'Y' WHERE id = ?")
 public class CommentEntity
         extends BaseClsfEntity
         implements AtchFileEmbedModule, CommentEmbedModule, TagEmbedModule {
@@ -44,9 +44,9 @@ public class CommentEntity
     /** 댓글 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "post_no")
+    @Column(name = "id")
     @Comment("댓글 번호 (key)")
-    private Integer postNo;
+    private Integer id;
 
     /** 컨텐츠 타입 */
     @Builder.Default
@@ -61,9 +61,9 @@ public class CommentEntity
     /* ----- */
 
     /** 원글 번호 */
-    @Column(name = "ref_post_no")
+    @Column(name = "ref_id")
     @Comment("원글 번호")
-    private Integer refPostNo;
+    private Integer refId;
 
     /** 원글 컨텐츠 타입 */
     @Column(name = "ref_content_type")

@@ -34,14 +34,14 @@ public class JrnlTodoCacheEvictor
         final ContentType refContentType = ContentType.JRNL_TODO;
         try {
             final String username = param.getRegstrId();
-            final Integer postNo = param.getPostNo();
+            final Integer id = param.getId();
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();
             // jrnl_todo
             this.evictMyYyMnthCache(username, "jrnlTodoListByUser", yy, mnth);
-            EhCacheUtils.evictUserCacheByKey("jrnlTodoDtlDtoByUser", username, postNo);
+            EhCacheUtils.evictUserCacheByKey("jrnlTodoDtlDtoByUser", username, id);
             // 태그 캐시 처리
-            EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", postNo + "_JRNL_TODO");
+            EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", id + "_JRNL_TODO");
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);
             throw e;

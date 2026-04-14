@@ -71,18 +71,18 @@ public class JrnlDiaryRestController
      * 저널 일기 상세 조회 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param key 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_DIARY})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDiaryDtlAjax(
-            final @PathVariable("postNo") Integer key
+            final @PathVariable("id") Integer id
     ) throws Exception {
 
-        final JrnlDiaryDto retrievedDto = myJrnlDiaryService.getMyDtlDtoWithCache(key);
-        final boolean isSuccess = (retrievedDto.getPostNo() != null);
+        final JrnlDiaryDto retrievedDto = myJrnlDiaryService.getMyDtlDtoWithCache(id);
+        final boolean isSuccess = (retrievedDto.getId() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
@@ -104,13 +104,13 @@ public class JrnlDiaryRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDiaryRegAjax(
-            final @PathVariable(value = "postNo", required = false) Integer postNo,
+            final @PathVariable(value = "id", required = false) Integer id,
             final @Valid JrnlDiaryPostDto jrnlDiary,
             final MultipartHttpServletRequest request
     ) throws Exception {
 
-        final boolean isMdf = postNo != null;
-        if (isMdf) jrnlDiary.setPostNo(postNo);
+        final boolean isMdf = id != null;
+        if (isMdf) jrnlDiary.setId(id);
 
         final ServiceResponse result = isMdf ? jrnlDiaryService.modify(jrnlDiary, request) : jrnlDiaryService.regist(jrnlDiary, request);
         final boolean isSuccess = result.getRslt();
@@ -123,17 +123,17 @@ public class JrnlDiaryRestController
      * 저널 일기 삭제 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param postNo 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @DeleteMapping(value = {Url.JRNL_DIARY})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDiaryDelAjax(
-            final @PathVariable("postNo") Integer postNo
+            final @PathVariable("id") Integer id
     ) throws Exception {
 
-        final ServiceResponse result = jrnlDiaryService.delete(postNo);
+        final ServiceResponse result = jrnlDiaryService.delete(id);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));

@@ -19,10 +19,10 @@ public interface JrnlIntrptMapper {
 
     /**
      * 삭제된 데이터 정보 조회
-     * @param postNo 조회할 게시글 번호 (삭제된 데이터)
+     * @param id 조회할 게시글 번호 (삭제된 데이터)
      * @return {@link JrnlIntrptDto} -- 삭제된 저널 일기 데이터
      */
-    JrnlIntrptDto getDeletedByPostNo(final @Param("postNo") Integer postNo);
+    JrnlIntrptDto getDeletedById(final @Param("id") Integer id);
     
     /**
      * 인덱스 갱신
@@ -34,8 +34,8 @@ public interface JrnlIntrptMapper {
     /**
      * 인덱스 갱신용 전체 목록 조회
      *
-     * @param jrnlDreamNo 상위 키값
+     * @param jrnlDreamId 상위 키값
      * @return Integer -- 업데이트된 행 개수
      */
-    List<JrnlIntrptDto> findAllForReorder(final @Param("jrnlDreamNo") Integer jrnlDreamNo);
+    List<JrnlIntrptDto> findAllForReorder(final @Param("jrnlDreamId") Integer jrnlDreamId);
 }

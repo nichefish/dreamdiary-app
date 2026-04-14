@@ -31,9 +31,9 @@ public interface NoticeRepository
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    @Query("SELECT COUNT(notice.postNo) " +
+    @Query("SELECT COUNT(notice.id) " +
             "FROM NoticeEntity notice " +
-            "INNER JOIN ViewerEntity viewer ON viewer.refContentType = 'NOTICE' AND notice.postNo = viewer.refPostNo " +
+            "INNER JOIN ViewerEntity viewer ON viewer.refContentType = 'NOTICE' AND notice.id = viewer.refId " +
             "WHERE COALESCE(notice.mdfDt, notice.regDt) >= :stdrdDt " +
             " AND COALESCE(notice.mdfusrId, notice.regstrId) != :username " +
             " AND ( " +

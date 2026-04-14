@@ -80,7 +80,7 @@ public class SectnService
      */
     public void evictCache(final SectnDto rslt) throws Exception {
         final String refContentType = rslt.getRefContentType();
-        final Integer refPostNo = rslt.getRefPostNo();
-        ehCacheEvictService.evictClsfCache(refContentType, refPostNo);
+        final Integer refId = rslt.getRefId();
+        ehCacheEvictService.evictClsfCache(refContentType, refId);
     }
 }

@@ -83,13 +83,13 @@ public class JrnlDreamRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDreamRegAjax(
-            final @PathVariable(value = "postNo", required = false) Integer postNo,
+            final @PathVariable(value = "id", required = false) Integer id,
             final @Valid JrnlDreamPostDto jrnlDream,
             final MultipartHttpServletRequest request
     ) throws Exception {
 
-        final boolean isMdf = postNo != null;
-        if (isMdf) jrnlDream.setPostNo(postNo);
+        final boolean isMdf = id != null;
+        if (isMdf) jrnlDream.setId(id);
 
         final ServiceResponse result = isMdf ? jrnlDreamService.modify(jrnlDream, request) : jrnlDreamService.regist(jrnlDream, request);
         final boolean isSuccess = result.getRslt();
@@ -102,18 +102,18 @@ public class JrnlDreamRestController
      * 저널 꿈 상세 조회 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param key 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_DREAM})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDreamDtlAjax(
-            final @PathVariable("postNo") Integer key
+            final @PathVariable("id") Integer id
     ) throws Exception {
 
-        final JrnlDreamDto retrievedDto = myJrnlDreamService.getMyDtlDtoWithCache(key);
-        final boolean isSuccess = (retrievedDto.getPostNo() != null);
+        final JrnlDreamDto retrievedDto = myJrnlDreamService.getMyDtlDtoWithCache(id);
+        final boolean isSuccess = (retrievedDto.getId() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
@@ -123,17 +123,17 @@ public class JrnlDreamRestController
      * 저널 꿈 삭제 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param postNo 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @DeleteMapping(value = {Url.JRNL_DREAM})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDreamDelAjax(
-            final @PathVariable("postNo") Integer postNo
+            final @PathVariable("id") Integer id
     ) throws Exception {
 
-        final ServiceResponse result = jrnlDreamService.delete(postNo);
+        final ServiceResponse result = jrnlDreamService.delete(id);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

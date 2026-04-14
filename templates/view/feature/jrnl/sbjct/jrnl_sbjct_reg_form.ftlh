@@ -16,7 +16,7 @@
     <div class="card-body">
         <!--begin:Form-->
         <form name="jrnlSbjctRegForm" id="jrnlSbjctRegForm" class="form" data-mode="${formMode!}" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="postNo" value="${post.postNo!}">
+            <input type="hidden" name="id" value="${post.id!}">
             <input type="hidden" name="atchFileNo" value="${post.atchFileNo!}">
             <input type="hidden" name="hitCnt" value="${post.hitCnt!0?string.number}">
 

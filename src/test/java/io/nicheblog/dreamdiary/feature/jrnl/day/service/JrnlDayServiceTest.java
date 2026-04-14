@@ -73,7 +73,7 @@ class JrnlDayServiceTest {
 
         // Then::
         assertNotNull(registered, "등록이 정상적으로 이루어지지 않았습니다.");
-        assertNotNull(registered.getPostNo(), "등록이 정상적으로 이루어지지 않았습니다.");
+        assertNotNull(registered.getId(), "등록이 정상적으로 이루어지지 않았습니다.");
         // audit
         assertNotNull(registered.getRegDt(), "등록일자 audit 처리가 되지 않았습니다.");
         assertNotNull(registered.getRegstrId(),  "등록자 audit 처리가 되지 않았습니다.");
@@ -97,7 +97,7 @@ class JrnlDayServiceTest {
         final JrnlDayDto updated = (JrnlDayDto) modifyResult.getRsltObj();
 
         // Then::
-        assertNotNull(updated.getPostNo(), "수정이 정상적으로 이루어지지 않았습니다.");
+        assertNotNull(updated.getId(), "수정이 정상적으로 이루어지지 않았습니다.");
         assertEquals("2020-01-01", updated.getJrnlDt(), "수정이 정상적으로 이루어지지 않았습니다.");
         // audit
         assertNotNull(updated.getMdfDt(), "수정일자 audit 처리가 되지 않았습니다.");

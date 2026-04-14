@@ -53,11 +53,11 @@ dF.State = (function(): dfModule {
 
         /**
          * 상태 변경 처리. (Ajax)
-         * @param {postNo: string|number, contentType: string, stateCd: string, cacheContext?: Record<string, any>} payload
+         * @param {id: string|number, contentType: string, stateCd: string, cacheContext?: Record<string, any>} payload
          * @param {Function} [callback]
          */
         toggleAjax: function (
-            payload: { postNo: string|number, contentType: string, stateCd: string, cacheContext?: Record<string, any> },
+            payload: { id: string|number, contentType: string, stateCd: string, cacheContext?: Record<string, any> },
             callback: Function
         ): void {
 

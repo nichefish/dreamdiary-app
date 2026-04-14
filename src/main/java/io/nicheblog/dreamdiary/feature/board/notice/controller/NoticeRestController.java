@@ -109,7 +109,7 @@ public class NoticeRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> noticeDtlAjax(
-            final @PathVariable("postNo") Integer key
+            final @PathVariable("id") Integer key
     ) throws Exception {
 
         final NoticeDto retrievedDto = noticeService.viewDtlPage(key);
@@ -123,17 +123,17 @@ public class NoticeRestController
      * 공지사항 삭제 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param postNo 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @DeleteMapping(Url.NOTICE)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> noticeDelAjax(
-            final @PathVariable("postNo") Integer postNo
+            final @PathVariable("id") Integer id
     ) throws Exception {
 
-        final ServiceResponse result = noticeService.delete(postNo);
+        final ServiceResponse result = noticeService.delete(id);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

@@ -30,7 +30,7 @@ public class JrnlDreamCalDto
     /* ----- */
 
     /** 저널 일자 번호 */
-    private Integer jrnlDayNo;
+    private Integer jrnlDayId;
 
     /** 중요 여부 (Y/N) */
     @Builder.Default

@@ -31,7 +31,7 @@ public class JrnlSbjctDtoTestFactory {
      */
     public static JrnlSbjctDto createWithKey(final Integer key) throws Exception {
         return JrnlSbjctDto.builder()
-                .postNo(key)
+                .id(key)
                 .contentType(ContentType.JRNL_SBJCT.key)
                 .build();
     }

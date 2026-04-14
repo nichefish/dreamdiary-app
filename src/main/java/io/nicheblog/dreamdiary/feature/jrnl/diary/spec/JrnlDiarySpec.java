@@ -82,7 +82,6 @@ public class JrnlDiarySpec
     ) throws Exception {
 
         final List<Predicate> predicate = new ArrayList<>();
-
         // expressions
         final Join<JrnlDiarySmpEntity, JrnlChapterSmpEntity> jrnlChapterJoin = root.join("jrnlChapter", JoinType.INNER);
         final Join<JrnlChapterSmpEntity, JrnlDaySmpEntity> jrnlDayJoin = jrnlChapterJoin.join("jrnlDay", JoinType.INNER);
@@ -113,9 +112,13 @@ public class JrnlDiarySpec
                     final Integer mnth = (Integer) value;
                     if (mnth != 99) predicate.add(builder.equal(jrnlDayJoin.get(key), mnth));
                     continue;
-                case "jrnlDayNo":
+                case "jrnlDayId":
                     // 99 = 모든 월
-                    predicate.add(builder.equal(jrnlDayJoin.get("postNo"), value));
+                    predicate.add(builder.equal(jrnlDayJoin.get("id"), value));
+                    continue;
+                case "jrnlChapterId":
+                    // 챕터 id alias 검색
+                    predicate.add(builder.equal(jrnlChapterJoin.get("id"), value));
                     continue;
                 case "searchKeywords":
                     // 내용 like 검색
@@ -157,10 +160,10 @@ public class JrnlDiarySpec
                     final Subquery<Long> sub = query.subquery(Long.class);
                     final Root<TagContentEntity> subRoot = sub.from(TagContentEntity.class);
 
-                    sub.select(subRoot.get("refPostNo"));
+                    sub.select(subRoot.get("refId"));
                     sub.where(
                         builder.and(
-                            builder.equal(subRoot.get("refPostNo"), root.get("postNo")),
+                            builder.equal(subRoot.get("refId"), root.get("id")),
                             builder.equal(subRoot.get("refContentType"), ContentType.JRNL_DIARY.key),
                             builder.equal(subRoot.get("regstrId"), regstrId),
                             subRoot.get("tagId").in(tagIds)
@@ -182,10 +185,10 @@ public class JrnlDiarySpec
                         .filter(StringUtils::isNotEmpty)
                         .toList();
 
-                    subquery.select(stateRoot.get("refPostNo"));
+                    subquery.select(stateRoot.get("refId"));
                     subquery.where(
                         builder.and(
-                            builder.equal(stateRoot.get("refPostNo"), root.get("postNo")),
+                            builder.equal(stateRoot.get("refId"), root.get("id")),
                             builder.equal(stateRoot.get("refContentType"), ContentType.JRNL_DIARY.key),
                             stateRoot.get("stateCd").in(states)
                         )
@@ -215,4 +218,5 @@ public class JrnlDiarySpec
         }
         throw new IllegalArgumentException("regstrId is required.");
     }
+
 }

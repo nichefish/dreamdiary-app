@@ -76,14 +76,14 @@ public class MyJrnlDiaryService {
 
         final List<BaseClsfKey> refKeyList = new ArrayList<>();
         listDto.stream()
-                .filter(dto -> dto != null && dto.getPostNo() != null)
-                .forEach(dto -> refKeyList.add(new BaseClsfKey(dto.getPostNo(), ContentType.JRNL_DIARY)));
+                .filter(dto -> dto != null && dto.getId() != null)
+                .forEach(dto -> refKeyList.add(new BaseClsfKey(dto.getId(), ContentType.JRNL_DIARY)));
 
         final Map<String, List<RelatedContentDto>> relatedMap = relatedContentQueryService.getRelatedContentMapByRefs(refKeyList, username);
         for (final JrnlDiaryDto jrnlDiary : listDto) {
-            if (jrnlDiary == null || jrnlDiary.getPostNo() == null) continue;
+            if (jrnlDiary == null || jrnlDiary.getId() == null) continue;
             jrnlDiary.setRelatedContentList(
-                    relatedMap.getOrDefault(String.format("%s:%d", ContentType.JRNL_DIARY.key, jrnlDiary.getPostNo()), List.of())
+                    relatedMap.getOrDefault(String.format("%s:%d", ContentType.JRNL_DIARY.key, jrnlDiary.getId()), List.of())
             );
         }
     }

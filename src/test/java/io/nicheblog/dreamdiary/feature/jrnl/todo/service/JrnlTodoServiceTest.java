@@ -71,7 +71,7 @@ class JrnlTodoServiceTest {
 
         // Then::
         assertNotNull(registered, "Register result is null.");
-        assertNotNull(registered.getPostNo(), "Register did not assign key.");
+        assertNotNull(registered.getId(), "Register did not assign key.");
         assertEquals(1, registered.getIdx(), "Unexpected index for first item.");
     }
 
@@ -92,7 +92,7 @@ class JrnlTodoServiceTest {
         final JrnlTodoDto modified = (JrnlTodoDto) modifyResult.getRsltObj();
 
         // Then::
-        assertNotNull(modified.getPostNo(), "Modify did not keep key.");
+        assertNotNull(modified.getId(), "Modify did not keep key.");
         assertEquals("test", modified.getCn(), "Modify did not update content.");
     }
 

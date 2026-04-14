@@ -39,9 +39,9 @@ public interface JrnlSumryRepository
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    @Query("SELECT COUNT(dream.postNo) " +
+    @Query("SELECT COUNT(dream.id) " +
             "FROM JrnlDreamEntity dream " +
-            "INNER JOIN FETCH JrnlDayEntity day ON dream.jrnlDayNo = day.postNo " +
+            "INNER JOIN FETCH JrnlDayEntity day ON dream.jrnlDayId = day.id " +
             "WHERE day.yy = :yy " +
             "   AND day.regstrId = :regstrId")
     Integer getDreamCntByYy(final @Param("yy") Integer yy, final @Param("regstrId") String regstrId);
@@ -66,9 +66,9 @@ public interface JrnlSumryRepository
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    @Query("SELECT COUNT(distinct day.postNo) " +
+    @Query("SELECT COUNT(distinct day.id) " +
             "FROM JrnlDayEntity day " +
-            "INNER JOIN FETCH JrnlDreamEntity dream ON day.postNo = dream.jrnlDayNo " +
+            "INNER JOIN FETCH JrnlDreamEntity dream ON day.id = dream.jrnlDayId " +
             "WHERE day.yy = :yy " +
             "   AND day.regstrId = :regstrId")
     Integer getDreamDayCntByYy(final @Param("yy") Integer yy, final @Param("regstrId") String regstrId);

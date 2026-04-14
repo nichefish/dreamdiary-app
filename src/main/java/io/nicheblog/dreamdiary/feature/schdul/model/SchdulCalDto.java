@@ -47,7 +47,7 @@ public class SchdulCalDto
 
     /** 일정 고유 ID */
     @JsonProperty("id")
-    private String postNo;
+    private String id;
 
     /** 일정 그룹 ID */
     @JsonProperty("groupId")

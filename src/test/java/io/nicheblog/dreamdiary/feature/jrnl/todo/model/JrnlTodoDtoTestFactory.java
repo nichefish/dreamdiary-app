@@ -37,7 +37,7 @@ public class JrnlTodoDtoTestFactory {
      */
     public static JrnlTodoDto createWithKey(final Integer key) throws Exception {
         return JrnlTodoDto.builder()
-                .postNo(key)
+                .id(key)
                 .contentType(ContentType.JRNL_TODO.key)
                 .title("test_title")
                 .cn("test_cn")

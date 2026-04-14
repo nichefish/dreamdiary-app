@@ -28,7 +28,7 @@ public class JrnlChapterSearchParam
     private Integer mnth;
 
     /** 저널 일자 번호 */
-    private Integer jrnlDayNo;
+    private Integer jrnlDayId;
 
     /** 컨텐츠 타입 */
     private String contentType;

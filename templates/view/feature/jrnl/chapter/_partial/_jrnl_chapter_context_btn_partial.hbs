@@ -21,7 +21,7 @@
             <!--begin::Menu item-->
             <div class="menu-item px-3 my-1 cursor-pointer"
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.chapter"/> <@spring.message 'bs.tooltip.modal.mdf'/>">
-                <div class="menu-link flex-stack px-3" onclick="dF.JrnlChapter.mdfModal({{postNo}}, '{{stdrdDt}}');">
+                <div class="menu-link flex-stack px-3" onclick="dF.JrnlChapter.mdfModal({{id}}, '{{stdrdDt}}');">
                     <@spring.message 'txt.comm.edit'/>
                     <i class="bi bi-pencil-square fs-8"></i>
                 </div>
@@ -43,7 +43,7 @@
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.status.collapsed'/>">
                                 <!--begin::Input-->
                                 <input class="form-check-input w-30px h-20px cursor-pointer chapter-context-collapsed-check" type="checkbox" value="1" {{#if (hasState state 'COLLAPSED')}}checked="checked"{{/if}}
-                                       onclick="dF.JrnlChapter.collapseAjax({{postNo}});">
+                                       onclick="dF.JrnlChapter.collapseAjax({{id}});">
                                 <!--end::Input-->
                                 <!--end::Label-->
                                 <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.collapsed'/></span>
@@ -63,7 +63,7 @@
             <!--begin::Menu item-->
             <div class="menu-item px-3 my-1 cursor-pointer"
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.jrnl.chapter"/> <@spring.message 'bs.tooltip.del'/>">
-                <div class="menu-link flex-stack px-3 text-danger" onclick="dF.JrnlChapter.delAjax({{postNo}});">
+                <div class="menu-link flex-stack px-3 text-danger" onclick="dF.JrnlChapter.delAjax({{id}});">
                     <@spring.message 'txt.comm.del'/>
                     <i class="bi bi-trash text-danger p-0 fs-8"></i>
                 </div>
