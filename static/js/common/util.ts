@@ -139,8 +139,8 @@ cF.util = (function(): Module {
         /**
          * 파일 다운로드를 수행합니다.
          * AJAX로 파일 존재 여부를 체크한 후, 임시 폼을 생성하여 제출합니다.
-         * @param {string|number} atchFileNo - 첨부 파일 번호.
-         * @param {string|number} atchFileDtlNo - 첨부 파일 상세 번호.
+         * @param {string|number} atchFileId - 첨부 파일 번호.
+         * @param {string|number} atchFileDtlId - 첨부 파일 상세 번호.
          * TODO: URL 외부에서 주입하기?
          */
         fileDownload: function(atchFileId: string|number, atchFileDtlId: string|number): void {

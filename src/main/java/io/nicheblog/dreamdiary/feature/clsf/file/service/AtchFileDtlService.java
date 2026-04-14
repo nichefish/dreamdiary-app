@@ -71,12 +71,12 @@ public class AtchFileDtlService
     /**
      * 첨부파일 상세 목록 조회 (dto level)
      *
-     * @param atchFileNo 조회할 첨부파일 묶음 번호
+     * @param atchFileId 조회할 첨부파일 묶음 번호
      * @return {@link List} -- 첨부파일 상세 정보 목록
      */
-    public List<AtchFileDtlDto> getPageDto(final Integer atchFileNo) throws Exception {
+    public List<AtchFileDtlDto> getPageDto(final Integer atchFileId) throws Exception {
         final Map<String, Object> paramMap = new HashMap<>() {{
-            put("atchFileId", atchFileNo);
+            put("atchFileId", atchFileId);
         }};
 
         return this.getSelf().getListDto(paramMap);

@@ -89,7 +89,7 @@ dF.AtchFile = (function(): dfModule {
 
         /**
          * 기존 첨부파일 삭제 플래그 세팅
-         * @param {string|number} atchFileDtlNo - 첨부파일 상세 번호.
+         * @param {string|number} atchFileDtlId - 첨부파일 상세 번호.
          */
         delExistingFile: function(atchFileDtlId: string|number): void {
             if (isNaN(Number(atchFileDtlId))) return;

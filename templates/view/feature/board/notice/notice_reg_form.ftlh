@@ -18,7 +18,7 @@
         <form name="noticeRegForm" id="noticeRegForm" class="form" data-mode="${formMode!}" method="post" enctype="multipart/form-data">
             <input type="hidden" name="id" value="${post.id!}">
             <input type="hidden" name="contentType" value="NOTICE">
-            <input type="hidden" name="atchFileNo" value="${post.atchFileNo!}">
+            <input type="hidden" name="atchFileId" value="${post.atchFileId!}">
             <input type="hidden" name="hitCnt" value="${post.hitCnt!0?string.number}">
 
             <#--begin::Row-->

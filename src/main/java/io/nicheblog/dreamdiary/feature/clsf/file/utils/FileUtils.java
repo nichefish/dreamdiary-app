@@ -74,8 +74,8 @@ public class FileUtils
     public static Boolean fileChck(final String fileId) {
         try {
             // 1. 파일ID일 경우로 상정 ::
-            final Integer atchFileDtlNo = Integer.parseInt(fileId);
-            final AtchFileDtlEntity fileDtl = atchFileDtlService.getDtlEntity(atchFileDtlNo);
+            final Integer atchFileDtlId = Integer.parseInt(fileId);
+            final AtchFileDtlEntity fileDtl = atchFileDtlService.getDtlEntity(atchFileDtlId);
             new File(fileDtl.getFileStrePath(), fileDtl.getStreFileNm());
         } catch (final NumberFormatException e) {
             // 2. 에러시 Integer형 ID가 아닌 것으로 판단, 파일명으로 처리
@@ -151,16 +151,16 @@ public class FileUtils
      * 업로드된 파일을 처리하여 반환합니다. (기존 파일 또는 새 파일 처리)
      *
      * @param multiRequest Multipart 요청
-     * @param atchFileNo 기존에 첨부된 파일 번호 (Integer)
+     * @param atchFileId 기존에 첨부된 파일 번호 (Integer)
      * @return {@link AtchFileEntity} -- 업로드된 파일 정보
      */
     public static AtchFileEntity getUploadedFile(
             final MultipartHttpServletRequest multiRequest,
-            final Integer atchFileNo
+            final Integer atchFileId
     ) throws Exception {
 
         // 첨부파일 ID 세팅
-        final AtchFileEntity atchFile = (atchFileNo != null) ? atchFileService.getDtlEntity(atchFileNo) : AtchFileEntity.builder().build();
+        final AtchFileEntity atchFile = (atchFileId != null) ? atchFileService.getDtlEntity(atchFileId) : AtchFileEntity.builder().build();
         final List<AtchFileDtlEntity> atchFileList = atchFile.getAtchFileList();
 
         // 파일 처리
@@ -193,23 +193,23 @@ public class FileUtils
      * 파일 업로드 (기존 파일 또는 새 파일 처리)
      *
      * @param multiRequest Multipart 요청
-     * @param atchFileNo 기존에 첨부된 파일 번호 (Integer), null일 경우 새로 첨부된 파일 처리
+     * @param atchFileId 기존에 첨부된 파일 번호 (Integer), null일 경우 새로 첨부된 파일 처리
      * @return {@link Integer} -- 업로드된 파일의 첨부파일 번호
      */
     public static Integer uploadFile(
             final MultipartHttpServletRequest multiRequest,
-            final Integer atchFileNo
+            final Integer atchFileId
     ) throws Exception {
 
         try {
-            final AtchFileEntity rslt = getUploadedFile(multiRequest, atchFileNo);
+            final AtchFileEntity rslt = getUploadedFile(multiRequest, atchFileId);
             if (rslt == null) return null;
 
             return rslt.getId();
         } catch (final Exception e) {
             MessageUtils.alertMessage("파일 업로드에 실패했습니다.");
         }
-        return atchFileNo;
+        return atchFileId;
     }
 
     /**
