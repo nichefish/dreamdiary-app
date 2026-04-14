@@ -23,10 +23,10 @@ CREATE TABLE IF NOT EXISTS user (
     cttpc VARCHAR(20) COMMENT '연락처',        -- 기본 연락처
     -- ACCOUNT_STATUS
     locked_yn CHAR(1) DEFAULT 'N' COMMENT '잠금 여부 (Y/N)',
-    use_acs_ip_yn CHAR(1) DEFAULT 'N' COMMENT '접속IP 사용 여부 (Y/N)',
-    lst_lgn_dt DATETIME COMMENT '마지막 로그인 일시',
+    use_allowed_ip_yn CHAR(1) DEFAULT 'N' COMMENT '접속IP 사용 여부 (Y/N)',
+    last_login_at DATETIME COMMENT '마지막 로그인 일시',
     lgn_fail_cnt INT DEFAULT 0 COMMENT '로그인 실패 횟수',
-    pw_chg_dt DATETIME COMMENT '비밀번호 변경 일시',
+    password_changed_at DATETIME COMMENT '비밀번호 변경 일시',
     dormant_bypass_yn CHAR(1) DEFAULT 'N' COMMENT '장기 미로그인 통과 여부 (Y/N)',
     needs_pw_reset CHAR(1) DEFAULT 'N' COMMENT '패스워드 변경 필요 여부 (Y/N)',
     -- REQST
@@ -83,12 +83,12 @@ CREATE TABLE IF NOT EXISTS user_auth_role (
 
 -- -----------------------
 
--- 사용자 계정 정보 :: 접속 IP (user_acs_ip)
+-- 사용자 계정 정보 :: 접속 IP (user_allowed_ip)
 -- @extends: BaseCrudEntity
-CREATE TABLE IF NOT EXISTS user_acs_ip (
+CREATE TABLE IF NOT EXISTS user_allowed_ip (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 접속 IP 고유 ID',
     user_id INT COMMENT '사용자 고유 번호',
-    acs_ip VARCHAR(20) COMMENT '접속 IP',
+    allowed_ip VARCHAR(20) COMMENT '접속 IP',
     -- AUDIT
     deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT

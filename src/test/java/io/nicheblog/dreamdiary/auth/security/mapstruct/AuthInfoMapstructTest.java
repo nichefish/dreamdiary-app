@@ -41,13 +41,13 @@ class AuthInfoMapstructTest {
         // Given::
         UserEntity userEntity = UserEntityTestFactory.create();
         userEntity.setProflImgUrl("test_url");
-        // 접속IP : Entity 로딩시 AcsIpList -> AcsIpStrList 변환됨. (@Transient)
-        userEntity.setUseAcsIpYn("Y");
-        UserAcsIpEntity aa = UserAcsIpEntityTestFactory.create("1.1.1.1");
-        UserAcsIpEntity bb = UserAcsIpEntityTestFactory.create("2.2.2.2");
-        userEntity.setAcsIpList(List.of(aa, bb));
-        userEntity.setAcsIpStrList(userEntity.getAcsIpList().stream()
-                .map(UserAcsIpEntity::getAcsIp)
+        // 접속IP : Entity 로딩시 AllowedIpList -> AllowedIpStrList 변환됨. (@Transient)
+        userEntity.setUseAllowedIpYn("Y");
+        UserAllowedIpEntity aa = UserAllowedIpEntityTestFactory.create("1.1.1.1");
+        UserAllowedIpEntity bb = UserAllowedIpEntityTestFactory.create("2.2.2.2");
+        userEntity.setAllowedIpList(List.of(aa, bb));
+        userEntity.setAllowedIpStrList(userEntity.getAllowedIpList().stream()
+                .map(UserAllowedIpEntity::getAllowedIp)
                 .collect(Collectors.toList()));
 
         // When::
@@ -60,10 +60,10 @@ class AuthInfoMapstructTest {
         assertEquals(TestConstant.TEST_NICK_NM, dto.getNickNm());
         assertEquals("test_url", dto.getProflImgUrl());
         // 접속 IP
-        assertEquals("Y", dto.getUseAcsIpYn());
-        assertFalse(CollectionUtils.isEmpty(dto.getAcsIpStrList()));
-        assertEquals(2, dto.getAcsIpStrList().size());
-        assertEquals(dto.getAcsIpStrList(), List.of("1.1.1.1", "2.2.2.2"));
+        assertEquals("Y", dto.getUseAllowedIpYn());
+        assertFalse(CollectionUtils.isEmpty(dto.getAllowedIpStrList()));
+        assertEquals(2, dto.getAllowedIpStrList().size());
+        assertEquals(dto.getAllowedIpStrList(), List.of("1.1.1.1", "2.2.2.2"));
     }
 
     /**
@@ -102,17 +102,17 @@ class AuthInfoMapstructTest {
     }
 
     /**
-     * entity -> dto 검증 :: 어노테이션 매핑 (lstLgnDt, pwChgDt)
+     * entity -> dto 검증 :: 어노테이션 매핑 (lastLoginAt, passwordChangedAt)
      * 로직이 들어간 부분 테스트 분리
      */
     @Test
     void testToDto_checkMapping_stusDtNotNull() throws Exception {
         // Given::
         UserEntity userEntity = UserEntityTestFactory.create();
-        // acntStus - lstLgnDt, pwChgDt = null
+        // acntStus - lastLoginAt, passwordChangedAt = null
         UserStusEmbed acntStus = UserStusEmbed.builder()
-                .lstLgnDt(DateUtils.asDate("2000-01-11"))
-                .pwChgDt(DateUtils.asDate("2000-02-22"))
+                .lastLoginAt(DateUtils.asDate("2000-01-11"))
+                .passwordChangedAt(DateUtils.asDate("2000-02-22"))
                 .build();
         userEntity.setAcntStus(acntStus);
 
@@ -121,23 +121,23 @@ class AuthInfoMapstructTest {
 
         // Then::
         assertNotNull(dto);
-        // acntStus - lstLgnDt, pwChgDt 대신 createdAt 사용
-        assertEquals(dto.getLstLgnDt(), DateUtils.asDate("2000-01-11"));
-        assertEquals(dto.getPwChgDt(), DateUtils.asDate("2000-02-22"));
+        // acntStus - lastLoginAt, passwordChangedAt 대신 createdAt 사용
+        assertEquals(dto.getLastLoginAt(), DateUtils.asDate("2000-01-11"));
+        assertEquals(dto.getPasswordChangedAt(), DateUtils.asDate("2000-02-22"));
     }
 
     /**
-     * entity -> dto 검증 :: 어노테이션 매핑 (lstLgnDt, pwChgDt)
+     * entity -> dto 검증 :: 어노테이션 매핑 (lastLoginAt, passwordChangedAt)
      * 로직이 들어간 부분 테스트 분리
      */
     @Test
     void testToDto_checkMapping_stusDtNull() throws Exception {
         // Given::
         UserEntity userEntity = UserEntityTestFactory.create();
-        // acntStus - lstLgnDt, pwChgDt = null
+        // acntStus - lastLoginAt, passwordChangedAt = null
         UserStusEmbed acntStus = UserStusEmbed.builder()
-                .lstLgnDt(null)
-                .pwChgDt(null)
+                .lastLoginAt(null)
+                .passwordChangedAt(null)
                 .build();
         userEntity.setAcntStus(acntStus);
         userEntity.setCreatedAt(DateUtils.asDate("2000-01-31"));
@@ -147,9 +147,9 @@ class AuthInfoMapstructTest {
 
         // Then::
         assertNotNull(dto);
-        // acntStus - lstLgnDt, pwChgDt 대신 createdAt 사용
-        assertEquals(dto.getLstLgnDt(), DateUtils.asDate("2000-01-31"));
-        assertEquals(dto.getPwChgDt(), DateUtils.asDate("2000-01-31"));
+        // acntStus - lastLoginAt, passwordChangedAt 대신 createdAt 사용
+        assertEquals(dto.getLastLoginAt(), DateUtils.asDate("2000-01-31"));
+        assertEquals(dto.getPasswordChangedAt(), DateUtils.asDate("2000-01-31"));
     }
 
     /**
@@ -167,7 +167,7 @@ class AuthInfoMapstructTest {
 
         // Then::
         assertNotNull(dto);
-        // acntStus - lstLgnDt, pwChgDt 대신 createdAt 사용
+        // acntStus - lastLoginAt, passwordChangedAt 대신 createdAt 사용
         UserProfileDto userProfile = dto.getProfile();
         assertEquals("2000-01-01", userProfile.getBrthdy());
         assertEquals("test_profl_cn", userProfile.getProflCn());

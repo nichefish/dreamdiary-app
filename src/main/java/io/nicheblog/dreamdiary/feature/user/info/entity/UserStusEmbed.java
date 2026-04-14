@@ -32,9 +32,9 @@ public class UserStusEmbed {
 
     /** 마지막 로그인 일시 */
     @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
-    @Column(name = "lst_lgn_dt")
+    @Column(name = "last_login_at")
     @Comment("마지막 로그인 일시")
-    private Date lstLgnDt;
+    private Date lastLoginAt;
 
     /** 로그인 실패 횟수 */
     @Builder.Default
@@ -44,9 +44,9 @@ public class UserStusEmbed {
 
     /** 패스워드 변경일시 */
     @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
-    @Column(name = "pw_chg_dt")
+    @Column(name = "password_changed_at")
     @Comment("패스워드 변경일시")
-    private Date pwChgDt;
+    private Date passwordChangedAt;
 
     /** 패스워드 리셋 필요 여부 (Y/N) */
     @Builder.Default

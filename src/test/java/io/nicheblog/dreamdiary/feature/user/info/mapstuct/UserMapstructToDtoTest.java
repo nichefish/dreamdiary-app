@@ -95,7 +95,7 @@ class UserMapstructToDtoTest {
         assertEquals(TestConstant.TEST_REGSTR_NM, userDto.getCreatedByNm(), "등록자 이름이 제대로 매핑되지 않았습니다.");
         assertEquals("2000-01-01 00:00:00", userDto.getCreatedAt(), "등록일시가 제대로 매핑되지 않았습니다.");
         // 수정자
-        assertEquals(TestConstant.TEST_MDFUSR_ID, userDto.getUpdatedById(), "수정자 ID가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_MDFUSR_ID, userDto.getUpdatedBy(), "수정자 ID가 제대로 매핑되지 않았습니다.");
         assertEquals(TestConstant.TEST_MDFUSR_NM, userDto.getUpdatedByNm(), "수정자 이름이 제대로 매핑되지 않았습니다.");
         assertEquals("2000-01-01 00:00:00", userDto.getUpdatedAt(), "수정일시가 제대로 매핑되지 않았습니다.");
     }
@@ -127,12 +127,12 @@ class UserMapstructToDtoTest {
      * entity -> dto 검증 :: 접속 IP 매핑 검증
      */
     @Test
-    void testToDto_checkAcsIp() throws Exception {
+    void testToDto_checkAllowedIp() throws Exception {
         // Given::
-        userEntity.setUseAcsIpYn("Y");
-        final UserAcsIpEntity aa = UserAcsIpEntityTestFactory.create("1.1.1.1");
-        final UserAcsIpEntity bb = UserAcsIpEntityTestFactory.create("2.2.2.2");
-        userEntity.setAcsIpList(List.of(aa, bb));
+        userEntity.setUseAllowedIpYn("Y");
+        final UserAllowedIpEntity aa = UserAllowedIpEntityTestFactory.create("1.1.1.1");
+        final UserAllowedIpEntity bb = UserAllowedIpEntityTestFactory.create("2.2.2.2");
+        userEntity.setAllowedIpList(List.of(aa, bb));
 
         // When::
         final UserDto userDto = userMapstruct.toDto(userEntity);
@@ -140,12 +140,12 @@ class UserMapstructToDtoTest {
         // Then::
         assertNotNull(userDto, "변환된 사용자 상세 Dto는 null일 수 없습니다.");
         // 접속 IP 관련 매핑 검증
-        assertEquals(userEntity.getUseAcsIpYn(), userDto.getUseAcsIpYn(), "접속 IP 사용여부가 제대로 매핑되지 않았습니다.");
-        assertNotNull(userDto.getAcsIpList(), "변환된 접속 가능 IP 목록 Dto는 null일 수 없습니다.");
-        assertEquals(2, userDto.getAcsIpList().size(), "접속 가능 IP 목록 크기가 일치하지 않습니다.");
-        assertEquals("1.1.1.1", userDto.getAcsIpList().get(0).getAcsIp(), "접속 가능 IP 목록에서 IP 정보가 제대로 매핑되지 않았습니다.");
-        assertEquals("2.2.2.2", userDto.getAcsIpList().get(1).getAcsIp(), "접속 가능 IP 목록에서 IP 정보가 제대로 매핑되지 않았습니다.");
-        assertEquals("1.1.1.1, 2.2.2.2", userDto.getAcsIpListStr(), "접속 가능 IP 목록 문자열이 제대로 매핑되지 않았습니다.");
+        assertEquals(userEntity.getUseAllowedIpYn(), userDto.getUseAllowedIpYn(), "접속 IP 사용여부가 제대로 매핑되지 않았습니다.");
+        assertNotNull(userDto.getAllowedIpList(), "변환된 접속 가능 IP 목록 Dto는 null일 수 없습니다.");
+        assertEquals(2, userDto.getAllowedIpList().size(), "접속 가능 IP 목록 크기가 일치하지 않습니다.");
+        assertEquals("1.1.1.1", userDto.getAllowedIpList().get(0).getAllowedIp(), "접속 가능 IP 목록에서 IP 정보가 제대로 매핑되지 않았습니다.");
+        assertEquals("2.2.2.2", userDto.getAllowedIpList().get(1).getAllowedIp(), "접속 가능 IP 목록에서 IP 정보가 제대로 매핑되지 않았습니다.");
+        assertEquals("1.1.1.1, 2.2.2.2", userDto.getAllowedIpListStr(), "접속 가능 IP 목록 문자열이 제대로 매핑되지 않았습니다.");
     }
 
     /**
@@ -251,7 +251,7 @@ class UserMapstructToDtoTest {
         assertEquals(TestConstant.TEST_REGSTR_NM, userListDto.getCreatedByNm(), "등록자 이름이 제대로 매핑되지 않았습니다.");
         assertEquals("2000-01-01 00:00:00", userListDto.getCreatedAt(), "등록일시가 제대로 매핑되지 않았습니다.");
         // 수정자
-        assertEquals(TestConstant.TEST_MDFUSR_ID, userListDto.getUpdatedById(), "수정자 ID가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_MDFUSR_ID, userListDto.getUpdatedBy(), "수정자 ID가 제대로 매핑되지 않았습니다.");
         assertEquals(TestConstant.TEST_MDFUSR_NM, userListDto.getUpdatedByNm(), "수정자 이름이 제대로 매핑되지 않았습니다.");
         assertEquals("2000-01-01 00:00:00", userListDto.getUpdatedAt(), "수정일시가 제대로 매핑되지 않았습니다.");
     }

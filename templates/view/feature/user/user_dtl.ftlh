@@ -154,12 +154,12 @@
         <div class="row mb-4">
             <div class="col-xl-2 col-4">
                 <div class="col-form-label text-center fw-bold">
-                    <label for="acsIpListStr">접속IP</label>
+                    <label for="allowedIpListStr">접속IP</label>
                 </div>
             </div>
             <div class="col-xl-2 col-4">
                 <div class="col-form-label">
-                    <#if user.useAcsIp!false>
+                    <#if user.useAllowedIp!false>
                         <div class="text-success">
                             <@spring.message 'txt.status.use'/><i class="bi bi-check text-success"></i>
                         </div>
@@ -170,9 +170,9 @@
                     </#if>
                 </div>
                 <div class="form-check form-switch form-check-custom form-check-solid gap-4">
-                    <#if user.useAcsIp! && user.acsIpList??>
-                        <#list user.acsIpList![] as item>
-                            <span class="div-textarea div-height-1 px-5">${item.acsIp}</span>
+                    <#if user.useAllowedIp! && user.allowedIpList??>
+                        <#list user.allowedIpList![] as item>
+                            <span class="div-textarea div-height-1 px-5">${item.allowedIp}</span>
                         </#list>
                     </#if>
                 </div>

@@ -75,11 +75,11 @@ public class OAuth2AuthenticationSuccessHandler
             final ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
             final HttpSession session = servletRequestAttribute.getRequest().getSession();
             session.setAttribute("authInfo", authInfo);
-            session.setAttribute("acsIp", AuthUtils.getAcsIpAddr());
+            session.setAttribute("remoteIp", AuthUtils.getRemoteIpAddr());
 
             // 최종 로그인 날짜 세팅 및 패스워드오류 카운트 초기화
             final String username = authInfo.getUsername();
-            authService.setLstLgnDt(username);
+            authService.setLastLoginAt(username);
             // session에 lgnId attribute 추가 :: 중복 로그인 방지 비교용
             DupIdLgnManager.addKey(username);
 

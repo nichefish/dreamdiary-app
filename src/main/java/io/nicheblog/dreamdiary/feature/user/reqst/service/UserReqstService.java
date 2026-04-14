@@ -42,9 +42,9 @@ public class UserReqstService {
      */
     public void preRegist(final UserReqstDto registDto) throws Exception {
         // 접속 IP 정보 없을시 사용으로 찍었더라도 미사용으로 변경
-        if (StringUtils.isEmpty(registDto.getAcsIpListStr())) {
-            registDto.setUseAcsIpYn("N");
-            registDto.setAcsIpListStr(null);
+        if (StringUtils.isEmpty(registDto.getAllowedIpListStr())) {
+            registDto.setUseAllowedIpYn("N");
+            registDto.setAllowedIpListStr(null);
         }
     }
 

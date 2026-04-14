@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.feature.user.info.mapstuct;
 import io.nicheblog.dreamdiary.auth.type.Auth;
 import io.nicheblog.dreamdiary.feature.user.emplym.entity.UserEmplymEntity;
 import io.nicheblog.dreamdiary.feature.user.emplym.model.UserEmplymDtoTestFactory;
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserAcsIpEntity;
+import io.nicheblog.dreamdiary.feature.user.info.entity.UserAllowedIpEntity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.feature.user.info.mapstruct.UserMapstruct;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserAuthRoleDto;
@@ -95,11 +95,11 @@ class UserMapstructToEntityTest {
      * dto -> entity 변환 검증:: 접속 IP
      */
     @Test
-    void testToEntity_checkAcsIp() throws Exception {
+    void testToEntity_checkAllowedIp() throws Exception {
         // Given::
         // ACS_IP
-        userDto.setUseAcsIpYn("Y");
-        userDto.setAcsIpListStr("[{\"value\":\"1.1.1.1\"},{\"value\":\"2.2.2.2\"}]");
+        userDto.setUseAllowedIpYn("Y");
+        userDto.setAllowedIpListStr("[{\"value\":\"1.1.1.1\"},{\"value\":\"2.2.2.2\"}]");
 
         // When::
         final UserEntity entity = userMapstruct.toEntity(userDto);
@@ -107,12 +107,12 @@ class UserMapstructToEntityTest {
         // Then::
         assertNotNull(entity, "변환된 사용자 Entity는 null일 수 없습니다.");
         // 접속 IP 관련
-        assertEquals(userDto.getUseAcsIpYn(), entity.getUseAcsIpYn(), "접속 IP 사용여부가 제대로 매핑되지 않았습니다.");
-        final List<UserAcsIpEntity> acsIpEntityList = entity.getAcsIpList();
-        assertNotNull(acsIpEntityList, "변환된 접속 가능 IP 목록 Dto는 null일 수 없습니다.");
-        assertEquals(2, acsIpEntityList.size(), "접속 가능 IP 목록 크기가 일치하지 않습니다.");
-        assertEquals("1.1.1.1", acsIpEntityList.get(0).getAcsIp(), "접속 가능 IP 목록에서 IP 정보가 제대로 매핑되지 않았습니다.");
-        assertEquals("2.2.2.2", acsIpEntityList.get(1).getAcsIp(), "접속 가능 IP 목록에서 IP 정보가 제대로 매핑되지 않았습니다.");
+        assertEquals(userDto.getUseAllowedIpYn(), entity.getUseAllowedIpYn(), "접속 IP 사용여부가 제대로 매핑되지 않았습니다.");
+        final List<UserAllowedIpEntity> allowedIpEntityList = entity.getAllowedIpList();
+        assertNotNull(allowedIpEntityList, "변환된 접속 가능 IP 목록 Dto는 null일 수 없습니다.");
+        assertEquals(2, allowedIpEntityList.size(), "접속 가능 IP 목록 크기가 일치하지 않습니다.");
+        assertEquals("1.1.1.1", allowedIpEntityList.get(0).getAllowedIp(), "접속 가능 IP 목록에서 IP 정보가 제대로 매핑되지 않았습니다.");
+        assertEquals("2.2.2.2", allowedIpEntityList.get(1).getAllowedIp(), "접속 가능 IP 목록에서 IP 정보가 제대로 매핑되지 않았습니다.");
     }
 
     /**

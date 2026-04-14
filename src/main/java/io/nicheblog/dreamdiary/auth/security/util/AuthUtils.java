@@ -191,11 +191,11 @@ public class AuthUtils {
     }
 
     /**
-     * 사용자 IP 주소 조회 (헤더 조회)
+     * 접속한 클라이언트 IP 주소 조회 (헤더 우선)
      *
-     * @return {@link String} -- 현재 로그인 중인 사용자가 접속 중인 IP 주소.
+     * @return {@link String} -- 현재 요청의 원격 접속 IP 주소.
      */
-    public static String getAcsIpAddr() {
+    public static String getRemoteIpAddr() {
         // request 맥락 하에서만 실행
         if (request == null) return null;
         String ipType = "";

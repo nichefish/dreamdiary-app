@@ -62,16 +62,16 @@ public class AuthInfo
     private String lockedYn;
 
     /** 접속 IP 사용 여부 (Y/N) */
-    private String useAcsIpYn;
+    private String useAllowedIpYn;
 
     /** 접속 IP 목록 */
-    private List<String> acsIpStrList;
+    private List<String> allowedIpStrList;
 
     /** 최종접속일시 */
-    private Date lstLgnDt;
+    private Date lastLoginAt;
 
     /** 최종비밀번호변경일시 */
-    private Date pwChgDt;
+    private Date passwordChangedAt;
 
     /** 패스워드 리셋 필요 여부 (Y/N) */
     private String needsPwReset;
