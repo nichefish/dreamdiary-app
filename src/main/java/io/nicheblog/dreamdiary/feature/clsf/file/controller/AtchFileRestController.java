@@ -42,7 +42,7 @@ public class AtchFileRestController
     private final AtchFileDtlService atchFileDtlService;
 
     /**
-     * 파일 유무 여부 체크 (Ajax) - 첨부파일 상세 ID(atchFileDtlNo) 이용.
+     * 파일 유무 여부 체크 (Ajax) - 첨부파일 상세 ID(atchFileDtlId) 이용.
      * (로그인 사용자만 접근 가능.)
      *
      * @param fileId 파일 ID. 체크할 파일의 고유 식별자
@@ -69,10 +69,10 @@ public class AtchFileRestController
     }
 
     /**
-     * 파일 목록 정보 조회 (Ajax) - 첨부파일 묶음 ID 이용. (atchFileNo)
+     * 파일 목록 정보 조회 (Ajax) - 첨부파일 묶음 ID 이용. (atchFileId)
      * 비로그인 사용자도 외부에서 접근 가능. (인증 없음)
      *
-     * @param atchFileNo - 파일 번호. 조회할 파일의 고유 식별자
+     * @param atchFileId - 파일 번호. 조회할 파일의 고유 식별자
      * @param logParam 로그 관련 파라미터. 처리 과정에서 필요한 로그 정보를 포함
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
@@ -94,11 +94,11 @@ public class AtchFileRestController
     }
 
     /**
-     * 파일 다운로드 : 첨부파일 상세 ID 이용 (atchFileDtlNo)
+     * 파일 다운로드 : 첨부파일 상세 ID 이용 (atchFileDtlId)
      * Ajax로 유무 체크 후 다운로드하므로 항상 파일이 존재한다 가정하고 진행
      * (로그인 사용자만 접근 가능.)
      *
-     * @param atchFileDtlNo 파일 상세 번호. 다운로드할 파일의 고유 식별자
+     * @param atchFileDtlId 파일 상세 번호. 다운로드할 파일의 고유 식별자
      * @param logParam 로그 관련 파라미터. 처리 과정에서 필요한 로그 정보를 포함
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */

@@ -7,14 +7,14 @@
         return {
             /**
              * 첨부파일 목록 모달 호출
-             * @param {string|number} atchFileNo - 첨부파일 번호.
+             * @param {string|number} atchFileId - 첨부파일 번호.
              */
-            modal: function(atchFileNo) {
+            modal: function(atchFileId) {
                 event.stopPropagation();
-                if (isNaN(atchFileNo)) return;
+                if (isNaN(atchFileId)) return;
 
                 const url = "${Url.FILE_INFO_LIST_AJAX!}";
-                const ajaxData = { "atchFileNo": atchFileNo };
+                const ajaxData = { "atchFileId": atchFileId };
                 cF.ajax.get(url, ajaxData, function(res) {
                     if (!res.rslt) {
                         if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });

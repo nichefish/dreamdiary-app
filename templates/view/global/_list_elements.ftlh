@@ -75,7 +75,7 @@
     <#if post.atchFileInfo?? && (post.atchFileInfo.atchFileList)?has_content>
         <a class="badge badge-secondary p-2 btn-white bg-hover-white blank blink-slow"
            data-bs-toggle="tooltip" data-bs-placement="top" title="<@spring.message 'txt.atch-file'/>">
-            <i class="bi bi-file-earmark-arrow-down fs-5 text-info opacity-hover" onclick="AtchFileList.modal('${post.atchFileNo!}');"></i>
+            <i class="bi bi-file-earmark-arrow-down fs-5 text-info opacity-hover" onclick="AtchFileList.modal('${post.atchFileId!}');"></i>
         </a>
     <#else>
         -
