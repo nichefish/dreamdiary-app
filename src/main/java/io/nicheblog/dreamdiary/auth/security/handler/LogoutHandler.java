@@ -10,7 +10,6 @@ import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.infrastructure.web.util.CookieUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.Cookie;
@@ -18,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * LgoutHandler
+ * LogoutHandler
  * <pre>
  *  Spring Security:: 로그아웃시 처리 Handler
  * </pre>
@@ -27,8 +26,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Component
 @RequiredArgsConstructor
-public class LgoutHandler
-        implements LogoutHandler {
+public class LogoutHandler
+        implements org.springframework.security.web.authentication.logout.LogoutHandler {
 
     private final ApplicationEventPublisherWrapper publisher;
     private final RefreshTokenService refreshTokenService;

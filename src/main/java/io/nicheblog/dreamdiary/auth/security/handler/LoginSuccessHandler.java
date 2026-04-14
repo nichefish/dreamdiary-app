@@ -38,7 +38,7 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 @Log4j2
-public class WebLgnSuccessHandler
+public class LoginSuccessHandler
         extends SavedRequestAwareAuthenticationSuccessHandler
         implements AuthenticationSuccessHandler {
 

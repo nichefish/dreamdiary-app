@@ -12,6 +12,6 @@ import org.springframework.security.core.AuthenticationException;
  * @author nichefish
  */
 @StandardException
-public class DupIdLgnException
+public class DupIdLoginException
         extends AuthenticationException {
 }
