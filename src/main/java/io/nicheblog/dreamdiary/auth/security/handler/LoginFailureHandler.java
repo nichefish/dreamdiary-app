@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.auth.policy.entity.AuthPolicyEntity;
 import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyQueryService;
 import io.nicheblog.dreamdiary.auth.security.exception.AccountDormantException;
 import io.nicheblog.dreamdiary.auth.security.exception.AccountNeedsPwResetException;
-import io.nicheblog.dreamdiary.auth.security.exception.DupIdLgnException;
+import io.nicheblog.dreamdiary.auth.security.exception.DupIdLoginException;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * LgnFailureHandler
+ * LoginFailureHandler
  * <pre>
  *  Spring Security:: 웹 로그인 실패시 처리 Handler
  * </pre>
@@ -43,7 +43,7 @@ import javax.servlet.http.HttpSession;
 @Component
 @RequiredArgsConstructor
 @Log4j2
-public class WebLgnFailureHandler
+public class LoginFailureHandler
         extends SimpleUrlAuthenticationFailureHandler
         implements AuthenticationFailureHandler {
 
@@ -72,7 +72,7 @@ public class WebLgnFailureHandler
         final String username = request.getParameter("username");
         String errorMsg = this.getLgnFailureMsg(exception);
         /* 존재하지 않는 계정 제외하고 로그인 실패 로그 저장 */
-        if (!(exception instanceof InternalAuthenticationServiceException) && !(exception instanceof DupIdLgnException)) {
+        if (!(exception instanceof InternalAuthenticationServiceException) && !(exception instanceof DupIdLoginException)) {
             final LogActvtyParam logParam = new LogActvtyParam(username, false, errorMsg, ActvtyCtgr.LGN);
             publisher.publishAsyncEvent(new LogAnonActvtyEvent(this, logParam));
         }
@@ -96,7 +96,7 @@ public class WebLgnFailureHandler
             request.setAttribute("username", username);
             request.setAttribute("isCredentialExpired", true);
         /* 중복 로그인 방지 */
-        } else if (exception instanceof DupIdLgnException) {
+        } else if (exception instanceof DupIdLoginException) {
             request.setAttribute("username", username);
             // 세션에서 중복 아이디 정보 관리
             final ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();

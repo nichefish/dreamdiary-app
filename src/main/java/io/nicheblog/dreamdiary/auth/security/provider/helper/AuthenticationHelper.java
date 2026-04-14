@@ -104,7 +104,7 @@ public class AuthenticationHelper {
 
         // 중복 로그인 체크 :: 세션 attribute 훑어서 "lgnId" 비교
         final boolean isDupLgn = DupIdLgnManager.isDupIdLgn(username);
-        if (isDupLgn) throw new DupIdLgnException("AbstractUserDetailsAuthenticationProvider.DupIdLgnException");
+        if (isDupLgn) throw new DupIdLoginException("AbstractUserDetailsAuthenticationProvider.DupIdLgnException");
 
         return true;
     }

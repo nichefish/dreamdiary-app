@@ -4,9 +4,9 @@ import io.nicheblog.dreamdiary.auth.jwt.filter.JwtAuthenticationFilter;
 import io.nicheblog.dreamdiary.auth.oauth2.handler.OAuth2AuthenticationFailureHandler;
 import io.nicheblog.dreamdiary.auth.oauth2.handler.OAuth2AuthenticationSuccessHandler;
 import io.nicheblog.dreamdiary.auth.security.handler.AjaxAwareAuthenticationEntryPoint;
-import io.nicheblog.dreamdiary.auth.security.handler.LgoutHandler;
-import io.nicheblog.dreamdiary.auth.security.handler.WebLgnFailureHandler;
-import io.nicheblog.dreamdiary.auth.security.handler.WebLgnSuccessHandler;
+import io.nicheblog.dreamdiary.auth.security.handler.LogoutHandler;
+import io.nicheblog.dreamdiary.auth.security.handler.LoginFailureHandler;
+import io.nicheblog.dreamdiary.auth.security.handler.LoginSuccessHandler;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
@@ -47,12 +47,12 @@ public class WebSecurityAdapter {
 
     private final AuthService authService;
     private final OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService;
-    private final WebLgnFailureHandler webLgnFailureHandler;
-    private final WebLgnSuccessHandler webLgnSuccessHandler;
+    private final LoginFailureHandler webLgnFailureHandler;
+    private final LoginSuccessHandler webLgnSuccessHandler;
     private final OAuth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
     private final OAuth2AuthenticationFailureHandler oauth2AuthenticationFailureHandler;
     private final AjaxAwareAuthenticationEntryPoint ajaxAwareAuthenticationEntryPoint;
-    private final LgoutHandler lgoutHandler;
+    private final LogoutHandler lgoutHandler;
     private final AuthenticationProvider authenticationProvider;
     private final SessionRegistry sessionRegistry;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
