@@ -68,14 +68,14 @@ public class JrnlDaySearchParam
     /**
      * 기본 파라미터 객체 반환
      *
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      * @param yy 년도
      * @param mnth 월
      * @return {@link JrnlDaySearchParam}
      */
-    public static JrnlDaySearchParam getBaseParam(String userId, Integer yy, Integer mnth) {
+    public static JrnlDaySearchParam getBaseParam(String username, Integer yy, Integer mnth) {
         return JrnlDaySearchParam.builder()
-                .regstrId(userId)
+                .regstrId(username)
                 .yy(yy)
                 .mnth(mnth)
                 .sort("ASC")
@@ -85,13 +85,13 @@ public class JrnlDaySearchParam
     /**
      * 기간 기준 기본 파라미터 객체 반환
      *
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      * @param weekStartDt 주 시작일
      * @return {@link JrnlDaySearchParam}
      */
-    public static JrnlDaySearchParam getBaseParam(final String userId, final String weekStartDt) {
+    public static JrnlDaySearchParam getBaseParam(final String username, final String weekStartDt) {
         return JrnlDaySearchParam.builder()
-                .regstrId(userId)
+                .regstrId(username)
                 .weekStartDt(weekStartDt)
                 .sort("ASC")
                 .build();

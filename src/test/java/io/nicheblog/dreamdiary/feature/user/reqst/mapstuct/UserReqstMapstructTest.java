@@ -5,9 +5,9 @@ import io.nicheblog.dreamdiary.feature.user.emplym.model.UserEmplymDtoTestFactor
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserAcsIpEntity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.feature.user.info.model.emplym.UserEmplymDto;
-import io.nicheblog.dreamdiary.feature.user.info.model.profl.UserProflDto;
-import io.nicheblog.dreamdiary.feature.user.profl.entity.UserProflEntity;
-import io.nicheblog.dreamdiary.feature.user.profl.model.UserProflDtoTestFactory;
+import io.nicheblog.dreamdiary.feature.user.info.model.profile.UserProfileDto;
+import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntity;
+import io.nicheblog.dreamdiary.feature.user.profile.model.UserProfileDtoTestFactory;
 import io.nicheblog.dreamdiary.feature.user.reqst.mapstruct.UserReqstMapstruct;
 import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDto;
 import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDtoTestFactory;
@@ -91,18 +91,18 @@ class UserReqstMapstructTest {
     @Test
     void testToEntity_checkProfl() throws Exception {
         // Given::
-        final UserProflDto userProflDto = UserProflDtoTestFactory.create();
-        userReqstDto.setProfl(userProflDto);
+        final UserProfileDto userProfileDto = UserProfileDtoTestFactory.create();
+        userReqstDto.setProfile(userProfileDto);
 
         // When::
         final UserEntity entity = userReqstMapstruct.toEntity(userReqstDto);
 
         // Then::
         assertNotNull(entity, "변환된 사용자 계정 신청 Entity는 null일 수 없습니다.");
-        UserProflEntity userProflEntity = entity.getProfl();
-        assertNotNull(userProflEntity, "변환된 사용자 프로필 정보 Entity는 null일 수 없습니다.");
+        UserProfileEntity userProfileEntity = entity.getProfile();
+        assertNotNull(userProfileEntity, "변환된 사용자 프로필 정보 Entity는 null일 수 없습니다.");
         // 날짜 변환 체크
-        assertEquals(DateUtils.asDate("2000-01-01"), userProflEntity.getBrthdy(), "사용자 프로필 정보 생일 정보가 제대로 매핑되지 않았습니다.");
+        assertEquals(DateUtils.asDate("2000-01-01"), userProfileEntity.getBrthdy(), "사용자 프로필 정보 생일 정보가 제대로 매핑되지 않았습니다.");
     }
 
     /**

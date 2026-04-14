@@ -62,7 +62,7 @@ public class MetaContentSpec
     ) {
 
         final List<Predicate> predicate = new ArrayList<>();
-        predicate.add(builder.equal(root.get("regstrId"), AuthUtils.getLgnUserIdOrDefault()));      // 등록자 ID 기준으로 조회
+        predicate.add(builder.equal(root.get("regstrId"), AuthUtils.getLgnUsernameOrDefault()));      // 등록자 ID 기준으로 조회
 
         // 파라미터 비교
         for (final String key : searchParamMap.keySet()) {

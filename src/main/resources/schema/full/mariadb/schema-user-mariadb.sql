@@ -9,9 +9,9 @@
 -- 사용자 계정 정보 (user)
 -- @extends: BaseAtchEntity
 CREATE TABLE IF NOT EXISTS user (
-    user_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 고유 ID',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 고유 ID',
     -- ACCOUNT_BASIC_INFO
-    user_id VARCHAR(20) COMMENT '로그인 ID',
+    username VARCHAR(20) COMMENT '로그인 ID',
     password VARCHAR(64) COMMENT '비밀번호',
     refresh_token_hash VARCHAR(64) COMMENT '리프레시 토큰 해시',
     refresh_token_issued_at DATETIME COMMENT '리프레시 토큰 발급일시',
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS user (
     mdf_dt DATETIME COMMENT '수정일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
     -- CONSTRAINT
-    INDEX (user_id)
+    INDEX (username)
 ) COMMENT = '사용자 계정';
 
 -- -----------------------
@@ -69,15 +69,15 @@ CREATE TABLE IF NOT EXISTS auth_role (
 -- 사용자 권한 (user_auth_role)
 -- @extends: BaseCrudEntity
 CREATE TABLE IF NOT EXISTS user_auth_role (
-    user_auth_role_no INT PRIMARY KEY AUTO_INCREMENT COMMENT '사용자 권한 ID',
-    user_no INT COMMENT '사용자 고유 번호',
+    id INT PRIMARY KEY AUTO_INCREMENT COMMENT '사용자 권한 ID',
+    user_id INT COMMENT '사용자 고유 번호',
     auth_cd VARCHAR(50) COMMENT '권한 코드',
     -- AUDIT
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
     -- CONSTRAINT
-    FOREIGN KEY(user_no) REFERENCES user (user_no),
+    FOREIGN KEY(user_id) REFERENCES user (id),
     FOREIGN KEY(auth_cd) REFERENCES auth_role (auth_cd),
-    INDEX (user_no),
+    INDEX (user_id),
     INDEX (auth_cd)
 ) COMMENT = '사용자 권한';
 
@@ -86,22 +86,22 @@ CREATE TABLE IF NOT EXISTS user_auth_role (
 -- 사용자 계정 정보 :: 접속 IP (user_acs_ip)
 -- @extends: BaseCrudEntity
 CREATE TABLE IF NOT EXISTS user_acs_ip (
-    user_acs_ip_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 접속 IP 고유 ID',
-    user_no INT COMMENT '사용자 고유 번호',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 접속 IP 고유 ID',
+    user_id INT COMMENT '사용자 고유 번호',
     acs_ip VARCHAR(20) COMMENT '접속 IP',
     -- AUDIT
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
     -- CONSTRAINT
-    FOREIGN KEY(user_no) REFERENCES user (user_no)
+    FOREIGN KEY(user_id) REFERENCES user (id)
 ) COMMENT = '사용자 접속IP';
 
 -- -----------------------
 
--- 사용자 프로필 정보 (user_profl)
+-- 사용자 프로필 정보 (user_profile)
 -- @extends: BaseAtchEntity
-CREATE TABLE IF NOT EXISTS user_profl (
-    user_profl_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 프로필 고유 ID',
-    user_no INT COMMENT '사용자 고유 번호',
+CREATE TABLE IF NOT EXISTS user_profile (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 프로필 고유 ID',
+    user_id INT COMMENT '사용자 고유 번호',
     addr VARCHAR(500) COMMENT '주소',
     zipcode VARCHAR(20) COMMENT '우편번호',
     brthdy DATE COMMENT '생일',
@@ -116,14 +116,14 @@ CREATE TABLE IF NOT EXISTS user_profl (
     mdf_dt DATETIME COMMENT '수정일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
     -- CONSTRAINT
-    FOREIGN KEY(user_no) REFERENCES user (user_no)
+    FOREIGN KEY(user_id) REFERENCES user (id)
 ) COMMENT = '사용자 프로필';
 
 -- 사용자 인사정보 (user_emplym)
 -- @extends: BaseAtchEntity
 CREATE TABLE IF NOT EXISTS user_emplym (
-    user_emplym_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 인사정보 고유 ID',
-    user_no INT COMMENT '사용자 고유 번호',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 인사정보 고유 ID',
+    user_id INT COMMENT '사용자 고유 번호',
     user_nm VARCHAR(50) COMMENT '직원명',
     emplym_cttpc VARCHAR(20) COMMENT '연락처',        -- 기본 연락처
     emplym_email VARCHAR(100) COMMENT '이메일',        -- 기본 이메일:: 계정복구 등에 사용함
@@ -147,5 +147,5 @@ CREATE TABLE IF NOT EXISTS user_emplym (
     mdf_dt DATETIME COMMENT '수정일시',
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
     -- CONSTRAINT
-    FOREIGN KEY(user_no) REFERENCES user (user_no)
+    FOREIGN KEY(user_id) REFERENCES user (id)
 ) COMMENT = '사용자 인사정보';

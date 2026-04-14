@@ -77,12 +77,12 @@ public class JwtTokenProvider {
     /**
      * JWT 토큰을 생성합니다.
      *
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      * @param roles 사용자 권한 목록
      * @return {@link String} -- 생성된 JWT 토큰 문자열
      */
-    public String createToken(final String userId, final List<String> roles) {
-        final Claims claims = Jwts.claims().setSubject(userId);
+    public String createToken(final String username, final List<String> roles) {
+        final Claims claims = Jwts.claims().setSubject(username);
         claims.put("roles", roles);
         final Date now = DateUtils.getCurrDate();
         
@@ -98,12 +98,12 @@ public class JwtTokenProvider {
     /**
      * Access Token 생성 (짧은 만료시간)
      *
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      * @param roles 권한
      * @return {@link String} -- ?앹꽦??JWT ?좏겙 臾몄옄??
      */
-    public String createAccessToken(final String userId, final List<String> roles) {
-        final Claims claims = Jwts.claims().setSubject(userId);
+    public String createAccessToken(final String username, final List<String> roles) {
+        final Claims claims = Jwts.claims().setSubject(username);
         claims.put("roles", roles);
         final Date now = DateUtils.getCurrDate();
 

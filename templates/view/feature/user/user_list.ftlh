@@ -36,7 +36,7 @@
                     <#assign divideCfYn = prevCfYn?? && user.cfYn! != prevCfYn>
                     <#assign divideRetireYn = prevRetireYn?? && user.retireYn! != prevRetireYn>
                     <#assign divide = divideCfYn || divideRetireYn>
-                    <tr class="<#if user.isMe!false>bg-light</#if> bg-hover-secondary <#if divide>border-top-5</#if>" onclick="dF.User.dtl(${user.userNo!});">
+                    <tr class="<#if user.isMe!false>bg-light</#if> bg-hover-secondary <#if divide>border-top-5</#if>" onclick="dF.User.dtl(${user.id!});">
                         <td class="text-center hidden-table">
                             ${user.rnum}
                         </td>
@@ -59,7 +59,7 @@
                                         <img src="${(user.proflImgUrl)!}" class="img-thumbnail p-0 w-100" />
                                     </div>
                                 </#if>
-                                <span class="pe-1">${user.userNm!"-"} (${user.userId!"-"})</span>
+                                <span class="pe-1">${user.userNm!"-"} (${user.username!"-"})</span>
                             </a>
                             <#if (user.userProflYn!"Y") == "N">
                                 <i class="bi bi-person-dash vertical-middle text-muted"
@@ -126,7 +126,7 @@
 </div>
 
 <form name="procForm" id="procForm" method="get">
-    <input type="hidden" name="userNo" id="userNo" />
+    <input type="hidden" name="id" id="id" />
 </form>
 
 <#--include::script modules-->

@@ -24,7 +24,7 @@ dF.LgnPwChg = (function(): dfModule {
          * 비밀번호 변경 팝업 호출
          */
         pwChgModal: function(): void {
-            const data: Record<string, any> = { "userId": Model.userId, "errorMsg": Model.errorMsg };
+            const data: Record<string, any> = { "username": Model.username, "errorMsg": Model.errorMsg };
             /* initialize form. */
             dF.LgnPwChg.initForm(data);
         },
@@ -67,10 +67,10 @@ dF.LgnPwChg = (function(): dfModule {
             const url: string = Url.API_AUTH_LGN_PW_CHG;
 
             // 순수 JavaScript로 DOM 요소 접근
-            const userId: string = cF.util.getInputValue("#lgnUserId");
+            const username: string = cF.util.getInputValue("#lgnUsername");
             const currPw: string = cF.util.getInputValue("#currPw");
             const newPw: string = cF.util.getInputValue("#newPw");
-            const ajaxData: Record<string, any> = { "userId" : userId, "currPw" : currPw, "newPw" : newPw };
+            const ajaxData: Record<string, any> = { "username" : username, "currPw" : currPw, "newPw" : newPw };
             cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({
                     text: res.message

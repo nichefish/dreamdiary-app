@@ -22,7 +22,7 @@ public class LgnSuccessCacheWarmupEvent
     /** 보안 컨텍스트 */
     private final SecurityContext securityContext;
     /** 컨텐츠 타입 */
-    private final String userId;
+    private final String username;
 
     /* ----- */
 
@@ -31,9 +31,10 @@ public class LgnSuccessCacheWarmupEvent
      *
      * @param source 이벤트의 출처를 나타내는 객체
      */
-    public LgnSuccessCacheWarmupEvent(final Object source, final String userId) {
+    public LgnSuccessCacheWarmupEvent(final Object source, final String username) {
         super(source);
         this.securityContext = SecurityContextHolder.getContext();
-        this.userId = userId;
+        this.username = username;
     }
+
 }

@@ -25,7 +25,7 @@ public class UserAuthRoleDto
         extends BaseCrudDto {
 
     /** 사용자 권한 ID */
-    private Integer userAuthRoleNo;
+    private Integer id;
 
     /** 권한 코드 */
     private String authCd;

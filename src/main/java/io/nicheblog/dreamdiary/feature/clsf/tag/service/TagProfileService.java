@@ -69,7 +69,7 @@ public class TagProfileService
      * @return {@link Optional} -- 조회된 TagProfileDto
      */
     public Optional<TagProfileDto> getDtoByTagIdAndContentType(final Integer tagId, final String contentType) throws Exception {
-        final String regstrId = AuthUtils.requireLgnUserId();
+        final String regstrId = AuthUtils.requireLgnUsername();
         final Optional<TagProfileEntity> entityOpt = repository.findByTagIdAndContentTypeAndRegstrId(tagId, contentType, regstrId);
         if (entityOpt.isEmpty()) return Optional.empty();
 
@@ -95,7 +95,7 @@ public class TagProfileService
     @Transactional(readOnly = true)
     public void applyVisualSemantic(final List<TagDto> tagList, final String contentType) {
         if (CollectionUtils.isEmpty(tagList) || StringUtils.isBlank(contentType)) return;
-        final String regstrId = AuthUtils.getLgnUserId();
+        final String regstrId = AuthUtils.getLgnUsername();
         if (StringUtils.isBlank(regstrId)) return;
 
         final List<Integer> tagIdList = tagList.stream()
@@ -175,14 +175,14 @@ public class TagProfileService
 
     @Override
     public TagProfileEntity getDtlEntity(final Integer key) throws Exception {
-        final String regstrId = AuthUtils.requireLgnUserId();
+        final String regstrId = AuthUtils.requireLgnUsername();
         return repository.findByIdAndRegstrId(key, regstrId)
                 .orElseThrow(() -> new EntityNotFoundException("exception.EntityNotFoundException"));
     }
 
     @Override
     public TagProfileEntity findDtlEntity(final Integer key) throws Exception {
-        final String regstrId = AuthUtils.getLgnUserId();
+        final String regstrId = AuthUtils.getLgnUsername();
         if (StringUtils.isBlank(regstrId)) return null;
 
         return repository.findByIdAndRegstrId(key, regstrId).orElse(null);
@@ -195,35 +195,35 @@ public class TagProfileService
     }
 
     public void evictTagCloudCaches(final String contentType) {
-        final String userId = AuthUtils.getLgnUserId();
-        if (StringUtils.isBlank(userId) || StringUtils.isBlank(contentType)) return;
+        final String username = AuthUtils.getLgnUsername();
+        if (StringUtils.isBlank(username) || StringUtils.isBlank(contentType)) return;
 
         if (ContentType.JRNL_DAY.key.equals(contentType)) {
-            EhCacheUtils.clearUserCache("jrnlDayYyMnthTagListByUser", userId);
-            EhCacheUtils.clearUserCache("jrnlDayWeeklyTagListByUser", userId);
-            EhCacheUtils.clearUserCache("jrnlDayYyMnthSizedTagListByUser", userId);
-            EhCacheUtils.clearUserCache("jrnlDayWeeklySizedTagListByUser", userId);
+            EhCacheUtils.clearUserCache("jrnlDayYyMnthTagListByUser", username);
+            EhCacheUtils.clearUserCache("jrnlDayWeeklyTagListByUser", username);
+            EhCacheUtils.clearUserCache("jrnlDayYyMnthSizedTagListByUser", username);
+            EhCacheUtils.clearUserCache("jrnlDayWeeklySizedTagListByUser", username);
             return;
         }
         if (ContentType.JRNL_DIARY.key.equals(contentType)) {
-            EhCacheUtils.clearUserCache("jrnlDiaryTagListByUser", userId);
-            EhCacheUtils.clearUserCache("jrnlDiaryYyMnthTagListByUser", userId);
-            EhCacheUtils.clearUserCache("jrnlDiaryWeeklyTagListByUser", userId);
-            EhCacheUtils.clearUserCache("jrnlDiaryYyMnthSizedTagListByUser", userId);
-            EhCacheUtils.clearUserCache("jrnlDiaryWeeklySizedTagListByUser", userId);
+            EhCacheUtils.clearUserCache("jrnlDiaryTagListByUser", username);
+            EhCacheUtils.clearUserCache("jrnlDiaryYyMnthTagListByUser", username);
+            EhCacheUtils.clearUserCache("jrnlDiaryWeeklyTagListByUser", username);
+            EhCacheUtils.clearUserCache("jrnlDiaryYyMnthSizedTagListByUser", username);
+            EhCacheUtils.clearUserCache("jrnlDiaryWeeklySizedTagListByUser", username);
             return;
         }
         if (ContentType.JRNL_DREAM.key.equals(contentType)) {
-            EhCacheUtils.clearUserCache("jrnlDreamTagListByUser", userId);
-            EhCacheUtils.clearUserCache("jrnlDreamYyMnthTagListByUser", userId);
-            EhCacheUtils.clearUserCache("jrnlDreamWeeklyTagListByUser", userId);
-            EhCacheUtils.clearUserCache("jrnlDreamYyMnthSizedTagListByUser", userId);
-            EhCacheUtils.clearUserCache("jrnlDreamWeeklySizedTagListByUser", userId);
+            EhCacheUtils.clearUserCache("jrnlDreamTagListByUser", username);
+            EhCacheUtils.clearUserCache("jrnlDreamYyMnthTagListByUser", username);
+            EhCacheUtils.clearUserCache("jrnlDreamWeeklyTagListByUser", username);
+            EhCacheUtils.clearUserCache("jrnlDreamYyMnthSizedTagListByUser", username);
+            EhCacheUtils.clearUserCache("jrnlDreamWeeklySizedTagListByUser", username);
             return;
         }
         if (ContentType.JRNL_INTRPT.key.equals(contentType)) {
-            EhCacheUtils.clearUserCache("jrnlIntrptYyMnthTagListByUser", userId);
-            EhCacheUtils.clearUserCache("jrnlIntrptYyMnthSizedTagListByUser", userId);
+            EhCacheUtils.clearUserCache("jrnlIntrptYyMnthTagListByUser", username);
+            EhCacheUtils.clearUserCache("jrnlIntrptYyMnthSizedTagListByUser", username);
         }
     }
 
@@ -281,7 +281,7 @@ public class TagProfileService
         if (tagProfile == null) return null;
         if (tagProfile.getTagId() == null || StringUtils.isBlank(tagProfile.getContentType())) return tagProfile;
 
-        final String regstrId = AuthUtils.getLgnUserId();
+        final String regstrId = AuthUtils.getLgnUsername();
         if (StringUtils.isBlank(regstrId)) return tagProfile;
 
         this.populateTagCategoryInfo(tagProfile);
@@ -323,7 +323,7 @@ public class TagProfileService
     private void upsertCategoryProfile(final TagProfileDto tagProfile) throws Exception {
         if (tagProfile == null || tagProfile.getTagCategoryId() == null || StringUtils.isBlank(tagProfile.getContentType())) return;
 
-        final String regstrId = AuthUtils.requireLgnUserId();
+        final String regstrId = AuthUtils.requireLgnUsername();
         final TextClass categorySemantic = TextClass.getOrDefault(tagProfile.getCategoryTextClass());
         final Optional<TagCategoryProfileEntity> existingOpt = tagCategoryProfileRepository
                 .findByTagCategoryIdAndContentTypeAndRegstrId(tagProfile.getTagCategoryId(), tagProfile.getContentType(), regstrId);

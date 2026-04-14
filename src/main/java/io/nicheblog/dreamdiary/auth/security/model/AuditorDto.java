@@ -32,7 +32,7 @@ public class AuditorDto
     }
 
     /** 사용자 ID */
-    private String userId;
+    private String username;
     /** 사용자 이름 */
     private String nickNm;
     /** 프로필 이미지 URL */
@@ -40,4 +40,5 @@ public class AuditorDto
 
     /** 사용자 권한 정보 */
     private List<UserAuthRoleDto> authList;
+
 }

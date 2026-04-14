@@ -29,8 +29,8 @@ public class LogActvtyQueryDto
 
     /** 로그 고유 ID */
     private Integer id;
-    /** 작업자 ID */
-    private String userId;
+    /** 작업자 계정명 */
+    private String username;
     /** 작업자 이름 */
     private String logUserNm;
     /** 권한코드 */
@@ -97,7 +97,7 @@ public class LogActvtyQueryDto
      * Getter :: 작업자 여부
      */
     public Boolean getIsActvtyUser() {
-        return AuthUtils.isRegstr(this.userId);
+        return AuthUtils.isRegstr(this.username);
     }
 
     /**
@@ -112,4 +112,5 @@ public class LogActvtyQueryDto
     public Integer getKey() {
         return this.id;
     }
+
 }

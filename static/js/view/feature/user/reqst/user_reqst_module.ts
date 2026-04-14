@@ -26,7 +26,7 @@ dF.UserReqst = (function(): dfModule {
             /* jquery validation */
             cF.validate.validateForm("#userReqstForm", dF.UserReqst.submitHandler, {
                 rules: {
-                    userId: { minlength: 4, maxlength: 16 },
+                    username: { minlength: 4, maxlength: 16 },
                     ipDupChckPassed: { dupChck: true },
                     emailDupChckPassed: { dupChck: true },
                     password: { minlength: 9, maxlength: 20, regex: cF.regex.pw },
@@ -44,7 +44,7 @@ dF.UserReqst = (function(): dfModule {
             });
 
             // 자동 대문자->소문자처리
-            cF.validate.toLowerCase("#userId");
+            cF.validate.toLowerCase("#username");
             // 전화번호 형식 유효성 검사
             cF.validate.cttpc("#cttpc");
             // 이메일 도메인 select시 자동입력
@@ -56,8 +56,8 @@ dF.UserReqst = (function(): dfModule {
                 $("#authCd").valid(); // 체크박스 상태 변경시 details 필드 재검증
             });
             // 등록화면:: 사용자 ID 변경입력시 중복체크 통과여부 초기화
-            $("#userId").on("input", function(): void {
-                $("#userId_validate_span").empty();
+            $("#username").on("input", function(): void {
+                $("#username_validate_span").empty();
                 $("#ipDupChckPassed").val("N");
                 $("#idDupChckBtn").addClass("blink").removeClass("btn-success").addClass("btn-secondary").removeAttr("disabled");
             });

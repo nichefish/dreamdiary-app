@@ -46,7 +46,7 @@
                     </span>
                 </div>
                 <a href="#" class="fw-semibold text-muted text-hover-primary fs-7">${(authInfo.email)!}</a>
-                <a href="#" class="fw-semibold text-muted text-hover-primary fs-7">(${(authInfo.userId)!})</a>
+                <a href="#" class="fw-semibold text-muted text-hover-primary fs-7">(${(authInfo.username)!})</a>
                 <a href="#" class="fw-semibold text-muted text-hover-primary fs-7">(${acsIp!})</a>
             </div>
             <!--end::Username-->

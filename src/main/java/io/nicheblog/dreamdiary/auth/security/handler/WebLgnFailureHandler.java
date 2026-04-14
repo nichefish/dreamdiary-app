@@ -67,13 +67,13 @@ public class WebLgnFailureHandler
             final AuthenticationException exception
     ) {
 
-        request.removeAttribute("userId");
+        request.removeAttribute("username");
         request.removeAttribute("needsPwReset");
-        final String userId = request.getParameter("userId");
+        final String username = request.getParameter("username");
         String errorMsg = this.getLgnFailureMsg(exception);
         /* 존재하지 않는 계정 제외하고 로그인 실패 로그 저장 */
         if (!(exception instanceof InternalAuthenticationServiceException) && !(exception instanceof DupIdLgnException)) {
-            final LogActvtyParam logParam = new LogActvtyParam(userId, false, errorMsg, ActvtyCtgr.LGN);
+            final LogActvtyParam logParam = new LogActvtyParam(username, false, errorMsg, ActvtyCtgr.LGN);
             publisher.publishAsyncEvent(new LogAnonActvtyEvent(this, logParam));
         }
         /* 비밀번호 불일치 */
@@ -81,34 +81,34 @@ public class WebLgnFailureHandler
             final AuthPolicyEntity rsAuthPolicyEntity = authPolicyQueryService.getDtlEntity();
             final Integer lgnTryLmt = rsAuthPolicyEntity.getLgnTryLmt();
             // 로그인 실패 횟수 처리
-            final Integer newLgnFailCnt = authService.applyLgnFailCnt(userId);
+            final Integer newLgnFailCnt = authService.applyLgnFailCnt(username);
             if (newLgnFailCnt < lgnTryLmt) {
                 errorMsg += "<br>" + MessageUtils.getMessage(MessageUtils.LGN_FAIL_BADCREDENTIALS_CNT, new Object[]{lgnTryLmt, newLgnFailCnt});
             } else {
-                authService.lockAccount(userId);
+                authService.lockAccount(username);
                 errorMsg += "<br>" + MessageUtils.getMessage(MessageUtils.LGN_FAIL_BADCREDENTIALS_LOCKED, new Object[]{newLgnFailCnt});
             }
             // 로그인 실패 횟수 처리
         } else if (exception instanceof AccountDormantException) {
-            authService.lockAccount(userId);        // 계정 잠금 처리
+            authService.lockAccount(username);        // 계정 잠금 처리
             /* 비밀번호 변경기간 만료 */
         } else if (exception instanceof CredentialsExpiredException) {
-            request.setAttribute("userId", userId);
+            request.setAttribute("username", username);
             request.setAttribute("isCredentialExpired", true);
         /* 중복 로그인 방지 */
         } else if (exception instanceof DupIdLgnException) {
-            request.setAttribute("userId", userId);
+            request.setAttribute("username", username);
             // 세션에서 중복 아이디 정보 관리
             final ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
             final HttpSession session = servletRequestAttribute.getRequest().getSession();
-            session.setAttribute("isDupIdLgn", userId);
+            session.setAttribute("isDupIdLgn", username);
         /* 패스워드 초기화 강제 */
         } else if (exception instanceof AccountNeedsPwResetException) {
-            request.setAttribute("userId", userId);
+            request.setAttribute("username", username);
             request.setAttribute("needsPwReset", true);
         }
 
-        log.info("login attempt failed.. userId: {} errorMsg: {}", userId, errorMsg);
+        log.info("login attempt failed.. username: {} errorMsg: {}", username, errorMsg);
         request.setAttribute(Constant.ERROR_MSG, errorMsg);
         // POST로 넘어왔던 Request 메소드를 GET으로 변경
         final HttpMethodRequestWrapper getMethodRequest = new HttpMethodRequestWrapper(request);

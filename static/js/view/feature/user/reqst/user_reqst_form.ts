@@ -14,7 +14,7 @@ const Page: Page = (function(): Page {
             /* initialize modules. */
             dF.User.init();
             dF.UserEmplym.init();
-            dF.UserProfl.init();
+            dF.UserProfile.init();
             /* initialize form. */
             dF.UserReqst.initForm();
         },

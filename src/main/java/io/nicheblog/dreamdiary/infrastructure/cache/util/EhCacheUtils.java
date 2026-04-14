@@ -208,26 +208,26 @@ public class EhCacheUtils {
      * @param cacheName 캐시의 이름.
      */
     public static void evictMyCache(final String cacheName) {
-        evictUserCache(cacheName, AuthUtils.getLgnUserId());
+        evictUserCache(cacheName, AuthUtils.getLgnUsername());
     }
 
     /**
      * 사용자 범위 캐시 evict
      *
      * @param cacheName 캐시명
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      */
-    public static void evictUserCache(final String cacheName, final String userId) {
+    public static void evictUserCache(final String cacheName, final String username) {
         final Cache cache = cacheManager.getCache(cacheName);
         if (cache == null) return;
 
-        if (StringUtils.isEmpty(userId)) {
-            log.warn("UserId is empty. Skip user-scoped evict for cache: {}", cacheName);
+        if (StringUtils.isEmpty(username)) {
+            log.warn("Username is empty. Skip user-scoped evict for cache: {}", cacheName);
             return;
         }
-        cache.evict(userId);
-        cache.evict(new SimpleKey(userId));
-        log.debug("cache name {} (key: {}) evicted.", cacheName, userId);
+        cache.evict(username);
+        cache.evict(new SimpleKey(username));
+        log.debug("cache name {} (key: {}) evicted.", cacheName, username);
     }
 
     /**
@@ -237,29 +237,29 @@ public class EhCacheUtils {
      * @param cacheKey  제거할 캐시 항목을 식별하는 키.
      */
     public static void evictMyCacheByKey(final String cacheName, final Object cacheKey) {
-        evictUserCacheByKey(cacheName, AuthUtils.getLgnUserId(), cacheKey);
+        evictUserCacheByKey(cacheName, AuthUtils.getLgnUsername(), cacheKey);
     }
 
     /**
      * 사용자 범위 캐시 evict
      *
      * @param cacheName 캐시명
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      * @param cacheKey 캐시 하위 키
      */
-    public static void evictUserCacheByKey(final String cacheName, final String userId, final Object cacheKey) {
+    public static void evictUserCacheByKey(final String cacheName, final String username, final Object cacheKey) {
         final Cache cache = cacheManager.getCache(cacheName);
         if (cache == null || cacheKey == null) {
             log.debug("cache name {} does not exists.", cacheName);
             return;
         }
-        if (StringUtils.isEmpty(userId)) {
+        if (StringUtils.isEmpty(username)) {
             log.warn("User id is empty. Skip user-scoped evict for cache: {}", cacheName);
             return;
         }
-        final Object scopedKey = new SimpleKey(userId, cacheKey);
+        final Object scopedKey = new SimpleKey(username, cacheKey);
         cache.evict(scopedKey);
-        cache.evict(userId + "_" + cacheKey); // fallback for legacy keys
+        cache.evict(username + "_" + cacheKey); // fallback for legacy keys
         log.debug("cache name {} (key: {}) evicted.", cacheName, scopedKey);
     }
 
@@ -291,19 +291,19 @@ public class EhCacheUtils {
      * @param cacheName String
      */
     public static void clearMyCache(final String cacheName) {
-        clearUserCache(cacheName, AuthUtils.getLgnUserId());
+        clearUserCache(cacheName, AuthUtils.getLgnUsername());
     }
 
     /**
      * 사용자 범위 캐시 전체 clear
      *
      * @param cacheName 캐시명
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      */
-    public static void clearUserCache(final String cacheName, final String userId) {
+    public static void clearUserCache(final String cacheName, final String username) {
         final Cache cache = cacheManager.getCache(cacheName);
         if (cache == null) return;
-        if (StringUtils.isEmpty(userId)) {
+        if (StringUtils.isEmpty(username)) {
             log.warn("User id is empty. Skip user-scoped clear for cache: {}", cacheName);
             return;
         }
@@ -313,7 +313,7 @@ public class EhCacheUtils {
         if (nativeCache instanceof javax.cache.Cache<?, ?> ehCache) {
             final List<Object> keysToEvict = new ArrayList<>();
             ehCache.iterator().forEachRemaining(entry -> {
-                if (isMyScopeCacheKey(entry.getKey(), userId)) keysToEvict.add(entry.getKey());
+                if (isMyScopeCacheKey(entry.getKey(), username)) keysToEvict.add(entry.getKey());
             });
             for (final Object key : keysToEvict) {
                 cache.evict(key);
@@ -322,7 +322,7 @@ public class EhCacheUtils {
         } else if (nativeCache instanceof com.github.benmanes.caffeine.cache.Cache<?, ?> caffeineCache) {
             final List<Object> keysToEvict = new ArrayList<>();
             caffeineCache.asMap().keySet().forEach(key -> {
-                if (isMyScopeCacheKey(key, userId)) keysToEvict.add(key);
+                if (isMyScopeCacheKey(key, username)) keysToEvict.add(key);
             });
             for (final Object key : keysToEvict) {
                 cache.evict(key);
@@ -332,7 +332,7 @@ public class EhCacheUtils {
             log.warn("Unsupported native cache type. Skip user-scoped clear for cache: {}", cacheName);
             return;
         }
-        log.debug("cache name {} user scoped clear done. userId={}, evicted={}", cacheName, userId, evictedCnt);
+        log.debug("cache name {} user scoped clear done. username={}, evicted={}", cacheName, username, evictedCnt);
     }
 
     /**
@@ -342,32 +342,32 @@ public class EhCacheUtils {
      * @param cacheKeyPrefix 사용자 prefix 이후 매칭할 key prefix
      */
     public static void evictMyCacheByPrefix(final String cacheName, final String cacheKeyPrefix) {
-        evictUserCacheByPrefix(cacheName, AuthUtils.getLgnUserId(), cacheKeyPrefix);
+        evictUserCacheByPrefix(cacheName, AuthUtils.getLgnUsername(), cacheKeyPrefix);
     }
 
     /**
      * 사용자 범위 prefix 기반 캐시 제거
      *
      * @param cacheName 캐시명
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      * @param cacheKeyPrefix 사용자 prefix 이후 key prefix
      */
-    public static void evictUserCacheByPrefix(final String cacheName, final String userId, final String cacheKeyPrefix) {
+    public static void evictUserCacheByPrefix(final String cacheName, final String username, final String cacheKeyPrefix) {
         if (StringUtils.isEmpty(cacheKeyPrefix)) {
-            clearUserCache(cacheName, userId);
+            clearUserCache(cacheName, username);
             return;
         }
 
         final Cache cache = cacheManager.getCache(cacheName);
         if (cache == null) return;
 
-        if (StringUtils.isEmpty(userId)) {
+        if (StringUtils.isEmpty(username)) {
             log.warn("User id is empty. Skip user-scoped prefix clear for cache: {}", cacheName);
             return;
         }
 
         final String normalizedPrefix = stripTrailingUnderscore(cacheKeyPrefix.trim());
-        final String fullPrefix = userId + "_" + normalizedPrefix;
+        final String fullPrefix = username + "_" + normalizedPrefix;
         final String[] prefixParts = normalizedPrefix.isEmpty() ? new String[0] : normalizedPrefix.split("_");
         final Object nativeCache = cache.getNativeCache();
         int evictedCnt = 0;
@@ -376,7 +376,7 @@ public class EhCacheUtils {
             ehCache.iterator().forEachRemaining(entry -> {
                 final Object keyObj = entry.getKey();
                 if (keyObj instanceof SimpleKey simpleKey) {
-                    if (matchesSimpleKeyPrefix(simpleKey, userId, prefixParts)) keysToEvict.add(keyObj);
+                    if (matchesSimpleKeyPrefix(simpleKey, username, prefixParts)) keysToEvict.add(keyObj);
                     return;
                 }
                 final String keyStr = Objects.toString(keyObj, "");
@@ -390,7 +390,7 @@ public class EhCacheUtils {
             final List<Object> keysToEvict = new ArrayList<>();
             caffeineCache.asMap().keySet().forEach(key -> {
                 if (key instanceof SimpleKey simpleKey) {
-                    if (matchesSimpleKeyPrefix(simpleKey, userId, prefixParts)) keysToEvict.add(key);
+                    if (matchesSimpleKeyPrefix(simpleKey, username, prefixParts)) keysToEvict.add(key);
                     return;
                 }
                 final String keyStr = Objects.toString(key, "");
@@ -409,7 +409,7 @@ public class EhCacheUtils {
 
     /**
      * 문자열 끝에 붙은 '_'를 모두 제거한다.
-     * - prefix 기반 키 비교 시 "userId_" 같은 불완전한 경계값을 정규화하기 위함
+     * - prefix 기반 키 비교 시 "username_" 같은 불완전한 경계값을 정규화하기 위함
      *
      * @param value String
      */
@@ -435,25 +435,25 @@ public class EhCacheUtils {
     }
 
     /**
-     * cacheKey가 특정 사용자(lgnUserId)의 scope에 속하는지 판단한다.
-     * - 캐시 키를 "userId 기반 namespace"로 간주하고 필터링
+     * cacheKey가 특정 사용자(username)의 scope에 속하는지 판단한다.
+     * - 캐시 키를 "username 기반 namespace"로 간주하고 필터링
      * - 동일 사용자 데이터만 선택적으로 invalidate / 조회하기 위함
      *
      * @param cacheKey Object
-     * @param lgnUserId String
+     * @param username String
      */
-    private static boolean isMyScopeCacheKey(final Object cacheKey, final String lgnUserId) {
-        if (cacheKey == null || lgnUserId == null || lgnUserId.isBlank()) return false;
+    private static boolean isMyScopeCacheKey(final Object cacheKey, final String username) {
+        if (cacheKey == null || username == null || username.isBlank()) return false;
 
         if (cacheKey instanceof SimpleKey simpleKey) {
             final Object[] params = getSimpleKeyParams(simpleKey);
             if (params == null || params.length == 0) return false;
             final String firstParam = Objects.toString(params[0], null);
-            return lgnUserId.equals(firstParam);
+            return username.equals(firstParam);
         }
 
         final String keyStr = Objects.toString(cacheKey, "");
-        return lgnUserId.equals(keyStr) || keyStr.startsWith(lgnUserId + "_");
+        return username.equals(keyStr) || keyStr.startsWith(username + "_");
     }
 
     private static Object[] getSimpleKeyParams(final SimpleKey simpleKey) {
@@ -467,10 +467,10 @@ public class EhCacheUtils {
         }
     }
 
-    private static boolean matchesSimpleKeyPrefix(final SimpleKey simpleKey, final String lgnUserId, final String[] prefixParts) {
+    private static boolean matchesSimpleKeyPrefix(final SimpleKey simpleKey, final String username, final String[] prefixParts) {
         final Object[] params = getSimpleKeyParams(simpleKey);
         if (params == null || params.length == 0) return false;
-        if (!lgnUserId.equals(Objects.toString(params[0], null))) return false;
+        if (!username.equals(Objects.toString(params[0], null))) return false;
         if (prefixParts == null || prefixParts.length == 0) return true;
         final String prefixToken = String.join("_", prefixParts);
         final String joinedParams = Arrays.stream(params, 1, params.length)

@@ -39,9 +39,9 @@ public class MyJrnlDreamService {
      * @return {@link List} -- 조회된 목록
      */
     public List<JrnlDreamDto> getMyListDto(final JrnlDreamSearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        final List<JrnlDreamDto> listDto = jrnlDreamService.getListDtoByUser(userId, searchParam);
-        this.mergeRelatedContents(userId, listDto);
+        final String username = AuthUtils.requireLgnUsername();
+        final List<JrnlDreamDto> listDto = jrnlDreamService.getListDtoByUser(username, searchParam);
+        this.mergeRelatedContents(username, listDto);
         return listDto;
     }
 
@@ -52,9 +52,9 @@ public class MyJrnlDreamService {
      * @return {@link List} -- 해당 연도의중요 목록
      */
     public List<JrnlDreamDto> getMySumryDreamList(final JrnlDreamSearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        final List<JrnlDreamDto> listDto = jrnlDreamService.getSumryDreamListByUser(userId, searchParam);
-        this.mergeRelatedContents(userId, listDto);
+        final String username = AuthUtils.requireLgnUsername();
+        final List<JrnlDreamDto> listDto = jrnlDreamService.getSumryDreamListByUser(username, searchParam);
+        this.mergeRelatedContents(username, listDto);
         return listDto;
     }
 
@@ -65,13 +65,13 @@ public class MyJrnlDreamService {
      * @return {@link JrnlDreamDto} -- 조회된 객체
      */
     public JrnlDreamDto getMyDtlDtoWithCache(final Integer key) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        final JrnlDreamDto retrieved = jrnlDreamService.getDtlDtoWithCacheByUser(userId, key);
-        this.mergeRelatedContents(userId, retrieved == null ? List.of() : List.of(retrieved));
+        final String username = AuthUtils.requireLgnUsername();
+        final JrnlDreamDto retrieved = jrnlDreamService.getDtlDtoWithCacheByUser(username, key);
+        this.mergeRelatedContents(username, retrieved == null ? List.of() : List.of(retrieved));
         return retrieved;
     }
 
-    private void mergeRelatedContents(final String userId, final List<JrnlDreamDto> listDto) throws Exception {
+    private void mergeRelatedContents(final String username, final List<JrnlDreamDto> listDto) throws Exception {
         if (listDto == null || listDto.isEmpty()) return;
 
         final List<BaseClsfKey> refKeyList = new ArrayList<>();
@@ -79,7 +79,7 @@ public class MyJrnlDreamService {
                 .filter(dto -> dto != null && dto.getPostNo() != null)
                 .forEach(dto -> refKeyList.add(new BaseClsfKey(dto.getPostNo(), ContentType.JRNL_DREAM)));
 
-        final Map<String, List<RelatedContentDto>> relatedMap = relatedContentQueryService.getRelatedContentMapByRefs(refKeyList, userId);
+        final Map<String, List<RelatedContentDto>> relatedMap = relatedContentQueryService.getRelatedContentMapByRefs(refKeyList, username);
         for (final JrnlDreamDto jrnlDream : listDto) {
             if (jrnlDream == null || jrnlDream.getPostNo() == null) continue;
             jrnlDream.setRelatedContentList(

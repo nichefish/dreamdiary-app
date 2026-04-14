@@ -5,10 +5,10 @@
 
 <script type="text/x-handlebars-template" id="schdul_reg_modal_prtcpnt_template">
     <div id="prtcpntRow{{idx}}" class="d-flex align-items-center mb-1">
-        <select name="prtcpntList[{{idx}}].userId" class="form-select form-select-solid me-2">
+        <select name="prtcpntList[{{idx}}].username" class="form-select form-select-solid me-2">
             <option value="">--선택--</option>
             <#list crtdUserList![] as user>
-                <option value="${user.userId!}" id="${user.userId!}">${user.userNm!}</option>
+                <option value="${user.username!}" id="${user.username!}">${user.userNm!}</option>
             </#list>
         </select>
         <span class="btn btn-sm btn-icon btn-light-danger" onclick="dF.Schdul.removePrtcpnt({{idx}});">

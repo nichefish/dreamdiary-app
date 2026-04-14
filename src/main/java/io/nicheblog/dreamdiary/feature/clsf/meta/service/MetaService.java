@@ -175,7 +175,7 @@ public class MetaService
         int maxFrequency = 0;
         for (final MetaDto meta : metaList) {
             // 캐싱 처리 위해 셀프 프록시
-            final Integer metaSize = this.countMetaSize(meta.getId(), contentType, AuthUtils.getLgnUserId());
+            final Integer metaSize = this.countMetaSize(meta.getId(), contentType, AuthUtils.getLgnUsername());
             meta.setContentSize(metaSize);
             maxFrequency = Math.max(maxFrequency, metaSize);
         }

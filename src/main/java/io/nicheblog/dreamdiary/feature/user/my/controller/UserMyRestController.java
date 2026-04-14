@@ -96,8 +96,8 @@ public class UserMyRestController
             final @RequestParam("currPw") @Nullable String currPw
     ) throws Exception {
 
-        final String lgnUserId = AuthUtils.getLgnUserId();
-        final boolean isSuccess = userMyService.myPwCf(lgnUserId, currPw);
+        final String lgnUsername = AuthUtils.getLgnUsername();
+        final boolean isSuccess = userMyService.myPwCf(lgnUsername, currPw);
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));

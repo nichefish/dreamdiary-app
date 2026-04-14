@@ -5,8 +5,8 @@ import io.nicheblog.dreamdiary.feature.user.emplym.entity.UserEmplymEntity;
 import io.nicheblog.dreamdiary.feature.user.emplym.entity.UserEmplymEntityTestFactory;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntityTestFactory;
-import io.nicheblog.dreamdiary.feature.user.profl.entity.UserProflEntity;
-import io.nicheblog.dreamdiary.feature.user.profl.entity.UserProflEntityTestFactory;
+import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntity;
+import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntityTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -67,18 +67,18 @@ class UserRepositoryTest {
         
         // When::
         final UserEntity registered = userRepository.save(userEntity);
-        final Integer key = registered.getUserNo();
+        final Integer key = registered.getId();
         final UserEntity retrieved = userRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
-        assertNotNull(retrieved.getUserNo(), "저장된 엔티티의 key 값이 없습니다.");
+        assertNotNull(retrieved.getId(), "저장된 엔티티의 key 값이 없습니다.");
         // audit
         assertNotNull(retrieved.getRegDt(), "등록일자 audit 처리가 되지 않았습니다.");
         assertNotNull(retrieved.getRegstrId(),  "등록자 audit 처리가 되지 않았습니다.");
         assertEquals(TestConstant.TEST_AUDITOR, retrieved.getRegstrId(), "등록자가 예상 값과 일치하지 않습니다.");
         // value
-        assertEquals(registered.getUserId(), retrieved.getUserId(), "값이 제대로 등록되지 않았습니다.");
+        assertEquals(registered.getUsername(), retrieved.getUsername(), "값이 제대로 등록되지 않았습니다.");
     }
 
     /**
@@ -87,25 +87,25 @@ class UserRepositoryTest {
     @Test
     public void testRegist_proflCascade() throws Exception {
         // Given::
-        UserProflEntity userProfl = UserProflEntityTestFactory.create();
-        userEntity.setProfl(userProfl);
+        UserProfileEntity userProfile = UserProfileEntityTestFactory.create();
+        userEntity.setProfile(userProfile);
         userEntity.cascade();
 
         // When::
         final UserEntity registered = userRepository.save(userEntity);
-        final Integer key = registered.getUserNo();
+        final Integer key = registered.getId();
         final UserEntity retrieved = userRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
-        UserProflEntity retrievedProfl = retrieved.getProfl();
-        assertNotNull(retrievedProfl, "사용자 프로필 정보가 제대로 저장되지 않았습니다.");
-        assertNotNull(retrievedProfl.getUserProflNo(), "사용자 프로필 정보 ID가 제대로 생성되지 않았습니다.");
+        UserProfileEntity retrievedProfile = retrieved.getProfile();
+        assertNotNull(retrievedProfile, "사용자 프로필 정보가 제대로 저장되지 않았습니다.");
+        assertNotNull(retrievedProfile.getUserProfileId(), "사용자 프로필 정보 ID가 제대로 생성되지 않았습니다.");
         // cascade 체크
-        assertNotNull(retrievedProfl.getUser(), "프로필에 연결된 사용자 정보가 없습니다.");
-        assertEquals(key, retrievedProfl.getUser().getUserNo(), "프로필의 사용자 ID가 일치하지 않습니다.");
+        assertNotNull(retrievedProfile.getUser(), "프로필에 연결된 사용자 정보가 없습니다.");
+        assertEquals(key, retrievedProfile.getUser().getId(), "프로필의 사용자 ID가 일치하지 않습니다.");
         // 항목 체크
-        assertEquals(userProfl.getBrthdy(), retrievedProfl.getBrthdy(), "프로필의 생년월일 정보가 일치하지 않습니다.");
+        assertEquals(userProfile.getBrthdy(), retrievedProfile.getBrthdy(), "프로필의 생년월일 정보가 일치하지 않습니다.");
     }
 
     /**
@@ -120,17 +120,17 @@ class UserRepositoryTest {
 
         // When::
         final UserEntity registered = userRepository.save(userEntity);
-        final Integer key = registered.getUserNo();
+        final Integer key = registered.getId();
         final UserEntity retrieved = userRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
         UserEmplymEntity retrievedEmplym = retrieved.getEmplym();
         assertNotNull(retrievedEmplym, "사용자 인사정보가 제대로 저장되지 않았습니다.");
-        assertNotNull(retrievedEmplym.getUserEmplymNo(), "사용자 인사정보 ID가 제대로 생성되지 않았습니다.");
+        assertNotNull(retrievedEmplym.getId(), "사용자 인사정보 ID가 제대로 생성되지 않았습니다.");
         // cascade 체크
         assertNotNull(retrievedEmplym.getUser(), "사용자 인사정보가 제대로 저장되지 않았습니다.");
-        assertEquals(key, retrievedEmplym.getUser().getUserNo(), "사용자 인사정보가 사용자 정보에 제대로 매핑되지 않았습니다.");
+        assertEquals(key, retrievedEmplym.getUser().getId(), "사용자 인사정보가 사용자 정보에 제대로 매핑되지 않았습니다.");
         // 항목 체크
         // 날짜 변환 체크
         assertEquals(userEmplym.getEcnyDt(), retrievedEmplym.getEcnyDt(), "프로필의 생년월일 정보가 일치하지 않습니다.");
@@ -146,7 +146,7 @@ class UserRepositoryTest {
     public void testModify() throws Exception {
         // Given::
         UserEntity registered = userRepository.save(userEntity);
-        Integer key = registered.getUserNo();
+        Integer key = registered.getId();
 
         // When::
         UserEntity toModify = userRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
@@ -155,7 +155,7 @@ class UserRepositoryTest {
 
         // Then::
         assertNotNull(modified, "저장한 데이터를 조회할 수 없습니다.");
-        assertNotNull(modified.getUserNo(), "저장된 엔티티의 key 값이 없습니다.");
+        assertNotNull(modified.getId(), "저장된 엔티티의 key 값이 없습니다.");
         // audit
         assertNotNull(modified.getMdfDt(), "수정일자 audit 처리가 되지 않았습니다.");
         assertNotNull(modified.getMdfusrId(),  "수정자 audit 처리가 되지 않았습니다.");
@@ -171,7 +171,7 @@ class UserRepositoryTest {
     public void testDelete() throws Exception {
         // Given::
         final UserEntity registered = userRepository.save(userEntity);
-        final Integer key = registered.getUserNo();
+        final Integer key = registered.getId();
 
         // When::
         final UserEntity toDelete = userRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete")));

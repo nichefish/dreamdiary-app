@@ -14,26 +14,26 @@ const Page: Page = (function(): Page {
             /* initialize modules. */
             dF.User.init();
             dF.UserEmplym.init();
-            dF.UserProfl.init();
+            dF.UserProfile.init();
             /* initialize form. */
             dF.User.initForm();
 
             if (!dF.User.isMdf) {
                 // 등록화면:: 사용자 ID 변경입력시 중복체크 통과여부 초기화
-                $("#userId").on("keyup", function(): void {
-                    $("#userId_validate_span").empty();
+                $("#username").on("keyup", function(): void {
+                    $("#username_validate_span").empty();
                     $("#ipDupChckPassed").val("N");
                     $("#idDupChckBtn").addClass("blink").removeClass("btn-success").addClass("btn-secondary").removeAttr("disabled");
                 }).on("keydown", function(): void {
-                    $("#userId_validate_span").text("");
+                    $("#username_validate_span").text("");
                     $("#ipDupChckPassed").val("N");
                     $("#idDupChckBtn").addClass("blink").removeClass("btn-success").addClass("btn-secondary").removeAttr("disabled");
                 });
             }
 
             // 프로필 정보 / 인사정보 창 활성화
-            const hasProfl = $("#userProflBtn").data("profl");
-            if (hasProfl) dF.UserProfl.enableUserProfl();
+            const hasProfile = $("#userProfileBtn").data("profile");
+            if (hasProfile) dF.UserProfile.enableUserProfile();
             const hasEmplym = $("#userEmplymBtn").data("emplym");
             if (hasEmplym) dF.UserEmplym.enableUserEmplym();
         },

@@ -54,13 +54,13 @@ public class AuthPageController
             if (StringUtils.isEmpty(token)) throw new AuthenticationFailureException("인증에 필요한 정보가 없습니다.");
             if (!jwtTokenProvider.validateToken(token)) throw new AuthenticationFailureException("이미 만료된 인증 코드입니다.");
             
-            final String userId = jwtTokenProvider.getUsernameFromToken(token);
-            final UserEntity user = userService.getDtlEntity(userId);
+            final String username = jwtTokenProvider.getUsernameFromToken(token);
+            final UserEntity user = userService.getDtlEntity(username);
             final boolean isAlreadyCf = "Y".equals(user.acntStus.getCfYn());
             // 이미 가입된 계정이면 미처리.
             if (isAlreadyCf) throw new AlreadyAuthenticatedException("이미 인증된 계정입니다.");
             // 계정 승인 처리
-            userReqstService.cf(user.getUserNo());
+            userReqstService.cf(user.getId());
 
             return "/view/auth/security/verify_success";
         } catch (final Exception e) {

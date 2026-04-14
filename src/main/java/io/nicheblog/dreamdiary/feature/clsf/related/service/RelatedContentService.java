@@ -80,7 +80,7 @@ public class RelatedContentService {
             throw new IllegalArgumentException("relationType is required.");
         }
 
-        final String regstrId = AuthUtils.requireLgnUserId();
+        final String regstrId = AuthUtils.requireLgnUsername();
         this.validateWritablePair(firstKey, secondKey);
 
         final BaseClsfKey[] normalizedKeys = this.normalizePair(firstKey, secondKey);
@@ -117,7 +117,7 @@ public class RelatedContentService {
         this.validateReadableKey(refKey);
         this.requireOwnedContent(refKey);
 
-        final String regstrId = AuthUtils.requireLgnUserId();
+        final String regstrId = AuthUtils.requireLgnUsername();
         final List<RelatedContentEntity> entityList = repository.findAllByRef(refKey.getPostNo(), refKey.getContentType(), regstrId);
 
         return entityList.stream()
@@ -141,7 +141,7 @@ public class RelatedContentService {
         this.validateReadableKey(refKey);
         this.requireOwnedContent(refKey);
 
-        final String regstrId = AuthUtils.requireLgnUserId();
+        final String regstrId = AuthUtils.requireLgnUsername();
         repository.softDeleteAllByRef(refKey.getPostNo(), refKey.getContentType(), regstrId);
     }
 
@@ -149,7 +149,7 @@ public class RelatedContentService {
     public void deleteAllByRef(final BaseClsfKey refKey, final String regstrId) {
         this.validateReadableKey(refKey);
 
-        final String requiredRegstrId = AuthUtils.requireUserId(regstrId);
+        final String requiredRegstrId = AuthUtils.requireUsername(regstrId);
         if (!AuthUtils.isRegstr(requiredRegstrId)) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }

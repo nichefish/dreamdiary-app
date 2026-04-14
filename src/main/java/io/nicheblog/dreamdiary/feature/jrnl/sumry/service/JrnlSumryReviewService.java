@@ -57,8 +57,8 @@ public class JrnlSumryReviewService
         return context.getBean(this.getClass());
     }
 
-    public List<JrnlSumryReviewDto> getListDtoByUser(final String userId, final io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
+    public List<JrnlSumryReviewDto> getListDtoByUser(final String username, final io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(AuthUtils.requireUsername(username));
         return this.getSelf().getListDto(searchParam);
     }
 

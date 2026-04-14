@@ -22,8 +22,8 @@ public class UserXlsxDto {
     /** 권한 */
     private String authNm;
 
-    /** 아이디  */
-    private String userId;
+    /** 계정명  */
+    private String username;
 
     /** 이름 */
     private String nickNm;
@@ -45,4 +45,5 @@ public class UserXlsxDto {
 
     /** 최종접속일시 */
     private String lstLgnDt;
+
 }

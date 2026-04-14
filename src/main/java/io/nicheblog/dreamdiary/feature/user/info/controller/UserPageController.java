@@ -139,7 +139,7 @@ public class UserPageController
     @GetMapping(Url.USER_DTL)
     @Secured(Constant.ROLE_MNGR)
     public String userDtl(
-            final @RequestParam("userNo") Integer key,
+            final @RequestParam("id") Integer key,
             final ModelMap model
     ) throws Exception {
 
@@ -165,7 +165,7 @@ public class UserPageController
     @GetMapping(Url.USER_MDF_FORM)
     @Secured(Constant.ROLE_MNGR)
     public String userMdfForm(
-            final @RequestParam("userNo") Integer key,
+            final @RequestParam("id") Integer key,
             final ModelMap model
     ) throws Exception {
 

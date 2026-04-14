@@ -59,7 +59,7 @@ public class HistoryEmbed
     private Date historyTriggeredAt;
 
     public HistoryEmbed() {
-        this.historyTriggeredBy = AuthUtils.getLgnUserId();
+        this.historyTriggeredBy = AuthUtils.getLgnUsername();
     }
 
     public HistoryEmbed(final Boolean updtLastModifiedDt) {

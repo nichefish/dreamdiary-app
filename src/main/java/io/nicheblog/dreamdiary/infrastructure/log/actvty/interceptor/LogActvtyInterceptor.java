@@ -49,7 +49,7 @@ public class LogActvtyInterceptor implements HandlerInterceptor {
                     request.getMethod(),
                     request.getRequestURI(),
                     getHandlerSignature(handlerMethod),
-                    getUserIdForLog(),
+                    getUsernameForLog(),
                     AuthUtils.getAcsIpAddr()
             );
         }
@@ -74,7 +74,7 @@ public class LogActvtyInterceptor implements HandlerInterceptor {
 
         final String traceId = MDC.get("traceId");
         final String handlerSignature = getHandlerSignature(handlerMethod);
-        final String userId = getUserIdForLog();
+        final String username = getUsernameForLog();
 
         if (ex != null) {
             log.error(
@@ -84,7 +84,7 @@ public class LogActvtyInterceptor implements HandlerInterceptor {
                     handlerSignature,
                     response.getStatus(),
                     duration,
-                    userId,
+                    username,
                     AuthUtils.getAcsIpAddr(),
                     ex
             );
@@ -96,7 +96,7 @@ public class LogActvtyInterceptor implements HandlerInterceptor {
                     handlerSignature,
                     response.getStatus(),
                     duration,
-                    userId,
+                    username,
                     AuthUtils.getAcsIpAddr()
             );
         } else {
@@ -107,7 +107,7 @@ public class LogActvtyInterceptor implements HandlerInterceptor {
                     handlerSignature,
                     response.getStatus(),
                     duration,
-                    userId,
+                    username,
                     AuthUtils.getAcsIpAddr()
             );
         }
@@ -139,7 +139,7 @@ public class LogActvtyInterceptor implements HandlerInterceptor {
         param.setTraceId(MDC.get("traceId"));
         param.setRequestUri(request.getRequestURI());
         param.setHttpMethod(request.getMethod());
-        param.setUserId(AuthUtils.getLgnUserId());
+        param.setUsername(AuthUtils.getLgnUsername());
         param.setDurationMs(duration);
         param.setHttpStatus(response.getStatus());
         param.setReferer(request.getHeader(Constant.REFERER));
@@ -186,8 +186,8 @@ public class LogActvtyInterceptor implements HandlerInterceptor {
         return handlerMethod.getBeanType().getSimpleName() + "." + handlerMethod.getMethod().getName();
     }
 
-    private String getUserIdForLog() {
-        final String userId = AuthUtils.getLgnUserId();
-        return userId == null ? "anonymous" : userId;
+    private String getUsernameForLog() {
+        final String username = AuthUtils.getLgnUsername();
+        return username == null ? "anonymous" : username;
     }
 }

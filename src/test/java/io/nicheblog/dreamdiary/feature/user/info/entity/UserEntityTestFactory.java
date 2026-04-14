@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.user.info.entity;
 
 import io.nicheblog.dreamdiary.feature.user.emplym.entity.UserEmplymEntity;
-import io.nicheblog.dreamdiary.feature.user.profl.entity.UserProflEntity;
+import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntity;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import lombok.experimental.UtilityClass;
 import org.springframework.test.context.ActiveProfiles;
@@ -25,7 +25,7 @@ public class UserEntityTestFactory {
     public static UserEntity create() throws Exception {
         // 객체 생성
         return UserEntity.builder()
-                .userId(TestConstant.TEST_USER)
+                .username(TestConstant.TEST_USER)
                 .password(TestConstant.TEST_PASSWORD_ENCODED)
                 .nickNm(TestConstant.TEST_NICK_NM)
                 .email("test_email_id@test_email_domain")
@@ -38,10 +38,10 @@ public class UserEntityTestFactory {
     /**
      * 테스트용 사용자 정보 Entity 객체 생성
      */
-    public static UserEntity create(UserProflEntity profl) throws Exception {
+    public static UserEntity create(UserProfileEntity profile) throws Exception {
         // 객체 생성
         UserEntity entity = create();
-        entity.setProfl(profl);
+        entity.setProfile(profile);
         return entity;
     }
 
@@ -58,10 +58,10 @@ public class UserEntityTestFactory {
     /**
      * 테스트용 사용자 정보 Entity 객체 생성
      */
-    public static UserEntity create(UserProflEntity profl, UserEmplymEntity emplym) throws Exception {
+    public static UserEntity create(UserProfileEntity profile, UserEmplymEntity emplym) throws Exception {
         // 객체 생성
         UserEntity entity = create();
-        entity.setProfl(profl);
+        entity.setProfile(profile);
         entity.setEmplym(emplym);
         return entity;
     }

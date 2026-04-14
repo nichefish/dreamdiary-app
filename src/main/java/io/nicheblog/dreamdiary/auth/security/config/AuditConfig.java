@@ -63,7 +63,7 @@ public class AuditConfig {
 
             // 로그인 사용자 ID 반환
             final AuthInfo authInfo = (AuthInfo) authentication.getPrincipal();
-            return Optional.of(authInfo.getUserId());
+            return Optional.of(authInfo.getUsername());
         }
     }
 }

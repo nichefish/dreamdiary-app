@@ -84,7 +84,7 @@ public class UserReqstService {
         UserEntity updatedEntity = userRepository.save(registEntity);
 
         return ServiceResponse.builder()
-                .rslt(updatedEntity.getUserNo() != null)
+                .rslt(updatedEntity.getId() != null)
                 .rsltObj(userReqstMapstruct.toDto(updatedEntity))
                 .build();
     }
@@ -108,7 +108,7 @@ public class UserReqstService {
         final UserEntity updatedEntity = userRepository.saveAndFlush(retrievedEntity);
 
         return ServiceResponse.builder()
-                .rslt(updatedEntity.getUserNo() != null)
+                .rslt(updatedEntity.getId() != null)
                 .build();
     }
 
@@ -131,7 +131,7 @@ public class UserReqstService {
         final UserEntity updatedEntity = userRepository.saveAndFlush(retrievedEntity);
 
         return ServiceResponse.builder()
-                .rslt(updatedEntity.getUserNo() != null)
+                .rslt(updatedEntity.getId() != null)
                 .build();
     }
 }

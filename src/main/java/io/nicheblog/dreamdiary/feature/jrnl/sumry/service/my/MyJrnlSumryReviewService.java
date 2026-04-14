@@ -32,7 +32,7 @@ public class MyJrnlSumryReviewService {
      * @return {@link List<JrnlSumryReviewDto>} -- 검색 조건에 맞는 결산 목록 Dto 리스트
      */
     public List<JrnlSumryReviewDto> getMyListDto(final BaseSearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlSumryReviewService.getListDtoByUser(userId, searchParam);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlSumryReviewService.getListDtoByUser(username, searchParam);
     }
 }

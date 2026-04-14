@@ -45,17 +45,17 @@ public class UserRestController
      * 사용자 아이디 중복 체크 (Ajax)
      * 사용자 계정 신청시 사용해야 하므로 인증 없이 접근 가능
      *
-     * @param userId 중복 체크를 할 사용자 아이디
+     * @param username 중복 체크를 할 사용자 아이디
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(Url.USER_ID_DUP_CHK_AJAX)
+    @GetMapping(Url.USERNAME_DUP_CHK_AJAX)
     @ResponseBody
-    public ResponseEntity<AjaxResponse> userIdDupChckAjax(
-            final @RequestParam("userId") String userId
+    public ResponseEntity<AjaxResponse> usernameDupChckAjax(
+            final @RequestParam("username") String username
     ) {
 
-        final Boolean isUserIdDup = userService.userIdDupChck(userId);
-        final boolean isSuccess = !isUserIdDup;;
+        final Boolean isUsernameDup = userService.usernameDupChck(username);
+        final boolean isSuccess = !isUsernameDup;
         final String rsltMsg = MessageUtils.getMessage(isSuccess ? "msg.user.id.usable" : "msg.user.id.duplicated");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
@@ -75,7 +75,7 @@ public class UserRestController
     ) {
 
         final Boolean isEmailDup = userService.emailDupChck(email);
-        final boolean isSuccess = !isEmailDup;;
+        final boolean isSuccess = !isEmailDup;
         final String rsltMsg = MessageUtils.getMessage(isSuccess ? "msg.user.email.usable" : "msg.user.email.duplicated");
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
@@ -107,17 +107,17 @@ public class UserRestController
      * 사용자 관리 > 계정 및 권한 관리 > 사용자 패스워드 초기화 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
-     * @param userNo 패스워드를 초기화할 사용자 아이디
+     * @param id 패스워드를 초기화할 사용자 아이디
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.USER_PW_RESET_AJAX)
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> passwordResetAjax(
-            final @RequestParam("userNo") Integer userNo
+            final @RequestParam("id") Integer id
     ) throws Exception {
 
-        final ServiceResponse result = userService.passwordReset(userNo);
+        final ServiceResponse result = userService.passwordReset(id);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.getMessage(isSuccess ? MessageUtils.RSLT_SUCCESS_PW_RESET : MessageUtils.RSLT_FAILURE);
 
@@ -128,25 +128,25 @@ public class UserRestController
      * 사용자 관리 > 계정 및 권한 관리 > 사용자 삭제 (Ajax)
      * (관리자MNGR만 접근 가능.)
      *
-     * @param userNo 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.USER_DEL_AJAX)
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> userDelAjax(
-            final @RequestParam("userNo") Integer userNo
+            final @RequestParam("id") Integer id
     ) throws Exception {
 
-        final UserDto user = userService.getDtlDto(userNo);
+        final UserDto user = userService.getDtlDto(id);
         // 내 정보인지 비교 :: "내 정보는 삭제할 수 없습니다."
-        final boolean isMyInfo = AuthUtils.isMyInfo(user.getUserId());
+        final boolean isMyInfo = AuthUtils.isMyInfo(user.getUsername());
         if (!isMyInfo) {
             final String rsltMsg = MessageUtils.NOT_DELABLE_OWN_ID;
             return ResponseEntity.ok(AjaxResponse.withAjaxResult(false, rsltMsg));
         }
 
-        final ServiceResponse result = userService.delete(userNo);
+        final ServiceResponse result = userService.delete(id);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 

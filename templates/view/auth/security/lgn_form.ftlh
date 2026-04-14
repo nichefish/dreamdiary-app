@@ -11,7 +11,7 @@
     /** Model 값을 객체에 담아 typescript로 전달 */
     const Model = (function() {
         return {
-            userId: "${userId!}",
+            username: "${username!}",
             errorMsg: "${errorMsg!}",
             isDupIdLgn: ${(isDupIdLgn!false)?c},
             isCredentialExpired: ${(isCredentialExpired!false)?c},
@@ -43,13 +43,13 @@
     <#--begin::Form-->
     <form name="lgnForm" id="lgnForm" class="w-100" method="post">
         <div class="opacity-75">
-            <label class="form-label fs-6 text-secondary fw-bolder" for="userId">아이디</label>
-            <input type="text" name="userId" id="userId" class="form-control form-control-lg enter required"
+            <label class="form-label fs-6 text-secondary fw-bolder" for="username">아이디</label>
+            <input type="text" name="username" id="username" class="form-control form-control-lg enter required"
                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="아이디를 입력하세요."
                    value="" placeholder="아이디를 입력하세요." autocomplete="off" maxlength="20" />
         </div>
         <div class="h-15px mt-1 mb-5">
-            <span id="userId_validate_span" class="text-danger"></span>
+            <span id="username_validate_span" class="text-danger"></span>
         </div>
         <div class="opacity-75">
             <label class="form-label text-secondary fw-bolder fs-6 mb-1" for="password">비밀번호</label>

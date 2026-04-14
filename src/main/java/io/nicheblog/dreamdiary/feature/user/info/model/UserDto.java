@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.feature.clsf.file.model.cmpstn.AtchFileCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.file.model.cmpstn.AtchFileCmpstnModule;
 import io.nicheblog.dreamdiary.feature.user.info.model.emplym.UserEmplymDto;
-import io.nicheblog.dreamdiary.feature.user.info.model.profl.UserProflDto;
+import io.nicheblog.dreamdiary.feature.user.info.model.profile.UserProfileDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
 import lombok.*;
@@ -34,11 +34,9 @@ public class UserDto
         extends BaseClsfDto
         implements Identifiable<Integer>, AtchFileCmpstnModule {
 
-    /** 사용자 고유 ID */
-    private Integer userNo;
     /** 아이디 */
     @NotEmpty
-    private String userId;
+    private String username;
     /** 표시이름 */
     @NotEmpty
     private String nickNm;
@@ -62,7 +60,7 @@ public class UserDto
     private List<String> authStrList;
 
     /** 사용자 정보 (위임) */
-    private UserProflDto profl;
+    private UserProfileDto profile;
     /** 사용자 정보 (위임) */
     private UserEmplymDto emplym;
 
@@ -138,12 +136,12 @@ public class UserDto
 
     /** 내 정보 여부 채크 */
     public Boolean getIsMe() {
-        return (AuthUtils.isRegstr(this.getUserId()));       // 인자로 넘긴 ID와 세션의 사용자 ID 비교
+        return (AuthUtils.isRegstr(this.getUsername()));       // 인자로 넘긴 ID와 세션의 사용자 ID 비교
     }
 
     @Override
     public Integer getKey() {
-        return this.userNo;
+        return this.id;
     }
 
     /* ----- */

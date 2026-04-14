@@ -33,21 +33,21 @@ public class JrnlChapterCacheEvictor
     public void evict(final JrnlCacheEvictParam param) throws Exception {
         final ContentType refContentType = ContentType.JRNL_CHAPTER;
         try {
-            final String userId = param.getRegstrId();
+            final String username = param.getRegstrId();
             final Integer postNo = param.getPostNo();
             final Integer jrnlDayNo = param.getJrnlDayNo();
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();
             final String weekStartDt = param.getWeekStartDt();
             if (postNo != null) {
-                EhCacheUtils.evictUserCacheByKey("jrnlChapterDtlDtoByUser", userId, postNo);
+                EhCacheUtils.evictUserCacheByKey("jrnlChapterDtlDtoByUser", username, postNo);
             }
             // jrnl_day
             if (jrnlDayNo != null) {
-                EhCacheUtils.evictUserCacheByKey("jrnlDayDtlDtoByUser", userId, jrnlDayNo);
+                EhCacheUtils.evictUserCacheByKey("jrnlDayDtlDtoByUser", username, jrnlDayNo);
             }
-            this.evictMyJrnlDayYyMnthCaches(userId, yy, mnth);
-            this.evictMyJrnlDayWeeklyCaches(userId, weekStartDt);
+            this.evictMyJrnlDayYyMnthCaches(username, yy, mnth);
+            this.evictMyJrnlDayWeeklyCaches(username, weekStartDt);
             // 태그 캐시 처리
             if (postNo != null) {
                 EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", postNo + "_JRNL_CHAPTER");

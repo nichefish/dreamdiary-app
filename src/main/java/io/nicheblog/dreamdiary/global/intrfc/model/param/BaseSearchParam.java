@@ -65,7 +65,7 @@ public class BaseSearchParam
     protected String managtrNm;
 
     /** 로그인 유저 ID */
-    protected String lgnUserId;
+    protected String lgnUsername;
 
     /* ----- */
 

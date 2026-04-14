@@ -63,7 +63,7 @@ public class BaseAuditRegEntity
      */
     public Boolean isRegstr() {
         if (StringUtils.isEmpty(this.regstrId)) return false;
-        return this.regstrId.equals(AuthUtils.getLgnUserId());
+        return this.regstrId.equals(AuthUtils.getLgnUsername());
     }
 
     /**

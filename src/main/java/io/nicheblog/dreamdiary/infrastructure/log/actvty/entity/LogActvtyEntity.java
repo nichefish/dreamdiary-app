@@ -58,11 +58,11 @@ public class LogActvtyEntity
     @Comment("로그 고유 ID (key)")
     private Integer id;
 
-    /** 작업자 ID */
+    /** 작업자 계정명 */
     @CreatedBy
-    @Column(name = "user_id", length = 20)
-    @Comment("작업자 ID")
-    private String userId;
+    @Column(name = "username", length = 20)
+    @Comment("작업자 계정명")
+    private String username;
 
     /** trace ID */
     @Column(name = "trace_id", length = 72)
@@ -70,7 +70,7 @@ public class LogActvtyEntity
 
     /** 작업자 정보 */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "username", referencedColumnName = "username", insertable = false, updatable = false)
     @Fetch(value = FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     private AuditorInfo userInfo;

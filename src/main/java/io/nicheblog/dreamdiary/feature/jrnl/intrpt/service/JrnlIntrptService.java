@@ -69,8 +69,8 @@ public class JrnlIntrptService
         return context.getBean(this.getClass());
     }
 
-    public List<JrnlIntrptDto> getListDtoByUser(final String userId, final JrnlIntrptSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
+    public List<JrnlIntrptDto> getListDtoByUser(final String username, final JrnlIntrptSearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(AuthUtils.requireUsername(username));
         return this.getSelf().getListDto(searchParam);
     }
 
@@ -133,12 +133,12 @@ public class JrnlIntrptService
      * @param key 식별자
      * @return {@link JrnlIntrptDto} -- 조회된 객체
      */
-    @Cacheable(value="jrnlIntrptDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #key)")
-    public JrnlIntrptDto getDtlDtoWithCacheByUser(final String userId, final Integer key) throws Exception {
+    @Cacheable(value="jrnlIntrptDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #key)")
+    public JrnlIntrptDto getDtlDtoWithCacheByUser(final String username, final Integer key) throws Exception {
         final JrnlIntrptEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlIntrptDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr(AuthUtils.requireUserId(userId))) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+        if (!retrieved.getIsRegstr(AuthUtils.requireUsername(username))) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         return retrieved;
     }
 

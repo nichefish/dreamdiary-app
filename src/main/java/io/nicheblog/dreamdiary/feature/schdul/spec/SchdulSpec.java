@@ -102,7 +102,7 @@ public class SchdulSpec
                     // 개인 일정 조회
                     predicate.add(builder.equal(prvtYnExp, "Y"));
                     prtcpntJoin = root.join("prtcpntList", JoinType.INNER);
-                    predicate.add(builder.equal(prtcpntJoin.get("userId"), AuthUtils.getLgnUserId()));
+                    predicate.add(builder.equal(prtcpntJoin.get("username"), AuthUtils.getLgnUsername()));
                     continue;
                 case "indtChked":
                     // 내근 조회
@@ -126,7 +126,7 @@ public class SchdulSpec
                 //     // 내가 속한 일정 조회
                 //     if ("Y".equals(value)) {
                 //         prtcpntJoin = root.join("prtcpntList", JoinType.INNER);
-                //         predicate.add(builder.equal(prtcpntJoin.get("userId"), AuthUtils.getLgnUserId()));
+                //         predicate.add(builder.equal(prtcpntJoin.get("username"), AuthUtils.getLgnUsername()));
                 //     }
                 //     continue;
                 case "searchKeyword":

@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.feature.user.info.entity.UserAuthRoleEntity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserStusEmbed;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
-import io.nicheblog.dreamdiary.feature.user.profl.mapstruct.UserProflMapstruct;
+import io.nicheblog.dreamdiary.feature.user.profile.mapstruct.UserProfileMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, CollectionUtils.class, UserStusEmbed.class, Collectors.class, UserProflMapstruct.class, UserEmplymMapstruct.class}, builder = @Builder(disableBuilder = true))
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, CollectionUtils.class, UserStusEmbed.class, Collectors.class, UserProfileMapstruct.class, UserEmplymMapstruct.class}, builder = @Builder(disableBuilder = true))
 public interface UserMapstruct
         extends BaseWriteMapstruct<UserDto, UserEntity>, BaseReadMapstruct<UserDto, UserEntity> {
 
@@ -46,7 +46,7 @@ public interface UserMapstruct
     @Mapping(target = "useAcsIp", expression = "java(\"Y\".equals(entity.getUseAcsIpYn()))")
     @Mapping(target = "acsIpListStr", expression = "java(CollectionUtils.isEmpty(entity.getAcsIpStrList()) ? null : String.join(\",\", entity.getAcsIpStrList()))")      // 접속IP tagify 문자열 세팅
     @Mapping(target = "isCf", expression = "java(entity.getAcntStus() != null && \"Y\".equals(entity.getAcntStus().getCfYn()))")
-    @Mapping(target = "profl", expression = "java(UserProflMapstruct.INSTANCE.toDto(entity.getProfl()))")
+    @Mapping(target = "profile", expression = "java(UserProfileMapstruct.INSTANCE.toDto(entity.getProfile()))")
     @Mapping(target = "emplym", expression = "java(UserEmplymMapstruct.INSTANCE.toDto(entity.getEmplym()))")
     UserDto toDto(final UserEntity entity) throws Exception;
 
@@ -68,7 +68,7 @@ public interface UserMapstruct
     @Mapping(target = "email", expression = "java(dto.getEmailId() + \"@\" + dto.getEmailDomain())")
     @Mapping(target = "acsIpList", expression = "java(dto.getAcsIpListStr())")      // tagify 문자열 파싱
     @Mapping(target = "authList", expression = "java(dto.getAuthListStr())")        // multiselect 문자열 파싱
-    @Mapping(target = "profl", expression = "java(UserProflMapstruct.INSTANCE.toEntity(dto.getProfl()))")
+    @Mapping(target = "profile", expression = "java(UserProfileMapstruct.INSTANCE.toEntity(dto.getProfile()))")
     @Mapping(target = "emplym", expression = "java(UserEmplymMapstruct.INSTANCE.toEntity(dto.getEmplym()))")
     UserEntity toEntity(final UserDto dto) throws Exception;
 
@@ -99,7 +99,7 @@ public interface UserMapstruct
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "acsIpList", expression = "java(dto.getAcsIpListStr())")      // tagify 문자열 파싱
     @Mapping(target = "authList", expression = "java(dto.getAuthListStr())")        // multiselect 문자열 파싱
-    @Mapping(target = "profl", expression = "java(entity.getProflUpdt(dto.getProfl()))")            // 영속성 유지를 위해 update 로직을 타야 한다.
+    @Mapping(target = "profile", expression = "java(entity.getProfileUpdt(dto.getProfile()))")            // 영속성 유지를 위해 update 로직을 타야 한다.
     @Mapping(target = "emplym", expression = "java(entity.getEmplymUpdt(dto.getEmplym()))")         // 영속성 유지를 위해 update 로직을 타야 한다.
     void updateFromDto(final UserDto dto, final @MappingTarget UserEntity entity) throws Exception;
 }

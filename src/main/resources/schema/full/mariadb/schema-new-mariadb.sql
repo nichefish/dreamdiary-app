@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS schdul (
 CREATE TABLE IF NOT EXISTS schdul_prtcpnt (
     id INT PRIMARY KEY AUTO_INCREMENT COMMENT '일정 참여자 ID',
     schdul_id INT COMMENT '일정 ID',
-    user_id VARCHAR(30) COMMENT '일정 참여자 ID',
+    username VARCHAR(30) COMMENT '일정 참여자 ID',
     -- AUDIT
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
     -- CONSTRAINT

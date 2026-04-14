@@ -30,7 +30,7 @@ const Page: Page = (function(): Page {
          */
         myPaprList: function(): void {
             const url: string = Url.TMPLAT_DEF_LIST;
-            const param: string = `?searchType=nickNm&searchKeyword=${AuthInfo.nickNm!}&regstrId=${AuthInfo.userId!}&pageSize=50&actionTyCd=MY_PAPR`;
+            const param: string = `?searchType=nickNm&searchKeyword=${AuthInfo.nickNm!}&regstrId=${AuthInfo.username!}&pageSize=50&actionTyCd=MY_PAPR`;
             cF.ui.blockUIReplace(url + param);
         },
 

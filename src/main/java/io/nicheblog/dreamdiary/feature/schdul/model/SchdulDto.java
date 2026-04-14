@@ -127,14 +127,14 @@ public class SchdulDto
     }
 
     /**
-     * Getter :: userId가 빈 객체를 제외한 참가자 목록을 반환한다.
+     * Getter :: username이 빈 객체를 제외한 참가자 목록을 반환한다.
      *
      * @return {@link List} -- 참가자 목록
      */
     public List<SchdulPrtcpntDto> getPrtcpntList() {
         if (CollectionUtils.isEmpty(this.prtcpntList)) return this.prtcpntList;
         return this.prtcpntList.stream()
-                .filter(dto -> StringUtils.isNotEmpty(dto.getUserId()))
+                .filter(dto -> StringUtils.isNotEmpty(dto.getUsername()))
                 .collect(Collectors.toList());
     }
 

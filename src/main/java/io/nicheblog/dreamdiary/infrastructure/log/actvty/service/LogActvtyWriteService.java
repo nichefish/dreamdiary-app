@@ -34,7 +34,7 @@ public class LogActvtyWriteService {
         repository.save(logActvty);
         log.info(
                 "ACTIVITY_LOG_SAVED user={} category={} type={} method={} uri={} status={} result={} message={}",
-                logParam.getUserId(),
+                logParam.getUsername(),
                 logParam.getActvtyCtgr(),
                 logParam.getLogType(),
                 logParam.getHttpMethod(),
@@ -52,14 +52,14 @@ public class LogActvtyWriteService {
      */
     public void regLogAnonActvty(final LogActvtyParam logParam) throws Exception {
         final LogActvtyEntity logActvty = mapstruct.toEntity(logParam);
-        logActvty.setUserId(logParam.getUserId());
+        logActvty.setUsername(logParam.getUsername());
         logActvty.setRslt(logParam.getRslt());
         logActvty.setRsltMsg(logParam.getRsltMsg());
         repository.save(logActvty);
 
         log.info(
                 "ACTIVITY_LOG_SAVED user={} category={} type={} method={} uri={} status={} result={} message={}",
-                logParam.getUserId(),
+                logParam.getUsername(),
                 logParam.getActvtyCtgr(),
                 logParam.getLogType(),
                 logParam.getHttpMethod(),

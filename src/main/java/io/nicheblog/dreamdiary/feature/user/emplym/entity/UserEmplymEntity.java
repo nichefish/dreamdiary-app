@@ -33,7 +33,7 @@ import java.util.Date;
 @AllArgsConstructor
 @ToString(exclude = {"user"}, callSuper = true)
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE user_emplym SET DEL_YN = 'Y' WHERE user_emplym_no = ?")
+@SQLDelete(sql = "UPDATE user_emplym SET DEL_YN = 'Y' WHERE id = ?")
 public class UserEmplymEntity
         extends BaseCrudEntity {
 
@@ -49,13 +49,13 @@ public class UserEmplymEntity
     /** 사용자 인사정보 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_emplym_no")
+    @Column(name = "id")
     @Comment("사용자 인사정보 ID")
-    private Integer userEmplymNo;
+    private Integer id;
 
     /** 사용자 정보 (FK) */
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_no", referencedColumnName = "user_no")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     @Fetch(FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("계정 정보")

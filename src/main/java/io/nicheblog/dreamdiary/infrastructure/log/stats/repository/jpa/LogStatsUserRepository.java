@@ -34,11 +34,11 @@ public interface LogStatsUserRepository
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    @Query("SELECT t.userId as userId, u.nickNm as userNm, count(t.id) as actvtyCnt " +
+    @Query("SELECT t.username as username, u.nickNm as userNm, count(t.id) as actvtyCnt " +
             "FROM LogActvtyEntity t " +
-            "INNER JOIN FETCH UserEntity u ON t.userId = u.userId " +
+            "INNER JOIN FETCH UserEntity u ON t.username = u.username " +
             "WHERE t.logDt between :searchStartDt and :searchEndDt and u.nickNm != null " +
-            "GROUP BY t.userId"
+            "GROUP BY t.username"
     )
     List<LogStatsUserIntrfc> getStatsUserIntrfcList(
             final @Param("searchStartDt") Date searchStartDt,
@@ -54,11 +54,11 @@ public interface LogStatsUserRepository
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    @Query("SELECT t.userId as userId, u.nickNm as userNm, count(t.id) as actvtyCnt " +
+    @Query("SELECT t.username as username, u.nickNm as userNm, count(t.id) as actvtyCnt " +
             "FROM LogActvtyEntity t " +
-            "LEFT JOIN FETCH UserEntity u ON t.userId = u.userId " +
+            "LEFT JOIN FETCH UserEntity u ON t.username = u.username " +
             "WHERE t.logDt between :searchStartDt and :searchEndDt and u.nickNm is null " +
-            "GROUP BY t.userId"
+            "GROUP BY t.username"
     )
     List<LogStatsUserIntrfc> getStatsNotUserIntrfcList(
             final @Param("searchStartDt") Date searchStartDt,

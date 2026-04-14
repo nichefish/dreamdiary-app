@@ -120,7 +120,7 @@ public interface ApiUrl {
     String USER_PW_RESET_AJAX = Prefix.API + "/user/password-reset";
     String USER_DEL_AJAX = Prefix.API + "/user/del";
     String USER_LIST_XLSX_DOWNLOAD = Prefix.API + "/user/list-xlsx-download.do";
-    String USER_ID_DUP_CHK_AJAX = Prefix.API + "/user/id-dup-chk";
+    String USERNAME_DUP_CHK_AJAX = Prefix.API + "/user/id-dup-chk";
     String USER_EMAIL_DUP_CHK_AJAX = Prefix.API + "/user/email-dup-chk";
 
     /** 내 정보 관리 */

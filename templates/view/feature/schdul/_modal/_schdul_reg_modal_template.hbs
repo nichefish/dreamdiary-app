@@ -57,10 +57,10 @@
         <div class="col-xl-10 col-10" id="schdul_reg_prtcpnt_div">
             {{#prtcpntList}}
                 <div id="prtcpntRow{{@index}}" class="d-flex align-items-center mb-1">
-                    <select name="prtcpntList[{{@index}}].userId" class="form-select form-select-solid me-2">
+                    <select name="prtcpntList[{{@index}}].username" class="form-select form-select-solid me-2">
                         <option value="">--선택--</option>
                         <#list crtdUserList![] as user>
-                            <option value="${user.userId!}" id="${user.userId!}" {{selectedIf (equals userId "${user.userId}")}}>${user.userNm!}</option>
+                            <option value="${user.username!}" id="${user.username!}" {{selectedIf (equals username "${user.username}")}}>${user.userNm!}</option>
                         </#list>
                     </select>
                     <span class="btn btn-sm btn-icon btn-light-danger" onclick="dF.Schdul.removePrtcpnt({{@index}});">

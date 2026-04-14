@@ -74,7 +74,7 @@
                         </#if>
                     </div>
                     <div class="w-75px ms-2 mb-1 fs-7 text-muted text-truncate">
-                        (${(authInfo.userId)!})
+                        (${(authInfo.username)!})
                     </div>
                 </div>
                 <!--begin::User account menu-->

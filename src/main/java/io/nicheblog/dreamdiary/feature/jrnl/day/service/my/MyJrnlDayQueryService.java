@@ -32,8 +32,8 @@ public class MyJrnlDayQueryService {
      * @return {@link List} -- 가공 완료된 일자 DTO 목록
      */
     public List<JrnlDayDto> getMyYyMnthListDtoEnriched(final JrnlDaySearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDayQueryService.getYyMnthListDtoEnrichedByUser(userId, searchParam);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlDayQueryService.getYyMnthListDtoEnrichedByUser(username, searchParam);
     }
 
     /**
@@ -43,8 +43,8 @@ public class MyJrnlDayQueryService {
      * @return {@link List} -- 가공 완료된 DTO 목록
      */
     public List<JrnlDayDto> getMyStdrdDaysDtoEnriched(final JrnlDaySearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDayQueryService.getStdrdDaysDtoEnrichedByUser(userId, searchParam);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlDayQueryService.getStdrdDaysDtoEnrichedByUser(username, searchParam);
     }
 
     /**
@@ -54,8 +54,8 @@ public class MyJrnlDayQueryService {
      * @return {@link List} -- 가공 완료된 DTO 목록
      */
     public List<JrnlDayDto> getMyWeeklyListDtoEnriched(final JrnlDaySearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDayQueryService.getWeeklyListDtoEnrichedByUser(userId, searchParam);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlDayQueryService.getWeeklyListDtoEnrichedByUser(username, searchParam);
     }
 
     /**
@@ -65,8 +65,8 @@ public class MyJrnlDayQueryService {
      * @return {@link List} -- 가공 완료된 DTO 목록
      */
     public List<JrnlDayDto> getMyListDtoByMetaIdEnriched(final JrnlDaySearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDayQueryService.getListDtoByMetaIdEnrichedByUser(userId, searchParam);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlDayQueryService.getListDtoByMetaIdEnrichedByUser(username, searchParam);
     }
 
     /**
@@ -76,8 +76,8 @@ public class MyJrnlDayQueryService {
      * @return {@link List} -- 가공 완료된 DTO 목록
      */
     public List<JrnlDayDto> getMyListDtoByTagIdEnriched(final JrnlDaySearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDayQueryService.getListDtoByTagIdEnrichedByUser(userId, searchParam);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlDayQueryService.getListDtoByTagIdEnrichedByUser(username, searchParam);
     }
 
     /**
@@ -87,7 +87,7 @@ public class MyJrnlDayQueryService {
      * @return {@link JrnlDayDto} -- 가공 완료된 DTO
      */
     public JrnlDayDto getMyDtlDtoEnriched(final Integer key) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDayQueryService.getDtlDtoEnrichedByUser(userId, key);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlDayQueryService.getDtlDtoEnrichedByUser(username, key);
     }
 }

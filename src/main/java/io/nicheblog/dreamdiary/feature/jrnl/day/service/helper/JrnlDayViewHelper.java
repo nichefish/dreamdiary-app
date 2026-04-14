@@ -31,10 +31,10 @@ public final class JrnlDayViewHelper {
      * @param searchParam 검색 파라미터
      */
     @SuppressWarnings("unchecked")
-    public static void mergeStates(final String userId, final List<JrnlDayDto> listDto, final JrnlDaySearchParam searchParam) {
+    public static void mergeStates(final String username, final List<JrnlDayDto> listDto, final JrnlDaySearchParam searchParam) {
         if (CollectionUtils.isEmpty(listDto) || searchParam == null) return;
 
-        final Object cacheKey = new SimpleKey(userId, searchParam.getYy(), searchParam.getMnth());
+        final Object cacheKey = new SimpleKey(username, searchParam.getYy(), searchParam.getMnth());
 
         final Map<Integer, JrnlState> chapterMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlChapterStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JrnlState> diaryMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlDiaryStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
@@ -51,12 +51,12 @@ public final class JrnlDayViewHelper {
      * @param searchParam 검색 파라미터
      */
     @SuppressWarnings("unchecked")
-    public static void mergeWeeklyStates(final String userId, final List<JrnlDayDto> listDto, final JrnlDaySearchParam searchParam) {
+    public static void mergeWeeklyStates(final String username, final List<JrnlDayDto> listDto, final JrnlDaySearchParam searchParam) {
         if (CollectionUtils.isEmpty(listDto) || searchParam == null) return;
         if (StringUtils.isBlank(searchParam.getWeekStartDt())) return;
 
         final Object cacheKey = new SimpleKey(
-                userId,
+                username,
                 searchParam.getWeekStartDt()
         );
 
@@ -74,10 +74,10 @@ public final class JrnlDayViewHelper {
      * @param jrnlDay 저널 일자
      */
     @SuppressWarnings("unchecked")
-    public static void mergeStates(final String userId, final JrnlDayDto jrnlDay) {
+    public static void mergeStates(final String username, final JrnlDayDto jrnlDay) {
         if (jrnlDay == null) return;
 
-        final Object cacheKey = new SimpleKey(userId, jrnlDay.getYy(), jrnlDay.getMnth());
+        final Object cacheKey = new SimpleKey(username, jrnlDay.getYy(), jrnlDay.getMnth());
 
         final Map<Integer, JrnlState> chapterMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlChapterStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JrnlState> diaryMap = Optional.ofNullable((Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache("jrnlDiaryStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());

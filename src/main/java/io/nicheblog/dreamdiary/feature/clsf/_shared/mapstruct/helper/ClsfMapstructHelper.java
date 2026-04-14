@@ -50,6 +50,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.mapstruct.MappingTarget;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 /**
  * MapstructHelper
  * <pre>
@@ -156,6 +158,6 @@ public class ClsfMapstructHelper {
         // 열람자에 내가 없으면 true
         if (((ViewerEmbedModule) entity).getViewer() == null || CollectionUtils.isEmpty(((ViewerEmbedModule) entity).getViewer().getList())) return true;
         return ((ViewerEmbedModule) entity).getViewer().getList().stream()
-                .anyMatch(e -> !AuthUtils.getLgnUserId().equals(e.getRegstrId()));
+                .anyMatch(e -> !Objects.equals(AuthUtils.getLgnUsername(), e.getRegstrId()));
     }
 }

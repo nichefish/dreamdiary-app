@@ -33,8 +33,8 @@ public class LgnSuccessCacheWarmupEventListener {
     @Async
     public void handleCacheWarmupEvent(final LgnSuccessCacheWarmupEvent event) throws Exception {
         SecurityContextHolder.setContext(event.getSecurityContext());
-        final String userId = event.getUserId();
+        final String username = event.getUsername();
 
-        cacheWarmupService.warmupOnLgn(userId);
+        cacheWarmupService.warmupOnLgn(username);
     }
 }

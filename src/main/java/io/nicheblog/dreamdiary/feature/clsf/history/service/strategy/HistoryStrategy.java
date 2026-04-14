@@ -19,7 +19,7 @@ public interface HistoryStrategy<Dto extends BaseClsfDto> {
 
     ContentType getContentType();
 
-    Dto getOwnedDto(final String userId, final Integer key) throws Exception;
+    Dto getOwnedDto(final String username, final Integer key) throws Exception;
 
     Dto updtCn(
             final Integer key,

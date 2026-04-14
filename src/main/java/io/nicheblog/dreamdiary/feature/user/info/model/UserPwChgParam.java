@@ -22,9 +22,9 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class UserPwChgParam {
 
-    /** 사용자 ID */
+    /** 사용자 계정명 */
     @NotEmpty
-    private String userId;
+    private String username;
 
     /** 현재 패스워드 */
     @NotEmpty
@@ -35,4 +35,5 @@ public class UserPwChgParam {
     @Size(min = 9, max = 15, message = "비밀번호는 9자 이상 15자 이하로 입력해야 합니다.")
     @Pattern(regexp = Regex.PW_REGEX, message = "비밀번호가 형식에 맞지 않습니다.")
     private String newPw;
+
 }

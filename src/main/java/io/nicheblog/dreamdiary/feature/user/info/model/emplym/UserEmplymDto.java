@@ -24,7 +24,7 @@ public class UserEmplymDto
         extends BaseCrudDto {
 
     /** 사용자 정보 고유 ID */
-    private Integer userEmplymNo;
+    private Integer id;
 
     /** 이름 */
     private String userNm;

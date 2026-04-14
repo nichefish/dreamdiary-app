@@ -33,7 +33,7 @@ public class JrnlIntrptCacheEvictor
     public void evict(final JrnlCacheEvictParam param) throws Exception {
         final ContentType refContentType = ContentType.JRNL_INTRPT;
         try {
-            final String userId = param.getRegstrId();
+            final String username = param.getRegstrId();
             final Integer postNo = param.getPostNo();
             final Integer jrnlDayNo = param.getJrnlDayNo();
             final Integer yy = param.getYy();
@@ -41,14 +41,14 @@ public class JrnlIntrptCacheEvictor
             final String weekStartDt = param.getWeekStartDt();
             // jrnl_day
             if (jrnlDayNo != null) {
-                EhCacheUtils.evictUserCacheByKey("jrnlDayDtlDtoByUser", userId, jrnlDayNo);
+                EhCacheUtils.evictUserCacheByKey("jrnlDayDtlDtoByUser", username, jrnlDayNo);
             }
-            this.evictMyJrnlDayYyMnthCaches(userId, yy, mnth);
-            this.evictMyJrnlDayWeeklyCaches(userId, weekStartDt);
+            this.evictMyJrnlDayYyMnthCaches(username, yy, mnth);
+            this.evictMyJrnlDayWeeklyCaches(username, weekStartDt);
             // jrnl_intrpt
-            EhCacheUtils.evictUserCacheByKey("jrnlIntrptDtlDtoByUser", userId, postNo);
+            EhCacheUtils.evictUserCacheByKey("jrnlIntrptDtlDtoByUser", username, postNo);
             // jrnl_diary_tag
-            EhCacheUtils.clearUserCache("jrnlIntrptTagCtgrMapByUser", userId);
+            EhCacheUtils.clearUserCache("jrnlIntrptTagCtgrMapByUser", username);
             // 태그 캐시 처리
             if (postNo != null) {
                 EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", postNo + "_JRNL_INTRPT");

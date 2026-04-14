@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.feature.user.info.spec;
 import io.nicheblog.dreamdiary.auth.intrfc.spec.BaseAuditSpec;
 import io.nicheblog.dreamdiary.feature.user.emplym.entity.UserEmplymEntity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
-import io.nicheblog.dreamdiary.feature.user.profl.entity.UserProflEntity;
+import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntity;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -55,7 +55,7 @@ public class UserSpec
             }
             predicate.addAll(basePredicate);
             // "시스템관리자"를 조회 목록에서 제외한다.
-            predicate.add(builder.notEqual(root.get("userId"), Constant.SYSTEM_ACNT));
+            predicate.add(builder.notEqual(root.get("username"), Constant.SYSTEM_ACNT));
             this.postQuery(root, query, builder);
 
             return builder.and(predicate.toArray(new Predicate[0]));
@@ -124,23 +124,23 @@ public class UserSpec
     ) {
 
         final List<Predicate> predicate = new ArrayList<>();
-        final Join<UserEntity, UserProflEntity> proflJoin = root.join("profl", JoinType.LEFT);
+        final Join<UserEntity, UserProfileEntity> profileJoin = root.join("profile", JoinType.LEFT);
 
         // 파라미터 비교
         for (final String key : searchParamMap.keySet()) {
             final Object value = searchParamMap.get(key);
             switch (key) {
-                // 사용자 정보 존재 "hasUserProfl" 체크시 조인결과 있는 목록만 반환
-                case "hasUserProfl":
+                // 사용자 정보 존재 "hasUserProfile" 체크시 조인결과 있는 목록만 반환
+                case "hasUserProfile":
                     if ((Boolean) value) {
-                        predicate.add(builder.isNotNull(proflJoin.get("userProflNo")));
+                        predicate.add(builder.isNotNull(profileJoin.get("userProfileId")));
                     }
                     continue;
                     // 이름 = LIKE 검색
                 case "cmpyCd":
                 case "rankCd":
                 case "teamCd":
-                    predicate.add(builder.equal(proflJoin.get(key), value));
+                    predicate.add(builder.equal(profileJoin.get(key), value));
                     continue;
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색
@@ -206,8 +206,8 @@ public class UserSpec
         final List<Predicate> predicate = getCrdtUser(startDtStr, endDtStr, root, builder);
         // JOIN 조건 세팅
         final Join<UserEntity, UserEmplymEntity> emplymJoin = root.join("emplym", JoinType.INNER);
-        final Join<UserEntity, UserProflEntity> proflJoin = root.join("profl", JoinType.INNER);
-        predicate.add(builder.equal(proflJoin.get("brthdy"), DateUtils.asDate(startDtStr)));
+        final Join<UserEntity, UserProfileEntity> profileJoin = root.join("profile", JoinType.INNER);
+        predicate.add(builder.equal(profileJoin.get("brthdy"), DateUtils.asDate(startDtStr)));
 
         return predicate;
     }

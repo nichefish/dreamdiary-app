@@ -46,9 +46,9 @@ public class JrnlDayCalService {
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
      */
-    public List<BaseCalDto> getCalListDtoByUser(final String userId, final JrnlDaySearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
-        final List<JrnlDayDto> myJrnlDayList = jrnlDayQueryService.getYyMnthListDtoEnrichedByUser(userId, searchParam);
+    public List<BaseCalDto> getCalListDtoByUser(final String username, final JrnlDaySearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(AuthUtils.requireUsername(username));
+        final List<JrnlDayDto> myJrnlDayList = jrnlDayQueryService.getYyMnthListDtoEnrichedByUser(username, searchParam);
 
         final List<BaseCalDto> jrnlCalEventList = new ArrayList<>();
         for (final JrnlDayDto jrnlDay: myJrnlDayList) {

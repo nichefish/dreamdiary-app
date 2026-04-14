@@ -135,7 +135,7 @@ public class SchdulService
         List<SchdulPrtcpntDto> prtcpntList = schdulDto.getPrtcpntList();
         if (CollectionUtils.isEmpty(prtcpntList)) prtcpntList = new ArrayList<>();
         // 내이름 있는지 체크
-        final SchdulPrtcpntDto isMe = new SchdulPrtcpntDto(AuthUtils.getLgnUserId());
+        final SchdulPrtcpntDto isMe = new SchdulPrtcpntDto(AuthUtils.getLgnUsername());
         if (!prtcpntList.contains(isMe)) prtcpntList.add(isMe);
         schdulDto.setPrtcpntList(prtcpntList);
     }

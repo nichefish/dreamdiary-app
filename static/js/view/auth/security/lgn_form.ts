@@ -33,7 +33,7 @@ const Page: Page = (function(): Page {
                 cF.form.blockUISubmit("#lgnForm", Url.API_AUTH_LGN_PROC);
             });
             // 엔터키 처리
-            cF.util.enterKey("#userId, #password", Page.lgn);
+            cF.util.enterKey("#username, #password", Page.lgn);
         },
 
         /**
@@ -45,7 +45,7 @@ const Page: Page = (function(): Page {
 
             const $errorMsgSpan: JQuery<HTMLElement> = $("#errorMsgSpan");
             $errorMsgSpan.html("");
-            $("#userId_validate_span").text("");
+            $("#username_validate_span").text("");
             $("#password_validate_span").text("");
             $errorMsgSpan.html(errorMsg.replace(/&lt;br&gt;/g, '<br/>'));   // 줄바꿈 처리
         },
@@ -64,7 +64,7 @@ const Page: Page = (function(): Page {
             }).then(function(result: SwalResult): void {
                 if (result.value) {
                     // 중복ID 로그인
-                    $("#userId").val(Model.userId);
+                    $("#username").val(Model.username);
                     $("#password").attr("disabled", "disabled");
                     Page.lgn();
                 } else {

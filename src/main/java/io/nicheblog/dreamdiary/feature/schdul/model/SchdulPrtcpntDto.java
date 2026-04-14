@@ -17,7 +17,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@EqualsAndHashCode(of = {"userId"})
+@EqualsAndHashCode(of = {"username"})
 public class SchdulPrtcpntDto {
 
     /** 일정 참여자 ID */
@@ -26,8 +26,8 @@ public class SchdulPrtcpntDto {
     /** 일정 ID */
     private Integer schdulId;
 
-    /** 참석자 ID */
-    private String userId;
+    /** 참석자 계정명 */
+    private String username;
 
     /** 참석자 이름 */
     private String userNm;
@@ -37,9 +37,10 @@ public class SchdulPrtcpntDto {
     /**
      * 생성자.
      *
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      */
-    public SchdulPrtcpntDto(final String userId) {
-        this.userId = userId;
+    public SchdulPrtcpntDto(final String username) {
+        this.username = username;
     }
+
 }

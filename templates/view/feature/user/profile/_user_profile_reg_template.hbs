@@ -1,10 +1,10 @@
 <#--
- * 사용자 프로필 정보(user_profl) > 추가 Template
+ * 사용자 프로필 정보(user_profile) > 추가 Template
  * (freemarker 맥락 하에서 쓰이므로 freemarker 형식으로 데이터 바인딩)
  * @included_in : user_reg_form
  -->
 
-<script type="text/x-handlebars-template" id="user_profl_template">
+<script type="text/x-handlebars-template" id="user_profile_template">
 
     <div class="separator my-8"></div>
 
@@ -20,7 +20,7 @@
             </div>
         </div>
         <div class="col-xl-9">
-            <textarea name="profl.proflCn" id="proflCn" class="form-control form-control-solid h-100px"
+            <textarea name="profile.proflCn" id="proflCn" class="form-control form-control-solid h-100px"
                       wrap="hard" maxlength="500"></textarea>
         </div>
     </div>
@@ -47,8 +47,8 @@
                           fill="black"/>
                 </svg>
             </span>
-            <input type="text" name="profl.brthdy" id="brthdy" class="form-control form-control-solid ps-12"
-                   value="${(user.profl.brthdy)!}" placeholder="생년월일" readonly/>
+            <input type="text" name="profile.brthdy" id="brthdy" class="form-control form-control-solid ps-12"
+                   value="${(user.profile.brthdy)!}" placeholder="생년월일" readonly/>
         </div>
         <div class="col-xl-2">
             <div class="form-check form-switch mt-2 form-check-custom form-check-solid">
@@ -56,10 +56,10 @@
                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="음력 생일 사용시 체크합니다.">
                     음력여부 :
                 </label>
-                <input type="checkbox" name="profl.lunarYn" id="lunarYn" class="form-check-input cursor-pointer ms-3"
-                       value="Y" <#if (((user.profl.lunarYn)!"N") == "Y")!false>checked="checked"</#if> />
-                <label class="form-check-label fw-bold ms-3" for="lunarYn" id="lunarYnLabel" <#if ((user.profl.lunarYn)!"N") == "Y">blue<#else>gray</#if>;>
-                    <#if ((user.profl.lunarYn)!"N") == "Y">음력<#else>양력</#if>
+                <input type="checkbox" name="profile.lunarYn" id="lunarYn" class="form-check-input cursor-pointer ms-3"
+                       value="Y" <#if (((user.profile.lunarYn)!"N") == "Y")!false>checked="checked"</#if> />
+                <label class="form-check-label fw-bold ms-3" for="lunarYn" id="lunarYnLabel" <#if ((user.profile.lunarYn)!"N") == "Y">blue<#else>gray</#if>;>
+                    <#if ((user.profile.lunarYn)!"N") == "Y">음력<#else>양력</#if>
                 </label>
             </div>
         </div>
@@ -75,8 +75,8 @@
             </div>
         </div>
         <div class="col-xl-9">
-            <textarea name="profl.proflCn" id="proflCn" class="form-control form-control-solid h-100px"
-                      wrap="hard" maxlength="500">${(user.profl.proflCn)!}</textarea>
+            <textarea name="profile.proflCn" id="proflCn" class="form-control form-control-solid h-100px"
+                      wrap="hard" maxlength="500">${(user.profile.proflCn)!}</textarea>
         </div>
     </div>
 </script>

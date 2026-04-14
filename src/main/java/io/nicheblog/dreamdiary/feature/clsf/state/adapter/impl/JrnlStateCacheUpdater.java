@@ -49,11 +49,11 @@ public class JrnlStateCacheUpdater
         final CacheContext cacheContext = toggle.getCacheContext();
         if (cacheContext == null) return;
 
-        final String userId = AuthUtils.getLgnUserId();
-        if (StringUtils.isBlank(userId)) return;
+        final String username = AuthUtils.getLgnUsername();
+        if (StringUtils.isBlank(username)) return;
 
-        this.updateMonthlyCacheMap(toggle, contentType, cacheContext, userId, isEnabled);
-        this.updateWeeklyCacheMap(toggle, contentType, cacheContext, userId, isEnabled);
+        this.updateMonthlyCacheMap(toggle, contentType, cacheContext, username, isEnabled);
+        this.updateWeeklyCacheMap(toggle, contentType, cacheContext, username, isEnabled);
 
         final String evictCacheNm = this.getEvictCacheNm(contentType);
         if (evictCacheNm != null) {
@@ -71,12 +71,12 @@ public class JrnlStateCacheUpdater
             final StateToggleDto toggle,
             final ContentType contentType,
             final CacheContext cacheContext,
-            final String userId,
+            final String username,
             final Boolean isEnabled
     ) {
         if (cacheContext.getYy() == null || cacheContext.getMnth() == null) return;
 
-        final Object cacheKey = new SimpleKey(userId, cacheContext.getYy(), cacheContext.getMnth());
+        final Object cacheKey = new SimpleKey(username, cacheContext.getYy(), cacheContext.getMnth());
         this.updateCacheMap(toggle, this.getMonthlyCacheMapNm(contentType), cacheKey, isEnabled);
     }
 
@@ -84,12 +84,12 @@ public class JrnlStateCacheUpdater
             final StateToggleDto toggle,
             final ContentType contentType,
             final CacheContext cacheContext,
-            final String userId,
+            final String username,
             final Boolean isEnabled
     ) {
         if (StringUtils.isBlank(cacheContext.getWeekStartDt())) return;
 
-        final Object cacheKey = new SimpleKey(userId, cacheContext.getWeekStartDt());
+        final Object cacheKey = new SimpleKey(username, cacheContext.getWeekStartDt());
         this.updateCacheMap(toggle, this.getWeeklyCacheMapNm(contentType), cacheKey, isEnabled);
     }
 

@@ -77,21 +77,21 @@ public class JrnlDreamService
     /**
      * 사용자별 특정 년도의 중요 꿈 목록 조회 :: 캐시 처리
      *
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      * @param searchParam JrnlDreamSearchParam
      * @return {@link List} -- 해당 년도의 중요 목록
      */
-    @Cacheable(value="jrnlDreamYySumryStatedListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #searchParam.toSummaryCacheKey())")
-    public List<JrnlDreamDto> getSumryDreamListByUser(final String userId, final JrnlDreamSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
+    @Cacheable(value="jrnlDreamYySumryStatedListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #searchParam.toSummaryCacheKey())")
+    public List<JrnlDreamDto> getSumryDreamListByUser(final String username, final JrnlDreamSearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(AuthUtils.requireUsername(username));
         final List<JrnlDreamDto> jrnlDreamYySumryStatedListByUser = this.getSelf().getListDto(searchParam);
         Collections.sort(jrnlDreamYySumryStatedListByUser);
 
         return jrnlDreamYySumryStatedListByUser;
     }
 
-    public List<JrnlDreamDto> getListDtoByUser(final String userId, final JrnlDreamSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
+    public List<JrnlDreamDto> getListDtoByUser(final String username, final JrnlDreamSearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(AuthUtils.requireUsername(username));
         return this.getSelf().getListDto(searchParam);
     }
 
@@ -124,12 +124,12 @@ public class JrnlDreamService
      * @param key 식별자
      * @return {@link JrnlDreamDto} -- 조회된 객체
      */
-    @Cacheable(value="jrnlDreamDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #key)")
-    public JrnlDreamDto getDtlDtoWithCacheByUser(final String userId, final Integer key) throws Exception {
+    @Cacheable(value="jrnlDreamDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #key)")
+    public JrnlDreamDto getDtlDtoWithCacheByUser(final String username, final Integer key) throws Exception {
         final JrnlDreamEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlDreamDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr(AuthUtils.requireUserId(userId))) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+        if (!retrieved.getIsRegstr(AuthUtils.requireUsername(username))) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
 
         return retrieved;
     }

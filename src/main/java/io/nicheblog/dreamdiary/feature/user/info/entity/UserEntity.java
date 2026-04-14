@@ -6,9 +6,9 @@ import io.nicheblog.dreamdiary.feature.clsf.file.entity.embed.AtchFileEmbedModul
 import io.nicheblog.dreamdiary.feature.user.emplym.entity.UserEmplymEntity;
 import io.nicheblog.dreamdiary.feature.user.emplym.mapstruct.UserEmplymMapstruct;
 import io.nicheblog.dreamdiary.feature.user.info.model.emplym.UserEmplymDto;
-import io.nicheblog.dreamdiary.feature.user.info.model.profl.UserProflDto;
-import io.nicheblog.dreamdiary.feature.user.profl.entity.UserProflEntity;
-import io.nicheblog.dreamdiary.feature.user.profl.mapstruct.UserProflMapstruct;
+import io.nicheblog.dreamdiary.feature.user.info.model.profile.UserProfileDto;
+import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntity;
+import io.nicheblog.dreamdiary.feature.user.profile.mapstruct.UserProfileMapstruct;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE user SET del_yn = 'Y' WHERE user_no = ?")
+@SQLDelete(sql = "UPDATE user SET del_yn = 'Y' WHERE id = ?")
 public class UserEntity
         extends BaseClsfEntity
         implements AtchFileEmbedModule {
@@ -58,14 +58,14 @@ public class UserEntity
     /** 사용자 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_no")
+    @Column(name = "id")
     @Comment("사용자 ID")
-    private Integer userNo;
+    private Integer id;
 
     /** 사용자 아이디 */
-    @Column(name = "user_id", length = 20, unique = true)
+    @Column(name = "username", length = 20, unique = true)
     @Comment("사용자 아이디")
-    private String userId;
+    private String username;
 
     /** 비밀번호 :: 암호화된 비밀번호(64bit)를 저장하기 위해 길이=64이다. */
     @Column(name = "password", length = 64)
@@ -91,7 +91,7 @@ public class UserEntity
 
     /** 사용자 권한 정보 */
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_no")
+    @JoinColumn(name = "user_id")
     @BatchSize(size = 10)
     @Fetch(FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
@@ -106,7 +106,7 @@ public class UserEntity
 
     /** 접속 IP 정보 */
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_no")
+    @JoinColumn(name = "user_id")
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 10)
     @OrderBy("acsIp ASC")
@@ -145,15 +145,15 @@ public class UserEntity
 
     /** 사용자 프로필 정보 */
     @OneToOne(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_no")
+    @JoinColumn(name = "user_id")
     @Fetch(FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("사용자 프로필 정보")
-    private UserProflEntity profl;
+    private UserProfileEntity profile;
 
     /** 사용자 인사정보 */
     @OneToOne(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_no", referencedColumnName = "user_no")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     @Fetch(FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("사용자 프로필 정보")
@@ -227,11 +227,11 @@ public class UserEntity
      * 사용자 프로필 정보를 업데이트하여 반환합니다.
      *
      * @param dto 업데이트할 사용자 프로필 정보가 담긴 Dto
-     * @return {@link UserProflEntity} -- 업데이트된 사용자 프로필 엔티티
+     * @return {@link UserProfileEntity} -- 업데이트된 사용자 프로필 엔티티
      */
-    public UserProflEntity getProflUpdt(UserProflDto dto) throws Exception {
-        UserProflMapstruct.INSTANCE.updateFromDto(dto, this.profl);
-        return this.profl;
+    public UserProfileEntity getProfileUpdt(UserProfileDto dto) throws Exception {
+        UserProfileMapstruct.INSTANCE.updateFromDto(dto, this.profile);
+        return this.profile;
     }
 
     /**
@@ -249,7 +249,7 @@ public class UserEntity
      * 등록 시 계층적으로 연관된 엔티티를 cascade.
      */
     public void cascade() {
-        if (this.profl != null) this.profl.setUser(this);
+        if (this.profile != null) this.profile.setUser(this);
         if (this.emplym != null) this.emplym.setUser(this);
     }
 

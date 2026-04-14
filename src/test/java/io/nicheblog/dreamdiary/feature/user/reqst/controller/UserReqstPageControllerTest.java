@@ -90,7 +90,7 @@ class UserReqstPageControllerTest {
         final MockMultipartFile jsonFile = new MockMultipartFile("userReqst", "", "application/json", userReqstJsonContent.getBytes());
         // 응답 객체 설정
         final UserReqstDto rsltDto = UserReqstDtoTestFactory.create();
-        rsltDto.setUserNo(0);
+        rsltDto.setId(0);
         final ServiceResponse result = ServiceResponse.builder().rsltObj(rsltDto).rslt(true).message("신규계정이 성공적으로 신청되었습니다.").build();
         when(userReqstService.regist(any(UserReqstDto.class))).thenReturn(result);
 
@@ -111,7 +111,7 @@ class UserReqstPageControllerTest {
         when(userReqstService.cf(anyInt())).thenReturn(result);
 
         mockMvc.perform(post(Url.USER_REQST_CF_AJAX)
-                .param("userNo", "123"))
+                .param("id", "123"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.rslt").value(true));
     }
@@ -122,7 +122,7 @@ class UserReqstPageControllerTest {
         when(userReqstService.uncf(anyInt())).thenReturn(result);
 
         mockMvc.perform(post(Url.USER_REQST_UNCF_AJAX)
-                        .param("userNo", "123"))
+                        .param("id", "123"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.rslt").value(true));
     }

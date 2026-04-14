@@ -59,24 +59,24 @@ public class JrnlDayMetaService
      * 사용자 기준 특정 메타가 존재하는 연도 목록을 반환합니다.
      *
      * @param metaId 메타 ID
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      * @return 연도 목록
      */
-    @Cacheable(value="jrnlDayMetaYyListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#metaId, #userId)")
-    public List<Integer> getYyListByMetaIdAndUser(final Integer metaId, final String userId) {
-        return jrnlDayRepository.findDistinctYysByMetaIdAndRegstrId(metaId, AuthUtils.requireUserId(userId));
+    @Cacheable(value="jrnlDayMetaYyListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#metaId, #username)")
+    public List<Integer> getYyListByMetaIdAndUser(final Integer metaId, final String username) {
+        return jrnlDayRepository.findDistinctYysByMetaIdAndRegstrId(metaId, AuthUtils.requireUsername(username));
     }
 
     /**
      * 사용자별 메타 카테고리 맵을 반환합니다.
      *
-     * @param userId 사용자 아이디
+     * @param username 사용자 계정명
      * @return {@link Map} -- 메타 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵
      */
-    @Cacheable(value="jrnlDayMetaCtgrMapByUser", key="#userId")
-    public Map<String, List<String>> getMetaCtgrMapByUser(final String userId) throws Exception {
+    @Cacheable(value="jrnlDayMetaCtgrMapByUser", key="#username")
+    public Map<String, List<String>> getMetaCtgrMapByUser(final String username) throws Exception {
         final HashMap<String, Object> paramMap = new HashMap<>() {{
-            put("regstrId", AuthUtils.requireUserId(userId));
+            put("regstrId", AuthUtils.requireUsername(username));
         }};
 
         final List<JrnlDayMetaEntity> metaList = this.getSelf().getListEntity(paramMap);

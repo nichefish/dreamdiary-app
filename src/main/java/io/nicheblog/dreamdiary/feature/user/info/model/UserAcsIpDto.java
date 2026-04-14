@@ -18,10 +18,10 @@ import lombok.Setter;
 public class UserAcsIpDto {
 
     /** 사용자 접속 IP 고유 ID */
-    private Integer userAcsIpNo;
+    private Integer id;
 
     /** 사용자 번호 (FK) */
-    private Integer userNo;
+    private Integer userId;
 
     /** 접속 IP */
     private String acsIp;

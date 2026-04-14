@@ -78,10 +78,10 @@ public class OAuth2AuthenticationSuccessHandler
             session.setAttribute("acsIp", AuthUtils.getAcsIpAddr());
 
             // 최종 로그인 날짜 세팅 및 패스워드오류 카운트 초기화
-            final String userId = authInfo.getUserId();
-            authService.setLstLgnDt(userId);
+            final String username = authInfo.getUsername();
+            authService.setLstLgnDt(username);
             // session에 lgnId attribute 추가 :: 중복 로그인 방지 비교용
-            DupIdLgnManager.addKey(userId);
+            DupIdLgnManager.addKey(username);
 
             // 로그인 로그 남기기
             final LogActvtyParam logParam = new LogActvtyParam(true, MessageUtils.RSLT_SUCCESS, ActvtyCtgr.LGN);

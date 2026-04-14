@@ -59,13 +59,13 @@ public class JrnlTodoService
     /**
      * 목록 조회 (dto level) :: 캐시 처리
      *
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      * @param searchParam 검색 조건이 담긴 파라미터 객체
      * @return {@link List} -- 조회된 목록
      */
-    @Cacheable(value="jrnlTodoListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #searchParam.getYy(), #searchParam.getMnth())")
-    public List<JrnlTodoDto> getListDtoWithCacheByUser(final String userId, final JrnlTodoSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
+    @Cacheable(value="jrnlTodoListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #searchParam.getYy(), #searchParam.getMnth())")
+    public List<JrnlTodoDto> getListDtoWithCacheByUser(final String username, final JrnlTodoSearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(AuthUtils.requireUsername(username));
 
         return this.getSelf().getListDto(searchParam);
     }
@@ -123,12 +123,12 @@ public class JrnlTodoService
      * @param key 식별자
      * @return {@link JrnlTodoDto} -- 조회된 객체
      */
-    @Cacheable(value="jrnlTodoDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #key)")
-    public JrnlTodoDto getDtlDtoWithCacheByUser(final String userId, final Integer key) throws Exception {
+    @Cacheable(value="jrnlTodoDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #key)")
+    public JrnlTodoDto getDtlDtoWithCacheByUser(final String username, final Integer key) throws Exception {
         final JrnlTodoEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlTodoDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr(AuthUtils.requireUserId(userId))) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+        if (!retrieved.getIsRegstr(AuthUtils.requireUsername(username))) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         return retrieved;
     }
 

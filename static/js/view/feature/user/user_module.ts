@@ -28,7 +28,7 @@ dF.User = (function(): dfModule {
             /* jquery validation */
             cF.validate.validateForm("#userReqstForm", dF.UserReqst.submitHandler, {
                 rules: {
-                    userId: { minlength: 4, maxlength: 16 },
+                    username: { minlength: 4, maxlength: 16 },
                     ipDupChckPassed: { dupChck: true },
                     emailDupChckPassed: { dupChck: true },
                     password: { minlength: 9, maxlength: 20, regex: cF.regex.pw },
@@ -45,7 +45,7 @@ dF.User = (function(): dfModule {
                 return (value === "Y");
             });
             // 자동 대문자->소문자처리
-            cF.validate.toLowerCase("#userId");
+            cF.validate.toLowerCase("#username");
             // 연락처 포맷
             cF.validate.cttpc("#cttpc");
             // 권한 변경시 필드 재검증
@@ -53,8 +53,8 @@ dF.User = (function(): dfModule {
                 $("#authCd").valid();
             });
             // 등록화면:: 사용자 ID 변경입력시 중복체크 통과여부 초기화
-            $("#userId").on("input", function(): void {
-                $("#userId_validate_span").empty();
+            $("#username").on("input", function(): void {
+                $("#username_validate_span").empty();
                 $("#ipDupChckPassed").val("N");
                 $("#idDupChckBtn").addClass("blink").removeClass("btn-success").addClass("btn-secondary").removeAttr("disabled");
             });
@@ -137,24 +137,24 @@ dF.User = (function(): dfModule {
          * 아이디 중복 체크(Ajax)
          */
         idDupChckAjax: function(): boolean {
-            const userIdValidSpan = $("#userId_validate_span");
-            const userId: string = cF.util.getInputValue("#userId");
-            if (!cF.regex.id.test(userId)) {
-                userIdValidSpan.text("아이디가 형식에 맞지 않습니다.").removeClass("text-success").addClass("text-danger");
+            const usernameValidSpan = $("#username_validate_span");
+            const username: string = cF.util.getInputValue("#username");
+            if (!cF.regex.id.test(username)) {
+                usernameValidSpan.text("아이디가 형식에 맞지 않습니다.").removeClass("text-success").addClass("text-danger");
                 return false;
             }
 
-            const url: string = Url.USER_ID_DUP_CHK_AJAX;
-            const ajaxData: Record<string, any> = { "userId": userId };
+            const url: string = Url.USERNAME_DUP_CHK_AJAX;
+            const ajaxData: Record<string, any> = { "username": username };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
-                userIdValidSpan.text(res.message);
+                usernameValidSpan.text(res.message);
                 if (res.rslt) {
-                    userIdValidSpan.removeClass("text-danger").addClass("text-success");
+                    usernameValidSpan.removeClass("text-danger").addClass("text-success");
                     $("#ipDupChckPassed").val("Y");
                     $("#ipDupChckPassed_validate_span").text("");
                     $("#idDupChckBtn").removeClass("blink").addClass("btn-success").removeClass("btn-secondary").attr("disabled", "disabled");
                 } else {
-                    userIdValidSpan.removeClass("text-success").addClass("text-danger");
+                    usernameValidSpan.removeClass("text-success").addClass("text-danger");
                     $("#ipDupChckPassed").val("N");
                 }
             });
@@ -205,12 +205,12 @@ dF.User = (function(): dfModule {
 
         /**
          * 상세 화면으로 이동
-         * @param {string|number} userNo - 사용자 번호
+         * @param {string|number} id - 사용자 번호
          */
-        dtl: function(userNo: string|number): void {
-            if (isNaN(Number(userNo))) return;
+        dtl: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
-            $("#procForm #userNo").val(userNo);
+            $("#procForm #id").val(id);
             cF.form.blockUISubmit("#procForm", Url.USER_DTL);
         },
 

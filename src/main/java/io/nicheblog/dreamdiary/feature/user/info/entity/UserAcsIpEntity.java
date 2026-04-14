@@ -29,20 +29,20 @@ import javax.persistence.Table;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE user_acs_ip SET del_yn = 'Y' WHERE user_acs_ip_no = ?")
+@SQLDelete(sql = "UPDATE user_acs_ip SET del_yn = 'Y' WHERE id = ?")
 public class UserAcsIpEntity
         extends BaseCrudEntity {
 
     /** 사용자 정보 접속가능 IP ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_acs_ip_no")
+    @Column(name = "id")
     @Comment("사용자 정보 접속가능 IP ID")
-    private Integer userAcsIpNo;
+    private Integer id;
 
     /** 사용자 정보 */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_no", referencedColumnName = "user_no")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     @Fetch(FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("사용자 정보")

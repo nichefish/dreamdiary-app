@@ -22,23 +22,23 @@
     <div class="card-body">
         <#--begin::Form-->
         <form name="userRegForm" id="userRegForm" class="form mt-10" data-mode="${formMode!}" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="userNo" value="${user.userNo!}">
+            <input type="hidden" name="id" value="${user.id!}">
             <input type="hidden" name="atchFileNo" value="${user.atchFileNo!}">
             <#--begin::Row-->
             <div class="row mb-4">
                 <div class="col-xl-2">
                     <div class="fw-bold col-form-label text-lg-center text-sm-end <#if isReg!false>required</#if>">
-                        <label for="userId">아이디</label>
+                        <label for="username">아이디</label>
                     </div>
                 </div>
                 <#if isReg!false>
                     <div class="col-xl-2 col-8">
-                        <input type="text" name="userId" id="userId" class="form-control form-control-solid required no-space"
-                               value="${user.userId!}" maxlength="16" />
+                        <input type="text" name="username" id="username" class="form-control form-control-solid required no-space"
+                               value="${user.username!}" maxlength="16" />
                         <div class="form-text">
-                            <@spring.message 'txt.req.userid'/>
+                            <@spring.message 'txt.req.username'/>
                         </div>
-                        <div id="userId_validate_span" class="text-danger"></div>
+                        <div id="username_validate_span" class="text-danger"></div>
                         <div id="ipDupChckPassed_validate_span" class="text-danger"></div>
                     </div>
                     <div class="col-xl-2 col-4">
@@ -52,8 +52,8 @@
                 </#if>
                 <#if isMdf!false>
                     <div class="col-xl-2">
-                        <input type="hidden" name="userId" id="userId" value="${user.userId!}" />
-                        <div class="fw-bold col-form-label text-start">${user.userId!}</div>
+                        <input type="hidden" name="username" id="username" value="${user.username!}" />
+                        <div class="fw-bold col-form-label text-start">${user.username!}</div>
                     </div>
                 </#if>
             </div>
@@ -230,7 +230,7 @@
             </div>
 
             <#--사용자 프로필 정보 영역-->
-            <div id="user_profl_div">
+            <div id="user_profile_div">
                 <#--handlebars template goes in here-->
             </div>
 
@@ -247,10 +247,10 @@
         <div class="d-flex justify-content-between">
             <div>
                 <div class="d-flex gap-2">
-                    <div id="user_profl_reg_btn_div">
-                        <button type="button" id="userProflBtn" class="btn btn-sm btn-primary blink"
-                                onclick="dF.UserProfl.enableUserProfl();"
-                                data-profl="${user.profl??}"
+                    <div id="user_profile_reg_btn_div">
+                        <button type="button" id="userProfileBtn" class="btn btn-sm btn-primary blink"
+                                onclick="dF.UserProfile.enableUserProfile();"
+                                data-profile="${user.profile??}"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="사용자 프로필 정보를&#10;추가합니다.">
                             프로필 정보 추가+
                         </button>
@@ -279,7 +279,7 @@
 </div>
 
 <form name="procForm" id="procForm" method="get">
-    <input type="hidden" name="userNo" value="${user.userNo!}">
+    <input type="hidden" name="id" value="${user.id!}">
 </form>
 
 <#--include::script modules-->
@@ -287,9 +287,9 @@
 <#--include::user_emplym_modules-->
 <#include "/view/feature/user/emplym/_user_emplym_reg_template.hbs">
 <script type="text/javascript" src="/js/view/feature/user/emplym/user_emplym_module.js?${releaseDate!}"></script>
-<#--include::user_profl_modules-->
-<#include "/view/feature/user/profl/_user_profl_reg_template.hbs">
-<script type="text/javascript" src="/js/view/feature/user/profl/user_profl_module.js?${releaseDate!}"></script>
+<#--include::user_profile_modules-->
+<#include "/view/feature/user/profile/_user_profile_reg_template.hbs">
+<script type="text/javascript" src="/js/view/feature/user/profile/user_profile_module.js?${releaseDate!}"></script>
 
 <!--include::page scripts-->
 <script type="text/javascript" src="/js/view/feature/user/user_reg_form.js?${releaseDate!}"></script>

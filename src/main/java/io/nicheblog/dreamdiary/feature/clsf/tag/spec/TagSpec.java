@@ -64,7 +64,7 @@ public class TagSpec
         final List<Predicate> predicate = new ArrayList<>();
 
         final Join<TagEntity, TagContentEntity> tagContentJoin = root.join("tagContentList", JoinType.INNER);
-        predicate.add(builder.equal(tagContentJoin.get("regstrId"), AuthUtils.getLgnUserIdOrDefault()));     // 등록자 ID 기준으로 조회
+        predicate.add(builder.equal(tagContentJoin.get("regstrId"), AuthUtils.getLgnUsernameOrDefault()));     // 등록자 ID 기준으로 조회
 
         // 파라미터 비교
         for (final String key : searchParamMap.keySet()) {
@@ -94,7 +94,7 @@ public class TagSpec
             List<Predicate> predicate = new ArrayList<>();
 
             final Join<TagEntity, TagContentEntity> tagContentJoin = root.join("tagContentList", JoinType.LEFT);
-            predicate.add(builder.equal(tagContentJoin.get("regstrId"), AuthUtils.getLgnUserIdOrDefault()));     // 등록자 ID 기준으로 조회
+            predicate.add(builder.equal(tagContentJoin.get("regstrId"), AuthUtils.getLgnUsernameOrDefault()));     // 등록자 ID 기준으로 조회
             predicate.add(builder.isNull(tagContentJoin));
 
             return builder.and(predicate.toArray(new Predicate[0]));
