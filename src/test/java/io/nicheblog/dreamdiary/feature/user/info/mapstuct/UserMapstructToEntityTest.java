@@ -11,9 +11,9 @@ import io.nicheblog.dreamdiary.feature.user.info.model.UserAuthRoleDtoTestFactor
 import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserDtoTestFactory;
 import io.nicheblog.dreamdiary.feature.user.info.model.emplym.UserEmplymDto;
-import io.nicheblog.dreamdiary.feature.user.info.model.profl.UserProflDto;
-import io.nicheblog.dreamdiary.feature.user.profl.entity.UserProflEntity;
-import io.nicheblog.dreamdiary.feature.user.profl.model.UserProflDtoTestFactory;
+import io.nicheblog.dreamdiary.feature.user.info.model.profile.UserProfileDto;
+import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntity;
+import io.nicheblog.dreamdiary.feature.user.profile.model.UserProfileDtoTestFactory;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cd.Code;
 import lombok.extern.log4j.Log4j2;
@@ -121,18 +121,18 @@ class UserMapstructToEntityTest {
     @Test
     void testToEntity_checkProfl() throws Exception {
         // Given::
-        final UserProflDto userProflDto = UserProflDtoTestFactory.create();
-        userDto.setProfl(userProflDto);
+        final UserProfileDto userProfileDto = UserProfileDtoTestFactory.create();
+        userDto.setProfile(userProfileDto);
 
         // When::
         final UserEntity entity = userMapstruct.toEntity(userDto);
 
         // Then::
         assertNotNull(entity, "변환된 사용자 Entity는 null일 수 없습니다.");
-        final UserProflEntity userProflEntity = entity.getProfl();
-        assertNotNull(userProflEntity, "변환된 사용자 프로필 정보 Entity는 null일 수 없습니다.");
+        final UserProfileEntity userProfileEntity = entity.getProfile();
+        assertNotNull(userProfileEntity, "변환된 사용자 프로필 정보 Entity는 null일 수 없습니다.");
         // 날짜 변환 체크
-        assertEquals(DateUtils.asDate("2000-01-01"), userProflEntity.getBrthdy(), "사용자 프로필 정보 생일 정보가 제대로 매핑되지 않았습니다.");
+        assertEquals(DateUtils.asDate("2000-01-01"), userProfileEntity.getBrthdy(), "사용자 프로필 정보 생일 정보가 제대로 매핑되지 않았습니다.");
     }
 
     /**

@@ -32,8 +32,8 @@ public class MyJrnlChapterService {
      * @return {@link List} -- 조회된 목록
      */
     public List<JrnlChapterDto> getMyListDto(final JrnlChapterSearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlChapterService.getListDtoByUser(userId, searchParam);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlChapterService.getListDtoByUser(username, searchParam);
     }
 
     /**
@@ -43,7 +43,7 @@ public class MyJrnlChapterService {
      * @return {@link JrnlChapterDto} -- 조회된 객체
      */
     public JrnlChapterDto getMyDtlDtoWithCache(final Integer key) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlChapterService.getDtlDtoWithCacheByUser(userId, key);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlChapterService.getDtlDtoWithCacheByUser(username, key);
     }
 }

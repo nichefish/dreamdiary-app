@@ -77,7 +77,7 @@ dF.JrnlSbjct = (function(): dfModule {
          */
         myPaprList: function(): void {
             const url: string = Url.JRNL_SBJCT_LIST;
-            const param: string = "?searchType=nickNm&searchKeyword=${authInfo.nickNm!}&regstrId=${authInfo.userId!}&pageSize=50&actionTyCd=MY_PAPR";
+            const param: string = "?searchType=nickNm&searchKeyword=${authInfo.nickNm!}&regstrId=${authInfo.username!}&pageSize=50&actionTyCd=MY_PAPR";
             cF.ui.blockUIReplace(url + param);
         },
 

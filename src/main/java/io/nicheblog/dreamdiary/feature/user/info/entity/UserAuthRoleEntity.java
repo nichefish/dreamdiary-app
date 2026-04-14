@@ -28,7 +28,7 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @ToString(callSuper = true)
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE user_auth_role SET del_yn = 'Y' WHERE user_auth_role_no = ?")
+@SQLDelete(sql = "UPDATE user_auth_role SET del_yn = 'Y' WHERE id = ?")
 public class UserAuthRoleEntity
         extends BaseCrudEntity {
 
@@ -41,9 +41,9 @@ public class UserAuthRoleEntity
     /** 사용자-권한 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_auth_role_no")
+    @Column(name = "id")
     @Comment("사용자 권한 ID")
-    private Integer userAuthRoleNo;
+    private Integer id;
 
     /** 권한 코드 */
     @Column(name = "auth_cd")

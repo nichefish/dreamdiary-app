@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS atch_file_dtl (
 CREATE TABLE IF NOT EXISTS log_actvty (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '활동 로그 ID',
     log_dt DATETIME COMMENT '로그 기록 일시',
-    user_id VARCHAR(20) COMMENT '로그 사용자 ID',
+    username VARCHAR(20) COMMENT '로그 사용자 ID',
     trace_id VARCHAR(64) COMMENT 'Trace ID',
     log_type VARCHAR(20) COMMENT '로그 타입',
     actvty_ctgr_cd VARCHAR(50) COMMENT '활동 카테고리 코드',
@@ -162,7 +162,7 @@ CREATE TABLE IF NOT EXISTS log_actvty (
     -- CONSTRAINT
     INDEX idx_trace_id (trace_id),
     INDEX idx_log_dt (log_dt),
-    INDEX idx_user_dt (user_id, log_dt)
+    INDEX idx_user_dt (username, log_dt)
 ) COMMENT = '활동 로그';
 
 -- 시스템 로그 (log_sys)
@@ -170,7 +170,7 @@ CREATE TABLE IF NOT EXISTS log_actvty (
 CREATE TABLE IF NOT EXISTS log_sys (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '시스템 로그 ID',
     log_dt DATETIME COMMENT '로그 날짜 및 시간',
-    user_id VARCHAR(20) COMMENT '로그 기록 사용자 ID',
+    username VARCHAR(20) COMMENT '로그 기록 사용자 ID',
     actvty_ctgr_cd VARCHAR(50) COMMENT '활동 카테고리 코드',
     cn LONGTEXT COMMENT '내용',
     rslt TINYINT NOT NULL COMMENT '결과',

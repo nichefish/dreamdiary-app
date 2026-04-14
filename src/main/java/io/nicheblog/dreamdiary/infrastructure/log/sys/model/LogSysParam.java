@@ -27,9 +27,9 @@ public class LogSysParam
     /** 로그 고유 ID */
     private Integer id;
 
-    /** 작업자 ID = 시스템 계정 */
+    /** 작업자 계정명 = 시스템 계정 */
     @Builder.Default
-    private String userId = Constant.SYSTEM_ACNT;
+    private String username = Constant.SYSTEM_ACNT;
 
     /** 성공 여부 */
     private Boolean rslt;
@@ -126,4 +126,5 @@ public class LogSysParam
         this.exceptionNm = MessageUtils.getExceptionNm(e);
         this.exceptionMsg = MessageUtils.getExceptionMsg(e);
     }
+
 }

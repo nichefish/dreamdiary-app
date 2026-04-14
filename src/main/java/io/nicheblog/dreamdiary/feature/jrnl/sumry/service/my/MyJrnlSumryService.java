@@ -33,8 +33,8 @@ public class MyJrnlSumryService {
      * @return {@link List<JrnlSumryDto>} -- 검색 조건에 맞는 결산 목록 Dto 리스트
      */
     public List<JrnlSumryDto> getMyListDto(final BaseSearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlSumryService.getListDtoByUser(userId, searchParam);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlSumryService.getListDtoByUser(username, searchParam);
     }
 
     /**
@@ -43,8 +43,8 @@ public class MyJrnlSumryService {
      * @return {@link JrnlSumryDto} -- 총 결산 정보가 담긴 Dto 객체
      */
     public JrnlSumryDto getMyTotalSumry() {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlSumryService.getTotalSumryByUser(userId);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlSumryService.getTotalSumryByUser(username);
     }
 
     /**
@@ -54,8 +54,8 @@ public class MyJrnlSumryService {
      * @return {@link JrnlSumryDto} -- 조회된 결산 정보가 담긴 Dto 객체
      */
     public JrnlSumryDto getMySumryDtl(final Integer key) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlSumryService.getSumryDtlByUser(userId, key);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlSumryService.getSumryDtlByUser(username, key);
     }
 
     /**
@@ -65,8 +65,8 @@ public class MyJrnlSumryService {
      * @return {@link JrnlSumryDto} -- 조회된 결산 정보가 담긴 Dto 객체, 없을 경우 null 반환
      */
     public JrnlSumryDto getMyDtlDtoByYy(final Integer yy) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlSumryService.getDtlDtoByYyByUser(userId, yy);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlSumryService.getDtlDtoByYyByUser(username, yy);
     }
 
     /**
@@ -75,8 +75,8 @@ public class MyJrnlSumryService {
      * @return {@link Boolean} -- 결산 생성 성공 여부 (항상 true 반환)
      */
     public Boolean makeMyYySumry(final Integer yy) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlSumryService.makeYySumryByUser(userId, yy);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlSumryService.makeYySumryByUser(username, yy);
     }
 
     /**
@@ -85,8 +85,8 @@ public class MyJrnlSumryService {
      * @return {@link Boolean} -- 결산 생성 성공 여부 (항상 true 반환)
      */
     public Boolean makeMyTotalYySumry() throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        final Boolean result = jrnlSumryService.makeTotalYySumryByUser(userId);
+        final String username = AuthUtils.requireLgnUsername();
+        final Boolean result = jrnlSumryService.makeTotalYySumryByUser(username);
         EhCacheUtils.clearMyCache("jrnlSumryDtlDtoByUser");
         EhCacheUtils.clearMyCache("jrnlSumryYyDtlDtoByUser");
         return result;

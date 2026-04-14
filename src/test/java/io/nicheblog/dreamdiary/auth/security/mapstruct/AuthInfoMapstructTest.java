@@ -3,9 +3,9 @@ package io.nicheblog.dreamdiary.auth.security.mapstruct;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.type.Auth;
 import io.nicheblog.dreamdiary.feature.user.info.entity.*;
-import io.nicheblog.dreamdiary.feature.user.info.model.profl.UserProflDto;
-import io.nicheblog.dreamdiary.feature.user.profl.entity.UserProflEntity;
-import io.nicheblog.dreamdiary.feature.user.profl.entity.UserProflEntityTestFactory;
+import io.nicheblog.dreamdiary.feature.user.info.model.profile.UserProfileDto;
+import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntity;
+import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntityTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cd.Code;
@@ -55,7 +55,7 @@ class AuthInfoMapstructTest {
 
         // Then::
         assertNotNull(dto);
-        assertEquals(TestConstant.TEST_USER, dto.getUserId());
+        assertEquals(TestConstant.TEST_USER, dto.getUsername());
         assertEquals(TestConstant.TEST_PASSWORD_ENCODED, dto.getPassword());
         assertEquals(TestConstant.TEST_NICK_NM, dto.getNickNm());
         assertEquals("test_url", dto.getProflImgUrl());
@@ -156,11 +156,11 @@ class AuthInfoMapstructTest {
      * entity -> dto 검증 :: 사용자 프로필(user_profl) 검증
      */
     @Test
-    void testToDto_checkMapping_userProfl() throws Exception {
+    void testToDto_checkMapping_userProfile() throws Exception {
         // Given::
-        UserProflEntity userProflEntity = UserProflEntityTestFactory.create();
-        userProflEntity.setUserProflNo(1);
-        UserEntity userEntity = UserEntityTestFactory.create(userProflEntity);
+        UserProfileEntity userProfileEntity = UserProfileEntityTestFactory.create();
+        userProfileEntity.setUserProfileId(1);
+        UserEntity userEntity = UserEntityTestFactory.create(userProfileEntity);
 
         // When::
         AuthInfo dto = authInfoMapstruct.toDto(userEntity);
@@ -168,10 +168,10 @@ class AuthInfoMapstructTest {
         // Then::
         assertNotNull(dto);
         // acntStus - lstLgnDt, pwChgDt 대신 regDt 사용
-        UserProflDto userProfl = dto.getProfl();
-        assertEquals("2000-01-01", userProfl.getBrthdy());
-        assertEquals("test_profl_cn", userProfl.getProflCn());
-        assertEquals(1, dto.getUserProflNo());
+        UserProfileDto userProfile = dto.getProfile();
+        assertEquals("2000-01-01", userProfile.getBrthdy());
+        assertEquals("test_profl_cn", userProfile.getProflCn());
+        assertEquals(1, dto.getUserProfileId());
     }
 
 }

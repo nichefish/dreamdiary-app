@@ -65,7 +65,7 @@ declare const Model: {
  * Message : Spring Boot에서 메세지 번들로 관리되는 Message 요소들.
  */
 declare const AuthInfo: {
-    userId: string,
+    username: string,
     nickNm: string,
     email: string,
     proflImgUrl: string,

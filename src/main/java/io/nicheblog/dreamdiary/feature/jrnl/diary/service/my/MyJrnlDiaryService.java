@@ -39,9 +39,9 @@ public class MyJrnlDiaryService {
      * @return {@link List} -- 조회된 목록
      */
     public List<JrnlDiaryDto> getMyListDto(final JrnlDiarySearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        final List<JrnlDiaryDto> listDto = jrnlDiaryService.getListDtoByUser(userId, searchParam);
-        this.mergeRelatedContents(userId, listDto);
+        final String username = AuthUtils.requireLgnUsername();
+        final List<JrnlDiaryDto> listDto = jrnlDiaryService.getListDtoByUser(username, searchParam);
+        this.mergeRelatedContents(username, listDto);
         return listDto;
     }
 
@@ -52,9 +52,9 @@ public class MyJrnlDiaryService {
      * @return {@link List} -- 해당 연도의중요 목록
      */
     public List<JrnlDiaryDto> getMySumryDiaryList(final JrnlDiarySearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        final List<JrnlDiaryDto> listDto = jrnlDiaryService.getSumryDiaryListByUser(userId, searchParam);
-        this.mergeRelatedContents(userId, listDto);
+        final String username = AuthUtils.requireLgnUsername();
+        final List<JrnlDiaryDto> listDto = jrnlDiaryService.getSumryDiaryListByUser(username, searchParam);
+        this.mergeRelatedContents(username, listDto);
         return listDto;
     }
 
@@ -65,13 +65,13 @@ public class MyJrnlDiaryService {
      * @return {@link JrnlDiaryDto} -- 조회된 객체
      */
     public JrnlDiaryDto getMyDtlDtoWithCache(final Integer key) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        final JrnlDiaryDto retrieved = jrnlDiaryService.getDtlDtoWithCacheByUser(userId, key);
-        this.mergeRelatedContents(userId, retrieved == null ? List.of() : List.of(retrieved));
+        final String username = AuthUtils.requireLgnUsername();
+        final JrnlDiaryDto retrieved = jrnlDiaryService.getDtlDtoWithCacheByUser(username, key);
+        this.mergeRelatedContents(username, retrieved == null ? List.of() : List.of(retrieved));
         return retrieved;
     }
 
-    private void mergeRelatedContents(final String userId, final List<JrnlDiaryDto> listDto) throws Exception {
+    private void mergeRelatedContents(final String username, final List<JrnlDiaryDto> listDto) throws Exception {
         if (listDto == null || listDto.isEmpty()) return;
 
         final List<BaseClsfKey> refKeyList = new ArrayList<>();
@@ -79,7 +79,7 @@ public class MyJrnlDiaryService {
                 .filter(dto -> dto != null && dto.getPostNo() != null)
                 .forEach(dto -> refKeyList.add(new BaseClsfKey(dto.getPostNo(), ContentType.JRNL_DIARY)));
 
-        final Map<String, List<RelatedContentDto>> relatedMap = relatedContentQueryService.getRelatedContentMapByRefs(refKeyList, userId);
+        final Map<String, List<RelatedContentDto>> relatedMap = relatedContentQueryService.getRelatedContentMapByRefs(refKeyList, username);
         for (final JrnlDiaryDto jrnlDiary : listDto) {
             if (jrnlDiary == null || jrnlDiary.getPostNo() == null) continue;
             jrnlDiary.setRelatedContentList(

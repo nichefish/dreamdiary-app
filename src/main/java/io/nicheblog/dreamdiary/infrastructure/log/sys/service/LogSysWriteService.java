@@ -45,6 +45,6 @@ public class LogSysWriteService {
                 logParam.getRsltMsg()
         );
 
-        return rslt.getLogSysNo() != null;
+        return rslt.getId() != null;
     }
 }

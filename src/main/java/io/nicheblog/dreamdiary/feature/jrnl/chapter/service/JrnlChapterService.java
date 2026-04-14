@@ -66,23 +66,23 @@ public class JrnlChapterService
         return context.getBean(this.getClass());
     }
 
-    public List<JrnlChapterDto> getListDtoByUser(final String userId, final JrnlChapterSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
+    public List<JrnlChapterDto> getListDtoByUser(final String username, final JrnlChapterSearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(AuthUtils.requireUsername(username));
         return this.getSelf().getListDto(searchParam);
     }
 
     /**
      * 상세 조회 (dto level) :: 캐시 처리
      *
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      * @param key 일련번호
      * @return {@link JrnlChapterDto} -- 조회된 객체
      */
-    @Cacheable(value="jrnlChapterDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #key)")
-    public JrnlChapterDto getDtlDtoWithCacheByUser(final String userId, final Integer key) throws Exception {
+    @Cacheable(value="jrnlChapterDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #key)")
+    public JrnlChapterDto getDtlDtoWithCacheByUser(final String username, final Integer key) throws Exception {
         final JrnlChapterEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlChapterDto retrieved = mapstruct.toDto(retrievedEntity);
-        if (!retrieved.getIsRegstr(AuthUtils.requireUserId(userId))) {
+        if (!retrieved.getIsRegstr(AuthUtils.requireUsername(username))) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         return retrieved;

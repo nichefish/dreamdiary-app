@@ -49,13 +49,13 @@ public class SchdulPrtcpntEntity
     private SchdulEntity schdul;
 
     /** 참여자 ID */
-    @Column(name = "user_id", length = 20)
+    @Column(name = "username", length = 20)
     @Comment("참여자 ID")
-    private String userId;
+    private String username;
 
     /** 참여자 정보 */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "username", referencedColumnName = "username", insertable = false, updatable = false)
     @Fetch(value = FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("참여자 정보")

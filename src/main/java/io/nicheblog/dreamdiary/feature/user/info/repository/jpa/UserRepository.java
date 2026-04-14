@@ -21,10 +21,10 @@ public interface UserRepository
     /**
      * 사용자 ID로 사용자 엔티티를 검색합니다.
      *
-     * @param userId 검색할 사용자 ID
+     * @param username 검색할 사용자 계정명
      * @return {@link Optional} -- 사용자 엔티티를 포함한 Optional 객체
      */
-    Optional<UserEntity> findByUserId(final String userId);
+    Optional<UserEntity> findByUsername(final String username);
 
     /**
      * 사용자 이메일로 사용자 엔티티를 검색합니다.

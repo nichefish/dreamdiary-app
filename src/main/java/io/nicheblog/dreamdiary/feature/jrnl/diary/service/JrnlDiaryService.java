@@ -77,21 +77,21 @@ public class JrnlDiaryService
     /**
      * 사용자별 특정 년도의 일기 목록 조회 :: 캐시 처리
      *
-     * @param userId String
+     * @param username String
      * @param searchParam JrnlDiarySearchParam
      * @return {@link List} -- 해당 년도의 중요 목록
      */
-    @Cacheable(value="jrnlDiaryYySumryStatedListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #searchParam.toSummaryCacheKey())")
-    public List<JrnlDiaryDto> getSumryDiaryListByUser(final String userId, final JrnlDiarySearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
+    @Cacheable(value="jrnlDiaryYySumryStatedListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #searchParam.toSummaryCacheKey())")
+    public List<JrnlDiaryDto> getSumryDiaryListByUser(final String username, final JrnlDiarySearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(AuthUtils.requireUsername(username));
         final List<JrnlDiaryDto> jrnlDiaryYySumryStatedListByUser = this.getSelf().getListDto(searchParam);
         Collections.sort(jrnlDiaryYySumryStatedListByUser);
 
         return jrnlDiaryYySumryStatedListByUser;
     }
 
-    public List<JrnlDiaryDto> getListDtoByUser(final String userId, final JrnlDiarySearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
+    public List<JrnlDiaryDto> getListDtoByUser(final String username, final JrnlDiarySearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(AuthUtils.requireUsername(username));
         return this.getSelf().getListDto(searchParam);
     }
 
@@ -163,12 +163,12 @@ public class JrnlDiaryService
      * @param key 식별자
      * @return {@link JrnlDiaryDto} -- 조회된 객체
      */
-    @Cacheable(value="jrnlDiaryDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #key)")
-    public JrnlDiaryDto getDtlDtoWithCacheByUser(final String userId, final Integer key) throws Exception {
+    @Cacheable(value="jrnlDiaryDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #key)")
+    public JrnlDiaryDto getDtlDtoWithCacheByUser(final String username, final Integer key) throws Exception {
         final JrnlDiaryEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlDiaryDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr(AuthUtils.requireUserId(userId))) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+        if (!retrieved.getIsRegstr(AuthUtils.requireUsername(username))) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         return retrieved;
     }
 

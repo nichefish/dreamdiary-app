@@ -110,12 +110,12 @@ public class AuthRestController {
             }
 
             final RefreshTokenService.RefreshResult refreshResult = refreshTokenService.rotate(refreshToken);
-            final AuthInfo authInfo = authService.loadUserByUsername(refreshResult.getUserId());
+            final AuthInfo authInfo = authService.loadUserByUsername(refreshResult.getUsername());
             final List<String> roles = authInfo.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList());
 
-            final String accessToken = jwtTokenProvider.createAccessToken(authInfo.getUserId(), roles);
+            final String accessToken = jwtTokenProvider.createAccessToken(authInfo.getUsername(), roles);
 
             CookieUtils.setJwtCookie(accessToken, (int) jwtTokenProvider.getAccessTokenValiditySeconds());
             CookieUtils.setRefreshTokenCookie(refreshResult.getRefreshToken(), (int) refreshTokenService.getRefreshTokenValiditySeconds());

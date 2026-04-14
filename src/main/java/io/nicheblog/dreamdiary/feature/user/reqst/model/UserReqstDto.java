@@ -31,7 +31,7 @@ public class UserReqstDto
 
     /** 아이디 */
     @NotEmpty
-    private String userId;
+    private String username;
     /** 비밀번호 */
     @NotEmpty
     @Size(min = 9, max = 15, message = "비밀번호는 9자 이상 15자 이하로 입력해야 합니다.")

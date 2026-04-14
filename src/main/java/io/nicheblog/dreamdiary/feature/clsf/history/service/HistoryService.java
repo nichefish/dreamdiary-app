@@ -56,7 +56,7 @@ public class HistoryService {
     @Transactional
     public void addHistory(final BaseClsfKey refKey, final String cn, final HistoryType historyType, final Integer fromHistoryId) {
         if (refKey == null || refKey.getPostNo() == null || refKey.getContentType() == null) return;
-        if (AuthUtils.getLgnUserId() == null) return;
+        if (AuthUtils.getLgnUsername() == null) return;
 
         final HistoryEntity history = new HistoryEntity(refKey, cn, historyType, fromHistoryId);
         historyRepository.save(history);

@@ -36,9 +36,9 @@ public class RelatedContentQueryService {
     @Transactional(readOnly = true)
     public Map<String, List<RelatedContentDto>> getRelatedContentMapByRefs(
             final Collection<BaseClsfKey> refKeyList,
-            final String userId
+            final String username
     ) throws Exception {
-        final String resolvedUserId = AuthUtils.requireUserId(userId);
+        final String resolvedUsername = AuthUtils.requireUsername(username);
         final Map<String, BaseClsfKey> refKeyMap = this.toRefKeyMap(refKeyList);
         if (refKeyMap.isEmpty()) return Map.of();
 
@@ -46,7 +46,7 @@ public class RelatedContentQueryService {
         refKeyMap.values().forEach(refKey -> postNoSet.add(refKey.getPostNo()));
         if (postNoSet.isEmpty()) return Map.of();
 
-        final List<RelatedContentEntity> entityList = relatedContentRepository.findAllByAnyRefPostNoIn(postNoSet, resolvedUserId);
+        final List<RelatedContentEntity> entityList = relatedContentRepository.findAllByAnyRefPostNoIn(postNoSet, resolvedUsername);
         if (entityList.isEmpty()) return Map.of();
 
         final Map<String, String> titleMap = this.resolveTitleMap(entityList);

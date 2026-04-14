@@ -36,8 +36,8 @@ public class LogActvtyParam
     /** 로그 고유 ID */
     private Integer logActvtysNo;
 
-    /** 사용자 ID */
-    private String userId;
+    /** 사용자 계정명 */
+    private String username;
 
     /** trace ID */
     private String traceId;
@@ -147,17 +147,17 @@ public class LogActvtyParam
     /**
      * 생성자. 객체 생성시 request 관련 인자들을 자동 세팅한다. (가능하면)
      *
-     * @param userId 사용자 ID. (비로그인 처리시 사용)
+     * @param username 사용자 계정명. (비로그인 처리시 사용)
      * @param rslt 결과
      * @param rsltMsg 결과 메세지
      * @param actvtyCtgr 활동 유형
      */
-    public LogActvtyParam(final String userId, final Boolean rslt, final String rsltMsg, final ActvtyCtgr actvtyCtgr) {
+    public LogActvtyParam(final String username, final Boolean rslt, final String rsltMsg, final ActvtyCtgr actvtyCtgr) {
         this();
         this.rslt = rslt;
         this.rsltMsg = rsltMsg;
         this.actvtyCtgr = actvtyCtgr;
-        this.userId = userId;
+        this.username = username;
     }
 
     /**

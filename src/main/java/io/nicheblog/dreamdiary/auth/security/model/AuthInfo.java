@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.auth.security.model;
 
-import io.nicheblog.dreamdiary.feature.user.info.model.profl.UserProflDto;
+import io.nicheblog.dreamdiary.feature.user.info.model.profile.UserProfileDto;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.cd.Code;
@@ -33,12 +33,12 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @Builder
-@EqualsAndHashCode(of = {"userId"}, callSuper = false)
+@EqualsAndHashCode(of = {"username"}, callSuper = false)
 public class AuthInfo
         implements UserDetails, OAuth2User {
 
     /** 사용자 ID */
-    private String userId;
+    private String username;
 
     /** 사용자 PW */
     private String password;
@@ -77,9 +77,9 @@ public class AuthInfo
     private String needsPwReset;
 
     /** 사용자 정보 ID */
-    private Integer userProflNo;
+    private Integer userProfileId;
     /** 사용자 정보 통으로 저장 (일단) */
-    private UserProflDto profl;
+    private UserProfileDto profile;
 
     /* ----- */
 
@@ -94,8 +94,8 @@ public class AuthInfo
     /**
      * Getter :: 사용자 프로필 정보 존재 여부 (내부사용자)
      */
-    public Boolean getHasUserProfl() {
-        return this.profl != null && this.userProflNo != null;
+    public Boolean getHasUserProfile() {
+        return this.profile != null && this.userProfileId != null;
     }
 
     /**
@@ -160,7 +160,7 @@ public class AuthInfo
      */
     @Override
     public String getUsername() {
-        return this.userId;
+        return this.username;
     }
 
     /**
@@ -168,7 +168,7 @@ public class AuthInfo
      */
     @Override
     public String getName() {
-        return this.userId;
+        return this.username;
     }
 
     /**

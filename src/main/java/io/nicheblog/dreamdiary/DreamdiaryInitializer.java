@@ -132,7 +132,7 @@ public class DreamdiaryInitializer
 
         final UserDto systemAcnt = UserDto.builder()
                 .nickNm(Constant.SYSTEM_ACNT_NM)
-                .userId(Constant.SYSTEM_ACNT)
+                .username(Constant.SYSTEM_ACNT)
                 .password(SYSTEM_INIT_TEMP_PW)
                 .authList(List.of(userAuthRole))
                 .regstrId(Constant.SYSTEM_ACNT)

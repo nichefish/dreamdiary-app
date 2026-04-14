@@ -67,27 +67,27 @@ public class JrnlSumryService
      * @param searchParam 검색 조건을 담은 파라미터 객체
      * @return {@link List<JrnlSumryDto>} -- 검색 조건에 맞는 결산 목록 Dto 리스트
      */
-    @Cacheable(value="jrnlSumryListByUser", key="#userId")
-    public List<JrnlSumryDto> getListDtoByUser(final String userId, final BaseSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
+    @Cacheable(value="jrnlSumryListByUser", key="#username")
+    public List<JrnlSumryDto> getListDtoByUser(final String username, final BaseSearchParam searchParam) throws Exception {
+        searchParam.setRegstrId(AuthUtils.requireUsername(username));
         return this.getSelf().getListDto(searchParam);
     }
 
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value="jrnlSumryTotalListByUser", key="#userId"),
-            @CacheEvict(value="jrnlSumryListByUser", key="#userId"),
-            @CacheEvict(value="jrnlSumryYyDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #yy)")
+            @CacheEvict(value="jrnlSumryTotalListByUser", key="#username"),
+            @CacheEvict(value="jrnlSumryListByUser", key="#username"),
+            @CacheEvict(value="jrnlSumryYyDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #yy)")
     })
-    public Boolean makeYySumryByUser(final String userId, final Integer yy) throws Exception {
+    public Boolean makeYySumryByUser(final String username, final Integer yy) throws Exception {
         // 해당 년도 저널 결산 정보 조회
-        final JrnlSumryEntity sumry = repository.findByYyAndRegstrId(yy, AuthUtils.requireUserId(userId)).orElse(new JrnlSumryEntity(yy));
+        final JrnlSumryEntity sumry = repository.findByYyAndRegstrId(yy, AuthUtils.requireUsername(username)).orElse(new JrnlSumryEntity(yy));
 
         // 해당 년도 꿈 일자 조회해서 갱신
-        final Integer dreamDayCntByYy = repository.getDreamDayCntByYy(yy, AuthUtils.requireUserId(userId));
+        final Integer dreamDayCntByYy = repository.getDreamDayCntByYy(yy, AuthUtils.requireUsername(username));
         sumry.setDreamDayCnt(dreamDayCntByYy);
         // 해당 년도 꿈 조회해서 갱신
-        final Integer dreamCntByYy = repository.getDreamCntByYy(yy, AuthUtils.requireUserId(userId));
+        final Integer dreamCntByYy = repository.getDreamCntByYy(yy, AuthUtils.requireUsername(username));
         sumry.setDreamCnt(dreamCntByYy);
 
         repository.save(sumry);
@@ -101,13 +101,13 @@ public class JrnlSumryService
      * @return {@link Boolean} -- 결산 생성 성공 여부 (항상 true 반환)
      */
     @Transactional
-    @CacheEvict(value={"jrnlSumryTotalListByUser", "jrnlSumryListByUser"}, key="#userId")
-    public Boolean makeTotalYySumryByUser(final String userId) throws Exception {
+    @CacheEvict(value={"jrnlSumryTotalListByUser", "jrnlSumryListByUser"}, key="#username")
+    public Boolean makeTotalYySumryByUser(final String username) throws Exception {
         final int currYy = DateUtils.getCurrYy();
         final int startYy = 2011;
         for (int yy = startYy; yy <= currYy; yy++) {
             try {
-                this.makeYySumryByUser(AuthUtils.requireUserId(userId), yy);
+                this.makeYySumryByUser(AuthUtils.requireUsername(username), yy);
             } catch (final Exception e) {
                 log.warn("Error creating annual summary for {}", yy);
             }
@@ -121,14 +121,14 @@ public class JrnlSumryService
      *
      * @return {@link JrnlSumryDto} -- 총 결산 정보가 담긴 Dto 객체
      */
-    @Cacheable(value="jrnlSumryTotalListByUser", key="#userId")
-    public JrnlSumryDto getTotalSumryByUser(final String userId) {
+    @Cacheable(value="jrnlSumryTotalListByUser", key="#username")
+    public JrnlSumryDto getTotalSumryByUser(final String username) {
         final JrnlSumryDto totalSumry = new JrnlSumryDto();
         // 해당 년도 꿈 일자 조회해서 갱신
-        final Integer dreamDayCntByYy = repository.getTotalDreamDayCnt(AuthUtils.requireUserId(userId));
+        final Integer dreamDayCntByYy = repository.getTotalDreamDayCnt(AuthUtils.requireUsername(username));
         totalSumry.setDreamDayCnt(dreamDayCntByYy);
         // 해당 년도 꿈 조회해서 갱신
-        final Integer dreamCntByYy = repository.getTotalDreamCnt(AuthUtils.requireUserId(userId));
+        final Integer dreamCntByYy = repository.getTotalDreamCnt(AuthUtils.requireUsername(username));
         totalSumry.setDreamCnt(dreamCntByYy);
 
         return totalSumry;
@@ -164,10 +164,10 @@ public class JrnlSumryService
      * @param key 식별자
      * @return {@link JrnlSumryDto} -- 조회된 결산 정보가 담긴 Dto 객체
      */
-    @Cacheable(value="jrnlSumryDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #key)")
-    public JrnlSumryDto getSumryDtlByUser(final String userId, final Integer key) throws Exception {
+    @Cacheable(value="jrnlSumryDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #key)")
+    public JrnlSumryDto getSumryDtlByUser(final String username, final Integer key) throws Exception {
         final JrnlSumryDto retrieved = this.getSelf().getDtlDto(key);
-        if (retrieved != null && !retrieved.getIsRegstr(userId)) {
+        if (retrieved != null && !retrieved.getIsRegstr(username)) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         return retrieved;
@@ -179,9 +179,9 @@ public class JrnlSumryService
      * @param yy 조회할 년도
      * @return {@link JrnlSumryDto} -- 조회된 결산 정보가 담긴 Dto 객체, 없을 경우 null 반환
      */
-    @Cacheable(value="jrnlSumryYyDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#userId, #yy)")
-    public JrnlSumryDto getDtlDtoByYyByUser(final String userId, final Integer yy) throws Exception {
-        final Optional<JrnlSumryEntity> retrievedWrapper = repository.findByYyAndRegstrId(yy, AuthUtils.requireUserId(userId));
+    @Cacheable(value="jrnlSumryYyDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #yy)")
+    public JrnlSumryDto getDtlDtoByYyByUser(final String username, final Integer yy) throws Exception {
+        final Optional<JrnlSumryEntity> retrievedWrapper = repository.findByYyAndRegstrId(yy, AuthUtils.requireUsername(username));
         if (retrievedWrapper.isEmpty()) return null;
 
         return mapstruct.toDto(retrievedWrapper.get());

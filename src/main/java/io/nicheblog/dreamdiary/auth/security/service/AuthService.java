@@ -38,18 +38,18 @@ public class AuthService
     private final AuthInfoMapstruct mapstruct = AuthInfoMapstruct.INSTANCE;
 
     /**
-     * userId로 계정 + 사용자 정보 조회
+     * username으로 계정 + 사용자 정보 조회
      * 로그인 등 인증시 Spring Security에서 사용.
      *
-     * @param userId 조회할 사용자의 ID
+     * @param username 조회할 사용자의 계정명
      * @return {@link AuthInfo} -- Spring Security용 사용자 인증정보 객체
      * @throws UsernameNotFoundException 사용자 정보를 찾을 수 없는 경우
      */
     @Override
     @SneakyThrows
     @Transactional(readOnly = true)
-    public AuthInfo loadUserByUsername(final String userId) throws UsernameNotFoundException {
-        final Optional<UserEntity> rsWrapper = userRepository.findByUserId(userId);
+    public AuthInfo loadUserByUsername(final String username) throws UsernameNotFoundException {
+        final Optional<UserEntity> rsWrapper = userRepository.findByUsername(username);
         if (rsWrapper.isEmpty()) throw new UsernameNotFoundException("exception.UsernameNotFoundException");
         final UserEntity rsUser = rsWrapper.get();
 
@@ -80,13 +80,13 @@ public class AuthService
     /**
      * 로그인 실패시 실패 카운트를 증가시킨다.
      *
-     * @param userId 로그인 실패한 사용자 ID
+     * @param username 로그인 실패한 사용자 계정명
      * @return {@link Integer} -- 업데이트된 로그인 실패 횟수
      */
     @Transactional
-    public Integer applyLgnFailCnt(final String userId) {
+    public Integer applyLgnFailCnt(final String username) {
         // ID로 사용자 정보 조회
-        final Optional<UserEntity> userEntityWrapper = userRepository.findByUserId(userId);
+        final Optional<UserEntity> userEntityWrapper = userRepository.findByUsername(username);
         if (userEntityWrapper.isEmpty()) return 0;
         final UserEntity userEntity = userEntityWrapper.get();
         // 로그인 실패횟수 조회해서 세팅
@@ -101,12 +101,12 @@ public class AuthService
     /**
      * 계정 잠금 처리
      *
-     * @param userId 계정을 잠글 사용자 ID
+     * @param username 계정을 잠글 사용자 계정명
      */
     @Transactional
-    public void lockAccount(final String userId) {
+    public void lockAccount(final String username) {
         // ID로 사용자 정보 조회
-        final Optional<UserEntity> userEntityWrapper = userRepository.findByUserId(userId);
+        final Optional<UserEntity> userEntityWrapper = userRepository.findByUsername(username);
         final UserEntity userEntity = userEntityWrapper.orElseThrow(NullPointerException::new);
         // 계정 잠금 처리
         userEntity.acntStus.setLockedYn("Y");
@@ -117,12 +117,12 @@ public class AuthService
     /**
      * 로그인 성공시 최종 로그인일자 세팅 및 실패 카운트 초기화
      *
-     * @param userId 처리할 사용자 ID
+     * @param username 처리할 사용자 계정명
      */
     @Transactional
-    public void setLstLgnDt(final String userId) {
+    public void setLstLgnDt(final String username) {
         // ID로 사용자 정보 조회
-        final Optional<UserEntity> userEntityWrapper = userRepository.findByUserId(userId);
+        final Optional<UserEntity> userEntityWrapper = userRepository.findByUsername(username);
         final UserEntity userEntity = userEntityWrapper.orElseThrow(NullPointerException::new);
         // 최종 로그인 날짜 세팅 및 실패 카운터 0으로 세팅
         userEntity.acntStus.setLstLgnDt(new Date());
@@ -144,13 +144,13 @@ public class AuthService
     /**
      * getAuditorInfo
      *
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      * @return AuditorInfo
      */
     @Transactional(readOnly = true)
-    @Cacheable(cacheNames = "auditorInfo", key = "#userId", condition = "#userId!=null")
-    public AuditorInfo getAuditorInfo(final String userId) {
-        final Optional<UserEntity> userEntityWrapper = userRepository.findByUserId(userId);
+    @Cacheable(cacheNames = "auditorInfo", key = "#username", condition = "#username!=null")
+    public AuditorInfo getAuditorInfo(final String username) {
+        final Optional<UserEntity> userEntityWrapper = userRepository.findByUsername(username);
         if (userEntityWrapper.isEmpty()) return null;
 
         final UserEntity userEntity = userEntityWrapper.get();

@@ -31,8 +31,8 @@ public class JrnlIntrptHistoryStrategy implements HistoryStrategy<JrnlIntrptDto>
     }
 
     @Override
-    public JrnlIntrptDto getOwnedDto(final String userId, final Integer key) throws Exception {
-        return jrnlIntrptService.getDtlDtoWithCacheByUser(userId, key);
+    public JrnlIntrptDto getOwnedDto(final String username, final Integer key) throws Exception {
+        return jrnlIntrptService.getDtlDtoWithCacheByUser(username, key);
     }
 
     @Override

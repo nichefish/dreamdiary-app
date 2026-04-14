@@ -32,8 +32,8 @@ public class MyJrnlIntrptService {
      * @return {@link List} -- 조회된 목록
      */
     public List<JrnlIntrptDto> getMyListDto(final JrnlIntrptSearchParam searchParam) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlIntrptService.getListDtoByUser(userId, searchParam);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlIntrptService.getListDtoByUser(username, searchParam);
     }
 
     /**
@@ -43,7 +43,7 @@ public class MyJrnlIntrptService {
      * @return {@link JrnlIntrptDto} -- 조회된 객체
      */
     public JrnlIntrptDto getMyDtlDtoWithCache(final Integer key) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlIntrptService.getDtlDtoWithCacheByUser(userId, key);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlIntrptService.getDtlDtoWithCacheByUser(username, key);
     }
 }

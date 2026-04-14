@@ -162,7 +162,7 @@ public class TagProcService {
             final Integer mnth,
             final Map<Integer, Integer> tagCntChangeMap
     ) throws Exception {
-        final Object cacheKey = new SimpleKey(AuthUtils.getLgnUserId(), yy, mnth);
+        final Object cacheKey = new SimpleKey(AuthUtils.getLgnUsername(), yy, mnth);
         final String contentType = clsfKey.getContentType();
         final Map<Integer, Integer> safeChangeMap = new HashMap<>(tagCntChangeMap);
         TransactionHookUtils.runAfterCommitOrNow(

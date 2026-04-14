@@ -31,8 +31,8 @@ public class JrnlDreamHistoryStrategy implements HistoryStrategy<JrnlDreamDto> {
     }
 
     @Override
-    public JrnlDreamDto getOwnedDto(final String userId, final Integer key) throws Exception {
-        return jrnlDreamService.getDtlDtoWithCacheByUser(userId, key);
+    public JrnlDreamDto getOwnedDto(final String username, final Integer key) throws Exception {
+        return jrnlDreamService.getDtlDtoWithCacheByUser(username, key);
     }
 
     @Override

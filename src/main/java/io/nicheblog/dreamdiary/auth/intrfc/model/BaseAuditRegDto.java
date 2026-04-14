@@ -63,17 +63,17 @@ public class BaseAuditRegDto
      */
     public Boolean getIsRegstr() {
         if (StringUtils.isEmpty(this.regstrId)) return false;
-        return this.regstrId.equals(AuthUtils.getLgnUserId());
+        return this.regstrId.equals(AuthUtils.getLgnUsername());
     }
 
     /**
      * 등록자 여부
      *
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      * @return 등록자 여부
      */
-    public Boolean getIsRegstr(final String userId) {
+    public Boolean getIsRegstr(final String username) {
         if (StringUtils.isEmpty(this.regstrId)) return false;
-        return this.regstrId.equals(userId);
+        return this.regstrId.equals(username);
     }
 }

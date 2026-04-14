@@ -51,22 +51,22 @@
         <div class="card-body">
             <#--begin::Form-->
             <form name="userReqstForm" id="userReqstForm" class="form" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="userNo" value="${user.userNo!}">
+                <input type="hidden" name="id" value="${user.id!}">
                 <input type="hidden" name="atchFileNo" value="${user.atchFileNo!}">
                 <#--begin::Row-->
                 <div class="row mb-4">
                     <div class="col-xl-2">
                         <div class="fw-bold col-form-label text-lg-center text-sm-end required">
-                            <label for="userId">아이디</label>
+                            <label for="username">아이디</label>
                         </div>
                     </div>
                     <div class="col-xl-2 col-8">
-                        <input type="text" name="userId" id="userId" class="form-control form-control-solid required no-space"
-                               value="${user.userId!}" placeholder="아이디" maxlength="16" />
+                        <input type="text" name="username" id="username" class="form-control form-control-solid required no-space"
+                               value="${user.username!}" placeholder="아이디" maxlength="16" />
                         <div class="form-text text-noti">
-                            <@spring.message 'txt.req.userid'/>
+                            <@spring.message 'txt.req.username'/>
                         </div>
-                        <div id="userId_validate_span" class="text-danger"></div>
+                        <div id="username_validate_span" class="text-danger"></div>
                         <div id="ipDupChckPassed_validate_span" class="text-danger"></div>
                     </div>
                     <div class="col-xl-2 col-4">
@@ -127,7 +127,7 @@
                 </div>
                 <#--begin::Row-->
                 <!-- 가리고 숨기고를 반복하는 곳은 style로 선언해야 한다. -->
-                <div class="row mb-4" id="nickNmShowDiv" <#if user.userProfl??>style="display:none;"</#if>>
+                <div class="row mb-4" id="nickNmShowDiv" <#if user.userProfile??>style="display:none;"</#if>>
                     <div class="col-xl-2">
                         <div class="fw-bold col-form-label text-lg-center text-sm-start required"
                              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="프로필 정보 미입력시&#10;사용할 이름입니다.&#10;(외부사용자, 임시계정 등)">
@@ -247,7 +247,7 @@
                 </div>
 
                 <#--사용자 프로필 정보 영역-->
-                <div id="user_profl_div">
+                <div id="user_profile_div">
                     <#--handlebars template goes in here-->
                 </div>
 
@@ -264,9 +264,9 @@
         <div class="d-flex justify-content-between">
             <div>
                 <div class="d-flex gap-2">
-                    <div id="user_profl_reg_btn_div">
-                        <button type="button" id="userProflBtn" class="btn btn-sm btn-primary blink"
-                                onclick="dF.UserProfl.enableUserProfl();"
+                    <div id="user_profile_reg_btn_div">
+                        <button type="button" id="userProfileBtn" class="btn btn-sm btn-primary blink"
+                                onclick="dF.UserProfile.enableUserProfile();"
                                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="사용자 프로필 정보를&#10;추가합니다.">
                             프로필 정보 추가+
                         </button>
@@ -304,9 +304,9 @@
 <#--include::user_emplym_modules-->
 <#include "/view/feature/user/emplym/_user_emplym_reg_template.hbs">
 <script type="text/javascript" src="/js/view/feature/user/emplym/user_emplym_module.js?${releaseDate!}"></script>
-<#--include::user_profl_modules-->
-<#include "/view/feature/user/profl/_user_profl_reg_template.hbs">
-<script type="text/javascript" src="/js/view/feature/user/profl/user_profl_module.js?${releaseDate!}"></script>
+<#--include::user_profile_modules-->
+<#include "/view/feature/user/profile/_user_profile_reg_template.hbs">
+<script type="text/javascript" src="/js/view/feature/user/profile/user_profile_module.js?${releaseDate!}"></script>
 
 <!--include::page scripts-->
 <script type="text/javascript" src="/js/view/feature/user/reqst/user_reqst_module.js?${releaseDate!}"></script>

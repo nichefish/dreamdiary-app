@@ -55,7 +55,7 @@
                         </span>
                     </#if>
                 </div>
-                ${user.userId!}
+                ${user.username!}
             </div>
             <div class="col-xl-2 col-4">
                 <div class="col-form-label text-center fw-bold">등록자</div>
@@ -189,8 +189,8 @@
         </div>
     </div>
     <#--페이지:: 사용자 프로필 정보 영역-->
-    <#if user.profl??>
-        <#include "/view/feature/user/profl/_user_profl_dtl_area.ftlh">
+    <#if user.profile??>
+        <#include "/view/feature/user/profile/_user_profile_dtl_area.ftlh">
     </#if>
     <#--페이지:: 사용자 인사정보 영역-->
     <#if user.emplym??>
@@ -201,7 +201,7 @@
         <#--페이지:: 버튼: 수정하기-->
         <@component.post_btn_modify "dF.User.mdfForm();" user isMngr />
         <#--페이지:: 버튼: 삭제하기-->
-        <@component.post_btn_delete "dF.User.delAjax(${post.postNo});" user isMngr />
+        <@component.post_btn_delete "dF.User.delAjax(${post.id});" user isMngr />
         <#--페이지:: 버튼: 목록으로 가기-->
         <@component.post_btn_toList "dF.User.list();" />
     </div>
@@ -210,9 +210,9 @@
 <!--end::Card-->
 
 <form name="procForm" id="procForm" method="get">
-    <input type="hidden" name="userNo" value="${user.userNo!}">
-    <#if user.profl??>
-        <input type="hidden" name="userProflNo" value="${user.profl.userProflNo!}">
+    <input type="hidden" name="id" value="${user.id!}">
+    <#if user.profile??>
+        <input type="hidden" name="userProfileId" value="${user.profile.userProfileId!}">
     </#if>
 </form>
 

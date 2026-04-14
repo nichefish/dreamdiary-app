@@ -43,47 +43,47 @@ public class JrnlDayQueryService {
     /**
      * 연월기준 목록 조회 + enrich
      *
-     * @param userId 조회 사용자 ID
+     * @param username 조회 사용자 계정명
      * @param searchParam 조회 조건 (연도, 월, 필터 조건 포함)
      * @return {@link List} -- 가공 완료된 일자 DTO 목록
      */
-    public List<JrnlDayDto> getYyMnthListDtoEnrichedByUser(final String userId, final JrnlDaySearchParam searchParam) throws Exception {
+    public List<JrnlDayDto> getYyMnthListDtoEnrichedByUser(final String username, final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
-        final String resolvedUserId = AuthUtils.requireUserId(userId);
+        final String resolvedUsername = AuthUtils.requireUsername(username);
 
         final List<JrnlDayDto> listDto = jrnlDayService.getCachedYyMnthListDtoByUser(
-                resolvedUserId,
+                resolvedUsername,
                 searchParam.getYy(),
                 searchParam.getMnth()
         );
         final List<JrnlDayDto> filteredList = JrnlDayFilterHelper.filterInMemory(listDto, searchParam);
 
-        return this.enrichList(resolvedUserId, filteredList, searchParam);
+        return this.enrichList(resolvedUsername, filteredList, searchParam);
     }
 
     /**
      * 기준일(standard day) 목록 조회 + enrich
      *
-     * @param userId 조회 사용자 ID
+     * @param username 조회 사용자 계정명
      * @param searchParam 조회 조건
      * @return {@link List} -- 가공 완료된 DTO 목록
      */
-    public List<JrnlDayDto> getStdrdDaysDtoEnrichedByUser(final String userId, final JrnlDaySearchParam searchParam) throws Exception {
-        final String resolvedUserId = AuthUtils.requireUserId(userId);
-        final List<JrnlDayDto> listDto = jrnlDayService.getJrnlStdrdDaysByUser(resolvedUserId, searchParam);
-        return this.enrichList(resolvedUserId, listDto, searchParam);
+    public List<JrnlDayDto> getStdrdDaysDtoEnrichedByUser(final String username, final JrnlDaySearchParam searchParam) throws Exception {
+        final String resolvedUsername = AuthUtils.requireUsername(username);
+        final List<JrnlDayDto> listDto = jrnlDayService.getJrnlStdrdDaysByUser(resolvedUsername, searchParam);
+        return this.enrichList(resolvedUsername, listDto, searchParam);
     }
 
     /**
      * 주간 목록 조회 + enrich
      *
-     * @param userId 조회 사용자 ID
+     * @param username 조회 사용자 계정명
      * @param searchParam 조회 조건
      * @return {@link List} -- 가공 완료된 DTO 목록
      */
-    public List<JrnlDayDto> getWeeklyListDtoEnrichedByUser(final String userId, final JrnlDaySearchParam searchParam) throws Exception {
+    public List<JrnlDayDto> getWeeklyListDtoEnrichedByUser(final String username, final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
-        final String resolvedUserId = AuthUtils.requireUserId(userId);
+        final String resolvedUsername = AuthUtils.requireUsername(username);
 
         final String weekStartDt = StringUtils.isNotBlank(searchParam.getWeekStartDt())
                 ? searchParam.getWeekStartDt()
@@ -91,48 +91,48 @@ public class JrnlDayQueryService {
         if (StringUtils.isBlank(weekStartDt)) return List.of();
         searchParam.setWeekStartDt(weekStartDt);
 
-        final List<JrnlDayDto> listDto = jrnlDayService.getCachedWeeklyListDtoByUser(resolvedUserId, weekStartDt);
+        final List<JrnlDayDto> listDto = jrnlDayService.getCachedWeeklyListDtoByUser(resolvedUsername, weekStartDt);
         final List<JrnlDayDto> filteredList = JrnlDayFilterHelper.filterInMemory(listDto, searchParam);
-        return this.enrichWeeklyList(resolvedUserId, filteredList, searchParam);
+        return this.enrichWeeklyList(resolvedUsername, filteredList, searchParam);
     }
 
     /**
      * 메타 기준 조회 + enrich
      *
-     * @param userId 조회 사용자 ID
+     * @param username 조회 사용자 계정명
      * @param searchParam 조회 조건 (metaId 포함)
      * @return {@link List} -- 가공 완료된 DTO 목록
      */
-    public List<JrnlDayDto> getListDtoByMetaIdEnrichedByUser(final String userId, final JrnlDaySearchParam searchParam) throws Exception {
-        final String resolvedUserId = AuthUtils.requireUserId(userId);
-        final List<JrnlDayDto> listDto = jrnlDayService.getListDtoByMetaIdAndUser(resolvedUserId, searchParam);
-        return this.enrichList(resolvedUserId, listDto, searchParam);
+    public List<JrnlDayDto> getListDtoByMetaIdEnrichedByUser(final String username, final JrnlDaySearchParam searchParam) throws Exception {
+        final String resolvedUsername = AuthUtils.requireUsername(username);
+        final List<JrnlDayDto> listDto = jrnlDayService.getListDtoByMetaIdAndUser(resolvedUsername, searchParam);
+        return this.enrichList(resolvedUsername, listDto, searchParam);
     }
 
     /**
      * 태그 기준 조회 + enrich
      *
-     * @param userId 조회 사용자 ID
+     * @param username 조회 사용자 계정명
      * @param searchParam 조회 조건 (tagId 포함)
      * @return {@link List} -- 가공 완료된 DTO 목록
      */
-    public List<JrnlDayDto> getListDtoByTagIdEnrichedByUser(final String userId, final JrnlDaySearchParam searchParam) throws Exception {
-        final String resolvedUserId = AuthUtils.requireUserId(userId);
-        final List<JrnlDayDto> listDto = jrnlDayService.getListDtoByTagIdAndUser(resolvedUserId, searchParam);
-        return this.enrichList(resolvedUserId, listDto, searchParam);
+    public List<JrnlDayDto> getListDtoByTagIdEnrichedByUser(final String username, final JrnlDaySearchParam searchParam) throws Exception {
+        final String resolvedUsername = AuthUtils.requireUsername(username);
+        final List<JrnlDayDto> listDto = jrnlDayService.getListDtoByTagIdAndUser(resolvedUsername, searchParam);
+        return this.enrichList(resolvedUsername, listDto, searchParam);
     }
 
     /**
      * 상세 조회 + enrich
      *
-     * @param userId 조회 사용자 ID
+     * @param username 조회 사용자 계정명
      * @param key PK
      * @return {@link JrnlDayDto} -- 가공 완료된 DTO
      */
-    public JrnlDayDto getDtlDtoEnrichedByUser(final String userId, final Integer key) throws Exception {
-        final String resolvedUserId = AuthUtils.requireUserId(userId);
-        final JrnlDayDto retrieved = jrnlDayService.getCachedDtlDtoByUser(resolvedUserId, key);
-        return this.enrichDetail(resolvedUserId, retrieved);
+    public JrnlDayDto getDtlDtoEnrichedByUser(final String username, final Integer key) throws Exception {
+        final String resolvedUsername = AuthUtils.requireUsername(username);
+        final JrnlDayDto retrieved = jrnlDayService.getCachedDtlDtoByUser(resolvedUsername, key);
+        return this.enrichDetail(resolvedUsername, retrieved);
     }
 
     /**
@@ -143,15 +143,15 @@ public class JrnlDayQueryService {
      * @param searchParam 조회 조건
      * @return enrich 완료 리스트
      */
-    private List<JrnlDayDto> enrichList(final String userId, final List<JrnlDayDto> listDto, final JrnlDaySearchParam searchParam) throws Exception {
+    private List<JrnlDayDto> enrichList(final String username, final List<JrnlDayDto> listDto, final JrnlDaySearchParam searchParam) throws Exception {
         if (listDto == null) return null;
 
         JrnlDayHldyHelper.setHldyInfo(listDto, getHldyMap());
         if (searchParam != null) {
-            JrnlDayViewHelper.mergeStates(userId, listDto, searchParam);
+            JrnlDayViewHelper.mergeStates(username, listDto, searchParam);
             JrnlDayViewHelper.applyChapterTagSummary(listDto, searchParam);
         }
-        this.mergeRelatedContents(userId, listDto);
+        this.mergeRelatedContents(username, listDto);
 
         return listDto;
     }
@@ -163,15 +163,15 @@ public class JrnlDayQueryService {
      * @param searchParam 조회 조건
      * @return enrich 완료 리스트
      */
-    private List<JrnlDayDto> enrichWeeklyList(final String userId, final List<JrnlDayDto> listDto, final JrnlDaySearchParam searchParam) throws Exception {
+    private List<JrnlDayDto> enrichWeeklyList(final String username, final List<JrnlDayDto> listDto, final JrnlDaySearchParam searchParam) throws Exception {
         if (listDto == null) return null;
 
         JrnlDayHldyHelper.setHldyInfo(listDto, getHldyMap());
         if (searchParam != null) {
-            JrnlDayViewHelper.mergeWeeklyStates(userId, listDto, searchParam);
+            JrnlDayViewHelper.mergeWeeklyStates(username, listDto, searchParam);
             JrnlDayViewHelper.applyChapterTagSummary(listDto, searchParam);
         }
-        this.mergeRelatedContents(userId, listDto);
+        this.mergeRelatedContents(username, listDto);
 
         return listDto;
     }
@@ -182,17 +182,17 @@ public class JrnlDayQueryService {
      * @param retrieved 조회 결과
      * @return enrich 완료 DTO
      */
-    private JrnlDayDto enrichDetail(final String userId, final JrnlDayDto retrieved) throws Exception {
+    private JrnlDayDto enrichDetail(final String username, final JrnlDayDto retrieved) throws Exception {
         if (retrieved == null) return null;
 
         JrnlDayHldyHelper.setHldyInfo(retrieved, getHldyMap());
-        JrnlDayViewHelper.mergeStates(userId, retrieved);
-        this.mergeRelatedContents(userId, List.of(retrieved));
+        JrnlDayViewHelper.mergeStates(username, retrieved);
+        this.mergeRelatedContents(username, List.of(retrieved));
 
         return retrieved;
     }
 
-    private void mergeRelatedContents(final String userId, final List<JrnlDayDto> listDto) throws Exception {
+    private void mergeRelatedContents(final String username, final List<JrnlDayDto> listDto) throws Exception {
         if (listDto == null || listDto.isEmpty()) return;
 
         final List<BaseClsfKey> refKeyList = new ArrayList<>();
@@ -215,7 +215,7 @@ public class JrnlDayQueryService {
             this.collectDreamRefKeys(refKeyList, jrnlDay.getJrnlElseDreamList());
         }
 
-        final Map<String, List<RelatedContentDto>> relatedMap = relatedContentQueryService.getRelatedContentMapByRefs(refKeyList, userId);
+        final Map<String, List<RelatedContentDto>> relatedMap = relatedContentQueryService.getRelatedContentMapByRefs(refKeyList, username);
 
         for (final JrnlDayDto jrnlDay : listDto) {
             if (jrnlDay == null) continue;

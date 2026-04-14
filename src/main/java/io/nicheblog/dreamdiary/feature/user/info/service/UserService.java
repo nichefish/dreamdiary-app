@@ -58,27 +58,27 @@ public class UserService
     private final PasswordEncoder passwordEncoder;
 
     /**
-     * 사용자 관리 > 사용자 단일 조회 (Dto Level) (Long userNo와 별도로 String userId)
+     * 사용자 관리 > 사용자 단일 조회 (Dto Level) (Long id와 별도로 String username)
      *
-     * @param userId 조회할 사용자의 ID (문자열)
+     * @param username 조회할 사용자의 계정명 (문자열)
      * @return {@link UserDto} -- 사용자 정보가 담긴 Dto 객체
      */
-    public UserDto getDtlDto(final String userId) throws Exception {
+    public UserDto getDtlDto(final String username) throws Exception {
         // Entity 레벨 조회
-        final UserEntity rsUserEntity = this.getDtlEntity(userId);
+        final UserEntity rsUserEntity = this.getDtlEntity(username);
 
         return mapstruct.toDto(rsUserEntity);
     }
 
     /**
-     * 사용자 관리 > 사용자 단일 조회 (Entity Level) (Long userNo와 별도로 String userId)
+     * 사용자 관리 > 사용자 단일 조회 (Entity Level) (Long id와 별도로 String username)
      *
-     * @param userId 조회할 사용자의 ID (문자열 형식)
+     * @param username 조회할 사용자의 계정명 (문자열 형식)
      * @return {@link UserEntity} -- 사용자 정보를
      * @throws NullPointerException 사용자 정보가 존재하지 않을 경우 발생
      */
-    public UserEntity getDtlEntity(final String userId) throws Exception {
-        final Optional<UserEntity> retrievedWrapper = repository.findByUserId(userId);
+    public UserEntity getDtlEntity(final String username) throws Exception {
+        final Optional<UserEntity> retrievedWrapper = repository.findByUsername(username);
 
         return Objects.requireNonNull(retrievedWrapper.orElseThrow(() -> new EntityNotFoundException("exception.UsernameNotFoundException")));
     }
@@ -88,11 +88,11 @@ public class UserService
     /**
      * 사용자 관리 > 사용자 ID 중복 체크
      *
-     * @param userId 중복을 확인할 사용자 ID (문자열 형식)
+     * @param username 중복을 확인할 사용자 계정명 (문자열 형식)
      * @return {@link Boolean} -- 중복 여부
      */
-    public Boolean userIdDupChck(final String userId) {
-        return repository.findByUserId(userId).isPresent();
+    public Boolean usernameDupChck(final String username) {
+        return repository.findByUsername(username).isPresent();
     }
 
     /**
@@ -152,7 +152,7 @@ public class UserService
         final UserEntity updatedEntity = repository.saveAndFlush(retrievedEntity);
 
         return ServiceResponse.builder()
-                .rslt(updatedEntity.getUserNo() != null)
+                .rslt(updatedEntity.getId() != null)
                 .build();
     }
 
@@ -186,7 +186,7 @@ public class UserService
         final UserDto updatedDto = mapstruct.toDto(updatedEntity);
 
         return ServiceResponse.builder()
-                .rslt(updatedEntity.getUserNo() != null)
+                .rslt(updatedEntity.getId() != null)
                 .rsltObj(updatedDto)
                 .build();
     }
@@ -194,14 +194,14 @@ public class UserService
     /**
      * 장기간 미접속여부 조회
      */
-    public Boolean isDormant(final String userId) throws Exception {
-        if (StringUtils.isEmpty(userId)) return false;
-        if (Constant.SYSTEM_ACNT.equals(userId) || Constant.DEV_ACNT.equals(userId)) return false;
+    public Boolean isDormant(final String username) throws Exception {
+        if (StringUtils.isEmpty(username)) return false;
+        if (Constant.SYSTEM_ACNT.equals(username) || Constant.DEV_ACNT.equals(username)) return false;
 
         final AuthPolicyEntity authPolicy = authPolicyQueryService.getDtlEntity();
         final Integer lgnLockDy = authPolicy.getLgnLockDy();
 
-        final UserEntity user = this.getDtlEntity(userId);
+        final UserEntity user = this.getDtlEntity(username);
         Date lastLgnDt = user.acntStus.getLstLgnDt();
         if (lastLgnDt == null) lastLgnDt = user.getRegDt();
         final Date dormantDt = DateUtils.getDateAddDay(lastLgnDt, lgnLockDy);
@@ -224,7 +224,7 @@ public class UserService
         final UserEntity updatedEntity = repository.saveAndFlush(retrievedEntity);
 
         return ServiceResponse.builder()
-                .rslt(updatedEntity.getUserNo() != null)
+                .rslt(updatedEntity.getId() != null)
                 .build();
     }
 
@@ -244,7 +244,7 @@ public class UserService
         final UserEntity updatedEntity = repository.saveAndFlush(retrievedEntity);
 
         return ServiceResponse.builder()
-                .rslt(updatedEntity.getUserNo() != null)
+                .rslt(updatedEntity.getId() != null)
                 .build();
     }
 
@@ -280,6 +280,6 @@ public class UserService
      * @param rslt 캐시 삭제 판단에 필요한 객체
      */
     public void evictCache(final UserEntity rslt) {
-        EhCacheUtils.evictCacheByKey("auditorInfo", rslt.getUserId());
+        EhCacheUtils.evictCacheByKey("auditorInfo", rslt.getUsername());
     }
 }

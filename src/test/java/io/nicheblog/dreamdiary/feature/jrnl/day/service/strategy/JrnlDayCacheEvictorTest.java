@@ -24,7 +24,7 @@ class JrnlDayCacheEvictorTest {
                 final MockedStatic<AuthUtils> authUtils = mockStatic(AuthUtils.class);
                 final MockedStatic<EhCacheUtils> ehCacheUtils = mockStatic(EhCacheUtils.class)
         ) {
-            authUtils.when(AuthUtils::getLgnUserId).thenReturn("nichefish");
+            authUtils.when(AuthUtils::getLgnUsername).thenReturn("nichefish");
 
             evictor.evict(param);
 

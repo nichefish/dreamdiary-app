@@ -6,8 +6,8 @@ import io.nicheblog.dreamdiary.feature.user.emplym.entity.UserEmplymEntityTestFa
 import io.nicheblog.dreamdiary.feature.user.info.entity.*;
 import io.nicheblog.dreamdiary.feature.user.info.mapstruct.UserMapstruct;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
-import io.nicheblog.dreamdiary.feature.user.profl.entity.UserProflEntity;
-import io.nicheblog.dreamdiary.feature.user.profl.entity.UserProflEntityTestFactory;
+import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntity;
+import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntityTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseEntityTestFactoryHelper;
 import io.nicheblog.dreamdiary.infrastructure.cd.Code;
@@ -154,17 +154,17 @@ class UserMapstructToDtoTest {
     @Test
     void testToDto_checkProfl() throws Exception {
         // Given::
-        final UserProflEntity userProflEntity = UserProflEntityTestFactory.create();
-        userEntity.setProfl(userProflEntity);
+        final UserProfileEntity userProfileEntity = UserProfileEntityTestFactory.create();
+        userEntity.setProfile(userProfileEntity);
 
         // When::
         final UserDto userDto = userMapstruct.toDto(userEntity);
 
         // Then::
         assertNotNull(userDto, "변환된 사용자 상세 Dto는 null일 수 없습니다.");
-        assertNotNull(userDto.getProfl(), "변환된 사용자 프로필 Dto는 null일 수 없습니다.");
+        assertNotNull(userDto.getProfile(), "변환된 사용자 프로필 Dto는 null일 수 없습니다.");
         // 날짜 변환 검증
-        assertEquals("2000-01-01", userDto.getProfl().getBrthdy(), "사용자 프로필 생일 정보가 제대로 매핑되지 않았습니다.");
+        assertEquals("2000-01-01", userDto.getProfile().getBrthdy(), "사용자 프로필 생일 정보가 제대로 매핑되지 않았습니다.");
     }
 
     /**

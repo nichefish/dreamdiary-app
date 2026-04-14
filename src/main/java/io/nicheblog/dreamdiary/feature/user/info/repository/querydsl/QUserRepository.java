@@ -16,5 +16,5 @@ import java.util.List;
  *//*
 
 public interface QUserRepository {
-    List<UserEntity> queryUsersByUserIdTest();
+    List<UserEntity> queryUsersByUsernameTest();
 }*/

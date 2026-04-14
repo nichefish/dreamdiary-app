@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.auth.security.mapstruct;
 import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
-import io.nicheblog.dreamdiary.feature.user.profl.mapstruct.UserProflMapstruct;
+import io.nicheblog.dreamdiary.feature.user.profile.mapstruct.UserProfileMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +20,7 @@ import org.mapstruct.factory.Mappers;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, UserProflMapstruct.class})
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, UserProfileMapstruct.class})
 public interface AuthInfoMapstruct
         extends BaseMapstruct<AuthInfo, UserEntity> {
 
@@ -38,8 +38,8 @@ public interface AuthInfoMapstruct
     @Mapping(target = "pwChgDt", expression = "java(entity.acntStus.getPwChgDt() != null ? entity.acntStus.getPwChgDt() : entity.getRegDt())")          // 최종비밀번호변경일 또는 등록일
     @Mapping(target = "needsPwReset", expression = "java(entity.acntStus.getNeedsPwReset())")
     @Mapping(target = "cfYn", expression = "java(entity.acntStus.getCfYn())")
-    @Mapping(target = "profl", expression = "java(UserProflMapstruct.INSTANCE.toDto(entity.getProfl()))")
-    @Mapping(target = "userProflNo", expression = "java(entity.getProfl() != null ? entity.getProfl().getUserProflNo() : null)")
+    @Mapping(target = "profile", expression = "java(UserProfileMapstruct.INSTANCE.toDto(entity.getProfile()))")
+    @Mapping(target = "userProfileId", expression = "java(entity.getProfile() != null ? entity.getProfile().getUserProfileId() : null)")
     AuthInfo toDto(final UserEntity entity) throws Exception;
 
     /**

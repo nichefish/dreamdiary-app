@@ -47,15 +47,15 @@ public class LogSysEntity
     @Comment("로그 고유 ID")
     private Integer id;
 
-    /** 작업자 ID */
+    /** 작업자 계정명 */
     @Builder.Default
-    @Column(name = "user_id", length = 20)
-    @Comment("작업자 ID")
-    private String userId = Constant.SYSTEM_ACNT;
+    @Column(name = "username", length = 20)
+    @Comment("작업자 계정명")
+    private String username = Constant.SYSTEM_ACNT;
 
     /** 작업자 정보 */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "username", referencedColumnName = "username", insertable = false, updatable = false)
     @Fetch(value = FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("작업자 정보")

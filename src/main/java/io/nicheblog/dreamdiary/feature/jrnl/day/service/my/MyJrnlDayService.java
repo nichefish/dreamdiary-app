@@ -35,8 +35,8 @@ public class MyJrnlDayService {
      * @return {@link List} -- 조회된 목록
      */
     public List<JrnlDayDto> getMyCachedYyMnthListDto(final Integer yy, final Integer mnth) throws Exception {
-        final String lgnUserId = AuthUtils.requireLgnUserId();
-        return jrnlDayService.getCachedYyMnthListDtoByUser(lgnUserId, yy, mnth);
+        final String lgnUsername = AuthUtils.requireLgnUsername();
+        return jrnlDayService.getCachedYyMnthListDtoByUser(lgnUsername, yy, mnth);
     }
 
     /**
@@ -49,8 +49,8 @@ public class MyJrnlDayService {
     public List<JrnlDayDto> getMyJrnlStdrdDays(final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDayService.getJrnlStdrdDaysByUser(userId, searchParam);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlDayService.getJrnlStdrdDaysByUser(username, searchParam);
     }
 
     /**
@@ -62,14 +62,14 @@ public class MyJrnlDayService {
     public List<JrnlDayDto> getMyCachedWeeklyListDto(final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        final String lgnUserId = AuthUtils.requireLgnUserId();
+        final String lgnUsername = AuthUtils.requireLgnUsername();
         final String weekStartDt = StringUtils.isNotBlank(searchParam.getWeekStartDt())
                 ? searchParam.getWeekStartDt()
                 : io.nicheblog.dreamdiary.global.util.date.DateUtils.getWeekStartDateStr(searchParam.getStdrdDt());
         if (StringUtils.isBlank(weekStartDt)) return List.of();
         searchParam.setWeekStartDt(weekStartDt);
 
-        return jrnlDayService.getCachedWeeklyListDtoByUser(lgnUserId, weekStartDt);
+        return jrnlDayService.getCachedWeeklyListDtoByUser(lgnUsername, weekStartDt);
     }
 
     /**
@@ -82,8 +82,8 @@ public class MyJrnlDayService {
     public List<JrnlDayDto> getMyListDtoByMetaId(final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDayService.getListDtoByMetaIdAndUser(userId, searchParam);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlDayService.getListDtoByMetaIdAndUser(username, searchParam);
     }
 
     /**
@@ -96,8 +96,8 @@ public class MyJrnlDayService {
     public List<JrnlDayDto> getMyListDtoByTagId(final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDayService.getListDtoByTagIdAndUser(userId, searchParam);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlDayService.getListDtoByTagIdAndUser(username, searchParam);
     }
 
     /**
@@ -107,8 +107,8 @@ public class MyJrnlDayService {
      * @return {@link JrnlDayDto} -- 조회된 객체
      */
     public JrnlDayDto getMyCachedDtlDto(final Integer key) throws Exception {
-        final String lgnUserId = AuthUtils.requireLgnUserId();
-        return jrnlDayService.getCachedDtlDtoByUser(lgnUserId, key);
+        final String lgnUsername = AuthUtils.requireLgnUsername();
+        return jrnlDayService.getCachedDtlDtoByUser(lgnUsername, key);
     }
 
     /**
@@ -118,8 +118,8 @@ public class MyJrnlDayService {
      * @return {@link boolean} -- 정상은 true, 중복은 false 반환
      */
     public boolean dupChck(final JrnlDayDto jrnlDay) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDayService.dupChckByUser(userId, jrnlDay);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlDayService.dupChckByUser(username, jrnlDay);
     }
 
     /**
@@ -129,7 +129,7 @@ public class MyJrnlDayService {
      * @return {@link Integer} -- 중복되는 경우 해당 게시글 번호
      */
     public Integer getDupKey(final JrnlDayDto jrnlDay) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDayService.getDupKeyByUser(userId, jrnlDay);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlDayService.getDupKeyByUser(username, jrnlDay);
     }
 }

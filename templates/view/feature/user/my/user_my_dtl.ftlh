@@ -47,7 +47,7 @@
                     </#if>
                     <#--end::Svg Icon-->
                 </div>
-                ${user.userId!}
+                ${user.username!}
             </div>
         </div>
         <#--begin::Row-->
@@ -250,9 +250,9 @@
 </div>
 
 <form name="procForm" id="procForm" method="get">
-    <input type="hidden" name="userNo" value="${user.userNo!}">
+    <input type="hidden" name="id" value="${user.id!}">
     <#if user.userInfo??>
-        <input type="hidden" name="userProflNo" value="${user.userInfo.userProflNo!}">
+        <input type="hidden" name="userProfileId" value="${user.userInfo.userProfileId!}">
     </#if>
 </form>
 <div id="proflImageTemplate" hidden>

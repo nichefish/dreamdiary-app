@@ -47,33 +47,33 @@ public class HistoryFacade {
 
     public <Dto extends BaseClsfDto> List<HistoryDto> getHistoryListByUser(
             final ContentType contentType,
-            final String userId,
+            final String username,
             final Integer key
     ) throws Exception {
         final HistoryStrategy<Dto> strategy = this.getRequiredStrategy(contentType);
-        final Dto currentDto = strategy.getOwnedDto(userId, key);
+        final Dto currentDto = strategy.getOwnedDto(username, key);
         return historyService.getHistoryList(currentDto.getClsfKey());
     }
 
     public <Dto extends BaseClsfDto> Dto getHistoryTargetByUser(
             final ContentType contentType,
-            final String userId,
+            final String username,
             final Integer key
     ) throws Exception {
         final HistoryStrategy<Dto> strategy = this.getRequiredStrategy(contentType);
-        final Dto currentDto = strategy.getOwnedDto(userId, key);
+        final Dto currentDto = strategy.getOwnedDto(username, key);
         final List<HistoryDto> historyList = historyService.getHistoryList(currentDto.getClsfKey());
         return strategy.applyHistoryList(currentDto, historyList);
     }
 
     public <Dto extends BaseClsfDto> Dto restoreHistoryByUser(
             final ContentType contentType,
-            final String userId,
+            final String username,
             final Integer key,
             final Integer historyId
     ) throws Exception {
         final HistoryStrategy<Dto> strategy = this.getRequiredStrategy(contentType);
-        final Dto currentDto = strategy.getOwnedDto(userId, key);
+        final Dto currentDto = strategy.getOwnedDto(username, key);
         final Optional<HistoryDto> history = historyService.getHistory(currentDto.getClsfKey(), historyId);
         if (history.isEmpty()) {
             throw new IllegalArgumentException("복구할 이력이 없습니다.");
@@ -84,22 +84,22 @@ public class HistoryFacade {
 
     public <Dto extends BaseClsfDto> boolean deleteHistoryByUser(
             final ContentType contentType,
-            final String userId,
+            final String username,
             final Integer key,
             final Integer historyId
     ) throws Exception {
         final HistoryStrategy<Dto> strategy = this.getRequiredStrategy(contentType);
-        final Dto currentDto = strategy.getOwnedDto(userId, key);
+        final Dto currentDto = strategy.getOwnedDto(username, key);
         return historyService.deleteHistory(currentDto.getClsfKey(), historyId);
     }
 
     public <Dto extends BaseClsfDto> boolean deleteAllHistoryByUser(
             final ContentType contentType,
-            final String userId,
+            final String username,
             final Integer key
     ) throws Exception {
         final HistoryStrategy<Dto> strategy = this.getRequiredStrategy(contentType);
-        final Dto currentDto = strategy.getOwnedDto(userId, key);
+        final Dto currentDto = strategy.getOwnedDto(username, key);
         return historyService.deleteAllHistory(currentDto.getClsfKey());
     }
 

@@ -56,8 +56,8 @@ public class UserMyPageController
         model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // 내 정보 조회 및 모델에 추가
-        final String lgnUserId = AuthUtils.getLgnUserId();
-        final UserDto retrievedDto = userService.getDtlDto(lgnUserId);
+        final String lgnUsername = AuthUtils.getLgnUsername();
+        final UserDto retrievedDto = userService.getDtlDto(lgnUsername);
         model.addAttribute("user", retrievedDto);
 
         return "/view/feature/user/my/user_my_dtl";

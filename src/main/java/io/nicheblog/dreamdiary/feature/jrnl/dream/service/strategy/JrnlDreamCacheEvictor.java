@@ -33,29 +33,29 @@ public class JrnlDreamCacheEvictor
     public void evict(final JrnlCacheEvictParam param) throws Exception {
         final ContentType refContentType = ContentType.JRNL_DREAM;
         try {
-            final String userId = param.getRegstrId();
+            final String username = param.getRegstrId();
             final Integer postNo = param.getPostNo();
             final Integer jrnlDayNo = param.getJrnlDayNo();
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();
             final String weekStartDt = param.getWeekStartDt();
             // jrnl_dream
-            this.evictMyYyCacheByYyPrefix(userId, "jrnlDreamYySumryStatedListByUser", yy);
-            EhCacheUtils.evictUserCacheByKey("jrnlDreamDtlDtoByUser", userId, postNo);
+            this.evictMyYyCacheByYyPrefix(username, "jrnlDreamYySumryStatedListByUser", yy);
+            EhCacheUtils.evictUserCacheByKey("jrnlDreamDtlDtoByUser", username, postNo);
             // jrnl_day
             if (jrnlDayNo != null) {
-                EhCacheUtils.evictUserCacheByKey("jrnlDayDtlDtoByUser", userId, jrnlDayNo);
+                EhCacheUtils.evictUserCacheByKey("jrnlDayDtlDtoByUser", username, jrnlDayNo);
             }
-            this.evictMyJrnlDayYyMnthCaches(userId, yy, mnth);
-            this.evictMyJrnlDayWeeklyCaches(userId, weekStartDt);
+            this.evictMyJrnlDayYyMnthCaches(username, yy, mnth);
+            this.evictMyJrnlDayWeeklyCaches(username, weekStartDt);
             // jrnl_dream_tag
-            EhCacheUtils.clearUserCache("jrnlDreamTagCtgrMapByUser", userId);
-            EhCacheUtils.clearUserCache("jrnlDreamTagListByUser", userId);
-            EhCacheUtils.clearUserCache("jrnlDreamYyMnthTagListByUser", userId);
-            EhCacheUtils.clearUserCache("jrnlDreamWeeklyTagListByUser", userId);
-            EhCacheUtils.clearUserCache("jrnlDreamYyMnthSizedTagListByUser", userId);
-            EhCacheUtils.clearUserCache("jrnlDreamWeeklySizedTagListByUser", userId);
-            EhCacheUtils.clearUserCache("jrnlDreamCountMapByUser", userId);
+            EhCacheUtils.clearUserCache("jrnlDreamTagCtgrMapByUser", username);
+            EhCacheUtils.clearUserCache("jrnlDreamTagListByUser", username);
+            EhCacheUtils.clearUserCache("jrnlDreamYyMnthTagListByUser", username);
+            EhCacheUtils.clearUserCache("jrnlDreamWeeklyTagListByUser", username);
+            EhCacheUtils.clearUserCache("jrnlDreamYyMnthSizedTagListByUser", username);
+            EhCacheUtils.clearUserCache("jrnlDreamWeeklySizedTagListByUser", username);
+            EhCacheUtils.clearUserCache("jrnlDreamCountMapByUser", username);
             // 태그 캐시 처리
             EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", postNo + "_JRNL_DREAM");
         } catch (final Exception e) {

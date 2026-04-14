@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.user.info.model;
 
 import io.nicheblog.dreamdiary.feature.user.info.model.emplym.UserEmplymDto;
-import io.nicheblog.dreamdiary.feature.user.info.model.profl.UserProflDto;
+import io.nicheblog.dreamdiary.feature.user.info.model.profile.UserProfileDto;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import lombok.experimental.UtilityClass;
 import org.springframework.test.context.ActiveProfiles;
@@ -25,7 +25,7 @@ public class UserDtoTestFactory {
     public static UserDto create() {
         // 객체 생성
         return UserDto.builder()
-                .userId(TestConstant.TEST_USER)
+                .username(TestConstant.TEST_USER)
                 .password("test_password")
                 .nickNm("test_nick_nm")
                 .emailId("test_email_id")
@@ -38,10 +38,10 @@ public class UserDtoTestFactory {
     /**
      * 테스트용 사용자 Dto (상세) 생성
      */
-    public static UserDto create(UserProflDto profl) {
+    public static UserDto create(UserProfileDto profile) {
         // 객체 생성
         UserDto dto = create();
-        dto.setProfl(profl);
+        dto.setProfile(profile);
         return dto;
     }
 
@@ -58,10 +58,10 @@ public class UserDtoTestFactory {
     /**
      * 테스트용 사용자 Dto (상세) 생성
      */
-    public static UserDto create(UserProflDto profl, UserEmplymDto emplym) {
+    public static UserDto create(UserProfileDto profile, UserEmplymDto emplym) {
         // 객체 생성
         UserDto dto = create();
-        dto.setProfl(profl);
+        dto.setProfile(profile);
         dto.setEmplym(emplym);
         return dto;
     }

@@ -79,7 +79,7 @@ public class BaseAuditEntity
      */
     public Boolean isMdfusr() {
         if (StringUtils.isEmpty(this.mdfusrId)) return false;
-        return this.mdfusrId.equals(AuthUtils.getLgnUserId());
+        return this.mdfusrId.equals(AuthUtils.getLgnUsername());
     }
 }
 

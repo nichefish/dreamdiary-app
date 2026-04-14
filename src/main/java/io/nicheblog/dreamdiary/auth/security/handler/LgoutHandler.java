@@ -55,9 +55,9 @@ public class LgoutHandler
         CookieUtils.deleteRefreshTokenCookie();
         if (authentication == null || authentication.getPrincipal() == null) return;
 
-        final String userId = ((AuthInfo) authentication.getPrincipal()).getUserId();
-        DupIdLgnManager.removeKey(userId);
-        refreshTokenService.revoke(userId);
+        final String username = ((AuthInfo) authentication.getPrincipal()).getUsername();
+        DupIdLgnManager.removeKey(username);
+        refreshTokenService.revoke(username);
 
         // 쿠키에서 JWT 토큰 삭제
     }

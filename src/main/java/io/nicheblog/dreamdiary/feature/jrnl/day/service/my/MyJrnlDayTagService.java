@@ -32,8 +32,8 @@ public class MyJrnlDayTagService {
      * @return 연도 목록
      */
     public List<Integer> getMyYyListByTagId(final Integer tagId) {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDayTagService.getYyListByTagIdAndUser(tagId, userId);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlDayTagService.getYyListByTagIdAndUser(tagId, username);
     }
 
     /**
@@ -45,8 +45,8 @@ public class MyJrnlDayTagService {
      * @return {@link List} -- CSS 사이즈가 적용된 태그 목록
      */
     public List<TagDto> getMyYyMnthSizedListDto(final Integer yy, final Integer mnth) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDayTagService.getYyMnthSizedListDtoByUser(userId, yy, mnth);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlDayTagService.getYyMnthSizedListDtoByUser(username, yy, mnth);
     }
 
     /**
@@ -57,8 +57,8 @@ public class MyJrnlDayTagService {
      * @return {@link List} -- CSS 사이즈가 적용된 태그 목록
      */
     public List<TagDto> getMyWeeklySizedListDto(final String weekStartDt) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDayTagService.getWeeklySizedListDtoByUser(userId, weekStartDt);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlDayTagService.getWeeklySizedListDtoByUser(username, weekStartDt);
     }
 
     /**
@@ -69,13 +69,13 @@ public class MyJrnlDayTagService {
      * @return {@link Map} -- 카테고리별로 그룹화된 태그 목록을 담은 Map
      */
     public Map<String, List<TagDto>> getMyYyMnthSizedGroupListDto(final Integer yy, final Integer mnth) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDayTagService.getYyMnthSizedGroupListDtoByUser(userId, yy, mnth);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlDayTagService.getYyMnthSizedGroupListDtoByUser(username, yy, mnth);
     }
 
     public Map<String, List<TagDto>> getMyWeeklySizedGroupListDto(final String weekStartDt) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDayTagService.getWeeklySizedGroupListDtoByUser(userId, weekStartDt);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlDayTagService.getWeeklySizedGroupListDtoByUser(username, weekStartDt);
     }
 
     /**
@@ -84,7 +84,7 @@ public class MyJrnlDayTagService {
      * @return {@link Map} -- 태그 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵
      */
     public Map<String, List<String>> getMyTagCtgrMap() throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return jrnlDayTagService.getTagCtgrMapByUser(userId);
+        final String username = AuthUtils.requireLgnUsername();
+        return jrnlDayTagService.getTagCtgrMapByUser(username);
     }
 }

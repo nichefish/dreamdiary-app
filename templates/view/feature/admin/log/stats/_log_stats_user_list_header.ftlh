@@ -25,7 +25,7 @@
         <#--헤더:: 인풋: searchType-->
         <select name="searchType" id="searchType" class="form-select form-select-solid fs-7 fw-bolder">
             <option value="nickNm">이름</option>
-            <option value="userId">아이디</option>
+            <option value="username">아이디</option>
         </select>
     </div>
     <div>

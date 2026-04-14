@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * DupIdLgnManager
  * <pre>
  *  중복 로그인 체크 관련 메모리 캐시 매니저
- *  로그인시 array에 userId 저장, 로그아웃 및 세션만료시 userId 제거
+ *  로그인시 array에 username 저장, 로그아웃 및 세션만료시 username 제거
  * </pre>
  *
  * @author nichefish
@@ -42,7 +42,7 @@ public class DupIdLgnManager
      */
     public synchronized static void addKey(final String lgnId) {
         lgnIdMap.put(lgnId, true);
-        log.info("userId {} added for dupIdLgnMap.", lgnId);
+        log.info("username {} added for dupIdLgnMap.", lgnId);
     }
 
     /**
@@ -52,6 +52,6 @@ public class DupIdLgnManager
      */
     public synchronized static void removeKey(final String compareId) {
         lgnIdMap.remove(compareId);
-        log.info("userId {} removed from dupIdLgnMap.", compareId);
+        log.info("username {} removed from dupIdLgnMap.", compareId);
     }
 }

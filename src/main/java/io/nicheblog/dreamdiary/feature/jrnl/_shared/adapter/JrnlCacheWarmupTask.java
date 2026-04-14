@@ -52,11 +52,11 @@ public class JrnlCacheWarmupTask
 
     /**
      * 로그인시 캐시 웜업
-     * @param userId String
+     * @param username String
      */
     @Override
-    public void warmupOnLgn(final String userId) throws Exception {
+    public void warmupOnLgn(final String username) throws Exception {
         // 로그인 시 해당 사용자의 월별 저널 목록(휴일 포함) 캐시 워밍업
-        jrnlDayService.getCachedYyMnthListDtoByUser(userId, DateUtils.getCurrYy(), DateUtils.getCurrMnth());
+        jrnlDayService.getCachedYyMnthListDtoByUser(username, DateUtils.getCurrYy(), DateUtils.getCurrMnth());
     }
 }

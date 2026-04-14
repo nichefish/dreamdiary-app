@@ -24,8 +24,8 @@ public class LogStatsUserQueryDto
 
     /** 목록 순번 */
     private Long rnum;
-    /** 아이디 */
-    private String userId;
+    /** 계정명 */
+    private String username;
     /** 이름 */
     private String userNm;
     /** 권한코드 */
@@ -55,4 +55,5 @@ public class LogStatsUserQueryDto
 
         return compareCnt.compareTo(this.actvtyCnt);
     }
+
 }

@@ -47,7 +47,7 @@
         <#--헤더:: 인풋: searchType-->
         <select name="searchType" id="searchType" class="form-select form-select-sm form-select-solid">
             <option value="nickNm">이름</option>
-            <option value="userId">아이디</option>
+            <option value="username">아이디</option>
         </select>
     </div>
     <div>

@@ -31,8 +31,8 @@ public class JrnlDiaryHistoryStrategy implements HistoryStrategy<JrnlDiaryDto> {
     }
 
     @Override
-    public JrnlDiaryDto getOwnedDto(final String userId, final Integer key) throws Exception {
-        return jrnlDiaryService.getDtlDtoWithCacheByUser(userId, key);
+    public JrnlDiaryDto getOwnedDto(final String username, final Integer key) throws Exception {
+        return jrnlDiaryService.getDtlDtoWithCacheByUser(username, key);
     }
 
     @Override

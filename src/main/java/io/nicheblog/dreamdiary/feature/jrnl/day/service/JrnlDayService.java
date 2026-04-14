@@ -71,17 +71,17 @@ public class JrnlDayService
     /**
      * 사용자 년월 목록 조회 (dto level) :: 캐시 처리
      *
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      * @param yy 년도
      * @param mnth 월
      * @return {@link List} -- 조회된 목록
      */
     @Transactional(readOnly = true)
-    @Cacheable(value = "jrnlDayYyMnthListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#userId, #yy, #mnth)")
-    public List<JrnlDayDto> getCachedYyMnthListDtoByUser(final String userId, final Integer yy, final Integer mnth) throws Exception {
-        final String resolvedUserId = AuthUtils.requireUserId(userId);
+    @Cacheable(value = "jrnlDayYyMnthListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#username, #yy, #mnth)")
+    public List<JrnlDayDto> getCachedYyMnthListDtoByUser(final String username, final Integer yy, final Integer mnth) throws Exception {
+        final String resolvedUsername = AuthUtils.requireUsername(username);
         final Map<String, Object> searchParamMap = new HashMap<>();
-        searchParamMap.put("regstrId", resolvedUserId);
+        searchParamMap.put("regstrId", resolvedUsername);
         searchParamMap.put("yy", yy);
         searchParamMap.put("mnth", mnth);
         searchParamMap.put("sort", "ASC");
@@ -90,7 +90,7 @@ public class JrnlDayService
         // 1) stateMap 만들기
         final JrnlStateMaps maps = JrnlDayStateMapHelper.makeJrnlStateMaps(myJrnlDayEntityList);
         // 2) stateMap 캐시에 저장
-        final SimpleKey cacheKey = new SimpleKey(resolvedUserId, yy, mnth);
+        final SimpleKey cacheKey = new SimpleKey(resolvedUsername, yy, mnth);
         EhCacheUtils.put("jrnlChapterStateMapByUser", cacheKey, maps.getChapterMap());
         EhCacheUtils.put("jrnlDiaryStateMapByUser", cacheKey, maps.getDiaryMap());
         EhCacheUtils.put("jrnlDreamStateMapByUser", cacheKey, maps.getDreamMap());
@@ -106,10 +106,10 @@ public class JrnlDayService
      * @return {@link List} -- 조회된 목록
      */
     @Transactional(readOnly = true)
-    public List<JrnlDayDto> getJrnlStdrdDaysByUser(final String userId, final JrnlDaySearchParam searchParam) throws Exception {
+    public List<JrnlDayDto> getJrnlStdrdDaysByUser(final String username, final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
+        searchParam.setRegstrId(AuthUtils.requireUsername(username));
         searchParam.setSort("ASC");
         final List<JrnlDayEntity> myJrnlStdrdDayEntityList = this.getListEntity(searchParam);
         return mapstruct.toDtoList(myJrnlStdrdDayEntityList);
@@ -118,22 +118,22 @@ public class JrnlDayService
     /**
      * 사용자 주간 일자 목록 조회 (dto level) :: 캐시 처리
      *
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      * @param weekStartDt 주 시작일
      * @return {@link List} -- 조회된 목록
      */
     @Transactional(readOnly = true)
-    @Cacheable(value = "jrnlDayWeeklyListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#userId, #weekStartDt)")
-    public List<JrnlDayDto> getCachedWeeklyListDtoByUser(final String userId, final String weekStartDt) throws Exception {
-        final String resolvedUserId = AuthUtils.requireUserId(userId);
+    @Cacheable(value = "jrnlDayWeeklyListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#username, #weekStartDt)")
+    public List<JrnlDayDto> getCachedWeeklyListDtoByUser(final String username, final String weekStartDt) throws Exception {
+        final String resolvedUsername = AuthUtils.requireUsername(username);
         final Map<String, Object> searchParamMap = new HashMap<>();
-        searchParamMap.put("regstrId", resolvedUserId);
+        searchParamMap.put("regstrId", resolvedUsername);
         searchParamMap.put("weekStartDt", DateUtils.asDate(weekStartDt));
         searchParamMap.put("sort", "ASC");
         final List<JrnlDayEntity> myJrnlDayEntityList = this.getListEntity(searchParamMap);
 
         final JrnlStateMaps maps = JrnlDayStateMapHelper.makeJrnlStateMaps(myJrnlDayEntityList);
-        final SimpleKey cacheKey = new SimpleKey(resolvedUserId, weekStartDt);
+        final SimpleKey cacheKey = new SimpleKey(resolvedUsername, weekStartDt);
         EhCacheUtils.put("jrnlChapterWeeklyStateMapByUser", cacheKey, maps.getChapterMap());
         EhCacheUtils.put("jrnlDiaryWeeklyStateMapByUser", cacheKey, maps.getDiaryMap());
         EhCacheUtils.put("jrnlDreamWeeklyStateMapByUser", cacheKey, maps.getDreamMap());
@@ -149,10 +149,10 @@ public class JrnlDayService
      * @return {@link List} -- 조회된 목록
      */
     @Transactional(readOnly = true)
-    public List<JrnlDayDto> getListDtoByMetaIdAndUser(final String userId, final JrnlDaySearchParam searchParam) throws Exception {
+    public List<JrnlDayDto> getListDtoByMetaIdAndUser(final String username, final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
+        searchParam.setRegstrId(AuthUtils.requireUsername(username));
         searchParam.setSort("DESC");
         return this.getSelf().getListDto(searchParam);
     }
@@ -164,10 +164,10 @@ public class JrnlDayService
      * @return {@link List} -- 검색 결과 목록
      */
     @Transactional(readOnly = true)
-    public List<JrnlDayDto> getListDtoByTagIdAndUser(final String userId, final JrnlDaySearchParam searchParam) throws Exception {
+    public List<JrnlDayDto> getListDtoByTagIdAndUser(final String username, final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        searchParam.setRegstrId(AuthUtils.requireUserId(userId));
+        searchParam.setRegstrId(AuthUtils.requireUsername(username));
         searchParam.setSort("DESC");
         return this.getSelf().getListDto(searchParam);
     }
@@ -175,17 +175,17 @@ public class JrnlDayService
     /**
      * 상세 조회 (dto level) :: 캐시 처리
      *
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      * @param key 식별자
      * @return {@link JrnlDayDto} -- 조회된 객체
      */
-    @Cacheable(value = "jrnlDayDtlDtoByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#userId, #key)")
-    public JrnlDayDto getCachedDtlDtoByUser(final String userId, final Integer key) throws Exception {
-        AuthUtils.requireUserId(userId);
+    @Cacheable(value = "jrnlDayDtlDtoByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#username, #key)")
+    public JrnlDayDto getCachedDtlDtoByUser(final String username, final Integer key) throws Exception {
+        AuthUtils.requireUsername(username);
         final JrnlDayEntity retrievedEntity = this.getDtlEntity(key);
         final JrnlDayDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr(userId)) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+        if (!retrieved.getIsRegstr(username)) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
 
         return retrieved;
     }
@@ -197,12 +197,12 @@ public class JrnlDayService
      * @return {@link boolean} -- 정상 시 true, 중복 시 false 반환
      */
     @Transactional(readOnly = true)
-    public boolean dupChckByUser(final String userId, final JrnlDayDto jrnlDay) throws Exception {
+    public boolean dupChckByUser(final String username, final JrnlDayDto jrnlDay) throws Exception {
         final boolean isDtUnknown = "Y".equals(jrnlDay.getDtUnknownYn());
         if (isDtUnknown) return false;
 
         final Date jrnlDt = DateUtils.asDate(jrnlDay.getJrnlDt());
-        final String regstrId = AuthUtils.requireUserId(userId);
+        final String regstrId = AuthUtils.requireUsername(username);
         final Integer isDup = repository.countByJrnlDt(jrnlDt, regstrId);
 
         return isDup > 0;
@@ -215,9 +215,9 @@ public class JrnlDayService
      * @return {@link Integer} -- 중복되는 경우 해당하는 키값 (게시글 번호)
      */
     @Transactional(readOnly = true)
-    public Integer getDupKeyByUser(final String userId, final JrnlDayDto jrnlDay) throws Exception {
+    public Integer getDupKeyByUser(final String username, final JrnlDayDto jrnlDay) throws Exception {
         final Date jrnlDt = DateUtils.asDate(jrnlDay.getJrnlDt());
-        final String regstrId = AuthUtils.requireUserId(userId);
+        final String regstrId = AuthUtils.requireUsername(username);
         final JrnlDayEntity existingEntity = repository.findByJrnlDt(jrnlDt, regstrId);
 
         return existingEntity.getPostNo();

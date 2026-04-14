@@ -10,8 +10,8 @@ package io.nicheblog.dreamdiary.infrastructure.log.stats.model;
  */
 public interface LogStatsUserIntrfc {
 
-    /** 아이디 */
-    String getUserId();
+    /** 계정명 */
+    String getUsername();
 
     /** 이름 */
     String getUserNm();

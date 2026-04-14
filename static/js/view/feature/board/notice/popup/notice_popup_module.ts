@@ -12,7 +12,7 @@ dF.NoticePopup = (function(): Module {
          */
         init: function(): void {
             /** 로그인 공지 목록 조회 */
-            const isAuthenticated = cF.util.isNotEmpty(AuthInfo.userId)
+            const isAuthenticated = cF.util.isNotEmpty(AuthInfo.username)
             if (isAuthenticated) dF.NoticePopup.showNoticePopupAjax();
 
             console.log("'NoticePopup' module initialized.");

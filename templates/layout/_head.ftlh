@@ -73,7 +73,7 @@
         /** AuthInfo 객체 생성 */
         const AuthInfo = (function() {
             return Object.freeze({
-                userId: "${(authInfo.userId)!}",
+                username: "${(authInfo.username)!}",
                 nickNm: "${(authInfo.nickNm)!}",
                 email: "${(authInfo.email)!}",
                 proflImgUrl: "${(authInfo.proflImgUrl)!}",

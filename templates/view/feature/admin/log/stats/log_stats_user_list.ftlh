@@ -35,7 +35,7 @@
                         <td class="text-center hidden-table">${user.rnum!}</td>
                         <td class="text-start ps-10 hidden-table">
                             <span class="fw-bold">${user.userNm!"-"}</span>
-                            <span class="ms-1">(${user.userId!})</span>
+                            <span class="ms-1">(${user.username!})</span>
                             <#if (user.userProflYn!"Y") == "N">
                                 <i class="bi bi-person-dash vertical-middle text-muted"
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="직원정보가 없습니다."></i>
@@ -91,7 +91,7 @@
                         <td class="text-center hidden-table">${user.rnum!}</td>
                         <td class="text-start ps-10 hidden-table">
                             <span class="fw-bold">${user.userNm!"-"}</span>
-                            <span class="ms-1">(${user.userId!"-"})</span>
+                            <span class="ms-1">(${user.username!"-"})</span>
                         </td>
                         <td class="text-center hidden-table">
                             총 ${user.actvtyCnt!0?string.number}건

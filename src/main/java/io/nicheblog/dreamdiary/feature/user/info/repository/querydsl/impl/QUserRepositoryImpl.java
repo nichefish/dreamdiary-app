@@ -29,7 +29,7 @@ public class QUserRepositoryImpl
     public List<UserEntity> queryUsersByUserIdTest() {
         final QUserEntity user = QUserEntity.userEntity;
         return jpaQueryFactory.selectFrom(user)
-                .where(user.userId.eq("nichefish"))
+                .where(user.username.eq("nichefish"))
                 .fetch();
     }
 }*/

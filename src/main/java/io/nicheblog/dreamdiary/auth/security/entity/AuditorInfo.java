@@ -38,12 +38,12 @@ public class AuditorInfo
 
     /** 사용자 ID */
     @Id
-    @Column(name = "user_no", length = 20, insertable = false, updatable = false)
-    private Integer userNo;
+    @Column(name = "id", length = 20, insertable = false, updatable = false)
+    private Integer id;
 
     /** 사용자 ID */
-    @Column(name = "user_id", length = 20, insertable = false, updatable = false)
-    private String userId;
+    @Column(name = "username", length = 20, insertable = false, updatable = false)
+    private String username;
 
     /** 사용자 이름 */
     @Column(name = "nick_nm", length = 20, insertable = false, updatable = false)
@@ -51,7 +51,7 @@ public class AuditorInfo
 
     /** 사용자 권한 정보 */
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_no")
+    @JoinColumn(name = "user_id")
     @Fetch(FetchMode.SELECT)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("사용자 권한 정보")

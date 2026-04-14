@@ -28,13 +28,13 @@ public class MyHistoryFacade {
             final ContentType contentType,
             final Integer key
     ) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return historyFacade.getHistoryTargetByUser(contentType, userId, key);
+        final String username = AuthUtils.requireLgnUsername();
+        return historyFacade.getHistoryTargetByUser(contentType, username, key);
     }
 
     public List<HistoryDto> getMyHistoryList(final ContentType contentType, final Integer key) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return historyFacade.getHistoryListByUser(contentType, userId, key);
+        final String username = AuthUtils.requireLgnUsername();
+        return historyFacade.getHistoryListByUser(contentType, username, key);
     }
 
     public <Dto extends BaseClsfDto> Dto restoreMyHistory(
@@ -42,8 +42,8 @@ public class MyHistoryFacade {
             final Integer key,
             final Integer historyId
     ) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return historyFacade.restoreHistoryByUser(contentType, userId, key, historyId);
+        final String username = AuthUtils.requireLgnUsername();
+        return historyFacade.restoreHistoryByUser(contentType, username, key, historyId);
     }
 
     public boolean deleteMyHistory(
@@ -51,15 +51,15 @@ public class MyHistoryFacade {
             final Integer key,
             final Integer historyId
     ) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return historyFacade.deleteHistoryByUser(contentType, userId, key, historyId);
+        final String username = AuthUtils.requireLgnUsername();
+        return historyFacade.deleteHistoryByUser(contentType, username, key, historyId);
     }
 
     public boolean deleteAllMyHistory(
             final ContentType contentType,
             final Integer key
     ) throws Exception {
-        final String userId = AuthUtils.requireLgnUserId();
-        return historyFacade.deleteAllHistoryByUser(contentType, userId, key);
+        final String username = AuthUtils.requireLgnUsername();
+        return historyFacade.deleteAllHistoryByUser(contentType, username, key);
     }
 }
