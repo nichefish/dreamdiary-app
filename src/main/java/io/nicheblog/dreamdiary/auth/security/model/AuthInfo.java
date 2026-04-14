@@ -4,10 +4,7 @@ import io.nicheblog.dreamdiary.feature.user.info.model.profile.UserProfileDto;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.cd.Code;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,6 +30,8 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(of = {"username"}, callSuper = false)
 public class AuthInfo
         implements UserDetails, OAuth2User {
@@ -216,4 +215,34 @@ public class AuthInfo
     public UsernamePasswordAuthenticationToken getAuthToken() {
         return new UsernamePasswordAuthenticationToken(this, this.password, this.getAuthorities());
     }
+
+    public AuthInfo(Collection<? extends GrantedAuthority> authorities, Map<String, Object> attributes, String userNameAttributeName) {
+        // ===== 기본 식별 =====
+        this.username = (String) attributes.get(userNameAttributeName);
+        this.email = (String) attributes.get("email");
+
+        // ===== 기본값 세팅 =====
+        this.password = null;
+        this.nickNm = (String) attributes.getOrDefault("name", this.username);
+        this.proflImgUrl = (String) attributes.get("profile_image");
+
+        // ===== OAuth 기본 상태 =====
+        this.cfYn = "N";
+        this.lockedYn = "N";
+        this.useAllowedIpYn = "N";
+        this.needsPwReset = "N";
+
+        // ===== 권한 처리 =====
+        this.authList = authorities.stream()
+                .map(auth -> AuthRoleDto.builder()
+                        .authCd(auth.getAuthority().replace("ROLE_", ""))
+                        .build())
+                .collect(Collectors.toList());
+
+        // ===== 기타 =====
+        this.allowedIpStrList = List.of();
+        this.lastLoginAt = new Date();
+        this.passwordChangedAt = null;
+    }
+
 }
