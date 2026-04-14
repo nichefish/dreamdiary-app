@@ -67,7 +67,7 @@ public class JrnlChapterService
     }
 
     public List<JrnlChapterDto> getListDtoByUser(final String username, final JrnlChapterSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUsername(username));
+        searchParam.setCreatedBy(AuthUtils.requireUsername(username));
         return this.getSelf().getListDto(searchParam);
     }
 
@@ -82,7 +82,7 @@ public class JrnlChapterService
     public JrnlChapterDto getDtlDtoWithCacheByUser(final String username, final Integer key) throws Exception {
         final JrnlChapterEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlChapterDto retrieved = mapstruct.toDto(retrievedEntity);
-        if (!retrieved.getIsRegstr(AuthUtils.requireUsername(username))) {
+        if (!retrieved.getIsCreatedBy(AuthUtils.requireUsername(username))) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         return retrieved;
@@ -122,7 +122,7 @@ public class JrnlChapterService
      */
     @Override
     public void preModify(final JrnlChapterDto modifyDto, final JrnlChapterEntity modifyEntity) throws Exception {
-        if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(modifyEntity.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         final boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
@@ -150,7 +150,7 @@ public class JrnlChapterService
      */
     @Override
     public void preDelete(final JrnlChapterDto deletedDto) throws Exception {
-        if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
@@ -180,7 +180,7 @@ public class JrnlChapterService
     public JrnlChapterDto getDeletedDtlDto(final Integer key) throws Exception {
         final JrnlChapterDto deleted = jrnlChapterMapper.getDeletedById(key);
         if (deleted == null) return null;
-        if (!AuthUtils.isRegstr(deleted.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(deleted.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         return deleted;

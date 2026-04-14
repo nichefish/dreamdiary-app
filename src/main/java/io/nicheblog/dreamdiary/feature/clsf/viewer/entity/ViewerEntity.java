@@ -27,7 +27,7 @@ import java.util.Date;
 @Table(
     name = "viewer",
     uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"regstr_id", "ref_id", "ref_content_type"})  // 한 참조글당 viewer entity는 한 개만 존재
+        @UniqueConstraint(columnNames = {"created_by", "ref_id", "ref_content_type"})  // 한 참조글당 viewer entity는 한 개만 존재
     }
 )
 @Getter
@@ -35,8 +35,8 @@ import java.util.Date;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE viewer SET del_yn = 'Y' WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE viewer SET deleted_at = NOW() WHERE id = ?")
 public class ViewerEntity
         extends BaseAuditRegEntity {
 

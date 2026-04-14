@@ -26,8 +26,8 @@ import javax.persistence.*;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE history SET del_yn = 'Y' WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE history SET deleted_at = NOW() WHERE id = ?")
 public class HistoryEntity
         extends BaseAuditRegEntity {
 

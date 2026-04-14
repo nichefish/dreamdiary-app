@@ -170,8 +170,8 @@ export default {
                                     <!--end::Avatar-->
                                     <!--begin::Details-->
                                     <div class="ms-3">
-                                        <a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">{{ msg.regstrNm }}</a>
-                                        <span class="text-muted fs-7 mb-1">{{ msg.regDt }}</span>
+                                        <a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">{{ msg.createdByNm }}</a>
+                                        <span class="text-muted fs-7 mb-1">{{ msg.createdAt }}</span>
                                     </div>
                                     <!--end::Details-->
                                 </div>

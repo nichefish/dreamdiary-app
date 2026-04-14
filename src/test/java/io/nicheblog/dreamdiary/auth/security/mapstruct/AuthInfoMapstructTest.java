@@ -121,7 +121,7 @@ class AuthInfoMapstructTest {
 
         // Then::
         assertNotNull(dto);
-        // acntStus - lstLgnDt, pwChgDt 대신 regDt 사용
+        // acntStus - lstLgnDt, pwChgDt 대신 createdAt 사용
         assertEquals(dto.getLstLgnDt(), DateUtils.asDate("2000-01-11"));
         assertEquals(dto.getPwChgDt(), DateUtils.asDate("2000-02-22"));
     }
@@ -140,14 +140,14 @@ class AuthInfoMapstructTest {
                 .pwChgDt(null)
                 .build();
         userEntity.setAcntStus(acntStus);
-        userEntity.setRegDt(DateUtils.asDate("2000-01-31"));
+        userEntity.setCreatedAt(DateUtils.asDate("2000-01-31"));
 
         // When::
         AuthInfo dto = authInfoMapstruct.toDto(userEntity);
 
         // Then::
         assertNotNull(dto);
-        // acntStus - lstLgnDt, pwChgDt 대신 regDt 사용
+        // acntStus - lstLgnDt, pwChgDt 대신 createdAt 사용
         assertEquals(dto.getLstLgnDt(), DateUtils.asDate("2000-01-31"));
         assertEquals(dto.getPwChgDt(), DateUtils.asDate("2000-01-31"));
     }
@@ -167,7 +167,7 @@ class AuthInfoMapstructTest {
 
         // Then::
         assertNotNull(dto);
-        // acntStus - lstLgnDt, pwChgDt 대신 regDt 사용
+        // acntStus - lstLgnDt, pwChgDt 대신 createdAt 사용
         UserProfileDto userProfile = dto.getProfile();
         assertEquals("2000-01-01", userProfile.getBrthdy());
         assertEquals("test_profl_cn", userProfile.getProflCn());

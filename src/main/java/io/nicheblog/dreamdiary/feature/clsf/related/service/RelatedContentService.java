@@ -80,7 +80,7 @@ public class RelatedContentService {
             throw new IllegalArgumentException("relationType is required.");
         }
 
-        final String regstrId = AuthUtils.requireLgnUsername();
+        final String createdBy = AuthUtils.requireLgnUsername();
         this.validateWritablePair(firstKey, secondKey);
 
         final BaseClsfKey[] normalizedKeys = this.normalizePair(firstKey, secondKey);
@@ -92,10 +92,10 @@ public class RelatedContentService {
                         leftKey.getContentType(),
                         rightKey.getId(),
                         rightKey.getContentType(),
-                        regstrId
+                        createdBy
                 )
                 .map(found -> {
-                    found.setDelYn("N");
+                    found.setDeletedAt(null);
                     found.setRelationType(relationType.key);
                     found.setReason(reason);
                     found.setOriginType(originType != null ? originType.key : RelationOriginType.MANUAL.key);
@@ -117,8 +117,8 @@ public class RelatedContentService {
         this.validateReadableKey(refKey);
         this.requireOwnedContent(refKey);
 
-        final String regstrId = AuthUtils.requireLgnUsername();
-        final List<RelatedContentEntity> entityList = repository.findAllByRef(refKey.getId(), refKey.getContentType(), regstrId);
+        final String createdBy = AuthUtils.requireLgnUsername();
+        final List<RelatedContentEntity> entityList = repository.findAllByRef(refKey.getId(), refKey.getContentType(), createdBy);
 
         return entityList.stream()
                 .map(entity -> {
@@ -141,20 +141,20 @@ public class RelatedContentService {
         this.validateReadableKey(refKey);
         this.requireOwnedContent(refKey);
 
-        final String regstrId = AuthUtils.requireLgnUsername();
-        repository.softDeleteAllByRef(refKey.getId(), refKey.getContentType(), regstrId);
+        final String createdBy = AuthUtils.requireLgnUsername();
+        repository.softDeleteAllByRef(refKey.getId(), refKey.getContentType(), createdBy);
     }
 
     @Transactional
-    public void deleteAllByRef(final BaseClsfKey refKey, final String regstrId) {
+    public void deleteAllByRef(final BaseClsfKey refKey, final String createdBy) {
         this.validateReadableKey(refKey);
 
-        final String requiredRegstrId = AuthUtils.requireUsername(regstrId);
-        if (!AuthUtils.isRegstr(requiredRegstrId)) {
+        final String requiredCreatedBy = AuthUtils.requireUsername(createdBy);
+        if (!AuthUtils.isCreatedBy(requiredCreatedBy)) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
 
-        repository.softDeleteAllByRef(refKey.getId(), refKey.getContentType(), requiredRegstrId);
+        repository.softDeleteAllByRef(refKey.getId(), refKey.getContentType(), requiredCreatedBy);
     }
 
     @Transactional
@@ -162,7 +162,7 @@ public class RelatedContentService {
         final RelatedContentEntity entity = repository.findById(relatedContentId)
                 .orElseThrow(() -> new EntityNotFoundException("exception.EntityNotFoundException.to-delete"));
 
-        if (!AuthUtils.isRegstr(entity.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(entity.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
 
@@ -196,9 +196,9 @@ public class RelatedContentService {
             throw new IllegalArgumentException("self relation is not allowed.");
         }
 
-        final String firstRegstrId = this.requireOwnedContent(firstKey);
-        final String secondRegstrId = this.requireOwnedContent(secondKey);
-        if (!Objects.equals(firstRegstrId, secondRegstrId)) {
+        final String firstCreatedBy = this.requireOwnedContent(firstKey);
+        final String secondCreatedBy = this.requireOwnedContent(secondKey);
+        if (!Objects.equals(firstCreatedBy, secondCreatedBy)) {
             throw new IllegalArgumentException("related contents must have same owner.");
         }
     }
@@ -215,23 +215,23 @@ public class RelatedContentService {
     }
 
     private String requireOwnedContent(final BaseClsfKey refKey) {
-        final String regstrId = this.resolveRegstrId(refKey);
-        if (StringUtils.isBlank(regstrId)) {
+        final String createdBy = this.resolveCreatedBy(refKey);
+        if (StringUtils.isBlank(createdBy)) {
             throw new EntityNotFoundException("exception.EntityNotFoundException.to-read");
         }
-        if (!AuthUtils.isRegstr(regstrId)) {
+        if (!AuthUtils.isCreatedBy(createdBy)) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
-        return regstrId;
+        return createdBy;
     }
 
-    private String resolveRegstrId(final BaseClsfKey refKey) {
+    private String resolveCreatedBy(final BaseClsfKey refKey) {
         return switch (refKey.getContentTypeEnum()) {
             case JRNL_DIARY -> jrnlDiaryRepository.findById(refKey.getId())
-                    .map(JrnlDiaryEntity::getRegstrId)
+                    .map(JrnlDiaryEntity::getCreatedBy)
                     .orElse(null);
             case JRNL_DREAM -> jrnlDreamRepository.findById(refKey.getId())
-                    .map(JrnlDreamEntity::getRegstrId)
+                    .map(JrnlDreamEntity::getCreatedBy)
                     .orElse(null);
             default -> null;
         };

@@ -27,8 +27,8 @@ import java.io.Serializable;
 @SuperBuilder(toBuilder = true)
 @AllArgsConstructor
 @RequiredArgsConstructor
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE flsys_meta SET del_yn = 'Y' WHERE flsys_ref_id = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE flsys_meta SET deleted_at = NOW() WHERE flsys_ref_id = ?")
 public class FlsysRefEntity
         implements Serializable {
 

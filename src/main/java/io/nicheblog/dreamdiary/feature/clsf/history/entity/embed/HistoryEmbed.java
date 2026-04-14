@@ -34,7 +34,7 @@ public class HistoryEmbed
 
     @PostLoad
     private void onLoad() {
-        this.isHistoryTriggeredBy = AuthUtils.isRegstr(this.historyTriggeredBy);
+        this.isHistoryTriggeredBy = AuthUtils.isCreatedBy(this.historyTriggeredBy);
     }
 
     /** 마지막 본문 수정자 ID */

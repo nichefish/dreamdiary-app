@@ -39,6 +39,6 @@ public class MetaContentParam
     private String label;
 
     /** 등록자 ID */
-    private String regstrId;
+    private String createdBy;
 
 }

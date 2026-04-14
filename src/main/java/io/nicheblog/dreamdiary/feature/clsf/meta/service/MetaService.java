@@ -190,8 +190,8 @@ public class MetaService
      * @return {@link Integer} -- 메타 목록에서 계산된 최대 사용 빈도 (Integer)
      */
     @Transactional(readOnly = true)
-    public Integer countMetaSize(final Integer metaId, final String contentType, final String regstrId) {
-        return repository.countMetaSize(metaId, contentType, regstrId);
+    public Integer countMetaSize(final Integer metaId, final String contentType, final String createdBy) {
+        return repository.countMetaSize(metaId, contentType, createdBy);
     }
 
     /**
@@ -209,7 +209,7 @@ public class MetaService
                     Optional<MetaEntity> existingMeta = repository.findByMetaNmAndCtgrAndLabel(meta.getMetaNm(), meta.getCtgr(), meta.getLabel());
                     if (existingMeta.isPresent()) {
                         MetaEntity metaEntity = existingMeta.get();
-                        metaEntity.setDelYn("N");
+                        metaEntity.setDeletedAt(null);
                         metaEntity.setValue(meta.getValue());       // content에 전달하기 위해 value 값 전달
                         metaEntity.setUnit(meta.getUnit());       // content에 전달하기 위해 value 값 전달
                         return metaEntity;

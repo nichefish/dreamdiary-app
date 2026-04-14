@@ -97,7 +97,7 @@ public class LogActvtyQueryDto
      * Getter :: 작업자 여부
      */
     public Boolean getIsActvtyUser() {
-        return AuthUtils.isRegstr(this.username);
+        return AuthUtils.isCreatedBy(this.username);
     }
 
     /**

@@ -30,8 +30,8 @@ import java.util.Date;
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE popup SET del_yn = 'Y' WHERE popup_cd = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE popup SET deleted_at = NOW() WHERE popup_cd = ?")
 public class PopupEntity
         extends BaseClsfEntity
         implements AtchFileEmbedModule {

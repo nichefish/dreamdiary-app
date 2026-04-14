@@ -200,8 +200,8 @@ public class TagService
      * @return {@link Integer} -- 태그 목록에서 계산된 최대 사용 빈도 (Integer)
      */
     @Transactional(readOnly = true)
-    public Integer countTagSize(final Integer tagId, final String contentType, final String regstrId) {
-        return repository.countTagSize(tagId, contentType, regstrId);
+    public Integer countTagSize(final Integer tagId, final String contentType, final String createdBy) {
+        return repository.countTagSize(tagId, contentType, createdBy);
     }
 
     /**
@@ -219,7 +219,7 @@ public class TagService
                     Optional<TagEntity> existingTag = repository.findByTagNmAndCtgr(tag.getTagNm(), tag.getCtgr());
                     if (existingTag.isPresent()) {
                         TagEntity tagEntity = existingTag.get();
-                        tagEntity.setDelYn("N");
+                        tagEntity.setDeletedAt(null);
                         this.syncCategory(tagEntity);
                         return tagEntity;
                     }

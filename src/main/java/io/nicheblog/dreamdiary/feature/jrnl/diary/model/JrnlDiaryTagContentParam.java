@@ -42,6 +42,6 @@ public class JrnlDiaryTagContentParam
     private String weekStartDt;
 
     /** 등록자 ID */
-    private String regstrId;
+    private String createdBy;
 
 }

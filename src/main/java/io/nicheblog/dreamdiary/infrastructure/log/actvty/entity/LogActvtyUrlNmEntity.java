@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * LogActvtyUrlNmEntity
@@ -29,7 +30,7 @@ import java.io.Serializable;
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Where(clause = "del_yn='N'")
+@Where(clause = "deleted_at IS NULL")
 public class LogActvtyUrlNmEntity
         implements Serializable {
 
@@ -44,9 +45,8 @@ public class LogActvtyUrlNmEntity
     @Comment("URL 이름")
     private String urlNm;
 
-    /** 삭제 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "del_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("삭제 여부")
-    private String delYn = "N";
+    /** 삭제 일시 (NULL이면 미삭제) */
+    @Column(name = "deleted_at")
+    @Comment("삭제 일시")
+    private Date deletedAt;
 }

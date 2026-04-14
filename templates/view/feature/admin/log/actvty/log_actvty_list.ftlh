@@ -51,7 +51,7 @@
                                 </#if>
                             </div>
                             <div>(${log.username!})</div>
-                            <#if log.isRegstr!false>
+                            <#if log.isCreatedBy!false>
                                 <span class="badge badge-secondary opacity-75 mx-1 fs-9">나</span>
                             </#if>
                         </td>

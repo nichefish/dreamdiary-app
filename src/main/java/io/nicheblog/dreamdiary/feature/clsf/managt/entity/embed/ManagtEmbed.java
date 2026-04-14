@@ -38,7 +38,7 @@ public class ManagtEmbed
 
     @PostLoad
     private void onLoad() {
-        this.isManagtr = AuthUtils.isRegstr(this.managtrId);
+        this.isManagtr = AuthUtils.isCreatedBy(this.managtrId);
     }
 
     /** 조치자(작업자)ID */
@@ -70,7 +70,7 @@ public class ManagtEmbed
     })
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 10)
-    @OrderBy("regDt DESC")
+    @OrderBy("createdAt DESC")
     @NotFound(action = NotFoundAction.IGNORE)
     private List<ManagtrEntity> list;
 

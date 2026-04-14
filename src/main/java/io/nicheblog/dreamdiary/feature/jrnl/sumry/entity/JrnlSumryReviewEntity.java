@@ -31,8 +31,8 @@ import javax.persistence.Table;
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE jrnl_sumry_review SET del_yn = 'Y' WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE jrnl_sumry_review SET deleted_at = NOW() WHERE id = ?")
 public class JrnlSumryReviewEntity
         extends BaseClsfEntity
         implements CommentEmbedModule, TagEmbedModule, AtchFileEmbedModule {

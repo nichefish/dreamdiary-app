@@ -34,11 +34,11 @@ public interface NoticeRepository
     @Query("SELECT COUNT(notice.id) " +
             "FROM NoticeEntity notice " +
             "INNER JOIN ViewerEntity viewer ON viewer.refContentType = 'NOTICE' AND notice.id = viewer.refId " +
-            "WHERE COALESCE(notice.mdfDt, notice.regDt) >= :stdrdDt " +
-            " AND COALESCE(notice.mdfusrId, notice.regstrId) != :username " +
+            "WHERE COALESCE(notice.updatedAt, notice.createdAt) >= :stdrdDt " +
+            " AND COALESCE(notice.updatedBy, notice.createdBy) != :username " +
             " AND ( " +
-            "  viewer.regstrId != :username " +
-            "  OR (viewer.regstrId = :username and viewer.lstVisitDt < COALESCE(notice.mdfDt, notice.regDt)) " +
+            "  viewer.createdBy != :username " +
+            "  OR (viewer.createdBy = :username and viewer.lstVisitDt < COALESCE(notice.updatedAt, notice.createdAt)) " +
             ")")
     Integer getUnreadCnt(final @Param("username") String username, final @Param("stdrdDt") Date stdrdDt);
 }

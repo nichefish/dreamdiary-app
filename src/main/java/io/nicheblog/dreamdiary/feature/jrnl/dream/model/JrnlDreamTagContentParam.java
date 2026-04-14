@@ -42,6 +42,6 @@ public class JrnlDreamTagContentParam
     private String weekStartDt;
 
     /** 등록자 ID */
-    private String regstrId;
+    private String createdBy;
 
 }

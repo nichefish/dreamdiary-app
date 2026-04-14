@@ -67,7 +67,7 @@ public class JrnlDreamTagService
     @Cacheable(value = "jrnlDreamTagListByUser", key = "#username")
     public List<TagDto> getTagListByUser(final String username) throws Exception {
         final HashMap<String, Object> paramMap = new HashMap<>() {{
-            put("regstrId", AuthUtils.requireUsername(username));
+            put("createdBy", AuthUtils.requireUsername(username));
         }};
 
         return this.getSelf().getListDto(paramMap);
@@ -84,7 +84,7 @@ public class JrnlDreamTagService
     @Cacheable(value = "jrnlDreamYyMnthTagListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#username, #yy, #mnth)")
     public List<TagDto> getListDtoWithCacheByUser(final String username, final Integer yy, final Integer mnth) throws Exception {
         final JrnlDreamSearchParam searchParam = JrnlDreamSearchParam.builder().yy(yy).mnth(mnth).build();
-        searchParam.setRegstrId(AuthUtils.requireUsername(username));
+        searchParam.setCreatedBy(AuthUtils.requireUsername(username));
         return this.getSelf().getListDto(searchParam);
     }
 
@@ -98,7 +98,7 @@ public class JrnlDreamTagService
     @Cacheable(value = "jrnlDreamWeeklyTagListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#username, #weekStartDt)")
     public List<TagDto> getWeeklyListDtoWithCacheByUser(final String username, final String weekStartDt) throws Exception {
         final JrnlDreamSearchParam searchParam = JrnlDreamSearchParam.builder().weekStartDt(weekStartDt).build();
-        searchParam.setRegstrId(AuthUtils.requireUsername(username));
+        searchParam.setCreatedBy(AuthUtils.requireUsername(username));
         return this.getSelf().getListDto(searchParam);
     }
 
@@ -150,7 +150,7 @@ public class JrnlDreamTagService
                 .yy(yy)
                 .mnth(mnth)
                 .weekStartDt(weekStartDt)
-                .regstrId(AuthUtils.requireUsername(username))
+                .createdBy(AuthUtils.requireUsername(username))
                 .build();
         final Map<Integer, Integer> tagCntMap = this.getSelf().countDreamSizeMap(param);
 
@@ -198,7 +198,7 @@ public class JrnlDreamTagService
      *
      * @return {@link Map} -- 카테고리별 태그 목록을 담은 Map
      */
-    @Cacheable(value = "jrnlDreamCountMapByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#param.regstrId, #param.yy, #param.mnth, #param.weekStartDt)")
+    @Cacheable(value = "jrnlDreamCountMapByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#param.createdBy, #param.yy, #param.mnth, #param.weekStartDt)")
     public Map<Integer, Integer> countDreamSizeMap(final JrnlDreamTagContentParam param) {
         final List<TagContentCntDto> tagCountList = repository.countDreamSizeMap(param);
 
@@ -239,7 +239,7 @@ public class JrnlDreamTagService
     @Cacheable(value = "jrnlDreamTagCtgrMapByUser", key = "#username")
     public Map<String, List<String>> getTagCtgrMapByUser(final String username) throws Exception {
         final HashMap<String, Object> paramMap = new HashMap<>() {{
-            put("regstrId", AuthUtils.requireUsername(username));
+            put("createdBy", AuthUtils.requireUsername(username));
         }};
 
         final List<JrnlDreamTagEntity> tagList = this.getSelf().getListEntity(paramMap);

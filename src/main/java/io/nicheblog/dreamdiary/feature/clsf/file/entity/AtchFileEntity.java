@@ -31,8 +31,8 @@ import java.util.Optional;
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE atch_file SET del_yn = 'Y' WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE atch_file SET deleted_at = NOW() WHERE id = ?")
 public class AtchFileEntity
         extends BaseCrudEntity {
 

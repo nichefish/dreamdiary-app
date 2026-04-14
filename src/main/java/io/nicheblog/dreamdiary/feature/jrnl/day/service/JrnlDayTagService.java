@@ -73,7 +73,7 @@ public class JrnlDayTagService
      */
     @Cacheable(value = "jrnlDayTagYyListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#tagId, #username)")
     public List<Integer> getYyListByTagIdAndUser(final Integer tagId, final String username) {
-        return repository.findDistinctYysByTagIdAndRegstrId(tagId, AuthUtils.requireUsername(username));
+        return repository.findDistinctYysByTagIdAndCreatedBy(tagId, AuthUtils.requireUsername(username));
     }
 
     /**
@@ -86,7 +86,7 @@ public class JrnlDayTagService
     @Cacheable(value = "jrnlDayYyMnthTagListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#username, #yy, #mnth)")
     public List<TagDto> getYyMnthListDtoWithCacheByUser(final String username, final Integer yy, final Integer mnth) throws Exception {
         final JrnlDaySearchParam searchParam = JrnlDaySearchParam.builder().yy(yy).mnth(mnth).build();
-        searchParam.setRegstrId(AuthUtils.requireUsername(username));
+        searchParam.setCreatedBy(AuthUtils.requireUsername(username));
         return this.getSelf().getListDto(searchParam);
     }
 
@@ -99,7 +99,7 @@ public class JrnlDayTagService
     @Cacheable(value = "jrnlDayWeeklyTagListByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#username, #weekStartDt)")
     public List<TagDto> getWeeklyListDtoWithCacheByUser(final String username, final String weekStartDt) throws Exception {
         final JrnlDaySearchParam searchParam = JrnlDaySearchParam.builder().weekStartDt(weekStartDt).build();
-        searchParam.setRegstrId(AuthUtils.requireUsername(username));
+        searchParam.setCreatedBy(AuthUtils.requireUsername(username));
         return this.getSelf().getListDto(searchParam);
     }
 
@@ -157,7 +157,7 @@ public class JrnlDayTagService
                 .yy(yy)
                 .mnth(mnth)
                 .weekStartDt(weekStartDt)
-                .regstrId(AuthUtils.requireUsername(username))
+                .createdBy(AuthUtils.requireUsername(username))
                 .build();
         final Map<Integer, Integer> tagCntMap = this.getSelf().countDaySizeMap(param);
 
@@ -204,7 +204,7 @@ public class JrnlDayTagService
      *
      * @return {@link Map} -- 카테고리별 태그 목록을 담은 Map
      */
-    @Cacheable(value = "jrnlDayCountMapByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#param.regstrId, #param.yy, #param.mnth, #param.weekStartDt)")
+    @Cacheable(value = "jrnlDayCountMapByUser", key = "new org.springframework.cache.interceptor.SimpleKey(#param.createdBy, #param.yy, #param.mnth, #param.weekStartDt)")
     public Map<Integer, Integer> countDaySizeMap(final JrnlDayTagContentParam param) {
         final List<TagContentCntDto> tagCountList = repository.countDaySizeMap(param);
 
@@ -252,7 +252,7 @@ public class JrnlDayTagService
     @Cacheable(value = "jrnlDayTagCtgrMapByUser", key = "#username")
     public Map<String, List<String>> getTagCtgrMapByUser(final String username) throws Exception {
         final HashMap<String, Object> paramMap = new HashMap<>() {{
-            put("regstrId", AuthUtils.requireUsername(username));
+            put("createdBy", AuthUtils.requireUsername(username));
         }};
 
         final List<JrnlDayTagEntity> tagList = this.getSelf().getListEntity(paramMap);

@@ -72,7 +72,7 @@ public class JrnlIntrptTagService
     @Cacheable(value="jrnlIntrptYyMnthTagListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #yy, #mnth)")
     public List<TagDto> getListDtoWithCacheByUser(final String username, final Integer yy, final Integer mnth) throws Exception {
         final JrnlIntrptSearchParam searchParam = JrnlIntrptSearchParam.builder().yy(yy).mnth(mnth).build();
-        searchParam.setRegstrId(AuthUtils.requireUsername(username));
+        searchParam.setCreatedBy(AuthUtils.requireUsername(username));
 
         return this.getSelf().getListDto(searchParam);
     }
@@ -129,7 +129,7 @@ public class JrnlIntrptTagService
         final JrnlIntrptTagContentParam param = JrnlIntrptTagContentParam.builder()
                 .yy(yy)
                 .mnth(mnth)
-                .regstrId(AuthUtils.requireUsername(username))
+                .createdBy(AuthUtils.requireUsername(username))
                 .build();
         final Map<Integer, Integer> tagCntMap = this.getSelf().countIntrptSizeMap(param);
 
@@ -147,7 +147,7 @@ public class JrnlIntrptTagService
      *
      * @return {@link Map} -- 카테고리별 태그 목록을 담은 Map
      */
-    @Cacheable(value="jrnlIntrptCountMapByUser", key="new org.springframework.cache.interceptor.SimpleKey(#param.regstrId, #param.yy, #param.mnth)")
+    @Cacheable(value="jrnlIntrptCountMapByUser", key="new org.springframework.cache.interceptor.SimpleKey(#param.createdBy, #param.yy, #param.mnth)")
     public ConcurrentHashMap<Integer, Integer> countIntrptSizeMap(final JrnlIntrptTagContentParam param) {
         final List<TagContentCntDto> tagCountList = repository.countIntrptSizeMap(param);
 
@@ -185,7 +185,7 @@ public class JrnlIntrptTagService
     @Cacheable(value="jrnlIntrptTagCtgrMapByUser", key="#username")
     public Map<String, List<String>> getTagCtgrMapByUser(final String username) throws Exception {
         final HashMap<String, Object> paramMap = new HashMap<>() {{
-            put("regstrId", AuthUtils.requireUsername(username));
+            put("createdBy", AuthUtils.requireUsername(username));
         }};
 
         final List<JrnlIntrptTagEntity> tagList = this.getSelf().getListEntity(paramMap);

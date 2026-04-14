@@ -30,8 +30,8 @@
                 <div class="d-flex align-items-center">
                     <!--begin::Name-->
                     <div class="d-flex flex-column align-items-start justify-content-center">
-                        <span class="text-gray-800 fs-6 fw-bold lh-1 mb-2">${tmplat.regstrNm!"-"}</span>
-                        <span class="text-muted fs-7 lh-1">${tmplat.regDt!}</span>
+                        <span class="text-gray-800 fs-6 fw-bold lh-1 mb-2">${tmplat.createdByNm!"-"}</span>
+                        <span class="text-muted fs-7 lh-1">${tmplat.createdAt!}</span>
                     </div>
                 </div>
                 <!--begin::Info-->

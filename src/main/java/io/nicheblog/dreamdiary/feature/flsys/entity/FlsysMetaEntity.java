@@ -34,8 +34,8 @@ import javax.persistence.*;
 @SuperBuilder(toBuilder = true)
 @AllArgsConstructor
 @RequiredArgsConstructor
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE flsys_meta SET del_yn = 'Y' WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE flsys_meta SET deleted_at = NOW() WHERE id = ?")
 public class FlsysMetaEntity
         extends BaseClsfEntity
         implements CommentEmbedModule, TagEmbedModule, ManagtEmbedModule, ViewerEmbedModule {

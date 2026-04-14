@@ -29,11 +29,11 @@ CREATE TABLE IF NOT EXISTS cmm_cl_cd  (
     use_yn CHAR(1) DEFAULT 'Y' COMMENT '사용 여부 (Y/N)',
     protected_yn CHAR(1) DEFAULT 'N' COMMENT '시스템 보호 여부',
     -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
-    mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
-    mdf_dt DATETIME COMMENT '수정일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)'
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정일시',
+    deleted_at DATETIME COMMENT '삭제일시'
 ) COMMENT = '분류 코드';
 
 -- 상세 코드 (dtl_cd)
@@ -49,11 +49,11 @@ CREATE TABLE IF NOT EXISTS cmm_dtl_cd (
     use_yn CHAR(1) DEFAULT 'Y' COMMENT '사용 여부 (Y/N)',
     protected_yn CHAR(1) DEFAULT 'N' COMMENT '시스템 보호 여부',
     -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
-    mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
-    mdf_dt DATETIME COMMENT '수정일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정일시',
+    deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
     PRIMARY KEY (cl_cd, dtl_cd)
 ) COMMENT = '상세 코드';
@@ -80,11 +80,11 @@ CREATE TABLE IF NOT EXISTS menu (
     idx INT DEFAULT 0 COMMENT '정렬 순서',
     use_yn CHAR(1) DEFAULT 'Y' COMMENT '사용 여부 (Y/N)',
     -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
-    mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
-    mdf_dt DATETIME COMMENT '수정일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)'
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정일시',
+    deleted_at DATETIME COMMENT '삭제일시'
 ) COMMENT = '메뉴';
 
 -- 인증 정책 (auth_policy)
@@ -96,11 +96,11 @@ CREATE TABLE IF NOT EXISTS auth_policy (
     lgn_lock_dy INT COMMENT '계정 잠금 주기',
     pw_for_reset VARCHAR(20) COMMENT '리셋할 패스워드',
     -- AUDIT
-    regstr_id VARCHAR(20) comment '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
-    mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
-    mdf_dt DATETIME COMMENT '수정일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)'
+    created_by VARCHAR(20) comment '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정일시',
+    deleted_at DATETIME COMMENT '삭제일시'
 ) COMMENT = '인증 정책';
 
 -- -----------------------
@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS auth_policy (
 CREATE TABLE IF NOT EXISTS atch_file (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '첨부파일 ID',
     -- AUDIT
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)'
+    deleted_at DATETIME COMMENT '삭제일시'
 ) COMMENT = '첨부파일';
 
 -- 첨부파일 상세 (atch_file_dtl)
@@ -126,7 +126,7 @@ CREATE TABLE IF NOT EXISTS atch_file_dtl (
     file_size INT COMMENT '파일 크기(BYTE)',
     url VARCHAR(500) COMMENT '파일 URL',
     -- AUDIT
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
     FOREIGN KEY(atch_file_id) REFERENCES atch_file (id)
 ) COMMENT = '첨부파일 상세';
@@ -158,7 +158,7 @@ CREATE TABLE IF NOT EXISTS log_actvty (
     exception_nm VARCHAR(100) COMMENT '예외 이름',
     exception_msg VARCHAR(4000) COMMENT '예외 메시지',
     -- AUDIT
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
     INDEX idx_trace_id (trace_id),
     INDEX idx_log_dt (log_dt),
@@ -178,5 +178,5 @@ CREATE TABLE IF NOT EXISTS log_sys (
     exception_nm VARCHAR(100) COMMENT '예외 이름',
     exception_msg VARCHAR(4000) COMMENT '예외 메시지',
     -- AUDIT
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)'
+    deleted_at DATETIME COMMENT '삭제일시'
 ) COMMENT = '시스템 로그';

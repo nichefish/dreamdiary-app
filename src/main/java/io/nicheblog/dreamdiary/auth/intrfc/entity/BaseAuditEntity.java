@@ -42,20 +42,20 @@ public class BaseAuditEntity
 
     /** 수정자 ID */
     @LastModifiedBy
-    @Column(name = "mdfusr_id", length = 20, insertable = false)
-    protected String mdfusrId;
+    @Column(name = "updated_by", length = 20, insertable = false)
+    protected String updatedBy;
 
     /** 수정일시 */
     @LastModifiedDate
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
-    @Column(name = "mdf_dt", insertable = false)
-    protected Date mdfDt;
+    @Column(name = "updated_at", insertable = false)
+    protected Date updatedAt;
 
     /** 수정자 정보 :: join 제거하고 캐시 처리 */
     @Transient
-    protected AuditorInfo mdfusrInfo;
+    protected AuditorInfo updatedByInfo;
 
     /* ----- */
 
@@ -64,12 +64,12 @@ public class BaseAuditEntity
      * 
      * @return {@link AuditorInfo}
      */
-    public AuditorInfo getMdfusrInfo() {
-        if (StringUtils.isEmpty(this.mdfusrId)) return null;
-        if (this.mdfusrInfo == null) {
-            this.mdfusrInfo = AuditorUtils.getAuditorInfo(this.mdfusrId);
+    public AuditorInfo getUpdatedByInfo() {
+        if (StringUtils.isEmpty(this.updatedBy)) return null;
+        if (this.updatedByInfo == null) {
+            this.updatedByInfo = AuditorUtils.getAuditorInfo(this.updatedBy);
         }
-        return this.mdfusrInfo;
+        return this.updatedByInfo;
     }
 
     /**
@@ -77,9 +77,9 @@ public class BaseAuditEntity
      * 
      * @return {@link Boolean} 수정자 여부
      */
-    public Boolean isMdfusr() {
-        if (StringUtils.isEmpty(this.mdfusrId)) return false;
-        return this.mdfusrId.equals(AuthUtils.getLgnUsername());
+    public Boolean isUpdatedBy() {
+        if (StringUtils.isEmpty(this.updatedBy)) return false;
+        return this.updatedBy.equals(AuthUtils.getLgnUsername());
     }
 }
 

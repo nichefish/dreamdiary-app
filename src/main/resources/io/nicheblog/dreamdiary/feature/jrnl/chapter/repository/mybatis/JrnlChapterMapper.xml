@@ -5,7 +5,7 @@
 
     <resultMap id="JrnlChapterMap" type="io.nicheblog.dreamdiary.feature.jrnl.chapter.model.JrnlChapterDto">
         <id property="id" column="id"/>
-        <result property="regstrId" column="regstr_id"/>
+        <result property="createdBy" column="created_by"/>
         <result property="jrnlDayId" column="jrnl_day_id"/>
         <result property="idx" column="idx"/>
         <result property="yy" column="yy"/>
@@ -17,7 +17,7 @@
         /* JrnlChapterMapper.getDeletedById */
         SELECT
             chapter.id,
-            chapter.regstr_id,
+            chapter.created_by,
             chapter.jrnl_day_id,
             chapter.idx,
             day.yy,
@@ -33,7 +33,7 @@
         /* JrnlChapterMapper.findAllForReorder */
         SELECT *
         FROM jrnl_chapter
-        WHERE jrnl_day_id = #{jrnlDayId} AND del_yn = 'N'
+        WHERE jrnl_day_id = #{jrnlDayId} AND deleted_at IS NULL
         ORDER BY idx
     </select>
 
@@ -43,7 +43,7 @@
         <foreach collection="list" item="item" separator=";">
             UPDATE jrnl_chapter
             SET idx = #{item.idx}
-            WHERE id = #{item.id} AND del_yn = 'N'
+            WHERE id = #{item.id} AND deleted_at IS NULL
         </foreach>
     </update>
 </mapper>

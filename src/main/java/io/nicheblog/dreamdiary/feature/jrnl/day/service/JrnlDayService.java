@@ -81,7 +81,7 @@ public class JrnlDayService
     public List<JrnlDayDto> getCachedYyMnthListDtoByUser(final String username, final Integer yy, final Integer mnth) throws Exception {
         final String resolvedUsername = AuthUtils.requireUsername(username);
         final Map<String, Object> searchParamMap = new HashMap<>();
-        searchParamMap.put("regstrId", resolvedUsername);
+        searchParamMap.put("createdBy", resolvedUsername);
         searchParamMap.put("yy", yy);
         searchParamMap.put("mnth", mnth);
         searchParamMap.put("sort", "ASC");
@@ -109,7 +109,7 @@ public class JrnlDayService
     public List<JrnlDayDto> getJrnlStdrdDaysByUser(final String username, final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        searchParam.setRegstrId(AuthUtils.requireUsername(username));
+        searchParam.setCreatedBy(AuthUtils.requireUsername(username));
         searchParam.setSort("ASC");
         final List<JrnlDayEntity> myJrnlStdrdDayEntityList = this.getListEntity(searchParam);
         return mapstruct.toDtoList(myJrnlStdrdDayEntityList);
@@ -127,7 +127,7 @@ public class JrnlDayService
     public List<JrnlDayDto> getCachedWeeklyListDtoByUser(final String username, final String weekStartDt) throws Exception {
         final String resolvedUsername = AuthUtils.requireUsername(username);
         final Map<String, Object> searchParamMap = new HashMap<>();
-        searchParamMap.put("regstrId", resolvedUsername);
+        searchParamMap.put("createdBy", resolvedUsername);
         searchParamMap.put("weekStartDt", DateUtils.asDate(weekStartDt));
         searchParamMap.put("sort", "ASC");
         final List<JrnlDayEntity> myJrnlDayEntityList = this.getListEntity(searchParamMap);
@@ -152,7 +152,7 @@ public class JrnlDayService
     public List<JrnlDayDto> getListDtoByMetaIdAndUser(final String username, final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        searchParam.setRegstrId(AuthUtils.requireUsername(username));
+        searchParam.setCreatedBy(AuthUtils.requireUsername(username));
         searchParam.setSort("DESC");
         return this.getSelf().getListDto(searchParam);
     }
@@ -167,7 +167,7 @@ public class JrnlDayService
     public List<JrnlDayDto> getListDtoByTagIdAndUser(final String username, final JrnlDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        searchParam.setRegstrId(AuthUtils.requireUsername(username));
+        searchParam.setCreatedBy(AuthUtils.requireUsername(username));
         searchParam.setSort("DESC");
         return this.getSelf().getListDto(searchParam);
     }
@@ -185,7 +185,7 @@ public class JrnlDayService
         final JrnlDayEntity retrievedEntity = this.getDtlEntity(key);
         final JrnlDayDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr(username)) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+        if (!retrieved.getIsCreatedBy(username)) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
 
         return retrieved;
     }
@@ -202,8 +202,8 @@ public class JrnlDayService
         if (isDtUnknown) return false;
 
         final Date jrnlDt = DateUtils.asDate(jrnlDay.getJrnlDt());
-        final String regstrId = AuthUtils.requireUsername(username);
-        final Integer isDup = repository.countByJrnlDt(jrnlDt, regstrId);
+        final String createdBy = AuthUtils.requireUsername(username);
+        final Integer isDup = repository.countByJrnlDt(jrnlDt, createdBy);
 
         return isDup > 0;
     }
@@ -217,8 +217,8 @@ public class JrnlDayService
     @Transactional(readOnly = true)
     public Integer getDupKeyByUser(final String username, final JrnlDayDto jrnlDay) throws Exception {
         final Date jrnlDt = DateUtils.asDate(jrnlDay.getJrnlDt());
-        final String regstrId = AuthUtils.requireUsername(username);
-        final JrnlDayEntity existingEntity = repository.findByJrnlDt(jrnlDt, regstrId);
+        final String createdBy = AuthUtils.requireUsername(username);
+        final JrnlDayEntity existingEntity = repository.findByJrnlDt(jrnlDt, createdBy);
 
         return existingEntity.getId();
     }
@@ -253,7 +253,7 @@ public class JrnlDayService
      */
     @Override
     public void preModify(final JrnlDayDto modifyDto, final JrnlDayEntity modifyEntity) throws Exception {
-        if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(modifyEntity.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         modifyDto.setPrevWeekStartDt(DateUtils.asStr(modifyEntity.getWeekStartDt(), DatePtn.DATE));
@@ -301,7 +301,7 @@ public class JrnlDayService
      */
     @Override
     public void preDelete(final JrnlDayDto deletedDto) throws Exception {
-        if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
@@ -327,7 +327,7 @@ public class JrnlDayService
     public JrnlDayDto getDeletedDtlDto(final Integer key) throws Exception {
         final JrnlDayDto deleted = jrnlDayMapper.getDeletedById(key);
         if (deleted == null) return null;
-        if (!AuthUtils.isRegstr(deleted.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(deleted.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         return deleted;

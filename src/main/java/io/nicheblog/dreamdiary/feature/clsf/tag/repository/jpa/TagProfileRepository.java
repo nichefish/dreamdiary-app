@@ -27,9 +27,9 @@ public interface TagProfileRepository
      * @param contentType 컨텐츠 타입
      * @return {@link Optional} -- 조회된 TagProfileEntity
      */
-    Optional<TagProfileEntity> findByTagIdAndContentTypeAndRegstrId(final Integer tagId, final String contentType, final String regstrId);
+    Optional<TagProfileEntity> findByTagIdAndContentTypeAndCreatedBy(final Integer tagId, final String contentType, final String createdBy);
 
-    List<TagProfileEntity> findAllByTagIdInAndContentTypeAndRegstrId(final Collection<Integer> tagIdList, final String contentType, final String regstrId);
+    List<TagProfileEntity> findAllByTagIdInAndContentTypeAndCreatedBy(final Collection<Integer> tagIdList, final String contentType, final String createdBy);
 
-    Optional<TagProfileEntity> findByIdAndRegstrId(final Integer id, final String regstrId);
+    Optional<TagProfileEntity> findByIdAndCreatedBy(final Integer id, final String createdBy);
 }

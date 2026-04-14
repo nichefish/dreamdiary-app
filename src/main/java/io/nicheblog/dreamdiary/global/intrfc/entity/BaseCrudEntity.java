@@ -7,6 +7,7 @@ import org.hibernate.annotations.Comment;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * BaseCrudEntity
@@ -27,9 +28,8 @@ import java.io.Serializable;
 public class BaseCrudEntity
         implements Serializable {
 
-    /** 삭제 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "del_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("삭제 여부 (Y/N)")
-    protected String delYn = "N";
+    /** 삭제 일시 (NULL이면 미삭제) */
+    @Column(name = "deleted_at")
+    @Comment("삭제 일시")
+    protected Date deletedAt;
 }

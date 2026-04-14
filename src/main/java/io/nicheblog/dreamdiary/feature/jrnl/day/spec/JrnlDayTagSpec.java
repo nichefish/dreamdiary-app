@@ -94,8 +94,8 @@ public class JrnlDayTagSpec
                 case "weekStartDt":
                     predicate.add(builder.equal(jrnlDayJoin.get(key), DateUtils.asDate(value)));
                     continue;
-                case "regstrId":
-                    predicate.add(builder.equal(jrnlDayTagJoin.get("regstrId"), value));
+                case "createdBy":
+                    predicate.add(builder.equal(jrnlDayTagJoin.get("createdBy"), value));
                     continue;
                 default:
                     continue;

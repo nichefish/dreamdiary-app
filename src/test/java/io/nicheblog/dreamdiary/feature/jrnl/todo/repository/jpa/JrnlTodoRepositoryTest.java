@@ -65,9 +65,9 @@ class JrnlTodoRepositoryTest {
         // Then::
         assertNotNull(retrieved, "Could not load saved entity.");
         assertNotNull(retrieved.getId(), "Saved entity key is null.");
-        assertNotNull(retrieved.getRegDt(), "regDt audit was not set.");
-        assertNotNull(retrieved.getRegstrId(), "regstrId audit was not set.");
-        assertEquals(TestConstant.TEST_AUDITOR, retrieved.getRegstrId(), "Saved regstrId is unexpected.");
+        assertNotNull(retrieved.getCreatedAt(), "createdAt audit was not set.");
+        assertNotNull(retrieved.getCreatedBy(), "createdBy audit was not set.");
+        assertEquals(TestConstant.TEST_AUDITOR, retrieved.getCreatedBy(), "Saved createdBy is unexpected.");
     }
 
     /**
@@ -88,9 +88,9 @@ class JrnlTodoRepositoryTest {
         // Then::
         assertNotNull(modified, "Could not load modified entity.");
         assertNotNull(modified.getId(), "Modified entity key is null.");
-        assertNotNull(modified.getMdfDt(), "mdfDt audit was not set.");
-        assertNotNull(modified.getMdfusrId(), "mdfusrId audit was not set.");
-        assertEquals(TestConstant.TEST_AUDITOR, modified.getMdfusrId(), "Modified mdfusrId is unexpected.");
+        assertNotNull(modified.getUpdatedAt(), "updatedAt audit was not set.");
+        assertNotNull(modified.getUpdatedById(), "updatedBy audit was not set.");
+        assertEquals(TestConstant.TEST_AUDITOR, modified.getUpdatedById(), "Modified updatedBy is unexpected.");
         assertEquals("modified", modified.getCn(), "Content was not updated.");
     }
 

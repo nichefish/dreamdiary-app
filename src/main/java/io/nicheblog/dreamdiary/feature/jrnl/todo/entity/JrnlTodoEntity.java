@@ -29,8 +29,8 @@ import javax.persistence.*;
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE jrnl_todo SET del_yn = 'Y' WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE jrnl_todo SET deleted_at = NOW() WHERE id = ?")
 public class JrnlTodoEntity
         extends BaseClsfEntity
         implements TagEmbedModule {

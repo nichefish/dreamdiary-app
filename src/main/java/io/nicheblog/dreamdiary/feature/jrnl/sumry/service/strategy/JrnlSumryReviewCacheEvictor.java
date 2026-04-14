@@ -33,7 +33,7 @@ public class JrnlSumryReviewCacheEvictor
     public void evict(final JrnlCacheEvictParam param) throws Exception {
         final ContentType refContentType = ContentType.JRNL_SUMRY_REVIEW;
         try {
-            final String username = param.getRegstrId();
+            final String username = param.getCreatedBy();
             final Integer reviewId = param.getId();
             final Integer jrnlSumryId = param.getJrnlSumryId();
             final Integer yy = param.getYy();

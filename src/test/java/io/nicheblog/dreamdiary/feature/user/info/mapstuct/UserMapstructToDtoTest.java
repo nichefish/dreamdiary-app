@@ -83,21 +83,21 @@ class UserMapstructToDtoTest {
     void testToDto_checkAuditor() throws Exception {
         // Given::
         // 등록자 / 수정자
-        BaseEntityTestFactoryHelper.setRegstrInfo(userEntity);
-        BaseEntityTestFactoryHelper.setMdfusrInfo(userEntity);
+        BaseEntityTestFactoryHelper.setCreatedByInfo(userEntity);
+        BaseEntityTestFactoryHelper.setUpdatedByInfo(userEntity);
 
         // When::
         final UserDto userDto = userMapstruct.toDto(userEntity);
 
         // Then::
         assertNotNull(userDto, "변환된 사용자 상세 Dto는 null일 수 없습니다.");
-        assertEquals(TestConstant.TEST_REGSTR_ID, userDto.getRegstrId(), "등록자 ID가 제대로 매핑되지 않았습니다.");
-        assertEquals(TestConstant.TEST_REGSTR_NM, userDto.getRegstrNm(), "등록자 이름이 제대로 매핑되지 않았습니다.");
-        assertEquals("2000-01-01 00:00:00", userDto.getRegDt(), "등록일시가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_REGSTR_ID, userDto.getCreatedBy(), "등록자 ID가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_REGSTR_NM, userDto.getCreatedByNm(), "등록자 이름이 제대로 매핑되지 않았습니다.");
+        assertEquals("2000-01-01 00:00:00", userDto.getCreatedAt(), "등록일시가 제대로 매핑되지 않았습니다.");
         // 수정자
-        assertEquals(TestConstant.TEST_MDFUSR_ID, userDto.getMdfusrId(), "수정자 ID가 제대로 매핑되지 않았습니다.");
-        assertEquals(TestConstant.TEST_MDFUSR_NM, userDto.getMdfusrNm(), "수정자 이름이 제대로 매핑되지 않았습니다.");
-        assertEquals("2000-01-01 00:00:00", userDto.getMdfDt(), "수정일시가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_MDFUSR_ID, userDto.getUpdatedById(), "수정자 ID가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_MDFUSR_NM, userDto.getUpdatedByNm(), "수정자 이름이 제대로 매핑되지 않았습니다.");
+        assertEquals("2000-01-01 00:00:00", userDto.getUpdatedAt(), "수정일시가 제대로 매핑되지 않았습니다.");
     }
 
     /**
@@ -239,21 +239,21 @@ class UserMapstructToDtoTest {
     void testToListDto_checkAuditor() throws Exception {
         // Given::
         // 등록자 / 수정자
-        BaseEntityTestFactoryHelper.setRegstrInfo(userEntity);
-        BaseEntityTestFactoryHelper.setMdfusrInfo(userEntity);
+        BaseEntityTestFactoryHelper.setCreatedByInfo(userEntity);
+        BaseEntityTestFactoryHelper.setUpdatedByInfo(userEntity);
 
         // When::
         final UserDto userListDto = userMapstruct.toDto(userEntity);
 
         // Then::
         assertNotNull(userListDto, "변환된 사용자 목록 Dto는 null일 수 없습니다.");
-        assertEquals(TestConstant.TEST_REGSTR_ID, userListDto.getRegstrId(), "등록자 ID가 제대로 매핑되지 않았습니다.");
-        assertEquals(TestConstant.TEST_REGSTR_NM, userListDto.getRegstrNm(), "등록자 이름이 제대로 매핑되지 않았습니다.");
-        assertEquals("2000-01-01 00:00:00", userListDto.getRegDt(), "등록일시가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_REGSTR_ID, userListDto.getCreatedBy(), "등록자 ID가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_REGSTR_NM, userListDto.getCreatedByNm(), "등록자 이름이 제대로 매핑되지 않았습니다.");
+        assertEquals("2000-01-01 00:00:00", userListDto.getCreatedAt(), "등록일시가 제대로 매핑되지 않았습니다.");
         // 수정자
-        assertEquals(TestConstant.TEST_MDFUSR_ID, userListDto.getMdfusrId(), "수정자 ID가 제대로 매핑되지 않았습니다.");
-        assertEquals(TestConstant.TEST_MDFUSR_NM, userListDto.getMdfusrNm(), "수정자 이름이 제대로 매핑되지 않았습니다.");
-        assertEquals("2000-01-01 00:00:00", userListDto.getMdfDt(), "수정일시가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_MDFUSR_ID, userListDto.getUpdatedById(), "수정자 ID가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_MDFUSR_NM, userListDto.getUpdatedByNm(), "수정자 이름이 제대로 매핑되지 않았습니다.");
+        assertEquals("2000-01-01 00:00:00", userListDto.getUpdatedAt(), "수정일시가 제대로 매핑되지 않았습니다.");
     }
 
 }

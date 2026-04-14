@@ -150,7 +150,7 @@ public class MetaContentService
                     .metaNm(meta.getMetaNm())
                     .ctgr(meta.getCtgr())
                     .label(meta.getLabel())
-                    .regstrId(AuthUtils.getLgnUsername())
+                    .createdBy(AuthUtils.getLgnUsername())
                     .build();
             repository.deleteObsoleteMetaContents(param);
             // 메타 캐시 처리

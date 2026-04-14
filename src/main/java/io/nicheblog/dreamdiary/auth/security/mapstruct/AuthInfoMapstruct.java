@@ -34,8 +34,8 @@ public interface AuthInfoMapstruct
      */
     @Override
     @Mapping(target = "lockedYn", expression = "java(entity.acntStus.getLockedYn())")
-    @Mapping(target = "lstLgnDt", expression = "java(entity.acntStus.getLstLgnDt() != null ? entity.acntStus.getLstLgnDt() : entity.getRegDt())")       // 최종접속일 또는 등록일
-    @Mapping(target = "pwChgDt", expression = "java(entity.acntStus.getPwChgDt() != null ? entity.acntStus.getPwChgDt() : entity.getRegDt())")          // 최종비밀번호변경일 또는 등록일
+    @Mapping(target = "lstLgnDt", expression = "java(entity.acntStus.getLstLgnDt() != null ? entity.acntStus.getLstLgnDt() : entity.getCreatedAt())")       // 최종접속일 또는 등록일
+    @Mapping(target = "pwChgDt", expression = "java(entity.acntStus.getPwChgDt() != null ? entity.acntStus.getPwChgDt() : entity.getCreatedAt())")          // 최종비밀번호변경일 또는 등록일
     @Mapping(target = "needsPwReset", expression = "java(entity.acntStus.getNeedsPwReset())")
     @Mapping(target = "cfYn", expression = "java(entity.acntStus.getCfYn())")
     @Mapping(target = "profile", expression = "java(UserProfileMapstruct.INSTANCE.toDto(entity.getProfile()))")

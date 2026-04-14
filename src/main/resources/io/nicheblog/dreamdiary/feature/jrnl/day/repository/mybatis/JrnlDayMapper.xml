@@ -8,7 +8,7 @@
         /* JrnlDayMapper.getDeletedById */
         SELECT
             day.id,
-            day.regstr_id,
+            day.created_by,
             day.yy,
             day.mnth
         FROM jrnl_day day

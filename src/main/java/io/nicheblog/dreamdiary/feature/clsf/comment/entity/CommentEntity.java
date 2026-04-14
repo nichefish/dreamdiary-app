@@ -31,8 +31,8 @@ import javax.persistence.*;
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE comment SET del_yn = 'Y' WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE comment SET deleted_at = NOW() WHERE id = ?")
 public class CommentEntity
         extends BaseClsfEntity
         implements AtchFileEmbedModule, CommentEmbedModule, TagEmbedModule {

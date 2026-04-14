@@ -78,7 +78,7 @@ public class JrnlSbjctService
      */
     @Override
     public void preModify(final JrnlSbjctDto modifyDto, final JrnlSbjctEntity modifyEntity) throws Exception {
-        if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(modifyEntity.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
@@ -106,7 +106,7 @@ public class JrnlSbjctService
      */
     @Override
     public void preDelete(final JrnlSbjctDto deletedDto) throws Exception {
-        if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }

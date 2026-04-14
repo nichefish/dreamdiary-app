@@ -22,11 +22,11 @@ CREATE TABLE IF NOT EXISTS jrnl_day (
     week_start_dt DATE COMMENT '주 시작일자 (월요일 기준)',
     weather VARCHAR(500) COMMENT '날씨',
     -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
-    mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
-    mdf_dt DATETIME COMMENT '수정일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정일시',
+    deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
     INDEX (jrnl_dt),
     INDEX (aprxmt_dt),
@@ -50,11 +50,11 @@ CREATE TABLE IF NOT EXISTS jrnl_chapter (
     idx INT DEFAULT 1 COMMENT '저널 챕터 인덱스',
     collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)',
     -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
-    mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
-    mdf_dt DATETIME COMMENT '수정일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정일시',
+    deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
     INDEX (jrnl_day_id)
 ) COMMENT = '저널 챕터';
@@ -75,11 +75,11 @@ CREATE TABLE IF NOT EXISTS jrnl_diary (
     -- ATCH_FILE
     atch_file_id INT COMMENT '첨부파일 번호',
     -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
-    mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
-    mdf_dt DATETIME COMMENT '수정일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정일시',
+    deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
     INDEX (jrnl_chapter_id)
 ) COMMENT = '저널 일기';
@@ -109,11 +109,11 @@ CREATE TABLE IF NOT EXISTS jrnl_dream (
     history_triggered_by VARCHAR(20) COMMENT '최종 이력 트리거 발생자',
     history_triggered_at DATETIME COMMENT '최종 이력 트리거 발생일시',
     -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
-    mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
-    mdf_dt DATETIME COMMENT '수정일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정일시',
+    deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
     INDEX (jrnl_day_id)
 ) COMMENT = '저널 꿈';
@@ -141,11 +141,11 @@ CREATE TABLE IF NOT EXISTS jrnl_intrpt (
     history_triggered_by VARCHAR(20) COMMENT '최종 이력 트리거 발생자',
     history_triggered_at DATETIME COMMENT '최종 이력 트리거 발생일시',
     -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
-    mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
-    mdf_dt DATETIME COMMENT '수정일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정일시',
+    deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
     INDEX (jrnl_dream_id)
 ) COMMENT = '저널 해석';
@@ -172,11 +172,11 @@ CREATE TABLE IF NOT EXISTS jrnl_todo (
     -- ATCH_FILE
     atch_file_id INT COMMENT '첨부파일 번호',
     -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
-    mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
-    mdf_dt DATETIME COMMENT '수정일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)'
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정일시',
+    deleted_at DATETIME COMMENT '삭제일시'
 ) COMMENT = '저널 할일';
 
 -- 저널 주제 (jrnl_sbjct)
@@ -197,11 +197,11 @@ CREATE TABLE IF NOT EXISTS jrnl_sbjct(
     -- ATCH_FILE
     atch_file_id INT COMMENT '첨부파일 번호',
     -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
-    mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
-    mdf_dt DATETIME COMMENT '수정일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)'
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정일시',
+    deleted_at DATETIME COMMENT '삭제일시'
 ) COMMENT = '저널 주제';
 
 -- 저널 결산 (jrnl_sumry)
@@ -219,11 +219,11 @@ CREATE TABLE IF NOT EXISTS jrnl_sumry (
     -- ATCH_FILE
     atch_file_id INT COMMENT '첨부파일 번호',
     -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
-    mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
-    mdf_dt DATETIME COMMENT '수정일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)'
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정일시',
+    deleted_at DATETIME COMMENT '삭제일시'
 ) COMMENT = '저널 결산';
 
 -- 저널 결산 리뷰 (jrnl_sumry_review)
@@ -247,9 +247,9 @@ CREATE TABLE IF NOT EXISTS jrnl_sumry_review (
     -- ATCH_FILE
     atch_file_id INT COMMENT '첨부파일 번호',
     -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
-    mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
-    mdf_dt DATETIME COMMENT '수정일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)'
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정일시',
+    deleted_at DATETIME COMMENT '삭제일시'
 ) COMMENT = '저널 결산 리뷰';

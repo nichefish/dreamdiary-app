@@ -42,7 +42,7 @@ public class CommentEmbed
     })
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 10)
-    @OrderBy("regDt ASC")
+    @OrderBy("createdAt ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("댓글 목록")
     private List<CommentEntity> list;

@@ -33,7 +33,7 @@ public class JrnlDayCacheEvictor
     public void evict(final JrnlCacheEvictParam param) throws Exception {
         final ContentType refContentType = ContentType.JRNL_DAY;
         try {
-            final String username = param.getRegstrId();
+            final String username = param.getCreatedBy();
             final Integer id = param.getId();
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();

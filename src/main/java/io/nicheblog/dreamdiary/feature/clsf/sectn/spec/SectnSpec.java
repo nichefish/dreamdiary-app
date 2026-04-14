@@ -44,7 +44,7 @@ public class SectnSpec
 
         final List<Predicate> predicate = new ArrayList<>();
         // expressions
-        final Expression<Date> regDtExp = root.get("regDt");
+        final Expression<Date> createdAtExp = root.get("createdAt");
 
         // 파라미터 비교
         for (final String key : searchParamMap.keySet()) {
@@ -52,11 +52,11 @@ public class SectnSpec
             switch (key) {
                 case "searchStartDt":
                     // 기간 검색
-                    predicate.add(builder.greaterThanOrEqualTo(regDtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.greaterThanOrEqualTo(createdAtExp, DateUtils.asDate(value)));
                     continue;
                 case "searchEndDt":
                     // 기간 검색
-                    predicate.add(builder.lessThanOrEqualTo(regDtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.lessThanOrEqualTo(createdAtExp, DateUtils.asDate(value)));
                     continue;
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색

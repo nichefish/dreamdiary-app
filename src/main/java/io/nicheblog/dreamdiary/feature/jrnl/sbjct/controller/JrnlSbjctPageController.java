@@ -79,7 +79,7 @@ public class JrnlSbjctPageController
         // 상단 고정 목록 조회
         // model.addAttribute("jrnlSbjctFxdList", jrnlSbjctService.getFxdList());
         // 페이징 정보 생성:: 공백시 pageSize=10, pageNo=1
-        final PageRequest pageRequest = ParamUtils.getPageRequest(searchParam, "regDt", model);
+        final PageRequest pageRequest = ParamUtils.getPageRequest(searchParam, "createdAt", model);
         // 목록 조회 및 모델에 추가
         final Page<JrnlSbjctDto> jrnlSbjctList = jrnlSbjctService.getPageDto(searchParam, pageRequest);
         model.addAttribute("jrnlSbjctList", jrnlSbjctList.getContent());

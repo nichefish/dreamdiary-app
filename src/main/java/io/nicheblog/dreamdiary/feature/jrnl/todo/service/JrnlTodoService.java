@@ -65,7 +65,7 @@ public class JrnlTodoService
      */
     @Cacheable(value="jrnlTodoListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #searchParam.getYy(), #searchParam.getMnth())")
     public List<JrnlTodoDto> getListDtoWithCacheByUser(final String username, final JrnlTodoSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUsername(username));
+        searchParam.setCreatedBy(AuthUtils.requireUsername(username));
 
         return this.getSelf().getListDto(searchParam);
     }
@@ -90,7 +90,7 @@ public class JrnlTodoService
      */
     @Override
     public void preModify(final JrnlTodoDto modifyDto, final JrnlTodoEntity modifyEntity) throws Exception {
-        if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(modifyEntity.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
@@ -128,7 +128,7 @@ public class JrnlTodoService
         final JrnlTodoEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlTodoDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr(AuthUtils.requireUsername(username))) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+        if (!retrieved.getIsCreatedBy(AuthUtils.requireUsername(username))) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         return retrieved;
     }
 
@@ -139,7 +139,7 @@ public class JrnlTodoService
      */
     @Override
     public void preDelete(final JrnlTodoDto deletedDto) throws Exception {
-        if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }

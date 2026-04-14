@@ -36,6 +36,6 @@ public class TagContentParam
     private String ctgr;
 
     /** 등록자 ID */
-    private String regstrId;
+    private String createdBy;
 
 }

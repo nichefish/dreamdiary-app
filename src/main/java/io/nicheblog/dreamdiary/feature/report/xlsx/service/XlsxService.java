@@ -67,8 +67,8 @@ public class XlsxService {
 //
     //     // 날짜 생성
     //     CellStyle COVER_DT = styleMap.get(XlsxStyle.COVER_DT);
-    //     Row regDtRow = sheet.createRow(23);
-    //     Cell regDtCell = XlsxUtils.createCellWithStyleInit(regDtRow, 3, COVER_DT, (String) dataMap.get("regDtDy"));
+    //     Row createdAtRow = sheet.createRow(23);
+    //     Cell createdAtCell = XlsxUtils.createCellWithStyleInit(createdAtRow, 3, COVER_DT, (String) dataMap.get("createdAtDy"));
     //     sheet.addMergedRegion(new CellRangeAddress(23, 23, 3, MAX_CELL - 3));
 //
     //     // 낙인 생성

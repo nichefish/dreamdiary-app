@@ -27,8 +27,8 @@ import javax.persistence.Table;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @ToString(callSuper = true)
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE user_auth_role SET del_yn = 'Y' WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE user_auth_role SET deleted_at = NOW() WHERE id = ?")
 public class UserAuthRoleEntity
         extends BaseCrudEntity {
 

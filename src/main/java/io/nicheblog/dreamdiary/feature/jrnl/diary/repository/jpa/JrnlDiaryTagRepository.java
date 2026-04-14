@@ -37,7 +37,7 @@ public interface JrnlDiaryTagRepository
             "FROM JrnlDiaryTagContentEntity ct " +
             "INNER JOIN FETCH JrnlDiaryEntity diary ON ct.refId = diary.id " +
             "INNER JOIN FETCH JrnlDayEntity day ON diary.jrnlChapter.jrnlDayId = day.id " +
-            "WHERE ct.regstrId = :#{#param.regstrId} " +
+            "WHERE ct.createdBy = :#{#param.createdBy} " +
             " AND (:#{#param.yy} IS NULL OR day.yy = :#{#param.yy} OR :#{#param.yy} = 9999) " +
             " AND (:#{#param.mnth} IS NULL OR day.mnth = :#{#param.mnth} OR :#{#param.mnth} = 99) " +
             " AND (:#{#param.weekStartDt} IS NULL OR day.weekStartDt = :#{T(io.nicheblog.dreamdiary.global.util.date.DateUtils).asDate(#param.weekStartDt)}) " +

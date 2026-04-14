@@ -12,15 +12,15 @@ import java.util.Optional;
 public interface TagCategoryProfileRepository
         extends BaseStreamRepository<TagCategoryProfileEntity, Integer> {
 
-    Optional<TagCategoryProfileEntity> findByTagCategoryIdAndContentTypeAndRegstrId(
+    Optional<TagCategoryProfileEntity> findByTagCategoryIdAndContentTypeAndCreatedBy(
             final Integer tagCategoryId,
             final String contentType,
-            final String regstrId
+            final String createdBy
     );
 
-    List<TagCategoryProfileEntity> findAllByTagCategoryIdInAndContentTypeAndRegstrId(
+    List<TagCategoryProfileEntity> findAllByTagCategoryIdInAndContentTypeAndCreatedBy(
             final Collection<Integer> tagCategoryIdList,
             final String contentType,
-            final String regstrId
+            final String createdBy
     );
 }

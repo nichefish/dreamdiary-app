@@ -75,9 +75,9 @@ class JrnlDayServiceTest {
         assertNotNull(registered, "등록이 정상적으로 이루어지지 않았습니다.");
         assertNotNull(registered.getId(), "등록이 정상적으로 이루어지지 않았습니다.");
         // audit
-        assertNotNull(registered.getRegDt(), "등록일자 audit 처리가 되지 않았습니다.");
-        assertNotNull(registered.getRegstrId(),  "등록자 audit 처리가 되지 않았습니다.");
-        assertEquals(TestConstant.TEST_AUDITOR, registered.getRegstrId(), "등록자가 예상 값과 일치하지 않습니다.");
+        assertNotNull(registered.getCreatedAt(), "등록일자 audit 처리가 되지 않았습니다.");
+        assertNotNull(registered.getCreatedBy(),  "등록자 audit 처리가 되지 않았습니다.");
+        assertEquals(TestConstant.TEST_AUDITOR, registered.getCreatedBy(), "등록자가 예상 값과 일치하지 않습니다.");
     }
 
     /**
@@ -100,9 +100,9 @@ class JrnlDayServiceTest {
         assertNotNull(updated.getId(), "수정이 정상적으로 이루어지지 않았습니다.");
         assertEquals("2020-01-01", updated.getJrnlDt(), "수정이 정상적으로 이루어지지 않았습니다.");
         // audit
-        assertNotNull(updated.getMdfDt(), "수정일자 audit 처리가 되지 않았습니다.");
-        assertNotNull(updated.getMdfusrId(),  "수정자 audit 처리가 되지 않았습니다.");
-        assertEquals(TestConstant.TEST_AUDITOR, updated.getMdfusrId(), "수정자가 예상 값과 일치하지 않습니다.");
+        assertNotNull(updated.getUpdatedAt(), "수정일자 audit 처리가 되지 않았습니다.");
+        assertNotNull(updated.getUpdatedById(),  "수정자 audit 처리가 되지 않았습니다.");
+        assertEquals(TestConstant.TEST_AUDITOR, updated.getUpdatedById(), "수정자가 예상 값과 일치하지 않습니다.");
     }
 
     /**

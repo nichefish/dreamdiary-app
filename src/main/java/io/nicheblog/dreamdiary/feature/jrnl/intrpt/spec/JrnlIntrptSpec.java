@@ -77,7 +77,7 @@ public class JrnlIntrptSpec
         final Join<JrnlIntrptSmpEntity, JrnlDreamSmpEntity> jrnlDreamJoin = root.join("jrnlDream", JoinType.INNER);
         final Join<JrnlDreamSmpEntity, JrnlDaySmpEntity> jrnlDayJoin = jrnlDreamJoin.join("jrnlDay", JoinType.INNER);
         final Expression<Date> effectiveDtExp = builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"));
-        final String regstrId = resolveRegstrId(searchParamMap);
+        final String createdBy = resolveCreatedBy(searchParamMap);
 
         // 파라미터 비교
         for (final String key : searchParamMap.keySet()) {
@@ -119,7 +119,7 @@ public class JrnlIntrptSpec
                     // 특정 태그된 꿈만 조회
                     final Join<JrnlIntrptEntity, TagEmbed> tagJoin = root.join("tag", JoinType.INNER);
                     final Join<TagEmbed, TagContentEntity> tagContentJoin = tagJoin.join("list", JoinType.INNER);
-                    predicate.add(builder.equal(tagContentJoin.get("regstrId"), regstrId));
+                    predicate.add(builder.equal(tagContentJoin.get("createdBy"), createdBy));
                     predicate.add(builder.equal(tagContentJoin.get("tagId"), value));
                     continue;
                 default:
@@ -135,13 +135,13 @@ public class JrnlIntrptSpec
         return predicate;
     }
 
-    private String resolveRegstrId(final Map<String, Object> searchParamMap) {
-        final Object regstrId = searchParamMap.get("regstrId");
-        if (regstrId != null) {
-            final String regstrIdStr = regstrId.toString();
-            if (!regstrIdStr.isBlank()) return regstrIdStr;
+    private String resolveCreatedBy(final Map<String, Object> searchParamMap) {
+        final Object createdBy = searchParamMap.get("createdBy");
+        if (createdBy != null) {
+            final String createdByStr = createdBy.toString();
+            if (!createdByStr.isBlank()) return createdByStr;
         }
-        throw new IllegalArgumentException("regstrId is required.");
+        throw new IllegalArgumentException("createdBy is required.");
     }
 
 }

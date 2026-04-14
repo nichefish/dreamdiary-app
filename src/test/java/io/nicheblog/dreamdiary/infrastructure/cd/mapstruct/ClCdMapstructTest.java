@@ -59,9 +59,9 @@ class ClCdMapstructTest {
         // Given::
         ClCdEntity clCdEntity = ClCdEntityTestFactory.create();
         // 등록자
-        BaseEntityTestFactoryHelper.setRegstrInfo(clCdEntity);
+        BaseEntityTestFactoryHelper.setCreatedByInfo(clCdEntity);
         // 수정자
-        BaseEntityTestFactoryHelper.setMdfusrInfo(clCdEntity);
+        BaseEntityTestFactoryHelper.setUpdatedByInfo(clCdEntity);
 
         // When::
         ClCdDto dto = clCdMapstruct.toDto(clCdEntity);
@@ -69,13 +69,13 @@ class ClCdMapstructTest {
         // Then::
         assertNotNull(dto);
         // 등록자
-        assertEquals(TestConstant.TEST_REGSTR_ID, dto.getRegstrId(), "등록자 ID가 제대로 매핑되지 않았습니다.");
-        assertEquals(TestConstant.TEST_REGSTR_NM, dto.getRegstrNm(), "등록자 이름이 제대로 매핑되지 않았습니다.");
-        assertEquals("2000-01-01 00:00:00", dto.getRegDt(), "등록일시가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_REGSTR_ID, dto.getCreatedBy(), "등록자 ID가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_REGSTR_NM, dto.getCreatedByNm(), "등록자 이름이 제대로 매핑되지 않았습니다.");
+        assertEquals("2000-01-01 00:00:00", dto.getCreatedAt(), "등록일시가 제대로 매핑되지 않았습니다.");
         // 수정자
-        assertEquals(TestConstant.TEST_MDFUSR_ID, dto.getMdfusrId(), "수정자 ID가 제대로 매핑되지 않았습니다.");
-        assertEquals(TestConstant.TEST_MDFUSR_NM, dto.getMdfusrNm(), "수정자 이름이 제대로 매핑되지 않았습니다.");
-        assertEquals("2000-01-01 00:00:00", dto.getMdfDt(), "수정일시가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_MDFUSR_ID, dto.getUpdatedById(), "수정자 ID가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_MDFUSR_NM, dto.getUpdatedByNm(), "수정자 이름이 제대로 매핑되지 않았습니다.");
+        assertEquals("2000-01-01 00:00:00", dto.getUpdatedAt(), "수정일시가 제대로 매핑되지 않았습니다.");
     }
 
     /* ----- */
@@ -110,9 +110,9 @@ class ClCdMapstructTest {
         // Given::
         ClCdEntity clCdEntity = ClCdEntityTestFactory.create();
         // 등록자
-        BaseEntityTestFactoryHelper.setRegstrInfo(clCdEntity);
+        BaseEntityTestFactoryHelper.setCreatedByInfo(clCdEntity);
         // 수정자
-        BaseEntityTestFactoryHelper.setMdfusrInfo(clCdEntity);
+        BaseEntityTestFactoryHelper.setUpdatedByInfo(clCdEntity);
 
         // When::
         ClCdDto dto = clCdMapstruct.toDto(clCdEntity);
@@ -120,13 +120,13 @@ class ClCdMapstructTest {
         // Then::
         assertNotNull(dto);
         // 등록자
-        assertEquals(TestConstant.TEST_REGSTR_ID, dto.getRegstrId(), "등록자 ID가 제대로 매핑되지 않았습니다.");
-        assertEquals(TestConstant.TEST_REGSTR_NM, dto.getRegstrNm(), "등록자 이름이 제대로 매핑되지 않았습니다.");
-        assertEquals("2000-01-01 00:00:00", dto.getRegDt(), "등록일시가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_REGSTR_ID, dto.getCreatedBy(), "등록자 ID가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_REGSTR_NM, dto.getCreatedByNm(), "등록자 이름이 제대로 매핑되지 않았습니다.");
+        assertEquals("2000-01-01 00:00:00", dto.getCreatedAt(), "등록일시가 제대로 매핑되지 않았습니다.");
         // 수정자
-        assertEquals(TestConstant.TEST_MDFUSR_ID, dto.getMdfusrId(), "수정자 ID가 제대로 매핑되지 않았습니다.");
-        assertEquals(TestConstant.TEST_MDFUSR_NM, dto.getMdfusrNm(), "수정자 이름이 제대로 매핑되지 않았습니다.");
-        assertEquals("2000-01-01 00:00:00", dto.getMdfDt(), "수정일시가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_MDFUSR_ID, dto.getUpdatedById(), "수정자 ID가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_MDFUSR_NM, dto.getUpdatedByNm(), "수정자 이름이 제대로 매핑되지 않았습니다.");
+        assertEquals("2000-01-01 00:00:00", dto.getUpdatedAt(), "수정일시가 제대로 매핑되지 않았습니다.");
     }
 
     /* ----- */

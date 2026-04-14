@@ -135,7 +135,7 @@ public class DreamdiaryInitializer
                 .username(Constant.SYSTEM_ACNT)
                 .password(SYSTEM_INIT_TEMP_PW)
                 .authList(List.of(userAuthRole))
-                .regstrId(Constant.SYSTEM_ACNT)
+                .createdBy(Constant.SYSTEM_ACNT)
                 .build();
 
         final ServiceResponse result = userService.regist(systemAcnt);

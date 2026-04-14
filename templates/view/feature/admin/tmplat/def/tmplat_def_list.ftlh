@@ -55,10 +55,10 @@
                             </a>
                         </td>
                         <td class="text-center col-form-label">
-                            ${tmplat.regstrNm!"-"}
+                            ${tmplat.createdByNm!"-"}
                         </td>
                         <td class="text-center hidden-table">
-                            ${tmplat.regDt!}
+                            ${tmplat.createdAt!}
                         </td>
                         <td class="text-center hidden-table">
                             ${tmplat.hitCnt!0?string.number}
@@ -90,13 +90,13 @@
                                 <i class="bi bi-stickies fs-5 text-noti opacity-hover" onclick="Page.dtlModal('${tmplat.id!}');"></i>
                             </a>
                         </td>
-                        <td class="text-center col-form-label">${tmplat.regstrNm!"-"}
-                            <#if tmplat.isRegstr!false>
+                        <td class="text-center col-form-label">${tmplat.createdByNm!"-"}
+                            <#if tmplat.isCreatedBy!false>
                                 <span class="badge badge-secondary opacity-75 mx-1 fs-9">나</span>
                             </#if>
                         </td>
                         <td class="text-center hidden-table">
-                            ${tmplat.regDt!}
+                            ${tmplat.createdAt!}
                         </td>
                         <td class="text-center hidden-table">
                             ${tmplat.hitCnt!0?string.number}

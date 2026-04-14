@@ -62,8 +62,8 @@ class UserReqstServiceTest {
         // Then::
         assertNotNull(registered, "사용자 계정 신청이 제대로 이루어지지 않았습니다.");
         // audit
-        assertNotNull(registered.getRegDt(), "등록일자 audit 처리가 되지 않았습니다.");
-        assertNotNull(registered.getRegstrId(),  "등록자 audit 처리가 되지 않았습니다.");
-        assertEquals(TestConstant.TEST_AUDITOR, registered.getRegstrId(), "등록자가 예상 값과 일치하지 않습니다.");
+        assertNotNull(registered.getCreatedAt(), "등록일자 audit 처리가 되지 않았습니다.");
+        assertNotNull(registered.getCreatedBy(),  "등록자 audit 처리가 되지 않았습니다.");
+        assertEquals(TestConstant.TEST_AUDITOR, registered.getCreatedBy(), "등록자가 예상 값과 일치하지 않습니다.");
     }
 }

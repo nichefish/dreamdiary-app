@@ -30,7 +30,7 @@ import javax.persistence.*;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @ToString
-@Where(clause = "del_yn='N'")
+@Where(clause = "deleted_at IS NULL")
 public class DtlCdEntity
         extends BaseAuditEntity
         implements Usable, Sortable {

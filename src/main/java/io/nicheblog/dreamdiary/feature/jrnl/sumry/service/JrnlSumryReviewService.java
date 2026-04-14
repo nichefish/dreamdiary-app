@@ -58,7 +58,7 @@ public class JrnlSumryReviewService
     }
 
     public List<JrnlSumryReviewDto> getListDtoByUser(final String username, final io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUsername(username));
+        searchParam.setCreatedBy(AuthUtils.requireUsername(username));
         return this.getSelf().getListDto(searchParam);
     }
 
@@ -90,7 +90,7 @@ public class JrnlSumryReviewService
      */
     @Override
     public void preModify(final JrnlSumryReviewDto modifyDto, final JrnlSumryReviewEntity modifyEntity) throws Exception {
-        if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(modifyEntity.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
@@ -102,7 +102,7 @@ public class JrnlSumryReviewService
      */
     @Override
     public void preDelete(final JrnlSumryReviewDto deletedDto) throws Exception {
-        if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
