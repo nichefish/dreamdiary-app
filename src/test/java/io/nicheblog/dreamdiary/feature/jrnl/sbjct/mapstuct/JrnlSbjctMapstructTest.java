@@ -58,8 +58,8 @@ class JrnlSbjctMapstructTest {
     void testToDto_checkAuditor() throws Exception {
         // Given::
         // 등록자 / 수정자
-        BaseEntityTestFactoryHelper.setRegstrInfo(jrnlSbjctEntity);
-        BaseEntityTestFactoryHelper.setMdfusrInfo(jrnlSbjctEntity);
+        BaseEntityTestFactoryHelper.setCreatedByInfo(jrnlSbjctEntity);
+        BaseEntityTestFactoryHelper.setUpdatedByInfo(jrnlSbjctEntity);
 
         // When::
         final JrnlSbjctDto jrnlSbjctDto = jrnlSbjctMapstruct.toDto(jrnlSbjctEntity);
@@ -67,13 +67,13 @@ class JrnlSbjctMapstructTest {
         // Then::
         assertNotNull(jrnlSbjctDto, "변환된 저널 일기 Dto는 null일 수 없습니다.");
         // 등록자
-        assertEquals(TestConstant.TEST_REGSTR_ID, jrnlSbjctDto.getRegstrId(), "등록자 ID가 제대로 매핑되지 않았습니다.");
-        assertEquals(TestConstant.TEST_REGSTR_NM, jrnlSbjctDto.getRegstrNm(), "등록자 이름이 제대로 매핑되지 않았습니다.");
-        assertEquals("2000-01-01 00:00:00", jrnlSbjctDto.getRegDt(), "등록일시가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_REGSTR_ID, jrnlSbjctDto.getCreatedBy(), "등록자 ID가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_REGSTR_NM, jrnlSbjctDto.getCreatedByNm(), "등록자 이름이 제대로 매핑되지 않았습니다.");
+        assertEquals("2000-01-01 00:00:00", jrnlSbjctDto.getCreatedAt(), "등록일시가 제대로 매핑되지 않았습니다.");
         // 수정자
-        assertEquals(TestConstant.TEST_MDFUSR_ID, jrnlSbjctDto.getMdfusrId(), "수정자 ID가 제대로 매핑되지 않았습니다.");
-        assertEquals(TestConstant.TEST_MDFUSR_NM, jrnlSbjctDto.getMdfusrNm(), "수정자 이름이 제대로 매핑되지 않았습니다.");
-        assertEquals("2000-01-01 00:00:00", jrnlSbjctDto.getMdfDt(), "수정일시가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_MDFUSR_ID, jrnlSbjctDto.getUpdatedById(), "수정자 ID가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_MDFUSR_NM, jrnlSbjctDto.getUpdatedByNm(), "수정자 이름이 제대로 매핑되지 않았습니다.");
+        assertEquals("2000-01-01 00:00:00", jrnlSbjctDto.getUpdatedAt(), "수정일시가 제대로 매핑되지 않았습니다.");
     }
 
     /* ----- */

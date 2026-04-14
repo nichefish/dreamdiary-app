@@ -24,15 +24,15 @@ import javax.persistence.*;
 @Entity
 @Table(
     name = "tag_profile",
-    uniqueConstraints = @UniqueConstraint(name = "uk_tag_profile", columnNames = { "tag_id", "content_type", "regstr_id" })
+    uniqueConstraints = @UniqueConstraint(name = "uk_tag_profile", columnNames = { "tag_id", "content_type", "created_by" })
 )
 @Getter
 @Setter
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE tag_profile SET del_yn = 'Y', content_type = CONCAT(content_type, '_del_', id) WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE tag_profile SET deleted_at = NOW(), content_type = CONCAT(content_type, '_del_', id) WHERE id = ?")
 public class TagProfileEntity
         extends BaseAuditRegEntity {
 

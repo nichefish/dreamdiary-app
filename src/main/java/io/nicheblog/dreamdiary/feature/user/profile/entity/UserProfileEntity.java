@@ -30,8 +30,8 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = {"user"}, callSuper = true)
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE user_profile SET DEL_YN = 'Y' WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE user_profile SET DELETED_AT = 'Y' WHERE id = ?")
 public class UserProfileEntity extends BaseCrudEntity {
 
     @Id

@@ -29,8 +29,8 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE tag SET del_yn = 'Y' WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE tag SET deleted_at = NOW() WHERE id = ?")
 public class JrnlDreamTagEntity
         extends BaseCrudEntity {
 

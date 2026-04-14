@@ -62,8 +62,8 @@ class JrnlDreamMapstructTest {
     void testToDto_checkAuditor() throws Exception {
         // Given::
         // 등록자 / 수정자
-        BaseEntityTestFactoryHelper.setRegstrInfo(jrnlDreamEntity);
-        BaseEntityTestFactoryHelper.setMdfusrInfo(jrnlDreamEntity);
+        BaseEntityTestFactoryHelper.setCreatedByInfo(jrnlDreamEntity);
+        BaseEntityTestFactoryHelper.setUpdatedByInfo(jrnlDreamEntity);
 
         // When::
         final JrnlDreamDto jrnlDreamDto = jrnlDreamMapstruct.toDto(jrnlDreamEntity);
@@ -71,13 +71,13 @@ class JrnlDreamMapstructTest {
         // Then::
         assertNotNull(jrnlDreamDto, "변환된 저널 꿈 Dto는 null일 수 없습니다.");
         // 등록자
-        assertEquals(TestConstant.TEST_REGSTR_ID, jrnlDreamDto.getRegstrId(), "등록자 ID가 제대로 매핑되지 않았습니다.");
-        assertEquals(TestConstant.TEST_REGSTR_NM, jrnlDreamDto.getRegstrNm(), "등록자 이름이 제대로 매핑되지 않았습니다.");
-        assertEquals("2000-01-01 00:00:00", jrnlDreamDto.getRegDt(), "등록일시가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_REGSTR_ID, jrnlDreamDto.getCreatedBy(), "등록자 ID가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_REGSTR_NM, jrnlDreamDto.getCreatedByNm(), "등록자 이름이 제대로 매핑되지 않았습니다.");
+        assertEquals("2000-01-01 00:00:00", jrnlDreamDto.getCreatedAt(), "등록일시가 제대로 매핑되지 않았습니다.");
         // 수정자
-        assertEquals(TestConstant.TEST_MDFUSR_ID, jrnlDreamDto.getMdfusrId(), "수정자 ID가 제대로 매핑되지 않았습니다.");
-        assertEquals(TestConstant.TEST_MDFUSR_NM, jrnlDreamDto.getMdfusrNm(), "수정자 이름이 제대로 매핑되지 않았습니다.");
-        assertEquals("2000-01-01 00:00:00", jrnlDreamDto.getMdfDt(), "수정일시가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_MDFUSR_ID, jrnlDreamDto.getUpdatedById(), "수정자 ID가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_MDFUSR_NM, jrnlDreamDto.getUpdatedByNm(), "수정자 이름이 제대로 매핑되지 않았습니다.");
+        assertEquals("2000-01-01 00:00:00", jrnlDreamDto.getUpdatedAt(), "수정일시가 제대로 매핑되지 않았습니다.");
     }
 
     /* ----- */

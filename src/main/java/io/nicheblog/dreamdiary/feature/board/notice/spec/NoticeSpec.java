@@ -62,7 +62,7 @@ public class NoticeSpec
         final List<Predicate> predicate = new ArrayList<>();
 
         // expressions
-        final Expression<Date> regDtExp = root.get("regDt");
+        final Expression<Date> createdAtExp = root.get("createdAt");
         final Expression<Date> managtDtExp = root.get("managt").get("managtDt");
 
         // 파라미터 비교
@@ -71,11 +71,11 @@ public class NoticeSpec
             switch (key) {
                 case "searchStartDt":
                     // 기간 검색
-                    predicate.add(builder.greaterThanOrEqualTo(regDtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.greaterThanOrEqualTo(createdAtExp, DateUtils.asDate(value)));
                     continue;
                 case "searchEndDt":
                     // 기간 검색
-                    predicate.add(builder.lessThanOrEqualTo(regDtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.lessThanOrEqualTo(createdAtExp, DateUtils.asDate(value)));
                     continue;
                 case "managtStartDt":
                     // 기간 검색

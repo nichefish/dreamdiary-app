@@ -11,15 +11,15 @@
                 <tr>
                     <td class="col-lg-2 col-3 text-start wb-keepall ps-6">
                         <div class="text-gray-800 fs-6 fw-bold lh-1 mb-2">
-                            {{#if (exists regstrInfo.proflImgUrl)}}
+                            {{#if (exists createdByInfo.proflImgUrl)}}
                                 <div class="btn btn-icon btn-active-light-primary position-relative w-15px h-15px w-md-20px h-md-20px me-1">
-                                    <img src="{{regstrInfo.proflImgUrl}}" class="img-thumbnail p-0 w-100" />
+                                    <img src="{{createdByInfo.proflImgUrl}}" class="img-thumbnail p-0 w-100" />
                                 </div>
                             {{/if}}
-                            {{regstrNm}}
+                            {{createdByNm}}
                         </div>
                         <div class="text-muted fs-7 lh-1">
-                            {{regDt}}
+                            {{createdAt}}
                         </div>
                     </td>
                     <td class="col-lg-10 col-9 text-start fs-small d-flex flex-column border-bottom-0">

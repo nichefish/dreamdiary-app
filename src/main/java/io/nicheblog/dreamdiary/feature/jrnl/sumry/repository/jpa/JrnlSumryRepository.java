@@ -29,7 +29,7 @@ public interface JrnlSumryRepository
      * @param yy 결산 정보를 조회할 년도
      * @return {@link Optional} -- 해당 년도의 결산 정보를 담고 있는 Optional 객체
      */
-    Optional<JrnlSumryEntity> findByYyAndRegstrId(final Integer yy, final String regstrId);
+    Optional<JrnlSumryEntity> findByYyAndCreatedBy(final Integer yy, final String createdBy);
 
     /**
      * 년도별 꿈기록 개수 조회
@@ -43,8 +43,8 @@ public interface JrnlSumryRepository
             "FROM JrnlDreamEntity dream " +
             "INNER JOIN FETCH JrnlDayEntity day ON dream.jrnlDayId = day.id " +
             "WHERE day.yy = :yy " +
-            "   AND day.regstrId = :regstrId")
-    Integer getDreamCntByYy(final @Param("yy") Integer yy, final @Param("regstrId") String regstrId);
+            "   AND day.createdBy = :createdBy")
+    Integer getDreamCntByYy(final @Param("yy") Integer yy, final @Param("createdBy") String createdBy);
 
     /**
      * 전체 꿈기록 개수 조회
@@ -55,8 +55,8 @@ public interface JrnlSumryRepository
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     @Query("SELECT COALESCE(SUM(sumry.dreamCnt), 0) " +
             "FROM JrnlSumryEntity sumry " +
-            "WHERE sumry.regstrId = :regstrId")
-    Integer getTotalDreamCnt(final @Param("regstrId") String regstrId);
+            "WHERE sumry.createdBy = :createdBy")
+    Integer getTotalDreamCnt(final @Param("createdBy") String createdBy);
     
     /**
      * 년도별 저널 꿈기록 일자 개수 조회
@@ -70,8 +70,8 @@ public interface JrnlSumryRepository
             "FROM JrnlDayEntity day " +
             "INNER JOIN FETCH JrnlDreamEntity dream ON day.id = dream.jrnlDayId " +
             "WHERE day.yy = :yy " +
-            "   AND day.regstrId = :regstrId")
-    Integer getDreamDayCntByYy(final @Param("yy") Integer yy, final @Param("regstrId") String regstrId);
+            "   AND day.createdBy = :createdBy")
+    Integer getDreamDayCntByYy(final @Param("yy") Integer yy, final @Param("createdBy") String createdBy);
 
     /**
      * 전체 꿈기록 일자 개수 조회
@@ -82,6 +82,6 @@ public interface JrnlSumryRepository
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     @Query("SELECT COALESCE(SUM(sumry.dreamDayCnt), 0) " +
             "FROM JrnlSumryEntity sumry " +
-            "WHERE sumry.regstrId = :regstrId")
-    Integer getTotalDreamDayCnt(final @Param("regstrId") String regstrId);
+            "WHERE sumry.createdBy = :createdBy")
+    Integer getTotalDreamDayCnt(final @Param("createdBy") String createdBy);
 }

@@ -28,8 +28,8 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE meta SET del_yn = 'Y' WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE meta SET deleted_at = NOW() WHERE id = ?")
 public class MetaEntity
         extends BaseCrudEntity {
 

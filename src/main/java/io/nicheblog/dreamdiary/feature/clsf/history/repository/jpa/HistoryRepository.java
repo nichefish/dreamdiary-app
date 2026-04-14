@@ -19,7 +19,7 @@ import java.util.Optional;
 public interface HistoryRepository
         extends BaseStreamRepository<HistoryEntity, Integer> {
 
-    List<HistoryEntity> findAllByRefIdAndRefContentTypeOrderByRegDtDesc(Integer refId, String refContentType);
+    List<HistoryEntity> findAllByRefIdAndRefContentTypeOrderByCreatedAtDesc(Integer refId, String refContentType);
 
     Optional<HistoryEntity> findByIdAndRefIdAndRefContentType(Integer id, Integer refId, String refContentType);
 

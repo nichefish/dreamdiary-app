@@ -33,9 +33,9 @@ public interface TagRepository
      */
     @Query(value = "SELECT t.* " +
         "FROM tag t " +
-        "LEFT JOIN tag_category tc ON tc.id = t.tag_category_id AND tc.del_yn = 'N' " +
+        "LEFT JOIN tag_category tc ON tc.id = t.tag_category_id AND tc.deleted_at IS NULL " +
         "WHERE t.tag_nm = :tagNm " +
-        "  AND t.del_yn = 'N' " +
+        "  AND t.deleted_at IS NULL " +
         "  AND ( " +
         "       ((:ctgr IS NULL OR :ctgr = '') AND t.tag_category_id IS NULL) " +
         "       OR tc.ctgr_nm = :ctgr " +
@@ -64,6 +64,6 @@ public interface TagRepository
             "INNER JOIN fetch TagEntity tag ON tag.id = ct.tagId " +
             "WHERE ct.tagId = :tagId " +
             " AND (:refContentType IS NULL OR :refContentType = '' OR ct.refContentType = :refContentType)" +
-            " AND (ct.regstrId = :regstrId)")
-    Integer countTagSize(final @Param("tagId") Integer tagId, final @Param("refContentType") String refContentType, final String regstrId);
+            " AND (ct.createdBy = :createdBy)")
+    Integer countTagSize(final @Param("tagId") Integer tagId, final @Param("refContentType") String refContentType, final String createdBy);
 }

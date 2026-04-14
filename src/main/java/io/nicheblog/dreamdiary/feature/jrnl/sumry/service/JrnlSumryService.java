@@ -69,7 +69,7 @@ public class JrnlSumryService
      */
     @Cacheable(value="jrnlSumryListByUser", key="#username")
     public List<JrnlSumryDto> getListDtoByUser(final String username, final BaseSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUsername(username));
+        searchParam.setCreatedBy(AuthUtils.requireUsername(username));
         return this.getSelf().getListDto(searchParam);
     }
 
@@ -81,7 +81,7 @@ public class JrnlSumryService
     })
     public Boolean makeYySumryByUser(final String username, final Integer yy) throws Exception {
         // 해당 년도 저널 결산 정보 조회
-        final JrnlSumryEntity sumry = repository.findByYyAndRegstrId(yy, AuthUtils.requireUsername(username)).orElse(new JrnlSumryEntity(yy));
+        final JrnlSumryEntity sumry = repository.findByYyAndCreatedBy(yy, AuthUtils.requireUsername(username)).orElse(new JrnlSumryEntity(yy));
 
         // 해당 년도 꿈 일자 조회해서 갱신
         final Integer dreamDayCntByYy = repository.getDreamDayCntByYy(yy, AuthUtils.requireUsername(username));
@@ -153,7 +153,7 @@ public class JrnlSumryService
      */
     @Override
     public void preModify(final JrnlSumryDto modifyDto, final JrnlSumryEntity modifyEntity) throws Exception {
-        if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(modifyEntity.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
@@ -167,7 +167,7 @@ public class JrnlSumryService
     @Cacheable(value="jrnlSumryDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #key)")
     public JrnlSumryDto getSumryDtlByUser(final String username, final Integer key) throws Exception {
         final JrnlSumryDto retrieved = this.getSelf().getDtlDto(key);
-        if (retrieved != null && !retrieved.getIsRegstr(username)) {
+        if (retrieved != null && !retrieved.getIsCreatedBy(username)) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         return retrieved;
@@ -181,7 +181,7 @@ public class JrnlSumryService
      */
     @Cacheable(value="jrnlSumryYyDtlDtoByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #yy)")
     public JrnlSumryDto getDtlDtoByYyByUser(final String username, final Integer yy) throws Exception {
-        final Optional<JrnlSumryEntity> retrievedWrapper = repository.findByYyAndRegstrId(yy, AuthUtils.requireUsername(username));
+        final Optional<JrnlSumryEntity> retrievedWrapper = repository.findByYyAndCreatedBy(yy, AuthUtils.requireUsername(username));
         if (retrievedWrapper.isEmpty()) return null;
 
         return mapstruct.toDto(retrievedWrapper.get());
@@ -196,7 +196,7 @@ public class JrnlSumryService
     @Transactional
     public boolean dreamCompt(final Integer key) throws Exception {
         final JrnlSumryEntity retrievedEntity = this.getDtlEntity(key);
-        if (!AuthUtils.isRegstr(retrievedEntity.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(retrievedEntity.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         retrievedEntity.setDreamComptYn("Y");
@@ -221,7 +221,7 @@ public class JrnlSumryService
      */
     @Override
     public void preDelete(final JrnlSumryDto deletedDto) throws Exception {
-        if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }

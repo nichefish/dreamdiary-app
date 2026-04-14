@@ -15,19 +15,19 @@
                     <div class="d-flex align-items-center py-1">
                         <div class="d-flex flex-column align-items-start justify-content-center">
                             <span class="text-gray-800 fs-6 fw-bold lh-1 mb-2">
-                                <#if (comment.regstrInfo.proflImgUrl)??>
+                                <#if (comment.createdByInfo.proflImgUrl)??>
                                     <div class="btn btn-icon btn-active-light-primary position-relative w-15px h-15px w-md-20px h-md-20px me-1">
-                                        <img src="${(comment.regstrInfo.proflImgUrl)!}" class="img-thumbnail p-0 w-100" />
+                                        <img src="${(comment.createdByInfo.proflImgUrl)!}" class="img-thumbnail p-0 w-100" />
                                     </div>
                                 </#if>
-                                ${comment.regstrNm!"-"}
+                                ${comment.createdByNm!"-"}
                             </span>
                             <span class="text-muted fs-7 fw-bold lh-1">
-                                ${comment.regDt!}<#if (comment.mdfDt!"") != ""> / ${comment.mdfDt!}</#if>
+                                ${comment.createdAt!}<#if (comment.updatedAt!"") != ""> / ${comment.updatedAt!}</#if>
                             </span>
                         </div>
                     </div>
-                    <#if comment.isRegstr!false>
+                    <#if comment.isCreatedBy!false>
                         <div class="d-flex align-items-center py-1">
                             <div id="showMdfBtnDiv${comment.id!}">
                                 <a href="javascript:void(0);" class="btn btn-sm btn-flex btn-light-primary btn-icon mx-1"

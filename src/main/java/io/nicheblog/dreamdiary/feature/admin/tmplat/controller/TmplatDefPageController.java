@@ -67,7 +67,7 @@ public class TmplatDefPageController
         searchParam = (TmplatDefSearchParam) ParamUtils.checkPrevSearchParam(baseUrl, searchParam);
 
         // 목록 조회
-        final PageRequest pageRequest = ParamUtils.getPageRequest(searchParam, "regDt", model);
+        final PageRequest pageRequest = ParamUtils.getPageRequest(searchParam, "createdAt", model);
         final Page<TmplatDefDto> tmplatList = tmplatDefService.getPageDto(searchParam, pageRequest);
         model.addAttribute("tmplatList", tmplatList.getContent());
         model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(tmplatList));

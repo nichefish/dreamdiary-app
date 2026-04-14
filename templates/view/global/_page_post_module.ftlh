@@ -40,29 +40,29 @@
                             </div>
                         </#if>
                         ${post.managt.managtrNm!"-"}
-                    <#elseif post.mdfusrInfo??>
-                        <#if (post.mdfusrInfo.proflImgUrl)??>
+                    <#elseif post.updatedByInfo??>
+                        <#if (post.updatedByInfo.proflImgUrl)??>
                             <div class="btn btn-icon btn-active-light-primary position-relative w-15px h-15px w-md-20px h-md-20px me-1">
-                                <img src="${(post.mdfusrInfo.proflImgUrl)!}" class="img-thumbnail p-0 w-100" />
+                                <img src="${(post.updatedByInfo.proflImgUrl)!}" class="img-thumbnail p-0 w-100" />
                             </div>
                         </#if>
-                        ${post.mdfusrNm!}
+                        ${post.updatedByNm!}
                     <#else>
-                        <#if (post.regstrInfo.proflImgUrl)??>
+                        <#if (post.createdByInfo.proflImgUrl)??>
                             <div class="btn btn-icon btn-active-light-primary position-relative w-15px h-15px w-md-20px h-md-20px me-1">
-                                <img src="${(post.regstrInfo.proflImgUrl)!}" class="img-thumbnail p-0 w-100" />
+                                <img src="${(post.createdByInfo.proflImgUrl)!}" class="img-thumbnail p-0 w-100" />
                             </div>
                         </#if>
-                        ${post.regstrNm!}
+                        ${post.createdByNm!}
                     </#if>
                 </span>
                 <span class="text-muted fs-7 lh-1">
                     <#if post.managtDt??>
                         ${post.managtDt!}
-                    <#elseif post.mdfDt??>
-                        ${post.mdfDt!}
+                    <#elseif post.updatedAt??>
+                        ${post.updatedAt!}
                     <#else>
-                        ${post.regDt!}
+                        ${post.createdAt!}
                     </#if>
                 </span>
             </div>
@@ -119,15 +119,15 @@
             <!--begin::Name-->
             <div class="d-flex flex-column align-items-start justify-content-center">
                     <span class="text-gray-800 fs-6 fw-bold lh-1 mb-2">
-                        <#if (post.regstrInfo.proflImgUrl)??>
+                        <#if (post.createdByInfo.proflImgUrl)??>
                             <div class="btn btn-icon btn-active-light-primary position-relative w-15px h-15px w-md-20px h-md-20px me-1">
-                                <img src="${(post.regstrInfo.proflImgUrl)!}" class="img-thumbnail p-0 w-100" />
+                                <img src="${(post.createdByInfo.proflImgUrl)!}" class="img-thumbnail p-0 w-100" />
                             </div>
                         </#if>
-                        ${post.regstrNm!"-"}
+                        ${post.createdByNm!"-"}
                     </span>
                 <span class="text-muted fs-7 lh-1">
-                        ${post.regDt!}
+                        ${post.createdAt!}
                     </span>
             </div>
         </div>

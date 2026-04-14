@@ -151,13 +151,13 @@ public class AuthUtils {
      *
      * @return {@link Boolean} -- 해당 ID가 등록한 정보일 경우 true.
      */
-    public static Boolean isRegstr(final String regstrId) {
-        if (StringUtils.isEmpty(regstrId)) return false;
+    public static Boolean isCreatedBy(final String createdBy) {
+        if (StringUtils.isEmpty(createdBy)) return false;
         final AuthInfo authInfo = getAuthenticatedUser();
         if (authInfo == null) return false;
 
         final String myUsername = authInfo.getUsername();
-        return regstrId.equals(myUsername);
+        return createdBy.equals(myUsername);
     }
 
     /**
@@ -165,8 +165,8 @@ public class AuthUtils {
      *
      * @return {@link Boolean} -- 해당 ID가 수정한 정보일 경우 true.
      */
-    public static Boolean isMdfusr(final String mdfusrId) {
-        return isRegstr(mdfusrId);
+    public static Boolean isUpdatedBy(final String updatedBy) {
+        return isCreatedBy(updatedBy);
     }
 
     /**

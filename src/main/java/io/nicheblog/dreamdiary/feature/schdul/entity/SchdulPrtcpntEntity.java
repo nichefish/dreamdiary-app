@@ -29,8 +29,8 @@ import javax.persistence.Table;
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE schdul_prtcpnt SET del_yn = 'Y' WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE schdul_prtcpnt SET deleted_at = NOW() WHERE id = ?")
 public class SchdulPrtcpntEntity
         extends BaseCrudEntity {
 

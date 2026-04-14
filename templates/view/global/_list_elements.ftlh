@@ -50,7 +50,7 @@
         </div>
     </#if>
     <span class="cursor-help"
-          data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="최초 작성자:&#10;${post.regstrNm!"-"}">
+          data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="최초 작성자:&#10;${post.createdByNm!"-"}">
         ${post.managt.managtrNm!"-"}
         <#if post.managt.isManagtr!false>
             <span class="badge badge-secondary opacity-75 mx-1 fs-9">나</span>
@@ -63,7 +63,7 @@
 -->
 <#macro list_managtDt post >
     <span class="cursor-help"
-          data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="최초 작성일:&#10;${post.regDt!"-"}">
+          data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="최초 작성일:&#10;${post.createdAt!"-"}">
         ${post.managt.managtDt!}
     </span>
 </#macro>

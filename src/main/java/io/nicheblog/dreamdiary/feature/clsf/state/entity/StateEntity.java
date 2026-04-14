@@ -27,7 +27,7 @@ import javax.persistence.*;
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Where(clause = "del_yn='N'")
+@Where(clause = "deleted_at IS NULL")
 public class StateEntity
         extends BaseCrudEntity {
 

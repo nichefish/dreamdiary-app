@@ -203,7 +203,7 @@ public class UserService
 
         final UserEntity user = this.getDtlEntity(username);
         Date lastLgnDt = user.acntStus.getLstLgnDt();
-        if (lastLgnDt == null) lastLgnDt = user.getRegDt();
+        if (lastLgnDt == null) lastLgnDt = user.getCreatedAt();
         final Date dormantDt = DateUtils.getDateAddDay(lastLgnDt, lgnLockDy);
 
         return (dormantDt == null || dormantDt.compareTo(DateUtils.getCurrDate()) < 0);

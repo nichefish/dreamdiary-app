@@ -27,8 +27,8 @@ import javax.persistence.Table;
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE board_post SET del_yn = 'Y' WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE board_post SET deleted_at = NOW() WHERE id = ?")
 public class BoardPostSmpEntity
         extends BaseClsfEntity {
 

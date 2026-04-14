@@ -33,8 +33,8 @@ import javax.persistence.*;
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE sectn SET del_yn = 'Y' WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE sectn SET deleted_at = NOW() WHERE id = ?")
 public class SectnEntity
         extends BaseClsfEntity
         implements Usable, AtchFileEmbedModule, CommentEmbedModule, TagEmbedModule {

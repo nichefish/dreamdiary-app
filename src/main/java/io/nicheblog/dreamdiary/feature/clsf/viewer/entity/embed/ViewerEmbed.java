@@ -39,7 +39,7 @@ public class ViewerEmbed
     })
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 10)
-    @OrderBy("regDt DESC")
+    @OrderBy("createdAt DESC")
     @NotFound(action = NotFoundAction.IGNORE)
     private List<ViewerEntity> list;
 

@@ -21,8 +21,8 @@ public final class TestConstant {
     public static final String TEST_NICK_NM = "test_nick_nm";
 
     // 테스트 등록자
-    public static final String TEST_REGSTR_ID = "test_regstr_id";
-    public static final String TEST_REGSTR_NM = "test_regstr_nm";
+    public static final String TEST_REGSTR_ID = "test_created_by";
+    public static final String TEST_REGSTR_NM = "test_createdBy_nm";
 
     // 테스트 수정자
     public static final String TEST_MDFUSR_ID = "test_mdfuser_id";

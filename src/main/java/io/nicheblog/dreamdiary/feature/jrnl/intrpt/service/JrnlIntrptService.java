@@ -70,7 +70,7 @@ public class JrnlIntrptService
     }
 
     public List<JrnlIntrptDto> getListDtoByUser(final String username, final JrnlIntrptSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUsername(username));
+        searchParam.setCreatedBy(AuthUtils.requireUsername(username));
         return this.getSelf().getListDto(searchParam);
     }
 
@@ -105,7 +105,7 @@ public class JrnlIntrptService
      */
     @Override
     public void preModify(final JrnlIntrptDto modifyDto, final JrnlIntrptEntity modifyEntity) throws Exception {
-        if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(modifyEntity.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
 
@@ -138,7 +138,7 @@ public class JrnlIntrptService
         final JrnlIntrptEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlIntrptDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr(AuthUtils.requireUsername(username))) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+        if (!retrieved.getIsCreatedBy(AuthUtils.requireUsername(username))) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         return retrieved;
     }
 
@@ -172,7 +172,7 @@ public class JrnlIntrptService
      */
     @Override
     public void preDelete(final JrnlIntrptDto deletedDto) throws Exception {
-        if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
@@ -202,7 +202,7 @@ public class JrnlIntrptService
     public JrnlIntrptDto getDeletedDtlDto(final Integer key) throws Exception {
         final JrnlIntrptDto deleted = mapper.getDeletedById(key);
         if (deleted == null) return null;
-        if (!AuthUtils.isRegstr(deleted.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(deleted.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         return deleted;
@@ -219,7 +219,7 @@ public class JrnlIntrptService
         int idx = 1;
         for (final JrnlIntrptDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictUserCacheByKey("jrnlIntrptDtlDtoByUser", e.getRegstrId(), e.getId());
+            EhCacheUtils.evictUserCacheByKey("jrnlIntrptDtlDtoByUser", e.getCreatedBy(), e.getId());
         }
 
         mapper.batchUpdateIdx(list);
@@ -259,7 +259,7 @@ public class JrnlIntrptService
         int idx = 1;
         for (final JrnlIntrptDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictUserCacheByKey("jrnlIntrptDtlDtoByUser", e.getRegstrId(), e.getId());
+            EhCacheUtils.evictUserCacheByKey("jrnlIntrptDtlDtoByUser", e.getCreatedBy(), e.getId());
         }
 
         mapper.batchUpdateIdx(list);

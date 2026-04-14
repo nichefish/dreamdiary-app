@@ -66,7 +66,7 @@ public class HistoryService {
     public List<HistoryDto> getHistoryList(final BaseClsfKey refKey) throws Exception {
         if (refKey == null || refKey.getId() == null || refKey.getContentType() == null) return new ArrayList<>();
 
-        final List<HistoryEntity> historyList = historyRepository.findAllByRefIdAndRefContentTypeOrderByRegDtDesc(refKey.getId(), refKey.getContentType());
+        final List<HistoryEntity> historyList = historyRepository.findAllByRefIdAndRefContentTypeOrderByCreatedAtDesc(refKey.getId(), refKey.getContentType());
         final List<HistoryDto> result = new ArrayList<>();
         for (final HistoryEntity history : historyList) {
             final HistoryDto dto = historyMapstruct.toDto(history);

@@ -25,24 +25,24 @@ public interface RelatedContentRepository
 
     @Query("SELECT rc " +
             "FROM RelatedContentEntity rc " +
-            "WHERE rc.regstrId = :regstrId " +
+            "WHERE rc.createdBy = :createdBy " +
             "  AND ((rc.leftId = :id AND rc.leftContentType = :contentType) " +
             "    OR (rc.rightId = :id AND rc.rightContentType = :contentType)) " +
-            "ORDER BY rc.regDt DESC")
+            "ORDER BY rc.createdAt DESC")
     List<RelatedContentEntity> findAllByRef(
             final @Param("id") Integer id,
             final @Param("contentType") String contentType,
-            final @Param("regstrId") String regstrId
+            final @Param("createdBy") String createdBy
     );
 
     @Query("SELECT rc " +
             "FROM RelatedContentEntity rc " +
-            "WHERE rc.regstrId = :regstrId " +
+            "WHERE rc.createdBy = :createdBy " +
             "  AND (rc.leftId IN :idSet OR rc.rightId IN :idSet) " +
-            "ORDER BY rc.regDt DESC")
+            "ORDER BY rc.createdAt DESC")
     List<RelatedContentEntity> findAllByAnyRefIdIn(
             final @Param("idSet") Set<Integer> idSet,
-            final @Param("regstrId") String regstrId
+            final @Param("createdBy") String createdBy
     );
 
     @Query(value = "SELECT * " +
@@ -51,25 +51,25 @@ public interface RelatedContentRepository
             "  AND rc.left_content_type = :leftContentType " +
             "  AND rc.right_id = :rightId " +
             "  AND rc.right_content_type = :rightContentType " +
-            "  AND rc.regstr_id = :regstrId " +
+            "  AND rc.created_by = :createdBy " +
             "LIMIT 1", nativeQuery = true)
     Optional<RelatedContentEntity> findAnyByPair(
             final @Param("leftId") Integer leftId,
             final @Param("leftContentType") String leftContentType,
             final @Param("rightId") Integer rightId,
             final @Param("rightContentType") String rightContentType,
-            final @Param("regstrId") String regstrId
+            final @Param("createdBy") String createdBy
     );
 
     @Modifying
     @Query("UPDATE RelatedContentEntity rc " +
-            "SET rc.delYn = 'Y' " +
-            "WHERE rc.regstrId = :regstrId " +
+            "SET rc.deletedAt = 'Y' " +
+            "WHERE rc.createdBy = :createdBy " +
             "  AND ((rc.leftId = :id AND rc.leftContentType = :contentType) " +
             "    OR (rc.rightId = :id AND rc.rightContentType = :contentType))")
     int softDeleteAllByRef(
             final @Param("id") Integer id,
             final @Param("contentType") String contentType,
-            final @Param("regstrId") String regstrId
+            final @Param("createdBy") String createdBy
     );
 }

@@ -163,7 +163,7 @@ public class AtchFileDtlService
         atchFileList.stream()
                 .peek(atchFileDtl -> {
                     String atchCtrl = multiRequest.getParameter("atchCtrl" + atchFileDtl.getId());
-                    if ("D".equals(atchCtrl)) atchFileDtl.setDelYn("Y");
+                    if ("D".equals(atchCtrl)) atchFileDtl.setDeletedAt(DateUtils.getCurrDate());
                     // TODO: 실제 파일 삭제?
                 });
     }

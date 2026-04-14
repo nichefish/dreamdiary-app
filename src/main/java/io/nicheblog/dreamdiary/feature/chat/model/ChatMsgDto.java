@@ -35,7 +35,7 @@ public class ChatMsgDto
     private String contentType = CONTENT_TYPE.key;
 
     /** 내 메세지(등록자) 여부 */
-    private Boolean isRegstr;
+    private Boolean isCreatedBy;
 
        /** 제목 */
     private String title;

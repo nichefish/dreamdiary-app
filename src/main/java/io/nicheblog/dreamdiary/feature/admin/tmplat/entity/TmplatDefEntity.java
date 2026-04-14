@@ -27,8 +27,8 @@ import javax.persistence.*;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @ToString
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE tmplat_def SET del_yn = 'Y' WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE tmplat_def SET deleted_at = NOW() WHERE id = ?")
 public class TmplatDefEntity
         extends BaseAuditEntity {
 

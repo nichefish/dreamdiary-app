@@ -16,8 +16,8 @@
                 <#if post.viewer??>
                     <#list post.viewer.list![] as viewer>
                         <span
-                            data-bs-toggle="tooltip" data-bs-placement="top" title="${viewer.regstrId!"-"}">
-                            ${viewer.regstrNm!"-"}
+                            data-bs-toggle="tooltip" data-bs-placement="top" title="${viewer.createdBy!"-"}">
+                            ${viewer.createdByNm!"-"}
                         </span>
 
                         <#if !viewer?is_last>/</#if>
@@ -47,14 +47,14 @@
                 <#list post.managt.list![] as managtr>
                     <!--begin::Name-->
                     <div class="text-gray-600 fs-6 me-4">
-                        <#if (managtr.regstrInfo.proflImgUrl)??>
+                        <#if (managtr.createdByInfo.proflImgUrl)??>
                             <div class="btn btn-icon btn-active-light-primary position-relative w-15px h-15px w-md-20px h-md-20px me-1">
-                                <img src="${(managtr.regstrInfo.proflImgUrl)!}" class="img-thumbnail p-0 w-100" />
+                                <img src="${(managtr.createdByInfo.proflImgUrl)!}" class="img-thumbnail p-0 w-100" />
                             </div>
                         </#if>
                         <span class="cursor-help"
-                              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="최종 작업일시: &#10;${managtr.regDt!}">
-                                ${managtr.regstrNm!"-"}
+                              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="최종 작업일시: &#10;${managtr.createdAt!}">
+                                ${managtr.createdByNm!"-"}
                             </span>
                         <#if managtr?has_next>, </#if>
                     </div>

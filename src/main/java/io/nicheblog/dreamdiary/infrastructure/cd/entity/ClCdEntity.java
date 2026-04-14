@@ -31,7 +31,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @ToString
-@Where(clause = "del_yn='N'")
+@Where(clause = "deleted_at IS NULL")
 public class ClCdEntity
         extends BaseAuditEntity
         implements Usable {

@@ -37,7 +37,7 @@ public interface JrnlIntrptTagRepository
             "FROM JrnlIntrptTagContentEntity ct " +
             "INNER JOIN FETCH JrnlIntrptEntity intrpt ON ct.refId = intrpt.id " +
             "INNER JOIN FETCH JrnlDayEntity day ON intrpt.jrnlDream.jrnlDayId = day.id " +
-            "WHERE ct.regstrId = :#{#param.regstrId} " +
+            "WHERE ct.createdBy = :#{#param.createdBy} " +
             " AND (:#{#param.yy} IS NULL OR day.yy = :#{#param.yy} OR :#{#param.yy} = 9999) " +
             " AND (:#{#param.mnth} IS NULL OR day.mnth = :#{#param.mnth} OR :#{#param.mnth} = 99)" +
             "GROUP BY ct.tagId")

@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * AuditorInfo
  * <pre>
- *  (공통) Auditor(regstr, mdfusr) 정보 Entity.
+ *  (공통) Auditor(createdBy, updatedBy) 정보 Entity.
  *  연관관계 조회시에만 사용. 상호참조로 인한 무한재귀호출 방지를 위해서 UserEntity와 분리
  * </pre>
  *
@@ -30,7 +30,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Where(clause = "del_yn='N'")
+@Where(clause = "deleted_at IS NULL")
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class AuditorInfo

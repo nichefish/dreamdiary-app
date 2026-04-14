@@ -78,12 +78,12 @@ public class JrnlDaySpec
         final Expression<Date> jrnlDtExp = root.get("jrnlDt");
         final Expression<Date> aprxmtDtExp = root.get("aprxmtDt");
         final Expression<Date> effectiveDtExp = builder.coalesce(jrnlDtExp, aprxmtDtExp);
-        final String regstrId = resolveRegstrId(searchParamMap);
+        final String createdBy = resolveCreatedBy(searchParamMap);
 
         // 파라미터 비교
         for (final String key : searchParamMap.keySet()) {
             if ("sort".equals(key)) continue;  // "sort" 파라미터는 건너뜀
-            if ("regstrId".equals(key)) continue;
+            if ("createdBy".equals(key)) continue;
 
             final Object value = searchParamMap.get(key);
             switch (key) {
@@ -114,14 +114,14 @@ public class JrnlDaySpec
                     // 특정 태그된 일자만 조회
                     final Join<JrnlDayEntity, TagEmbed> tagJoin = root.join("tag", JoinType.INNER);
                     final Join<TagEmbed, TagContentEntity> tagContentJoin = tagJoin.join("list", JoinType.INNER);
-                    predicate.add(builder.equal(tagContentJoin.get("regstrId"), regstrId));
+                    predicate.add(builder.equal(tagContentJoin.get("createdBy"), createdBy));
                     predicate.add(builder.equal(tagContentJoin.get("tagId"), value));
                     continue;
                 case "metaId":
                     // 특정 메타 지칭된 일자만 조회
                     final Join<JrnlDayEntity, MetaEmbed> metaJoin = root.join("meta", JoinType.INNER);
                     final Join<MetaEmbed, MetaContentEntity> metaContentJoin = metaJoin.join("list", JoinType.INNER);
-                    predicate.add(builder.equal(metaContentJoin.get("regstrId"), regstrId));
+                    predicate.add(builder.equal(metaContentJoin.get("createdBy"), createdBy));
                     predicate.add(builder.equal(metaContentJoin.get("metaId"), value));
                     continue;
                 default:
@@ -137,12 +137,12 @@ public class JrnlDaySpec
         return predicate;
     }
 
-    private String resolveRegstrId(final Map<String, Object> searchParamMap) {
-        final Object regstrId = searchParamMap.get("regstrId");
-        if (regstrId != null) {
-            final String regstrIdStr = regstrId.toString();
-            if (!regstrIdStr.isBlank()) return regstrIdStr;
+    private String resolveCreatedBy(final Map<String, Object> searchParamMap) {
+        final Object createdBy = searchParamMap.get("createdBy");
+        if (createdBy != null) {
+            final String createdByStr = createdBy.toString();
+            if (!createdByStr.isBlank()) return createdByStr;
         }
-        throw new IllegalArgumentException("regstrId is required. searchParamMapKeys=" + searchParamMap.keySet());
+        throw new IllegalArgumentException("createdBy is required. searchParamMapKeys=" + searchParamMap.keySet());
     }
 }

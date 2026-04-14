@@ -154,10 +154,10 @@ public class ClsfMapstructHelper {
         // 최종수정 이후 7일 지난 글은 새 글이 아님
         if (!((ManagtEmbedModule) entity).getManagt().getManagtDt().after(DateUtils.getCurrDateAddDay(-7))) return false;
         // 내가 최종수정자면 false
-        if (AuthUtils.isRegstr(((ManagtEmbedModule) entity).getManagt().getManagtrId())) return false;
+        if (AuthUtils.isCreatedBy(((ManagtEmbedModule) entity).getManagt().getManagtrId())) return false;
         // 열람자에 내가 없으면 true
         if (((ViewerEmbedModule) entity).getViewer() == null || CollectionUtils.isEmpty(((ViewerEmbedModule) entity).getViewer().getList())) return true;
         return ((ViewerEmbedModule) entity).getViewer().getList().stream()
-                .anyMatch(e -> !Objects.equals(AuthUtils.getLgnUsername(), e.getRegstrId()));
+                .anyMatch(e -> !Objects.equals(AuthUtils.getLgnUsername(), e.getCreatedBy()));
     }
 }

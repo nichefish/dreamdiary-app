@@ -39,6 +39,6 @@ public class JrnlIntrptTagContentParam
     private Integer mnth;
 
     /** 등록자 ID */
-    private String regstrId;
+    private String createdBy;
 
 }

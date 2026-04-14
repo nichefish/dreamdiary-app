@@ -29,11 +29,11 @@ CREATE TABLE IF NOT EXISTS comment (
     atch_file_id INT COMMENT '첨부파일 번호',
     visual_semantic VARCHAR(30) NOT NULL DEFAULT 'DEFAULT' COMMENT '시각 의미',
     -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
-    mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
-    mdf_dt DATETIME COMMENT '수정 일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정 일시',
+    deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
     INDEX (ref_id, ref_content_type)
 ) COMMENT = '댓글';
@@ -65,11 +65,11 @@ CREATE TABLE IF NOT EXISTS sectn (
     -- ATCH_FILE
     atch_file_id INT COMMENT '첨부파일 번호',
     -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
-    mdfusr_id VARCHAR(20) COMMENT '수정자 ID',
-    mdf_dt DATETIME COMMENT '수정 일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정 일시',
+    deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
     INDEX (ref_id, ref_content_type)
 ) COMMENT = '단락';
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS tag (
     tag_category_id INT COMMENT '태그 카테고리 ID',
     tag_category_key INT AS (IFNULL(tag_category_id, 0)) PERSISTENT,
     -- AUDIT
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
     UNIQUE KEY uk_tag_tag_nm_category (tag_nm, tag_category_key),
     INDEX idx_tag_tag_nm (tag_nm),
@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS tag_category (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '태그 카테고리 ID',
     ctgr_nm VARCHAR(100) COMMENT '태그 카테고리명',
     -- AUDIT
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
     UNIQUE KEY uk_tag_category_ctgr_nm (ctgr_nm),
     INDEX idx_tag_category_ctgr_nm (ctgr_nm)
@@ -115,14 +115,14 @@ CREATE TABLE IF NOT EXISTS tag_content (
     ref_id INT COMMENT '참조 글 번호',
     ref_content_type VARCHAR(30) COMMENT '참조 컨텐츠 타입',
     -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
+    deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
     FOREIGN KEY (tag_id) REFERENCES tag(id),
     INDEX (ref_content_type),
     INDEX (ref_id, ref_content_type),
-    INDEX (ref_id, ref_content_type, regstr_id)
+    INDEX (ref_id, ref_content_type, created_by)
 ) COMMENT = '태그-컨텐츠';
 
 -- 태그 프로필(tag_profile)
@@ -135,12 +135,12 @@ CREATE TABLE IF NOT EXISTS tag_profile (
     cn LONGTEXT COMMENT '내용',
     text_class VARCHAR(30) NULL COMMENT '시각 의미 (NULL=카테고리/기본 상속)',
     -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
+    deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
     FOREIGN KEY (tag_id) REFERENCES tag(id),
-    UNIQUE KEY uk_tag_profile (tag_id, content_type, regstr_id),
+    UNIQUE KEY uk_tag_profile (tag_id, content_type, created_by),
     INDEX (content_type)
 ) COMMENT = '태그 프로필';
 
@@ -153,12 +153,12 @@ CREATE TABLE IF NOT EXISTS tag_category_profile (
     --
     text_class VARCHAR(30) NOT NULL DEFAULT 'DEFAULT' COMMENT '시각 의미',
     -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
+    deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
     FOREIGN KEY (tag_category_id) REFERENCES tag_category(id),
-    UNIQUE KEY uk_tag_category_profile (tag_category_id, content_type, regstr_id),
+    UNIQUE KEY uk_tag_category_profile (tag_category_id, content_type, created_by),
     INDEX (content_type)
 ) COMMENT = '태그 카테고리 프로필';
 
@@ -170,7 +170,7 @@ CREATE TABLE IF NOT EXISTS meta (
     ctgr VARCHAR(100) COMMENT '카테고리',
     label VARCHAR(100) COMMENT '라벨',
     -- AUDIT
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
     UNIQUE (meta_nm, ctgr, label),
     INDEX (meta_nm),
@@ -187,14 +187,14 @@ CREATE TABLE IF NOT EXISTS meta_content (
     value VARCHAR(64) COMMENT '메타 값',
     unit VARCHAR(20) COMMENT '단위',
     -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
+    deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
     FOREIGN KEY (meta_id) REFERENCES meta(id),
     INDEX (ref_content_type),
     INDEX (ref_id, ref_content_type),
-    INDEX (ref_id, ref_content_type, regstr_id)
+    INDEX (ref_id, ref_content_type, created_by)
 ) COMMENT = '메타-컨텐츠';
 
 -- ---------- --
@@ -207,7 +207,7 @@ CREATE TABLE IF NOT EXISTS state (
     ref_content_type VARCHAR(30) COMMENT '참조 컨텐츠 타입',
     --
     state_cd VARCHAR(64) COMMENT '상태 코드',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    deleted_at DATETIME COMMENT '삭제일시',
     UNIQUE KEY uk_state (ref_content_type, ref_id, state_cd)
 ) COMMENT = '상태';
 
@@ -220,9 +220,9 @@ CREATE TABLE IF NOT EXISTS managtr (
     ref_id INT COMMENT '참조 글 번호',
     ref_content_type VARCHAR(30) COMMENT '참조 컨텐츠 타입',
     -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
+    deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
     INDEX (ref_id, ref_content_type)
 ) COMMENT = '조치자';
@@ -240,8 +240,8 @@ CREATE TABLE history (
     from_history_id INT COMMENT '복구 원본 이력 번호',
     -- AUDIT
     reg_id VARCHAR(50) COMMENT '등록자 ID',
-    reg_dt DATETIME COMMENT '등록 일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    created_at DATETIME COMMENT '등록 일시',
+    deleted_at DATETIME COMMENT '삭제일시',
 
     PRIMARY KEY (id),
     INDEX(ref_id, ref_content_type)
@@ -257,12 +257,12 @@ CREATE TABLE IF NOT EXISTS viewer (
     ref_content_type VARCHAR(30) COMMENT '참조 컨텐츠 타입',
     lst_visit_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '최종 방문 일시',
     -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
+    deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
     INDEX (ref_id, ref_content_type),
-    CONSTRAINT UC_user_post UNIQUE (regstr_id, ref_id, ref_content_type)
+    CONSTRAINT UC_user_post UNIQUE (created_by, ref_id, ref_content_type)
 ) COMMENT = '열람자';
 
 -- ---------- --
@@ -279,13 +279,13 @@ CREATE TABLE IF NOT EXISTS related_content (
     reason VARCHAR(255) COMMENT '관계 사유',
     origin_type VARCHAR(20) NOT NULL DEFAULT 'MANUAL' COMMENT '관계 생성 출처',
     -- AUDIT
-    regstr_id VARCHAR(20) COMMENT '등록자 ID',
-    reg_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
-    del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
+    deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
-    UNIQUE KEY uk_related_content_pair (left_content_type, left_id, right_content_type, right_id, regstr_id),
-    INDEX idx_related_content_left (left_id, left_content_type, regstr_id),
-    INDEX idx_related_content_right (right_id, right_content_type, regstr_id),
+    UNIQUE KEY uk_related_content_pair (left_content_type, left_id, right_content_type, right_id, created_by),
+    INDEX idx_related_content_left (left_id, left_content_type, created_by),
+    INDEX idx_related_content_right (right_id, right_content_type, created_by),
     INDEX idx_related_content_type (relation_type),
     INDEX idx_related_content_origin (origin_type)
 ) COMMENT = '관련글';

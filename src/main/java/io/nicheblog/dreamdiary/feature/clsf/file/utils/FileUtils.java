@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -239,7 +240,7 @@ public class FileUtils
         return atchFileList.stream()
                 .peek(atchFileDtl -> {
                     String atchCtrl = multiRequest.getParameter("atchCtrl" + atchFileDtl.getId());
-                    if ("D".equals(atchCtrl)) atchFileDtl.setDelYn("Y");
+                    if ("D".equals(atchCtrl)) atchFileDtl.setDeletedAt(new Date());
                     // TODO: 실제 파일 삭제?
                 })
                 .collect(Collectors.toList());

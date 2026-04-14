@@ -57,7 +57,7 @@ public class CommentRestController
             final @ModelAttribute("searchParam") CommentSearchParam searchParam
     ) throws Exception {
 
-        final Sort sort = Sort.by(Sort.Direction.ASC, "regDt");
+        final Sort sort = Sort.by(Sort.Direction.ASC, "createdAt");
         final PageRequest pageRequest = ParamUtils.getPageRequest(searchParam, sort);
         final Page<CommentDto> commentList = commentService.getPageDto(searchParam, pageRequest);
         final boolean isSuccess = true;

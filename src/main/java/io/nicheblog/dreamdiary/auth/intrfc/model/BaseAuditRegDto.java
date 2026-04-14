@@ -26,20 +26,20 @@ public class BaseAuditRegDto
         extends BaseCrudDto {
 
     /** 등록자 ID */
-    protected String regstrId;
+    protected String createdBy;
 
     /** 등록자 이름 */
-    protected String regstrNm;
+    protected String createdByNm;
 
     /** 등록일시 */
-    protected String regDt;
+    protected String createdAt;
 
     /** 등록자 정보 */
-    protected AuditorDto regstrInfo;
+    protected AuditorDto createdByInfo;
 
     /** 등록자 여부 */
     @Builder.Default
-    protected Boolean isRegstr = false;
+    protected Boolean isCreatedBy = false;
 
     /** 처리성공여부 = 서비스 레벨에서 결과값 반환시 사용 */
     @Builder.Default
@@ -52,8 +52,8 @@ public class BaseAuditRegDto
      *
      * @return {@link String} -- 마스킹 처리된 사용자 ID
      */
-    public String getMaskedRegstrId() throws Exception {
-        return CryptoUtils.Mask.nameMasking(this.getRegstrId());
+    public String getMaskedCreatedBy() throws Exception {
+        return CryptoUtils.Mask.nameMasking(this.getCreatedBy());
     }
 
     /**
@@ -61,9 +61,9 @@ public class BaseAuditRegDto
      *
      * @return 등록자 여부
      */
-    public Boolean getIsRegstr() {
-        if (StringUtils.isEmpty(this.regstrId)) return false;
-        return this.regstrId.equals(AuthUtils.getLgnUsername());
+    public Boolean getIsCreatedBy() {
+        if (StringUtils.isEmpty(this.createdBy)) return false;
+        return this.createdBy.equals(AuthUtils.getLgnUsername());
     }
 
     /**
@@ -72,8 +72,8 @@ public class BaseAuditRegDto
      * @param username 사용자 계정명
      * @return 등록자 여부
      */
-    public Boolean getIsRegstr(final String username) {
-        if (StringUtils.isEmpty(this.regstrId)) return false;
-        return this.regstrId.equals(username);
+    public Boolean getIsCreatedBy(final String username) {
+        if (StringUtils.isEmpty(this.createdBy)) return false;
+        return this.createdBy.equals(username);
     }
 }

@@ -83,7 +83,7 @@ public class JrnlDreamService
      */
     @Cacheable(value="jrnlDreamYySumryStatedListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #searchParam.toSummaryCacheKey())")
     public List<JrnlDreamDto> getSumryDreamListByUser(final String username, final JrnlDreamSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUsername(username));
+        searchParam.setCreatedBy(AuthUtils.requireUsername(username));
         final List<JrnlDreamDto> jrnlDreamYySumryStatedListByUser = this.getSelf().getListDto(searchParam);
         Collections.sort(jrnlDreamYySumryStatedListByUser);
 
@@ -91,7 +91,7 @@ public class JrnlDreamService
     }
 
     public List<JrnlDreamDto> getListDtoByUser(final String username, final JrnlDreamSearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUsername(username));
+        searchParam.setCreatedBy(AuthUtils.requireUsername(username));
         return this.getSelf().getListDto(searchParam);
     }
 
@@ -129,7 +129,7 @@ public class JrnlDreamService
         final JrnlDreamEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlDreamDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr(AuthUtils.requireUsername(username))) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+        if (!retrieved.getIsCreatedBy(AuthUtils.requireUsername(username))) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
 
         return retrieved;
     }
@@ -142,7 +142,7 @@ public class JrnlDreamService
      */
     @Override
     public void preModify(final JrnlDreamPostDto modifyDto, final JrnlDreamEntity modifyEntity) throws Exception {
-        if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(modifyEntity.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         final boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
@@ -170,7 +170,7 @@ public class JrnlDreamService
      */
     @Override
     public void preDelete(final JrnlDreamDto deletedDto) throws Exception {
-        if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
@@ -187,7 +187,7 @@ public class JrnlDreamService
 
         // 관련 캐시 삭제
         // 관련글 soft-delete
-        relatedContentService.deleteAllByRef(new BaseClsfKey(deletedDto.getId(), ContentType.JRNL_DREAM), deletedDto.getRegstrId());
+        relatedContentService.deleteAllByRef(new BaseClsfKey(deletedDto.getId(), ContentType.JRNL_DREAM), deletedDto.getCreatedBy());
 
         jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DREAM);
     }
@@ -234,7 +234,7 @@ public class JrnlDreamService
     public JrnlDreamDto getDeletedDtlDto(final Integer key) throws Exception {
         final JrnlDreamDto deleted = mapper.getDeletedById(key);
         if (deleted == null) return null;
-        if (!AuthUtils.isRegstr(deleted.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(deleted.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         return deleted;
@@ -253,7 +253,7 @@ public class JrnlDreamService
         int idx = 1;
         for (final JrnlDreamDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictUserCacheByKey("jrnlDreamDtlDtoByUser", e.getRegstrId(), e.getId());
+            EhCacheUtils.evictUserCacheByKey("jrnlDreamDtlDtoByUser", e.getCreatedBy(), e.getId());
         }
 
         mapper.batchUpdateIdx(list);
@@ -293,7 +293,7 @@ public class JrnlDreamService
         int idx = 1;
         for (final JrnlDreamDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictUserCacheByKey("jrnlDreamDtlDtoByUser", e.getRegstrId(), e.getId());
+            EhCacheUtils.evictUserCacheByKey("jrnlDreamDtlDtoByUser", e.getCreatedBy(), e.getId());
         }
 
         mapper.batchUpdateIdx(list);

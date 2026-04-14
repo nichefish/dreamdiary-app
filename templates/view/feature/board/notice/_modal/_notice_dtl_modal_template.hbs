@@ -21,15 +21,15 @@
                 <!--begin::Name-->
                 <div class="d-flex flex-column align-items-start justify-content-center">
                     <span class="text-gray-800 fs-6 fw-bold lh-1 mb-2">
-                    {{#if (exists regstrInfo.proflImgUrl)}}
+                    {{#if (exists createdByInfo.proflImgUrl)}}
                         <div class="btn btn-icon btn-active-light-primary position-relative w-15px h-15px w-md-20px h-md-20px me-1">
-                            <img src="{{regstrInfo.proflImgUrl}}" class="img-thumbnail p-0 w-100" />
+                            <img src="{{createdByInfo.proflImgUrl}}" class="img-thumbnail p-0 w-100" />
                         </div>
                     {{/if}}
-                    {{regstrNm}}
+                    {{createdByNm}}
                     </span>
                     <span class="text-muted fs-7 lh-1">
-                        {{regDt}}
+                        {{createdAt}}
                     </span>
                 </div>
             </div>

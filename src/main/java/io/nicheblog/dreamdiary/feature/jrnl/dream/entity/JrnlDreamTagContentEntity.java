@@ -29,8 +29,8 @@ import javax.persistence.Table;
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Where(clause = "ref_content_type='JRNL_DREAM' AND del_yn='N'")
-@SQLDelete(sql = "UPDATE tag_content SET del_yn = 'Y' WHERE id = ?")
+@Where(clause = "ref_content_type='JRNL_DREAM' AND deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE tag_content SET deleted_at = NOW() WHERE id = ?")
 public class JrnlDreamTagContentEntity
         extends BaseAuditRegEntity {
 

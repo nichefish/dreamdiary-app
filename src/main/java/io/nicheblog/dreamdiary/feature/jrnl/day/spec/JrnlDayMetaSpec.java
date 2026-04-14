@@ -92,8 +92,8 @@ public class JrnlDayMetaSpec
                     final Integer mnth = (Integer) value;
                     if (mnth != 99) predicate.add(builder.equal(jrnlDayJoin.get(key), mnth));
                     continue;
-                case "regstrId":
-                    predicate.add(builder.equal(jrnlDayMetaJoin.get("regstrId"), value));     // 등록자 ID 기준으로 조회
+                case "createdBy":
+                    predicate.add(builder.equal(jrnlDayMetaJoin.get("createdBy"), value));     // 등록자 ID 기준으로 조회
             }
         }
 

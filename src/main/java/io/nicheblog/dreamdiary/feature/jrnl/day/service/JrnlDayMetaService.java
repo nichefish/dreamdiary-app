@@ -64,7 +64,7 @@ public class JrnlDayMetaService
      */
     @Cacheable(value="jrnlDayMetaYyListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#metaId, #username)")
     public List<Integer> getYyListByMetaIdAndUser(final Integer metaId, final String username) {
-        return jrnlDayRepository.findDistinctYysByMetaIdAndRegstrId(metaId, AuthUtils.requireUsername(username));
+        return jrnlDayRepository.findDistinctYysByMetaIdAndCreatedBy(metaId, AuthUtils.requireUsername(username));
     }
 
     /**
@@ -76,7 +76,7 @@ public class JrnlDayMetaService
     @Cacheable(value="jrnlDayMetaCtgrMapByUser", key="#username")
     public Map<String, List<String>> getMetaCtgrMapByUser(final String username) throws Exception {
         final HashMap<String, Object> paramMap = new HashMap<>() {{
-            put("regstrId", AuthUtils.requireUsername(username));
+            put("createdBy", AuthUtils.requireUsername(username));
         }};
 
         final List<JrnlDayMetaEntity> metaList = this.getSelf().getListEntity(paramMap);

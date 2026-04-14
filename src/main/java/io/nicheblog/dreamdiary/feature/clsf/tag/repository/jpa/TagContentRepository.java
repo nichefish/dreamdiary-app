@@ -30,7 +30,7 @@ public interface TagContentRepository
     @Query("DELETE FROM TagContentEntity ct " +
             "WHERE ct.refId = :#{#param.refId} " +
             "  AND ct.refContentType = :#{#param.refContentType} " +
-            "  AND ct.regstrId = :#{#param.regstrId} " +
+            "  AND ct.createdBy = :#{#param.createdBy} " +
             "  AND EXISTS (SELECT 1 FROM TagEntity t " +
             "               LEFT JOIN t.tagCategory tc " +
             "               WHERE t.id = ct.tagId " +

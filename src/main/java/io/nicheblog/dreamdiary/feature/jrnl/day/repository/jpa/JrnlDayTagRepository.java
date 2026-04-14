@@ -37,7 +37,7 @@ public interface JrnlDayTagRepository
     @Query("SELECT new io.nicheblog.dreamdiary.feature.clsf.tag.model.TagContentCntDto(ct.tagId, COUNT(ct.id)) " +
             "FROM JrnlDayTagContentEntity ct " +
             "INNER JOIN FETCH JrnlDayEntity day ON ct.refId = day.id " +
-            "WHERE ct.regstrId = :#{#param.regstrId} " +
+            "WHERE ct.createdBy = :#{#param.createdBy} " +
             " AND (:#{#param.yy} IS NULL OR day.yy = :#{#param.yy} OR :#{#param.yy} = 9999) " +
             " AND (:#{#param.mnth} IS NULL OR day.mnth = :#{#param.mnth} OR :#{#param.mnth} = 99) " +
             " AND (:#{#param.weekStartDt} IS NULL OR day.weekStartDt = :#{T(io.nicheblog.dreamdiary.global.util.date.DateUtils).asDate(#param.weekStartDt)}) " +
@@ -48,7 +48,7 @@ public interface JrnlDayTagRepository
      * 태그가 기록된 연도 목록을 최신순으로 조회합니다.
      *
      * @param tagId 태그 ID
-     * @param regstrId 사용자 ID
+     * @param createdBy 사용자 ID
      * @return 연도 목록
      */
     @Transactional(readOnly = true)
@@ -57,7 +57,7 @@ public interface JrnlDayTagRepository
             "FROM JrnlDayTagContentEntity ct " +
             "INNER JOIN FETCH JrnlDayEntity day ON ct.refId = day.id " +
             "WHERE ct.tagId = :tagId " +
-            "  AND ct.regstrId = :regstrId " +
+            "  AND ct.createdBy = :createdBy " +
             "ORDER BY day.yy DESC")
-    List<Integer> findDistinctYysByTagIdAndRegstrId(final @Param("tagId") Integer tagId, final @Param("regstrId") String regstrId);
+    List<Integer> findDistinctYysByTagIdAndCreatedBy(final @Param("tagId") Integer tagId, final @Param("createdBy") String createdBy);
 }

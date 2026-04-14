@@ -41,11 +41,11 @@
                             <div class="d-flex flex-wrap gap-4 fs-7">
                                 <div>
                                     <span class="text-muted"><@spring.message 'txt.reg-dt'/>:</span>
-                                    <span class="fw-semibold text-dark ms-1">{{ifEmpty regDt "-"}}</span>
+                                    <span class="fw-semibold text-dark ms-1">{{ifEmpty createdAt "-"}}</span>
                                 </div>
                                 <div>
-                                    <span class="text-muted"><@spring.message 'txt.regstr'/>:</span>
-                                    <span class="fw-semibold text-dark ms-1">{{ifEmpty regstrNm "-"}}</span>
+                                    <span class="text-muted"><@spring.message 'txt.createdBy'/>:</span>
+                                    <span class="fw-semibold text-dark ms-1">{{ifEmpty createdByNm "-"}}</span>
                                 </div>
                             </div>
                         </div>

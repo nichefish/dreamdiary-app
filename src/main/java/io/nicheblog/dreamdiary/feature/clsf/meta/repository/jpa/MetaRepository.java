@@ -30,7 +30,7 @@ public interface MetaRepository
      * @param ctgr 조회할 카테고리명
      * @return 태그명과 카테고리명에 해당하는 TagEntity를 포함하는 Optional 객체
      */
-    @Query(value = "SELECT * FROM meta m WHERE m.meta_nm = :tagNm AND m.ctgr = :ctgr AND m.label = :label AND m.del_yn = 'N'", nativeQuery = true)
+    @Query(value = "SELECT * FROM meta m WHERE m.meta_nm = :tagNm AND m.ctgr = :ctgr AND m.label = :label AND m.deleted_at IS NULL", nativeQuery = true)
     Optional<MetaEntity> findByMetaNmAndCtgrAndLabel(final String tagNm, final String ctgr, final String label);
 
     /**
@@ -47,6 +47,6 @@ public interface MetaRepository
             "INNER JOIN fetch MetaEntity meta ON meta.id = ct.metaId " +
             "WHERE ct.metaId = :metaId " +
             " AND (:refContentType IS NULL OR :refContentType = '' OR ct.refContentType = :refContentType)" +
-            " AND (ct.regstrId = :regstrId)")
-    Integer countMetaSize(final @Param("metaId") Integer metaId, final @Param("refContentType") String refContentType, final String regstrId);
+            " AND (ct.createdBy = :createdBy)")
+    Integer countMetaSize(final @Param("metaId") Integer metaId, final @Param("refContentType") String refContentType, final String createdBy);
 }

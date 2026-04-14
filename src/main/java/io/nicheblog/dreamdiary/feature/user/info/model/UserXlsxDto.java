@@ -41,7 +41,7 @@ public class UserXlsxDto {
     private String acsIpListStr;
 
     /** 등록자 ID */
-    protected String regstrId;
+    protected String createdBy;
 
     /** 최종접속일시 */
     private String lstLgnDt;

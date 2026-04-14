@@ -61,8 +61,8 @@
                 <div class="col-form-label text-center fw-bold">등록자</div>
             </div>
             <div class="col-xl-6 col-8 pc-d-flex col-form-label">
-                <div class="col-xl-2 col-12">${user.regstrId!}</div>
-                <div class="col-xl-6 col-12"> (${user.regDt!})</div>
+                <div class="col-xl-2 col-12">${user.createdBy!}</div>
+                <div class="col-xl-6 col-12"> (${user.createdAt!})</div>
             </div>
         </div>
         <#--begin::Row-->

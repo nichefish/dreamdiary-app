@@ -35,27 +35,27 @@ public interface JrnlDayRepository
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     @Query("SELECT COUNT(day.jrnlDt) " +
             "FROM JrnlDayEntity day " +
-            "WHERE day.jrnlDt = :jrnlDt AND day.regstrId = :regstrId")
-    Integer countByJrnlDt(final @Param("jrnlDt") Date jrnlDt, final @Param("regstrId") String regstrId);
+            "WHERE day.jrnlDt = :jrnlDt AND day.createdBy = :createdBy")
+    Integer countByJrnlDt(final @Param("jrnlDt") Date jrnlDt, final @Param("createdBy") String createdBy);
 
     /**
      * 주어진 날짜에 해당하는 {@link JrnlDayEntity}를 반환합니다.
      *
      * @param jrnlDt 조회할 날짜
-     * @param regstrId 등록자 ID
+     * @param createdBy 등록자 ID
      * @return {@link Integer} -- 주어진 날짜에 해당하는 저널 일자 객체
      */
     @Query("SELECT day " +
             "FROM JrnlDayEntity day " +
-            "WHERE day.jrnlDt = :jrnlDt AND day.regstrId = :regstrId")
+            "WHERE day.jrnlDt = :jrnlDt AND day.createdBy = :createdBy")
     @EntityGraph(value = "JrnlDayEntity.withTags", type = EntityGraph.EntityGraphType.LOAD)
-    JrnlDayEntity findByJrnlDt(final @Param("jrnlDt") Date jrnlDt, final @Param("regstrId") String regstrId);
+    JrnlDayEntity findByJrnlDt(final @Param("jrnlDt") Date jrnlDt, final @Param("createdBy") String createdBy);
 
     /**
      * 메타가 기록된 연도 목록을 최신순으로 조회합니다.
      *
      * @param metaId 메타 ID
-     * @param regstrId 사용자 ID
+     * @param createdBy 사용자 ID
      * @return 연도 목록
      */
     @Transactional(readOnly = true)
@@ -65,7 +65,7 @@ public interface JrnlDayRepository
             "INNER JOIN day.meta.list metaContent " +
             "WHERE metaContent.metaId = :metaId " +
             "  AND metaContent.refContentType = 'JRNL_DAY' " +
-            "  AND metaContent.regstrId = :regstrId " +
+            "  AND metaContent.createdBy = :createdBy " +
             "ORDER BY day.yy DESC")
-    List<Integer> findDistinctYysByMetaIdAndRegstrId(final @Param("metaId") Integer metaId, final @Param("regstrId") String regstrId);
+    List<Integer> findDistinctYysByMetaIdAndCreatedBy(final @Param("metaId") Integer metaId, final @Param("createdBy") String createdBy);
 }

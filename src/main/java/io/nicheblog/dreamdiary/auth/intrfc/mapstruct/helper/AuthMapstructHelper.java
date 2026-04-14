@@ -23,20 +23,20 @@ public final class AuthMapstructHelper {
      */
     public static void mapAuditFields(final Object entity, final Object dto) throws Exception {
         if (entity instanceof BaseAuditRegEntity baseRegEntity && dto instanceof BaseAuditRegDto baseRegDto) {
-            final AuditorInfo regstrInfo = baseRegEntity.getRegstrInfo();
-            if (regstrInfo != null) {
-                baseRegDto.setRegstrNm(regstrInfo.getNickNm());
-                baseRegDto.setRegDt(DateUtils.asStr(baseRegEntity.getRegDt(), DatePtn.DATETIME));
-                baseRegDto.setIsRegstr(baseRegEntity.isRegstr());
+            final AuditorInfo createdByInfo = baseRegEntity.getCreatedByInfo();
+            if (createdByInfo != null) {
+                baseRegDto.setCreatedByNm(createdByInfo.getNickNm());
+                baseRegDto.setCreatedAt(DateUtils.asStr(baseRegEntity.getCreatedAt(), DatePtn.DATETIME));
+                baseRegDto.setIsCreatedBy(baseRegEntity.isCreatedBy());
             }
         }
 
         if (entity instanceof BaseAuditEntity baseAuditEntity && dto instanceof BaseAuditDto baseAuditDto) {
-            final AuditorInfo mdfusrInfo = baseAuditEntity.getMdfusrInfo();
-            if (mdfusrInfo != null) {
-                baseAuditDto.setMdfusrNm(mdfusrInfo.getNickNm());
-                baseAuditDto.setMdfDt(DateUtils.asStr(baseAuditEntity.getMdfDt(), DatePtn.DATETIME));
-                baseAuditDto.setIsMdfusr(baseAuditEntity.isMdfusr());
+            final AuditorInfo updatedByInfo = baseAuditEntity.getUpdatedByInfo();
+            if (updatedByInfo != null) {
+                baseAuditDto.setUpdatedByNm(updatedByInfo.getNickNm());
+                baseAuditDto.setUpdatedAt(DateUtils.asStr(baseAuditEntity.getUpdatedAt(), DatePtn.DATETIME));
+                baseAuditDto.setIsUpdatedBy(baseAuditEntity.isUpdatedBy());
             }
         }
     }

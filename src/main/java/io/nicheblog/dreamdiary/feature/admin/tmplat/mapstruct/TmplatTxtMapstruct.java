@@ -30,7 +30,7 @@ public interface TmplatTxtMapstruct
      * @return Dto -- 변환된 Dto 객체
      */
     @Override
-    @Mapping(target = "regDt", expression = "java(DateUtils.asStr(entity.getRegDt(), DatePtn.DATETIME))")
+    @Mapping(target = "createdAt", expression = "java(DateUtils.asStr(entity.getCreatedAt(), DatePtn.DATETIME))")
     TmplatTxtDto toDto(final TmplatTxtEntity entity) throws Exception;
 
     /**

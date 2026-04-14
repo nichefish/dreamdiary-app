@@ -36,8 +36,8 @@ public interface ManagtrMapstruct
      */
     @Override
     @Named("toDto")
-    @Mapping(target = "regDt", expression = "java(DateUtils.asStr(entity.getRegDt(), DatePtn.DATETIME))")
-    @Mapping(target = "regstrNm", expression = "java(entity.getRegstrInfo() != null ? entity.getRegstrInfo().getNickNm() : null)")
+    @Mapping(target = "createdAt", expression = "java(DateUtils.asStr(entity.getCreatedAt(), DatePtn.DATETIME))")
+    @Mapping(target = "createdByNm", expression = "java(entity.getCreatedByInfo() != null ? entity.getCreatedByInfo().getNickNm() : null)")
     ManagtrDto toDto(final ManagtrEntity entity) throws Exception;
 
     /**

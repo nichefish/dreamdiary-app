@@ -28,8 +28,8 @@ import java.util.Date;
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE jrnl_day SET del_yn = 'Y' WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE jrnl_day SET deleted_at = NOW() WHERE id = ?")
 public class JrnlDaySmpEntity {
 
     /** 저널 일자 고유 ID */

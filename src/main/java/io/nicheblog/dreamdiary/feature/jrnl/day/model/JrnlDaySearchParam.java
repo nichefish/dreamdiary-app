@@ -75,7 +75,7 @@ public class JrnlDaySearchParam
      */
     public static JrnlDaySearchParam getBaseParam(String username, Integer yy, Integer mnth) {
         return JrnlDaySearchParam.builder()
-                .regstrId(username)
+                .createdBy(username)
                 .yy(yy)
                 .mnth(mnth)
                 .sort("ASC")
@@ -91,7 +91,7 @@ public class JrnlDaySearchParam
      */
     public static JrnlDaySearchParam getBaseParam(final String username, final String weekStartDt) {
         return JrnlDaySearchParam.builder()
-                .regstrId(username)
+                .createdBy(username)
                 .weekStartDt(weekStartDt)
                 .sort("ASC")
                 .build();

@@ -69,8 +69,8 @@ public class TagProfileService
      * @return {@link Optional} -- 조회된 TagProfileDto
      */
     public Optional<TagProfileDto> getDtoByTagIdAndContentType(final Integer tagId, final String contentType) throws Exception {
-        final String regstrId = AuthUtils.requireLgnUsername();
-        final Optional<TagProfileEntity> entityOpt = repository.findByTagIdAndContentTypeAndRegstrId(tagId, contentType, regstrId);
+        final String createdBy = AuthUtils.requireLgnUsername();
+        final Optional<TagProfileEntity> entityOpt = repository.findByTagIdAndContentTypeAndCreatedBy(tagId, contentType, createdBy);
         if (entityOpt.isEmpty()) return Optional.empty();
 
         final TagProfileDto dto = mapstruct.toDto(entityOpt.get());
@@ -95,8 +95,8 @@ public class TagProfileService
     @Transactional(readOnly = true)
     public void applyVisualSemantic(final List<TagDto> tagList, final String contentType) {
         if (CollectionUtils.isEmpty(tagList) || StringUtils.isBlank(contentType)) return;
-        final String regstrId = AuthUtils.getLgnUsername();
-        if (StringUtils.isBlank(regstrId)) return;
+        final String createdBy = AuthUtils.getLgnUsername();
+        if (StringUtils.isBlank(createdBy)) return;
 
         final List<Integer> tagIdList = tagList.stream()
                 .map(TagDto::getId)
@@ -128,7 +128,7 @@ public class TagProfileService
         final Map<Integer, TextClass> categorySemanticMap = CollectionUtils.isEmpty(tagCategoryIdList)
                 ? Collections.emptyMap()
                 : tagCategoryProfileRepository
-                        .findAllByTagCategoryIdInAndContentTypeAndRegstrId(tagCategoryIdList, contentType, regstrId)
+                        .findAllByTagCategoryIdInAndContentTypeAndCreatedBy(tagCategoryIdList, contentType, createdBy)
                         .stream()
                         .collect(Collectors.toMap(
                                 TagCategoryProfileEntity::getTagCategoryId,
@@ -136,7 +136,7 @@ public class TagProfileService
                                 (left, right) -> left
                         ));
 
-        final Map<Integer, TextClass> semanticMap = repository.findAllByTagIdInAndContentTypeAndRegstrId(tagIdList, contentType, regstrId)
+        final Map<Integer, TextClass> semanticMap = repository.findAllByTagIdInAndContentTypeAndCreatedBy(tagIdList, contentType, createdBy)
                 .stream()
                 .filter(profile -> profile.getTextClass() != null)
                 .collect(Collectors.toMap(
@@ -175,17 +175,17 @@ public class TagProfileService
 
     @Override
     public TagProfileEntity getDtlEntity(final Integer key) throws Exception {
-        final String regstrId = AuthUtils.requireLgnUsername();
-        return repository.findByIdAndRegstrId(key, regstrId)
+        final String createdBy = AuthUtils.requireLgnUsername();
+        return repository.findByIdAndCreatedBy(key, createdBy)
                 .orElseThrow(() -> new EntityNotFoundException("exception.EntityNotFoundException"));
     }
 
     @Override
     public TagProfileEntity findDtlEntity(final Integer key) throws Exception {
-        final String regstrId = AuthUtils.getLgnUsername();
-        if (StringUtils.isBlank(regstrId)) return null;
+        final String createdBy = AuthUtils.getLgnUsername();
+        if (StringUtils.isBlank(createdBy)) return null;
 
-        return repository.findByIdAndRegstrId(key, regstrId).orElse(null);
+        return repository.findByIdAndCreatedBy(key, createdBy).orElse(null);
     }
 
     @Override
@@ -281,8 +281,8 @@ public class TagProfileService
         if (tagProfile == null) return null;
         if (tagProfile.getTagId() == null || StringUtils.isBlank(tagProfile.getContentType())) return tagProfile;
 
-        final String regstrId = AuthUtils.getLgnUsername();
-        if (StringUtils.isBlank(regstrId)) return tagProfile;
+        final String createdBy = AuthUtils.getLgnUsername();
+        if (StringUtils.isBlank(createdBy)) return tagProfile;
 
         this.populateTagCategoryInfo(tagProfile);
         final Integer tagCategoryId = tagProfile.getTagCategoryId();
@@ -295,7 +295,7 @@ public class TagProfileService
         }
 
         final Optional<TagCategoryProfileEntity> categoryProfileOpt = tagCategoryProfileRepository
-                .findByTagCategoryIdAndContentTypeAndRegstrId(tagCategoryId, tagProfile.getContentType(), regstrId);
+                .findByTagCategoryIdAndContentTypeAndCreatedBy(tagCategoryId, tagProfile.getContentType(), createdBy);
         if (categoryProfileOpt.isEmpty()) {
             tagProfile.setCategoryProfileId(null);
             tagProfile.setCategoryTextClass(TextClass.DEFAULT);
@@ -323,17 +323,17 @@ public class TagProfileService
     private void upsertCategoryProfile(final TagProfileDto tagProfile) throws Exception {
         if (tagProfile == null || tagProfile.getTagCategoryId() == null || StringUtils.isBlank(tagProfile.getContentType())) return;
 
-        final String regstrId = AuthUtils.requireLgnUsername();
+        final String createdBy = AuthUtils.requireLgnUsername();
         final TextClass categorySemantic = TextClass.getOrDefault(tagProfile.getCategoryTextClass());
         final Optional<TagCategoryProfileEntity> existingOpt = tagCategoryProfileRepository
-                .findByTagCategoryIdAndContentTypeAndRegstrId(tagProfile.getTagCategoryId(), tagProfile.getContentType(), regstrId);
+                .findByTagCategoryIdAndContentTypeAndCreatedBy(tagProfile.getTagCategoryId(), tagProfile.getContentType(), createdBy);
         if (existingOpt.isEmpty() && TextClass.DEFAULT.equals(categorySemantic)) return;
 
         final TagCategoryProfileEntity categoryProfile = existingOpt
                 .orElseGet(() -> TagCategoryProfileEntity.builder()
                         .tagCategoryId(tagProfile.getTagCategoryId())
                         .contentType(tagProfile.getContentType())
-                        .regstrId(regstrId)
+                        .createdBy(createdBy)
                         .build());
         categoryProfile.setTextClass(categorySemantic);
         tagCategoryProfileRepository.saveAndFlush(categoryProfile);

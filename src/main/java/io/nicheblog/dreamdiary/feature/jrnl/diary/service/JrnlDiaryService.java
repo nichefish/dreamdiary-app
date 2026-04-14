@@ -83,7 +83,7 @@ public class JrnlDiaryService
      */
     @Cacheable(value="jrnlDiaryYySumryStatedListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #searchParam.toSummaryCacheKey())")
     public List<JrnlDiaryDto> getSumryDiaryListByUser(final String username, final JrnlDiarySearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUsername(username));
+        searchParam.setCreatedBy(AuthUtils.requireUsername(username));
         final List<JrnlDiaryDto> jrnlDiaryYySumryStatedListByUser = this.getSelf().getListDto(searchParam);
         Collections.sort(jrnlDiaryYySumryStatedListByUser);
 
@@ -91,7 +91,7 @@ public class JrnlDiaryService
     }
 
     public List<JrnlDiaryDto> getListDtoByUser(final String username, final JrnlDiarySearchParam searchParam) throws Exception {
-        searchParam.setRegstrId(AuthUtils.requireUsername(username));
+        searchParam.setCreatedBy(AuthUtils.requireUsername(username));
         return this.getSelf().getListDto(searchParam);
     }
 
@@ -126,7 +126,7 @@ public class JrnlDiaryService
      */
     @Override
     public void preModify(final JrnlDiaryPostDto modifyDto, final JrnlDiaryEntity modifyEntity) throws Exception {
-        if (!AuthUtils.isRegstr(modifyEntity.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(modifyEntity.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
 
@@ -168,7 +168,7 @@ public class JrnlDiaryService
         final JrnlDiaryEntity retrievedEntity = this.getSelf().getDtlEntity(key);
         final JrnlDiaryDto retrieved = mapstruct.toDto(retrievedEntity);
         // 권한 체크
-        if (!retrieved.getIsRegstr(AuthUtils.requireUsername(username))) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
+        if (!retrieved.getIsCreatedBy(AuthUtils.requireUsername(username))) throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         return retrieved;
     }
 
@@ -202,7 +202,7 @@ public class JrnlDiaryService
      */
     @Override
     public void preDelete(final JrnlDiaryDto deletedDto) throws Exception {
-        if (!AuthUtils.isRegstr(deletedDto.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(deletedDto.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
     }
@@ -219,7 +219,7 @@ public class JrnlDiaryService
         
         // 관련 캐시 삭제
         // 관련글 soft-delete
-        relatedContentService.deleteAllByRef(new BaseClsfKey(deletedDto.getId(), ContentType.JRNL_DIARY), deletedDto.getRegstrId());
+        relatedContentService.deleteAllByRef(new BaseClsfKey(deletedDto.getId(), ContentType.JRNL_DIARY), deletedDto.getCreatedBy());
 
         jrnlCacheEvictWorker.evictAfterCommit(JrnlCacheEvictParam.of(deletedDto), ContentType.JRNL_DIARY);
     }
@@ -234,7 +234,7 @@ public class JrnlDiaryService
     public JrnlDiaryDto getDeletedDtlDto(final Integer key) throws Exception {
         final JrnlDiaryDto deleted = mapper.getDeletedById(key);
         if (deleted == null) return null;
-        if (!AuthUtils.isRegstr(deleted.getRegstrId())) {
+        if (!AuthUtils.isCreatedBy(deleted.getCreatedBy())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
         return deleted;
@@ -253,7 +253,7 @@ public class JrnlDiaryService
         int idx = 1;
         for (final JrnlDiaryDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictUserCacheByKey("jrnlDiaryDtlDtoByUser", e.getRegstrId(), e.getId());
+            EhCacheUtils.evictUserCacheByKey("jrnlDiaryDtlDtoByUser", e.getCreatedBy(), e.getId());
         }
 
         mapper.batchUpdateIdx(list);
@@ -293,7 +293,7 @@ public class JrnlDiaryService
         int idx = 1;
         for (final JrnlDiaryDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictUserCacheByKey("jrnlDiaryDtlDtoByUser", e.getRegstrId(), e.getId());
+            EhCacheUtils.evictUserCacheByKey("jrnlDiaryDtlDtoByUser", e.getCreatedBy(), e.getId());
         }
 
         mapper.batchUpdateIdx(list);

@@ -7,7 +7,7 @@
  * 버튼 : 권한/수정권한(mdfable)에 따른 수정 버튼
  -->
 <#macro post_btn_modify func post isMngr>
-    <#if post.isRegstr>
+    <#if post.isCreatedBy>
         <button type="button" class="btn btn-sm btn-light btn-active-primary me-2"
                 onclick="${func!}"
                 data-bs-toggle="tooltip" data-bs-placement="top" title="<@spring.message 'bs.tooltip.page.mdf'/>">
@@ -53,7 +53,7 @@
  * 버튼 : 권한에 따른 삭제 버튼
  -->
 <#macro post_btn_delete func post isMngr>
-    <#if post.isRegstr>
+    <#if post.isCreatedBy>
         <button type="button" class="btn btn-sm btn-light btn-active-danger me-2"
                 onclick="${func!}"
                 data-bs-toggle="tooltip" data-bs-placement="top" title="<@spring.message 'bs.tooltip.del'/>">

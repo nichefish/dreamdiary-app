@@ -136,7 +136,7 @@ public class UserDto
 
     /** 내 정보 여부 채크 */
     public Boolean getIsMe() {
-        return (AuthUtils.isRegstr(this.getUsername()));       // 인자로 넘긴 ID와 세션의 사용자 ID 비교
+        return (AuthUtils.isCreatedBy(this.getUsername()));       // 인자로 넘긴 ID와 세션의 사용자 ID 비교
     }
 
     @Override
