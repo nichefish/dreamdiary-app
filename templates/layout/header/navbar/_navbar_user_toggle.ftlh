@@ -47,7 +47,7 @@
                 </div>
                 <a href="#" class="fw-semibold text-muted text-hover-primary fs-7">${(authInfo.email)!}</a>
                 <a href="#" class="fw-semibold text-muted text-hover-primary fs-7">(${(authInfo.username)!})</a>
-                <a href="#" class="fw-semibold text-muted text-hover-primary fs-7">(${acsIp!})</a>
+                <a href="#" class="fw-semibold text-muted text-hover-primary fs-7">(${remoteIp!})</a>
             </div>
             <!--end::Username-->
         </div>

@@ -99,18 +99,18 @@ public class UserDto
 
     /** 접속IP 사용 여부 체크 */
     @Builder.Default
-    private Boolean useAcsIp = false;
+    private Boolean useAllowedIp = false;
 
     /** 접속 IP 사용 여부 (Y/N) */
     @Builder.Default
     @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
-    private String useAcsIpYn = "N";
+    private String useAllowedIpYn = "N";
 
     /** 접속 IP 정보 */
-    private String acsIpListStr;
+    private String allowedIpListStr;
 
     /** 접속 IP 정보 */
-    private List<UserAcsIpDto> acsIpList;
+    private List<UserAllowedIpDto> allowedIpList;
 
     /** 이메일 반환 (override) */
     public String getEmail() {

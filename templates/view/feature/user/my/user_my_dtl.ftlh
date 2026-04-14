@@ -94,17 +94,17 @@
         <div class="row mb-4">
             <div class="col-xl-2 col-4">
                 <div class="col-form-label text-center fs-6 fw-bold">
-                    <label for="acsIpListStr">접속IP</label>
+                    <label for="allowedIpListStr">접속IP</label>
                 </div>
             </div>
             <div class="col-xl-9 col-8 col-form-label">
                 <div class="form-check form-switch form-check-custom form-check-solid">
                     <span class="me-8">
-                        <#if user.isAcsIpY!false><@spring.message 'txt.status.use'/><#else><@spring.message 'txt.status.unuse'/></#if>
+                        <#if user.isAllowedIpY!false><@spring.message 'txt.status.use'/><#else><@spring.message 'txt.status.unuse'/></#if>
                     </span>
-                    <#if user.isAcsIpY!false && user.acsIpList??>
-                        <#list user.acsIpList![] as item>
-                            <span class="div-textarea div-height-1 me-4">${item.acsIp!}</span>
+                    <#if user.isAllowedIpY!false && user.allowedIpList??>
+                        <#list user.allowedIpList![] as item>
+                            <span class="div-textarea div-height-1 me-4">${item.allowedIp!}</span>
                         </#list>
                     </#if>
                 </div>

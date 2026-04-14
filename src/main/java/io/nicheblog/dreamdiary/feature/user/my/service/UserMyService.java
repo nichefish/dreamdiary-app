@@ -56,7 +56,7 @@ public class UserMyService {
         }
         retrievedEntity.setPassword(passwordEncoder.encode(newPw));
         retrievedEntity.acntStus.setNeedsPwReset("N");
-        retrievedEntity.acntStus.setPwChgDt(DateUtils.getCurrDate());
+        retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrDate());
         final UserEntity modified = userRepository.saveAndFlush(retrievedEntity);
         refreshTokenService.revoke(username);
 
@@ -116,7 +116,7 @@ public class UserMyService {
         // 2. 맞으면 비밀번호 업데이트
         retrievedEntity.setPassword(passwordEncoder.encode(newPw));
         retrievedEntity.acntStus.setNeedsPwReset("N");
-        retrievedEntity.acntStus.setPwChgDt(DateUtils.getCurrDate());
+        retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrDate());
         final UserEntity modified = userRepository.saveAndFlush(retrievedEntity);
         refreshTokenService.revoke(lgnUsername);
 

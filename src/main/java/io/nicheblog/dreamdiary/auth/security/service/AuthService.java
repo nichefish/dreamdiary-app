@@ -120,12 +120,12 @@ public class AuthService
      * @param username 처리할 사용자 계정명
      */
     @Transactional
-    public void setLstLgnDt(final String username) {
+    public void setLastLoginAt(final String username) {
         // ID로 사용자 정보 조회
         final Optional<UserEntity> userEntityWrapper = userRepository.findByUsername(username);
         final UserEntity userEntity = userEntityWrapper.orElseThrow(NullPointerException::new);
         // 최종 로그인 날짜 세팅 및 실패 카운터 0으로 세팅
-        userEntity.acntStus.setLstLgnDt(new Date());
+        userEntity.acntStus.setLastLoginAt(new Date());
         userEntity.acntStus.setLgnFailCnt(0);
         userRepository.save(userEntity);
     }

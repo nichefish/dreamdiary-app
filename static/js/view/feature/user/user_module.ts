@@ -77,20 +77,20 @@ dF.User = (function(): dfModule {
                 $("#emailDupChckBtn").addClass("blink").removeClass("btn-success").addClass("btn-secondary").removeAttr("disabled");
             });
             // 접속IP 사용 여부 클릭시 글씨 변경 + 입력창 토글 :: 메소드 분리
-            cF.ui.chckboxLabel("#useAcsIpYn", "사용//미사용", "blue//gray", function(): void{
-                $("#acsIpListSpan").show()
+            cF.ui.chckboxLabel("#useAllowedIpYn", "사용//미사용", "blue//gray", function(): void{
+                $("#allowedIpListSpan").show()
             }, function(){
-                $("#acsIpListSpan").hide()
+                $("#allowedIpListSpan").hide()
             });
             /* 접속IP tagify */
-            cF.tagify.init("#acsIpListStr");
+            cF.tagify.init("#allowedIpListStr");
         },
 
         /**
          * Custom SubmitHandler
          */
         submitHandler: function(): boolean {
-            if ($("#useAcsIpYn").is(":checked") && $("#acsIpListStr").val() === "") {
+            if ($("#useAllowedIpYn").is(":checked") && $("#allowedIpListStr").val() === "") {
                 Swal.fire("접속 IP는 최소 한 개 이상 입력해야 합니다.");
                 return false;
             }

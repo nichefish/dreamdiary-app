@@ -255,7 +255,7 @@ CREATE TABLE IF NOT EXISTS viewer (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '열람자 ID',
     ref_id INT COMMENT '참조 글 번호',
     ref_content_type VARCHAR(30) COMMENT '참조 컨텐츠 타입',
-    lst_visit_dt DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '최종 방문 일시',
+    last_visited_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '최종 방문 일시',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',

@@ -113,9 +113,9 @@ public class UserService
     @Override
     public void preRegist(final UserDto registDto) throws Exception {
         // 접속 IP 정보 없을시 사용으로 찍었더라도 미사용으로 변경
-        if (StringUtils.isEmpty(registDto.getAcsIpListStr())) {
-            registDto.setUseAcsIpYn("N");
-            registDto.setAcsIpListStr(null);
+        if (StringUtils.isEmpty(registDto.getAllowedIpListStr())) {
+            registDto.setUseAllowedIpYn("N");
+            registDto.setAllowedIpListStr(null);
         }
     }
 
@@ -148,7 +148,7 @@ public class UserService
         // update
         retrievedEntity.setPassword(pwForReset);
         retrievedEntity.acntStus.setNeedsPwReset("Y");
-        retrievedEntity.acntStus.setPwChgDt(DateUtils.getCurrDate());
+        retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrDate());
         final UserEntity updatedEntity = repository.saveAndFlush(retrievedEntity);
 
         return ServiceResponse.builder()
@@ -164,9 +164,9 @@ public class UserService
     @Override
     public void preModify(final UserDto modifyDto) throws Exception {
         // 접속 IP 정보 없을시 사용으로 찍었더라도 미사용으로 변경
-        if (StringUtils.isEmpty(modifyDto.getAcsIpListStr())) {
-            modifyDto.setUseAcsIpYn("N");
-            modifyDto.setAcsIpListStr(null);
+        if (StringUtils.isEmpty(modifyDto.getAllowedIpListStr())) {
+            modifyDto.setUseAllowedIpYn("N");
+            modifyDto.setAllowedIpListStr(null);
         }
     }
 
@@ -202,7 +202,7 @@ public class UserService
         final Integer lgnLockDy = authPolicy.getLgnLockDy();
 
         final UserEntity user = this.getDtlEntity(username);
-        Date lastLgnDt = user.acntStus.getLstLgnDt();
+        Date lastLgnDt = user.acntStus.getLastLoginAt();
         if (lastLgnDt == null) lastLgnDt = user.getCreatedAt();
         final Date dormantDt = DateUtils.getDateAddDay(lastLgnDt, lgnLockDy);
 
@@ -240,7 +240,7 @@ public class UserService
         // lockedYn 플래그 + 최종접속일 업데이트
         retrievedEntity.acntStus.setLockedYn("N");
         retrievedEntity.acntStus.setLgnFailCnt(0);
-        retrievedEntity.acntStus.setLstLgnDt(DateUtils.getCurrDate());
+        retrievedEntity.acntStus.setLastLoginAt(DateUtils.getCurrDate());
         final UserEntity updatedEntity = repository.saveAndFlush(retrievedEntity);
 
         return ServiceResponse.builder()

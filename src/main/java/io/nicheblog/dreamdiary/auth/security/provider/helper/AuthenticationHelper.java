@@ -93,7 +93,7 @@ public class AuthenticationHelper {
         if ("Y".equals(authInfo.getLockedYn())) throw new LockedException("AbstractUserDetailsAuthenticationProvider.LockedException");
 
         // 접속IP 체크 :: 메소드 분리
-        if (!this.isAcsIpValid(authInfo)) throw new AcsIpNotAllowedException("AbstractUserDetailsAuthenticationProvider.AcsIpNotAllowedException");
+        if (!this.isAllowedIpValid(authInfo)) throw new IpNotAllowedException("AbstractUserDetailsAuthenticationProvider.IpNotAllowedException");
 
         // 비밀번호 만료 여부 체크
         if (!this.isPwExpryValid(authInfo)) throw new CredentialsExpiredException("AbstractUserDetailsAuthenticationProvider.CredentialsExpiredException");
@@ -133,25 +133,25 @@ public class AuthenticationHelper {
      * @param authInfo 사용자 인증 정보 (AuthInfo)
      * @return {@link Boolean} -- 접속 IP가 유효한 경우 true
      */
-    public Boolean isAcsIpValid(final AuthInfo authInfo) {
-        if (!"Y".equals(authInfo.getUseAcsIpYn())) return true;
+    public Boolean isAllowedIpValid(final AuthInfo authInfo) {
+        if (!"Y".equals(authInfo.getUseAllowedIpYn())) return true;
 
-        final List<String> acsIpStrList = authInfo.getAcsIpStrList();
-        if (CollectionUtils.isEmpty(acsIpStrList)) return true;
+        final List<String> allowedIpStrList = authInfo.getAllowedIpStrList();
+        if (CollectionUtils.isEmpty(allowedIpStrList)) return true;
 
-        final String remoteAddr = AuthUtils.getAcsIpAddr();
+        final String remoteAddr = AuthUtils.getRemoteIpAddr();
         log.info("logged in remoteAddr: {}", remoteAddr);
 
         // 순회하며 IP 체크
-        for (final String acsIp : acsIpStrList) {
-            log.info("comparing remoteIP {} to access-allowed-IP {}...", remoteAddr, acsIp);
-            final boolean isCidr = acsIp.contains("/");
+        for (final String allowedIp : allowedIpStrList) {
+            log.info("comparing remoteIP {} to access-allowed-IP {}...", remoteAddr, allowedIp);
+            final boolean isCidr = allowedIp.contains("/");
             if (!isCidr) {
                 // 단순 IP일 경우: 정확히 일치여부 확인
-                if (acsIp.equals(remoteAddr)) return true;
+                if (allowedIp.equals(remoteAddr)) return true;
             } else {
                 // CIDR일 경우: 범위 체크
-                final SubnetUtils subnetUtils = new SubnetUtils(acsIp);
+                final SubnetUtils subnetUtils = new SubnetUtils(allowedIp);
                 final boolean isIpAddrWithinValid = subnetUtils.getInfo().isInRange(remoteAddr);
                 if (isIpAddrWithinValid) return true;
             }
@@ -168,7 +168,7 @@ public class AuthenticationHelper {
     public Boolean isPwExpryValid(final AuthInfo authInfo) throws Exception {
         final AuthPolicyEntity authPolicy = authPolicyQueryService.getDtlEntity();
         final Integer pwChgDy = authPolicy.getPwChgDy();
-        final Date pwExprDt = DateUtils.getDateAddDay(authInfo.getPwChgDt(), pwChgDy);
+        final Date pwExprDt = DateUtils.getDateAddDay(authInfo.getPasswordChangedAt(), pwChgDy);
         final boolean isPwExprd = (pwExprDt == null || pwExprDt.compareTo(DateUtils.getCurrDate()) < 0);
         return !isPwExprd;
     }

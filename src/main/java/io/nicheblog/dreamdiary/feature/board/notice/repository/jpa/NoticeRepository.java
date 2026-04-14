@@ -38,7 +38,7 @@ public interface NoticeRepository
             " AND COALESCE(notice.updatedBy, notice.createdBy) != :username " +
             " AND ( " +
             "  viewer.createdBy != :username " +
-            "  OR (viewer.createdBy = :username and viewer.lstVisitDt < COALESCE(notice.updatedAt, notice.createdAt)) " +
+            "  OR (viewer.createdBy = :username and viewer.lastVisitedAt < COALESCE(notice.updatedAt, notice.createdAt)) " +
             ")")
     Integer getUnreadCnt(final @Param("username") String username, final @Param("stdrdDt") Date stdrdDt);
 }

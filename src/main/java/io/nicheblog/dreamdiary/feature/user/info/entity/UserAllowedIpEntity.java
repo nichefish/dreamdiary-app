@@ -13,7 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 /**
- * UserAcsIpEntity
+ * UserAllowedIpEntity
  * <pre>
  *  사용자(계정) 정보 > 접속가능 IP Entity.
  * </pre>
@@ -21,7 +21,7 @@ import javax.persistence.Table;
  * @author nichefish
  */
 @Entity
-@Table(name = "user_acs_ip")
+@Table(name = "user_allowed_ip")
 @DynamicInsert      // null인 값은 (null로 insert하는 대신) insert에서 제외
 @Getter
 @Setter
@@ -29,8 +29,8 @@ import javax.persistence.Table;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "deleted_at IS NULL")
-@SQLDelete(sql = "UPDATE user_acs_ip SET deleted_at = NOW() WHERE id = ?")
-public class UserAcsIpEntity
+@SQLDelete(sql = "UPDATE user_allowed_ip SET deleted_at = NOW() WHERE id = ?")
+public class UserAllowedIpEntity
         extends BaseCrudEntity {
 
     /** 사용자 정보 접속가능 IP ID */
@@ -49,17 +49,17 @@ public class UserAcsIpEntity
     private UserEntity user;
 
     /** 접속가능 IP */
-    @Column(name = "acs_ip", length = 20)
+    @Column(name = "allowed_ip", length = 20)
     @Comment("접속가능 IP")
-    private String acsIp;
+    private String allowedIp;
 
     /* ----- */
 
     /**
      * 생성자.
-     * @param acsIp - 사용자 접근 IP 주소
+     * @param allowedIp - 사용자 접근 IP 주소
      */
-    public UserAcsIpEntity(final String acsIp) {
-        this.setAcsIp(acsIp);
+    public UserAllowedIpEntity(final String allowedIp) {
+        this.setAllowedIp(allowedIp);
     }
 }

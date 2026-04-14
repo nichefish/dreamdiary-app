@@ -4,7 +4,7 @@ import lombok.experimental.UtilityClass;
 import org.springframework.test.context.ActiveProfiles;
 
 /**
- * UserAcsIpEntityTestFactory
+ * UserAllowedIpEntityTestFactory
  * <pre>
  *  사용자 접속 IP 테스트 Entity 생성 팩토리 모듈
  * </pre>
@@ -13,14 +13,14 @@ import org.springframework.test.context.ActiveProfiles;
  */
 @UtilityClass
 @ActiveProfiles("test")
-public class UserAcsIpEntityTestFactory {
+public class UserAllowedIpEntityTestFactory {
 
     /**
      * 테스트용 사용자 접속 IP Entity 생성
      */
-    public static UserAcsIpEntity create(final String acsIp) {
-        return UserAcsIpEntity.builder()
-                .acsIp(acsIp)
+    public static UserAllowedIpEntity create(final String allowedIp) {
+        return UserAllowedIpEntity.builder()
+                .allowedIp(allowedIp)
                 .build();
     }
 }

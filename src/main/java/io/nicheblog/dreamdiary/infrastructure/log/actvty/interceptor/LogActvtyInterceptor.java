@@ -50,7 +50,7 @@ public class LogActvtyInterceptor implements HandlerInterceptor {
                     request.getRequestURI(),
                     getHandlerSignature(handlerMethod),
                     getUsernameForLog(),
-                    AuthUtils.getAcsIpAddr()
+                    AuthUtils.getRemoteIpAddr()
             );
         }
         // 반드시 true
@@ -85,7 +85,7 @@ public class LogActvtyInterceptor implements HandlerInterceptor {
                     response.getStatus(),
                     duration,
                     username,
-                    AuthUtils.getAcsIpAddr(),
+                    AuthUtils.getRemoteIpAddr(),
                     ex
             );
         } else if (response.getStatus() >= 400) {
@@ -97,7 +97,7 @@ public class LogActvtyInterceptor implements HandlerInterceptor {
                     response.getStatus(),
                     duration,
                     username,
-                    AuthUtils.getAcsIpAddr()
+                    AuthUtils.getRemoteIpAddr()
             );
         } else {
             log.info(
@@ -108,7 +108,7 @@ public class LogActvtyInterceptor implements HandlerInterceptor {
                     response.getStatus(),
                     duration,
                     username,
-                    AuthUtils.getAcsIpAddr()
+                    AuthUtils.getRemoteIpAddr()
             );
         }
 
@@ -143,7 +143,7 @@ public class LogActvtyInterceptor implements HandlerInterceptor {
         param.setDurationMs(duration);
         param.setHttpStatus(response.getStatus());
         param.setReferer(request.getHeader(Constant.REFERER));
-        param.setIpAddr(AuthUtils.getAcsIpAddr());       // 작업 IP
+        param.setIpAddr(AuthUtils.getRemoteIpAddr());       // 작업 IP
 
         // ===== 성공 여부 판단 =====
         final boolean success = (ex == null) && response.getStatus() < 400;

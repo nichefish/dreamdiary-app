@@ -50,8 +50,8 @@ public class UserEntity
     @PostLoad
     private void init() {
         // 접속IP 문자열 목록 세팅
-        this.acsIpStrList = this.acsIpList.stream()
-                .map(UserAcsIpEntity::getAcsIp)
+        this.allowedIpStrList = this.allowedIpList.stream()
+                .map(UserAllowedIpEntity::getAllowedIp)
                 .collect(Collectors.toList());
     }
     
@@ -100,23 +100,23 @@ public class UserEntity
 
     /** 접속 IP 사용 여부 (Y/N) */
     @Builder.Default
-    @Column(name = "use_acs_ip_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Column(name = "use_allowed_ip_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
     @Comment("접속 IP 사용 여부")
-    private String useAcsIpYn = "N";
+    private String useAllowedIpYn = "N";
 
     /** 접속 IP 정보 */
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id")
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 10)
-    @OrderBy("acsIp ASC")
+    @OrderBy("allowedIp ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("접속 IP 정보")
-    private List<UserAcsIpEntity> acsIpList;
+    private List<UserAllowedIpEntity> allowedIpList;
     
     /** 접속 IP 문자열 목록 */
     @Transient
-    private List<String> acsIpStrList;
+    private List<String> allowedIpStrList;
 
     /** 표시이름 : 사용자 프로필 정보가 없을 때 표시되는 이름 */
     @Column(name = "nick_nm", length = 50)
@@ -184,10 +184,10 @@ public class UserEntity
      *
      * @param tagifyStr tagify 형식으로 전달된 IP 주소 문자열
      */
-    public void setAcsIpList(final String tagifyStr) {
-        final List<String> acsIpStrList = CmmUtils.parseTagify(tagifyStr);
-        this.setAcsIpList(acsIpStrList.stream()
-                .map(UserAcsIpEntity::new)
+    public void setAllowedIpList(final String tagifyStr) {
+        final List<String> allowedIpStrList = CmmUtils.parseTagify(tagifyStr);
+        this.setAllowedIpList(allowedIpStrList.stream()
+                .map(UserAllowedIpEntity::new)
                 .collect(Collectors.toList()));
     }
 
@@ -195,15 +195,15 @@ public class UserEntity
      * 서브엔티티 List 처리를 위한 Setter Override
      * 한 번 Entity가 생성된 이후부터는 새 List를 할당하면 안 되고 계속 JPA 이력이 추적되어야 한다.
      *
-     * @param acsIpList - 설정할 객체 리스트
+     * @param allowedIpList - 설정할 객체 리스트
      */
-    public void setAcsIpList(final List<UserAcsIpEntity> acsIpList) {
-        if (CollectionUtils.isEmpty(acsIpList)) return;
-        if (this.acsIpList == null) {
-            this.acsIpList = new ArrayList<>(acsIpList);
+    public void setAllowedIpList(final List<UserAllowedIpEntity> allowedIpList) {
+        if (CollectionUtils.isEmpty(allowedIpList)) return;
+        if (this.allowedIpList == null) {
+            this.allowedIpList = new ArrayList<>(allowedIpList);
         } else {
-            this.acsIpList.clear();
-            this.acsIpList.addAll(acsIpList);
+            this.allowedIpList.clear();
+            this.allowedIpList.addAll(allowedIpList);
         }
     }
 

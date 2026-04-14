@@ -189,7 +189,7 @@
             <div class="row mb-4">
                 <div class="col-xl-2">
                     <div class="fw-bold col-form-label text-lg-center text-sm-start ">
-                        <label for="acsIpListStr" class="cursor-help"
+                        <label for="allowedIpListStr" class="cursor-help"
                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="특정 IP에서만&#10;접속 가능하도록 설정합니다.">
                             접속 IP
                             <i class="bi bi-question-circle"></i>
@@ -198,18 +198,18 @@
                 </div>
                 <div class="col-xl-2">
                     <div class="form-check form-switch form-check-custom form-check-solid mt-2">
-                        <input type="checkbox" name="useAcsIpYn" id="useAcsIpYn" class="form-check-input cursor-pointer" value="Y"
-                               <#if user.useAcsIp!false>checked="checked"</#if> />
-                        <label class="form-check-label fw-bold ms-3" for="useAcsIpYn" id="useAcsIpYnLabel" style="color:<#if user.useAcsIp!false>blue<#else>gray</#if>;">
-                            <#if !user.useAcsIp!false><@spring.message 'txt.status.unuse'/></#if><@spring.message 'txt.status.use'/>
+                        <input type="checkbox" name="useAllowedIpYn" id="useAllowedIpYn" class="form-check-input cursor-pointer" value="Y"
+                               <#if user.useAllowedIp!false>checked="checked"</#if> />
+                        <label class="form-check-label fw-bold ms-3" for="useAllowedIpYn" id="useAllowedIpYnLabel" style="color:<#if user.useAllowedIp!false>blue<#else>gray</#if>;">
+                            <#if !user.useAllowedIp!false><@spring.message 'txt.status.unuse'/></#if><@spring.message 'txt.status.use'/>
                         </label>
                     </div>
                     <!-- 가리고 숨기고를 반복하는 곳은 style로 선언해야 한다. -->
-                    <div id="acsIpListSpan" class="mt-2 mb-0" <#if !(user.useAcsIp!false)>style=display:none;"</#if>>
-                        <input type="text" name="acsIpListStr" id="acsIpListStr" class="form-control form-control-solid no-space"
-                               value="${user.acsIpListStr!}" maxlength="500" autocomplete="off" />
+                    <div id="allowedIpListSpan" class="mt-2 mb-0" <#if !(user.useAllowedIp!false)>style=display:none;"</#if>>
+                        <input type="text" name="allowedIpListStr" id="allowedIpListStr" class="form-control form-control-solid no-space"
+                               value="${user.allowedIpListStr!}" maxlength="500" autocomplete="off" />
                         <div class="form-text text-noti"><@spring.message 'txt.req.acsip'/></div>
-                        <div id="acsIpListStr_valid_span"></div>
+                        <div id="allowedIpListStr_valid_span"></div>
                     </div>
                 </div>
             </div>

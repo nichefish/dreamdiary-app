@@ -199,7 +199,7 @@ public class LogActvtyParam
         this.requestUri = request.getServletPath();         // 작업 url
         this.httpMethod = request.getMethod();           // 접근 메소드
         this.param = request.getQueryString();       // 작업 파라미터
-        this.ipAddr = AuthUtils.getAcsIpAddr();       // 작업 IP
+        this.ipAddr = AuthUtils.getRemoteIpAddr();       // 작업 IP
     }
 
     /**

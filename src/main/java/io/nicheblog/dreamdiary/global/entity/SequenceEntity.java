@@ -28,8 +28,8 @@ public class SequenceEntity
     /** 시퀀스 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "seqId")
-    private Integer seqId;
+    @Column(name = "id")
+    private Integer id;
 
     /** 시퀀스 이름 */
     @Column(name = "seq_nm", length = 20)

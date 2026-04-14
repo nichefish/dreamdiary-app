@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * UserAcsIpDto
+ * UserAllowedIpDto
  * <pre>
  *  사용자 접속 IP Dto.
  * </pre>
@@ -15,7 +15,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserAcsIpDto {
+public class UserAllowedIpDto {
 
     /** 사용자 접속 IP 고유 ID */
     private Integer id;
@@ -24,5 +24,5 @@ public class UserAcsIpDto {
     private Integer userId;
 
     /** 접속 IP */
-    private String acsIp;
+    private String allowedIp;
 }

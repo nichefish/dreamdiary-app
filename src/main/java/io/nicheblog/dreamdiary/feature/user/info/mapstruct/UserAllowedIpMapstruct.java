@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.user.info.mapstruct;
 
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserAcsIpEntity;
-import io.nicheblog.dreamdiary.feature.user.info.model.UserAcsIpDto;
+import io.nicheblog.dreamdiary.feature.user.info.entity.UserAllowedIpEntity;
+import io.nicheblog.dreamdiary.feature.user.info.model.UserAllowedIpDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -10,7 +10,7 @@ import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 /**
- * UserAcsIpMapstruct
+ * UserAllowedIpMapstruct
  * <pre>
  *  사용자 접속 IP MapStruct 기반 Mapper 인터페이스.
  * </pre>
@@ -18,10 +18,10 @@ import org.mapstruct.factory.Mappers;
  * @author nichefish
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, })
-public interface UserAcsIpMapstruct
-        extends BaseWriteMapstruct<UserAcsIpDto, UserAcsIpEntity>, BaseMapstruct<UserAcsIpDto, UserAcsIpEntity> {
+public interface UserAllowedIpMapstruct
+        extends BaseWriteMapstruct<UserAllowedIpDto, UserAllowedIpEntity>, BaseMapstruct<UserAllowedIpDto, UserAllowedIpEntity> {
 
-    UserAcsIpMapstruct INSTANCE = Mappers.getMapper(UserAcsIpMapstruct.class);
+    UserAllowedIpMapstruct INSTANCE = Mappers.getMapper(UserAllowedIpMapstruct.class);
 
     /**
      * Entity -> Dto 변환
@@ -30,7 +30,7 @@ public interface UserAcsIpMapstruct
      * @return Dto -- 변환된 Dto 객체
      */
     @Override
-    UserAcsIpDto toDto(final UserAcsIpEntity entity) throws Exception;
+    UserAllowedIpDto toDto(final UserAllowedIpEntity entity) throws Exception;
 
     /**
      * Dto -> Entity 변환
@@ -39,7 +39,7 @@ public interface UserAcsIpMapstruct
      * @return Entity -- 변환된 Entity 객체
      */
     @Override
-    UserAcsIpEntity toEntity(final UserAcsIpDto dto) throws Exception;
+    UserAllowedIpEntity toEntity(final UserAllowedIpDto dto) throws Exception;
 
     /**
      * update Entity from Dto (Dto에서 null이 아닌 값만 Entity로 매핑)
@@ -49,5 +49,5 @@ public interface UserAcsIpMapstruct
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateFromDto(final UserAcsIpDto dto, final @MappingTarget UserAcsIpEntity entity) throws Exception;
+    void updateFromDto(final UserAllowedIpDto dto, final @MappingTarget UserAllowedIpEntity entity) throws Exception;
 }
