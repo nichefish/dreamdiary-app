@@ -24,15 +24,15 @@ public class MyRelatedContentService {
 
     private final RelatedContentService relatedContentService;
 
-    public List<RelatedContentDto> getMyListDto(final ContentType contentType, final Integer postNo) throws Exception {
-        return relatedContentService.getListDtoByRef(postNo, contentType);
+    public List<RelatedContentDto> getMyListDto(final ContentType contentType, final Integer id) throws Exception {
+        return relatedContentService.getListDtoByRef(id, contentType);
     }
 
     public RelatedContentDto saveMyRelation(final RelatedContentPostDto postDto) throws Exception {
         return relatedContentService.saveManualRelation(
-                postDto.getSrcPostNo(),
+                postDto.getSrcId(),
                 ContentType.get(postDto.getSrcContentType()),
-                postDto.getTargetPostNo(),
+                postDto.getTargetId(),
                 ContentType.get(postDto.getTargetContentType()),
                 RelationType.from(postDto.getRelationType()),
                 postDto.getReason()

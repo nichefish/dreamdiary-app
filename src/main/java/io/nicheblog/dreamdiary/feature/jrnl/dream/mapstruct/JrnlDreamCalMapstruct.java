@@ -25,7 +25,6 @@ public interface JrnlDreamCalMapstruct {
      * @return CalDto -- 변환된 달력 Dto 객체
      */
     @Named("toCalDto")
-    @Mapping(target = "id", source = "postNo")
     @Mapping(target = "start", source = "stdrdDt")
     @Mapping(target = "end", source = "stdrdDt")
     JrnlDreamCalDto toCalDto(final JrnlDreamDto dto) throws Exception;

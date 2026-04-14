@@ -32,7 +32,7 @@ public class TagEmbed
     /** 태그-컨텐츠 목록 */
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(column = @JoinColumn(name = "ref_post_no", referencedColumnName = "post_no", insertable = false, updatable = false)),
+            @JoinColumnOrFormula(column = @JoinColumn(name = "ref_id", referencedColumnName = "id", insertable = false, updatable = false)),
             @JoinColumnOrFormula(column = @JoinColumn(name = "ref_content_type", referencedColumnName = "content_type", insertable = false, updatable = false)),
     })
     @Fetch(FetchMode.SELECT)

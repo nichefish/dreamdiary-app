@@ -220,7 +220,7 @@ public class JrnlDayService
         final String regstrId = AuthUtils.requireUsername(username);
         final JrnlDayEntity existingEntity = repository.findByJrnlDt(jrnlDt, regstrId);
 
-        return existingEntity.getPostNo();
+        return existingEntity.getId();
     }
 
     /**
@@ -325,7 +325,7 @@ public class JrnlDayService
      */
     @Transactional(readOnly = true)
     public JrnlDayDto getDeletedDtlDto(final Integer key) throws Exception {
-        final JrnlDayDto deleted = jrnlDayMapper.getDeletedByPostNo(key);
+        final JrnlDayDto deleted = jrnlDayMapper.getDeletedById(key);
         if (deleted == null) return null;
         if (!AuthUtils.isRegstr(deleted.getRegstrId())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");

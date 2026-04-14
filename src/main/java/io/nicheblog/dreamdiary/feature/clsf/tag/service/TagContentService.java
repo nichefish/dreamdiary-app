@@ -66,14 +66,14 @@ public class TagContentService
     /**
      * 특정 게시물에 대한 콘텐츠 태그 목록을 조회합니다.
      *
-     * @param postNo 글 번호
+     * @param id 글 번호
      * @param contentType 컨텐츠 타입
      * @return {@link List} -- 태그 목록
      */
-    @Cacheable(value = "tagContentEntityListByRef", key = "#postNo + '_' + #contentType.key")
-    public List<TagContentEntity> getListEntityByRefWithCache(final Integer postNo, final ContentType contentType) throws Exception {
+    @Cacheable(value = "tagContentEntityListByRef", key = "#id + '_' + #contentType.key")
+    public List<TagContentEntity> getListEntityByRefWithCache(final Integer id, final ContentType contentType) throws Exception {
         final TagContentParam param = TagContentParam.builder()
-                .refPostNo(postNo)
+                .refId(id)
                 .refContentType(contentType.key)
                 .build();
         return this.getSelf().getListEntityTag(param);
@@ -119,7 +119,7 @@ public class TagContentService
      */
     @Transactional(readOnly = true)
     public List<TagDto> getTagStrListByClsfKey(final BaseClsfKey clsfKey) throws Exception {
-        final List<TagContentEntity> entityList = this.getSelf().getListEntityByRefWithCache(clsfKey.getPostNo(), clsfKey.getContentTypeEnum());
+        final List<TagContentEntity> entityList = this.getSelf().getListEntityByRefWithCache(clsfKey.getId(), clsfKey.getContentTypeEnum());
         if (CollectionUtils.isEmpty(entityList)) return new ArrayList<>();
 
         return entityList.stream()
@@ -138,7 +138,7 @@ public class TagContentService
         final String contentType = clsfKey.getContentType();
         obsoleteTagList.forEach(tag -> {
             final TagContentParam param = TagContentParam.builder()
-                    .refPostNo(clsfKey.getPostNo())
+                    .refId(clsfKey.getId())
                     .refContentType(clsfKey.getContentType())
                     .tagNm(tag.getTagNm())
                     .ctgr(tag.getCtgr())

@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * BaseClsfKey
  * <pre>
- *  (공통/상속) 게시판 복합키 Entity. (postNo + contentType)
+ *  (공통/상속) 게시판 복합키 Entity. (id + contentType)
  * </pre>
  *
  * @author nichefish
@@ -23,7 +23,7 @@ public class BaseClsfKey
         implements Serializable {
 
     /** 글 번호 */
-    protected Integer postNo;
+    protected Integer id;
 
     /** 컨텐츠 타입 */
     protected String contentType;
@@ -32,11 +32,11 @@ public class BaseClsfKey
 
     /**
      * 생성자.
-     * @param postNo 글 번호
+     * @param id 글 번호
      * @param type 콘텐츠 타입
      */
-    public BaseClsfKey(final Integer postNo, final ContentType type) {
-        this.postNo = postNo;
+    public BaseClsfKey(final Integer id, final ContentType type) {
+        this.id = id;
         this.contentType = type.key;
     }
 

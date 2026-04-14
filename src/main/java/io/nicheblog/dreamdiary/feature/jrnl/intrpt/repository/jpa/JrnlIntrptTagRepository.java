@@ -35,8 +35,8 @@ public interface JrnlIntrptTagRepository
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     @Query("SELECT new io.nicheblog.dreamdiary.feature.clsf.tag.model.TagContentCntDto(ct.tagId, COUNT(ct.id)) " +
             "FROM JrnlIntrptTagContentEntity ct " +
-            "INNER JOIN FETCH JrnlIntrptEntity intrpt ON ct.refPostNo = intrpt.postNo " +
-            "INNER JOIN FETCH JrnlDayEntity day ON intrpt.jrnlDream.jrnlDayNo = day.postNo " +
+            "INNER JOIN FETCH JrnlIntrptEntity intrpt ON ct.refId = intrpt.id " +
+            "INNER JOIN FETCH JrnlDayEntity day ON intrpt.jrnlDream.jrnlDayId = day.id " +
             "WHERE ct.regstrId = :#{#param.regstrId} " +
             " AND (:#{#param.yy} IS NULL OR day.yy = :#{#param.yy} OR :#{#param.yy} = 9999) " +
             " AND (:#{#param.mnth} IS NULL OR day.mnth = :#{#param.mnth} OR :#{#param.mnth} = 99)" +

@@ -36,7 +36,7 @@ public class FlsysMetaDto
 
     /** 글 번호 */
     @Positive
-    private Integer postNo;
+    private Integer id;
 
     /** 파일절대경로 */
     private String filePath;
@@ -101,7 +101,7 @@ public class FlsysMetaDto
 
     @Override
     public Integer getKey() {
-        return this.postNo;
+        return this.id;
     }
 
     /** 위임 :: 댓글 정보 모듈 */

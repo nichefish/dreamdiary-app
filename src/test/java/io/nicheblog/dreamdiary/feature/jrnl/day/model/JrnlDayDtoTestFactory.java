@@ -31,7 +31,7 @@ public class JrnlDayDtoTestFactory {
      */
     public static JrnlDayDto createWithKey(final Integer key) throws Exception {
         return JrnlDayDto.builder()
-                .postNo(key)
+                .id(key)
                 .contentType(ContentType.JRNL_DAY.key)
                 .build();
     }
@@ -41,7 +41,7 @@ public class JrnlDayDtoTestFactory {
      */
     public static JrnlDayDto createWithJrnlDt(final String jrnlDtStr) throws Exception {
         return JrnlDayDto.builder()
-                .postNo(0)
+                .id(0)
                 .contentType(ContentType.JRNL_DAY.key)
                 .jrnlDt(jrnlDtStr)
                 .build();

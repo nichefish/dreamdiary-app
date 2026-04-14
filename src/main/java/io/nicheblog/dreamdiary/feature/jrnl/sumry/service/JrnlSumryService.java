@@ -205,7 +205,7 @@ public class JrnlSumryService
         // 관련 캐시 제거
         jrnlCacheEvictWorker.evictAfterCommit(
                 JrnlCacheEvictParam.builder()
-                        .postNo(key)
+                        .id(key)
                         .yy(retrievedEntity.getYy())
                         .build(),
                 ContentType.JRNL_SUMRY

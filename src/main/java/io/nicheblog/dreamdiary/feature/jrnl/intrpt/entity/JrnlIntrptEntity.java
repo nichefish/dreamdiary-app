@@ -38,7 +38,7 @@ import javax.persistence.*;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE jrnl_intrpt SET del_yn = 'Y' WHERE post_no = ?")
+@SQLDelete(sql = "UPDATE jrnl_intrpt SET del_yn = 'Y' WHERE id = ?")
 public class JrnlIntrptEntity
         extends BaseClsfEntity
         implements AtchFileEmbedModule, CommentEmbedModule, TagEmbedModule, StateEmbedModule, HistoryEmbedModule {
@@ -46,9 +46,9 @@ public class JrnlIntrptEntity
     /** 저널 해석 고유 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "post_no")
+    @Column(name = "id")
     @Comment("저널 해석 고유 번호")
-    private Integer postNo;
+    private Integer id;
 
     /** 컨텐츠 타입 */
     @Builder.Default
@@ -68,7 +68,7 @@ public class JrnlIntrptEntity
 
     /** 저널 꿈 정보 */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "jrnl_dream_no", nullable = false)
+    @JoinColumn(name = "jrnl_dream_id", nullable = false)
     @Comment("저널 꿈 정보")
     private JrnlDreamEntity jrnlDream;
 

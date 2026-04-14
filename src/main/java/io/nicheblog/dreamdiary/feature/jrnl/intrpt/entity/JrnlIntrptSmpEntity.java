@@ -27,7 +27,7 @@ import javax.persistence.Table;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE jrnl_intrpt SET del_yn = 'Y' WHERE post_no = ?")
+@SQLDelete(sql = "UPDATE jrnl_intrpt SET del_yn = 'Y' WHERE id = ?")
 public class JrnlIntrptSmpEntity {
 
     /** 필수: 컨텐츠 타입 */
@@ -37,9 +37,9 @@ public class JrnlIntrptSmpEntity {
     /** 저널 해석 고유 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "post_no")
+    @Column(name = "id")
     @Comment("저널 해석 고유 번호")
-    private Integer postNo;
+    private Integer id;
 
     /** 컨텐츠 타입 */
     @Builder.Default
@@ -54,13 +54,13 @@ public class JrnlIntrptSmpEntity {
     private Integer idx;
 
     /** 저널 꿈 번호  */
-    @Column(name = "jrnl_dream_no")
+    @Column(name = "jrnl_dream_id")
     @Comment("저널 꿈 번호")
-    private Integer jrnlDreamNo;
+    private Integer jrnlDreamId;
 
     /** 저널 꿈 정보 */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "jrnl_dream_no", referencedColumnName = "post_no", insertable = false, updatable = false)
+    @JoinColumn(name = "jrnl_dream_id", referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("저널 꿈 정보")

@@ -38,7 +38,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE jrnl_day SET del_yn = 'Y' WHERE post_no = ?")
+@SQLDelete(sql = "UPDATE jrnl_day SET del_yn = 'Y' WHERE id = ?")
 @NamedEntityGraph(
     name = "JrnlDayEntity.withTags",
     attributeNodes = {
@@ -58,9 +58,9 @@ public class JrnlDayEntity
     /** 저널 일자 고유 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "post_no")
+    @Column(name = "id")
     @Comment("저널 일자 고유 ID")
-    private Integer postNo;
+    private Integer id;
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -114,7 +114,7 @@ public class JrnlDayEntity
 
     /** 저널 챕터 목록 */
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "jrnl_day_no", referencedColumnName = "post_no", insertable = false, updatable = false)
+    @JoinColumn(name = "jrnl_day_id", referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(FetchMode.SUBSELECT)
     @BatchSize(size = 10)
     @OrderBy("idx ASC")
@@ -124,7 +124,7 @@ public class JrnlDayEntity
 
     /** 저널 꿈 목록 */
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "jrnl_day_no", referencedColumnName = "post_no", insertable = false, updatable = false)
+    @JoinColumn(name = "jrnl_day_id", referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(FetchMode.SUBSELECT)
     @BatchSize(size = 10)
     @Where(clause = "else_dream_yn = 'N'")
@@ -135,7 +135,7 @@ public class JrnlDayEntity
 
     /** 저널 꿈 (타인) 목록 */
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "jrnl_day_no", referencedColumnName = "post_no", insertable = false, updatable = false)
+    @JoinColumn(name = "jrnl_day_id", referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(FetchMode.SUBSELECT)
     @BatchSize(size = 10)
     @Where(clause = "else_dream_yn = 'Y'")

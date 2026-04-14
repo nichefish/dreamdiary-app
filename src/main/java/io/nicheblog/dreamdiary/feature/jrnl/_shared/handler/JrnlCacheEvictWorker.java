@@ -91,7 +91,7 @@ public class JrnlCacheEvictWorker {
 
         TransactionHookUtils.runAfterCommitOrNow(
                 () -> this.evict(param, contentType),
-                e -> log.error("Journal cache invalidation failed [{}:{}]: {}", contentType, param.getPostNo(), e.getMessage(), e)
+                e -> log.error("Journal cache invalidation failed [{}:{}]: {}", contentType, param.getId(), e.getMessage(), e)
         );
     }
 

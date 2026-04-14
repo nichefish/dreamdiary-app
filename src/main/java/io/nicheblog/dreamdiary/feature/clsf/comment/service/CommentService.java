@@ -122,6 +122,6 @@ public class CommentService
      */
     private void evictRelatedCache(final CommentDto dto) throws Exception {
         final ContentType refContentType = ContentType.get(dto.getRefContentType());
-        commentCacheInvalidateWorker.invalidateAfterCommit(dto.getRefPostNo(), refContentType);
+        commentCacheInvalidateWorker.invalidateAfterCommit(dto.getRefId(), refContentType);
     }
 }

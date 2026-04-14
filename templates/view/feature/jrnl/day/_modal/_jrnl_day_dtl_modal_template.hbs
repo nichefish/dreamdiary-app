@@ -4,7 +4,7 @@
  -->
 
 <script type="text/x-handlebars-template" id="jrnl_day_dtl_modal_template">
-    <input type="hidden" name="postNo" value="{{postNo}}">
+    <input type="hidden" name="id" value="{{id}}">
 
     <#--begin::Row-->
     <div class="row row-cols-lg-2 mb-3 d-flex flex-column">
@@ -35,7 +35,7 @@
                 </span>
             </div>
             {{#each jrnlDiaryList}}
-                <div class="jrnl-diary-item" data-id="{{postNo}}">
+                <div class="jrnl-diary-item" data-id="{{id}}">
                     <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
                         <div># {{idx}}</div>
                     </div>

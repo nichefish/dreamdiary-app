@@ -80,13 +80,13 @@ public class JrnlIntrptRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlIntrptRegAjax(
-            final @PathVariable(value = "postNo", required = false) Integer postNo,
+            final @PathVariable(value = "id", required = false) Integer id,
             final @Valid JrnlIntrptDto jrnlIntrpt,
             final MultipartHttpServletRequest request
     ) throws Exception {
 
-        final boolean isMdf = postNo != null;
-        if (isMdf) jrnlIntrpt.setPostNo(postNo);
+        final boolean isMdf = id != null;
+        if (isMdf) jrnlIntrpt.setId(id);
 
         final ServiceResponse result = isMdf ? jrnlIntrptService.modify(jrnlIntrpt, request) : jrnlIntrptService.regist(jrnlIntrpt, request);
         final boolean isSuccess = result.getRslt();
@@ -99,18 +99,18 @@ public class JrnlIntrptRestController
      * 저널 해석 상세 조회 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param key 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_INTRPT})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlIntrptDtlAjax(
-            final @PathVariable("postNo") Integer key
+            final @PathVariable("id") Integer id
     ) throws Exception {
 
-        final JrnlIntrptDto retrievedDto = myJrnlIntrptService.getMyDtlDtoWithCache(key);
-        final boolean isSuccess = (retrievedDto.getPostNo() != null);
+        final JrnlIntrptDto retrievedDto = myJrnlIntrptService.getMyDtlDtoWithCache(id);
+        final boolean isSuccess = (retrievedDto.getId() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
@@ -120,17 +120,17 @@ public class JrnlIntrptRestController
      * 저널 해석 삭제 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param postNo 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @DeleteMapping(value = {Url.JRNL_INTRPT})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlIntrptDelAjax(
-            final @PathVariable("postNo") Integer postNo
+            final @PathVariable("id") Integer id
     ) throws Exception {
 
-        final ServiceResponse result = jrnlIntrptService.delete(postNo);
+        final ServiceResponse result = jrnlIntrptService.delete(id);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 

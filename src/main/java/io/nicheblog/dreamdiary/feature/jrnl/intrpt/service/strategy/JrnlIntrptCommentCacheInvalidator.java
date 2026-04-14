@@ -39,12 +39,12 @@ public class JrnlIntrptCommentCacheInvalidator
     /**
      * 주어진 게시글에 대한 캐시를 무효화한다.
      *
-     * @param refPostNo 참조 대상 게시글 번호
+     * @param refId 참조 대상 게시글 번호
      * @throws Exception 캐시 무효화 과정에서 발생할 수 있는 예외
      */
     @Override
-    public void invalidate(final Integer refPostNo) throws Exception {
-        final JrnlIntrptDto jrnlIntrptDto = jrnlIntrptService.getDtlDto(refPostNo);
+    public void invalidate(final Integer refId) throws Exception {
+        final JrnlIntrptDto jrnlIntrptDto = jrnlIntrptService.getDtlDto(refId);
         final JrnlCacheEvictParam param = JrnlCacheEvictParam.of(jrnlIntrptDto);
         jrnlCacheEvictWorker.evictAfterCommit(param, ContentType.JRNL_INTRPT);
     }

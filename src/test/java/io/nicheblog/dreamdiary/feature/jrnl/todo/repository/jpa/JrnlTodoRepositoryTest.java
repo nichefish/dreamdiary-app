@@ -58,13 +58,13 @@ class JrnlTodoRepositoryTest {
 
         // When::
         final JrnlTodoEntity registered = jrnlTodoRepository.save(jrnlTodoEntity);
-        final Integer key = registered.getPostNo();
+        final Integer key = registered.getId();
         final JrnlTodoEntity retrieved = jrnlTodoRepository.findById(key)
                 .orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "Could not load saved entity.");
-        assertNotNull(retrieved.getPostNo(), "Saved entity key is null.");
+        assertNotNull(retrieved.getId(), "Saved entity key is null.");
         assertNotNull(retrieved.getRegDt(), "regDt audit was not set.");
         assertNotNull(retrieved.getRegstrId(), "regstrId audit was not set.");
         assertEquals(TestConstant.TEST_AUDITOR, retrieved.getRegstrId(), "Saved regstrId is unexpected.");
@@ -77,7 +77,7 @@ class JrnlTodoRepositoryTest {
     void testModify() throws Exception {
         // Given::
         final JrnlTodoEntity registered = jrnlTodoRepository.save(jrnlTodoEntity);
-        final Integer key = registered.getPostNo();
+        final Integer key = registered.getId();
 
         // When::
         final JrnlTodoEntity toModify = jrnlTodoRepository.findById(key)
@@ -87,7 +87,7 @@ class JrnlTodoRepositoryTest {
 
         // Then::
         assertNotNull(modified, "Could not load modified entity.");
-        assertNotNull(modified.getPostNo(), "Modified entity key is null.");
+        assertNotNull(modified.getId(), "Modified entity key is null.");
         assertNotNull(modified.getMdfDt(), "mdfDt audit was not set.");
         assertNotNull(modified.getMdfusrId(), "mdfusrId audit was not set.");
         assertEquals(TestConstant.TEST_AUDITOR, modified.getMdfusrId(), "Modified mdfusrId is unexpected.");
@@ -101,7 +101,7 @@ class JrnlTodoRepositoryTest {
     void testDelete() throws Exception {
         // Given::
         final JrnlTodoEntity registered = jrnlTodoRepository.save(jrnlTodoEntity);
-        final Integer key = registered.getPostNo();
+        final Integer key = registered.getId();
 
         // When::
         final JrnlTodoEntity toDelete = jrnlTodoRepository.findById(key)

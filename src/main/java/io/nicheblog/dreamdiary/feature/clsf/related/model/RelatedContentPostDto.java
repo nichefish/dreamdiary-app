@@ -27,7 +27,7 @@ public class RelatedContentPostDto {
 
     @NotNull
     @Positive
-    private Integer srcPostNo;
+    private Integer srcId;
 
     @NotNull
     @Builder.Default
@@ -35,7 +35,7 @@ public class RelatedContentPostDto {
 
     @NotNull
     @Positive
-    private Integer targetPostNo;
+    private Integer targetId;
 
     @NotNull
     @Builder.Default
@@ -48,4 +48,20 @@ public class RelatedContentPostDto {
 
     @Size(max = 255)
     private String reason;
+
+    public Integer getSrcId() {
+        return this.srcId;
+    }
+
+    public void setSrcId(final Integer srcId) {
+        this.srcId = srcId;
+    }
+
+    public Integer getTargetId() {
+        return this.targetId;
+    }
+
+    public void setTargetId(final Integer targetId) {
+        this.targetId = targetId;
+    }
 }

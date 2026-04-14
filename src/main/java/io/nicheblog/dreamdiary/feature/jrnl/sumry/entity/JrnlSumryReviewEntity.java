@@ -32,7 +32,7 @@ import javax.persistence.Table;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE jrnl_sumry_review SET del_yn = 'Y' WHERE post_no = ?")
+@SQLDelete(sql = "UPDATE jrnl_sumry_review SET del_yn = 'Y' WHERE id = ?")
 public class JrnlSumryReviewEntity
         extends BaseClsfEntity
         implements CommentEmbedModule, TagEmbedModule, AtchFileEmbedModule {
@@ -40,9 +40,9 @@ public class JrnlSumryReviewEntity
     /** 저널 꿈 고유 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "post_no")
+    @Column(name = "id")
     @Comment("저널 결산 리뷰 고유 번호")
-    private Integer postNo;
+    private Integer id;
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -62,13 +62,13 @@ public class JrnlSumryReviewEntity
     /* ----- */
 
     /** 저널 결산 번호  */
-    @Column(name = "jrnl_sumry_no")
+    @Column(name = "jrnl_sumry_id")
     @Comment("저널 결산 번호")
-    private Integer jrnlSumryNo;
+    private Integer jrnlSumryId;
 
     /** 저널 결산 정보 */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "jrnl_sumry_no", referencedColumnName = "post_no", insertable = false, updatable = false)
+    @JoinColumn(name = "jrnl_sumry_id", referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("저널 일자 정보")

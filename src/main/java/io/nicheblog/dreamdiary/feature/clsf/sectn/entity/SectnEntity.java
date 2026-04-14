@@ -34,7 +34,7 @@ import javax.persistence.*;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE sectn SET del_yn = 'Y' WHERE post_no = ?")
+@SQLDelete(sql = "UPDATE sectn SET del_yn = 'Y' WHERE id = ?")
 public class SectnEntity
         extends BaseClsfEntity
         implements Usable, AtchFileEmbedModule, CommentEmbedModule, TagEmbedModule {
@@ -46,9 +46,9 @@ public class SectnEntity
     /** 내용 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "post_no")
+    @Column(name = "id")
     @Comment("내용 번호 (key)")
-    private Integer postNo;
+    private Integer id;
 
     /** 컨텐츠 타입 */
     @Builder.Default
@@ -101,9 +101,9 @@ public class SectnEntity
     /* ----- */
 
     /** 원글 번호 */
-    @Column(name = "ref_post_no")
+    @Column(name = "ref_id")
     @Comment("원글 번호")
-    private Integer refPostNo;
+    private Integer refId;
 
     /** 원글 컨텐츠 타입 */
     @Column(name = "ref_content_type")

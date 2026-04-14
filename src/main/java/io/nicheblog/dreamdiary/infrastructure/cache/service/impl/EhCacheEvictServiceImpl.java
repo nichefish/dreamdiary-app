@@ -45,15 +45,15 @@ public class EhCacheEvictServiceImpl
      * 관련 캐시 삭제
      * 
      * @param refContentType - 캐시를 삭제할 컨텐츠 타입
-     * @param refPostNo - 캐시를 삭제할 게시글 번호
+     * @param refId - 캐시를 삭제할 게시글 번호
      */
     @Override
-    public void evictClsfCache(final String refContentType, final Integer refPostNo) throws Exception {
+    public void evictClsfCache(final String refContentType, final Integer refId) throws Exception {
         final CacheEvictor<Integer> evictor = evictorMap.get(refContentType);
         if (evictor == null) {
             log.warn("No CacheEvictor found for ContentType: {}", refContentType);
             return;
         }
-        evictor.evict(refPostNo);
+        evictor.evict(refId);
     }
 }

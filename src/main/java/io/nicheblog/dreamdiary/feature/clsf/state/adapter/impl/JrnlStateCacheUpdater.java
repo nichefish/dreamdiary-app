@@ -116,7 +116,7 @@ public class JrnlStateCacheUpdater
         final Map<Integer, JrnlState> map = (Map<Integer, JrnlState>) EhCacheUtils.getObjectFromCache(cacheMapNm, cacheKey);
         if (map == null) return;
 
-        final JrnlState state = map.get(toggle.getPostNo());
+        final JrnlState state = map.get(toggle.getId());
         if (state == null) return;
 
         JrnlStateApplier.apply(state, toggle.getStateCd(), isEnabled);      // 같은 객체 수정. put 필요없음.

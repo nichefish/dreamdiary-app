@@ -62,7 +62,7 @@ public class JrnlSumryDto
 
     @Override
     public Integer getKey() {
-        return this.postNo;
+        return this.id;
     }
 
     /** 위임 :: 단락 정보 모듈 */

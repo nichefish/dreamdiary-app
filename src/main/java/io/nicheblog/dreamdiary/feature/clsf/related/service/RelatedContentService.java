@@ -52,16 +52,16 @@ public class RelatedContentService {
 
     @Transactional
     public RelatedContentDto saveManualRelation(
-            final Integer firstPostNo,
+            final Integer firstId,
             final ContentType firstContentType,
-            final Integer secondPostNo,
+            final Integer secondId,
             final ContentType secondContentType,
             final RelationType relationType,
             final String reason
     ) throws Exception {
         return this.saveRelation(
-                new BaseClsfKey(firstPostNo, firstContentType),
-                new BaseClsfKey(secondPostNo, secondContentType),
+                new BaseClsfKey(firstId, firstContentType),
+                new BaseClsfKey(secondId, secondContentType),
                 relationType,
                 StringUtils.trimToNull(reason),
                 RelationOriginType.MANUAL
@@ -88,9 +88,9 @@ public class RelatedContentService {
         final BaseClsfKey rightKey = normalizedKeys[1];
 
         final RelatedContentEntity entity = repository.findAnyByPair(
-                        leftKey.getPostNo(),
+                        leftKey.getId(),
                         leftKey.getContentType(),
-                        rightKey.getPostNo(),
+                        rightKey.getId(),
                         rightKey.getContentType(),
                         regstrId
                 )
@@ -108,8 +108,8 @@ public class RelatedContentService {
     }
 
     @Transactional(readOnly = true)
-    public List<RelatedContentDto> getListDtoByRef(final Integer postNo, final ContentType contentType) throws Exception {
-        return this.getListDtoByRef(new BaseClsfKey(postNo, contentType));
+    public List<RelatedContentDto> getListDtoByRef(final Integer id, final ContentType contentType) throws Exception {
+        return this.getListDtoByRef(new BaseClsfKey(id, contentType));
     }
 
     @Transactional(readOnly = true)
@@ -118,7 +118,7 @@ public class RelatedContentService {
         this.requireOwnedContent(refKey);
 
         final String regstrId = AuthUtils.requireLgnUsername();
-        final List<RelatedContentEntity> entityList = repository.findAllByRef(refKey.getPostNo(), refKey.getContentType(), regstrId);
+        final List<RelatedContentEntity> entityList = repository.findAllByRef(refKey.getId(), refKey.getContentType(), regstrId);
 
         return entityList.stream()
                 .map(entity -> {
@@ -132,8 +132,8 @@ public class RelatedContentService {
     }
 
     @Transactional
-    public void deleteAllByRef(final Integer postNo, final ContentType contentType) throws Exception {
-        this.deleteAllByRef(new BaseClsfKey(postNo, contentType));
+    public void deleteAllByRef(final Integer id, final ContentType contentType) throws Exception {
+        this.deleteAllByRef(new BaseClsfKey(id, contentType));
     }
 
     @Transactional
@@ -142,7 +142,7 @@ public class RelatedContentService {
         this.requireOwnedContent(refKey);
 
         final String regstrId = AuthUtils.requireLgnUsername();
-        repository.softDeleteAllByRef(refKey.getPostNo(), refKey.getContentType(), regstrId);
+        repository.softDeleteAllByRef(refKey.getId(), refKey.getContentType(), regstrId);
     }
 
     @Transactional
@@ -154,7 +154,7 @@ public class RelatedContentService {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
 
-        repository.softDeleteAllByRef(refKey.getPostNo(), refKey.getContentType(), requiredRegstrId);
+        repository.softDeleteAllByRef(refKey.getId(), refKey.getContentType(), requiredRegstrId);
     }
 
     @Transactional
@@ -173,25 +173,25 @@ public class RelatedContentService {
     private RelatedContentDto toDto(final RelatedContentEntity entity, final BaseClsfKey refKey) throws Exception {
         final RelatedContentDto dto = mapstruct.toDto(entity);
         final BaseClsfKey targetKey = this.resolveTargetKey(entity, refKey);
-        dto.setTargetPostNo(targetKey.getPostNo());
+        dto.setTargetId(targetKey.getId());
         dto.setTargetContentType(targetKey.getContentType());
         dto.setTargetTitle(this.resolveTitle(targetKey));
         return dto;
     }
 
     private BaseClsfKey resolveTargetKey(final RelatedContentEntity entity, final BaseClsfKey refKey) {
-        final boolean isLeft = Objects.equals(entity.getLeftPostNo(), refKey.getPostNo())
+        final boolean isLeft = Objects.equals(entity.getLeftId(), refKey.getId())
                 && Objects.equals(entity.getLeftContentType(), refKey.getContentType());
 
-        if (isLeft) return new BaseClsfKey(entity.getRightPostNo(), entity.getRightContentType());
-        return new BaseClsfKey(entity.getLeftPostNo(), entity.getLeftContentType());
+        if (isLeft) return new BaseClsfKey(entity.getRightId(), entity.getRightContentType());
+        return new BaseClsfKey(entity.getLeftId(), entity.getLeftContentType());
     }
 
     private void validateWritablePair(final BaseClsfKey firstKey, final BaseClsfKey secondKey) {
         this.validateReadableKey(firstKey);
         this.validateReadableKey(secondKey);
 
-        if (Objects.equals(firstKey.getPostNo(), secondKey.getPostNo())
+        if (Objects.equals(firstKey.getId(), secondKey.getId())
                 && Objects.equals(firstKey.getContentType(), secondKey.getContentType())) {
             throw new IllegalArgumentException("self relation is not allowed.");
         }
@@ -204,7 +204,7 @@ public class RelatedContentService {
     }
 
     private void validateReadableKey(final BaseClsfKey refKey) {
-        if (refKey == null || refKey.getPostNo() == null || StringUtils.isBlank(refKey.getContentType())) {
+        if (refKey == null || refKey.getId() == null || StringUtils.isBlank(refKey.getContentType())) {
             throw new IllegalArgumentException("related content key is required.");
         }
 
@@ -227,10 +227,10 @@ public class RelatedContentService {
 
     private String resolveRegstrId(final BaseClsfKey refKey) {
         return switch (refKey.getContentTypeEnum()) {
-            case JRNL_DIARY -> jrnlDiaryRepository.findById(refKey.getPostNo())
+            case JRNL_DIARY -> jrnlDiaryRepository.findById(refKey.getId())
                     .map(JrnlDiaryEntity::getRegstrId)
                     .orElse(null);
-            case JRNL_DREAM -> jrnlDreamRepository.findById(refKey.getPostNo())
+            case JRNL_DREAM -> jrnlDreamRepository.findById(refKey.getId())
                     .map(JrnlDreamEntity::getRegstrId)
                     .orElse(null);
             default -> null;
@@ -239,10 +239,10 @@ public class RelatedContentService {
 
     private String resolveTitle(final BaseClsfKey refKey) {
         return switch (refKey.getContentTypeEnum()) {
-            case JRNL_DIARY -> jrnlDiaryRepository.findById(refKey.getPostNo())
+            case JRNL_DIARY -> jrnlDiaryRepository.findById(refKey.getId())
                     .map(JrnlDiaryEntity::getTitle)
                     .orElse(null);
-            case JRNL_DREAM -> jrnlDreamRepository.findById(refKey.getPostNo())
+            case JRNL_DREAM -> jrnlDreamRepository.findById(refKey.getId())
                     .map(JrnlDreamEntity::getTitle)
                     .orElse(null);
             default -> null;
@@ -259,6 +259,6 @@ public class RelatedContentService {
     private int compareKey(final BaseClsfKey firstKey, final BaseClsfKey secondKey) {
         final int contentTypeResult = firstKey.getContentType().compareTo(secondKey.getContentType());
         if (contentTypeResult != 0) return contentTypeResult;
-        return Integer.compare(firstKey.getPostNo(), secondKey.getPostNo());
+        return Integer.compare(firstKey.getId(), secondKey.getId());
     }
 }

@@ -142,7 +142,7 @@ public class SchdulDto
 
     @Override
     public Integer getKey() {
-        return this.postNo;
+        return this.id;
     }
 
     /** 위임 :: 댓글 정보 모듈 */

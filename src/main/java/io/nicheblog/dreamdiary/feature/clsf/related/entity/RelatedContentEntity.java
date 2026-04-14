@@ -38,17 +38,17 @@ public class RelatedContentEntity
     @Comment("관련글 ID")
     private Integer id;
 
-    @Column(name = "left_post_no", nullable = false)
+    @Column(name = "left_id", nullable = false)
     @Comment("좌측 글 번호")
-    private Integer leftPostNo;
+    private Integer leftId;
 
     @Column(name = "left_content_type", length = 30, nullable = false)
     @Comment("좌측 컨텐츠 타입")
     private String leftContentType;
 
-    @Column(name = "right_post_no", nullable = false)
+    @Column(name = "right_id", nullable = false)
     @Comment("우측 글 번호")
-    private Integer rightPostNo;
+    private Integer rightId;
 
     @Column(name = "right_content_type", length = 30, nullable = false)
     @Comment("우측 컨텐츠 타입")
@@ -75,9 +75,9 @@ public class RelatedContentEntity
             final String reason,
             final RelationOriginType originType
     ) {
-        this.leftPostNo = leftKey.getPostNo();
+        this.leftId = leftKey.getId();
         this.leftContentType = leftKey.getContentType();
-        this.rightPostNo = rightKey.getPostNo();
+        this.rightId = rightKey.getId();
         this.rightContentType = rightKey.getContentType();
         this.relationType = relationType != null ? relationType.key : RelationType.REFERENCE.key;
         this.reason = reason;

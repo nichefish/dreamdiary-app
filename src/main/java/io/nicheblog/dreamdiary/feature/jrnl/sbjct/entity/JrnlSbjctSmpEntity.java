@@ -28,7 +28,7 @@ import javax.persistence.*;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE jrnl_sbjct SET del_yn = 'Y' WHERE post_no = ?")
+@SQLDelete(sql = "UPDATE jrnl_sbjct SET del_yn = 'Y' WHERE id = ?")
 public class JrnlSbjctSmpEntity
         extends BaseClsfEntity {
 
@@ -39,9 +39,9 @@ public class JrnlSbjctSmpEntity
     /** 저널 주제 고유 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "post_no")
+    @Column(name = "id")
     @Comment("저널 주제 고유 번호")
-    private Integer postNo;
+    private Integer id;
 
     /** 컨텐츠 타입 */
     @Builder.Default

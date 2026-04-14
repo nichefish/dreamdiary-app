@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE schdul SET del_yn = 'Y' WHERE post_no = ?")
+@SQLDelete(sql = "UPDATE schdul SET del_yn = 'Y' WHERE id = ?")
 public class SchdulEntity
         extends BaseClsfEntity
         implements CommentEmbedModule, TagEmbedModule {
@@ -63,9 +63,9 @@ public class SchdulEntity
     /** 글 번호 */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "post_no")
+    @Column(name = "id")
     @Comment("공지사항 번호")
-    private Integer postNo;
+    private Integer id;
 
     /** 컨텐츠 타입 */
     @Builder.Default
@@ -140,7 +140,7 @@ public class SchdulEntity
 
     /** 참여자 정보 */
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "schdul_id", referencedColumnName = "post_no")
+    @JoinColumn(name = "schdul_id", referencedColumnName = "id")
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 10)
     @NotFound(action = NotFoundAction.IGNORE)

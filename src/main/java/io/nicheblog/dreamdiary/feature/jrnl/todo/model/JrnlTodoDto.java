@@ -102,7 +102,7 @@ public class JrnlTodoDto
 
     @Override
     public Integer getKey() {
-        return this.postNo;
+        return this.id;
     }
 
     /** 위임 :: 태그 정보 모듈 */

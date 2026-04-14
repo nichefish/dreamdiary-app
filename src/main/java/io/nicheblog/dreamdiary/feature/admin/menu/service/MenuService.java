@@ -188,12 +188,12 @@ public class MenuService
     /**
      * 상태를 설정한다.
      *
-     * @param postNo 대상 게시물 PK
+     * @param id 대상 게시물 PK
      * @param patchDto 상태 Dto
      * @return collapsedYn 반영 성공 여부를 담은 ServiceResponse
      */
     @Transactional
-    public ServiceResponse patch(final Integer postNo, final MenuPatchDto patchDto) throws Exception {
+    public ServiceResponse patch(final Integer id, final MenuPatchDto patchDto) throws Exception {
         if (StringUtils.isEmpty(patchDto.getUseYn())) {
             return ServiceResponse.builder()
                     .rslt(false)
@@ -201,7 +201,7 @@ public class MenuService
                     .build();
         }
 
-        return this.getSelf().setUse(postNo, patchDto.getUseYn());
+        return this.getSelf().setUse(id, patchDto.getUseYn());
     }
     
     /**

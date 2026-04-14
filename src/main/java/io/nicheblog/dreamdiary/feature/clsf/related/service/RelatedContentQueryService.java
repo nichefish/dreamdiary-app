@@ -42,19 +42,19 @@ public class RelatedContentQueryService {
         final Map<String, BaseClsfKey> refKeyMap = this.toRefKeyMap(refKeyList);
         if (refKeyMap.isEmpty()) return Map.of();
 
-        final Set<Integer> postNoSet = new LinkedHashSet<>();
-        refKeyMap.values().forEach(refKey -> postNoSet.add(refKey.getPostNo()));
-        if (postNoSet.isEmpty()) return Map.of();
+        final Set<Integer> idSet = new LinkedHashSet<>();
+        refKeyMap.values().forEach(refKey -> idSet.add(refKey.getId()));
+        if (idSet.isEmpty()) return Map.of();
 
-        final List<RelatedContentEntity> entityList = relatedContentRepository.findAllByAnyRefPostNoIn(postNoSet, resolvedUsername);
+        final List<RelatedContentEntity> entityList = relatedContentRepository.findAllByAnyRefIdIn(idSet, resolvedUsername);
         if (entityList.isEmpty()) return Map.of();
 
         final Map<String, String> titleMap = this.resolveTitleMap(entityList);
         final Map<String, List<RelatedContentDto>> relatedMap = new LinkedHashMap<>();
 
         for (final RelatedContentEntity entity : entityList) {
-            this.appendRelatedDto(relatedMap, refKeyMap, titleMap, entity.getLeftPostNo(), entity.getLeftContentType(), entity);
-            this.appendRelatedDto(relatedMap, refKeyMap, titleMap, entity.getRightPostNo(), entity.getRightContentType(), entity);
+            this.appendRelatedDto(relatedMap, refKeyMap, titleMap, entity.getLeftId(), entity.getLeftContentType(), entity);
+            this.appendRelatedDto(relatedMap, refKeyMap, titleMap, entity.getRightId(), entity.getRightContentType(), entity);
         }
 
         return relatedMap;
@@ -66,7 +66,7 @@ public class RelatedContentQueryService {
 
         for (final BaseClsfKey refKey : refKeyList) {
             if (!this.isSupported(refKey)) continue;
-            refKeyMap.putIfAbsent(this.toKey(refKey.getContentType(), refKey.getPostNo()), refKey);
+            refKeyMap.putIfAbsent(this.toKey(refKey.getContentType(), refKey.getId()), refKey);
         }
 
         return refKeyMap;
@@ -76,76 +76,76 @@ public class RelatedContentQueryService {
             final Map<String, List<RelatedContentDto>> relatedMap,
             final Map<String, BaseClsfKey> refKeyMap,
             final Map<String, String> titleMap,
-            final Integer refPostNo,
+            final Integer refId,
             final String refContentType,
             final RelatedContentEntity entity
     ) throws Exception {
-        final String refKey = this.toKey(refContentType, refPostNo);
+        final String refKey = this.toKey(refContentType, refId);
         final BaseClsfKey matchedRefKey = refKeyMap.get(refKey);
         if (matchedRefKey == null) return;
 
         final RelatedContentDto dto = relatedContentMapstruct.toDto(entity);
         final BaseClsfKey targetKey = this.resolveTargetKey(entity, matchedRefKey);
-        dto.setTargetPostNo(targetKey.getPostNo());
+        dto.setTargetId(targetKey.getId());
         dto.setTargetContentType(targetKey.getContentType());
-        dto.setTargetTitle(titleMap.get(this.toKey(targetKey.getContentType(), targetKey.getPostNo())));
+        dto.setTargetTitle(titleMap.get(this.toKey(targetKey.getContentType(), targetKey.getId())));
 
         relatedMap.computeIfAbsent(refKey, key -> new ArrayList<>()).add(dto);
     }
 
     private BaseClsfKey resolveTargetKey(final RelatedContentEntity entity, final BaseClsfKey refKey) {
-        final boolean isLeft = Objects.equals(entity.getLeftPostNo(), refKey.getPostNo())
+        final boolean isLeft = Objects.equals(entity.getLeftId(), refKey.getId())
                 && Objects.equals(entity.getLeftContentType(), refKey.getContentType());
 
-        if (isLeft) return new BaseClsfKey(entity.getRightPostNo(), entity.getRightContentType());
-        return new BaseClsfKey(entity.getLeftPostNo(), entity.getLeftContentType());
+        if (isLeft) return new BaseClsfKey(entity.getRightId(), entity.getRightContentType());
+        return new BaseClsfKey(entity.getLeftId(), entity.getLeftContentType());
     }
 
     private Map<String, String> resolveTitleMap(final Collection<RelatedContentEntity> entityList) {
-        final Set<Integer> diaryPostNoSet = new LinkedHashSet<>();
-        final Set<Integer> dreamPostNoSet = new LinkedHashSet<>();
+        final Set<Integer> diaryIdSet = new LinkedHashSet<>();
+        final Set<Integer> dreamIdSet = new LinkedHashSet<>();
 
         for (final RelatedContentEntity entity : entityList) {
-            this.collectTitleTarget(diaryPostNoSet, dreamPostNoSet, entity.getLeftPostNo(), entity.getLeftContentType());
-            this.collectTitleTarget(diaryPostNoSet, dreamPostNoSet, entity.getRightPostNo(), entity.getRightContentType());
+            this.collectTitleTarget(diaryIdSet, dreamIdSet, entity.getLeftId(), entity.getLeftContentType());
+            this.collectTitleTarget(diaryIdSet, dreamIdSet, entity.getRightId(), entity.getRightContentType());
         }
 
         final Map<String, String> titleMap = new LinkedHashMap<>();
-        jrnlDiaryRepository.findAllById(diaryPostNoSet).forEach(entity ->
-                titleMap.put(this.toKey(ContentType.JRNL_DIARY.key, entity.getPostNo()), entity.getTitle())
+        jrnlDiaryRepository.findAllById(diaryIdSet).forEach(entity ->
+                titleMap.put(this.toKey(ContentType.JRNL_DIARY.key, entity.getId()), entity.getTitle())
         );
-        jrnlDreamRepository.findAllById(dreamPostNoSet).forEach(entity ->
-                titleMap.put(this.toKey(ContentType.JRNL_DREAM.key, entity.getPostNo()), entity.getTitle())
+        jrnlDreamRepository.findAllById(dreamIdSet).forEach(entity ->
+                titleMap.put(this.toKey(ContentType.JRNL_DREAM.key, entity.getId()), entity.getTitle())
         );
 
         return titleMap;
     }
 
     private void collectTitleTarget(
-            final Set<Integer> diaryPostNoSet,
-            final Set<Integer> dreamPostNoSet,
-            final Integer postNo,
+            final Set<Integer> diaryIdSet,
+            final Set<Integer> dreamIdSet,
+            final Integer id,
             final String contentType
     ) {
-        if (postNo == null || StringUtils.isBlank(contentType)) return;
+        if (id == null || StringUtils.isBlank(contentType)) return;
 
         if (Objects.equals(contentType, ContentType.JRNL_DIARY.key)) {
-            diaryPostNoSet.add(postNo);
+            diaryIdSet.add(id);
             return;
         }
 
         if (Objects.equals(contentType, ContentType.JRNL_DREAM.key)) {
-            dreamPostNoSet.add(postNo);
+            dreamIdSet.add(id);
         }
     }
 
     private boolean isSupported(final BaseClsfKey refKey) {
-        if (refKey == null || refKey.getPostNo() == null || StringUtils.isBlank(refKey.getContentType())) return false;
+        if (refKey == null || refKey.getId() == null || StringUtils.isBlank(refKey.getContentType())) return false;
         return Objects.equals(refKey.getContentType(), ContentType.JRNL_DIARY.key)
                 || Objects.equals(refKey.getContentType(), ContentType.JRNL_DREAM.key);
     }
 
-    private String toKey(final String contentType, final Integer postNo) {
-        return String.format("%s:%d", StringUtils.defaultString(contentType), postNo);
+    private String toKey(final String contentType, final Integer id) {
+        return String.format("%s:%d", StringUtils.defaultString(contentType), id);
     }
 }

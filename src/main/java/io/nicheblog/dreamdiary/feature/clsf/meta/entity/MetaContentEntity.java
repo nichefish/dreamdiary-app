@@ -46,9 +46,9 @@ public class MetaContentEntity
     private Integer metaId;
 
     /** 참조 글 번호 */
-    @Column(name = "ref_post_no")
+    @Column(name = "ref_id")
     @Comment("참조 글 번호")
-    private Integer refPostNo;
+    private Integer refId;
 
     /** 참조 컨텐츠 타입 */
     @Column(name = "ref_content_type")
@@ -94,7 +94,7 @@ public class MetaContentEntity
      */
     public MetaContentEntity(final Integer metaId, final BaseClsfKey clsfKey, final String value, final String unit) {
         this.metaId = metaId;
-        this.refPostNo = clsfKey.getPostNo();
+        this.refId = clsfKey.getId();
         this.refContentType = clsfKey.getContentType();
         this.value = value;
         this.unit = unit;

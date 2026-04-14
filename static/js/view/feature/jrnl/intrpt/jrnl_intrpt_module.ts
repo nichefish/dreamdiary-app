@@ -49,15 +49,15 @@ dF.JrnlIntrpt = (function(): dfModule {
         /**
          * 등록 모달 호출
          * @param {Object} param - 파라미터 객체
-         * @param {string|number} param.jrnlDayNo - 저널 일자 번호.
-         * @param {string|number} param.jrnlDreamNo - 저널 꿈 번호.
+         * @param {string|number} param.jrnlDayId - 저널 일자 번호.
+         * @param {string|number} param.jrnlDreamId - 저널 꿈 번호.
          * @param {string} param.stdrdDt - 기준 날짜.
          * @param {string} param.jrnlDtWeekDay - 기준 날짜 요일.
          */
-        regModal: function({ jrnlDayNo, jrnlDreamNo, stdrdDt, jrnlDtWeekDay }: { jrnlDayNo: string | number; jrnlDreamNo: string | number; stdrdDt: string; jrnlDtWeekDay: string; }): void {
-            if (isNaN(Number(jrnlDayNo))) return;
+        regModal: function({ jrnlDayId, jrnlDreamId, stdrdDt, jrnlDtWeekDay }: { jrnlDayId: string | number; jrnlDreamId: string | number; stdrdDt: string; jrnlDtWeekDay: string; }): void {
+            if (isNaN(Number(jrnlDayId))) return;
 
-            const obj: Record<string, any> = { jrnlDayNo: jrnlDayNo, jrnlDreamNo: jrnlDreamNo, stdrdDt: stdrdDt, jrnlDtWeekDay: jrnlDtWeekDay };
+            const obj: Record<string, any> = { jrnlDayId: jrnlDayId, jrnlDreamId: jrnlDreamId, stdrdDt: stdrdDt, jrnlDtWeekDay: jrnlDtWeekDay };
             /* initialize form. */
             dF.JrnlIntrpt.initForm(obj);
         },
@@ -74,15 +74,15 @@ dF.JrnlIntrpt = (function(): dfModule {
          * 등록 (Ajax)
          */
         regAjax: function(): void {
-            const postNo: string = cF.util.getInputValue("#jrnlIntrptRegForm [name='postNo']");
-            const isMdf: boolean = cF.util.isNotEmpty(postNo);
+            const id: string = cF.util.getInputValue("#jrnlIntrptRegForm [name='id']");
+            const isMdf: boolean = cF.util.isNotEmpty(id);
             Swal.fire({
                 text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = isMdf ? cF.util.bindUrl(Url.JRNL_INTRPT, { postNo }) : Url.JRNL_INTRPTS;
+                const url: string = isMdf ? cF.util.bindUrl(Url.JRNL_INTRPT, { id }) : Url.JRNL_INTRPTS;
                 const ajaxData: FormData = new FormData(document.getElementById("jrnlIntrptRegForm") as HTMLFormElement);
                 cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
@@ -98,10 +98,10 @@ dF.JrnlIntrpt = (function(): dfModule {
 
         /**
          * 상세 모달 호출
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          */
-        dtlModal: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        dtlModal: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
             // 기존에 열린 모달이 있으면 닫기
             const openModals: NodeList = document.querySelectorAll('.modal.show'); // 열린 모달을 찾기
@@ -113,7 +113,7 @@ dF.JrnlIntrpt = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = cF.util.bindUrl(Url.JRNL_INTRPT, { postNo });
+            const url: string = cF.util.bindUrl(Url.JRNL_INTRPT, { id });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -130,10 +130,10 @@ dF.JrnlIntrpt = (function(): dfModule {
 
         /**
          * 수정 모달 호출
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          */
-        mdfModal: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        mdfModal: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
             // 기존에 열린 모달이 있으면 닫기
             const openModals: NodeList = document.querySelectorAll('.modal.show'); // 열린 모달을 찾기
@@ -145,7 +145,7 @@ dF.JrnlIntrpt = (function(): dfModule {
             const func: string = arguments.callee.name; // 현재 실행 중인 함수 참조
             const args: any[] = Array.from(arguments); // 함수 인자 배열로 받기
 
-            const url: string = cF.util.bindUrl(Url.JRNL_INTRPT, { postNo });
+            const url: string = cF.util.bindUrl(Url.JRNL_INTRPT, { id });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -162,10 +162,10 @@ dF.JrnlIntrpt = (function(): dfModule {
 
         /**
          * 삭제 (Ajax)
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          */
-        delAjax: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        delAjax: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
@@ -173,7 +173,7 @@ dF.JrnlIntrpt = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = cF.util.bindUrl(Url.JRNL_INTRPT, { postNo });
+                const url: string = cF.util.bindUrl(Url.JRNL_INTRPT, { id });
                 cF.$ajax.delete(url, null, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
@@ -187,19 +187,19 @@ dF.JrnlIntrpt = (function(): dfModule {
         },
 
         /**
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          * @param {'Y'|'N'} collapsedYn - 글접기 여부.
          */
-        collapse: function(postNo: string|number, collapsedYn: 'Y'|'N'): void {
-            if (isNaN(Number(postNo))) return;
+        collapse: function(id: string|number, collapsedYn: 'Y'|'N'): void {
+            if (isNaN(Number(id))) return;
 
             const url: string = Url.JRNL_INTRPT_SET_COLLAPSE_AJAX;
-            const ajaxData: Record<string, any> = { postNo, collapsedYn };
+            const ajaxData: Record<string, any> = { id, collapsedYn };
             cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) return;
 
                 // 찾아서 해당 그것만 collapse 추가 제거.
-                const item: HTMLElement = document.querySelector(`.jrnl-intrpt-cn[data-id='${postNo}']`);
+                const item: HTMLElement = document.querySelector(`.jrnl-intrpt-cn[data-id='${id}']`);
                 if (!item) return console.log("item not found.");
 
                 const content: HTMLElement = item.querySelector(".cn");
@@ -215,13 +215,12 @@ dF.JrnlIntrpt = (function(): dfModule {
 
         /**
          * toggle
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          * @param {HTMLElement} trigger - 클릭 버튼 객체
          */
-        toggle: function(postNo: string|number, trigger: HTMLElement): void {
-            if (isNaN(Number(postNo))) return;
+        toggle: function(id: string|number, trigger: HTMLElement): void {
+            if (isNaN(Number(id))) return;
 
-            const id: string = String(postNo);
             const item: HTMLElement = trigger.closest(`.jrnl-intrpt-item[data-id='${id}']`);
             if (!item) return console.log("item not found.");
 
@@ -265,13 +264,13 @@ dF.JrnlIntrpt = (function(): dfModule {
 
         /**
          * copy
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          * @deprecated
          */
-        copy: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        copy: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
-            const url: string = cF.util.bindUrl(Url.JRNL_INTRPT, { postNo });
+            const url: string = cF.util.bindUrl(Url.JRNL_INTRPT, { id });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });

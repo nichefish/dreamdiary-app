@@ -21,7 +21,7 @@ public class NoticeEntityTestFactory {
      */
     public static NoticeEntity create() throws Exception {
         return NoticeEntity.builder()
-                .postNo(0)
+                .id(0)
                 .contentType(ContentType.NOTICE.key)
                 .popupYn("Y")
                 .title("test_title")

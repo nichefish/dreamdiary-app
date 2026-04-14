@@ -62,12 +62,12 @@ class JrnlDreamRepositoryTest {
 
         // When::
         final JrnlDreamEntity registered = jrnlDreamRepository.save(jrnlDreamEntity);
-        Integer key = registered.getPostNo();
+        Integer key = registered.getId();
         final JrnlDreamEntity retrieved = jrnlDreamRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
-        assertNotNull(retrieved.getPostNo(), "저장된 엔티티의 key 값이 없습니다.");
+        assertNotNull(retrieved.getId(), "저장된 엔티티의 key 값이 없습니다.");
         // audit
         assertNotNull(retrieved.getRegDt(), "등록일자 audit 처리가 되지 않았습니다.");
         assertNotNull(retrieved.getRegstrId(),  "등록자 audit 처리가 되지 않았습니다.");
@@ -81,7 +81,7 @@ class JrnlDreamRepositoryTest {
     public void testModify() throws Exception {
         // Given::
         JrnlDreamEntity registered = jrnlDreamRepository.save(jrnlDreamEntity);
-        Integer key = registered.getPostNo();
+        Integer key = registered.getId();
 
         // When::
         JrnlDreamEntity toModify = jrnlDreamRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
@@ -90,7 +90,7 @@ class JrnlDreamRepositoryTest {
 
         // Then::
         assertNotNull(modified, "저장한 데이터를 조회할 수 없습니다.");
-        assertNotNull(modified.getPostNo(), "저장된 엔티티의 key 값이 없습니다.");
+        assertNotNull(modified.getId(), "저장된 엔티티의 key 값이 없습니다.");
         // audit
         assertNotNull(modified.getMdfDt(), "수정일자 audit 처리가 되지 않았습니다.");
         assertNotNull(modified.getMdfusrId(),  "수정자 audit 처리가 되지 않았습니다.");
@@ -106,7 +106,7 @@ class JrnlDreamRepositoryTest {
     public void testDelete() throws Exception {
         // Given::
         JrnlDreamEntity registered = jrnlDreamRepository.save(jrnlDreamEntity);
-        Integer key = registered.getPostNo();
+        Integer key = registered.getId();
 
         // When::
         final JrnlDreamEntity toDelete = jrnlDreamRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete")));

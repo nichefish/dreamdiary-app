@@ -42,13 +42,13 @@ dF.Comment.modal = (function(): dfModule {
 
         /**
          * 등록 모달 호출
-         * @param {string|number} refPostNo - 참조할 게시물 번호.
+         * @param {string|number} refId - 참조할 게시물 번호.
          * @param {string} refContentType - 참조할 콘텐츠 타입.
          */
-        regModal: function(refPostNo: number|string, refContentType: string): void {
-            if (isNaN(Number(refPostNo)) || !refContentType) return;
+        regModal: function(refId: number|string, refContentType: string): void {
+            if (isNaN(Number(refId)) || !refContentType) return;
 
-            const obj: Record<string, any> = { "refPostNo": refPostNo, "refContentType": refContentType };
+            const obj: Record<string, any> = { "refId": refId, "refContentType": refContentType };
             /* initialize form. */
             dF.Comment.modal.initForm(obj);
         },
@@ -65,15 +65,15 @@ dF.Comment.modal = (function(): dfModule {
          * 댓글 입력(등록/수정) 처리 (Ajax)
          */
         regAjax: function(): void {
-            const postNo = cF.util.getInputValue("#commentRegForm #postNo");
-            const isMdf: boolean = cF.util.isNotEmpty(postNo);
+            const id = cF.util.getInputValue("#commentRegForm #id");
+            const isMdf: boolean = cF.util.isNotEmpty(id);
             Swal.fire({
                 text: Message.get("view.cnfm.save"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = isMdf ? cF.util.bindUrl(Url.COMMENT, { postNo }) : Url.COMMENTS;
+                const url: string = isMdf ? cF.util.bindUrl(Url.COMMENT, { id }) : Url.COMMENTS;
                 const ajaxData: FormData = new FormData(document.getElementById("commentRegForm") as HTMLFormElement);
                 cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
@@ -92,12 +92,12 @@ dF.Comment.modal = (function(): dfModule {
 
         /**
          * 수정 모달 호출
-         * @param {string|number} postNo - 댓글 번호.
+         * @param {string|number} id - 댓글 번호.
          */
-        mdfModal: function(postNo: string | number): void {
-            if (isNaN(Number(postNo))) return;
+        mdfModal: function(id: string | number): void {
+            if (isNaN(Number(id))) return;
 
-            const url: string = cF.util.bindUrl(Url.COMMENT, { postNo });
+            const url: string = cF.util.bindUrl(Url.COMMENT, { id });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -111,10 +111,10 @@ dF.Comment.modal = (function(): dfModule {
 
         /**
          * 댓글 삭제 (Ajax)
-         * @param {string|number} postNo - 댓글 번호.
+         * @param {string|number} id - 댓글 번호.
          */
-        delAjax: function(postNo: string | number): void {
-            if (isNaN(Number(postNo))) return;
+        delAjax: function(id: string | number): void {
+            if (isNaN(Number(id))) return;
 
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
@@ -122,7 +122,7 @@ dF.Comment.modal = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = cF.util.bindUrl(Url.COMMENT, { postNo });
+                const url: string = cF.util.bindUrl(Url.COMMENT, { id });
                 const ajaxData: Record<string, any> = { }; // TODO: actvtyCtgrCd 다시 추가하기.
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })

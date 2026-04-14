@@ -51,7 +51,7 @@
             <#--페이지:: 버튼: 수정하기-->
             <@component.post_btn_modify "dF.Notice.mdfForm();" post isMngr />
             <#--페이지:: 버튼: 삭제하기-->
-            <@component.post_btn_delete "dF.Notice.delAjax(${post.postNo});" post isMngr />
+            <@component.post_btn_delete "dF.Notice.delAjax(${post.id});" post isMngr />
             <#--페이지:: 버튼: 목록으로 가기-->
             <@component.post_btn_toList "dF.Notice.list();" />
         </div>
@@ -71,7 +71,7 @@
 </#if>
 
 <form name="procForm" id="procForm" method="get">
-    <input type="hidden" name="postNo" id="postNo" value="${post.postNo!}" />
+    <input type="hidden" name="id" id="id" value="${post.id!}" />
 </form>
 
 <#--include::comment-->

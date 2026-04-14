@@ -65,7 +65,7 @@ public class ManagtEmbed
     /** 게시물 조치자 목록 */
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(column = @JoinColumn(name = "ref_post_no", referencedColumnName = "post_no", insertable = false, updatable = false)),
+            @JoinColumnOrFormula(column = @JoinColumn(name = "ref_id", referencedColumnName = "id", insertable = false, updatable = false)),
             @JoinColumnOrFormula(column = @JoinColumn(name = "ref_content_type", referencedColumnName = "content_type", insertable = false, updatable = false))
     })
     @Fetch(FetchMode.SELECT)

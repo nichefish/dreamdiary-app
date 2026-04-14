@@ -33,7 +33,7 @@ public class ManagtrDto
 
     /** 참조 글 번호 */
     @Positive
-    private Integer refPostNo;
+    private Integer refId;
 
     /** 참조 컨텐츠 타입 */
     @Size(max = 50)
@@ -47,7 +47,6 @@ public class ManagtrDto
      * @param refKey 글 번호와 컨텐츠 타입을 포함하는 참조 복합키 객체
      */
     public ManagtrDto(final BaseClsfKey refKey) {
-        this.refPostNo = refKey.getPostNo();
+        this.refId = refKey.getId();
         this.refContentType = refKey.getContentType();
-    }
-}
+    }}

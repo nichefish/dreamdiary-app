@@ -205,8 +205,8 @@ public class JrnlDayQueryService {
                     if (jrnlChapter == null || jrnlChapter.getJrnlDiaryList() == null) continue;
 
                     for (final JrnlDiaryDto jrnlDiary : jrnlChapter.getJrnlDiaryList()) {
-                        if (jrnlDiary == null || jrnlDiary.getPostNo() == null) continue;
-                        refKeyList.add(new BaseClsfKey(jrnlDiary.getPostNo(), ContentType.JRNL_DIARY));
+                        if (jrnlDiary == null || jrnlDiary.getId() == null) continue;
+                        refKeyList.add(new BaseClsfKey(jrnlDiary.getId(), ContentType.JRNL_DIARY));
                     }
                 }
             }
@@ -226,8 +226,8 @@ public class JrnlDayQueryService {
                     if (jrnlChapter == null || jrnlChapter.getJrnlDiaryList() == null) continue;
 
                     for (final JrnlDiaryDto jrnlDiary : jrnlChapter.getJrnlDiaryList()) {
-                        if (jrnlDiary == null || jrnlDiary.getPostNo() == null) continue;
-                        jrnlDiary.setRelatedContentList(this.getRelatedList(relatedMap, ContentType.JRNL_DIARY.key, jrnlDiary.getPostNo()));
+                        if (jrnlDiary == null || jrnlDiary.getId() == null) continue;
+                        jrnlDiary.setRelatedContentList(this.getRelatedList(relatedMap, ContentType.JRNL_DIARY.key, jrnlDiary.getId()));
                     }
                 }
             }
@@ -241,8 +241,8 @@ public class JrnlDayQueryService {
         if (jrnlDreamList == null) return;
 
         for (final JrnlDreamDto jrnlDream : jrnlDreamList) {
-            if (jrnlDream == null || jrnlDream.getPostNo() == null) continue;
-            refKeyList.add(new BaseClsfKey(jrnlDream.getPostNo(), ContentType.JRNL_DREAM));
+            if (jrnlDream == null || jrnlDream.getId() == null) continue;
+            refKeyList.add(new BaseClsfKey(jrnlDream.getId(), ContentType.JRNL_DREAM));
         }
     }
 
@@ -253,17 +253,17 @@ public class JrnlDayQueryService {
         if (jrnlDreamList == null) return;
 
         for (final JrnlDreamDto jrnlDream : jrnlDreamList) {
-            if (jrnlDream == null || jrnlDream.getPostNo() == null) continue;
-            jrnlDream.setRelatedContentList(this.getRelatedList(relatedMap, ContentType.JRNL_DREAM.key, jrnlDream.getPostNo()));
+            if (jrnlDream == null || jrnlDream.getId() == null) continue;
+            jrnlDream.setRelatedContentList(this.getRelatedList(relatedMap, ContentType.JRNL_DREAM.key, jrnlDream.getId()));
         }
     }
 
     private List<RelatedContentDto> getRelatedList(
             final Map<String, List<RelatedContentDto>> relatedMap,
             final String contentType,
-            final Integer postNo
+            final Integer id
     ) {
-        return relatedMap.getOrDefault(String.format("%s:%d", contentType, postNo), List.of());
+        return relatedMap.getOrDefault(String.format("%s:%d", contentType, id), List.of());
     }
 
     /**

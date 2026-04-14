@@ -1,4 +1,4 @@
-/**
+﻿/**
  * jrnl_sbjct_module.ts
  * 저널 주제 스크립트 모듈
  * 
@@ -118,34 +118,34 @@ dF.JrnlSbjct = (function(): dfModule {
                         if (!res.rslt) return;
 
                         if (res.rsltObj == null) dF.JrnlSbjct.list();
-                        const postNo: number = res.rsltObj.postNo;
-                        cF.ui.blockUIReplace(`${Url.JRNL_SBJCT_DTL!}?postNo=${postNo}`);
+                        const id: number = res.rsltObj.id;
+                        cF.ui.blockUIReplace(`${Url.JRNL_SBJCT_DTL!}?id=${id}`);
                     });
             }, "block");
         },
 
         /**
          * 상세 화면으로 이동
-         * @param {string|number} postNo - 조회할 글 번호.
+         * @param {string|number} id - 조회할 글 번호.
          */
-        dtl: function(postNo: string|number): void {
+        dtl: function(id: string|number): void {
             event.stopPropagation();
-            if (isNaN(Number(postNo))) return;
+            if (isNaN(Number(id))) return;
 
-            $("#procForm #postNo").val(postNo);
+            $("#procForm #id").val(id);
             cF.form.blockUISubmit("#procForm", Url.JRNL_SBJCT_DTL);
         },
 
         /**
          * 상세 모달 호출
-         * @param {string|number} postNo - 조회할 글 번호.
+         * @param {string|number} id - 조회할 글 번호.
          */
-        dtlModal: function(postNo: string|number): void {
+        dtlModal: function(id: string|number): void {
             event.stopPropagation();
-            if (isNaN(Number(postNo))) return;
+            if (isNaN(Number(id))) return;
 
             const url: string = Url.JRNL_SBJCT_DTL_AJAX;
-            const ajaxData: Record<string, any> = { "postNo": postNo };
+            const ajaxData: Record<string, any> = { id };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({text: res.message});

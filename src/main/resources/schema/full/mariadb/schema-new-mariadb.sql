@@ -11,7 +11,7 @@
 -- @implements: TagEmbed, CommentEmbed, ManagtEmbed, ViewerEmbed
 CREATE TABLE IF NOT EXISTS notice (
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
     content_type VARCHAR(32) DEFAULT 'NOTICE' COMMENT '컨텐츠 타입',
     --
     popup_yn CHAR(1) DEFAULT 'N' COMMENT '팝업 여부 (Y/N)',
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS notice (
 -- @implements: TagEmbed, CommentEmbed
 CREATE TABLE IF NOT EXISTS schdul (
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
     content_type VARCHAR(32) DEFAULT 'SCHDUL' COMMENT '컨텐츠 타입',
     --
     schdul_cd VARCHAR(30) COMMENT '일정 코드',
@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS schdul_prtcpnt (
     -- AUDIT
     del_yn CHAR(1) DEFAULT 'N' COMMENT '삭제 여부 (Y/N)',
     -- CONSTRAINT
-    CONSTRAINT fk_schdul_prtcpnt FOREIGN KEY (schdul_id) REFERENCES schdul (post_no),
+    CONSTRAINT fk_schdul_prtcpnt FOREIGN KEY (schdul_id) REFERENCES schdul (id),
     INDEX (schdul_id)
 ) COMMENT = '일정 참여자';
 
@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS tmplat_txt (
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS flsys_meta (
     -- CLSF
-    post_no INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
     content_type VARCHAR(32) DEFAULT 'FLSYS_META' COMMENT '컨텐츠 타입',
     --
     file_path VARCHAR(500) UNIQUE COMMENT '파일 경로',
@@ -163,7 +163,7 @@ CREATE TABLE IF NOT EXISTS flsys_meta (
 -- 채팅 메세지
 -- @extends: BasePostEntity
 CREATE TABLE IF NOT EXISTS chat_msg (
-    post_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
     content_type VARCHAR(30) DEFAULT 'CHAT' COMMENT '게시판 코드 (PK)',
     -- POST
     title VARCHAR(200) COMMENT '제목',

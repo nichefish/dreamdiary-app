@@ -67,14 +67,14 @@ public class MetaContentService
     /**
      * 특정 게시물에 대한 콘텐츠 메타 목록을 조회합니다.
      *
-     * @param postNo 글 번호
+     * @param id 글 번호
      * @param contentType 컨텐츠 타입
      * @return {@link List} -- 메타 목록
      */
-    @Cacheable(value = "metaContentEntityListByRef", key = "#postNo + '_' + #contentType.key")
-    public List<MetaContentEntity> getListEntityByRefWithCache(final Integer postNo, final ContentType contentType) throws Exception {
+    @Cacheable(value = "metaContentEntityListByRef", key = "#id + '_' + #contentType.key")
+    public List<MetaContentEntity> getListEntityByRefWithCache(final Integer id, final ContentType contentType) throws Exception {
         final MetaContentParam param = MetaContentParam.builder()
-                .refPostNo(postNo)
+                .refId(id)
                 .refContentType(contentType.key)
                 .build();
         return this.getSelf().getListEntityMeta(param);
@@ -121,7 +121,7 @@ public class MetaContentService
      */
     @Transactional(readOnly = true)
     public List<MetaDto> getMetaStrListByClsfKey(final BaseClsfKey clsfKey) throws Exception {
-        final List<MetaContentEntity> entityList = this.getSelf().getListEntityByRefWithCache(clsfKey.getPostNo(), clsfKey.getContentTypeEnum());
+        final List<MetaContentEntity> entityList = this.getSelf().getListEntityByRefWithCache(clsfKey.getId(), clsfKey.getContentTypeEnum());
         if (CollectionUtils.isEmpty(entityList)) return new ArrayList<>();
 
         return entityList.stream()
@@ -145,7 +145,7 @@ public class MetaContentService
     public void delObsoleteMetaContents(final BaseClsfKey clsfKey, final List<MetaDto> obsoleteMetaList) throws Exception {
         obsoleteMetaList.forEach(meta -> {
             final MetaContentParam param = MetaContentParam.builder()
-                    .refPostNo(clsfKey.getPostNo())
+                    .refId(clsfKey.getId())
                     .refContentType(clsfKey.getContentType())
                     .metaNm(meta.getMetaNm())
                     .ctgr(meta.getCtgr())

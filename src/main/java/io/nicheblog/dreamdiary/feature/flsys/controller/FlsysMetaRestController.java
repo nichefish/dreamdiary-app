@@ -58,7 +58,7 @@ public class FlsysMetaRestController
     ) throws Exception {
 
         final BaseClsfKey key = flsysMeta.getClsfKey();
-        final boolean isReg = key.getPostNo() == null;
+        final boolean isReg = key.getId() == null;
         final ServiceResponse result = isReg ? flsysMetaService.regist(flsysMeta) : flsysMetaService.modify(flsysMeta);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
@@ -78,7 +78,7 @@ public class FlsysMetaRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> flsysMetaDtlAjax(
-            final @RequestParam("postNo") Integer key
+            final @RequestParam("id") Integer key
     ) throws Exception {
 
         // 정보 조회 및 응답에 세팅
@@ -93,7 +93,7 @@ public class FlsysMetaRestController
      * 파일시스템 메타 정보 삭제 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param postNo 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      * @see LogActvtyEventListener
      */
@@ -101,10 +101,10 @@ public class FlsysMetaRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> flsysMetaDelAjax(
-            final @RequestParam("postNo") Integer postNo
+            final @RequestParam("id") Integer id
         ) throws Exception {
 
-        final ServiceResponse result = flsysMetaService.delete(postNo);
+        final ServiceResponse result = flsysMetaService.delete(id);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 

@@ -48,7 +48,7 @@ dF.NoticePopup = (function(): Module {
                 return dF.NoticePopup.showNoticePopup();
             }
             const obj: Record<string, any> = dF.NoticePopup.popupList[dF.NoticePopup.popupIdx];
-            const url: string = cF.util.bindUrl(Url.NOTICE, { postNo: obj.postNo });
+            const url: string = cF.util.bindUrl(Url.NOTICE, { id: obj.id });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -66,7 +66,7 @@ dF.NoticePopup = (function(): Module {
             const obj: Record<string, any> = dF.NoticePopup.popupList[dF.NoticePopup.popupIdx];
             if (obj == null) return false;
 
-            const popupCookie: string = $.cookie("notice_popup__postno_" + obj.postNo);
+            const popupCookie: string = $.cookie("notice_popup__postno_" + obj.id);
             return (popupCookie != null);
         },
 
@@ -90,8 +90,8 @@ dF.NoticePopup = (function(): Module {
             const isChecked: boolean = $("#noticePopupCookieChk").prop("checked");
             if (!isChecked) return;
 
-            const postNo = $("#noticePopupPostNo").val();
-            const cookieNm: string = "notice_popup__postno_" + postNo;
+            const id = $("#noticePopupPostNo").val();
+            const cookieNm: string = "notice_popup__postno_" + id;
             // 선택지에 따라 시간 별도 세팅
             const selectedTime = $("#noticePopupCookieTime").val();
             const cookieOptions = {} as any;

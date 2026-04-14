@@ -34,21 +34,21 @@ public class JrnlSumryReviewCacheEvictor
         final ContentType refContentType = ContentType.JRNL_SUMRY_REVIEW;
         try {
             final String username = param.getRegstrId();
-            final Integer reviewPostNo = param.getPostNo();
-            final Integer jrnlSumryNo = param.getJrnlSumryNo();
+            final Integer reviewId = param.getId();
+            final Integer jrnlSumryId = param.getJrnlSumryId();
             final Integer yy = param.getYy();
 
             // Summary detail caches affected by review add/update/delete.
-            if (jrnlSumryNo != null) {
-                EhCacheUtils.evictUserCacheByKey("jrnlSumryDtlDtoByUser", username, jrnlSumryNo);
+            if (jrnlSumryId != null) {
+                EhCacheUtils.evictUserCacheByKey("jrnlSumryDtlDtoByUser", username, jrnlSumryId);
             }
             if (yy != null) {
                 EhCacheUtils.evictUserCacheByKey("jrnlSumryYyDtlDtoByUser", username, yy);
             }
 
             // Review tag cache.
-            if (reviewPostNo != null) {
-                EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", reviewPostNo + "_JRNL_SUMRY_REVIEW");
+            if (reviewId != null) {
+                EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", reviewId + "_JRNL_SUMRY_REVIEW");
             }
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);

@@ -26,14 +26,14 @@ public interface JrnlChapterRepository
     /**
      * 해당 일자에서 항목 마지막 인덱스 조회
      *
-     * @param jrnlDayNo 조회할 일자 번호
+     * @param jrnlDayId 조회할 일자 번호
      * @return {@link Optional} -- 해당 일자에서 항목의 마지막 인덱스
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     @Query("SELECT MAX(entry.idx) " +
             "FROM JrnlChapterEntity entry " +
-            "INNER JOIN FETCH JrnlDayEntity day ON entry.jrnlDayNo = day.postNo " +
-            "WHERE entry.jrnlDayNo = :jrnlDayNo")
-    Optional<Integer> findLastIndexByJrnlDay(final @Param("jrnlDayNo") Integer jrnlDayNo);
+            "INNER JOIN FETCH JrnlDayEntity day ON entry.jrnlDayId = day.id " +
+            "WHERE entry.jrnlDayId = :jrnlDayId")
+    Optional<Integer> findLastIndexByJrnlDay(final @Param("jrnlDayId") Integer jrnlDayId);
 }

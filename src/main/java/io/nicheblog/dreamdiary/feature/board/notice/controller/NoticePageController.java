@@ -159,7 +159,7 @@ public class NoticePageController
     @GetMapping(Url.NOTICE_DTL)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String noticeDtl(
-            final @RequestParam("postNo") Integer key,
+            final @RequestParam("id") Integer key,
             final ModelMap model
     ) throws Exception {
 
@@ -185,7 +185,7 @@ public class NoticePageController
     @GetMapping(Url.NOTICE_MDF_FORM)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     public String noticeMdfForm(
-            final @RequestParam("postNo") Integer key,
+            final @RequestParam("id") Integer key,
             final ModelMap model
     ) throws Exception {
 

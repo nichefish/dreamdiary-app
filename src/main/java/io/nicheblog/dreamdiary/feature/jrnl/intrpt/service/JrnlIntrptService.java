@@ -82,7 +82,7 @@ public class JrnlIntrptService
     @Override
     public void preRegist(final JrnlIntrptDto registDto) throws Exception {
         // 인덱스(정렬순서) 처리
-        final Integer lastIndex = repository.findLastIndexByJrnlDay(registDto.getJrnlDreamNo()).orElse(0);
+        final Integer lastIndex = repository.findLastIndexByJrnlDay(registDto.getJrnlDreamId()).orElse(0);
         registDto.setIdx(lastIndex + 1);
     }
 
@@ -200,7 +200,7 @@ public class JrnlIntrptService
      */
     @Transactional(readOnly = true)
     public JrnlIntrptDto getDeletedDtlDto(final Integer key) throws Exception {
-        final JrnlIntrptDto deleted = mapper.getDeletedByPostNo(key);
+        final JrnlIntrptDto deleted = mapper.getDeletedById(key);
         if (deleted == null) return null;
         if (!AuthUtils.isRegstr(deleted.getRegstrId())) {
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
@@ -212,14 +212,14 @@ public class JrnlIntrptService
      * 해당 그룹 전체를 idx = 1부터 다시 정렬한다.
      */
     @Transactional
-    public void normalize(final Integer jrnlDreamNo) {
-        final List<JrnlIntrptDto> list = mapper.findAllForReorder(jrnlDreamNo);
+    public void normalize(final Integer jrnlDreamId) {
+        final List<JrnlIntrptDto> list = mapper.findAllForReorder(jrnlDreamId);
         if (CollectionUtils.isEmpty(list)) return;
 
         int idx = 1;
         for (final JrnlIntrptDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictUserCacheByKey("jrnlIntrptDtlDtoByUser", e.getRegstrId(), e.getPostNo());
+            EhCacheUtils.evictUserCacheByKey("jrnlIntrptDtlDtoByUser", e.getRegstrId(), e.getId());
         }
 
         mapper.batchUpdateIdx(list);
@@ -228,24 +228,24 @@ public class JrnlIntrptService
     /**
      * 대상 상위 키에 엔티티를 특정 위치에 삽입 후 재정렬한다.
      *
-     * @param jrnlDreamNo 정렬을 수행할 상위 키
-     * @param postNo 게시물 PK
+     * @param jrnlDreamId 정렬을 수행할 상위 키
+     * @param id 게시물 PK
      * @param targetIdx 삽입할 목표 위치(1-based). null이면 맨 뒤에 삽입됨
      */
     @Transactional
-    public void insert(final Integer jrnlDreamNo, final Integer postNo, Integer targetIdx) throws Exception {
-        final List<JrnlIntrptDto> list = mapper.findAllForReorder(jrnlDreamNo);
+    public void insert(final Integer jrnlDreamId, final Integer id, Integer targetIdx) throws Exception {
+        final List<JrnlIntrptDto> list = mapper.findAllForReorder(jrnlDreamId);
 
         // target 조회
-        final JrnlIntrptEntity targetEntity = findDtlEntity(postNo);
+        final JrnlIntrptEntity targetEntity = findDtlEntity(id);
         if (targetEntity == null) return;
         final JrnlIntrptDto target = mapstruct.toDto(targetEntity);
 
         // 혹시 이미 포함되어 있으면 제거
-        list.removeIf(e -> Objects.equals(e.getPostNo(), postNo));
+        list.removeIf(e -> Objects.equals(e.getId(), id));
 
         // chapterNo 변경
-        target.setJrnlDreamNo(jrnlDreamNo);
+        target.setJrnlDreamId(jrnlDreamId);
 
         // targetIdx 보정 (upper bound)
         final int maxIdx = list.size() + 1;
@@ -259,7 +259,7 @@ public class JrnlIntrptService
         int idx = 1;
         for (final JrnlIntrptDto e : list) {
             e.setIdx(idx++);
-            EhCacheUtils.evictUserCacheByKey("jrnlIntrptDtlDtoByUser", e.getRegstrId(), e.getPostNo());
+            EhCacheUtils.evictUserCacheByKey("jrnlIntrptDtlDtoByUser", e.getRegstrId(), e.getId());
         }
 
         mapper.batchUpdateIdx(list);
@@ -273,9 +273,9 @@ public class JrnlIntrptService
     @Transactional
     public void reorderIdx(final JrnlIntrptDto updatedDto) throws Exception {
         // 1단계: 현재 chapter 그룹 정리 (기존 idx 값을 normalization하여 안정화)
-        normalize(updatedDto.getJrnlDreamNo());
+        normalize(updatedDto.getJrnlDreamId());
         // 2단계: 해당 group에 새 위치로 target 삽입
-        insert(updatedDto.getJrnlDreamNo(), updatedDto.getPostNo(), updatedDto.getIdx());
+        insert(updatedDto.getJrnlDreamId(), updatedDto.getId(), updatedDto.getIdx());
     }
 
     /**

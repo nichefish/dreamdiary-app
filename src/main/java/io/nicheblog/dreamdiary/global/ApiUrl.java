@@ -30,7 +30,7 @@ public interface ApiUrl {
 
     /** 저널 일자 */
     String JRNL_DAYS = Prefix.API + "/jrnl/days";
-    String JRNL_DAY = Prefix.API + "/jrnl/day/{postNo}";
+    String JRNL_DAY = Prefix.API + "/jrnl/day/{id}";
     /** 저널 일자 태그 */
     String JRNL_DAY_TAGS = Prefix.API + "/jrnl/day/tags";
     String JRNL_DAY_TAG_GROUP_LIST = Prefix.API + "/jrnl/day/tag/group-list";
@@ -45,7 +45,7 @@ public interface ApiUrl {
 
     /** 저널 꿈 */
     String JRNL_DREAMS = Prefix.API + "/jrnl/dreams";
-    String JRNL_DREAM = Prefix.API + "/jrnl/dream/{postNo}";
+    String JRNL_DREAM = Prefix.API + "/jrnl/dream/{id}";
     String JRNL_DREAMS_EXPORT = Prefix.API + "/jrnl/dreams/export";
     /** 저널 꿈 태그 */
     String JRNL_DREAM_TAGS = Prefix.API + "/jrnl/dream/tags";
@@ -53,7 +53,7 @@ public interface ApiUrl {
     String JRNL_DREAM_TAG_CTGR_MAP = Prefix.API + "/jrnl/dream/tag/ctgr-map";
     /** 저널 해석 */
     String JRNL_INTRPTS = Prefix.API + "/jrnl/intrpts";
-    String JRNL_INTRPT = Prefix.API + "/jrnl/intrpt/{postNo}";
+    String JRNL_INTRPT = Prefix.API + "/jrnl/intrpt/{id}";
     String JRNL_INTRPT_SET_COLLAPSE_AJAX = Prefix.API + "/jrnl/intrpt/set-collapse";
     /** 저널 해석 태그 */
     String JRNL_INTRPT_TAGS = Prefix.API + "/jrnl/intrpt/tags";
@@ -63,12 +63,12 @@ public interface ApiUrl {
 
     /** 저널 챕터 */
     String JRNL_CHAPTERS = Prefix.API + "/jrnl/chapters";
-    String JRNL_CHAPTER = Prefix.API + "/jrnl/chapter/{postNo}";
-    String JRNL_CHAPTER_EXPORT = Prefix.API + "/jrnl/chapter/{postNo}/export";
+    String JRNL_CHAPTER = Prefix.API + "/jrnl/chapter/{id}";
+    String JRNL_CHAPTER_EXPORT = Prefix.API + "/jrnl/chapter/{id}/export";
 
     /** 저널 일기 */
     String JRNL_DIARIES = Prefix.API + "/jrnl/diaries";
-    String JRNL_DIARY = Prefix.API + "/jrnl/diary/{postNo}";
+    String JRNL_DIARY = Prefix.API + "/jrnl/diary/{id}";
     String JRNL_DIARIES_EXPORT = Prefix.API + "/jrnl/diaries/export";
     /** 저널 일기 태그 */
     String JRNL_DIARY_TAGS = Prefix.API + "/jrnl/diary/tags";
@@ -77,7 +77,7 @@ public interface ApiUrl {
 
     /** 저널 할일 */
     String JRNL_TODOS = Prefix.API + "/jrnl/todos";
-    String JRNL_TODO = Prefix.API + "/jrnl/todo/{postNo}";
+    String JRNL_TODO = Prefix.API + "/jrnl/todo/{id}";
 
     /** 저널 주제 */
     String JRNL_SBJCT_REG_AJAX = Prefix.API + "/jrnl/sbjct/reg";
@@ -99,11 +99,11 @@ public interface ApiUrl {
 
     /** 저널 결산 리뷰 */
     String JRNL_SUMRY_REVIEWS = Prefix.API + "/jrnl/sumry/reviews";
-    String JRNL_SUMRY_REVIEW = Prefix.API + "/jrnl/sumry/review/{postNo}";
+    String JRNL_SUMRY_REVIEW = Prefix.API + "/jrnl/sumry/review/{id}";
 
     /** 공지사항 */
     String NOTICE_REG_AJAX = Prefix.API + "/notice/reg";
-    String NOTICE = Prefix.API + "/notice/{postNo}";
+    String NOTICE = Prefix.API + "/notice/{id}";
     String NOTICE_MDF_AJAX = Prefix.API + "/notice/mdf";
     String NOTICE_POPUP_LIST_AJAX = Prefix.API + "/notice/popup-list";
     String NOTICE_LIST_XLSX_DOWNLOAD = Prefix.API + "/notice/list-xlsx-download.do";
@@ -131,21 +131,21 @@ public interface ApiUrl {
 
     /** 댓글 */
     String COMMENTS = Prefix.API + "/comments";
-    String COMMENT = Prefix.API + "/comment/{postNo}";
+    String COMMENT = Prefix.API + "/comment/{id}";
 
     /** 이력 */
-    String HISTORIES = Prefix.API + "/history/{contentType}/{postNo}";
-    String HISTORY = Prefix.API + "/history/{contentType}/{postNo}/{historyId}";
-    String HISTORY_RESTORE = Prefix.API + "/history/{contentType}/{postNo}/{historyId}/restore";
-    String HISTORY_CLEAR = Prefix.API + "/history/{contentType}/{postNo}/clear";
+    String HISTORIES = Prefix.API + "/history/{contentType}/{id}";
+    String HISTORY = Prefix.API + "/history/{contentType}/{id}/{historyId}";
+    String HISTORY_RESTORE = Prefix.API + "/history/{contentType}/{id}/{historyId}/restore";
+    String HISTORY_CLEAR = Prefix.API + "/history/{contentType}/{id}/clear";
 
     /** 관련글 */
-    String RELATEDS = Prefix.API + "/related/{contentType}/{postNo}";
+    String RELATEDS = Prefix.API + "/related/{contentType}/{id}";
     String RELATED = Prefix.API + "/related/{relatedContentId}";
 
     /** 단락 */
     String SECTNS = Prefix.API + "/sectns";
-    String SECTN = Prefix.API + "/sectn/{postNo}";
+    String SECTN = Prefix.API + "/sectn/{id}";
     String SECTN_SORT_ORDR = Prefix.API + "/sectn/sort-ordr";
 
     /** 상태 */

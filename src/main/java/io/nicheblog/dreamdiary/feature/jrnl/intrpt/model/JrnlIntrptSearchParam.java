@@ -28,7 +28,7 @@ public class JrnlIntrptSearchParam
     private Integer mnth;
 
     /** 저널 꿈 번호 */
-    private Integer jrnlDreamNo;
+    private Integer jrnlDreamId;
 
     /** 컨텐츠 타입 */
     private String contentType;

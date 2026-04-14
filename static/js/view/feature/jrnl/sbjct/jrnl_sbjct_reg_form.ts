@@ -37,8 +37,8 @@ const Page: Page = (function(): Page {
             }
         },
 
-        refreshFunc: function({ refPostNo, refContentType }): void {
-            dF.Sectn.listAjax({ "refPostNo": refPostNo, "refContentType": refContentType });
+        refreshFunc: function({ refId, refContentType }): void {
+            dF.Sectn.listAjax({ "refId": refId, "refContentType": refContentType });
             $("#sectn_reg_modal").modal("hide");
             dF.Sectn.initDraggable({
                 refreshFunc: Page.refreshFunc

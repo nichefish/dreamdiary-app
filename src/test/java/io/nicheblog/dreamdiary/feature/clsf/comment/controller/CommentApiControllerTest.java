@@ -162,16 +162,16 @@ public class CommentApiControllerTest {
         List<CommentDto> testData = Arrays.asList(
                 new CommentDto() {{
                     setRnum(1L);
-                    setPostNo(101);
-                    setRefPostNo(1001);
+                    setId(101);
+                    setRefId(1001);
                     setRefContentType("BC001");
                     setCn("첫 번째 댓글 내용입니다.");
                     setIsSuccess(true);
                 }},
                 new CommentDto() {{
                     setRnum(2L);
-                    setPostNo(102);
-                    setRefPostNo(1002);
+                    setId(102);
+                    setRefId(1002);
                     setRefContentType("BC001");
                     setCn("두 번째 댓글 내용입니다.");
                     setIsSuccess(true);

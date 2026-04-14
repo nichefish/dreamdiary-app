@@ -39,9 +39,9 @@ public class StateEntity
     private Integer id;
 
     /** 참조 글 번호 */
-    @Column(name = "ref_post_no")
+    @Column(name = "ref_id")
     @Comment("참조 글 번호")
-    private Integer refPostNo;
+    private Integer refId;
 
     /** 참조 컨텐츠 타입 */
     @Column(name = "ref_content_type")
@@ -60,7 +60,7 @@ public class StateEntity
      */
     public static StateEntity of(final StateToggleDto stateToggle) {
         return StateEntity.builder()
-                .refPostNo(stateToggle.getPostNo())
+                .refId(stateToggle.getId())
                 .refContentType(stateToggle.getContentType().key)
                 .stateCd(stateToggle.getStateCd().key)
                 .build();

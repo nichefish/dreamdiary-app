@@ -39,9 +39,9 @@ public class HistoryEntity
     private Integer id;
 
     /** 참조 글번호 */
-    @Column(name = "ref_post_no")
+    @Column(name = "ref_id")
     @Comment("참조 글번호")
-    private Integer refPostNo;
+    private Integer refId;
 
     /** 참조 컨텐츠 타입 */
     @Column(name = "ref_content_type")
@@ -70,7 +70,7 @@ public class HistoryEntity
      * @param refKey 글 번호와 컨텐츠 타입을 포함하는 참조 복합키 객체
      */
     public HistoryEntity(final BaseClsfKey refKey) {
-        this.refPostNo = refKey.getPostNo();
+        this.refId = refKey.getId();
         this.refContentType = refKey.getContentType();
     }
 

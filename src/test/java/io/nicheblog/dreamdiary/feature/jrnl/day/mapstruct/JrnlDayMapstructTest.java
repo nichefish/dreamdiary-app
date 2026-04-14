@@ -76,22 +76,22 @@ class JrnlDayMapstructTest {
             final JrnlDayEntity entity = createEntity("N");
 
             final List<JrnlChapterEntity> chapterEntities = List.of(
-                    JrnlChapterEntity.builder().postNo(11).title("chapter").idx(1).build()
+                    JrnlChapterEntity.builder().id(11).title("chapter").idx(1).build()
             );
             final List<JrnlDreamEntity> dreamEntities = List.of(
-                    JrnlDreamEntity.builder().postNo(21).title("dream").idx(1).build()
+                    JrnlDreamEntity.builder().id(21).title("dream").idx(1).build()
             );
             final List<JrnlDreamEntity> elseDreamEntities = List.of(
-                    JrnlDreamEntity.builder().postNo(31).title("else-dream").idx(1).build()
+                    JrnlDreamEntity.builder().id(31).title("else-dream").idx(1).build()
             );
             entity.setJrnlChapterList(chapterEntities);
             entity.setJrnlDreamList(dreamEntities);
             entity.setJrnlElseDreamList(elseDreamEntities);
 
-            final List<JrnlChapterSmpDto> expectedChapterSmp = List.of(JrnlChapterSmpDto.builder().postNo(11).title("chapter").idx(1).build());
-            final List<JrnlChapterDto> expectedChapter = List.of(JrnlChapterDto.builder().postNo(11).title("chapter").idx(1).build());
-            final List<JrnlDreamDto> expectedDream = List.of(JrnlDreamDto.builder().postNo(21).title("dream").idx(1).build());
-            final List<JrnlDreamDto> expectedElseDream = List.of(JrnlDreamDto.builder().postNo(31).title("else-dream").idx(1).build());
+            final List<JrnlChapterSmpDto> expectedChapterSmp = List.of(JrnlChapterSmpDto.builder().id(11).title("chapter").idx(1).build());
+            final List<JrnlChapterDto> expectedChapter = List.of(JrnlChapterDto.builder().id(11).title("chapter").idx(1).build());
+            final List<JrnlDreamDto> expectedDream = List.of(JrnlDreamDto.builder().id(21).title("dream").idx(1).build());
+            final List<JrnlDreamDto> expectedElseDream = List.of(JrnlDreamDto.builder().id(31).title("else-dream").idx(1).build());
 
             when(jrnlChapterMapstruct.toSmpDtoList(chapterEntities)).thenReturn(expectedChapterSmp);
             when(jrnlChapterMapstruct.toDtoList(chapterEntities)).thenReturn(expectedChapter);
@@ -123,9 +123,9 @@ class JrnlDayMapstructTest {
         @DisplayName("returns jrnlDt as standard date when dtUnknownYn is Y (dto getter contract)")
         void usesApproximateDateWhenUnknownDate() throws Exception {
             final JrnlDayEntity entity = createEntity("Y");
-            final List<JrnlChapterEntity> chapterEntities = List.of(JrnlChapterEntity.builder().postNo(11).title("chapter").idx(1).build());
-            final List<JrnlDreamEntity> dreamEntities = List.of(JrnlDreamEntity.builder().postNo(21).title("dream").idx(1).build());
-            final List<JrnlDreamEntity> elseDreamEntities = List.of(JrnlDreamEntity.builder().postNo(31).title("else-dream").idx(1).build());
+            final List<JrnlChapterEntity> chapterEntities = List.of(JrnlChapterEntity.builder().id(11).title("chapter").idx(1).build());
+            final List<JrnlDreamEntity> dreamEntities = List.of(JrnlDreamEntity.builder().id(21).title("dream").idx(1).build());
+            final List<JrnlDreamEntity> elseDreamEntities = List.of(JrnlDreamEntity.builder().id(31).title("else-dream").idx(1).build());
             entity.setJrnlChapterList(chapterEntities);
             entity.setJrnlDreamList(dreamEntities);
             entity.setJrnlElseDreamList(elseDreamEntities);
@@ -166,12 +166,12 @@ class JrnlDayMapstructTest {
             dto.setYy(2026);
             dto.setMnth(3);
 
-            final List<JrnlChapterDto> chapterDtos = List.of(JrnlChapterDto.builder().postNo(11).title("chapter").idx(1).build());
+            final List<JrnlChapterDto> chapterDtos = List.of(JrnlChapterDto.builder().id(11).title("chapter").idx(1).build());
             dto.setJrnlChapterList(chapterDtos);
-            dto.setJrnlDreamList(List.of(JrnlDreamDto.builder().postNo(21).title("dream").idx(1).build()));
-            dto.setJrnlElseDreamList(List.of(JrnlDreamDto.builder().postNo(31).title("else-dream").idx(1).build()));
+            dto.setJrnlDreamList(List.of(JrnlDreamDto.builder().id(21).title("dream").idx(1).build()));
+            dto.setJrnlElseDreamList(List.of(JrnlDreamDto.builder().id(31).title("else-dream").idx(1).build()));
 
-            final List<JrnlChapterEntity> mappedChapterEntities = List.of(JrnlChapterEntity.builder().postNo(11).title("chapter").idx(1).build());
+            final List<JrnlChapterEntity> mappedChapterEntities = List.of(JrnlChapterEntity.builder().id(11).title("chapter").idx(1).build());
             when(jrnlChapterMapstruct.toEntityList(chapterDtos)).thenReturn(mappedChapterEntities);
 
             final JrnlDayEntity entity = sut.toEntity(dto);
@@ -208,7 +208,7 @@ class JrnlDayMapstructTest {
             target.setYy(2024);
             target.setMnth(1);
             final List<JrnlChapterEntity> originalChapterList = new ArrayList<>(
-                    List.of(JrnlChapterEntity.builder().postNo(1).title("origin").idx(1).build())
+                    List.of(JrnlChapterEntity.builder().id(1).title("origin").idx(1).build())
             );
             target.setJrnlChapterList(originalChapterList);
 

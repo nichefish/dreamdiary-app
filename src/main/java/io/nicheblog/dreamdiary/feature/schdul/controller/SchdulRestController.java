@@ -71,11 +71,11 @@ public class SchdulRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> schdulDtlAjax(
-            final @RequestParam("postNo") Integer key
+            final @RequestParam("id") Integer key
     ) throws Exception {
 
         final SchdulDto retrievedDto = schdulService.getDtlDto(key);
-        final boolean isSuccess = (retrievedDto.getPostNo() != null);
+        final boolean isSuccess = (retrievedDto.getId() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
@@ -85,17 +85,17 @@ public class SchdulRestController
      * 일정 > 전체일정 > 일정 삭제 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param postNo 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.SCHDUL_DEL_AJAX)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> schdulDelAjax(
-            final @RequestParam("postNo") Integer postNo
+            final @RequestParam("id") Integer id
     ) throws Exception {
 
-        final ServiceResponse result = schdulService.delete(postNo);
+        final ServiceResponse result = schdulService.delete(id);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));

@@ -17,8 +17,8 @@ public interface CommentMapper {
 
     /**
      * 삭제된 데이터 정보 조회
-     * @param postNo - 조회할 게시글 번호 (삭제된 데이터)
+     * @param id - 조회할 게시글 번호 (삭제된 데이터)
      * @return {@link CommentDto} -- 삭제된 댓글 데이터
      */
-    CommentDto getDeletedByPostNo(final @Param("postNo") Integer postNo);
+    CommentDto getDeletedById(final @Param("id") Integer id);
 }

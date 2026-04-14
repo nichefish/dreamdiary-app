@@ -34,13 +34,13 @@ public class JrnlDayCacheEvictor
         final ContentType refContentType = ContentType.JRNL_DAY;
         try {
             final String username = param.getRegstrId();
-            final Integer postNo = param.getPostNo();
+            final Integer id = param.getId();
             final Integer yy = param.getYy();
             final Integer mnth = param.getMnth();
             final String weekStartDt = param.getWeekStartDt();
             final String prevWeekStartDt = param.getPrevWeekStartDt();
             // jrnl_day
-            EhCacheUtils.evictUserCacheByKey("jrnlDayDtlDtoByUser", username, postNo);
+            EhCacheUtils.evictUserCacheByKey("jrnlDayDtlDtoByUser", username, id);
             this.evictMyJrnlDayYyMnthCaches(username, yy, mnth);
             this.evictMyJrnlDayWeeklyCaches(username, prevWeekStartDt, weekStartDt);
             // jrnl_day_tag
@@ -50,10 +50,10 @@ public class JrnlDayCacheEvictor
             EhCacheUtils.clearUserCache("jrnlDayYyMnthSizedTagListByUser", username);
             EhCacheUtils.clearUserCache("jrnlDayWeeklySizedTagListByUser", username);
             EhCacheUtils.clearUserCache("jrnlDayCountMapByUser", username);
-            EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", postNo + "_JRNL_DAY");
+            EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", id + "_JRNL_DAY");
             // jrnl_day_meta
             EhCacheUtils.clearUserCache("jrnlDayMetaCtgrMapByUser", username);
-            EhCacheUtils.evictCacheByKey("metaContentEntityListByRef", postNo + "_JRNL_DAY");
+            EhCacheUtils.evictCacheByKey("metaContentEntityListByRef", id + "_JRNL_DAY");
         } catch (final Exception e) {
             log.error("CacheEvictor error [{}]: {}", refContentType, e.getMessage(), e);
             throw e;

@@ -99,7 +99,7 @@ public class SectnDto
 
     /** 원글 번호 */
     @Positive
-    private Integer refPostNo;
+    private Integer refId;
 
     /** 원글 컨텐츠 타입 */
     @Size(max = 50)
@@ -114,7 +114,7 @@ public class SectnDto
 
     @Override
     public Integer getKey() {
-        return this.postNo;
+        return this.id;
     }
 
     /** 위임 :: 첨부파일 모듈 */

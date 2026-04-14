@@ -49,7 +49,7 @@ dF.Sectn = (function(): dfModule {
          * @param {Function} [options.refreshFunc] - 드래그 완료 후 호출할 함수 (선택적).
          */
         initDraggable: function({ refreshFunc }: { refreshFunc?: Function } = {}): void {
-            const keyExtractor: Function = (item: HTMLElement) => ({ "postNo": $(item).attr("id") });
+            const keyExtractor: Function = (item: HTMLElement) => ({ "id": $(item).attr("id") });
             const url: string = Url.SECTN_SORT_ORDR;
             dF.Sectn.swappable = cF.draggable.init(keyExtractor, url, refreshFunc);
         },
@@ -57,12 +57,12 @@ dF.Sectn = (function(): dfModule {
         /**
          * 전체 태그 목록 조회 (Ajax)
          * @param {Record<string, any>} options - 조회 옵션 객체.
-         * @param {string|number} options.refPostNo - 참조할 포스트 번호.
+         * @param {string|number} options.refId - 참조할 포스트 번호.
          * @param {string} options.refContentType - 참조할 콘텐츠 유형.
          */
-        listAjax: function({ refPostNo, refContentType }): void {
+        listAjax: function({ refId, refContentType }): void {
             const url: string = Url.SECTNS;
-            const ajaxData: Record<string, any> = { "refPostNo": refPostNo, "refContentType": refContentType };
+            const ajaxData: Record<string, any> = { "refId": refId, "refContentType": refContentType };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -75,13 +75,13 @@ dF.Sectn = (function(): dfModule {
 
         /**
          * 등록 모달 호출
-         * @param {string|number} refPostNo - 참조할 포스트 번호.
+         * @param {string|number} refId - 참조할 포스트 번호.
          * @param {string} refContentType - 참조할 콘텐츠 유형.
          */
-        regModal: function(refPostNo: string|number, refContentType: string): void {
-            if (isNaN(Number(refPostNo)) || !refContentType) return;
+        regModal: function(refId: string|number, refContentType: string): void {
+            if (isNaN(Number(refId)) || !refContentType) return;
 
-            const obj = { "refPostNo": refPostNo, "refContentType": refContentType };
+            const obj = { "refId": refId, "refContentType": refContentType };
             /* initialize form. */
             dF.Sectn.initForm(obj);
         },
@@ -98,15 +98,15 @@ dF.Sectn = (function(): dfModule {
          * 단락 등록 (Ajax)
          */
         regAjax: function(): void {
-            const postNo = cF.util.getInputValue("#sectnRegForm #postNo");
-            const isMdf: boolean = cF.util.isNotEmpty(postNo);
+            const id = cF.util.getInputValue("#sectnRegForm #id");
+            const isMdf: boolean = cF.util.isNotEmpty(id);
             Swal.fire({
                 text: Message.get(isMdf ? "view.cnfm.mdf" : "view.cnfm.reg"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = isMdf ? cF.util.bindUrl(Url.SECTN, {postNo}) : Url.SECTNS;
+                const url: string = isMdf ? cF.util.bindUrl(Url.SECTN, {id}) : Url.SECTNS;
                 const ajaxData: FormData = new FormData(document.getElementById("sectnRegForm") as HTMLFormElement);
                 cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
@@ -125,12 +125,12 @@ dF.Sectn = (function(): dfModule {
 
         /**
          * 단락 수정 모달 호출
-         * @param {string|number} postNo - 단락 번호.
+         * @param {string|number} id - 단락 번호.
          */
-        mdfModal: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        mdfModal: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
-            const url: string = cF.util.bindUrl(Url.SECTN, {postNo});
+            const url: string = cF.util.bindUrl(Url.SECTN, {id});
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -144,10 +144,10 @@ dF.Sectn = (function(): dfModule {
 
         /**
          * 단락 삭제 (Ajax)
-         * @param {string|number} postNo - 단락 번호.
+         * @param {string|number} id - 단락 번호.
          */
-        delAjax: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        delAjax: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
@@ -155,7 +155,7 @@ dF.Sectn = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = cF.util.bindUrl(Url.SECTN, {postNo});
+                const url: string = cF.util.bindUrl(Url.SECTN, {id});
                 const ajaxData: Record<string, any> = { "actvtyCtgrCd": "${actvtyCtgrCd!}" };
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })

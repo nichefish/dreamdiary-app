@@ -95,7 +95,7 @@ public class JrnlSumryRestController
 
         // 객체 조회 및 모델에 추가
         final JrnlSumryDto retrievedDto = myJrnlSumryService.getMyDtlDtoByYy(yy);
-        final boolean isSuccess = (retrievedDto.getPostNo() != null);
+        final boolean isSuccess = (retrievedDto.getId() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
@@ -226,17 +226,17 @@ public class JrnlSumryRestController
      * 저널 결산 꿈 기록 완료 처리 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param postNo 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(value = {Url.JRNL_SUMRY_DREAM_COMPT_AJAX})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlSumryDreamComptAjax(
-            final @RequestParam("postNo") Integer postNo
+            final @RequestParam("id") Integer id
     ) throws Exception {
 
-        final boolean isSuccess = jrnlSumryService.dreamCompt(postNo);
+        final boolean isSuccess = jrnlSumryService.dreamCompt(id);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));

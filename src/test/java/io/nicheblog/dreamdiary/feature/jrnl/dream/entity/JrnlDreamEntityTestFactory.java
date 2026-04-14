@@ -28,7 +28,7 @@ public class JrnlDreamEntityTestFactory {
                 .contentType(ContentType.JRNL_DREAM.key)
                 .title("test_title")
                 .cn("test_cn")
-                .jrnlDayNo(jrnlDayEntity != null ? jrnlDayEntity.getPostNo() : null)
+                .jrnlDayId(jrnlDayEntity != null ? jrnlDayEntity.getId() : null)
                 .jrnlDay(toSmpEntity(jrnlDayEntity))
                 .build();
     }
@@ -57,7 +57,7 @@ public class JrnlDreamEntityTestFactory {
     private static JrnlDaySmpEntity toSmpEntity(final JrnlDayEntity jrnlDayEntity) {
         if (jrnlDayEntity == null) return null;
         return JrnlDaySmpEntity.builder()
-                .postNo(jrnlDayEntity.getPostNo())
+                .id(jrnlDayEntity.getId())
                 .contentType(jrnlDayEntity.getContentType())
                 .jrnlDt(jrnlDayEntity.getJrnlDt())
                 .dtUnknownYn(jrnlDayEntity.getDtUnknownYn())

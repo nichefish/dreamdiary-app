@@ -69,7 +69,6 @@ public class JrnlChapterSpec
     ) throws Exception {
 
         final List<Predicate> predicate = new ArrayList<>();
-
         // expressions
         final Join<JrnlChapterEntity, JrnlDaySmpEntity> jrnlDayJoin = root.join("jrnlDay", JoinType.INNER);
         final Expression<Date> effectiveDtExp = builder.coalesce(jrnlDayJoin.get("jrnlDt"), jrnlDayJoin.get("aprxmtDt"));
@@ -99,9 +98,9 @@ public class JrnlChapterSpec
                     final Integer mnth = (Integer) value;
                     if (mnth != 99) predicate.add(builder.equal(jrnlDayJoin.get(key), mnth));
                     continue;
-                case "jrnlDayNo":
+                case "jrnlDayId":
                     // 99 = 모든 월
-                    predicate.add(builder.equal(jrnlDayJoin.get("postNo"), value));
+                    predicate.add(builder.equal(jrnlDayJoin.get("id"), value));
                     continue;
                 case "dreamKeyword":
                     // 내용 like 검색
@@ -135,4 +134,5 @@ public class JrnlChapterSpec
         }
         throw new IllegalArgumentException("regstrId is required.");
     }
+
 }

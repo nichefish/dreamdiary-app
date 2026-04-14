@@ -43,7 +43,7 @@ public class SchdulPrtcpntEntity
 
     /** 일정 정보 */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "schdul_id", referencedColumnName = "post_no")
+    @JoinColumn(name = "schdul_id", referencedColumnName = "id")
     @Fetch(FetchMode.JOIN)
     @Comment("일정 정보")
     private SchdulEntity schdul;

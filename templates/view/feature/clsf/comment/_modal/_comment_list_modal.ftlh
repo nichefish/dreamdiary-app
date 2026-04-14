@@ -8,14 +8,14 @@
         return {
             /**
              * 댓글 목록 모달 호출
-             * @param {string|number} refPostNo - 참조할 게시물 번호.
+             * @param {string|number} refId - 참조할 게시물 번호.
              * @param {string} refContentType - 참조할 콘텐츠 타입.
              */
-            modal: function(refPostNo, refContentType) {
+            modal: function(refId, refContentType) {
                 event.stopPropagation();
-                if (isNaN(refPostNo) || !refContentType) return;
+                if (isNaN(refId) || !refContentType) return;
 
-                document.querySelector(`#commentProcForm [name="refPostNo"]`).value = refPostNo;
+                document.querySelector(`#commentProcForm [name="refId"]`).value = refId;
                 if (cF.util.isNotEmpty(refContentType)) {
                     document.querySelector(`#commentProcForm [name="refContentType"]`).value = refContentType;
                 }
@@ -57,7 +57,7 @@
 </@modal.layout>
 
 <form name="procForm" id="commentProcForm" method="get">
-    <input type="hidden" name="refPostNo" value="" />
+    <input type="hidden" name="refId" value="" />
     <input type="hidden" name="refContentType" value="${contentType!}" />
     <input type="hidden" name="actvtyCtgrCd" value="${actvtyCtgrCd!}" />
 </form>

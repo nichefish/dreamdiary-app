@@ -90,15 +90,15 @@ public class JrnlDayRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayRegAjax(
-            final @PathVariable(value = "postNo", required = false) Integer postNo,
+            final @PathVariable(value = "id", required = false) Integer id,
             final @Valid JrnlDayDto jrnlDay
     ) throws Exception {
 
-        boolean isReg = postNo == null;
+        boolean isReg = id == null;
         if (isReg) {
             boolean isDup = myJrnlDayService.dupChck(jrnlDay);
             if (isDup) {
-                jrnlDay.setPostNo(myJrnlDayService.getDupKey(jrnlDay));
+                jrnlDay.setId(myJrnlDayService.getDupKey(jrnlDay));
                 isReg = false;      // 등록 대신 기존 데이터 수정
             }
         }
@@ -113,18 +113,18 @@ public class JrnlDayRestController
      * 저널 일자 상세 조회 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param key 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_DAY})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayDtlAjax(
-            final @PathVariable("postNo") Integer key
+            final @PathVariable("id") Integer id
     ) throws Exception {
 
-        final JrnlDayDto retrievedDto = myJrnlDayQueryService.getMyDtlDtoEnriched(key);
-        final boolean isSuccess = (retrievedDto.getPostNo() != null);
+        final JrnlDayDto retrievedDto = myJrnlDayQueryService.getMyDtlDtoEnriched(id);
+        final boolean isSuccess = (retrievedDto.getId() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
@@ -134,17 +134,17 @@ public class JrnlDayRestController
      * 저널 일자 삭제 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param key 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @DeleteMapping(value = {Url.JRNL_DAY})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlDayDelAjax(
-            final @PathVariable("postNo") Integer key
+            final @PathVariable("id") Integer id
     ) throws Exception {
 
-        final ServiceResponse result = jrnlDayService.delete(key);
+        final ServiceResponse result = jrnlDayService.delete(id);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));

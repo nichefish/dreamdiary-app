@@ -44,7 +44,7 @@ public abstract class JrnlDiaryMapstruct
      */
     @Override
     @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
-    @Mapping(target = "jrnlChapter", source = "jrnlChapterNo", qualifiedByName = "mapJrnlChapter")
+    @Mapping(target = "jrnlChapter", source = "jrnlChapterId", qualifiedByName = "mapJrnlChapter")
     public abstract JrnlDiaryEntity toEntity(final JrnlDiaryPostDto dto) throws Exception;
 
     /**
@@ -56,7 +56,7 @@ public abstract class JrnlDiaryMapstruct
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
-    @Mapping(target = "jrnlChapter", source = "jrnlChapterNo", qualifiedByName = "mapJrnlChapter")
+    @Mapping(target = "jrnlChapter", source = "jrnlChapterId", qualifiedByName = "mapJrnlChapter")
     public abstract void updateFromDto(final JrnlDiaryPostDto dto, final @MappingTarget JrnlDiaryEntity entity) throws Exception;
 
     /**
@@ -66,8 +66,8 @@ public abstract class JrnlDiaryMapstruct
      * @return Dto -- 변환된 Dto 객체
      */
     @Named("toDto")
-    @Mapping(target = "jrnlChapterNo", source = "jrnlChapter.postNo")
-    @Mapping(target = "jrnlDayNo", source = "jrnlChapter.jrnlDayNo")
+    @Mapping(target = "jrnlChapterId", source = "jrnlChapter.id")
+    @Mapping(target = "jrnlDayId", source = "jrnlChapter.jrnlDayId")
     @Mapping(target = "stdrdDt", expression = "java(entity.getJrnlChapter().getJrnlDay() != null ? DateUtils.asStr(\"Y\".equals(entity.getJrnlChapter().getJrnlDay().getDtUnknownYn()) ? entity.getJrnlChapter().getJrnlDay().getAprxmtDt() : entity.getJrnlChapter().getJrnlDay().getJrnlDt(), DatePtn.DATE) : null)")
     @Mapping(target = "dtUnknownYn", expression = "java(entity.getJrnlChapter().getJrnlDay() != null ? entity.getJrnlChapter().getJrnlDay().getDtUnknownYn() : \"N\")")
     @Mapping(target = "jrnlDtWeekDay", expression = "java(entity.getJrnlChapter().getJrnlDay() != null && entity.getJrnlChapter().getJrnlDay().getJrnlDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJrnlChapter().getJrnlDay().getJrnlDt()) : null)")
@@ -77,13 +77,13 @@ public abstract class JrnlDiaryMapstruct
     public abstract JrnlDiaryDto toDto(final JrnlDiaryEntity entity) throws Exception;
 
     /**
-     * jrnlChapterNo로부터 JrnlChapterEntity 객체 생성
-     * @param jrnlChapterNo jrnlChapterNo
+     * jrnlChapterId로부터 JrnlChapterEntity 객체 생성
+     * @param jrnlChapterId jrnlChapterId
      * @return JrnlChapterEntity
      */
     @Named("mapJrnlChapter")
-    protected JrnlChapterEntity mapJrnlChapter(final Integer jrnlChapterNo) {
-        if (jrnlChapterNo == null) return null;
-        return em.getReference(JrnlChapterEntity.class, jrnlChapterNo);
+    protected JrnlChapterEntity mapJrnlChapter(final Integer jrnlChapterId) {
+        if (jrnlChapterId == null) return null;
+        return em.getReference(JrnlChapterEntity.class, jrnlChapterId);
     }
 }

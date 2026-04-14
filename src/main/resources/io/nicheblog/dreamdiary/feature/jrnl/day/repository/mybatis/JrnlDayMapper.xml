@@ -4,14 +4,14 @@
 <mapper namespace="io.nicheblog.dreamdiary.feature.jrnl.day.repository.mybatis.JrnlDayMapper">
 
     <!-- 삭제 데이터 조회 -->
-    <select id="getDeletedByPostNo" resultType="io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto">
-        /* JrnlDayMapper.getDeletedByPostNo */
+    <select id="getDeletedById" resultType="io.nicheblog.dreamdiary.feature.jrnl.day.model.JrnlDayDto">
+        /* JrnlDayMapper.getDeletedById */
         SELECT
-            day.post_no AS postNo,
-            day.regstr_id AS regstrId,
-            day.yy AS yy,
-            day.mnth AS mnth
+            day.id,
+            day.regstr_id,
+            day.yy,
+            day.mnth
         FROM jrnl_day day
-        WHERE day.post_no = #{postNo}
+        WHERE day.id = #{id}
     </select>
 </mapper>

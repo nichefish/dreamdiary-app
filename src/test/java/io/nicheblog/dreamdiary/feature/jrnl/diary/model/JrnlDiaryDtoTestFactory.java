@@ -31,7 +31,7 @@ public class JrnlDiaryDtoTestFactory {
      */
     public static JrnlDiaryDto createWithKey(final Integer key) throws Exception {
         return JrnlDiaryDto.builder()
-                .postNo(key)
+                .id(key)
                 .contentType(ContentType.JRNL_DIARY.key)
                 .build();
     }
@@ -51,7 +51,7 @@ public class JrnlDiaryDtoTestFactory {
      */
     public static JrnlDiaryPostDto createPostWithKey(final Integer key) throws Exception {
         return JrnlDiaryPostDto.builder()
-                .postNo(key)
+                .id(key)
                 .contentType(ContentType.JRNL_DIARY.key)
                 .build();
     }

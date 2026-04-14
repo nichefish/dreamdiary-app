@@ -22,7 +22,7 @@
 <#macro list_comment post >
     <#if post.comment?? && post.comment.cnt gt 0>
         <span class="mx-1 text-noti btn-active-warning fs-x-small cursor-pointer opacity-hover"
-              onclick="CommentList.modal(${post.postNo!}, '${post.contentType}');"
+              onclick="CommentList.modal(${post.id!}, '${post.contentType}');"
               data-bs-toggle="tooltip" data-bs-placement="top" title="<@spring.message 'txt.comment'/> 모달 호출">
         [${post.comment.cnt!0}]
         </span>
@@ -33,7 +33,7 @@
  * 목록 모달 팝업 열기 버튼 표시
  -->
 <#macro list_dtl_modal post func>
-    <#assign fullFunc = (func + "(" + post.postNo?c + ")") />
+    <#assign fullFunc = (func + "(" + post.id?c + ")") />
     <a class="badge badge-secondary p-2 btn-white bg-hover-white blank blink-slow float-end"
        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="모달로 보기">
         <i class="bi bi-stickies fs-5 text-noti opacity-hover" onclick="${fullFunc!}"></i>

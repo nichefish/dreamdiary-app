@@ -120,7 +120,7 @@ public class BoardPostDto
 
     @Override
     public Integer getKey() {
-        return this.postNo;
+        return this.id;
     }
 
     /** 위임 :: 첨부파일 모듈 */

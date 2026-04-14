@@ -86,12 +86,12 @@ public class JrnlChapterRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlChapterRegAjax(
-            final @PathVariable(value = "postNo", required = false) Integer postNo,
+            final @PathVariable(value = "id", required = false) Integer id,
             final @Valid JrnlChapterDto jrnlChapter
     ) throws Exception {
 
-        final boolean isMdf = postNo != null;
-        if (isMdf) jrnlChapter.setPostNo(postNo);
+        final boolean isMdf = id != null;
+        if (isMdf) jrnlChapter.setId(id);
 
         final ServiceResponse result = isMdf ? jrnlChapterService.modify(jrnlChapter) : jrnlChapterService.regist(jrnlChapter);
         final boolean isSuccess = result.getRslt();
@@ -111,11 +111,11 @@ public class JrnlChapterRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlChapterDtlAjax(
-            final @PathVariable("postNo") Integer key
+            final @PathVariable("id") Integer key
     ) throws Exception {
 
         final JrnlChapterDto retrievedDto = myJrnlChapterService.getMyDtlDtoWithCache(key);
-        final boolean isSuccess = (retrievedDto.getPostNo() != null);
+        final boolean isSuccess = (retrievedDto.getId() != null);
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(retrievedDto));
@@ -125,17 +125,17 @@ public class JrnlChapterRestController
      * 저널 챕터 삭제 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param postNo 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @DeleteMapping(value = {Url.JRNL_CHAPTER})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> jrnlChapterDelAjax(
-            final @PathVariable("postNo") Integer postNo
+            final @PathVariable("id") Integer id
     ) throws Exception {
 
-        final ServiceResponse result = jrnlChapterService.delete(postNo);
+        final ServiceResponse result = jrnlChapterService.delete(id);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -146,17 +146,17 @@ public class JrnlChapterRestController
      * 저널 챕터 텍스트 내보내기
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param postNo 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(value = {Url.JRNL_CHAPTER_EXPORT})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<byte[]> jrnlChapterExportTxtAjax(
-            final @PathVariable("postNo") Integer postNo
+            final @PathVariable("id") Integer id
     ) throws Exception {
 
-        final JrnlChapterDto retrievedDto = myJrnlChapterService.getMyDtlDtoWithCache(postNo);
+        final JrnlChapterDto retrievedDto = myJrnlChapterService.getMyDtlDtoWithCache(id);
         final String text = jrnlChapterExportService.buildTxt(retrievedDto);
         final byte[] bytes = text.getBytes(StandardCharsets.UTF_8);
         final String filename = "chapter_" + DateUtils.asStr(retrievedDto.getStdrdDt(), DatePtn.PDATE) + "_@" + DateUtils.getCurrDateStr(DatePtn.PDATE) + ".txt";

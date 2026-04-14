@@ -15,7 +15,7 @@ class JrnlDayCacheEvictorTest {
     void evict_clearsCurrentMonthListCacheAndStateMaps() throws Exception {
         final JrnlDayCacheEvictor evictor = new JrnlDayCacheEvictor();
         final JrnlCacheEvictParam param = JrnlCacheEvictParam.builder()
-                .postNo(101)
+                .id(101)
                 .yy(2026)
                 .mnth(3)
                 .build();

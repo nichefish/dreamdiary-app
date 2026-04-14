@@ -73,7 +73,7 @@ class JrnlDiaryServiceTest {
         final JrnlDiaryDto registered = (JrnlDiaryDto) registResult.getRsltObj();
 
         // Then::
-        assertNotNull(registered.getPostNo(), "등록이 정상적으로 이루어지지 않았습니다.");
+        assertNotNull(registered.getId(), "등록이 정상적으로 이루어지지 않았습니다.");
     }
 
     /**
@@ -93,7 +93,7 @@ class JrnlDiaryServiceTest {
         final JrnlDiaryDto modified = (JrnlDiaryDto) modifyResult.getRsltObj();
 
         // Then::
-        assertNotNull(modified.getPostNo(), "수정이 정상적으로 이루어지지 않았습니다.");
+        assertNotNull(modified.getId(), "수정이 정상적으로 이루어지지 않았습니다.");
         assertEquals("test", modified.getCn(), "수정이 정상적으로 이루어지지 않았습니다.");
     }
 

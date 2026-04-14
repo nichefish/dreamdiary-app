@@ -55,7 +55,7 @@ public class HistoryService {
      */
     @Transactional
     public void addHistory(final BaseClsfKey refKey, final String cn, final HistoryType historyType, final Integer fromHistoryId) {
-        if (refKey == null || refKey.getPostNo() == null || refKey.getContentType() == null) return;
+        if (refKey == null || refKey.getId() == null || refKey.getContentType() == null) return;
         if (AuthUtils.getLgnUsername() == null) return;
 
         final HistoryEntity history = new HistoryEntity(refKey, cn, historyType, fromHistoryId);
@@ -64,9 +64,9 @@ public class HistoryService {
 
     @Transactional(readOnly = true)
     public List<HistoryDto> getHistoryList(final BaseClsfKey refKey) throws Exception {
-        if (refKey == null || refKey.getPostNo() == null || refKey.getContentType() == null) return new ArrayList<>();
+        if (refKey == null || refKey.getId() == null || refKey.getContentType() == null) return new ArrayList<>();
 
-        final List<HistoryEntity> historyList = historyRepository.findAllByRefPostNoAndRefContentTypeOrderByRegDtDesc(refKey.getPostNo(), refKey.getContentType());
+        final List<HistoryEntity> historyList = historyRepository.findAllByRefIdAndRefContentTypeOrderByRegDtDesc(refKey.getId(), refKey.getContentType());
         final List<HistoryDto> result = new ArrayList<>();
         for (final HistoryEntity history : historyList) {
             final HistoryDto dto = historyMapstruct.toDto(history);
@@ -78,9 +78,9 @@ public class HistoryService {
 
     @Transactional(readOnly = true)
     public Optional<HistoryDto> getHistory(final BaseClsfKey refKey, final Integer historyId) throws Exception {
-        if (refKey == null || refKey.getPostNo() == null || refKey.getContentType() == null || historyId == null) return Optional.empty();
+        if (refKey == null || refKey.getId() == null || refKey.getContentType() == null || historyId == null) return Optional.empty();
 
-        final Optional<HistoryEntity> history = historyRepository.findByIdAndRefPostNoAndRefContentType(historyId, refKey.getPostNo(), refKey.getContentType());
+        final Optional<HistoryEntity> history = historyRepository.findByIdAndRefIdAndRefContentType(historyId, refKey.getId(), refKey.getContentType());
         if (history.isEmpty()) return Optional.empty();
 
         final HistoryDto dto = historyMapstruct.toDto(history.get());
@@ -90,9 +90,9 @@ public class HistoryService {
 
     @Transactional
     public boolean deleteHistory(final BaseClsfKey refKey, final Integer historyId) {
-        if (refKey == null || refKey.getPostNo() == null || refKey.getContentType() == null || historyId == null) return false;
+        if (refKey == null || refKey.getId() == null || refKey.getContentType() == null || historyId == null) return false;
 
-        final Optional<HistoryEntity> history = historyRepository.findByIdAndRefPostNoAndRefContentType(historyId, refKey.getPostNo(), refKey.getContentType());
+        final Optional<HistoryEntity> history = historyRepository.findByIdAndRefIdAndRefContentType(historyId, refKey.getId(), refKey.getContentType());
         if (history.isEmpty()) return false;
 
         historyRepository.delete(history.get());
@@ -101,9 +101,9 @@ public class HistoryService {
 
     @Transactional
     public boolean deleteAllHistory(final BaseClsfKey refKey) {
-        if (refKey == null || refKey.getPostNo() == null || refKey.getContentType() == null) return false;
+        if (refKey == null || refKey.getId() == null || refKey.getContentType() == null) return false;
 
-        historyRepository.deleteAllByRefPostNoAndRefContentType(refKey.getPostNo(), refKey.getContentType());
+        historyRepository.deleteAllByRefIdAndRefContentType(refKey.getId(), refKey.getContentType());
         return true;
     }
 

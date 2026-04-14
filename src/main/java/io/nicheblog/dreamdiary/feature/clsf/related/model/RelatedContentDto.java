@@ -32,13 +32,13 @@ public class RelatedContentDto
     private Integer id;
 
     @Positive
-    private Integer leftPostNo;
+    private Integer leftId;
 
     @Size(max = 30)
     private String leftContentType;
 
     @Positive
-    private Integer rightPostNo;
+    private Integer rightId;
 
     @Size(max = 30)
     private String rightContentType;
@@ -54,12 +54,20 @@ public class RelatedContentDto
     @Size(max = 20)
     private String originType = RelationOriginType.MANUAL.key;
 
-    private Integer targetPostNo;
+    private Integer targetId;
     private String targetContentType;
     private String targetTitle;
 
     @Override
     public Integer getKey() {
         return this.id;
+    }
+
+    public Integer getTargetId() {
+        return this.targetId;
+    }
+
+    public void setTargetId(final Integer targetId) {
+        this.targetId = targetId;
     }
 }

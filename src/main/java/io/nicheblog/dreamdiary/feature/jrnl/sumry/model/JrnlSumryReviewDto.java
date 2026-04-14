@@ -46,7 +46,7 @@ public class JrnlSumryReviewDto
     /* ----- */
 
     /** 저널 결산 번호  */
-    private Integer jrnlSumryNo;
+    private Integer jrnlSumryId;
     /** 결산 년도 */
     private Integer yy;
 
@@ -54,7 +54,7 @@ public class JrnlSumryReviewDto
 
     @Override
     public Integer getKey() {
-        return this.postNo;
+        return this.id;
     }
 
     /** 위임 :: 첨부파일 모듈 */

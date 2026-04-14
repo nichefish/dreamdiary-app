@@ -56,9 +56,9 @@ public class JrnlDiaryDto
     /* ----- */
 
     /** 저널 일자 번호 */
-    private Integer jrnlDayNo;
+    private Integer jrnlDayId;
     /** 저널 챕터 번호 */
-    private Integer jrnlChapterNo;
+    private Integer jrnlChapterId;
     /** 저널 기준일자 */
     private String stdrdDt;
     /** 저널 기준일자 */
@@ -88,7 +88,7 @@ public class JrnlDiaryDto
     @Builder.Default
     private Boolean isChapterChanged = false;
     /** 이전 저널 챕터 번호 */
-    private Integer prevJrnlChapterNo;
+    private Integer prevJrnlChapterId;
 
     /* ----- */
 
@@ -112,7 +112,7 @@ public class JrnlDiaryDto
 
     @Override
     public Integer getKey() {
-        return this.postNo;
+        return this.id;
     }
 
     /** 위임 :: 첨부파일 모듈 */
