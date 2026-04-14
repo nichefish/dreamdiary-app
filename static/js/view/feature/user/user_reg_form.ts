@@ -11,6 +11,9 @@ const Page: Page = (function(): Page {
          * Page 객체 초기화
          */
         init: function(): void {
+            /* render handlebars template. */
+            dF.User.renderRegFormFromPageData();
+
             /* initialize modules. */
             dF.User.init();
             dF.UserEmplym.init();
@@ -18,7 +21,7 @@ const Page: Page = (function(): Page {
             /* initialize form. */
             dF.User.initForm();
 
-            if (!dF.User.isMdf) {
+            if (!dF.User.isMdf()) {
                 // 등록화면:: 사용자 ID 변경입력시 중복체크 통과여부 초기화
                 $("#username").on("keyup", function(): void {
                     $("#username_validate_span").empty();
