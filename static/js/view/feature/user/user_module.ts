@@ -8,7 +8,6 @@ if (typeof dF === 'undefined') { var dF = {} as any; }
 dF.User = (function(): dfModule {
     return {
         initialized: false,
-        isMdf: $("#userRegForm").data("mode") === "modify",
 
         /**
          * initializes module.
@@ -18,6 +17,20 @@ dF.User = (function(): dfModule {
 
             dF.User.initialized = true;
             console.log("'dF.User' module initialized.");
+        },
+
+        /**
+         * 등록/수정 화면 모드 여부
+         */
+        isMdf: function(): boolean {
+            return $("#userRegForm").data("mode") === "modify";
+        },
+
+        /**
+         * 페이지에 포함된 사용자 등록 폼 템플릿 렌더링
+         */
+        renderRegFormFromPageData: function(): void {
+            cF.handlebars.template({}, "user_reg_form");
         },
 
         /**
@@ -95,7 +108,7 @@ dF.User = (function(): dfModule {
                 return false;
             }
             Swal.fire({
-                text: dF.User.isMdf ? Message.get("view.cnfm.mdf") : Message.get("view.cnfm.reg"),
+                text: dF.User.isMdf() ? Message.get("view.cnfm.mdf") : Message.get("view.cnfm.reg"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
@@ -193,7 +206,7 @@ dF.User = (function(): dfModule {
          * 등록/수정 처리(Ajax)
          */
         regAjax: function(): void {
-            const url: string = dF.User.isMdf ? Url.USER_MDF_AJAX : Url.USER_REG_AJAX;
+            const url: string = dF.User.isMdf() ? Url.USER_MDF_AJAX : Url.USER_REG_AJAX;
             const ajaxData: FormData = new FormData(document.getElementById("userRegForm") as HTMLFormElement);
             cF.$ajax.multipart(url, ajaxData, function(res: AjaxResponse): void {
                 Swal.fire({ text: res.message })
@@ -308,7 +321,7 @@ dF.User = (function(): dfModule {
          * 목록 화면으로 이동
          */
         list: function(): void {
-            const listUrl: string = Url.USER_LIST + (dF.User.isMdf ? "?isBackToList=Y" : "");
+            const listUrl: string = Url.USER_LIST + (dF.User.isMdf() ? "?isBackToList=Y" : "");
             cF.ui.blockUIReplace(listUrl);
         }
     }

@@ -20,6 +20,13 @@ dF.UserReqst = (function(): dfModule {
         },
 
         /**
+         * 페이지에 포함된 사용자 신청 폼 템플릿 렌더링
+         */
+        renderRegFormFromPageData: function(): void {
+            cF.handlebars.template({}, "user_reqst_form");
+        },
+
+        /**
          * form init
          */
         initForm: function(): void {
