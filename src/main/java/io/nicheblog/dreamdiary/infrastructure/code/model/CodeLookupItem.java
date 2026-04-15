@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * CdLookupItem.
+ * CodeLookupItem.
  * <pre>
  *  코드 조회/캐시 전용 인프라 모델.
  * </pre>
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CdLookupItem {
+public class CodeLookupItem {
 
     /** 분류 코드 */
     private String clCd;

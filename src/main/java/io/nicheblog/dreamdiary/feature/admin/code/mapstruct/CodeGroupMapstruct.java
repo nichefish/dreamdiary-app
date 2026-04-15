@@ -4,11 +4,11 @@ import io.nicheblog.dreamdiary.feature.admin.code.model.CodeGroupDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeGroupEntity;
-import io.nicheblog.dreamdiary.infrastructure.code.utils.CdUtils;
+import io.nicheblog.dreamdiary.infrastructure.code.utils.CodeUtils;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {CdUtils.class})
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {CodeUtils.class})
 public interface CodeGroupMapstruct
         extends BaseWriteMapstruct<CodeGroupDto, CodeGroupEntity>, BaseReadMapstruct<CodeGroupDto, CodeGroupEntity> {
 
@@ -16,7 +16,7 @@ public interface CodeGroupMapstruct
 
     @Override
     @Named("toDto")
-    @Mapping(target = "clCtgrNm", expression = "java(CdUtils.getDtlCdNm(\"CL_CTGR_CD\", entity.getClCtgrCd()))")
+    @Mapping(target = "clCtgrNm", expression = "java(CodeUtils.getDtlCdNm(\"CL_CTGR_CD\", entity.getClCtgrCd()))")
     @Mapping(target = "dtlCdList", expression = "java(CodeItemMapstruct.INSTANCE.toDtoList(entity.getDtlCdList()))")
     CodeGroupDto toDto(final CodeGroupEntity entity) throws Exception;
 

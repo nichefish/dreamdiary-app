@@ -1,27 +1,27 @@
 package io.nicheblog.dreamdiary.infrastructure.code.utils;
 
-import io.nicheblog.dreamdiary.infrastructure.code.service.CdLookupService;
+import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
 /**
- * CdUtils
+ * CodeUtils
  *
  * @author nichefish
  */
 @Component
 @RequiredArgsConstructor
-public class CdUtils {
+public class CodeUtils {
 
-    private final CdLookupService autowiredCdLookupService;
-    private static CdLookupService cdLookupService;
+    private final CodeLookupService autowiredCodeLookupService;
+    private static CodeLookupService codeLookupService;
 
     /** static 맥락에서 사용할 수 있도록 bean 주입 */
     @PostConstruct
     private void init() {
-        cdLookupService = autowiredCdLookupService;
+        codeLookupService = autowiredCodeLookupService;
     }
 
     /**
@@ -32,7 +32,7 @@ public class CdUtils {
      * @return {@link String} -- 상세 코드명
      */
     public static String getDtlCdNm(final String clCd, final String dtlCd) {
-        return cdLookupService.getDtlCdNm(clCd, dtlCd);
+        return codeLookupService.getDtlCdNm(clCd, dtlCd);
     }
 
 }

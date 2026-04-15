@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.user.reqst.controller;
 
-import io.nicheblog.dreamdiary.infrastructure.code.service.CdLookupService;
+import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
 import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDto;
 import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDtoTestFactory;
 import io.nicheblog.dreamdiary.feature.user.reqst.service.UserReqstService;
@@ -49,8 +49,8 @@ class UserReqstPageControllerTest {
     private MockMvc mockMvc;
     @MockBean(name = "userReqstService")
     private UserReqstService userReqstService;
-    @MockBean(name = "cdLookupService")
-    private CdLookupService cdLookupService;
+    @MockBean(name = "codeLookupService")
+    private CodeLookupService codeLookupService;
 
     @BeforeEach
     public void setup(final WebApplicationContext webApplicationContext) {
@@ -69,7 +69,7 @@ class UserReqstPageControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        verify(cdLookupService, times(5)).setCdListToModel(anyString(), any());
+        verify(codeLookupService, times(5)).setCdListToModel(anyString(), any());
 
         // then::
         final String viewName = Objects.requireNonNull(result.getModelAndView()).getViewName();

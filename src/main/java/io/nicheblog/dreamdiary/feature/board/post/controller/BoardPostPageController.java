@@ -13,7 +13,7 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;
-import io.nicheblog.dreamdiary.infrastructure.code.service.CdLookupService;
+import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.PaginationInfo;
@@ -53,7 +53,7 @@ public class BoardPostPageController
 
     private final BoardDefService boardDefService;
     private final BoardPostService boardPostService;
-    private final CdLookupService cdLookupService;
+    private final CodeLookupService codeLookupService;
     private final TagService tagService;
 
     /**
@@ -90,7 +90,7 @@ public class BoardPostPageController
         model.addAttribute("tagList", tagService.getContentSpecificTagList(boardDef));
         // 코드 정보 모델에 추가
         final BoardDefDto boardDefInfo = boardDefService.getDtlDto(boardDef);
-        cdLookupService.setCdListToModel(boardDefInfo.getCtgrClCd(), model);
+        codeLookupService.setCdListToModel(boardDefInfo.getCtgrClCd(), model);
         // 목록 검색 URL + 파라미터 모델에 추가
         ParamUtils.setModelAttrMap(searchParam, baseUrl, model);
 
@@ -122,9 +122,9 @@ public class BoardPostPageController
         model.addAttribute(Constant.FORM_MODE, "regist");
         // 코드 정보 모델에 추가
         final BoardDefDto boardDefInfo = boardDefService.getDtlDto(boardDef);
-        cdLookupService.setCdListToModel(boardDefInfo.getCtgrClCd(), model);
-        cdLookupService.setCdListToModel(Code.MDFABLE_CD, model);
-        cdLookupService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
+        codeLookupService.setCdListToModel(boardDefInfo.getCtgrClCd(), model);
+        codeLookupService.setCdListToModel(Code.MDFABLE_CD, model);
+        codeLookupService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
         // CmmUtils.setModelFlsysPath(model);
 
         return "/view/feature/board/post/board_post_reg_form";
@@ -216,9 +216,9 @@ public class BoardPostPageController
         model.addAttribute(Constant.FORM_MODE, "modify");
         // 코드 정보 모델에 추가
         final BoardDefDto boardDefInfo = boardDefService.getDtlDto(boardDef);
-        cdLookupService.setCdListToModel(boardDefInfo.getCtgrClCd(), model);
-        cdLookupService.setCdListToModel(Code.MDFABLE_CD, model);
-        cdLookupService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
+        codeLookupService.setCdListToModel(boardDefInfo.getCtgrClCd(), model);
+        codeLookupService.setCdListToModel(Code.MDFABLE_CD, model);
+        codeLookupService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
         // CmmUtils.setModelFlsysPath(model);
         
         return "/view/feature/board/post/board_post_reg_form";

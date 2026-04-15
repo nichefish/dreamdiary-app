@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.infrastructure.code.service;
 
 import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemEntity;
-import io.nicheblog.dreamdiary.infrastructure.code.mapstruct.CdLookupMapstruct;
-import io.nicheblog.dreamdiary.infrastructure.code.model.CdLookupItem;
+import io.nicheblog.dreamdiary.infrastructure.code.mapstruct.CodeLookupMapstruct;
+import io.nicheblog.dreamdiary.infrastructure.code.model.CodeLookupItem;
 import io.nicheblog.dreamdiary.infrastructure.code.repository.jpa.CodeItemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * CdLookupService.
+ * CodeLookupService.
  * <pre>
  *  코드 조회 전용 서비스.
  *  DB 조회 대신 인메모리 캐시를 우선 사용하고, miss 시 해당 clCd만 재로딩한다.
@@ -30,15 +30,15 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class CdLookupService {
+public class CodeLookupService {
 
     private static final String USE_YN = "Y";
 
     private final CodeItemRepository dtlCdRepository;
-    private final CdLookupMapstruct cdLookupMapstruct;
+    private final CodeLookupMapstruct codeLookupMapstruct;
 
     /** clCd -> 상세코드 목록 캐시 */
-    private final Map<String, List<CdLookupItem>> cdItemListCacheByClCd = new ConcurrentHashMap<>();
+    private final Map<String, List<CodeLookupItem>> codeItemListCacheByClCd = new ConcurrentHashMap<>();
     /** clCd + dtlCd -> 상세코드명 캐시 */
     private final Map<String, String> dtlCdNmCache = new ConcurrentHashMap<>();
 
@@ -57,13 +57,13 @@ public class CdLookupService {
     /**
      * clCd 기준 상세코드 목록 조회 (인메모리 우선).
      */
-    public List<CdLookupItem> getCdItemListByClCd(final String clCd) {
+    public List<CodeLookupItem> getCdItemListByClCd(final String clCd) {
         if (StringUtils.isEmpty(clCd)) return null;
 
-        List<CdLookupItem> cached = cdItemListCacheByClCd.get(clCd);
+        List<CodeLookupItem> cached = codeItemListCacheByClCd.get(clCd);
         if (cached == null) {
             cached = loadCdItemList(clCd);
-            cdItemListCacheByClCd.put(clCd, cached);
+            codeItemListCacheByClCd.put(clCd, cached);
         }
         return cached.isEmpty() ? null : cached;
     }
@@ -78,10 +78,10 @@ public class CdLookupService {
         final String cachedNm = dtlCdNmCache.get(cacheKey);
         if (cachedNm != null) return cachedNm;
 
-        final List<CdLookupItem> dtlCdList = getCdItemListByClCd(clCd);
+        final List<CodeLookupItem> dtlCdList = getCdItemListByClCd(clCd);
         if (CollectionUtils.isEmpty(dtlCdList)) return null;
 
-        for (final CdLookupItem item : dtlCdList) {
+        for (final CodeLookupItem item : dtlCdList) {
             if (!dtlCd.equals(item.getDtlCd())) continue;
             dtlCdNmCache.put(cacheKey, item.getDtlCdNm());
             return item.getDtlCdNm();
@@ -95,22 +95,22 @@ public class CdLookupService {
     public synchronized void reloadAll() {
         final List<CodeItemEntity> allCdList = dtlCdRepository.findAllByUseYnOrderByClCdAscSortOrderAsc(USE_YN);
 
-        cdItemListCacheByClCd.clear();
+        codeItemListCacheByClCd.clear();
         dtlCdNmCache.clear();
         if (CollectionUtils.isEmpty(allCdList)) return;
 
-        final Map<String, List<CdLookupItem>> groupedMap = new ConcurrentHashMap<>();
+        final Map<String, List<CodeLookupItem>> groupedMap = new ConcurrentHashMap<>();
         for (final CodeItemEntity entity : allCdList) {
-            final CdLookupItem item = cdLookupMapstruct.toLookupItem(entity);
+            final CodeLookupItem item = codeLookupMapstruct.toLookupItem(entity);
             groupedMap.computeIfAbsent(item.getClCd(), key -> new ArrayList<>()).add(item);
             dtlCdNmCache.put(getDtlCdNmCacheKey(item.getClCd(), item.getDtlCd()), item.getDtlCdNm());
         }
 
         groupedMap.forEach((clCd, itemList) ->
-                cdItemListCacheByClCd.put(clCd, Collections.unmodifiableList(itemList))
+                codeItemListCacheByClCd.put(clCd, Collections.unmodifiableList(itemList))
         );
         log.info("cd cache preloaded. clCd count: {}, dtlCd count: {}",
-                cdItemListCacheByClCd.size(), dtlCdNmCache.size());
+                codeItemListCacheByClCd.size(), dtlCdNmCache.size());
     }
 
     /**
@@ -119,7 +119,7 @@ public class CdLookupService {
     public void evictClCdCache(final String clCd) {
         if (StringUtils.isEmpty(clCd)) return;
 
-        cdItemListCacheByClCd.remove(clCd);
+        codeItemListCacheByClCd.remove(clCd);
         dtlCdNmCache.keySet().removeIf(key -> key.startsWith(clCd + "::"));
     }
 
@@ -130,7 +130,7 @@ public class CdLookupService {
         if (StringUtils.isEmpty(clCd)) return;
 
         // 목록 캐시를 비워야 dtlCdNm 변경/사용여부 변경이 안전하게 반영된다.
-        cdItemListCacheByClCd.remove(clCd);
+        codeItemListCacheByClCd.remove(clCd);
         if (StringUtils.isNotEmpty(dtlCd)) {
             dtlCdNmCache.remove(getDtlCdNmCacheKey(clCd, dtlCd));
         } else {
@@ -138,15 +138,15 @@ public class CdLookupService {
         }
     }
 
-    private List<CdLookupItem> loadCdItemList(final String clCd) {
+    private List<CodeLookupItem> loadCdItemList(final String clCd) {
         final List<CodeItemEntity> dtlCdEntityList = dtlCdRepository.findByClCdAndUseYnOrderBySortOrderAsc(clCd, USE_YN);
         if (CollectionUtils.isEmpty(dtlCdEntityList)) {
             return Collections.emptyList();
         }
 
-        final List<CdLookupItem> itemList = new ArrayList<>(dtlCdEntityList.size());
+        final List<CodeLookupItem> itemList = new ArrayList<>(dtlCdEntityList.size());
         for (final CodeItemEntity entity : dtlCdEntityList) {
-            final CdLookupItem item = cdLookupMapstruct.toLookupItem(entity);
+            final CodeLookupItem item = codeLookupMapstruct.toLookupItem(entity);
             itemList.add(item);
             dtlCdNmCache.put(getDtlCdNmCacheKey(item.getClCd(), item.getDtlCd()), item.getDtlCdNm());
         }

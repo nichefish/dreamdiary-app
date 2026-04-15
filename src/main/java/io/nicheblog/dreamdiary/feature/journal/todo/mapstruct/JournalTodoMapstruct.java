@@ -7,7 +7,7 @@ import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.code.utils.CdUtils;
+import io.nicheblog.dreamdiary.infrastructure.code.utils.CodeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
@@ -20,7 +20,7 @@ import org.mapstruct.factory.Mappers;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CdUtils.class}, builder = @Builder(disableBuilder = true))
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CodeUtils.class}, builder = @Builder(disableBuilder = true))
 public interface JournalTodoMapstruct
         extends BaseWriteMapstruct<JournalTodoDto, JournalTodoEntity>, BaseClsfMapstruct<JournalTodoDto, JournalTodoEntity> {
 
@@ -34,7 +34,7 @@ public interface JournalTodoMapstruct
      */
     @Override
     @Named("toDto")
-    @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"JOURNAL_TODO_CTGR_CD\", entity.getCtgrCd()))")
+    @Mapping(target = "ctgrNm", expression = "java(CodeUtils.getDtlCdNm(\"JOURNAL_TODO_CTGR_CD\", entity.getCtgrCd()))")
     @Mapping(target = "markdownContent", expression = "java(StringUtils.isEmpty(entity.getContent()) ? \"-\" : MarkdownUtils.markdown(entity.getContent()))")
     JournalTodoDto toDto(final JournalTodoEntity entity) throws Exception;
 
