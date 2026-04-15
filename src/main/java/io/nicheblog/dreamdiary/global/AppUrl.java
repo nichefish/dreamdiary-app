@@ -74,7 +74,6 @@ public interface AppUrl {
     String USER_MY_DTL = Prefix.APP + "/user/my/dtl.do";
 
     /** 태그 */
-    String TAG_LIST = Prefix.APP + "/tag/list.do";
     String TAG_CLOUD_PAGE = Prefix.APP + "/tag/tag-cloud-page.do";
 
     /** 인증 정책 관리 */
