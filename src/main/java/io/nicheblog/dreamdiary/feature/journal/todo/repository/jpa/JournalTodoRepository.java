@@ -32,7 +32,7 @@ public interface JournalTodoRepository
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    @Query("SELECT MAX(todo.idx) " +
+    @Query("SELECT MAX(todo.sortOrder) " +
             "FROM JournalTodoEntity todo " +
             "WHERE todo.yy = :yy AND NOT(todo.mnth = :mnth)")
     Optional<Integer> findLastIndexByYyMnth(final @Param("yy") Integer yy, final @Param("mnth") Integer mnth);

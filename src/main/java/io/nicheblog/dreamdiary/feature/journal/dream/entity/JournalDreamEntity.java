@@ -88,8 +88,8 @@ public class JournalDreamEntity
     private JournalDaySmpEntity journalDay;
 
     /** 순번 */
-    @Column(name = "idx", columnDefinition = "INT DEFAULT 1")
-    private Integer idx;
+    @Column(name = "sort_order", columnDefinition = "INT DEFAULT 1")
+    private Integer sortOrder;
 
     /** 악몽 여부 (Y/N) */
     @Builder.Default
@@ -115,14 +115,14 @@ public class JournalDreamEntity
 
     /** 저널 해석 목록 */
     @OneToMany(mappedBy = "journalDream", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("idx ASC")
+    @OrderBy("sortOrder ASC")
     @Comment("저널 해석 목록")
     private List<JournalIntrptEntity> journalIntrptList;
 
     /** 인덱스 변경 여부 */
     @Builder.Default
     @Transient
-    private Boolean isIdxChanged = false;
+    private Boolean isSortOrderChanged = false;
 
     /* ----- */
 

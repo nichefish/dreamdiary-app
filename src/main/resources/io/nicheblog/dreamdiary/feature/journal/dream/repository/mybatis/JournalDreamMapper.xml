@@ -7,7 +7,7 @@
         <id property="id" column="id"/>
         <result property="createdBy" column="created_by"/>
         <result property="journalDayId" column="journal_day_id"/>
-        <result property="idx" column="idx"/>
+        <result property="sortOrder" column="sort_order"/>
         <result property="yy" column="yy"/>
         <result property="mnth" column="mnth"/>
     </resultMap>
@@ -19,7 +19,7 @@
             dream.id,
             dream.created_by,
             dream.journal_day_id,
-            dream.idx,
+            dream.sort_order,
             day.yy AS yy,
             day.mnth AS mnth
         FROM journal_dream dream
@@ -34,7 +34,7 @@
         SELECT *
         FROM journal_dream
         WHERE journal_day_id = #{journalDayId} AND deleted_at IS NULL
-        ORDER BY idx
+        ORDER BY sort_order
     </select>
 
     <!-- 인덱스 갱신 -->
@@ -42,7 +42,7 @@
         /* JournalDreamMapper.batchUpdateIdx */
         <foreach collection="list" item="item" separator=";">
             UPDATE journal_dream
-            SET idx = #{item.idx}
+            SET sort_order = #{item.sortOrder}
             WHERE id = #{item.id} AND deleted_at IS NULL
         </foreach>
     </update>

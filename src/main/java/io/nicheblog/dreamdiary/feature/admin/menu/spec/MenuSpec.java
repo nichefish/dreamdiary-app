@@ -38,7 +38,7 @@ public class MenuSpec
     ) {
         // distinct
         List<Order> orders = new ArrayList<>();
-        orders.add(builder.asc(root.get("idx")));
+        orders.add(builder.asc(root.get("sortOrder")));
         query.orderBy(orders);
     }
 }

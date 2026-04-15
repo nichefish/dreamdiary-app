@@ -24,5 +24,5 @@ public class DtlCdParam
         extends BaseParam {
 
     /** 정렬순서 배열 */
-    private List<DtlCdDto> idxs;
+    private List<DtlCdDto> sortOrders;
 }

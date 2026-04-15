@@ -24,5 +24,5 @@ public class SectnParam
         extends BaseParam {
 
     /** 정렬순서 배열 */
-    private List<SectnDto> idx;
+    private List<SectnDto> sortOrders;
 }

@@ -93,7 +93,7 @@ dF.Menu = (function(): dfModule {
             const items: Record<string, number>[] = dF.Menu.getSortableChildren(container, itemSelector)
                 .map((item: HTMLElement, idx: number): Record<string, number> => ({
                     "id": Number(item.dataset.id),
-                    "idx": idx,
+                    "sortOrder": idx,
                 }));
 
             return {
@@ -128,7 +128,7 @@ dF.Menu = (function(): dfModule {
             const targetItems: Record<string, number>[] = sortedOrder.map(
                 (id: string, idx: number): Record<string, number> => ({
                     "id": Number(id),
-                    "idx": idx,
+                    "sortOrder": idx,
                 })
             );
             groups.push({ "upperMenuId": targetUpperMenuId, "items": targetItems });
@@ -139,7 +139,7 @@ dF.Menu = (function(): dfModule {
                     .filter((el: HTMLElement): boolean => Number(el.dataset.id) !== movedId)
                     .map((el: HTMLElement, idx: number): Record<string, number> => ({
                         "id": Number(el.dataset.id),
-                        "idx": idx,
+                        "sortOrder": idx,
                     }));
                 groups.push({ "upperMenuId": sourceUpperMenuId, "items": sourceItems });
             }

@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS journal_chapter (
     --
     title VARCHAR(200) COMMENT '제목',
     ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
-    idx INT DEFAULT 1 COMMENT '저널 챕터 인덱스',
+    sort_order INT DEFAULT 1 COMMENT '저널 챕터 인덱스',
     collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS journal_diary (
     --
     title VARCHAR(200) COMMENT '제목',
     cn LONGTEXT COMMENT '내용',
-    idx INT DEFAULT 1 COMMENT '저널 일기 인덱스',
+    sort_order INT DEFAULT 1 COMMENT '저널 일기 인덱스',
     -- ATCH_FILE
     atch_file_id INT COMMENT '첨부파일 번호',
     -- AUDIT
@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS journal_dream (
     --
     title VARCHAR(200) COMMENT '제목',
     cn LONGTEXT COMMENT '내용',
-    idx INT DEFAULT 1 COMMENT '저널 꿈 인덱스',
+    sort_order INT DEFAULT 1 COMMENT '저널 꿈 인덱스',
     halluc_yn CHAR(1) DEFAULT  'N' COMMENT '입면환각 여부 (Y/N)',
     nhtmr_yn CHAR(1) DEFAULT  'N' COMMENT '악몽 여부 (Y/N)',
     else_dream_yn CHAR(1) DEFAULT 'N' COMMENT '타인 꿈 여부 (Y/N)',
@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS journal_intrpt (
     --
     title VARCHAR(200) COMMENT '제목',
     cn LONGTEXT COMMENT '내용',
-    idx INT DEFAULT 1 COMMENT '저널 해석 인덱스',
+    sort_order INT DEFAULT 1 COMMENT '저널 해석 인덱스',
     resolved_yn CHAR(1) DEFAULT 'N' COMMENT '정리완료 여부 (Y/N)',
     collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)',
     -- POST
@@ -158,7 +158,7 @@ CREATE TABLE IF NOT EXISTS journal_todo (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 결산 ID',
     content_type VARCHAR(32) DEFAULT 'JOURNAL_TODO' COMMENT '컨텐츠 타입',
     --
-    idx INT DEFAULT 1 COMMENT '저널 일기 인덱스',
+    sort_order INT DEFAULT 1 COMMENT '저널 일기 인덱스',
     yy INT UNIQUE COMMENT '결산 년도',
     mnth INT COMMENT '월',
     -- POST
@@ -235,7 +235,7 @@ CREATE TABLE IF NOT EXISTS journal_sumry_review (
     content_type VARCHAR(32) DEFAULT 'JOURNAL_SUMRY_REVIEW' COMMENT '컨텐츠 타입',
     --
     journal_sumry_id INT COMMENT '저널 결산 번호',
-    idx INT DEFAULT 1 COMMENT '저널 결산 리뷰 인덱스',
+    sort_order INT DEFAULT 1 COMMENT '저널 결산 리뷰 인덱스',
     -- POST
     title VARCHAR(200) COMMENT '제목',
     cn LONGTEXT COMMENT '내용',

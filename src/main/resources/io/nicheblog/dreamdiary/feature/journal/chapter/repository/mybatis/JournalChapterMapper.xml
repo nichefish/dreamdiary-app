@@ -7,7 +7,7 @@
         <id property="id" column="id"/>
         <result property="createdBy" column="created_by"/>
         <result property="journalDayId" column="journal_day_id"/>
-        <result property="idx" column="idx"/>
+        <result property="sortOrder" column="sort_order"/>
         <result property="yy" column="yy"/>
         <result property="mnth" column="mnth"/>
     </resultMap>
@@ -19,7 +19,7 @@
             chapter.id,
             chapter.created_by,
             chapter.journal_day_id,
-            chapter.idx,
+            chapter.sort_order,
             day.yy,
             day.mnth
         FROM journal_chapter chapter
@@ -34,7 +34,7 @@
         SELECT *
         FROM journal_chapter
         WHERE journal_day_id = #{journalDayId} AND deleted_at IS NULL
-        ORDER BY idx
+        ORDER BY sort_order
     </select>
 
     <!-- 인덱스 갱신 -->
@@ -42,7 +42,7 @@
         /* JournalChapterMapper.batchUpdateIdx */
         <foreach collection="list" item="item" separator=";">
             UPDATE journal_chapter
-            SET idx = #{item.idx}
+            SET sort_order = #{item.sortOrder}
             WHERE id = #{item.id} AND deleted_at IS NULL
         </foreach>
     </update>

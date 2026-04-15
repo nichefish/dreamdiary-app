@@ -45,7 +45,7 @@ public class JournalChapterSpec
         final List<Order> order = new ArrayList<>();
         final Join<JournalChapterEntity, JournalDaySmpEntity> journalDayJoin = root.join("journalDay", JoinType.INNER);
         order.add(builder.desc(builder.coalesce(journalDayJoin.get("journalDt"), journalDayJoin.get("aprxmtDt"))));
-        order.add(builder.asc(root.get("idx")));
+        order.add(builder.asc(root.get("sortOrder")));
         query.orderBy(order);
         // distinct
         query.distinct(true);

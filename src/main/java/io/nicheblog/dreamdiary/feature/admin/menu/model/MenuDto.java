@@ -75,6 +75,9 @@ public class MenuDto
     @Size(max = 50)
     private String menuSubExtendTyNm;
 
+    /** 정렬 순서 */
+    private Integer sortOrder;
+
     /** 사용 여부 (Y/N) */
     @Builder.Default
     private String useYn = "N";

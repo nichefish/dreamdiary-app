@@ -102,9 +102,9 @@ public class JournalDiaryService
      */
     @Override
     public void preRegist(final JournalDiaryPostDto registDto) throws Exception {
-        // 인덱스(정렬순서) 처리
-        final Integer lastIndex = repository.findLastIndexByJournalChapter(registDto.getJournalChapterId()).orElse(0);
-        registDto.setIdx(lastIndex + 1);
+        // 정렬 순서 처리
+        final Integer lastSortOrder = repository.findLastIndexByJournalChapter(registDto.getJournalChapterId()).orElse(0);
+        registDto.setSortOrder(lastSortOrder + 1);
     }
 
     /**
@@ -130,8 +130,8 @@ public class JournalDiaryService
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
 
-        final boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
-        modifyDto.setIsIdxChanged(isIdxChanged);
+        final boolean isSortOrderChanged = !Objects.equals(modifyDto.getSortOrder(), modifyEntity.getSortOrder());
+        modifyDto.setIsSortOrderChanged(isSortOrderChanged);
         final boolean isChapterChanged = !Objects.equals(modifyDto.getJournalChapterId(), modifyEntity.getJournalChapter().getId());
         modifyDto.setIsChapterChanged(isChapterChanged);
         if (isChapterChanged) {
@@ -146,11 +146,11 @@ public class JournalDiaryService
      */
     @Override
     public void postModify(final JournalDiaryPostDto postDto, final JournalDiaryDto updatedDto) throws Exception {
-        // 인덱스 재조정 ('이동' 포함)
+        // 정렬 순서 재조정 ('이동' 포함)
         if (postDto.getIsChapterChanged()) {
             this.getSelf().reorderWhenChapterChanged(postDto);
-        } else if (postDto.getIsIdxChanged()) {
-            this.getSelf().reorderIdx(postDto);
+        } else if (postDto.getIsSortOrderChanged()) {
+            this.getSelf().reorderSortOrder(postDto);
         }
 
         // 관련 캐시 삭제
@@ -214,8 +214,8 @@ public class JournalDiaryService
      */
     @Override
     public void postDelete(final JournalDiaryDto deletedDto) throws Exception {
-        // 인덱스 재조정
-        this.getSelf().normalize(deletedDto.getJournalChapterId());
+        // 정렬 순서 재조정
+        this.getSelf().normalizeSortOrder(deletedDto.getJournalChapterId());
         
         // 관련 캐시 삭제
         // 관련글 soft-delete
@@ -241,18 +241,18 @@ public class JournalDiaryService
     }
 
     /**
-     * 해당 그룹 전체를 idx = 1부터 다시 정렬한다.
+     * 해당 그룹 전체를 sortOrder = 1부터 다시 정렬한다.
      *
      * @param journalChapterId 정렬을 수행할 상위 키
      */
     @Transactional
-    public void normalize(final Integer journalChapterId) {
+    public void normalizeSortOrder(final Integer journalChapterId) {
         final List<JournalDiaryDto> list = mapper.findAllForReorder(journalChapterId);
         if (CollectionUtils.isEmpty(list)) return;
 
-        int idx = 1;
+        int sortOrder = 1;
         for (final JournalDiaryDto e : list) {
-            e.setIdx(idx++);
+            e.setSortOrder(sortOrder++);
             EhCacheUtils.evictUserCacheByKey("journalDiaryDtlDtoByUser", e.getCreatedBy(), e.getId());
         }
 
@@ -264,10 +264,10 @@ public class JournalDiaryService
      *
      * @param journalChapterId 정렬을 수행할 상위 키
      * @param id 게시물 PK
-     * @param targetIdx 삽입할 목표 위치(1-based). null이면 맨 뒤에 삽입됨
+     * @param targetSortOrder 삽입할 목표 위치(1-based). null이면 맨 뒤에 삽입됨
      */
     @Transactional
-    public void insert(final Integer journalChapterId, final Integer id, Integer targetIdx) throws Exception {
+    public void insert(final Integer journalChapterId, final Integer id, Integer targetSortOrder) throws Exception {
         final List<JournalDiaryDto> list = mapper.findAllForReorder(journalChapterId);
 
         // target 조회
@@ -281,18 +281,18 @@ public class JournalDiaryService
         // chapterNo 변경
         target.setJournalChapterId(journalChapterId);
 
-        // targetIdx 보정 (upper bound)
+        // targetSortOrder 보정 (upper bound)
         final int maxIdx = list.size() + 1;
-        final int normalizedIdx = Math.min(targetIdx == null ? maxIdx : targetIdx, maxIdx);
+        final int normalizedIdx = Math.min(targetSortOrder == null ? maxIdx : targetSortOrder, maxIdx);
         // 삽입 위치 계산
         int pos = normalizedIdx - 1;
         pos = Math.min(pos, list.size());
         list.add(pos, target);
 
-        // idx 재정렬
-        int idx = 1;
+        // sortOrder 재정렬
+        int sortOrder = 1;
         for (final JournalDiaryDto e : list) {
-            e.setIdx(idx++);
+            e.setSortOrder(sortOrder++);
             EhCacheUtils.evictUserCacheByKey("journalDiaryDtlDtoByUser", e.getCreatedBy(), e.getId());
         }
 
@@ -307,22 +307,22 @@ public class JournalDiaryService
     @Transactional
     public void reorderWhenChapterChanged(final JournalDiaryPostDto updatedDto) throws Exception {
         // 1) 기존 chapter 그룹 정리 (삭제처리와 동일한 효과)
-        normalize(updatedDto.getPrevJournalChapterId());
+        normalizeSortOrder(updatedDto.getPrevJournalChapterId());
         // 2) 새 chapter 그룹에 삽입
-        insert(updatedDto.getJournalChapterId(), updatedDto.getId(), updatedDto.getIdx());
+        insert(updatedDto.getJournalChapterId(), updatedDto.getId(), updatedDto.getSortOrder());
     }
 
     /**
-     * 인덱스 변경시 관련 인덱스 업데이트
+     * 정렬 순서 변경 시 관련 순서를 업데이트
      *
      * @param updatedDto 업데이트된 객체
      */
     @Transactional
-    public void reorderIdx(final JournalDiaryPostDto updatedDto) throws Exception {
-        // 1단계: 현재 chapter 그룹 정리 (기존 idx 값을 normalization하여 안정화)
-        normalize(updatedDto.getJournalChapterId());
+    public void reorderSortOrder(final JournalDiaryPostDto updatedDto) throws Exception {
+        // 1단계: 현재 chapter 그룹 정리 (기존 sortOrder 값을 normalize하여 안정화)
+        normalizeSortOrder(updatedDto.getJournalChapterId());
         // 2단계: 해당 group에 새 위치로 target 삽입
-        insert(updatedDto.getJournalChapterId(), updatedDto.getId(), updatedDto.getIdx());
+        insert(updatedDto.getJournalChapterId(), updatedDto.getId(), updatedDto.getSortOrder());
     }
 
     /**

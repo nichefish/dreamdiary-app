@@ -74,11 +74,11 @@ public class JournalIntrptDto
     private String markdownCn;
 
     /** 순번 */
-    private Integer idx;
+    private Integer sortOrder;
 
     /** 인덱스 변경 여부 */
     @Builder.Default
-    private Boolean isIdxChanged = false;
+    private Boolean isSortOrderChanged = false;
 
     /* ----- */
 

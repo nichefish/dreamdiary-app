@@ -37,7 +37,7 @@ public interface JournalIntrptRepository
      * @param journalDreamId 조회할 항목 번호
      * @return {@link Optional} -- 해당 일자에서 일기의 마지막 인덱스
      */
-    @Query("SELECT MAX(intrpt.idx) " +
+    @Query("SELECT MAX(intrpt.sortOrder) " +
             "FROM JournalIntrptEntity intrpt " +
             "WHERE intrpt.journalDream.id = :journalDreamId")
     Optional<Integer> findLastIndexByJournalDay(final @Param("journalDreamId") Integer journalDreamId);

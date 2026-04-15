@@ -34,7 +34,7 @@ public interface DtlCdRepository
      * @param clCd 분류코드.
      * @return 상세코드 목록.
      */
-    List<DtlCdEntity> findByClCdOrderByIdxAscDtlCdAsc(final String clCd);
+    List<DtlCdEntity> findByClCdOrderBySortOrderAscDtlCdAsc(final String clCd);
 
     /**
      * 분류코드 기준으로 사용중인 상세코드 목록을 조회.
@@ -43,7 +43,7 @@ public interface DtlCdRepository
      * @param useYn 사용여부.
      * @return 상세코드 목록.
      */
-    List<DtlCdEntity> findByClCdAndUseYnOrderByIdxAsc(final String clCd, final String useYn);
+    List<DtlCdEntity> findByClCdAndUseYnOrderBySortOrderAsc(final String clCd, final String useYn);
 
     /**
      * 사용중인 상세코드를 메모리 preload 용도로 조회.
@@ -51,7 +51,7 @@ public interface DtlCdRepository
      * @param useYn 사용여부.
      * @return 정렬된 상세코드 목록.
      */
-    List<DtlCdEntity> findAllByUseYnOrderByClCdAscIdxAsc(final String useYn);
+    List<DtlCdEntity> findAllByUseYnOrderByClCdAscSortOrderAsc(final String useYn);
 
     /**
      * 공통코드, 상세 코드로 상세 코드명 조회.

@@ -48,8 +48,8 @@ public class JournalIntrptSpec
         final Join<JournalIntrptEntity, JournalDreamSmpEntity> journalDreamJoin = root.join("journalDream", JoinType.INNER);
         final Join<JournalDreamSmpEntity, JournalDaySmpEntity> journalDayJoin = journalDreamJoin.join("journalDay", JoinType.INNER);
         order.add(builder.desc(builder.coalesce(journalDayJoin.get("journalDt"), journalDayJoin.get("aprxmtDt"))));
-        order.add(builder.asc(journalDreamJoin.get("idx")));
-        order.add(builder.asc(root.get("idx")));
+        order.add(builder.asc(journalDreamJoin.get("sortOrder")));
+        order.add(builder.asc(root.get("sortOrder")));
         query.orderBy(order);
         // distinct
         query.distinct(true);

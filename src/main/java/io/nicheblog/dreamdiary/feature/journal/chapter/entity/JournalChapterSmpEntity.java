@@ -50,8 +50,8 @@ public class JournalChapterSmpEntity {
     /* ----- */
 
     /** 순번 */
-    @Column(name = "idx", columnDefinition = "INT DEFAULT 1")
-    private Integer idx;
+    @Column(name = "sort_order", columnDefinition = "INT DEFAULT 1")
+    private Integer sortOrder;
 
     /** 저널 일자 번호  */
     @Column(name = "journal_day_id")

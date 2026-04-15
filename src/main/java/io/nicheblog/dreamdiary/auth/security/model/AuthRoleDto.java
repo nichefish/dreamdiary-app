@@ -35,6 +35,8 @@ public class AuthRoleDto
     private Integer authLevel;
     /** 상위 권한 코드 (null일시 최상위 권한) */
     private String topAuthCd;
+    /** 정렬 순서 */
+    private Integer sortOrder;
     /** 하위 권한 정보 */
     private List<AuthRoleDto> subAuthList;
 

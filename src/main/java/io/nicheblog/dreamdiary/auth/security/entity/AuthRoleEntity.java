@@ -50,8 +50,8 @@ public class AuthRoleEntity
     private String topAuthCd;
 
     /** 정렬 순서 */
-    @Column(name = "idx", columnDefinition = "INT DEFAULT 0")
-    private Integer idx;
+    @Column(name = "sort_order", columnDefinition = "INT DEFAULT 0")
+    private Integer sortOrder;
 
     /** 사용 여부 (Y/N) */
     @Builder.Default
@@ -63,7 +63,7 @@ public class AuthRoleEntity
     @JoinColumn(name = "auth_cd", referencedColumnName = "top_auth_cd", insertable = false, updatable = false)
     @Fetch(value = FetchMode.JOIN)
     @BatchSize(size = 10)
-    @OrderBy("idx ASC")
+    @OrderBy("sortOrder ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("하위 권한 정보")
     private List<AuthRoleEntity> subAuthList;

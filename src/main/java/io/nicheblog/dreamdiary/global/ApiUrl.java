@@ -163,7 +163,7 @@ public interface ApiUrl {
     /** 메뉴 관리 */
     String MENU_MAIN_LIST_AJAX = Prefix.API + "/menu/menu-main-list";
     String MENUS = Prefix.API + "/menus";
-    String MENUS_IDX = Prefix.API + "/menus/idx";
+    String MENUS_SORT_ORDERS = Prefix.API + "/menus/sort-orders";
     String MENUS_TREE = Prefix.API + "/menus/tree";
     String MENU = Prefix.API + "/menu/{id}";
 

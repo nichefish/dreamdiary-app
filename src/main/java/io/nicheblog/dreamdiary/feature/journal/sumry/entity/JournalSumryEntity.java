@@ -84,7 +84,7 @@ public class JournalSumryEntity
     @JoinColumn(name = "journal_sumry_id", referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(FetchMode.SUBSELECT)
     @BatchSize(size = 10)
-    @OrderBy("idx ASC")
+    @OrderBy("sortOrder ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("저널 결산 리뷰 목록")
     private List<JournalSumryReviewEntity> journalSumryReviewList;

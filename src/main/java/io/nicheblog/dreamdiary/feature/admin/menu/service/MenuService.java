@@ -47,7 +47,7 @@ import java.util.*;
 public class MenuService
         implements BaseDtoReadableService<MenuDto, Integer, MenuEntity>,
                    BaseDtoWritableService<MenuPostDto, MenuDto, Integer, MenuEntity>,
-                   BaseSortableService<MenuSortIdxDto, Integer, MenuEntity> {
+                   BaseSortableService<MenuSortOrderDto, Integer, MenuEntity> {
 
     @Getter
     private final MenuRepository repository;
@@ -102,7 +102,7 @@ public class MenuService
                 .mngrYn("N")
                 .useYn("Y")
                 .build());
-        final Sort sort = Sort.by(Sort.Direction.ASC, "idx");
+        final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
 
         return this.getListDto(searchParamMap, sort);
     }
@@ -120,7 +120,7 @@ public class MenuService
                 .mngrYn("Y")
                 .useYn("Y")
                 .build());
-        final Sort sort = Sort.by(Sort.Direction.ASC, "idx");
+        final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
 
         return this.getListDto(searchParamMap, sort);
     }
@@ -224,7 +224,7 @@ public class MenuService
      * 정렬 순서 변경 후처리.
      */
     @Override
-    public void postSortIdx(final List<MenuSortIdxDto> idxs) {
+    public void postSortOrder(final List<MenuSortOrderDto> sortOrders) {
         EhCacheUtils.clearCache("mngrMenuList");
         EhCacheUtils.clearCache("userMenuList");
     }
@@ -288,8 +288,7 @@ public class MenuService
             final List<MenuTreeMoveItemDto> items = group.getItems();
             if (upperMenuId == null || items == null) continue;
 
-            for (int idx = 0; idx < items.size(); idx++) {
-                final MenuTreeMoveItemDto item = items.get(idx);
+            for (final MenuTreeMoveItemDto item : items) {
                 if (item == null || item.getId() == null) continue;
 
                 final MenuEntity menu = this.getDtlEntity(item.getId());
@@ -301,7 +300,7 @@ public class MenuService
                 }
 
                 menu.setUpperMenuId(upperMenuId);
-                menu.setIdx(idx);
+                menu.setSortOrder(item.getSortOrder());
                 this.updt(menu);
             }
         }
@@ -344,7 +343,7 @@ public class MenuService
      * (트리 순환 방지용)
      *
      * @param id 검사 대상 메뉴
-     * @param ancestorMenuNo 조상 후보 메뉴
+     * @param ancestorMenuId 조상 후보 메뉴
      * @return true: 하위 노드 / false: 아님
      */
     private boolean isDescendantOf(final Integer id, final Integer ancestorMenuId) throws Exception {

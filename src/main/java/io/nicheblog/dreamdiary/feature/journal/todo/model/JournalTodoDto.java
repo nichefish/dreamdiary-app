@@ -96,7 +96,7 @@ public class JournalTodoDto
     /** 월 */
     private Integer mnth;
     /** 순번 */
-    private Integer idx;
+    private Integer sortOrder;
 
     /* ----- */
 

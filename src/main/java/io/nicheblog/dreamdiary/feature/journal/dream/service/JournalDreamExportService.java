@@ -85,7 +85,7 @@ public class JournalDreamExportService {
             }
 
             sb.append("#")
-              .append(dream.getIdx())
+              .append(dream.getSortOrder())
               .append("\r\n")
               .append(CmmUtils.htmlToText(dream.getCn()))
               .append("\r\n");

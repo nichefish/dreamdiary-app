@@ -81,9 +81,9 @@ public class JournalIntrptService
      */
     @Override
     public void preRegist(final JournalIntrptDto registDto) throws Exception {
-        // 인덱스(정렬순서) 처리
-        final Integer lastIndex = repository.findLastIndexByJournalDay(registDto.getJournalDreamId()).orElse(0);
-        registDto.setIdx(lastIndex + 1);
+        // 정렬 순서 처리
+        final Integer lastSortOrder = repository.findLastIndexByJournalDay(registDto.getJournalDreamId()).orElse(0);
+        registDto.setSortOrder(lastSortOrder + 1);
     }
 
     /**
@@ -109,8 +109,8 @@ public class JournalIntrptService
             throw new NotAuthorizedException("msg.rslt.access-not-authorized");
         }
 
-        final boolean isIdxChanged = !Objects.equals(modifyDto.getIdx(), modifyEntity.getIdx());
-        modifyDto.setIsIdxChanged(isIdxChanged);
+        final boolean isSortOrderChanged = !Objects.equals(modifyDto.getSortOrder(), modifyEntity.getSortOrder());
+        modifyDto.setIsSortOrderChanged(isSortOrderChanged);
     }
 
     /**
@@ -120,8 +120,8 @@ public class JournalIntrptService
      */
     @Override
     public void postModify(final JournalIntrptDto postDto, final JournalIntrptDto updatedDto) throws Exception {
-        // 인덱스 재조정
-        if (updatedDto.getIsIdxChanged()) this.getSelf().reorderIdx(updatedDto);
+        // 정렬 순서 재조정
+        if (updatedDto.getIsSortOrderChanged()) this.getSelf().reorderSortOrder(updatedDto);
 
         // 관련 캐시 삭제
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(updatedDto), ContentType.JOURNAL_INTRPT);
@@ -184,8 +184,8 @@ public class JournalIntrptService
      */
     @Override
     public void postDelete(final JournalIntrptDto deletedDto) throws Exception {
-        // 인덱스 재조정
-        this.getSelf().reorderIdx(deletedDto);
+        // 정렬 순서 재조정
+        this.getSelf().reorderSortOrder(deletedDto);
 
         // 태그 처리 :: 메인 로직과 분리
         // 관련 캐시 삭제
@@ -209,16 +209,16 @@ public class JournalIntrptService
     }
     
     /**
-     * 해당 그룹 전체를 idx = 1부터 다시 정렬한다.
+     * 해당 그룹 전체를 sortOrder = 1부터 다시 정렬한다.
      */
     @Transactional
-    public void normalize(final Integer journalDreamId) {
+    public void normalizeSortOrder(final Integer journalDreamId) {
         final List<JournalIntrptDto> list = mapper.findAllForReorder(journalDreamId);
         if (CollectionUtils.isEmpty(list)) return;
 
-        int idx = 1;
+        int sortOrder = 1;
         for (final JournalIntrptDto e : list) {
-            e.setIdx(idx++);
+            e.setSortOrder(sortOrder++);
             EhCacheUtils.evictUserCacheByKey("journalIntrptDtlDtoByUser", e.getCreatedBy(), e.getId());
         }
 
@@ -230,10 +230,10 @@ public class JournalIntrptService
      *
      * @param journalDreamId 정렬을 수행할 상위 키
      * @param id 게시물 PK
-     * @param targetIdx 삽입할 목표 위치(1-based). null이면 맨 뒤에 삽입됨
+     * @param targetSortOrder 삽입할 목표 위치(1-based). null이면 맨 뒤에 삽입됨
      */
     @Transactional
-    public void insert(final Integer journalDreamId, final Integer id, Integer targetIdx) throws Exception {
+    public void insert(final Integer journalDreamId, final Integer id, Integer targetSortOrder) throws Exception {
         final List<JournalIntrptDto> list = mapper.findAllForReorder(journalDreamId);
 
         // target 조회
@@ -247,18 +247,18 @@ public class JournalIntrptService
         // chapterNo 변경
         target.setJournalDreamId(journalDreamId);
 
-        // targetIdx 보정 (upper bound)
+        // targetSortOrder 보정 (upper bound)
         final int maxIdx = list.size() + 1;
-        final int normalizedIdx = Math.min(targetIdx == null ? maxIdx : targetIdx, maxIdx);
+        final int normalizedIdx = Math.min(targetSortOrder == null ? maxIdx : targetSortOrder, maxIdx);
         // 삽입 위치 계산
         int pos = normalizedIdx - 1;
         pos = Math.min(pos, list.size());
         list.add(pos, target);
 
-        // idx 재정렬
-        int idx = 1;
+        // sortOrder 재정렬
+        int sortOrder = 1;
         for (final JournalIntrptDto e : list) {
-            e.setIdx(idx++);
+            e.setSortOrder(sortOrder++);
             EhCacheUtils.evictUserCacheByKey("journalIntrptDtlDtoByUser", e.getCreatedBy(), e.getId());
         }
 
@@ -266,16 +266,16 @@ public class JournalIntrptService
     }
 
     /**
-     * 인덱스 변경시 관련 인덱스 업데이트
+     * 정렬 순서 변경 시 관련 순서를 업데이트
      *
      * @param updatedDto 업데이트된 객체
      */
     @Transactional
-    public void reorderIdx(final JournalIntrptDto updatedDto) throws Exception {
-        // 1단계: 현재 chapter 그룹 정리 (기존 idx 값을 normalization하여 안정화)
-        normalize(updatedDto.getJournalDreamId());
+    public void reorderSortOrder(final JournalIntrptDto updatedDto) throws Exception {
+        // 1단계: 현재 chapter 그룹 정리 (기존 sortOrder 값을 normalize하여 안정화)
+        normalizeSortOrder(updatedDto.getJournalDreamId());
         // 2단계: 해당 group에 새 위치로 target 삽입
-        insert(updatedDto.getJournalDreamId(), updatedDto.getId(), updatedDto.getIdx());
+        insert(updatedDto.getJournalDreamId(), updatedDto.getId(), updatedDto.getSortOrder());
     }
 
     /**

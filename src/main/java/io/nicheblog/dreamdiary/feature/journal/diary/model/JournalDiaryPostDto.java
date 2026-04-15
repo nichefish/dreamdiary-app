@@ -53,11 +53,11 @@ public class JournalDiaryPostDto
     private Integer mnth;
 
     /** 순번 */
-    private Integer idx;
+    private Integer sortOrder;
 
     /** 인덱스 변경 여부 */
     @Builder.Default
-    private Boolean isIdxChanged = false;
+    private Boolean isSortOrderChanged = false;
     /** 저널 챕터 변경 여부 */
     @Builder.Default
     private Boolean isChapterChanged = false;

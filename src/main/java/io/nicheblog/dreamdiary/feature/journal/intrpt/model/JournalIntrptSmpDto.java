@@ -26,5 +26,5 @@ public class JournalIntrptSmpDto {
     /** 제목 */
     private String title;
     /** 순번 */
-    private Integer idx;
+    private Integer sortOrder;
 }

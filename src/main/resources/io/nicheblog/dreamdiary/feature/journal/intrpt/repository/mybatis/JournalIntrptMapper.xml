@@ -8,7 +8,7 @@
         <result property="createdBy" column="created_by"/>
         <result property="journalDreamId" column="journal_dream_id"/>
         <result property="journalDayId" column="journal_day_id"/>
-        <result property="idx" column="idx"/>
+        <result property="sortOrder" column="sort_order"/>
         <result property="yy" column="yy"/>
         <result property="mnth" column="mnth"/>
     </resultMap>
@@ -20,7 +20,7 @@
             intrpt.id,
             intrpt.created_by,
             intrpt.journal_dream_id,
-            intrpt.idx,
+            intrpt.sort_order,
             day.id AS journal_day_id,
             day.yy,
             day.mnth
@@ -36,7 +36,7 @@
         SELECT *
         FROM journal_intrpt
         WHERE journal_dream_id = #{journalDreamId} AND deleted_at IS NULL
-        ORDER BY idx
+        ORDER BY sort_order
     </select>
 
     <!-- 인덱스 갱신 -->
@@ -44,7 +44,7 @@
         /* JournalIntrptMapper.batchUpdateIdx */
         <foreach collection="list" item="item" separator=";">
             UPDATE journal_intrpt
-            SET idx = #{item.idx}
+            SET sort_order = #{item.sortOrder}
             WHERE id = #{item.id} AND deleted_at IS NULL
         </foreach>
     </update>

@@ -8,7 +8,7 @@
         <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 ps-5 me-2 h-75" style="width:85px;">
             <div class="d-flex flex-column align-items-center">
                 <span {{#if (hasState state 'RESOLVED')}}tclass="text-success"{{/if}}>
-                    # {{idx}}
+                    # {{sortOrder}}
                 </span>
                 {{> journal_intrpt_toggle_btn_partial this}}
             </div>

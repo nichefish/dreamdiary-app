@@ -24,5 +24,5 @@ public class ClCdParam
         extends BaseParam {
 
     /** 정렬순서 배열 */
-    private List<ClCdDto> idx;
+    private List<ClCdDto> sortOrders;
 }
