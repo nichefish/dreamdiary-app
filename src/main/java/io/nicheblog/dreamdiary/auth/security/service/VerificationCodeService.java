@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author nichefish
  */
-@Service("verificationCodeService")
+@Service
 @RequiredArgsConstructor
 public class VerificationCodeService {
 
@@ -37,3 +37,4 @@ public class VerificationCodeService {
         return "email_verification:" + email;
     }
 }
+

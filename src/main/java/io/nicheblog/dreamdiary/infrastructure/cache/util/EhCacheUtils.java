@@ -7,7 +7,6 @@ import io.nicheblog.dreamdiary.infrastructure.cache.service.CacheStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.SessionFactory;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.SimpleKey;
@@ -34,8 +33,6 @@ public class EhCacheUtils {
 
     @Resource(name="jCacheManager")
     CacheManager manager;
-    @Resource(name="hibernateSessionFactory")
-    private SessionFactory factory;
     private final List<CacheStrategy> autowiredCacheStrategies;  // 자동으로 모든 전략이 주입됨
 
     private static CacheManager cacheManager;

@@ -22,7 +22,7 @@ import java.util.List;
  * @author nichefish
  */
 
-@Repository("journalDayTagRepository")
+@Repository
 public interface JournalDayTagRepository
         extends BaseStreamRepository<JournalDayTagEntity, Integer> {
 
@@ -61,4 +61,5 @@ public interface JournalDayTagRepository
             "ORDER BY day.yy DESC")
     List<Integer> findDistinctYysByTagIdAndCreatedBy(final @Param("tagId") Integer tagId, final @Param("createdBy") String createdBy);
 }
+
 

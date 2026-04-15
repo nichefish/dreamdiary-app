@@ -12,9 +12,10 @@ import org.springframework.stereotype.Repository;
  *
  * @author nichefish
  */
-@Repository("chatMsgRepository")
+@Repository
 public interface ChatMsgRepository
         extends BaseStreamRepository<ChatMsgEntity, Integer> {
 
     //
 }
+

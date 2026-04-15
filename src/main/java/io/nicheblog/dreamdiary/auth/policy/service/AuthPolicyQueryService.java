@@ -21,7 +21,7 @@ import java.util.Optional;
  *
  * @author nichefish
  */
-@Service("authPolicyQueryService")
+@Service
 @RequiredArgsConstructor
 public class AuthPolicyQueryService {
 
@@ -58,3 +58,4 @@ public class AuthPolicyQueryService {
         return retrievedWrapper.orElse(null);
     }
 }
+

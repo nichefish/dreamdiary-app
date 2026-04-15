@@ -18,7 +18,7 @@ import java.util.Optional;
  *
  * @author nichefish
  */
-@Repository("journalIntrptRepository")
+@Repository
 public interface JournalIntrptRepository
         extends BaseStreamRepository<JournalIntrptEntity, Integer> {
 
@@ -42,4 +42,5 @@ public interface JournalIntrptRepository
             "WHERE intrpt.journalDream.id = :journalDreamId")
     Optional<Integer> findLastIndexByJournalDay(final @Param("journalDreamId") Integer journalDreamId);
 }
+
 

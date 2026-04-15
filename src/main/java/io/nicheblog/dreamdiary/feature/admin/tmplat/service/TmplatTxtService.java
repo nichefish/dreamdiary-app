@@ -20,7 +20,7 @@ import java.util.Optional;
  *
  * @author nichefish
  */
-@Service("tmplatTxtService")
+@Service
 @RequiredArgsConstructor
 public class TmplatTxtService
         implements BaseDtoWritableService<TmplatTxtDto, TmplatTxtDto, Integer, TmplatTxtEntity> {
@@ -56,3 +56,4 @@ public class TmplatTxtService
     }
 
 }
+

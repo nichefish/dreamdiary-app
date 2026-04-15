@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  *
  * @author nichefish
  */
-@Service("schdulService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class ScheduleService

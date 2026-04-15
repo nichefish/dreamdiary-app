@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
  *
  * @author nichefish
  */
-@Service("tmplatDefService")
+@Service
 @RequiredArgsConstructor
 public class TmplatDefService
         implements BaseDtoWritableService<TmplatDefDto, TmplatDefDto, Integer, TmplatDefEntity> {
@@ -37,3 +37,4 @@ public class TmplatDefService
         return this.mapstruct;
     }
 }
+

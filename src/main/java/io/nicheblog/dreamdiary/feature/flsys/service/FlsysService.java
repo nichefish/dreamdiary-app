@@ -21,7 +21,7 @@ import java.util.*;
  *
  * @author nichefish
  */
-@Service("flsysService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class FlsysService {
@@ -173,3 +173,4 @@ public class FlsysService {
     //         }
     //     }
 }
+

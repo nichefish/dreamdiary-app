@@ -24,7 +24,7 @@ import java.util.List;
  *
  * @author nichefish
  */
-@Service("atchFileService")
+@Service
 @RequiredArgsConstructor
 public class AtchFileService
         implements BaseDtoWritableService<AtchFileDto, AtchFileDto, Integer, AtchFileEntity> {
@@ -64,3 +64,4 @@ public class AtchFileService
         return this.getSelf().updt(atchFile);
     }
 }
+

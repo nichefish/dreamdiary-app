@@ -21,7 +21,7 @@ import java.util.List;
  *
  * @author nichefish
  */
-@Repository("journalDreamTagRepository")
+@Repository
 public interface JournalDreamTagRepository
         extends BaseStreamRepository<JournalDreamTagEntity, Integer> {
 
@@ -44,4 +44,5 @@ public interface JournalDreamTagRepository
             " GROUP BY ct.tagId")
     List<TagContentCntDto> countDreamSizeMap(final @Param("param") JournalDreamTagContentParam param);
 }
+
 

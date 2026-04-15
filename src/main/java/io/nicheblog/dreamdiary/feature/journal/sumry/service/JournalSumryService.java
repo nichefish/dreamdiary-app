@@ -34,7 +34,7 @@ import java.util.Optional;
  *
  * @author nichefish
  */
-@Service("journalSumryService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class JournalSumryService
@@ -226,4 +226,5 @@ public class JournalSumryService
         }
     }
 }
+
 

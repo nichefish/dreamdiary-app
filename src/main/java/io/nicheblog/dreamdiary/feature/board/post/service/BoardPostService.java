@@ -32,7 +32,7 @@ import java.util.Map;
  *
  * @author nichefish
  */
-@Service("boardPostService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class BoardPostService
@@ -164,3 +164,4 @@ public class BoardPostService
         return retrievedDto;
     }
 }
+

@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
  *
  * @author nichefish
  */
-@Service("popupService")
+@Service
 @RequiredArgsConstructor
 public class PopupService
         implements BaseClsfService<PopupDto, PopupDto, Integer, PopupEntity>, BaseMultipartWritableService<PopupDto, PopupDto, Integer, PopupEntity> {
@@ -48,3 +48,4 @@ public class PopupService
     //     return this.pageEntityToDto(entityPage);
     // }
 }
+

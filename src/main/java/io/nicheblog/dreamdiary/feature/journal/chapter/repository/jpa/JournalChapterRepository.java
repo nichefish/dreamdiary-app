@@ -19,7 +19,7 @@ import java.util.Optional;
  *
  * @author nichefish
  */
-@Repository("journalChapterRepository")
+@Repository
 public interface JournalChapterRepository
         extends BaseStreamRepository<JournalChapterEntity, Integer> {
 
@@ -37,4 +37,5 @@ public interface JournalChapterRepository
             "WHERE entry.journalDayId = :journalDayId")
     Optional<Integer> findLastIndexByJournalDay(final @Param("journalDayId") Integer journalDayId);
 }
+
 

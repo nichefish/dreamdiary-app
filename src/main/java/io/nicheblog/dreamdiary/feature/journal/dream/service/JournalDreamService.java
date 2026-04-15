@@ -44,7 +44,7 @@ import java.util.Objects;
  *
  * @author nichefish
  */
-@Service("journalDreamService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class JournalDreamService
@@ -331,4 +331,5 @@ public class JournalDreamService
         }
     }
 }
+
 

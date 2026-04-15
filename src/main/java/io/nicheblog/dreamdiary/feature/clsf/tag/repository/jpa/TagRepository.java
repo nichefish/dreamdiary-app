@@ -20,7 +20,7 @@ import java.util.Optional;
  *
  * @author nichefish
  */
-@Repository("tagRepository")
+@Repository
 public interface TagRepository
         extends BaseStreamRepository<TagEntity, Integer> {
 
@@ -67,3 +67,4 @@ public interface TagRepository
             " AND (ct.createdBy = :createdBy)")
     Integer countTagSize(final @Param("tagId") Integer tagId, final @Param("refContentType") String refContentType, final String createdBy);
 }
+

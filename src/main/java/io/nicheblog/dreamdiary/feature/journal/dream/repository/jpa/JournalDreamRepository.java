@@ -19,7 +19,7 @@ import java.util.Optional;
  *
  * @author nichefish
  */
-@Repository("journalDreamRepository")
+@Repository
 public interface JournalDreamRepository
         extends BaseStreamRepository<JournalDreamEntity, Integer> {
 
@@ -37,4 +37,5 @@ public interface JournalDreamRepository
             "WHERE dream.journalDayId = :journalDayId AND (dream.elseDreamYn IS NULL OR dream.elseDreamYn = 'N')")
     Optional<Integer> findLastIndexByJournalDay(final @Param("journalDayId") Integer journalDayId);
 }
+
 

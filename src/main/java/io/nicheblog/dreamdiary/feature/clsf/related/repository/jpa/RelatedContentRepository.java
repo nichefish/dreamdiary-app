@@ -19,7 +19,7 @@ import java.util.Set;
  *
  * @author nichefish
  */
-@Repository("relatedContentRepository")
+@Repository
 public interface RelatedContentRepository
         extends BaseStreamRepository<RelatedContentEntity, Integer> {
 
@@ -73,3 +73,4 @@ public interface RelatedContentRepository
             final @Param("createdBy") String createdBy
     );
 }
+

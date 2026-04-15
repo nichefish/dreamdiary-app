@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-@Repository("tagCategoryProfileRepository")
+@Repository
 public interface TagCategoryProfileRepository
         extends BaseStreamRepository<TagCategoryProfileEntity, Integer> {
 
@@ -24,3 +24,4 @@ public interface TagCategoryProfileRepository
             final String createdBy
     );
 }
+

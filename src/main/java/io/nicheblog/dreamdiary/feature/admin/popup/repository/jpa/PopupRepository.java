@@ -12,8 +12,9 @@ import org.springframework.stereotype.Repository;
  *
  * @author nichefish
  */
-@Repository("popupRepository")
+@Repository
 public interface PopupRepository
         extends BaseStreamRepository<PopupEntity, Integer> {
     //
 }
+

@@ -12,9 +12,10 @@ import org.springframework.stereotype.Repository;
  *
  * @author nichefish
  */
-@Repository("authRoleRepository")
+@Repository
 public interface AuthRoleRepository
         extends BaseStreamRepository<AuthRoleEntity, String> {
     //
 }
+
 

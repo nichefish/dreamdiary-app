@@ -19,7 +19,7 @@ import java.util.Optional;
  *
  * @author nichefish
  */
-@Repository("journalSumryRepository")
+@Repository
 public interface JournalSumryRepository
         extends BaseStreamRepository<JournalSumryEntity, Integer> {
 
@@ -85,4 +85,5 @@ public interface JournalSumryRepository
             "WHERE sumry.createdBy = :createdBy")
     Integer getTotalDreamDayCnt(final @Param("createdBy") String createdBy);
 }
+
 

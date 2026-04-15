@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  *
  * @author nichefish
  */
-@Service("boardDefService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class BoardDefService
@@ -117,3 +117,4 @@ public class BoardDefService
         EhCacheUtils.evictCacheByKey("boardMenu", deletedDto.getBoardDef());
     }
 }
+

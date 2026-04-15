@@ -29,7 +29,7 @@ import java.util.List;
  *
  * @author nichefish
  */
-@Service("journalDayCalService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class JournalDayCalService {
@@ -113,4 +113,5 @@ public class JournalDayCalService {
         return 2;
     }
 }
+
 

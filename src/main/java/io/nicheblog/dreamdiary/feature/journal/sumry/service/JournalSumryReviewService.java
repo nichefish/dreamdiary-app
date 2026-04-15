@@ -28,7 +28,7 @@ import java.util.List;
  *
  * @author nichefish
  */
-@Service("journalSumryReviewService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class JournalSumryReviewService
@@ -117,4 +117,5 @@ public class JournalSumryReviewService
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(deletedDto), ContentType.JOURNAL_SUMRY_REVIEW);
     }
 }
+
 

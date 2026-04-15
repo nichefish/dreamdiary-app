@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
  *
  * @author nichefish
  */
-@Service("chatMsgService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class ChatMsgService
@@ -39,3 +39,4 @@ public class ChatMsgService
         return this.mapstruct;
     }
 }
+

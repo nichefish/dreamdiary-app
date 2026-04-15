@@ -15,7 +15,7 @@ import java.util.Optional;
  *
  * @author nichefish
  */
-@Repository("historyRepository")
+@Repository
 public interface HistoryRepository
         extends BaseStreamRepository<HistoryEntity, Integer> {
 
@@ -25,3 +25,4 @@ public interface HistoryRepository
 
     void deleteAllByRefIdAndRefContentType(Integer refId, String refContentType);
 }
+

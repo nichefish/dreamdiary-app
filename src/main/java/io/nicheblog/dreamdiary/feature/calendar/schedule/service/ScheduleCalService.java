@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  *
  * @author nichefish
  */
-@Service("schdulCalService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class ScheduleCalService {

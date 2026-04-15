@@ -41,7 +41,7 @@ import java.util.*;
  *
  * @author nichefish
  */
-@Service("atchFileDtlService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class AtchFileDtlService
@@ -206,3 +206,4 @@ public class AtchFileDtlService
         }
     }
 }
+

@@ -19,7 +19,7 @@ import java.util.Optional;
  *
  * @author nichefish
  */
-@Repository("metaRepository")
+@Repository
 public interface MetaRepository
         extends BaseStreamRepository<MetaEntity, Integer> {
 
@@ -50,3 +50,4 @@ public interface MetaRepository
             " AND (ct.createdBy = :createdBy)")
     Integer countMetaSize(final @Param("metaId") Integer metaId, final @Param("refContentType") String refContentType, final String createdBy);
 }
+

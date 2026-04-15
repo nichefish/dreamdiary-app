@@ -29,7 +29,7 @@ import java.util.stream.Stream;
  *
  * @author nichefish
  */
-@Service("noticeService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class NoticeService
@@ -129,3 +129,4 @@ public class NoticeService
         });
     }
 }
+

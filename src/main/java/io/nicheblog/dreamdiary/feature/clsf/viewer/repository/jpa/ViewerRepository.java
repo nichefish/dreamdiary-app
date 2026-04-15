@@ -12,8 +12,9 @@ import org.springframework.stereotype.Repository;
  *
  * @author nichefish
  */
-@Repository("viewerRepository")
+@Repository
 public interface ViewerRepository
         extends BaseStreamRepository<ViewerEntity, Integer> {
     //
 }
+

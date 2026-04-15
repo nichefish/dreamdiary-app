@@ -12,9 +12,10 @@ import org.springframework.stereotype.Repository;
  *
  * @author nichefish
  */
-@Repository("journalSbjctRepository")
+@Repository
 public interface JournalSbjctRepository
         extends BaseStreamRepository<JournalSbjctEntity, Integer> {
     //
 }
+
 

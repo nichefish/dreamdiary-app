@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  *
  * @author nichefish
  */
-@Service("journalIntrptTagService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class JournalIntrptTagService
@@ -199,4 +199,5 @@ public class JournalIntrptTagService
                 ));
     }
 }
+
 

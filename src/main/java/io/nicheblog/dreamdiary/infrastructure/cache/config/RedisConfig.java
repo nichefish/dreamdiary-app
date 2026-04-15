@@ -67,7 +67,7 @@ public class RedisConfig {
     /**
      * 빈 등록 :: redisCacheManager
      */
-    @Bean(name = "redisCacheManager")
+    @Bean
     public RedisCacheManager redisCacheManager() {
         RedisCacheConfiguration cacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
                 .serializeValuesWith(

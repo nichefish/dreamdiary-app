@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
  *
  * @author nichefish
  */
-@Service("jandiApiService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class JandiApiService {
@@ -130,3 +130,4 @@ public class JandiApiService {
         return new HttpEntity<>(jandiMsg, headers);
     }
 }
+

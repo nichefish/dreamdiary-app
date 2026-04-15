@@ -33,7 +33,7 @@ import java.util.Objects;
  *
  * @author nichefish
  */
-@Service("relatedContentService")
+@Service
 @RequiredArgsConstructor
 public class RelatedContentService {
 
@@ -262,3 +262,4 @@ public class RelatedContentService {
         return Integer.compare(firstKey.getId(), secondKey.getId());
     }
 }
+

@@ -12,14 +12,12 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.Resource;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,16 +33,13 @@ import java.util.stream.Collectors;
  *
  * @author nichefish
  */
-@Service("hldyKasiApiService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class HolydayKasiApiService {
 
     private final HolydayKasiApiMapstruct holydayApiMapstruct = HolydayKasiApiMapstruct.INSTANCE;
     private final ScheduleService scheduleService;
-
-    @Resource(name="jCacheManager")
-    private CacheManager cacheManager;
 
     private final ApplicationContext context;
     private HolydayKasiApiService getSelf() {
@@ -156,3 +151,4 @@ public class HolydayKasiApiService {
         return isSuccess;
     }
 }
+

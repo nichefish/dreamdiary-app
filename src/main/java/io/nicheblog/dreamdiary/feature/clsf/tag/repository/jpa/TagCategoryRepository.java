@@ -14,9 +14,10 @@ import java.util.Optional;
  *
  * @author nichefish
  */
-@Repository("tagCategoryRepository")
+@Repository
 public interface TagCategoryRepository
         extends BaseStreamRepository<TagCategoryEntity, Integer> {
 
     Optional<TagCategoryEntity> findByCtgrNm(String ctgrNm);
 }
+

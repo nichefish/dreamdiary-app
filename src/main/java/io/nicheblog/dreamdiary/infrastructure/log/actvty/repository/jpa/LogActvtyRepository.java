@@ -12,8 +12,9 @@ import org.springframework.stereotype.Repository;
  *
  * @author nichefish
  */
-@Repository("logActvtyRepository")
+@Repository
 public interface LogActvtyRepository
         extends BaseStreamRepository<LogActvtyEntity, Integer> {
     //
 }
+

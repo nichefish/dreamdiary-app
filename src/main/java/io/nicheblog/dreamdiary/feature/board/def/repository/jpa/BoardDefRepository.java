@@ -13,9 +13,10 @@ import org.springframework.stereotype.Repository;
  *
  * @author nichefish
  */
-@Repository("boardDefRepository")
+@Repository
 public interface BoardDefRepository
         extends BaseStreamRepository<BoardDefEntity, String> {
     //
 }
+
 

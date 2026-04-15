@@ -35,7 +35,7 @@ import java.util.Optional;
  *
  * @author nichefish
  */
-@Service("userService")
+@Service
 @RequiredArgsConstructor
 public class UserService
         implements BaseClsfService<UserDto, UserDto, Integer, UserEntity>, BaseMultipartWritableService<UserDto, UserDto, Integer, UserEntity> {
@@ -283,3 +283,4 @@ public class UserService
         EhCacheUtils.evictCacheByKey("auditorInfo", rslt.getUsername());
     }
 }
+

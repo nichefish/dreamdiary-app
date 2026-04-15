@@ -29,7 +29,7 @@ import java.util.Map;
  *
  * @author nichefish
  */
-@Service("commentService")
+@Service
 @RequiredArgsConstructor
 public class CommentService
         implements BaseClsfService<CommentDto, CommentDto, Integer, CommentEntity>, BaseMultipartWritableService<CommentDto, CommentDto, Integer, CommentEntity> {
@@ -125,3 +125,4 @@ public class CommentService
         commentCacheInvalidateWorker.invalidateAfterCommit(dto.getRefId(), refContentType);
     }
 }
+
