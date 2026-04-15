@@ -52,7 +52,7 @@
                     <div id="commentSpan${comment.id!}" class="col fs-5 fw-normal text-gray-800">
                         <div id="commentDtlSpan${comment.id!}" class="fs-6 col-form-label">
                             <div id="commentCnSpanDiv${comment.id!}" class="div-textarea-smp">
-                                ${comment.cn!}
+                                ${comment.content!}
                             </div>
                         </div>
                     </div>
@@ -118,7 +118,7 @@
             <input type="hidden" name="actvtyCtgrCd" value="${actvtyCtgrCd!}" >
             <div class="row">
                 <div class="col-12">
-                    <textarea name="cn" id="commentMdfCn__INDEX__" class="form-control required w-100" rows="3" maxlength="10000"></textarea>
+                    <textarea name="content" id="commentMdfCn__INDEX__" class="form-control required w-100" rows="3" maxlength="10000"></textarea>
                     <div id="commentMdfCnSpan__INDEX__"></div>
                 </div>
             </div>

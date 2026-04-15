@@ -13,8 +13,8 @@
             <div class="col-12 col-md-1 d-flex flex-wrap align-items-center fs-5 fw-bold">
                 {{> journal_day_stdrd_dt_partial this}}
             </div>
-            <div class="col py-3 journal-diary-cn {{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}">
-                {{> journal_dream_cn_search_partial this collapse="collapse-4"}}
+            <div class="col py-3 journal-diary-content {{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}">
+                {{> journal_dream_content_search_partial this collapse="collapse-4"}}
             </div>
             <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
             <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">

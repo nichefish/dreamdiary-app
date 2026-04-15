@@ -38,7 +38,7 @@ public abstract class JournalDreamMapstruct
      * @return Entity -- 변환된 Entity 객체
      */
     @Override
-    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
+    @Mapping(target = "content", expression = "java(MarkdownUtils.normalize(dto.getContent()))")
     public abstract JournalDreamEntity toEntity(final JournalDreamPostDto dto) throws Exception;
 
     /**
@@ -49,7 +49,7 @@ public abstract class JournalDreamMapstruct
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
+    @Mapping(target = "content", expression = "java(MarkdownUtils.normalize(dto.getContent()))")
     public abstract void updateFromDto(final JournalDreamPostDto dto, final @MappingTarget JournalDreamEntity entity) throws Exception;
 
     /**
@@ -64,7 +64,7 @@ public abstract class JournalDreamMapstruct
     @Mapping(target = "journalDtWeekDay", expression = "java(entity.getJournalDay() != null && entity.getJournalDay().getJournalDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJournalDay().getJournalDt()) : null)")
     @Mapping(target = "yy", source = "journalDay.yy")
     @Mapping(target = "mnth", source = "journalDay.mnth")
-    @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
+    @Mapping(target = "markdownContent", expression = "java(StringUtils.isEmpty(entity.getContent()) ? \"-\" : MarkdownUtils.markdown(entity.getContent()))")
     public abstract JournalDreamDto toDto(final JournalDreamEntity entity) throws Exception;
 }
 

@@ -30,7 +30,7 @@ public class UserEntityTestFactory {
                 .nickNm(TestConstant.TEST_NICK_NM)
                 .email("test_email_id@test_email_domain")
                 .cttpc("010-0101-0101")
-                .cn("test_cn")
+                .content("test_cn")
                 .acntStus(UserStusEmbed.builder().build())
                 .build();
     }

@@ -1,4 +1,4 @@
-﻿package io.nicheblog.dreamdiary.feature.calendar.schedule.entity;
+package io.nicheblog.dreamdiary.feature.calendar.schedule.entity;
 
 import io.nicheblog.dreamdiary.feature.calendar.schedule.entity.ScheduleEntity;
 import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
@@ -24,7 +24,7 @@ public class ScheduleEntityTestFactory {
         return ScheduleEntity.builder()
                 .contentType(ContentType.SCHEDULE.key)
                 .title("test_title")
-                .cn("test_cn")
+                .content("test_cn")
                 .build();
     }
 }

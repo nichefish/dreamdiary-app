@@ -21,9 +21,9 @@ public interface HistoryStrategy<Dto extends BaseClsfDto> {
 
     Dto getOwnedDto(final String username, final Integer key) throws Exception;
 
-    Dto updtCn(
+    Dto updtContent(
             final Integer key,
-            final String cn,
+            final String content,
             final HistoryType historyType,
             final Integer fromHistoryId
     ) throws Exception;

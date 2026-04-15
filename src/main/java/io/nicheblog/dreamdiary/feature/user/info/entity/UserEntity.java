@@ -139,9 +139,9 @@ public class UserEntity
     private String proflImgUrl;
 
     /** 계정 설명 (관리자용) */
-    @Column(name = "cn")
+    @Column(name = "content")
     @Comment("계정 설명")
-    private String cn;
+    private String content;
 
     /** 사용자 프로필 정보 */
     @OneToOne(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)

@@ -143,7 +143,7 @@ public class JournalSbjctPageController
         model.addAttribute("pageNm", PageNm.PREVIEW);
 
         // 객체 정보 모델에 추가
-        journalSbjct.setMarkdownCn(MarkdownUtils.markdown(journalSbjct.getCn()));
+        journalSbjct.setMarkdownContent(MarkdownUtils.markdown(journalSbjct.getContent()));
         model.addAttribute("post", journalSbjct);
 
         return "/view/feature/journal/sbjct/journal_sbjct_preview_pop";

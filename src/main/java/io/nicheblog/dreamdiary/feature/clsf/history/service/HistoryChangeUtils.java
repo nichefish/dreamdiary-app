@@ -27,7 +27,7 @@ public final class HistoryChangeUtils {
     public static String resolveCn(final BaseClsfEntity entity) throws Exception {
         if (entity == null) return null;
 
-        final Method getter = entity.getClass().getMethod("getCn");
+        final Method getter = entity.getClass().getMethod("getContent");
         final Object value = getter.invoke(entity);
         return value instanceof String str ? str : null;
     }

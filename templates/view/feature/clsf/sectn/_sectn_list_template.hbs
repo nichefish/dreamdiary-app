@@ -35,7 +35,7 @@
                     <!--begin::accordion item Body-->
                     <div id="kt_accordion_sectn_item_{{@index}}" class="fs-6 d-flex collapse {{^ifYn deprcYn}}show{{/ifYn}} ps-10">
                         <div class="col mx-5 fs-4 fw-normal {{#ifYn deprcYn}}text-muted strikethrough{{/ifYn}}">
-                            {{{markdownCn}}}
+                            {{{markdownContent}}}
                             {{#if comment.hasComment}}
                                 <div class="row pb-2 fs-4">
                                     {{#each comment.list}}

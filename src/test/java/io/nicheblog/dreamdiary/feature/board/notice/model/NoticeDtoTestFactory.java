@@ -24,7 +24,7 @@ public class NoticeDtoTestFactory {
                 .id(0)
                 .contentType(ContentType.NOTICE.key)
                 .title("test_title")
-                .cn("test_cn")
+                .content("test_cn")
                 .ctgrCd("test_ctgr_cd")
                 .build();
     }

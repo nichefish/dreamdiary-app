@@ -118,7 +118,7 @@ public class JournalDreamSpec
                     if (CollectionUtils.isEmpty(rawList)) continue;
 
                     final List<Predicate> likeList = new ArrayList<>();
-                    final Expression<String> cnLowerExp = builder.lower(root.get("cn"));
+                    final Expression<String> cnLowerExp = builder.lower(root.get("content"));
                     for (final Object obj : rawList) {
                         if (obj == null) continue;
                         final String keyword = obj.toString().trim().toLowerCase();

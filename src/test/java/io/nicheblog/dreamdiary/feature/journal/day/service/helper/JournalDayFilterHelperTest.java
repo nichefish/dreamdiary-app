@@ -39,7 +39,7 @@ class JournalDayFilterHelperTest {
     private JournalChapterDto createChapter(final String ctgrCd, final String diaryContent) {
         return JournalChapterDto.builder()
                 .ctgrCd(ctgrCd)
-                .journalDiaryList(List.of(JournalDiaryDto.builder().cn(diaryContent).build()))
+                .journalDiaryList(List.of(JournalDiaryDto.builder().content(diaryContent).build()))
                 .build();
     }
 }

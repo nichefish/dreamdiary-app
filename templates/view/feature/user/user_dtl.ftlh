@@ -184,7 +184,7 @@
                 <div class="col-form-label text-center fw-bold">계정 설명</div>
             </div>
             <div class="col-xl-9 col-8 col-form-label">
-                <div class="div-textarea h-auto min-h-125px">${user.cn!}</div>
+                <div class="div-textarea h-auto min-h-125px">${user.content!}</div>
             </div>
         </div>
     </div>

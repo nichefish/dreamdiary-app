@@ -40,12 +40,12 @@
                     <!--begin::accordion item Body-->
                     <div id="kt_accordion_sectn_item_${sectn?index}" class="fs-6 d-flex collapse <#if sectn.deprcYn != "Y">show</#if> ps-10">
                         <div class="col mx-5 fs-4 fw-normal <#if sectn.deprcYn == "Y">text-muted strikethrough</#if>">
-                            ${sectn.markdownCn?no_esc}
+                            ${sectn.markdownContent?no_esc}
                             <#if sectn.comment?? && sectn.comment.cnt gt 0>
                                 <div class="row pb-2 fs-4">
                                     <#list sectn.comment.list![] as comment>
                                         <div class="row ms-10 text-noti my-1 <#if comment?index == 0>mt-3</#if> <#if comment?index == sectn.comment.list?size - 1>mb-3</#if>">
-                                            <div class="col div-textarea-smp me-10">- ${comment.markdownCn?no_esc}</div>
+                                            <div class="col div-textarea-smp me-10">- ${comment.markdownContent?no_esc}</div>
                                             <div class="col-1">
                                                 <button type="button" class="btn btn-sm btn-light-primary btn-outlined ms-2 py-1 px-2 cursor-pointer"
                                                         onclick="dF.Comment.modal.mdfModal(${comment.id!});"

@@ -90,16 +90,16 @@
 
             <div class="d-flex flex-column mb-8">
                 <!--begin::Label-->
-                <label class="mb-2" for="tinymce_cn">
-                    <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'txt.cn'/></span>
+                <label class="mb-2" for="tinymce_content">
+                    <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'txt.content'/></span>
                     <span class="text-gray-500 fs-9">&nbsp;</span>
                 </label>
                 <!--end::Label-->
                 <!--begin::Form control-->
                 <div class="mb-3">
-                    <textarea name="cn" id="tinymce_cn" class="form-control required" rows="10" placeholder="내용을 입력하세요.">${post.cn!}</textarea>
+                    <textarea name="content" id="tinymce_content" class="form-control required" rows="10" placeholder="내용을 입력하세요.">${post.content!}</textarea>
                 </div>
-                <div id="tinymce_cn_validate_span"></div>
+                <div id="tinymce_content_validate_span"></div>
                 <!--end::Form control-->
             </div>
 

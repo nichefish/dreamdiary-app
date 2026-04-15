@@ -143,7 +143,7 @@ public class JournalIntrptService
     }
 
     @Transactional
-    public JournalIntrptDto updtCn(
+    public JournalIntrptDto updtContent(
             final Integer key,
             final String updatedCn,
             final HistoryType historyType,
@@ -154,7 +154,7 @@ public class JournalIntrptService
                 ? restoreEntity.toBuilder().build()
                 : null;
 
-        restoreEntity.setCn(updatedCn);
+        restoreEntity.setContent(updatedCn);
         BaseClsfHistoryHelper.applyModifyHistory(historySnapshot, restoreEntity);
 
         final JournalIntrptEntity updatedEntity = getRepository().saveAndFlush(restoreEntity);

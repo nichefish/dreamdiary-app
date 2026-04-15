@@ -13,8 +13,8 @@
                 {{> journal_intrpt_toggle_btn_partial this}}
             </div>
         </div>
-        <div class="col journal-intrpt-cn {{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}" data-resolved="{{resolvedYn}}">
-            {{> journal_intrpt_cn_partial this}}
+        <div class="col journal-intrpt-content {{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}" data-resolved="{{resolvedYn}}">
+            {{> journal_intrpt_content_partial this}}
         </div>
         <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
         <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">

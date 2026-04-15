@@ -31,7 +31,7 @@ public class JournalSumryEntityTestFactory {
         return JournalSumryEntity.builder()
                 .contentType(ContentType.JOURNAL_SUMRY.key)
                 .title("test_title")
-                .cn("test_cn")
+                .content("test_cn")
                 .build();
     }
 }

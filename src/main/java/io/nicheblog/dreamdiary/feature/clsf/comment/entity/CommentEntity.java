@@ -55,8 +55,8 @@ public class CommentEntity
     private String contentType = CONTENT_TYPE.key;
 
     /** 내용 */
-    @Column(name = "cn")
-    private String cn;
+    @Column(name = "content")
+    private String content;
 
     /* ----- */
 

@@ -37,14 +37,14 @@ public class HistoryDto
     @Size(max = 50)
     private String refContentType;
 
-    private String cn;
+    private String content;
 
     @Builder.Default
     private String historyType = HistoryType.CHANGE.key;
 
     private Integer fromHistoryId;
 
-    private String previewCn;
+    private String previewContent;
 
     /* ----- */
 
@@ -58,8 +58,8 @@ public class HistoryDto
         this.refContentType = refKey.getContentType();
     }
 
-    public HistoryDto(final BaseClsfKey refKey, final String cn) {
+    public HistoryDto(final BaseClsfKey refKey, final String content) {
         this(refKey);
-        this.cn = cn;
+        this.content = content;
     }
 }

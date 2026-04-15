@@ -41,10 +41,10 @@ public class ChatMsgDto
     private String title;
 
     /** 내용 */
-    private String cn;
+    private String content;
 
     /** 마크다운 처리된 내용 */
-    private String markdownCn;
+    private String markdownContent;
 
     /** 중요 여부 (Y/N) */
     @Builder.Default

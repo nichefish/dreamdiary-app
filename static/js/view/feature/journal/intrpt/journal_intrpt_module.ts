@@ -41,7 +41,7 @@ dF.JournalIntrpt = (function(): dfModule {
             cF.ui.chckboxLabel("#journalIntrptRegForm #imprtcYn", "중요//해당없음", "red//gray");
             /* tinymce editor reset */
             cF.tinymce.init('#tinymce_journalIntrptCn');
-            cF.tinymce.setContentWhenReady("tinymce_journalIntrptCn", obj.cn || "");
+            cF.tinymce.setContentWhenReady("tinymce_journalIntrptCn", obj.content || "");
             /* tagify */
             dF.JournalIntrpt.tagify = cF.tagify.initWithCtgr("#journalIntrptRegForm #tagListStr", dF.JournalIntrptTag.ctgrMap);
         },
@@ -199,10 +199,10 @@ dF.JournalIntrpt = (function(): dfModule {
                 if (!res.rslt) return;
 
                 // 찾아서 해당 그것만 collapse 추가 제거.
-                const item: HTMLElement = document.querySelector(`.journal-intrpt-cn[data-id='${id}']`);
+                const item: HTMLElement = document.querySelector(`.journal-intrpt-content[data-id='${id}']`);
                 if (!item) return console.log("item not found.");
 
-                const content: HTMLElement = item.querySelector(".cn");
+                const content: HTMLElement = item.querySelector(".journal-content");
                 if (!content) return console.log("content not found.");
 
                 if (collapsedYn === "Y") {
@@ -224,7 +224,7 @@ dF.JournalIntrpt = (function(): dfModule {
             const item: HTMLElement = trigger.closest(`.journal-intrpt-item[data-id='${id}']`);
             if (!item) return console.log("item not found.");
 
-            const content: HTMLElement = item.querySelector(".journal-intrpt-cn .cn");
+            const content: HTMLElement = item.querySelector(".journal-intrpt-content .journal-content");
             if (!content) return console.log("content not found.");
 
             const icon: HTMLElement = document.querySelector(`#intrpt-toggle-icon-${id}`);
@@ -250,9 +250,9 @@ dF.JournalIntrpt = (function(): dfModule {
          */
         initCollapseState: function(): void {
             const collapsedIds = new Set(JSON.parse(localStorage.getItem(dF.JournalIntrpt.STORAGE_KEY) || "[]"));
-            document.querySelectorAll(".journal-intrpt-item .journal-intrpt-cn").forEach((item: HTMLElement): void => {
+            document.querySelectorAll(".journal-intrpt-item .journal-intrpt-content").forEach((item: HTMLElement): void => {
                 const id: string = item.dataset.id;
-                const content: HTMLElement = item.querySelector(".cn");
+                const content: HTMLElement = item.querySelector(".journal-content");
                 const icon: HTMLElement = document.querySelector(`#intrpt-toggle-icon-${id}`);
                 if (!icon) console.log("icon not found.");
                 if (id && collapsedIds.has(id)) {
@@ -279,7 +279,7 @@ dF.JournalIntrpt = (function(): dfModule {
                 const rsltObj: Record<string, any> = res.rsltObj;
                 const { stdrdDt, journalDtWeekDay } = rsltObj;
                 const date: string = stdrdDt + " (" + journalDtWeekDay + ")" + "\r\n";
-                const resultCn: string = rsltObj.cn;
+                const resultCn: string = rsltObj.content;
                 // 문단/줄바꿈을 먼저 텍스트로 치환
                 const replacedCn: string = resultCn.replace(/<\s*br\s*\/?>/gi, "\n").replace(/<\s*\/?p[^>]*>/gi, "\n");
                 const div: HTMLDivElement = document.createElement("div");

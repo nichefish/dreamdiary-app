@@ -52,9 +52,9 @@ public class SectnDto
     /** 제목 */
     private String title;
     /** 내용 */
-    private String cn;
+    private String content;
     /** 마크다운 처리된 내용 */
-    private String markdownCn;
+    private String markdownContent;
 
     /** 글분류 코드 */
     @Size(max = 50)

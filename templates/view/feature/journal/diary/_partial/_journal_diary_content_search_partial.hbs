@@ -3,9 +3,9 @@
  * @see handlebars.ts
  -->
 
-<script type="text/x-handlebars-template" id="journal_diary_cn_search_partial" data-partial>
-    <div class="{{#if (exists cnClass)}}{{cnClass}}{{else}}cn {{cnStateClass state}}{{/if}}">
-        {{{markdownCn}}}
+<script type="text/x-handlebars-template" id="journal_diary_content_search_partial" data-partial>
+    <div class="{{#if (exists contentClass)}}{{contentClass}}{{else}}journal-content {{contentStateClass state}}{{/if}}">
+        {{{markdownContent}}}
     </div>
     <!-- "더 보기" 버튼, <p> child 3개 이상일 때만 보임 (css) -->
     <button type="button" class="btn btn-xxs btn-active-light-info badge-light-primary btn-outlined expand-btn"

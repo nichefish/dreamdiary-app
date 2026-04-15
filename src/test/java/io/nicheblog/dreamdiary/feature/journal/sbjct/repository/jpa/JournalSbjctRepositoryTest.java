@@ -83,7 +83,7 @@ class JournalSbjctRepositoryTest {
 
         // When::
         JournalSbjctEntity toModify = journalSbjctRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
-        toModify.setCn("modified");
+        toModify.setContent("modified");
         JournalSbjctEntity modified = journalSbjctRepository.save(toModify);
 
         // Then::
@@ -94,7 +94,7 @@ class JournalSbjctRepositoryTest {
         assertNotNull(modified.getUpdatedBy(),  "수정자 audit 처리가 되지 않았습니다.");
         assertEquals(TestConstant.TEST_AUDITOR, modified.getUpdatedBy(), "수정자가 예상 값과 일치하지 않습니다.");
         // value
-        assertEquals("modified", modified.getCn(), "값이 정상적으로 수정되지 않았습니다.");
+        assertEquals("modified", modified.getContent(), "값이 정상적으로 수정되지 않았습니다.");
     }
 
     /**

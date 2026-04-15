@@ -87,13 +87,13 @@ class JournalTodoServiceTest {
 
         // When::
         final JournalTodoDto toModify = JournalTodoDtoTestFactory.createWithKey(key);
-        toModify.setCn("test");
+        toModify.setContent("test");
         final ServiceResponse modifyResult = journalTodoService.modify(toModify);
         final JournalTodoDto modified = (JournalTodoDto) modifyResult.getRsltObj();
 
         // Then::
         assertNotNull(modified.getId(), "Modify did not keep key.");
-        assertEquals("test", modified.getCn(), "Modify did not update content.");
+        assertEquals("test", modified.getContent(), "Modify did not update content.");
     }
 
     /**

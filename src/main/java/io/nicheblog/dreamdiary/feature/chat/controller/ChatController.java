@@ -80,7 +80,7 @@ public class ChatController {
         AuthUtils.setAuthentication(authentication);
 
         final ChatMsgDto chatMsg = ChatMsgDto.builder()
-                        .cn(message)
+                        .content(message)
                         .build();
 
         final ServiceResponse result = chatMsgService.regist(chatMsg);  // 채팅 메시지 등록

@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS user (
     refresh_token_expires_at DATETIME COMMENT '리프레시 토큰 만료일시',
     nick_nm VARCHAR(50) COMMENT '사용자 표시이름',
     profl_img_url VARCHAR(256) COMMENT '프로필 이미지 경로',
-    cn LONGTEXT COMMENT '사용자 설명 (관리자용)',
+    content LONGTEXT COMMENT '사용자 설명 (관리자용)',
     email VARCHAR(100) COMMENT '이메일',        -- 기본 이메일:: 계정복구 등에 사용함
     cttpc VARCHAR(20) COMMENT '연락처',        -- 기본 연락처
     -- ACCOUNT_STATUS

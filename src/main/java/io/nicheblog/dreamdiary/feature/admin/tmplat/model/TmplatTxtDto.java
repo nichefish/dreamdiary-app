@@ -54,7 +54,7 @@ public class TmplatTxtDto
     private String title;
 
     /** 내용 (텍스트에디터 */
-    private String cn;
+    private String content;
 
     /** 기본설정 여부 (Y/N) */
     @Builder.Default

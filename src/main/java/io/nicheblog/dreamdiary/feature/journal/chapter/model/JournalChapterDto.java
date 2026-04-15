@@ -47,7 +47,7 @@ public class JournalChapterDto
     private String ctgrNm;
 
     /** 마크다운 처리된 내용 */
-    private String markdownCn;
+    private String markdownContent;
 
     /** 인덱스 변경 여부 */
     @Builder.Default

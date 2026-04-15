@@ -23,7 +23,7 @@ public class JournalSbjctEntityTestFactory {
         return JournalSbjctEntity.builder()
                 .contentType(ContentType.JOURNAL_SBJCT.key)
                 .title("test_title")
-                .cn("test_cn")
+                .content("test_cn")
                 .ctgrCd("test_ctgr_cd")
                 .build();
     }

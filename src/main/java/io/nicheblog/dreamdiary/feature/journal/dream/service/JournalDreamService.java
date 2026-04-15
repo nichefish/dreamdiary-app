@@ -202,7 +202,7 @@ public class JournalDreamService
      * @return {@link JournalDreamDto} -- 수정된 객체
      */
     @Transactional
-    public JournalDreamDto updtCn(
+    public JournalDreamDto updtContent(
             final Integer key,
             final String updatedCn,
             final HistoryType historyType,
@@ -213,7 +213,7 @@ public class JournalDreamService
                 ? restoreEntity.toBuilder().build()
                 : null;
 
-        restoreEntity.setCn(updatedCn);
+        restoreEntity.setContent(updatedCn);
         BaseClsfHistoryHelper.applyModifyHistory(historySnapshot, restoreEntity);
 
         final JournalDreamEntity updatedEntity = getRepository().saveAndFlush(restoreEntity);

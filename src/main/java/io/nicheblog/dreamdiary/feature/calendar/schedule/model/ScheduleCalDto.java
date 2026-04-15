@@ -58,7 +58,7 @@ public class ScheduleCalDto
 
     /** 일정 내용 */
     @JsonProperty("description")
-    private String cn;
+    private String content;
 
     /** 일정 시작일 */
     @JsonProperty("start")

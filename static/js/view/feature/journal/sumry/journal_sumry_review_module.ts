@@ -34,7 +34,7 @@ dF.JournalSumryReview = (function(): dfModule {
             cF.tagify.initWithCtgr("#journalSumryReviewRegForm #tagListStr", undefined);
             // tinymce editor reset
             cF.tinymce.init('#tinymce_journalSumryReviewCn');
-            cF.tinymce.setContentWhenReady("tinymce_journalSumryReviewCn", obj.cn || "");
+            cF.tinymce.setContentWhenReady("tinymce_journalSumryReviewCn", obj.content || "");
             /* tagify */
             dF.JournalSumryReview.tagify = cF.tagify.init("#journalSumryReviewRegForm #tagListStr");
         },

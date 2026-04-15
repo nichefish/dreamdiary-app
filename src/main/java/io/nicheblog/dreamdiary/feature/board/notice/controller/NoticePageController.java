@@ -141,7 +141,7 @@ public class NoticePageController
         model.addAttribute("pageNm", PageNm.PREVIEW);
 
         // 객체 정보 모델에 추가
-        notice.setMarkdownCn(MarkdownUtils.markdown(notice.getCn()));
+        notice.setMarkdownContent(MarkdownUtils.markdown(notice.getContent()));
         model.addAttribute("post", notice);
 
         return "/view/feature/board/notice/notice_preview_pop";

@@ -23,7 +23,7 @@ public class JournalTodoEntityTestFactory {
         return JournalTodoEntity.builder()
                 .contentType(ContentType.JOURNAL_TODO.key)
                 .title("test_title")
-                .cn("test_cn")
+                .content("test_cn")
                 .ctgrCd("test_ctgr_cd")
                 .yy(2000)
                 .mnth(1)

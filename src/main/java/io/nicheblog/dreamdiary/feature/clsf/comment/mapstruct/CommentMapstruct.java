@@ -34,7 +34,7 @@ public interface CommentMapstruct
      */
     @Override
     @Named("toDto")
-    @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
+    @Mapping(target = "markdownContent", expression = "java(StringUtils.isEmpty(entity.getContent()) ? \"-\" : MarkdownUtils.markdown(entity.getContent()))")
     CommentDto toDto(final CommentEntity entity) throws Exception;
 
     /**
@@ -45,7 +45,7 @@ public interface CommentMapstruct
      */
     @Override
     @Named("toEntity")
-    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
+    @Mapping(target = "content", expression = "java(MarkdownUtils.normalize(dto.getContent()))")
     CommentEntity toEntity(final CommentDto dto) throws Exception;
 
     /**
@@ -56,6 +56,6 @@ public interface CommentMapstruct
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
+    @Mapping(target = "content", expression = "java(MarkdownUtils.normalize(dto.getContent()))")
     void updateFromDto(final CommentDto dto, final @MappingTarget CommentEntity entity) throws Exception;
 }

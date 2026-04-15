@@ -78,7 +78,7 @@ public class LogActvtyParam
     private String rsltMsg;
 
     /** 내용 */
-    private String cn;
+    private String content;
 
     /** 작업 카테고리 코드 */
     @Size(max = 50)

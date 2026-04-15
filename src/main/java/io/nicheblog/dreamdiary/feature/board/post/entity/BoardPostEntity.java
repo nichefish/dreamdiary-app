@@ -68,8 +68,8 @@ public class BoardPostEntity
     private String title;
 
     /** 내용 */
-    @Column(name = "cn")
-    private String cn;
+    @Column(name = "content")
+    private String content;
 
     /* ----- */
 

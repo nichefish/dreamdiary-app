@@ -133,7 +133,7 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     margin-bottom: 1rem !important;
 }
 
-.journal-diary-cn, .journal-dream-cn, .journal-intrpt-cn, .journal-sumry-cn, .journal-sumry-review-cn {
+.journal-diary-content, .journal-dream-content, .journal-intrpt-content, .journal-sumry-content, .journal-sumry-review-content {
     p {
         margin-top: 0.1rem !important;
         margin-bottom: 0.1rem !important;
@@ -178,7 +178,7 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
         }
     }
 
-    &:has(.journal-diary-cn .cn.imprtc) {
+    &:has(.journal-diary-content .journal-content.imprtc) {
         .journal-chapter-cn.collapsed,
         .journal-chapter-tags:not(.d-none) {
             background: #fff5f5;
@@ -187,7 +187,7 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
         }
     }
 
-    &:has(.journal-diary-cn .cn.refrnc) {
+    &:has(.journal-diary-content .journal-content.refrnc) {
         .journal-chapter-cn.collapsed,
         .journal-chapter-tags:not(.d-none) {
             background: #fffcec;
@@ -196,7 +196,7 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
         }
     }
 
-    &:has(.journal-diary-cn .cn.imprtc):has(.journal-diary-cn .cn.refrnc) {
+    &:has(.journal-diary-content .journal-content.imprtc):has(.journal-diary-content .journal-content.refrnc) {
         .journal-chapter-cn.collapsed,
         .journal-chapter-tags:not(.d-none) {
             background: #fff8ef;
@@ -210,10 +210,10 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     display: none;
 }
 
-.journal-diary-cn, .journal-dream-cn, .journal-intrpt-cn, .journal-sumry-cn, .journal-sumry-review-cn {
+.journal-diary-content, .journal-dream-content, .journal-intrpt-content, .journal-sumry-content, .journal-sumry-review-content {
     transition: all 0.2s ease;
 
-    .cn {
+    .journal-content {
         &.collapsed::before {
             content: "(collapsed)";
             display: block;
@@ -267,28 +267,28 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
 }
 
 .journal-diary-item[data-resolved="Y"] {
-    .journal-diary-cn {
-        .cn.collapsed::before {
+    .journal-diary-content {
+        .journal-content.collapsed::before {
             color: #8ab89a;
         }
     }
 }
 .journal-dream-item[data-resolved="Y"] {
-    .journal-dream-cn {
-        .cn.collapsed::before {
+    .journal-dream-content {
+        .journal-content.collapsed::before {
             color: #8ab89a;
         }
     }
 }
 .journal-intrpt-item[data-resolved="Y"] {
-    .journal-intrpt-cn {
-        .cn.collapsed::before {
+    .journal-intrpt-content {
+        .journal-content.collapsed::before {
             color: #8ab89a;
         }
     }
 }
 
-.journal-diary-cn, .journal-intrpt-cn {
+.journal-diary-content, .journal-intrpt-content {
     p {
         color: rgba(75, 75, 75, 0.9);
     }
@@ -296,7 +296,7 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
         color: initial;
     }
 }
-.journal-dream-cn {
+.journal-dream-content {
     p {
         color: rgba(95, 0, 130, 0.8);
     }
@@ -321,7 +321,7 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
 
 /* 글접기 처리 */
 .modal-body {
-    .journal-dream-cn, .journal-diary-cn {
+    .journal-dream-content, .journal-diary-content {
 
         // 공통 스타일 믹스인
         @mixin cn-collapse($lines, $height) {
@@ -443,8 +443,8 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
 
 .journal-diary-item,
 .journal-dream-item {
-    .journal-diary-cn,
-    .journal-dream-cn {
+    .journal-diary-content,
+    .journal-dream-content {
         position: relative;
         border: 1px solid transparent;
         border-radius: 0 0.5rem 0.5rem 0;
@@ -476,8 +476,8 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
 
 .journal-diary-item[data-resolved="Y"],
 .journal-dream-item[data-resolved="Y"] {
-    .journal-diary-cn,
-    .journal-dream-cn {
+    .journal-diary-content,
+    .journal-dream-content {
         background: rgba(34, 197, 94, 0.05);
         border-color: rgba(34, 197, 94, 0.14);
 
@@ -490,8 +490,8 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
 
 .journal-diary-item[data-refrnc="Y"],
 .journal-dream-item[data-refrnc="Y"] {
-    .journal-diary-cn,
-    .journal-dream-cn {
+    .journal-diary-content,
+    .journal-dream-content {
         background: rgba(245, 158, 11, 0.07);
         border-color: rgba(245, 158, 11, 0.16);
 
@@ -504,8 +504,8 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
 
 .journal-diary-item[data-imprtc="Y"],
 .journal-dream-item[data-imprtc="Y"] {
-    .journal-diary-cn,
-    .journal-dream-cn {
+    .journal-diary-content,
+    .journal-dream-content {
         background: rgba(239, 68, 68, 0.06);
         border-color: rgba(239, 68, 68, 0.15);
 
@@ -518,8 +518,8 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
 
 .journal-diary-item[data-resolved="Y"][data-refrnc="Y"],
 .journal-dream-item[data-resolved="Y"][data-refrnc="Y"] {
-    .journal-diary-cn,
-    .journal-dream-cn {
+    .journal-diary-content,
+    .journal-dream-content {
         background: rgba(234, 179, 8, 0.08);
         border-color: rgba(234, 179, 8, 0.17);
 
@@ -532,8 +532,8 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
 
 .journal-diary-item[data-resolved="Y"][data-imprtc="Y"],
 .journal-dream-item[data-resolved="Y"][data-imprtc="Y"] {
-    .journal-diary-cn,
-    .journal-dream-cn {
+    .journal-diary-content,
+    .journal-dream-content {
         background: rgba(248, 113, 113, 0.08);
         border-color: rgba(239, 68, 68, 0.16);
 
@@ -546,8 +546,8 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
 
 .journal-diary-item[data-imprtc="Y"][data-refrnc="Y"],
 .journal-dream-item[data-imprtc="Y"][data-refrnc="Y"] {
-    .journal-diary-cn,
-    .journal-dream-cn {
+    .journal-diary-content,
+    .journal-dream-content {
         background: rgba(251, 191, 36, 0.09);
         border-color: rgba(245, 158, 11, 0.18);
 
@@ -560,8 +560,8 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
 
 .journal-diary-item[data-resolved="Y"][data-imprtc="Y"][data-refrnc="Y"],
 .journal-dream-item[data-resolved="Y"][data-imprtc="Y"][data-refrnc="Y"] {
-    .journal-diary-cn,
-    .journal-dream-cn {
+    .journal-diary-content,
+    .journal-dream-content {
         background: rgba(245, 208, 120, 0.1);
         border-color: rgba(234, 179, 8, 0.2);
 

@@ -556,7 +556,7 @@ dF.JournalDay = (function(): dfModule {
                             .map((entry: Record<string, any>): Record<string, any> | null => {
                                 const journalDiaryList: Record<string, any>[] = Array.isArray(entry?.journalDiaryList) ? entry.journalDiaryList : [];
                                 const filteredDiaryList: Record<string, any>[] = journalDiaryList.filter((diary: Record<string, any>): boolean => {
-                                    return containsKeyword(diary?.cn, diaryKeyword);
+                                    return containsKeyword(diary?.content, diaryKeyword);
                                 });
                                 if (filteredDiaryList.length === 0) return null;
                                 return {...entry, journalDiaryList: filteredDiaryList};
@@ -568,10 +568,10 @@ dF.JournalDay = (function(): dfModule {
                         const journalDreamList: Record<string, any>[] = Array.isArray(day.journalDreamList) ? day.journalDreamList : [];
                         const journalElseDreamList: Record<string, any>[] = Array.isArray(day.journalElseDreamList) ? day.journalElseDreamList : [];
                         nextDay.journalDreamList = journalDreamList.filter((dream: Record<string, any>): boolean => {
-                            return containsKeyword(dream?.cn, dreamKeyword);
+                            return containsKeyword(dream?.content, dreamKeyword);
                         });
                         nextDay.journalElseDreamList = journalElseDreamList.filter((dream: Record<string, any>): boolean => {
-                            return containsKeyword(dream?.cn, dreamKeyword);
+                            return containsKeyword(dream?.content, dreamKeyword);
                         });
                         nextDay.hasDream = (nextDay.journalDreamList.length + nextDay.journalElseDreamList.length) > 0;
                     }

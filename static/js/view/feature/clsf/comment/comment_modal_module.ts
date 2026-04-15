@@ -37,7 +37,7 @@ dF.Comment.modal = (function(): dfModule {
             cF.validate.validateForm("#commentRegForm", dF.Comment.modal.regAjax);
             /* tinymce editor reset */
             cF.tinymce.init('#tinymce_commentCn');
-            cF.tinymce.setContentWhenReady("tinymce_commentCn", obj.cn || "");
+            cF.tinymce.setContentWhenReady("tinymce_commentCn", obj.content || "");
         },
 
         /**

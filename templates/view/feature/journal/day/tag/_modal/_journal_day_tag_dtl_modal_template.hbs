@@ -81,8 +81,8 @@
                                                 {{> journal_diary_toggle_btn_partial this}}
                                             </div>
                                         </div>
-                                        <div class="col journal-diary-cn">
-                                            {{> journal_diary_cn_partial this}}
+                                        <div class="col journal-diary-content">
+                                            {{> journal_diary_content_partial this}}
                                         </div>
                                         <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                                         <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
@@ -106,8 +106,8 @@
                                     <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
                                         <div># {{sortOrder}}</div>
                                     </div>
-                                    <div class="col py-3 journal-dream-cn {{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}">
-                                        {{> journal_dream_cn_partial this collapse="collapse-4"}}
+                                    <div class="col py-3 journal-dream-content {{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}">
+                                        {{> journal_dream_content_partial this collapse="collapse-4"}}
                                     </div>
                                     <div class="col-1 bd-none d-md-flex order-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                                     <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
@@ -122,8 +122,8 @@
                                     <div class="col-1 py-3 d-none d-md-flex border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
                                         -
                                     </div>
-                                    <div class="col py-3 journal-dream-cn bg-secondary">
-                                        {{> journal_dream_cn_partial this collapse="collapse-4" elseDreamYn="Y"}}
+                                    <div class="col py-3 journal-dream-content bg-secondary">
+                                        {{> journal_dream_content_partial this collapse="collapse-4" elseDreamYn="Y"}}
                                     </div>
                                     <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                                     <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">

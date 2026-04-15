@@ -1,11 +1,11 @@
 <#--
- * 저널 꿈(journal_dream) - 내용 partial
+ * 저널 꿈(journal_dream) - 검색 내용 partial
  * @see handlebars.ts
  -->
 
-<script type="text/x-handlebars-template" id="journal_dream_cn_partial" data-partial>
-    <div class="cn {{#if (hasState state 'COLLAPSED')}}collapsed collapse-4{{/if}}">
-        {{{markdownCn}}}
+<script type="text/x-handlebars-template" id="journal_dream_content_search_partial" data-partial>
+    <div class="{{#if (exists contentClass)}}{{contentClass}}{{else}}journal-content {{#if (hasState state 'COLLAPSED')}}collapsed{{/if}}{{/if}}">
+        {{{markdownContent}}}
     </div>
     <!-- "더 보기" 버튼, <p> child 3개 이상일 때만 보임 (css) -->
     <button type="button" class="btn btn-xxs btn-active-light-info badge-light-primary btn-outlined expand-btn"
@@ -16,7 +16,7 @@
         <div class="tags ms-2 mt-3">
             <i class="bi bi-tag"></i>
         {{#tag.list}}
-            {{> tag_list_partial this module="dF.JournalDreamTag"}}
+            {{> tag_list_partial this module="dF.JournalDreamSearch"}}
         {{/tag.list}}
         </div>
     {{/if}}

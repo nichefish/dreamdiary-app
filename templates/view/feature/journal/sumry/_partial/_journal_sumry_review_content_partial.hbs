@@ -3,9 +3,9 @@
  * @see handlebars.ts
  -->
 
-<script type="text/x-handlebars-template" id="journal_sumry_review_cn_partial" data-partial>
-    <div class="{{#if (exists cnClass)}}{{cnClass}}{{else}}cn {{cnStateClass state}}{{/if}}">
-        {{{markdownCn}}}
+<script type="text/x-handlebars-template" id="journal_sumry_review_content_partial" data-partial>
+    <div class="{{#if (exists contentClass)}}{{contentClass}}{{else}}journal-content {{contentStateClass state}}{{/if}}">
+        {{{markdownContent}}}
     </div>
 
     {{#if (exists tag.list)}}

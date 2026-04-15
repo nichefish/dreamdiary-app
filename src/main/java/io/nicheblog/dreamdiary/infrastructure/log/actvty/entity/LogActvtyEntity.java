@@ -132,9 +132,9 @@ public class LogActvtyEntity
     private String param;
 
     /** 작업 내용 */
-    @Column(name = "cn", length = 400)
+    @Column(name = "content", length = 400)
     @Comment("작업 내용")
-    private String cn;
+    private String content;
 
     /** 리퍼러 */
     @Column(name = "referer", length = 1000)

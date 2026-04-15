@@ -37,7 +37,7 @@ dF.JournalTodo = (function(): dfModule {
             cF.ui.chckboxLabel("#journalTodoRegForm #imprtcYn", "중요//해당없음", "red//gray");
             /* tinymce editor reset */
             cF.tinymce.init('#tinymce_journalTodoCn');
-            cF.tinymce.setContentWhenReady("tinymce_journalTodoCn", obj.cn || "");
+            cF.tinymce.setContentWhenReady("tinymce_journalTodoCn", obj.content || "");
             /* tagify */
             dF.JournalTodo.tagify = cF.tagify.initWithCtgr("#journalTodoRegForm #tagListStr", dF.JournalTodoTag.ctgrMap);
         },

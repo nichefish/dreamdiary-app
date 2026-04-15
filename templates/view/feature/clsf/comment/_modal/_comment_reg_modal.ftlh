@@ -17,11 +17,11 @@
             </div>
             <!--begin::Label-->
             <label class="mb-2" for="tinymce_commentCn">
-                <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'txt.cn'/></span>
+                <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'txt.content'/></span>
                 <span class="text-gray-500 fs-9">&nbsp;</span>
             </label>
             <!--end::Label-->
-            <textarea name="cn" id="tinymce_commentCn" class="form-control required w-100" rows="3" maxlength="1000" placeholder="내용을 입력하세요."></textarea>
+            <textarea name="content" id="tinymce_commentCn" class="form-control required w-100" rows="3" maxlength="1000" placeholder="내용을 입력하세요."></textarea>
             <div id="commentCn_validate_span"></div>
             <div class="row" id="comment_reg_div">
                 <#--handlebars template goes in here-->

@@ -253,7 +253,7 @@ dF.JournalDreamSearch = (function(): dfModule {
             let prevDate: string|null = null;
             const textToCopy: string = results.map((item: any): string => {
                 const date: string = `${item.stdrdDt} (${item.journalDtWeekDay})`;
-                const content: string = cF.util.htmlToText(item.markdownCn ?? "");
+                const content: string = cF.util.htmlToText(item.markdownContent ?? "");
 
                 let block: string = "";
                 // 날짜가 바뀌었을 때만 날짜 출력

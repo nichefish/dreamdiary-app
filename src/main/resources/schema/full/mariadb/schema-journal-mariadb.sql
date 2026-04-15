@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS journal_diary (
     journal_chapter_id INT COMMENT '저널 챕터 번호',
     --
     title VARCHAR(200) COMMENT '제목',
-    cn LONGTEXT COMMENT '내용',
+    content LONGTEXT COMMENT '내용',
     sort_order INT DEFAULT 1 COMMENT '저널 일기 인덱스',
     -- ATCH_FILE
     atch_file_id INT COMMENT '첨부파일 번호',
@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS journal_dream (
     journal_day_id INT COMMENT '저널 일자 번호',
     --
     title VARCHAR(200) COMMENT '제목',
-    cn LONGTEXT COMMENT '내용',
+    content LONGTEXT COMMENT '내용',
     sort_order INT DEFAULT 1 COMMENT '저널 꿈 인덱스',
     halluc_yn CHAR(1) DEFAULT  'N' COMMENT '입면환각 여부 (Y/N)',
     nhtmr_yn CHAR(1) DEFAULT  'N' COMMENT '악몽 여부 (Y/N)',
@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS journal_intrpt (
     journal_dream_id INT COMMENT '저널 꿈 번호',
     --
     title VARCHAR(200) COMMENT '제목',
-    cn LONGTEXT COMMENT '내용',
+    content LONGTEXT COMMENT '내용',
     sort_order INT DEFAULT 1 COMMENT '저널 해석 인덱스',
     resolved_yn CHAR(1) DEFAULT 'N' COMMENT '정리완료 여부 (Y/N)',
     collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)',
@@ -163,7 +163,7 @@ CREATE TABLE IF NOT EXISTS journal_todo (
     mnth INT COMMENT '월',
     -- POST
     title VARCHAR(200) COMMENT '제목',
-    cn LONGTEXT COMMENT '내용',
+    content LONGTEXT COMMENT '내용',
     ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
     fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
     hit_cnt INT DEFAULT 0 COMMENT '조회수',
@@ -188,7 +188,7 @@ CREATE TABLE IF NOT EXISTS journal_sbjct(
     content_type VARCHAR(30) DEFAULT 'JOURNAL_SBJCT' COMMENT '게시판 코드 (PK)',
     -- POST
     title VARCHAR(200) COMMENT '제목',
-    cn LONGTEXT COMMENT '내용',
+    content LONGTEXT COMMENT '내용',
     ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
     imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
     fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
@@ -238,7 +238,7 @@ CREATE TABLE IF NOT EXISTS journal_sumry_review (
     sort_order INT DEFAULT 1 COMMENT '저널 결산 리뷰 인덱스',
     -- POST
     title VARCHAR(200) COMMENT '제목',
-    cn LONGTEXT COMMENT '내용',
+    content LONGTEXT COMMENT '내용',
     ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
     imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
     fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',

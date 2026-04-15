@@ -32,10 +32,10 @@ public class HistoryEventListener {
             if (!(event.getSource() instanceof HistoryChangeDetector<?> detector)) return;
             if (event.getAfterEntity() == null) return;
 
-            final String cn = this.resolveHistoryCn(detector, event);
-            if (event.getEntitySnapshot() != null && StringUtils.isBlank(cn)) return;
+            final String content = this.resolveHistoryCn(detector, event);
+            if (event.getEntitySnapshot() != null && StringUtils.isBlank(content)) return;
 
-            historyService.addHistory(event.getAfterEntity().getClsfKey(), cn, event.getHistoryType(), event.getFromHistoryId());
+            historyService.addHistory(event.getAfterEntity().getClsfKey(), content, event.getHistoryType(), event.getFromHistoryId());
         } finally {
             SecurityContextHolder.setContext(previousSecurityContext);
         }

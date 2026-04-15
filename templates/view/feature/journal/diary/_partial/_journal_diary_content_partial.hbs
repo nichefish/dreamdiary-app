@@ -1,11 +1,11 @@
 <#--
- * 저널 꿈(journal_dream) - 검색 내용 partial
+ * 저널 일기(journal_diary) - 내용 partial
  * @see handlebars.ts
  -->
 
-<script type="text/x-handlebars-template" id="journal_dream_cn_search_partial" data-partial>
-    <div class="{{#if (exists cnClass)}}{{cnClass}}{{else}}cn {{#if (hasState state 'COLLAPSED')}}collapsed{{/if}}{{/if}}">
-        {{{markdownCn}}}
+<script type="text/x-handlebars-template" id="journal_diary_content_partial" data-partial>
+    <div class="{{#if (exists contentClass)}}{{contentClass}}{{else}}journal-content {{contentStateClass state}}{{/if}}">
+        {{{markdownContent}}}
     </div>
     <!-- "더 보기" 버튼, <p> child 3개 이상일 때만 보임 (css) -->
     <button type="button" class="btn btn-xxs btn-active-light-info badge-light-primary btn-outlined expand-btn"
@@ -16,18 +16,18 @@
         <div class="tags ms-2 mt-3">
             <i class="bi bi-tag"></i>
         {{#tag.list}}
-            {{> tag_list_partial this module="dF.JournalDreamSearch"}}
+            {{> tag_list_partial this module="dF.JournalDiaryTag"}}
         {{/tag.list}}
         </div>
     {{/if}}
-    {{^ifYn elseDreamYn}}
+    {{#if (exists id)}}
         <div class="related-content-anchor"
              data-post-no="{{id}}"
-             data-content-type="JOURNAL_DREAM"></div>
+             data-content-type="JOURNAL_DIARY"></div>
         {{#if relatedContentList.length}}
             <div class="related-content-box mt-4 pt-4 border-top border-gray-200"
                  data-post-no="{{id}}"
-                 data-content-type="JOURNAL_DREAM">
+                 data-content-type="JOURNAL_DIARY">
                 <div class="d-flex align-items-center gap-2 mb-3 text-gray-700">
                     <i class="bi bi-link-45deg"></i>
                     <span class="fw-semibold">관련 글</span>
@@ -56,7 +56,7 @@
                 </div>
             </div>
         {{/if}}
-    {{/ifYn}}
+    {{/if}}
     {{#if (exists comment.list)}}
         {{#each comment.list}}
             {{> comment_list_partial this}}

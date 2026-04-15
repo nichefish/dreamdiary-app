@@ -67,7 +67,7 @@ public final class JournalDayFilterHelper {
                             if (CollectionUtils.isEmpty(diaryList)) continue;
                             final List<JournalDiaryDto> filteredDiaries = new ArrayList<>();
                             for (final JournalDiaryDto diary : diaryList) {
-                                if (containsKeyword(diary.getCn(), diaryKeyword)) filteredDiaries.add(diary);
+                                if (containsKeyword(diary.getContent(), diaryKeyword)) filteredDiaries.add(diary);
                             }
                             if (filteredDiaries.isEmpty()) continue;
                             filteredEntries.add(chapter.toBuilder().journalDiaryList(filteredDiaries).build());
@@ -146,7 +146,7 @@ public final class JournalDayFilterHelper {
         if (CollectionUtils.isEmpty(dreamList)) return new ArrayList<>();
         final List<JournalDreamDto> filtered = new ArrayList<>();
         for (final JournalDreamDto dream : dreamList) {
-            if (containsKeyword(dream.getCn(), keyword)) filtered.add(dream);
+            if (containsKeyword(dream.getContent(), keyword)) filtered.add(dream);
         }
         return filtered;
     }
