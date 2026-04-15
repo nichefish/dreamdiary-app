@@ -1,4 +1,4 @@
-<#--
+﻿<#--
  * 파일시스템 메타(flsys_meta) > 상세 Modal
  -->
 
@@ -21,7 +21,7 @@
             <#--모달:: 버튼: 수정 모달 호출-->
             <@component.modal_btn_modify "FlsysMeta.mdfModal(FlsysMeta.key);" />
             <#--모달:: 버튼: 삭제-->
-            <@component.modal_btn_delete "dF.Schdul.delAjax(FlsysMeta.key);" />
+            <@component.modal_btn_delete "dF.Schedule.delAjax(FlsysMeta.key);" />
             <#--모달:: 버튼: 모달 닫기-->
             <@component.modal_btn_close />
         </div>
@@ -30,3 +30,4 @@
 
 <#--include:: Handlebars template-->
 <#include "_flsys_meta_dtl_template.hbs">
+

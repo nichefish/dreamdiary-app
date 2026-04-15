@@ -64,7 +64,7 @@ public class JournalDayRestController
 
         final Object list = switch (viewType) {
             case LIST -> myJournalDayQueryService.getMyYyMnthListDtoEnriched(searchParam);
-            case CAL -> myJournalDayCalService.getSchdulTotalCalList(searchParam);
+            case CAL -> myJournalDayCalService.getScheduleTotalCalList(searchParam);
             case DAILY -> myJournalDayQueryService.getMyStdrdDaysDtoEnriched(searchParam);
             case WEEKLY -> myJournalDayQueryService.getMyWeeklyListDtoEnriched(searchParam);
             case SEARCH -> myJournalDayQueryService.getMyListDtoByMetaIdEnriched(searchParam);

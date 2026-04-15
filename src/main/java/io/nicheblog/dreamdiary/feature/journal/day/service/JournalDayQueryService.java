@@ -9,7 +9,7 @@ import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayFilterHelper;
-import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayHldyHelper;
+import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayHolydayHelper;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayViewHelper;
 import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryDto;
 import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamDto;
@@ -146,7 +146,7 @@ public class JournalDayQueryService {
     private List<JournalDayDto> enrichList(final String username, final List<JournalDayDto> listDto, final JournalDaySearchParam searchParam) throws Exception {
         if (listDto == null) return null;
 
-        JournalDayHldyHelper.setHldyInfo(listDto, getHldyMap());
+        JournalDayHolydayHelper.setHolydayInfo(listDto, getHolydayMap());
         if (searchParam != null) {
             JournalDayViewHelper.mergeStates(username, listDto, searchParam);
             JournalDayViewHelper.applyChapterTagSummary(listDto, searchParam);
@@ -166,7 +166,7 @@ public class JournalDayQueryService {
     private List<JournalDayDto> enrichWeeklyList(final String username, final List<JournalDayDto> listDto, final JournalDaySearchParam searchParam) throws Exception {
         if (listDto == null) return null;
 
-        JournalDayHldyHelper.setHldyInfo(listDto, getHldyMap());
+        JournalDayHolydayHelper.setHolydayInfo(listDto, getHolydayMap());
         if (searchParam != null) {
             JournalDayViewHelper.mergeWeeklyStates(username, listDto, searchParam);
             JournalDayViewHelper.applyChapterTagSummary(listDto, searchParam);
@@ -185,7 +185,7 @@ public class JournalDayQueryService {
     private JournalDayDto enrichDetail(final String username, final JournalDayDto retrieved) throws Exception {
         if (retrieved == null) return null;
 
-        JournalDayHldyHelper.setHldyInfo(retrieved, getHldyMap());
+        JournalDayHolydayHelper.setHolydayInfo(retrieved, getHolydayMap());
         JournalDayViewHelper.mergeStates(username, retrieved);
         this.mergeRelatedContents(username, List.of(retrieved));
 
@@ -272,8 +272,8 @@ public class JournalDayQueryService {
      * @return 휴일 맵
      */
     @SuppressWarnings("unchecked")
-    private Map<String, List<String>> getHldyMap() {
-        return (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("hldyMap");
+    private Map<String, List<String>> getHolydayMap() {
+        return (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("holydayMap");
     }
 }
 

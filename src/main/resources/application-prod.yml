@@ -1,4 +1,4 @@
-##
+﻿##
 # application-local.yml
 # 운영(prod) 프로필용 설정 파일
 ##
@@ -51,7 +51,7 @@ api:
         topics:
             - name: NOTICE
               id:  ${JANDI_TOPIC_NOTICE}
-            - name: SCHDUL
-              id: ${JANDI_TOPIC_SCHDUL}
+            - name: SCHEDULE
+              id: ${JANDI_TOPIC_SCHEDULE}
             - name: TEST
               id: ${TEST}

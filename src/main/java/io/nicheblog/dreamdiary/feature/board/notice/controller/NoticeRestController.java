@@ -169,7 +169,7 @@ public class NoticeRestController
         } catch (final Exception e) {
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);
-            MessageUtils.alertMessage(rsltMsg, Url.VCATN_SCHDUL_LIST);
+            MessageUtils.alertMessage(rsltMsg, Url.VCATN_SCHEDULE_LIST);
         } finally {
             // 로그 관련 세팅
             logParam.setResult(isSuccess, rsltMsg);
@@ -180,3 +180,4 @@ public class NoticeRestController
     }
 
 }
+

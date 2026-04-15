@@ -60,8 +60,9 @@ public enum ActvtyCtgr {
     FLSYS("파일 시스템"),
 
     // DEPRECATED
-    SCHDUL("일정 관리"),
+    SCHEDULE("일정 관리"),
     NOTION("노션");
 
     public final String desc;
 }
+

@@ -52,10 +52,10 @@
     <cache alias="dtlCdNm" uses-template="defaultTemplate" />
 
     <!-- 휴일 정보 -->
-    <cache alias="hldyEntityList" uses-template="defaultTemplate" />
-    <cache alias="hldyMap" uses-template="defaultTemplate" />
-    <cache alias="isHldy" uses-template="defaultTemplate" />
-    <cache alias="isHldyOrWeekend" uses-template="defaultTemplate" />
+    <cache alias="holydayEntityList" uses-template="defaultTemplate" />
+    <cache alias="holydayMap" uses-template="defaultTemplate" />
+    <cache alias="isHolyday" uses-template="defaultTemplate" />
+    <cache alias="isHolydayOrWeekend" uses-template="defaultTemplate" />
 
     <!-- ↓ 개인 -->
 

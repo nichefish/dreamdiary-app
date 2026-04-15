@@ -1,4 +1,4 @@
--- 코드 데이터 쿼리 정보를 입력한다.
+﻿-- 코드 데이터 쿼리 정보를 입력한다.
 -- 쿼리 줄바꿈 안됨. 무조건 한 줄에 한 쿼리 단위로 실행된다.
 -- @database : mariadb
 -- @author : nichefish
@@ -23,16 +23,16 @@ INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('MDFAB
 -- -----------------------
 
 -- 옵션 :: 일정 분류 코드 추가
-INSERT IGNORE INTO cmm_cl_cd (cl_cd, cl_cd_nm, cl_ctgr_cd, dc) VALUES ('SCHDUL_CD', '일정', '', '일정 코드');
+INSERT IGNORE INTO cmm_cl_cd (cl_cd, cl_cd_nm, cl_ctgr_cd, dc) VALUES ('SCHEDULE_CD', '일정', '', '일정 코드');
 -- 필수 :: 수정권한 상세 코드 추가
-INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('SCHDUL_CD', 'HLDY', '공휴일', '공휴일', '1');
-INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('SCHDUL_CD', 'CEREMONY', '행사', '행사', '2');
-INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('SCHDUL_CD', 'BRTHDY', '생일', '생일', '3');
-INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('SCHDUL_CD', 'INDT', '내부일정', '내부일정', '11');
-INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('SCHDUL_CD', 'TLCMMT', '재택', '재택', '21');
-INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('SCHDUL_CD', 'OUTDT', '외근', '외근', '22');
-INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('SCHDUL_CD', 'VCATN', '휴가', '휴가', '23');
-INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('SCHDUL_CD', 'ETC', '기타', '기타', '99');
+INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('SCHEDULE_CD', 'HOLYDAY', '공휴일', '공휴일', '1');
+INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('SCHEDULE_CD', 'CEREMONY', '행사', '행사', '2');
+INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('SCHEDULE_CD', 'BRTHDY', '생일', '생일', '3');
+INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('SCHEDULE_CD', 'INDT', '내부일정', '내부일정', '11');
+INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('SCHEDULE_CD', 'TLCMMT', '재택', '재택', '21');
+INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('SCHEDULE_CD', 'OUTDT', '외근', '외근', '22');
+INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('SCHEDULE_CD', 'VCATN', '휴가', '휴가', '23');
+INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('SCHEDULE_CD', 'ETC', '기타', '기타', '99');
 
 -- -----------------------
 
@@ -48,7 +48,7 @@ INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('JOURN
 INSERT IGNORE INTO cmm_cl_cd (cl_cd, cl_cd_nm, dc) VALUES ('NOTICE_CTGR_CD', '공지사항 분류 코드', '공지사항 분류 코드');
 -- (구) 필수 :: 공지사항 분류 상세 코드 추가
 INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('NOTICE_CTGR_CD', 'NOTICE', '공지', '공지', '1');
-INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('NOTICE_CTGR_CD', 'SCHDUL', '일정', '일정', '2');
+INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('NOTICE_CTGR_CD', 'SCHEDULE', '일정', '일정', '2');
 
 -- -----------------------
 
@@ -77,3 +77,4 @@ INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('TEXT_
 INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('TEXT_CLASS_CD', 'DIALOG', 'DIALOG', 'text-dialog', '10');
 INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('TEXT_CLASS_CD', 'NOTI', 'NOTI', 'text-noti', '11');
 INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('TEXT_CLASS_CD', 'BURNT', 'BURNT', 'text-burnt', '12');
+

@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.feature.journal.day.service.my;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.day.service.JournalDayCalService;
-import io.nicheblog.dreamdiary.feature.schdul.service.SchdulCalService;
+import io.nicheblog.dreamdiary.feature.calendar.schedule.service.ScheduleCalService;
 import io.nicheblog.dreamdiary.global.intrfc.model.fullcalendar.BaseCalDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -26,7 +26,7 @@ import java.util.List;
 public class MyJournalDayCalService {
 
     private final JournalDayCalService journalDayCalService;
-    private final SchdulCalService schdulCalService;
+    private final ScheduleCalService scheduleCalService;
 
     /**
      * 전체 목록 (저널일자 및 일정) 데이터 조회
@@ -34,17 +34,17 @@ public class MyJournalDayCalService {
      * @param searchParam 검색조건을 담고 있는 파라미터 객체
      * @return {@link List} -- 조회된 일정 및 일기 목록
      */
-    public List<BaseCalDto> getSchdulTotalCalList(final JournalDaySearchParam searchParam) throws Exception {
+    public List<BaseCalDto> getScheduleTotalCalList(final JournalDaySearchParam searchParam) throws Exception {
 
         // 저널일자 캘린더 목록 조회
         final List<BaseCalDto> journalDayCalList = this.getMyCalListDto(searchParam);
-        final List<BaseCalDto> totalSchdulCalList = new ArrayList<>(journalDayCalList);
+        final List<BaseCalDto> totalScheduleCalList = new ArrayList<>(journalDayCalList);
 
         // 일정(공휴일, 행사) 캘린더 목록 검색
-        final List<BaseCalDto> hldyCalList = schdulCalService.getHldyCalList(searchParam);
-        totalSchdulCalList.addAll(hldyCalList);
+        final List<BaseCalDto> holydayCalList = scheduleCalService.getHolydayCalList(searchParam);
+        totalScheduleCalList.addAll(holydayCalList);
 
-        return totalSchdulCalList;
+        return totalScheduleCalList;
     }
 
     /**

@@ -32,7 +32,7 @@ public enum ContentType {
     JOURNAL_SUMRY_REVIEW("JOURNAL_SUMRY_REVIEW", "저널 결산 리뷰"),
     JOURNAL_TODO("JOURNAL_TODO", "저널 할일", "book"),
     // 일정
-    SCHDUL("SCHDUL", "일정"),
+    SCHEDULE("SCHEDULE", "일정"),
     // 채팅
     CHAT_MSG("CHAT_MSG", "채팅 메세지"),
 
@@ -57,3 +57,4 @@ public enum ContentType {
         return DEFAULT;
     }
 }
+

@@ -282,18 +282,18 @@ public class JournalIntrptService
      * 주어진 {@link JournalDayDto} 객체에 공휴일 및 주말 여부 정보를 설정한다.
      *
      * @param journalIntrpt 공휴일 및 주말 정보를 설정할 대상 DTO
-     * @param hldyMap 날짜(String: yyyy-MM-dd) → 공휴일 이름 목록 매핑 정보
+     * @param holydayMap 날짜(String: yyyy-MM-dd) → 공휴일 이름 목록 매핑 정보
      */
-    private void setHldyInfo(final JournalIntrptDto journalIntrpt, final Map<String, List<String>> hldyMap) throws Exception {
-        if (journalIntrpt == null || hldyMap == null) return;
+    private void setHolydayInfo(final JournalIntrptDto journalIntrpt, final Map<String, List<String>> holydayMap) throws Exception {
+        if (journalIntrpt == null || holydayMap == null) return;
 
         final String stdrdDt = journalIntrpt.getStdrdDt();
-        final boolean isHldy = hldyMap.containsKey(stdrdDt);
+        final boolean isHolyday = holydayMap.containsKey(stdrdDt);
         final boolean isWeekend = DateUtils.isWeekend(stdrdDt);
-        journalIntrpt.setIsHldy(isHldy || isWeekend);
-        if (isHldy) {
-            final String concatHldyNm = String.join(", ", hldyMap.get(stdrdDt));
-            journalIntrpt.setHldyNm(concatHldyNm);
+        journalIntrpt.setIsHolyday(isHolyday || isWeekend);
+        if (isHolyday) {
+            final String concatHolydayNm = String.join(", ", holydayMap.get(stdrdDt));
+            journalIntrpt.setHolydayNm(concatHolydayNm);
         }
     }
 }

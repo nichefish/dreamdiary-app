@@ -1,4 +1,4 @@
--- 필수 데이터 및 코드 데이터 쿼리 정보를 입력한다.
+﻿-- 필수 데이터 및 코드 데이터 쿼리 정보를 입력한다.
 -- 쿼리 줄바꿈 안됨. 무조건 한 줄에 한 쿼리 단위로 실행된다.
 -- @database : mariadb
 -- @author : nichefish
@@ -46,7 +46,7 @@ INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 -- 일정
 INSERT INTO menu ( upper_menu_id, menu_ty_cd, menu_nm, url, icon, idx, created_by, menu_sub_extend_ty_cd, menu_label, mngr_yn, protected_yn, required_yn, use_yn )
 WITH T AS ( SELECT 'MAIN' AS upper_label )
-SELECT M.id, 'SUB', '일정', NULL, '<span class="menu-icon"><i class="bi bi-calendar3 fs-2"></i></span>', 6, 'system', 'LIST', 'SCHDUL', 'N', 'N', 'N', 'Y'
+SELECT M.id, 'SUB', '일정', NULL, '<span class="menu-icon"><i class="bi bi-calendar3 fs-2"></i></span>', 6, 'system', 'LIST', 'SCHEDULE', 'N', 'N', 'N', 'Y'
 FROM T
 INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 
@@ -112,5 +112,6 @@ WITH T AS ( SELECT 'LOG' AS upper_label )
 SELECT M.id, 'SUB', '시스템 로그', '/app/log/sys/list.do', NULL, 27, 'nichefish', 'NO_SUB', 'LOG_SYS', 'N', 'Y', 'N', 'Y'
 FROM T
 INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
+
 
 

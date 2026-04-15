@@ -233,11 +233,11 @@ public interface ApiUrl {
 
     /* ---------- */
 
-    String SCHDUL_CAL_LIST_AJAX = Prefix.API + "/schdul/cal-list";
-    String SCHDUL_REG_AJAX = Prefix.API + "/schdul/cal-reg";
-    String SCHDUL_DTL_AJAX = Prefix.API + "/schdul/cal-dtl";
-    String SCHDUL_MDF_AJAX = Prefix.API + "/schdul/cal-mdf";
-    String SCHDUL_DEL_AJAX = Prefix.API + "/schdul/cal-del";
+    String SCHEDULE_CAL_LIST_AJAX = Prefix.API + "/schedule/cal-list";
+    String SCHEDULE_REG_AJAX = Prefix.API + "/schedule/cal-reg";
+    String SCHEDULE_DTL_AJAX = Prefix.API + "/schedule/cal-dtl";
+    String SCHEDULE_MDF_AJAX = Prefix.API + "/schedule/cal-mdf";
+    String SCHEDULE_DEL_AJAX = Prefix.API + "/schedule/cal-del";
 
     String USER_REQST_REG_AJAX = Prefix.API + "/user/reqst/reqst-reg";
     String USER_REQST_CF_AJAX = Prefix.API + "/user/reqst/reqst-cf";
@@ -246,7 +246,7 @@ public interface ApiUrl {
     String JANDI_CONNECT_WH = "https://wh.jandi.com/connect-api/webhook";
 
     /** (API) 한국천문연구원 : 특일 정보 조회 */
-    String API_HLDY_GET = Prefix.API + "/hldy/get-hldy-info.do";
+    String API_HOLYDAY_GET = Prefix.API + "/holyday/get-holyday-info.do";
     
     /** (API) SNMP : 메세지 발신 */
     String URL_API_SNMP_SEND_AJAX = Prefix.API +"/snmp/send";
@@ -266,3 +266,4 @@ public interface ApiUrl {
         String API = "/api";
     }
 }
+

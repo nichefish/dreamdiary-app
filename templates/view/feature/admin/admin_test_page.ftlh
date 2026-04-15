@@ -43,10 +43,10 @@
         <#--begin::Row-->
         <div class="row mb-8">
             <div class="col-xl-2">
-                <div class="fs-6 fw-bold col-form-label"><label for="hldyYy">한국천문연구원 특일정보 API</label></div>
+                <div class="fs-6 fw-bold col-form-label"><label for="holydayYy">한국천문연구원 특일정보 API</label></div>
             </div>
             <div class="col-xl-2">
-                <select name="hldyYy" id="hldyYy" class="form-select form-select-solid">
+                <select name="holydayYy" id="holydayYy" class="form-select form-select-solid">
                     <#assign currYy = DateUtils.getCurrYyStr()!>
                     <#assign prevYy = ((currYy?number)-1)?c>
                     <#assign nextYy = ((currYy?number)+1)?c>
@@ -56,7 +56,7 @@
                 </select>
             </div>
             <div class="col-xl-2 mt-1">
-                <button type="button" class="btn btn-sm btn-primary" onclick="Page.hldyAjax();">
+                <button type="button" class="btn btn-sm btn-primary" onclick="Page.holydayAjax();">
                     휴일정보 조회+저장
                 </button>
             </div>
@@ -67,7 +67,7 @@
         <#--begin::Row-->
         <div class="row mb-8">
             <div class="col-xl-2">
-                <div class="fs-6 fw-bold col-form-label"><label for="hldyYy">NOTION API 테스트</label></div>
+                <div class="fs-6 fw-bold col-form-label"><label for="holydayYy">NOTION API 테스트</label></div>
             </div>
             <div class="col-xl-2">
                 <select name="dataType" id="dataType" class="form-select form-select-solid">

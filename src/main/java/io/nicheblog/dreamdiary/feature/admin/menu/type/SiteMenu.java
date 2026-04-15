@@ -46,12 +46,8 @@ public enum SiteMenu {
 
     BOARD("일반게시판"),
 
-    SCHDUL("일정"),
-    SCHDUL_CAL("일정 달력"),
-    VCATN_PAPR("휴가계획서"),
-    VCATN_ADMIN("휴가 관리"),
-    VCATN_SCHDUL("휴가사용일자 관리"),
-    VCATN_STATS("년도별 휴가 관리"),
+    SCHEDULE("일정"),
+    SCHEDULE_CAL("일정 달력"),
 
     LOG("로그 관리"),
     LOG_ACTVTY("활동 로그 관리"),
@@ -64,3 +60,4 @@ public enum SiteMenu {
 
     private final String pageNm;
 }
+
