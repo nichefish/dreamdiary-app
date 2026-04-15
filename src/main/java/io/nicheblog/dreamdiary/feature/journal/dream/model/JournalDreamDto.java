@@ -77,7 +77,7 @@ public class JournalDreamDto
     private String holydayNm;
 
     /** 순번 */
-    private Integer idx;
+    private Integer sortOrder;
 
     /** 저널 일기 목록 */
     private List<JournalIntrptDto> journalIntrptList;
@@ -99,7 +99,7 @@ public class JournalDreamDto
 
     /** 인덱스 변경 여부 */
     @Builder.Default
-    private Boolean isIdxChanged = false;
+    private Boolean isSortOrderChanged = false;
 
     /* ----- */
 

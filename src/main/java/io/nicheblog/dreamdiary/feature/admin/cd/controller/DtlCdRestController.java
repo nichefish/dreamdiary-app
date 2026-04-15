@@ -63,7 +63,7 @@ public class DtlCdRestController
     ) throws Exception {
 
         final DtlCdSearchParam searchParam = DtlCdSearchParam.builder().clCd(clCd).build();
-        final Sort sort = Sort.by(Sort.Direction.ASC, "idx").and(Sort.by(Sort.Direction.ASC, "dtlCd"));
+        final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder").and(Sort.by(Sort.Direction.ASC, "dtlCd"));
         final List<DtlCdDto> dtlCdList = dtlCdService.getListDto(searchParam, sort);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
@@ -220,7 +220,7 @@ public class DtlCdRestController
             final LogActvtyParam logParam
     ) throws Exception {
 
-        final ServiceResponse result = dtlCdService.sortIdx(dtlCdParam.getIdxs());
+        final ServiceResponse result = dtlCdService.sortOrder(dtlCdParam.getSortOrders());
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 

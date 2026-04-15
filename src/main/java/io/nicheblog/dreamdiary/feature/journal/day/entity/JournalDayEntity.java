@@ -117,7 +117,7 @@ public class JournalDayEntity
     @JoinColumn(name = "journal_day_id", referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(FetchMode.SUBSELECT)
     @BatchSize(size = 10)
-    @OrderBy("idx ASC")
+    @OrderBy("sortOrder ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("저널 챕터 목록")
     private List<JournalChapterEntity> journalChapterList;
@@ -128,7 +128,7 @@ public class JournalDayEntity
     @Fetch(FetchMode.SUBSELECT)
     @BatchSize(size = 10)
     @Where(clause = "else_dream_yn = 'N'")
-    @OrderBy("idx ASC")
+    @OrderBy("sortOrder ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("저널 꿈 목록")
     private List<JournalDreamEntity> journalDreamList;
@@ -139,7 +139,7 @@ public class JournalDayEntity
     @Fetch(FetchMode.SUBSELECT)
     @BatchSize(size = 10)
     @Where(clause = "else_dream_yn = 'Y'")
-    @OrderBy("idx ASC")
+    @OrderBy("sortOrder ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("저널 꿈 (타인) 목록")
     private List<JournalDreamEntity> journalElseDreamList;

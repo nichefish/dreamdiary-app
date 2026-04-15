@@ -32,5 +32,5 @@ public class UserInfoItemDto {
     private String itemDc;
 
     /** 정렬 순서 */
-    private Integer idx;
+    private Integer sortOrder;
 }

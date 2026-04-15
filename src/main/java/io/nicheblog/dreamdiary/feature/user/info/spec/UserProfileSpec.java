@@ -75,7 +75,7 @@ public class UserProfileSpec implements BaseSpec<UserProfileEntity> {
     ) {
         final List<Order> order = new ArrayList<>();
         final Join<UserProfileEntity, DtlCdEntity> rankCdJoin = root.join("rankCdInfo", JoinType.LEFT);
-        order.add(builder.desc(rankCdJoin.get("idx")));
+        order.add(builder.desc(rankCdJoin.get("sortOrder")));
         order.add(builder.asc(root.get("ecnyDt")));
         return order;
     }

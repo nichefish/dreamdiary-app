@@ -55,7 +55,7 @@ public class JournalChapterExportService {
         // =========================
         for (final JournalDiaryDto diary : journalDiaryList) {
             sb.append("#")
-              .append(diary.getIdx())
+              .append(diary.getSortOrder())
               .append("\r\n")
               .append(CmmUtils.htmlToText(diary.getCn()))
               .append("\r\n");

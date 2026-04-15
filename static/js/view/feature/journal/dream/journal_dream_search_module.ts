@@ -263,7 +263,7 @@ dF.JournalDreamSearch = (function(): dfModule {
                 }
 
                 block += [
-                    `#${item.idx}`,
+                    `#${item.sortOrder}`,
                     content
                 ].join("\r\n");
 

@@ -16,7 +16,7 @@
         <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 ps-5 me-2 h-75" style="width:85px;">
             <div class="d-flex flex-column align-items-center">
                 <span class="journal-diary-idx {{#if (hasState state 'RESOLVED')}}text-success{{/if}}">
-                    # {{idx}}
+                    # {{sortOrder}}
                 </span>
                 {{> journal_diary_toggle_btn_partial this}}
             </div>

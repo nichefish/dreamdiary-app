@@ -74,15 +74,15 @@ cF.draggable = (function(): Module {
         sortIdx: function(selectorSuffix: string, keyExtractor: Function, url: string, refreshFunc?: Function): void {
             const zoneSelector: string = '.draggable-zone' + selectorSuffix;
             const itemSelector: string = '.sortable-item.draggable' + selectorSuffix;
-            const idxsData: object[] = [];
+            const sortOrdersData: object[] = [];
 
             const container: Element = document.querySelector(zoneSelector);
             const items: NodeListOf<Element> = container.querySelectorAll(itemSelector);
             items.forEach((item: HTMLElement, idx: number): void => {
                 const key: Function = keyExtractor(item, idx);
-                idxsData.push({ ...key, idx });
+                sortOrdersData.push({ ...key, sortOrder: idx });
             });
-            const ajaxData: Record<string, any> = { "idxs": idxsData };
+            const ajaxData: Record<string, any> = { "sortOrders": sortOrdersData };
             cF.$ajax.put(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) return Swal.fire({ text: res.message });

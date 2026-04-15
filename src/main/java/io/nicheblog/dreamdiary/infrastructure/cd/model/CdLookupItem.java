@@ -28,7 +28,7 @@ public class CdLookupItem {
     /** 설명 */
     private String dc;
     /** 정렬 순서 */
-    private Integer idx;
+    private Integer sortOrder;
     /** 사용 여부 */
     private String useYn;
     /** 보호 여부 */

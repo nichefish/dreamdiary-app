@@ -63,7 +63,7 @@ public class JournalDiarySmpEntity {
     private JournalChapterSmpEntity journalChapter;
 
     /** 순번 */
-    @Column(name = "idx", columnDefinition = "INT DEFAULT 1")
-    private Integer idx;
+    @Column(name = "sort_order", columnDefinition = "INT DEFAULT 1")
+    private Integer sortOrder;
 }
 

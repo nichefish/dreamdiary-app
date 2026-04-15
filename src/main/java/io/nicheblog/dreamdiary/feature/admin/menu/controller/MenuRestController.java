@@ -57,7 +57,7 @@ public class MenuRestController
     ) throws Exception {
 
         // 페이징 정보 생성:: 공백시 pageSize=10, pageNo=1
-        final Sort sort = Sort.by(Sort.Direction.ASC, "idx");
+        final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
         final List<MenuDto> menuList = menuService.getMainMenuList(searchParam, sort);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
@@ -139,14 +139,14 @@ public class MenuRestController
      * @param menuParam 키+정렬 순서 목록을 담은 파라미터
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @PutMapping(Url.MENUS_IDX)
+    @PutMapping(Url.MENUS_SORT_ORDERS)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> menuSortOrdrAjax(
             final @RequestBody MenuParam menuParam
     ) throws Exception {
 
-        final ServiceResponse result = menuService.sortIdx(menuParam.getIdxs());
+        final ServiceResponse result = menuService.sortOrder(menuParam.getSortOrders());
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 

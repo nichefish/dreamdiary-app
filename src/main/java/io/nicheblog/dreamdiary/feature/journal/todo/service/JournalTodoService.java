@@ -77,9 +77,9 @@ public class JournalTodoService
      */
     @Override
     public void preRegist(final JournalTodoDto registDto) throws Exception {
-        // 인덱스(정렬순서) 처리
-        final Integer lastIndex = repository.findLastIndexByYyMnth(registDto.getYy(), registDto.getMnth()).orElse(0);
-        registDto.setIdx(lastIndex + 1);
+        // 정렬 순서 처리
+        final Integer lastSortOrder = repository.findLastIndexByYyMnth(registDto.getYy(), registDto.getMnth()).orElse(0);
+        registDto.setSortOrder(lastSortOrder + 1);
     }
 
     /**

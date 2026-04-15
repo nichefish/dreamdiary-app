@@ -41,7 +41,7 @@ public class DtlCdDto
     private String clCd;
 
     /** 정렬 순서 */
-    private Integer idx;
+    private Integer sortOrder;
 
     /** 시스템 보호 여부 (Y/N) */
     @Builder.Default

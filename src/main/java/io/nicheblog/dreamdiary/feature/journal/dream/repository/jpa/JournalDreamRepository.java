@@ -31,7 +31,7 @@ public interface JournalDreamRepository
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    @Query("SELECT MAX(dream.idx) " +
+    @Query("SELECT MAX(dream.sortOrder) " +
             "FROM JournalDreamEntity dream " +
             "INNER JOIN FETCH JournalDayEntity day ON dream.journalDayId = day.id " +
             "WHERE dream.journalDayId = :journalDayId AND (dream.elseDreamYn IS NULL OR dream.elseDreamYn = 'N')")

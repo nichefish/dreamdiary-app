@@ -60,8 +60,8 @@ public class DtlCdEntity
     private String dc;
 
     /** 정렬 순서 */
-    @Column(name = "idx", columnDefinition = "INT DEFAULT 0")
-    private Integer idx;
+    @Column(name = "sort_order", columnDefinition = "INT DEFAULT 0")
+    private Integer sortOrder;
 
     /** 사용 여부 (Y/N) */
     @Builder.Default

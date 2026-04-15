@@ -57,7 +57,7 @@ public class SectnRestController
             @ModelAttribute("searchParam") SectnSearchParam searchParam
     ) throws Exception {
 
-        final Sort sort = Sort.by(Sort.Direction.ASC, "idx");
+        final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
         final PageRequest pageRequest = ParamUtils.getPageRequest(searchParam, sort);
         final Page<SectnDto> sectnList = sectnService.getPageDto(searchParam, pageRequest);
         final boolean isSuccess = true;

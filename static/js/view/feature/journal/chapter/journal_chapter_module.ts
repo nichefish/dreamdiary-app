@@ -287,7 +287,7 @@ dF.JournalChapter = (function(): dfModule {
                 const journalDiaryList: object[] = rsltObj.journalDiaryList;
                 const { stdrdDt, journalDtWeekDay } = rsltObj;
                 const date: string = stdrdDt + " (" + journalDtWeekDay + ")" + "\r\n";
-                const resultCn: string = journalDiaryList?.map((item: any): any => "#" + (item?.idx ?? "") + (item?.cn ?? "")).join("\r\n");
+                const resultCn: string = journalDiaryList?.map((item: any): any => "#" + (item?.sortOrder ?? "") + (item?.cn ?? "")).join("\r\n");
 
                 // 문단/줄바꿈을 먼저 텍스트로 치환
                 const replacedCn: string = resultCn.replace(/<\s*br\s*\/?>/gi, "\n").replace(/<\s*\/?p[^>]*>/gi, "\n");

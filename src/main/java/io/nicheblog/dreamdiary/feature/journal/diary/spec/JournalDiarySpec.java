@@ -57,8 +57,8 @@ public class JournalDiarySpec
         } else {
             order.add(builder.asc(dateExp));
         }
-        order.add(builder.asc(journalChapterJoin.get("idx")));
-        order.add(builder.asc(root.get("idx")));
+        order.add(builder.asc(journalChapterJoin.get("sortOrder")));
+        order.add(builder.asc(root.get("sortOrder")));
         query.orderBy(order);
         // distinct
         query.distinct(true);

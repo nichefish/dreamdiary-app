@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * MenuSortIdxDto
+ * MenuSortOrderDto
  * <pre>
- *  메뉴 idx 정렬용 Dto.
+ *  메뉴 정렬용 Dto.
  * </pre>
  *
  * @author nichefish
@@ -18,7 +18,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class MenuSortIdxDto
+public class MenuSortOrderDto
         extends BaseCrudDto
         implements Identifiable<Integer>, Sortable {
 
@@ -26,8 +26,8 @@ public class MenuSortIdxDto
     private Integer id;
     /** 상위 메뉴 번호 (계층 보호/검증용) */
     private Integer upperMenuId;
-    /** idx */
-    private Integer idx;
+    /** 정렬 순서 */
+    private Integer sortOrder;
 
     @Override
     public Integer getKey() {

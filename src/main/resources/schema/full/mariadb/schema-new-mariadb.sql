@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS tmplat_def (
     tmplat_def_cd VARCHAR(50) COMMENT '템플릿 정의 코드',
     title VARCHAR(200) COMMENT '이름',
     -- STATE
-    idx INT DEFAULT 0 COMMENT '정렬 순서',
+    sort_order INT DEFAULT 0 COMMENT '정렬 순서',
     use_yn CHAR(1) DEFAULT 'Y' COMMENT '사용 여부 (Y/N)',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',

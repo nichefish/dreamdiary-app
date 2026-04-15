@@ -42,7 +42,7 @@ public interface JournalDiaryRepository
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    @Query("SELECT MAX(diary.idx) " +
+    @Query("SELECT MAX(diary.sortOrder) " +
             "FROM JournalDiaryEntity diary " +
             "WHERE diary.journalChapter.id = :journalChapterId")
     Optional<Integer> findLastIndexByJournalChapter(final @Param("journalChapterId") Integer journalChapterId);

@@ -93,7 +93,7 @@ public class CdLookupService {
      * 전체 코드 캐시를 재구성.
      */
     public synchronized void reloadAll() {
-        final List<DtlCdEntity> allCdList = dtlCdRepository.findAllByUseYnOrderByClCdAscIdxAsc(USE_YN);
+        final List<DtlCdEntity> allCdList = dtlCdRepository.findAllByUseYnOrderByClCdAscSortOrderAsc(USE_YN);
 
         cdItemListCacheByClCd.clear();
         dtlCdNmCache.clear();
@@ -139,7 +139,7 @@ public class CdLookupService {
     }
 
     private List<CdLookupItem> loadCdItemList(final String clCd) {
-        final List<DtlCdEntity> dtlCdEntityList = dtlCdRepository.findByClCdAndUseYnOrderByIdxAsc(clCd, USE_YN);
+        final List<DtlCdEntity> dtlCdEntityList = dtlCdRepository.findByClCdAndUseYnOrderBySortOrderAsc(clCd, USE_YN);
         if (CollectionUtils.isEmpty(dtlCdEntityList)) {
             return Collections.emptyList();
         }

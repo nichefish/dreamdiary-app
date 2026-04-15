@@ -31,7 +31,7 @@ public interface JournalChapterRepository
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    @Query("SELECT MAX(entry.idx) " +
+    @Query("SELECT MAX(entry.sortOrder) " +
             "FROM JournalChapterEntity entry " +
             "INNER JOIN FETCH JournalDayEntity day ON entry.journalDayId = day.id " +
             "WHERE entry.journalDayId = :journalDayId")

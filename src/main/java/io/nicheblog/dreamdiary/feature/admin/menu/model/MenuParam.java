@@ -25,5 +25,5 @@ public class MenuParam
         extends BaseParam {
 
     /** 정렬 순서 배열 */
-    private List<MenuSortIdxDto> idxs;
+    private List<MenuSortOrderDto> sortOrders;
 }

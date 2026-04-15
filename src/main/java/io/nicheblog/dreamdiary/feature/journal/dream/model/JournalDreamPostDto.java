@@ -52,7 +52,7 @@ public class JournalDreamPostDto
     private Integer mnth;
 
     /** 순번 */
-    private Integer idx;
+    private Integer sortOrder;
 
     /** 저널 일기 목록 */
     private List<JournalIntrptDto> journalIntrptList;
@@ -64,7 +64,7 @@ public class JournalDreamPostDto
      * 인덱스 변경 여부
      */
     @Builder.Default
-    private Boolean isIdxChanged = false;
+    private Boolean isSortOrderChanged = false;
 
     /* ----- */
 

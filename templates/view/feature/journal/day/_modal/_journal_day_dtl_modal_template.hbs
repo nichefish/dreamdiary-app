@@ -37,7 +37,7 @@
             {{#each journalDiaryList}}
                 <div class="journal-diary-item" data-id="{{id}}">
                     <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
-                        <div># {{idx}}</div>
+                        <div># {{sortOrder}}</div>
                     </div>
                     <div class="col journal-diary-cn">
                         {{> journal_diary_cn_partial this collapse="collapse-4"}}
@@ -62,7 +62,7 @@
         {{#each journalDreamList}}
             <div class="journal-item">
                 <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
-                    <div># {{idx}}</div>
+                    <div># {{sortOrder}}</div>
                 </div>
                 <div class="col py-3 journal-dream-cn {{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}">
                     {{> journal_dream_cn_partial this collapse="collapse-4"}}
