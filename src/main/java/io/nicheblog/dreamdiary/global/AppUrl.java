@@ -46,9 +46,9 @@ public interface AppUrl {
     String JOURNAL_SBJCT_DTL = Prefix.APP + "/journal/sbjct/dtl.do";
     String JOURNAL_SBJCT_MDF_FORM = Prefix.APP + "/journal/sbjct/mdf-form.do";
 
-    /** 저널 결산 */
-    String JOURNAL_SUMRY_LIST = Prefix.APP + "/journal/sumry/list.do";
-    String JOURNAL_SUMRY_VIEW = Prefix.APP + "/journal/sumry/{yy}.do";
+    /** 저널 연간 */
+    String JOURNAL_ANNUAL_LIST = Prefix.APP + "/journal/annual/list.do";
+    String JOURNAL_ANNUAL_VIEW = Prefix.APP + "/journal/annual/{yy}.do";
 
     /** 공지사항 */
     String NOTICE_LIST = Prefix.APP + "/notice/list.do";

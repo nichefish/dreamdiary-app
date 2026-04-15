@@ -28,8 +28,8 @@ public enum ContentType {
     JOURNAL_CHAPTER("JOURNAL_CHAPTER", "저널 챕터", "book"),
     JOURNAL_DIARY("JOURNAL_DIARY", "저널 일기", "book"),
     JOURNAL_SBJCT("JOURNAL_SBJCT", "저널 주제"),
-    JOURNAL_SUMRY("JOURNAL_SUMRY", "저널 결산"),
-    JOURNAL_SUMRY_REVIEW("JOURNAL_SUMRY_REVIEW", "저널 결산 리뷰"),
+    JOURNAL_ANNUAL("JOURNAL_ANNUAL", "저널 연간"),
+    JOURNAL_ANNUAL_REVIEW("JOURNAL_ANNUAL_REVIEW", "저널 연간 리뷰"),
     JOURNAL_TODO("JOURNAL_TODO", "저널 할일", "book"),
     // 일정
     SCHEDULE("SCHEDULE", "일정"),

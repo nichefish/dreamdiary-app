@@ -18,7 +18,7 @@ dF.JournalDream = (function(): dfModule {
             SEARCH: {
                 collapsed: false,
             },
-            SUMRY: {
+            ANNUAL: {
                 collapsed: false,
             }
         },

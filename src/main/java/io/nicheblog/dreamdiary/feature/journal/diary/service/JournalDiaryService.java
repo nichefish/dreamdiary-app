@@ -81,13 +81,13 @@ public class JournalDiaryService
      * @param searchParam JournalDiarySearchParam
      * @return {@link List} -- 해당 년도의 중요 목록
      */
-    @Cacheable(value="journalDiaryYySumryStatedListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #searchParam.toSummaryCacheKey())")
-    public List<JournalDiaryDto> getSumryDiaryListByUser(final String username, final JournalDiarySearchParam searchParam) throws Exception {
+    @Cacheable(value="journalDiaryYyAnnualStatedListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #searchParam.toSummaryCacheKey())")
+    public List<JournalDiaryDto> getAnnualDiaryListByUser(final String username, final JournalDiarySearchParam searchParam) throws Exception {
         searchParam.setCreatedBy(AuthUtils.requireUsername(username));
-        final List<JournalDiaryDto> journalDiaryYySumryStatedListByUser = this.getSelf().getListDto(searchParam);
-        Collections.sort(journalDiaryYySumryStatedListByUser);
+        final List<JournalDiaryDto> journalDiaryYyAnnualStatedListByUser = this.getSelf().getListDto(searchParam);
+        Collections.sort(journalDiaryYyAnnualStatedListByUser);
 
-        return journalDiaryYySumryStatedListByUser;
+        return journalDiaryYyAnnualStatedListByUser;
     }
 
     public List<JournalDiaryDto> getListDtoByUser(final String username, final JournalDiarySearchParam searchParam) throws Exception {

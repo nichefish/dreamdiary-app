@@ -77,7 +77,7 @@ public interface Code {
     String MENU_TY_SUB = "SUB";
 
     /** 꿈 결산 구분 코드 */
-    String JOURNAL_SUMRY_TY_CD = "JOURNAL_SUMRY_TY_CD";
+    String JOURNAL_ANNUAL_TY_CD = "JOURNAL_ANNUAL_TY_CD";
 
     /** 일정 분류 코드 */
     String SCHEDULE_CD = "SCHEDULE_CD";       // 일정 구분 코드

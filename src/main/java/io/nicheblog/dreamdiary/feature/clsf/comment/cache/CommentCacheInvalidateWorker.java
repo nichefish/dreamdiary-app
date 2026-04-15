@@ -35,7 +35,7 @@ public class CommentCacheInvalidateWorker {
                 ContentType.JOURNAL_DIARY,
                 ContentType.JOURNAL_DREAM,
                 ContentType.JOURNAL_INTRPT,
-                ContentType.JOURNAL_SUMRY_REVIEW
+                ContentType.JOURNAL_ANNUAL_REVIEW
         );
 
         final Map<ContentType, Integer> supportCountMap = new HashMap<>();

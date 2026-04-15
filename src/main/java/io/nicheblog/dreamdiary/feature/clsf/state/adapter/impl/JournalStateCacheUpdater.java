@@ -95,8 +95,8 @@ public class JournalStateCacheUpdater
 
     private String getEvictCacheNm(final ContentType contentType) {
         return switch (contentType) {
-            case JOURNAL_DIARY -> "journalDiaryYySumryStatedListByUser";
-            case JOURNAL_DREAM -> "journalDreamYySumryStatedListByUser";
+            case JOURNAL_DIARY -> "journalDiaryYyAnnualStatedListByUser";
+            case JOURNAL_DREAM -> "journalDreamYyAnnualStatedListByUser";
             default -> null;
         };
     }

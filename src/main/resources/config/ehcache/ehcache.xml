@@ -7,18 +7,18 @@
                             http://www.ehcache.org/schema/ehcache-107-ext-3.7.xsd">
 
     <cache-template name="defaultTemplate">
-        <!-- 캐시 만료기간 설정 -->
+        <!-- 캐시 만료기간 ?�정 -->
         <expiry>
             <!-- unit : nanos, micros, millis, seconds, minutes, hours, days -->
             <ttl unit="days">1</ttl>
         </expiry>
         <resources>
-            <!-- 캐시에 최대 몇개 까지 유지할지 -->
+            <!-- 캐시??최�? 몇개 까�? ?��??��? -->
             <heap unit="entries">9999</heap>
         </resources>
     </cache-template>
 
-    <!-- alias 는 @Cacheable(value = "codes", key="#codeGrp") 여기에서 썻던 value 값으로 사용 -->
+    <!-- alias ??@Cacheable(value = "codes", key="#codeGrp") ?�기?�서 ?�던 value 값으�??�용 -->
 
     <cache alias="defaultCache">
         <expiry>
@@ -29,12 +29,12 @@
         </resources>
     </cache>
 
-    <!-- ↓ 공통 -->
+    <!-- ??공통 -->
 
-    <!-- 사용자 정보 -->
+    <!-- ?�용???�보 -->
     <cache alias="auditorInfo" uses-template="defaultTemplate" />
 
-    <!-- 인증 정책 관리 -->
+    <!-- ?�증 ?�책 관�?-->
     <cache alias="authPolicy" uses-template="defaultTemplate" />
     <cache alias="authPolicyEntity" uses-template="defaultTemplate" />
 
@@ -44,26 +44,26 @@
     <cache alias="menuByLabel" uses-template="defaultTemplate" />
     <cache alias="isMngrMenu" uses-template="defaultTemplate" />
 
-    <!-- 게시판 정의 -->
+    <!-- 게시???�의 -->
     <cache alias="boardDefMenuList" uses-template="defaultTemplate" />
     <cache alias="boardMenu" uses-template="defaultTemplate" />
 
-    <!-- 코드 이름 -->
+    <!-- 코드 ?�름 -->
     <cache alias="dtlCdNm" uses-template="defaultTemplate" />
 
-    <!-- 휴일 정보 -->
+    <!-- ?�일 ?�보 -->
     <cache alias="holydayEntityList" uses-template="defaultTemplate" />
     <cache alias="holydayMap" uses-template="defaultTemplate" />
     <cache alias="isHolyday" uses-template="defaultTemplate" />
     <cache alias="isHolydayOrWeekend" uses-template="defaultTemplate" />
 
-    <!-- ↓ 개인 -->
+    <!-- ??개인 -->
 
-    <!-- 저널 일자 -->
+    <!-- ?�???�자 -->
     <cache alias="journalDayYyMnthListByUser" uses-template="defaultTemplate" />
     <cache alias="journalDayWeeklyListByUser" uses-template="defaultTemplate" />
     <cache alias="journalDayDtlDtoByUser" uses-template="defaultTemplate" />
-    <!-- 저널 일자: 태그 -->
+    <!-- ?�???�자: ?�그 -->
     <cache alias="journalDayYyMnthTagListByUser" uses-template="defaultTemplate" />
     <cache alias="journalDayWeeklyTagListByUser" uses-template="defaultTemplate" />
     <cache alias="journalDayYyMnthSizedTagListByUser" uses-template="defaultTemplate" />
@@ -74,12 +74,12 @@
     <cache alias="journalDayMetaYyListByUser" uses-template="defaultTemplate" />
     <cache alias="journalDayCountMapByUser" uses-template="defaultTemplate" />
 
-    <!-- 저널 챕터 -->
+    <!-- ?�??챕터 -->
     <cache alias="journalChapterDtlDtoByUser" uses-template="defaultTemplate" />
     <cache alias="journalChapterStateMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalChapterWeeklyStateMapByUser" uses-template="defaultTemplate" />
 
-    <!-- 저널 일기 -->
+    <!-- ?�???�기 -->
     <cache alias="journalDiaryDtlDtoByUser" uses-template="defaultTemplate" />
     <cache alias="journalDiaryTagListByUser" uses-template="defaultTemplate" />
     <cache alias="journalDiaryYyMnthTagListByUser" uses-template="defaultTemplate" />
@@ -90,9 +90,9 @@
     <cache alias="journalDiaryCountMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalDiaryStateMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalDiaryWeeklyStateMapByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDiaryYySumryStatedListByUser" uses-template="defaultTemplate" />
+    <cache alias="journalDiaryYyAnnualStatedListByUser" uses-template="defaultTemplate" />
 
-    <!-- 저널 꿈 -->
+    <!-- ?�??�?-->
     <cache alias="journalDreamDtlDtoByUser" uses-template="defaultTemplate" />
     <cache alias="journalDreamTagListByUser" uses-template="defaultTemplate" />
     <cache alias="journalDreamYyMnthTagListByUser" uses-template="defaultTemplate" />
@@ -103,28 +103,28 @@
     <cache alias="journalDreamCountMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalDreamStateMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalDreamWeeklyStateMapByUser" uses-template="defaultTemplate" />
-    <cache alias="journalDreamYySumryStatedListByUser" uses-template="defaultTemplate" />
+    <cache alias="journalDreamYyAnnualStatedListByUser" uses-template="defaultTemplate" />
 
-    <!-- 저널 해석 -->
+    <!-- ?�???�석 -->
     <cache alias="journalIntrptDtlDtoByUser" uses-template="defaultTemplate" />
     <cache alias="journalIntrptStateMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalIntrptWeeklyStateMapByUser" uses-template="defaultTemplate" />
 
-    <!-- 저널 할일 -->
+    <!-- ?�???�일 -->
     <cache alias="journalTodoListByUser" uses-template="defaultTemplate" />
     <cache alias="journalTodoDtlDtoByUser" uses-template="defaultTemplate" />
 
-    <!-- 저널 결산 -->
-    <cache alias="journalSumryTotalListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalSumryListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalSumryDtlDtoByUser" uses-template="defaultTemplate" />
-    <cache alias="journalSumryYyDtlDtoByUser" uses-template="defaultTemplate" />
+    <!-- ?�??결산 -->
+    <cache alias="journalAnnualTotalListByUser" uses-template="defaultTemplate" />
+    <cache alias="journalAnnualListByUser" uses-template="defaultTemplate" />
+    <cache alias="journalAnnualDtlDtoByUser" uses-template="defaultTemplate" />
+    <cache alias="journalAnnualYyDtlDtoByUser" uses-template="defaultTemplate" />
 
-    <!-- 태그 -->
+    <!-- ?�그 -->
     <cache alias="tagContentEntityListByRef" uses-template="defaultTemplate" />
     <cache alias="tagSmpDtlEntity" uses-template="defaultTemplate" />
 
-    <!-- 메타 -->
+    <!-- 메�? -->
     <cache alias="metaContentEntityListByRef" uses-template="defaultTemplate" />
     <cache alias="metaSmpDtlEntity" uses-template="defaultTemplate" />
 </config>

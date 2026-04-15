@@ -7,8 +7,8 @@ import io.nicheblog.dreamdiary.feature.journal.day.service.strategy.JournalDayCa
 import io.nicheblog.dreamdiary.feature.journal.diary.service.strategy.JournalDiaryCacheEvictor;
 import io.nicheblog.dreamdiary.feature.journal.dream.service.strategy.JournalDreamCacheEvictor;
 import io.nicheblog.dreamdiary.feature.journal.intrpt.service.strategy.JournalIntrptCacheEvictor;
-import io.nicheblog.dreamdiary.feature.journal.sumry.service.strategy.JournalSumryCacheEvictor;
-import io.nicheblog.dreamdiary.feature.journal.sumry.service.strategy.JournalSumryReviewCacheEvictor;
+import io.nicheblog.dreamdiary.feature.journal.annual.service.strategy.JournalAnnualCacheEvictor;
+import io.nicheblog.dreamdiary.feature.journal.annual.service.strategy.JournalAnnualReviewCacheEvictor;
 import io.nicheblog.dreamdiary.feature.journal.todo.service.strategy.JournalTodoCacheEvictor;
 import io.nicheblog.dreamdiary.global.util.TransactionHookUtils;
 import lombok.RequiredArgsConstructor;
@@ -40,8 +40,8 @@ public class JournalCacheEvictWorker {
     private final JournalDreamCacheEvictor journalDreamCacheEvictor;
     private final JournalIntrptCacheEvictor journalIntrptCacheEvictor;
     private final JournalTodoCacheEvictor journalTodoCacheEvictor;
-    private final JournalSumryCacheEvictor journalSumryCacheEvictor;
-    private final JournalSumryReviewCacheEvictor journalSumryReviewCacheEvictor;
+    private final JournalAnnualCacheEvictor journalAnnualCacheEvictor;
+    private final JournalAnnualReviewCacheEvictor journalAnnualReviewCacheEvictor;
 
     // CacheEvictor를 매핑하는 Map
     private final Map<ContentType, JournalCacheEvictor> evictorMap = new HashMap<>();
@@ -54,8 +54,8 @@ public class JournalCacheEvictWorker {
         evictorMap.put(ContentType.JOURNAL_DREAM, journalDreamCacheEvictor);
         evictorMap.put(ContentType.JOURNAL_INTRPT, journalIntrptCacheEvictor);
         evictorMap.put(ContentType.JOURNAL_TODO, journalTodoCacheEvictor);
-        evictorMap.put(ContentType.JOURNAL_SUMRY, journalSumryCacheEvictor);
-        evictorMap.put(ContentType.JOURNAL_SUMRY_REVIEW, journalSumryReviewCacheEvictor);
+        evictorMap.put(ContentType.JOURNAL_ANNUAL, journalAnnualCacheEvictor);
+        evictorMap.put(ContentType.JOURNAL_ANNUAL_REVIEW, journalAnnualReviewCacheEvictor);
         validateEvictorMap();
     }
 
@@ -70,8 +70,8 @@ public class JournalCacheEvictWorker {
                 ContentType.JOURNAL_DREAM,
                 ContentType.JOURNAL_INTRPT,
                 ContentType.JOURNAL_TODO,
-                ContentType.JOURNAL_SUMRY,
-                ContentType.JOURNAL_SUMRY_REVIEW
+                ContentType.JOURNAL_ANNUAL,
+                ContentType.JOURNAL_ANNUAL_REVIEW
         );
 
         for (final ContentType requiredType : requiredTypes) {
