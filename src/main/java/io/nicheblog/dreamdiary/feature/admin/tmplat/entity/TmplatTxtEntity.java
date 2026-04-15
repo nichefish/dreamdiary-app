@@ -73,9 +73,9 @@ public class TmplatTxtEntity
     /**
      * 내용 (텍스트에디터)
      */
-    @Column(name = "cn", length = 1000)
+    @Column(name = "content", length = 1000)
     @Comment("내용")
-    private String cn;
+    private String content;
 
     /**
      * 기본설정 여부

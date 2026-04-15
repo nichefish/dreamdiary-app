@@ -101,7 +101,7 @@
 <#include "/view/feature/journal/diary/_partial/_journal_diary_context_btn_partial.hbs">
 <#include "/view/feature/journal/diary/_partial/_journal_diary_copy_btn_partial.hbs">
 <#include "/view/feature/journal/diary/_partial/_journal_diary_toggle_btn_partial.hbs">
-<#include "/view/feature/journal/diary/_partial/_journal_diary_cn_partial.hbs">
+<#include "/view/feature/journal/diary/_partial/_journal_diary_content_partial.hbs">
 <script type="text/javascript" src="/js/view/feature/journal/diary/journal_diary_module.js?${releaseDate!}"></script>
 
 <#--include::journal_dream_module-->
@@ -137,7 +137,7 @@
 <#--include::journal_sumry_modules-->
 <#include "/view/feature/journal/sumry/_partial/_journal_sumry_context_btn_partial.hbs">
 <#include "/view/feature/journal/sumry/_partial/_journal_sumry_review_item_partial.hbs">
-<#include "/view/feature/journal/sumry/_partial/_journal_sumry_review_cn_partial.hbs">
+<#include "/view/feature/journal/sumry/_partial/_journal_sumry_review_content_partial.hbs">
 <#include "/view/feature/journal/sumry/_partial/_journal_sumry_review_context_btn_partial.hbs">
 <#include "/view/feature/journal/sumry/_modal/_journal_sumry_review_reg_modal.ftlh">
 <#include "/view/feature/journal/sumry/_journal_sumry_dtl_template.hbs">

@@ -37,9 +37,9 @@ public class JournalSumryDto
     /** 제목 */
     private String title;
     /** 내용 */
-    private String cn;
+    private String content;
     /** 마크다운 처리된 내용 */
-    private String markdownCn;
+    private String markdownContent;
 
     /* ----- */
 

@@ -45,7 +45,7 @@ public interface HolydayKasiApiMapstruct
     @Mapping(target = "src", expression = "java(\"KASI\")")
     @Mapping(target = "contentType", expression = "java(\"schedule\")")
     @Mapping(target = "title", expression = "java(dto.getDateName())")
-    @Mapping(target = "cn", expression = "java(dto.getDateName())")
+    @Mapping(target = "content", expression = "java(dto.getDateName())")
     @Mapping(target = "scheduleCd", expression = "java(Code.SCHEDULE_HOLYDAY)")
     @Mapping(target = "bgnDt", expression = "java(DateUtils.asDate(dto.getLocdate()))")
     @Mapping(target = "endDt", expression = "java(DateUtils.asDate(dto.getLocdate()))")

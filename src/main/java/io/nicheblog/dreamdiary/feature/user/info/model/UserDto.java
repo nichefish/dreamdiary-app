@@ -90,7 +90,7 @@ public class UserDto
     private String authListStr;
 
     /** 계정 설명 (관리자용) */
-    private String cn;
+    private String content;
 
     /** 입사일 */
     private String ecnyDt;

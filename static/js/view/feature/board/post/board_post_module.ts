@@ -28,7 +28,7 @@ dF.BoardPost = (function(): dfModule {
             /* jquery validation */
             cF.validate.validateForm("#postRegForm", dF.BoardPost.submitHandler);
             /* tinymce init */
-            cF.tinymce.init("#tinymce_cn");
+            cF.tinymce.init("#tinymce_content");
             /* tagify */
             cF.tagify.initWithCtgr("#postRegForm #tagListStr");
             // 잔디발송여부 클릭시 글씨 변경

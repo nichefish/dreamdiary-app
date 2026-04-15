@@ -36,13 +36,13 @@ public class JournalDreamHistoryStrategy implements HistoryStrategy<JournalDream
     }
 
     @Override
-    public JournalDreamDto updtCn(
+    public JournalDreamDto updtContent(
             final Integer key,
-            final String cn,
+            final String content,
             final HistoryType historyType,
             final Integer fromHistoryId
     ) throws Exception {
-        return journalDreamService.updtCn(key, cn, historyType, fromHistoryId);
+        return journalDreamService.updtContent(key, content, historyType, fromHistoryId);
     }
 
     @Override

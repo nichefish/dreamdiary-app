@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS comment (
     ref_content_type VARCHAR(30) COMMENT '참조 컨텐츠 타입',
     -- POST
     title VARCHAR(200) COMMENT '제목',
-    cn LONGTEXT COMMENT '내용',
+    content LONGTEXT COMMENT '내용',
     ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
     imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
     fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단 고정 여부 (Y/N)',
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS sectn (
     use_yn CHAR(1) DEFAULT 'Y' COMMENT '사용 여부 (Y/N)',
     -- POST
     title VARCHAR(200) COMMENT '제목',
-    cn LONGTEXT COMMENT '내용',
+    content LONGTEXT COMMENT '내용',
     ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
     imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
     fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단 고정 여부 (Y/N)',
@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS tag_profile (
     tag_id INT NOT NULL COMMENT '태그 ID',
     content_type VARCHAR(50) NOT NULL COMMENT '컨텐츠 타입',
     --
-    cn LONGTEXT COMMENT '내용',
+    content LONGTEXT COMMENT '내용',
     text_class VARCHAR(30) NULL COMMENT '시각 의미 (NULL=카테고리/기본 상속)',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
@@ -235,7 +235,7 @@ CREATE TABLE history (
     id INT AUTO_INCREMENT COMMENT '이력 ID',
     ref_id INT COMMENT '참조 글 번호',
     ref_content_type VARCHAR(255) COMMENT '참조 컨텐츠 타입',
-    cn LONGTEXT COMMENT '이력 내용 요약',
+    content LONGTEXT COMMENT '이력 내용 요약',
     history_type VARCHAR(20) NOT NULL DEFAULT 'CHANGE' COMMENT '이력 타입',
     from_history_id INT COMMENT '복구 원본 이력 번호',
     -- AUDIT

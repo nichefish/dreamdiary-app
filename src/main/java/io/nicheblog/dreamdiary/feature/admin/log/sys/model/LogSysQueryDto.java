@@ -51,7 +51,7 @@ public class LogSysQueryDto
     private String url;
 
     /** 작업 내용 */
-    private String cn;
+    private String content;
 
     /** 작업 결과 */
     private String rslt;

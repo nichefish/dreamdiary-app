@@ -40,7 +40,7 @@ dF.Sectn = (function(): dfModule {
             cF.tagify.initWithCtgr("#sectnRegForm #tagListStr", undefined);
             // tinymce editor reset
             cF.tinymce.init('#tinymce_sectnCn');
-            cF.tinymce.setContentWhenReady("tinymce_sectnCn", obj?.cn || "");
+            cF.tinymce.setContentWhenReady("tinymce_sectnCn", obj?.content || "");
         },
 
         /**

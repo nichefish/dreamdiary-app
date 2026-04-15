@@ -149,7 +149,7 @@ CREATE TABLE IF NOT EXISTS log_actvty (
     ip_addr VARCHAR(20) COMMENT 'IP 주소',
     referer VARCHAR(1000) COMMENT '리퍼러 URL',
 
-    cn LONGTEXT COMMENT '내용',
+    content LONGTEXT COMMENT '내용',
 
     http_status int COMMENT 'HTTP 상태',
     duration_ms long COMMENT '소요시간(ms)',
@@ -172,7 +172,7 @@ CREATE TABLE IF NOT EXISTS log_sys (
     log_dt DATETIME COMMENT '로그 날짜 및 시간',
     username VARCHAR(20) COMMENT '로그 기록 사용자 ID',
     actvty_ctgr_cd VARCHAR(50) COMMENT '활동 카테고리 코드',
-    cn LONGTEXT COMMENT '내용',
+    content LONGTEXT COMMENT '내용',
     rslt TINYINT NOT NULL COMMENT '결과',
     rslt_msg VARCHAR(500) COMMENT '결과 메시지',
     exception_nm VARCHAR(100) COMMENT '예외 이름',

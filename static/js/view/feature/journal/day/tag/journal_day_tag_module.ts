@@ -622,7 +622,7 @@ dF.JournalDayTag = (function(): dfModule {
         },
 
         expand: function(obj: HTMLElement): void {
-            $(obj).prev(".cn").toggleClass("expanded");
+            $(obj).prev(".journal-content").toggleClass("expanded");
         },
 
         tagCtgrSyncAjax: function(): void {

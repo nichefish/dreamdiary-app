@@ -113,7 +113,7 @@ public class JournalIntrptSpec
                     continue;
                 case "diaryKeyword":
                     // 내용 like 검색
-                    predicate.add(builder.like(root.get("cn"), "%" + value + "%"));
+                    predicate.add(builder.like(root.get("content"), "%" + value + "%"));
                     continue;
                 case "tagId":
                     // 특정 태그된 꿈만 조회

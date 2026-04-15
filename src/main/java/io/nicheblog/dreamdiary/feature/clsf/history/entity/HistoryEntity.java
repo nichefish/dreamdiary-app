@@ -49,9 +49,9 @@ public class HistoryEntity
     private String refContentType;
 
     @Lob
-    @Column(name = "cn")
+    @Column(name = "content")
     @Comment("이력 내용 스냅샷")
-    private String cn;
+    private String content;
 
     @Builder.Default
     @Column(name = "history_type", length = 20, nullable = false)
@@ -78,23 +78,23 @@ public class HistoryEntity
      * 생성자.
      *
      * @param refKey 글 번호와 컨텐츠 타입을 포함하는 참조 복합키 객체
-     * @param cn 변경내용
+     * @param content 변경내용
      */
-    public HistoryEntity(final BaseClsfKey refKey, final String cn) {
+    public HistoryEntity(final BaseClsfKey refKey, final String content) {
         this(refKey);
-        this.cn = cn;
+        this.content = content;
     }
 
     /**
      * 생성자.
      *
      * @param refKey 글 번호와 컨텐츠 타입을 포함하는 참조 복합키 객체
-     * @param cn 변경내용
+     * @param content 변경내용
      * @param historyType 이력 타입
      * @param fromHistoryId 이력 복구 번호
      */
-    public HistoryEntity(final BaseClsfKey refKey, final String cn, final HistoryType historyType, final Integer fromHistoryId) {
-        this(refKey, cn);
+    public HistoryEntity(final BaseClsfKey refKey, final String content, final HistoryType historyType, final Integer fromHistoryId) {
+        this(refKey, content);
         this.historyType = historyType != null ? historyType.key : HistoryType.CHANGE.key;
         this.fromHistoryId = fromHistoryId;
     }

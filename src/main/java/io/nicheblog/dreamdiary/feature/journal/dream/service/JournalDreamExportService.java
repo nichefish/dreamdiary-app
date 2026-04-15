@@ -87,7 +87,7 @@ public class JournalDreamExportService {
             sb.append("#")
               .append(dream.getSortOrder())
               .append("\r\n")
-              .append(CmmUtils.htmlToText(dream.getCn()))
+              .append(CmmUtils.htmlToText(dream.getContent()))
               .append("\r\n");
             // 태그 처리
             if (dream.getTag() == null || CollectionUtils.isEmpty(dream.getTag().getList())) {

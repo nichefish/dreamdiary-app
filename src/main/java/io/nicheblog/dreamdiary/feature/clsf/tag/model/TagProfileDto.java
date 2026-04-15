@@ -35,7 +35,7 @@ public class TagProfileDto
     /** 참조 컨텐츠 타입 */
     private String contentType;
     /** 본문 */
-    private String cn;
+    private String content;
 
     /** 개별 태그 시각 의미 ({@code null} = 카테고리/기본 색 상속) */
     private TextClass textClass;

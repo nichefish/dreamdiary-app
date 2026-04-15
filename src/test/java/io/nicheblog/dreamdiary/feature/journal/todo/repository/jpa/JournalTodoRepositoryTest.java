@@ -82,7 +82,7 @@ class JournalTodoRepositoryTest {
         // When::
         final JournalTodoEntity toModify = journalTodoRepository.findById(key)
                 .orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
-        toModify.setCn("modified");
+        toModify.setContent("modified");
         final JournalTodoEntity modified = journalTodoRepository.save(toModify);
 
         // Then::
@@ -91,7 +91,7 @@ class JournalTodoRepositoryTest {
         assertNotNull(modified.getUpdatedAt(), "updatedAt audit was not set.");
         assertNotNull(modified.getUpdatedBy(), "updatedBy audit was not set.");
         assertEquals(TestConstant.TEST_AUDITOR, modified.getUpdatedBy(), "Modified updatedBy is unexpected.");
-        assertEquals("modified", modified.getCn(), "Content was not updated.");
+        assertEquals("modified", modified.getContent(), "Content was not updated.");
     }
 
     /**

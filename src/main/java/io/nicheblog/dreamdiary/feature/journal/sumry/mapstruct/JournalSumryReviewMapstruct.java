@@ -33,7 +33,7 @@ public abstract class JournalSumryReviewMapstruct
      */
     @Override
     @Named("toDto")
-    @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
+    @Mapping(target = "markdownContent", expression = "java(StringUtils.isEmpty(entity.getContent()) ? \"-\" : MarkdownUtils.markdown(entity.getContent()))")
     public abstract JournalSumryReviewDto toDto(final JournalSumryReviewEntity entity) throws Exception;
 
     /**
@@ -43,7 +43,7 @@ public abstract class JournalSumryReviewMapstruct
      * @return Entity -- 변환된 Entity 객체
      */
     @Override
-    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
+    @Mapping(target = "content", expression = "java(MarkdownUtils.normalize(dto.getContent()))")
     public abstract JournalSumryReviewEntity toEntity(final JournalSumryReviewDto dto) throws Exception;
 
     /**
@@ -54,6 +54,6 @@ public abstract class JournalSumryReviewMapstruct
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
+    @Mapping(target = "content", expression = "java(MarkdownUtils.normalize(dto.getContent()))")
     public abstract void updateFromDto(final JournalSumryReviewDto dto, final @MappingTarget JournalSumryReviewEntity entity) throws Exception;
 }

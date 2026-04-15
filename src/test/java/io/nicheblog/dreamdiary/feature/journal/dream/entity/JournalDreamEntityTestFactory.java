@@ -27,7 +27,7 @@ public class JournalDreamEntityTestFactory {
         return JournalDreamEntity.builder()
                 .contentType(ContentType.JOURNAL_DREAM.key)
                 .title("test_title")
-                .cn("test_cn")
+                .content("test_cn")
                 .journalDayId(journalDayEntity != null ? journalDayEntity.getId() : null)
                 .journalDay(toSmpEntity(journalDayEntity))
                 .build();
@@ -41,7 +41,7 @@ public class JournalDreamEntityTestFactory {
         return JournalDreamEntity.builder()
                 .contentType(ContentType.JOURNAL_DREAM.key)
                 .title("test_title")
-                .cn("test_cn")
+                .content("test_cn")
                 .journalDay(JournalDaySmpEntity.builder().journalDt(DateUtils.asDate(journalDtStr)).build())
                 .build();
     }

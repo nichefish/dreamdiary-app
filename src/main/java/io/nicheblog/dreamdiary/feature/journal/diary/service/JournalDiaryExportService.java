@@ -87,7 +87,7 @@ public class JournalDiaryExportService {
             sb.append("#")
               .append(diary.getSortOrder())
               .append("\r\n")
-              .append(CmmUtils.htmlToText(diary.getCn()))
+              .append(CmmUtils.htmlToText(diary.getContent()))
               .append("\r\n");
             // 태그 처리
             if (diary.getTag() == null || CollectionUtils.isEmpty(diary.getTag().getList())) {

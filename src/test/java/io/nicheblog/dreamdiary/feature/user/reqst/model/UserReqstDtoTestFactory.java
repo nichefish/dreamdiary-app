@@ -39,7 +39,7 @@ public class UserReqstDtoTestFactory {
                 .emailId("test_email_id")
                 .emailDomain("test_email_domain")
                 .cttpc("010-0101-0101")
-                .cn("test_cn")
+                .content("test_cn")
                 .build();
     }
 

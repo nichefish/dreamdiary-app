@@ -133,7 +133,7 @@ public class ScheduleSpec
                     // 입력 키워드 검색
                     final String keyword = (String) value;
                     final Predicate scheduleTitle = builder.like(root.get("title"), "%" + keyword + "%");
-                    final Predicate scheduleContent = builder.like(root.get("cn"), "%" + keyword + "%");
+                    final Predicate scheduleContent = builder.like(root.get("content"), "%" + keyword + "%");
                     predicate.add(builder.or(scheduleTitle, scheduleContent));
                     continue;
                 default:

@@ -38,27 +38,27 @@ public class HistoryService {
      * 게시물 작업 이력 등록.
      *
      * @param refKey 게시물 복합 키
-     * @param cn 작업 시점 내용 스냅샷
+     * @param content 작업 시점 내용 스냅샷
      */
     @Transactional
-    public void addHistory(final BaseClsfKey refKey, final String cn) {
-        this.addHistory(refKey, cn, HistoryType.CHANGE, null);
+    public void addHistory(final BaseClsfKey refKey, final String content) {
+        this.addHistory(refKey, content, HistoryType.CHANGE, null);
     }
 
     /**
      * 게시물 작업 이력 등록.
      *
      * @param refKey 게시물 복합 키
-     * @param cn 작업 시점 내용 스냅샷
+     * @param content 작업 시점 내용 스냅샷
      * @param historyType 이력 타입
      * @param fromHistoryId 복구 원본 이력 번호
      */
     @Transactional
-    public void addHistory(final BaseClsfKey refKey, final String cn, final HistoryType historyType, final Integer fromHistoryId) {
+    public void addHistory(final BaseClsfKey refKey, final String content, final HistoryType historyType, final Integer fromHistoryId) {
         if (refKey == null || refKey.getId() == null || refKey.getContentType() == null) return;
         if (AuthUtils.getLgnUsername() == null) return;
 
-        final HistoryEntity history = new HistoryEntity(refKey, cn, historyType, fromHistoryId);
+        final HistoryEntity history = new HistoryEntity(refKey, content, historyType, fromHistoryId);
         historyRepository.save(history);
     }
 
@@ -70,7 +70,7 @@ public class HistoryService {
         final List<HistoryDto> result = new ArrayList<>();
         for (final HistoryEntity history : historyList) {
             final HistoryDto dto = historyMapstruct.toDto(history);
-            dto.setPreviewCn(buildPreview(dto.getCn()));
+            dto.setPreviewContent(buildPreview(dto.getContent()));
             result.add(dto);
         }
         return result;
@@ -84,7 +84,7 @@ public class HistoryService {
         if (history.isEmpty()) return Optional.empty();
 
         final HistoryDto dto = historyMapstruct.toDto(history.get());
-        dto.setPreviewCn(buildPreview(dto.getCn()));
+        dto.setPreviewContent(buildPreview(dto.getContent()));
         return Optional.of(dto);
     }
 
@@ -107,9 +107,9 @@ public class HistoryService {
         return true;
     }
 
-    private String buildPreview(final String cn) {
-        if (StringUtils.isBlank(cn)) return "";
-        final String plainText = CmmUtils.htmlToText(cn).replaceAll("\\s+", " ").trim();
+    private String buildPreview(final String content) {
+        if (StringUtils.isBlank(content)) return "";
+        final String plainText = CmmUtils.htmlToText(content).replaceAll("\\s+", " ").trim();
         return StringUtils.abbreviate(plainText, 240);
     }
 }

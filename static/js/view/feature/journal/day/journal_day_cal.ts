@@ -1,4 +1,4 @@
-﻿/**
+/**
  * journal_day_cal.ts
  * 저널 달력 페이지 스크립트
  *
@@ -97,10 +97,10 @@ const Page: Page = (function(): Page {
                             tooltipContent = event.title;
                             break;
                         case "JOURNAL_DIARY":
-                            tooltipContent = `<div class="journal-diary-cn">${event.extendedProps.markdownCn}</div>`;
+                            tooltipContent = `<div class="journal-diary-content">${event.extendedProps.markdownContent}</div>`;
                             break;
                         case "JOURNAL_DREAM":
-                            tooltipContent = `<div class="journal-dream-cn">${event.extendedProps.markdownCn}</div>`;
+                            tooltipContent = `<div class="journal-dream-content">${event.extendedProps.markdownContent}</div>`;
                             break;
                         default:
                             break;

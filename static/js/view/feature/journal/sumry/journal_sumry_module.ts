@@ -33,7 +33,7 @@ dF.JournalSumry = (function(): dfModule {
             cF.tagify.initWithCtgr("#journalSumryRegForm #tagListStr", undefined);
             // tinymce editor reset
             cF.tinymce.init('#tinymce_journalSumryCn');
-            cF.tinymce.setContentWhenReady("tinymce_journalSumryCn", obj.cn || "");
+            cF.tinymce.setContentWhenReady("tinymce_journalSumryCn", obj.content || "");
         },
 
         /**
@@ -146,7 +146,7 @@ dF.JournalSumry = (function(): dfModule {
                     dF.JournalDiary.buildViewModel(diary, 'SUMRY')
                 );
                 cF.handlebars.template(viewModels, "journal_sumry_diary_list");
-                document.querySelectorAll(".cn.collapsed").forEach(el => el.classList.remove("collapsed"));
+                document.querySelectorAll(".journal-content.collapsed").forEach(el => el.classList.remove("collapsed"));
                 KTMenu.createInstances();
             });
         },
@@ -166,7 +166,7 @@ dF.JournalSumry = (function(): dfModule {
                     dF.JournalDream.buildViewModel(dream, 'SUMRY')
                 );
                 cF.handlebars.template(viewModels, "journal_sumry_dream_list");
-                document.querySelectorAll(".cn.collapsed").forEach(el => el.classList.remove("collapsed"));
+                document.querySelectorAll(".journal-content.collapsed").forEach(el => el.classList.remove("collapsed"));
                 KTMenu.createInstances();
             });
         },

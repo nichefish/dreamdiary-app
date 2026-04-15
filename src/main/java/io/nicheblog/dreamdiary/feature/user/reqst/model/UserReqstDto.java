@@ -53,7 +53,7 @@ public class UserReqstDto
     private String cttpc;
 
     /** 계정 설명 (관리자용) */
-    private String cn;
+    private String content;
 
     /* ----- */
 

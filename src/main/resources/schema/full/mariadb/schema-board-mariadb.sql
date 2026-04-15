@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS board_post(
     content_type VARCHAR(30) COMMENT '게시판 코드 (PK)',
     -- POST
     title VARCHAR(200) COMMENT '제목',
-    cn LONGTEXT COMMENT '내용',
+    content LONGTEXT COMMENT '내용',
     ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
     imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
     fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',

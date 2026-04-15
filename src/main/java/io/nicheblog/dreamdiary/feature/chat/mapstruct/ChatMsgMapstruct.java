@@ -32,7 +32,7 @@ public interface ChatMsgMapstruct
      */
     @Override
     @Named("toDto")
-    @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
+    @Mapping(target = "markdownContent", expression = "java(StringUtils.isEmpty(entity.getContent()) ? \"-\" : MarkdownUtils.markdown(entity.getContent()))")
     ChatMsgDto toDto(final ChatMsgEntity entity) throws Exception;
 
     /**
@@ -42,7 +42,7 @@ public interface ChatMsgMapstruct
      * @return Entity -- 변환된 Entity 객체
      */
     @Override
-    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
+    @Mapping(target = "content", expression = "java(MarkdownUtils.normalize(dto.getContent()))")
     ChatMsgEntity toEntity(final ChatMsgDto dto) throws Exception;
 
     /**
@@ -53,6 +53,6 @@ public interface ChatMsgMapstruct
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
+    @Mapping(target = "content", expression = "java(MarkdownUtils.normalize(dto.getContent()))")
     void updateFromDto(final ChatMsgDto dto, final @MappingTarget ChatMsgEntity entity) throws Exception;
 }

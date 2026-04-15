@@ -62,7 +62,7 @@
                             ${user.url!}
                         </td>
                         <td class="text-center">
-                            ${user.cn!"-"}
+                            ${user.content!"-"}
                         </td>
                         <!--begin::actionTyCd=-->
                         <td class="text-center text-end hidden-table">
@@ -103,7 +103,7 @@
                             ${user.param!"-"}
                         </td>
                         <td class="text-center">
-                            ${user.cn!"-"}
+                            ${user.content!"-"}
                         </td>
                         <!--begin::actionTyCd=-->
                         <td class="text-center text-end hidden-table">

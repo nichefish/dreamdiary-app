@@ -42,7 +42,7 @@ public abstract class JournalIntrptMapstruct
      * @return Entity -- 변환된 Entity 객체
      */
     @Override
-    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
+    @Mapping(target = "content", expression = "java(MarkdownUtils.normalize(dto.getContent()))")
     @Mapping(target = "journalDream", source = "journalDreamId", qualifiedByName = "mapJournalDream")
     public abstract JournalIntrptEntity toEntity(final JournalIntrptDto dto) throws Exception;
 
@@ -54,7 +54,7 @@ public abstract class JournalIntrptMapstruct
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
+    @Mapping(target = "content", expression = "java(MarkdownUtils.normalize(dto.getContent()))")
     @Mapping(target = "journalDream", source = "journalDreamId", qualifiedByName = "mapJournalDream")
     public abstract void updateFromDto(final JournalIntrptDto dto, final @MappingTarget JournalIntrptEntity entity) throws Exception;
 
@@ -72,7 +72,7 @@ public abstract class JournalIntrptMapstruct
     @Mapping(target = "journalDtWeekDay", expression = "java((entity.getJournalDream() != null && entity.getJournalDream().getJournalDay() != null) && entity.getJournalDream().getJournalDay().getJournalDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJournalDream().getJournalDay().getJournalDt()) : null)")
     @Mapping(target = "yy", source = "journalDream.journalDay.yy")
     @Mapping(target = "mnth", source = "journalDream.journalDay.mnth")
-    @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
+    @Mapping(target = "markdownContent", expression = "java(StringUtils.isEmpty(entity.getContent()) ? \"-\" : MarkdownUtils.markdown(entity.getContent()))")
     public abstract JournalIntrptDto toDto(final JournalIntrptEntity entity) throws Exception;
 
     /**

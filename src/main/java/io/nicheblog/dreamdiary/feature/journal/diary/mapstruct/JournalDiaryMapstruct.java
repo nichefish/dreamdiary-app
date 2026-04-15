@@ -43,7 +43,7 @@ public abstract class JournalDiaryMapstruct
      * @return Entity -- 변환된 Entity 객체
      */
     @Override
-    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
+    @Mapping(target = "content", expression = "java(MarkdownUtils.normalize(dto.getContent()))")
     @Mapping(target = "journalChapter", source = "journalChapterId", qualifiedByName = "mapJournalChapter")
     public abstract JournalDiaryEntity toEntity(final JournalDiaryPostDto dto) throws Exception;
 
@@ -55,7 +55,7 @@ public abstract class JournalDiaryMapstruct
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
+    @Mapping(target = "content", expression = "java(MarkdownUtils.normalize(dto.getContent()))")
     @Mapping(target = "journalChapter", source = "journalChapterId", qualifiedByName = "mapJournalChapter")
     public abstract void updateFromDto(final JournalDiaryPostDto dto, final @MappingTarget JournalDiaryEntity entity) throws Exception;
 
@@ -73,7 +73,7 @@ public abstract class JournalDiaryMapstruct
     @Mapping(target = "journalDtWeekDay", expression = "java(entity.getJournalChapter().getJournalDay() != null && entity.getJournalChapter().getJournalDay().getJournalDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJournalChapter().getJournalDay().getJournalDt()) : null)")
     @Mapping(target = "yy", source = "journalChapter.journalDay.yy")
     @Mapping(target = "mnth", source = "journalChapter.journalDay.mnth")
-    @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
+    @Mapping(target = "markdownContent", expression = "java(StringUtils.isEmpty(entity.getContent()) ? \"-\" : MarkdownUtils.markdown(entity.getContent()))")
     public abstract JournalDiaryDto toDto(final JournalDiaryEntity entity) throws Exception;
 
     /**

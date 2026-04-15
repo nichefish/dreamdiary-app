@@ -36,13 +36,13 @@ public class JournalIntrptHistoryStrategy implements HistoryStrategy<JournalIntr
     }
 
     @Override
-    public JournalIntrptDto updtCn(
+    public JournalIntrptDto updtContent(
             final Integer key,
-            final String cn,
+            final String content,
             final HistoryType historyType,
             final Integer fromHistoryId
     ) throws Exception {
-        return journalIntrptService.updtCn(key, cn, historyType, fromHistoryId);
+        return journalIntrptService.updtContent(key, content, historyType, fromHistoryId);
     }
 
     @Override

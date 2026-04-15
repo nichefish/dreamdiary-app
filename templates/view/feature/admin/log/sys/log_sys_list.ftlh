@@ -58,7 +58,7 @@
                             -
                         </td>
                         <td class="text-center">
-                            ${log.cn!"-"}
+                            ${log.content!"-"}
                         </td>
                         <!--begin::actionTyCd=-->
                         <td class="text-center text-end hidden-table">

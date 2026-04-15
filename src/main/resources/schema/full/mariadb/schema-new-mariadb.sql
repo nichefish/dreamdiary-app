@@ -1,4 +1,4 @@
-﻿-- 기능 구조 (new) 테이블 생성 쿼리 정보를 입력한다.
+-- 기능 구조 (new) 테이블 생성 쿼리 정보를 입력한다.
 -- "JPA CASCADE INSERT에서는 먼저 INSERT 후 나중에 FK값을 업데이트하게 되므로 FK가 NOT_NULL이면 에러가 발생한다."
 -- (=> JPA에서 다른 테이블과 연관성을 갖는 컬럼은 반드시 NULL을 허용해야 한다!) (NOT NULL이면 안된다)
 -- @database : mariadb
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS notice (
     popup_yn CHAR(1) DEFAULT 'N' COMMENT '팝업 여부 (Y/N)',
     -- POST
     title VARCHAR(200) COMMENT '제목',
-    cn LONGTEXT COMMENT '내용',
+    content LONGTEXT COMMENT '내용',
     ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
     imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
     fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS schedule (
     src VARCHAR(50) DEFAULT '출처',
     -- POST
     title VARCHAR(200) COMMENT '제목',
-    cn LONGTEXT COMMENT '내용',
+    content LONGTEXT COMMENT '내용',
     ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
     imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
     fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS tmplat_txt (
     tmplat_def_cd VARCHAR(50) COMMENT '템플릿 정의 코드',
     -- ctgr_cd VARCHAR(50) COMMENT '글분류 코드',
     title VARCHAR(200) COMMENT '이름',
-    cn LONGTEXT COMMENT '내용',
+    content LONGTEXT COMMENT '내용',
     default_yn CHAR(1) DEFAULT 'N' COMMENT '기본 템플릿 여부',
     -- ATCH_FILE
     atch_file_id INT COMMENT '첨부파일 번호',
@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS flsys_meta (
     upper_file_path VARCHAR(500) COMMENT '상위 파일 경로',
     -- TITLE
     title VARCHAR(200) COMMENT '제목',
-    cn LONGTEXT COMMENT '내용',
+    content LONGTEXT COMMENT '내용',
     ctgr_cd VARCHAR(50) COMMENT '글분류 코드',
     imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
     fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
@@ -167,7 +167,7 @@ CREATE TABLE IF NOT EXISTS chat_msg (
     content_type VARCHAR(30) DEFAULT 'CHAT' COMMENT '게시판 코드 (PK)',
     -- POST
     title VARCHAR(200) COMMENT '제목',
-    cn LONGTEXT COMMENT '내용',
+    content LONGTEXT COMMENT '내용',
     imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
     fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
     -- ATCH_FILE

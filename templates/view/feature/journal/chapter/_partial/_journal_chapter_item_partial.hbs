@@ -30,7 +30,7 @@
          data-mnth="{{mnth}}"
          data-collapsed="{{hasState state 'COLLAPSED'}}"
          data-resolved="{{#ifYn chapterResolvedYn}}Y{{else}}N{{/ifYn}}">
-        <div class="journal-chapter-cn {{#if (hasState state 'COLLAPSED')}}collapsed{{/if}}">
+        <div class="journal-chapter-content {{#if (hasState state 'COLLAPSED')}}collapsed{{/if}}">
             {{#each journalDiaryList}}
                 {{> journal_diary_item_partial this}}
             {{/each}}

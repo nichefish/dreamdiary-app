@@ -34,7 +34,7 @@ public interface JournalSbjctMapstruct
     @Override
     @Named("toDto")
     @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"JOURNAL_SBJCT_CTGR_CD\", entity.getCtgrCd()))")
-    @Mapping(target = "markdownCn", expression = "java(StringUtils.isEmpty(entity.getCn()) ? \"-\" : MarkdownUtils.markdown(entity.getCn()))")
+    @Mapping(target = "markdownContent", expression = "java(StringUtils.isEmpty(entity.getContent()) ? \"-\" : MarkdownUtils.markdown(entity.getContent()))")
     JournalSbjctDto toDto(final JournalSbjctEntity entity) throws Exception;
 
     /**
@@ -44,7 +44,7 @@ public interface JournalSbjctMapstruct
      * @return Entity -- 변환된 Entity 객체
      */
     @Override
-    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
+    @Mapping(target = "content", expression = "java(MarkdownUtils.normalize(dto.getContent()))")
     JournalSbjctEntity toEntity(final JournalSbjctDto dto) throws Exception;
 
     /**
@@ -55,6 +55,6 @@ public interface JournalSbjctMapstruct
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "cn", expression = "java(MarkdownUtils.normalize(dto.getCn()))")
+    @Mapping(target = "content", expression = "java(MarkdownUtils.normalize(dto.getContent()))")
     void updateFromDto(final JournalSbjctDto dto, final @MappingTarget JournalSbjctEntity entity) throws Exception;
 }

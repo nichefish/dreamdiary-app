@@ -88,13 +88,13 @@ class JournalDreamServiceTest {
 
         // When::
         final JournalDreamPostDto toModify = JournalDreamDtoTestFactory.createPostWithKey(key);
-        toModify.setCn("test");
+        toModify.setContent("test");
         final ServiceResponse modifyResult = journalDreamService.modify(toModify);
         final JournalDreamDto modified = (JournalDreamDto) modifyResult.getRsltObj();
 
         // Then::
         assertNotNull(modified.getId(), "수정이 정상적으로 이루어지지 않았습니다.");
-        assertEquals("test", modified.getCn(), "수정이 정상적으로 이루어지지 않았습니다.");
+        assertEquals("test", modified.getContent(), "수정이 정상적으로 이루어지지 않았습니다.");
     }
 
     /**

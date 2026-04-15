@@ -52,9 +52,9 @@ public class TagProfileEntity
     @Comment("컨텐츠 타입")
     private String contentType;
 
-    @Column(name = "cn", columnDefinition = "LONGTEXT")
+    @Column(name = "content", columnDefinition = "LONGTEXT")
     @Comment("프로필 본문")
-    private String cn;
+    private String content;
 
     /**
      * 개별 태그 시각 의미. {@code null}이면 카테고리 프로필(또는 전역 기본) 색을 상속한다.

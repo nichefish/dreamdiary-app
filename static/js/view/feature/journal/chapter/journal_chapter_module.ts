@@ -219,10 +219,10 @@ dF.JournalChapter = (function(): dfModule {
             if (isNaN(Number(id))) return;
 
             const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
-                const cn: HTMLDivElement = item.querySelector("div.journal-chapter-cn");
-                if (!cn) return console.warn("cn not found.");
+                const content: HTMLDivElement = item.querySelector("div.journal-chapter-content");
+                if (!content) return console.warn("content not found.");
 
-                cn?.classList.toggle("collapsed", res.rsltSts === "ON");
+                content?.classList.toggle("collapsed", res.rsltSts === "ON");
             }
             this.toggleStateAjax(id, "COLLAPSED", { onOffFunc });
         },
@@ -237,33 +237,33 @@ dF.JournalChapter = (function(): dfModule {
             const item = document.querySelector(`.journal-chapter-item[data-id='${id}']`) as HTMLElement;
             if (!item) return console.warn("item not found.");
 
-            const cn: HTMLDivElement = item.querySelector("div.journal-chapter-cn");
-            if (!cn) return console.warn("cn not found.");
+            const content: HTMLDivElement = item.querySelector("div.journal-chapter-content");
+            if (!content) return console.warn("content not found.");
 
             // collapsed 상태 판정 → diary 중 하나라도 펴져 있으면 전체 접기
-            const shouldCollapse: boolean = cn && !cn.classList.contains("collapsed");
-            const diaries: NodeListOf<HTMLElement> = item.querySelectorAll(".journal-diary-cn");
+            const shouldCollapse: boolean = content && !content.classList.contains("collapsed");
+            const diaries: NodeListOf<HTMLElement> = item.querySelectorAll(".journal-diary-content");
             const tagDiv = item.querySelector(".journal-chapter-tags");
             const icon: HTMLElement = document.querySelector(`#chapter-toggle-icon-${id}`);
             if (!icon) console.log("icon not found.");
             if (shouldCollapse) {
                 // 전체 접기
-                cn.classList.add("collapsed");
+                content.classList.add("collapsed");
                 icon.classList.add("bi-arrows-expand");
                 icon.classList.remove("bi-arrows-collapse");
                 tagDiv.classList.remove("d-none");
                 diaries.forEach((diary: HTMLElement): void => {
-                    const content: HTMLElement = diary.querySelector(".cn");
+                    const content: HTMLElement = diary.querySelector(".journal-content");
                     content.classList.add("collapsed");
                 });
             } else {
                 // 전체 펼치기
-                cn.classList.remove("collapsed");
+                content.classList.remove("collapsed");
                 icon.classList.add("bi-arrows-collapse");
                 icon.classList.remove("bi-arrows-expand");
                 tagDiv.classList.add("d-none");
                 diaries.forEach((diary: HTMLElement): void => {
-                    const content: HTMLElement = diary.querySelector(".cn");
+                    const content: HTMLElement = diary.querySelector(".journal-content");
                     content.classList.remove("collapsed");
                 });
             }
@@ -287,7 +287,7 @@ dF.JournalChapter = (function(): dfModule {
                 const journalDiaryList: object[] = rsltObj.journalDiaryList;
                 const { stdrdDt, journalDtWeekDay } = rsltObj;
                 const date: string = stdrdDt + " (" + journalDtWeekDay + ")" + "\r\n";
-                const resultCn: string = journalDiaryList?.map((item: any): any => "#" + (item?.sortOrder ?? "") + (item?.cn ?? "")).join("\r\n");
+                const resultCn: string = journalDiaryList?.map((item: any): any => "#" + (item?.sortOrder ?? "") + (item?.content ?? "")).join("\r\n");
 
                 // 문단/줄바꿈을 먼저 텍스트로 치환
                 const replacedCn: string = resultCn.replace(/<\s*br\s*\/?>/gi, "\n").replace(/<\s*\/?p[^>]*>/gi, "\n");

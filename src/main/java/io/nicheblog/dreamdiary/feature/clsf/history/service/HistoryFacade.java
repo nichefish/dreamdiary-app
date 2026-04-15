@@ -79,7 +79,7 @@ public class HistoryFacade {
             throw new IllegalArgumentException("복구할 이력이 없습니다.");
         }
 
-        return strategy.updtCn(key, history.get().getCn(), HistoryType.RESTORE, historyId);
+        return strategy.updtContent(key, history.get().getContent(), HistoryType.RESTORE, historyId);
     }
 
     public <Dto extends BaseClsfDto> boolean deleteHistoryByUser(

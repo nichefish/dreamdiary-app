@@ -20,11 +20,11 @@
             <div class="row mb-4">
                 <div class="col-12">
                     <label class="d-flex align-items-center mb-2" for="tinymce_journalDiaryCn">
-                        <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'txt.cn'/></span>
+                        <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'txt.content'/></span>
                     </label>
                 </div>
                 <div class="col-12">
-                    <textarea name="cn" id="tinymce_journalDiaryCn" class="form-control form-control-solid h-100px required"></textarea>
+                    <textarea name="content" id="tinymce_journalDiaryCn" class="form-control form-control-solid h-100px required"></textarea>
                     <div id="tinymce_journalDiaryCn_validate_span"></div>
                 </div>
             </div>

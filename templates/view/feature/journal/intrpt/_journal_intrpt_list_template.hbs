@@ -9,7 +9,7 @@
             <div class="col-1 d-none d-md-flex-align-center flex-column py-3 border-2 border-gray-300 border-end ps-6 me-4 w-130px h-75 gap-2">
                 {{> journal_day_context_btn_partial this id=this.journalDayId}}
             </div>
-            <div class="col py-3 journal-intrpt-cn {{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}">
+            <div class="col py-3 journal-intrpt-content {{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}">
                 <div class="d-flex-align-center">
                     {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}
                 </div>

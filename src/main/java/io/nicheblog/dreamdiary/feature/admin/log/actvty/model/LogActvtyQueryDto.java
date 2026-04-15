@@ -64,7 +64,7 @@ public class LogActvtyQueryDto
     private String signature;
 
     /** 작업 내용 */
-    private String cn;
+    private String content;
 
     /** 작업자 IP */
     private String ipAddr;

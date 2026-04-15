@@ -75,7 +75,7 @@
 <#include "/view/feature/journal/diary/_partial/_journal_diary_context_btn_partial.hbs">
 <#include "/view/feature/journal/diary/_partial/_journal_diary_toggle_btn_partial.hbs">
 <#include "/view/feature/journal/diary/_partial/_journal_diary_states_partial.hbs">
-<#include "/view/feature/journal/diary/_partial/_journal_diary_cn_partial.hbs">
+<#include "/view/feature/journal/diary/_partial/_journal_diary_content_partial.hbs">
 <script type="text/javascript" src="/js/view/feature/journal/diary/journal_diary_module.js?${releaseDate!}"></script>
 
 <#--include::journal_dream_module-->
@@ -87,7 +87,7 @@
 <#include "/view/feature/journal/dream/_partial/_journal_dream_context_btn_partial.hbs">
 <#include "/view/feature/journal/dream/_partial/_journal_dream_toggle_btn_partial.hbs">
 <#include "/view/feature/journal/dream/_partial/_journal_dream_states_partial.hbs">
-<#include "/view/feature/journal/dream/_partial/_journal_dream_cn_partial.hbs">
+<#include "/view/feature/journal/dream/_partial/_journal_dream_content_partial.hbs">
 <script type="text/javascript" src="/js/view/feature/journal/dream/journal_dream_module.js?${releaseDate!}"></script>
 
 <#--include::journal_intrpt_module-->
@@ -97,7 +97,7 @@
 <#include "/view/feature/journal/intrpt/_partial/_journal_intrpt_copy_btn_partial.hbs">
 <#include "/view/feature/journal/intrpt/_partial/_journal_intrpt_context_btn_partial.hbs">
 <#include "/view/feature/journal/intrpt/_partial/_journal_intrpt_toggle_btn_partial.hbs">
-<#include "/view/feature/journal/intrpt/_partial/_journal_intrpt_cn_partial.hbs">
+<#include "/view/feature/journal/intrpt/_partial/_journal_intrpt_content_partial.hbs">
 <script type="text/javascript" src="/js/view/feature/journal/intrpt/journal_intrpt_module.js?${releaseDate!}"></script>
 
 <#--include::journal_todo_module-->

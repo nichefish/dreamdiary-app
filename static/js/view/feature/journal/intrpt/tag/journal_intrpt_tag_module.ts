@@ -125,7 +125,7 @@ dF.JournalIntrptTag = (function(): dfModule {
         },
 
         expand: function(obj: HTMLElement): void {
-            $(obj).prev(".cn").toggleClass("expanded");
+            $(obj).prev(".journal-content").toggleClass("expanded");
         }
     }
 })();

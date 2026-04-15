@@ -40,7 +40,7 @@ public class JournalDreamPostDto
     /** 제목 */
     private String title;
     /** 내용 */
-    private String cn;
+    private String content;
 
     /* ----- */
 

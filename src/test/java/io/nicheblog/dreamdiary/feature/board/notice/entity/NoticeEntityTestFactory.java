@@ -25,7 +25,7 @@ public class NoticeEntityTestFactory {
                 .contentType(ContentType.NOTICE.key)
                 .popupYn("Y")
                 .title("test_title")
-                .cn("test_cn")
+                .content("test_cn")
                 .ctgrCd("test_ctgr_cd")
                 .build();
     }

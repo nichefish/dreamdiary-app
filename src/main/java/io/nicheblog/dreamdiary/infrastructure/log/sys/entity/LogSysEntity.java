@@ -86,9 +86,9 @@ public class LogSysEntity
     private DtlCdEntity actvtyCtgrInfo;
 
     /** 작업 내용 */
-    @Column(name = "cn", length = 400)
+    @Column(name = "content", length = 400)
     @Comment("작업 내용")
-    private String cn;
+    private String content;
 
     /** 작업 결과 */
     @Column(name = "rslt")

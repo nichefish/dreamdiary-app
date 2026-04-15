@@ -30,7 +30,7 @@ dF.Notice = (function(): dfModule {
             /* jquery validation */
             cF.validate.validateForm("#noticeRegForm", dF.Notice.submitHandler);
             /* tinymce init */
-            cF.tinymce.init("#tinymce_cn");
+            cF.tinymce.init("#tinymce_content");
             /* tagify */
             dF.Notice.tagify = cF.tagify.initWithCtgr("#noticeRegForm #tagListStr");
             // 잔디발송여부 클릭시 글씨 변경

@@ -165,7 +165,7 @@ public class CommentApiControllerTest {
                     setId(101);
                     setRefId(1001);
                     setRefContentType("BC001");
-                    setCn("첫 번째 댓글 내용입니다.");
+                    setContent("첫 번째 댓글 내용입니다.");
                     setIsSuccess(true);
                 }},
                 new CommentDto() {{
@@ -173,7 +173,7 @@ public class CommentApiControllerTest {
                     setId(102);
                     setRefId(1002);
                     setRefContentType("BC001");
-                    setCn("두 번째 댓글 내용입니다.");
+                    setContent("두 번째 댓글 내용입니다.");
                     setIsSuccess(true);
                 }}
                 // 필요한 만큼 더 추가할 수 있습니다.

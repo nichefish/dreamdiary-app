@@ -107,7 +107,7 @@ dF.JournalDream = (function(): dfModule {
             });
             /* tinymce editor reset */
             cF.tinymce.init('#tinymce_journalDreamCn');
-            cF.tinymce.setContentWhenReady("tinymce_journalDreamCn", obj.cn || "");
+            cF.tinymce.setContentWhenReady("tinymce_journalDreamCn", obj.content || "");
             /* tagify */
             dF.JournalDream.tagify = cF.tagify.initWithCtgr("#journalDreamRegForm #tagListStr", dF.JournalDreamTag.ctgrMap);
         },
@@ -268,10 +268,10 @@ dF.JournalDream = (function(): dfModule {
             if (isNaN(Number(id))) return;
 
             const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
-                const cn: HTMLDivElement = item.querySelector("div.journal-dream-cn .cn");
-                if (!cn) return console.warn("cn not found.");
+                const content: HTMLDivElement = item.querySelector("div.journal-dream-content .journal-content");
+                if (!content) return console.warn("content not found.");
 
-                cn?.classList.toggle("collapsed", res.rsltSts === "ON");
+                content?.classList.toggle("collapsed", res.rsltSts === "ON");
                 item.classList.toggle("is-collapsed", res.rsltSts === "ON");
             }
             this.toggleStateAjax(id, "COLLAPSED", { onOffFunc });
@@ -286,9 +286,9 @@ dF.JournalDream = (function(): dfModule {
 
             const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
                 if (res.rsltSts === "ON") {
-                    const cn: HTMLDivElement = item.querySelector("div.journal-dream-cn .cn");
-                    if (!cn) console.warn("cn not found.");
-                    cn?.classList.add("collapsed");
+                    const content: HTMLDivElement = item.querySelector("div.journal-dream-content .journal-content");
+                    if (!content) console.warn("content not found.");
+                    content?.classList.add("collapsed");
                     item.dataset.collapsed = "Y";
                     item.classList.add("is-collapsed");
 
@@ -307,10 +307,10 @@ dF.JournalDream = (function(): dfModule {
             if (isNaN(Number(id))) return;
 
             const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
-                const cn: HTMLDivElement = item.querySelector("div.journal-dream-cn .cn");
-                if (!cn) return console.warn("cn not found.");
+                const content: HTMLDivElement = item.querySelector("div.journal-dream-content .journal-content");
+                if (!content) return console.warn("content not found.");
 
-                cn.classList.toggle("imprtc", res.rsltSts === "ON");
+                content.classList.toggle("imprtc", res.rsltSts === "ON");
             }
             this.toggleStateAjax(id, "IMPRTC", { onOffFunc });
         },
@@ -323,10 +323,10 @@ dF.JournalDream = (function(): dfModule {
             if (isNaN(Number(id))) return;
 
             const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
-                const cn: HTMLDivElement = item.querySelector("div.journal-dream-cn .cn");
-                if (!cn) return console.warn("cn not found.");
+                const content: HTMLDivElement = item.querySelector("div.journal-dream-content .journal-content");
+                if (!content) return console.warn("content not found.");
 
-                cn.classList.toggle("refrnc", res.rsltSts === "ON");
+                content.classList.toggle("refrnc", res.rsltSts === "ON");
             }
             this.toggleStateAjax(id, "REFRNC", { onOffFunc });
         },
@@ -369,10 +369,10 @@ dF.JournalDream = (function(): dfModule {
                 if (!res.rslt) return;
 
                 // 찾아서 해당 그것만 collapse 추가 제거.
-                const item: HTMLElement = document.querySelector(`.journal-dream-cn[data-id='${id}']`);
+                const item: HTMLElement = document.querySelector(`.journal-dream-content[data-id='${id}']`);
                 if (!item) return console.log("item not found.");
 
-                const content: HTMLElement = item.querySelector(".cn");
+                const content: HTMLElement = item.querySelector(".journal-content");
                 if (!content) return console.log("content not found.");
 
                 if (collapsedYn === "Y") {
@@ -394,7 +394,7 @@ dF.JournalDream = (function(): dfModule {
             const item: HTMLElement = trigger.closest(`.journal-dream-item[data-id='${id}']`);
             if (!item) return console.log("item not found.");
 
-            const content: HTMLElement = item.querySelector(".journal-dream-cn .cn");
+            const content: HTMLElement = item.querySelector(".journal-dream-content .journal-content");
             if (!content) return console.log("content not found.");
 
             const icon: HTMLElement = document.querySelector(`#dream-toggle-icon-${id}`);
@@ -422,9 +422,9 @@ dF.JournalDream = (function(): dfModule {
          */
         initCollapseState: function(): void {
             const collapsedIds = new Set(JSON.parse(localStorage.getItem(dF.JournalDream.STORAGE_KEY) || "[]"));
-            document.querySelectorAll(".journal-dream-item .journal-dream-cn").forEach((item: HTMLElement): void => {
+            document.querySelectorAll(".journal-dream-item .journal-dream-content").forEach((item: HTMLElement): void => {
                 const id: string = item.dataset.id;
-                const content: HTMLElement = item.querySelector(".cn");
+                const content: HTMLElement = item.querySelector(".journal-content");
                 const icon: HTMLElement = document.querySelector(`#dream-toggle-icon-${id}`);
                 if (!icon) console.log("icon not found.");
                 if (id && collapsedIds.has(id)) {
@@ -452,7 +452,7 @@ dF.JournalDream = (function(): dfModule {
                 const rsltObj: Record<string, any> = res.rsltObj;
                 const { stdrdDt, journalDtWeekDay } = rsltObj;
                 const date: string = stdrdDt + " (" + journalDtWeekDay + ")" + "\r\n";
-                const resultCn: string = rsltObj.cn;
+                const resultCn: string = rsltObj.content;
                 // 문단/줄바꿈을 먼저 텍스트로 치환
                 const replacedCn: string = resultCn.replace(/<\s*br\s*\/?>/gi, "\n").replace(/<\s*\/?p[^>]*>/gi, "\n");
                 const div: HTMLDivElement = document.createElement("div");
@@ -489,8 +489,8 @@ dF.JournalDream = (function(): dfModule {
             return {
                 ...dream,
                 view: profile,
-                cnClass: [
-                    'cn',
+                contentClass: [
+                    'journal-content',
                     profile.collapsed && dream.state?.includes('COLLAPSED') ? 'collapsed' : null
                 ].filter(Boolean).join(' ')
             };

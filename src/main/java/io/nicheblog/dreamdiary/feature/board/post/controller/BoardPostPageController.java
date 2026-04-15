@@ -152,7 +152,7 @@ public class BoardPostPageController
         model.addAttribute("pageNm", PageNm.PREVIEW);
 
         // 객체 정보 모델에 추가
-        boardPost.setMarkdownCn(MarkdownUtils.markdown(boardPost.getCn()));
+        boardPost.setMarkdownContent(MarkdownUtils.markdown(boardPost.getContent()));
         model.addAttribute("post", boardPost);
 
         return "/view/board/post/board_post_preview_pop";

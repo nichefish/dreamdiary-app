@@ -17,7 +17,7 @@ type RelatedTargetItem = {
     contentType: string;
     title: string;
     stdrdDt: string;
-    cn: string;
+    content: string;
 };
 
 type RelatedContentPayload = {
@@ -373,7 +373,7 @@ dF.RelatedContent = (function(): dfModule {
                         contentType: String(item?.contentType ?? targetContentType),
                         title: String(item?.title ?? "").trim(),
                         stdrdDt: String(item?.stdrdDt ?? "").trim(),
-                        cn: String(item?.cn ?? item?.markdownCn ?? "").trim()
+                        content: String(item?.content ?? item?.markdownContent ?? "").trim()
                     };
                 }).filter(function(item: RelatedTargetItem): boolean {
                     return Number.isInteger(item.id) && item.id > 0;
@@ -406,7 +406,7 @@ dF.RelatedContent = (function(): dfModule {
                 const key: string = dF.RelatedContent.getTargetKey(item.contentType, item.id);
                 const selectedClass: string = selectedId === item.id ? "border-primary bg-light-primary" : "border-gray-300";
                 const title: string = dF.RelatedContent.escapeHtml(item.title || `#${item.id}`);
-                const excerpt: string = dF.RelatedContent.escapeHtml(dF.RelatedContent.toPreviewText(item.cn));
+                const excerpt: string = dF.RelatedContent.escapeHtml(dF.RelatedContent.toPreviewText(item.content));
 
                 return [
                     `<button type="button" class="btn w-100 text-start rounded border ${selectedClass} px-4 py-3 mb-3 related-target-item" data-related-key="${key}" onclick="dF.RelatedContent.selectTargetByKey('${key}');">`,

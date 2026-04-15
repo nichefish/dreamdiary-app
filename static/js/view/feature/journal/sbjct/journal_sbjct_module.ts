@@ -28,7 +28,7 @@ dF.JournalSbjct = (function(): dfModule {
             /* jquery validation */
             cF.validate.validateForm("#journalSbjctRegForm", dF.JournalSbjct.submitHandler);
             /* tinymce init */
-            cF.tinymce.init("#tinymce_cn");
+            cF.tinymce.init("#tinymce_content");
             /* tagify */
             cF.tagify.initWithCtgr("#tagListStr", undefined);
             // 잔디발송여부 클릭시 글씨 변경
