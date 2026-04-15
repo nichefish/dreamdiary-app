@@ -54,8 +54,6 @@ public enum SiteMenu {
     LOG_SYS("시스템 로그 관리"),
     LOG_STATS("로그 통계"),
 
-    TAG("태그"),
-
     FLSYS("파일시스템");
 
     private final String pageNm;
