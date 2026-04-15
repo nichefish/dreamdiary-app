@@ -209,7 +209,6 @@ dF.JournalDayTag = (function(): dfModule {
                 "[onclick*='dF.JournalDayTag.select(']",
                 "[onclick*='dF.JournalDiaryTag.select(']",
                 "[onclick*='dF.JournalDreamTag.select(']",
-                "[onclick*='dF.JournalIntrptTag.select(']",
             ].join(", ");
         },
 

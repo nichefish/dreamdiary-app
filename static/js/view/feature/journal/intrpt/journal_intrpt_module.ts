@@ -11,16 +11,12 @@ dF.JournalIntrpt = (function(): dfModule {
 
         initialized: false,
         inKeywordSearchMode: false,
-        tagify: null,
 
         /**
          * initializes module.
          */
         init: function(): void {
             if (dF.JournalIntrpt.initialized) return;
-
-            /* initialize submodules. */
-            dF.JournalIntrptTag.init();
 
             dF.JournalIntrpt.initialized = true;
             console.log("'dF.JournalIntrpt' module initialized.");
@@ -42,8 +38,6 @@ dF.JournalIntrpt = (function(): dfModule {
             /* tinymce editor reset */
             cF.tinymce.init('#tinymce_journalIntrptCn');
             cF.tinymce.setContentWhenReady("tinymce_journalIntrptCn", obj.content || "");
-            /* tagify */
-            dF.JournalIntrpt.tagify = cF.tagify.initWithCtgr("#journalIntrptRegForm #tagListStr", dF.JournalIntrptTag.ctgrMap);
         },
 
         /**
@@ -90,7 +84,6 @@ dF.JournalIntrpt = (function(): dfModule {
                             if (!res.rslt) return;
 
                             dF.JournalDay.refresh();
-                            dF.JournalIntrptTag.listAjax();     // 태그 refresh
                         });
                 }, "block");
             });
@@ -180,7 +173,6 @@ dF.JournalIntrpt = (function(): dfModule {
                             if (!res.rslt) return;
 
                             dF.JournalDay.refresh();
-                            dF.JournalIntrptTag.listAjax();     // 태그 refresh
                         });
                 }, "block");
             });

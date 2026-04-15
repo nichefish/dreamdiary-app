@@ -183,8 +183,6 @@ public class JournalTagCacheUpdtWorker {
             return "journalDiaryCountMapByUser";
         } else if (ContentType.JOURNAL_DREAM.key.equals(contentType)) {
             return "journalDreamCountMapByUser";
-        } else if (ContentType.JOURNAL_INTRPT.key.equals(contentType)) {
-            return "journalIntrptCountMapByUser";
         }
         return "";
     }
@@ -202,8 +200,6 @@ public class JournalTagCacheUpdtWorker {
             return "journalDiaryYyMnthTagListByUser";
         } else if (ContentType.JOURNAL_DREAM.key.equals(contentType)) {
             return "journalDreamYyMnthTagListByUser";
-        } else if (ContentType.JOURNAL_INTRPT.key.equals(contentType)) {
-            return "journalIntrptYyMnthTagListByUser";
         }
         return "";
     }
@@ -221,8 +217,6 @@ public class JournalTagCacheUpdtWorker {
             return "journalDiaryYyMnthSizedTagListByUser";
         } else if (ContentType.JOURNAL_DREAM.key.equals(contentType)) {
             return "journalDreamYyMnthSizedTagListByUser";
-        } else if (ContentType.JOURNAL_INTRPT.key.equals(contentType)) {
-            return "journalIntrptYyMnthSizedTagListByUser";
         }
         return "";
     }

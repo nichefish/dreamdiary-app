@@ -10,8 +10,6 @@ import io.nicheblog.dreamdiary.feature.clsf.history.entity.embed.HistoryEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.history.entity.embed.HistoryEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.state.entity.embed.StateEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.state.entity.embed.StateEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -41,7 +39,7 @@ import javax.persistence.*;
 @SQLDelete(sql = "UPDATE journal_intrpt SET deleted_at = NOW() WHERE id = ?")
 public class JournalIntrptEntity
         extends BaseClsfEntity
-        implements AtchFileEmbedModule, CommentEmbedModule, TagEmbedModule, StateEmbedModule, HistoryEmbedModule {
+        implements AtchFileEmbedModule, CommentEmbedModule, StateEmbedModule, HistoryEmbedModule {
 
     /** 저널 해석 고유 ID */
     @Id
@@ -91,9 +89,6 @@ public class JournalIntrptEntity
     /** 위임 :: 댓글 정보 모듈 */
     @Embedded
     public CommentEmbed comment;
-    /** 위임 :: 태그 정보 모듈 */
-    @Embedded
-    public TagEmbed tag;
     /** 위임 :: 상태 정보 모듈 */
     @Embedded
     public StateEmbed state;

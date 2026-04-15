@@ -107,10 +107,6 @@
 
     <!-- 저널 해석 -->
     <cache alias="journalIntrptDtlDtoByUser" uses-template="defaultTemplate" />
-    <cache alias="journalIntrptYyMnthTagListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalIntrptYyMnthSizedTagListByUser" uses-template="defaultTemplate" />
-    <cache alias="journalIntrptTagCtgrMapByUser" uses-template="defaultTemplate" />
-    <cache alias="journalIntrptCountMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalIntrptStateMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalIntrptWeeklyStateMapByUser" uses-template="defaultTemplate" />
 

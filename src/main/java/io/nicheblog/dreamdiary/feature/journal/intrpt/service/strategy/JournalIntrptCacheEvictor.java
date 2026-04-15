@@ -47,8 +47,6 @@ public class JournalIntrptCacheEvictor
             this.evictMyJournalDayWeeklyCaches(username, weekStartDt);
             // journal_intrpt
             EhCacheUtils.evictUserCacheByKey("journalIntrptDtlDtoByUser", username, id);
-            // journal_diary_tag
-            EhCacheUtils.clearUserCache("journalIntrptTagCtgrMapByUser", username);
             // 태그 캐시 처리
             if (id != null) {
                 EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", id + "_JOURNAL_INTRPT");

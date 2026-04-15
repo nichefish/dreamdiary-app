@@ -5,7 +5,6 @@ import io.nicheblog.dreamdiary.feature.journal.day.service.JournalDayService;
 import io.nicheblog.dreamdiary.feature.journal.day.service.JournalDayTagService;
 import io.nicheblog.dreamdiary.feature.journal.diary.service.JournalDiaryTagService;
 import io.nicheblog.dreamdiary.feature.journal.dream.service.JournalDreamTagService;
-import io.nicheblog.dreamdiary.feature.journal.intrpt.service.JournalIntrptTagService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.port.CacheWarmupTask;
@@ -35,7 +34,6 @@ public class JournalCacheWarmupTask
     private final JournalDiaryTagService journalDiaryTagService;
     private final JournalDreamTagService journalDreamTagService;
     private final JournalDayMetaService journalDayMetaService;
-    private final JournalIntrptTagService journalIntrptTagService;
 
     /**
      * 캐시 웜업
@@ -47,7 +45,6 @@ public class JournalCacheWarmupTask
         journalDayMetaService.getMetaCtgrMapByUser(Constant.SYSTEM_ACNT);
         journalDiaryTagService.getTagCtgrMapByUser(Constant.SYSTEM_ACNT);
         journalDreamTagService.getTagCtgrMapByUser(Constant.SYSTEM_ACNT);
-        journalIntrptTagService.getTagCtgrMapByUser(Constant.SYSTEM_ACNT);
     }
 
     /**
