@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.auth.security.model;
 import io.nicheblog.dreamdiary.feature.user.info.model.profile.UserProfileDto;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.cd.Code;
+import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;

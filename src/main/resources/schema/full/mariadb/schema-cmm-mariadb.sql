@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS cmm_sequence (
 -- 분류 코드 (cl_cd)
 -- @extends: BaseAuditEntity
 -- @implements: StateEmbed
-CREATE TABLE IF NOT EXISTS cmm_cl_cd  (
+CREATE TABLE IF NOT EXISTS code_group  (
     cl_cd VARCHAR(50) NOT NULL PRIMARY KEY COMMENT '분류 코드',
     cl_cd_nm VARCHAR(50) COMMENT '분류 코드 이름',
     cl_ctgr_cd VARCHAR(50) COMMENT '분류 코드 분류 코드',
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS cmm_cl_cd  (
 -- 상세 코드 (dtl_cd)
 -- @extends: BaseAuditEntity
 -- @implements: StateEmbed
-CREATE TABLE IF NOT EXISTS cmm_dtl_cd (
+CREATE TABLE IF NOT EXISTS code_item (
     cl_cd VARCHAR(50) COMMENT '분류 코드',
     dtl_cd VARCHAR(50) COMMENT '상세 코드',
     dtl_cd_nm VARCHAR(40) COMMENT '상세 코드 이름',

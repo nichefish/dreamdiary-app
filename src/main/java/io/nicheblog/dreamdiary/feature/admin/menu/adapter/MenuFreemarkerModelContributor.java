@@ -7,7 +7,7 @@ import io.nicheblog.dreamdiary.feature.admin.menu.service.MenuService;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.cd.Code;
+import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import io.nicheblog.dreamdiary.infrastructure.freemarker.interceptor.FreemarkerInterceptor;
 import io.nicheblog.dreamdiary.infrastructure.freemarker.model.FreemarkerModelContext;
 import io.nicheblog.dreamdiary.infrastructure.freemarker.port.FreemarkerModelContributor;

@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.feature.admin.menu.entity;
 import io.nicheblog.dreamdiary.auth.intrfc.entity.BaseAuditEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.Sortable;
 import io.nicheblog.dreamdiary.global.intrfc.entity.Usable;
-import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
+import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
@@ -109,7 +109,7 @@ public class MenuEntity
     @Fetch(value = FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("메뉴 구분 코드 정보")
-    private DtlCdEntity menuSubExtendTyCdInfo;
+    private CodeItemEntity menuSubExtendTyCdInfo;
 
     /** 하위메뉴 확장유형 이름 */
     @Transient

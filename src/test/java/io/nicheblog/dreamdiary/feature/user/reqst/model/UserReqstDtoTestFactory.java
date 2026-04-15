@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.nicheblog.dreamdiary.feature.user.info.model.emplym.UserEmplymDto;
 import io.nicheblog.dreamdiary.feature.user.info.model.profile.UserProfileDto;
 import io.nicheblog.dreamdiary.global.TestConstant;
-import io.nicheblog.dreamdiary.infrastructure.cd.Code;
+import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.experimental.UtilityClass;
 import org.springframework.test.context.ActiveProfiles;
 

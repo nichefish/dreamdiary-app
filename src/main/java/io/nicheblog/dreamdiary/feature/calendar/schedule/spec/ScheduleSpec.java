@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.feature.clsf._shared.spec.BaseClsfSpec;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.entity.ScheduleEntity;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.entity.SchedulePrtcpntEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.cd.Code;
+import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 

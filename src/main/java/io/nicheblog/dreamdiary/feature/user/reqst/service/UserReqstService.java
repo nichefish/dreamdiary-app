@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
 import io.nicheblog.dreamdiary.feature.user.reqst.mapstruct.UserReqstMapstruct;
 import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDto;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
-import io.nicheblog.dreamdiary.infrastructure.cd.Code;
+import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;

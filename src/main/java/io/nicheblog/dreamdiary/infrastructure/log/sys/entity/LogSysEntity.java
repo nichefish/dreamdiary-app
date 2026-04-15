@@ -4,8 +4,8 @@ import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.cd.Code;
-import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
+import io.nicheblog.dreamdiary.infrastructure.code.Code;
+import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
@@ -83,7 +83,7 @@ public class LogSysEntity
     @Fetch(value = FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("작업 구분 코드 정보")
-    private DtlCdEntity actvtyCtgrInfo;
+    private CodeItemEntity actvtyCtgrInfo;
 
     /** 작업 내용 */
     @Column(name = "content", length = 400)

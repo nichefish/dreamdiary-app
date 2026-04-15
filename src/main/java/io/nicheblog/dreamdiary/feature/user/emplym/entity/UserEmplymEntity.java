@@ -3,8 +3,8 @@ package io.nicheblog.dreamdiary.feature.user.emplym.entity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.cd.Code;
-import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
+import io.nicheblog.dreamdiary.infrastructure.code.Code;
+import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
@@ -89,7 +89,7 @@ public class UserEmplymEntity
     })
     @Fetch(value= FetchMode.JOIN)
     @NotFound(action=NotFoundAction.IGNORE)
-    private DtlCdEntity cmpyCdInfo;
+    private CodeItemEntity cmpyCdInfo;
 
     @Transient
     private String cmpyNm;
@@ -107,7 +107,7 @@ public class UserEmplymEntity
     })
     @Fetch(value= FetchMode.JOIN)
     @NotFound(action=NotFoundAction.IGNORE)
-    private DtlCdEntity teamCdInfo;
+    private CodeItemEntity teamCdInfo;
 
     @Transient
     private String teamNm;
@@ -125,7 +125,7 @@ public class UserEmplymEntity
     })
     @Fetch(value= FetchMode.JOIN)
     @NotFound(action=NotFoundAction.IGNORE)
-    private DtlCdEntity emplymCdInfo;
+    private CodeItemEntity emplymCdInfo;
 
     @Transient
     private String emplymNm;
@@ -143,7 +143,7 @@ public class UserEmplymEntity
     })
     @Fetch(value= FetchMode.JOIN)
     @NotFound(action=NotFoundAction.IGNORE)
-    private DtlCdEntity rankCdInfo;
+    private CodeItemEntity rankCdInfo;
 
     @Transient
     private String rankNm;

@@ -3,8 +3,8 @@ package io.nicheblog.dreamdiary.infrastructure.log.actvty.entity;
 import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.cd.Code;
-import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
+import io.nicheblog.dreamdiary.infrastructure.code.Code;
+import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemEntity;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.LogType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -102,7 +102,7 @@ public class LogActvtyEntity
     @Fetch(value = FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("작업 구분 코드 정보")
-    private DtlCdEntity actvtyCtgrInfo;
+    private CodeItemEntity actvtyCtgrInfo;
 
     /** 메소드 */
     @Column(name = "httpMethod", length = 1000)

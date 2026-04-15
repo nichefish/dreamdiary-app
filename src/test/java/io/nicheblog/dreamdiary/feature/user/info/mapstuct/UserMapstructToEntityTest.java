@@ -15,7 +15,7 @@ import io.nicheblog.dreamdiary.feature.user.info.model.profile.UserProfileDto;
 import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntity;
 import io.nicheblog.dreamdiary.feature.user.profile.model.UserProfileDtoTestFactory;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.cd.Code;
+import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

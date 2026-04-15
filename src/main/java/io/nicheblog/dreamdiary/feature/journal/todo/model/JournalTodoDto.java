@@ -6,7 +6,7 @@ import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalPeriodModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
-import io.nicheblog.dreamdiary.infrastructure.cd.Code;
+import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
