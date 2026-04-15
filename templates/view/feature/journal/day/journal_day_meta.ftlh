@@ -166,11 +166,6 @@
 <#include "/view/feature/journal/dream/tag/_journal_dream_tag_list_template.hbs">
 <script type="text/javascript" src="/js/view/feature/journal/dream/tag/journal_dream_tag_module.js?${releaseDate!}"></script>
 
-<#--include::journal_intrpt_tag_module-->
-<#include "/view/feature/journal/intrpt/tag/_journal_intrpt_tag_list_template.hbs">
-<#include "/view/feature/journal/intrpt/tag/_modal/_journal_intrpt_tag_dtl_modal.ftlh">
-<script type="text/javascript" src="/js/view/feature/journal/intrpt/tag/journal_intrpt_tag_module.js?${releaseDate!}"></script>
-
 <#--include::tags-->
 <#include "/view/feature/journal/tag/_journal_tag_list_modal.ftlh">
 <#include "/view/feature/clsf/tag/_modal/_tag_profile_modal.ftlh">

@@ -219,11 +219,6 @@ public class TagProfileService
             EhCacheUtils.clearUserCache("journalDreamWeeklyTagListByUser", username);
             EhCacheUtils.clearUserCache("journalDreamYyMnthSizedTagListByUser", username);
             EhCacheUtils.clearUserCache("journalDreamWeeklySizedTagListByUser", username);
-            return;
-        }
-        if (ContentType.JOURNAL_INTRPT.key.equals(contentType)) {
-            EhCacheUtils.clearUserCache("journalIntrptYyMnthTagListByUser", username);
-            EhCacheUtils.clearUserCache("journalIntrptYyMnthSizedTagListByUser", username);
         }
     }
 

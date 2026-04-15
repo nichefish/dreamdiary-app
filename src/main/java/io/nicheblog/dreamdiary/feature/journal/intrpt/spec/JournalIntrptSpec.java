@@ -1,8 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.intrpt.spec;
 
 import io.nicheblog.dreamdiary.feature.clsf._shared.spec.BaseClsfSpec;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagContentEntity;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDaySmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamSmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.intrpt.entity.JournalIntrptEntity;
@@ -77,7 +75,6 @@ public class JournalIntrptSpec
         final Join<JournalIntrptSmpEntity, JournalDreamSmpEntity> journalDreamJoin = root.join("journalDream", JoinType.INNER);
         final Join<JournalDreamSmpEntity, JournalDaySmpEntity> journalDayJoin = journalDreamJoin.join("journalDay", JoinType.INNER);
         final Expression<Date> effectiveDtExp = builder.coalesce(journalDayJoin.get("journalDt"), journalDayJoin.get("aprxmtDt"));
-        final String createdBy = resolveCreatedBy(searchParamMap);
 
         // 파라미터 비교
         for (final String key : searchParamMap.keySet()) {
@@ -115,13 +112,6 @@ public class JournalIntrptSpec
                     // 내용 like 검색
                     predicate.add(builder.like(root.get("content"), "%" + value + "%"));
                     continue;
-                case "tagId":
-                    // 특정 태그된 꿈만 조회
-                    final Join<JournalIntrptEntity, TagEmbed> tagJoin = root.join("tag", JoinType.INNER);
-                    final Join<TagEmbed, TagContentEntity> tagContentJoin = tagJoin.join("list", JoinType.INNER);
-                    predicate.add(builder.equal(tagContentJoin.get("createdBy"), createdBy));
-                    predicate.add(builder.equal(tagContentJoin.get("tagId"), value));
-                    continue;
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색
                     try {
@@ -133,15 +123,6 @@ public class JournalIntrptSpec
         }
 
         return predicate;
-    }
-
-    private String resolveCreatedBy(final Map<String, Object> searchParamMap) {
-        final Object createdBy = searchParamMap.get("createdBy");
-        if (createdBy != null) {
-            final String createdByStr = createdBy.toString();
-            if (!createdByStr.isBlank()) return createdByStr;
-        }
-        throw new IllegalArgumentException("createdBy is required.");
     }
 
 }

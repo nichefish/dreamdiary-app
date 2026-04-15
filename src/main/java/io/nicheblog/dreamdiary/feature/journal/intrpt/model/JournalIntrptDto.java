@@ -11,8 +11,6 @@ import io.nicheblog.dreamdiary.feature.clsf.history.model.cmpstn.HistoryCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.history.model.cmpstn.HistoryCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstnModule;
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalPeriodModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -39,7 +37,7 @@ import java.util.List;
 @ToString(callSuper = true)
 public class JournalIntrptDto
         extends BaseClsfDto
-        implements Identifiable<Integer>, AtchFileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, StateCmpstnModule, HistoryCmpstnModule, JournalPeriodModule, Comparable<JournalIntrptDto> {
+        implements Identifiable<Integer>, AtchFileCmpstnModule, CommentCmpstnModule, StateCmpstnModule, HistoryCmpstnModule, JournalPeriodModule, Comparable<JournalIntrptDto> {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -109,8 +107,6 @@ public class JournalIntrptDto
     public AtchFileCmpstn file;
     /** 위임 :: 댓글 정보 모듈 */
     public CommentCmpstn comment;
-    /** 위임 :: 태그 정보 모듈 */
-    public TagCmpstn tag;
     /** 위임 :: 상태 정보 모듈 */
     public StateCmpstn state;
     public HistoryCmpstn history;

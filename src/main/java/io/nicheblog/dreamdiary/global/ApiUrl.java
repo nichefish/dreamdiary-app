@@ -55,11 +55,6 @@ public interface ApiUrl {
     String JOURNAL_INTRPTS = Prefix.API + "/journal/intrpts";
     String JOURNAL_INTRPT = Prefix.API + "/journal/intrpt/{id}";
     String JOURNAL_INTRPT_SET_COLLAPSE_AJAX = Prefix.API + "/journal/intrpt/set-collapse";
-    /** 저널 해석 태그 */
-    String JOURNAL_INTRPT_TAGS = Prefix.API + "/journal/intrpt/tags";
-    String JOURNAL_INTRPT_TAG_GROUP_LIST_AJAX = Prefix.API + "/journal/intrpt/tag/group-list";
-    String JOURNAL_INTRPT_TAG = Prefix.API + "/journal/intrpt/tag/{tagId}";
-    String JOURNAL_INTRPT_TAG_CTGR_MAP = Prefix.API + "/journal/intrpt/tag/ctgr-map";
 
     /** 저널 챕터 */
     String JOURNAL_CHAPTERS = Prefix.API + "/journal/chapters";
