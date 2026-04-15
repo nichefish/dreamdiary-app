@@ -26,8 +26,8 @@
                 <select id="tagCategoryTextClassCd" name="categoryTextClassCd" class="form-select form-select-solid" {{#if tagCategoryId}}{{else}}disabled{{/if}}>
                     <#list TEXT_CLASS_CD![] as item>
                         <option value="${item.dtlCd!}"
-                                data-text-class="${item.dc!}"
-                                class="${item.dc!}"
+                                data-text-class="${item.description!}"
+                                class="${item.description!}"
                                 {{#if (equals categoryTextClassCd "${item.dtlCd!}")}}selected{{/if}}>
                             ${item.dtlCdNm!}
                         </option>
@@ -46,8 +46,8 @@
                     </option>
                     <#list TEXT_CLASS_CD![] as item>
                         <option value="${item.dtlCd!}"
-                                data-text-class="${item.dc!}"
-                                class="${item.dc!}"
+                                data-text-class="${item.description!}"
+                                class="${item.description!}"
                                 {{#if (equals textClassCd "${item.dtlCd!}")}}selected{{/if}}>
                             ${item.dtlCdNm!}
                         </option>

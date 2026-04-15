@@ -41,7 +41,7 @@ public class BoardDefDto
     private String ctgrClCd;
 
     /** 설명 */
-    private String dc;
+    private String description;
 
     /** 사용 여부 (Y/N) */
     @Builder.Default

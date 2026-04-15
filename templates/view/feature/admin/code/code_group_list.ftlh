@@ -46,7 +46,7 @@
         "clCd": "${(clCd.clCd!'')?js_string}",
         "clCdNm": "${(clCd.clCdNm!'')?js_string}",
         "clCtgrNm": "${(clCd.clCtgrNm!'')?js_string}",
-        "dc": "${(clCd.dc!'')?js_string}",
+        "description": "${(clCd.description!'')?js_string}",
         "dtlCdCnt": ${clCd.dtlCdCnt!0},
         "useYn": "${(clCd.useYn!'N')?js_string}"
     }<#if clCd_has_next>,</#if>

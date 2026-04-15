@@ -22,7 +22,7 @@ public class CodeItemDto
 
     private String dtlCd;
     private String dtlCdNm;
-    private String dc;
+    private String description;
     private String clCd;
     private Integer sortOrder;
 

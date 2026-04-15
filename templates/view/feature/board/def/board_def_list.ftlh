@@ -64,7 +64,7 @@
                             ${boardDef.ctgrClCd!}
                         </td>
                         <td class="text-center hidden-table">
-                            <div class="w-100 text-truncate">${boardDef.dc!}</div>
+                            <div class="w-100 text-truncate">${boardDef.description!}</div>
                         </td>
                         <td class="text-center hidden-table">
                             -

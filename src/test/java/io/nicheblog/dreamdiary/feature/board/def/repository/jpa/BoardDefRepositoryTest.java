@@ -92,7 +92,7 @@ class BoardDefRepositoryTest {
 
         // When::
         BoardDefEntity toModify = boardDefRepository.findById(boardDef).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
-        toModify.setDc("modified");
+        toModify.setDescription("modified");
         BoardDefEntity modified = boardDefRepository.save(toModify);
 
         // Then::
@@ -103,7 +103,7 @@ class BoardDefRepositoryTest {
         assertNotNull(modified.getUpdatedBy(),  "수정자 audit 처리가 되지 않았습니다.");
         assertEquals(TestConstant.TEST_AUDITOR, modified.getUpdatedBy(), "수정자가 예상 값과 일치하지 않습니다.");
         // value
-        assertEquals("modified", modified.getDc(), "값이 정상적으로 수정되지 않았습니다.");
+        assertEquals("modified", modified.getDescription(), "값이 정상적으로 수정되지 않았습니다.");
     }
 
     /**

@@ -30,7 +30,7 @@ class CodeGroupMapstructTest {
         assertNotNull(dto);
         assertEquals(TestConstant.TEST_CL_CD, dto.getClCd());
         assertEquals(TestConstant.TEST_CL_CD_NM, dto.getClCdNm());
-        assertEquals(TestConstant.TEST_DC, dto.getDc());
+        assertEquals(TestConstant.TEST_DC, dto.getDescription());
         assertEquals(TestConstant.TEST_CL_CTGR_CD, dto.getClCtgrCd());
     }
 
@@ -72,7 +72,7 @@ class CodeGroupMapstructTest {
         assertNotNull(entity);
         assertEquals(TestConstant.TEST_CL_CD_1, dto.getClCd());
         assertEquals(TestConstant.TEST_CL_CD_NM_1, dto.getClCdNm());
-        assertEquals(TestConstant.TEST_DC_1, dto.getDc());
+        assertEquals(TestConstant.TEST_DC_1, dto.getDescription());
         assertEquals(TestConstant.TEST_CL_CTGR_CD_1, dto.getClCtgrCd());
     }
 }
