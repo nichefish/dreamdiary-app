@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;
-import io.nicheblog.dreamdiary.infrastructure.code.service.CdLookupService;
+import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.PaginationInfo;
@@ -35,7 +35,7 @@ public class CodeGroupPageController extends BaseControllerImpl {
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.CD;
 
     private final CodeGroupService codeGroupService;
-    private final CdLookupService cdLookupService;
+    private final CodeLookupService codeLookupService;
 
     @GetMapping(Url.CODE_GROUP_LIST)
     @Secured({Constant.ROLE_MNGR})
@@ -53,7 +53,7 @@ public class CodeGroupPageController extends BaseControllerImpl {
         model.addAttribute("clCdList", codeGroupList.getContent());
         model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(codeGroupList));
         ParamUtils.setModelAttrMap(searchParam, baseUrl, model);
-        cdLookupService.setCdListToModel(Code.CL_CTGR_CD, model);
+        codeLookupService.setCdListToModel(Code.CL_CTGR_CD, model);
 
         return "/view/feature/admin/code/code_group_list";
     }

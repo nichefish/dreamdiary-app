@@ -9,7 +9,7 @@ import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeGroupEntity;
 import io.nicheblog.dreamdiary.infrastructure.code.repository.jpa.CodeGroupRepository;
-import io.nicheblog.dreamdiary.infrastructure.code.service.CdLookupService;
+import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -50,7 +50,7 @@ public class CodeGroupService
         return context.getBean(this.getClass());
     }
 
-    private final CdLookupService cdLookupService;
+    private final CodeLookupService codeLookupService;
 
     /**
      * 등록 후처리. (override)
@@ -88,7 +88,7 @@ public class CodeGroupService
      * @param dto 캐시 처리할 엔티티
      */
     public void evictCache(final CodeGroupDto dto) throws Exception {
-        cdLookupService.evictClCdCache(dto.getClCd());
+        codeLookupService.evictClCdCache(dto.getClCd());
     }
 
     /**
@@ -116,6 +116,6 @@ public class CodeGroupService
      */
     @Override
     public void postSetUse(final CodeGroupEntity updateEntity) {
-        cdLookupService.evictClCdCache(updateEntity.getClCd());
+        codeLookupService.evictClCdCache(updateEntity.getClCd());
     }
 }

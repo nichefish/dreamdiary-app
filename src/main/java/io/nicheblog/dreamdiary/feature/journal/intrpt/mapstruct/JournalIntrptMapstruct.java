@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.code.utils.CdUtils;
+import io.nicheblog.dreamdiary.infrastructure.code.utils.CodeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
 
@@ -26,7 +26,7 @@ import javax.persistence.PersistenceContext;
 @Mapper(
     componentModel = "spring",
     unmappedTargetPolicy = ReportingPolicy.IGNORE,
-    imports = { DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CdUtils.class },
+    imports = { DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CodeUtils.class },
     builder = @Builder(disableBuilder = true)
 )
 public abstract class JournalIntrptMapstruct

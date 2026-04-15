@@ -9,7 +9,7 @@ import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.code.utils.CdUtils;
+import io.nicheblog.dreamdiary.infrastructure.code.utils.CodeUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @Mapper(
     componentModel = "spring",
     unmappedTargetPolicy = ReportingPolicy.IGNORE,
-    imports = { DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CdUtils.class },
+    imports = { DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CodeUtils.class },
     uses = { JournalDiaryMapstruct.class },
     builder = @Builder(disableBuilder = true)
 )
@@ -47,7 +47,7 @@ public abstract class JournalChapterMapstruct
     @Mapping(target = "journalDtWeekDay", expression = "java(entity.getJournalDay() != null && entity.getJournalDay().getJournalDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJournalDay().getJournalDt()) : null)")
     @Mapping(target = "yy", source = "journalDay.yy")
     @Mapping(target = "mnth", source = "journalDay.mnth")
-    @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"JOURNAL_CHAPTER_CTGR_CD\", entity.getCtgrCd()))")
+    @Mapping(target = "ctgrNm", expression = "java(CodeUtils.getDtlCdNm(\"JOURNAL_CHAPTER_CTGR_CD\", entity.getCtgrCd()))")
     public abstract JournalChapterDto toDto(final JournalChapterEntity entity) throws Exception;
 
     /**

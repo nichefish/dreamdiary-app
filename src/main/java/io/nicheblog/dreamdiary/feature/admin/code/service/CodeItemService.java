@@ -7,9 +7,9 @@ import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseSortableService;
 import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemEntity;
 import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemKey;
-import io.nicheblog.dreamdiary.infrastructure.code.model.CdLookupItem;
+import io.nicheblog.dreamdiary.infrastructure.code.model.CodeLookupItem;
 import io.nicheblog.dreamdiary.infrastructure.code.repository.jpa.CodeItemRepository;
-import io.nicheblog.dreamdiary.infrastructure.code.service.CdLookupService;
+import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -26,7 +26,7 @@ import java.util.Objects;
  * CodeItemService
  * <pre>
  *  상세 코드 CRUD 서비스.
- *  조회/코드명 lookup 은 CdLookupService(infrastructure)에서 인메모리 캐시로 처리한다.
+ *  조회/코드명 lookup 은 CodeLookupService(infrastructure)에서 인메모리 캐시로 처리한다.
  * </pre>
  *
  * @author nichefish
@@ -45,7 +45,7 @@ public class CodeItemService
     @Getter
     private final CodeItemMapstruct mapstruct = CodeItemMapstruct.INSTANCE;
 
-    private final CdLookupService cdLookupService;
+    private final CodeLookupService codeLookupService;
 
     public CodeItemMapstruct getReadMapstruct() {
         return this.mapstruct;
@@ -59,7 +59,7 @@ public class CodeItemService
      * 코드 정보를 Model 에 추가.
      */
     public void setCdListToModel(final String clCd, final ModelMap model) {
-        cdLookupService.setCdListToModel(clCd, model);
+        codeLookupService.setCdListToModel(clCd, model);
     }
 
     /**
@@ -76,11 +76,11 @@ public class CodeItemService
      */
     @Transactional(readOnly = true)
     public List<CodeItemDto> getCdDtoListByClCd(final String clCd) {
-        final List<CdLookupItem> itemList = cdLookupService.getCdItemListByClCd(clCd);
+        final List<CodeLookupItem> itemList = codeLookupService.getCdItemListByClCd(clCd);
         if (itemList == null) return null;
 
         final List<CodeItemDto> dtoList = new ArrayList<>(itemList.size());
-        for (final CdLookupItem item : itemList) {
+        for (final CodeLookupItem item : itemList) {
             dtoList.add(
                     CodeItemDto.builder()
                             .clCd(item.getClCd())
@@ -101,7 +101,7 @@ public class CodeItemService
      */
     @Transactional(readOnly = true)
     public String getDtlCdNm(final String clCd, final String dtlCd) {
-        return cdLookupService.getDtlCdNm(clCd, dtlCd);
+        return codeLookupService.getDtlCdNm(clCd, dtlCd);
     }
 
     @Override
@@ -174,13 +174,13 @@ public class CodeItemService
      * 코드 캐시 무효화.
      */
     public void evictCache(final CodeItemDto rslt) {
-        cdLookupService.evictDtlCdCache(rslt.getClCd(), rslt.getDtlCd());
+        codeLookupService.evictDtlCdCache(rslt.getClCd(), rslt.getDtlCd());
     }
 
     /**
      * 분류코드 단위 코드 캐시 무효화.
      */
     public void evictCacheByClCd(final String clCd) {
-        cdLookupService.evictClCdCache(clCd);
+        codeLookupService.evictClCdCache(clCd);
     }
 }

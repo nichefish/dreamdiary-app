@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.feature.flsys.entity.FlsysMetaEntity;
 import io.nicheblog.dreamdiary.feature.flsys.model.FlsysMetaDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.code.utils.CdUtils;
+import io.nicheblog.dreamdiary.infrastructure.code.utils.CodeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
@@ -18,7 +18,7 @@ import org.mapstruct.factory.Mappers;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, CdUtils.class})
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, CodeUtils.class})
 public interface FlsysMetaMapstruct
         extends BaseWriteMapstruct<FlsysMetaDto, FlsysMetaEntity>, BaseClsfMapstruct<FlsysMetaDto, FlsysMetaEntity> {
 
@@ -32,7 +32,7 @@ public interface FlsysMetaMapstruct
      */
     @Override
     @Named("toDto")
-    @Mapping(target = "ctgrNm", expression = "java(CdUtils.getDtlCdNm(\"FLSYS_META_CTGR_CD\", entity.getCtgrCd()))")
+    @Mapping(target = "ctgrNm", expression = "java(CodeUtils.getDtlCdNm(\"FLSYS_META_CTGR_CD\", entity.getCtgrCd()))")
     FlsysMetaDto toDto(final FlsysMetaEntity entity) throws Exception;
 
     /**

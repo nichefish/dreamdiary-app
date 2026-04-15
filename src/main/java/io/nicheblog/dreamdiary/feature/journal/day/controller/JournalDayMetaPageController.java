@@ -6,7 +6,7 @@ import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;
-import io.nicheblog.dreamdiary.infrastructure.code.service.CdLookupService;
+import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import lombok.Getter;
@@ -35,7 +35,7 @@ public class JournalDayMetaPageController
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JOURNAL;        // 작업 카테고리 (로그 적재용)
 
-    private final CdLookupService cdLookupService;
+    private final CodeLookupService codeLookupService;
 
     /**
      * 저널 일자 메타 화면 조회
@@ -55,7 +55,7 @@ public class JournalDayMetaPageController
         /* 사이트 메뉴 설정 */
         model.addAttribute("menuLabel", SiteMenu.JOURNAL_DAY);
         model.addAttribute("pageNm", PageNm.PAGE);
-        cdLookupService.setCdListToModel(Code.TEXT_CLASS_CD, model);
+        codeLookupService.setCdListToModel(Code.TEXT_CLASS_CD, model);
 
         return "/view/feature/journal/day/journal_day_meta";
     }

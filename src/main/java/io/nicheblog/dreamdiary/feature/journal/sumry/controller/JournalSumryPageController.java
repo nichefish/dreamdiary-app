@@ -9,7 +9,7 @@ import io.nicheblog.dreamdiary.feature.journal.sumry.type.JournalSumrySection;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;
-import io.nicheblog.dreamdiary.infrastructure.code.service.CdLookupService;
+import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import lombok.Getter;
@@ -41,7 +41,7 @@ public class JournalSumryPageController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JOURNAL;        // 작업 카테고리 (로그 적재용)
 
     private final MyJournalSumryService myJournalSumryService;
-    private final CdLookupService cdLookupService;
+    private final CodeLookupService codeLookupService;
 
     /**
      * 저널 결산 화면 조회
@@ -92,7 +92,7 @@ public class JournalSumryPageController
         model.addAttribute("section", section);
 
         // 코드 데이터 모델에 추가
-        cdLookupService.setCdListToModel(Code.JOURNAL_SUMRY_TY_CD, model);
+        codeLookupService.setCdListToModel(Code.JOURNAL_SUMRY_TY_CD, model);
 
         return "/view/feature/journal/sumry/journal_sumry_dtl";
     }

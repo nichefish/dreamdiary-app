@@ -9,7 +9,7 @@
  import io.nicheblog.dreamdiary.global.Constant;
  import io.nicheblog.dreamdiary.global.Url;
  import io.nicheblog.dreamdiary.infrastructure.code.Code;
- import io.nicheblog.dreamdiary.infrastructure.code.service.CdLookupService;
+ import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
  import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
  import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
  import io.nicheblog.dreamdiary.infrastructure.web.model.PaginationInfo;
@@ -51,7 +51,7 @@ public class UserPageController
 
     private final UserService userService;
     private final AuthRoleService authRoleService;
-    private final CdLookupService cdLookupService;
+    private final CodeLookupService codeLookupService;
 
     /**
      * 사용자 관리 > 계정 및 권한 관리 > 사용자 목록 화면 조회
@@ -84,10 +84,10 @@ public class UserPageController
         model.addAttribute("userList", userList.getContent());
         model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(userList));
         // 코드 정보 모델에 추가
-        cdLookupService.setCdListToModel(Code.AUTH_CD, model);
-        cdLookupService.setCdListToModel(Code.TEAM_CD, model);
-        cdLookupService.setCdListToModel(Code.EMPLYM_CD, model);
-        cdLookupService.setCdListToModel(Code.RANK_CD, model);
+        codeLookupService.setCdListToModel(Code.AUTH_CD, model);
+        codeLookupService.setCdListToModel(Code.TEAM_CD, model);
+        codeLookupService.setCdListToModel(Code.EMPLYM_CD, model);
+        codeLookupService.setCdListToModel(Code.RANK_CD, model);
         // 목록 검색 URL + 파라미터 모델에 추가
         ParamUtils.setModelAttrMap(searchParam, baseUrl, model);
 
@@ -120,10 +120,10 @@ public class UserPageController
         }};
         model.addAttribute("authRoleList", authRoleService.getListDto(searchParamMap));
         // 코드 정보 모델에 추가
-        cdLookupService.setCdListToModel(Code.AUTH_CD, model);
-        cdLookupService.setCdListToModel(Code.TEAM_CD, model);
-        cdLookupService.setCdListToModel(Code.EMPLYM_CD, model);
-        cdLookupService.setCdListToModel(Code.RANK_CD, model);
+        codeLookupService.setCdListToModel(Code.AUTH_CD, model);
+        codeLookupService.setCdListToModel(Code.TEAM_CD, model);
+        codeLookupService.setCdListToModel(Code.EMPLYM_CD, model);
+        codeLookupService.setCdListToModel(Code.RANK_CD, model);
 
         return "/view/feature/user/user_reg_form";
     }
@@ -184,10 +184,10 @@ public class UserPageController
         }};
         model.addAttribute("authRoleList", authRoleService.getListDto(searchParamMap));
         // 코드 정보 모델에 추가
-        cdLookupService.setCdListToModel(Code.AUTH_CD, model);
-        cdLookupService.setCdListToModel(Code.TEAM_CD, model);
-        cdLookupService.setCdListToModel(Code.EMPLYM_CD, model);
-        cdLookupService.setCdListToModel(Code.RANK_CD, model);
+        codeLookupService.setCdListToModel(Code.AUTH_CD, model);
+        codeLookupService.setCdListToModel(Code.TEAM_CD, model);
+        codeLookupService.setCdListToModel(Code.EMPLYM_CD, model);
+        codeLookupService.setCdListToModel(Code.RANK_CD, model);
 
         return "/view/feature/user/user_reg_form";
     }

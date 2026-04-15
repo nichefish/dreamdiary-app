@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;
-import io.nicheblog.dreamdiary.infrastructure.code.service.CdLookupService;
+import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import lombok.Getter;
@@ -39,7 +39,7 @@ public class JournalDayPageController
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.JOURNAL;
 
-    private final CdLookupService cdLookupService;
+    private final CodeLookupService codeLookupService;
 
     /**
      * 저널 일자 (월간) 화면 조회
@@ -62,8 +62,8 @@ public class JournalDayPageController
 
         // URL 파라미터가 전부 존재한다면 그대로 페이지 렌더링
         if (searchParam.getYy() != null && searchParam.getMnth() != null) {
-            cdLookupService.setCdListToModel(Code.JOURNAL_CHAPTER_CTGR_CD, model);
-            cdLookupService.setCdListToModel(Code.TEXT_CLASS_CD, model);
+            codeLookupService.setCdListToModel(Code.JOURNAL_CHAPTER_CTGR_CD, model);
+            codeLookupService.setCdListToModel(Code.TEXT_CLASS_CD, model);
             return "/view/feature/journal/day/journal_day_monthly";
         }
 
@@ -93,8 +93,8 @@ public class JournalDayPageController
 
         if (StringUtils.isNotBlank(searchParam.getStdrdDt())) {
             model.addAttribute("stdrdDt", searchParam.getStdrdDt());
-            cdLookupService.setCdListToModel(Code.JOURNAL_CHAPTER_CTGR_CD, model);
-            cdLookupService.setCdListToModel(Code.TEXT_CLASS_CD, model);
+            codeLookupService.setCdListToModel(Code.JOURNAL_CHAPTER_CTGR_CD, model);
+            codeLookupService.setCdListToModel(Code.TEXT_CLASS_CD, model);
             return "/view/feature/journal/day/journal_day_weekly";
         }
 
@@ -135,8 +135,8 @@ public class JournalDayPageController
         model.addAttribute("menuLabel", SiteMenu.JOURNAL_DAY);
         model.addAttribute("pageNm", PageNm.DTL);
         model.addAttribute("stdrdDt", stdrdDt);
-        cdLookupService.setCdListToModel(Code.JOURNAL_CHAPTER_CTGR_CD, model);
-        cdLookupService.setCdListToModel(Code.TEXT_CLASS_CD, model);
+        codeLookupService.setCdListToModel(Code.JOURNAL_CHAPTER_CTGR_CD, model);
+        codeLookupService.setCdListToModel(Code.TEXT_CLASS_CD, model);
 
         return "/view/feature/journal/day/journal_day_view";
     }
