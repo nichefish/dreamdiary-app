@@ -51,9 +51,9 @@ public class MyJournalDiaryService {
      * @param searchParam JournalDiarySearchParam
      * @return {@link List} -- 해당 연도의중요 목록
      */
-    public List<JournalDiaryDto> getMySumryDiaryList(final JournalDiarySearchParam searchParam) throws Exception {
+    public List<JournalDiaryDto> getMyAnnualDiaryList(final JournalDiarySearchParam searchParam) throws Exception {
         final String username = AuthUtils.requireLgnUsername();
-        final List<JournalDiaryDto> listDto = journalDiaryService.getSumryDiaryListByUser(username, searchParam);
+        final List<JournalDiaryDto> listDto = journalDiaryService.getAnnualDiaryListByUser(username, searchParam);
         this.mergeRelatedContents(username, listDto);
         return listDto;
     }

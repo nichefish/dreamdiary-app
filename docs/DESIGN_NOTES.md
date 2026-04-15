@@ -6,8 +6,8 @@
     - journal-diary
   - journal-dream
     - journal-intrpt 
-- journal-sumry
-  - journal-sumry-review
+- journal-annual
+  - journal-annual-review
 
 ---
 
@@ -47,7 +47,7 @@
 
 ### 저널 해석(journal-intrpt)
 
-### 저널 결산(journal-sumry)
+### 저널 결산(journal-annual)
 - 결산 주기: 연간으로 고정.
   - "월간 결산은 지금 기준으로 투머치다."
   - "결산의 베스트 프랙티스는: 시간이 충분히 지나 사건이 ‘정리되고’, 의미가 ‘침전된 뒤’에 하는 해석이다."

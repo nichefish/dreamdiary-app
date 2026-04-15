@@ -80,21 +80,21 @@ public interface ApiUrl {
     String JOURNAL_SBJCT_MDF_AJAX = Prefix.API + "/journal/sbjct/mdf";
     String JOURNAL_SBJCT_DEL_AJAX = Prefix.API + "/journal/sbjct/del";
 
-    /** 저널 결산 */
-    String JOURNAL_SUMRIES = Prefix.API + "/journal/sumries";
-    String JOURNAL_SUMRY = Prefix.API + "/journal/sumry/{yy}";
-    String JOURNAL_SUMRY_DIARIES = Prefix.API + "/journal/sumry/{yy}/diaries";
-    String JOURNAL_SUMRY_DREAMS = Prefix.API + "/journal/sumry/{yy}/dreams";
-    String JOURNAL_SUMRY_TAGS = Prefix.API + "/journal/sumry/{yy}/tags";
+    /** 저널 연간 */
+    String JOURNAL_SUMRIES = Prefix.API + "/journal/annuals";
+    String JOURNAL_ANNUAL = Prefix.API + "/journal/annual/{yy}";
+    String JOURNAL_ANNUAL_DIARIES = Prefix.API + "/journal/annual/{yy}/diaries";
+    String JOURNAL_ANNUAL_DREAMS = Prefix.API + "/journal/annual/{yy}/dreams";
+    String JOURNAL_ANNUAL_TAGS = Prefix.API + "/journal/annual/{yy}/tags";
 
-    String JOURNAL_SUMRY_MAKE_AJAX = Prefix.API + "/journal/sumry/make";
-    String JOURNAL_SUMRY_MAKE_TOTAL_AJAX = Prefix.API + "/journal/sumry/make-total";
-    String JOURNAL_SUMRY_DREAM_COMPT_AJAX = Prefix.API + "/journal/sumry/dream-compt";
-    String JOURNAL_SUMRY_REG_AJAX = Prefix.API + "/journal/sumry/reg";
+    String JOURNAL_ANNUAL_MAKE_AJAX = Prefix.API + "/journal/annual/make";
+    String JOURNAL_ANNUAL_MAKE_TOTAL_AJAX = Prefix.API + "/journal/annual/make-total";
+    String JOURNAL_ANNUAL_DREAM_COMPT_AJAX = Prefix.API + "/journal/annual/dream-compt";
+    String JOURNAL_ANNUAL_REG_AJAX = Prefix.API + "/journal/annual/reg";
 
-    /** 저널 결산 리뷰 */
-    String JOURNAL_SUMRY_REVIEWS = Prefix.API + "/journal/sumry/reviews";
-    String JOURNAL_SUMRY_REVIEW = Prefix.API + "/journal/sumry/review/{id}";
+    /** 저널 연간 리뷰 */
+    String JOURNAL_ANNUAL_REVIEWS = Prefix.API + "/journal/annual/reviews";
+    String JOURNAL_ANNUAL_REVIEW = Prefix.API + "/journal/annual/review/{id}";
 
     /** 공지사항 */
     String NOTICE_REG_AJAX = Prefix.API + "/notice/reg";

@@ -81,13 +81,13 @@ public class JournalDreamService
      * @param searchParam JournalDreamSearchParam
      * @return {@link List} -- 해당 년도의 중요 목록
      */
-    @Cacheable(value="journalDreamYySumryStatedListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #searchParam.toSummaryCacheKey())")
-    public List<JournalDreamDto> getSumryDreamListByUser(final String username, final JournalDreamSearchParam searchParam) throws Exception {
+    @Cacheable(value="journalDreamYyAnnualStatedListByUser", key="new org.springframework.cache.interceptor.SimpleKey(#username, #searchParam.toSummaryCacheKey())")
+    public List<JournalDreamDto> getAnnualDreamListByUser(final String username, final JournalDreamSearchParam searchParam) throws Exception {
         searchParam.setCreatedBy(AuthUtils.requireUsername(username));
-        final List<JournalDreamDto> journalDreamYySumryStatedListByUser = this.getSelf().getListDto(searchParam);
-        Collections.sort(journalDreamYySumryStatedListByUser);
+        final List<JournalDreamDto> journalDreamYyAnnualStatedListByUser = this.getSelf().getListDto(searchParam);
+        Collections.sort(journalDreamYyAnnualStatedListByUser);
 
-        return journalDreamYySumryStatedListByUser;
+        return journalDreamYyAnnualStatedListByUser;
     }
 
     public List<JournalDreamDto> getListDtoByUser(final String username, final JournalDreamSearchParam searchParam) throws Exception {

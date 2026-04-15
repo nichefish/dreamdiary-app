@@ -51,9 +51,9 @@ public class MyJournalDreamService {
      * @param searchParam JournalDreamSearchParam
      * @return {@link List} -- 해당 연도의중요 목록
      */
-    public List<JournalDreamDto> getMySumryDreamList(final JournalDreamSearchParam searchParam) throws Exception {
+    public List<JournalDreamDto> getMyAnnualDreamList(final JournalDreamSearchParam searchParam) throws Exception {
         final String username = AuthUtils.requireLgnUsername();
-        final List<JournalDreamDto> listDto = journalDreamService.getSumryDreamListByUser(username, searchParam);
+        final List<JournalDreamDto> listDto = journalDreamService.getAnnualDreamListByUser(username, searchParam);
         this.mergeRelatedContents(username, listDto);
         return listDto;
     }

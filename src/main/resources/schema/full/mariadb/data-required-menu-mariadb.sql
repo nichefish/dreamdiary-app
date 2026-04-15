@@ -39,7 +39,7 @@ INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 
 INSERT INTO menu ( upper_menu_id, menu_ty_cd, menu_nm, url, icon, sort_order, created_by, menu_sub_extend_ty_cd, menu_label, mngr_yn, protected_yn, required_yn, use_yn )
 WITH T AS ( SELECT 'JOURNAL' AS upper_label )
-SELECT M.id, 'SUB', '저널 결산', '/app/journal/sumry/list.do', NULL, 2, 'system', 'NO_SUB', 'JOURNAL_SUMRY', 'N', 'N', 'N', 'Y'
+SELECT M.id, 'SUB', '저널 연간', '/app/journal/annual/list.do', NULL, 2, 'system', 'NO_SUB', 'JOURNAL_ANNUAL', 'N', 'N', 'N', 'Y'
 FROM T
 INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 

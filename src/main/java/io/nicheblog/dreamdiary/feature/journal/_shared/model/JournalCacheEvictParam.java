@@ -6,8 +6,8 @@ import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryPostDto;
 import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamDto;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.intrpt.model.JournalIntrptDto;
-import io.nicheblog.dreamdiary.feature.journal.sumry.model.JournalSumryDto;
-import io.nicheblog.dreamdiary.feature.journal.sumry.model.JournalSumryReviewDto;
+import io.nicheblog.dreamdiary.feature.journal.annual.model.JournalAnnualDto;
+import io.nicheblog.dreamdiary.feature.journal.annual.model.JournalAnnualReviewDto;
 import io.nicheblog.dreamdiary.feature.journal.todo.model.JournalTodoDto;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.*;
@@ -37,7 +37,7 @@ public class JournalCacheEvictParam {
     /** 저널 꿈 번호 */
     private Integer journalDreamId;
     /** 저널 결산 번호 */
-    private Integer journalSumryId;
+    private Integer journalAnnualId;
     /** 년도 */
     private Integer yy;
     /** 월 */
@@ -174,7 +174,7 @@ public class JournalCacheEvictParam {
      * @param dto {@link JournalTodoDto}
      * @return {@link JournalCacheEvictParam}
      */
-    public static JournalCacheEvictParam of(final JournalSumryDto dto) {
+    public static JournalCacheEvictParam of(final JournalAnnualDto dto) {
         return JournalCacheEvictParam.builder()
                 .createdBy(dto.getCreatedBy())
                 .id(dto.getId())
@@ -188,11 +188,11 @@ public class JournalCacheEvictParam {
      * @param dto {@link JournalTodoDto}
      * @return {@link JournalCacheEvictParam}
      */
-    public static JournalCacheEvictParam of(final JournalSumryReviewDto dto) {
+    public static JournalCacheEvictParam of(final JournalAnnualReviewDto dto) {
         return JournalCacheEvictParam.builder()
                 .createdBy(dto.getCreatedBy())
                 .id(dto.getId())
-                .journalSumryId(dto.getJournalSumryId())
+                .journalAnnualId(dto.getJournalAnnualId())
                 .yy(dto.getYy())
                 .build();
     }
@@ -206,7 +206,6 @@ public class JournalCacheEvictParam {
     public static JournalCacheEvictParam of(final JournalTodoDto dto) {
         return JournalCacheEvictParam.builder()
                 .createdBy(dto.getCreatedBy())
-                .id(dto.getId())
                 .id(dto.getId())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())

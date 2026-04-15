@@ -40,7 +40,7 @@ public class JournalDreamCacheEvictor
             final Integer mnth = param.getMnth();
             final String weekStartDt = param.getWeekStartDt();
             // journal_dream
-            this.evictMyYyCacheByYyPrefix(username, "journalDreamYySumryStatedListByUser", yy);
+            this.evictMyYyCacheByYyPrefix(username, "journalDreamYyAnnualStatedListByUser", yy);
             EhCacheUtils.evictUserCacheByKey("journalDreamDtlDtoByUser", username, id);
             // journal_day
             if (journalDayId != null) {

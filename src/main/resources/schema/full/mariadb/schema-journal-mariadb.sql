@@ -204,13 +204,13 @@ CREATE TABLE IF NOT EXISTS journal_sbjct(
     deleted_at DATETIME COMMENT '삭제일시'
 ) COMMENT = '저널 주제';
 
--- 저널 결산 (journal_sumry)
+-- 저널 연간 (journal_annual)
 -- @extends: BaseClsfEntity
 -- @uses: CommentEmbed
-CREATE TABLE IF NOT EXISTS journal_sumry (
+CREATE TABLE IF NOT EXISTS journal_annual (
     -- CLSF
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 결산 ID',
-    content_type VARCHAR(32) DEFAULT 'JOURNAL_SUMRY' COMMENT '컨텐츠 타입',
+    content_type VARCHAR(32) DEFAULT 'JOURNAL_ANNUAL' COMMENT '컨텐츠 타입',
     --
     yy INT UNIQUE COMMENT '결산 년도',
     dream_day_cnt INT DEFAULT 0 COMMENT '꿈 일수',
@@ -224,18 +224,18 @@ CREATE TABLE IF NOT EXISTS journal_sumry (
     updated_by VARCHAR(20) COMMENT '수정자 ID',
     updated_at DATETIME COMMENT '수정일시',
     deleted_at DATETIME COMMENT '삭제일시'
-) COMMENT = '저널 결산';
+) COMMENT = '저널 연간';
 
--- 저널 결산 리뷰 (journal_sumry_review)
+-- 저널 연간 리뷰 (journal_annual_review)
 -- @extends: BasePostEntity
 -- @uses: CommentEmbed
-CREATE TABLE IF NOT EXISTS journal_sumry_review (
+CREATE TABLE IF NOT EXISTS journal_annual_review (
     -- CLSF
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 결산 리뷰 ID',
-    content_type VARCHAR(32) DEFAULT 'JOURNAL_SUMRY_REVIEW' COMMENT '컨텐츠 타입',
+    content_type VARCHAR(32) DEFAULT 'JOURNAL_ANNUAL_REVIEW' COMMENT '컨텐츠 타입',
     --
-    journal_sumry_id INT COMMENT '저널 결산 번호',
-    sort_order INT DEFAULT 1 COMMENT '저널 결산 리뷰 인덱스',
+    journal_annual_id INT COMMENT '저널 연간 번호',
+    sort_order INT DEFAULT 1 COMMENT '저널 연간 리뷰 인덱스',
     -- POST
     title VARCHAR(200) COMMENT '제목',
     content LONGTEXT COMMENT '내용',
@@ -252,5 +252,5 @@ CREATE TABLE IF NOT EXISTS journal_sumry_review (
     updated_by VARCHAR(20) COMMENT '수정자 ID',
     updated_at DATETIME COMMENT '수정일시',
     deleted_at DATETIME COMMENT '삭제일시'
-) COMMENT = '저널 결산 리뷰';
+) COMMENT = '저널 연간 리뷰';
 
