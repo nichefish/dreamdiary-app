@@ -12,8 +12,9 @@ import org.springframework.stereotype.Repository;
  *
  * @author nichefish
  */
-@Repository("flsysMetaRepository")
+@Repository
 public interface FlsysMetaRepository
         extends BaseStreamRepository<FlsysMetaEntity, Integer> {
     //
 }
+

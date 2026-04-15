@@ -13,8 +13,9 @@ import org.springframework.stereotype.Repository;
  *
  * @author nichefish
  */
-@Repository("atchFileRepository")
+@Repository
 public interface AtchFileRepository
         extends BaseStreamRepository<AtchFileEntity, Integer> {
     //
 }
+

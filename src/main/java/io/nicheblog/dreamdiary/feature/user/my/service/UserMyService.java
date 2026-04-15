@@ -26,7 +26,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
  *
  * @author nichefish
  */
-@Service("userMyService")
+@Service
 @RequiredArgsConstructor
 public class UserMyService {
 
@@ -167,3 +167,4 @@ public class UserMyService {
         return updatedEntity.getId() != null;
     }
 }
+

@@ -41,7 +41,7 @@ import java.util.*;
  *
  * @author nichefish
  */
-@Service("menuService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class MenuService
@@ -398,3 +398,4 @@ public class MenuService
         EhCacheUtils.evictCacheByKey("menuByLabel", deletedDto.getMenuLabel());
     }
 }
+

@@ -26,7 +26,7 @@ import java.util.List;
  *
  * @author nichefish
  */
-@Service("userReqstService")
+@Service
 @RequiredArgsConstructor
 public class UserReqstService {
 
@@ -135,3 +135,4 @@ public class UserReqstService {
                 .build();
     }
 }
+

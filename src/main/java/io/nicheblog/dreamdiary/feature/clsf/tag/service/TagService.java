@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  *
  * @author nichefish
  */
-@Service("tagService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class TagService
@@ -278,3 +278,4 @@ public class TagService
         tagEntity.setTagCategory(tagCategory);
     }
 }
+

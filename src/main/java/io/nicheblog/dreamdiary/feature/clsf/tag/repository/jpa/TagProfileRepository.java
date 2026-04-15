@@ -16,7 +16,7 @@ import java.util.Optional;
  *
  * @author nichefish
  */
-@Repository("tagProfileRepository")
+@Repository
 public interface TagProfileRepository
         extends BaseStreamRepository<TagProfileEntity, Integer> {
 
@@ -33,3 +33,4 @@ public interface TagProfileRepository
 
     Optional<TagProfileEntity> findByIdAndCreatedBy(final Integer id, final String createdBy);
 }
+

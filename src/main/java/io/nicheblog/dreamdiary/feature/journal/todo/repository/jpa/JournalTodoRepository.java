@@ -19,7 +19,7 @@ import java.util.Optional;
  *
  * @author nichefish
  */
-@Repository("journalTodoRepository")
+@Repository
 public interface JournalTodoRepository
         extends BaseStreamRepository<JournalTodoEntity, Integer> {
 
@@ -37,4 +37,5 @@ public interface JournalTodoRepository
             "WHERE todo.yy = :yy AND NOT(todo.mnth = :mnth)")
     Optional<Integer> findLastIndexByYyMnth(final @Param("yy") Integer yy, final @Param("mnth") Integer mnth);
 }
+
 

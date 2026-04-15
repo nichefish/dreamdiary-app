@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author nichefish
  */
-@Service("journalSbjctService")
+@Service
 @RequiredArgsConstructor
 public class JournalSbjctService
         implements BaseClsfService<JournalSbjctDto, JournalSbjctDto, Integer, JournalSbjctEntity>, BaseMultipartWritableService<JournalSbjctDto, JournalSbjctDto, Integer, JournalSbjctEntity> {
@@ -111,4 +111,5 @@ public class JournalSbjctService
         }
     }
 }
+
 

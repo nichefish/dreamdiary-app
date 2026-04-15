@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  *
  * @author nichefish
  */
-@Service("tagProfileService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class TagProfileService
@@ -351,4 +351,5 @@ public class TagProfileService
         return "text-" + normalized.toLowerCase(Locale.ROOT);
     }
 }
+
 

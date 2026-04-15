@@ -25,7 +25,7 @@ import java.util.Map;
  * 
  * @author nichefish
  */
-@Service("oauth2UserService")
+@Service
 public class OAuth2UserServiceImpl
         implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 

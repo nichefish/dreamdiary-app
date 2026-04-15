@@ -32,7 +32,7 @@ import java.util.Set;
  *
  * @author nichefish
  */
-@Service("stateService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class StateService
@@ -179,3 +179,4 @@ public class StateService
         return repository.findByRefIdAndRefContentTypeAndStateCd(stateToggle.getId(), stateToggle.getContentType().key, stateToggle.getStateCd().key);
     }
 }
+

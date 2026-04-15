@@ -40,7 +40,7 @@ import java.util.Objects;
  *
  * @author nichefish
  */
-@Service("journalIntrptService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class JournalIntrptService
@@ -297,4 +297,5 @@ public class JournalIntrptService
         }
     }
 }
+
 

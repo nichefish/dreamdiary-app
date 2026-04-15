@@ -23,7 +23,7 @@ import java.util.Map;
  *
  * @author nichefish
  */
-@Service("managtrService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class ManagtrService {
@@ -61,3 +61,4 @@ public class ManagtrService {
         managtrRepository.save(managtr);
     }
 }
+

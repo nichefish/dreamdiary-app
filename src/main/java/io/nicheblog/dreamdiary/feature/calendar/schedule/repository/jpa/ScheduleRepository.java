@@ -18,7 +18,7 @@ import java.util.Optional;
  *
  * @author nichefish
  */
-@Repository("schdulRepository")
+@Repository
 public interface ScheduleRepository
         extends BaseStreamRepository<ScheduleEntity, Integer> {
 

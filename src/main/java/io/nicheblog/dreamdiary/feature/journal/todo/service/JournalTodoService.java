@@ -29,7 +29,7 @@ import java.util.List;
  *
  * @author nichefish
  */
-@Service("journalTodoService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class JournalTodoService
@@ -155,4 +155,5 @@ public class JournalTodoService
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(deletedDto), ContentType.JOURNAL_TODO);
     }
 }
+
 

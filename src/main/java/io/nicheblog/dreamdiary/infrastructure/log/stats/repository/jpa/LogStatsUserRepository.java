@@ -21,7 +21,7 @@ import java.util.List;
  *
  * @author nichefish
  */
-@Repository("logStatsUserRepository")
+@Repository
 public interface LogStatsUserRepository
         extends BaseStreamRepository<LogStatsUserEntity, String> {
 
@@ -65,3 +65,4 @@ public interface LogStatsUserRepository
             final @Param("searchEndDt") Date searchEndDt
     );
 }
+

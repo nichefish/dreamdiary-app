@@ -12,8 +12,9 @@ import org.springframework.stereotype.Repository;
  *
  * @author nichefish
  */
-@Repository("tagSmpRepository")
+@Repository
 public interface TagSmpRepository
         extends BaseStreamRepository<TagSmpEntity, Integer> {
     //
 }
+

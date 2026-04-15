@@ -35,7 +35,7 @@ import java.util.Objects;
  *
  * @author nichefish
  */
-@Service("journalChapterService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class JournalChapterService
@@ -256,4 +256,5 @@ public class JournalChapterService
         insert(updatedDto.getJournalDayId(), updatedDto.getId(), updatedDto.getIdx());
     }
 }
+
 

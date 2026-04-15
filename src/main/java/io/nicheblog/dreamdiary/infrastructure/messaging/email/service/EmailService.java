@@ -36,7 +36,7 @@ import java.util.Map;
  *
  * @author nichefish
  */
-@Service("mailService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class EmailService {

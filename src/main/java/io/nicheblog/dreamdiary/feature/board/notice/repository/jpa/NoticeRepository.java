@@ -19,7 +19,7 @@ import java.util.Date;
  *
  * @author nichefish
  */
-@Repository("noticeRepository")
+@Repository
 public interface NoticeRepository
         extends BaseStreamRepository<NoticeEntity, Integer> {
 
@@ -42,3 +42,4 @@ public interface NoticeRepository
             ")")
     Integer getUnreadCnt(final @Param("username") String username, final @Param("stdrdDt") Date stdrdDt);
 }
+

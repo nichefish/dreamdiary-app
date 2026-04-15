@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository;
  *
  * @author nichefish
  */
-@Repository("metaContentRepository")
+@Repository
 public interface MetaContentRepository
         extends BaseStreamRepository<MetaContentEntity, Integer> {
 
@@ -34,3 +34,4 @@ public interface MetaContentRepository
             "  AND EXISTS (SELECT 1 FROM MetaEntity t WHERE t.id = ct.metaId AND t.metaNm = :#{#param.metaNm} AND (t.ctgr = :#{#param.ctgr} OR (t.ctgr IS NULL AND :#{#param.ctgr} IS NULL)))")
     void deleteObsoleteMetaContents(final @Param("param") MetaContentParam param);
 }
+

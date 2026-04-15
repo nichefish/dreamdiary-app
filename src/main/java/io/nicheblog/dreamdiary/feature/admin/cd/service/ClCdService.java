@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
  *
  * @author nichefish
  */
-@Service("clCdService")
+@Service
 @RequiredArgsConstructor
 public class ClCdService
         implements BaseDtoReadableService<ClCdDto, String, ClCdEntity>,
@@ -119,3 +119,4 @@ public class ClCdService
         cdLookupService.evictClCdCache(updateEntity.getClCd());
     }
 }
+

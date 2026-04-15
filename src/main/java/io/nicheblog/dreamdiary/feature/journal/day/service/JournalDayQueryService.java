@@ -32,7 +32,7 @@ import java.util.Map;
  *
  * @author nichefish
  */
-@Service("journalDayQueryService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class JournalDayQueryService {
@@ -276,4 +276,5 @@ public class JournalDayQueryService {
         return (Map<String, List<String>>) EhCacheUtils.getObjectFromCache("holydayMap");
     }
 }
+
 

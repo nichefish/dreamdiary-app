@@ -12,9 +12,10 @@ import org.springframework.stereotype.Repository;
  *
  * @author nichefish
  */
-@Repository("commentRepository")
+@Repository
 public interface CommentRepository
         extends BaseStreamRepository<CommentEntity, Integer> {
 
     //
 }
+

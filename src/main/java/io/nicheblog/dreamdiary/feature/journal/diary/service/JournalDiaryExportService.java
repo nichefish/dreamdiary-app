@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  *
  * @author nichefish
  */
-@Service("journalDiaryExportService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class JournalDiaryExportService {
@@ -108,4 +108,5 @@ public class JournalDiaryExportService {
         return sb.toString();
     }
 }
+
 

@@ -40,7 +40,7 @@ import java.util.Map;
  *
  * @author nichefish
  */
-@Service("journalDayService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class JournalDayService
@@ -333,4 +333,5 @@ public class JournalDayService
         return deleted;
     }
 }
+
 

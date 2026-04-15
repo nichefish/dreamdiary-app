@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
  *
  * @author nichefish
  */
-@Service("sectnService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class SectnService
@@ -84,3 +84,4 @@ public class SectnService
         ehCacheEvictService.evictClsfCache(refContentType, refId);
     }
 }
+

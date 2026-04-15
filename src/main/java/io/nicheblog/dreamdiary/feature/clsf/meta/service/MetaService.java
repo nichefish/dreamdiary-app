@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  *
  * @author nichefish
  */
-@Service("metaService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class MetaService
@@ -231,3 +231,4 @@ public class MetaService
         repository.deleteAll(entity);
     }
 }
+

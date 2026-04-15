@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
  *
  * @author nichefish
  */
-@Service("authRoleService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class AuthRoleService

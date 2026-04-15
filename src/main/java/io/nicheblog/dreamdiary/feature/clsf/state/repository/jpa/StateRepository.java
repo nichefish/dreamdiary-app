@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
  *
  * @author nichefish
  */
-@Repository("stateRepository")
+@Repository
 public interface StateRepository
         extends BaseStreamRepository<StateEntity, Integer> {
 
@@ -20,3 +20,4 @@ public interface StateRepository
 
     //
 }
+

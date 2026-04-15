@@ -21,7 +21,7 @@ import java.util.List;
  *
  * @author nichefish
  */
-@Repository("journalIntrptTagRepository")
+@Repository
 public interface JournalIntrptTagRepository
         extends BaseStreamRepository<JournalIntrptTagEntity, Integer> {
 
@@ -43,4 +43,5 @@ public interface JournalIntrptTagRepository
             "GROUP BY ct.tagId")
     List<TagContentCntDto> countIntrptSizeMap(final @Param("param") JournalIntrptTagContentParam param);
 }
+
 

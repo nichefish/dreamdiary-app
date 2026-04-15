@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
  *
  * @author nichefish
  */
-@Service("flsysMetaService")
+@Service
 @RequiredArgsConstructor
 public class FlsysMetaService
         implements BaseDtoWritableService<FlsysMetaDto, FlsysMetaDto, Integer, FlsysMetaEntity> {
@@ -37,3 +37,4 @@ public class FlsysMetaService
         return this.mapstruct;
     }
 }
+

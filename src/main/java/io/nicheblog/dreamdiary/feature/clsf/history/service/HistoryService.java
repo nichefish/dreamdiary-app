@@ -26,7 +26,7 @@ import java.util.Optional;
  *
  * @author nichefish
  */
-@Service("historyService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class HistoryService {
@@ -113,3 +113,4 @@ public class HistoryService {
         return StringUtils.abbreviate(plainText, 240);
     }
 }
+

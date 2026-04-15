@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository;
  *
  * @author nichefish
  */
-@Repository("tagContentRepository")
+@Repository
 public interface TagContentRepository
         extends BaseStreamRepository<TagContentEntity, Integer> {
 
@@ -41,3 +41,4 @@ public interface TagContentRepository
             "                 ))")
     void deleteObsoleteTagContents(final @Param("param") TagContentParam param);
 }
+

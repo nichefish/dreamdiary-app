@@ -22,7 +22,7 @@ import java.util.Optional;
  *
  * @author nichefish
  */
-@Service("authPolicyService")
+@Service
 @RequiredArgsConstructor
 public class AuthPolicyService {
 
@@ -79,3 +79,4 @@ public class AuthPolicyService {
                 .build();
     }
 }
+

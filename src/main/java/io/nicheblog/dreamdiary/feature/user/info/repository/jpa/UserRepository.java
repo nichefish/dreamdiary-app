@@ -14,7 +14,7 @@ import java.util.Optional;
  *
  * @author nichefish
  */
-@Repository("userRepository")
+@Repository
 public interface UserRepository
     extends BaseStreamRepository<UserEntity, Integer> {
 
@@ -34,3 +34,4 @@ public interface UserRepository
      */
     Optional<UserEntity> findByEmail(final String email);
 }
+

@@ -31,7 +31,7 @@ import java.util.Objects;
  *
  * @author nichefish
  */
-@Service("dtlCdService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class DtlCdService
@@ -184,3 +184,4 @@ public class DtlCdService
         cdLookupService.evictClCdCache(clCd);
     }
 }
+

@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @author nichefish
  */
-@Repository("dtlCdRepository")
+@Repository
 public interface DtlCdRepository
         extends BaseStreamRepository<DtlCdEntity, DtlCdKey> {
 
@@ -62,3 +62,4 @@ public interface DtlCdRepository
      */
     DtlCdEntity findByClCdAndDtlCd(final String clCd, final String dtlCd);
 }
+

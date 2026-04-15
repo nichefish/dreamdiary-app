@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  *
  * @author nichefish
  */
-@Service("metaContentService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class MetaContentService
@@ -177,3 +177,4 @@ public class MetaContentService
         return this.getSelf().getListDto(MetaSearchParam.builder().metaId(metaId).lgnUsername(lgnUsername).build());
     }
 }
+

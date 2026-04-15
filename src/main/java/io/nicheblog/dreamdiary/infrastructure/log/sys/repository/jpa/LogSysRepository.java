@@ -12,8 +12,9 @@ import org.springframework.stereotype.Repository;
  *
  * @author nichefish
  */
-@Repository("logSysRepository")
+@Repository
 public interface LogSysRepository
         extends BaseStreamRepository<LogSysEntity, Integer> {
     //
 }
+

@@ -13,8 +13,9 @@ import org.springframework.stereotype.Repository;
  *
  * @author nichefish
  */
-@Repository("clCdRepository")
+@Repository
 public interface ClCdRepository
         extends BaseStreamRepository<ClCdEntity, String> {
     //
 }
+

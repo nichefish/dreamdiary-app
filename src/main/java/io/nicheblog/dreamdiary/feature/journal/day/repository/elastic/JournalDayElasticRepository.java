@@ -16,10 +16,11 @@ import java.util.List;
  * @author nichefish
  *//*
 
-@Repository("journalDayElasticRepository")
+@Repository
 public interface JournalDayElasticRepository {
 
     // @Query("{ \"nested\": { \"path\": \"tag.list\", \"query\": { \"bool\": { \"must\": [{ \"nested\": { \"path\": \"tag.list.tag\", \"query\": { \"match\": { \"tag.list.tag.tagNm\": \"달리기     \" } } } }] } } } }")
     List<JournalDayEntity> findByTag_TagNm(final String tagNm);
 }*/
+
 

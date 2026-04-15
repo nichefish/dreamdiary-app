@@ -27,7 +27,7 @@ import java.util.Optional;
  *
  * @author nichefish
  */
-@Service("authService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class AuthService
@@ -157,3 +157,4 @@ public class AuthService
         return mapstruct.toAuditorInfo(userEntity);
     }
 }
+

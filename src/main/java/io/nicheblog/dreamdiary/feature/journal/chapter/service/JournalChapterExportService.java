@@ -21,7 +21,7 @@ import java.util.List;
  *
  * @author nichefish
  */
-@Service("journalChapterExportService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class JournalChapterExportService {
@@ -78,4 +78,5 @@ public class JournalChapterExportService {
         return sb.toString();
     }
 }
+
 

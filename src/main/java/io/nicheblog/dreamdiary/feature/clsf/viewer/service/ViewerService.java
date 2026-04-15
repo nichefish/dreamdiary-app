@@ -22,7 +22,7 @@ import java.util.Map;
  *
  * @author nichefish
  */
-@Service("ViewerService")
+@Service
 @RequiredArgsConstructor
 public class ViewerService {
 
@@ -57,3 +57,4 @@ public class ViewerService {
         viewerRepository.save(viewer);
     }
 }
+

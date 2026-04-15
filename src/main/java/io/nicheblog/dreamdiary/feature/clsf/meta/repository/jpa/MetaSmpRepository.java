@@ -12,8 +12,9 @@ import org.springframework.stereotype.Repository;
  *
  * @author nichefish
  */
-@Repository("metaSmpRepository")
+@Repository
 public interface MetaSmpRepository
         extends BaseStreamRepository<MetaSmpEntity, Integer> {
     //
 }
+
