@@ -189,17 +189,25 @@ public interface ApiUrl {
     String POPUP_LIST = "";
 
     /** 코드 관리 */
-    String CD_CLS = Prefix.API + "cd/cls";
-    String CD_CL = Prefix.API + "/cd/cl/{clCd}";
+    String CODE_GROUPS = Prefix.API + "/code/groups";
+    String CODE_GROUP = Prefix.API + "/code/group/{clCd}";
+    String CODE_ITEMS = Prefix.API + "/code/items";
+    String CODE_ITEM = Prefix.API + "/code/item";
+    String CODE_ITEMS_SORT_ORDERS = Prefix.API + "/code/items/sort-orders";
+    String CODE_ITEM_USE = Prefix.API + "/code/item/use";
+    String CODE_ITEM_UNUSE = Prefix.API + "/code/item/unuse";
 
-    String DTL_CD_REG_AJAX = Prefix.API + "/cd/dtl-cd-reg";
-    String DTL_CD_DTL_AJAX = Prefix.API + "/cd/dtl-cd-dtl";
-    String DTL_CD_MDF_AJAX = Prefix.API + "/cd/dtl-cd-mdf";
-    String DTL_CD_LIST_AJAX = Prefix.API + "/cd/dtl-cd-list";
-    String DTL_CD_USE_AJAX = Prefix.API + "/cd/dtl-cd-use";
-    String DTL_CD_UNUSE_AJAX = Prefix.API + "/cd/dtl-cd-unuse";
-    String DTL_CD_DEL_AJAX = Prefix.API + "/cd/dtl-cd-del";
-    String DTL_CD_SORT_ORDR_AJAX = Prefix.API + "/cd/dtl-cd-sort-ordr";
+    // backward compatibility
+    String CD_CLS = CODE_GROUPS;
+    String CD_CL = CODE_GROUP;
+    String DTL_CD_REG_AJAX = CODE_ITEMS;
+    String DTL_CD_DTL_AJAX = CODE_ITEM;
+    String DTL_CD_MDF_AJAX = CODE_ITEMS;
+    String DTL_CD_LIST_AJAX = CODE_ITEMS;
+    String DTL_CD_USE_AJAX = CODE_ITEM_USE;
+    String DTL_CD_UNUSE_AJAX = CODE_ITEM_UNUSE;
+    String DTL_CD_DEL_AJAX = CODE_ITEM;
+    String DTL_CD_SORT_ORDR_AJAX = CODE_ITEMS_SORT_ORDERS;
     
     /** 활동 로그 조회 */
     String LOG_ACTVTY_DTL_AJAX = Prefix.API + "/log/actvty/log-actvty-dtl";

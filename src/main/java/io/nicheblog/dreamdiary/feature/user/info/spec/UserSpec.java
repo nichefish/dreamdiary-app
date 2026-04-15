@@ -7,7 +7,7 @@ import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntity;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
+import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemEntity;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
@@ -225,7 +225,7 @@ public class UserSpec
     ) {
         final List<Order> order = new ArrayList<>();
         final Join<UserEntity, UserEmplymEntity> emplymJoin = root.join("emplym", JoinType.INNER);
-        final Join<UserEmplymEntity, DtlCdEntity> rankCdJoin = emplymJoin.join("rankCdInfo", JoinType.INNER);
+        final Join<UserEmplymEntity, CodeItemEntity> rankCdJoin = emplymJoin.join("rankCdInfo", JoinType.INNER);
         order.add(builder.desc(rankCdJoin.get("sortOrder")));
         order.add(builder.asc(emplymJoin.get("ecnyDt")));
 

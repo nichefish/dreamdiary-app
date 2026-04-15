@@ -21,10 +21,10 @@
     </div>
     <div>
         <#--헤더:: 버튼: 목록 검색-->
-        <@component.header_btn_search "dF.ClCd.search();" />
+        <@component.header_btn_search "dF.CodeGroup.search();" />
     </div>
     <div>
         <#--헤더:: 버튼: 등록 모달 호출하기-->
-        <@component.header_btn_reg_modal "dF.ClCd.regModal();" />
+        <@component.header_btn_reg_modal "dF.CodeGroup.regModal();" />
     </div>
 </form>

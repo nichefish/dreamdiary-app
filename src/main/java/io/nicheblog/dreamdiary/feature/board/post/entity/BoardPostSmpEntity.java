@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.feature.board.post.entity;
 
 import io.nicheblog.dreamdiary.feature.board.def.entity.BoardDefEntity;
 import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
-import io.nicheblog.dreamdiary.infrastructure.cd.Code;
+import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;

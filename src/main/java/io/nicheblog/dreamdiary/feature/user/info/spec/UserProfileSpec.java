@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.feature.user.info.spec;
 import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntity;
 import io.nicheblog.dreamdiary.global.intrfc.spec.BaseSpec;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
+import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemEntity;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
@@ -74,7 +74,7 @@ public class UserProfileSpec implements BaseSpec<UserProfileEntity> {
             final CriteriaBuilder builder
     ) {
         final List<Order> order = new ArrayList<>();
-        final Join<UserProfileEntity, DtlCdEntity> rankCdJoin = root.join("rankCdInfo", JoinType.LEFT);
+        final Join<UserProfileEntity, CodeItemEntity> rankCdJoin = root.join("rankCdInfo", JoinType.LEFT);
         order.add(builder.desc(rankCdJoin.get("sortOrder")));
         order.add(builder.asc(root.get("ecnyDt")));
         return order;

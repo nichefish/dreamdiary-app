@@ -1,0 +1,52 @@
+<#--
+ -- 코드 아이템 등록/수정 Template
+ -- @included_in : _code_item_reg_modal.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="code_item_reg_modal_template">
+    <input type="hidden" name="clCd" value="{{clCd}}">
+    <input type="hidden" name="regYn" value="{{#if (notExists dtlCd)}}Y{{/if}}{{#if (exists dtlCd)}}N{{/if}}">
+
+    <div class="row mb-4">
+        <div class="col-3 col-form-label text-center">
+            <span class="cursor-help fw-bold required">상세 코드 <i class="bi bi-question-circle"></i></span>
+        </div>
+        <div class="col-4">
+            {{#if (exists dtlCd)}}
+            <div class="col-form-label">
+                <span class="text-noti fw-bold ps-1">{{dtlCd}}</span>
+                <input type="hidden" name="dtlCd" value="{{dtlCd}}">
+            </div>
+            {{/if}}
+            {{#if (notExists dtlCd)}}
+                <input type="text" name="dtlCd" id="dtlCd" class="form-control form-control-solid required" value="{{dtlCd}}" maxlength="30">
+                <div class="text-noti">※영문 대문자 및 숫자만 가능, 1~30자</div>
+                <div id="dtlCd_validate_span"></div>
+            {{/if}}
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-3 col-form-label text-center"><label class="cursor-help fw-bold required">상세 코드명 <i class="bi bi-question-circle"></i></label></div>
+        <div class="col-9">
+            <input type="text" name="dtlCdNm" id="dtlCdNm" class="form-control form-control-solid required" value="{{dtlCdNm}}" maxlength="20">
+            <div id="dtlCdNm_validate_span"></div>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-3 col-form-label text-center"><label class="fw-bold">상세 코드 설명</label></div>
+        <div class="col-9">
+            <textarea name="dc" id="dc" class="form-control form-control-solid h-100px" wrap="hard" maxlength="1000" placeholder="상세 코드 설명을 입력합니다.">{{dc}}</textarea>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-3 col-form-label text-center"><label class="cursor-help fw-bold">사용 여부 <i class="bi bi-question-circle"></i></label></div>
+        <div class="col-9 text-center d-flex align-items-center">
+            <div class="form-check form-switch form-check-custom form-check-solid">
+                <input type="checkbox" name="useYn" id="useYn" class="form-check-input cursor-pointer" value="Y" {{checkedYn useYn}} />
+                <label class="form-check-label ms-3" for="useYn" id="useYnLabel" {{checkedYnStyle useYn "color" "blue//gray"}}>
+                    {{^ifYn useYn}}미{{/ifYn}}사용
+                </label>
+            </div>
+        </div>
+    </div>
+</script>

@@ -10,7 +10,7 @@ import io.nicheblog.dreamdiary.feature.clsf.sectn.entity.embed.SectnEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.sectn.entity.embed.SectnEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbedModule;
-import io.nicheblog.dreamdiary.infrastructure.cd.Code;
+import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
