@@ -117,7 +117,7 @@ public interface AppUrl {
 
     /* ---------- */
 
-    String SCHDUL_CAL = Prefix.APP + "/schdul/cal.do";
+    String SCHEDULE_CAL = Prefix.APP + "/schedule/cal.do";
 
     String USER_REQST_REG_FORM = Prefix.APP + "/user/reqst/form.do";
 
@@ -129,3 +129,4 @@ public interface AppUrl {
         String API = "/api";
     }
 }
+

@@ -1,4 +1,4 @@
--- 기능 구조 (new) 테이블 생성 쿼리 정보를 입력한다.
+﻿-- 기능 구조 (new) 테이블 생성 쿼리 정보를 입력한다.
 -- "JPA CASCADE INSERT에서는 먼저 INSERT 후 나중에 FK값을 업데이트하게 되므로 FK가 NOT_NULL이면 에러가 발생한다."
 -- (=> JPA에서 다른 테이블과 연관성을 갖는 컬럼은 반드시 NULL을 허용해야 한다!) (NOT NULL이면 안된다)
 -- @database : mariadb
@@ -38,15 +38,15 @@ CREATE TABLE IF NOT EXISTS notice (
 
 -- ---------- --
 
--- 일정 (schdul)
+-- 일정 (schedule)
 -- @extends: BasePostEntity
 -- @implements: TagEmbed, CommentEmbed
-CREATE TABLE IF NOT EXISTS schdul (
+CREATE TABLE IF NOT EXISTS schedule (
     -- CLSF
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
-    content_type VARCHAR(32) DEFAULT 'SCHDUL' COMMENT '컨텐츠 타입',
+    content_type VARCHAR(32) DEFAULT 'SCHEDULE' COMMENT '컨텐츠 타입',
     --
-    schdul_cd VARCHAR(30) COMMENT '일정 코드',
+    schedule_cd VARCHAR(30) COMMENT '일정 코드',
     bgn_dt DATETIME DEFAULT NULL COMMENT '시작일자',
     end_dt DATETIME DEFAULT NULL COMMENT '종료일자',
     prvt_yn CHAR(1) DEFAULT 'N' COMMENT '개인일정 여부 (Y/N)',
@@ -69,17 +69,17 @@ CREATE TABLE IF NOT EXISTS schdul (
     deleted_at DATETIME COMMENT '삭제일시'
 ) COMMENT = '일정';
 
--- 일정 참여자 (schdul_prtcpnt)
+-- 일정 참여자 (schedule_participant)
 -- @extends: BaseCrudEntity
-CREATE TABLE IF NOT EXISTS schdul_prtcpnt (
+CREATE TABLE IF NOT EXISTS schedule_participant (
     id INT PRIMARY KEY AUTO_INCREMENT COMMENT '일정 참여자 ID',
-    schdul_id INT COMMENT '일정 ID',
+    schedule_id INT COMMENT '일정 ID',
     username VARCHAR(30) COMMENT '일정 참여자 ID',
     -- AUDIT
     deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
-    CONSTRAINT fk_schdul_prtcpnt FOREIGN KEY (schdul_id) REFERENCES schdul (id),
-    INDEX (schdul_id)
+    CONSTRAINT fk_schedule_participant_schedule FOREIGN KEY (schedule_id) REFERENCES schedule (id),
+    INDEX (schedule_id)
 ) COMMENT = '일정 참여자';
 
 -- 템플릿 정의 정보
@@ -179,3 +179,4 @@ CREATE TABLE IF NOT EXISTS chat_msg (
     updated_at DATETIME COMMENT '수정일시',
     deleted_at DATETIME COMMENT '삭제일시'
 );
+

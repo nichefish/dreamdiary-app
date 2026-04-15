@@ -1,4 +1,4 @@
-<#--
+﻿<#--
  * 저널 일자(journal_day) : 페이지 (달력)
  -->
 
@@ -33,38 +33,38 @@
 <link rel="stylesheet" type="text/css" href="/metronic/assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" />
 
 <!--begin::Advance form-->
-<div class="collapse px-10 py-4 bg-light w-100" id="schdul_advanced_search_div">
+<div class="collapse px-10 py-4 bg-light w-100" id="schedule_advanced_search_div">
     <div class="d-flex flex-lg-row flex-column align-items-lg-center align-items-start justify-content-end text-muted">
         <div class="mx-3"
              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="내 일정 정보만 조회합니다.&#10;(해당 정보는 브라우저 캐시에&#10;저장됩니다.)">
-            <label for="schdul_chk_myPaprChk" class="me-2 text-muted cursor-help">내 일정만 보기</label>
-            <input type="checkbox" name="myPaprChk" id="schdul_chk_myPaprChk" class="form-check-input cursor-pointer" value="Y" onclick="Page.chkbxProp(this);">
+            <label for="schedule_chk_myPaprChk" class="me-2 text-muted cursor-help">내 일정만 보기</label>
+            <input type="checkbox" name="myPaprChk" id="schedule_chk_myPaprChk" class="form-check-input cursor-pointer" value="Y" onclick="Page.chkbxProp(this);">
         </div>
 
         <div class="mx-3"
              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="휴가 정보 표시여부를&#10;켜고 끕니다.&#10;(해당 정보는 브라우저 캐시에&#10;저장됩니다.)">
-            <label for="schdul_chk_vcatnChk" class="me-2 text-muted cursor-help">휴가</label>
-            <input type="checkbox" name="vcatnChk" id="schdul_chk_vcatnChk" class="form-check-input cursor-pointer" value="Y" onclick="Page.chkbxProp(this);">
+            <label for="schedule_chk_vcatnChk" class="me-2 text-muted cursor-help">휴가</label>
+            <input type="checkbox" name="vcatnChk" id="schedule_chk_vcatnChk" class="form-check-input cursor-pointer" value="Y" onclick="Page.chkbxProp(this);">
         </div>
         <div class="mx-3"
              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="내부일정 정보 표시여부를&#10;켜고 끕니다.&#10;(해당 정보는 브라우저 캐시에&#10;저장됩니다.)">
-            <label for="schdul_chk_indtChk" class="me-2 text-muted cursor-help">내부일정</label>
-            <input type="checkbox" name="indtChk" id="schdul_chk_indtChk" class="form-check-input cursor-pointer" value="Y" onclick="Page.chkbxProp(this);">
+            <label for="schedule_chk_indtChk" class="me-2 text-muted cursor-help">내부일정</label>
+            <input type="checkbox" name="indtChk" id="schedule_chk_indtChk" class="form-check-input cursor-pointer" value="Y" onclick="Page.chkbxProp(this);">
         </div>
         <div class="mx-3"
              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="외근 정보 표시여부를&#10;켜고 끕니다.&#10;(해당 정보는 브라우저 캐시에&#10;저장됩니다.)">
-            <label for="schdul_chk_outdtChk" class="me-2 text-muted cursor-help">외근</label>
-            <input type="checkbox" name="outdtChk" id="schdul_chk_outdtChk" class="form-check-input cursor-pointer" value="Y" onclick="Page.chkbxProp(this);">
+            <label for="schedule_chk_outdtChk" class="me-2 text-muted cursor-help">외근</label>
+            <input type="checkbox" name="outdtChk" id="schedule_chk_outdtChk" class="form-check-input cursor-pointer" value="Y" onclick="Page.chkbxProp(this);">
         </div>
         <div class="mx-3"
              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="재택근무 정보 표시여부를&#10;켜고 끕니다.&#10;(해당 정보는 브라우저 캐시에&#10;저장됩니다.)">
-            <label for="schdul_chk_tlcmmtChk" class="me-2 text-muted cursor-help">재택근무</label>
-            <input type="checkbox" name="tlcmmtChk" id="schdul_chk_tlcmmtChk" class="form-check-input cursor-pointer" value="Y" onclick="Page.chkbxProp(this);">
+            <label for="schedule_chk_tlcmmtChk" class="me-2 text-muted cursor-help">재택근무</label>
+            <input type="checkbox" name="tlcmmtChk" id="schedule_chk_tlcmmtChk" class="form-check-input cursor-pointer" value="Y" onclick="Page.chkbxProp(this);">
         </div>
         <div class="mx-3"
              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="개인용 일정 표시여부를&#10;켜고 끕니다.&#10;(해당 정보는 브라우저 캐시에&#10;저장됩니다.)">
-            <label for="schdul_chk_prvtChk" class="me-2 text-muted cursor-help">개인용 일정</label>
-            <input type="checkbox" name="prvtChk" id="schdul_chk_prvtChk" class="form-check-input cursor-pointer" value="Y" onclick="Page.chkbxProp(this);">
+            <label for="schedule_chk_prvtChk" class="me-2 text-muted cursor-help">개인용 일정</label>
+            <input type="checkbox" name="prvtChk" id="schedule_chk_prvtChk" class="form-check-input cursor-pointer" value="Y" onclick="Page.chkbxProp(this);">
         </div>
     </div>
 </div>
@@ -221,3 +221,4 @@
 <script type="text/javascript" src="/js/view/feature/journal/day/journal_day_cal.js?${releaseDate!}"></script>
 
 </@layout.layout>
+

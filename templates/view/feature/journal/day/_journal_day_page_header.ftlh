@@ -1,10 +1,10 @@
-<#--
+﻿<#--
  * 저널 일자(journal_day) > 목록 툴바 Header
  * @included_in : journal_day_page.ftlh
  -->
 
 <form name="listForm" id="listForm" class="d-none d-md-flex align-items-center flex-nowrap gap-2" data-url="${listUrl!}" method="get">
-    <div class="cursor-pointer ms-1 me-5" data-bs-toggle="collapse" href="#schdul_advanced_search_div">
+    <div class="cursor-pointer ms-1 me-5" data-bs-toggle="collapse" href="#schedule_advanced_search_div">
         <a class="btn btn-sm btn-light-primary h-100 d-flex align-items-center text-gray-700 fs-7 fw-bold">
         <span class="svg-icon svg-icon-muted svg-icon-2 svg-icon-gray-700"
               data-bs-toggle="tooltip" data-bs-placement="top" title="고급 필터 영역을 열고 닫습니다.">
@@ -19,12 +19,12 @@
         </a>
     </div>
     <a href="javascript:void(0);" class="btn btn-sm btn-primary"
-       onclick="dF.Schdul.regModal();"
+       onclick="dF.Schedule.regModal();"
        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="일정 등록 모달을 호출합니다.">
         <i class="fas fa-plus"></i>일정 등록
     </a>
     <a href="javascript:void(0);" class="btn btn-sm btn-light-primary btn-outlined"
-       onclick="dF.Schdul.prvtRegModal();"
+       onclick="dF.Schedule.prvtRegModal();"
        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="개인용 일정 등록 모달을&#10;호출합니다.&#10;(다른 사람에겐 보이지 않는&#10;일정입니다.)">
         <i class="fas fa-plus"></i>개인용 일정<span class="d-none d-lg-inline"> 등록</span>
     </a>
@@ -42,3 +42,4 @@
         <@component.header_btn_reg_modal "dF.JournalDay.regModal();" />
     </div>
 </form>
+

@@ -49,7 +49,7 @@ public interface XlsxHeader {
     /**
      * 휴가
      */
-    List<XlsxCell> VCATN_SCHDUL = List.of(
+    List<XlsxCell> VCATN_SCHEDULE = List.of(
             new XlsxCell("직원명", 10),
             new XlsxCell("날짜", 10),
             new XlsxCell("종류", 10),
@@ -85,3 +85,4 @@ public interface XlsxHeader {
             new XlsxCell("작업결과", 10)
     );
 }
+

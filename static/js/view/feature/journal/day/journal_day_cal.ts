@@ -1,4 +1,4 @@
-/**
+﻿/**
  * journal_day_cal.ts
  * 저널 달력 페이지 스크립트
  *
@@ -40,12 +40,12 @@ const Page: Page = (function(): Page {
             // 달력 생성
             Page.calendar = cF.fullcalendar.init("full_calendar_app", { initDt: Page.calDt }, function(info): void {
                 const event = info.event;
-                const schdulCd: string = event.groupId;
-                const isVcatn: boolean = schdulCd === `${Code?.SCHDUL_VCATN!}`;
-                const isBrthdy: boolean = schdulCd === `${Code?.SCHDUL_BRTHDY!}`;
+                const scheduleCd: string = event.groupId;
+                const isVcatn: boolean = scheduleCd === `${Code?.SCHEDULE_VCATN!}`;
+                const isBrthdy: boolean = scheduleCd === `${Code?.SCHEDULE_BRTHDY!}`;
                 if (isVcatn || isBrthdy) return;
 
-                switch (schdulCd) {
+                switch (scheduleCd) {
                     case "JOURNAL_DAY":
                         dF.JournalDay.dtlModal(event.id);
                         break;
@@ -68,12 +68,12 @@ const Page: Page = (function(): Page {
                  */
                 eventContent: function(info) {
                     const event = info.event;
-                    const schdulCd: string = event.groupId;
+                    const scheduleCd: string = event.groupId;
                     const icon: string = event.extendedProps.icon;
                     const title: string = event.title;
                     const titleWithIcon: string = icon + ' ' + title;
 
-                    switch (schdulCd) {
+                    switch (scheduleCd) {
                         case "JOURNAL_DAY":
                             return { html: `<div class='cursor-pointer text-truncate'>${titleWithIcon}</div>` };
                         case "JOURNAL_DIARY":
@@ -90,9 +90,9 @@ const Page: Page = (function(): Page {
                  */
                 eventDidMount: function(info): void {
                     const event = info.event;
-                    const schdulCd: string = event.groupId;
+                    const scheduleCd: string = event.groupId;
                     let tooltipContent;
-                    switch (schdulCd) {
+                    switch (scheduleCd) {
                         case "JOURNAL_DAY":
                             tooltipContent = event.title;
                             break;
@@ -154,7 +154,7 @@ const Page: Page = (function(): Page {
          */
         getChkedCookie: function(key: string): string {
             const cookie = $.cookie(key);
-            if (key === "schdul_chk_myPaprChk") return (cookie == null) ? "N" : cookie;
+            if (key === "schedule_chk_myPaprChk") return (cookie == null) ? "N" : cookie;
             return (cookie == null) ? "Y" : cookie;
         },
 
@@ -183,3 +183,4 @@ const Page: Page = (function(): Page {
 document.addEventListener("DOMContentLoaded", function(): void {
     Page.init();
 });
+

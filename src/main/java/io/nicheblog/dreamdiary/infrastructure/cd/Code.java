@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.infrastructure.cd;
 
 import io.nicheblog.dreamdiary.auth.type.Auth;
 import io.nicheblog.dreamdiary.auth.type.Mdfable;
-import io.nicheblog.dreamdiary.feature.schdul.Schdul;
+import io.nicheblog.dreamdiary.feature.calendar.schedule.type.ScheduleType;
 import io.nicheblog.dreamdiary.feature.user.emplym.Emplym;
 import io.nicheblog.dreamdiary.feature.user.emplym.Rank;
 import io.nicheblog.dreamdiary.global.type.Device;
@@ -80,15 +80,15 @@ public interface Code {
     String JOURNAL_SUMRY_TY_CD = "JOURNAL_SUMRY_TY_CD";
 
     /** 일정 분류 코드 */
-    String SCHDUL_CD = "SCHDUL_CD";       // 일정 구분 코드
-    String SCHDUL_HLDY = Schdul.HLDY.name();
-    String SCHDUL_CEREMONY = Schdul.CEREMONY.name();
-    String SCHDUL_TLCMMT = Schdul.TLCMMT.name();
-    String SCHDUL_OUTDT = Schdul.OUTDT.name();
-    String SCHDUL_INDT = Schdul.INDT.name();
-    String SCHDUL_VCATN = Schdul.VCATN.name();
-    String SCHDUL_BRTHDY = Schdul.BRTHDY.name();
-    String SCHDUL_ETC = Schdul.ETC.name();
+    String SCHEDULE_CD = "SCHEDULE_CD";       // 일정 구분 코드
+    String SCHEDULE_HOLYDAY = ScheduleType.HOLYDAY.name();
+    String SCHEDULE_CEREMONY = ScheduleType.CEREMONY.name();
+    String SCHEDULE_TLCMMT = ScheduleType.TLCMMT.name();
+    String SCHEDULE_OUTDT = ScheduleType.OUTDT.name();
+    String SCHEDULE_INDT = ScheduleType.INDT.name();
+    String SCHEDULE_VCATN = ScheduleType.VCATN.name();
+    String SCHEDULE_BRTHDY = ScheduleType.BRTHDY.name();
+    String SCHEDULE_ETC = ScheduleType.ETC.name();
 
     /** 활동 구분 코드 (로그) */
     String ACTION_TY_SEARCH = "SEARCH";
@@ -109,3 +109,4 @@ public interface Code {
     /* 소속(회사) 코드 */
     String CMPY_CD = "CMPY_CD";
 }
+

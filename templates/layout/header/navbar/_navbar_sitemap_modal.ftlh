@@ -1,4 +1,4 @@
-<!--
+﻿<!--
  * 레이아웃 > 사이트맵 Modal
  * @included_in : layout/topbar
  -->
@@ -99,11 +99,11 @@
                     </div>
                     <!-- 일정 > 전체 일정 확인 -->
                     <div class="menu-item">
-                        <a class="menu-link" href="${SiteMenu.MENU_SCHDUL_CAL[3]!}">
+                        <a class="menu-link" href="${SiteMenu.MENU_SCHEDULE_CAL[3]!}">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
-                            <span class="menu-title">${SiteMenu.MENU_SCHDUL_CAL[2]!}</span>
+                            <span class="menu-title">${SiteMenu.MENU_SCHEDULE_CAL[2]!}</span>
                         </a>
                     </div>
                 </div>
@@ -145,11 +145,11 @@
                     </div>
                     <!-- 휴가관리 > 휴가사용일자 -->
                     <div class="menu-item">
-                        <a class="menu-link" href="${SiteMenu.MENU_VCATN_SCHDUL[3]!}">
+                        <a class="menu-link" href="${SiteMenu.MENU_VCATN_SCHEDULE[3]!}">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
-                            <span class="menu-title">${SiteMenu.MENU_VCATN_SCHDUL[2]!}</span>
+                            <span class="menu-title">${SiteMenu.MENU_VCATN_SCHEDULE[2]!}</span>
                         </a>
                     </div>
                     <div class="d-flex align-items-center">
@@ -256,3 +256,4 @@
         </div>
     </div>
 </@modal.layout>
+

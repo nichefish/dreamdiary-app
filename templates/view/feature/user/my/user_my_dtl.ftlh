@@ -266,9 +266,6 @@
 
 <#--include::modals-->
 <#include "/view/feature/user/my/_modal/_user_my_pw_chg_modal.ftlh">
-<#if (authInfo.hasEcnyDt!false)>
-    <#include "/view/feature/user/my/_modal/_user_my_vcatn_list_modal.ftlh">
-</#if>
 <script type="text/javascript" src="/js/view/feature/user/my/user_my_module.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/feature/user/my/user_my_pw_chg_module.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/feature/user/my/user_my_dtl.js?${releaseDate!}"></script>

@@ -2,8 +2,8 @@ package io.nicheblog.dreamdiary.feature.notify.handler;
 
 import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeDto;
 import io.nicheblog.dreamdiary.feature.board.post.model.BoardPostDto;
-import io.nicheblog.dreamdiary.feature.schdul.model.SchdulDto;
-import io.nicheblog.dreamdiary.feature.schdul.service.SchdulService;
+import io.nicheblog.dreamdiary.feature.calendar.schedule.model.ScheduleDto;
+import io.nicheblog.dreamdiary.feature.calendar.schedule.service.ScheduleService;
 import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
 @Log4j2
 public class NotifyEventHandler {
 
-    private final SchdulService schdulService;
+    private final ScheduleService scheduleService;
     private final UserService userService;
     private final CdLookupService cdLookupService;
     private final JandiApiService jandiApiService;
@@ -106,25 +106,25 @@ public class NotifyEventHandler {
      *
      * @see LogSysEventListener
      */
-    public String notifySchdulReg(
+    public String notifyScheduleReg(
             final JandiTopic trgetTopic,
-            final SchdulDto result,
+            final ScheduleDto result,
             final LogSysParam logParam
     ) {
         String jandiRsltMsg;
         try {
             // title
-            final String schdulTyNm = cdLookupService.getDtlCdNm(Code.SCHDUL_CD, result.getSchdulCd());
-            String title = "[" + schdulTyNm + "] " + result.getBgnDt() + " / " + result.getSchdulNm();
+            final String scheduleTyNm = cdLookupService.getDtlCdNm(Code.SCHEDULE_CD, result.getScheduleCd());
+            String title = "[" + scheduleTyNm + "] " + result.getBgnDt() + " / " + result.getScheduleNm();
             String prtcpntStr = result.getPrtcpntListStr();
             if (StringUtils.isNotEmpty(prtcpntStr)) {
-                title = "[" + schdulTyNm + "] " + result.getBgnDt() + " / " + prtcpntStr + " : " + result.getSchdulNm();
+                title = "[" + scheduleTyNm + "] " + result.getBgnDt() + " / " + prtcpntStr + " : " + result.getScheduleNm();
             }
             // msg
             final String msg = "새로운 일정이 등록되었습니다.";
             // url
             final String param = Code.UTM_SOURCE + "=jandi";
-            final String fullUrl = Url.DOMAIN + Url.SCHDUL_CAL + "?" + param;
+            final String fullUrl = Url.DOMAIN + Url.SCHEDULE_CAL + "?" + param;
             // 메세지 발송
             jandiApiService.sendMsg(trgetTopic, msg, title, fullUrl);
             jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_SUCCESS);
@@ -148,7 +148,7 @@ public class NotifyEventHandler {
     //     String jandiRsltMsg = "";
     //     boolean isSuccess = false;
     //     try {
-    //         JandiTopic trgetTopic = JandiTopic.SCHDUL;
+    //         JandiTopic trgetTopic = JandiTopic.SCHEDULE;
     //         for (UserDto user : brthdyUserList) {
     //             // title
     //             String title = "[생일] " + user.getUserNm();
@@ -174,3 +174,4 @@ public class NotifyEventHandler {
     // }
 
 }
+

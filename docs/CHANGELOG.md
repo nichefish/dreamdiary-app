@@ -1,4 +1,4 @@
-# CHANGELOG
+﻿# CHANGELOG
 
 ### 2026-04-13 | v0.16.1
 - 신규 기능

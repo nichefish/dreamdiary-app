@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum JandiTopic {
     NOTICE,
-    SCHDUL,
+    SCHEDULE,
     TEST;
 }
+

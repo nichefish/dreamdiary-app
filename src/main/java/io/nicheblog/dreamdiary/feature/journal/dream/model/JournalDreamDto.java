@@ -72,9 +72,9 @@ public class JournalDreamDto
     private Integer mnth;
 
     /** 공휴일 여부 */
-    private Boolean isHldy;
+    private Boolean isHolyday;
     /** 공휴일 이름 */
-    private String hldyNm;
+    private String holydayNm;
 
     /** 순번 */
     private Integer idx;
