@@ -198,32 +198,32 @@ public class TagProfileService
         final String username = AuthUtils.getLgnUsername();
         if (StringUtils.isBlank(username) || StringUtils.isBlank(contentType)) return;
 
-        if (ContentType.JRNL_DAY.key.equals(contentType)) {
-            EhCacheUtils.clearUserCache("jrnlDayYyMnthTagListByUser", username);
-            EhCacheUtils.clearUserCache("jrnlDayWeeklyTagListByUser", username);
-            EhCacheUtils.clearUserCache("jrnlDayYyMnthSizedTagListByUser", username);
-            EhCacheUtils.clearUserCache("jrnlDayWeeklySizedTagListByUser", username);
+        if (ContentType.JOURNAL_DAY.key.equals(contentType)) {
+            EhCacheUtils.clearUserCache("journalDayYyMnthTagListByUser", username);
+            EhCacheUtils.clearUserCache("journalDayWeeklyTagListByUser", username);
+            EhCacheUtils.clearUserCache("journalDayYyMnthSizedTagListByUser", username);
+            EhCacheUtils.clearUserCache("journalDayWeeklySizedTagListByUser", username);
             return;
         }
-        if (ContentType.JRNL_DIARY.key.equals(contentType)) {
-            EhCacheUtils.clearUserCache("jrnlDiaryTagListByUser", username);
-            EhCacheUtils.clearUserCache("jrnlDiaryYyMnthTagListByUser", username);
-            EhCacheUtils.clearUserCache("jrnlDiaryWeeklyTagListByUser", username);
-            EhCacheUtils.clearUserCache("jrnlDiaryYyMnthSizedTagListByUser", username);
-            EhCacheUtils.clearUserCache("jrnlDiaryWeeklySizedTagListByUser", username);
+        if (ContentType.JOURNAL_DIARY.key.equals(contentType)) {
+            EhCacheUtils.clearUserCache("journalDiaryTagListByUser", username);
+            EhCacheUtils.clearUserCache("journalDiaryYyMnthTagListByUser", username);
+            EhCacheUtils.clearUserCache("journalDiaryWeeklyTagListByUser", username);
+            EhCacheUtils.clearUserCache("journalDiaryYyMnthSizedTagListByUser", username);
+            EhCacheUtils.clearUserCache("journalDiaryWeeklySizedTagListByUser", username);
             return;
         }
-        if (ContentType.JRNL_DREAM.key.equals(contentType)) {
-            EhCacheUtils.clearUserCache("jrnlDreamTagListByUser", username);
-            EhCacheUtils.clearUserCache("jrnlDreamYyMnthTagListByUser", username);
-            EhCacheUtils.clearUserCache("jrnlDreamWeeklyTagListByUser", username);
-            EhCacheUtils.clearUserCache("jrnlDreamYyMnthSizedTagListByUser", username);
-            EhCacheUtils.clearUserCache("jrnlDreamWeeklySizedTagListByUser", username);
+        if (ContentType.JOURNAL_DREAM.key.equals(contentType)) {
+            EhCacheUtils.clearUserCache("journalDreamTagListByUser", username);
+            EhCacheUtils.clearUserCache("journalDreamYyMnthTagListByUser", username);
+            EhCacheUtils.clearUserCache("journalDreamWeeklyTagListByUser", username);
+            EhCacheUtils.clearUserCache("journalDreamYyMnthSizedTagListByUser", username);
+            EhCacheUtils.clearUserCache("journalDreamWeeklySizedTagListByUser", username);
             return;
         }
-        if (ContentType.JRNL_INTRPT.key.equals(contentType)) {
-            EhCacheUtils.clearUserCache("jrnlIntrptYyMnthTagListByUser", username);
-            EhCacheUtils.clearUserCache("jrnlIntrptYyMnthSizedTagListByUser", username);
+        if (ContentType.JOURNAL_INTRPT.key.equals(contentType)) {
+            EhCacheUtils.clearUserCache("journalIntrptYyMnthTagListByUser", username);
+            EhCacheUtils.clearUserCache("journalIntrptYyMnthSizedTagListByUser", username);
         }
     }
 
@@ -351,3 +351,4 @@ public class TagProfileService
         return "text-" + normalized.toLowerCase(Locale.ROOT);
     }
 }
+

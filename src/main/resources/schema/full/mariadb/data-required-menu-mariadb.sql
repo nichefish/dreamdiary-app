@@ -21,25 +21,25 @@ INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 -- 저널
 INSERT INTO menu ( upper_menu_id, menu_ty_cd, menu_label, menu_nm, url, idx, menu_sub_extend_ty_cd, mngr_yn, protected_yn, required_yn, use_yn, created_by )
 WITH T AS ( SELECT 'MAIN' AS upper_label )
-SELECT M.id, 'SUB', 'JRNL', '저널', NULL, 0, 'LIST', 'N', 'N', 'N', 'Y', 'SYSTEM'
+SELECT M.id, 'SUB', 'JOURNAL', '저널', NULL, 0, 'LIST', 'N', 'N', 'N', 'Y', 'SYSTEM'
 FROM T
 INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 
 INSERT INTO menu ( upper_menu_id, menu_ty_cd, menu_nm, url, icon, idx, created_by, menu_sub_extend_ty_cd, menu_label, mngr_yn, protected_yn, required_yn, use_yn )
-WITH T AS ( SELECT 'JRNL' AS upper_label )
-SELECT M.id, 'SUB', '저널 일자', '/app/jrnl/day/monthly.do', NULL, 0, 'system', 'NO_SUB', 'JRNL_DAY', 'N', 'N', 'N', 'Y'
+WITH T AS ( SELECT 'JOURNAL' AS upper_label )
+SELECT M.id, 'SUB', '저널 일자', '/app/journal/day/monthly.do', NULL, 0, 'system', 'NO_SUB', 'JOURNAL_DAY', 'N', 'N', 'N', 'Y'
 FROM T
 INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 
 INSERT INTO menu ( upper_menu_id, menu_ty_cd, menu_nm, url, icon, idx, created_by, menu_sub_extend_ty_cd, menu_label, mngr_yn, protected_yn, required_yn, use_yn )
-WITH T AS ( SELECT 'JRNL' AS upper_label )
-SELECT M.id, 'SUB', '저널 주제', '/app/jrnl/sbjct/list.do', NULL, 1, 'system', 'NO_SUB', 'JRNL_SBJCT', 'N', 'N', 'N', 'Y'
+WITH T AS ( SELECT 'JOURNAL' AS upper_label )
+SELECT M.id, 'SUB', '저널 주제', '/app/journal/sbjct/list.do', NULL, 1, 'system', 'NO_SUB', 'JOURNAL_SBJCT', 'N', 'N', 'N', 'Y'
 FROM T
 INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 
 INSERT INTO menu ( upper_menu_id, menu_ty_cd, menu_nm, url, icon, idx, created_by, menu_sub_extend_ty_cd, menu_label, mngr_yn, protected_yn, required_yn, use_yn )
-WITH T AS ( SELECT 'JRNL' AS upper_label )
-SELECT M.id, 'SUB', '저널 결산', '/app/jrnl/sumry/list.do', NULL, 2, 'system', 'NO_SUB', 'JRNL_SUMRY', 'N', 'N', 'N', 'Y'
+WITH T AS ( SELECT 'JOURNAL' AS upper_label )
+SELECT M.id, 'SUB', '저널 결산', '/app/journal/sumry/list.do', NULL, 2, 'system', 'NO_SUB', 'JOURNAL_SUMRY', 'N', 'N', 'N', 'Y'
 FROM T
 INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 

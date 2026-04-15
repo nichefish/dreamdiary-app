@@ -1,0 +1,40 @@
+<#--
+ * 저널 결산(journal_sumry) - 컨텍스트 버튼 partial
+ * @see handlebars.ts
+ -->
+
+<script type="text/x-handlebars-template" id="journal_sumry_context_btn_partial" data-partial>
+    <!-- Dropdown -->
+    <div class="me-0 d-flex align-items-center">
+        <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary"
+                data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end"
+                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.context.menu.show'/>">
+            <i class="ki-solid ki-dots-horizontal fs-2x"></i>
+        </button>
+        <!--begin::Menu 3-->
+        <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3" data-kt-menu="true" style="">
+            <!--begin::Heading-->
+            <div class="menu-item px-3">
+                <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase"><@spring.message "txt.journal.sumry"/></div>
+            </div>
+            <!--end::Heading-->
+            <!--begin::Menu item-->
+            <div class="menu-item px-3 my-1 cursor-pointer"
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.journal.sumry"/> <@spring.message 'txt.comm.open-in-new-window'/>">
+                <div class="menu-link flex-stack px-3" onclick="dF.JournalSumry.dtlView({{yy}});">
+                    <@spring.message 'txt.sumry'/> <@spring.message "txt.comm.open-in-new-window"/>
+                    <i class="bi bi-window-stack fs-8"></i>
+                </div>
+            </div>
+            <!--begin::Menu item-->
+            <div class="menu-item px-3 my-1 cursor-pointer"
+                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.journal.sumry"/> <@spring.message 'bs.tooltip.modal.mdf'/>">
+                <div class="menu-link flex-stack px-3" onclick="dF.JournalSumry.mdfModal({{yy}});">
+                    <@spring.message 'txt.sumry'/> <@spring.message 'txt.comm.edit'/>
+                    <i class="bi bi-pencil-square fs-8"></i>
+                </div>
+            </div>
+        </div>
+        <!--end::Menu 3-->
+    </div>
+</script>

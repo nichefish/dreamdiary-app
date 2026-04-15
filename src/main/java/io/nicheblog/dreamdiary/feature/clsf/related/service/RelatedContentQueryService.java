@@ -7,8 +7,8 @@ import io.nicheblog.dreamdiary.feature.clsf.related.entity.RelatedContentEntity;
 import io.nicheblog.dreamdiary.feature.clsf.related.mapstruct.RelatedContentMapstruct;
 import io.nicheblog.dreamdiary.feature.clsf.related.model.RelatedContentDto;
 import io.nicheblog.dreamdiary.feature.clsf.related.repository.jpa.RelatedContentRepository;
-import io.nicheblog.dreamdiary.feature.jrnl.diary.repository.jpa.JrnlDiaryRepository;
-import io.nicheblog.dreamdiary.feature.jrnl.dream.repository.jpa.JrnlDreamRepository;
+import io.nicheblog.dreamdiary.feature.journal.diary.repository.jpa.JournalDiaryRepository;
+import io.nicheblog.dreamdiary.feature.journal.dream.repository.jpa.JournalDreamRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -30,8 +30,8 @@ public class RelatedContentQueryService {
 
     private final RelatedContentRepository relatedContentRepository;
     private final RelatedContentMapstruct relatedContentMapstruct;
-    private final JrnlDiaryRepository jrnlDiaryRepository;
-    private final JrnlDreamRepository jrnlDreamRepository;
+    private final JournalDiaryRepository journalDiaryRepository;
+    private final JournalDreamRepository journalDreamRepository;
 
     @Transactional(readOnly = true)
     public Map<String, List<RelatedContentDto>> getRelatedContentMapByRefs(
@@ -111,11 +111,11 @@ public class RelatedContentQueryService {
         }
 
         final Map<String, String> titleMap = new LinkedHashMap<>();
-        jrnlDiaryRepository.findAllById(diaryIdSet).forEach(entity ->
-                titleMap.put(this.toKey(ContentType.JRNL_DIARY.key, entity.getId()), entity.getTitle())
+        journalDiaryRepository.findAllById(diaryIdSet).forEach(entity ->
+                titleMap.put(this.toKey(ContentType.JOURNAL_DIARY.key, entity.getId()), entity.getTitle())
         );
-        jrnlDreamRepository.findAllById(dreamIdSet).forEach(entity ->
-                titleMap.put(this.toKey(ContentType.JRNL_DREAM.key, entity.getId()), entity.getTitle())
+        journalDreamRepository.findAllById(dreamIdSet).forEach(entity ->
+                titleMap.put(this.toKey(ContentType.JOURNAL_DREAM.key, entity.getId()), entity.getTitle())
         );
 
         return titleMap;
@@ -129,20 +129,20 @@ public class RelatedContentQueryService {
     ) {
         if (id == null || StringUtils.isBlank(contentType)) return;
 
-        if (Objects.equals(contentType, ContentType.JRNL_DIARY.key)) {
+        if (Objects.equals(contentType, ContentType.JOURNAL_DIARY.key)) {
             diaryIdSet.add(id);
             return;
         }
 
-        if (Objects.equals(contentType, ContentType.JRNL_DREAM.key)) {
+        if (Objects.equals(contentType, ContentType.JOURNAL_DREAM.key)) {
             dreamIdSet.add(id);
         }
     }
 
     private boolean isSupported(final BaseClsfKey refKey) {
         if (refKey == null || refKey.getId() == null || StringUtils.isBlank(refKey.getContentType())) return false;
-        return Objects.equals(refKey.getContentType(), ContentType.JRNL_DIARY.key)
-                || Objects.equals(refKey.getContentType(), ContentType.JRNL_DREAM.key);
+        return Objects.equals(refKey.getContentType(), ContentType.JOURNAL_DIARY.key)
+                || Objects.equals(refKey.getContentType(), ContentType.JOURNAL_DREAM.key);
     }
 
     private String toKey(final String contentType, final Integer id) {

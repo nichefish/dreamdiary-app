@@ -62,8 +62,8 @@ public interface Code {
     String NOTICE_CTGR_CD = "NOTICE_CTGR_CD";   // 공지사항 글분류 코드
     String POST_CTGR_CD = "POST_CTGR_CD";       // 게시판
     String JANDI_TOPIC_CD = "JANDI_TOPIC_CD";   // 잔디 토픽 코드
-    String JRNL_CHAPTER_CTGR_CD = "JRNL_CHAPTER_CTGR_CD";   // 저널 챕터 글분류 코드
-    String JRNL_SBJCT_CTGR_CD = "JRNL_SBJCT_CTGR_CD";   // 저널 주제 글분류 코드
+    String JOURNAL_CHAPTER_CTGR_CD = "JOURNAL_CHAPTER_CTGR_CD";   // 저널 챕터 글분류 코드
+    String JOURNAL_SBJCT_CTGR_CD = "JOURNAL_SBJCT_CTGR_CD";   // 저널 주제 글분류 코드
 
     String YY_CD = "YY_CD";                 // 사용자 권한 코드
     String MNTH_CD = "MNTH_CD";                 // 사용자 권한 코드
@@ -77,7 +77,7 @@ public interface Code {
     String MENU_TY_SUB = "SUB";
 
     /** 꿈 결산 구분 코드 */
-    String JRNL_SUMRY_TY_CD = "JRNL_SUMRY_TY_CD";
+    String JOURNAL_SUMRY_TY_CD = "JOURNAL_SUMRY_TY_CD";
 
     /** 일정 분류 코드 */
     String SCHDUL_CD = "SCHDUL_CD";       // 일정 구분 코드

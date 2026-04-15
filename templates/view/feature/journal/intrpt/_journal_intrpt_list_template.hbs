@@ -1,0 +1,29 @@
+<#--
+ * 저널 해석(journal_intrpt) 목록 조회 Template
+ * @included_in : journal_day_page.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="journal_intrpt_list_template">
+    {{#each this}}
+        <div class="journal-item">
+            <div class="col-1 d-none d-md-flex-align-center flex-column py-3 border-2 border-gray-300 border-end ps-6 me-4 w-130px h-75 gap-2">
+                {{> journal_day_context_btn_partial this id=this.journalDayId}}
+            </div>
+            <div class="col py-3 journal-intrpt-cn {{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}">
+                <div class="d-flex-align-center">
+                    {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}
+                </div>
+            </div>
+            <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+            <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
+                {{> comment_reg_btn_partial this contentType="JOURNAL_INTRPT"}}
+                {{> journal_intrpt_copy_btn_partial this}}
+                {{> journal_intrpt_context_btn_partial this}}
+            </div>
+        </div>
+    {{else}}
+        <div class="journal-day d-flex-center">
+            <@spring.message 'txt.journal.intrpt'/> <@spring.message 'view.list.empty'/>
+        </div>
+    {{/each}}
+</script>

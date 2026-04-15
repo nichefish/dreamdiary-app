@@ -47,7 +47,7 @@ class NoticeMapstructTest {
         assertEquals(TestConstant.TEST_REGSTR_NM, noticeDto.getCreatedByNm(), "등록자 이름이 제대로 매핑되지 않았습니다.");
         assertEquals("2000-01-01 00:00:00", noticeDto.getCreatedAt(), "등록일시가 제대로 매핑되지 않았습니다.");
         // 수정자
-        assertEquals(TestConstant.TEST_MDFUSR_ID, noticeDto.getUpdatedById(), "수정자 ID가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_MDFUSR_ID, noticeDto.getUpdatedBy(), "수정자 ID가 제대로 매핑되지 않았습니다.");
         assertEquals(TestConstant.TEST_MDFUSR_NM, noticeDto.getUpdatedByNm(), "수정자 이름이 제대로 매핑되지 않았습니다.");
         assertEquals("2000-01-01 00:00:00", noticeDto.getUpdatedAt(), "수정일시가 제대로 매핑되지 않았습니다.");
     }

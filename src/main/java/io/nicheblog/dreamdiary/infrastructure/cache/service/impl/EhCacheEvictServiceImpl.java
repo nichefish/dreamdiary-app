@@ -25,20 +25,20 @@ import java.util.Map;
 public class EhCacheEvictServiceImpl
         implements CacheEvictService {
 
-    // private final JrnlDayCacheEvictor jrnlDayCacheEvictor;
-    // private final JrnlDiaryCacheEvictor jrnlDiaryCacheEvictor;
-    // private final JrnlDreamCacheEvictor jrnlDreamCacheEvictor;
-    // private final JrnlSumryCacheEvictor jrnlSumryCacheEvictor;
+    // private final JournalDayCacheEvictor journalDayCacheEvictor;
+    // private final JournalDiaryCacheEvictor journalDiaryCacheEvictor;
+    // private final JournalDreamCacheEvictor journalDreamCacheEvictor;
+    // private final JournalSumryCacheEvictor journalSumryCacheEvictor;
 
     // CacheEvictor를 매핑하는 Map
     private final Map<String, CacheEvictor<Integer>> evictorMap = new HashMap<>();
 
     @PostConstruct
     private void initEvictorMap() {
-        // evictorMap.put(ContentType.JRNL_DAY.key, jrnlDayCacheEvictor);
-        // evictorMap.put(ContentType.JRNL_DIARY.key, jrnlDiaryCacheEvictor);
-        // evictorMap.put(ContentType.JRNL_DREAM.key, jrnlDreamCacheEvictor);
-        // evictorMap.put(ContentType.JRNL_SUMRY.key, jrnlSumryCacheEvictor);
+        // evictorMap.put(ContentType.JOURNAL_DAY.key, journalDayCacheEvictor);
+        // evictorMap.put(ContentType.JOURNAL_DIARY.key, journalDiaryCacheEvictor);
+        // evictorMap.put(ContentType.JOURNAL_DREAM.key, journalDreamCacheEvictor);
+        // evictorMap.put(ContentType.JOURNAL_SUMRY.key, journalSumryCacheEvictor);
     }
 
     /**
@@ -57,3 +57,4 @@ public class EhCacheEvictServiceImpl
         evictor.evict(refId);
     }
 }
+

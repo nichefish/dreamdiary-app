@@ -2,7 +2,7 @@ export {};
 
 declare global {
     interface Window {
-        JRNL?: {
+        JOURNAL?: {
             stdrdDt?: string;
         };
     }

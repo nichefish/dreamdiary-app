@@ -54,9 +54,9 @@ public class MetaService
      */
     public List<ContentType> getContentTypeList() {
         return List.of(
-                ContentType.JRNL_DAY,
-                ContentType.JRNL_DIARY,
-                ContentType.JRNL_DREAM
+                ContentType.JOURNAL_DAY,
+                ContentType.JOURNAL_DIARY,
+                ContentType.JOURNAL_DREAM
         );
     }
 

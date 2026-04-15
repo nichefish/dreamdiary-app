@@ -18,7 +18,7 @@
             <#--begin::Row-->
             <div class="row mb-4">
                 <div class="col-12">
-                    <label class="d-flex align-items-center mb-2" for="tinymce_jrnlDreamCn">
+                    <label class="d-flex align-items-center mb-2" for="tinymce_journalDreamCn">
                         <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'txt.cn'/></span>
                     </label>
                 </div>

@@ -1,0 +1,24 @@
+<#--
+ * 저널 결산 리뷰(journal_sumry_review) - 내용 partial
+ * @see handlebars.ts
+ -->
+
+<script type="text/x-handlebars-template" id="journal_sumry_review_cn_partial" data-partial>
+    <div class="{{#if (exists cnClass)}}{{cnClass}}{{else}}cn {{cnStateClass state}}{{/if}}">
+        {{{markdownCn}}}
+    </div>
+
+    {{#if (exists tag.list)}}
+        <div class="tags ms-2 mt-3">
+            <i class="bi bi-tag"></i>
+        {{#tag.list}}
+            {{> tag_list_partial this module="dF.JournalDiaryTag"}}
+        {{/tag.list}}
+        </div>
+    {{/if}}
+    {{#if (exists comment.list)}}
+        {{#each comment.list}}
+            {{> comment_list_partial this}}
+        {{/each}}
+    {{/if}}
+</script>

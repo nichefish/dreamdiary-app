@@ -29,77 +29,77 @@ public interface ApiUrl {
     String OAUTH2_NAVER_REDIRECT_URI = "/login/oauth2/code/naver";
 
     /** 저널 일자 */
-    String JRNL_DAYS = Prefix.API + "/jrnl/days";
-    String JRNL_DAY = Prefix.API + "/jrnl/day/{id}";
+    String JOURNAL_DAYS = Prefix.API + "/journal/days";
+    String JOURNAL_DAY = Prefix.API + "/journal/day/{id}";
     /** 저널 일자 태그 */
-    String JRNL_DAY_TAGS = Prefix.API + "/jrnl/day/tags";
-    String JRNL_DAY_TAG_GROUP_LIST = Prefix.API + "/jrnl/day/tag/group-list";
-    String JRNL_DAY_TAG = Prefix.API + "/jrnl/day/tag/{tagId}";
-    String JRNL_DAY_TAG_YYS = Prefix.API + "/jrnl/day/tag/{tagId}/years";
-    String JRNL_DAY_TAG_CTGR_MAP = Prefix.API + "/jrnl/day/tag/ctgr-map";
+    String JOURNAL_DAY_TAGS = Prefix.API + "/journal/day/tags";
+    String JOURNAL_DAY_TAG_GROUP_LIST = Prefix.API + "/journal/day/tag/group-list";
+    String JOURNAL_DAY_TAG = Prefix.API + "/journal/day/tag/{tagId}";
+    String JOURNAL_DAY_TAG_YYS = Prefix.API + "/journal/day/tag/{tagId}/years";
+    String JOURNAL_DAY_TAG_CTGR_MAP = Prefix.API + "/journal/day/tag/ctgr-map";
     /** 저널 일자 메타 */
-    String JRNL_DAY_METAS = Prefix.API + "/jrnl/day/metas";
-    String JRNL_DAY_META = Prefix.API + "/jrnl/day/metas/{id}";
-    String JRNL_DAY_META_YYS = Prefix.API + "/jrnl/day/metas/{id}/years";
-    String JRNL_DAY_META_CTGR_MAP = Prefix.API + "/jrnl/day/meta/ctgr-map";
+    String JOURNAL_DAY_METAS = Prefix.API + "/journal/day/metas";
+    String JOURNAL_DAY_META = Prefix.API + "/journal/day/metas/{id}";
+    String JOURNAL_DAY_META_YYS = Prefix.API + "/journal/day/metas/{id}/years";
+    String JOURNAL_DAY_META_CTGR_MAP = Prefix.API + "/journal/day/meta/ctgr-map";
 
     /** 저널 꿈 */
-    String JRNL_DREAMS = Prefix.API + "/jrnl/dreams";
-    String JRNL_DREAM = Prefix.API + "/jrnl/dream/{id}";
-    String JRNL_DREAMS_EXPORT = Prefix.API + "/jrnl/dreams/export";
+    String JOURNAL_DREAMS = Prefix.API + "/journal/dreams";
+    String JOURNAL_DREAM = Prefix.API + "/journal/dream/{id}";
+    String JOURNAL_DREAMS_EXPORT = Prefix.API + "/journal/dreams/export";
     /** 저널 꿈 태그 */
-    String JRNL_DREAM_TAGS = Prefix.API + "/jrnl/dream/tags";
-    String JRNL_DREAM_TAG_GROUP_LIST_AJAX = Prefix.API + "/jrnl/dream/tag-group-list";
-    String JRNL_DREAM_TAG_CTGR_MAP = Prefix.API + "/jrnl/dream/tag/ctgr-map";
+    String JOURNAL_DREAM_TAGS = Prefix.API + "/journal/dream/tags";
+    String JOURNAL_DREAM_TAG_GROUP_LIST_AJAX = Prefix.API + "/journal/dream/tag-group-list";
+    String JOURNAL_DREAM_TAG_CTGR_MAP = Prefix.API + "/journal/dream/tag/ctgr-map";
     /** 저널 해석 */
-    String JRNL_INTRPTS = Prefix.API + "/jrnl/intrpts";
-    String JRNL_INTRPT = Prefix.API + "/jrnl/intrpt/{id}";
-    String JRNL_INTRPT_SET_COLLAPSE_AJAX = Prefix.API + "/jrnl/intrpt/set-collapse";
+    String JOURNAL_INTRPTS = Prefix.API + "/journal/intrpts";
+    String JOURNAL_INTRPT = Prefix.API + "/journal/intrpt/{id}";
+    String JOURNAL_INTRPT_SET_COLLAPSE_AJAX = Prefix.API + "/journal/intrpt/set-collapse";
     /** 저널 해석 태그 */
-    String JRNL_INTRPT_TAGS = Prefix.API + "/jrnl/intrpt/tags";
-    String JRNL_INTRPT_TAG_GROUP_LIST_AJAX = Prefix.API + "/jrnl/intrpt/tag/group-list";
-    String JRNL_INTRPT_TAG = Prefix.API + "/jrnl/intrpt/tag/{tagId}";
-    String JRNL_INTRPT_TAG_CTGR_MAP = Prefix.API + "/jrnl/intrpt/tag/ctgr-map";
+    String JOURNAL_INTRPT_TAGS = Prefix.API + "/journal/intrpt/tags";
+    String JOURNAL_INTRPT_TAG_GROUP_LIST_AJAX = Prefix.API + "/journal/intrpt/tag/group-list";
+    String JOURNAL_INTRPT_TAG = Prefix.API + "/journal/intrpt/tag/{tagId}";
+    String JOURNAL_INTRPT_TAG_CTGR_MAP = Prefix.API + "/journal/intrpt/tag/ctgr-map";
 
     /** 저널 챕터 */
-    String JRNL_CHAPTERS = Prefix.API + "/jrnl/chapters";
-    String JRNL_CHAPTER = Prefix.API + "/jrnl/chapter/{id}";
-    String JRNL_CHAPTER_EXPORT = Prefix.API + "/jrnl/chapter/{id}/export";
+    String JOURNAL_CHAPTERS = Prefix.API + "/journal/chapters";
+    String JOURNAL_CHAPTER = Prefix.API + "/journal/chapter/{id}";
+    String JOURNAL_CHAPTER_EXPORT = Prefix.API + "/journal/chapter/{id}/export";
 
     /** 저널 일기 */
-    String JRNL_DIARIES = Prefix.API + "/jrnl/diaries";
-    String JRNL_DIARY = Prefix.API + "/jrnl/diary/{id}";
-    String JRNL_DIARIES_EXPORT = Prefix.API + "/jrnl/diaries/export";
+    String JOURNAL_DIARIES = Prefix.API + "/journal/diaries";
+    String JOURNAL_DIARY = Prefix.API + "/journal/diary/{id}";
+    String JOURNAL_DIARIES_EXPORT = Prefix.API + "/journal/diaries/export";
     /** 저널 일기 태그 */
-    String JRNL_DIARY_TAGS = Prefix.API + "/jrnl/diary/tags";
-    String JRNL_DIARY_TAG_GROUP_LIST_AJAX = Prefix.API + "/jrnl/diary/tag/group-list";
-    String JRNL_DIARY_TAG_CTGR_MAP = Prefix.API + "/jrnl/diary/tag/ctgr-map";
+    String JOURNAL_DIARY_TAGS = Prefix.API + "/journal/diary/tags";
+    String JOURNAL_DIARY_TAG_GROUP_LIST_AJAX = Prefix.API + "/journal/diary/tag/group-list";
+    String JOURNAL_DIARY_TAG_CTGR_MAP = Prefix.API + "/journal/diary/tag/ctgr-map";
 
     /** 저널 할일 */
-    String JRNL_TODOS = Prefix.API + "/jrnl/todos";
-    String JRNL_TODO = Prefix.API + "/jrnl/todo/{id}";
+    String JOURNAL_TODOS = Prefix.API + "/journal/todos";
+    String JOURNAL_TODO = Prefix.API + "/journal/todo/{id}";
 
     /** 저널 주제 */
-    String JRNL_SBJCT_REG_AJAX = Prefix.API + "/jrnl/sbjct/reg";
-    String JRNL_SBJCT_DTL_AJAX = Prefix.API + "/jrnl/sbjct/dtl";
-    String JRNL_SBJCT_MDF_AJAX = Prefix.API + "/jrnl/sbjct/mdf";
-    String JRNL_SBJCT_DEL_AJAX = Prefix.API + "/jrnl/sbjct/del";
+    String JOURNAL_SBJCT_REG_AJAX = Prefix.API + "/journal/sbjct/reg";
+    String JOURNAL_SBJCT_DTL_AJAX = Prefix.API + "/journal/sbjct/dtl";
+    String JOURNAL_SBJCT_MDF_AJAX = Prefix.API + "/journal/sbjct/mdf";
+    String JOURNAL_SBJCT_DEL_AJAX = Prefix.API + "/journal/sbjct/del";
 
     /** 저널 결산 */
-    String JRNL_SUMRIES = Prefix.API + "/jrnl/sumries";
-    String JRNL_SUMRY = Prefix.API + "/jrnl/sumry/{yy}";
-    String JRNL_SUMRY_DIARIES = Prefix.API + "/jrnl/sumry/{yy}/diaries";
-    String JRNL_SUMRY_DREAMS = Prefix.API + "/jrnl/sumry/{yy}/dreams";
-    String JRNL_SUMRY_TAGS = Prefix.API + "/jrnl/sumry/{yy}/tags";
+    String JOURNAL_SUMRIES = Prefix.API + "/journal/sumries";
+    String JOURNAL_SUMRY = Prefix.API + "/journal/sumry/{yy}";
+    String JOURNAL_SUMRY_DIARIES = Prefix.API + "/journal/sumry/{yy}/diaries";
+    String JOURNAL_SUMRY_DREAMS = Prefix.API + "/journal/sumry/{yy}/dreams";
+    String JOURNAL_SUMRY_TAGS = Prefix.API + "/journal/sumry/{yy}/tags";
 
-    String JRNL_SUMRY_MAKE_AJAX = Prefix.API + "/jrnl/sumry/make";
-    String JRNL_SUMRY_MAKE_TOTAL_AJAX = Prefix.API + "/jrnl/sumry/make-total";
-    String JRNL_SUMRY_DREAM_COMPT_AJAX = Prefix.API + "/jrnl/sumry/dream-compt";
-    String JRNL_SUMRY_REG_AJAX = Prefix.API + "/jrnl/sumry/reg";
+    String JOURNAL_SUMRY_MAKE_AJAX = Prefix.API + "/journal/sumry/make";
+    String JOURNAL_SUMRY_MAKE_TOTAL_AJAX = Prefix.API + "/journal/sumry/make-total";
+    String JOURNAL_SUMRY_DREAM_COMPT_AJAX = Prefix.API + "/journal/sumry/dream-compt";
+    String JOURNAL_SUMRY_REG_AJAX = Prefix.API + "/journal/sumry/reg";
 
     /** 저널 결산 리뷰 */
-    String JRNL_SUMRY_REVIEWS = Prefix.API + "/jrnl/sumry/reviews";
-    String JRNL_SUMRY_REVIEW = Prefix.API + "/jrnl/sumry/review/{id}";
+    String JOURNAL_SUMRY_REVIEWS = Prefix.API + "/journal/sumry/reviews";
+    String JOURNAL_SUMRY_REVIEW = Prefix.API + "/journal/sumry/review/{id}";
 
     /** 공지사항 */
     String NOTICE_REG_AJAX = Prefix.API + "/notice/reg";

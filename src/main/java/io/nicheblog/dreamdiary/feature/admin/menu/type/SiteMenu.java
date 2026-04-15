@@ -38,11 +38,11 @@ public enum SiteMenu {
 
     NOTICE("공지사항"),
 
-    JRNL("저널"),
-    JRNL_DAY("저널 일자"),
-    JRNL_CAL("저널 달력"),
-    JRNL_SBJCT("저널 주제"),
-    JRNL_SUMRY("저널 결산"),
+    JOURNAL("저널"),
+    JOURNAL_DAY("저널 일자"),
+    JOURNAL_CAL("저널 달력"),
+    JOURNAL_SBJCT("저널 주제"),
+    JOURNAL_SUMRY("저널 결산"),
 
     BOARD("일반게시판"),
 

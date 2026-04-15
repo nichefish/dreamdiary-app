@@ -52,7 +52,7 @@ class NoticeRepositoryTest {
      */
     @BeforeEach
     void setUp() throws Exception {
-        // 공통적으로 사용할 jrnlDayEntity 초기화
+        // 공통적으로 사용할 journalDayEntity 초기화
         noticeEntity = NoticeEntityTestFactory.create();
     }
 
@@ -96,8 +96,8 @@ class NoticeRepositoryTest {
         assertNotNull(modified.getId(), "저장된 엔티티의 key 값이 없습니다.");
         // audit
         assertNotNull(modified.getUpdatedAt(), "수정일자 audit 처리가 되지 않았습니다.");
-        assertNotNull(modified.getUpdatedById(),  "수정자 audit 처리가 되지 않았습니다.");
-        assertEquals(TestConstant.TEST_AUDITOR, modified.getUpdatedById(), "수정자가 예상 값과 일치하지 않습니다.");
+        assertNotNull(modified.getUpdatedBy(),  "수정자 audit 처리가 되지 않았습니다.");
+        assertEquals(TestConstant.TEST_AUDITOR, modified.getUpdatedBy(), "수정자가 예상 값과 일치하지 않습니다.");
         // value
         assertEquals("modified", modified.getCn(), "값이 정상적으로 수정되지 않았습니다.");
     }
@@ -121,3 +121,4 @@ class NoticeRepositoryTest {
         assertNull(retrieved, "삭제가 제대로 이루어지지 않았습니다.");
     }
 }
+
