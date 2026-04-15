@@ -26,7 +26,7 @@ public class CdLookupItem {
     /** 상세 코드명 */
     private String dtlCdNm;
     /** 설명 */
-    private String dc;
+    private String description;
     /** 정렬 순서 */
     private Integer sortOrder;
     /** 사용 여부 */

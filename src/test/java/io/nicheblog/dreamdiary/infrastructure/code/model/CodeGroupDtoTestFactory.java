@@ -13,7 +13,7 @@ public class CodeGroupDtoTestFactory {
         return CodeGroupDto.builder()
                 .clCd(TestConstant.TEST_CL_CD)
                 .clCdNm(TestConstant.TEST_CL_CD_NM)
-                .dc(TestConstant.TEST_DC)
+                .description(TestConstant.TEST_DC)
                 .build();
     }
 
@@ -21,7 +21,7 @@ public class CodeGroupDtoTestFactory {
         return CodeGroupDto.builder()
                 .clCd(TestConstant.TEST_CL_CD_1)
                 .clCdNm(TestConstant.TEST_CL_CD_NM_1)
-                .dc(TestConstant.TEST_DC_1)
+                .description(TestConstant.TEST_DC_1)
                 .build();
     }
 }

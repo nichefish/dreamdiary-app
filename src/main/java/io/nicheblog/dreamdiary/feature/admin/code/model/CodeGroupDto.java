@@ -23,7 +23,7 @@ public class CodeGroupDto
     private Long rnum;
     private String clCd;
     private String clCdNm;
-    private String dc;
+    private String description;
     @Builder.Default
     private String protectedYn = "N";
     private String clCtgrCd;

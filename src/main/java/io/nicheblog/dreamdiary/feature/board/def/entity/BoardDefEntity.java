@@ -50,8 +50,8 @@ public class BoardDefEntity
     private String ctgrClCd;
 
     /** 설명 */
-    @Column(name = "dc", length=2000)
-    private String dc;
+    @Column(name = "description", length=2000)
+    private String description;
 
     /** 정렬 순서 */
     @Column(name = "sort_order", columnDefinition = "INT DEFAULT 0")

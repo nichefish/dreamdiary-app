@@ -86,7 +86,7 @@ public class CodeItemService
                             .clCd(item.getClCd())
                             .dtlCd(item.getDtlCd())
                             .dtlCdNm(item.getDtlCdNm())
-                            .dc(item.getDc())
+                            .description(item.getDescription())
                             .sortOrder(item.getSortOrder())
                             .useYn(item.getUseYn())
                             .protectedYn(item.getProtectedYn())

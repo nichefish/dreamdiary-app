@@ -33,7 +33,7 @@ public class CodeGroupSpec
             switch (key) {
                 case "clCd":
                 case "clCdNm":
-                case "dc":
+                case "description":
                     final Expression<String> keyExp = root.get(key);
                     predicate.add(builder.like(keyExp, "%" + value + "%"));
                     continue;

@@ -12,7 +12,7 @@ public class CodeGroupEntityTestFactory {
         return CodeGroupEntity.builder()
                 .clCd(TestConstant.TEST_CL_CD)
                 .clCdNm(TestConstant.TEST_CL_CD_NM)
-                .dc(TestConstant.TEST_DC)
+                .description(TestConstant.TEST_DC)
                 .build();
     }
 }

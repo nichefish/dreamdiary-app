@@ -13,7 +13,7 @@ public class CodeItemEntityTestFactory {
                 .clCd(TestConstant.TEST_CL_CD)
                 .dtlCd(TestConstant.TEST_DTL_CD)
                 .dtlCdNm(TestConstant.TEST_DTL_CD_NM)
-                .dc(TestConstant.TEST_DC)
+                .description(TestConstant.TEST_DC)
                 .build();
     }
 }
