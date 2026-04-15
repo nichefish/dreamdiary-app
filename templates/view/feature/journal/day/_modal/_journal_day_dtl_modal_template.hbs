@@ -1,0 +1,99 @@
+<#--
+ * 저널 일자(journal_day) > 등록/수정 Template
+ * @included_in : _journal_day_reg_modal.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="journal_day_dtl_modal_template">
+    <input type="hidden" name="id" value="{{id}}">
+
+    <#--begin::Row-->
+    <div class="row row-cols-lg-2 mb-3 d-flex flex-column">
+        <div class="d-flex align-items-center mt-1 gap-1">
+            <i class="bi bi-calendar3 fs-6 me-1"></i>
+            {{stdrdDt}}
+            {{#if (exists journalDt)}}
+                <span class="fs-8 text-gray-600">({{journalDtWeekDay}})</span>
+            {{else}}
+                <i class='bi bi-exclamation-circle cursor-pointer text-noti blink fs-7 ms-2'
+                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="불확실한 일자입니다."></i>
+            {{/if}}
+            <span class="fs-7 ms-4 text-muted">{{{weather}}}</span>
+        </div>
+        <div class="mt-3">
+            {{#tag.list}}
+                {{> tag_list_partial this module="dF.JournalDayTag"}}
+            {{/tag.list}}
+        </div>
+    </div>
+
+    <div class="row p-5">
+        {{#if (exists journalDiaryList)}}
+            <div class="d-flex align-items-center mt-2">
+                <span class="text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder">
+                    <@spring.message 'txt.diary'/>
+                    <i class="bi bi-book fs-4 pe-1"></i>
+                </span>
+            </div>
+            {{#each journalDiaryList}}
+                <div class="journal-diary-item" data-id="{{id}}">
+                    <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
+                        <div># {{idx}}</div>
+                    </div>
+                    <div class="col journal-diary-cn">
+                        {{> journal_diary_cn_partial this collapse="collapse-4"}}
+                    </div>
+                    <div class="col-1 d-none d-md-flex ms-4 pe-0 border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                    <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
+                        {{> comment_reg_btn_partial this contentType="JOURNAL_DIARY"}}
+                        {{> journal_diary_copy_btn_partial this}}
+                        {{> journal_diary_context_btn_partial this}}
+                    </div>
+                </div>
+            {{/each}}
+        {{/if}}
+        {{#if hasDream}}
+            <div class="d-flex align-items-center mt-2">
+                <span class="text-gray-700 fs-6 ps-1 ps-md-5 fw-bolder">
+                    <@spring.message 'txt.dream'/>
+                    <i class="bi bi-moon-stars fs-4 pe-1"></i>
+                </span>
+            </div>
+        {{/if}}
+        {{#each journalDreamList}}
+            <div class="journal-item">
+                <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
+                    <div># {{idx}}</div>
+                </div>
+                <div class="col py-3 journal-dream-cn {{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}">
+                    {{> journal_dream_cn_partial this collapse="collapse-4"}}
+                </div>
+                <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
+                    {{> comment_reg_btn_partial this contentType="JOURNAL_DREAM"}}
+                    {{> journal_dream_copy_btn_partial this}}
+                    {{> journal_dream_context_btn_partial this}}
+                </div>
+            </div>
+        {{/each}}
+        {{#each journalElseDreamList}}
+            <div class="journal-item">
+                <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
+                    <div>
+                        -
+                    </div>
+                </div>
+                <div class="col py-3 journal-dream-cn bg-secondary">
+                    {{> journal_diary_cn_partial this collapse="collapse-4" elseDreamYn="Y"}}
+                </div>
+                <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
+                    {{> comment_reg_btn_partial this contentType="JOURNAL_DREAM"}}
+                </div>
+                <div class="col-1 ms-4 pe-0 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                <div class="col-1 py-3 d-none d-md-flex-between w-50px gap-1">
+                    {{> journal_dream_copy_btn_partial this}}
+                    {{> journal_dream_context_btn_partial this}}
+                </div>
+            </div>
+            {{/each}}
+    </div>
+</script>

@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfKey;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagEntity;
-import io.nicheblog.dreamdiary.feature.clsf.tag.handler.JrnlTagCacheUpdtWorker;
+import io.nicheblog.dreamdiary.feature.clsf.tag.handler.JournalTagCacheUpdtWorker;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.global.util.TransactionHookUtils;
@@ -34,7 +34,7 @@ public class TagProcService {
 
     private final TagService tagService;
     private final TagContentService tagContentService;
-    private final JrnlTagCacheUpdtWorker jrnlTagCacheUpdtWorker;
+    private final JournalTagCacheUpdtWorker journalTagCacheUpdtWorker;
 
     /**
      * 태그 처리.
@@ -53,9 +53,9 @@ public class TagProcService {
     ) throws Exception {
         if (clsfKey == null) return;
 
-        final boolean isJrnl = yy != null || mnth != null;
-        if (isJrnl && (yy == null || mnth == null)) {
-            throw new IllegalStateException("yy/mnth must both be set for jrnl tag process.");
+        final boolean isJournal = yy != null || mnth != null;
+        if (isJournal && (yy == null || mnth == null)) {
+            throw new IllegalStateException("yy/mnth must both be set for journal tag process.");
         }
 
         if (tagCmpstn == null) {
@@ -65,7 +65,7 @@ public class TagProcService {
         }
 
         // 비저널 컨텐츠만 일반 분류 캐시 evict
-        if (!isJrnl) {
+        if (!isJournal) {
             EhCacheUtils.evictCacheByKey("tagContentEntityListByRef", clsfKey.getId() + "_" + clsfKey.getContentType());
         }
 
@@ -166,8 +166,9 @@ public class TagProcService {
         final String contentType = clsfKey.getContentType();
         final Map<Integer, Integer> safeChangeMap = new HashMap<>(tagCntChangeMap);
         TransactionHookUtils.runAfterCommitOrNow(
-                () -> jrnlTagCacheUpdtWorker.handle(contentType, cacheKey, safeChangeMap),
+                () -> journalTagCacheUpdtWorker.handle(contentType, cacheKey, safeChangeMap),
                 e -> log.error("Tag cache update failed [{}:{}:{}]: {}", contentType, yy, mnth, e.getMessage(), e)
         );
     }
 }
+

@@ -31,11 +31,11 @@ public class CommentCacheInvalidateWorker {
     @PostConstruct
     private void validateStrategies() {
         final Set<ContentType> requiredTypes = EnumSet.of(
-                ContentType.JRNL_DAY,
-                ContentType.JRNL_DIARY,
-                ContentType.JRNL_DREAM,
-                ContentType.JRNL_INTRPT,
-                ContentType.JRNL_SUMRY_REVIEW
+                ContentType.JOURNAL_DAY,
+                ContentType.JOURNAL_DIARY,
+                ContentType.JOURNAL_DREAM,
+                ContentType.JOURNAL_INTRPT,
+                ContentType.JOURNAL_SUMRY_REVIEW
         );
 
         final Map<ContentType, Integer> supportCountMap = new HashMap<>();

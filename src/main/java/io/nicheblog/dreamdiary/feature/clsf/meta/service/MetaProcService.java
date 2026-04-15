@@ -47,9 +47,9 @@ public class MetaProcService {
     ) throws Exception {
         if (clsfKey == null) return;
 
-        final boolean isJrnl = yy != null || mnth != null;
-        if (isJrnl && (yy == null || mnth == null)) {
-            throw new IllegalStateException("yy/mnth must both be set for jrnl meta process.");
+        final boolean isJournal = yy != null || mnth != null;
+        if (isJournal && (yy == null || mnth == null)) {
+            throw new IllegalStateException("yy/mnth must both be set for journal meta process.");
         }
 
         if (metaCmpstn == null) {
@@ -59,7 +59,7 @@ public class MetaProcService {
         }
 
         // 비저널 컨텐츠만 일반 분류 캐시 evict
-        if (!isJrnl) {
+        if (!isJournal) {
             EhCacheUtils.evictCacheByKey("metaContentEntityListByRef", clsfKey.getId() + "_" + clsfKey.getContentType());
         }
 
@@ -115,3 +115,4 @@ public class MetaProcService {
         }
     }
 }
+

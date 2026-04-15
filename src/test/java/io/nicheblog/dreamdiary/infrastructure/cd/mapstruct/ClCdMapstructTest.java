@@ -73,7 +73,7 @@ class ClCdMapstructTest {
         assertEquals(TestConstant.TEST_REGSTR_NM, dto.getCreatedByNm(), "등록자 이름이 제대로 매핑되지 않았습니다.");
         assertEquals("2000-01-01 00:00:00", dto.getCreatedAt(), "등록일시가 제대로 매핑되지 않았습니다.");
         // 수정자
-        assertEquals(TestConstant.TEST_MDFUSR_ID, dto.getUpdatedById(), "수정자 ID가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_MDFUSR_ID, dto.getUpdatedBy(), "수정자 ID가 제대로 매핑되지 않았습니다.");
         assertEquals(TestConstant.TEST_MDFUSR_NM, dto.getUpdatedByNm(), "수정자 이름이 제대로 매핑되지 않았습니다.");
         assertEquals("2000-01-01 00:00:00", dto.getUpdatedAt(), "수정일시가 제대로 매핑되지 않았습니다.");
     }
@@ -124,7 +124,7 @@ class ClCdMapstructTest {
         assertEquals(TestConstant.TEST_REGSTR_NM, dto.getCreatedByNm(), "등록자 이름이 제대로 매핑되지 않았습니다.");
         assertEquals("2000-01-01 00:00:00", dto.getCreatedAt(), "등록일시가 제대로 매핑되지 않았습니다.");
         // 수정자
-        assertEquals(TestConstant.TEST_MDFUSR_ID, dto.getUpdatedById(), "수정자 ID가 제대로 매핑되지 않았습니다.");
+        assertEquals(TestConstant.TEST_MDFUSR_ID, dto.getUpdatedBy(), "수정자 ID가 제대로 매핑되지 않았습니다.");
         assertEquals(TestConstant.TEST_MDFUSR_NM, dto.getUpdatedByNm(), "수정자 이름이 제대로 매핑되지 않았습니다.");
         assertEquals("2000-01-01 00:00:00", dto.getUpdatedAt(), "수정일시가 제대로 매핑되지 않았습니다.");
     }

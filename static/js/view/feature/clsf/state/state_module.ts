@@ -24,10 +24,10 @@ dF.State = (function(): dfModule {
             console.log("'dF.State' module initialized.");
         },
 
-        resolveJrnlCacheContext: function(item?: HTMLElement | null): Record<string, any> {
+        resolveJournalCacheContext: function(item?: HTMLElement | null): Record<string, any> {
             const itemYy: string = item?.dataset?.yy ?? "";
             const itemMnth: string = item?.dataset?.mnth ?? "";
-            const dayElement: HTMLElement = item?.closest?.(".jrnl-day") as HTMLElement;
+            const dayElement: HTMLElement = item?.closest?.(".journal-day") as HTMLElement;
             const stdrdDt: string = item?.dataset?.stdrdDt
                 ?? dayElement?.dataset?.stdrdDt
                 ?? cF.util.getUrlParam("stdrdDt")
@@ -72,3 +72,4 @@ dF.State = (function(): dfModule {
         },
     }
 })();
+

@@ -26,7 +26,7 @@
         <div class="fs-5 fw-bold me-5">
             태그-컨텐츠 :
         </div>
-        <div id="jrnl_tag_ctgr_div" data-ref-content-type="${refContentType!}">
+        <div id="journal_tag_ctgr_div" data-ref-content-type="${refContentType!}">
             <#list contentTypeList![] as contentType>
                 <#assign isChecked = refContentType! == contentType.key! />
                 <div class="btn btn-sm btn-outlined <#if isChecked>btn-light-primary<#else>btn-light-secondary</#if> text-dark align-middler"

@@ -210,7 +210,7 @@ cF.util = (function(): Module {
          */
         getPathVariableFromUrl: function(regex: RegExp): string|null  {
             const path: string = window.location.pathname;
-            // 예: /app/jrnl/sumry/2024.do
+            // 예: /app/journal/sumry/2024.do
             const match: RegExpMatchArray = path.match(regex);
 
             if (!match) return null;

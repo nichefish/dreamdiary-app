@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.feature.clsf.meta.service.MetaProcService;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagProcService;
-import io.nicheblog.dreamdiary.feature.jrnl._shared.model.JrnlPeriodModule;
+import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalPeriodModule;
 import io.nicheblog.dreamdiary.global.handler.SpringBeanProvider;
 import lombok.experimental.UtilityClass;
 
@@ -23,11 +23,11 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public final class BaseClsfProcPostProcessor {
 
-    private static final class JrnlPeriod {
+    private static final class JournalPeriod {
         private final Integer yy;
         private final Integer mnth;
 
-        private JrnlPeriod(final Integer yy, final Integer mnth) {
+        private JournalPeriod(final Integer yy, final Integer mnth) {
             this.yy = yy;
             this.mnth = mnth;
         }
@@ -69,7 +69,7 @@ public final class BaseClsfProcPostProcessor {
 
         final TagCmpstn tagCmpstn = isDeleteMethod ? null : tagCmpstnModule.getTag();
         final TagProcService tagProcService = SpringBeanProvider.getBean(TagProcService.class);
-        final JrnlPeriod period = resolveJrnlPeriod(dto, "tag");
+        final JournalPeriod period = resolveJournalPeriod(dto, "tag");
         tagProcService.process(clsfKey, tagCmpstn, period.getYy(), period.getMnth());
     }
 
@@ -84,21 +84,22 @@ public final class BaseClsfProcPostProcessor {
 
         final MetaCmpstn metaCmpstn = isDeleteMethod ? null : metaCmpstnModule.getMeta();
         final MetaProcService metaProcService = SpringBeanProvider.getBean(MetaProcService.class);
-        final JrnlPeriod period = resolveJrnlPeriod(dto, "meta");
+        final JournalPeriod period = resolveJournalPeriod(dto, "meta");
         metaProcService.process(clsfKey, metaCmpstn, period.getYy(), period.getMnth());
     }
 
     /**
      * 저널 DTO인 경우 yy/mnth를 검증해 반환, 아니면 (null, null) 반환.
      */
-    private static JrnlPeriod resolveJrnlPeriod(final BaseClsfDto dto, final String context) {
-        if (!(dto instanceof JrnlPeriodModule periodModule)) return new JrnlPeriod(null, null);
+    private static JournalPeriod resolveJournalPeriod(final BaseClsfDto dto, final String context) {
+        if (!(dto instanceof JournalPeriodModule periodModule)) return new JournalPeriod(null, null);
 
         final Integer yy = periodModule.getYy();
         final Integer mnth = periodModule.getMnth();
         if (yy == null || mnth == null) {
-            throw new IllegalStateException("yy/mnth must not be null for jrnl " + context + " process: " + dto.getClass().getName());
+            throw new IllegalStateException("yy/mnth must not be null for journal " + context + " process: " + dto.getClass().getName());
         }
-        return new JrnlPeriod(yy, mnth);
+        return new JournalPeriod(yy, mnth);
     }
 }
+

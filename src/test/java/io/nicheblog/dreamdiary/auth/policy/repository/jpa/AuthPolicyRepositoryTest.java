@@ -90,8 +90,8 @@ class AuthPolicyRepositoryTest {
         assertNotNull(modified.getId(), "저장된 엔티티의 key 값이 없습니다.");
         // audit
         assertNotNull(modified.getUpdatedAt(), "수정일자 audit 처리가 되지 않았습니다.");
-        assertNotNull(modified.getUpdatedById(),  "수정자 audit 처리가 되지 않았습니다.");
-        assertEquals(TestConstant.TEST_AUDITOR, modified.getUpdatedById(), "수정자가 예상 값과 일치하지 않습니다.");
+        assertNotNull(modified.getUpdatedBy(),  "수정자 audit 처리가 되지 않았습니다.");
+        assertEquals(TestConstant.TEST_AUDITOR, modified.getUpdatedBy(), "수정자가 예상 값과 일치하지 않습니다.");
         // value
         assertEquals(25, modified.getLgnTryLmt(), "값이 정상적으로 수정되지 않았습니다.");
     }

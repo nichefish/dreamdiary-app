@@ -37,10 +37,10 @@ INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('SCHDU
 -- -----------------------
 
 -- 필수 :: 저널 결산 구분 분류 코드 추가
-INSERT IGNORE INTO cmm_cl_cd (cl_cd, cl_cd_nm, cl_ctgr_cd, dc) VALUES ('JRNL_SUMRY_TY_CD', '저널 결산 구분', 'SYS', '저널 결산 구분 코드');
+INSERT IGNORE INTO cmm_cl_cd (cl_cd, cl_cd_nm, cl_ctgr_cd, dc) VALUES ('JOURNAL_SUMRY_TY_CD', '저널 결산 구분', 'SYS', '저널 결산 구분 코드');
 -- 필수 :: 저널 결산 구분 상세 코드 추가
-INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('JRNL_SUMRY_TY_CD', 'DIARY', '일기', '일기 결산', '1');
-INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('JRNL_SUMRY_TY_CD', 'DREAM', '꿈', '꿈 결산', '2');
+INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('JOURNAL_SUMRY_TY_CD', 'DIARY', '일기', '일기 결산', '1');
+INSERT IGNORE INTO cmm_dtl_cd (cl_cd, dtl_cd, dtl_cd_nm, dc, idx) VALUES ('JOURNAL_SUMRY_TY_CD', 'DREAM', '꿈', '꿈 결산', '2');
 
 -- -----------------------
 

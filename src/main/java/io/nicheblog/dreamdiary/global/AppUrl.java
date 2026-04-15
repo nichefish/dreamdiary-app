@@ -26,29 +26,29 @@ public interface AppUrl {
     String NOTION_HOME = Prefix.APP + "/notion-home.do";
 
     /** 저널 일자 (리스트) */
-    String JRNL_DAY_MONTHLY = Prefix.APP + "/jrnl/day/monthly.do";
-    String JRNL_DAY_WEEKLY = Prefix.APP + "/jrnl/day/weekly.do";
-    String JRNL_DAY_META_VIEW = Prefix.APP + "/jrnl/day/meta.do";
-    String JRNL_DAY_DAILY_VIEW_TODAY = Prefix.APP + "/jrnl/day.do";
-    String JRNL_DAY_DAILY_VIEW = Prefix.APP + "/jrnl/day/{stdrdDt}.do";
+    String JOURNAL_DAY_MONTHLY = Prefix.APP + "/journal/day/monthly.do";
+    String JOURNAL_DAY_WEEKLY = Prefix.APP + "/journal/day/weekly.do";
+    String JOURNAL_DAY_META_VIEW = Prefix.APP + "/journal/day/meta.do";
+    String JOURNAL_DAY_DAILY_VIEW_TODAY = Prefix.APP + "/journal/day.do";
+    String JOURNAL_DAY_DAILY_VIEW = Prefix.APP + "/journal/day/{stdrdDt}.do";
     /** 저널 일자 (달력) */
-    String JRNL_DAY_CAL = Prefix.APP + "/jrnl/day/cal.do";
+    String JOURNAL_DAY_CAL = Prefix.APP + "/journal/day/cal.do";
 
     /** 저널 일기 (검색) */
-    String JRNL_DIARY_SEARCH = Prefix.APP + "/jrnl/diary/search.do";
+    String JOURNAL_DIARY_SEARCH = Prefix.APP + "/journal/diary/search.do";
     /** 저널 꿈 (검색) */
-    String JRNL_DREAM_SEARCH = Prefix.APP + "/jrnl/dream/search.do";
+    String JOURNAL_DREAM_SEARCH = Prefix.APP + "/journal/dream/search.do";
 
     /** 저널 주제 */
-    String JRNL_SBJCT_LIST = Prefix.APP + "/jrnl/sbjct/list.do";
-    String JRNL_SBJCT_REG_FORM = Prefix.APP + "/jrnl/sbjct/reg-form.do";
-    String JRNL_SBJCT_REG_PREVIEW_POP = Prefix.APP + "/jrnl/sbjct/preview-pop.do";
-    String JRNL_SBJCT_DTL = Prefix.APP + "/jrnl/sbjct/dtl.do";
-    String JRNL_SBJCT_MDF_FORM = Prefix.APP + "/jrnl/sbjct/mdf-form.do";
+    String JOURNAL_SBJCT_LIST = Prefix.APP + "/journal/sbjct/list.do";
+    String JOURNAL_SBJCT_REG_FORM = Prefix.APP + "/journal/sbjct/reg-form.do";
+    String JOURNAL_SBJCT_REG_PREVIEW_POP = Prefix.APP + "/journal/sbjct/preview-pop.do";
+    String JOURNAL_SBJCT_DTL = Prefix.APP + "/journal/sbjct/dtl.do";
+    String JOURNAL_SBJCT_MDF_FORM = Prefix.APP + "/journal/sbjct/mdf-form.do";
 
     /** 저널 결산 */
-    String JRNL_SUMRY_LIST = Prefix.APP + "/jrnl/sumry/list.do";
-    String JRNL_SUMRY_VIEW = Prefix.APP + "/jrnl/sumry/{yy}.do";
+    String JOURNAL_SUMRY_LIST = Prefix.APP + "/journal/sumry/list.do";
+    String JOURNAL_SUMRY_VIEW = Prefix.APP + "/journal/sumry/{yy}.do";
 
     /** 공지사항 */
     String NOTICE_LIST = Prefix.APP + "/notice/list.do";

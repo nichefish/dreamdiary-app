@@ -31,7 +31,7 @@ public class RelatedContentPostDto {
 
     @NotNull
     @Builder.Default
-    private String srcContentType = ContentType.JRNL_DIARY.key;
+    private String srcContentType = ContentType.JOURNAL_DIARY.key;
 
     @NotNull
     @Positive
@@ -39,7 +39,7 @@ public class RelatedContentPostDto {
 
     @NotNull
     @Builder.Default
-    private String targetContentType = ContentType.JRNL_DREAM.key;
+    private String targetContentType = ContentType.JOURNAL_DREAM.key;
 
     @NotNull
     @Builder.Default

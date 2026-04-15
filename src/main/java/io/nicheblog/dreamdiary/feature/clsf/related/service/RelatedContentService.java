@@ -10,10 +10,10 @@ import io.nicheblog.dreamdiary.feature.clsf.related.model.RelatedContentDto;
 import io.nicheblog.dreamdiary.feature.clsf.related.repository.jpa.RelatedContentRepository;
 import io.nicheblog.dreamdiary.feature.clsf.related.type.RelationOriginType;
 import io.nicheblog.dreamdiary.feature.clsf.related.type.RelationType;
-import io.nicheblog.dreamdiary.feature.jrnl.diary.entity.JrnlDiaryEntity;
-import io.nicheblog.dreamdiary.feature.jrnl.diary.repository.jpa.JrnlDiaryRepository;
-import io.nicheblog.dreamdiary.feature.jrnl.dream.entity.JrnlDreamEntity;
-import io.nicheblog.dreamdiary.feature.jrnl.dream.repository.jpa.JrnlDreamRepository;
+import io.nicheblog.dreamdiary.feature.journal.diary.entity.JournalDiaryEntity;
+import io.nicheblog.dreamdiary.feature.journal.diary.repository.jpa.JournalDiaryRepository;
+import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntity;
+import io.nicheblog.dreamdiary.feature.journal.dream.repository.jpa.JournalDreamRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -38,8 +38,8 @@ import java.util.Objects;
 public class RelatedContentService {
 
     private static final EnumSet<ContentType> SUPPORTED_TYPES = EnumSet.of(
-            ContentType.JRNL_DIARY,
-            ContentType.JRNL_DREAM
+            ContentType.JOURNAL_DIARY,
+            ContentType.JOURNAL_DREAM
     );
 
     @Getter
@@ -47,8 +47,8 @@ public class RelatedContentService {
     @Getter
     private final RelatedContentMapstruct mapstruct;
 
-    private final JrnlDiaryRepository jrnlDiaryRepository;
-    private final JrnlDreamRepository jrnlDreamRepository;
+    private final JournalDiaryRepository journalDiaryRepository;
+    private final JournalDreamRepository journalDreamRepository;
 
     @Transactional
     public RelatedContentDto saveManualRelation(
@@ -227,11 +227,11 @@ public class RelatedContentService {
 
     private String resolveCreatedBy(final BaseClsfKey refKey) {
         return switch (refKey.getContentTypeEnum()) {
-            case JRNL_DIARY -> jrnlDiaryRepository.findById(refKey.getId())
-                    .map(JrnlDiaryEntity::getCreatedBy)
+            case JOURNAL_DIARY -> journalDiaryRepository.findById(refKey.getId())
+                    .map(JournalDiaryEntity::getCreatedBy)
                     .orElse(null);
-            case JRNL_DREAM -> jrnlDreamRepository.findById(refKey.getId())
-                    .map(JrnlDreamEntity::getCreatedBy)
+            case JOURNAL_DREAM -> journalDreamRepository.findById(refKey.getId())
+                    .map(JournalDreamEntity::getCreatedBy)
                     .orElse(null);
             default -> null;
         };
@@ -239,11 +239,11 @@ public class RelatedContentService {
 
     private String resolveTitle(final BaseClsfKey refKey) {
         return switch (refKey.getContentTypeEnum()) {
-            case JRNL_DIARY -> jrnlDiaryRepository.findById(refKey.getId())
-                    .map(JrnlDiaryEntity::getTitle)
+            case JOURNAL_DIARY -> journalDiaryRepository.findById(refKey.getId())
+                    .map(JournalDiaryEntity::getTitle)
                     .orElse(null);
-            case JRNL_DREAM -> jrnlDreamRepository.findById(refKey.getId())
-                    .map(JrnlDreamEntity::getTitle)
+            case JOURNAL_DREAM -> journalDreamRepository.findById(refKey.getId())
+                    .map(JournalDreamEntity::getTitle)
                     .orElse(null);
             default -> null;
         };

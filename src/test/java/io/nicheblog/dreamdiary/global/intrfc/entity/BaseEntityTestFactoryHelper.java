@@ -41,7 +41,7 @@ public class BaseEntityTestFactoryHelper {
         if (!(obj instanceof BaseAuditEntity)) return;
 
         ((BaseAuditEntity) obj).setUpdatedAt(DateUtils.asDate("2000-01-01"));
-        ((BaseAuditEntity) obj).setUpdatedById(TestConstant.TEST_MDFUSR_ID);
+        ((BaseAuditEntity) obj).setUpdatedBy(TestConstant.TEST_MDFUSR_ID);
         ((BaseAuditEntity) obj).setUpdatedByInfo(AuditorInfo.builder()
                 .username(TestConstant.TEST_MDFUSR_ID)
                 .nickNm(TestConstant.TEST_MDFUSR_NM)

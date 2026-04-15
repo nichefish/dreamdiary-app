@@ -1,0 +1,12 @@
+<#--
+ * 저널 꿈(journal_dream) - 복사 버튼 partial
+ * @see handlebars.ts
+ -->
+
+<script type="text/x-handlebars-template" id="journal_dream_copy_btn_partial" data-partial>
+    <button type="button" class="btn btn-sm btn-light-primary btn-outlined m-1 py-0 px-2 cursor-pointer"
+            onclick="dF.JournalDream.copy({{id}});"
+            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "bs.tooltip.copy"/>">
+        <i class="bi bi-copy p-0"></i>
+    </button>
+</script>

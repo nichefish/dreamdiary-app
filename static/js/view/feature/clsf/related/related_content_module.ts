@@ -37,8 +37,8 @@ dF.RelatedContent = (function(): dfModule {
         popupSearchMap: {} as Record<string, RelatedTargetItem>,
 
         CONTENT_TYPE_LABEL_MAP: {
-            JRNL_DIARY: "일기",
-            JRNL_DREAM: "꿈"
+            JOURNAL_DIARY: "일기",
+            JOURNAL_DREAM: "꿈"
         } as Record<string, string>,
 
         init: function(): void {
@@ -207,7 +207,7 @@ dF.RelatedContent = (function(): dfModule {
 
         openAddModalWithSource: function(source: RelatedSource): void {
             const sourceLabel: string = dF.RelatedContent.CONTENT_TYPE_LABEL_MAP[source.contentType] ?? source.contentType;
-            const defaultTargetType: string = source.contentType === "JRNL_DIARY" ? "JRNL_DREAM" : "JRNL_DIARY";
+            const defaultTargetType: string = source.contentType === "JOURNAL_DIARY" ? "JOURNAL_DREAM" : "JOURNAL_DIARY";
             dF.RelatedContent.popupSearchMap = {};
 
             Swal.fire({
@@ -290,8 +290,8 @@ dF.RelatedContent = (function(): dfModule {
                 '    <div class="col-md-4">',
                 '      <label for="relatedTargetContentType" class="form-label fw-semibold text-gray-700">대상 글 유형</label>',
                 '      <select id="relatedTargetContentType" class="form-select form-select-solid" onchange="dF.RelatedContent.resetPopupSelection();">',
-                `        <option value="JRNL_DIARY" ${defaultTargetType === "JRNL_DIARY" ? "selected" : ""}>일기</option>`,
-                `        <option value="JRNL_DREAM" ${defaultTargetType === "JRNL_DREAM" ? "selected" : ""}>꿈</option>`,
+                `        <option value="JOURNAL_DIARY" ${defaultTargetType === "JOURNAL_DIARY" ? "selected" : ""}>일기</option>`,
+                `        <option value="JOURNAL_DREAM" ${defaultTargetType === "JOURNAL_DREAM" ? "selected" : ""}>꿈</option>`,
                 '      </select>',
                 '    </div>',
                 '    <div class="col-md-4 d-flex align-items-end">',
@@ -354,7 +354,7 @@ dF.RelatedContent = (function(): dfModule {
                 '</div>'
             ].join("");
 
-            const url: string = targetContentType === "JRNL_DREAM" ? Url.JRNL_DREAMS : Url.JRNL_DIARIES;
+            const url: string = targetContentType === "JOURNAL_DREAM" ? Url.JOURNAL_DREAMS : Url.JOURNAL_DIARIES;
             const ajaxData: Record<string, any> = {
                 searchKeywords: keyword,
                 pageSize: 8,
@@ -496,13 +496,13 @@ dF.RelatedContent = (function(): dfModule {
         openTarget: function(contentType: string, id: number): void {
             if (!Number.isInteger(Number(id)) || Number(id) <= 0) return;
 
-            if (contentType === "JRNL_DIARY" && typeof dF.JrnlDiary?.dtlModal === "function") {
-                dF.JrnlDiary.dtlModal(id);
+            if (contentType === "JOURNAL_DIARY" && typeof dF.JournalDiary?.dtlModal === "function") {
+                dF.JournalDiary.dtlModal(id);
                 return;
             }
 
-            if (contentType === "JRNL_DREAM" && typeof dF.JrnlDream?.dtlModal === "function") {
-                dF.JrnlDream.dtlModal(id);
+            if (contentType === "JOURNAL_DREAM" && typeof dF.JournalDream?.dtlModal === "function") {
+                dF.JournalDream.dtlModal(id);
                 return;
             }
 

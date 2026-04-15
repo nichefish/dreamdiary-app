@@ -32,8 +32,8 @@ public enum ActvtyCtgr {
     // NOTICE
     NOTICE("공지사항"),
 
-    // JRNL
-    JRNL("꿈 관리"),
+    // JOURNAL
+    JOURNAL("꿈 관리"),
     BOARD_POST("게시판"),
 
     TAG("태그"),
