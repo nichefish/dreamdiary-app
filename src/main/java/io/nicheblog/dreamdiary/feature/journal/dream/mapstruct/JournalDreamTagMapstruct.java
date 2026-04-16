@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.dream.mapstruct;
 
-import io.nicheblog.dreamdiary.feature.clsf.tag.mapstruct.TagContentMapstruct;
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
+import io.nicheblog.dreamdiary.feature.attachable.tag.mapstruct.TagContentMapstruct;
+import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamTagEntity;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;

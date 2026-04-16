@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.feature.user.info.service;
 
 import io.nicheblog.dreamdiary.auth.policy.entity.AuthPolicyEntity;
 import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyQueryService;
-import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
+import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
 import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserStusEmbed;
@@ -38,7 +38,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserService
-        implements BaseClsfService<UserDto, UserDto, Integer, UserEntity>, BaseMultipartWritableService<UserDto, UserDto, Integer, UserEntity> {
+        implements BaseAttachableService<UserDto, UserDto, Integer, UserEntity>, BaseMultipartWritableService<UserDto, UserDto, Integer, UserEntity> {
 
     @Getter
     private final UserRepository repository;

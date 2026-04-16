@@ -124,7 +124,7 @@
                 <#include "/view/feature/flsys/_flsys_reg_area.ftlh">
 
                 <!-- #include:: component:: 태그 태그 -->
-                <#include "/view/feature/clsf/tag/_tag_page_reg_area.ftlh">
+                <#include "/view/feature/attachable/tag/_tag_page_reg_area.ftlh">
             </div>
 
             <div class="separator my-8"></div>
@@ -155,7 +155,7 @@
         <#--begin::Card body-->
         <div class="card-body pt-0">
             <#--페이지:: 단락 영역-->
-            <#include "/view/feature/clsf/sectn/_sectn_page_reg_area.ftlh">
+            <#include "/view/feature/attachable/sectn/_sectn_page_reg_area.ftlh">
         </div>
     </div>
 </#if>
@@ -171,14 +171,14 @@
 <script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
 
 <#--include::sectn-->
-<#include "/view/feature/clsf/sectn/_modal/_sectn_reg_modal.ftlh">
-<#include "/view/feature/clsf/sectn/_sectn_list_template.hbs">
-<script type="text/javascript" src="/js/view/feature/clsf/sectn/sectn_module.js?${releaseDate!}"></script>
+<#include "/view/feature/attachable/sectn/_modal/_sectn_reg_modal.ftlh">
+<#include "/view/feature/attachable/sectn/_sectn_list_template.hbs">
+<script type="text/javascript" src="/js/view/feature/attachable/sectn/sectn_module.js?${releaseDate!}"></script>
 
 <#--include::comment-->
-<#include "/view/feature/clsf/comment/_modal/_comment_reg_modal.ftlh">
-<#include "/view/feature/clsf/comment/_partial/_comment_list_partial.hbs">
-<script type="text/javascript" src="/js/view/feature/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
+<#include "/view/feature/attachable/comment/_modal/_comment_reg_modal.ftlh">
+<#include "/view/feature/attachable/comment/_partial/_comment_list_partial.hbs">
+<script type="text/javascript" src="/js/view/feature/attachable/comment/comment_modal_module.js?${releaseDate!}"></script>
 
 <#--include::script modules-->
 <script type="text/javascript" src="/js/view/feature/journal/sbjct/journal_sbjct_module.js?${releaseDate!}"></script>

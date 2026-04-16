@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.flsys.controller;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfKey;
+import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableKey;
 import io.nicheblog.dreamdiary.feature.flsys.model.FlsysMetaDto;
 import io.nicheblog.dreamdiary.feature.flsys.service.FlsysMetaService;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -57,7 +57,7 @@ public class FlsysMetaRestController
             final @Valid FlsysMetaDto flsysMeta
     ) throws Exception {
 
-        final BaseClsfKey key = flsysMeta.getClsfKey();
+        final BaseAttachableKey key = flsysMeta.getAttachableKey();
         final boolean isReg = key.getId() == null;
         final ServiceResponse result = isReg ? flsysMetaService.regist(flsysMeta) : flsysMetaService.modify(flsysMeta);
         final boolean isSuccess = result.getRslt();

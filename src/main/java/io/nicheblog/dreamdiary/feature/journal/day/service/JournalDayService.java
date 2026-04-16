@@ -2,8 +2,8 @@ package io.nicheblog.dreamdiary.feature.journal.day.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.journal._shared.handler.JournalCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalStateMaps;
@@ -44,7 +44,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Log4j2
 public class JournalDayService
-        implements BaseClsfService<JournalDayDto, JournalDayDto, Integer, JournalDayEntity> {
+        implements BaseAttachableService<JournalDayDto, JournalDayDto, Integer, JournalDayEntity> {
 
     @Getter
     private final JournalDayRepository repository;

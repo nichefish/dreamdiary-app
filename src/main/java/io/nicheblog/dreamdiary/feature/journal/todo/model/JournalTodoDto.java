@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.journal.todo.model;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstnModule;
+import io.nicheblog.dreamdiary.feature.attachable._shared.model.BaseAttachableDto;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalPeriodModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;
@@ -28,7 +28,7 @@ import javax.validation.constraints.Size;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class JournalTodoDto
-        extends BaseClsfDto
+        extends BaseAttachableDto
         implements Identifiable<Integer>, TagCmpstnModule, JournalPeriodModule {
 
     /** 필수: 컨텐츠 타입 */

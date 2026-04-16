@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.intrpt.service.helper;
 
-import io.nicheblog.dreamdiary.feature.clsf.state.StateCd;
+import io.nicheblog.dreamdiary.feature.attachable.state.StateCd;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState;
 import io.nicheblog.dreamdiary.feature.journal.intrpt.model.JournalIntrptDto;
 import lombok.experimental.UtilityClass;

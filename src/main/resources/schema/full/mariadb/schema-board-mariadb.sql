@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS board_def (
 -- @extends: BasePostEntity
 -- @implements: TagEmbed, CommentEmbed, ManagtEmbed, ViewerEmbed
 CREATE TABLE IF NOT EXISTS board_post(
-    -- CLSF
+    -- ATTACHABLE
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
     content_type VARCHAR(30) COMMENT '게시판 코드 (PK)',
     -- POST

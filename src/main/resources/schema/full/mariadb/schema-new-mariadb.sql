@@ -10,7 +10,7 @@
 -- @extends: BasePostEntity
 -- @implements: TagEmbed, CommentEmbed, ManagtEmbed, ViewerEmbed
 CREATE TABLE IF NOT EXISTS notice (
-    -- CLSF
+    -- ATTACHABLE
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
     content_type VARCHAR(32) DEFAULT 'NOTICE' COMMENT '컨텐츠 타입',
     --
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS notice (
 -- @extends: BasePostEntity
 -- @implements: TagEmbed, CommentEmbed
 CREATE TABLE IF NOT EXISTS schedule (
-    -- CLSF
+    -- ATTACHABLE
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
     content_type VARCHAR(32) DEFAULT 'SCHEDULE' COMMENT '컨텐츠 타입',
     --
@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS tmplat_txt (
 -- @extends: BasePostEntity
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS flsys_meta (
-    -- CLSF
+    -- ATTACHABLE
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
     content_type VARCHAR(32) DEFAULT 'FLSYS_META' COMMENT '컨텐츠 타입',
     --

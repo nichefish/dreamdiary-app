@@ -1,0 +1,25 @@
+package io.nicheblog.dreamdiary.feature.attachable.meta.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * MetaContentCntDto
+ * <pre>
+ *  메타 번호 - 갯수 맵 Dto.
+ * </pre>
+ * 
+ * @author nichefish 
+ */
+@Getter
+@Setter
+@AllArgsConstructor
+public class MetaContentCntDto {
+    
+    /** 메타 ID */
+    private Integer metaId;
+
+    /** 개수 */
+    private Long count;
+}

@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.sbjct.controller;
 
-import io.nicheblog.dreamdiary.feature.clsf.viewer.handler.ViewerEventListener;
+import io.nicheblog.dreamdiary.feature.attachable.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.feature.journal.sbjct.model.JournalSbjctDto;
 import io.nicheblog.dreamdiary.feature.journal.sbjct.service.JournalSbjctService;
 import io.nicheblog.dreamdiary.global.Constant;

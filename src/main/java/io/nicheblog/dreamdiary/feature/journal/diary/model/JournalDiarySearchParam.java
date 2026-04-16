@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.diary.model;
 
-import io.nicheblog.dreamdiary.feature.clsf.state.StateCd;
+import io.nicheblog.dreamdiary.feature.attachable.state.StateCd;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.*;

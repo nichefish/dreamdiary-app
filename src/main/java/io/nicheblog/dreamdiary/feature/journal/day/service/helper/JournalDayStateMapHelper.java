@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.day.service.helper;
 
-import io.nicheblog.dreamdiary.feature.clsf.state.StateCd;
+import io.nicheblog.dreamdiary.feature.attachable.state.StateCd;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalStateMaps;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayEntity;

@@ -48,7 +48,7 @@ public class EhCacheEvictServiceImpl
      * @param refId - 캐시를 삭제할 게시글 번호
      */
     @Override
-    public void evictClsfCache(final String refContentType, final Integer refId) throws Exception {
+    public void evictAttachableCache(final String refContentType, final Integer refId) throws Exception {
         final CacheEvictor<Integer> evictor = evictorMap.get(refContentType);
         if (evictor == null) {
             log.warn("No CacheEvictor found for ContentType: {}", refContentType);

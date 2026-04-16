@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.annual.service.strategy;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.comment.cache.CommentCacheInvalidator;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.comment.cache.CommentCacheInvalidator;
 import io.nicheblog.dreamdiary.feature.journal._shared.handler.JournalCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.journal.annual.model.JournalAnnualReviewDto;

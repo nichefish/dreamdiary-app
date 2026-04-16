@@ -1,0 +1,20 @@
+package io.nicheblog.dreamdiary.feature.attachable.sectn.repository.jpa;
+
+import io.nicheblog.dreamdiary.feature.attachable.sectn.entity.SectnEntity;
+import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
+import org.springframework.stereotype.Repository;
+
+/**
+ * SectnRepository
+ * <pre>
+ *  단락 (JPA) Repository 인터페이스.
+ * </pre>
+ *
+ * @author nichefish
+ */
+@Repository
+public interface SectnRepository
+        extends BaseStreamRepository<SectnEntity, Integer> {
+    //
+}
+

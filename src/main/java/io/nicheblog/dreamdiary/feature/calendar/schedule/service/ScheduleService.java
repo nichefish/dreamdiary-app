@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.calendar.schedule.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
+import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.entity.ScheduleEntity;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.mapstruct.ScheduleMapstruct;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.model.ScheduleDto;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Log4j2
 public class ScheduleService
-        implements BaseClsfService<ScheduleDto, ScheduleDto, Integer, ScheduleEntity> {
+        implements BaseAttachableService<ScheduleDto, ScheduleDto, Integer, ScheduleEntity> {
 
     @Getter
     private final ScheduleRepository repository;

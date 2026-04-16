@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.day.controller;
 
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagSearchParam;
+import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagDto;
+import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagSearchParam;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.day.service.my.MyJournalDayQueryService;

@@ -64,7 +64,7 @@
   - "Filter에서 모든 요청에 traceId를 생성한다."
   - "이 구조면 서버 로그 ↔ DB access 로그 ↔ audit 로그, 전부 하나의 traceId로 묶인다. 이게 운영 관측성(Observability)의 최소 단위다."
 
-## 분류(clsf)
+## 분류(attachable)
 
 ### 댓글(comment)
 
@@ -83,7 +83,7 @@
 ### 조회자(viewer)
 
 ### 관련글(related)
-- "기존 BaseClsfKey(postNo + contentType) 체계 위에 명시적 관계 레이어를 하나 더 얹는다."
+- "기존 BaseAttachableKey(postNo + contentType) 체계 위에 명시적 관계 레이어를 하나 더 얹는다."
 - 컬럼은 방향성을 드러내는 `src/dst`보다 중립적인 `left/right`를 사용한다.
 - "A-B"와 "B-A"를 같은 관계로 보고, 물리적으로는 1행만 저장한다. 조회는 양방향으로 푼다. 자기 자신과의 관계는 금지한다.
 - 저장 전에 항상 pair를 정규화한다. 정규화 후 앞쪽을 `left_*`, 뒤쪽을 `right_*`에 저장한다.

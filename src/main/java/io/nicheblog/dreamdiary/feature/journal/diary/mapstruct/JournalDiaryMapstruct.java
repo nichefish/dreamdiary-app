@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.diary.mapstruct;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.mapstruct.BaseClsfMapstruct;
+import io.nicheblog.dreamdiary.feature.attachable._shared.mapstruct.BaseAttachableMapstruct;
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
 import io.nicheblog.dreamdiary.feature.journal.diary.entity.JournalDiaryEntity;
 import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryDto;
@@ -31,7 +31,7 @@ import javax.persistence.PersistenceContext;
     builder = @Builder(disableBuilder = true)
 )
 public abstract class JournalDiaryMapstruct
-        implements BaseWriteMapstruct<JournalDiaryPostDto, JournalDiaryEntity>, BaseClsfMapstruct<JournalDiaryDto, JournalDiaryEntity> {
+        implements BaseWriteMapstruct<JournalDiaryPostDto, JournalDiaryEntity>, BaseAttachableMapstruct<JournalDiaryDto, JournalDiaryEntity> {
 
     @PersistenceContext
     protected EntityManager em;

@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.day.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.meta.model.MetaDto;
+import io.nicheblog.dreamdiary.feature.attachable.meta.model.MetaDto;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayMetaEntity;
 import io.nicheblog.dreamdiary.feature.journal.day.mapstruct.JournalDayMetaMapstruct;
 import io.nicheblog.dreamdiary.feature.journal.day.repository.jpa.JournalDayMetaRepository;

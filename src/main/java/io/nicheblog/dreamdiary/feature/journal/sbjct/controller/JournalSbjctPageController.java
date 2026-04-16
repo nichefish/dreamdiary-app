@@ -2,9 +2,9 @@ package io.nicheblog.dreamdiary.feature.journal.sbjct.controller;
 
 import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagService;
-import io.nicheblog.dreamdiary.feature.clsf.viewer.handler.ViewerEventListener;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.tag.service.TagService;
+import io.nicheblog.dreamdiary.feature.attachable.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.feature.journal.sbjct.model.JournalSbjctDto;
 import io.nicheblog.dreamdiary.feature.journal.sbjct.model.JournalSbjctSearchParam;
 import io.nicheblog.dreamdiary.feature.journal.sbjct.service.JournalSbjctService;

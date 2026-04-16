@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.user.info.model;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
+import io.nicheblog.dreamdiary.feature.attachable._shared.model.BaseAttachableDto;
 import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstn;
 import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstnModule;
 import io.nicheblog.dreamdiary.feature.user.info.model.emplym.UserEmplymDto;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class UserDto
-        extends BaseClsfDto
+        extends BaseAttachableDto
         implements Identifiable<Integer>, FileCmpstnModule {
 
     /** 아이디 */

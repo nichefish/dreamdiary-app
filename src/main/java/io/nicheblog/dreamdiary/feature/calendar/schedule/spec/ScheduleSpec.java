@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.calendar.schedule.spec;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf._shared.spec.BaseClsfSpec;
+import io.nicheblog.dreamdiary.feature.attachable._shared.spec.BaseAttachableSpec;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.entity.ScheduleEntity;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.entity.SchedulePrtcpntEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -26,7 +26,7 @@ import java.util.Map;
 @Component
 @Log4j2
 public class ScheduleSpec
-        implements BaseClsfSpec<ScheduleEntity> {
+        implements BaseAttachableSpec<ScheduleEntity> {
 
     /**
      * 검색 조건 세팅 후 쿼리 후처리. (override)

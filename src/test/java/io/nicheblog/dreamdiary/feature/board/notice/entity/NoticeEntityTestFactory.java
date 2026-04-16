@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.board.notice.entity;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import lombok.experimental.UtilityClass;
 import org.springframework.test.context.ActiveProfiles;
 

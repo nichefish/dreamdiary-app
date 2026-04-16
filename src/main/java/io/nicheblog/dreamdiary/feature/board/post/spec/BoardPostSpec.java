@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.board.post.spec;
 
 import io.nicheblog.dreamdiary.feature.board.post.entity.BoardPostEntity;
-import io.nicheblog.dreamdiary.feature.clsf._shared.spec.BaseClsfSpec;
+import io.nicheblog.dreamdiary.feature.attachable._shared.spec.BaseAttachableSpec;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -23,7 +23,7 @@ import java.util.Map;
 @Component
 @Log4j2
 public class BoardPostSpec
-        implements BaseClsfSpec<BoardPostEntity> {
+        implements BaseAttachableSpec<BoardPostEntity> {
 
     /**
      * 인자별로 구체적인 검색 조건을 세팅한다. (override)

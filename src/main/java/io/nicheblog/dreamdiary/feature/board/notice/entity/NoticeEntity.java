@@ -1,19 +1,19 @@
 package io.nicheblog.dreamdiary.feature.board.notice.entity;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableEntity;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbedModule;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbed;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.managt.entity.embed.ManagtEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.managt.entity.embed.ManagtEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.sectn.entity.embed.SectnEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.sectn.entity.embed.SectnEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.viewer.entity.embed.ViewerEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.viewer.entity.embed.ViewerEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable.managt.entity.embed.ManagtEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.managt.entity.embed.ManagtEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable.sectn.entity.embed.SectnEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.sectn.entity.embed.SectnEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable.viewer.entity.embed.ViewerEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.viewer.entity.embed.ViewerEmbedModule;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -41,7 +41,7 @@ import javax.persistence.*;
 @Where(clause = "deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE notice SET deleted_at = NOW() WHERE id = ?")
 public class NoticeEntity
-        extends BaseClsfEntity
+        extends BaseAttachableEntity
         implements FileEmbedModule, CommentEmbedModule, SectnEmbedModule, TagEmbedModule, ManagtEmbedModule, ViewerEmbedModule {
 
     /** 필수: 컨텐츠 타입 */

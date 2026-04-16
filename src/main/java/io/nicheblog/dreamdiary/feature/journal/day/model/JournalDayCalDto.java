@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.day.model;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.global.intrfc.model.fullcalendar.BaseCalDto;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

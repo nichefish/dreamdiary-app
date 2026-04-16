@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.day.service.my;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
+import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.journal.day.service.JournalDayTagService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

@@ -2,11 +2,11 @@ package io.nicheblog.dreamdiary.feature.journal.intrpt.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
-import io.nicheblog.dreamdiary.feature.clsf._shared.service.helper.BaseClsfHistoryHelper;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
+import io.nicheblog.dreamdiary.feature.attachable._shared.service.helper.BaseAttachableHistoryHelper;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService;
-import io.nicheblog.dreamdiary.feature.clsf.history.HistoryType;
+import io.nicheblog.dreamdiary.feature.attachable.history.HistoryType;
 import io.nicheblog.dreamdiary.feature.journal._shared.handler.JournalCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
@@ -44,7 +44,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Log4j2
 public class JournalIntrptService
-        implements BaseClsfService<JournalIntrptDto, JournalIntrptDto, Integer, JournalIntrptEntity>, BaseMultipartWritableService<JournalIntrptDto, JournalIntrptDto, Integer, JournalIntrptEntity> {
+        implements BaseAttachableService<JournalIntrptDto, JournalIntrptDto, Integer, JournalIntrptEntity>, BaseMultipartWritableService<JournalIntrptDto, JournalIntrptDto, Integer, JournalIntrptEntity> {
 
     @Getter
     private final JournalIntrptRepository repository;
@@ -150,15 +150,15 @@ public class JournalIntrptService
             final Integer fromHistoryId
     ) throws Exception {
         final JournalIntrptEntity restoreEntity = this.getSelf().getDtlEntity(key);
-        final JournalIntrptEntity historySnapshot = BaseClsfHistoryHelper.isHistoryModule(restoreEntity)
+        final JournalIntrptEntity historySnapshot = BaseAttachableHistoryHelper.isHistoryModule(restoreEntity)
                 ? restoreEntity.toBuilder().build()
                 : null;
 
         restoreEntity.setContent(updatedCn);
-        BaseClsfHistoryHelper.applyModifyHistory(historySnapshot, restoreEntity);
+        BaseAttachableHistoryHelper.applyModifyHistory(historySnapshot, restoreEntity);
 
         final JournalIntrptEntity updatedEntity = getRepository().saveAndFlush(restoreEntity);
-        BaseClsfHistoryHelper.publishHistoryEventIfSupported(this, historySnapshot, updatedEntity, historyType, fromHistoryId);
+        BaseAttachableHistoryHelper.publishHistoryEventIfSupported(this, historySnapshot, updatedEntity, historyType, fromHistoryId);
 
         final JournalIntrptDto updatedDto = getReadMapstruct().toDto(updatedEntity);
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(updatedDto), ContentType.JOURNAL_INTRPT);

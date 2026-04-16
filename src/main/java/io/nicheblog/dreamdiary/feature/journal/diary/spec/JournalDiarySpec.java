@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.feature.journal.diary.spec;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.spec.BaseClsfSpec;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.state.entity.StateEntity;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagContentEntity;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
+import io.nicheblog.dreamdiary.feature.attachable._shared.spec.BaseAttachableSpec;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.state.entity.StateEntity;
+import io.nicheblog.dreamdiary.feature.attachable.tag.entity.TagContentEntity;
+import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterSmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDaySmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.diary.entity.JournalDiaryEntity;
@@ -29,7 +29,7 @@ import java.util.*;
 @Component
 @Log4j2
 public class JournalDiarySpec
-        implements BaseClsfSpec<JournalDiaryEntity> {
+        implements BaseAttachableSpec<JournalDiaryEntity> {
 
     /**
      * 검색 조건 세팅 후 쿼리 후처리. (override)

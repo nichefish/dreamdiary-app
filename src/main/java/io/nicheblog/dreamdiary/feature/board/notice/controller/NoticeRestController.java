@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.feature.board.notice.controller;
 import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeDto;
 import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeSearchParam;
 import io.nicheblog.dreamdiary.feature.board.notice.service.NoticeService;
-import io.nicheblog.dreamdiary.feature.clsf.viewer.handler.ViewerEventListener;
+import io.nicheblog.dreamdiary.feature.attachable.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;

@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.day.repository.jpa;
 
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagContentCntDto;
+import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagContentCntDto;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayTagEntity;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayTagContentParam;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
@@ -34,7 +34,7 @@ public interface JournalDayTagRepository
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    @Query("SELECT new io.nicheblog.dreamdiary.feature.clsf.tag.model.TagContentCntDto(ct.tagId, COUNT(ct.id)) " +
+    @Query("SELECT new io.nicheblog.dreamdiary.feature.attachable.tag.model.TagContentCntDto(ct.tagId, COUNT(ct.id)) " +
             "FROM JournalDayTagContentEntity ct " +
             "INNER JOIN FETCH JournalDayEntity day ON ct.refId = day.id " +
             "WHERE ct.createdBy = :#{#param.createdBy} " +

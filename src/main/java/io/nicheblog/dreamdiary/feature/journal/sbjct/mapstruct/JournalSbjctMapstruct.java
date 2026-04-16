@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.sbjct.mapstruct;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.mapstruct.BaseClsfMapstruct;
+import io.nicheblog.dreamdiary.feature.attachable._shared.mapstruct.BaseAttachableMapstruct;
 import io.nicheblog.dreamdiary.feature.journal.sbjct.entity.JournalSbjctEntity;
 import io.nicheblog.dreamdiary.feature.journal.sbjct.model.JournalSbjctDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
@@ -21,7 +21,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, MarkdownUtils.class, CodeUtils.class}, builder = @Builder(disableBuilder = true))
 public interface JournalSbjctMapstruct
-        extends BaseWriteMapstruct<JournalSbjctDto, JournalSbjctEntity>, BaseClsfMapstruct<JournalSbjctDto, JournalSbjctEntity> {
+        extends BaseWriteMapstruct<JournalSbjctDto, JournalSbjctEntity>, BaseAttachableMapstruct<JournalSbjctDto, JournalSbjctEntity> {
 
     JournalSbjctMapstruct INSTANCE = Mappers.getMapper(JournalSbjctMapstruct.class);
 

@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.annual.service.strategy;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.journal._shared.handler.JournalCacheEvictor;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalCacheEvictParam;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;

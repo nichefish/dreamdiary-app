@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.day.entity;
 
 import io.nicheblog.dreamdiary.auth.intrfc.entity.BaseAuditRegEntity;
-import io.nicheblog.dreamdiary.feature.clsf.meta.entity.MetaSmpEntity;
+import io.nicheblog.dreamdiary.feature.attachable.meta.entity.MetaSmpEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

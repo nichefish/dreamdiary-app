@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.feature.board.notice.mapstruct;
 import io.nicheblog.dreamdiary.feature.board.notice.entity.NoticeEntity;
 import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeDto;
 import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeXlsxDto;
-import io.nicheblog.dreamdiary.feature.clsf._shared.mapstruct.BaseClsfMapstruct;
+import io.nicheblog.dreamdiary.feature.attachable._shared.mapstruct.BaseAttachableMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -22,7 +22,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, MarkdownUtils.class, CodeUtils.class}, builder = @Builder(disableBuilder = true))
 public interface NoticeMapstruct
-        extends BaseWriteMapstruct<NoticeDto, NoticeEntity>, BaseClsfMapstruct<NoticeDto, NoticeEntity> {
+        extends BaseWriteMapstruct<NoticeDto, NoticeEntity>, BaseAttachableMapstruct<NoticeDto, NoticeEntity> {
 
     NoticeMapstruct INSTANCE = Mappers.getMapper(NoticeMapstruct.class);
 

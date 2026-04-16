@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.board.post.entity;
 
 import io.nicheblog.dreamdiary.feature.board.def.entity.BoardDefEntity;
-import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
+import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableEntity;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -30,7 +30,7 @@ import javax.persistence.Table;
 @Where(clause = "deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE board_post SET deleted_at = NOW() WHERE id = ?")
 public class BoardPostSmpEntity
-        extends BaseClsfEntity {
+        extends BaseAttachableEntity {
 
     /** 글 번호 */
     @Id

@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.chat.model;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable._shared.model.BaseAttachableDto;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -20,7 +20,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class ChatMsgDto
-        extends BaseClsfDto
+        extends BaseAttachableDto
         implements Identifiable<Integer> {
 
     /** 필수: 컨텐츠 타입 */

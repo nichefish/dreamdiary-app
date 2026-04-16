@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.calendar.schedule.mapstruct;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.mapstruct.BaseClsfMapstruct;
+import io.nicheblog.dreamdiary.feature.attachable._shared.mapstruct.BaseAttachableMapstruct;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.entity.ScheduleEntity;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.model.ScheduleDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
@@ -20,7 +20,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, DatePtn.class})
 public interface ScheduleMapstruct
-        extends BaseWriteMapstruct<ScheduleDto, ScheduleEntity>, BaseClsfMapstruct<ScheduleDto, ScheduleEntity> {
+        extends BaseWriteMapstruct<ScheduleDto, ScheduleEntity>, BaseAttachableMapstruct<ScheduleDto, ScheduleEntity> {
 
     ScheduleMapstruct INSTANCE = Mappers.getMapper(ScheduleMapstruct.class);
 

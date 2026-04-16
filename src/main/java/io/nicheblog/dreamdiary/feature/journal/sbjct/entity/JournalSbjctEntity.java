@@ -1,15 +1,15 @@
 package io.nicheblog.dreamdiary.feature.journal.sbjct.entity;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableEntity;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbedModule;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbed;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.sectn.entity.embed.SectnEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.sectn.entity.embed.SectnEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable.sectn.entity.embed.SectnEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.sectn.entity.embed.SectnEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -38,7 +38,7 @@ import javax.persistence.*;
 @Where(clause = "deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE journal_sbjct SET deleted_at = NOW() WHERE id = ?")
 public class JournalSbjctEntity
-        extends BaseClsfEntity
+        extends BaseAttachableEntity
         implements FileEmbedModule, CommentEmbedModule, TagEmbedModule, SectnEmbedModule {
 
     /** 필수: 컨텐츠 타입 */
