@@ -2,7 +2,6 @@ package io.nicheblog.dreamdiary.infrastructure.code.repository.jpa;
 
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemEntity;
-import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemKey;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.List;
  */
 @Repository
 public interface CodeItemRepository
-        extends BaseStreamRepository<CodeItemEntity, CodeItemKey> {
+        extends BaseStreamRepository<CodeItemEntity, Integer> {
 
     List<CodeItemEntity> findByClCd(final String clCd);
 

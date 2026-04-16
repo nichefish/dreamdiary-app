@@ -4,7 +4,8 @@
  -->
 
 <script type="text/x-handlebars-template" id="code_group_reg_modal_template">
-    <input type="hidden" name="regYn" value="{{#if (notExists clCd)}}Y{{/if}}{{#if (exists clCd)}}N{{/if}}">
+    <input type="hidden" name="id" value="{{id}}">
+    <input type="hidden" name="regYn" value="{{#if (notExists id)}}Y{{/if}}{{#if (exists id)}}N{{/if}}">
     <div class="row mb-4">
         <div class="col-3 col-form-label text-center">
             <label class="cursor-help fw-bold required">분류 코드 <i class="bi bi-question-circle"></i></label>

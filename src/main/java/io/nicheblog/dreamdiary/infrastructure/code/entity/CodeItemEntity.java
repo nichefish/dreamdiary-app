@@ -23,7 +23,6 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "code_item")
-@IdClass(CodeItemKey.class)      // 분류 코드+상세 코드 복합키 적용
 @Getter
 @Setter
 @SuperBuilder(toBuilder = true)
@@ -35,13 +34,17 @@ public class CodeItemEntity
         extends BaseAuditEntity
         implements Usable, Sortable {
 
-    /** 상세 코드 */
+    /** 내부 PK (id) */
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer id;
+
+    /** 상세 코드 */
     @Column(name = "dtl_cd", length=50)
     private String dtlCd;
 
     /** 공통코드 */
-    @Id
     @Column(name = "cl_cd", length=50)
     private String clCd;
 
@@ -75,33 +78,5 @@ public class CodeItemEntity
     private String protectedYn = "N";
 
     /* ---- */
-
-    /**
-     * Key 반환
-     * @return {@link CodeItemKey}
-     */
-    public CodeItemKey getKey() {
-        return new CodeItemKey(this.getClCd(), this.getDtlCd());
-    }
-    
-    /**
-     * 생성자.
-     *
-     * @param clCd 분류 코드
-     * @param dtlCd 상세 코드
-     */
-    public CodeItemEntity(final String clCd, final String dtlCd) {
-        this.clCd = clCd;
-        this.dtlCd = dtlCd;
-    }
-
-    /**
-     * 생성자.
-     *
-     * @param key 분류 코드와 상세 코드로 이루어진 복합키.
-     */
-    public CodeItemEntity(final CodeItemKey key) {
-        this(key.getClCd(), key.getDtlCd());
-    }
 
 }

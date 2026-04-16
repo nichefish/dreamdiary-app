@@ -6,9 +6,9 @@
 
 -- -----------------------
 
--- 시퀀스 (cmm_sequence)
+-- 시퀀스 (sequence)
 -- 복합키 요소에 대한 시퀀스 :: AUTO_INCREMENT가 먹지 않는 복합키 요소에 대하여 사용
-CREATE TABLE IF NOT EXISTS cmm_sequence (
+CREATE TABLE IF NOT EXISTS sequence (
     seq_id INT PRIMARY KEY AUTO_INCREMENT COMMENT '시퀀스 ID',
     seq_nm VARCHAR(30) COMMENT '시퀀스 이름',
     seq_val INT NOT NULL DEFAULT 0 COMMENT '시퀀스 값'
@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS cmm_sequence (
 -- @extends: BaseAuditEntity
 -- @implements: StateEmbed
 CREATE TABLE IF NOT EXISTS code_group  (
-    cl_cd VARCHAR(50) NOT NULL PRIMARY KEY COMMENT '분류 코드',
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '분류 코드 ID',
+    cl_cd VARCHAR(50) NOT NULL COMMENT '분류 코드',
     cl_cd_nm VARCHAR(50) COMMENT '분류 코드 이름',
     cl_ctgr_cd VARCHAR(50) COMMENT '분류 코드 분류 코드',
     description VARCHAR(1000) COMMENT '분류 코드 설명',
@@ -33,13 +34,16 @@ CREATE TABLE IF NOT EXISTS code_group  (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     updated_by VARCHAR(20) COMMENT '수정자 ID',
     updated_at DATETIME COMMENT '수정일시',
-    deleted_at DATETIME COMMENT '삭제일시'
+    deleted_at DATETIME COMMENT '삭제일시',
+    -- CONSTRAINT
+    UNIQUE KEY uk_code_group_cl_cd (cl_cd)
 ) COMMENT = '분류 코드';
 
 -- 상세 코드 (dtl_cd)
 -- @extends: BaseAuditEntity
 -- @implements: StateEmbed
 CREATE TABLE IF NOT EXISTS code_item (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '상세 코드 ID',
     cl_cd VARCHAR(50) COMMENT '분류 코드',
     dtl_cd VARCHAR(50) COMMENT '상세 코드',
     dtl_cd_nm VARCHAR(40) COMMENT '상세 코드 이름',
@@ -55,7 +59,7 @@ CREATE TABLE IF NOT EXISTS code_item (
     updated_at DATETIME COMMENT '수정일시',
     deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
-    PRIMARY KEY (cl_cd, dtl_cd)
+    UNIQUE KEY uk_code_item_cl_cd_dtl_cd (cl_cd, dtl_cd)
 ) COMMENT = '상세 코드';
 
 -- -----------------------

@@ -218,7 +218,7 @@ class JournalDayRepositoryTest {
         // When::
         // 저널 꿈 regist
         final JournalChapterEntity journalChapter = testEntityManager.persistFlushFind(
-                JournalChapterEntity.builder().journalDayId(journalDayId).title("test_entry").idx(1).build()
+                JournalChapterEntity.builder().journalDayId(journalDayId).title("test_entry").sortOrder(1).build()
         );
         final JournalDiaryEntity journalDiary = JournalDiaryEntityTestFactory.create();
         journalDiary.setJournalChapter(journalChapter);

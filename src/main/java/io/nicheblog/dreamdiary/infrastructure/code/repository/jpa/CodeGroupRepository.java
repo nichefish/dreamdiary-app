@@ -15,6 +15,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface CodeGroupRepository
-        extends BaseStreamRepository<CodeGroupEntity, String> {
+        extends BaseStreamRepository<CodeGroupEntity, Integer> {
     //
 }

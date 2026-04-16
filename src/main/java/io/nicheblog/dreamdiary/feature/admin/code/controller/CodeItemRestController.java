@@ -8,7 +8,6 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemKey;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
@@ -73,8 +72,8 @@ public class CodeItemRestController extends BaseControllerImpl {
     @GetMapping(Url.CODE_ITEM)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> dtlCdDtlAjax(final CodeItemKey key, final LogActvtyParam logParam) throws Exception {
-        final CodeItemDto codeItemDto = codeItemService.getDtlDto(key);
+    public ResponseEntity<AjaxResponse> dtlCdDtlAjax(final @RequestParam("id") Integer id, final LogActvtyParam logParam) throws Exception {
+        final CodeItemDto codeItemDto = codeItemService.getDtlDto(id);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
@@ -84,8 +83,8 @@ public class CodeItemRestController extends BaseControllerImpl {
     @DeleteMapping(Url.CODE_ITEM)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> dtlCdDelAjax(final CodeItemKey key, final LogActvtyParam logParam) throws Exception {
-        final ServiceResponse result = codeItemService.delete(key);
+    public ResponseEntity<AjaxResponse> dtlCdDelAjax(final @RequestParam("id") Integer id, final LogActvtyParam logParam) throws Exception {
+        final ServiceResponse result = codeItemService.delete(id);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);

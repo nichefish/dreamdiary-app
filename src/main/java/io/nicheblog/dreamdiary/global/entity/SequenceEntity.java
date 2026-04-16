@@ -15,7 +15,7 @@ import java.io.Serializable;
  * @author nichefish
  */
 @Entity
-@Table(name = "cmm_sequence")
+@Table(name = "sequence")
 @Getter
 @Setter
 @Builder

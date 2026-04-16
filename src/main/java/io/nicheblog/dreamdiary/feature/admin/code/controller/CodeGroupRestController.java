@@ -45,7 +45,8 @@ public class CodeGroupRestController extends BaseControllerImpl {
     @PostMapping(value = {Url.CODE_GROUP})
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> clCdMdfAjax(final @PathVariable("clCd") String clCd, final @Valid CodeGroupDto clCdDto, final LogActvtyParam logParam) throws Exception {
+    public ResponseEntity<AjaxResponse> clCdMdfAjax(final @PathVariable("id") Integer id, final @Valid CodeGroupDto clCdDto, final LogActvtyParam logParam) throws Exception {
+        clCdDto.setId(id);
         final ServiceResponse result = codeGroupService.modify(clCdDto);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
@@ -56,8 +57,8 @@ public class CodeGroupRestController extends BaseControllerImpl {
     @GetMapping(Url.CODE_GROUP)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> clCdDtlAjax(final @PathVariable("clCd") String clCd, final LogActvtyParam logParam) throws Exception {
-        final CodeGroupDto codeGroup = codeGroupService.getDtlDto(clCd);
+    public ResponseEntity<AjaxResponse> clCdDtlAjax(final @PathVariable("id") Integer id, final LogActvtyParam logParam) throws Exception {
+        final CodeGroupDto codeGroup = codeGroupService.getDtlDto(id);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
@@ -67,8 +68,8 @@ public class CodeGroupRestController extends BaseControllerImpl {
     @PatchMapping(Url.CODE_GROUP)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> clCdPatchAjax(final @PathVariable("clCd") String clCd, final @RequestBody CodeGroupPatchDto patchDto, final LogActvtyParam logParam) throws Exception {
-        final ServiceResponse result = codeGroupService.patch(clCd, patchDto);
+    public ResponseEntity<AjaxResponse> clCdPatchAjax(final @PathVariable("id") Integer id, final @RequestBody CodeGroupPatchDto patchDto, final LogActvtyParam logParam) throws Exception {
+        final ServiceResponse result = codeGroupService.patch(id, patchDto);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
@@ -78,8 +79,8 @@ public class CodeGroupRestController extends BaseControllerImpl {
     @DeleteMapping(Url.CODE_GROUP)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> clCdDelAjax(final @PathVariable("clCd") String clCd, final LogActvtyParam logParam) throws Exception {
-        final ServiceResponse result = codeGroupService.delete(clCd);
+    public ResponseEntity<AjaxResponse> clCdDelAjax(final @PathVariable("id") Integer id, final LogActvtyParam logParam) throws Exception {
+        final ServiceResponse result = codeGroupService.delete(id);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);

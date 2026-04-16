@@ -72,7 +72,7 @@ class JournalTodoServiceTest {
         // Then::
         assertNotNull(registered, "Register result is null.");
         assertNotNull(registered.getId(), "Register did not assign key.");
-        assertEquals(1, registered.getIdx(), "Unexpected index for first item.");
+        assertEquals(1, registered.getSortOrder(), "Unexpected index for first item.");
     }
 
     /**

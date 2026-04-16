@@ -28,8 +28,8 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class CodeGroupService
-        implements BaseDtoReadableService<CodeGroupDto, String, CodeGroupEntity>,
-                   BaseDtoWritableService<CodeGroupDto, CodeGroupDto, String, CodeGroupEntity> {
+        implements BaseDtoReadableService<CodeGroupDto, Integer, CodeGroupEntity>,
+                   BaseDtoWritableService<CodeGroupDto, CodeGroupDto, Integer, CodeGroupEntity> {
 
     @Getter
     private final CodeGroupRepository repository;
@@ -94,11 +94,11 @@ public class CodeGroupService
     /**
      * 상태를 설정한다.
      *
-     * @param clCd 대상 게시물 PK
+     * @param id 대상 게시물 PK
      * @param patchDto 상태 Dto
      * @return collapsedYn 반영 성공 여부를 담은 ServiceResponse
      */
-    public ServiceResponse patch(final String clCd, final CodeGroupPatchDto patchDto) throws Exception {
+    public ServiceResponse patch(final Integer id, final CodeGroupPatchDto patchDto) throws Exception {
         if (StringUtils.isEmpty(patchDto.getUseYn())) {
             return ServiceResponse.builder()
                     .rslt(false)
@@ -106,7 +106,7 @@ public class CodeGroupService
                     .build();
         }
 
-        return this.getSelf().setUse(clCd, patchDto.getUseYn());
+        return this.getSelf().setUse(id, patchDto.getUseYn());
     }
 
     /**

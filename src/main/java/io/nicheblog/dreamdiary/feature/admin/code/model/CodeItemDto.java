@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.nicheblog.dreamdiary.auth.intrfc.model.BaseAuditDto;
 import io.nicheblog.dreamdiary.global.intrfc.entity.Sortable;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
-import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemKey;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -18,8 +17,9 @@ import lombok.experimental.SuperBuilder;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CodeItemDto
         extends BaseAuditDto
-        implements Identifiable<CodeItemKey>, Sortable {
+        implements Identifiable<Integer>, Sortable {
 
+    private Integer id;
     private String dtlCd;
     private String dtlCdNm;
     private String description;
@@ -32,7 +32,7 @@ public class CodeItemDto
     private String useYn = "N";
 
     @Override
-    public CodeItemKey getKey() {
-        return new CodeItemKey(this.clCd, this.dtlCd);
+    public Integer getKey() {
+        return this.id;
     }
 }

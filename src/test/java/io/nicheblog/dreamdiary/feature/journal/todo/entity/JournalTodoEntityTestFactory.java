@@ -27,7 +27,7 @@ public class JournalTodoEntityTestFactory {
                 .ctgrCd("test_ctgr_cd")
                 .yy(2000)
                 .mnth(1)
-                .idx(1)
+                .sortOrder(1)
                 .build();
     }
 }

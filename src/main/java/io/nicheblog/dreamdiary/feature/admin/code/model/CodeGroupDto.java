@@ -18,9 +18,10 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CodeGroupDto
         extends BaseAuditDto
-        implements Identifiable<String> {
+        implements Identifiable<Integer> {
 
     private Long rnum;
+    private Integer id;
     private String clCd;
     private String clCdNm;
     private String description;
@@ -37,7 +38,7 @@ public class CodeGroupDto
     private String regYn = "N";
 
     @Override
-    public String getKey() {
-        return this.clCd;
+    public Integer getKey() {
+        return this.id;
     }
 }

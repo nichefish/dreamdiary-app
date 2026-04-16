@@ -102,8 +102,11 @@ dF.CodeGroup = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                $("#clCdRegForm #regYn").val("Y");
-                const url: string = Url.CODE_GROUPS;
+                const regYn: string = String($("#clCdRegForm #regYn").val() || "Y").toUpperCase();
+                const id: number = Number($("#clCdRegForm #id").val());
+                const url: string = regYn === "Y"
+                    ? Url.CODE_GROUPS
+                    : cF.util.bindUrl(Url.CODE_GROUP, { id });
                 const ajaxData: Record<string, any> = cF.util.getJsonFormData("#clCdRegForm");
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
@@ -114,27 +117,29 @@ dF.CodeGroup = (function(): dfModule {
             });
         },
 
-        dtlModal: function(clCd: string): void {
+        dtlModal: function(id: number): void {
             event.stopPropagation();
-            $("#clCd").val(clCd);
+            if (isNaN(Number(id))) return;
 
-            const url: string = cF.util.bindUrl(Url.CODE_GROUP, { clCd });
+            const url: string = cF.util.bindUrl(Url.CODE_GROUP, { id });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
                     return;
                 }
                 cF.handlebars.modal(res.rsltObj, "code_group_dtl");
-                dF.CodeGroup.key = clCd;
+                $("#clCd").val(res.rsltObj?.clCd || "");
+                dF.CodeGroup.key = res.rsltObj?.id;
                 dF.CodeItem.initDraggable();
             });
         },
 
-        mdfModal: function(clCd: string): void {
+        mdfModal: function(id: number): void {
             event.stopPropagation();
+            if (isNaN(Number(id))) return;
 
-            const url: string = cF.util.bindUrl(Url.CODE_GROUP, { clCd });
-            const ajaxData: Record<string, any> = { clCd };
+            const url: string = cF.util.bindUrl(Url.CODE_GROUP, { id });
+            const ajaxData: Record<string, any> = { id };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -147,12 +152,13 @@ dF.CodeGroup = (function(): dfModule {
             });
         },
 
-        toggleUseAjax: function(clCd: string): void {
-            const item: HTMLElement | null = document.querySelector(`.cl-cd-item[data-cl-cd='${clCd}']`);
+        toggleUseAjax: function(id: number): void {
+            if (isNaN(Number(id))) return;
+            const item: HTMLElement | null = document.querySelector(`.cl-cd-item[data-id='${id}']`);
             const currentUseYn: string = (item?.dataset?.useYn || "N").toUpperCase();
             const nextUseYn: string = currentUseYn === "Y" ? "N" : "Y";
 
-            const url: string = cF.util.bindUrl(Url.CODE_GROUP, { clCd });
+            const url: string = cF.util.bindUrl(Url.CODE_GROUP, { id });
             const ajaxData: Record<string, any> = { useYn: nextUseYn };
             cF.$ajax.patch(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
@@ -165,8 +171,9 @@ dF.CodeGroup = (function(): dfModule {
             });
         },
 
-        delAjax: function(clCd: string): void {
+        delAjax: function(id: number): void {
             event.stopPropagation();
+            if (isNaN(Number(id))) return;
 
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
@@ -174,7 +181,7 @@ dF.CodeGroup = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = cF.util.bindUrl(Url.CODE_GROUP, { clCd });
+                const url: string = cF.util.bindUrl(Url.CODE_GROUP, { id });
                 cF.$ajax.delete(url, null, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {

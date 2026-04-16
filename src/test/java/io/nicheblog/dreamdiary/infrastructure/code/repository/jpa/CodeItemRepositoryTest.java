@@ -6,7 +6,6 @@ import io.nicheblog.dreamdiary.global.config.DataSourceConfig;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemEntity;
 import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemEntityTestFactory;
-import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemKey;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,8 +45,8 @@ class CodeItemRepositoryTest {
     @Test
     void testRegist() throws Exception {
         final CodeItemEntity registered = codeItemRepository.save(entity);
-        final CodeItemKey key = registered.getKey();
-        final CodeItemEntity retrieved = codeItemRepository.findById(key)
+        final Integer id = registered.getId();
+        final CodeItemEntity retrieved = codeItemRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         assertNotNull(retrieved);

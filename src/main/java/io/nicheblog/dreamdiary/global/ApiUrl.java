@@ -185,7 +185,7 @@ public interface ApiUrl {
 
     /** 코드 관리 */
     String CODE_GROUPS = Prefix.API + "/code/groups";
-    String CODE_GROUP = Prefix.API + "/code/group/{clCd}";
+    String CODE_GROUP = Prefix.API + "/code/group/{id}";
     String CODE_ITEMS = Prefix.API + "/code/items";
     String CODE_ITEM = Prefix.API + "/code/item";
     String CODE_ITEMS_SORT_ORDERS = Prefix.API + "/code/items/sort-orders";

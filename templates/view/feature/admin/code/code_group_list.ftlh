@@ -43,6 +43,7 @@
 <#list clCdList![] as clCd>
     {
         "rnum": ${clCd.rnum!0},
+        "id": ${clCd.id!0},
         "clCd": "${(clCd.clCd!'')?js_string}",
         "clCdNm": "${(clCd.clCdNm!'')?js_string}",
         "clCtgrNm": "${(clCd.clCtgrNm!'')?js_string}",
