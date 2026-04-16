@@ -6,7 +6,6 @@ import io.nicheblog.dreamdiary.feature.admin.code.spec.CodeItemSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseSortableService;
 import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemEntity;
-import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemKey;
 import io.nicheblog.dreamdiary.infrastructure.code.model.CodeLookupItem;
 import io.nicheblog.dreamdiary.infrastructure.code.repository.jpa.CodeItemRepository;
 import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
@@ -35,8 +34,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Log4j2
 public class CodeItemService
-        implements BaseDtoWritableService<CodeItemDto, CodeItemDto, CodeItemKey, CodeItemEntity>,
-                   BaseSortableService<CodeItemDto, CodeItemKey, CodeItemEntity> {
+        implements BaseDtoWritableService<CodeItemDto, CodeItemDto, Integer, CodeItemEntity>,
+                   BaseSortableService<CodeItemDto, Integer, CodeItemEntity> {
 
     @Getter
     private final CodeItemRepository repository;

@@ -45,8 +45,8 @@ class CodeGroupRepositoryTest {
     @Test
     void testRegist() throws Exception {
         final CodeGroupEntity registered = codeGroupRepository.save(entity);
-        final String key = registered.getClCd();
-        final CodeGroupEntity retrieved = codeGroupRepository.findById(key)
+        final Integer id = registered.getId();
+        final CodeGroupEntity retrieved = codeGroupRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         assertNotNull(retrieved);

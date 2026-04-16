@@ -36,7 +36,7 @@
         </thead>
         <tbody class="draggable-zone-dtl-cd">
             {{#each dtlCdList}}
-                <tr class="bg-hover-secondary cursor-pointer sortable-item draggable-dtl-cd" id="{{dtlCd}}" data-id="{{dtlCd}}" onclick="dF.CodeItem.mdfModal('{{dtlCd}}');">
+                <tr class="bg-hover-secondary cursor-pointer sortable-item draggable-dtl-cd" id="code-item-{{id}}" data-id="{{id}}" onclick="dF.CodeItem.mdfModal({{id}});">
                     <td class="text-center">
                         <div class="draggable-handle-dtl-cd d-flex-center cursor-move px-2 py-1" onclick="event.stopPropagation();" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="순서 변경">
                             <i class="ki-duotone ki-abstract-14 fs-1"><span class="path1"></span><span class="path2"></span></i>
@@ -54,7 +54,7 @@
                     </td>
                     <td class="text-center">
                         <div class="d-flex justify-content-center align-items-center gap-2">
-                            <div class="badge badge-danger badge-outlined cursor-pointer" onclick="event.stopPropagation(); dF.CodeItem.delAjax('{{dtlCd}}');" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.del'/>">
+                            <div class="badge badge-danger badge-outlined cursor-pointer" onclick="event.stopPropagation(); dF.CodeItem.delAjax({{id}});" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.del'/>">
                                 <i class="bi bi-trash text-danger fs-7 blink-slow"></i>
                                 <@spring.message 'txt.comm.del'/>
                             </div>

@@ -41,9 +41,14 @@ public class CodeGroupEntity
         this.dtlCdCnt = (CollectionUtils.isEmpty(this.dtlCdList)) ? 0 : this.dtlCdList.size();
     }
 
-    /** 분류 코드 */
+    /** 내부 PK (id) */
     @Id
-    @Column(name = "cl_cd", length=50)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer id;
+
+    /** 분류 코드 (비즈니스 키, UNIQUE) */
+    @Column(name = "cl_cd", length=50, unique = true)
     private String clCd;
 
     /** 분류 코드 이름 */

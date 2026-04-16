@@ -4,6 +4,7 @@
  -->
 
 <script type="text/x-handlebars-template" id="code_item_reg_modal_template">
+    <input type="hidden" name="id" value="{{id}}">
     <input type="hidden" name="clCd" value="{{clCd}}">
     <input type="hidden" name="regYn" value="{{#if (notExists dtlCd)}}Y{{/if}}{{#if (exists dtlCd)}}N{{/if}}">
 

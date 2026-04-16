@@ -76,22 +76,22 @@ class JournalDayMapstructTest {
             final JournalDayEntity entity = createEntity("N");
 
             final List<JournalChapterEntity> chapterEntities = List.of(
-                    JournalChapterEntity.builder().id(11).title("chapter").idx(1).build()
+                    JournalChapterEntity.builder().id(11).title("chapter").sortOrder(1).build()
             );
             final List<JournalDreamEntity> dreamEntities = List.of(
-                    JournalDreamEntity.builder().id(21).title("dream").idx(1).build()
+                    JournalDreamEntity.builder().id(21).title("dream").sortOrder(1).build()
             );
             final List<JournalDreamEntity> elseDreamEntities = List.of(
-                    JournalDreamEntity.builder().id(31).title("else-dream").idx(1).build()
+                    JournalDreamEntity.builder().id(31).title("else-dream").sortOrder(1).build()
             );
             entity.setJournalChapterList(chapterEntities);
             entity.setJournalDreamList(dreamEntities);
             entity.setJournalElseDreamList(elseDreamEntities);
 
-            final List<JournalChapterSmpDto> expectedChapterSmp = List.of(JournalChapterSmpDto.builder().id(11).title("chapter").idx(1).build());
-            final List<JournalChapterDto> expectedChapter = List.of(JournalChapterDto.builder().id(11).title("chapter").idx(1).build());
-            final List<JournalDreamDto> expectedDream = List.of(JournalDreamDto.builder().id(21).title("dream").idx(1).build());
-            final List<JournalDreamDto> expectedElseDream = List.of(JournalDreamDto.builder().id(31).title("else-dream").idx(1).build());
+            final List<JournalChapterSmpDto> expectedChapterSmp = List.of(JournalChapterSmpDto.builder().id(11).title("chapter").sortOrder(1).build());
+            final List<JournalChapterDto> expectedChapter = List.of(JournalChapterDto.builder().id(11).title("chapter").sortOrder(1).build());
+            final List<JournalDreamDto> expectedDream = List.of(JournalDreamDto.builder().id(21).title("dream").sortOrder(1).build());
+            final List<JournalDreamDto> expectedElseDream = List.of(JournalDreamDto.builder().id(31).title("else-dream").sortOrder(1).build());
 
             when(journalChapterMapstruct.toSmpDtoList(chapterEntities)).thenReturn(expectedChapterSmp);
             when(journalChapterMapstruct.toDtoList(chapterEntities)).thenReturn(expectedChapter);
@@ -123,9 +123,9 @@ class JournalDayMapstructTest {
         @DisplayName("returns journalDt as standard date when dtUnknownYn is Y (dto getter contract)")
         void usesApproximateDateWhenUnknownDate() throws Exception {
             final JournalDayEntity entity = createEntity("Y");
-            final List<JournalChapterEntity> chapterEntities = List.of(JournalChapterEntity.builder().id(11).title("chapter").idx(1).build());
-            final List<JournalDreamEntity> dreamEntities = List.of(JournalDreamEntity.builder().id(21).title("dream").idx(1).build());
-            final List<JournalDreamEntity> elseDreamEntities = List.of(JournalDreamEntity.builder().id(31).title("else-dream").idx(1).build());
+            final List<JournalChapterEntity> chapterEntities = List.of(JournalChapterEntity.builder().id(11).title("chapter").sortOrder(1).build());
+            final List<JournalDreamEntity> dreamEntities = List.of(JournalDreamEntity.builder().id(21).title("dream").sortOrder(1).build());
+            final List<JournalDreamEntity> elseDreamEntities = List.of(JournalDreamEntity.builder().id(31).title("else-dream").sortOrder(1).build());
             entity.setJournalChapterList(chapterEntities);
             entity.setJournalDreamList(dreamEntities);
             entity.setJournalElseDreamList(elseDreamEntities);
@@ -166,12 +166,12 @@ class JournalDayMapstructTest {
             dto.setYy(2026);
             dto.setMnth(3);
 
-            final List<JournalChapterDto> chapterDtos = List.of(JournalChapterDto.builder().id(11).title("chapter").idx(1).build());
+            final List<JournalChapterDto> chapterDtos = List.of(JournalChapterDto.builder().id(11).title("chapter").sortOrder(1).build());
             dto.setJournalChapterList(chapterDtos);
-            dto.setJournalDreamList(List.of(JournalDreamDto.builder().id(21).title("dream").idx(1).build()));
-            dto.setJournalElseDreamList(List.of(JournalDreamDto.builder().id(31).title("else-dream").idx(1).build()));
+            dto.setJournalDreamList(List.of(JournalDreamDto.builder().id(21).title("dream").sortOrder(1).build()));
+            dto.setJournalElseDreamList(List.of(JournalDreamDto.builder().id(31).title("else-dream").sortOrder(1).build()));
 
-            final List<JournalChapterEntity> mappedChapterEntities = List.of(JournalChapterEntity.builder().id(11).title("chapter").idx(1).build());
+            final List<JournalChapterEntity> mappedChapterEntities = List.of(JournalChapterEntity.builder().id(11).title("chapter").sortOrder(1).build());
             when(journalChapterMapstruct.toEntityList(chapterDtos)).thenReturn(mappedChapterEntities);
 
             final JournalDayEntity entity = sut.toEntity(dto);
@@ -208,7 +208,7 @@ class JournalDayMapstructTest {
             target.setYy(2024);
             target.setMnth(1);
             final List<JournalChapterEntity> originalChapterList = new ArrayList<>(
-                    List.of(JournalChapterEntity.builder().id(1).title("origin").idx(1).build())
+                    List.of(JournalChapterEntity.builder().id(1).title("origin").sortOrder(1).build())
             );
             target.setJournalChapterList(originalChapterList);
 

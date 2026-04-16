@@ -27,7 +27,7 @@ dF.CodeItem = (function(): dfModule {
         initDraggable: function(): void {
             const hasZone: boolean = !!document.querySelector(".draggable-zone-dtl-cd");
             if (!hasZone) return;
-            const keyExtractor: Function = (item: HTMLElement) => ({ "clCd": $("#clCd").val(), "dtlCd": item.dataset.id || item.id });
+            const keyExtractor: Function = (item: HTMLElement) => ({ "id": Number(item.dataset.id || item.id) });
             const url: string = Url.CODE_ITEMS_SORT_ORDERS;
             dF.CodeItem.swappable = cF.draggable.init("-dtl-cd", keyExtractor, url);
         },
@@ -53,10 +53,10 @@ dF.CodeItem = (function(): dfModule {
             });
         },
 
-        mdfModal: function(dtlCd: string): void {
+        mdfModal: function(id: number): void {
             event.stopPropagation();
             const url: string = Url.CODE_ITEM;
-            const ajaxData: Record<string, any> = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
+            const ajaxData: Record<string, any> = { id };
             cF.ajax.get(url, ajaxData, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
@@ -69,37 +69,37 @@ dF.CodeItem = (function(): dfModule {
             });
         },
 
-        useAjax: function(dtlCd: string): void {
+        useAjax: function(id: number): void {
             event.stopPropagation();
             Swal.fire({ text: Message.get("view.cnfm.use"), showCancelButton: true }).then(function(result: SwalResult): void {
                 if (!result.value) return;
                 const url: string = Url.CODE_ITEM_USE;
-                const ajaxData: Record<string, any> = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
+                const ajaxData: Record<string, any> = { id };
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message }).then(function(): void { if (res.rslt) cF.ui.blockUIReload(); });
                 }, "block");
             });
         },
 
-        unuseAjax: function(dtlCd: string): void {
+        unuseAjax: function(id: number): void {
             event.stopPropagation();
             Swal.fire({ text: Message.get("view.cnfm.unuse"), showCancelButton: true }).then(function(result: SwalResult): void {
                 if (!result.value) return;
                 const url: string = Url.CODE_ITEM_UNUSE;
-                const ajaxData: Record<string, any> = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
+                const ajaxData: Record<string, any> = { id };
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message }).then(function(): void { if (res.rslt) cF.ui.blockUIReload(); });
                 }, "block");
             });
         },
 
-        delAjax: function(dtlCd: string): void {
+        delAjax: function(id: number): void {
             event.stopPropagation();
             Swal.fire({ text: Message.get("view.cnfm.del"), showCancelButton: true }).then(function(result: SwalResult): void {
                 if (!result.value) return;
                 const url: string = Url.CODE_ITEM;
-                const ajaxData: Record<string, any> = { "clCd": $("#clCd").val(), "dtlCd": dtlCd };
-                cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
+                const ajaxData: Record<string, any> = { id };
+                cF.$ajax.delete(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message }).then(function(): void { if (res.rslt) cF.ui.blockUIReload(); });
                 }, "block");
             });

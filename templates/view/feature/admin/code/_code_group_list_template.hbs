@@ -6,10 +6,11 @@
 <script type="text/x-handlebars-template" id="code_group_list_template">
     {{#each this}}
         <tr class="cl-cd-item bg-hover-secondary"
-            id="{{clCd}}"
+            id="code-group-{{id}}"
+            data-id="{{id}}"
             data-cl-cd="{{clCd}}"
             data-use-yn="{{ifEmpty useYn 'N'}}"
-            onclick="dF.CodeGroup.dtlModal('{{clCd}}');">
+            onclick="dF.CodeGroup.dtlModal({{id}});">
             <td class="text-center hidden-table">{{rnum}}</td>
             <td class="text-start px-6 cursor-pointer fw-bold text-gray-700">
                 {{#if (exists clCtgrNm)}}
@@ -22,7 +23,7 @@
             <td class="text-center hidden-table">{{ifEmpty dtlCdCnt 0}}</td>
             <td class="text-center hidden-table">
                 <div class="badge {{#ifYn useYn}}badge-success{{else}}badge-secondary btn-white{{/ifYn}} cursor-pointer"
-                     onclick="event.stopPropagation(); dF.CodeGroup.toggleUseAjax('{{clCd}}');"
+                     onclick="event.stopPropagation(); dF.CodeGroup.toggleUseAjax({{id}});"
                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                      title="클릭하여 사용 상태를 변경합니다.">
                     <i class="bi bi-check text-light blink-slow"></i>
@@ -31,7 +32,7 @@
             </td>
             <td class="text-center hidden-table">
                 <div class="badge badge-danger badge-outlined cursor-pointer"
-                     onclick="event.stopPropagation(); dF.CodeGroup.delAjax('{{clCd}}');"
+                     onclick="event.stopPropagation(); dF.CodeGroup.delAjax({{id}});"
                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
                      title="<@spring.message 'bs.tooltip.del'/>">
                     <i class="bi bi-trash text-danger fs-7 blink-slow"></i>

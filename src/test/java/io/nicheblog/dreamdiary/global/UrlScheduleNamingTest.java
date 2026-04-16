@@ -1,4 +1,4 @@
-﻿package io.nicheblog.dreamdiary.global;
+package io.nicheblog.dreamdiary.global;
 
 import org.junit.jupiter.api.Test;
 
