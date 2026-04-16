@@ -139,13 +139,13 @@ cF.util = (function(): Module {
         /**
          * 파일 다운로드를 수행합니다.
          * AJAX로 파일 존재 여부를 체크한 후, 임시 폼을 생성하여 제출합니다.
-         * @param {string|number} atchFileId - 첨부 파일 번호.
-         * @param {string|number} atchFileDtlId - 첨부 파일 상세 번호.
+         * @param {string|number} fileGroupId - 첨부 파일 번호.
+         * @param {string|number} fileRecordId - 첨부 파일 상세 번호.
          * TODO: URL 외부에서 주입하기?
          */
-        fileDownload: function(atchFileId: string|number, atchFileDtlId: string|number): void {
-            const inputs: string = "<input type='hidden' name='atchFileId' value='" + atchFileId + "'>" +
-                           "<input type='hidden' name='atchFileDtlId' value='" + atchFileDtlId + "'>";
+        fileDownload: function(fileGroupId: string|number, fileRecordId: string|number): void {
+            const inputs: string = "<input type='hidden' name='fileGroupId' value='" + fileGroupId + "'>" +
+                           "<input type='hidden' name='fileRecordId' value='" + fileRecordId + "'>";
             const form: HTMLFormElement = document.createElement("form");
             form.action = "/file/file-download.do";
             form.method = "POST"; // POST 방식으로 설정

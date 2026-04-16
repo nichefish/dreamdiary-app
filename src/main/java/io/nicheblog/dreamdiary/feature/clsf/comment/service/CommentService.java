@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.feature.clsf.comment.mapstruct.CommentMapstruct;
 import io.nicheblog.dreamdiary.feature.clsf.comment.model.CommentDto;
 import io.nicheblog.dreamdiary.feature.clsf.comment.repository.jpa.CommentRepository;
 import io.nicheblog.dreamdiary.feature.clsf.comment.spec.CommentSpec;
-import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableService;
+import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.Getter;

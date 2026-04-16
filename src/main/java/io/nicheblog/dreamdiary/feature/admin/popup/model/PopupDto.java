@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.admin.popup.model;
 
 import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
-import io.nicheblog.dreamdiary.feature.clsf.file.model.cmpstn.AtchFileCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.file.model.cmpstn.AtchFileCmpstnModule;
+import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstn;
+import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
@@ -30,7 +30,7 @@ import javax.validation.constraints.Size;
 @EqualsAndHashCode(callSuper = false)
 public class PopupDto
         extends BaseClsfDto
-        implements Identifiable<Integer>, AtchFileCmpstnModule, StateCmpstnModule {
+        implements Identifiable<Integer>, FileCmpstnModule, StateCmpstnModule {
 
     /** 팝업 코드 */
     @Size(max = 50)
@@ -61,7 +61,7 @@ public class PopupDto
     }
 
     /** 위임 :: 첨부파일 모듈 */
-    public AtchFileCmpstn file;
+    public FileCmpstn file;
     /** 위임 :: 상태 관리 모듈 */
     public StateCmpstn state;
 }

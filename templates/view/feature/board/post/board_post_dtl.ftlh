@@ -31,7 +31,7 @@
         <#--begin::meta-->
         <div class="mb-0">
             <#--페이지:: 첨부파일 표시 영역-->
-            <#include "/view/feature/clsf/file/_atch_file_page_dtl_area.ftlh">
+            <#include "/view/feature/file/_file_page_dtl_area.ftlh">
 
             <#--페이지:: 파일시스템 참조 표시 영역-->
 

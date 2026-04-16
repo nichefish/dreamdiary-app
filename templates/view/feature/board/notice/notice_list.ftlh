@@ -89,7 +89,7 @@
                         </td>
                         <td class="text-center col-form-label hidden-table">
                             <#--목록:: 첨부파일 모달 열기 버튼 표시-->
-                            <@component.list_atch_file post />
+                            <@component.list_file_group post />
                         </td>
                         <td class="text-center col-form-label">
                             <#--목록:: 최종수정자 표시-->
@@ -147,7 +147,7 @@
                         </td>
                         <td class="text-center col-form-label hidden-table">
                             <#--목록:: 첨부파일 모달 열기 버튼 표시-->
-                            <@component.list_atch_file post />
+                            <@component.list_file_group post />
                         </td>
                         <td class="text-center col-form-label">
                             <#--목록:: 최종수정자 표시-->
@@ -183,7 +183,7 @@
 
 <#--include::modals-->
 <#include "/view/feature/clsf/comment/_modal/_comment_list_modal.ftlh">
-<#include "/view/feature/clsf/file/_modal/_atch_file_list_modal.ftlh">
+<#include "/view/feature/file/_modal/_file_group_list_modal.ftlh">
 
 <#--include::notice_modules-->
 <#include "/view/feature/board/notice/_modal/_notice_dtl_modal.ftlh">

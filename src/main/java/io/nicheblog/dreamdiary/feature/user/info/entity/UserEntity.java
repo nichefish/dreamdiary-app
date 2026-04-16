@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.user.info.entity;
 
 import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
-import io.nicheblog.dreamdiary.feature.clsf.file.entity.embed.AtchFileEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.file.entity.embed.AtchFileEmbedModule;
+import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbed;
+import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbedModule;
 import io.nicheblog.dreamdiary.feature.user.emplym.entity.UserEmplymEntity;
 import io.nicheblog.dreamdiary.feature.user.emplym.mapstruct.UserEmplymMapstruct;
 import io.nicheblog.dreamdiary.feature.user.info.model.emplym.UserEmplymDto;
@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 @SQLDelete(sql = "UPDATE user SET deleted_at = NOW() WHERE id = ?")
 public class UserEntity
         extends BaseClsfEntity
-        implements AtchFileEmbedModule {
+        implements FileEmbedModule {
     
     @PostLoad
     private void init() {
@@ -256,5 +256,5 @@ public class UserEntity
     /* ----- */
 
     @Embedded
-    public AtchFileEmbed file;
+    public FileEmbed file;
 }

@@ -73,7 +73,7 @@
                         </td>
                         <td class="text-center col-form-label hidden-table">
                             <#--목록:: 첨부파일 모달 열기 버튼 표시-->
-                            <@component.list_atch_file post />
+                            <@component.list_file_group post />
                         </td>
                         <td class="text-center hidden-table">
                             ${post.hitCnt!0?string.number}
@@ -123,7 +123,7 @@
                         </td>
                         <td class="text-center col-form-label hidden-table">
                             <#--목록:: 첨부파일 모달 열기 버튼 표시-->
-                            <@component.list_atch_file post />
+                            <@component.list_file_group post />
                         </td>
                         <td class="text-center hidden-table">
                             ${post.hitCnt!0?string.number}
@@ -151,7 +151,7 @@
 
 <#--include::modals-->
 <#include "/view/feature/clsf/comment/_modal/_comment_list_modal.ftlh">
-<#include "/view/feature/clsf/file/_modal/_atch_file_list_modal.ftlh">
+<#include "/view/feature/file/_modal/_file_group_list_modal.ftlh">
 
 <#--include::script modules-->
 <script type="text/javascript" src="/js/view/feature/journal/sbjct/journal_sbjct_module.js?${releaseDate!}"></script>

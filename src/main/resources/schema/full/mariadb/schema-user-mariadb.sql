@@ -32,8 +32,8 @@ CREATE TABLE IF NOT EXISTS user (
     -- REQST
     reqst_yn CHAR(1) DEFAULT 'N' COMMENT '외부신청 여부 (Y/N)',
     cf_yn CHAR(1) DEFAULT 'N' COMMENT '사용자 승인 여부 (Y/N)',
-    -- ATCH_FILE
-    atch_file_id INT COMMENT '첨부파일 번호',
+    -- FILE_GROUP
+    file_group_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -107,8 +107,8 @@ CREATE TABLE IF NOT EXISTS user_profile (
     brthdy DATE COMMENT '생일',
     lunar_yn CHAR(1) DEFAULT 'N' COMMENT '음력 여부 (Y/N)',
     profl_cn VARCHAR(2000) COMMENT '프로필(자기소개)',
-    -- ATCH_FILE
-    atch_file_id INT COMMENT '첨부파일 번호',
+    -- FILE_GROUP
+    file_group_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -138,8 +138,8 @@ CREATE TABLE IF NOT EXISTS user_emplym (
     acnt_bank VARCHAR(50) COMMENT '급여 은행',
     acnt_no VARCHAR(50) COMMENT '급여 계좌번호',
     emplym_cn VARCHAR(2000) COMMENT '인사정보 비고',
-    -- ATCH_FILE
-    atch_file_id INT COMMENT '첨부파일 번호',
+    -- FILE_GROUP
+    file_group_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',

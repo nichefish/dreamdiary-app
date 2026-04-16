@@ -2,8 +2,8 @@ package io.nicheblog.dreamdiary.feature.user.my.service;
 
 import io.nicheblog.dreamdiary.auth.jwt.service.RefreshTokenService;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf.file.model.AtchFileDtlDto;
-import io.nicheblog.dreamdiary.feature.clsf.file.utils.FileUtils;
+import io.nicheblog.dreamdiary.feature.file.model.FileRecordDto;
+import io.nicheblog.dreamdiary.feature.file.utils.FileUtils;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserPwChgParam;
 import io.nicheblog.dreamdiary.feature.user.info.repository.jpa.UserRepository;
@@ -132,7 +132,7 @@ public class UserMyService {
     @Transactional
     public boolean uploadProflImg(final MultipartHttpServletRequest request) throws Exception {
         // 파일 영역 처리 후 업로드 정보 받아서 반환
-        final AtchFileDtlDto uploaded = FileUtils.uploadDtlFile(request);
+        final FileRecordDto uploaded = FileUtils.uploadDtlFile(request);
         if (uploaded == null) return false;
 
         // 프로필 url 업데이트
