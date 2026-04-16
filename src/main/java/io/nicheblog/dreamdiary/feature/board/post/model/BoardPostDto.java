@@ -3,8 +3,8 @@ package io.nicheblog.dreamdiary.feature.board.post.model;
 import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstnModule;
-import io.nicheblog.dreamdiary.feature.clsf.file.model.cmpstn.AtchFileCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.file.model.cmpstn.AtchFileCmpstnModule;
+import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstn;
+import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.managt.model.cmpstn.ManagtCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.managt.model.cmpstn.ManagtCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
@@ -34,7 +34,7 @@ import javax.validation.constraints.Size;
 @EqualsAndHashCode(callSuper = true)
 public class BoardPostDto
         extends BaseClsfDto
-        implements Identifiable<Integer>, AtchFileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, ManagtCmpstnModule, ViewerCmpstnModule {
+        implements Identifiable<Integer>, FileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, ManagtCmpstnModule, ViewerCmpstnModule {
 
     /** 게시판 정의 */
     private String boardDef;
@@ -124,7 +124,7 @@ public class BoardPostDto
     }
 
     /** 위임 :: 첨부파일 모듈 */
-    public AtchFileCmpstn file;
+    public FileCmpstn file;
     /** 위임 :: 댓글 정보 모듈 */
     public CommentCmpstn comment;
     /** 위임 :: 태그 정보 모듈 */

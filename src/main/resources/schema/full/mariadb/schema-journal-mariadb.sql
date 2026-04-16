@@ -72,8 +72,8 @@ CREATE TABLE IF NOT EXISTS journal_diary (
     title VARCHAR(200) COMMENT '제목',
     content LONGTEXT COMMENT '내용',
     sort_order INT DEFAULT 1 COMMENT '저널 일기 인덱스',
-    -- ATCH_FILE
-    atch_file_id INT COMMENT '첨부파일 번호',
+    -- FILE_GROUP
+    file_group_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -103,8 +103,8 @@ CREATE TABLE IF NOT EXISTS journal_dream (
     else_dreamer_nm VARCHAR(64) COMMENT '꿈꾼이 이름',
     resolved_yn CHAR(1) DEFAULT 'N' COMMENT '정리완료 여부 (Y/N)',
     collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)',
-    -- ATCH_FILE
-    atch_file_id INT COMMENT '첨부파일 번호',
+    -- FILE_GROUP
+    file_group_id INT COMMENT '첨부파일 번호',
     -- history
     history_triggered_by VARCHAR(20) COMMENT '최종 이력 트리거 발생자',
     history_triggered_at DATETIME COMMENT '최종 이력 트리거 발생일시',
@@ -135,8 +135,8 @@ CREATE TABLE IF NOT EXISTS journal_intrpt (
     collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)',
     -- POST
     imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
-    -- ATCH_FILE
-    atch_file_id INT COMMENT '첨부파일 번호',
+    -- FILE_GROUP
+    file_group_id INT COMMENT '첨부파일 번호',
     -- history
     history_triggered_by VARCHAR(20) COMMENT '최종 이력 트리거 발생자',
     history_triggered_at DATETIME COMMENT '최종 이력 트리거 발생일시',
@@ -169,8 +169,8 @@ CREATE TABLE IF NOT EXISTS journal_todo (
     hit_cnt INT DEFAULT 0 COMMENT '조회수',
     imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
     mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
-    -- ATCH_FILE
-    atch_file_id INT COMMENT '첨부파일 번호',
+    -- FILE_GROUP
+    file_group_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -194,8 +194,8 @@ CREATE TABLE IF NOT EXISTS journal_sbjct(
     fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
     hit_cnt INT DEFAULT 0 COMMENT '조회수',
     mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
-    -- ATCH_FILE
-    atch_file_id INT COMMENT '첨부파일 번호',
+    -- FILE_GROUP
+    file_group_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -216,8 +216,8 @@ CREATE TABLE IF NOT EXISTS journal_annual (
     dream_day_cnt INT DEFAULT 0 COMMENT '꿈 일수',
     dream_cnt INT DEFAULT 0 COMMENT '꿈 개수',
     dream_compt_yn CHAR(1) DEFAULT 'N' COMMENT '꿈 기록 완료 여부',
-    -- ATCH_FILE
-    atch_file_id INT COMMENT '첨부파일 번호',
+    -- FILE_GROUP
+    file_group_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -244,8 +244,8 @@ CREATE TABLE IF NOT EXISTS journal_annual_review (
     fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
     hit_cnt INT DEFAULT 0 COMMENT '조회수',
     mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
-    -- ATCH_FILE
-    atch_file_id INT COMMENT '첨부파일 번호',
+    -- FILE_GROUP
+    file_group_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',

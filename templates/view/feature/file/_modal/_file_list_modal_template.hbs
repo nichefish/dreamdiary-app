@@ -1,0 +1,32 @@
+<#--
+ * 목록 > 첨부파일 조회 Template
+ * @included_in : _file_group_list_modal.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="file_group_list_modal_template">
+    <#--begin::Table-->
+    <table class="table align-middle table-row-dashed fs-small gy-3 table-fixed hoverTable mb-3">
+        <#--begin::Table body-->
+        <tbody>
+            {{#each this}}
+                <tr class="bg-hover-secondary" onclick="cF.util.fileDownload('{{fileGroupId}}', '{{id}}');"
+                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "bs.tooltip.file.download"/>">
+                    <td class="col-lg-7 col-8 text-start wb-keepall ps-6">
+                        <a class="badge badge-secondary p-2 btn-white blank blink-slow me-2">
+                            <i class="bi bi-file-earmark-arrow-down-fill text-primary blink-none"></i>
+                        </a>
+                        <span class="border-bottom text-primary opacity-hover">{{orgnFileNm}}</span>
+                    </td>
+                    <td class="col-lg-3 text-start hidden-table fs-small">
+                        ({{numberFormat fileSize}} bytes)
+                    </td>
+                    <td class="col-lg-2 col-3 text-start">
+                        <div class="badge badge-sm btn-primary badge-light-primary btn-outlined fw-normal">
+                            <i class="fas fa-download fs-7 pe-1"></i>다운로드
+                        </div>
+                    </td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</script>

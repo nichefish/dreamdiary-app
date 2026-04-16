@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.clsf.sectn.service;
 
-import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableService;
+import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.feature.clsf.sectn.entity.SectnEntity;
 import io.nicheblog.dreamdiary.feature.clsf.sectn.mapstruct.SectnMapstruct;
 import io.nicheblog.dreamdiary.feature.clsf.sectn.model.SectnDto;

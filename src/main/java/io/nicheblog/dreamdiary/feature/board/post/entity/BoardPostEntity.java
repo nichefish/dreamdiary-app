@@ -4,8 +4,8 @@ import io.nicheblog.dreamdiary.feature.board.def.entity.BoardDefEntity;
 import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
 import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.file.entity.embed.AtchFileEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.file.entity.embed.AtchFileEmbedModule;
+import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbed;
+import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.managt.entity.embed.ManagtEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.managt.entity.embed.ManagtEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
@@ -40,7 +40,7 @@ import javax.persistence.Table;
 @SQLDelete(sql = "UPDATE board_post SET deleted_at = NOW() WHERE id = ?")
 public class BoardPostEntity
         extends BaseClsfEntity
-        implements AtchFileEmbedModule, CommentEmbedModule, TagEmbedModule, ManagtEmbedModule, ViewerEmbedModule {
+        implements FileEmbedModule, CommentEmbedModule, TagEmbedModule, ManagtEmbedModule, ViewerEmbedModule {
 
     /** 글 번호 */
     @Id
@@ -100,7 +100,7 @@ public class BoardPostEntity
 
     /** 위임 :: 첨부파일 모듈 */
     @Embedded
-    public AtchFileEmbed file;
+    public FileEmbed file;
     /** 위임 :: 댓글 정보 모듈 */
     @Embedded
     public CommentEmbed comment;

@@ -23,7 +23,7 @@ dF.UserMy = (function(): dfModule {
          * 프로필 이미지 첨부
          */
         uploadProflImg: function(): void {
-            const $fileInput: JQuery<HTMLInputElement> = $("#atchFile0");
+            const $fileInput: JQuery<HTMLInputElement> = $("#fileGroup0");
             $fileInput.click();
             $fileInput.on("change", function(): void {
                 if ((this as HTMLInputElement).value === "") return;

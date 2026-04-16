@@ -258,7 +258,7 @@
 <div id="proflImageTemplate" hidden>
     <#--begin::Form-->
     <form name="profllImgForm" id="profllImgForm" class="form" enctype="multipart/form-data">
-        <input type="file" name="atchFile0" id="atchFile0" class="file"
+        <input type="file" name="fileGroup0" id="fileGroup0" class="file"
                onchange="return false;"
                accept=".png, .jpg, .jpeg" />
     </form>

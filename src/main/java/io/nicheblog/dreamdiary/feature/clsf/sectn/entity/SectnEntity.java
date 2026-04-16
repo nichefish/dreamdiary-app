@@ -4,8 +4,8 @@ import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
 import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.file.entity.embed.AtchFileEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.file.entity.embed.AtchFileEmbedModule;
+import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbed;
+import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.global.intrfc.entity.Usable;
@@ -37,7 +37,7 @@ import javax.persistence.*;
 @SQLDelete(sql = "UPDATE sectn SET deleted_at = NOW() WHERE id = ?")
 public class SectnEntity
         extends BaseClsfEntity
-        implements Usable, AtchFileEmbedModule, CommentEmbedModule, TagEmbedModule {
+        implements Usable, FileEmbedModule, CommentEmbedModule, TagEmbedModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -131,7 +131,7 @@ public class SectnEntity
 
     /** 위임 :: 첨부파일 모듈 */
     @Embedded
-    public AtchFileEmbed file;
+    public FileEmbed file;
     /** 위임 :: 댓글 정보 모듈 */
     @Embedded
     public CommentEmbed comment;

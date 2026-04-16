@@ -120,7 +120,7 @@ cF.tinymce = (function(): Module {
          * tinymce 에디터 이미지 첨부
          */
         imgRegFunc: function(): void {
-            const fileInput: HTMLInputElement = document.getElementById("atchFile0") as HTMLInputElement;
+            const fileInput: HTMLInputElement = document.getElementById("fileGroup0") as HTMLInputElement;
             fileInput.click();
 
             fileInput.addEventListener("change", function(): void {

@@ -52,7 +52,7 @@
 
         <#--begin::meta-->
         <div class="mb-0">
-            <#if (tmplat.atchFileInfo.atchFileList)?has_content>
+            <#if (tmplat.fileGroupInfo.fileRecordList)?has_content>
                 <div class="d-flex flex-stack flex-wrap mb-3 bg-light">
                     <div class="col-xl-1">
                         <div class="fs-6 fw-bold col-form-label px-5">
@@ -60,10 +60,10 @@
                         </div>
                     </div>
                     <div class="col-xl-11 my-3">
-                        <#list (tmplat.atchFileInfo.atchFileList)![] as file>
+                        <#list (tmplat.fileGroupInfo.fileRecordList)![] as file>
                             <div class="row my-1">
                                 <div class="col-xl-8">
-                                    <a href="javascript:void(0);" onclick="cF.util.fileDownload('${file.atchFileId!}', '${file.atchFileDtlId!}');"
+                                    <a href="javascript:void(0);" onclick="cF.util.fileDownload('${file.fileGroupId!}', '${file.fileRecordId!}');"
                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.file.download'/>">
                                         <i class="fas fa-file-download fs-15 me-1"></i>
                                         ${file.orgnFileNm!}(${file.fileSize!}byte)

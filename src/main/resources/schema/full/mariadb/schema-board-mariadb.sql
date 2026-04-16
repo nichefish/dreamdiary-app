@@ -47,8 +47,8 @@ CREATE TABLE IF NOT EXISTS board_post(
     -- MANAGT (module)
     managtr_id VARCHAR(20) COMMENT '작업자 ID',
     managt_dt DATETIME COMMENT '작업일시',
-    -- ATCH_FILE
-    atch_file_id INT COMMENT '첨부파일 번호',
+    -- FILE_GROUP
+    file_group_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',

@@ -26,8 +26,8 @@ CREATE TABLE IF NOT EXISTS notice (
     -- MANAGT (module)
     managtr_id VARCHAR(20) COMMENT '작업자 ID',
     managt_dt DATETIME COMMENT '작업일시',
-    -- ATCH_FILE
-    atch_file_id INT COMMENT '첨부파일 번호',
+    -- FILE_GROUP
+    file_group_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -59,8 +59,8 @@ CREATE TABLE IF NOT EXISTS schedule (
     fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
     hit_cnt INT DEFAULT 0 COMMENT '조회수',
     mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
-    -- ATCH_FILE
-    atch_file_id INT COMMENT '첨부파일 번호',
+    -- FILE_GROUP
+    file_group_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -112,8 +112,8 @@ CREATE TABLE IF NOT EXISTS tmplat_txt (
     title VARCHAR(200) COMMENT '이름',
     content LONGTEXT COMMENT '내용',
     default_yn CHAR(1) DEFAULT 'N' COMMENT '기본 템플릿 여부',
-    -- ATCH_FILE
-    atch_file_id INT COMMENT '첨부파일 번호',
+    -- FILE_GROUP
+    file_group_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -146,8 +146,8 @@ CREATE TABLE IF NOT EXISTS flsys_meta (
     -- MANAGT (module)
     managtr_id VARCHAR(20) COMMENT '작업자 ID',
     managt_dt DATETIME COMMENT '작업일시',
-    -- ATCH_FILE
-    atch_file_id INT COMMENT '첨부파일 번호',
+    -- FILE_GROUP
+    file_group_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
@@ -170,8 +170,8 @@ CREATE TABLE IF NOT EXISTS chat_msg (
     content LONGTEXT COMMENT '내용',
     imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
     fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
-    -- ATCH_FILE
-    atch_file_id INT COMMENT '첨부파일 번호',
+    -- FILE_GROUP
+    file_group_id INT COMMENT '첨부파일 번호',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',

@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeXlsxDto;
 import io.nicheblog.dreamdiary.feature.board.notice.repository.jpa.NoticeRepository;
 import io.nicheblog.dreamdiary.feature.board.notice.spec.NoticeSpec;
 import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
-import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableService;
+import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.feature.clsf.managt.event.ManagtrAddEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import lombok.Getter;

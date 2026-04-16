@@ -4,8 +4,8 @@ import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
 import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.file.entity.embed.AtchFileEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.file.entity.embed.AtchFileEmbedModule;
+import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbed;
+import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbedModule;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbedModule;
 import lombok.*;
@@ -35,7 +35,7 @@ import javax.persistence.*;
 @SQLDelete(sql = "UPDATE comment SET deleted_at = NOW() WHERE id = ?")
 public class CommentEntity
         extends BaseClsfEntity
-        implements AtchFileEmbedModule, CommentEmbedModule, TagEmbedModule {
+        implements FileEmbedModule, CommentEmbedModule, TagEmbedModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -74,7 +74,7 @@ public class CommentEntity
 
     /** 위임 :: 첨부파일 모듈 */
     @Embedded
-    public AtchFileEmbed file;
+    public FileEmbed file;
     /** 위임 :: 댓글 정보 모듈 */
     @Embedded
     public CommentEmbed comment;

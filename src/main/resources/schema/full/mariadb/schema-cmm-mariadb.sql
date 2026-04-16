@@ -105,19 +105,19 @@ CREATE TABLE IF NOT EXISTS auth_policy (
 
 -- -----------------------
 
--- 첨부파일 (atch_file)
+-- 첨부파일 (file_group)
 -- @extends: BaseCrudEntity
-CREATE TABLE IF NOT EXISTS atch_file (
+CREATE TABLE IF NOT EXISTS file_group (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '첨부파일 ID',
     -- AUDIT
     deleted_at DATETIME COMMENT '삭제일시'
 ) COMMENT = '첨부파일';
 
--- 첨부파일 상세 (atch_file_dtl)
+-- 첨부파일 상세 (file_record)
 -- @extends: BaseCrudEntity
-CREATE TABLE IF NOT EXISTS atch_file_dtl (
+CREATE TABLE IF NOT EXISTS file_record (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '첨부파일 상세 ID',
-    atch_file_id INT COMMENT '첨부파일 번호',
+    file_group_id INT COMMENT '첨부파일 번호',
     file_sn INT COMMENT '파일 순번',
     orgn_file_nm VARCHAR(200) COMMENT '원본파일명',
     stre_file_nm VARCHAR(200) COMMENT '저장파일명',
@@ -128,7 +128,7 @@ CREATE TABLE IF NOT EXISTS atch_file_dtl (
     -- AUDIT
     deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
-    FOREIGN KEY(atch_file_id) REFERENCES atch_file (id)
+    FOREIGN KEY(file_group_id) REFERENCES file_group (id)
 ) COMMENT = '첨부파일 상세';
 
 -- -----------------------

@@ -90,9 +90,9 @@ public class EmailService {
         final Template tmplat = freemarkerEmailConfig.getTemplate(mailSendParam.getTmplat());
         final String compiledContent = FreeMarkerTemplateUtils.processTemplateIntoString(tmplat, dataMap);
         helper.setText(compiledContent, true);
-        if (CollectionUtils.isNotEmpty(mailSendParam.getAtchFileList())) {
+        if (CollectionUtils.isNotEmpty(mailSendParam.getFileRecordList())) {
             // 첨부파일 처리
-            mailSendParam.getAtchFileList().forEach(attachFile -> {
+            mailSendParam.getFileRecordList().forEach(attachFile -> {
                 try {
                     helper.addAttachment(attachFile.getFileNm(), new File(attachFile.getFilePath()));
                 } catch (MessagingException e) {

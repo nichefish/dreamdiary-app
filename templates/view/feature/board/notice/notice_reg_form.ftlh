@@ -18,7 +18,7 @@
         <form name="noticeRegForm" id="noticeRegForm" class="form" data-mode="${formMode!}" method="post" enctype="multipart/form-data">
             <input type="hidden" name="id" value="${post.id!}">
             <input type="hidden" name="contentType" value="NOTICE">
-            <input type="hidden" name="atchFileId" value="${post.atchFileId!}">
+            <input type="hidden" name="fileGroupId" value="${post.fileGroupId!}">
             <input type="hidden" name="hitCnt" value="${post.hitCnt!0?string.number}">
 
             <#--begin::Row-->
@@ -134,7 +134,7 @@
             <#--begin::meta-->
             <div class="mb-0">
                 <#--페이지:: 첨부파일 추가추가 영역-->
-                <#include "/view/feature/clsf/file/_atch_file_page_reg_area.ftlh">
+                <#include "/view/feature/file/_file_page_reg_area.ftlh">
 
                 <!-- #include:: component:: 파일시스템 참조 -->
 <#--                <#include "/view/feature/flsys/_flsys_reg_area.ftlh">-->

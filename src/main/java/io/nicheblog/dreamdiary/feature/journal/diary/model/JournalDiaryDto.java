@@ -4,8 +4,8 @@ import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
 import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstnModule;
-import io.nicheblog.dreamdiary.feature.clsf.file.model.cmpstn.AtchFileCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.file.model.cmpstn.AtchFileCmpstnModule;
+import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstn;
+import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstnModule;
 import io.nicheblog.dreamdiary.feature.clsf.history.model.HistoryDto;
 import io.nicheblog.dreamdiary.feature.clsf.history.model.cmpstn.HistoryCmpstn;
 import io.nicheblog.dreamdiary.feature.clsf.history.model.cmpstn.HistoryCmpstnModule;
@@ -40,7 +40,7 @@ import java.util.List;
 @ToString(callSuper = true)
 public class JournalDiaryDto
         extends BaseClsfDto
-        implements Identifiable<Integer>, AtchFileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, StateCmpstnModule, HistoryCmpstnModule, JournalPeriodModule, Comparable<JournalDiaryDto>  {
+        implements Identifiable<Integer>, FileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, StateCmpstnModule, HistoryCmpstnModule, JournalPeriodModule, Comparable<JournalDiaryDto>  {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -116,7 +116,7 @@ public class JournalDiaryDto
     }
 
     /** 위임 :: 첨부파일 모듈 */
-    public AtchFileCmpstn file;
+    public FileCmpstn file;
     /** 위임 :: 댓글 정보 모듈 */
     public CommentCmpstn comment;
     /** 위임 :: 태그 정보 모듈 */
