@@ -105,9 +105,6 @@ public interface AppUrl {
     /** 로그 통계 조회 (TODO) */
     String LOG_STATS_USER_LIST = Prefix.APP + "/log/stats/list.do";
 
-    /** 파일시스템 */
-    String FLSYS_HOME = Prefix.APP + "/flsys/page.do";
-
     /** ERROR */
     // URL
     String ERROR = Prefix.APP + "/error";

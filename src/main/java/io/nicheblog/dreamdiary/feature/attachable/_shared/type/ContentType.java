@@ -38,8 +38,7 @@ public enum ContentType {
 
     //
     SECTN("SECTN", "단락"),
-    COMMENT("COMMENT", "댓글"),
-    FLSYS_META("FLSYS_META", "파일시스템 메타");
+    COMMENT("COMMENT", "댓글");
 
     public final String key;
     public final String desc;

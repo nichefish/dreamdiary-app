@@ -125,7 +125,6 @@ public class BoardPostPageController
         codeLookupService.setCdListToModel(boardDefInfo.getCtgrClCd(), model);
         codeLookupService.setCdListToModel(Code.MDFABLE_CD, model);
         codeLookupService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
-        // CmmUtils.setModelFlsysPath(model);
 
         return "/view/feature/board/post/board_post_reg_form";
     }
@@ -219,7 +218,6 @@ public class BoardPostPageController
         codeLookupService.setCdListToModel(boardDefInfo.getCtgrClCd(), model);
         codeLookupService.setCdListToModel(Code.MDFABLE_CD, model);
         codeLookupService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
-        // CmmUtils.setModelFlsysPath(model);
         
         return "/view/feature/board/post/board_post_reg_form";
     }

@@ -89,8 +89,6 @@ public final class Constant {
 
     /** 각 메뉴 번호 */
     public static final String USER = "user";              // 계정 관리
-    public static final String HOME_FLSYS = "flsys";
-
     /** 부트스트랩 클래스 */
     public static final String BS_PRIMARY = "primary";
     public static final String BS_PRIMARY_700 = "primary-700";

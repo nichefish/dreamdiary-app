@@ -52,9 +52,7 @@ public enum SiteMenu {
     LOG("로그 관리"),
     LOG_ACTVTY("활동 로그 관리"),
     LOG_SYS("시스템 로그 관리"),
-    LOG_STATS("로그 통계"),
-
-    FLSYS("파일시스템");
+    LOG_STATS("로그 통계");
 
     private final String pageNm;
 }

@@ -120,9 +120,6 @@
                 <#--페이지:: 첨부파일 추가추가 영역-->
                 <#include "/view/feature/file/_file_page_reg_area.ftlh">
 
-                <!-- #include:: component:: 파일시스템 참조 -->
-                <#include "/view/feature/flsys/_flsys_reg_area.ftlh">
-
                 <!-- #include:: component:: 태그 태그 -->
                 <#include "/view/feature/attachable/tag/_tag_page_reg_area.ftlh">
             </div>

@@ -210,17 +210,6 @@ public interface ApiUrl {
     /** 시스템 로그 조회 */
     String LOG_SYS_DTL_AJAX = Prefix.API + "/log/sys/log-sys-dtl";
 
-    /** 파일시스템 */
-    String FLSYS_LIST_AJAX = Prefix.API + "/flsys/flsys-list";
-    String FLSYS_FILE_DOWNLOAD = Prefix.API + "/flsys/flsys-file-download.do";
-    String FLSYS_OPEN_IN_EXPLORER_AJAX = Prefix.API + "/flsys/flsys-open-in-explorer";
-    String FLSYS_FILE_EXEC_AJAX = Prefix.API + "/flsys/flsys-file-exec";
-
-    String FLSYS_META_REG_AJAX = Prefix.API + "/flsys/flsys-meta-reg";
-    String FLSYS_META_DTL_AJAX = Prefix.API + "/flsys/flsys-meta-dtl";
-    String FLSYS_META_MDF_AJAX = Prefix.API + "/flsys/flsys-meta-mdf";
-    String FLSYS_META_DEL_AJAX = Prefix.API + "/flsys/flsys-meta-del";
-
     /** (공통) 파일 */
     String FILE_DOWNLOAD_CHK_AJAX = Prefix.API + "/file/file-download-chk";
     String FILE_INFO_LIST_AJAX = Prefix.API + "/file/file-info-list";
