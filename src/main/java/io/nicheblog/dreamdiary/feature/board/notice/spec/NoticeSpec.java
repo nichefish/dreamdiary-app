@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.board.notice.spec;
 
 import io.nicheblog.dreamdiary.feature.board.notice.entity.NoticeEntity;
-import io.nicheblog.dreamdiary.feature.clsf._shared.spec.BaseClsfSpec;
+import io.nicheblog.dreamdiary.feature.attachable._shared.spec.BaseAttachableSpec;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -23,7 +23,7 @@ import java.util.Map;
 @Component
 @Log4j2
 public class NoticeSpec
-        implements BaseClsfSpec<NoticeEntity> {
+        implements BaseAttachableSpec<NoticeEntity> {
 
     /**
      * 검색 조건 세팅 후 쿼리 후처리. (override)

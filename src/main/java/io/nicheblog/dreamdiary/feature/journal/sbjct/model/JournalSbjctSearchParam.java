@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.sbjct.model;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.model.param.BaseClsfSearchParam;
+import io.nicheblog.dreamdiary.feature.attachable._shared.model.param.BaseAttachableSearchParam;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -19,6 +19,6 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class JournalSbjctSearchParam
-        extends BaseClsfSearchParam {
+        extends BaseAttachableSearchParam {
     //
 }

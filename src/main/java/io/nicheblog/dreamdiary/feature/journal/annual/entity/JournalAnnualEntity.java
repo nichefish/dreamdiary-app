@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.journal.annual.entity;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableEntity;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbedModule;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
@@ -32,7 +32,7 @@ import java.util.List;
 @Where(clause = "deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE journal_annual SET deleted_at = NOW() WHERE id = ?")
 public class JournalAnnualEntity
-        extends BaseClsfEntity
+        extends BaseAttachableEntity
         implements TagEmbedModule {
 
     /** 저널 꿈 고유 ID */

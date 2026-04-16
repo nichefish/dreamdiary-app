@@ -2,9 +2,9 @@ package io.nicheblog.dreamdiary.feature.journal.sbjct.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
+import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
 import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService;
-import io.nicheblog.dreamdiary.feature.clsf.managt.event.ManagtrAddEvent;
+import io.nicheblog.dreamdiary.feature.attachable.managt.event.ManagtrAddEvent;
 import io.nicheblog.dreamdiary.feature.journal.sbjct.entity.JournalSbjctEntity;
 import io.nicheblog.dreamdiary.feature.journal.sbjct.mapstruct.JournalSbjctMapstruct;
 import io.nicheblog.dreamdiary.feature.journal.sbjct.model.JournalSbjctDto;
@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class JournalSbjctService
-        implements BaseClsfService<JournalSbjctDto, JournalSbjctDto, Integer, JournalSbjctEntity>, BaseMultipartWritableService<JournalSbjctDto, JournalSbjctDto, Integer, JournalSbjctEntity> {
+        implements BaseAttachableService<JournalSbjctDto, JournalSbjctDto, Integer, JournalSbjctEntity>, BaseMultipartWritableService<JournalSbjctDto, JournalSbjctDto, Integer, JournalSbjctEntity> {
 
     @Getter
     private final JournalSbjctRepository repository;
@@ -52,7 +52,7 @@ public class JournalSbjctService
     @Override
     public void postRegist(final JournalSbjctDto updatedDto) throws Exception {
         // 조치자 추가 :: 메인 로직과 분리
-        publisher.publishEvent(new ManagtrAddEvent(this, updatedDto.getClsfKey()));
+        publisher.publishEvent(new ManagtrAddEvent(this, updatedDto.getAttachableKey()));
         // 잔디 메세지 발송 :: 메인 로직과 분리
         // if ("Y".equals(jandiYn)) {
         //     String jandiRsltMsg = notifyService.notifyJournalSbjctReg(trgetTopic, result, logParam);
@@ -91,7 +91,7 @@ public class JournalSbjctService
     @Override
     public void postModify(final JournalSbjctDto postDto, final JournalSbjctDto updatedDto) throws Exception {
         // 조치자 추가 :: 메인 로직과 분리
-        publisher.publishEvent(new ManagtrAddEvent(this, updatedDto.getClsfKey()));
+        publisher.publishEvent(new ManagtrAddEvent(this, updatedDto.getAttachableKey()));
         // 잔디 메세지 발송 :: 메인 로직과 분리
         // if ("Y".equals(jandiYn)) {
         //     String jandiRsltMsg = notifyService.notifyJournalSbjctReg(trgetTopic, result, logParam);

@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.feature.journal.dream.service.my;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfKey;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.related.model.RelatedContentDto;
-import io.nicheblog.dreamdiary.feature.clsf.related.service.RelatedContentQueryService;
+import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableKey;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentDto;
+import io.nicheblog.dreamdiary.feature.attachable.related.service.RelatedContentQueryService;
 import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamDto;
 import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamSearchParam;
 import io.nicheblog.dreamdiary.feature.journal.dream.service.JournalDreamService;
@@ -74,10 +74,10 @@ public class MyJournalDreamService {
     private void mergeRelatedContents(final String username, final List<JournalDreamDto> listDto) throws Exception {
         if (listDto == null || listDto.isEmpty()) return;
 
-        final List<BaseClsfKey> refKeyList = new ArrayList<>();
+        final List<BaseAttachableKey> refKeyList = new ArrayList<>();
         listDto.stream()
                 .filter(dto -> dto != null && dto.getId() != null)
-                .forEach(dto -> refKeyList.add(new BaseClsfKey(dto.getId(), ContentType.JOURNAL_DREAM)));
+                .forEach(dto -> refKeyList.add(new BaseAttachableKey(dto.getId(), ContentType.JOURNAL_DREAM)));
 
         final Map<String, List<RelatedContentDto>> relatedMap = relatedContentQueryService.getRelatedContentMapByRefs(refKeyList, username);
         for (final JournalDreamDto journalDream : listDto) {

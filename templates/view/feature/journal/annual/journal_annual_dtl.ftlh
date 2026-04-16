@@ -115,24 +115,24 @@
 <#include "/view/feature/journal/tag/_journal_tag_list_modal.ftlh">
 
 <#--include::sectn-->
-<#include "/view/feature/clsf/sectn/_modal/_sectn_reg_modal.ftlh">
-<#include "/view/feature/clsf/sectn/_sectn_list_template.hbs">
-<script type="text/javascript" src="/js/view/feature/clsf/sectn/sectn_module.js?${releaseDate!}"></script>
+<#include "/view/feature/attachable/sectn/_modal/_sectn_reg_modal.ftlh">
+<#include "/view/feature/attachable/sectn/_sectn_list_template.hbs">
+<script type="text/javascript" src="/js/view/feature/attachable/sectn/sectn_module.js?${releaseDate!}"></script>
 
 <#--include::tags-->
 <#include "/view/feature/journal/tag/_journal_tag_list_modal.ftlh">
-<#include "/view/feature/clsf/tag/_partial/_tag_list_partial.hbs">
-<#include "/view/feature/clsf/tag/_partial/_tag_list_sized_partial.hbs">
+<#include "/view/feature/attachable/tag/_partial/_tag_list_partial.hbs">
+<#include "/view/feature/attachable/tag/_partial/_tag_list_sized_partial.hbs">
 
 <#--include::comment-->
-<#include "/view/feature/clsf/comment/_modal/_comment_reg_modal.ftlh">
-<#include "/view/feature/clsf/comment/_partial/_comment_list_partial.hbs">
-<#include "/view/feature/clsf/comment/_partial/_comment_reg_btn_partial.hbs">
-<script type="text/javascript" src="/js/view/feature/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/js/view/feature/clsf/related/related_content_module.js?${releaseDate!}"></script>
+<#include "/view/feature/attachable/comment/_modal/_comment_reg_modal.ftlh">
+<#include "/view/feature/attachable/comment/_partial/_comment_list_partial.hbs">
+<#include "/view/feature/attachable/comment/_partial/_comment_reg_btn_partial.hbs">
+<script type="text/javascript" src="/js/view/feature/attachable/comment/comment_modal_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/feature/attachable/related/related_content_module.js?${releaseDate!}"></script>
 
 <#--include::state-->
-<script type="text/javascript" src="/js/view/feature/clsf/state/state_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/feature/attachable/state/state_module.js?${releaseDate!}"></script>
 
 <#--include::journal_annual_modules-->
 <#include "/view/feature/journal/annual/_partial/_journal_annual_context_btn_partial.hbs">

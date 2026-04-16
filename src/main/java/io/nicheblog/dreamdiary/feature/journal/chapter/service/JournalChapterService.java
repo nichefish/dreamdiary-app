@@ -2,8 +2,8 @@ package io.nicheblog.dreamdiary.feature.journal.chapter.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.journal._shared.handler.JournalCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
@@ -39,7 +39,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Log4j2
 public class JournalChapterService
-        implements BaseClsfService<JournalChapterDto, JournalChapterDto, Integer, JournalChapterEntity> {
+        implements BaseAttachableService<JournalChapterDto, JournalChapterDto, Integer, JournalChapterEntity> {
 
     /** 동일 일자 내 첫 항목 등록 시 기본 카테고리 코드 */
     private static final String FIRST_CHAPTER_CTGR_CD = "SUMMARY";

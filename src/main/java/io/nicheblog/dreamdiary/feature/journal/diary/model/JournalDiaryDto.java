@@ -1,19 +1,19 @@
 package io.nicheblog.dreamdiary.feature.journal.diary.model;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstnModule;
+import io.nicheblog.dreamdiary.feature.attachable._shared.model.BaseAttachableDto;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.comment.model.cmpstn.CommentCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.comment.model.cmpstn.CommentCmpstnModule;
 import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstn;
 import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstnModule;
-import io.nicheblog.dreamdiary.feature.clsf.history.model.HistoryDto;
-import io.nicheblog.dreamdiary.feature.clsf.history.model.cmpstn.HistoryCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.history.model.cmpstn.HistoryCmpstnModule;
-import io.nicheblog.dreamdiary.feature.clsf.related.model.RelatedContentDto;
-import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstnModule;
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstnModule;
+import io.nicheblog.dreamdiary.feature.attachable.history.model.HistoryDto;
+import io.nicheblog.dreamdiary.feature.attachable.history.model.cmpstn.HistoryCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.history.model.cmpstn.HistoryCmpstnModule;
+import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentDto;
+import io.nicheblog.dreamdiary.feature.attachable.state.model.cmpstn.StateCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.state.model.cmpstn.StateCmpstnModule;
+import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalPeriodModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -39,7 +39,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class JournalDiaryDto
-        extends BaseClsfDto
+        extends BaseAttachableDto
         implements Identifiable<Integer>, FileCmpstnModule, CommentCmpstnModule, TagCmpstnModule, StateCmpstnModule, HistoryCmpstnModule, JournalPeriodModule, Comparable<JournalDiaryDto>  {
 
     /** 필수: 컨텐츠 타입 */

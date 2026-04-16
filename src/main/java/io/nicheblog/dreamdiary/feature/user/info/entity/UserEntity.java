@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.user.info.entity;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
+import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableEntity;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbed;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbedModule;
 import io.nicheblog.dreamdiary.feature.user.emplym.entity.UserEmplymEntity;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 @Where(clause = "deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE user SET deleted_at = NOW() WHERE id = ?")
 public class UserEntity
-        extends BaseClsfEntity
+        extends BaseAttachableEntity
         implements FileEmbedModule {
     
     @PostLoad

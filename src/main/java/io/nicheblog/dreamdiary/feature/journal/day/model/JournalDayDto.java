@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.feature.journal.day.model;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.meta.model.cmpstn.MetaCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.meta.model.cmpstn.MetaCmpstnModule;
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstnModule;
+import io.nicheblog.dreamdiary.feature.attachable._shared.model.BaseAttachableDto;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.meta.model.cmpstn.MetaCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.meta.model.cmpstn.MetaCmpstnModule;
+import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalPeriodModule;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterCtgrHintDto;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
@@ -39,7 +39,7 @@ import java.util.List;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class JournalDayDto
-        extends BaseClsfDto
+        extends BaseAttachableDto
         implements Identifiable<Integer>, TagCmpstnModule, MetaCmpstnModule, JournalPeriodModule, Comparable<JournalDayDto>  {
 
     /** 필수: 컨텐츠 타입 */

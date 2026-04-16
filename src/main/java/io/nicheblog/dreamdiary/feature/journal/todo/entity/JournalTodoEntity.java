@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.journal.todo.entity;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableEntity;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -32,7 +32,7 @@ import javax.persistence.*;
 @Where(clause = "deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE journal_todo SET deleted_at = NOW() WHERE id = ?")
 public class JournalTodoEntity
-        extends BaseClsfEntity
+        extends BaseAttachableEntity
         implements TagEmbedModule {
 
     /** 필수: 컨텐츠 타입 */

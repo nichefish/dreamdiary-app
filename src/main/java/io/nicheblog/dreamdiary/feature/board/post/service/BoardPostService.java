@@ -5,9 +5,9 @@ import io.nicheblog.dreamdiary.feature.board.post.mapstruct.BoardPostMapstruct;
 import io.nicheblog.dreamdiary.feature.board.post.model.BoardPostDto;
 import io.nicheblog.dreamdiary.feature.board.post.repository.jpa.BoardPostRepository;
 import io.nicheblog.dreamdiary.feature.board.post.spec.BoardPostSpec;
-import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
+import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
 import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService;
-import io.nicheblog.dreamdiary.feature.clsf.managt.event.ManagtrAddEvent;
+import io.nicheblog.dreamdiary.feature.attachable.managt.event.ManagtrAddEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
@@ -36,7 +36,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Log4j2
 public class BoardPostService
-        implements BaseClsfService<BoardPostDto, BoardPostDto, Integer, BoardPostEntity>, BaseMultipartWritableService<BoardPostDto, BoardPostDto, Integer, BoardPostEntity> {
+        implements BaseAttachableService<BoardPostDto, BoardPostDto, Integer, BoardPostEntity>, BaseMultipartWritableService<BoardPostDto, BoardPostDto, Integer, BoardPostEntity> {
 
     @Getter
     private final BoardPostRepository repository;
@@ -109,7 +109,7 @@ public class BoardPostService
     @Override
     public void postRegist(final BoardPostDto updatedDto) throws Exception {
         // 조치자 추가 :: 메인 로직과 분리
-        publisher.publishEvent(new ManagtrAddEvent(this, updatedDto.getClsfKey()));
+        publisher.publishEvent(new ManagtrAddEvent(this, updatedDto.getAttachableKey()));
         // 잔디 메세지 발송 :: 메인 로직과 분리
         // if ("Y".equals(jandiYn)) {
         //     String jandiRsltMsg = notifyService.notifyNoticeReg(trgetTopic, result, logParam);
@@ -140,7 +140,7 @@ public class BoardPostService
     @Override
     public void postModify(final BoardPostDto postDto, final BoardPostDto updatedDto) throws Exception {
         // 조치자 추가 :: 메인 로직과 분리
-        publisher.publishEvent(new ManagtrAddEvent(this, updatedDto.getClsfKey()));
+        publisher.publishEvent(new ManagtrAddEvent(this, updatedDto.getAttachableKey()));
         // 잔디 메세지 발송 :: 메인 로직과 분리
         // if ("Y".equals(jandiYn)) {
         //     String jandiRsltMsg = notifyService.notifyNoticeReg(trgetTopic, result, logParam);

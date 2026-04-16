@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.day.service.helper;
 
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagContentDto;
+import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagContentDto;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.chapter.service.helper.JournaaChapterViewHelper;

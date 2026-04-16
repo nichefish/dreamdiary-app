@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.feature.journal.diary.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagContentCntDto;
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagDto;
-import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagProfileService;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagContentCntDto;
+import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagDto;
+import io.nicheblog.dreamdiary.feature.attachable.tag.service.TagProfileService;
 import io.nicheblog.dreamdiary.feature.journal.diary.entity.JournalDiaryTagEntity;
 import io.nicheblog.dreamdiary.feature.journal.diary.mapstruct.JournalDiaryTagMapstruct;
 import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiarySearchParam;

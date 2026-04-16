@@ -7,10 +7,10 @@
 -- -----------------------
 
 -- 저널 일자 (journal_day)
--- @extends: BaseClsfEntity
+-- @extends: BaseAttachableEntity
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS journal_day (
-    -- CLSF
+    -- ATTACHABLE
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 일자 ID',
     content_type VARCHAR(32) DEFAULT 'JOURNAL_DAY' COMMENT '컨텐츠 타입',
     --
@@ -36,10 +36,10 @@ CREATE TABLE IF NOT EXISTS journal_day (
 ) COMMENT = '저널 일자';
 
 -- 저널 챕터 (journal_chapter)
--- @extends: BaseClsfEntity
+-- @extends: BaseAttachableEntity
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS journal_chapter (
-    -- CLSF
+    -- ATTACHABLE
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 챕터 ID',
     content_type VARCHAR(32) DEFAULT 'JOURNAL_CHAPTER' COMMENT '컨텐츠 타입',
     --
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS journal_chapter (
 -- @extends: BasePostEntity
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS journal_diary (
-    -- CLSF
+    -- ATTACHABLE
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 일기 ID',
     content_type VARCHAR(32) DEFAULT 'JOURNAL_DIARY' COMMENT '컨텐츠 타입',
     --
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS journal_diary (
 -- @extends: BasePostEntity
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS journal_dream (
-    -- CLSF
+    -- ATTACHABLE
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 꿈 ID',
     content_type VARCHAR(32) DEFAULT 'JOURNAL_DREAM' COMMENT '컨텐츠 타입',
     --
@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS journal_dream (
 -- @extends: BasePostEntity
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS journal_intrpt (
-    -- CLSF
+    -- ATTACHABLE
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 해석 ID',
     content_type VARCHAR(32) DEFAULT 'JOURNAL_INTRPT' COMMENT '컨텐츠 타입',
     --
@@ -154,7 +154,7 @@ CREATE TABLE IF NOT EXISTS journal_intrpt (
 -- @extends: BasePostEntity
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS journal_todo (
-    -- CLSF
+    -- ATTACHABLE
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 결산 ID',
     content_type VARCHAR(32) DEFAULT 'JOURNAL_TODO' COMMENT '컨텐츠 타입',
     --
@@ -183,7 +183,7 @@ CREATE TABLE IF NOT EXISTS journal_todo (
 -- @extends: BasePostEntity
 -- @implements: TagEmbed, CommentEmbed
 CREATE TABLE IF NOT EXISTS journal_sbjct(
-    -- CLSF
+    -- ATTACHABLE
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
     content_type VARCHAR(30) DEFAULT 'JOURNAL_SBJCT' COMMENT '게시판 코드 (PK)',
     -- POST
@@ -205,10 +205,10 @@ CREATE TABLE IF NOT EXISTS journal_sbjct(
 ) COMMENT = '저널 주제';
 
 -- 저널 연간 (journal_annual)
--- @extends: BaseClsfEntity
+-- @extends: BaseAttachableEntity
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS journal_annual (
-    -- CLSF
+    -- ATTACHABLE
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 결산 ID',
     content_type VARCHAR(32) DEFAULT 'JOURNAL_ANNUAL' COMMENT '컨텐츠 타입',
     --
@@ -230,7 +230,7 @@ CREATE TABLE IF NOT EXISTS journal_annual (
 -- @extends: BasePostEntity
 -- @uses: CommentEmbed
 CREATE TABLE IF NOT EXISTS journal_annual_review (
-    -- CLSF
+    -- ATTACHABLE
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 결산 리뷰 ID',
     content_type VARCHAR(32) DEFAULT 'JOURNAL_ANNUAL_REVIEW' COMMENT '컨텐츠 타입',
     --

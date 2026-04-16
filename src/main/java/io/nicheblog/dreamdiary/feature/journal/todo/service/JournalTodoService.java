@@ -2,8 +2,8 @@ package io.nicheblog.dreamdiary.feature.journal.todo.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.journal._shared.handler.JournalCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.journal.todo.entity.JournalTodoEntity;
@@ -33,7 +33,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Log4j2
 public class JournalTodoService
-        implements BaseClsfService<JournalTodoDto, JournalTodoDto, Integer, JournalTodoEntity> {
+        implements BaseAttachableService<JournalTodoDto, JournalTodoDto, Integer, JournalTodoEntity> {
 
     @Getter
     private final JournalTodoRepository repository;

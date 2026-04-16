@@ -61,7 +61,7 @@
 
 <#--include::tag-->
 <#include "/view/feature/journal/tag/_journal_tag_list_modal.ftlh">
-<#include "/view/feature/clsf/tag/_partial/_tag_list_partial.hbs">
+<#include "/view/feature/attachable/tag/_partial/_tag_list_partial.hbs">
 
 <#--include::script modules-->
 <script type="text/javascript" src="/js/view/feature/journal/annual/journal_annual_module.js?${releaseDate!}"></script>

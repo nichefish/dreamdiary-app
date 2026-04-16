@@ -1,17 +1,17 @@
 package io.nicheblog.dreamdiary.feature.journal.dream.entity;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableEntity;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbedModule;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbed;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.history.entity.embed.HistoryEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.history.entity.embed.HistoryEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.state.entity.embed.StateEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.state.entity.embed.StateEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable.history.entity.embed.HistoryEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.history.entity.embed.HistoryEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable.state.entity.embed.StateEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.state.entity.embed.StateEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDaySmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.intrpt.entity.JournalIntrptEntity;
 import lombok.*;
@@ -44,7 +44,7 @@ import java.util.List;
 @Where(clause = "deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE journal_dream SET deleted_at = NOW() WHERE id = ?")
 public class JournalDreamEntity
-        extends BaseClsfEntity
+        extends BaseAttachableEntity
         implements FileEmbedModule, CommentEmbedModule, TagEmbedModule, StateEmbedModule, HistoryEmbedModule {
 
     /** 필수: 컨텐츠 타입 */

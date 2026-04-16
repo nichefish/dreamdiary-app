@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.admin.popup.entity;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
+import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableEntity;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbed;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbedModule;
 import lombok.AllArgsConstructor;
@@ -33,7 +33,7 @@ import java.util.Date;
 @Where(clause = "deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE popup SET deleted_at = NOW() WHERE popup_cd = ?")
 public class PopupEntity
-        extends BaseClsfEntity
+        extends BaseAttachableEntity
         implements FileEmbedModule {
 
     /** 팝업 코드 */

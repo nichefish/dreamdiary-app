@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.chapter.service;
 
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.TagContentDto;
-import io.nicheblog.dreamdiary.feature.clsf.tag.service.TagService;
+import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagContentDto;
+import io.nicheblog.dreamdiary.feature.attachable.tag.service.TagService;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryDto;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;

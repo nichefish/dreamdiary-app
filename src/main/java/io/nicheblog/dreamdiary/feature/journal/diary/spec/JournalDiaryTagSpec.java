@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.diary.spec;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterSmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDaySmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.diary.entity.JournalDiarySmpEntity;

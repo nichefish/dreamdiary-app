@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.sbjct.entity;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableEntity;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -30,7 +30,7 @@ import javax.persistence.*;
 @Where(clause = "deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE journal_sbjct SET deleted_at = NOW() WHERE id = ?")
 public class JournalSbjctSmpEntity
-        extends BaseClsfEntity {
+        extends BaseAttachableEntity {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default

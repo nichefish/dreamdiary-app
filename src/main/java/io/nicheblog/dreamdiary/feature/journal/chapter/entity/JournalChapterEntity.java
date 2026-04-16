@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.feature.journal.chapter.entity;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.state.entity.embed.StateEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.state.entity.embed.StateEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableEntity;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.state.entity.embed.StateEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.state.entity.embed.StateEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDaySmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.diary.entity.JournalDiaryEntity;
 import lombok.*;
@@ -38,7 +38,7 @@ import java.util.List;
 @Where(clause = "deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE journal_chapter SET deleted_at = NOW() WHERE id = ?")
 public class JournalChapterEntity
-        extends BaseClsfEntity
+        extends BaseAttachableEntity
         implements TagEmbedModule, StateEmbedModule {
 
     /** 필수: 컨텐츠 타입 */

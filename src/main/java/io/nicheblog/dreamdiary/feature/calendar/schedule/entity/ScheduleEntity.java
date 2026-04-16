@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.feature.calendar.schedule.entity;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableEntity;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 @Where(clause = "deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE schedule SET deleted_at = NOW() WHERE id = ?")
 public class ScheduleEntity
-        extends BaseClsfEntity
+        extends BaseAttachableEntity
         implements CommentEmbedModule, TagEmbedModule {
 
     @PostLoad

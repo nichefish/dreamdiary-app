@@ -1,19 +1,19 @@
 package io.nicheblog.dreamdiary.feature.board.notice.model;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.comment.model.cmpstn.CommentCmpstnModule;
+import io.nicheblog.dreamdiary.feature.attachable._shared.model.BaseAttachableDto;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.comment.model.cmpstn.CommentCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.comment.model.cmpstn.CommentCmpstnModule;
 import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstn;
 import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstnModule;
-import io.nicheblog.dreamdiary.feature.clsf.managt.model.cmpstn.ManagtCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.managt.model.cmpstn.ManagtCmpstnModule;
-import io.nicheblog.dreamdiary.feature.clsf.sectn.model.cmpstn.SectnCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.sectn.model.cmpstn.SectnCmpstnModule;
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.tag.model.cmpstn.TagCmpstnModule;
-import io.nicheblog.dreamdiary.feature.clsf.viewer.model.cmpstn.ViewerCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.viewer.model.cmpstn.ViewerCmpstnModule;
+import io.nicheblog.dreamdiary.feature.attachable.managt.model.cmpstn.ManagtCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.managt.model.cmpstn.ManagtCmpstnModule;
+import io.nicheblog.dreamdiary.feature.attachable.sectn.model.cmpstn.SectnCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.sectn.model.cmpstn.SectnCmpstnModule;
+import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstnModule;
+import io.nicheblog.dreamdiary.feature.attachable.viewer.model.cmpstn.ViewerCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.viewer.model.cmpstn.ViewerCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;
@@ -40,7 +40,7 @@ import javax.validation.constraints.Size;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class NoticeDto
-        extends BaseClsfDto
+        extends BaseAttachableDto
         implements Identifiable<Integer>, FileCmpstnModule, CommentCmpstnModule, SectnCmpstnModule, TagCmpstnModule, ManagtCmpstnModule, ViewerCmpstnModule {
 
     /** 필수: 컨텐츠 타입 */

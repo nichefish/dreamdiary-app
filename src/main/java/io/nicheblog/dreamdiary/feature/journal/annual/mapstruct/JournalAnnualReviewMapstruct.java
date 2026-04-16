@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.annual.mapstruct;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.mapstruct.BaseClsfMapstruct;
+import io.nicheblog.dreamdiary.feature.attachable._shared.mapstruct.BaseAttachableMapstruct;
 import io.nicheblog.dreamdiary.feature.journal.annual.entity.JournalAnnualReviewEntity;
 import io.nicheblog.dreamdiary.feature.journal.annual.model.JournalAnnualReviewDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
@@ -23,7 +23,7 @@ import org.mapstruct.*;
     builder = @Builder(disableBuilder = true)
 )
 public abstract class JournalAnnualReviewMapstruct
-        implements BaseWriteMapstruct<JournalAnnualReviewDto, JournalAnnualReviewEntity>, BaseClsfMapstruct<JournalAnnualReviewDto, JournalAnnualReviewEntity> {
+        implements BaseWriteMapstruct<JournalAnnualReviewDto, JournalAnnualReviewEntity>, BaseAttachableMapstruct<JournalAnnualReviewDto, JournalAnnualReviewEntity> {
 
     /**
      * Entity -> Dto 변환

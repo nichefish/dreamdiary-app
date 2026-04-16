@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.todo.mapstruct;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.mapstruct.BaseClsfMapstruct;
+import io.nicheblog.dreamdiary.feature.attachable._shared.mapstruct.BaseAttachableMapstruct;
 import io.nicheblog.dreamdiary.feature.journal.todo.entity.JournalTodoEntity;
 import io.nicheblog.dreamdiary.feature.journal.todo.model.JournalTodoDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
@@ -22,7 +22,7 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CodeUtils.class}, builder = @Builder(disableBuilder = true))
 public interface JournalTodoMapstruct
-        extends BaseWriteMapstruct<JournalTodoDto, JournalTodoEntity>, BaseClsfMapstruct<JournalTodoDto, JournalTodoEntity> {
+        extends BaseWriteMapstruct<JournalTodoDto, JournalTodoEntity>, BaseAttachableMapstruct<JournalTodoDto, JournalTodoEntity> {
 
     JournalTodoMapstruct INSTANCE = Mappers.getMapper(JournalTodoMapstruct.class);
 

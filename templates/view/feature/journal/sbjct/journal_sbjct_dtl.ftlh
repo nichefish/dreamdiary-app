@@ -38,7 +38,7 @@
             <#--페이지:: 노션 참조 표시 영역-->
 
             <#--페이지:: 태그 표시 영역-->
-            <#include "/view/feature/clsf/tag/_tag_page_dtl_area.ftlh">
+            <#include "/view/feature/attachable/tag/_tag_page_dtl_area.ftlh">
 
             <#--페이지:: 열람자 표시 영역-->
             <@component.post_viewer_area post />
@@ -57,7 +57,7 @@
             <@component.post_btn_toList "dF.JournalSbjct.list();" />
         </div>
         <#--페이지:: 댓글 영역-->
-        <#include "/view/feature/clsf/comment/_comment_page_area.ftlh">
+        <#include "/view/feature/attachable/comment/_comment_page_area.ftlh">
     </div>
 </div>
 
@@ -66,7 +66,7 @@
         <#--begin::Card body-->
         <div class="card-body">
             <#--페이지:: 단락 영역-->
-            <#include "/view/feature/clsf/sectn/_sectn_page_dtl_area.ftlh">
+            <#include "/view/feature/attachable/sectn/_sectn_page_dtl_area.ftlh">
         </div>
     </div>
 </#if>
@@ -79,11 +79,11 @@
 <script type="text/javascript" src="/js/view/feature/journal/sbjct/journal_sbjct_module.js?${releaseDate!}"></script>
 
 <#--include::sectn-->
-<script type="text/javascript" src="/js/view/feature/clsf/sectn/sectn_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/feature/attachable/sectn/sectn_module.js?${releaseDate!}"></script>
 
 <#--include::comment-->
-<#include "/view/feature/clsf/comment/_modal/_comment_reg_modal.ftlh">
-<script type="text/javascript" src="/js/view/feature/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
+<#include "/view/feature/attachable/comment/_modal/_comment_reg_modal.ftlh">
+<script type="text/javascript" src="/js/view/feature/attachable/comment/comment_modal_module.js?${releaseDate!}"></script>
 
 <!--include::page scripts-->
 <script type="text/javascript" src="/js/view/feature/journal/sbjct/journal_sbjct_dtl.js?${releaseDate!}"></script>

@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.day.mapstruct;
 
-import io.nicheblog.dreamdiary.feature.clsf.meta.mapstruct.MetaContentMapstruct;
-import io.nicheblog.dreamdiary.feature.clsf.meta.model.MetaDto;
+import io.nicheblog.dreamdiary.feature.attachable.meta.mapstruct.MetaContentMapstruct;
+import io.nicheblog.dreamdiary.feature.attachable.meta.model.MetaDto;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayMetaEntity;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;

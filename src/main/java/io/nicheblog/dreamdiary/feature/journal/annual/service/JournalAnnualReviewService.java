@@ -2,8 +2,8 @@ package io.nicheblog.dreamdiary.feature.journal.annual.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.feature.journal._shared.handler.JournalCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalCacheEvictParam;
@@ -32,7 +32,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Log4j2
 public class JournalAnnualReviewService
-        implements BaseClsfService<JournalAnnualReviewDto, JournalAnnualReviewDto, Integer, JournalAnnualReviewEntity>, BaseMultipartWritableService<JournalAnnualReviewDto, JournalAnnualReviewDto, Integer, JournalAnnualReviewEntity> {
+        implements BaseAttachableService<JournalAnnualReviewDto, JournalAnnualReviewDto, Integer, JournalAnnualReviewEntity>, BaseMultipartWritableService<JournalAnnualReviewDto, JournalAnnualReviewDto, Integer, JournalAnnualReviewEntity> {
 
     @Getter
     private final JournalAnnualReviewRepository repository;

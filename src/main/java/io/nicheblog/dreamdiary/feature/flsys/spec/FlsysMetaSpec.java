@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.flsys.spec;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.spec.BaseClsfSpec;
+import io.nicheblog.dreamdiary.feature.attachable._shared.spec.BaseAttachableSpec;
 import io.nicheblog.dreamdiary.feature.flsys.entity.FlsysMetaEntity;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +14,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class FlsysMetaSpec
-        implements BaseClsfSpec<FlsysMetaEntity> {
+        implements BaseAttachableSpec<FlsysMetaEntity> {
     //
 }

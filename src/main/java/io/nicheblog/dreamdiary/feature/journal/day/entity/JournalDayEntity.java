@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.feature.journal.day.entity;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.meta.entity.embed.MetaEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.meta.entity.embed.MetaEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableEntity;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.meta.entity.embed.MetaEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.meta.entity.embed.MetaEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntity;
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -52,7 +52,7 @@ import java.util.List;
     }
 )
 public class JournalDayEntity
-        extends BaseClsfEntity
+        extends BaseAttachableEntity
         implements TagEmbedModule, MetaEmbedModule {
 
     /** 저널 일자 고유 ID */

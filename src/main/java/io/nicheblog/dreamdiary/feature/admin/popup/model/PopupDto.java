@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.feature.admin.popup.model;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.model.BaseClsfDto;
+import io.nicheblog.dreamdiary.feature.attachable._shared.model.BaseAttachableDto;
 import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstn;
 import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstnModule;
-import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstn;
-import io.nicheblog.dreamdiary.feature.clsf.state.model.cmpstn.StateCmpstnModule;
+import io.nicheblog.dreamdiary.feature.attachable.state.model.cmpstn.StateCmpstn;
+import io.nicheblog.dreamdiary.feature.attachable.state.model.cmpstn.StateCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -29,7 +29,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class PopupDto
-        extends BaseClsfDto
+        extends BaseAttachableDto
         implements Identifiable<Integer>, FileCmpstnModule, StateCmpstnModule {
 
     /** 팝업 코드 */

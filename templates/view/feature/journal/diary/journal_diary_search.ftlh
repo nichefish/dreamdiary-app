@@ -93,21 +93,21 @@
 
 <#--include::tags-->
 <#include "/view/feature/journal/tag/_journal_tag_list_modal.ftlh">
-<#include "/view/feature/clsf/tag/_partial/_tag_list_partial.hbs">
-<#include "/view/feature/clsf/tag/_partial/_tag_list_sized_partial.hbs">
+<#include "/view/feature/attachable/tag/_partial/_tag_list_partial.hbs">
+<#include "/view/feature/attachable/tag/_partial/_tag_list_sized_partial.hbs">
 
 <#--include::comment-->
-<#include "/view/feature/clsf/history/_history_modal.ftlh">
-<#include "/view/feature/clsf/comment/_modal/_comment_reg_modal.ftlh">
-<#include "/view/feature/clsf/comment/_partial/_comment_list_partial.hbs">
-<#include "/view/feature/clsf/comment/_partial/_comment_reg_btn_partial.hbs">
-<script type="text/javascript" src="/js/view/feature/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/js/view/feature/clsf/related/related_content_module.js?${releaseDate!}"></script>
+<#include "/view/feature/attachable/history/_history_modal.ftlh">
+<#include "/view/feature/attachable/comment/_modal/_comment_reg_modal.ftlh">
+<#include "/view/feature/attachable/comment/_partial/_comment_list_partial.hbs">
+<#include "/view/feature/attachable/comment/_partial/_comment_reg_btn_partial.hbs">
+<script type="text/javascript" src="/js/view/feature/attachable/comment/comment_modal_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/feature/attachable/related/related_content_module.js?${releaseDate!}"></script>
 
 <#--include::state-->
-<script type="text/javascript" src="/js/view/feature/clsf/state/state_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/feature/attachable/state/state_module.js?${releaseDate!}"></script>
 
-<script type="text/javascript" src="/js/view/feature/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/feature/attachable/comment/comment_modal_module.js?${releaseDate!}"></script>
 
 <!--include::page scripts-->
 <script type="text/javascript" src="/js/view/feature/journal/diary/journal_diary_search.js?${releaseDate!}"></script>

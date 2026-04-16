@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.feature.journal.day.service;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfKey;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.clsf.related.model.RelatedContentDto;
-import io.nicheblog.dreamdiary.feature.clsf.related.service.RelatedContentQueryService;
+import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableKey;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable.related.model.RelatedContentDto;
+import io.nicheblog.dreamdiary.feature.attachable.related.service.RelatedContentQueryService;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
@@ -195,7 +195,7 @@ public class JournalDayQueryService {
     private void mergeRelatedContents(final String username, final List<JournalDayDto> listDto) throws Exception {
         if (listDto == null || listDto.isEmpty()) return;
 
-        final List<BaseClsfKey> refKeyList = new ArrayList<>();
+        final List<BaseAttachableKey> refKeyList = new ArrayList<>();
         for (final JournalDayDto journalDay : listDto) {
             if (journalDay == null) continue;
 
@@ -206,7 +206,7 @@ public class JournalDayQueryService {
 
                     for (final JournalDiaryDto journalDiary : journalChapter.getJournalDiaryList()) {
                         if (journalDiary == null || journalDiary.getId() == null) continue;
-                        refKeyList.add(new BaseClsfKey(journalDiary.getId(), ContentType.JOURNAL_DIARY));
+                        refKeyList.add(new BaseAttachableKey(journalDiary.getId(), ContentType.JOURNAL_DIARY));
                     }
                 }
             }
@@ -237,12 +237,12 @@ public class JournalDayQueryService {
         }
     }
 
-    private void collectDreamRefKeys(final List<BaseClsfKey> refKeyList, final List<JournalDreamDto> journalDreamList) {
+    private void collectDreamRefKeys(final List<BaseAttachableKey> refKeyList, final List<JournalDreamDto> journalDreamList) {
         if (journalDreamList == null) return;
 
         for (final JournalDreamDto journalDream : journalDreamList) {
             if (journalDream == null || journalDream.getId() == null) continue;
-            refKeyList.add(new BaseClsfKey(journalDream.getId(), ContentType.JOURNAL_DREAM));
+            refKeyList.add(new BaseAttachableKey(journalDream.getId(), ContentType.JOURNAL_DREAM));
         }
     }
 

@@ -2,13 +2,13 @@ package io.nicheblog.dreamdiary.feature.journal.dream.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.NotAuthorizedException;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfKey;
-import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
-import io.nicheblog.dreamdiary.feature.clsf._shared.service.helper.BaseClsfHistoryHelper;
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableKey;
+import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
+import io.nicheblog.dreamdiary.feature.attachable._shared.service.helper.BaseAttachableHistoryHelper;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService;
-import io.nicheblog.dreamdiary.feature.clsf.history.HistoryType;
-import io.nicheblog.dreamdiary.feature.clsf.related.service.RelatedContentService;
+import io.nicheblog.dreamdiary.feature.attachable.history.HistoryType;
+import io.nicheblog.dreamdiary.feature.attachable.related.service.RelatedContentService;
 import io.nicheblog.dreamdiary.feature.journal._shared.handler.JournalCacheEvictWorker;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalCacheEvictParam;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
@@ -48,7 +48,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Log4j2
 public class JournalDreamService
-        implements BaseClsfService<JournalDreamPostDto, JournalDreamDto, Integer, JournalDreamEntity>, BaseMultipartWritableService<JournalDreamPostDto, JournalDreamDto, Integer, JournalDreamEntity> {
+        implements BaseAttachableService<JournalDreamPostDto, JournalDreamDto, Integer, JournalDreamEntity>, BaseMultipartWritableService<JournalDreamPostDto, JournalDreamDto, Integer, JournalDreamEntity> {
 
     @Getter
     private final JournalDreamRepository repository;
@@ -187,7 +187,7 @@ public class JournalDreamService
 
         // 관련 캐시 삭제
         // 관련글 soft-delete
-        relatedContentService.deleteAllByRef(new BaseClsfKey(deletedDto.getId(), ContentType.JOURNAL_DREAM), deletedDto.getCreatedBy());
+        relatedContentService.deleteAllByRef(new BaseAttachableKey(deletedDto.getId(), ContentType.JOURNAL_DREAM), deletedDto.getCreatedBy());
 
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(deletedDto), ContentType.JOURNAL_DREAM);
     }
@@ -209,15 +209,15 @@ public class JournalDreamService
             final Integer fromHistoryId
     ) throws Exception {
         final JournalDreamEntity restoreEntity = this.getSelf().getDtlEntity(key);
-        final JournalDreamEntity historySnapshot = BaseClsfHistoryHelper.isHistoryModule(restoreEntity)
+        final JournalDreamEntity historySnapshot = BaseAttachableHistoryHelper.isHistoryModule(restoreEntity)
                 ? restoreEntity.toBuilder().build()
                 : null;
 
         restoreEntity.setContent(updatedCn);
-        BaseClsfHistoryHelper.applyModifyHistory(historySnapshot, restoreEntity);
+        BaseAttachableHistoryHelper.applyModifyHistory(historySnapshot, restoreEntity);
 
         final JournalDreamEntity updatedEntity = getRepository().saveAndFlush(restoreEntity);
-        BaseClsfHistoryHelper.publishHistoryEventIfSupported(this, historySnapshot, updatedEntity, historyType, fromHistoryId);
+        BaseAttachableHistoryHelper.publishHistoryEventIfSupported(this, historySnapshot, updatedEntity, historyType, fromHistoryId);
 
         final JournalDreamDto updatedDto = getReadMapstruct().toDto(updatedEntity);
         journalCacheEvictWorker.evictAfterCommit(JournalCacheEvictParam.of(updatedDto), ContentType.JOURNAL_DREAM);

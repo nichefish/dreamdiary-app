@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.feature.journal.day.spec;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.spec.BaseClsfSpec;
-import io.nicheblog.dreamdiary.feature.clsf.meta.entity.MetaContentEntity;
-import io.nicheblog.dreamdiary.feature.clsf.meta.entity.embed.MetaEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.TagContentEntity;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
+import io.nicheblog.dreamdiary.feature.attachable._shared.spec.BaseAttachableSpec;
+import io.nicheblog.dreamdiary.feature.attachable.meta.entity.MetaContentEntity;
+import io.nicheblog.dreamdiary.feature.attachable.meta.entity.embed.MetaEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.tag.entity.TagContentEntity;
+import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
@@ -28,7 +28,7 @@ import java.util.Map;
 @Component
 @Log4j2
 public class JournalDaySpec
-        implements BaseClsfSpec<JournalDayEntity> {
+        implements BaseAttachableSpec<JournalDayEntity> {
 
     /**
      * 검색 조건 세팅 후 쿼리 후처리. (override)

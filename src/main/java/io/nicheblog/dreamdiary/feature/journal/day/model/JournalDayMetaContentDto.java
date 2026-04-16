@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.day.model;
 
-import io.nicheblog.dreamdiary.feature.clsf.meta.model.MetaContentDto;
+import io.nicheblog.dreamdiary.feature.attachable.meta.model.MetaContentDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

@@ -7,9 +7,9 @@ import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeSearchParam;
 import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeXlsxDto;
 import io.nicheblog.dreamdiary.feature.board.notice.repository.jpa.NoticeRepository;
 import io.nicheblog.dreamdiary.feature.board.notice.spec.NoticeSpec;
-import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
+import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
 import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService;
-import io.nicheblog.dreamdiary.feature.clsf.managt.event.ManagtrAddEvent;
+import io.nicheblog.dreamdiary.feature.attachable.managt.event.ManagtrAddEvent;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 @Log4j2
 public class NoticeService
-        implements BaseClsfService<NoticeDto, NoticeDto, Integer, NoticeEntity>, BaseMultipartWritableService<NoticeDto, NoticeDto, Integer, NoticeEntity> {
+        implements BaseAttachableService<NoticeDto, NoticeDto, Integer, NoticeEntity>, BaseMultipartWritableService<NoticeDto, NoticeDto, Integer, NoticeEntity> {
 
     @Getter
     private final NoticeRepository repository;
@@ -71,7 +71,7 @@ public class NoticeService
     @Override
     public void postRegist(final NoticeDto updatedDto) throws Exception {
         // 조치자 추가 :: 메인 로직과 분리
-        publisher.publishEvent(new ManagtrAddEvent(this, updatedDto.getClsfKey()));
+        publisher.publishEvent(new ManagtrAddEvent(this, updatedDto.getAttachableKey()));
         // 잔디 메세지 발송 :: 메인 로직과 분리
         // if ("Y".equals(jandiYn)) {
         //     String jandiRsltMsg = notifyService.notifyNoticeReg(trgetTopic, result, logParam);
@@ -102,7 +102,7 @@ public class NoticeService
     @Override
     public void postModify(final NoticeDto postDto,  NoticeDto updatedDto) throws Exception {
         // 조치자 추가 :: 메인 로직과 분리
-        publisher.publishEvent(new ManagtrAddEvent(this, updatedDto.getClsfKey()));
+        publisher.publishEvent(new ManagtrAddEvent(this, updatedDto.getAttachableKey()));
         // 잔디 메세지 발송 :: 메인 로직과 분리
         // if ("Y".equals(jandiYn)) {
         //     String jandiRsltMsg = notifyService.notifyNoticeReg(trgetTopic, result, logParam);

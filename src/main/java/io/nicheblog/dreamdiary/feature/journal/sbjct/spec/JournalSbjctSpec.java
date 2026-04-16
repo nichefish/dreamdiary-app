@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.sbjct.spec;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.spec.BaseClsfSpec;
+import io.nicheblog.dreamdiary.feature.attachable._shared.spec.BaseAttachableSpec;
 import io.nicheblog.dreamdiary.feature.journal.sbjct.entity.JournalSbjctEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
@@ -23,7 +23,7 @@ import java.util.Map;
 @Component
 @Log4j2
 public class JournalSbjctSpec
-        implements BaseClsfSpec<JournalSbjctEntity> {
+        implements BaseAttachableSpec<JournalSbjctEntity> {
 
     /**
      * 인자별로 구체적인 검색 조건을 세팅한다. (override)

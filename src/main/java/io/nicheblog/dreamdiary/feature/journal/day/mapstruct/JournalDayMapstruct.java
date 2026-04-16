@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.day.mapstruct;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.mapstruct.BaseClsfMapstruct;
+import io.nicheblog.dreamdiary.feature.attachable._shared.mapstruct.BaseAttachableMapstruct;
 import io.nicheblog.dreamdiary.feature.journal.chapter.mapstruct.JournalChapterMapstruct;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayEntity;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
@@ -27,7 +27,7 @@ import org.mapstruct.*;
     builder = @Builder(disableBuilder = true)
 )
 public abstract class JournalDayMapstruct
-        implements BaseWriteMapstruct<JournalDayDto, JournalDayEntity>, BaseClsfMapstruct<JournalDayDto, JournalDayEntity> {
+        implements BaseWriteMapstruct<JournalDayDto, JournalDayEntity>, BaseAttachableMapstruct<JournalDayDto, JournalDayEntity> {
 
     /**
      * Dto -> Entity 변환
