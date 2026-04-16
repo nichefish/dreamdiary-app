@@ -8,11 +8,6 @@
     <#--include::Notion-->
     <#include "/layout/header/navbar/_navbar_btn_notion.ftlh">
 
-    <#--include::Flsys-->
-    <#include "/layout/header/navbar/_navbar_btn_flsys.ftlh">
-
-    <span class="my-6 border-gray-300 border-start ms-3 mx-2"></span>
-
     <#--include::테스트 페이지 -->
     <#include "/layout/header/navbar/_navbar_btn_test_page.ftlh">
     <#include "/layout/header/navbar/_navbar_btn_swagger.ftlh">

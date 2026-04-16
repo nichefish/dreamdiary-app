@@ -57,7 +57,6 @@ public enum ActvtyCtgr {
     LOG_STATS("로그 통계"),
     // CMM
     FILE("파일"),
-    FLSYS("파일 시스템"),
 
     // DEPRECATED
     SCHEDULE("일정 관리"),

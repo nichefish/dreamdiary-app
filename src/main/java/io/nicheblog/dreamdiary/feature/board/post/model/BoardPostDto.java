@@ -99,8 +99,6 @@ public class BoardPostDto
         /** 노션 페이지 참조 ID :: UUID */
         // private String notionPageId;
 
-        /** 파일시스템 참조 목록 */
-        // private List<FlsysRefDto> flsysRefList;
     }
 
     /**

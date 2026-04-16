@@ -132,8 +132,6 @@ public class NoticeDto
         @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
         private String popupYn = "N";
 
-        /** 파일시스템 참조 목록 */
-        // private List<FlsysRefDto> flsysRefList;
     }
 
     /**

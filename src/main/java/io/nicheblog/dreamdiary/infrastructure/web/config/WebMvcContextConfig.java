@@ -69,13 +69,6 @@ public class WebMvcContextConfig
                 .addResourceLocations(contentResourcePath)
                 .resourceChain(true)
                 .addResolver(new UTF8DecodeResourceResolver());
-        // workspace 경로
-        final String workspaceContextPath = "/flsys/**";
-        final String workspaceResourcePath = "file:file/flsys/";
-        registry.addResourceHandler(workspaceContextPath)
-                .addResourceLocations(workspaceResourcePath)
-                .resourceChain(true)
-                .addResolver(new UTF8DecodeResourceResolver());
         // react 경로 = 기본경로에 추가로 동작하도록
         final String reactContextPath = "/react/**";
         final String reactResourcePath = "file:static/react/";
