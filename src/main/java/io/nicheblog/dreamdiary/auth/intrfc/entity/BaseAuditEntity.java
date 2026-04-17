@@ -79,7 +79,7 @@ public class BaseAuditEntity
      */
     public Boolean isUpdatedBy() {
         if (StringUtils.isEmpty(this.updatedBy)) return false;
-        return this.updatedBy.equals(AuthUtils.getLgnUsername());
+        return this.updatedBy.equals(AuthUtils.getLoginUsername());
     }
 }
 

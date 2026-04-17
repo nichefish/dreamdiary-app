@@ -54,7 +54,7 @@ public class MyJournalDayCalService {
      * @return {@link List} -- 조회된 목록
      */
     public List<BaseCalDto> getMyCalListDto(final JournalDaySearchParam searchParam) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDayCalService.getCalListDtoByUser(username, searchParam);
     }
 }

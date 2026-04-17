@@ -16,5 +16,5 @@ public interface LoginCacheWarmupTask {
     /**
      * 로그인시 캐시 웜업
      */
-    void warmupOnLgn(final String username) throws Exception;
+    void warmupOnLogin(final String username) throws Exception;
 }

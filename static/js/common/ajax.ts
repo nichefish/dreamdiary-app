@@ -148,7 +148,7 @@ cF.ajax = (function(): Module {
         const statusCode: number = response.status;
         const msgObject: Record<string, string> = await response.json().catch(() => Message.get("view.error.access-denied"));      // "접근이 거부되었습니다. (ACCESS DENIED)"
         const msg:string = msgObject.message;
-        const lgnFormUrl: string = "/app/auth/lgn-form.do";
+        const loginFormUrl: string = "/app/auth/login-form.do";
 
         switch(statusCode) {
             case 401: {
@@ -156,8 +156,8 @@ cF.ajax = (function(): Module {
                     cF.ui.confirmClosePopup(msg);
                     return;
                 }
-                cF.ui.swalOrConfirm(msg + "\n" + Message.get("view.auth.redirect-to-lgn-form"), function(): void {
-                    window.location.href = lgnFormUrl;
+                cF.ui.swalOrConfirm(msg + "\n" + Message.get("view.auth.redirect-to-login-form"), function(): void {
+                    window.location.href = loginFormUrl;
                 }, function(): void {
                     // ui에 세션 만료 표시
                     if ($(".session-expired-message").length > 0) return;
@@ -172,7 +172,7 @@ cF.ajax = (function(): Module {
             }
             case 403: {
                 cF.ui.swalOrAlert(Message.get("view.error.forbidden"), function(): void {
-                    window.location.href = lgnFormUrl;
+                    window.location.href = loginFormUrl;
                 });
                 return;
             }

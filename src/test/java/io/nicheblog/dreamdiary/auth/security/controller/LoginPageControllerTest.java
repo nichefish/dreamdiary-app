@@ -25,17 +25,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * LgnControllerTest
+ * LoginControllerTest
  * <pre>
  *  로그인 컨트롤러 테스트 모듈
  * </pre>
  *
  * @author nichefish
  */
-@WebMvcTest(LgnPageController.class)
+@WebMvcTest(LoginPageController.class)
 @ActiveProfiles("test")
 @AutoConfigureRestDocs(outputDir = "build/snippets")
-class LgnPageControllerTest {
+class LoginPageControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -48,7 +48,7 @@ class LgnPageControllerTest {
      * 로그인 사용자가 아닐 때 로그인 페이지 접근
      */
     @Test
-    void testLgnFormAnonymous() throws Exception {
+    void testLoginFormAnonymous() throws Exception {
 
         AuthInfo authInfo = AuthInfoTestFactory.createAuthInfo();
 
@@ -69,7 +69,7 @@ class LgnPageControllerTest {
      */
     @Test
     @WithMockUser
-    void testLgnFormAuthenticated() throws Exception {
+    void testLoginFormAuthenticated() throws Exception {
 
         AuthInfo authInfo = AuthInfoTestFactory.createAuthInfo();
 

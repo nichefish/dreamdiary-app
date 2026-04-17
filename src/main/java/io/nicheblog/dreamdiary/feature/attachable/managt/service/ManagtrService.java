@@ -40,7 +40,7 @@ public class ManagtrService {
     @Transactional(readOnly = true)
     public Boolean hasAlreadyVisited(final BaseAttachableKey refKey) {
         final Map<String, Object> searchParamMap = new HashedMap<>() {{
-            put("createdBy", AuthUtils.getLgnUsername());
+            put("createdBy", AuthUtils.getLoginUsername());
             put("refId", refKey.getId());
             put("refContentType", refKey.getContentType());
         }};

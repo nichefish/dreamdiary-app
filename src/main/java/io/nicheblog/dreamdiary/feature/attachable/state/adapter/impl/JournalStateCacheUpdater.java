@@ -49,7 +49,7 @@ public class JournalStateCacheUpdater
         final CacheContext cacheContext = toggle.getCacheContext();
         if (cacheContext == null) return;
 
-        final String username = AuthUtils.getLgnUsername();
+        final String username = AuthUtils.getLoginUsername();
         if (StringUtils.isBlank(username)) return;
 
         this.updateMonthlyCacheMap(toggle, contentType, cacheContext, username, isEnabled);

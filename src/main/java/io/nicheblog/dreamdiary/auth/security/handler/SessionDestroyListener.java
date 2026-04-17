@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.auth.security.handler;
 
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
-import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLgnManager;
+import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLoginManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationListener;
@@ -41,7 +41,7 @@ public class SessionDestroyListener
             // 중복 로그인 관리용 arrayList에서 로그인 아이디 제거
             final Authentication authentication = securityContext.getAuthentication();
             final String username = ((AuthInfo) authentication.getPrincipal()).getUsername();
-            DupIdLgnManager.removeKey(username);
+            DupIdLoginManager.removeKey(username);
 
             // WebSocket 메시지로 세션 종료 알림 전송
             messagingTemplate.convertAndSend("/topic/session-invalid", "Your session has expired, please log in again.");

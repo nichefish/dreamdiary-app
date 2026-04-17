@@ -65,15 +65,15 @@ public class UserStateEntity {
 
     /** 로그인 실패 횟수 */
     @Builder.Default
-    @Column(name = "lgn_fail_cnt", columnDefinition = "INT DEFAULT 0")
+    @Column(name = "login_fail_cnt", columnDefinition = "INT DEFAULT 0")
     @Comment("로그인 실패 횟수")
-    private Integer lgnFailCnt = 0;
+    private Integer loginFailCnt = 0;
 
     /** 로그인 실패 카운트 윈도우 시작 시각 */
     @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
-    @Column(name = "lgn_fail_window_started_at")
+    @Column(name = "login_fail_window_started_at")
     @Comment("로그인 실패 카운트 윈도우 시작 시각")
-    private Date lgnFailWindowStartedAt;
+    private Date loginFailWindowStartedAt;
 
     /** 계정 잠금 만료 시각 */
     @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
@@ -108,7 +108,7 @@ public class UserStateEntity {
     public static UserStateEntity getRegistStus() {
         return UserStateEntity.builder()
                 .lockedYn("N")
-                .lgnFailCnt(0)
+                .loginFailCnt(0)
                 .needsPwReset("N")
                 .dormantBypassYn("N")
                 .build();

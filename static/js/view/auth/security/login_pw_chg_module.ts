@@ -1,12 +1,12 @@
 /**
- * lgn_pw_chg_module.ts
+ * login_pw_chg_module.ts
  * 로그인 비밀번호 변경 스크립트 모듈
  *
- * @namespace: dF.LgnPwChg (노출식 모듈 패턴)
+ * @namespace: dF.LoginPwChg (노출식 모듈 패턴)
  * @author nichefish
  */
 if (typeof dF === 'undefined') { var dF = {} as any; }
-dF.LgnPwChg = (function(): dfModule {
+dF.LoginPwChg = (function(): dfModule {
     return {
         initialized: false,
 
@@ -14,10 +14,10 @@ dF.LgnPwChg = (function(): dfModule {
          * initializes module.
          */
         init: function(): void {
-            if (dF.LgnPwChg.initialized) return;
+            if (dF.LoginPwChg.initialized) return;
 
-            dF.LgnPwChg.initialized = true;
-            console.log("'dF.LgnPwChg' module initialized.");
+            dF.LoginPwChg.initialized = true;
+            console.log("'dF.LoginPwChg' module initialized.");
         },
 
         /**
@@ -26,7 +26,7 @@ dF.LgnPwChg = (function(): dfModule {
         pwChgModal: function(): void {
             const data: Record<string, any> = { "username": Model.username, "errorMsg": Model.errorMsg };
             /* initialize form. */
-            dF.LgnPwChg.initForm(data);
+            dF.LoginPwChg.initForm(data);
         },
 
         /**
@@ -35,13 +35,13 @@ dF.LgnPwChg = (function(): dfModule {
          */
         initForm: function(obj: Record<string, any> = {}): void {
             /* show modal */
-            cF.handlebars.modal(obj, "lgn_pw_chg");
+            cF.handlebars.modal(obj, "login_pw_chg");
 
             // 엔터키 처리
-            cF.util.enterKey("#currPw, #newPw, #newPwCf", dF.LgnPwChg.submit);
+            cF.util.enterKey("#currPw, #newPw, #newPwCf", dF.LoginPwChg.submit);
 
             /* jquery validation */
-            cF.validate.validateForm("#lgnPwChgForm", dF.LgnPwChg.lgnPwChgAjax, {
+            cF.validate.validateForm("#loginPwChgForm", dF.LoginPwChg.loginPwChgAjax, {
                 rules: {
                     newPw: { regex: cF.regex.pw },
                     newPwCf: { equalTo: "#newPw" }
@@ -57,17 +57,17 @@ dF.LgnPwChg = (function(): dfModule {
          * form submit
          */
         submit: function(): void {
-            $("#lgnPwChgForm").submit();
+            $("#loginPwChgForm").submit();
         },
 
         /**
          * 비밀번호 수정 (Ajax)
          */
-        lgnPwChgAjax: function(): void {
+        loginPwChgAjax: function(): void {
             const url: string = Url.API_AUTH_LGN_PW_CHG;
 
             // 순수 JavaScript로 DOM 요소 접근
-            const username: string = cF.util.getInputValue("#lgnUsername");
+            const username: string = cF.util.getInputValue("#loginUsername");
             const currPw: string = cF.util.getInputValue("#currPw");
             const newPw: string = cF.util.getInputValue("#newPw");
             const ajaxData: Record<string, any> = { "username" : username, "currPw" : currPw, "newPw" : newPw };
@@ -75,7 +75,7 @@ dF.LgnPwChg = (function(): dfModule {
                 Swal.fire({
                     text: res.message
                 }).then(function(): void {
-                    ($("#lgnPwChgForm")[0] as HTMLFormElement).reset();
+                    ($("#loginPwChgForm")[0] as HTMLFormElement).reset();
                     if (res.rslt) cF.ui.blockUIReplace(Url.APP_AUTH_LGN_FORM);
                 });
             });

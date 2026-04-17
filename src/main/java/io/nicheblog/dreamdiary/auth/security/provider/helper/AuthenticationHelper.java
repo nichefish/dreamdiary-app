@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.auth.policy.entity.AuthPolicyEntity;
 import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyQueryService;
 import io.nicheblog.dreamdiary.auth.security.exception.*;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
-import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLgnManager;
+import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLoginManager;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -61,7 +61,7 @@ public class AuthenticationHelper {
 
         // 중복 로그인 '확인'(기존 아이디 끊기) 후 들어왔을 시 바로 패스 :: 메소드 분리
         final String username = authentication.getName();
-        if (this.isDupLgnConfirmed(username)) return true;
+        if (this.isDupLoginConfirmed(username)) return true;
 
         // password 일치여부 체크
         final String password = (String) authentication.getCredentials();
@@ -108,9 +108,9 @@ public class AuthenticationHelper {
             throw new AccountNeedsPwResetException("AbstractUserDetailsAuthenticationProvider.AccountNeedsPwResetException");
         }
 
-        // 중복 로그인 체크 :: 세션 attribute 훑어서 "lgnId" 비교
-        final boolean isDupLgn = DupIdLgnManager.isDupIdLgn(username);
-        if (isDupLgn) throw new DupIdLoginException("AbstractUserDetailsAuthenticationProvider.DupIdLgnException");
+        // 중복 로그인 체크 :: 세션 attribute 훑어서 "loginId" 비교
+        final boolean isDupLogin = DupIdLoginManager.isDupIdLogin(username);
+        if (isDupLogin) throw new DupIdLoginException("AbstractUserDetailsAuthenticationProvider.DupIdLoginException");
 
         return true;
     }
@@ -121,16 +121,16 @@ public class AuthenticationHelper {
      * @param username 확인할 사용자 이름 (String)
      * @return {@link Boolean} -- 중복 로그인 후 재접근이 확인된 경우 true, 그렇지 않으면 false
      */
-    public Boolean isDupLgnConfirmed(final String username) {
+    public Boolean isDupLoginConfirmed(final String username) {
         if (StringUtils.isEmpty(username)) return false;
 
         final ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         final HttpSession session = servletRequestAttribute.getRequest().getSession(false);
         if (session == null) return false;
 
-        final Object isDupIdLgn = session.getAttribute("isDupIdLgn");
-        session.removeAttribute("isDupIdLgn");
-        return isDupIdLgn instanceof String && username.equals(isDupIdLgn);
+        final Object isDupIdLogin = session.getAttribute("isDupIdLogin");
+        session.removeAttribute("isDupIdLogin");
+        return isDupIdLogin instanceof String && username.equals(isDupIdLogin);
     }
 
     /**

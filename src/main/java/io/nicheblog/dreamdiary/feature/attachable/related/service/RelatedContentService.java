@@ -80,7 +80,7 @@ public class RelatedContentService {
             throw new IllegalArgumentException("relationType is required.");
         }
 
-        final String createdBy = AuthUtils.requireLgnUsername();
+        final String createdBy = AuthUtils.requireLoginUsername();
         this.validateWritablePair(firstKey, secondKey);
 
         final BaseAttachableKey[] normalizedKeys = this.normalizePair(firstKey, secondKey);
@@ -117,7 +117,7 @@ public class RelatedContentService {
         this.validateReadableKey(refKey);
         this.requireOwnedContent(refKey);
 
-        final String createdBy = AuthUtils.requireLgnUsername();
+        final String createdBy = AuthUtils.requireLoginUsername();
         final List<RelatedContentEntity> entityList = repository.findAllByRef(refKey.getId(), refKey.getContentType(), createdBy);
 
         return entityList.stream()
@@ -141,7 +141,7 @@ public class RelatedContentService {
         this.validateReadableKey(refKey);
         this.requireOwnedContent(refKey);
 
-        final String createdBy = AuthUtils.requireLgnUsername();
+        final String createdBy = AuthUtils.requireLoginUsername();
         repository.softDeleteAllByRef(refKey.getId(), refKey.getContentType(), createdBy);
     }
 

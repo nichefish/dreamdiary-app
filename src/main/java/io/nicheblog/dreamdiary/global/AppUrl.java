@@ -12,7 +12,7 @@ package io.nicheblog.dreamdiary.global;
 public interface AppUrl {
 
     /** 로그인 관련 */
-    String APP_AUTH_LGN_FORM = Prefix.APP + "/auth/lgn-form.do";
+    String APP_AUTH_LGN_FORM = Prefix.APP + "/auth/login-form.do";
 
     /** 메인 */
     String ROOT = "/";

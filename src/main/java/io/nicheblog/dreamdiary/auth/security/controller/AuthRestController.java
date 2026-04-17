@@ -145,11 +145,11 @@ public class AuthRestController {
     @PostMapping(Url.API_AUTH_LGN_PW_CHG)
     @PermitAll
     @ResponseBody
-    public ResponseEntity<AjaxResponse> lgnPwChgAjax(
+    public ResponseEntity<AjaxResponse> loginPwChgAjax(
             final @Valid UserPwChgParam userPwChgParam
     ) throws Exception {
 
-        final boolean isSuccess = userMyService.lgnPwChg(userPwChgParam);
+        final boolean isSuccess = userMyService.loginPwChg(userPwChgParam);
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));

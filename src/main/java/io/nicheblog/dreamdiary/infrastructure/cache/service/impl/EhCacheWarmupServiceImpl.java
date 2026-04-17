@@ -42,9 +42,9 @@ public class EhCacheWarmupServiceImpl
      * 로그인시 캐시 웜업
      */
     @Override
-    public void warmupOnLgn(final String username) throws Exception {
+    public void warmupOnLogin(final String username) throws Exception {
         for (final LoginCacheWarmupTask task : loginCacheWarmupTasks) {
-            task.warmupOnLgn(username);
+            task.warmupOnLogin(username);
         }
     }
 }

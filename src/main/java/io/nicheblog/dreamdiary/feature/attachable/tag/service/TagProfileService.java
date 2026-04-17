@@ -69,7 +69,7 @@ public class TagProfileService
      * @return {@link Optional} -- 조회된 TagProfileDto
      */
     public Optional<TagProfileDto> getDtoByTagIdAndContentType(final Integer tagId, final String contentType) throws Exception {
-        final String createdBy = AuthUtils.requireLgnUsername();
+        final String createdBy = AuthUtils.requireLoginUsername();
         final Optional<TagProfileEntity> entityOpt = repository.findByTagIdAndContentTypeAndCreatedBy(tagId, contentType, createdBy);
         if (entityOpt.isEmpty()) return Optional.empty();
 
@@ -95,7 +95,7 @@ public class TagProfileService
     @Transactional(readOnly = true)
     public void applyVisualSemantic(final List<TagDto> tagList, final String contentType) {
         if (CollectionUtils.isEmpty(tagList) || StringUtils.isBlank(contentType)) return;
-        final String createdBy = AuthUtils.getLgnUsername();
+        final String createdBy = AuthUtils.getLoginUsername();
         if (StringUtils.isBlank(createdBy)) return;
 
         final List<Integer> tagIdList = tagList.stream()
@@ -175,14 +175,14 @@ public class TagProfileService
 
     @Override
     public TagProfileEntity getDtlEntity(final Integer key) throws Exception {
-        final String createdBy = AuthUtils.requireLgnUsername();
+        final String createdBy = AuthUtils.requireLoginUsername();
         return repository.findByIdAndCreatedBy(key, createdBy)
                 .orElseThrow(() -> new EntityNotFoundException("exception.EntityNotFoundException"));
     }
 
     @Override
     public TagProfileEntity findDtlEntity(final Integer key) throws Exception {
-        final String createdBy = AuthUtils.getLgnUsername();
+        final String createdBy = AuthUtils.getLoginUsername();
         if (StringUtils.isBlank(createdBy)) return null;
 
         return repository.findByIdAndCreatedBy(key, createdBy).orElse(null);
@@ -195,7 +195,7 @@ public class TagProfileService
     }
 
     public void evictTagCloudCaches(final String contentType) {
-        final String username = AuthUtils.getLgnUsername();
+        final String username = AuthUtils.getLoginUsername();
         if (StringUtils.isBlank(username) || StringUtils.isBlank(contentType)) return;
 
         if (ContentType.JOURNAL_DAY.key.equals(contentType)) {
@@ -276,7 +276,7 @@ public class TagProfileService
         if (tagProfile == null) return null;
         if (tagProfile.getTagId() == null || StringUtils.isBlank(tagProfile.getContentType())) return tagProfile;
 
-        final String createdBy = AuthUtils.getLgnUsername();
+        final String createdBy = AuthUtils.getLoginUsername();
         if (StringUtils.isBlank(createdBy)) return tagProfile;
 
         this.populateTagCategoryInfo(tagProfile);
@@ -318,7 +318,7 @@ public class TagProfileService
     private void upsertCategoryProfile(final TagProfileDto tagProfile) throws Exception {
         if (tagProfile == null || tagProfile.getTagCategoryId() == null || StringUtils.isBlank(tagProfile.getContentType())) return;
 
-        final String createdBy = AuthUtils.requireLgnUsername();
+        final String createdBy = AuthUtils.requireLoginUsername();
         final TextClass categorySemantic = TextClass.getOrDefault(tagProfile.getCategoryTextClass());
         final Optional<TagCategoryProfileEntity> existingOpt = tagCategoryProfileRepository
                 .findByTagCategoryIdAndContentTypeAndCreatedBy(tagProfile.getTagCategoryId(), tagProfile.getContentType(), createdBy);

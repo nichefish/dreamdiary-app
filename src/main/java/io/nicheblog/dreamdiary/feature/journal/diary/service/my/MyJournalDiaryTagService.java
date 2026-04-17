@@ -31,7 +31,7 @@ public class MyJournalDiaryTagService {
      * @return {@link Map} -- 태그 ID를 키로 하고, 태그 이름을 값으로 가지는 맵
      */
     public List<TagDto> getMyTagList() throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDiaryTagService.getTagListByUser(username);
     }
 
@@ -43,12 +43,12 @@ public class MyJournalDiaryTagService {
      * @return {@link List} -- 태그 목록
      */
     public List<TagDto> getMyListDtoWithCache(final Integer yy, final Integer mnth) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDiaryTagService.getListDtoWithCacheByUser(username, yy, mnth);
     }
 
     public List<TagDto> getMyWeeklyListDtoWithCache(final String weekStartDt) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDiaryTagService.getWeeklyListDtoWithCacheByUser(username, weekStartDt);
     }
 
@@ -61,12 +61,12 @@ public class MyJournalDiaryTagService {
      * @return {@link List} -- CSS 사이즈가 적용된 태그 목록
      */
     public List<TagDto> getMyDiarySizedListDto(final Integer yy, final Integer mnth) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDiaryTagService.getDiarySizedListDtoByUser(username, yy, mnth);
     }
 
     public List<TagDto> getMyWeeklySizedListDto(final String weekStartDt) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDiaryTagService.getWeeklySizedListDtoByUser(username, weekStartDt);
     }
 
@@ -78,12 +78,12 @@ public class MyJournalDiaryTagService {
      * @return {@link Map} -- 카테고리별로 그룹화된 태그 목록을 담은 Map
      */
     public Map<String, List<TagDto>> getMyDiarySizedGroupListDto(final Integer yy, final Integer mnth) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDiaryTagService.getDiarySizedGroupListDtoByUser(username, yy, mnth);
     }
 
     public Map<String, List<TagDto>> getMyWeeklySizedGroupListDto(final String weekStartDt) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDiaryTagService.getWeeklySizedGroupListDtoByUser(username, weekStartDt);
     }
 
@@ -93,7 +93,7 @@ public class MyJournalDiaryTagService {
      * @return {@link Map} -- 태그 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵
      */
     public Map<String, List<String>> getMyTagCtgrMap() throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDiaryTagService.getTagCtgrMapByUser(username);
     }
 }

@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.auth.oauth2.handler;
 import io.nicheblog.dreamdiary.auth.oauth2.provider.OAuth2Provider;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
-import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLgnManager;
+import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLoginManager;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -80,8 +80,8 @@ public class OAuth2AuthenticationSuccessHandler
             // 최종 로그인 날짜 세팅 및 패스워드오류 카운트 초기화
             final String username = authInfo.getUsername();
             authService.setLastLoginAt(username);
-            // session에 lgnId attribute 추가 :: 중복 로그인 방지 비교용
-            DupIdLgnManager.addKey(username);
+            // session에 loginId attribute 추가 :: 중복 로그인 방지 비교용
+            DupIdLoginManager.addKey(username);
 
             // 로그인 로그 남기기
             final LogActvtyParam logParam = new LogActvtyParam(true, MessageUtils.RSLT_SUCCESS, ActvtyCtgr.LGN);

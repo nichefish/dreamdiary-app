@@ -84,7 +84,7 @@ public class AuthUtils {
      * 
      * @return {@link String} -- 현재 로그인 중인 사용자 이름
      */
-    public static String getLgnUserNm() {
+    public static String getLoginUserNm() {
         final AuthInfo AuthInfo = getAuthenticatedUser();
         assert AuthInfo != null;
         return AuthInfo.getNickNm();
@@ -95,7 +95,7 @@ public class AuthUtils {
      *
      * @return {@link String} -- 현재 로그인 중인 사용자 아이디
      */
-    public static String getLgnUsername() {
+    public static String getLoginUsername() {
         final AuthInfo authInfo = getAuthenticatedUser();
         if (authInfo == null) return null;
         return authInfo.getUsername();
@@ -119,8 +119,8 @@ public class AuthUtils {
      *
      * @return {@link String} -- 검증된 현재 로그인 사용자 아이디
      */
-    public static String requireLgnUsername() {
-        return requireUsername(getLgnUsername());
+    public static String requireLoginUsername() {
+        return requireUsername(getLoginUsername());
     }
 
     /**
@@ -128,9 +128,9 @@ public class AuthUtils {
      *
      * @return {@link String} -- 현재 로그인 중인 사용자 아이디
      */
-    public static String getLgnUsernameOrDefault() {
+    public static String getLoginUsernameOrDefault() {
         if (!isAuthenticated()) return Constant.SYSTEM_ACNT;
-        return getLgnUsername();
+        return getLoginUsername();
     }
 
     /**

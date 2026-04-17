@@ -1,5 +1,5 @@
 /**
- * lgn_form.ts
+ * login_form.ts
  * 로그인 페이지 스크립트
  *
  * @author nichefish
@@ -12,16 +12,16 @@ const Page: Page = (function(): Page {
          */
         init: function(): void {
             /* initialize modules. */
-            dF.LgnPwChg.init();
+            dF.LoginPwChg.init();
             /* initialize form. */
             Page.initForm();
 
             /* 에러 메세지 존재시 표시 */
             if (Model.errorMsg) Page.showErrorMsg();
             /* 중복 로그인시 기존 로그인 끊기 팝업 호출 */
-            if (Model.isDupIdLgn) Page.dupLgnAlert();
+            if (Model.isDupIdLogin) Page.dupLoginAlert();
             /* 조건 일치시 비밀번호 변경 팝업 호출 */
-            if (Model.isCredentialExpired || Model.needsPwReset) dF.LgnPwChg.pwChgModal();
+            if (Model.isCredentialExpired || Model.needsPwReset) dF.LoginPwChg.pwChgModal();
         },
 
         /**
@@ -29,11 +29,11 @@ const Page: Page = (function(): Page {
          */
         initForm: function(): void {
             /* jquery validation */
-            cF.validate.validateForm("#lgnForm", function(): void {
-                cF.form.blockUISubmit("#lgnForm", Url.API_AUTH_LGN_PROC);
+            cF.validate.validateForm("#loginForm", function(): void {
+                cF.form.blockUISubmit("#loginForm", Url.API_AUTH_LGN_PROC);
             });
             // 엔터키 처리
-            cF.util.enterKey("#username, #password", Page.lgn);
+            cF.util.enterKey("#username, #password", Page.login);
         },
 
         /**
@@ -53,10 +53,10 @@ const Page: Page = (function(): Page {
         /**
          * 기존 로그인 끊기 팝업 호출
          */
-        dupLgnAlert: function(): void {
+        dupLoginAlert: function(): void {
             Swal.fire({
-                title: Message.get("view.auth.dupLgn"),
-                text: Message.get("view.cnfm.dupLgn"),
+                title: Message.get("view.auth.dupLogin"),
+                text: Message.get("view.cnfm.dupLogin"),
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonText: "로그인",
@@ -66,7 +66,7 @@ const Page: Page = (function(): Page {
                     // 중복ID 로그인
                     $("#username").val(Model.username);
                     $("#password").attr("disabled", "disabled");
-                    Page.lgn();
+                    Page.login();
                 } else {
                     // 로그인하지 않음. 중복ID 세션 attribute 만료시킴
                     const url: string = Url.API_AUTH_EXPIRE_SESSION;
@@ -80,8 +80,8 @@ const Page: Page = (function(): Page {
         /**
          * 로그인 처리
          */
-        lgn: function(): void {
-            $("#lgnForm").submit();
+        login: function(): void {
+            $("#loginForm").submit();
         },
 
         /**

@@ -150,7 +150,7 @@ public class MetaContentService
                     .metaNm(meta.getMetaNm())
                     .ctgr(meta.getCtgr())
                     .label(meta.getLabel())
-                    .createdBy(AuthUtils.getLgnUsername())
+                    .createdBy(AuthUtils.getLoginUsername())
                     .build();
             repository.deleteObsoleteMetaContents(param);
             // 메타 캐시 처리
@@ -172,9 +172,9 @@ public class MetaContentService
         return this.registAll(metaContentList);
     }
 
-    public List<MetaContentDto> getMyListDtoByMetaId(final Integer metaId, final String lgnUsername) throws Exception {
+    public List<MetaContentDto> getMyListDtoByMetaId(final Integer metaId, final String loginUsername) throws Exception {
 
-        return this.getSelf().getListDto(MetaSearchParam.builder().metaId(metaId).lgnUsername(lgnUsername).build());
+        return this.getSelf().getListDto(MetaSearchParam.builder().metaId(metaId).loginUsername(loginUsername).build());
     }
 }
 

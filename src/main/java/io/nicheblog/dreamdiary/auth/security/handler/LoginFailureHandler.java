@@ -70,7 +70,7 @@ public class LoginFailureHandler
         request.removeAttribute("username");
         request.removeAttribute("needsPwReset");
         final String username = request.getParameter("username");
-        String errorMsg = this.getLgnFailureMsg(exception);
+        String errorMsg = this.getLoginFailureMsg(exception);
         /* 존재하지 않는 계정 제외하고 로그인 실패 로그 저장 */
         if (!(exception instanceof InternalAuthenticationServiceException) && !(exception instanceof DupIdLoginException)) {
             final LogActvtyParam logParam = new LogActvtyParam(username, false, errorMsg, ActvtyCtgr.LGN);
@@ -81,12 +81,12 @@ public class LoginFailureHandler
             final AuthPolicyEntity rsAuthPolicyEntity = authPolicyQueryService.getDtlEntity();
             final Integer loginAttemptLimit = rsAuthPolicyEntity.getLoginAttemptLimit();
             // 로그인 실패 횟수 처리
-            final Integer newLgnFailCnt = authService.applyLgnFailCnt(username);
-            if (newLgnFailCnt < loginAttemptLimit) {
-                errorMsg += "<br>" + MessageUtils.getMessage(MessageUtils.LGN_FAIL_BADCREDENTIALS_CNT, new Object[]{loginAttemptLimit, newLgnFailCnt});
+            final Integer newLoginFailCnt = authService.applyLoginFailCnt(username);
+            if (newLoginFailCnt < loginAttemptLimit) {
+                errorMsg += "<br>" + MessageUtils.getMessage(MessageUtils.LGN_FAIL_BADCREDENTIALS_CNT, new Object[]{loginAttemptLimit, newLoginFailCnt});
             } else {
                 authService.lockAccount(username);
-                errorMsg += "<br>" + MessageUtils.getMessage(MessageUtils.LGN_FAIL_BADCREDENTIALS_LOCKED, new Object[]{newLgnFailCnt});
+                errorMsg += "<br>" + MessageUtils.getMessage(MessageUtils.LGN_FAIL_BADCREDENTIALS_LOCKED, new Object[]{newLoginFailCnt});
             }
             // 로그인 실패 횟수 처리
         } else if (exception instanceof AccountDormantException) {
@@ -101,7 +101,7 @@ public class LoginFailureHandler
             // 세션에서 중복 아이디 정보 관리
             final ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
             final HttpSession session = servletRequestAttribute.getRequest().getSession();
-            session.setAttribute("isDupIdLgn", username);
+            session.setAttribute("isDupIdLogin", username);
         /* 패스워드 초기화 강제 */
         } else if (exception instanceof AccountNeedsPwResetException) {
             request.setAttribute("username", username);
@@ -123,7 +123,7 @@ public class LoginFailureHandler
      * @param e 예외 객체
      * @return {@link String} -- 예외에 해당하는 에러 메시지
      */
-    public String getLgnFailureMsg(final Exception e) {
+    public String getLoginFailureMsg(final Exception e) {
         final String fullExceptionNm = e.getClass().toString();
         final String exceptionNm = fullExceptionNm.substring(fullExceptionNm.lastIndexOf('.') + 1);
         return MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider." + exceptionNm);

@@ -26,17 +26,17 @@ public class MyJournalDreamTagService {
     private final JournalDreamTagService journalDreamTagService;
 
     public List<TagDto> getMyTagList() throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDreamTagService.getTagListByUser(username);
     }
 
     public List<TagDto> getMyListDtoWithCache(final Integer yy, final Integer mnth) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDreamTagService.getListDtoWithCacheByUser(username, yy, mnth);
     }
 
     public List<TagDto> getMyWeeklyListDtoWithCache(final String weekStartDt) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDreamTagService.getWeeklyListDtoWithCacheByUser(username, weekStartDt);
     }
 
@@ -49,12 +49,12 @@ public class MyJournalDreamTagService {
      * @return {@link List} -- CSS 사이즈가 적용된 태그 목록
      */
     public List<TagDto> getMyDreamSizedListDto(final Integer yy, final Integer mnth) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDreamTagService.getDreamSizedListDtoByUser(username, yy, mnth);
     }
 
     public List<TagDto> getMyWeeklySizedListDto(final String weekStartDt) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDreamTagService.getWeeklySizedListDtoByUser(username, weekStartDt);
     }
 
@@ -66,12 +66,12 @@ public class MyJournalDreamTagService {
      * @return {@link Map} -- 카테고리별로 그룹화된 태그 목록을 담은 Map
      */
     public Map<String, List<TagDto>> getMyDreamSizedGroupListDto(final Integer yy, final Integer mnth) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDreamTagService.getDreamSizedGroupListDtoByUser(username, yy, mnth);
     }
 
     public Map<String, List<TagDto>> getMyWeeklySizedGroupListDto(final String weekStartDt) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDreamTagService.getWeeklySizedGroupListDtoByUser(username, weekStartDt);
     }
 
@@ -81,7 +81,7 @@ public class MyJournalDreamTagService {
      * @return {@link Map} -- 태그 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵
      */
     public Map<String, List<String>> getMyTagCtgrMap() throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDreamTagService.getTagCtgrMapByUser(username);
     }
 }

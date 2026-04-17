@@ -85,7 +85,7 @@ public class OAuth2AuthenticationFailureHandler
             // 세션에서 중복 아이디 정보 관리
             final ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
             final HttpSession session = servletRequestAttribute.getRequest().getSession();
-            session.setAttribute("isDupIdLgn", username);
+            session.setAttribute("isDupIdLogin", username);
             /* 패스워드 초기화 강제 */
         } else if (exception instanceof AccountNeedsPwResetException) {
             request.setAttribute("username", username);

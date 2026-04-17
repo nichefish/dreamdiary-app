@@ -4,7 +4,7 @@ import lombok.experimental.StandardException;
 import org.springframework.security.core.AuthenticationException;
 
 /**
- * DupIdLgnException
+ * DupIdLoginException
  * <pre>
  *  Spring Security:: 중복 로그인시 던지는 Custom Exception
  * </pre>

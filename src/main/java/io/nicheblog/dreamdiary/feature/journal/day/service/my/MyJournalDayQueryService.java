@@ -32,7 +32,7 @@ public class MyJournalDayQueryService {
      * @return {@link List} -- 가공 완료된 일자 DTO 목록
      */
     public List<JournalDayDto> getMyYyMnthListDtoEnriched(final JournalDaySearchParam searchParam) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDayQueryService.getYyMnthListDtoEnrichedByUser(username, searchParam);
     }
 
@@ -43,7 +43,7 @@ public class MyJournalDayQueryService {
      * @return {@link List} -- 가공 완료된 DTO 목록
      */
     public List<JournalDayDto> getMyStdrdDaysDtoEnriched(final JournalDaySearchParam searchParam) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDayQueryService.getStdrdDaysDtoEnrichedByUser(username, searchParam);
     }
 
@@ -54,7 +54,7 @@ public class MyJournalDayQueryService {
      * @return {@link List} -- 가공 완료된 DTO 목록
      */
     public List<JournalDayDto> getMyWeeklyListDtoEnriched(final JournalDaySearchParam searchParam) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDayQueryService.getWeeklyListDtoEnrichedByUser(username, searchParam);
     }
 
@@ -65,7 +65,7 @@ public class MyJournalDayQueryService {
      * @return {@link List} -- 가공 완료된 DTO 목록
      */
     public List<JournalDayDto> getMyListDtoByMetaIdEnriched(final JournalDaySearchParam searchParam) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDayQueryService.getListDtoByMetaIdEnrichedByUser(username, searchParam);
     }
 
@@ -76,7 +76,7 @@ public class MyJournalDayQueryService {
      * @return {@link List} -- 가공 완료된 DTO 목록
      */
     public List<JournalDayDto> getMyListDtoByTagIdEnriched(final JournalDaySearchParam searchParam) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDayQueryService.getListDtoByTagIdEnrichedByUser(username, searchParam);
     }
 
@@ -87,7 +87,7 @@ public class MyJournalDayQueryService {
      * @return {@link JournalDayDto} -- 가공 완료된 DTO
      */
     public JournalDayDto getMyDtlDtoEnriched(final Integer key) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDayQueryService.getDtlDtoEnrichedByUser(username, key);
     }
 }

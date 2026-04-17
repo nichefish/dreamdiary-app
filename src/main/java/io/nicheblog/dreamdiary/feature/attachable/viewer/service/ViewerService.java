@@ -38,7 +38,7 @@ public class ViewerService {
     @Transactional(readOnly = true)
     public ViewerEntity getViewerByHasVisitedChk(final BaseAttachableKey refKey) {
         final Map<String, Object> searchParamMap = new HashedMap<>() {{
-            put("createdBy", AuthUtils.getLgnUsername());
+            put("createdBy", AuthUtils.getLoginUsername());
             put("refId", refKey.getId());
             put("refContentType", refKey.getContentType());
         }};

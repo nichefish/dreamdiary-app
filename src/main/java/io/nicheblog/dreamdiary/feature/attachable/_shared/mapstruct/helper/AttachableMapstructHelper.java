@@ -158,6 +158,6 @@ public class AttachableMapstructHelper {
         // 열람자에 내가 없으면 true
         if (((ViewerEmbedModule) entity).getViewer() == null || CollectionUtils.isEmpty(((ViewerEmbedModule) entity).getViewer().getList())) return true;
         return ((ViewerEmbedModule) entity).getViewer().getList().stream()
-                .anyMatch(e -> !Objects.equals(AuthUtils.getLgnUsername(), e.getCreatedBy()));
+                .anyMatch(e -> !Objects.equals(AuthUtils.getLoginUsername(), e.getCreatedBy()));
     }
 }

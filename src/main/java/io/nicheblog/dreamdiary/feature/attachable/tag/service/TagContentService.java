@@ -142,7 +142,7 @@ public class TagContentService
                     .refContentType(attachableKey.getContentType())
                     .tagNm(tag.getTagNm())
                     .ctgr(tag.getCtgr())
-                    .createdBy(AuthUtils.getLgnUsername())
+                    .createdBy(AuthUtils.getLoginUsername())
                     .build();
             repository.deleteObsoleteTagContents(param);
             // 태그 캐시 처리
