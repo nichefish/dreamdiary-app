@@ -9,38 +9,30 @@
     <#--begin::Row-->
     <div class="row row-cols-lg-2 mb-3">
         <div class="col-xl-2 col-2 d-flex-center">
-            <label class="fs-6 fw-bold mb-2 required" for="journalDt">날짜</label>
+            <label class="fs-6 fw-bold mb-2 required" for="journalDate">날짜</label>
         </div>
-        <div class="col-xl-2 col-5 d-flex flex-column {{#ifYn dtUnknownYn}}d-none{{/ifYn}}" id="journalDtDiv">
+        <div class="col-xl-3 col-5 d-flex flex-column" id="journalDateDiv">
             <div class="d-flex align-items-center mt-1">
                 <span class="menu-icon me-md-2 vertical-middle">
-                    <label for="journalDt"><i class="bi bi-calendar3 fs-2 cursor-pointer"></i></label>
+                    <label for="journalDate"><i class="bi bi-calendar3 fs-2 cursor-pointer"></i></label>
                 </span>
-                <input type="text" name="journalDt" id="journalDt" class="form-control form-control-solid w-150px"
-                       value="{{journalDt}}" placeholder="꿈꾼 일자" maxlength="10" autocomplete="off" />
+                <input type="text" name="journalDate" id="journalDate" class="form-control form-control-solid w-150px"
+                       value="{{journalDate}}" placeholder="꿈꾼 일자" maxlength="10" autocomplete="off" />
             </div>
-            <div id="journalDt_validate_span"></div>
+            <div id="journalDate_validate_span"></div>
         </div>
-        <div class="col-xl-2 col-5 d-flex flex-column align-items-center col-form-label">
-            <div class="form-check form-switch form-check-custom form-check-solid"
-                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="날짜 미상시 입력한 대략일자 위치로 정렬됩니다.">
-                <label class="form-check-label cursor-pointer" for="dtUnknownYn" id="dtUnknownYnLabel" {{checkedYnStyle dtUnknownYn "color" "blue//gray"}}>
-                    날짜미상
-                </label>
-                <i class="bi bi-question-circle cursor-pointer ms-1 me-5"></i>
-                <input type="checkbox" name="dtUnknownYn" id="dtUnknownYn" class="form-check-input cursor-pointer"
-                       value="Y" {{checkedYn dtUnknownYn}} />
+        <div class="col-xl-3 col-5 d-flex flex-column align-items-start col-form-label">
+            <div class="d-flex align-items-center gap-2">
+                <label class="fs-6 fw-bold mb-0 required" for="journalDatePrecision">정밀도</label>
+                <i class="bi bi-question-circle cursor-pointer"
+                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
+                   title="EXACT: 정확한 날짜, APPROXIMATE: 대략적인 날짜, UNKNOWN: 날짜 불명"></i>
             </div>
-        </div>
-        <div class="col-xl-3 col-5 {{^ifYn dtUnknownYn}}d-none{{/ifYn}}" id="aprxmtDtDiv">
-            <div class="d-flex align-items-center mt-1">
-                <span class="menu-icon me-md-2 vertical-middle">
-                    <label for="aprxmtDt"><i class="bi bi-calendar3 fs-2 cursor-pointer"></i></label>
-                </span>
-                <input type="text" name="aprxmtDt" id="aprxmtDt" class="form-control form-control-solid w-150px"
-                       value="{{aprxmtDt}}" placeholder="대략일자" maxlength="10" />
-            </div>
-            <div id="aprxmtDt_validate_span"></div>
+            <select name="journalDatePrecision" id="journalDatePrecision" class="form-select form-select-solid w-150px mt-1">
+                <option value="EXACT">EXACT</option>
+                <option value="APPROXIMATE">APPROXIMATE</option>
+                <option value="UNKNOWN">UNKNOWN</option>
+            </select>
         </div>
     </div>
     <#--begin::Row-->

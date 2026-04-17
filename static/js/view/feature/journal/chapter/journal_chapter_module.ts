@@ -43,12 +43,12 @@ dF.JournalChapter = (function(): dfModule {
          * @param {Object} param - 파라미터 객체
          * @param {string|number} param.journalDayId - 저널 일자 번호.
          * @param {string} param.stdrdDt - 기준 날짜.
-         * @param {string} param.journalDtWeekDay - 기준 날짜 요일.
+         * @param {string} param.journalDateWeekDay - 기준 날짜 요일.
          */
-        regModal: function({ journalDayId, stdrdDt, journalDtWeekDay }: { journalDayId: string | number; stdrdDt: string; journalDtWeekDay: string; }): void {
+        regModal: function({ journalDayId, stdrdDt, journalDateWeekDay }: { journalDayId: string | number; stdrdDt: string; journalDateWeekDay: string; }): void {
             if (isNaN(Number(journalDayId))) return;
 
-            const obj: Record<string, any> = { journalDayId: journalDayId, stdrdDt: stdrdDt, journalDtWeekDay: journalDtWeekDay };
+            const obj: Record<string, any> = { journalDayId: journalDayId, stdrdDt: stdrdDt, journalDateWeekDay: journalDateWeekDay };
             /* initialize form. */
             dF.JournalChapter.initForm(obj);
         },
@@ -285,8 +285,8 @@ dF.JournalChapter = (function(): dfModule {
                 }
                 const rsltObj: Record<string, any> = res.rsltObj;
                 const journalDiaryList: object[] = rsltObj.journalDiaryList;
-                const { stdrdDt, journalDtWeekDay } = rsltObj;
-                const date: string = stdrdDt + " (" + journalDtWeekDay + ")" + "\r\n";
+                const { stdrdDt, journalDateWeekDay } = rsltObj;
+                const date: string = stdrdDt + " (" + journalDateWeekDay + ")" + "\r\n";
                 const resultCn: string = journalDiaryList?.map((item: any): any => "#" + (item?.sortOrder ?? "") + (item?.content ?? "")).join("\r\n");
 
                 // 문단/줄바꿈을 먼저 텍스트로 치환

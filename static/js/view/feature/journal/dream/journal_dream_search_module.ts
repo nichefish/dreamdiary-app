@@ -252,7 +252,7 @@ dF.JournalDreamSearch = (function(): dfModule {
 
             let prevDate: string|null = null;
             const textToCopy: string = results.map((item: any): string => {
-                const date: string = `${item.stdrdDt} (${item.journalDtWeekDay})`;
+                const date: string = `${item.stdrdDt} (${item.journalDateWeekDay})`;
                 const content: string = cF.util.htmlToText(item.markdownContent ?? "");
 
                 let block: string = "";

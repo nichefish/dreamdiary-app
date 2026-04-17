@@ -67,7 +67,7 @@ public class JournalDreamTagSpec
         final Join<JournalDreamTagEntity, JournalDreamTagContentEntity> journalDreamTagJoin = root.join("journalDreamTagList", JoinType.INNER);
         final Join<JournalDreamTagContentEntity, JournalDreamSmpEntity> journalDreamJoin = journalDreamTagJoin.join("journalDream", JoinType.INNER);
         final Join<JournalDreamSmpEntity, JournalDaySmpEntity> journalDayJoin = journalDreamJoin.join("journalDay", JoinType.INNER);
-        final Expression<Date> effectiveDtExp = builder.coalesce(journalDayJoin.get("journalDt"), journalDayJoin.get("aprxmtDt"));
+        final Expression<Date> effectiveDtExp = journalDayJoin.get("journalDate");
 
         predicate.add(builder.equal(journalDreamTagJoin.get("refContentType"), ContentType.JOURNAL_DREAM.key));
 

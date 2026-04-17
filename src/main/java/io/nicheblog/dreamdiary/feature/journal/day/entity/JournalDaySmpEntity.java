@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.day.entity;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDatePrecision;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -48,17 +49,18 @@ public class JournalDaySmpEntity {
     /* ----- */
 
     /** 저널 일자 */
-    @Column(name = "journal_dt")
+    @Column(name = "journal_date")
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = DateUtils.PTN_DATE)
     @Comment("저널 일자")
-    private Date journalDt;
+    private Date journalDate;
 
-    /** 날짜미상 여부 (Y/N) */
+    /** 저널 날짜 정밀도 (EXACT | APPROXIMATE | UNKNOWN) */
     @Builder.Default
-    @Column(name = "dt_unknown_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("날짜미상여부")
-    private String dtUnknownYn = "N";
+    @Enumerated(EnumType.STRING)
+    @Column(name = "journal_date_precision", length = 20, columnDefinition = "VARCHAR(20) DEFAULT 'EXACT'")
+    @Comment("저널 날짜 정밀도 (EXACT | APPROXIMATE | UNKNOWN)")
+    private JournalDatePrecision journalDatePrecision = JournalDatePrecision.EXACT;
 
     /** 년도 */
     @Column(name = "yy")
@@ -71,18 +73,11 @@ public class JournalDaySmpEntity {
     private Integer mnth;
 
     /** 주 시작일자 (월요일 기준) */
-    @Column(name = "week_start_dt")
+    @Column(name = "week_start_date")
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = DateUtils.PTN_DATE)
     @Comment("주 시작일자 (월요일 기준)")
     private Date weekStartDt;
-
-    /** 대략일자 (날짜미상시 해당일자 이후에 표기) */
-    @Column(name = "aprxmt_dt")
-    @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = DateUtils.PTN_DATE)
-    @Comment("대략일자 (날짜미상시 해당일자 이후에 표기)")
-    private Date aprxmtDt;
 
     /** 날씨 */
     @Column(name = "weather")

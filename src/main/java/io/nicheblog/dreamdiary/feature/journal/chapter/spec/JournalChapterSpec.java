@@ -44,7 +44,7 @@ public class JournalChapterSpec
         // 정렬 순서 변경
         final List<Order> order = new ArrayList<>();
         final Join<JournalChapterEntity, JournalDaySmpEntity> journalDayJoin = root.join("journalDay", JoinType.INNER);
-        order.add(builder.desc(builder.coalesce(journalDayJoin.get("journalDt"), journalDayJoin.get("aprxmtDt"))));
+        order.add(builder.desc(journalDayJoin.get("journalDate")));
         order.add(builder.asc(root.get("sortOrder")));
         query.orderBy(order);
         // distinct
@@ -71,7 +71,7 @@ public class JournalChapterSpec
         final List<Predicate> predicate = new ArrayList<>();
         // expressions
         final Join<JournalChapterEntity, JournalDaySmpEntity> journalDayJoin = root.join("journalDay", JoinType.INNER);
-        final Expression<Date> effectiveDtExp = builder.coalesce(journalDayJoin.get("journalDt"), journalDayJoin.get("aprxmtDt"));
+        final Expression<Date> effectiveDtExp = journalDayJoin.get("journalDate");
         final String createdBy = resolveCreatedBy(searchParamMap);
 
         // 파라미터 비교

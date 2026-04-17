@@ -14,12 +14,11 @@ CREATE TABLE IF NOT EXISTS journal_day (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 일자 ID',
     content_type VARCHAR(32) DEFAULT 'JOURNAL_DAY' COMMENT '컨텐츠 타입',
     --
-    journal_dt DATE COMMENT '저널 일자',
-    dt_unknown_yn CHAR(1) DEFAULT 'N' COMMENT '날짜미상 여부 (Y/N)',
-    aprxmt_dt DATE COMMENT '대략일자 (날짜미상시 해당일자 이후에 표기)',
+    journal_date DATE COMMENT '저널 일자',
+    journal_date_precision VARCHAR(20) DEFAULT 'EXACT' COMMENT '저널 날짜 정밀도 (EXACT | APPROXIMATE | UNKNOWN)',
     yy INT COMMENT '년도',
     mnth INT COMMENT '월',
-    week_start_dt DATE COMMENT '주 시작일자 (월요일 기준)',
+    week_start_date DATE COMMENT '주 시작일자 (월요일 기준)',
     weather VARCHAR(500) COMMENT '날씨',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
@@ -28,11 +27,11 @@ CREATE TABLE IF NOT EXISTS journal_day (
     updated_at DATETIME COMMENT '수정일시',
     deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
-    INDEX (journal_dt),
-    INDEX (aprxmt_dt),
+    INDEX (journal_date),
+    INDEX (journal_date_precision),
     INDEX (yy),
     INDEX (yy, mnth),
-    INDEX(week_start_dt)
+    INDEX(week_start_date)
 ) COMMENT = '저널 일자';
 
 -- 저널 챕터 (journal_chapter)

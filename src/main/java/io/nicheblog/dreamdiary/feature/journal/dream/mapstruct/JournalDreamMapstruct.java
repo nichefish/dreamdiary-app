@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.dream.mapstruct;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.mapstruct.BaseAttachableMapstruct;
+import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDatePrecision;
 import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntity;
 import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamDto;
 import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamPostDto;
@@ -24,7 +25,7 @@ import org.mapstruct.*;
 @Mapper(
     componentModel = "spring",
     unmappedTargetPolicy = ReportingPolicy.IGNORE,
-    imports = { DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CodeUtils.class },
+    imports = { DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CodeUtils.class, JournalDatePrecision.class },
     uses = { JournalIntrptMapstruct.class },
     builder = @Builder(disableBuilder = true)
 )
@@ -59,9 +60,9 @@ public abstract class JournalDreamMapstruct
      * @return Dto -- 변환된 Dto 객체
      */
     @Override
-    @Mapping(target = "stdrdDt", expression = "java(entity.getJournalDay() != null ? DateUtils.asStr(\"Y\".equals(entity.getJournalDay().getDtUnknownYn()) ? entity.getJournalDay().getAprxmtDt() : entity.getJournalDay().getJournalDt(), DatePtn.DATE) : null)")
-    @Mapping(target = "dtUnknownYn", expression = "java(entity.getJournalDay() != null ? entity.getJournalDay().getDtUnknownYn() : \"N\")")
-    @Mapping(target = "journalDtWeekDay", expression = "java(entity.getJournalDay() != null && entity.getJournalDay().getJournalDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJournalDay().getJournalDt()) : null)")
+    @Mapping(target = "stdrdDt", expression = "java(entity.getJournalDay() != null ? DateUtils.asStr(entity.getJournalDay().getJournalDate(), DatePtn.DATE) : null)")
+    @Mapping(target = "journalDatePrecision", expression = "java(entity.getJournalDay() != null ? entity.getJournalDay().getJournalDatePrecision() : JournalDatePrecision.EXACT)")
+    @Mapping(target = "journalDateWeekDay", expression = "java(entity.getJournalDay() != null && entity.getJournalDay().getJournalDate() != null ? DateUtils.getDayOfWeekChinese(entity.getJournalDay().getJournalDate()) : null)")
     @Mapping(target = "yy", source = "journalDay.yy")
     @Mapping(target = "mnth", source = "journalDay.mnth")
     @Mapping(target = "markdownContent", expression = "java(StringUtils.isEmpty(entity.getContent()) ? \"-\" : MarkdownUtils.markdown(entity.getContent()))")

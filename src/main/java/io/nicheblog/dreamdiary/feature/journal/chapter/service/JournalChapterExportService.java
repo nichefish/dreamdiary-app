@@ -38,7 +38,7 @@ public class JournalChapterExportService {
         sb.append("=== dreamdiary export ===\r\n");
 
         final String stdrdDt = entry.getStdrdDt();
-        final String journalWeekDay = StringUtils.isEmpty(entry.getJournalDtWeekDay()) ? "" : "(" + entry.getJournalDtWeekDay() + ")";
+        final String journalWeekDay = StringUtils.isEmpty(entry.getJournalDateWeekDay()) ? "" : "(" + entry.getJournalDateWeekDay() + ")";
         final String date = stdrdDt + journalWeekDay;
         sb.append("\r\n").append(date).append("\r\n");
 

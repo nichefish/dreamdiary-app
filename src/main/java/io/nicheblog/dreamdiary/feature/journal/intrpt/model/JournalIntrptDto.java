@@ -52,7 +52,7 @@ public class JournalIntrptDto
     /** 저널 기준일자 */
     private String stdrdDt;
     /** 저널 일자 요일 */
-    private String journalDtWeekDay;
+    private String journalDateWeekDay;
 
     /** 저널 기준일자 */
     private Integer yy;

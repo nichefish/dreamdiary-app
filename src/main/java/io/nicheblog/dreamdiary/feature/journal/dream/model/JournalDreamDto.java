@@ -15,6 +15,7 @@ import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstnModu
 import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstn;
 import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstnModule;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalPeriodModule;
+import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDatePrecision;
 import io.nicheblog.dreamdiary.feature.journal.intrpt.model.JournalIntrptDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -63,9 +64,9 @@ public class JournalDreamDto
     /** 저널 기준일자 */
     private String stdrdDt;
     /** 저널 기준일자 */
-    private String dtUnknownYn;
+    private JournalDatePrecision journalDatePrecision;
     /** 저널 일자 요일 */
-    private String journalDtWeekDay;
+    private String journalDateWeekDay;
     /** 저널 기준일자 */
     private Integer yy;
     /** 저널 기준일자 */

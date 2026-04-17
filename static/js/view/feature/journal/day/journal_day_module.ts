@@ -136,41 +136,15 @@ dF.JournalDay = (function(): dfModule {
             const form: HTMLFormElement = document.querySelector("#journalDayRegForm") as HTMLFormElement;
             cF.validate.validateForm(form, dF.JournalDay.regAjax, {
                 rules: {
-                    journalDt: {
-                        required: function(): boolean {
-                            const dtUnknownYn: HTMLInputElement = document.querySelector("#journalDayRegForm #dtUnknownYn");
-                            return !dtUnknownYn?.checked;
-                        }
-                    },
-                    aprxmtDt: {
-                        required: function(): boolean {
-                            const dtUnknownYn: HTMLInputElement = document.querySelector("#journalDayRegForm #dtUnknownYn");
-                            return dtUnknownYn?.checked;
-                        }
-                    },
+                    journalDate: { required: true },
                 },
                 ignore: undefined
             });
-            // 체크박스 상태 변경시 필드 재검증
-            $("#dtUnknownYn").change(function(): void {
-                $("#journalDt").valid();
-                $("#aprxmtDt").valid();
-            });
             // 일자 datepicker 날짜 검색 init : 현재 조회중인 yyyy-MM으로 처리
-            cF.datepicker.singleDatePicker("#journalDt", "yyyy-MM-DD", obj.journalDt);
-            // 날짜미상 datepicker 날짜 검색 init
-            cF.datepicker.singleDatePicker("#aprxmtDt", "yyyy-MM-DD", obj.aprxmtDt);
+            cF.datepicker.singleDatePicker("#journalDate", "yyyy-MM-DD", obj.journalDate);
+            $("#journalDatePrecision").val(obj.journalDatePrecision ?? "EXACT");
             // checkbox init
             cF.ui.chckboxLabel("#journalDayRegForm #diaryResolvedYn", "완료//미완료", "blue//gray");
-            cF.ui.chckboxLabel("#journalDayRegForm #dtUnknownYn", "날짜미상//날짜미상", "blue//gray", function(): void {
-                $("#journalDayRegForm #journalDtDiv").addClass("d-none");
-                $("#journalDayRegForm #aprxmtDtDiv").removeClass("d-none");
-                $("#journalDayRegForm #aprxmtDt").val($("#journalDayRegForm #journalDt").val());
-            }, function(): void {
-                $("#journalDayRegForm #journalDtDiv").removeClass("d-none");
-                $("#journalDayRegForm #aprxmtDtDiv").addClass("d-none");
-                $("#journalDayRegForm #journalDt").val($("#journalDayRegForm #aprxmtDt").val());
-            });
             /* tagify */
             dF.JournalDay.tagTagify = cF.tagify.initWithCtgr("#journalDayRegForm #tagListStr", dF.JournalDayTag.ctgrMap);
             dF.JournalDay.metaTagify = cF.tagify.initMeta("#journalDayRegForm #metaListStr", dF.JournalDayMeta.ctgrMap);
@@ -721,7 +695,7 @@ dF.JournalDay = (function(): dfModule {
          * 등록 모달 호출
          */
         regModal: function(): void {
-            const obj: Record<string, any> = { "journalDt": dF.JournalDay.validDt() };
+            const obj: Record<string, any> = { "journalDate": dF.JournalDay.validDt(), "journalDatePrecision": "EXACT" };
             /* initialize form. */
             dF.JournalDay.initForm(obj);
 

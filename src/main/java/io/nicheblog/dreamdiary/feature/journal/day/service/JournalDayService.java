@@ -15,6 +15,7 @@ import io.nicheblog.dreamdiary.feature.journal.day.repository.jpa.JournalDayRepo
 import io.nicheblog.dreamdiary.feature.journal.day.repository.mybatis.JournalDayMapper;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayStateMapHelper;
 import io.nicheblog.dreamdiary.feature.journal.day.spec.JournalDaySpec;
+import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDatePrecision;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
@@ -198,12 +199,11 @@ public class JournalDayService
      */
     @Transactional(readOnly = true)
     public boolean dupChckByUser(final String username, final JournalDayDto journalDay) throws Exception {
-        final boolean isDtUnknown = "Y".equals(journalDay.getDtUnknownYn());
-        if (isDtUnknown) return false;
+        if (journalDay.getJournalDatePrecision() != JournalDatePrecision.EXACT) return false;
 
-        final Date journalDt = DateUtils.asDate(journalDay.getJournalDt());
+        final Date journalDate = DateUtils.asDate(journalDay.getJournalDate());
         final String createdBy = AuthUtils.requireUsername(username);
-        final Integer isDup = repository.countByJournalDt(journalDt, createdBy);
+        final Integer isDup = repository.countByJournalDate(journalDate, createdBy);
 
         return isDup > 0;
     }
@@ -216,9 +216,9 @@ public class JournalDayService
      */
     @Transactional(readOnly = true)
     public Integer getDupKeyByUser(final String username, final JournalDayDto journalDay) throws Exception {
-        final Date journalDt = DateUtils.asDate(journalDay.getJournalDt());
+        final Date journalDate = DateUtils.asDate(journalDay.getJournalDate());
         final String createdBy = AuthUtils.requireUsername(username);
-        final JournalDayEntity existingEntity = repository.findByJournalDt(journalDt, createdBy);
+        final JournalDayEntity existingEntity = repository.findByJournalDate(journalDate, createdBy);
 
         return existingEntity.getId();
     }
@@ -279,18 +279,9 @@ public class JournalDayService
      */
     public void setPeriodFields(final JournalDayDto journalDay) throws Exception {
         final String stdrdDt;
-        // 날짜미상여부 N시 대략일자 무효화
-        if ("Y".equals(journalDay.getDtUnknownYn())) {
-            journalDay.setJournalDt("");
-            journalDay.setYy(Integer.valueOf(journalDay.getAprxmtDt().substring(0, 4)));
-            journalDay.setMnth(Integer.valueOf(journalDay.getAprxmtDt().substring(5, 7)));
-            stdrdDt = journalDay.getAprxmtDt();
-        } else {
-            journalDay.setAprxmtDt("");
-            journalDay.setYy(Integer.valueOf(journalDay.getJournalDt().substring(0, 4)));
-            journalDay.setMnth(Integer.valueOf(journalDay.getJournalDt().substring(5, 7)));
-            stdrdDt = journalDay.getJournalDt();
-        }
+        journalDay.setYy(Integer.valueOf(journalDay.getJournalDate().substring(0, 4)));
+        journalDay.setMnth(Integer.valueOf(journalDay.getJournalDate().substring(5, 7)));
+        stdrdDt = journalDay.getJournalDate();
         journalDay.setWeekStartDt(DateUtils.getWeekStartDateStr(stdrdDt));
     }
 

@@ -48,13 +48,13 @@ public class JournalDreamSpec
         final List<Order> order = new ArrayList<>();
         final Join<JournalDreamEntity, JournalDaySmpEntity> journalDayJoin = root.join("journalDay", JoinType.INNER);
         final String sort = String.valueOf(searchParamMap.getOrDefault("sort", "desc")).toLowerCase();
-        final Expression<Date> dateExp = builder.coalesce(journalDayJoin.get("journalDt"), journalDayJoin.get("aprxmtDt"));
+        final Expression<Date> dateExp = journalDayJoin.get("journalDate");
         if ("desc".equals(sort)) {
             order.add(builder.desc(dateExp));
         } else {
             order.add(builder.asc(dateExp));
         }
-        order.add(builder.desc(builder.coalesce(journalDayJoin.get("journalDt"), journalDayJoin.get("aprxmtDt"))));
+        order.add(builder.desc(journalDayJoin.get("journalDate")));
         order.add(builder.asc(root.get("sortOrder")));
         query.orderBy(order);
         // distinct
@@ -81,7 +81,7 @@ public class JournalDreamSpec
         final List<Predicate> predicate = new ArrayList<>();
         // expressions
         final Join<JournalDreamEntity, JournalDaySmpEntity> journalDayJoin = root.join("journalDay", JoinType.INNER);
-        final Expression<Date> effectiveDtExp = builder.coalesce(journalDayJoin.get("journalDt"), journalDayJoin.get("aprxmtDt"));
+        final Expression<Date> effectiveDtExp = journalDayJoin.get("journalDate");
         final String createdBy = resolveCreatedBy(searchParamMap);
 
         // 파라미터 비교

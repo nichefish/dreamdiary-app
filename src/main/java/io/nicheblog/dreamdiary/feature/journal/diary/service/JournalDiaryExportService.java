@@ -76,7 +76,7 @@ public class JournalDiaryExportService {
         String prevDate = null;
         for (final JournalDiaryDto diary: journalDiaryList) {
             final String stdrdDt = diary.getStdrdDt();
-            final String journalWeekDay = StringUtils.isEmpty(diary.getJournalDtWeekDay()) ? "" : "(" + diary.getJournalDtWeekDay() + ")";
+            final String journalWeekDay = StringUtils.isEmpty(diary.getJournalDateWeekDay()) ? "" : "(" + diary.getJournalDateWeekDay() + ")";
             final String date = stdrdDt + journalWeekDay;
 
             if (!Objects.equals(prevDate, date)) {
