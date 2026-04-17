@@ -186,9 +186,12 @@ public class DreamdiaryInitializer
     public boolean regAuthPolicy() throws Exception {
 
         final AuthPolicyDto authPolicy = AuthPolicyDto.builder()
-                .lgnTryLmt(5)
-                .pwChgDy(90)
-                .lgnLockDy(90)
+                .loginAttemptLimit(5)
+                .loginAttemptWindowMinutes(10)
+                .accountLockDurationMinutes(30)
+                .passwordChangeCycleDays(90)
+                .inactiveLockDays(90)
+                .passwordResetTokenExpiryMinutes(30)
                 .pwForReset(SYSTEM_INIT_TEMP_PW)
                 .build();
 

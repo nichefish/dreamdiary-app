@@ -69,11 +69,17 @@ public class AuthInfo
     /** 최종접속일시 */
     private Date lastLoginAt;
 
+    /** 계정 잠금 만료 시각 */
+    private Date lockExpiresAt;
+
     /** 최종비밀번호변경일시 */
     private Date passwordChangedAt;
 
     /** 패스워드 리셋 필요 여부 (Y/N) */
     private String needsPwReset;
+
+    /** 패스워드 리셋 토큰 발급 시각 */
+    private Date pwResetTokenIssuedAt;
 
     /** 사용자 정보 ID */
     private Integer userProfileId;
@@ -175,7 +181,9 @@ public class AuthInfo
      */
     @Override
     public boolean isAccountNonLocked() {
-        return !"Y".equals(this.getLockedYn());
+        if (!"Y".equals(this.getLockedYn())) return true;
+        if (this.lockExpiresAt == null) return false;
+        return this.lockExpiresAt.after(new Date()) ? false : true;
     }
 
     /**

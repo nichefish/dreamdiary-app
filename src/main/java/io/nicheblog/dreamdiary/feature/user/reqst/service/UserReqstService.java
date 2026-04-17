@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.feature.user.reqst.service;
 
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserAuthRoleEntity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserStusEmbed;
+import io.nicheblog.dreamdiary.feature.user.info.entity.UserStateEntity;
 import io.nicheblog.dreamdiary.feature.user.info.repository.jpa.UserRepository;
 import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
 import io.nicheblog.dreamdiary.feature.user.reqst.mapstruct.UserReqstMapstruct;
@@ -57,7 +57,7 @@ public class UserReqstService {
         // userReqstEntity.setUserProflNo(this.userInfoReg(userReqstEntity, userReqst));
         registEntity.setAuthList(List.of(new UserAuthRoleEntity(Code.AUTH_USER)));
         registEntity.setPassword(passwordEncoder.encode(registEntity.getPassword()));
-        registEntity.setAcntStus(UserStusEmbed.getReqstStus());
+        registEntity.setAcntStus(UserStateEntity.getReqstStus());
         registEntity.cascade();
     }
 

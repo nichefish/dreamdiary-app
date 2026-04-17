@@ -1,5 +1,7 @@
 package io.nicheblog.dreamdiary.auth.security.service;
 
+import io.nicheblog.dreamdiary.auth.policy.entity.AuthPolicyEntity;
+import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyQueryService;
 import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.auth.security.entity.AuthRoleEntity;
 import io.nicheblog.dreamdiary.auth.security.mapstruct.AuthInfoMapstruct;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * AuthService
@@ -35,6 +38,7 @@ public class AuthService
 
     private final UserRepository userRepository;
     private final AuthRoleRepository authRoleRepository;
+    private final AuthPolicyQueryService authPolicyQueryService;
     private final AuthInfoMapstruct mapstruct = AuthInfoMapstruct.INSTANCE;
 
     /**
@@ -89,6 +93,26 @@ public class AuthService
         final Optional<UserEntity> userEntityWrapper = userRepository.findByUsername(username);
         if (userEntityWrapper.isEmpty()) return 0;
         final UserEntity userEntity = userEntityWrapper.get();
+        Integer loginAttemptWindowMinutes = 10;
+        try {
+            final AuthPolicyEntity authPolicy = authPolicyQueryService.getDtlEntity();
+            if (authPolicy != null && authPolicy.getLoginAttemptWindowMinutes() != null) {
+                loginAttemptWindowMinutes = authPolicy.getLoginAttemptWindowMinutes();
+            }
+        } catch (final Exception ignore) {
+            // 정책 조회 실패시 기본값 사용
+        }
+        final Date now = new Date();
+        final Date windowStart = userEntity.acntStus.getLgnFailWindowStartedAt();
+
+        final long windowMillis = (loginAttemptWindowMinutes == null ? 0L : TimeUnit.MINUTES.toMillis(loginAttemptWindowMinutes));
+        final boolean shouldResetWindow = (windowStart == null) || (windowMillis > 0 && (now.getTime() - windowStart.getTime()) >= windowMillis);
+
+        if (shouldResetWindow) {
+            userEntity.acntStus.setLgnFailCnt(0);
+            userEntity.acntStus.setLgnFailWindowStartedAt(now);
+        }
+
         // 로그인 실패횟수 조회해서 세팅
         final Integer currLgnFailCnt = userEntity.acntStus.getLgnFailCnt();
         final Integer newLgnFailCnt = (currLgnFailCnt == null) ? 1 : currLgnFailCnt + 1;
@@ -108,9 +132,25 @@ public class AuthService
         // ID로 사용자 정보 조회
         final Optional<UserEntity> userEntityWrapper = userRepository.findByUsername(username);
         final UserEntity userEntity = userEntityWrapper.orElseThrow(NullPointerException::new);
+        Integer accountLockDurationMinutes = 30;
+        try {
+            final AuthPolicyEntity authPolicy = authPolicyQueryService.getDtlEntity();
+            if (authPolicy != null && authPolicy.getAccountLockDurationMinutes() != null) {
+                accountLockDurationMinutes = authPolicy.getAccountLockDurationMinutes();
+            }
+        } catch (final Exception ignore) {
+            // 정책 조회 실패시 기본값 사용
+        }
+        final Date now = new Date();
+        final Date lockExpiresAt = (accountLockDurationMinutes == null)
+                ? null
+                : new Date(now.getTime() + TimeUnit.MINUTES.toMillis(accountLockDurationMinutes));
+
         // 계정 잠금 처리
         userEntity.acntStus.setLockedYn("Y");
         userEntity.acntStus.setLgnFailCnt(0);
+        userEntity.acntStus.setLgnFailWindowStartedAt(null);
+        userEntity.acntStus.setLockExpiresAt(lockExpiresAt);
         userRepository.save(userEntity);
     }
 
@@ -127,6 +167,9 @@ public class AuthService
         // 최종 로그인 날짜 세팅 및 실패 카운터 0으로 세팅
         userEntity.acntStus.setLastLoginAt(new Date());
         userEntity.acntStus.setLgnFailCnt(0);
+        userEntity.acntStus.setLgnFailWindowStartedAt(null);
+        userEntity.acntStus.setLockedYn("N");
+        userEntity.acntStus.setLockExpiresAt(null);
         userRepository.save(userEntity);
     }
 

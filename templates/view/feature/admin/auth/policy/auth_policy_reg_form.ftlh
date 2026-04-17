@@ -15,12 +15,12 @@
             <#--begin::Row-->
             <div class="row mb-4">
                 <div class="col-xl-2 col-form-label fs-6 fw-bold">
-                    <label for="lgnLockDy">장기간 미로그인 잠금일수</label>
+                    <label for="inactiveLockDays">장기간 미로그인 잠금일수</label>
                 </div>
                 <div class="col-xl-1">
-                    <input type="text" name="lgnLockDy" id="lgnLockDy" class="form-control form-control-solid text-end required number"
-                           value="${authPolicy.lgnLockDy!}" maxlength="3" />
-                    <div id="lgnLockDy_validate_span"></div>
+                    <input type="text" name="inactiveLockDays" id="inactiveLockDays" class="form-control form-control-solid text-end required number"
+                           value="${authPolicy.inactiveLockDays!}" maxlength="3" />
+                    <div id="inactiveLockDays_validate_span"></div>
                 </div>
                 <div class="col-xl-1 col-form-label w-5">
                     일
@@ -33,15 +33,23 @@
             <#--begin::Row-->
             <div class="row mb-4">
                 <div class="col-xl-2 col-form-label fs-6 fw-bold">
-                    <label for="lgnTryLmt">로그인 제한 횟수</label>
+                    <label for="loginAttemptLimit">로그인 제한 횟수</label>
                 </div>
                 <div class="col-xl-1">
-                    <input type="text" name="lgnTryLmt" id="lgnTryLmt" class="form-control form-control-solid text-end required number"
-                           value="${authPolicy.lgnTryLmt!}" maxlength="3" />
-                    <div id="lgnTryLmt_validate_span"></div>
+                    <input type="text" name="loginAttemptLimit" id="loginAttemptLimit" class="form-control form-control-solid text-end required number"
+                           value="${authPolicy.loginAttemptLimit!}" maxlength="3" />
+                    <div id="loginAttemptLimit_validate_span"></div>
                 </div>
                 <div class="col-xl-1 col-form-label w-5">
                     회
+                </div>
+                <div class="col-xl-2">
+                    <input type="text" name="loginAttemptWindowMinutes" id="loginAttemptWindowMinutes" class="form-control form-control-solid text-end required number"
+                           value="${authPolicy.loginAttemptWindowMinutes!}" maxlength="3" />
+                    <div id="loginAttemptWindowMinutes_validate_span"></div>
+                </div>
+                <div class="col-xl-1 col-form-label w-5">
+                    분
                 </div>
                 <div class="col-xl-8 text-noti">
                     ※ 해당 횟수만큼 연속 로그인 실패시 자동 계정 잠금<br />
@@ -51,12 +59,12 @@
             <#--begin::Row-->
             <div class="row mb-4">
                 <div class="col-xl-2 col-form-label fs-6 fw-bold">
-                    <label for="pwChgDy">비밀번호 변경 일수</label>
+                    <label for="passwordChangeCycleDays">비밀번호 변경 일수</label>
                 </div>
                 <div class="col-xl-1">
-                    <input type="text" name="pwChgDy" id="pwChgDy" class="form-control form-control-solid text-end required number"
-                           value="${authPolicy.pwChgDy!}" maxlength="3" />
-                    <div id="pwChgDy_validate_span"></div>
+                    <input type="text" name="passwordChangeCycleDays" id="passwordChangeCycleDays" class="form-control form-control-solid text-end required number"
+                           value="${authPolicy.passwordChangeCycleDays!}" maxlength="3" />
+                    <div id="passwordChangeCycleDays_validate_span"></div>
                 </div>
                 <div class="col-xl-1 col-form-label w-5">
                     일
@@ -64,6 +72,34 @@
                 <div class="col-xl-8 text-noti">
                     ※ 비밀번호 변경 이후 해당 일수 이후부터 비밀번호 변경해야 로그인 가능<br />
                     (비밀번호 변경시 카운트 초기화)
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-xl-2 col-form-label fs-6 fw-bold">
+                    <label for="accountLockDurationMinutes">계정 잠금 지속 시간</label>
+                </div>
+                <div class="col-xl-1">
+                    <input type="text" name="accountLockDurationMinutes" id="accountLockDurationMinutes" class="form-control form-control-solid text-end required number"
+                           value="${authPolicy.accountLockDurationMinutes!}" maxlength="4" />
+                    <div id="accountLockDurationMinutes_validate_span"></div>
+                </div>
+                <div class="col-xl-1 col-form-label w-5">분</div>
+                <div class="col-xl-8 text-noti">
+                    ※ 로그인 실패 제한 초과 시 잠금 유지 시간
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-xl-2 col-form-label fs-6 fw-bold">
+                    <label for="passwordResetTokenExpiryMinutes">비밀번호 재설정 토큰 만료 시간</label>
+                </div>
+                <div class="col-xl-1">
+                    <input type="text" name="passwordResetTokenExpiryMinutes" id="passwordResetTokenExpiryMinutes" class="form-control form-control-solid text-end required number"
+                           value="${authPolicy.passwordResetTokenExpiryMinutes!}" maxlength="5" />
+                    <div id="passwordResetTokenExpiryMinutes_validate_span"></div>
+                </div>
+                <div class="col-xl-1 col-form-label w-5">분</div>
+                <div class="col-xl-8 text-noti">
+                    ※ 비밀번호 재설정 링크/토큰 유효 시간
                 </div>
             </div>
             <#--begin::Row-->

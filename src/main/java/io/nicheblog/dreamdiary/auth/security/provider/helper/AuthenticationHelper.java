@@ -90,7 +90,11 @@ public class AuthenticationHelper {
         if (userService.isDormant(username)) throw new AccountDormantException("AbstractUserDetailsAuthenticationProvider.AccountDormantException");
 
         // 잠금여부 체크
-        if ("Y".equals(authInfo.getLockedYn())) throw new LockedException("AbstractUserDetailsAuthenticationProvider.LockedException");
+        if ("Y".equals(authInfo.getLockedYn())) {
+            final Date lockExpiresAt = authInfo.getLockExpiresAt();
+            final boolean isStillLocked = (lockExpiresAt == null) || lockExpiresAt.after(DateUtils.getCurrDate());
+            if (isStillLocked) throw new LockedException("AbstractUserDetailsAuthenticationProvider.LockedException");
+        }
 
         // 접속IP 체크 :: 메소드 분리
         if (!this.isAllowedIpValid(authInfo)) throw new IpNotAllowedException("AbstractUserDetailsAuthenticationProvider.IpNotAllowedException");
@@ -100,7 +104,12 @@ public class AuthenticationHelper {
 
         // 비밀번호 변경 필요 여부 체크
         final boolean needsPwReset = "Y".equals(authInfo.getNeedsPwReset());
-        if (needsPwReset) throw new AccountNeedsPwResetException("AbstractUserDetailsAuthenticationProvider.AccountNeedsPwResetException");
+        if (needsPwReset) {
+            if (!this.isPwResetTokenValid(authInfo)) {
+                throw new CredentialsExpiredException("AbstractUserDetailsAuthenticationProvider.CredentialsExpiredException");
+            }
+            throw new AccountNeedsPwResetException("AbstractUserDetailsAuthenticationProvider.AccountNeedsPwResetException");
+        }
 
         // 중복 로그인 체크 :: 세션 attribute 훑어서 "lgnId" 비교
         final boolean isDupLgn = DupIdLgnManager.isDupIdLgn(username);
@@ -167,9 +176,24 @@ public class AuthenticationHelper {
      */
     public Boolean isPwExpryValid(final AuthInfo authInfo) throws Exception {
         final AuthPolicyEntity authPolicy = authPolicyQueryService.getDtlEntity();
-        final Integer pwChgDy = authPolicy.getPwChgDy();
-        final Date pwExprDt = DateUtils.getDateAddDay(authInfo.getPasswordChangedAt(), pwChgDy);
+        final Integer passwordChangeCycleDays = authPolicy.getPasswordChangeCycleDays();
+        final Date pwExprDt = DateUtils.getDateAddDay(authInfo.getPasswordChangedAt(), passwordChangeCycleDays);
         final boolean isPwExprd = (pwExprDt == null || pwExprDt.compareTo(DateUtils.getCurrDate()) < 0);
         return !isPwExprd;
+    }
+
+    /**
+     * 패스워드 리셋 토큰 만료 여부 체크.
+     */
+    public Boolean isPwResetTokenValid(final AuthInfo authInfo) throws Exception {
+        final AuthPolicyEntity authPolicy = authPolicyQueryService.getDtlEntity();
+        final Integer expiryMinutes = (authPolicy == null || authPolicy.getPasswordResetTokenExpiryMinutes() == null)
+                ? 30
+                : authPolicy.getPasswordResetTokenExpiryMinutes();
+        final Date issuedAt = authInfo.getPwResetTokenIssuedAt();
+        if (issuedAt == null) return false;
+
+        final Date expiresAt = new Date(issuedAt.getTime() + (expiryMinutes.longValue() * 60L * 1000L));
+        return expiresAt.after(DateUtils.getCurrDate());
     }
 }

@@ -79,11 +79,11 @@ public class LoginFailureHandler
         /* 비밀번호 불일치 */
         if (exception instanceof BadCredentialsException) {
             final AuthPolicyEntity rsAuthPolicyEntity = authPolicyQueryService.getDtlEntity();
-            final Integer lgnTryLmt = rsAuthPolicyEntity.getLgnTryLmt();
+            final Integer loginAttemptLimit = rsAuthPolicyEntity.getLoginAttemptLimit();
             // 로그인 실패 횟수 처리
             final Integer newLgnFailCnt = authService.applyLgnFailCnt(username);
-            if (newLgnFailCnt < lgnTryLmt) {
-                errorMsg += "<br>" + MessageUtils.getMessage(MessageUtils.LGN_FAIL_BADCREDENTIALS_CNT, new Object[]{lgnTryLmt, newLgnFailCnt});
+            if (newLgnFailCnt < loginAttemptLimit) {
+                errorMsg += "<br>" + MessageUtils.getMessage(MessageUtils.LGN_FAIL_BADCREDENTIALS_CNT, new Object[]{loginAttemptLimit, newLgnFailCnt});
             } else {
                 authService.lockAccount(username);
                 errorMsg += "<br>" + MessageUtils.getMessage(MessageUtils.LGN_FAIL_BADCREDENTIALS_LOCKED, new Object[]{newLgnFailCnt});

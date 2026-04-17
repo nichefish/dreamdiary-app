@@ -30,20 +30,35 @@ public class AuthPolicyDto
     /** 인증 정책 고유 ID */
     private Integer id;
 
-    /** 로그인 최대 시도 횟수 */
+    /** 로그인 시도 제한 횟수 */
     @Positive
     @Max(value = 999)
-    private Integer lgnTryLmt;
+    private Integer loginAttemptLimit;
 
-    /** 비밀번호 변경 일자 */
+    /** 로그인 시도 누적 시간 창(분) */
+    @Positive
+    @Max(value = 999)
+    private Integer loginAttemptWindowMinutes;
+
+    /** 계정 잠금 지속 시간(분) */
+    @Positive
+    @Max(value = 9999)
+    private Integer accountLockDurationMinutes;
+
+    /** 비밀번호 변경 주기(일) */
     @Positive
     @Max(value = 365)
-    private Integer pwChgDy;
+    private Integer passwordChangeCycleDays;
 
-    /** 미접속시 계정 잠금 일자 */
+    /** 미로그인 시 잠금 일수 */
     @Positive
     @Max(value = 365)
-    private Integer lgnLockDy;
+    private Integer inactiveLockDays;
+
+    /** 비밀번호 재설정 토큰 만료 시간(분) */
+    @Positive
+    @Max(value = 10080)
+    private Integer passwordResetTokenExpiryMinutes;
 
     /** 비밀번호 초기화 값 */
     @Size(min = 9, max = 20)
