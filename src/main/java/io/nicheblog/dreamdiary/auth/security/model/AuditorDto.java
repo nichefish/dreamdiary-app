@@ -28,15 +28,15 @@ public class AuditorDto
 
     @PostLoad
     private void onLoad() {
-        if (StringUtils.isEmpty(this.proflImgUrl)) this.proflImgUrl = Constant.BLANK_AVATAR_URL;
+        if (StringUtils.isEmpty(this.profileImageUrl)) this.profileImageUrl = Constant.BLANK_AVATAR_URL;
     }
 
     /** 사용자 ID */
     private String username;
     /** 사용자 이름 */
-    private String nickNm;
+    private String nickname;
     /** 프로필 이미지 URL */
-    private String proflImgUrl;
+    private String profileImageUrl;
 
     /** 사용자 권한 정보 */
     private List<UserAuthRoleDto> authList;

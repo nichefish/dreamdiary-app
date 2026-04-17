@@ -959,9 +959,9 @@ $.validator.addMethod( "mobileNL", function( value, element ) {
 	return this.optional( element ) || /^((\+|00(\s|\s?\-\s?)?)31(\s|\s?\-\s?)?(\(0\)[\-\s]?)?|0)6((\s|\s?\-\s?)?[0-9]){8}$/.test( value );
 }, "Please specify a valid mobile number." );
 
-$.validator.addMethod( "mobileRU", function( phone_number, element ) {
-	var ruPhone_number = phone_number.replace( /\(|\)|\s+|-/g, "" );
-	return this.optional( element ) || ruPhone_number.length > 9 && /^((\+7|7|8)+([0-9]){10})$/.test( ruPhone_number );
+$.validator.addMethod( "mobileRU", function( phoneNumber, element ) {
+	var ruPhoneNumber = phoneNumber.replace( /\(|\)|\s+|-/g, "" );
+	return this.optional( element ) || ruPhoneNumber.length > 9 && /^((\+7|7|8)+([0-9]){10})$/.test( ruPhoneNumber );
 }, "Please specify a valid mobile number." );
 
 /* For UK phone functions, do the following server side processing:
@@ -972,10 +972,10 @@ $.validator.addMethod( "mobileRU", function( phone_number, element ) {
  * A number of very detailed GB telephone number RegEx patterns can also be found at:
  * http://www.aa-asterisk.org.uk/index.php/Regular_Expressions_for_Validating_and_Formatting_GB_Telephone_Numbers
  */
-$.validator.addMethod( "mobileUK", function( phone_number, element ) {
-	phone_number = phone_number.replace( /\(|\)|\s+|-/g, "" );
-	return this.optional( element ) || phone_number.length > 9 &&
-		phone_number.match( /^(?:(?:(?:00\s?|\+)44\s?|0)7(?:[1345789]\d{2}|624)\s?\d{3}\s?\d{3})$/ );
+$.validator.addMethod( "mobileUK", function( phoneNumber, element ) {
+	phoneNumber = phoneNumber.replace( /\(|\)|\s+|-/g, "" );
+	return this.optional( element ) || phoneNumber.length > 9 &&
+		phoneNumber.match( /^(?:(?:(?:00\s?|\+)44\s?|0)7(?:[1345789]\d{2}|624)\s?\d{3}\s?\d{3})$/ );
 }, "Please specify a valid mobile number." );
 
 $.validator.addMethod( "netmask", function( value, element ) {
@@ -1190,10 +1190,10 @@ $.validator.addMethod( "phoneNL", function( value, element ) {
  *
  * Poland National Numbering Plan http://www.itu.int/oth/T02020000A8/en
  */
-$.validator.addMethod( "phonePL", function( phone_number, element ) {
-	phone_number = phone_number.replace( /\s+/g, "" );
+$.validator.addMethod( "phonePL", function( phoneNumber, element ) {
+	phoneNumber = phoneNumber.replace( /\s+/g, "" );
 	var regexp = /^(?:(?:(?:\+|00)?48)|(?:\(\+?48\)))?(?:1[2-8]|2[2-69]|3[2-49]|4[1-68]|5[0-9]|6[0-35-9]|[7-8][1-9]|9[145])\d{7}$/;
-	return this.optional( element ) || regexp.test( phone_number );
+	return this.optional( element ) || regexp.test( phoneNumber );
 }, "Please specify a valid phone number." );
 
 /* For UK phone functions, do the following server side processing:
@@ -1206,10 +1206,10 @@ $.validator.addMethod( "phonePL", function( phone_number, element ) {
  */
 
 // Matches UK landline + mobile, accepting only 01-3 for landline or 07 for mobile to exclude many premium numbers
-$.validator.addMethod( "phonesUK", function( phone_number, element ) {
-	phone_number = phone_number.replace( /\(|\)|\s+|-/g, "" );
-	return this.optional( element ) || phone_number.length > 9 &&
-		phone_number.match( /^(?:(?:(?:00\s?|\+)44\s?|0)(?:1\d{8,9}|[23]\d{9}|7(?:[1345789]\d{8}|624\d{6})))$/ );
+$.validator.addMethod( "phonesUK", function( phoneNumber, element ) {
+	phoneNumber = phoneNumber.replace( /\(|\)|\s+|-/g, "" );
+	return this.optional( element ) || phoneNumber.length > 9 &&
+		phoneNumber.match( /^(?:(?:(?:00\s?|\+)44\s?|0)(?:1\d{8,9}|[23]\d{9}|7(?:[1345789]\d{8}|624\d{6})))$/ );
 }, "Please specify a valid uk phone number." );
 
 /* For UK phone functions, do the following server side processing:
@@ -1220,10 +1220,10 @@ $.validator.addMethod( "phonesUK", function( phone_number, element ) {
  * A number of very detailed GB telephone number RegEx patterns can also be found at:
  * http://www.aa-asterisk.org.uk/index.php/Regular_Expressions_for_Validating_and_Formatting_GB_Telephone_Numbers
  */
-$.validator.addMethod( "phoneUK", function( phone_number, element ) {
-	phone_number = phone_number.replace( /\(|\)|\s+|-/g, "" );
-	return this.optional( element ) || phone_number.length > 9 &&
-		phone_number.match( /^(?:(?:(?:00\s?|\+)44\s?)|(?:\(?0))(?:\d{2}\)?\s?\d{4}\s?\d{4}|\d{3}\)?\s?\d{3}\s?\d{3,4}|\d{4}\)?\s?(?:\d{5}|\d{3}\s?\d{3})|\d{5}\)?\s?\d{4,5})$/ );
+$.validator.addMethod( "phoneUK", function( phoneNumber, element ) {
+	phoneNumber = phoneNumber.replace( /\(|\)|\s+|-/g, "" );
+	return this.optional( element ) || phoneNumber.length > 9 &&
+		phoneNumber.match( /^(?:(?:(?:00\s?|\+)44\s?)|(?:\(?0))(?:\d{2}\)?\s?\d{4}\s?\d{4}|\d{3}\)?\s?\d{3}\s?\d{3,4}|\d{4}\)?\s?(?:\d{5}|\d{3}\s?\d{3})|\d{5}\)?\s?\d{4,5})$/ );
 }, "Please specify a valid phone number." );
 
 /**
@@ -1242,10 +1242,10 @@ $.validator.addMethod( "phoneUK", function( phone_number, element ) {
  * and not
  * 212 123 4567
  */
-$.validator.addMethod( "phoneUS", function( phone_number, element ) {
-	phone_number = phone_number.replace( /\s+/g, "" );
-	return this.optional( element ) || phone_number.length > 9 &&
-		phone_number.match( /^(\+?1-?)?(\([2-9]([02-9]\d|1[02-9])\)|[2-9]([02-9]\d|1[02-9]))-?[2-9]\d{2}-?\d{4}$/ );
+$.validator.addMethod( "phoneUS", function( phoneNumber, element ) {
+	phoneNumber = phoneNumber.replace( /\s+/g, "" );
+	return this.optional( element ) || phoneNumber.length > 9 &&
+		phoneNumber.match( /^(\+?1-?)?(\([2-9]([02-9]\d|1[02-9])\)|[2-9]([02-9]\d|1[02-9]))-?[2-9]\d{2}-?\d{4}$/ );
 }, "Please specify a valid phone number." );
 
 /*

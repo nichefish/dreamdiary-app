@@ -83,7 +83,7 @@ public class UserPageController
         // 목록 조회
         final Page<UserDto> userList = userService.getPageDto(searchParam, pageRequest);
         model.addAttribute("userList", userList.getContent());
-        model.addAttribute("pendingSignupReqList", userSignupRequestRepository.findByRequestStatusOrderByCreatedAtDesc("PENDING"));
+        model.addAttribute("pendingSignupReqList", userSignupRequestRepository.findByStatusOrderByCreatedAtDesc("PENDING"));
         model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(userList));
         // 코드 정보 모델에 추가
         codeLookupService.setCdListToModel(Code.AUTH_CD, model);

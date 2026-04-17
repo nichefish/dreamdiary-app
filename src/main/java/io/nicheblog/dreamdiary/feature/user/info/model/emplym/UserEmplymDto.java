@@ -63,7 +63,7 @@ public class UserEmplymDto
     protected String emplymEmailDomain;
 
     /** 업무 연락처 */
-    private String emplymCttpc;
+    private String emplymPhoneNumber;
 
     /** 수습 여부 (Y/N) */
     @Builder.Default

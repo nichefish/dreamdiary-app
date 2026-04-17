@@ -60,7 +60,7 @@ dF.User = (function(): dfModule {
             // 자동 대문자->소문자처리
             cF.validate.toLowerCase("#username");
             // 연락처 포맷
-            cF.validate.cttpc("#cttpc");
+            cF.validate.phoneNumber("#phoneNumber");
             // 권한 변경시 필드 재검증
             $("#authCd").change(function(): void {
                 $("#authCd").valid();

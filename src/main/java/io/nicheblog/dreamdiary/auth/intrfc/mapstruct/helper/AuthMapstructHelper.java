@@ -25,7 +25,7 @@ public final class AuthMapstructHelper {
         if (entity instanceof BaseAuditRegEntity baseRegEntity && dto instanceof BaseAuditRegDto baseRegDto) {
             final AuditorInfo createdByInfo = baseRegEntity.getCreatedByInfo();
             if (createdByInfo != null) {
-                baseRegDto.setCreatedByNm(createdByInfo.getNickNm());
+                baseRegDto.setCreatedByNm(createdByInfo.getNickname());
                 baseRegDto.setCreatedAt(DateUtils.asStr(baseRegEntity.getCreatedAt(), DatePtn.DATETIME));
                 baseRegDto.setIsCreatedBy(baseRegEntity.isCreatedBy());
             }
@@ -34,7 +34,7 @@ public final class AuthMapstructHelper {
         if (entity instanceof BaseAuditEntity baseAuditEntity && dto instanceof BaseAuditDto baseAuditDto) {
             final AuditorInfo updatedByInfo = baseAuditEntity.getUpdatedByInfo();
             if (updatedByInfo != null) {
-                baseAuditDto.setUpdatedByNm(updatedByInfo.getNickNm());
+                baseAuditDto.setUpdatedByNm(updatedByInfo.getNickname());
                 baseAuditDto.setUpdatedAt(DateUtils.asStr(baseAuditEntity.getUpdatedAt(), DatePtn.DATETIME));
                 baseAuditDto.setIsUpdatedBy(baseAuditEntity.isUpdatedBy());
             }

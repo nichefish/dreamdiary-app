@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.attachable._shared.spec;
 
 import io.nicheblog.dreamdiary.auth.intrfc.spec.BaseAuditSpec;
-import io.nicheblog.dreamdiary.feature.board.notice.entity.NoticeEntity;
 import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableEntity;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.TagContentEntity;
+import io.nicheblog.dreamdiary.feature.board.notice.entity.NoticeEntity;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.jpa.domain.Specification;
 

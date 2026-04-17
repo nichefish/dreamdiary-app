@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.journal.diary.mapstuct;
 
 import io.nicheblog.dreamdiary.feature.journal.diary.entity.JournalDiaryEntity;
-import io.nicheblog.dreamdiary.feature.journal.diary.mapstruct.JournalDiaryMapstruct;
 import io.nicheblog.dreamdiary.feature.journal.diary.entity.JournalDiaryEntityTestFactory;
+import io.nicheblog.dreamdiary.feature.journal.diary.mapstruct.JournalDiaryMapstruct;
 import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryDto;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseEntityTestFactoryHelper;

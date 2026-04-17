@@ -67,7 +67,7 @@ public class LoginSuccessHandler
         request.removeAttribute(Constant.ERROR_MSG);
         request.removeAttribute("isCredentialExpired");
         request.removeAttribute("isDupIdLogin");
-        request.removeAttribute("needsPwReset");
+        request.removeAttribute("needsPasswordReset");
 
         // 사용자 정보 세션에 추가
         final AuthInfo authInfo = (AuthInfo) authentication.getPrincipal();

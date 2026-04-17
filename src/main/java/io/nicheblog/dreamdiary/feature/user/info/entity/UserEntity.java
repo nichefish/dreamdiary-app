@@ -102,9 +102,9 @@ public class UserEntity
     private List<String> allowedIpStrList;
 
     /** 표시이름 : 사용자 프로필 정보가 없을 때 표시되는 이름 */
-    @Column(name = "nick_nm", length = 50)
+    @Column(name = "nickname", length = 50)
     @Comment("표시이름")
-    private String nickNm;
+    private String nickname;
 
     /** Email 주소 */
     @Column(name = "email", length = 100)
@@ -112,14 +112,14 @@ public class UserEntity
     private String email;
 
     /** 연락처 */
-    @Column(name = "cttpc", length = 20)
+    @Column(name = "phone_number", length = 20)
     @Comment("연락처")
-    private String cttpc;
+    private String phoneNumber;
 
     /** 프로필 이미지 URL */
-    @Column(name = "profl_img_url", length = 1000)
+    @Column(name = "profile_image_url", length = 1000)
     @Comment("프로필 이미지 URL")
-    private String proflImgUrl;
+    private String profileImageUrl;
 
     /** 계정 설명 (관리자용) */
     @Column(name = "content")

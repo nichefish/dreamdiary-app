@@ -40,7 +40,7 @@ class AuthInfoMapstructTest {
     void testToDto_checkBasic() throws Exception {
         // Given::
         UserEntity userEntity = UserEntityTestFactory.create();
-        userEntity.setProflImgUrl("test_url");
+        userEntity.setProfileImageUrl("test_url");
         userEntity.setUseAllowedIpYn("Y");
         UserAllowedIpEntity aa = UserAllowedIpEntityTestFactory.create("1.1.1.1");
         UserAllowedIpEntity bb = UserAllowedIpEntityTestFactory.create("2.2.2.2");
@@ -56,8 +56,8 @@ class AuthInfoMapstructTest {
         assertNotNull(dto);
         assertEquals(TestConstant.TEST_USER, dto.getUsername());
         assertEquals(TestConstant.TEST_PASSWORD_ENCODED, dto.getPassword());
-        assertEquals(TestConstant.TEST_NICK_NM, dto.getNickNm());
-        assertEquals("test_url", dto.getProflImgUrl());
+        assertEquals(TestConstant.TEST_NICK_NM, dto.getNickname());
+        assertEquals("test_url", dto.getProfileImageUrl());
         assertEquals("Y", dto.getUseAllowedIpYn());
         assertFalse(CollectionUtils.isEmpty(dto.getAllowedIpStrList()));
         assertEquals(2, dto.getAllowedIpStrList().size());
@@ -77,7 +77,7 @@ class AuthInfoMapstructTest {
 
         UserStateEntity acntStus = UserStateEntity.builder()
                 .lockedYn("N")
-                .needsPwReset("Y")
+                .needsPasswordReset("Y")
                 .build();
         userEntity.setAcntStus(acntStus);
 
@@ -91,7 +91,7 @@ class AuthInfoMapstructTest {
         assertEquals(Code.AUTH_USER, dto.getAuthList().get(0).getAuthCd());
         assertEquals(Code.AUTH_MNGR, dto.getAuthList().get(1).getAuthCd());
         assertEquals("N", dto.getLockedYn());
-        assertEquals("Y", dto.getNeedsPwReset());
+        assertEquals("Y", dto.getNeedsPasswordReset());
     }
 
     /**

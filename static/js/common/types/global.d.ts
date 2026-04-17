@@ -66,9 +66,9 @@ declare const Model: {
  */
 declare const AuthInfo: {
     username: string,
-    nickNm: string,
+    nickname: string,
     email: string,
-    proflImgUrl: string,
+    profileImageUrl: string,
     isMngr: boolean,
     authList: Array
 };

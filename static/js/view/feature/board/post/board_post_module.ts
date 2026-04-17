@@ -81,7 +81,7 @@ dF.BoardPost = (function(): dfModule {
 
             const boardDef: string = boardDefElement.value;
             const url: string = Url.BOARD_POST_LIST;
-            const param: string = `??boardDef=${boardDef!}&searchType=nickNm&searchKeyword=${AuthInfo.nickNm!}&createdBy=${AuthInfo.username!}&pageSize=50&actionTyCd=MY_PAPR`;
+            const param: string = `??boardDef=${boardDef!}&searchType=nickname&searchKeyword=${AuthInfo.nickname!}&createdBy=${AuthInfo.username!}&pageSize=50&actionTyCd=MY_PAPR`;
             cF.ui.blockUIReplace(url + param);
         },
 

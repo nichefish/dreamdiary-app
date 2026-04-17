@@ -44,9 +44,9 @@
  * 목록 등록자(조치자) 표시
  -->
 <#macro list_managtr post >
-    <#if (post.managtrInfo)?? && (post.managtrInfo.proflImgUrl)??>
+    <#if (post.managtrInfo)?? && (post.managtrInfo.profileImageUrl)??>
         <div class="btn btn-icon btn-active-light-primary position-relative w-15px h-15px w-md-20px h-md-20px me-1">
-            <img src="${(post.managtrInfo.proflImgUrl)!}" class="img-thumbnail p-0 w-100" />
+            <img src="${(post.managtrInfo.profileImageUrl)!}" class="img-thumbnail p-0 w-100" />
         </div>
     </#if>
     <span class="cursor-help"

@@ -56,7 +56,7 @@ public class UserReqstService {
      */
     public void preRegist(final UserSignupRequestEntity registEntity) throws Exception {
         registEntity.setPassword(passwordEncoder.encode(registEntity.getPassword()));
-        registEntity.setRequestStatus("PENDING");
+        registEntity.setStatus("PENDING");
     }
 
     /**
@@ -79,19 +79,19 @@ public class UserReqstService {
         if (userRepository.findByEmail(email).isPresent()) {
             return ServiceResponse.builder().rslt(false).message("이미 사용 중인 이메일입니다.").build();
         }
-        if (userSignupRequestRepository.existsByUsernameAndRequestStatus(username, "PENDING")) {
+        if (userSignupRequestRepository.existsByUsernameAndStatus(username, "PENDING")) {
             return ServiceResponse.builder().rslt(false).message("이미 대기 중인 신청이 존재합니다.").build();
         }
-        if (userSignupRequestRepository.existsByEmailAndRequestStatus(email, "PENDING")) {
+        if (userSignupRequestRepository.existsByEmailAndStatus(email, "PENDING")) {
             return ServiceResponse.builder().rslt(false).message("해당 이메일로 대기 중인 신청이 존재합니다.").build();
         }
 
         final UserSignupRequestEntity registEntity = UserSignupRequestEntity.builder()
                 .username(username)
                 .password(registDto.getPassword())
-                .nickNm(registDto.getNickNm())
+                .nickname(registDto.getNickname())
                 .email(email)
-                .cttpc(registDto.getCttpc())
+                .phoneNumber(registDto.getPhoneNumber())
                 .content(registDto.getContent())
                 .build();
         this.preRegist(registEntity);
@@ -100,9 +100,9 @@ public class UserReqstService {
         final UserReqstDto rsltDto = UserReqstDto.builder()
                 .id(updatedEntity.getId())
                 .username(updatedEntity.getUsername())
-                .nickNm(updatedEntity.getNickNm())
+                .nickname(updatedEntity.getNickname())
                 .email(updatedEntity.getEmail())
-                .cttpc(updatedEntity.getCttpc())
+                .phoneNumber(updatedEntity.getPhoneNumber())
                 .content(updatedEntity.getContent())
                 .createdBy(updatedEntity.getCreatedBy())
                 .build();
@@ -123,16 +123,16 @@ public class UserReqstService {
     public ServiceResponse cf(final Integer key) throws Exception {
         final UserSignupRequestEntity req =
                 userSignupRequestRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("exception.EntityNotFoundException"));
-        if (!"PENDING".equals(req.getRequestStatus())) {
+        if (!"PENDING".equals(req.getStatus())) {
             return ServiceResponse.builder().rslt(false).build();
         }
 
         final UserEntity userEntity = UserEntity.builder()
                 .username(req.getUsername())
                 .password(req.getPassword())
-                .nickNm(req.getNickNm())
+                .nickname(req.getNickname())
                 .email(req.getEmail())
-                .cttpc(req.getCttpc())
+                .phoneNumber(req.getPhoneNumber())
                 .content(req.getContent())
                 .authList(List.of(new UserAuthRoleEntity(Code.AUTH_USER)))
                 .acntStus(UserStateEntity.getRegistStus())
@@ -140,7 +140,7 @@ public class UserReqstService {
         userEntity.cascade();
         final UserEntity updatedEntity = userRepository.saveAndFlush(userEntity);
 
-        req.setRequestStatus("APPROVED");
+        req.setStatus("APPROVED");
         req.setApprovedAt(DateUtils.getCurrDate());
         userSignupRequestRepository.save(req);
 
@@ -159,7 +159,7 @@ public class UserReqstService {
     public ServiceResponse uncf(final Integer key) throws Exception {
         final UserSignupRequestEntity req =
                 userSignupRequestRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("exception.EntityNotFoundException"));
-        req.setRequestStatus("REJECTED");
+        req.setStatus("REJECTED");
         req.setRejectedAt(DateUtils.getCurrDate());
         final UserSignupRequestEntity updatedEntity = userSignupRequestRepository.saveAndFlush(req);
 
@@ -174,7 +174,7 @@ public class UserReqstService {
     @Transactional
     public ServiceResponse cfByUsername(final String username) throws Exception {
         final Optional<UserSignupRequestEntity> reqWrapper =
-                userSignupRequestRepository.findTopByUsernameAndRequestStatusOrderByCreatedAtDesc(username, "PENDING");
+                userSignupRequestRepository.findTopByUsernameAndStatusOrderByCreatedAtDesc(username, "PENDING");
         if (reqWrapper.isEmpty()) throw new EntityNotFoundException("exception.EntityNotFoundException");
         return this.cf(reqWrapper.get().getId());
     }

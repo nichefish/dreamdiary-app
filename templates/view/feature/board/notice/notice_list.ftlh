@@ -17,11 +17,11 @@
 <div class="card post">
     <div class="px-8">
         <button type="button" class="btn btn-sm btn-light btn-outline btn-active-secondary mx-1"
-                onclick="$('#crdt_user_cttpc_modal').modal('show');"
+                onclick="$('#crdt_user_phoneNumber_modal').modal('show');"
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="직원 연락처 팝업을 호출합니다.">
             <i class="bi bi-telephone"></i>직원 연락처
         </button>
-        <#include "/view/feature/board/notice/_modal/_notice_list_crdt_user_cttpc_modal.ftlh">
+        <#include "/view/feature/board/notice/_modal/_notice_list_crdt_user_phoneNumber_modal.ftlh">
         <button type="button" class="btn btn-sm btn-light btn-outline btn-active-secondary mx-1"
                 onclick="$('#extn_phone_modal').modal('show');"
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="내선전화 관련 안내 팝업을&#10;호출합니다.">

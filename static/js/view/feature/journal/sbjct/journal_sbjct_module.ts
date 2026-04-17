@@ -77,7 +77,7 @@ dF.JournalSbjct = (function(): dfModule {
          */
         myPaprList: function(): void {
             const url: string = Url.JOURNAL_SBJCT_LIST;
-            const param: string = "?searchType=nickNm&searchKeyword=${authInfo.nickNm!}&createdBy=${authInfo.username!}&pageSize=50&actionTyCd=MY_PAPR";
+            const param: string = "?searchType=nickname&searchKeyword=${authInfo.nickname!}&createdBy=${authInfo.username!}&pageSize=50&actionTyCd=MY_PAPR";
             cF.ui.blockUIReplace(url + param);
         },
 

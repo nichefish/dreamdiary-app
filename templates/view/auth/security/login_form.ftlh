@@ -15,7 +15,7 @@
             errorMsg: "${errorMsg!}",
             isDupIdLogin: ${(isDupIdLogin!false)?c},
             isCredentialExpired: ${(isCredentialExpired!false)?c},
-            needsPwReset: ${(needsPwReset!false)?c},
+            needsPasswordReset: ${(needsPasswordReset!false)?c},
         }
     })();
 </script>

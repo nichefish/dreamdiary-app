@@ -30,7 +30,7 @@ public class UserEmplymEntityTestFactory {
                 .rankCd("test_rank")
                 .apntcYn("Y")
                 .emplymEmail("test_emplym_email_id@test_emplym_email_domain")
-                .emplymCttpc("000-0000-0000")
+                .emplymPhoneNumber("000-0000-0000")
                 .ecnyDt(DateUtils.asDate("2000-01-01"))
                 .retireYn("Y")
                 .retireDt(DateUtils.asDate("2000-01-01"))

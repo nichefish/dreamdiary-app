@@ -1,6 +1,5 @@
-package io.nicheblog.dreamdiary.feature.calendar.schedule.entity;
+﻿package io.nicheblog.dreamdiary.feature.calendar.schedule.entity;
 
-import io.nicheblog.dreamdiary.feature.calendar.schedule.entity.SchedulePrtcpntEntity;
 import org.junit.jupiter.api.Test;
 
 import javax.persistence.JoinColumn;

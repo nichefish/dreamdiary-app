@@ -16,8 +16,8 @@
             </div>
             <div class="col-xl-2 col-8 col-form-label">
                 <div class="btn btn-icon btn-secondary position-relative w-30px h-30px w-md-40px h-md-40px me-3">
-                    <#if user.proflImgUrl??>
-                        <img src="${user.proflImgUrl!}" class="img-thumbnail p-0 w-100" />
+                    <#if user.profileImageUrl??>
+                        <img src="${user.profileImageUrl!}" class="img-thumbnail p-0 w-100" />
                     <#else>
                         <span class="svg-icon svg-icon-1">
                             <i class="fas fa-user-circle fs-2"></i>
@@ -73,11 +73,11 @@
         <div class="row mb-4">
             <div class="col-xl-2 col-4">
                 <div class="col-form-label text-center fw-bold">
-                    <label for="nickNm">표시이름</label>
+                    <label for="nickname">표시이름</label>
                 </div>
             </div>
             <div class="col-xl-2 col-8 col-form-label">
-                ${user.nickNm!}
+                ${user.nickname!}
             </div>
         </div>
         <#--begin::Row-->
@@ -95,11 +95,11 @@
         <div class="row mb-4">
             <div class="col-xl-2 col-4">
                 <div class="col-form-label text-center fw-bold">
-                    <label for="cttpc">연락처</label>
+                    <label for="phoneNumber">연락처</label>
                 </div>
             </div>
             <div class="col-xl-2 col-8 col-form-label">
-                ${user.cttpc!}
+                ${user.phoneNumber!}
             </div>
         </div>
         <#--begin::Row-->

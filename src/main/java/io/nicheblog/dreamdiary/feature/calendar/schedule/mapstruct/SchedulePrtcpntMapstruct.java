@@ -31,7 +31,7 @@ public interface SchedulePrtcpntMapstruct
      * @return Dto -- 변환된 Dto 객체
      */
     @Override
-    @Mapping(target = "userNm", expression = "java((entity.getUser() != null) ? entity.getUser().getNickNm() : null)")
+    @Mapping(target = "userNm", expression = "java((entity.getUser() != null) ? entity.getUser().getNickname() : null)")
     SchedulePrtcpntDto toDto(final SchedulePrtcpntEntity entity) throws Exception;
 
     /**

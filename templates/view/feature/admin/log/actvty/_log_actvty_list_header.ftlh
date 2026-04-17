@@ -24,7 +24,7 @@
     <div>
         <#--헤더:: 인풋: searchType-->
         <select name="searchType" id="searchType" class="form-select form-select-sm form-select-solid">
-            <option value="nickNm" label="이름" ${fn.selected(searchParam.searchType!, "nickNm")} />
+            <option value="nickname" label="이름" ${fn.selected(searchParam.searchType!, "nickname")} />
             <option value="username" label="아이디" ${fn.selected(searchParam.searchType!, "username")} />
         </select>
     </div>

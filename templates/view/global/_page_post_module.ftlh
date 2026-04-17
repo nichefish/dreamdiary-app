@@ -34,23 +34,23 @@
             <div class="d-flex flex-column align-items-start justify-content-center">
                 <span class="text-gray-800 fs-6 fw-bold lh-1 mb-2">
                     <#if post.managt??>
-                        <#if (post.managt.managtrInfo.proflImgUrl)??>
+                        <#if (post.managt.managtrInfo.profileImageUrl)??>
                             <div class="btn btn-icon btn-active-light-primary position-relative w-15px h-15px w-md-20px h-md-20px me-1">
-                                <img src="${(post.managt.managtrInfo.proflImgUrl)!}" class="img-thumbnail p-0 w-100" />
+                                <img src="${(post.managt.managtrInfo.profileImageUrl)!}" class="img-thumbnail p-0 w-100" />
                             </div>
                         </#if>
                         ${post.managt.managtrNm!"-"}
                     <#elseif post.updatedByInfo??>
-                        <#if (post.updatedByInfo.proflImgUrl)??>
+                        <#if (post.updatedByInfo.profileImageUrl)??>
                             <div class="btn btn-icon btn-active-light-primary position-relative w-15px h-15px w-md-20px h-md-20px me-1">
-                                <img src="${(post.updatedByInfo.proflImgUrl)!}" class="img-thumbnail p-0 w-100" />
+                                <img src="${(post.updatedByInfo.profileImageUrl)!}" class="img-thumbnail p-0 w-100" />
                             </div>
                         </#if>
                         ${post.updatedByNm!}
                     <#else>
-                        <#if (post.createdByInfo.proflImgUrl)??>
+                        <#if (post.createdByInfo.profileImageUrl)??>
                             <div class="btn btn-icon btn-active-light-primary position-relative w-15px h-15px w-md-20px h-md-20px me-1">
-                                <img src="${(post.createdByInfo.proflImgUrl)!}" class="img-thumbnail p-0 w-100" />
+                                <img src="${(post.createdByInfo.profileImageUrl)!}" class="img-thumbnail p-0 w-100" />
                             </div>
                         </#if>
                         ${post.createdByNm!}
@@ -87,12 +87,12 @@
             <!--begin::Name-->
             <div class="d-flex flex-column align-items-start justify-content-center">
                 <span class="text-gray-800 fs-6 fw-bold lh-1 mb-2">
-                    <#if (authInfo.proflImgUrl)??>
+                    <#if (authInfo.profileImageUrl)??>
                         <div class="btn btn-icon btn-active-light-primary position-relative w-15px h-15px w-md-20px h-md-20px me-1">
-                            <img src="${(authInfo.proflImgUrl)!}" class="img-thumbnail p-0 w-100" />
+                            <img src="${(authInfo.profileImageUrl)!}" class="img-thumbnail p-0 w-100" />
                         </div>
                     </#if>
-                    ${authInfo.nickNm!"-"}
+                    ${authInfo.nickname!"-"}
                 </span>
                 <span class="text-muted fs-7 lh-1">
                     ${DateUtils.getCurrDtStr()!}
@@ -119,9 +119,9 @@
             <!--begin::Name-->
             <div class="d-flex flex-column align-items-start justify-content-center">
                     <span class="text-gray-800 fs-6 fw-bold lh-1 mb-2">
-                        <#if (post.createdByInfo.proflImgUrl)??>
+                        <#if (post.createdByInfo.profileImageUrl)??>
                             <div class="btn btn-icon btn-active-light-primary position-relative w-15px h-15px w-md-20px h-md-20px me-1">
-                                <img src="${(post.createdByInfo.proflImgUrl)!}" class="img-thumbnail p-0 w-100" />
+                                <img src="${(post.createdByInfo.profileImageUrl)!}" class="img-thumbnail p-0 w-100" />
                             </div>
                         </#if>
                         ${post.createdByNm!"-"}

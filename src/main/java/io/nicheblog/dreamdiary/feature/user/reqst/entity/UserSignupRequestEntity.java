@@ -37,22 +37,22 @@ public class UserSignupRequestEntity extends BaseAuditEntity {
     @Column(name = "password", length = 64)
     private String password;
 
-    @Column(name = "nick_nm", length = 50)
-    private String nickNm;
+    @Column(name = "nickname", length = 50)
+    private String nickname;
 
     @Column(name = "email", length = 100)
     private String email;
 
-    @Column(name = "cttpc", length = 20)
-    private String cttpc;
+    @Column(name = "phone_number", length = 20)
+    private String phoneNumber;
 
     @Column(name = "content")
     private String content;
 
     /** PENDING/APPROVED/REJECTED */
     @Builder.Default
-    @Column(name = "request_status", length = 20)
-    private String requestStatus = "PENDING";
+    @Column(name = "status", length = 20)
+    private String status = "PENDING";
 
     @Column(name = "approved_at")
     private Date approvedAt;

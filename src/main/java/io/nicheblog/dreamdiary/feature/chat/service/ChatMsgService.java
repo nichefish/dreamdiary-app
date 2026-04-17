@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.feature.chat.service;
 
+import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
 import io.nicheblog.dreamdiary.feature.chat.entity.ChatMsgEntity;
 import io.nicheblog.dreamdiary.feature.chat.mapstruct.ChatMsgMapstruct;
 import io.nicheblog.dreamdiary.feature.chat.model.ChatMsgDto;
 import io.nicheblog.dreamdiary.feature.chat.repository.jpa.ChatMsgRepository;
 import io.nicheblog.dreamdiary.feature.chat.spec.ChatMsgSpec;
-import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

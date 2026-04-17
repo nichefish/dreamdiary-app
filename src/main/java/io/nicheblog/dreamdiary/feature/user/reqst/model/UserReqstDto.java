@@ -39,7 +39,7 @@ public class UserReqstDto
     private String password;
     /** 표시이름 */
     @NotEmpty
-    private String nickNm;
+    private String nickname;
 
     /** 이메일 */
     private String email;
@@ -50,7 +50,7 @@ public class UserReqstDto
     @NotEmpty
     private String emailDomain;
     /** 연락처 */
-    private String cttpc;
+    private String phoneNumber;
 
     /** 계정 설명 (관리자용) */
     private String content;

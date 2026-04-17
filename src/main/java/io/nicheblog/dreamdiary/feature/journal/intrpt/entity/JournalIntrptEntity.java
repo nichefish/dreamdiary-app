@@ -4,12 +4,12 @@ import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableE
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbedModule;
-import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbed;
-import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbedModule;
 import io.nicheblog.dreamdiary.feature.attachable.history.entity.embed.HistoryEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.history.entity.embed.HistoryEmbedModule;
 import io.nicheblog.dreamdiary.feature.attachable.state.entity.embed.StateEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.state.entity.embed.StateEmbedModule;
+import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbed;
+import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbedModule;
 import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

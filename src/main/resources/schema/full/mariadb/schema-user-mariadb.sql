@@ -13,11 +13,11 @@ CREATE TABLE IF NOT EXISTS user (
     -- ACCOUNT_BASIC_INFO
     username VARCHAR(20) COMMENT '로그인 ID',
     password VARCHAR(64) COMMENT '비밀번호',
-    nick_nm VARCHAR(50) COMMENT '사용자 표시이름',
-    profl_img_url VARCHAR(256) COMMENT '프로필 이미지 경로',
+    nickname VARCHAR(50) COMMENT '사용자 표시이름',
+    profile_image_url VARCHAR(256) COMMENT '프로필 이미지 경로',
     content LONGTEXT COMMENT '사용자 설명 (관리자용)',
     email VARCHAR(100) COMMENT '이메일',        -- 기본 이메일:: 계정복구 등에 사용함
-    cttpc VARCHAR(20) COMMENT '연락처',        -- 기본 연락처
+    phone_number VARCHAR(20) COMMENT '연락처',        -- 기본 연락처
     -- ACCOUNT_STATUS
     use_allowed_ip_yn CHAR(1) DEFAULT 'N' COMMENT '접속IP 사용 여부 (Y/N)',
     -- FILE_GROUP
@@ -45,9 +45,9 @@ CREATE TABLE IF NOT EXISTS user_state (
     login_fail_window_started_at DATETIME COMMENT '로그인 실패 카운트 윈도우 시작 시각',
     lock_expires_at DATETIME COMMENT '계정 잠금 만료 시각',
     password_changed_at DATETIME COMMENT '비밀번호 변경 일시',
-    needs_pw_reset CHAR(1) DEFAULT 'N' COMMENT '패스워드 변경 필요 여부 (Y/N)',
-    pw_reset_token_issued_at DATETIME COMMENT '패스워드 리셋 토큰 발급 시각',
-    dormant_bypass_yn CHAR(1) DEFAULT 'N' COMMENT '장기 미로그인 통과 여부 (Y/N)',
+    needs_password_reset CHAR(1) DEFAULT 'N' COMMENT '패스워드 변경 필요 여부 (Y/N)',
+    password_reset_token_issued_at DATETIME COMMENT '패스워드 리셋 토큰 발급 시각',
+    -- CONSTRAINT
     FOREIGN KEY(user_id) REFERENCES user (id)
 ) COMMENT = '사용자 상태';
 
@@ -56,20 +56,22 @@ CREATE TABLE IF NOT EXISTS user_signup_request (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 가입 신청 ID',
     username VARCHAR(20) COMMENT '로그인 ID',
     password VARCHAR(64) COMMENT '비밀번호',
-    nick_nm VARCHAR(50) COMMENT '사용자 표시이름',
+    nickname VARCHAR(50) COMMENT '사용자 표시이름',
     email VARCHAR(100) COMMENT '이메일',
-    cttpc VARCHAR(20) COMMENT '연락처',
+    phone_number VARCHAR(20) COMMENT '연락처',
     content LONGTEXT COMMENT '신청 메모',
-    request_status VARCHAR(20) DEFAULT 'PENDING' COMMENT '신청 상태',
+    status VARCHAR(20) DEFAULT 'PENDING' COMMENT '신청 상태',
     approved_at DATETIME COMMENT '승인 일시',
     rejected_at DATETIME COMMENT '반려 일시',
+    -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     updated_by VARCHAR(20) COMMENT '수정자 ID',
     updated_at DATETIME COMMENT '수정일시',
     deleted_at DATETIME COMMENT '삭제일시',
+    -- CONSTRAINT
     INDEX (username),
-    INDEX (request_status)
+    INDEX (status)
 ) COMMENT = '사용자 가입 신청';
 
 -- -----------------------
@@ -158,7 +160,7 @@ CREATE TABLE IF NOT EXISTS user_emplym (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 인사정보 고유 ID',
     user_id INT COMMENT '사용자 고유 번호',
     user_nm VARCHAR(50) COMMENT '직원명',
-    emplym_cttpc VARCHAR(20) COMMENT '연락처',        -- 기본 연락처
+    emplym_phone_number VARCHAR(20) COMMENT '연락처',        -- 기본 연락처
     emplym_email VARCHAR(100) COMMENT '이메일',        -- 기본 이메일:: 계정복구 등에 사용함
     cmpy_cd VARCHAR(30) COMMENT '회사 코드',
     team_cd VARCHAR(30) COMMENT '팀 코드',

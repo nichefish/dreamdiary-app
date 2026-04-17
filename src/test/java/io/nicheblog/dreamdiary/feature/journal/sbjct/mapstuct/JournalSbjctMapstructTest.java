@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.journal.sbjct.mapstuct;
 
 import io.nicheblog.dreamdiary.feature.journal.sbjct.entity.JournalSbjctEntity;
+import io.nicheblog.dreamdiary.feature.journal.sbjct.entity.JournalSbjctEntityTestFactory;
 import io.nicheblog.dreamdiary.feature.journal.sbjct.mapstruct.JournalSbjctMapstruct;
 import io.nicheblog.dreamdiary.feature.journal.sbjct.model.JournalSbjctDto;
-import io.nicheblog.dreamdiary.feature.journal.sbjct.entity.JournalSbjctEntityTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseEntityTestFactoryHelper;
 import org.junit.jupiter.api.BeforeEach;

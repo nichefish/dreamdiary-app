@@ -68,7 +68,7 @@ public class LoginFailureHandler
     ) {
 
         request.removeAttribute("username");
-        request.removeAttribute("needsPwReset");
+        request.removeAttribute("needsPasswordReset");
         final String username = request.getParameter("username");
         String errorMsg = this.getLoginFailureMsg(exception);
         /* 존재하지 않는 계정 제외하고 로그인 실패 로그 저장 */
@@ -105,7 +105,7 @@ public class LoginFailureHandler
         /* 패스워드 초기화 강제 */
         } else if (exception instanceof AccountNeedsPwResetException) {
             request.setAttribute("username", username);
-            request.setAttribute("needsPwReset", true);
+            request.setAttribute("needsPasswordReset", true);
         }
 
         log.info("login attempt failed.. username: {} errorMsg: {}", username, errorMsg);

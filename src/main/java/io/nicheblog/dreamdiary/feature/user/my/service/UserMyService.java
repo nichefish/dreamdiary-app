@@ -55,8 +55,8 @@ public class UserMyService {
             throw new BadCredentialsException(MessageUtils.PW_MISMATCH);
         }
         retrievedEntity.setPassword(passwordEncoder.encode(newPw));
-        retrievedEntity.acntStus.setNeedsPwReset("N");
-        retrievedEntity.acntStus.setPwResetTokenIssuedAt(null);
+        retrievedEntity.acntStus.setNeedsPasswordReset("N");
+        retrievedEntity.acntStus.setPasswordResetTokenIssuedAt(null);
         retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrDate());
         final UserEntity modified = userRepository.saveAndFlush(retrievedEntity);
         refreshTokenService.revoke(username);
@@ -116,8 +116,8 @@ public class UserMyService {
         }
         // 2. 맞으면 비밀번호 업데이트
         retrievedEntity.setPassword(passwordEncoder.encode(newPw));
-        retrievedEntity.acntStus.setNeedsPwReset("N");
-        retrievedEntity.acntStus.setPwResetTokenIssuedAt(null);
+        retrievedEntity.acntStus.setNeedsPasswordReset("N");
+        retrievedEntity.acntStus.setPasswordResetTokenIssuedAt(null);
         retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrDate());
         final UserEntity modified = userRepository.saveAndFlush(retrievedEntity);
         refreshTokenService.revoke(loginUsername);
@@ -141,7 +141,7 @@ public class UserMyService {
         final String url = uploaded.getUrl();
         final String loginUsername = AuthUtils.getLoginUsername();
         final UserEntity retrievedEntity = userService.getDtlEntity(loginUsername);
-        retrievedEntity.setProflImgUrl(url);
+        retrievedEntity.setProfileImageUrl(url);
         final UserEntity modified = userRepository.saveAndFlush(retrievedEntity);
 
         // 관련 캐시 삭제
@@ -160,7 +160,7 @@ public class UserMyService {
         // 프로필 url 삭제
         final String loginUsername = AuthUtils.getLoginUsername();
         final UserEntity retrievedEntity = userService.getDtlEntity(loginUsername);
-        retrievedEntity.setProflImgUrl(null);
+        retrievedEntity.setProfileImageUrl(null);
         final UserEntity updatedEntity = userRepository.saveAndFlush(retrievedEntity);
 
         // 관련 캐시 삭제

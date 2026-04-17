@@ -74,9 +74,9 @@
         const AuthInfo = (function() {
             return Object.freeze({
                 username: "${(authInfo.username)!}",
-                nickNm: "${(authInfo.nickNm)!}",
+                nickname: "${(authInfo.nickname)!}",
                 email: "${(authInfo.email)!}",
-                proflImgUrl: "${(authInfo.proflImgUrl)!}",
+                profileImageUrl: "${(authInfo.profileImageUrl)!}",
                 isMngr: ${((authInfo.isMngr)!false)?c},
                 authList: [
                     <#list (authInfo.authList)![] as auth>

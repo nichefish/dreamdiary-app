@@ -1,16 +1,16 @@
 package io.nicheblog.dreamdiary.feature.journal.day.mapstruct;
 
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
+import io.nicheblog.dreamdiary.feature.journal.chapter.mapstruct.JournalChapterMapstruct;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterSmpDto;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayEntity;
-import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
-import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntity;
-import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamDto;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayEntityTestFactory;
+import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDtoTestFactory;
+import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntity;
 import io.nicheblog.dreamdiary.feature.journal.dream.mapstruct.JournalDreamMapstruct;
-import io.nicheblog.dreamdiary.feature.journal.chapter.mapstruct.JournalChapterMapstruct;
+import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamDto;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

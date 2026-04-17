@@ -30,7 +30,7 @@ public class BaseEntityTestFactoryHelper {
         ((BaseAuditRegEntity) obj).setCreatedBy(TestConstant.TEST_REGSTR_ID);
         ((BaseAuditRegEntity) obj).setCreatedByInfo(AuditorInfo.builder()
                 .username(TestConstant.TEST_REGSTR_ID)
-                .nickNm(TestConstant.TEST_REGSTR_NM)
+                .nickname(TestConstant.TEST_REGSTR_NM)
                 .build());
     }
 
@@ -44,7 +44,7 @@ public class BaseEntityTestFactoryHelper {
         ((BaseAuditEntity) obj).setUpdatedBy(TestConstant.TEST_MDFUSR_ID);
         ((BaseAuditEntity) obj).setUpdatedByInfo(AuditorInfo.builder()
                 .username(TestConstant.TEST_MDFUSR_ID)
-                .nickNm(TestConstant.TEST_MDFUSR_NM)
+                .nickname(TestConstant.TEST_MDFUSR_NM)
                 .build());
     }
 }

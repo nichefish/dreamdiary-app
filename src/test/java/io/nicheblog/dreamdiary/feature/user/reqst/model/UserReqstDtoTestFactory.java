@@ -35,10 +35,10 @@ public class UserReqstDtoTestFactory {
                 // 권한:: 운영 로직에선 변환 전 서비스단에서 할당하여 넣어줌.
                 // .authList(List.of(UserAuthRoleDto.builder().authCd(Code.AUTH_USER).build()))
                 .authListStr(Code.AUTH_USER)
-                .nickNm("test_nick_nm")
+                .nickname("test_nickname")
                 .emailId("test_email_id")
                 .emailDomain("test_email_domain")
-                .cttpc("010-0101-0101")
+                .phoneNumber("010-0101-0101")
                 .content("test_cn")
                 .build();
     }

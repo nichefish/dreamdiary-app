@@ -27,10 +27,10 @@ public class UserDtoTestFactory {
         return UserDto.builder()
                 .username(TestConstant.TEST_USER)
                 .password("test_password")
-                .nickNm("test_nick_nm")
+                .nickname("test_nickname")
                 .emailId("test_email_id")
                 .emailDomain("test_email_domain")
-                .cttpc("010-0101-0101")
+                .phoneNumber("010-0101-0101")
                 .content("test_cn")
                 .build();
     }

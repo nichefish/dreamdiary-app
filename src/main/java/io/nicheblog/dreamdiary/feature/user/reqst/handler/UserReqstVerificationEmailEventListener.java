@@ -56,11 +56,11 @@ public class UserReqstVerificationEmailEventListener {
             final String verifyUrl = "http://" + domain + "/auth/verify.do/" + securityCode;
 
             final EmailSendParam emailSendParam = EmailSendParam.builder()
-                    .recipientList(Collections.singletonList(new EmailAddress(userReqst.getEmail(), userReqst.getNickNm())))
+                    .recipientList(Collections.singletonList(new EmailAddress(userReqst.getEmail(), userReqst.getNickname())))
                     .sender(new EmailAddress(Constant.SYSTEM_EMAIL, Constant.SYSTEM_ADMIN_NM))
                     .subject("Dreamdiary 계정 신청 인증번호")
                     .tmplat("email/user_reqst_verification_code.ftlh")
-                    .dataMap(Map.of("securityCode", securityCode, "recipientName", userReqst.getNickNm(), "authenticationUrl", verifyUrl))
+                    .dataMap(Map.of("securityCode", securityCode, "recipientName", userReqst.getNickname(), "authenticationUrl", verifyUrl))
                     .build();
             final EmailSendEvent emailSendEvent = new EmailSendEvent(event.getSource(), emailSendParam);
             publisher.publishAsyncEvent(emailSendEvent);
