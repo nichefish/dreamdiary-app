@@ -391,7 +391,7 @@ dF.JournalDayTag = (function(): dfModule {
                 case "JOURNAL_DAY": return "\uC77C\uC790";
                 case "JOURNAL_DIARY": return "\uC77C\uAE30";
                 case "JOURNAL_DREAM": return "\uAFC8";
-                case "JOURNAL_INTRPT": return "\uD574\uC11D";
+                case "JOURNAL_INTERPRETATION": return "\uD574\uC11D";
                 default: return contentType;
             }
         },

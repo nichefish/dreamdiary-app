@@ -106,9 +106,13 @@
     <cache alias="journalDreamYyAnnualStatedListByUser" uses-template="defaultTemplate" />
 
     <!-- ?�???�석 -->
-    <cache alias="journalIntrptDtlDtoByUser" uses-template="defaultTemplate" />
-    <cache alias="journalIntrptStateMapByUser" uses-template="defaultTemplate" />
-    <cache alias="journalIntrptWeeklyStateMapByUser" uses-template="defaultTemplate" />
+    <cache alias="journalInterpretationDtlDtoByUser" uses-template="defaultTemplate" />
+    <cache alias="journalInterpretationStateMapByUser" uses-template="defaultTemplate" />
+    <cache alias="journalInterpretationWeeklyStateMapByUser" uses-template="defaultTemplate" />
+    <!-- backward compatibility -->
+    <cache alias="journalInterpretationDtlDtoByUser" uses-template="defaultTemplate" />
+    <cache alias="journalInterpretationStateMapByUser" uses-template="defaultTemplate" />
+    <cache alias="journalInterpretationWeeklyStateMapByUser" uses-template="defaultTemplate" />
 
     <!-- ?�???�일 -->
     <cache alias="journalTodoListByUser" uses-template="defaultTemplate" />

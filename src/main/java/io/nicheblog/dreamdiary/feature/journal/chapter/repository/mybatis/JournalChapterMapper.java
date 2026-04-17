@@ -1,7 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.chapter.repository.mybatis;
 
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
-import io.nicheblog.dreamdiary.feature.journal.intrpt.model.JournalIntrptDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -21,7 +20,7 @@ public interface JournalChapterMapper {
     /**
      * 삭제된 데이터 정보 조회
      * @param id 조회할 게시글 번호 (삭제된 데이터)
-     * @return {@link JournalIntrptDto} -- 삭제된 저널 일기 데이터
+     * @return {@link JournalChapterDto} -- 삭제된 저널 챕터 데이터
      */
     JournalChapterDto getDeletedById(final @Param("id") Integer id);
 

@@ -34,7 +34,7 @@ public class CommentCacheInvalidateWorker {
                 ContentType.JOURNAL_DAY,
                 ContentType.JOURNAL_DIARY,
                 ContentType.JOURNAL_DREAM,
-                ContentType.JOURNAL_INTRPT,
+                ContentType.JOURNAL_INTERPRETATION,
                 ContentType.JOURNAL_ANNUAL_REVIEW
         );
 

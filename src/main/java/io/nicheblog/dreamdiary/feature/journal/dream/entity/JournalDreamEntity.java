@@ -13,7 +13,7 @@ import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbedModul
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbed;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbedModule;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDaySmpEntity;
-import io.nicheblog.dreamdiary.feature.journal.intrpt.entity.JournalIntrptEntity;
+import io.nicheblog.dreamdiary.feature.journal.interpretation.entity.JournalInterpretationEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
@@ -117,7 +117,7 @@ public class JournalDreamEntity
     @OneToMany(mappedBy = "journalDream", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("sortOrder ASC")
     @Comment("저널 해석 목록")
-    private List<JournalIntrptEntity> journalIntrptList;
+    private List<JournalInterpretationEntity> journalInterpretationList;
 
     /** 인덱스 변경 여부 */
     @Builder.Default

@@ -8,7 +8,7 @@ import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstn;
 import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstnModule;
-import io.nicheblog.dreamdiary.feature.journal.intrpt.model.JournalIntrptDto;
+import io.nicheblog.dreamdiary.feature.journal.interpretation.model.JournalInterpretationDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -55,7 +55,7 @@ public class JournalDreamPostDto
     private Integer sortOrder;
 
     /** 저널 일기 목록 */
-    private List<JournalIntrptDto> journalIntrptList;
+    private List<JournalInterpretationDto> journalInterpretationList;
 
     /** 꿈꾼이(타인) 이름 */
     private String elseDreamerNm;

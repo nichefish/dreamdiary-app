@@ -13,7 +13,6 @@ import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterSearc
 import io.nicheblog.dreamdiary.feature.journal.chapter.repository.jpa.JournalChapterRepository;
 import io.nicheblog.dreamdiary.feature.journal.chapter.repository.mybatis.JournalChapterMapper;
 import io.nicheblog.dreamdiary.feature.journal.chapter.spec.JournalChapterSpec;
-import io.nicheblog.dreamdiary.feature.journal.intrpt.model.JournalIntrptDto;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -174,7 +173,7 @@ public class JournalChapterService
      * 삭제 데이터 조회
      *
      * @param key 삭제된 데이터의 키
-     * @return {@link JournalIntrptDto} -- 삭제된 데이터 Dto
+     * @return {@link JournalChapterDto} -- 삭제된 데이터 Dto
      */
     @Transactional(readOnly = true)
     public JournalChapterDto getDeletedDtlDto(final Integer key) throws Exception {

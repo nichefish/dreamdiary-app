@@ -56,7 +56,7 @@ public class StateService
                 ContentType.JOURNAL_CHAPTER,
                 ContentType.JOURNAL_DIARY,
                 ContentType.JOURNAL_DREAM,
-                ContentType.JOURNAL_INTRPT
+                ContentType.JOURNAL_INTERPRETATION
         );
 
         for (final ContentType requiredType : requiredTypes) {

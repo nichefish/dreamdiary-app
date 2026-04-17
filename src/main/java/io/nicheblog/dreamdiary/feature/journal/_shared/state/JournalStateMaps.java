@@ -22,5 +22,5 @@ public class JournalStateMaps {
     /** 꿈 상태 맵 */
     private Map<Integer, JournalState> dreamMap;
     /** 해석 상태 맵 */
-    private Map<Integer, JournalState> intrptMap;
+    private Map<Integer, JournalState> interpretationMap;
 }
