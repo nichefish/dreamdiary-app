@@ -34,8 +34,12 @@ public class UserAuthRoleEntity
 
     @PostLoad
     private void onLoad() {
-        // 코드 이름 세팅
-        if (this.roleInfo != null) this.authNm = this.roleInfo.getAuthNm();
+        // 권한 정보 동기화
+        if (this.roleInfo != null) {
+            this.authRoleId = this.roleInfo.getId();
+            this.authCd = this.roleInfo.getAuthCd();
+            this.authNm = this.roleInfo.getAuthNm();
+        }
     }
 
     /** 사용자-권한 ID */
@@ -50,9 +54,14 @@ public class UserAuthRoleEntity
     @Comment("권한 코드")
     private String authCd;
 
+    /** 권한 ID */
+    @Column(name = "auth_role_id")
+    @Comment("권한 ID")
+    private Integer authRoleId;
+
     /** 권한 정보 매핑 */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "auth_cd", referencedColumnName = "auth_cd", insertable = false, updatable = false)
+    @JoinColumn(name = "auth_role_id", referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(value = FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("작업자 정보")

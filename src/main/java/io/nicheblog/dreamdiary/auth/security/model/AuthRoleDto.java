@@ -25,9 +25,11 @@ import java.util.List;
 @NoArgsConstructor
 public class AuthRoleDto
         extends BaseCrudDto
-        implements Identifiable<String>, StateCmpstnModule {
+        implements Identifiable<Integer>, StateCmpstnModule {
 
-    /** 권한 코드 (PK) */
+    /** 내부 PK (id) */
+    private Integer id;
+    /** 권한 코드 */
     private String authCd;
     /** 권한 이름 */
     private String authNm;
@@ -43,8 +45,8 @@ public class AuthRoleDto
     /* ----- */
 
     @Override
-    public String getKey() {
-        return this.authCd;
+    public Integer getKey() {
+        return this.id;
     }
 
     /** 위임 :: 상태 관리 모듈 */

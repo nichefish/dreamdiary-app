@@ -14,8 +14,9 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface AuthRoleRepository
-        extends BaseStreamRepository<AuthRoleEntity, String> {
-    //
+        extends BaseStreamRepository<AuthRoleEntity, Integer> {
+
+    AuthRoleEntity findByAuthCd(String authCd);
 }
 
 

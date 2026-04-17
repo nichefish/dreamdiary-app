@@ -30,6 +30,9 @@ public class UserAuthRoleDto
     /** 권한 코드 */
     private String authCd;
 
+    /** 권한 ID */
+    private Integer authRoleId;
+
     /** 권한 코드 */
     private String authNm;
 

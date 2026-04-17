@@ -2,6 +2,8 @@ package io.nicheblog.dreamdiary.feature.user.info.service;
 
 import io.nicheblog.dreamdiary.auth.policy.entity.AuthPolicyEntity;
 import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyQueryService;
+import io.nicheblog.dreamdiary.auth.security.entity.AuthRoleEntity;
+import io.nicheblog.dreamdiary.auth.security.repository.jpa.AuthRoleRepository;
 import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
 import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
@@ -56,6 +58,7 @@ public class UserService
 
     private final AuthPolicyQueryService authPolicyQueryService;
     private final PasswordEncoder passwordEncoder;
+    private final AuthRoleRepository authRoleRepository;
 
     /**
      * 사용자 관리 > 사용자 단일 조회 (Dto Level) (Long id와 별도로 String username)
@@ -129,6 +132,7 @@ public class UserService
         // 접속 IP 정보 없을시 사용으로 찍었더라도 미사용으로 변경
         registEntity.setPassword(passwordEncoder.encode(registEntity.getPassword()));
         registEntity.setAcntStus(UserStusEmbed.getRegistStus());
+        this.applyAuthRoleIds(registEntity);
         registEntity.cascade();
     }
 
@@ -180,6 +184,7 @@ public class UserService
     public ServiceResponse modify(final UserDto modifyDto) throws Exception {
         final UserEntity modifyEntity = this.getDtlEntity(modifyDto.getKey());
         mapstruct.updateFromDto(modifyDto, modifyEntity);
+        this.applyAuthRoleIds(modifyEntity);
 
         // update
         final UserEntity updatedEntity = this.updt(modifyEntity);
@@ -281,6 +286,25 @@ public class UserService
      */
     public void evictCache(final UserEntity rslt) {
         EhCacheUtils.evictCacheByKey("auditorInfo", rslt.getUsername());
+    }
+
+    /**
+     * 사용자 권한 목록의 auth_cd를 기준으로 auth_role_id를 동기화한다.
+     */
+    private void applyAuthRoleIds(final UserEntity userEntity) {
+        if (userEntity == null || userEntity.getAuthList() == null) return;
+
+        userEntity.getAuthList().forEach(auth -> {
+            if (auth == null) return;
+
+            final String authCd = auth.getAuthCd();
+            if (StringUtils.isEmpty(authCd)) return;
+
+            final AuthRoleEntity role = authRoleRepository.findByAuthCd(authCd);
+            if (role != null) {
+                auth.setAuthRoleId(role.getId());
+            }
+        });
     }
 }
 
