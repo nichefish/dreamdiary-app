@@ -54,8 +54,8 @@ public class UserStateEntity {
 
     /** 잠금 여부 (Y/N) */
     @Builder.Default
-    @Column(name = "locked_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'Y'")
-    private String lockedYn = "Y";
+    @Column(name = "locked_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    private String lockedYn = "N";
 
     /** 마지막 로그인 일시 */
     @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
@@ -105,28 +105,12 @@ public class UserStateEntity {
     @Comment("장기 미로그인 패스 체크 여부")
     private String dormantBypassYn = "N";
 
-    /** 본인신청 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "reqst_yn", length = 1, columnDefinition = "CHAR DEFAULT 'Y'")
-    @Comment("본인신청여부")
-    private String reqstYn = "Y";
-
-    /** 승인 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "cf_yn", length = 1, columnDefinition = "CHAR DEFAULT 'Y'")
-    @Comment("승인여부")
-    private String cfYn = "Y";
-
-    public UserStateEntity(final String reqstYn, final String cfYn) {
-        this.reqstYn = reqstYn;
-        this.cfYn = cfYn;
-    }
-
-    public static UserStateEntity getReqstStus() {
-        return new UserStateEntity("Y", "N");
-    }
-
     public static UserStateEntity getRegistStus() {
-        return new UserStateEntity("N", "Y");
+        return UserStateEntity.builder()
+                .lockedYn("N")
+                .lgnFailCnt(0)
+                .needsPwReset("N")
+                .dormantBypassYn("N")
+                .build();
     }
 }

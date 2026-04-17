@@ -64,11 +64,6 @@ public class UserDto
     /** 사용자 정보 (위임) */
     private UserEmplymDto emplym;
 
-    /** 본인신청 여부 (Y/N) */
-    private String isReqst;
-    /** 승인 여부 */
-    private Boolean isCf;
-
     /** 잠금 여부 (Y/N) */
     @Builder.Default
     @Pattern(regexp = "^[YN]$", groups = UpdateState.class)

@@ -20,9 +20,6 @@ CREATE TABLE IF NOT EXISTS user (
     cttpc VARCHAR(20) COMMENT '연락처',        -- 기본 연락처
     -- ACCOUNT_STATUS
     use_allowed_ip_yn CHAR(1) DEFAULT 'N' COMMENT '접속IP 사용 여부 (Y/N)',
-    -- REQST
-    reqst_yn CHAR(1) DEFAULT 'N' COMMENT '외부신청 여부 (Y/N)',
-    cf_yn CHAR(1) DEFAULT 'N' COMMENT '사용자 승인 여부 (Y/N)',
     -- FILE_GROUP
     file_group_id INT COMMENT '첨부파일 번호',
     -- AUDIT
@@ -51,10 +48,29 @@ CREATE TABLE IF NOT EXISTS user_state (
     needs_pw_reset CHAR(1) DEFAULT 'N' COMMENT '패스워드 변경 필요 여부 (Y/N)',
     pw_reset_token_issued_at DATETIME COMMENT '패스워드 리셋 토큰 발급 시각',
     dormant_bypass_yn CHAR(1) DEFAULT 'N' COMMENT '장기 미로그인 통과 여부 (Y/N)',
-    reqst_yn CHAR(1) DEFAULT 'N' COMMENT '외부신청 여부 (Y/N)',
-    cf_yn CHAR(1) DEFAULT 'N' COMMENT '사용자 승인 여부 (Y/N)',
     FOREIGN KEY(user_id) REFERENCES user (id)
 ) COMMENT = '사용자 상태';
+
+-- 사용자 가입 신청 (user_signup_request)
+CREATE TABLE IF NOT EXISTS user_signup_request (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 가입 신청 ID',
+    username VARCHAR(20) COMMENT '로그인 ID',
+    password VARCHAR(64) COMMENT '비밀번호',
+    nick_nm VARCHAR(50) COMMENT '사용자 표시이름',
+    email VARCHAR(100) COMMENT '이메일',
+    cttpc VARCHAR(20) COMMENT '연락처',
+    content LONGTEXT COMMENT '신청 메모',
+    request_status VARCHAR(20) DEFAULT 'PENDING' COMMENT '신청 상태',
+    approved_at DATETIME COMMENT '승인 일시',
+    rejected_at DATETIME COMMENT '반려 일시',
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정일시',
+    deleted_at DATETIME COMMENT '삭제일시',
+    INDEX (username),
+    INDEX (request_status)
+) COMMENT = '사용자 가입 신청';
 
 -- -----------------------
 

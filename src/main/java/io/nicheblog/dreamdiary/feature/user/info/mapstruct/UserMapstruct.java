@@ -45,7 +45,6 @@ public interface UserMapstruct
     @Mapping(target = "authStrList", expression = "java(entity.getAuthList().stream().map(UserAuthRoleEntity::getAuthCd).collect(Collectors.toList()))")      // 접속IP tagify 문자열 세팅
     @Mapping(target = "useAllowedIp", expression = "java(\"Y\".equals(entity.getUseAllowedIpYn()))")
     @Mapping(target = "allowedIpListStr", expression = "java(CollectionUtils.isEmpty(entity.getAllowedIpStrList()) ? null : String.join(\",\", entity.getAllowedIpStrList()))")      // 접속IP tagify 문자열 세팅
-    @Mapping(target = "isCf", expression = "java(entity.getAcntStus() != null && \"Y\".equals(entity.getAcntStus().getCfYn()))")
     @Mapping(target = "profile", expression = "java(UserProfileMapstruct.INSTANCE.toDto(entity.getProfile()))")
     @Mapping(target = "emplym", expression = "java(UserEmplymMapstruct.INSTANCE.toDto(entity.getEmplym()))")
     UserDto toDto(final UserEntity entity) throws Exception;

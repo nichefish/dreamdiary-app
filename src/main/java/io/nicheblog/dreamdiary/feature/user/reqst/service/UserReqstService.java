@@ -4,10 +4,11 @@ import io.nicheblog.dreamdiary.feature.user.info.entity.UserAuthRoleEntity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserStateEntity;
 import io.nicheblog.dreamdiary.feature.user.info.repository.jpa.UserRepository;
-import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
-import io.nicheblog.dreamdiary.feature.user.reqst.mapstruct.UserReqstMapstruct;
+import io.nicheblog.dreamdiary.feature.user.reqst.entity.UserSignupRequestEntity;
 import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDto;
+import io.nicheblog.dreamdiary.feature.user.reqst.repository.jpa.UserSignupRequestRepository;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
+import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * UserReqstService
@@ -30,9 +32,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserReqstService {
 
-    private final UserService userService;
-    private final UserReqstMapstruct userReqstMapstruct = UserReqstMapstruct.INSTANCE;
     private final UserRepository userRepository;
+    private final UserSignupRequestRepository userSignupRequestRepository;
     private final PasswordEncoder passwordEncoder;
 
     /**
@@ -53,12 +54,9 @@ public class UserReqstService {
      *
      * @param registEntity 등록할 객체
      */
-    public void preRegist(final UserEntity registEntity) throws Exception {
-        // userReqstEntity.setUserProflNo(this.userInfoReg(userReqstEntity, userReqst));
-        registEntity.setAuthList(List.of(new UserAuthRoleEntity(Code.AUTH_USER)));
+    public void preRegist(final UserSignupRequestEntity registEntity) throws Exception {
         registEntity.setPassword(passwordEncoder.encode(registEntity.getPassword()));
-        registEntity.setAcntStus(UserStateEntity.getReqstStus());
-        registEntity.cascade();
+        registEntity.setRequestStatus("PENDING");
     }
 
     /**
@@ -71,41 +69,80 @@ public class UserReqstService {
      */
     @Transactional
     public ServiceResponse regist(final UserReqstDto registDto) throws Exception {
-        // 전처리 (메소드 분리)
         this.preRegist(registDto);
 
-        // Dto -> Entity 변환
-        UserEntity registEntity = userReqstMapstruct.toEntity(registDto);
+        final String username = registDto.getUsername();
+        final String email = registDto.getEmail();
+        if (userRepository.findByUsername(username).isPresent()) {
+            return ServiceResponse.builder().rslt(false).message("이미 사용 중인 아이디입니다.").build();
+        }
+        if (userRepository.findByEmail(email).isPresent()) {
+            return ServiceResponse.builder().rslt(false).message("이미 사용 중인 이메일입니다.").build();
+        }
+        if (userSignupRequestRepository.existsByUsernameAndRequestStatus(username, "PENDING")) {
+            return ServiceResponse.builder().rslt(false).message("이미 대기 중인 신청이 존재합니다.").build();
+        }
+        if (userSignupRequestRepository.existsByEmailAndRequestStatus(email, "PENDING")) {
+            return ServiceResponse.builder().rslt(false).message("해당 이메일로 대기 중인 신청이 존재합니다.").build();
+        }
 
-        // 전처리 (메소드 분리)
+        final UserSignupRequestEntity registEntity = UserSignupRequestEntity.builder()
+                .username(username)
+                .password(registDto.getPassword())
+                .nickNm(registDto.getNickNm())
+                .email(email)
+                .cttpc(registDto.getCttpc())
+                .content(registDto.getContent())
+                .build();
         this.preRegist(registEntity);
+        final UserSignupRequestEntity updatedEntity = userSignupRequestRepository.save(registEntity);
 
-        // insert
-        UserEntity updatedEntity = userRepository.save(registEntity);
+        final UserReqstDto rsltDto = UserReqstDto.builder()
+                .id(updatedEntity.getId())
+                .username(updatedEntity.getUsername())
+                .nickNm(updatedEntity.getNickNm())
+                .email(updatedEntity.getEmail())
+                .cttpc(updatedEntity.getCttpc())
+                .content(updatedEntity.getContent())
+                .createdBy(updatedEntity.getCreatedBy())
+                .build();
 
         return ServiceResponse.builder()
                 .rslt(updatedEntity.getId() != null)
-                .rsltObj(userReqstMapstruct.toDto(updatedEntity))
+                .rsltObj(rsltDto)
                 .build();
     }
 
     /**
      * 사용자 정보 승인 처리.
      *
-     * @param key 사용자 번호
+     * @param key 신청 번호
      * @return {@link Boolean} 처리 성공 여부
      */
     @Transactional
     public ServiceResponse cf(final Integer key) throws Exception {
-        // Entity 레벨 조회
-        final UserEntity retrievedEntity = userService.getDtlEntity(key);
-        if (retrievedEntity == null) throw new EntityNotFoundException("exception.EntityNotFoundException");
+        final UserSignupRequestEntity req =
+                userSignupRequestRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("exception.EntityNotFoundException"));
+        if (!"PENDING".equals(req.getRequestStatus())) {
+            return ServiceResponse.builder().rslt(false).build();
+        }
 
-        // lockedYn 플래그 업데이트
-        retrievedEntity.acntStus.setCfYn("Y");
-        retrievedEntity.acntStus.setLockedYn("N");
-        retrievedEntity.acntStus.setLgnFailCnt(0);
-        final UserEntity updatedEntity = userRepository.saveAndFlush(retrievedEntity);
+        final UserEntity userEntity = UserEntity.builder()
+                .username(req.getUsername())
+                .password(req.getPassword())
+                .nickNm(req.getNickNm())
+                .email(req.getEmail())
+                .cttpc(req.getCttpc())
+                .content(req.getContent())
+                .authList(List.of(new UserAuthRoleEntity(Code.AUTH_USER)))
+                .acntStus(UserStateEntity.getRegistStus())
+                .build();
+        userEntity.cascade();
+        final UserEntity updatedEntity = userRepository.saveAndFlush(userEntity);
+
+        req.setRequestStatus("APPROVED");
+        req.setApprovedAt(DateUtils.getCurrDate());
+        userSignupRequestRepository.save(req);
 
         return ServiceResponse.builder()
                 .rslt(updatedEntity.getId() != null)
@@ -115,24 +152,31 @@ public class UserReqstService {
     /**
      * 사용자 정보 승인 취소 처리.
      *
-     * @param key 사용자 번호
+     * @param key 신청 번호
      * @return {@link Boolean} 처리 성공 여부
      */
      @Transactional
     public ServiceResponse uncf(final Integer key) throws Exception {
-        // Entity 레벨 조회
-        final UserEntity retrievedEntity = userService.getDtlEntity(key);
-        if (retrievedEntity == null) throw new EntityNotFoundException("exception.EntityNotFoundException");
-
-        // lockedYn 플래그 업데이트
-        retrievedEntity.acntStus.setCfYn("N");
-        retrievedEntity.acntStus.setLockedYn("Y");
-        retrievedEntity.acntStus.setLgnFailCnt(0);
-        final UserEntity updatedEntity = userRepository.saveAndFlush(retrievedEntity);
+        final UserSignupRequestEntity req =
+                userSignupRequestRepository.findById(key).orElseThrow(() -> new EntityNotFoundException("exception.EntityNotFoundException"));
+        req.setRequestStatus("REJECTED");
+        req.setRejectedAt(DateUtils.getCurrDate());
+        final UserSignupRequestEntity updatedEntity = userSignupRequestRepository.saveAndFlush(req);
 
         return ServiceResponse.builder()
                 .rslt(updatedEntity.getId() != null)
                 .build();
+    }
+
+    /**
+     * 인증 메일에서 전달된 username 기준 신청 승인 처리.
+     */
+    @Transactional
+    public ServiceResponse cfByUsername(final String username) throws Exception {
+        final Optional<UserSignupRequestEntity> reqWrapper =
+                userSignupRequestRepository.findTopByUsernameAndRequestStatusOrderByCreatedAtDesc(username, "PENDING");
+        if (reqWrapper.isEmpty()) throw new EntityNotFoundException("exception.EntityNotFoundException");
+        return this.cf(reqWrapper.get().getId());
     }
 }
 

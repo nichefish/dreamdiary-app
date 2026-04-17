@@ -78,7 +78,6 @@ class AuthInfoMapstructTest {
         UserStateEntity acntStus = UserStateEntity.builder()
                 .lockedYn("N")
                 .needsPwReset("Y")
-                .cfYn("N")
                 .build();
         userEntity.setAcntStus(acntStus);
 
@@ -93,7 +92,6 @@ class AuthInfoMapstructTest {
         assertEquals(Code.AUTH_MNGR, dto.getAuthList().get(1).getAuthCd());
         assertEquals("N", dto.getLockedYn());
         assertEquals("Y", dto.getNeedsPwReset());
-        assertEquals("N", dto.getCfYn());
     }
 
     /**

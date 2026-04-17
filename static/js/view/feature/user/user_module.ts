@@ -249,6 +249,16 @@ dF.User = (function(): dfModule {
         },
 
         /**
+         * 신청 승인 처리 (Ajax)
+         * @param {string|number} reqId - 가입 신청 ID
+         */
+        cfReqAjax: function(reqId: string|number): void {
+            if (isNaN(Number(reqId))) return;
+            $("#procForm #id").val(reqId);
+            dF.User.cfAjax();
+        },
+
+        /**
          * 승인취소 처리 (Ajax)
          */
         uncfAjax: function(): void {
@@ -267,6 +277,16 @@ dF.User = (function(): dfModule {
                         });
                 }, "block");
             });
+        },
+
+        /**
+         * 신청 반려 처리 (Ajax)
+         * @param {string|number} reqId - 가입 신청 ID
+         */
+        uncfReqAjax: function(reqId: string|number): void {
+            if (isNaN(Number(reqId))) return;
+            $("#procForm #id").val(reqId);
+            dF.User.uncfAjax();
         },
 
         /**

@@ -11,6 +11,41 @@
 
 <@layout.layout toolbar=toolbar!"">
 
+<#if (pendingSignupReqList?? && pendingSignupReqList?size > 0)>
+<div class="card post mb-4">
+    <div class="card-header">
+        <h3 class="card-title">대기 중 가입 신청</h3>
+    </div>
+    <div class="card-body">
+        <table class="table align-middle table-row-dashed fs-small gy-3 table-fixed mb-0">
+            <thead>
+            <tr class="text-start fw-bolder fs-7 text-uppercase gs-0 fw-bolder text-muted">
+                <th class="text-center w-10">번호</th>
+                <th class="text-center w-20">이름 (아이디)</th>
+                <th class="text-center w-25">E-MAIL</th>
+                <th class="text-center w-20">신청일시</th>
+                <th class="text-center w-25">처리</th>
+            </tr>
+            </thead>
+            <tbody>
+            <#list pendingSignupReqList as req>
+                <tr>
+                    <td class="text-center">${req.id!}</td>
+                    <td class="text-start">${req.nickNm!'-'} (${req.username!'-'})</td>
+                    <td class="text-start">${req.email!'-'}</td>
+                    <td class="text-center">${req.createdAt?string("yyyy-MM-dd HH:mm")!'-'}</td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-sm btn-primary me-2" onclick="dF.User.cfReqAjax(${req.id!});">승인</button>
+                        <button type="button" class="btn btn-sm btn-light-danger" onclick="dF.User.uncfReqAjax(${req.id!});">반려</button>
+                    </td>
+                </tr>
+            </#list>
+            </tbody>
+        </table>
+    </div>
+</div>
+</#if>
+
 <div class="card post">
     <#--begin::Card body-->
     <div class="card-body">
@@ -32,10 +67,8 @@
             <#--begin::Table body-->
             <tbody>
                 <#list userList![] as user>
-                    <!-- 계정신청 상태인 계정에 대해 구분 간격 표시 -->
-                    <#assign divideCfYn = prevCfYn?? && user.cfYn! != prevCfYn>
                     <#assign divideRetireYn = prevRetireYn?? && user.retireYn! != prevRetireYn>
-                    <#assign divide = divideCfYn || divideRetireYn>
+                    <#assign divide = divideRetireYn>
                     <tr class="<#if user.isMe!false>bg-light</#if> bg-hover-secondary <#if divide>border-top-5</#if>" onclick="dF.User.dtl(${user.id!});">
                         <td class="text-center hidden-table">
                             ${user.rnum}
@@ -67,9 +100,6 @@
                             <#elseif (user.retireYn!"N") == "Y">
                                 <i class="bi bi-person-dash vertical-middle text-danger"
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="퇴사한 인원입니다.&#10;(접속이 불가능합니다.)"></i>
-                            <#elseif (user.reqstYn!"N") == "Y" && (user.cfYn!"N") == "N">
-                                <i class="bi bi-person-plus vertical-middle text-muted blink"
-                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="신규 신청 계정입니다.&#10;(승인 처리 이후&#10;접속 가능합니다.)"></i>
                             <#else>
                                 <i class="bi bi-person-check vertical-middle text-success"
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="소속된 직원입니다."></i>
@@ -89,11 +119,7 @@
                             ${(user.email)!"-"}
                         </td>
                         <td class="text-center hidden-table">
-                            <#if !user.isCf!true>
-                                <span class="text-muted">
-                                    미승인<i class="bi bi-dash fs-9 text-muted blink"></i>
-                                </span>
-                            <#elseif user.isLocked!false>
+                            <#if user.isLocked!false>
                                 <span class="text-danger">
                                     잠김<i class="bi bi-lock fs-9 text-danger"></i>
                                 </span>
@@ -106,7 +132,6 @@
                     </tr>
                     <!-- 계정 승인여부 상태 저장 -->
                     <#assign prevRetireYn = user.retireYn! />
-                    <#assign prevCfYn = user.cfYn! />
                 <#else>
                     <tr>
                         <td colspan="7" class="text-center">
