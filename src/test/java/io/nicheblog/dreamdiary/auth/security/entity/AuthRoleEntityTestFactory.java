@@ -20,6 +20,11 @@ public class AuthRoleEntityTestFactory {
      */
     public static AuthRoleEntity create() throws Exception {
         return AuthRoleEntity.builder()
+                .authCd("TEST_AUTH_CD")
+                .authNm("테스트 권한")
+                .authLevel(1)
+                .sortOrder(1)
+                .useYn("Y")
                 .build();
     }
 }

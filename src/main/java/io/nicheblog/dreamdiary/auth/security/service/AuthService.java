@@ -138,7 +138,7 @@ public class AuthService
      * @return {@link AuthRoleEntity} -- 권한 정보 객체
      */
     public AuthRoleEntity getAuthRole(final String authCd) {
-        return authRoleRepository.findById(authCd).orElse(null);
+        return authRoleRepository.findByAuthCd(authCd);
     }
 
     /**

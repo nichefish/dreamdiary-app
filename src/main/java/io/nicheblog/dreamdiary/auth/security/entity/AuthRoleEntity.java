@@ -32,9 +32,14 @@ public class AuthRoleEntity
         extends BaseCrudEntity
         implements Usable {
 
-    /** 권한 코드 (PK) */
+    /** 내부 PK (id) */
     @Id
-    @Column(name = "auth_cd", length = 50)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer id;
+
+    /** 권한 코드 (비즈니스 키, UNIQUE) */
+    @Column(name = "auth_cd", length = 50, unique = true)
     private String authCd;
 
     /** 권한 이름 */

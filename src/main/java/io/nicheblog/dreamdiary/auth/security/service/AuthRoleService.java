@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Log4j2
 public class AuthRoleService
-        implements BaseDtoReadableService<AuthRoleDto, String, AuthRoleEntity> {
+        implements BaseDtoReadableService<AuthRoleDto, Integer, AuthRoleEntity> {
 
     @Getter
     private final AuthRoleRepository repository;
