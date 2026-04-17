@@ -63,13 +63,13 @@ public class JournalChapterEntity
     private String title;
 
     /** 글분류 코드 :: join을 제거하고 메모리 캐시 처리 */
-    @Column(name = "ctgr_cd", length = 50)
+    @Column(name = "category_code", length = 50)
     @Comment("저널 일기 글분류 코드 정보")
-    private String ctgrCd;
+    private String categoryCode;
 
     /** 글분류 코드 이름 :: join을 제거하고 메모리 캐시 처리 */
     @Transient
-    private String ctgrNm;
+    private String categoryName;
 
     /* ----- */
 

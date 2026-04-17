@@ -22,7 +22,7 @@ import lombok.experimental.SuperBuilder;
 public class JournalChapterCtgrHintDto {
 
     /** 카테고리 코드 */
-    private String ctgrCd;
+    private String categoryCode;
     /** 카테고리명 */
-    private String ctgrNm;
+    private String categoryName;
 }

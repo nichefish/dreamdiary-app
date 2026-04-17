@@ -15,11 +15,11 @@ class JournalDayFilterHelperTest {
     @Test
     void filterInMemory_doesNotReduceMonthListToAnchorDayWhenChapterCategoryFilterIsUsed() {
         final JournalDayDto firstDay = JournalDayDto.builder()
-                .journalDt("2026-04-01")
+                .journalDate("2026-04-01")
                 .journalChapterList(List.of(createChapter("SUMMARY", "first summary")))
                 .build();
         final JournalDayDto secondDay = JournalDayDto.builder()
-                .journalDt("2026-04-02")
+                .journalDate("2026-04-02")
                 .journalChapterList(List.of(createChapter("SUMMARY", "second summary")))
                 .build();
 
@@ -36,9 +36,9 @@ class JournalDayFilterHelperTest {
         assertEquals(List.of("2026-04-01", "2026-04-02"), filtered.stream().map(JournalDayDto::getStdrdDt).toList());
     }
 
-    private JournalChapterDto createChapter(final String ctgrCd, final String diaryContent) {
+    private JournalChapterDto createChapter(final String categoryCode, final String diaryContent) {
         return JournalChapterDto.builder()
-                .ctgrCd(ctgrCd)
+                .categoryCode(categoryCode)
                 .journalDiaryList(List.of(JournalDiaryDto.builder().content(diaryContent).build()))
                 .build();
     }
