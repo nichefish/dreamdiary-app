@@ -1,6 +1,9 @@
 package io.nicheblog.dreamdiary.feature.board.post.repository.jpa;
 
 import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
+import io.nicheblog.dreamdiary.feature.board.group.entity.BoardEntity;
+import io.nicheblog.dreamdiary.feature.board.group.entity.BoardEntityTestFactory;
+import io.nicheblog.dreamdiary.feature.board.group.jpa.BoardRepository;
 import io.nicheblog.dreamdiary.feature.board.post.entity.BoardPostEntity;
 import io.nicheblog.dreamdiary.feature.board.post.entity.BoardPostEntityTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;
@@ -18,7 +21,9 @@ import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityNotFoundException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * BoardPostRepositoryTest
@@ -39,6 +44,10 @@ class BoardPostRepositoryTest {
     @Autowired
     private BoardPostRepository boardPostRepository;
 
+    @Autowired
+    private BoardRepository boardRepository;
+
+    private BoardEntity boardEntity;
     private BoardPostEntity boardPostEntity;
 
     /**
@@ -47,71 +56,75 @@ class BoardPostRepositoryTest {
     @BeforeEach
     void setUp() throws Exception {
         // 공통적으로 사용할 boardPostEntity 초기화
-        boardPostEntity = BoardPostEntityTestFactory.create("CMPY_LIFE");
+        boardEntity = boardRepository.saveAndFlush(BoardEntityTestFactory.create("CMPY_LIFE"));
+        boardPostEntity = BoardPostEntityTestFactory.create(boardEntity.getBoardKey());
     }
 
     /**
      * regist 테스트
      */
     @Test
-    public void testRegist() throws Exception {
+    void testRegist() {
         // Given::
 
         // When::
         final BoardPostEntity registered = boardPostRepository.save(boardPostEntity);
         final Integer key = registered.getId();
-        final BoardPostEntity retrieved = boardPostRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
+        final BoardPostEntity retrieved = boardPostRepository.findById(key)
+                .orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
-        assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
-        assertNotNull(retrieved.getId(), "저장된 엔티티의 key 값이 없습니다.");
+        assertNotNull(retrieved);
+        assertNotNull(retrieved.getId());
         // audit
-        assertNotNull(retrieved.getCreatedAt(), "등록일자 audit 처리가 되지 않았습니다.");
-        assertNotNull(retrieved.getCreatedBy(),  "등록자 audit 처리가 되지 않았습니다.");
-        assertEquals(TestConstant.TEST_AUDITOR, retrieved.getCreatedBy(), "등록자가 예상 값과 일치하지 않습니다.");
+        assertNotNull(retrieved.getCreatedAt());
+        assertNotNull(retrieved.getCreatedBy());
+        assertEquals(TestConstant.TEST_AUDITOR, retrieved.getCreatedBy());
+        assertEquals(boardEntity.getBoardKey(), retrieved.getContentType());
     }
 
     /**
      * modify 테스트
      */
     @Test
-    public void testModify() throws Exception {
+    void testModify() {
         // Given::
-        BoardPostEntity registered = boardPostRepository.save(boardPostEntity);
-        Integer key = registered.getId();
+        final BoardPostEntity registered = boardPostRepository.save(boardPostEntity);
+        final Integer key = registered.getId();
 
         // When::
-        BoardPostEntity toModify = boardPostRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
+        final BoardPostEntity toModify = boardPostRepository.findById(key)
+                .orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
         toModify.setContent("modified");
-        BoardPostEntity modified = boardPostRepository.save(toModify);
+        final BoardPostEntity modified = boardPostRepository.save(toModify);
 
         // Then::
-        assertNotNull(modified, "저장한 데이터를 조회할 수 없습니다.");
-        assertNotNull(modified.getId(), "저장된 엔티티의 key 값이 없습니다.");
+        assertNotNull(modified);
+        assertNotNull(modified.getId());
         // audit
-        assertNotNull(modified.getUpdatedAt(), "수정일자 audit 처리가 되지 않았습니다.");
-        assertNotNull(modified.getUpdatedBy(),  "수정자 audit 처리가 되지 않았습니다.");
-        assertEquals(TestConstant.TEST_AUDITOR, modified.getUpdatedBy(), "수정자가 예상 값과 일치하지 않습니다.");
+        assertNotNull(modified.getUpdatedAt());
+        assertNotNull(modified.getUpdatedBy());
+        assertEquals(TestConstant.TEST_AUDITOR, modified.getUpdatedBy());
         // value
-        assertEquals("modified", modified.getContent(), "값이 정상적으로 수정되지 않았습니다.");
+        assertEquals("modified", modified.getContent());
     }
 
     /**
      * delete 테스트
      */
     @Test
-    public void testDelete() throws Exception {
+    void testDelete() {
         // Given::
-        BoardPostEntity registered = boardPostRepository.save(boardPostEntity);
-        Integer key = registered.getId();
+        final BoardPostEntity registered = boardPostRepository.save(boardPostEntity);
+        final Integer key = registered.getId();
 
         // When::
-        final BoardPostEntity toDelete = boardPostRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete")));
+        final BoardPostEntity toDelete = boardPostRepository.findById(key)
+                .orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete")));
         boardPostRepository.delete(toDelete);
 
-        final BoardPostEntity retrieved = boardPostRepository.findById(key).orElse(null);
-
         // Then::
-        assertNull(retrieved, "삭제가 제대로 이루어지지 않았습니다.");
+        final BoardPostEntity retrieved = boardPostRepository.findById(key).orElse(null);
+        assertNull(retrieved);
     }
 }

@@ -1,4 +1,4 @@
-﻿<!--
+<!--
  * 레이아웃 > 사이트맵 Modal
  * @included_in : layout/topbar
  -->
@@ -74,13 +74,13 @@
                             게시판
                         </div>
                     </div>
-                    <#list boardDefList![] as boardDef>
+                    <#list boardMenuList![] as board>
                         <div class="menu-item">
-                            <a class="menu-link" href="${Url.BOARD_POST_LIST!}?boardDef=${boardDef.boardDef!}">
+                            <a class="menu-link" href="${Url.BOARD_POST_LIST!}?contentType=${board.boardKey!}">
                                         <span class="menu-bullet">
                                             <span class="bullet bullet-dot"></span>
                                         </span>
-                                <span class="menu-title">${boardDef.boardNm!}</span>
+                                <span class="menu-title">${board.menuNm!}</span>
                             </a>
                         </div>
                     </#list>
@@ -173,11 +173,11 @@
                     </div>
                     <!-- 사이트 관리 > 게시판 관리 -->
                     <div class="menu-item">
-                        <a class="menu-link" href="${SiteMenu.MENU_BOARD_DEF[3]!}">
+                        <a class="menu-link" href="${SiteMenu.MENU_BOARD_GROUP[3]!}">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
-                            <span class="menu-title">${SiteMenu.MENU_BOARD_DEF[2]!}</span>
+                            <span class="menu-title">${SiteMenu.MENU_BOARD_GROUP[2]!}</span>
                         </a>
                     </div>
                     <!-- 사이트 관리 > 인증 정책 관리 -->
@@ -256,4 +256,3 @@
         </div>
     </div>
 </@modal.layout>
-

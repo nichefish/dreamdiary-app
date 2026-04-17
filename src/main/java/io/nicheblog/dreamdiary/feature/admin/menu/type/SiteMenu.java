@@ -27,7 +27,7 @@ public enum SiteMenu {
     CD("코드 관리"),
 
     CONTENT("컨텐츠 관리"),
-    BOARD_DEF("게시판 관리"),
+    BOARD_GROUP("게시판 관리"),
     TMPLAT("템플릿 관리"),
     POPUP("팝업 관리"),
 
@@ -56,4 +56,3 @@ public enum SiteMenu {
 
     private final String pageNm;
 }
-

@@ -71,7 +71,9 @@
         <div class="d-flex align-items-center py-1">
             <a href="#answers" data-kt-scroll-toggle="true"
                class="btn btn-sm btn-outline btn-outline-dashed btn-outline-default px-4 me-2"><@spring.message 'txt.comment'/> ${(post.comment.cnt)!0}</a>
-            <button class="btn btn-sm btn-light px-4 me-2 disabled"><@spring.message 'txt.hit-cnt'/> ${post.hitCnt!}</button>
+            <#if post.hitCnt??>
+                <button class="btn btn-sm btn-light px-4 me-2 disabled"><@spring.message 'txt.hit-cnt'/> ${post.hitCnt!}</button>
+            </#if>
         </div>
     </div>
 </#macro>
@@ -103,7 +105,9 @@
         <div class="d-flex align-items-center py-1">
             <a href="#answers" data-kt-scroll-toggle="true"
                class="btn btn-sm btn-outline btn-outline-dashed btn-outline-default px-4 me-2"><@spring.message 'txt.comment'/> ${(post.comment.cnt)!0}</a>
-            <button class="btn btn-sm btn-light px-4 me-2 disabled"><@spring.message 'txt.hit-cnt'/> ${(post.hitCnt)!0}</button>
+            <#if post.hitCnt??>
+                <button class="btn btn-sm btn-light px-4 me-2 disabled"><@spring.message 'txt.hit-cnt'/> ${(post.hitCnt)!0}</button>
+            </#if>
         </div>
     </div>
 </#macro>
@@ -142,9 +146,11 @@
                class="btn btn-sm btn-outline btn-outline-dashed btn-outline-default px-4 me-2">
                 <@spring.message 'txt.comment'/> ${(post.comment.cnt)!0}
             </a>
-            <button class="btn btn-sm btn-light px-4 me-2 disabled">
-                <@spring.message 'txt.hit-cnt'/> ${post.hitCnt!}
-            </button>
+            <#if post.hitCnt??>
+                <button class="btn btn-sm btn-light px-4 me-2 disabled">
+                    <@spring.message 'txt.hit-cnt'/> ${post.hitCnt!}
+                </button>
+            </#if>
         </div>
     </div>
 </#macro>
