@@ -58,7 +58,7 @@ public class NotifyEventHandler {
             // msg
             final String msg = "새로운 공지사항이 등록되었습니다.";
             // url
-            final String param = "id=" + result.getId() + "&boardDef=" + result.getContentType() + "&" + Code.UTM_SOURCE + "=jandi";
+            final String param = "id=" + result.getId() + "&contentType=" + result.getContentType() + "&" + Code.UTM_SOURCE + "=jandi";
             final String fullUrl = Url.DOMAIN + Url.NOTICE_DTL + "?" + param;
             // 메세지 발송
             jandiApiService.sendMsg(trgetTopic, msg, title, fullUrl);
@@ -88,7 +88,7 @@ public class NotifyEventHandler {
             // msg
             final String msg = "새로운 글이 등록되었습니다.";
             // url
-            final String param = "id=" + result.getId() + "&boardDef=" + result.getBoardDef() + "&" + Code.UTM_SOURCE + "=jandi";
+            final String param = "id=" + result.getId() + "&contentType=" + result.getContentType() + "&" + Code.UTM_SOURCE + "=jandi";
             final String fullUrl = Url.DOMAIN + Url.BOARD_POST_DTL + "?" + param;
             // 메세지 발송
             jandiApiService.sendMsg(trgetTopic, msg, title, fullUrl);
@@ -174,4 +174,3 @@ public class NotifyEventHandler {
     // }
 
 }
-

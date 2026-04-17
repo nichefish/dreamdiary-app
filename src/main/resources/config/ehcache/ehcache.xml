@@ -45,7 +45,7 @@
     <cache alias="isMngrMenu" uses-template="defaultTemplate" />
 
     <!-- 게시???�의 -->
-    <cache alias="boardDefMenuList" uses-template="defaultTemplate" />
+    <cache alias="boardMenuList" uses-template="defaultTemplate" />
     <cache alias="boardMenu" uses-template="defaultTemplate" />
 
     <!-- 코드 ?�름 -->
@@ -132,5 +132,4 @@
     <cache alias="metaContentEntityListByRef" uses-template="defaultTemplate" />
     <cache alias="metaSmpDtlEntity" uses-template="defaultTemplate" />
 </config>
-
 

@@ -58,8 +58,8 @@ public class JournalSbjctSpec
                     // 기간 검색
                     predicate.add(builder.lessThanOrEqualTo(createdAtExp, DateUtils.asDate(value)));
                     continue;
-                case "boardDef":
-                    // boardDef를 contentType으로 이용
+                case "board":
+                    // board를 contentType으로 이용
                     predicate.add(builder.equal(root.get("contentType"), value));
                     continue;
                 default:

@@ -24,7 +24,7 @@ import javax.validation.Valid;
  * BoardPostRestController
  * <pre>
  *  게시판 게시물 API 컨트롤러.
- *  화면단에선 boardDef, 어플리케이션 단에선 contentType으로 사용
+ *  화면단에선 board, 어플리케이션 단에선 contentType으로 사용
  * </pre>
  *
  * @author nichefish

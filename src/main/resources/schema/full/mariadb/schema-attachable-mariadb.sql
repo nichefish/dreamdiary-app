@@ -20,11 +20,7 @@ CREATE TABLE IF NOT EXISTS comment (
     -- POST
     title VARCHAR(200) COMMENT '제목',
     content LONGTEXT COMMENT '내용',
-    ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
-    imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
-    fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단 고정 여부 (Y/N)',
-    hit_cnt INT DEFAULT 0 COMMENT '조회수',
-    mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정 권한 범위',
+    category_code VARCHAR(50) COMMENT '글 분류 코드',
     -- FILE_GROUP
     file_group_id INT COMMENT '첨부파일 번호',
     visual_semantic VARCHAR(30) NOT NULL DEFAULT 'DEFAULT' COMMENT '시각 의미',

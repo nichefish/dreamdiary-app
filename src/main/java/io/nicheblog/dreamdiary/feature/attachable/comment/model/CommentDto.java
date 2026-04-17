@@ -49,6 +49,10 @@ public class CommentDto
     /** 마크다운 처리된 내용 */
     private String markdownContent;
 
+    /** 글 분류 코드 */
+    @Size(max = 50)
+    private String categoryCode;
+
     /* ----- */
 
     /** 원글 번호 */

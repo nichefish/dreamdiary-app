@@ -162,13 +162,13 @@ public interface ApiUrl {
     String MENU = Prefix.API + "/menu/{id}";
 
     /** 게시판 관리 */
-    String BOARD_DEF_REG_AJAX = Prefix.API + "/board/def/board-def-reg";
-    String BOARD_DEF_DTL_AJAX = Prefix.API + "/board/def/board-def-dtl";
-    String BOARD_DEF_MDF_ITEM_AJAX = Prefix.API + "/board/def/board-def-mdf-item";
-    String BOARD_DEF_DEL_AJAX = Prefix.API + "/board/def/board-def-del";
-    String BOARD_DEF_USE_AJAX = Prefix.API + "/board/def/board-def-use";
-    String BOARD_DEF_UNUSE_AJAX = Prefix.API + "/board/def/board-def-unuse";
-    String BOARD_DEF_SORT_ORDR_AJAX = Prefix.API + "/board/def/board-def-sort-ordr";
+    String BOARD_GROUP_REG_AJAX = Prefix.API + "/board/group/board-reg";
+    String BOARD_GROUP_DTL_AJAX = Prefix.API + "/board/group/board-dtl";
+    String BOARD_GROUP_MDF_ITEM_AJAX = Prefix.API + "/board/group/board-mdf-item";
+    String BOARD_GROUP_DEL_AJAX = Prefix.API + "/board/group/board-del";
+    String BOARD_GROUP_USE_AJAX = Prefix.API + "/board/group/board-use";
+    String BOARD_GROUP_UNUSE_AJAX = Prefix.API + "/board/group/board-unuse";
+    String BOARD_GROUP_SORT_ORDR_AJAX = Prefix.API + "/board/group/board-sort-ordr";
 
     /** 템플릿 관리 (TODO) */
     String TMPLAT_DEF_REG_AJAX = Prefix.API + "/tmplat/tmplat-def-reg";
@@ -257,4 +257,3 @@ public interface ApiUrl {
         String API = "/api";
     }
 }
-
