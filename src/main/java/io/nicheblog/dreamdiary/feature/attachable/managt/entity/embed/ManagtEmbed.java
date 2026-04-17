@@ -78,7 +78,7 @@ public class ManagtEmbed
 
     /** 생성자 */
     public ManagtEmbed() {
-        this.managtrId = AuthUtils.getLgnUsername();
+        this.managtrId = AuthUtils.getLoginUsername();
     }
     public ManagtEmbed(Boolean updtManagtDt) {
         this();

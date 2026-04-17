@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.auth.security.handler;
 
 import io.nicheblog.dreamdiary.auth.jwt.service.RefreshTokenService;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
-import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLgnManager;
+import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLoginManager;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.handler.LogActvtyEventListener;
@@ -55,7 +55,7 @@ public class LogoutHandler
         if (authentication == null || authentication.getPrincipal() == null) return;
 
         final String username = ((AuthInfo) authentication.getPrincipal()).getUsername();
-        DupIdLgnManager.removeKey(username);
+        DupIdLoginManager.removeKey(username);
         refreshTokenService.revoke(username);
 
         // 쿠키에서 JWT 토큰 삭제

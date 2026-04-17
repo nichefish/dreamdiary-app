@@ -28,12 +28,12 @@ public class MyHistoryFacade {
             final ContentType contentType,
             final Integer key
     ) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return historyFacade.getHistoryTargetByUser(contentType, username, key);
     }
 
     public List<HistoryDto> getMyHistoryList(final ContentType contentType, final Integer key) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return historyFacade.getHistoryListByUser(contentType, username, key);
     }
 
@@ -42,7 +42,7 @@ public class MyHistoryFacade {
             final Integer key,
             final Integer historyId
     ) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return historyFacade.restoreHistoryByUser(contentType, username, key, historyId);
     }
 
@@ -51,7 +51,7 @@ public class MyHistoryFacade {
             final Integer key,
             final Integer historyId
     ) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return historyFacade.deleteHistoryByUser(contentType, username, key, historyId);
     }
 
@@ -59,7 +59,7 @@ public class MyHistoryFacade {
             final ContentType contentType,
             final Integer key
     ) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return historyFacade.deleteAllHistoryByUser(contentType, username, key);
     }
 }

@@ -47,12 +47,12 @@ public class WebSecurityAdapter {
 
     private final AuthService authService;
     private final OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService;
-    private final LoginFailureHandler webLgnFailureHandler;
-    private final LoginSuccessHandler webLgnSuccessHandler;
+    private final LoginFailureHandler webLoginFailureHandler;
+    private final LoginSuccessHandler webLoginSuccessHandler;
     private final OAuth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
     private final OAuth2AuthenticationFailureHandler oauth2AuthenticationFailureHandler;
     private final AjaxAwareAuthenticationEntryPoint ajaxAwareAuthenticationEntryPoint;
-    private final LogoutHandler lgoutHandler;
+    private final LogoutHandler logoutHandler;
     private final AuthenticationProvider authenticationProvider;
     private final SessionRegistry sessionRegistry;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -112,8 +112,8 @@ public class WebSecurityAdapter {
                 .passwordParameter("password")
                 .loginProcessingUrl(Url.API_AUTH_LGN_PROC)
                 .defaultSuccessUrl(Url.MAIN)
-                .failureHandler(webLgnFailureHandler)
-                .successHandler(webLgnSuccessHandler)
+                .failureHandler(webLoginFailureHandler)
+                .successHandler(webLoginSuccessHandler)
                 .permitAll();
 
         // JWT 인증 필터 추가 (요청마다 토큰 검증 → 인증 객체 세팅)
@@ -161,14 +161,14 @@ public class WebSecurityAdapter {
                 .rememberMeParameter(REMEMBER_ME_PARAM)
                 .tokenValiditySeconds(86400 * 30)
                 .userDetailsService(authService)
-                .authenticationSuccessHandler(webLgnSuccessHandler);
+                .authenticationSuccessHandler(webLoginSuccessHandler);
 
         // 중복 로그인 방지
         http.sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 .maximumSessions(1)     // 최대 1개
                 .maxSessionsPreventsLogin(false)        // true:: 나중에 접속한 사용자 로그인 방지, false:: 먼저 접속한 사용자 로그아웃 처리
-                .expiredUrl(Url.APP_AUTH_LGN_FORM + "?dupLgnAt=Y")
+                .expiredUrl(Url.APP_AUTH_LGN_FORM + "?dupLoginAt=Y")
                 .sessionRegistry(sessionRegistry);
 
         // 로그아웃 설정
@@ -176,7 +176,7 @@ public class WebSecurityAdapter {
                 .logoutRequestMatcher(new AntPathRequestMatcher(Url.API_AUTH_LGOUT))
                 .logoutUrl(Url.API_AUTH_LGOUT)
                 .logoutSuccessUrl(Url.APP_AUTH_LGN_FORM)
-                .addLogoutHandler(lgoutHandler)
+                .addLogoutHandler(logoutHandler)
                 .invalidateHttpSession(true);
 
         // 401/403 예외처리 핸들링

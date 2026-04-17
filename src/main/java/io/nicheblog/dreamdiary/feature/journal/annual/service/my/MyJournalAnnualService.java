@@ -33,7 +33,7 @@ public class MyJournalAnnualService {
      * @return {@link List< JournalAnnualDto >} -- 검색 조건에 맞는 결산 목록 Dto 리스트
      */
     public List<JournalAnnualDto> getMyListDto(final BaseSearchParam searchParam) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalAnnualService.getListDtoByUser(username, searchParam);
     }
 
@@ -43,7 +43,7 @@ public class MyJournalAnnualService {
      * @return {@link JournalAnnualDto} -- 총 결산 정보가 담긴 Dto 객체
      */
     public JournalAnnualDto getMyTotalAnnual() {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalAnnualService.getTotalAnnualByUser(username);
     }
 
@@ -54,7 +54,7 @@ public class MyJournalAnnualService {
      * @return {@link JournalAnnualDto} -- 조회된 결산 정보가 담긴 Dto 객체
      */
     public JournalAnnualDto getMyAnnualDtl(final Integer key) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalAnnualService.getAnnualDtlByUser(username, key);
     }
 
@@ -65,7 +65,7 @@ public class MyJournalAnnualService {
      * @return {@link JournalAnnualDto} -- 조회된 결산 정보가 담긴 Dto 객체, 없을 경우 null 반환
      */
     public JournalAnnualDto getMyDtlDtoByYy(final Integer yy) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalAnnualService.getDtlDtoByYyByUser(username, yy);
     }
 
@@ -75,7 +75,7 @@ public class MyJournalAnnualService {
      * @return {@link Boolean} -- 결산 생성 성공 여부 (항상 true 반환)
      */
     public Boolean makeMyYyAnnual(final Integer yy) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalAnnualService.makeYyAnnualByUser(username, yy);
     }
 
@@ -85,7 +85,7 @@ public class MyJournalAnnualService {
      * @return {@link Boolean} -- 결산 생성 성공 여부 (항상 true 반환)
      */
     public Boolean makeMyTotalYyAnnual() throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         final Boolean result = journalAnnualService.makeTotalYyAnnualByUser(username);
         EhCacheUtils.clearMyCache("journalAnnualDtlDtoByUser");
         EhCacheUtils.clearMyCache("journalAnnualYyDtlDtoByUser");

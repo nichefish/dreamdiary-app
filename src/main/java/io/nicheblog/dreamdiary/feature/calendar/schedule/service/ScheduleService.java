@@ -135,7 +135,7 @@ public class ScheduleService
         List<SchedulePrtcpntDto> prtcpntList = scheduleDto.getPrtcpntList();
         if (CollectionUtils.isEmpty(prtcpntList)) prtcpntList = new ArrayList<>();
         // 내이름 있는지 체크
-        final SchedulePrtcpntDto isMe = new SchedulePrtcpntDto(AuthUtils.getLgnUsername());
+        final SchedulePrtcpntDto isMe = new SchedulePrtcpntDto(AuthUtils.getLoginUsername());
         if (!prtcpntList.contains(isMe)) prtcpntList.add(isMe);
         scheduleDto.setPrtcpntList(prtcpntList);
     }

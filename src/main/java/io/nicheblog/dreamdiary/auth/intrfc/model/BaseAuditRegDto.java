@@ -63,7 +63,7 @@ public class BaseAuditRegDto
      */
     public Boolean getIsCreatedBy() {
         if (StringUtils.isEmpty(this.createdBy)) return false;
-        return this.createdBy.equals(AuthUtils.getLgnUsername());
+        return this.createdBy.equals(AuthUtils.getLoginUsername());
     }
 
     /**

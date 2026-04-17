@@ -32,7 +32,7 @@ public class MyJournalAnnualReviewService {
      * @return {@link List< JournalAnnualReviewDto >} -- 검색 조건에 맞는 결산 목록 Dto 리스트
      */
     public List<JournalAnnualReviewDto> getMyListDto(final BaseSearchParam searchParam) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalAnnualReviewService.getListDtoByUser(username, searchParam);
     }
 }

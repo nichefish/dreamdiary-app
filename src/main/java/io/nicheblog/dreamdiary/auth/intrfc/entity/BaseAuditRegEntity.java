@@ -63,7 +63,7 @@ public class BaseAuditRegEntity
      */
     public Boolean isCreatedBy() {
         if (StringUtils.isEmpty(this.createdBy)) return false;
-        return this.createdBy.equals(AuthUtils.getLgnUsername());
+        return this.createdBy.equals(AuthUtils.getLoginUsername());
     }
 
     /**

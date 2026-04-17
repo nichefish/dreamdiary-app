@@ -32,7 +32,7 @@ public class MyJournalChapterService {
      * @return {@link List} -- 조회된 목록
      */
     public List<JournalChapterDto> getMyListDto(final JournalChapterSearchParam searchParam) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalChapterService.getListDtoByUser(username, searchParam);
     }
 
@@ -43,7 +43,7 @@ public class MyJournalChapterService {
      * @return {@link JournalChapterDto} -- 조회된 객체
      */
     public JournalChapterDto getMyDtlDtoWithCache(final Integer key) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalChapterService.getDtlDtoWithCacheByUser(username, key);
     }
 }

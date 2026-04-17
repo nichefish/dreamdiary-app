@@ -57,7 +57,7 @@ class JournalDreamServiceTest {
         // AuthUtils Mock
         try (final MockedStatic<AuthUtils> mockedStatic = mockStatic(AuthUtils.class)) {
             mockedStatic.when(AuthUtils::isAuthenticated).thenReturn(true);
-            mockedStatic.when(AuthUtils::getLgnUsername).thenReturn(TestConstant.TEST_AUDITOR);
+            mockedStatic.when(AuthUtils::getLoginUsername).thenReturn(TestConstant.TEST_AUDITOR);
         }
     }
 

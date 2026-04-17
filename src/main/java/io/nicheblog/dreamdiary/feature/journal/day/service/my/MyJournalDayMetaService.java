@@ -30,7 +30,7 @@ public class MyJournalDayMetaService {
      * @return {@link Map} -- 태그 이름을 키로 하고, 카테고리 목록을 값으로 가지는 맵
      */
     public Map<String, List<String>> getMyMetaCtgrMap() throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDayMetaService.getMetaCtgrMapByUser(username);
     }
 
@@ -41,7 +41,7 @@ public class MyJournalDayMetaService {
      * @return 연도 목록
      */
     public List<Integer> getMyYyListByMetaId(final Integer metaId) {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDayMetaService.getYyListByMetaIdAndUser(metaId, username);
     }
 }

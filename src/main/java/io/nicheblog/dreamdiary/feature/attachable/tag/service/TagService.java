@@ -185,7 +185,7 @@ public class TagService
         int maxFrequency = 0;
         for (final TagDto tag : tagList) {
             // 캐싱 처리 위해 셀프 프록시
-            final Integer tagSize = this.countTagSize(tag.getId(), contentType, AuthUtils.getLgnUsername());
+            final Integer tagSize = this.countTagSize(tag.getId(), contentType, AuthUtils.getLoginUsername());
             tag.setContentSize(tagSize);
             maxFrequency = Math.max(maxFrequency, tagSize);
         }

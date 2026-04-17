@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
 import javax.annotation.security.PermitAll;
 
 /**
- * LgnPageController
+ * LoginPageController
  * <pre>
  *  로그인 페이지 컨트롤러.
  * </pre>
@@ -31,7 +31,7 @@ import javax.annotation.security.PermitAll;
 @Controller
 @RequiredArgsConstructor
 @Log4j2
-public class LgnPageController
+public class LoginPageController
         extends BaseControllerImpl {
 
     @Getter
@@ -45,14 +45,14 @@ public class LgnPageController
     /**
      * 로그인 화면 조회
      *
-     * @param dupLgnAt 중복 로그인 여부를 나타내는 파라미터 (nullable)
+     * @param dupLoginAt 중복 로그인 여부를 나타내는 파라미터 (nullable)
      * @param model 뷰에 데이터를 전달하는 ModelMap 객체
      * @return {@link String} -- 로그인 화면 뷰 경로
      */
     @RequestMapping(Url.APP_AUTH_LGN_FORM)
     @PermitAll
-    public String lgnForm(
-            final @RequestParam("dupLgnAt") @Nullable String dupLgnAt,
+    public String loginForm(
+            final @RequestParam("dupLoginAt") @Nullable String dupLoginAt,
             final ModelMap model
     ) throws Exception {
 
@@ -67,9 +67,9 @@ public class LgnPageController
         model.addAttribute("REMEMBER_ME_PARAM", REMEMBER_ME_PARAM);
 
         // 중복 로그인으로 인해 로그인 면으로 튕겨나왔을 경우 alert
-        if ("Y".equals(dupLgnAt)) MessageUtils.alertMessage("중복 로그인 방지에 의해 로그아웃 처리되었습니다.", Url.APP_AUTH_LGN_FORM);
+        if ("Y".equals(dupLoginAt)) MessageUtils.alertMessage("중복 로그인 방지에 의해 로그아웃 처리되었습니다.", Url.APP_AUTH_LGN_FORM);
 
-        return "/view/auth/security/lgn_form";
+        return "/view/auth/security/login_form";
     }
 
     /**
@@ -80,7 +80,7 @@ public class LgnPageController
             //
     ) {
 
-        log.info("'GET' access in lgnProc!");
+        log.info("'GET' access in loginProc!");
 
         return "redirect:" + Url.APP_AUTH_LGN_FORM;
     }

@@ -205,7 +205,7 @@ public class EhCacheUtils {
      * @param cacheName 캐시의 이름.
      */
     public static void evictMyCache(final String cacheName) {
-        evictUserCache(cacheName, AuthUtils.getLgnUsername());
+        evictUserCache(cacheName, AuthUtils.getLoginUsername());
     }
 
     /**
@@ -234,7 +234,7 @@ public class EhCacheUtils {
      * @param cacheKey  제거할 캐시 항목을 식별하는 키.
      */
     public static void evictMyCacheByKey(final String cacheName, final Object cacheKey) {
-        evictUserCacheByKey(cacheName, AuthUtils.getLgnUsername(), cacheKey);
+        evictUserCacheByKey(cacheName, AuthUtils.getLoginUsername(), cacheKey);
     }
 
     /**
@@ -288,7 +288,7 @@ public class EhCacheUtils {
      * @param cacheName String
      */
     public static void clearMyCache(final String cacheName) {
-        clearUserCache(cacheName, AuthUtils.getLgnUsername());
+        clearUserCache(cacheName, AuthUtils.getLoginUsername());
     }
 
     /**
@@ -339,7 +339,7 @@ public class EhCacheUtils {
      * @param cacheKeyPrefix 사용자 prefix 이후 매칭할 key prefix
      */
     public static void evictMyCacheByPrefix(final String cacheName, final String cacheKeyPrefix) {
-        evictUserCacheByPrefix(cacheName, AuthUtils.getLgnUsername(), cacheKeyPrefix);
+        evictUserCacheByPrefix(cacheName, AuthUtils.getLoginUsername(), cacheKeyPrefix);
     }
 
     /**

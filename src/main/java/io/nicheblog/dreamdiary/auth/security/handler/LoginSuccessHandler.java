@@ -2,12 +2,12 @@ package io.nicheblog.dreamdiary.auth.security.handler;
 
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
-import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLgnManager;
+import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLoginManager;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.cache.event.LgnSuccessCacheWarmupEvent;
+import io.nicheblog.dreamdiary.infrastructure.cache.event.LoginSuccessCacheWarmupEvent;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.event.LogActvtyEvent;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.handler.LogActvtyEventListener;
@@ -27,7 +27,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
- * LgnSuccessHandler
+ * LoginSuccessHandler
  * <pre>
  *  Spring Security:: 웹로그인 성공시 처리 Handler
  *  "로그인 후 이전 페이지 이동" 기능 구현 위해 SavedRequestAwareAuthenticationSuccessHandler 상속
@@ -66,7 +66,7 @@ public class LoginSuccessHandler
 
         request.removeAttribute(Constant.ERROR_MSG);
         request.removeAttribute("isCredentialExpired");
-        request.removeAttribute("isDupIdLgn");
+        request.removeAttribute("isDupIdLogin");
         request.removeAttribute("needsPwReset");
 
         // 사용자 정보 세션에 추가
@@ -78,15 +78,15 @@ public class LoginSuccessHandler
         // 최종 로그인 날짜 세팅 및 패스워드오류 카운트 초기화
         final String username = authInfo.getUsername();
         authService.setLastLoginAt(username);
-        // session에 lgnId attribute 추가 :: 중복 로그인 방지 비교용
-        DupIdLgnManager.addKey(username);
+        // session에 loginId attribute 추가 :: 중복 로그인 방지 비교용
+        DupIdLoginManager.addKey(username);
 
         // 로그인 로그 남기기
         final LogActvtyParam logParam = new LogActvtyParam(true, MessageUtils.RSLT_SUCCESS, ActvtyCtgr.LGN);
         publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
 
         // 캐시 웜업 이벤트 발행
-        publisher.publishAsyncEvent(new LgnSuccessCacheWarmupEvent(this, username));
+        publisher.publishAsyncEvent(new LoginSuccessCacheWarmupEvent(this, username));
 
         // 로그인 성공시 브라우저 캐시 초기화 처리
         HttpUtils.setInvalidateBrowserCacheHeader(response);

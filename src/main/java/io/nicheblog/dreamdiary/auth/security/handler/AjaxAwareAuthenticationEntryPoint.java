@@ -56,22 +56,22 @@ public class AjaxAwareAuthenticationEntryPoint
             if (currentUrl.equals(Url.APP_AUTH_LGN_FORM)) return;
             // alert창 띄운 후 로그인 페이지로 리다이렉트1
             final String msg = "세션이 만료되었습니다. 다시 로그인 해주세요.";
-            final String lgnFormUrl = Url.APP_AUTH_LGN_FORM;
+            final String loginFormUrl = Url.APP_AUTH_LGN_FORM;
             try (PrintWriter out = response.getWriter()) {
                 out.println("<script type=\"text/javascript\">");
                 out.println("const hasSwal = (typeof Swal !== \"undefined\");");
                 out.println("if (hasSwal) {");
                 out.println("    Swal.fire({text: '" + msg + "'}).then(function() {");
-                out.println("        location.replace('" + lgnFormUrl + "');");
+                out.println("        location.replace('" + loginFormUrl + "');");
                 out.println("    });");
                 out.println("} else {");
                 out.println("    alert('" + msg + "');");
-                out.println("    location.replace('" + lgnFormUrl + "');");
+                out.println("    location.replace('" + loginFormUrl + "');");
                 out.println("}");
                 out.println("</script>");
             } catch (final Exception e) {
                 // 예외 발생 시 로그인 페이지로 리다이렉트
-                response.sendRedirect(lgnFormUrl);
+                response.sendRedirect(loginFormUrl);
             }
         }
     }

@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.infrastructure.cache.handler;
 
 import io.nicheblog.dreamdiary.global.config.AsyncConfig;
-import io.nicheblog.dreamdiary.infrastructure.cache.event.LgnSuccessCacheWarmupEvent;
+import io.nicheblog.dreamdiary.infrastructure.cache.event.LoginSuccessCacheWarmupEvent;
 import io.nicheblog.dreamdiary.infrastructure.cache.service.CacheWarmupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
@@ -10,7 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 /**
- * LgnSuccessCacheWarmupEventListener
+ * LoginSuccessCacheWarmupEventListener
  * <pre>
  *  EhCache 캐시 제거 이벤트 처리 핸들러.
  * </pre>
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class LgnSuccessCacheWarmupEventListener {
+public class LoginSuccessCacheWarmupEventListener {
 
     private final CacheWarmupService cacheWarmupService;
 
@@ -31,10 +31,10 @@ public class LgnSuccessCacheWarmupEventListener {
      */
     @EventListener
     @Async
-    public void handleCacheWarmupEvent(final LgnSuccessCacheWarmupEvent event) throws Exception {
+    public void handleCacheWarmupEvent(final LoginSuccessCacheWarmupEvent event) throws Exception {
         SecurityContextHolder.setContext(event.getSecurityContext());
         final String username = event.getUsername();
 
-        cacheWarmupService.warmupOnLgn(username);
+        cacheWarmupService.warmupOnLogin(username);
     }
 }

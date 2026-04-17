@@ -64,7 +64,7 @@ public class MetaSpec
         final List<Predicate> predicate = new ArrayList<>();
 
         final Join<MetaEntity, MetaContentEntity> metaContentJoin = root.join("metaContentList", JoinType.INNER);
-        predicate.add(builder.equal(metaContentJoin.get("createdBy"), AuthUtils.getLgnUsernameOrDefault()));     // 등록자 ID 기준으로 조회
+        predicate.add(builder.equal(metaContentJoin.get("createdBy"), AuthUtils.getLoginUsernameOrDefault()));     // 등록자 ID 기준으로 조회
 
         // 파라미터 비교
         for (final String key : searchParamMap.keySet()) {
@@ -94,7 +94,7 @@ public class MetaSpec
             List<Predicate> predicate = new ArrayList<>();
 
             final Join<MetaEntity, MetaContentEntity> metaContentJoin = root.join("metaContentList", JoinType.LEFT);
-            predicate.add(builder.equal(metaContentJoin.get("createdBy"), AuthUtils.getLgnUsernameOrDefault()));     // 등록자 ID 기준으로 조회
+            predicate.add(builder.equal(metaContentJoin.get("createdBy"), AuthUtils.getLoginUsernameOrDefault()));     // 등록자 ID 기준으로 조회
             predicate.add(builder.isNull(metaContentJoin));
 
             return builder.and(predicate.toArray(new Predicate[0]));

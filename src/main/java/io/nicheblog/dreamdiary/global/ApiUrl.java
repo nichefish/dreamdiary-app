@@ -14,9 +14,9 @@ public interface ApiUrl {
     String API_ALIVE_CHECK = Prefix.API + "/alive-check";
 
     /** 로그인 관련 */
-    String API_AUTH_LGN_PROC = Prefix.API + "/auth/lgn-proc";
-    String API_AUTH_LGN_PW_CHG = Prefix.API + "/auth/lgn-pw-chg";
-    String API_AUTH_LGOUT = Prefix.API + "/auth/lgout";
+    String API_AUTH_LGN_PROC = Prefix.API + "/auth/login-proc";
+    String API_AUTH_LGN_PW_CHG = Prefix.API + "/auth/login-pw-chg";
+    String API_AUTH_LGOUT = Prefix.API + "/auth/logout";
     String API_AUTH_REFRESH = Prefix.API + "/auth/refresh";
     String API_AUTH_EXPIRE_SESSION = Prefix.API + "/auth/expire-session";
     String API_AUTH_VERIFY = Prefix.API + "/auth/verify/{token}";
@@ -153,7 +153,7 @@ public interface ApiUrl {
     String TAG_PROFILE = Prefix.API + "/tag-profile/{id}";
 
     /** 인증 정책 관리 */
-    String AUTH_POLICY_REG_AJAX = Prefix.API + "/lgn-policy/reg";
+    String AUTH_POLICY_REG_AJAX = Prefix.API + "/login-policy/reg";
 
     /** 메뉴 관리 */
     String MENU_MAIN_LIST_AJAX = Prefix.API + "/menu/menu-main-list";

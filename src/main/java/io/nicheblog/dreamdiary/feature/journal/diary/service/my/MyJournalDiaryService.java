@@ -39,7 +39,7 @@ public class MyJournalDiaryService {
      * @return {@link List} -- 조회된 목록
      */
     public List<JournalDiaryDto> getMyListDto(final JournalDiarySearchParam searchParam) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         final List<JournalDiaryDto> listDto = journalDiaryService.getListDtoByUser(username, searchParam);
         this.mergeRelatedContents(username, listDto);
         return listDto;
@@ -52,7 +52,7 @@ public class MyJournalDiaryService {
      * @return {@link List} -- 해당 연도의중요 목록
      */
     public List<JournalDiaryDto> getMyAnnualDiaryList(final JournalDiarySearchParam searchParam) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         final List<JournalDiaryDto> listDto = journalDiaryService.getAnnualDiaryListByUser(username, searchParam);
         this.mergeRelatedContents(username, listDto);
         return listDto;
@@ -65,7 +65,7 @@ public class MyJournalDiaryService {
      * @return {@link JournalDiaryDto} -- 조회된 객체
      */
     public JournalDiaryDto getMyDtlDtoWithCache(final Integer key) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         final JournalDiaryDto retrieved = journalDiaryService.getDtlDtoWithCacheByUser(username, key);
         this.mergeRelatedContents(username, retrieved == null ? List.of() : List.of(retrieved));
         return retrieved;

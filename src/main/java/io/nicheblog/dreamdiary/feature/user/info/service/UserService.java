@@ -208,9 +208,9 @@ public class UserService
         final Integer inactiveLockDays = authPolicy.getInactiveLockDays();
 
         final UserEntity user = this.getDtlEntity(username);
-        Date lastLgnDt = user.acntStus.getLastLoginAt();
-        if (lastLgnDt == null) lastLgnDt = user.getCreatedAt();
-        final Date dormantDt = DateUtils.getDateAddDay(lastLgnDt, inactiveLockDays);
+        Date lastLoginDt = user.acntStus.getLastLoginAt();
+        if (lastLoginDt == null) lastLoginDt = user.getCreatedAt();
+        final Date dormantDt = DateUtils.getDateAddDay(lastLoginDt, inactiveLockDays);
 
         return (dormantDt == null || dormantDt.compareTo(DateUtils.getCurrDate()) < 0);
     }
@@ -226,7 +226,7 @@ public class UserService
 
         // lockedYn 플래그 업데이트
         retrievedEntity.acntStus.setLockedYn("Y");
-        retrievedEntity.acntStus.setLgnFailCnt(0);
+        retrievedEntity.acntStus.setLoginFailCnt(0);
         final UserEntity updatedEntity = repository.saveAndFlush(retrievedEntity);
 
         return ServiceResponse.builder()
@@ -245,7 +245,7 @@ public class UserService
 
         // lockedYn 플래그 + 최종접속일 업데이트
         retrievedEntity.acntStus.setLockedYn("N");
-        retrievedEntity.acntStus.setLgnFailCnt(0);
+        retrievedEntity.acntStus.setLoginFailCnt(0);
         retrievedEntity.acntStus.setLastLoginAt(DateUtils.getCurrDate());
         final UserEntity updatedEntity = repository.saveAndFlush(retrievedEntity);
 

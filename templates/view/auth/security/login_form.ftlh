@@ -13,7 +13,7 @@
         return {
             username: "${username!}",
             errorMsg: "${errorMsg!}",
-            isDupIdLgn: ${(isDupIdLgn!false)?c},
+            isDupIdLogin: ${(isDupIdLogin!false)?c},
             isCredentialExpired: ${(isCredentialExpired!false)?c},
             needsPwReset: ${(needsPwReset!false)?c},
         }
@@ -30,7 +30,7 @@
     }
 </style>
 
-<!--begin::LgnPage-->
+<!--begin::LoginPage-->
 <div class="w-lg-500px rounded mt-20 p-10 p-lg-15 mx-auto my-auto">
     <div class="aside-logo flex-column-auto pb-5 mb-20">
         <!-- -->
@@ -41,7 +41,7 @@
         <i class="bi bi-stars fs-2"></i>
     </div>
     <#--begin::Form-->
-    <form name="lgnForm" id="lgnForm" class="w-100" method="post">
+    <form name="loginForm" id="loginForm" class="w-100" method="post">
         <div class="opacity-75">
             <label class="form-label fs-6 text-secondary fw-bolder" for="username">아이디</label>
             <input type="text" name="username" id="username" class="form-control form-control-lg enter required"
@@ -74,7 +74,7 @@
         </div>
         <div class="d-flex flex-column text-center mb-4 mt-12 gap-2">
             <button type="button" class="btn btn-lg btn-light-primary opacity-75 w-100"
-                    onclick="Page.lgn();"
+                    onclick="Page.login();"
                     data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="로그인합니다." >
                 <span class="indicator-label">Sign In</span>
                 <span class="indicator-progress">Please wait...
@@ -121,11 +121,11 @@
 </div>
 
 <#--include::password change-->
-<#include "/view/auth/security/_modal/_lgn_pw_chg_modal.ftlh">
-<script type="text/javascript" src="/js/view/auth/security/lgn_pw_chg_module.js?${releaseDate!}"></script>
+<#include "/view/auth/security/_modal/_login_pw_chg_modal.ftlh">
+<script type="text/javascript" src="/js/view/auth/security/login_pw_chg_module.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/js/view/auth/oauth2/oauth2.js?${releaseDate!}"></script>
 
 <#--include::page scripts-->
-<script type="text/javascript" src="/js/view/auth/security/lgn_form.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/auth/security/login_form.js?${releaseDate!}"></script>
 
 </@layout.layout>

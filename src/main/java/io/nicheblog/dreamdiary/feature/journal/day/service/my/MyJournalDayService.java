@@ -35,8 +35,8 @@ public class MyJournalDayService {
      * @return {@link List} -- 조회된 목록
      */
     public List<JournalDayDto> getMyCachedYyMnthListDto(final Integer yy, final Integer mnth) throws Exception {
-        final String lgnUsername = AuthUtils.requireLgnUsername();
-        return journalDayService.getCachedYyMnthListDtoByUser(lgnUsername, yy, mnth);
+        final String loginUsername = AuthUtils.requireLoginUsername();
+        return journalDayService.getCachedYyMnthListDtoByUser(loginUsername, yy, mnth);
     }
 
     /**
@@ -49,7 +49,7 @@ public class MyJournalDayService {
     public List<JournalDayDto> getMyJournalStdrdDays(final JournalDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDayService.getJournalStdrdDaysByUser(username, searchParam);
     }
 
@@ -62,14 +62,14 @@ public class MyJournalDayService {
     public List<JournalDayDto> getMyCachedWeeklyListDto(final JournalDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        final String lgnUsername = AuthUtils.requireLgnUsername();
+        final String loginUsername = AuthUtils.requireLoginUsername();
         final String weekStartDt = StringUtils.isNotBlank(searchParam.getWeekStartDt())
                 ? searchParam.getWeekStartDt()
                 : io.nicheblog.dreamdiary.global.util.date.DateUtils.getWeekStartDateStr(searchParam.getStdrdDt());
         if (StringUtils.isBlank(weekStartDt)) return List.of();
         searchParam.setWeekStartDt(weekStartDt);
 
-        return journalDayService.getCachedWeeklyListDtoByUser(lgnUsername, weekStartDt);
+        return journalDayService.getCachedWeeklyListDtoByUser(loginUsername, weekStartDt);
     }
 
     /**
@@ -82,7 +82,7 @@ public class MyJournalDayService {
     public List<JournalDayDto> getMyListDtoByMetaId(final JournalDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDayService.getListDtoByMetaIdAndUser(username, searchParam);
     }
 
@@ -96,7 +96,7 @@ public class MyJournalDayService {
     public List<JournalDayDto> getMyListDtoByTagId(final JournalDaySearchParam searchParam) throws Exception {
         if (searchParam == null) return List.of();
 
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDayService.getListDtoByTagIdAndUser(username, searchParam);
     }
 
@@ -107,8 +107,8 @@ public class MyJournalDayService {
      * @return {@link JournalDayDto} -- 조회된 객체
      */
     public JournalDayDto getMyCachedDtlDto(final Integer key) throws Exception {
-        final String lgnUsername = AuthUtils.requireLgnUsername();
-        return journalDayService.getCachedDtlDtoByUser(lgnUsername, key);
+        final String loginUsername = AuthUtils.requireLoginUsername();
+        return journalDayService.getCachedDtlDtoByUser(loginUsername, key);
     }
 
     /**
@@ -118,7 +118,7 @@ public class MyJournalDayService {
      * @return {@link boolean} -- 정상은 true, 중복은 false 반환
      */
     public boolean dupChck(final JournalDayDto journalDay) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDayService.dupChckByUser(username, journalDay);
     }
 
@@ -129,7 +129,7 @@ public class MyJournalDayService {
      * @return {@link Integer} -- 중복되는 경우 해당 게시글 번호
      */
     public Integer getDupKey(final JournalDayDto journalDay) throws Exception {
-        final String username = AuthUtils.requireLgnUsername();
+        final String username = AuthUtils.requireLoginUsername();
         return journalDayService.getDupKeyByUser(username, journalDay);
     }
 }

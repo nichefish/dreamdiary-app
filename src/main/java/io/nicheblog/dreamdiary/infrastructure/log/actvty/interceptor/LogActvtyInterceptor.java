@@ -139,7 +139,7 @@ public class LogActvtyInterceptor implements HandlerInterceptor {
         param.setTraceId(MDC.get("traceId"));
         param.setRequestUri(request.getRequestURI());
         param.setHttpMethod(request.getMethod());
-        param.setUsername(AuthUtils.getLgnUsername());
+        param.setUsername(AuthUtils.getLoginUsername());
         param.setDurationMs(duration);
         param.setHttpStatus(response.getStatus());
         param.setReferer(request.getHeader(Constant.REFERER));
@@ -187,7 +187,7 @@ public class LogActvtyInterceptor implements HandlerInterceptor {
     }
 
     private String getUsernameForLog() {
-        final String username = AuthUtils.getLgnUsername();
+        final String username = AuthUtils.getLoginUsername();
         return username == null ? "anonymous" : username;
     }
 }

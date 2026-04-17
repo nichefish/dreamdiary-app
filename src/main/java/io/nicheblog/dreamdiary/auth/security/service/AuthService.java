@@ -88,7 +88,7 @@ public class AuthService
      * @return {@link Integer} -- 업데이트된 로그인 실패 횟수
      */
     @Transactional
-    public Integer applyLgnFailCnt(final String username) {
+    public Integer applyLoginFailCnt(final String username) {
         // ID로 사용자 정보 조회
         final Optional<UserEntity> userEntityWrapper = userRepository.findByUsername(username);
         if (userEntityWrapper.isEmpty()) return 0;
@@ -103,23 +103,23 @@ public class AuthService
             // 정책 조회 실패시 기본값 사용
         }
         final Date now = new Date();
-        final Date windowStart = userEntity.acntStus.getLgnFailWindowStartedAt();
+        final Date windowStart = userEntity.acntStus.getLoginFailWindowStartedAt();
 
         final long windowMillis = (loginAttemptWindowMinutes == null ? 0L : TimeUnit.MINUTES.toMillis(loginAttemptWindowMinutes));
         final boolean shouldResetWindow = (windowStart == null) || (windowMillis > 0 && (now.getTime() - windowStart.getTime()) >= windowMillis);
 
         if (shouldResetWindow) {
-            userEntity.acntStus.setLgnFailCnt(0);
-            userEntity.acntStus.setLgnFailWindowStartedAt(now);
+            userEntity.acntStus.setLoginFailCnt(0);
+            userEntity.acntStus.setLoginFailWindowStartedAt(now);
         }
 
         // 로그인 실패횟수 조회해서 세팅
-        final Integer currLgnFailCnt = userEntity.acntStus.getLgnFailCnt();
-        final Integer newLgnFailCnt = (currLgnFailCnt == null) ? 1 : currLgnFailCnt + 1;
-        userEntity.acntStus.setLgnFailCnt(newLgnFailCnt);
+        final Integer currLoginFailCnt = userEntity.acntStus.getLoginFailCnt();
+        final Integer newLoginFailCnt = (currLoginFailCnt == null) ? 1 : currLoginFailCnt + 1;
+        userEntity.acntStus.setLoginFailCnt(newLoginFailCnt);
         // 저장 후 반환된 값 반환
         final UserEntity rsltEntity = userRepository.save(userEntity);
-        return rsltEntity.acntStus.getLgnFailCnt();
+        return rsltEntity.acntStus.getLoginFailCnt();
     }
 
     /**
@@ -148,8 +148,8 @@ public class AuthService
 
         // 계정 잠금 처리
         userEntity.acntStus.setLockedYn("Y");
-        userEntity.acntStus.setLgnFailCnt(0);
-        userEntity.acntStus.setLgnFailWindowStartedAt(null);
+        userEntity.acntStus.setLoginFailCnt(0);
+        userEntity.acntStus.setLoginFailWindowStartedAt(null);
         userEntity.acntStus.setLockExpiresAt(lockExpiresAt);
         userRepository.save(userEntity);
     }
@@ -166,8 +166,8 @@ public class AuthService
         final UserEntity userEntity = userEntityWrapper.orElseThrow(NullPointerException::new);
         // 최종 로그인 날짜 세팅 및 실패 카운터 0으로 세팅
         userEntity.acntStus.setLastLoginAt(new Date());
-        userEntity.acntStus.setLgnFailCnt(0);
-        userEntity.acntStus.setLgnFailWindowStartedAt(null);
+        userEntity.acntStus.setLoginFailCnt(0);
+        userEntity.acntStus.setLoginFailWindowStartedAt(null);
         userEntity.acntStus.setLockedYn("N");
         userEntity.acntStus.setLockExpiresAt(null);
         userRepository.save(userEntity);
