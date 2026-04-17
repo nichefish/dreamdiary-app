@@ -31,7 +31,7 @@ public class UserEntityTestFactory {
                 .email("test_email_id@test_email_domain")
                 .cttpc("010-0101-0101")
                 .content("test_cn")
-                .acntStus(UserStusEmbed.builder().build())
+                .acntStus(UserStateEntity.builder().build())
                 .build();
     }
 

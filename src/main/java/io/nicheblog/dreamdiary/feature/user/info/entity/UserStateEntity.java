@@ -5,25 +5,52 @@ import lombok.*;
 import org.hibernate.annotations.Comment;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
- * UserStusInfo
+ * UserStateEntity
  * <pre>
- *  사용자user에서 계정 상태 관련 정보 분리
+ *  사용자 계정 상태(user_state) Entity.
  * </pre>
- *
- * @author nichefish
  */
-@Embeddable
+@Entity
+@Table(name = "user_state")
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserStusEmbed {
+public class UserStateEntity {
+
+    /** 사용자 ID (PK/FK) */
+    @Id
+    @Column(name = "user_id")
+    @Comment("사용자 ID")
+    private Integer userId;
+
+    /** 사용자 */
+    @MapsId
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
+
+    /** Refresh Token Hash */
+    @Column(name = "refresh_token_hash", length = 64)
+    @Comment("Refresh Token Hash")
+    private String refreshTokenHash;
+
+    /** Refresh Token 발생일시 */
+    @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
+    @Column(name = "refresh_token_issued_at")
+    @Comment("Refresh Token 발생일시")
+    private Date refreshTokenIssuedAt;
+
+    /** Refresh Token 만료일시 */
+    @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
+    @Column(name = "refresh_token_expires_at")
+    @Comment("Refresh Token 만료일시")
+    private Date refreshTokenExpiresAt;
 
     /** 잠금 여부 (Y/N) */
     @Builder.Default
@@ -42,6 +69,18 @@ public class UserStusEmbed {
     @Comment("로그인 실패 횟수")
     private Integer lgnFailCnt = 0;
 
+    /** 로그인 실패 카운트 윈도우 시작 시각 */
+    @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
+    @Column(name = "lgn_fail_window_started_at")
+    @Comment("로그인 실패 카운트 윈도우 시작 시각")
+    private Date lgnFailWindowStartedAt;
+
+    /** 계정 잠금 만료 시각 */
+    @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
+    @Column(name = "lock_expires_at")
+    @Comment("계정 잠금 만료 시각")
+    private Date lockExpiresAt;
+
     /** 패스워드 변경일시 */
     @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
     @Column(name = "password_changed_at")
@@ -53,6 +92,12 @@ public class UserStusEmbed {
     @Column(name = "needs_pw_reset", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
     @Comment("패스워드 리셋 필요여부")
     private String needsPwReset = "N";
+
+    /** 패스워드 리셋 토큰 발급 시각 */
+    @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
+    @Column(name = "pw_reset_token_issued_at")
+    @Comment("패스워드 리셋 토큰 발급 시각")
+    private Date pwResetTokenIssuedAt;
 
     /** 장기 미로그인 패스 체크 여부 (Y/N) */
     @Builder.Default
@@ -72,34 +117,16 @@ public class UserStusEmbed {
     @Comment("승인여부")
     private String cfYn = "Y";
 
-    /* ----- */
-
-    /**
-     * 생성자.
-     *
-     * @param reqstYn 요청 여부 ("Y" 또는 "N")
-     * @param cfYn 확인 여부 ("Y" 또는 "N")
-     */
-    public UserStusEmbed(final String reqstYn, final String cfYn) {
+    public UserStateEntity(final String reqstYn, final String cfYn) {
         this.reqstYn = reqstYn;
         this.cfYn = cfYn;
     }
 
-    /**
-     * 갓 요청한 상태 = 요청 상태가 "Y", 확인 상태가 "N"인 상태 각체 반환
-     *
-     * @return {@link UserStusEmbed} -- 상태 객체
-     */
-    public static UserStusEmbed getReqstStus() {
-        return new UserStusEmbed("Y", "N");
+    public static UserStateEntity getReqstStus() {
+        return new UserStateEntity("Y", "N");
     }
 
-    /**
-     * 갓 등록한 상태 = 요청 상태가 "N", 확인 상태가 "Y"인 상태 각체 반환
-     *
-     * @return {@link UserStusEmbed} -- 상태 객체
-     */
-    public static UserStusEmbed getRegistStus() {
-        return new UserStusEmbed("N", "Y");
+    public static UserStateEntity getRegistStus() {
+        return new UserStateEntity("N", "Y");
     }
 }

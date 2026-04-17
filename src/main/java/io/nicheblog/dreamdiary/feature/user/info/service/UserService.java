@@ -7,7 +7,7 @@ import io.nicheblog.dreamdiary.auth.security.repository.jpa.AuthRoleRepository;
 import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
 import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserStusEmbed;
+import io.nicheblog.dreamdiary.feature.user.info.entity.UserStateEntity;
 import io.nicheblog.dreamdiary.feature.user.info.mapstruct.UserMapstruct;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.feature.user.info.repository.jpa.UserRepository;
@@ -131,7 +131,7 @@ public class UserService
     public void preRegist(final UserEntity registEntity) throws Exception {
         // 접속 IP 정보 없을시 사용으로 찍었더라도 미사용으로 변경
         registEntity.setPassword(passwordEncoder.encode(registEntity.getPassword()));
-        registEntity.setAcntStus(UserStusEmbed.getRegistStus());
+        registEntity.setAcntStus(UserStateEntity.getRegistStus());
         this.applyAuthRoleIds(registEntity);
         registEntity.cascade();
     }
@@ -152,6 +152,7 @@ public class UserService
         // update
         retrievedEntity.setPassword(pwForReset);
         retrievedEntity.acntStus.setNeedsPwReset("Y");
+        retrievedEntity.acntStus.setPwResetTokenIssuedAt(DateUtils.getCurrDate());
         retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrDate());
         final UserEntity updatedEntity = repository.saveAndFlush(retrievedEntity);
 
@@ -204,12 +205,12 @@ public class UserService
         if (Constant.SYSTEM_ACNT.equals(username) || Constant.DEV_ACNT.equals(username)) return false;
 
         final AuthPolicyEntity authPolicy = authPolicyQueryService.getDtlEntity();
-        final Integer lgnLockDy = authPolicy.getLgnLockDy();
+        final Integer inactiveLockDays = authPolicy.getInactiveLockDays();
 
         final UserEntity user = this.getDtlEntity(username);
         Date lastLgnDt = user.acntStus.getLastLoginAt();
         if (lastLgnDt == null) lastLgnDt = user.getCreatedAt();
-        final Date dormantDt = DateUtils.getDateAddDay(lastLgnDt, lgnLockDy);
+        final Date dormantDt = DateUtils.getDateAddDay(lastLgnDt, inactiveLockDays);
 
         return (dormantDt == null || dormantDt.compareTo(DateUtils.getCurrDate()) < 0);
     }

@@ -82,7 +82,7 @@ class AuthPolicyRepositoryTest {
 
         // When::
         AuthPolicyEntity toModify = authPolicyRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
-        toModify.setLgnTryLmt(25);
+        toModify.setLoginAttemptLimit(25);
         AuthPolicyEntity modified = authPolicyRepository.save(toModify);
 
         // Then::
@@ -93,7 +93,7 @@ class AuthPolicyRepositoryTest {
         assertNotNull(modified.getUpdatedBy(),  "수정자 audit 처리가 되지 않았습니다.");
         assertEquals(TestConstant.TEST_AUDITOR, modified.getUpdatedBy(), "수정자가 예상 값과 일치하지 않습니다.");
         // value
-        assertEquals(25, modified.getLgnTryLmt(), "값이 정상적으로 수정되지 않았습니다.");
+        assertEquals(25, modified.getLoginAttemptLimit(), "값이 정상적으로 수정되지 않았습니다.");
     }
 
     /**

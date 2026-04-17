@@ -13,22 +13,13 @@ CREATE TABLE IF NOT EXISTS user (
     -- ACCOUNT_BASIC_INFO
     username VARCHAR(20) COMMENT '로그인 ID',
     password VARCHAR(64) COMMENT '비밀번호',
-    refresh_token_hash VARCHAR(64) COMMENT '리프레시 토큰 해시',
-    refresh_token_issued_at DATETIME COMMENT '리프레시 토큰 발급일시',
-    refresh_token_expires_at DATETIME COMMENT '리프레시 토큰 만료일시',
     nick_nm VARCHAR(50) COMMENT '사용자 표시이름',
     profl_img_url VARCHAR(256) COMMENT '프로필 이미지 경로',
     content LONGTEXT COMMENT '사용자 설명 (관리자용)',
     email VARCHAR(100) COMMENT '이메일',        -- 기본 이메일:: 계정복구 등에 사용함
     cttpc VARCHAR(20) COMMENT '연락처',        -- 기본 연락처
     -- ACCOUNT_STATUS
-    locked_yn CHAR(1) DEFAULT 'N' COMMENT '잠금 여부 (Y/N)',
     use_allowed_ip_yn CHAR(1) DEFAULT 'N' COMMENT '접속IP 사용 여부 (Y/N)',
-    last_login_at DATETIME COMMENT '마지막 로그인 일시',
-    lgn_fail_cnt INT DEFAULT 0 COMMENT '로그인 실패 횟수',
-    password_changed_at DATETIME COMMENT '비밀번호 변경 일시',
-    dormant_bypass_yn CHAR(1) DEFAULT 'N' COMMENT '장기 미로그인 통과 여부 (Y/N)',
-    needs_pw_reset CHAR(1) DEFAULT 'N' COMMENT '패스워드 변경 필요 여부 (Y/N)',
     -- REQST
     reqst_yn CHAR(1) DEFAULT 'N' COMMENT '외부신청 여부 (Y/N)',
     cf_yn CHAR(1) DEFAULT 'N' COMMENT '사용자 승인 여부 (Y/N)',
@@ -43,6 +34,27 @@ CREATE TABLE IF NOT EXISTS user (
     -- CONSTRAINT
     INDEX (username)
 ) COMMENT = '사용자 계정';
+
+-- 사용자 상태 (user_state)
+-- @extends: state table
+CREATE TABLE IF NOT EXISTS user_state (
+    user_id INT PRIMARY KEY COMMENT '사용자 고유 ID',
+    refresh_token_hash VARCHAR(64) COMMENT '리프레시 토큰 해시',
+    refresh_token_issued_at DATETIME COMMENT '리프레시 토큰 발급일시',
+    refresh_token_expires_at DATETIME COMMENT '리프레시 토큰 만료일시',
+    locked_yn CHAR(1) DEFAULT 'N' COMMENT '잠금 여부 (Y/N)',
+    last_login_at DATETIME COMMENT '마지막 로그인 일시',
+    lgn_fail_cnt INT DEFAULT 0 COMMENT '로그인 실패 횟수',
+    lgn_fail_window_started_at DATETIME COMMENT '로그인 실패 카운트 윈도우 시작 시각',
+    lock_expires_at DATETIME COMMENT '계정 잠금 만료 시각',
+    password_changed_at DATETIME COMMENT '비밀번호 변경 일시',
+    needs_pw_reset CHAR(1) DEFAULT 'N' COMMENT '패스워드 변경 필요 여부 (Y/N)',
+    pw_reset_token_issued_at DATETIME COMMENT '패스워드 리셋 토큰 발급 시각',
+    dormant_bypass_yn CHAR(1) DEFAULT 'N' COMMENT '장기 미로그인 통과 여부 (Y/N)',
+    reqst_yn CHAR(1) DEFAULT 'N' COMMENT '외부신청 여부 (Y/N)',
+    cf_yn CHAR(1) DEFAULT 'N' COMMENT '사용자 승인 여부 (Y/N)',
+    FOREIGN KEY(user_id) REFERENCES user (id)
+) COMMENT = '사용자 상태';
 
 -- -----------------------
 

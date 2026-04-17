@@ -41,7 +41,6 @@ class AuthInfoMapstructTest {
         // Given::
         UserEntity userEntity = UserEntityTestFactory.create();
         userEntity.setProflImgUrl("test_url");
-        // 접속IP : Entity 로딩시 AllowedIpList -> AllowedIpStrList 변환됨. (@Transient)
         userEntity.setUseAllowedIpYn("Y");
         UserAllowedIpEntity aa = UserAllowedIpEntityTestFactory.create("1.1.1.1");
         UserAllowedIpEntity bb = UserAllowedIpEntityTestFactory.create("2.2.2.2");
@@ -59,7 +58,6 @@ class AuthInfoMapstructTest {
         assertEquals(TestConstant.TEST_PASSWORD_ENCODED, dto.getPassword());
         assertEquals(TestConstant.TEST_NICK_NM, dto.getNickNm());
         assertEquals("test_url", dto.getProflImgUrl());
-        // 접속 IP
         assertEquals("Y", dto.getUseAllowedIpYn());
         assertFalse(CollectionUtils.isEmpty(dto.getAllowedIpStrList()));
         assertEquals(2, dto.getAllowedIpStrList().size());
@@ -73,12 +71,11 @@ class AuthInfoMapstructTest {
     void testToDto_checkMapping() throws Exception {
         // Given::
         UserEntity userEntity = UserEntityTestFactory.create();
-        // authList
         UserAuthRoleEntity aa = UserAuthRoleEntityTestFactory.create(Auth.USER);
         UserAuthRoleEntity bb = UserAuthRoleEntityTestFactory.create(Auth.MNGR);
         userEntity.setAuthList(List.of(aa, bb));
-        // acntStus
-        UserStusEmbed acntStus = UserStusEmbed.builder()
+
+        UserStateEntity acntStus = UserStateEntity.builder()
                 .lockedYn("N")
                 .needsPwReset("Y")
                 .cfYn("N")
@@ -90,12 +87,10 @@ class AuthInfoMapstructTest {
 
         // Then::
         assertNotNull(dto);
-        // authList
         assertFalse(CollectionUtils.isEmpty(dto.getAuthList()));
         assertEquals(2, dto.getAuthList().size());
         assertEquals(Code.AUTH_USER, dto.getAuthList().get(0).getAuthCd());
         assertEquals(Code.AUTH_MNGR, dto.getAuthList().get(1).getAuthCd());
-        // acntStus
         assertEquals("N", dto.getLockedYn());
         assertEquals("Y", dto.getNeedsPwReset());
         assertEquals("N", dto.getCfYn());
@@ -109,8 +104,7 @@ class AuthInfoMapstructTest {
     void testToDto_checkMapping_stusDtNotNull() throws Exception {
         // Given::
         UserEntity userEntity = UserEntityTestFactory.create();
-        // acntStus - lastLoginAt, passwordChangedAt = null
-        UserStusEmbed acntStus = UserStusEmbed.builder()
+        UserStateEntity acntStus = UserStateEntity.builder()
                 .lastLoginAt(DateUtils.asDate("2000-01-11"))
                 .passwordChangedAt(DateUtils.asDate("2000-02-22"))
                 .build();
@@ -134,8 +128,7 @@ class AuthInfoMapstructTest {
     void testToDto_checkMapping_stusDtNull() throws Exception {
         // Given::
         UserEntity userEntity = UserEntityTestFactory.create();
-        // acntStus - lastLoginAt, passwordChangedAt = null
-        UserStusEmbed acntStus = UserStusEmbed.builder()
+        UserStateEntity acntStus = UserStateEntity.builder()
                 .lastLoginAt(null)
                 .passwordChangedAt(null)
                 .build();
@@ -173,5 +166,4 @@ class AuthInfoMapstructTest {
         assertEquals("test_profl_cn", userProfile.getProflCn());
         assertEquals(1, dto.getUserProfileId());
     }
-
 }

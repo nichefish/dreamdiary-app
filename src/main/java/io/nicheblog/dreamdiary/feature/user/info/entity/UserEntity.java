@@ -72,23 +72,6 @@ public class UserEntity
     @Comment("비밀번호")
     private String password;
 
-    /** Refresh Token Hash */
-    @Column(name = "refresh_token_hash", length = 64)
-    @Comment("Refresh Token Hash")
-    private String refreshTokenHash;
-
-    /** Refresh Token 발생일시 */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "refresh_token_issued_at")
-    @Comment("Refresh Token 발생일시")
-    private java.util.Date refreshTokenIssuedAt;
-
-    /** Refresh Token 만료일시 */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "refresh_token_expires_at")
-    @Comment("Refresh Token 만료일시")
-    private java.util.Date refreshTokenExpiresAt;
-
     /** 사용자 권한 정보 */
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id")
@@ -159,9 +142,12 @@ public class UserEntity
     @Comment("사용자 프로필 정보")
     private UserEmplymEntity emplym;
 
-    /** 계정 상태 정보 (위임) */
-    @Embedded
-    public UserStusEmbed acntStus;
+    /** 계정 상태 정보 */
+    @OneToOne(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(FetchMode.JOIN)
+    @NotFound(action = NotFoundAction.IGNORE)
+    @Comment("계정 상태 정보")
+    public UserStateEntity acntStus;
 
     /* ----- */
 
@@ -251,6 +237,34 @@ public class UserEntity
     public void cascade() {
         if (this.profile != null) this.profile.setUser(this);
         if (this.emplym != null) this.emplym.setUser(this);
+        if (this.acntStus != null) this.acntStus.setUser(this);
+    }
+
+    public String getRefreshTokenHash() {
+        return this.acntStus == null ? null : this.acntStus.getRefreshTokenHash();
+    }
+
+    public void setRefreshTokenHash(final String refreshTokenHash) {
+        if (this.acntStus == null) this.acntStus = UserStateEntity.builder().build();
+        this.acntStus.setRefreshTokenHash(refreshTokenHash);
+    }
+
+    public java.util.Date getRefreshTokenIssuedAt() {
+        return this.acntStus == null ? null : this.acntStus.getRefreshTokenIssuedAt();
+    }
+
+    public void setRefreshTokenIssuedAt(final java.util.Date refreshTokenIssuedAt) {
+        if (this.acntStus == null) this.acntStus = UserStateEntity.builder().build();
+        this.acntStus.setRefreshTokenIssuedAt(refreshTokenIssuedAt);
+    }
+
+    public java.util.Date getRefreshTokenExpiresAt() {
+        return this.acntStus == null ? null : this.acntStus.getRefreshTokenExpiresAt();
+    }
+
+    public void setRefreshTokenExpiresAt(final java.util.Date refreshTokenExpiresAt) {
+        if (this.acntStus == null) this.acntStus = UserStateEntity.builder().build();
+        this.acntStus.setRefreshTokenExpiresAt(refreshTokenExpiresAt);
     }
 
     /* ----- */

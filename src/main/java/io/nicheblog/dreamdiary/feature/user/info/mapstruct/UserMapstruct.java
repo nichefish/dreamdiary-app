@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.feature.user.info.mapstruct;
 import io.nicheblog.dreamdiary.feature.user.emplym.mapstruct.UserEmplymMapstruct;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserAuthRoleEntity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserStusEmbed;
+import io.nicheblog.dreamdiary.feature.user.info.entity.UserStateEntity;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.feature.user.profile.mapstruct.UserProfileMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, CollectionUtils.class, UserStusEmbed.class, Collectors.class, UserProfileMapstruct.class, UserEmplymMapstruct.class}, builder = @Builder(disableBuilder = true))
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, CollectionUtils.class, UserStateEntity.class, Collectors.class, UserProfileMapstruct.class, UserEmplymMapstruct.class}, builder = @Builder(disableBuilder = true))
 public interface UserMapstruct
         extends BaseWriteMapstruct<UserDto, UserEntity>, BaseReadMapstruct<UserDto, UserEntity> {
 

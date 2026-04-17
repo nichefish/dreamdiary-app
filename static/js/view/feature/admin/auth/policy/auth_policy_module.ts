@@ -26,9 +26,12 @@ dF.AuthPolicy = (function(): dfModule {
             /* jquery validation */
             cF.validate.validateForm("#authPolicyForm", dF.AuthPolicy.regAjax, {
                 rules: {
-                    lgnLockDy: { maxlength: 3 },
-                    lgnTryLmt: { maxlength: 3 },
-                    pwChgDy: { maxlength: 3 },
+                    inactiveLockDays: { maxlength: 3 },
+                    loginAttemptLimit: { maxlength: 3 },
+                    loginAttemptWindowMinutes: { maxlength: 3 },
+                    accountLockDurationMinutes: { maxlength: 4 },
+                    passwordChangeCycleDays: { maxlength: 3 },
+                    passwordResetTokenExpiryMinutes: { maxlength: 5 },
                     pwForReset: { minlength: 8, maxlength: 20, regex: cF.regex.pw },
                 },
                 messages: {
