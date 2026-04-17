@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.user.info.entity;
 
-import io.nicheblog.dreamdiary.auth.security.entity.AuthRoleEntity;
+import io.nicheblog.dreamdiary.auth.security.entity.RoleEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -11,15 +11,15 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 /**
- * UserAuthRoleEntity
+ * UserRoleEntity
  * <pre>
- *  사용자-권한 Entity
+ *  사용자-역할(user_role) Entity
  * </pre>
  *
  * @author nichefish
  */
 @Entity
-@Table(name = "user_auth_role")
+@Table(name = "user_role")
 @DynamicInsert      // null인 값은 (null로 insert하는 대신) insert에서 제외
 @Getter
 @Setter
@@ -28,17 +28,16 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @ToString(callSuper = true)
 @Where(clause = "deleted_at IS NULL")
-@SQLDelete(sql = "UPDATE user_auth_role SET deleted_at = NOW() WHERE id = ?")
-public class UserAuthRoleEntity
+@SQLDelete(sql = "UPDATE user_role SET deleted_at = NOW() WHERE id = ?")
+public class UserRoleEntity
         extends BaseCrudEntity {
 
     @PostLoad
     private void onLoad() {
-        // 권한 정보 동기화
         if (this.roleInfo != null) {
-            this.authRoleId = this.roleInfo.getId();
-            this.authCd = this.roleInfo.getAuthCd();
-            this.authNm = this.roleInfo.getAuthNm();
+            this.roleId = this.roleInfo.getId();
+            this.roleKey = this.roleInfo.getRoleKey();
+            this.roleName = this.roleInfo.getRoleName();
         }
     }
 
@@ -49,35 +48,31 @@ public class UserAuthRoleEntity
     @Comment("사용자 권한 ID")
     private Integer id;
 
-    /** 권한 코드 */
-    @Column(name = "auth_cd")
-    @Comment("권한 코드")
-    private String authCd;
+    /** 역할 키 (요청/표시용 — DB에는 저장하지 않음) */
+    @Transient
+    private String roleKey;
 
-    /** 권한 ID */
-    @Column(name = "auth_role_id")
+    /** 역할 ID — DB: role_id */
+    @Column(name = "role_id")
     @Comment("권한 ID")
-    private Integer authRoleId;
+    private Integer roleId;
 
-    /** 권한 정보 매핑 */
+    /** 역할 정보 매핑 */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "auth_role_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "role_id", referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(value = FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("작업자 정보")
-    private AuthRoleEntity roleInfo;
+    @Comment("역할 정보")
+    private RoleEntity roleInfo;
 
-    /** 권한 이름 */
+    /** 역할 표시명 (표시용) */
     @Transient
-    private String authNm;
-    
-    /* ----- */
+    private String roleName;
 
     /**
-     * 생성자.
-     * @param authCd - 사용자의 권한 코드를 나타내는 문자열
+     * @param roleKey 역할 키 (예: MNGR)
      */
-    public UserAuthRoleEntity(final String authCd) {
-        this.authCd = authCd;
+    public UserRoleEntity(final String roleKey) {
+        this.roleKey = roleKey;
     }
 }

@@ -5,7 +5,7 @@ import lombok.experimental.UtilityClass;
 import org.springframework.test.context.ActiveProfiles;
 
 /**
- * UserAuthRoleDtoTestFactory
+ * UserRoleDtoTestFactory
  * <pre>
  *  사용자 권한 테스트 Dto 생성 팩토리 모듈
  * </pre>
@@ -14,14 +14,14 @@ import org.springframework.test.context.ActiveProfiles;
  */
 @UtilityClass
 @ActiveProfiles("test")
-public class UserAuthRoleDtoTestFactory {
+public class UserRoleDtoTestFactory {
 
     /**
      * 테스트용 사용자 권한 Dto 생성
      */
-    public static UserAuthRoleDto create(Auth auth) {
-        return UserAuthRoleDto.builder()
-                .authCd(auth.name())
+    public static UserRoleDto create(Auth auth) {
+        return UserRoleDto.builder()
+                .roleKey(auth.name())
                 .build();
     }
 }

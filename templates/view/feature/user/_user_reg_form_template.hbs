@@ -76,7 +76,7 @@
                 <div class="row mb-4">
                     <div class="col-xl-2">
                         <div class="fw-bold col-form-label text-lg-center text-sm-end required">
-                            <label for="authCd" class="cursor-help"
+                            <label for="roleKey" class="cursor-help"
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="계정 권한을 설정합니다.">
                                 권한
                                 <i class="bi bi-question-circle"></i>
@@ -84,14 +84,14 @@
                         </div>
                     </div>
                     <div class="col-xl-2">
-                        <select name="authListStr" id="authCd" class="form-select form-select-solid required"
+                        <select name="roleKeysStr" id="roleKey" class="form-select form-select-solid required"
                                 data-control="select2" data-allow-clear="true" data-hide-search="true" data-close-on-select="false" multiple="multiple">
-                            <#list authRoleList![] as auth>
-                                <#assign is_selected = user.authStrList?? && user.authStrList?seq_contains(auth.authCd) />
-                                <option value="${auth.authCd!}" <#if is_selected>selected</#if>>${auth.authNm!}</option>
+                            <#list roleList![] as auth>
+                                <#assign is_selected = user.roleKeyList?? && user.roleKeyList?seq_contains(auth.roleKey) />
+                                <option value="${auth.roleKey!}" <#if is_selected>selected</#if>>${auth.roleName!}</option>
                             </#list>
                         </select>
-                        <div id="authCd_validate_span"></div>
+                        <div id="roleKey_validate_span"></div>
                     </div>
                 </div>
                 <#--begin::Row-->

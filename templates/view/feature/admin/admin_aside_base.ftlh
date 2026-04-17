@@ -52,30 +52,30 @@
                     </thead>
                     <#--begin::Table body-->
                     <tbody>
-                        <#list authRoleList![] as authRole>
+                        <#list roleList![] as authRole>
                             <tr>
                                 <td class="text-center">
-                                    <div class="text-muted fw-bold">${authRole.authCd!}</div>
+                                    <div class="text-muted fw-bold">${authRole.roleKey!}</div>
                                 </td>
                                 <td class="text-center">
                                     <div class="d-flex-center">
-                                        <#if (authRole.authCd! == Code.AUTH_MNGR)>
+                                        <#if (authRole.roleKey! == Code.AUTH_MNGR)>
                                             <!-- 관리자 -->
                                             <i class="bi bi-person-lines-fill text-info fs-2 me-2 opacity-75"
-                                               data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="${authRole.authNm!"-"}"></i>
-                                            <div class="text-info fw-bold">${authRole.authNm!}</div>
+                                               data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="${authRole.roleName!"-"}"></i>
+                                            <div class="text-info fw-bold">${authRole.roleName!}</div>
                                             <div class="badge badge-info ms-3">${authRole.authLevel!}</div>
-                                        <#elseif (authRole.authCd! == Code.AUTH_USER)>
+                                        <#elseif (authRole.roleKey! == Code.AUTH_USER)>
                                             <!-- 사용자 -->
                                             <i class="bi bi-people-fill me-2 fs-2"
-                                               data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="${authRole.authNm!"-"}"></i>
-                                            <div class="text-muted fw-bold">${authRole.authNm!}</div>
+                                               data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="${authRole.roleName!"-"}"></i>
+                                            <div class="text-muted fw-bold">${authRole.roleName!}</div>
                                             <div class="badge badge-dark ms-3 opacity-50">${authRole.authLevel!}</div>
-                                        <#elseif (authRole.authCd! == Code.AUTH_DEV)>
+                                        <#elseif (authRole.roleKey! == Code.AUTH_DEV)>
                                             <!-- 개발자 -->
                                             <i class="bi bi-person-fill-gear text-info fs-2 me-2 opacity-75"
-                                               data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="${authRole.authNm!"-"}"></i>
-                                            <div class="text-info fw-bold">${authRole.authNm!}</div>
+                                               data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="${authRole.roleName!"-"}"></i>
+                                            <div class="text-info fw-bold">${authRole.roleName!}</div>
                                             <div class="badge badge-info ms-3">${authRole.authLevel!}</div>
                                         </#if>
                                     </div>

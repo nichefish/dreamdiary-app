@@ -1,10 +1,12 @@
 package io.nicheblog.dreamdiary.feature.admin.log.actvty.mapstruct;
 
 import io.nicheblog.dreamdiary.feature.admin.log.actvty.model.LogActvtyQueryDto;
+import io.nicheblog.dreamdiary.feature.user.info.entity.UserRoleEntity;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.entity.LogActvtyEntity;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
@@ -20,7 +22,7 @@ import org.mapstruct.factory.Mappers;
 @Mapper(
         componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        imports = {DateUtils.class, StringUtils.class, DatePtn.class},
+        imports = {DateUtils.class, StringUtils.class, DatePtn.class, CollectionUtils.class},
         builder = @Builder(disableBuilder = true)
 )
 public interface LogActvtyReadMapstruct
@@ -37,5 +39,30 @@ public interface LogActvtyReadMapstruct
     @Override
     @Named("toDto")
     @Mapping(target = "logDt", expression = "java(DateUtils.asStr(entity.getLogDt(), DatePtn.DATETIME))")
+    @Mapping(target = "logUserNm", ignore = true)
+    @Mapping(target = "roleKey", ignore = true)
+    @Mapping(target = "roleName", ignore = true)
     LogActvtyQueryDto toDto(final LogActvtyEntity entity) throws Exception;
+
+    /**
+     * 작업자 표시명·첫 역할 (AuditorInfo.userRoles / role) 채움
+     */
+    @AfterMapping
+    default void mapAuditorRoleFields(final LogActvtyEntity entity, final @MappingTarget LogActvtyQueryDto dto) {
+        if (entity.getUserInfo() == null) {
+            return;
+        }
+        dto.setLogUserNm(entity.getUserInfo().getNickname());
+        if (CollectionUtils.isEmpty(entity.getUserInfo().getUserRoles())) {
+            return;
+        }
+        final UserRoleEntity first = entity.getUserInfo().getUserRoles().get(0);
+        if (first.getRoleInfo() != null) {
+            dto.setRoleKey(first.getRoleInfo().getRoleKey());
+            dto.setRoleName(first.getRoleInfo().getRoleName());
+        } else {
+            dto.setRoleKey(first.getRoleKey());
+            dto.setRoleName(first.getRoleName());
+        }
+    }
 }

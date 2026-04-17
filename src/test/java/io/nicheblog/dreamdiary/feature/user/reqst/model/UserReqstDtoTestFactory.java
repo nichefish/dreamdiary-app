@@ -33,8 +33,7 @@ public class UserReqstDtoTestFactory {
                 .username(TestConstant.TEST_USER)
                 .password("test_password")
                 // 권한:: 운영 로직에선 변환 전 서비스단에서 할당하여 넣어줌.
-                // .authList(List.of(UserAuthRoleDto.builder().authCd(Code.AUTH_USER).build()))
-                .authListStr(Code.AUTH_USER)
+                .roleKeysStr(Code.AUTH_USER)
                 .nickname("test_nickname")
                 .emailId("test_email_id")
                 .emailDomain("test_email_domain")

@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.user.info.model;
 
-import io.nicheblog.dreamdiary.auth.security.entity.AuthRoleEntity;
+import io.nicheblog.dreamdiary.auth.security.entity.RoleEntity;
 import io.nicheblog.dreamdiary.global.intrfc.model.BaseCrudDto;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 /**
- * UserAuthRoleDto
+ * UserRoleDto
  * <pre>
  *  사용자-권한 Dto.
  * </pre>
@@ -21,21 +21,21 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class UserAuthRoleDto
+public class UserRoleDto
         extends BaseCrudDto {
 
     /** 사용자 권한 ID */
     private Integer id;
 
-    /** 권한 코드 */
-    private String authCd;
+    /** 역할 키 (요청/표시용) */
+    private String roleKey;
 
-    /** 권한 ID */
-    private Integer authRoleId;
+    /** 역할 PK (user_role.role_id) */
+    private Integer roleId;
 
-    /** 권한 코드 */
-    private String authNm;
+    /** 역할 표시명 (표시용) */
+    private String roleName;
 
     /** 권한 정보 매핑 */
-    private AuthRoleEntity role;
+    private RoleEntity role;
 }

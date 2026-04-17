@@ -28,10 +28,10 @@ public class LogStatsUserQueryDto
     private String username;
     /** 이름 */
     private String userNm;
-    /** 권한코드 */
-    private String authCd;
-    /** 권한이름 */
-    private String authNm;
+    /** 역할 키 */
+    private String roleKey;
+    /** 역할 표시명 */
+    private String roleName;
     /** 로그 목록 건수 */
     private Long actvtyCnt;
     /** 사용자 정보 */

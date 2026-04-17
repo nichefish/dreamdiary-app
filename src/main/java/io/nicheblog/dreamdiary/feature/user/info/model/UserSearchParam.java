@@ -24,6 +24,9 @@ public class UserSearchParam
     /** 글분류 코드 */
     private String ctgrCd;
 
+    /** 역할 키 (목록 검색: role.role_key) */
+    private String roleKey;
+
     /** 제목 */
     private String title;
 }

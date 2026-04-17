@@ -2,15 +2,23 @@ package io.nicheblog.dreamdiary.auth.security.mapstruct;
 
 import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
+import io.nicheblog.dreamdiary.auth.security.model.RoleDto;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
+import io.nicheblog.dreamdiary.feature.user.info.entity.UserRoleEntity;
 import io.nicheblog.dreamdiary.feature.user.profile.mapstruct.UserProfileMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * AuthInfoMapstruct
@@ -41,7 +49,26 @@ public interface AuthInfoMapstruct
     @Mapping(target = "passwordResetTokenIssuedAt", expression = "java(entity.acntStus.getPasswordResetTokenIssuedAt())")
     @Mapping(target = "profile", expression = "java(UserProfileMapstruct.INSTANCE.toDto(entity.getProfile()))")
     @Mapping(target = "userProfileId", expression = "java(entity.getProfile() != null ? entity.getProfile().getUserProfileId() : null)")
+    @Mapping(target = "roles", ignore = true)
     AuthInfo toDto(final UserEntity entity) throws Exception;
+
+    /**
+     * UserEntity.userRoles → AuthInfo.roles (RoleDto 목록)
+     */
+    @AfterMapping
+    default void mapRolesFromUserRoles(final UserEntity entity, final @MappingTarget AuthInfo dto) throws Exception {
+        if (CollectionUtils.isEmpty(entity.getUserRoles())) {
+            dto.setRoles(List.of());
+            return;
+        }
+        final List<RoleDto> roles = new ArrayList<>();
+        for (final UserRoleEntity ur : entity.getUserRoles()) {
+            if (ur.getRoleInfo() != null) {
+                roles.add(RoleMapstruct.INSTANCE.toDto(ur.getRoleInfo()));
+            }
+        }
+        dto.setRoles(roles);
+    }
 
     /**
      * toAuditorInfo

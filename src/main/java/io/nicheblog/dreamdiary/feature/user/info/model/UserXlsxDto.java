@@ -19,8 +19,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserXlsxDto {
 
-    /** 권한 */
-    private String authNm;
+    /** 역할 표시명 */
+    private String roleName;
 
     /** 계정명  */
     private String username;

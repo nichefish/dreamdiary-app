@@ -70,7 +70,7 @@ declare const AuthInfo: {
     email: string,
     profileImageUrl: string,
     isMngr: boolean,
-    authList: Array
+    roles: Array<{ roleKey: string, roleName: string }>
 };
 /**
  * Url : Spring Boot에서 정적으로 관리되는 Url 요소들.

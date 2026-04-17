@@ -71,9 +71,9 @@ class AuthInfoMapstructTest {
     void testToDto_checkMapping() throws Exception {
         // Given::
         UserEntity userEntity = UserEntityTestFactory.create();
-        UserAuthRoleEntity aa = UserAuthRoleEntityTestFactory.create(Auth.USER);
-        UserAuthRoleEntity bb = UserAuthRoleEntityTestFactory.create(Auth.MNGR);
-        userEntity.setAuthList(List.of(aa, bb));
+        UserRoleEntity aa = UserRoleEntityTestFactory.create(Auth.USER);
+        UserRoleEntity bb = UserRoleEntityTestFactory.create(Auth.MNGR);
+        userEntity.setUserRoles(List.of(aa, bb));
 
         UserStateEntity acntStus = UserStateEntity.builder()
                 .lockedYn("N")
@@ -86,10 +86,10 @@ class AuthInfoMapstructTest {
 
         // Then::
         assertNotNull(dto);
-        assertFalse(CollectionUtils.isEmpty(dto.getAuthList()));
-        assertEquals(2, dto.getAuthList().size());
-        assertEquals(Code.AUTH_USER, dto.getAuthList().get(0).getAuthCd());
-        assertEquals(Code.AUTH_MNGR, dto.getAuthList().get(1).getAuthCd());
+        assertFalse(CollectionUtils.isEmpty(dto.getRoles()));
+        assertEquals(2, dto.getRoles().size());
+        assertEquals(Code.AUTH_USER, dto.getRoles().get(0).getRoleKey());
+        assertEquals(Code.AUTH_MNGR, dto.getRoles().get(1).getRoleKey());
         assertEquals("N", dto.getLockedYn());
         assertEquals("Y", dto.getNeedsPasswordReset());
     }

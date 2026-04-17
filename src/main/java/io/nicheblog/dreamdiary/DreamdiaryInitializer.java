@@ -1,12 +1,12 @@
 package io.nicheblog.dreamdiary;
 
-import io.nicheblog.dreamdiary.auth.security.entity.AuthRoleEntity;
+import io.nicheblog.dreamdiary.auth.security.entity.RoleEntity;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
 import io.nicheblog.dreamdiary.feature.admin.auth.policy.model.AuthPolicyDto;
 import io.nicheblog.dreamdiary.feature.admin.auth.policy.service.AuthPolicyService;
 import io.nicheblog.dreamdiary.feature.file.utils.FileUtils;
-import io.nicheblog.dreamdiary.feature.user.info.model.UserAuthRoleDto;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
+import io.nicheblog.dreamdiary.feature.user.info.model.UserRoleDto;
 import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
 import io.nicheblog.dreamdiary.global.ActiveProfile;
 import io.nicheblog.dreamdiary.global.Constant;
@@ -123,18 +123,18 @@ public class DreamdiaryInitializer
      */
     public boolean regSystemAcnt() throws Exception {
 
-        final AuthRoleEntity authRoleEntityMngr = authService.getAuthRole(Code.AUTH_MNGR);
+        final RoleEntity mngrRole = authService.getRole(Code.AUTH_MNGR);
 
-        final UserAuthRoleDto userAuthRole = UserAuthRoleDto.builder()
-                .authCd(Code.AUTH_MNGR)
-                .role(authRoleEntityMngr)
+        final UserRoleDto userRole = UserRoleDto.builder()
+                .roleKey(Code.AUTH_MNGR)
+                .role(mngrRole)
                 .build();
 
         final UserDto systemAcnt = UserDto.builder()
                 .nickname(Constant.SYSTEM_ACNT_NM)
                 .username(Constant.SYSTEM_ACNT)
                 .password(SYSTEM_INIT_TEMP_PW)
-                .authList(List.of(userAuthRole))
+                .userRoles(List.of(userRole))
                 .createdBy(Constant.SYSTEM_ACNT)
                 .build();
 

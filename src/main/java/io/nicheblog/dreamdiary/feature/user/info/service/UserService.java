@@ -2,8 +2,8 @@ package io.nicheblog.dreamdiary.feature.user.info.service;
 
 import io.nicheblog.dreamdiary.auth.policy.entity.AuthPolicyEntity;
 import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyQueryService;
-import io.nicheblog.dreamdiary.auth.security.entity.AuthRoleEntity;
-import io.nicheblog.dreamdiary.auth.security.repository.jpa.AuthRoleRepository;
+import io.nicheblog.dreamdiary.auth.security.entity.RoleEntity;
+import io.nicheblog.dreamdiary.auth.security.repository.jpa.RoleRepository;
 import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
 import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
@@ -58,7 +58,7 @@ public class UserService
 
     private final AuthPolicyQueryService authPolicyQueryService;
     private final PasswordEncoder passwordEncoder;
-    private final AuthRoleRepository authRoleRepository;
+    private final RoleRepository roleRepository;
 
     /**
      * 사용자 관리 > 사용자 단일 조회 (Dto Level) (Long id와 별도로 String username)
@@ -132,7 +132,7 @@ public class UserService
         // 접속 IP 정보 없을시 사용으로 찍었더라도 미사용으로 변경
         registEntity.setPassword(passwordEncoder.encode(registEntity.getPassword()));
         registEntity.setAcntStus(UserStateEntity.getRegistStus());
-        this.applyAuthRoleIds(registEntity);
+        this.applyRoleIds(registEntity);
         registEntity.cascade();
     }
 
@@ -185,7 +185,7 @@ public class UserService
     public ServiceResponse modify(final UserDto modifyDto) throws Exception {
         final UserEntity modifyEntity = this.getDtlEntity(modifyDto.getKey());
         mapstruct.updateFromDto(modifyDto, modifyEntity);
-        this.applyAuthRoleIds(modifyEntity);
+        this.applyRoleIds(modifyEntity);
 
         // update
         final UserEntity updatedEntity = this.updt(modifyEntity);
@@ -290,20 +290,20 @@ public class UserService
     }
 
     /**
-     * 사용자 권한 목록의 auth_cd를 기준으로 auth_role_id를 동기화한다.
+     * 사용자 역할 목록의 role_key(요청 문자열)를 기준으로 role_id를 채운다. (user_role 테이블에는 role_id만 저장)
      */
-    private void applyAuthRoleIds(final UserEntity userEntity) {
-        if (userEntity == null || userEntity.getAuthList() == null) return;
+    private void applyRoleIds(final UserEntity userEntity) {
+        if (userEntity == null || userEntity.getUserRoles() == null) return;
 
-        userEntity.getAuthList().forEach(auth -> {
-            if (auth == null) return;
+        userEntity.getUserRoles().forEach(userRole -> {
+            if (userRole == null) return;
 
-            final String authCd = auth.getAuthCd();
-            if (StringUtils.isEmpty(authCd)) return;
+            final String roleKey = userRole.getRoleKey();
+            if (StringUtils.isEmpty(roleKey)) return;
 
-            final AuthRoleEntity role = authRoleRepository.findByAuthCd(authCd);
+            final RoleEntity role = roleRepository.findByRoleKey(roleKey);
             if (role != null) {
-                auth.setAuthRoleId(role.getId());
+                userRole.setRoleId(role.getId());
             }
         });
     }

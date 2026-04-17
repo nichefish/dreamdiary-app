@@ -54,10 +54,10 @@ public class UserDto
     /** 연락처 */
     private String phoneNumber;
 
-    /** 사용자 권한 정보 */
-    private List<UserAuthRoleDto> authList;
-    /** 사용자 권한 정보(문자열) */
-    private List<String> authStrList;
+    /** 사용자에게 부여된 역할 목록 */
+    private List<UserRoleDto> userRoles;
+    /** 부여 역할 키 목록 (표시/검증용) */
+    private List<String> roleKeyList;
 
     /** 사용자 정보 (위임) */
     private UserProfileDto profile;
@@ -80,9 +80,9 @@ public class UserDto
     /** 비밀번호 */
     private String password;
 
-    /** 사용자 권한 정보(문자열) (multiselect parameter) */
+    /** 역할 multiselect 원문 (쉼표 구분 role_key) */
     @NotEmpty
-    private String authListStr;
+    private String roleKeysStr;
 
     /** 계정 설명 (관리자용) */
     private String content;
@@ -114,12 +114,12 @@ public class UserDto
         return this.emailId + "@" + this.emailDomain;
     }
 
-    /** Getter Override */
-    public String getAuthListStr() {
-        if (this.authList != null) return this.authList.stream()
-                .map(UserAuthRoleDto::getAuthCd)
+    /** Getter Override — 폼/검증에서 사용하는 역할 키 CSV */
+    public String getRoleKeysStr() {
+        if (this.userRoles != null) return this.userRoles.stream()
+                .map(UserRoleDto::getRoleKey)
                 .collect(Collectors.joining(","));
-        return this.authListStr;
+        return this.roleKeysStr;
     }
     
     /* ----- */

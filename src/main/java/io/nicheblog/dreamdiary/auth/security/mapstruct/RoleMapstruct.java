@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.auth.security.mapstruct;
 
-import io.nicheblog.dreamdiary.auth.security.entity.AuthRoleEntity;
-import io.nicheblog.dreamdiary.auth.security.model.AuthRoleDto;
+import io.nicheblog.dreamdiary.auth.security.entity.RoleEntity;
+import io.nicheblog.dreamdiary.auth.security.model.RoleDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -10,7 +10,7 @@ import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 /**
- * AuthRoleMapstruct
+ * RoleMapstruct
  * <pre>
  *  권한 정보 관리 MapStruct 기반 Mapper 인터페이스.
  * </pre>
@@ -18,10 +18,10 @@ import org.mapstruct.factory.Mappers;
  * @author nichefish
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class})
-public interface AuthRoleMapstruct
-        extends BaseWriteMapstruct<AuthRoleDto, AuthRoleEntity>, BaseReadMapstruct<AuthRoleDto, AuthRoleEntity> {
+public interface RoleMapstruct
+        extends BaseWriteMapstruct<RoleDto, RoleEntity>, BaseReadMapstruct<RoleDto, RoleEntity> {
 
-    AuthRoleMapstruct INSTANCE = Mappers.getMapper(AuthRoleMapstruct.class);
+    RoleMapstruct INSTANCE = Mappers.getMapper(RoleMapstruct.class);
 
     /**
      * Entity -> Dto 변환
@@ -31,7 +31,7 @@ public interface AuthRoleMapstruct
      */
     @Override
     @Named("toDto")
-    AuthRoleDto toDto(final AuthRoleEntity entity) throws Exception;
+    RoleDto toDto(final RoleEntity entity) throws Exception;
 
     /**
      * Dto -> Entity 변환
@@ -40,7 +40,7 @@ public interface AuthRoleMapstruct
      * @return Entity -- 변환된 Entity 객체
      */
     @Override
-    AuthRoleEntity toEntity(final AuthRoleDto dto) throws Exception;
+    RoleEntity toEntity(final RoleDto dto) throws Exception;
 
     /**
      * update Entity from Dto (Dto에서 null이 아닌 값만 Entity로 매핑)
@@ -50,5 +50,5 @@ public interface AuthRoleMapstruct
      */
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateFromDto(final AuthRoleDto dto, final @MappingTarget AuthRoleEntity entity) throws Exception;
+    void updateFromDto(final RoleDto dto, final @MappingTarget RoleEntity entity) throws Exception;
 }

@@ -4,7 +4,7 @@ import lombok.experimental.UtilityClass;
 import org.springframework.test.context.ActiveProfiles;
 
 /**
- * AuthRoleEntityTestFactory
+ * RoleEntityTestFactory
  * <pre>
  *  권한 정보 테스트 Entity 생성 팩토리 모듈
  * </pre>
@@ -13,15 +13,15 @@ import org.springframework.test.context.ActiveProfiles;
  */
 @UtilityClass
 @ActiveProfiles("test")
-public class AuthRoleEntityTestFactory {
+public class RoleEntityTestFactory {
 
     /**
      * 테스트용 조치자 Entity 생성
      */
-    public static AuthRoleEntity create() throws Exception {
-        return AuthRoleEntity.builder()
-                .authCd("TEST_AUTH_CD")
-                .authNm("테스트 권한")
+    public static RoleEntity create() throws Exception {
+        return RoleEntity.builder()
+                .roleKey("TEST_AUTH_CD")
+                .roleName("테스트 권한")
                 .authLevel(1)
                 .sortOrder(1)
                 .useYn("Y")

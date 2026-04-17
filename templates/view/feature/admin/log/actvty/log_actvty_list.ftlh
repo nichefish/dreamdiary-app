@@ -42,12 +42,12 @@
                         <td class="text-center hidden-table">
                             <div>
                                 ${log.logUserNm!"-"}
-                                <#if (log.authCd! == Code.AUTH_MNGR)>
+                                <#if (log.roleKey! == Code.AUTH_MNGR)>
                                     <i class="bi bi-person-lines-fill text-info ms-1 opacity-75"
-                                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="${log.authNm!"-"}"></i>   <!-- 관리자 -->
-                                <#elseif (log.authCd! == Code.AUTH_USER)>
+                                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="${log.roleName!"-"}"></i>   <!-- 관리자 -->
+                                <#elseif (log.roleKey! == Code.AUTH_USER)>
                                     <i class="bi bi-people-fill ms-1"
-                                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="${log.authNm!"-"}"></i>   <!-- 관리자 -->
+                                       data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="${log.roleName!"-"}"></i>   <!-- 관리자 -->
                                 </#if>
                             </div>
                             <div>(${log.username!})</div>

@@ -1,4 +1,4 @@
-﻿package io.nicheblog.dreamdiary.feature.calendar.schedule.entity;
+package io.nicheblog.dreamdiary.feature.calendar.schedule.entity;
 
 import org.junit.jupiter.api.Test;
 
@@ -26,4 +26,3 @@ class ScheduleParticipantMappingTest {
         assertEquals("schedule_id", joinColumn.name());
     }
 }
-

@@ -63,7 +63,7 @@ public class UserReqstWorker
 
                 // 랜덤 보안 코드 생성 (예: UUID 기반)
                 final String username = userReqst.getUsername();
-                final String jwt = jwtTokenProvider.createToken(username, userReqst.getAuthStrList());
+                final String jwt = jwtTokenProvider.createToken(username, userReqst.getRoleKeyList());
                 log.info("Generated security code for {}: {}", email, jwt);
 
                 // 보안 코드 저장 (DB 또는 캐시 사용 가능) - 예제에서는 Redis 사용 가능
