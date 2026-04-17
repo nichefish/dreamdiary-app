@@ -107,9 +107,9 @@ dF.JournalDiary = (function(): dfModule {
          * @param {string|number} param.journalDayId - 저널 일자 번호.
          * @param {string|number} param.journalChapterId - 저널 챕터 번호.
          * @param {string} param.stdrdDt - 기준 날짜.
-         * @param {string} param.journalDtWeekDay - 기준 날짜 요일.
+         * @param {string} param.journalDateWeekDay - 기준 날짜 요일.
          */
-        regModal: function({ journalDayId, journalChapterId, stdrdDt, journalDtWeekDay }: { journalDayId: string | number; journalChapterId: string | number; stdrdDt: string; journalDtWeekDay: string; }): void {
+        regModal: function({ journalDayId, journalChapterId, stdrdDt, journalDateWeekDay }: { journalDayId: string | number; journalChapterId: string | number; stdrdDt: string; journalDateWeekDay: string; }): void {
             if (isNaN(Number(journalDayId))) return;
             if (isNaN(Number(journalChapterId))) return;
 
@@ -117,7 +117,7 @@ dF.JournalDiary = (function(): dfModule {
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) return;
                 const chapterList = res.rsltObj.chapterList;
-                const obj: Record<string, any> = { journalDayId: journalDayId, journalChapterId: journalChapterId, stdrdDt: stdrdDt, journalDtWeekDay: journalDtWeekDay, chapterList: chapterList };
+                const obj: Record<string, any> = { journalDayId: journalDayId, journalChapterId: journalChapterId, stdrdDt: stdrdDt, journalDateWeekDay: journalDateWeekDay, chapterList: chapterList };
                 /* initialize form. */
                 dF.JournalDiary.initForm(obj);
             });
@@ -395,8 +395,8 @@ dF.JournalDiary = (function(): dfModule {
                     return;
                 }
                 const rsltObj: Record<string, any> = res.rsltObj;
-                const { stdrdDt, journalDtWeekDay } = rsltObj;
-                const date: string = stdrdDt + " (" + journalDtWeekDay + ")" + "\r\n";
+                const { stdrdDt, journalDateWeekDay } = rsltObj;
+                const date: string = stdrdDt + " (" + journalDateWeekDay + ")" + "\r\n";
                 const resultCn: string = rsltObj.content;
                 // 문단/줄바꿈을 먼저 텍스트로 치환
                 const replacedCn: string = resultCn.replace(/<\s*br\s*\/?>/gi, "\n").replace(/<\s*\/?p[^>]*>/gi, "\n");

@@ -51,7 +51,7 @@ public class JournalDiarySpec
         final Join<JournalDiaryEntity, JournalChapterSmpEntity> journalChapterJoin = root.join("journalChapter", JoinType.INNER);
         final Join<JournalChapterSmpEntity, JournalDaySmpEntity> journalDayJoin = journalChapterJoin.join("journalDay", JoinType.INNER);
         final String sort = String.valueOf(searchParamMap.getOrDefault("sort", "desc")).toLowerCase();
-        final Expression<Date> dateExp = builder.coalesce(journalDayJoin.get("journalDt"), journalDayJoin.get("aprxmtDt"));
+        final Expression<Date> dateExp = journalDayJoin.get("journalDate");
         if ("desc".equals(sort)) {
             order.add(builder.desc(dateExp));
         } else {
@@ -85,7 +85,7 @@ public class JournalDiarySpec
         // expressions
         final Join<JournalDiarySmpEntity, JournalChapterSmpEntity> journalChapterJoin = root.join("journalChapter", JoinType.INNER);
         final Join<JournalChapterSmpEntity, JournalDaySmpEntity> journalDayJoin = journalChapterJoin.join("journalDay", JoinType.INNER);
-        final Expression<Date> effectiveDtExp = builder.coalesce(journalDayJoin.get("journalDt"), journalDayJoin.get("aprxmtDt"));
+        final Expression<Date> effectiveDtExp = journalDayJoin.get("journalDate");
         final String createdBy = resolveCreatedBy(searchParamMap);
 
         // 파라미터 비교

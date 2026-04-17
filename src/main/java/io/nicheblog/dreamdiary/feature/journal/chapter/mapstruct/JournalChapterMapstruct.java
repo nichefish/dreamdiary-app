@@ -43,8 +43,8 @@ public abstract class JournalChapterMapstruct
      */
     @Override
     @Named("toDto")
-    @Mapping(target = "stdrdDt", expression = "java(entity.getJournalDay() != null ? DateUtils.asStr(\"Y\".equals(entity.getJournalDay().getDtUnknownYn()) ? entity.getJournalDay().getAprxmtDt() : entity.getJournalDay().getJournalDt(), DatePtn.DATE) : null)")
-    @Mapping(target = "journalDtWeekDay", expression = "java(entity.getJournalDay() != null && entity.getJournalDay().getJournalDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJournalDay().getJournalDt()) : null)")
+    @Mapping(target = "stdrdDt", expression = "java(entity.getJournalDay() != null ? DateUtils.asStr(entity.getJournalDay().getJournalDate(), DatePtn.DATE) : null)")
+    @Mapping(target = "journalDateWeekDay", expression = "java(entity.getJournalDay() != null && entity.getJournalDay().getJournalDate() != null ? DateUtils.getDayOfWeekChinese(entity.getJournalDay().getJournalDate()) : null)")
     @Mapping(target = "yy", source = "journalDay.yy")
     @Mapping(target = "mnth", source = "journalDay.mnth")
     @Mapping(target = "ctgrNm", expression = "java(CodeUtils.getDtlCdNm(\"JOURNAL_CHAPTER_CTGR_CD\", entity.getCtgrCd()))")

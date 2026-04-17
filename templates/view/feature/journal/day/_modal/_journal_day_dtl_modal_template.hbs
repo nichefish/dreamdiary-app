@@ -11,12 +11,8 @@
         <div class="d-flex align-items-center mt-1 gap-1">
             <i class="bi bi-calendar3 fs-6 me-1"></i>
             {{stdrdDt}}
-            {{#if (exists journalDt)}}
-                <span class="fs-8 text-gray-600">({{journalDtWeekDay}})</span>
-            {{else}}
-                <i class='bi bi-exclamation-circle cursor-pointer text-noti blink fs-7 ms-2'
-                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="불확실한 일자입니다."></i>
-            {{/if}}
+            <span class="fs-8 text-gray-600">({{journalDateWeekDay}})</span>
+            <span class="badge badge-light-primary ms-2">{{journalDatePrecision}}</span>
             <span class="fs-7 ms-4 text-muted">{{{weather}}}</span>
         </div>
         <div class="mt-3">

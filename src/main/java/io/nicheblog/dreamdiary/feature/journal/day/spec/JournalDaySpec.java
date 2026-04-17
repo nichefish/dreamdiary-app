@@ -44,13 +44,13 @@ public class JournalDaySpec
             final CriteriaBuilder builder,
             final Map<String, Object> searchParamMap
     ) {
-        // 정렬 순서 변경 :: 날짜 오름차순 정렬, journalDt 부재시 aprxmtDt 사용
+        // 정렬 순서 변경 :: 날짜 오름차순 정렬
         final List<Order> order = new ArrayList<>();
         final String sortStr = (String) searchParamMap.get("sort");
         if (StringUtils.isNotEmpty(sortStr) && "DESC".equals(sortStr)) {
-            order.add(builder.desc(builder.coalesce(root.get("journalDt"), root.get("aprxmtDt"))));
+            order.add(builder.desc(root.get("journalDate")));
         } else {
-            order.add(builder.asc(builder.coalesce(root.get("journalDt"), root.get("aprxmtDt"))));
+            order.add(builder.asc(root.get("journalDate")));
         }
         query.orderBy(order);
     }
@@ -74,10 +74,7 @@ public class JournalDaySpec
 
         final List<Predicate> predicate = new ArrayList<>();
 
-        // Use journalDt if available, otherwise aprxmtDt
-        final Expression<Date> journalDtExp = root.get("journalDt");
-        final Expression<Date> aprxmtDtExp = root.get("aprxmtDt");
-        final Expression<Date> effectiveDtExp = builder.coalesce(journalDtExp, aprxmtDtExp);
+        final Expression<Date> effectiveDtExp = root.get("journalDate");
         final String createdBy = resolveCreatedBy(searchParamMap);
 
         // 파라미터 비교

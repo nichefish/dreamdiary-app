@@ -76,7 +76,7 @@ public class JournalDreamExportService {
         String prevDate = null;
         for (final JournalDreamDto dream : journalDreamList) {
             final String stdrdDt = dream.getStdrdDt();
-            final String journalWeekDay = StringUtils.isEmpty(dream.getJournalDtWeekDay()) ? "" : "(" + dream.getJournalDtWeekDay() + ")";
+            final String journalWeekDay = StringUtils.isEmpty(dream.getJournalDateWeekDay()) ? "" : "(" + dream.getJournalDateWeekDay() + ")";
             final String date = stdrdDt + journalWeekDay;
 
             if (!Objects.equals(prevDate, date)) {

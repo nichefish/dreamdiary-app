@@ -37,8 +37,7 @@ public abstract class JournalDayMapstruct
      */
     @Override
     @Named("toEntity")
-    @Mapping(target = "journalDt", expression = "java(DateUtils.asDate(dto.getJournalDt()))")
-    @Mapping(target = "aprxmtDt", expression = "java(DateUtils.asDate(dto.getAprxmtDt()))")
+    @Mapping(target = "journalDate", expression = "java(DateUtils.asDate(dto.getJournalDate()))")
     @Mapping(target = "weekStartDt", expression = "java(DateUtils.asDate(dto.getWeekStartDt()))")
     public abstract JournalDayEntity toEntity(final JournalDayDto dto) throws Exception;
 
@@ -49,8 +48,7 @@ public abstract class JournalDayMapstruct
      * @param entity 업데이트할 대상 Entity 객체
      */
     @Override
-    @Mapping(target = "journalDt", expression = "java(DateUtils.asDate(dto.getJournalDt()))")
-    @Mapping(target = "aprxmtDt", expression = "java(DateUtils.asDate(dto.getAprxmtDt()))")
+    @Mapping(target = "journalDate", expression = "java(DateUtils.asDate(dto.getJournalDate()))")
     @Mapping(target = "weekStartDt", expression = "java(DateUtils.asDate(dto.getWeekStartDt()))")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     public abstract void updateFromDto(final JournalDayDto dto, final @MappingTarget JournalDayEntity entity) throws Exception;
@@ -63,10 +61,9 @@ public abstract class JournalDayMapstruct
      */
     @Override
     @Named("toDto")
-    @Mapping(target = "journalDt", expression = "java(DateUtils.asStr(entity.getJournalDt(), DatePtn.DATE))")
-    @Mapping(target = "journalDtWeekDay", expression = "java(entity.getJournalDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJournalDt()) : null)")
-    @Mapping(target = "aprxmtDt", expression = "java(DateUtils.asStr(entity.getAprxmtDt(), DatePtn.DATE))")
-    @Mapping(target = "stdrdDt", expression = "java(DateUtils.asStr(\"Y\".equals(entity.getDtUnknownYn()) ? entity.getAprxmtDt() : entity.getJournalDt(), DatePtn.DATE))")
+    @Mapping(target = "journalDate", expression = "java(DateUtils.asStr(entity.getJournalDate(), DatePtn.DATE))")
+    @Mapping(target = "journalDateWeekDay", expression = "java(entity.getJournalDate() != null ? DateUtils.getDayOfWeekChinese(entity.getJournalDate()) : null)")
+    @Mapping(target = "stdrdDt", expression = "java(DateUtils.asStr(entity.getJournalDate(), DatePtn.DATE))")
     @Mapping(target = "weekStartDt", expression = "java(DateUtils.asStr(entity.getWeekStartDt(), DatePtn.DATE))")
     @Mapping(target = "chapterList", source = "journalChapterList")
     public abstract JournalDayDto toDto(final JournalDayEntity entity) throws Exception;

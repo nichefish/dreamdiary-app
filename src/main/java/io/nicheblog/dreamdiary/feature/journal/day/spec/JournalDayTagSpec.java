@@ -66,7 +66,7 @@ public class JournalDayTagSpec
         // 태그 조인
         final Join<JournalDayTagEntity, JournalDayTagContentEntity> journalDayTagJoin = root.join("journalDayTagList", JoinType.INNER);
         final Join<JournalDayTagContentEntity, JournalDaySmpEntity> journalDayJoin = journalDayTagJoin.join("journalDay", JoinType.INNER);
-        final Expression<Date> effectiveDtExp = builder.coalesce(journalDayJoin.get("journalDt"), journalDayJoin.get("aprxmtDt"));
+        final Expression<Date> effectiveDtExp = journalDayJoin.get("journalDate");
 
         predicate.add(builder.equal(journalDayTagJoin.get("refContentType"), ContentType.JOURNAL_DAY.key));
         // 파라미터 비교

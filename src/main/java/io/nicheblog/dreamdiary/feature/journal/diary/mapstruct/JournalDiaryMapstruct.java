@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEnti
 import io.nicheblog.dreamdiary.feature.journal.diary.entity.JournalDiaryEntity;
 import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryDto;
 import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryPostDto;
+import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDatePrecision;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
@@ -27,7 +28,7 @@ import javax.persistence.PersistenceContext;
 @Mapper(
     componentModel = "spring",
     unmappedTargetPolicy = ReportingPolicy.IGNORE,
-    imports = { DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CodeUtils.class },
+    imports = { DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CodeUtils.class, JournalDatePrecision.class },
     builder = @Builder(disableBuilder = true)
 )
 public abstract class JournalDiaryMapstruct
@@ -68,9 +69,9 @@ public abstract class JournalDiaryMapstruct
     @Named("toDto")
     @Mapping(target = "journalChapterId", source = "journalChapter.id")
     @Mapping(target = "journalDayId", source = "journalChapter.journalDayId")
-    @Mapping(target = "stdrdDt", expression = "java(entity.getJournalChapter().getJournalDay() != null ? DateUtils.asStr(\"Y\".equals(entity.getJournalChapter().getJournalDay().getDtUnknownYn()) ? entity.getJournalChapter().getJournalDay().getAprxmtDt() : entity.getJournalChapter().getJournalDay().getJournalDt(), DatePtn.DATE) : null)")
-    @Mapping(target = "dtUnknownYn", expression = "java(entity.getJournalChapter().getJournalDay() != null ? entity.getJournalChapter().getJournalDay().getDtUnknownYn() : \"N\")")
-    @Mapping(target = "journalDtWeekDay", expression = "java(entity.getJournalChapter().getJournalDay() != null && entity.getJournalChapter().getJournalDay().getJournalDt() != null ? DateUtils.getDayOfWeekChinese(entity.getJournalChapter().getJournalDay().getJournalDt()) : null)")
+    @Mapping(target = "stdrdDt", expression = "java(entity.getJournalChapter().getJournalDay() != null ? DateUtils.asStr(entity.getJournalChapter().getJournalDay().getJournalDate(), DatePtn.DATE) : null)")
+    @Mapping(target = "journalDatePrecision", expression = "java(entity.getJournalChapter().getJournalDay() != null ? entity.getJournalChapter().getJournalDay().getJournalDatePrecision() : JournalDatePrecision.EXACT)")
+    @Mapping(target = "journalDateWeekDay", expression = "java(entity.getJournalChapter().getJournalDay() != null && entity.getJournalChapter().getJournalDay().getJournalDate() != null ? DateUtils.getDayOfWeekChinese(entity.getJournalChapter().getJournalDay().getJournalDate()) : null)")
     @Mapping(target = "yy", source = "journalChapter.journalDay.yy")
     @Mapping(target = "mnth", source = "journalChapter.journalDay.mnth")
     @Mapping(target = "markdownContent", expression = "java(StringUtils.isEmpty(entity.getContent()) ? \"-\" : MarkdownUtils.markdown(entity.getContent()))")

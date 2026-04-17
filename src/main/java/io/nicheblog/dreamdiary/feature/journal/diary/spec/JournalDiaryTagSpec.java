@@ -69,7 +69,7 @@ public class JournalDiaryTagSpec
         final Join<JournalDiaryTagContentEntity, JournalDiarySmpEntity> journalDiaryJoin = journalDiaryTagJoin.join("journalDiary", JoinType.INNER);
         final Join<JournalDiarySmpEntity, JournalChapterSmpEntity> journalChapterJoin = journalDiaryJoin.join("journalChapter", JoinType.INNER);
         final Join<JournalChapterSmpEntity, JournalDaySmpEntity> journalDayJoin = journalChapterJoin.join("journalDay", JoinType.INNER);
-        final Expression<Date> effectiveDtExp = builder.coalesce(journalDayJoin.get("journalDt"), journalDayJoin.get("aprxmtDt"));
+        final Expression<Date> effectiveDtExp = journalDayJoin.get("journalDate");
 
         predicate.add(builder.equal(journalDiaryTagJoin.get("refContentType"), ContentType.JOURNAL_DIARY.key));
 

@@ -45,7 +45,7 @@ public class JournalIntrptSpec
         final List<Order> order = new ArrayList<>();
         final Join<JournalIntrptEntity, JournalDreamSmpEntity> journalDreamJoin = root.join("journalDream", JoinType.INNER);
         final Join<JournalDreamSmpEntity, JournalDaySmpEntity> journalDayJoin = journalDreamJoin.join("journalDay", JoinType.INNER);
-        order.add(builder.desc(builder.coalesce(journalDayJoin.get("journalDt"), journalDayJoin.get("aprxmtDt"))));
+        order.add(builder.desc(journalDayJoin.get("journalDate")));
         order.add(builder.asc(journalDreamJoin.get("sortOrder")));
         order.add(builder.asc(root.get("sortOrder")));
         query.orderBy(order);
@@ -74,7 +74,7 @@ public class JournalIntrptSpec
         // expressions
         final Join<JournalIntrptSmpEntity, JournalDreamSmpEntity> journalDreamJoin = root.join("journalDream", JoinType.INNER);
         final Join<JournalDreamSmpEntity, JournalDaySmpEntity> journalDayJoin = journalDreamJoin.join("journalDay", JoinType.INNER);
-        final Expression<Date> effectiveDtExp = builder.coalesce(journalDayJoin.get("journalDt"), journalDayJoin.get("aprxmtDt"));
+        final Expression<Date> effectiveDtExp = journalDayJoin.get("journalDate");
 
         // 파라미터 비교
         for (final String key : searchParamMap.keySet()) {

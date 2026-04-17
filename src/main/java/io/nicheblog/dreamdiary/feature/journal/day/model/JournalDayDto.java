@@ -10,10 +10,10 @@ import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalPeriodModule
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterCtgrHintDto;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterSmpDto;
+import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDatePrecision;
 import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.collections4.CollectionUtils;
@@ -51,20 +51,14 @@ public class JournalDayDto
     /** 저널 일자 */
     @Size(max = 10, message = "일자는 최대 10자여야 합니다.")
     @Pattern(regexp = "(\\d{4}-\\d{2}-\\d{2}|\\s*)", message = "일자는 'YYYY-MM-DD' 형식이어야 합니다.")
-    private String journalDt;
+    private String journalDate;
 
     /** 저널 일자 요일 */
-    private String journalDtWeekDay;
+    private String journalDateWeekDay;
 
-    /** 날짜미상 여부 (Y/N) */
+    /** 저널 날짜 정밀도 (EXACT | APPROXIMATE | UNKNOWN) */
     @Builder.Default
-    @Pattern(regexp = "^[YN]$", groups = UpdateState.class)
-    private String dtUnknownYn = "N";
-
-    /** 대략일자 (날짜미상시 해당일자 이후에 표기) */
-    @Size(max = 10, message = "일자는 최대 10자여야 합니다.")
-    @Pattern(regexp = "(\\d{4}-\\d{2}-\\d{2}|\\s*)", message = "일자는 'YYYY-MM-DD' 형식이어야 합니다.")
-    private String aprxmtDt;
+    private JournalDatePrecision journalDatePrecision = JournalDatePrecision.EXACT;
 
     /** 기준일자 (저널일자 또는 대략일자) */
     private String stdrdDt;
@@ -106,8 +100,7 @@ public class JournalDayDto
      * Getter :: 기준일자
      */
     public String getStdrdDt() {
-        if (!StringUtils.isEmpty(this.journalDt)) return journalDt;
-        return aprxmtDt;
+        return journalDate;
     }
 
     /**

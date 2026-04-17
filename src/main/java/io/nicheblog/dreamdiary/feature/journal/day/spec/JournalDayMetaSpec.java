@@ -67,7 +67,7 @@ public class JournalDayMetaSpec
         // 메타 조인
         final Join<JournalDayMetaEntity, JournalDayMetaContentEntity> journalDayMetaJoin = root.join("journalDayMetaList", JoinType.INNER);
         final Join<JournalDayMetaContentEntity, JournalDaySmpEntity> journalDayJoin = journalDayMetaJoin.join("journalDay", JoinType.INNER);
-        final Expression<Date> effectiveDtExp = builder.coalesce(journalDayJoin.get("journalDt"), journalDayJoin.get("aprxmtDt"));
+        final Expression<Date> effectiveDtExp = journalDayJoin.get("journalDate");
 
         predicate.add(builder.equal(journalDayMetaJoin.get("refContentType"), ContentType.JOURNAL_DAY.key));
         // 파라미터 비교

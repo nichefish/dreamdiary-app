@@ -136,7 +136,7 @@ const Page: Page = (function(): Page {
 
                 return {
                     ...day,
-                    journalDtWeekDay: day?.journalDtWeekDay ?? cF.date.getDayweekStr(day?.stdrdDt, "KO"),
+                    journalDateWeekDay: day?.journalDateWeekDay ?? cF.date.getDayweekStr(day?.stdrdDt, "KO"),
                     tag: day?.tag ?? { list: [] },
                     journalChapterList,
                     journalDreamList,
