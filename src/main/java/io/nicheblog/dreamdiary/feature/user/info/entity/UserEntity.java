@@ -78,8 +78,8 @@ public class UserEntity
     @BatchSize(size = 10)
     @Fetch(FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("사용자 권한 정보")
-    private List<UserAuthRoleEntity> authList;
+    @Comment("사용자 역할(user_role) 목록")
+    private List<UserRoleEntity> userRoles;
 
     /** 접속 IP 사용 여부 (Y/N) */
     @Builder.Default
@@ -154,14 +154,13 @@ public class UserEntity
     /**
      * tagify 문자열로부터 접속 가능 IP 목록 세팅
      *
-     * @param authStr 쉼표(,)로 구분된 권한 정보 문자열
+     * @param roleKeysCsv 쉼표(,)로 구분된 역할 키 문자열
      */
-    public void setAuthList(final String authStr) {
-        if (StringUtils.isEmpty(authStr)) return;
-        // 권한 정보 문자열에서 권한 목록 생성
-        final List<String> authStrList = List.of(authStr.split(","));
-        this.setAuthList(authStrList.stream()
-                .map(UserAuthRoleEntity::new)
+    public void setUserRoles(final String roleKeysCsv) {
+        if (StringUtils.isEmpty(roleKeysCsv)) return;
+        final List<String> keys = List.of(roleKeysCsv.split(","));
+        this.setUserRoles(keys.stream()
+                .map(UserRoleEntity::new)
                 .collect(Collectors.toList()));
     }
 
@@ -197,15 +196,15 @@ public class UserEntity
      * 서브엔티티 List 처리를 위한 Setter Override
      * 한 번 Entity가 생성된 이후부터는 새 List를 할당하면 안 되고 계속 JPA 이력이 추적되어야 한다.
      *
-     * @param authList - 설정할 객체 리스트
+     * @param userRoles 설정할 사용자-역할 엔티티 목록
      */
-    public void setAuthList(final List<UserAuthRoleEntity> authList) {
-        if (CollectionUtils.isEmpty(authList)) return;
-        if (this.authList == null) {
-            this.authList = new ArrayList<>(authList);
+    public void setUserRoles(final List<UserRoleEntity> userRoles) {
+        if (CollectionUtils.isEmpty(userRoles)) return;
+        if (this.userRoles == null) {
+            this.userRoles = new ArrayList<>(userRoles);
         } else {
-            this.authList.clear();
-            this.authList.addAll(authList);
+            this.userRoles.clear();
+            this.userRoles.addAll(userRoles);
         }
     }
 

@@ -76,14 +76,14 @@ CREATE TABLE IF NOT EXISTS user_signup_request (
 
 -- -----------------------
 
--- 권한 (auth_role)
+-- 권한 (role)
 -- @extends: BaseAuditEntity
-CREATE TABLE IF NOT EXISTS auth_role (
+CREATE TABLE IF NOT EXISTS `role` (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '권한 ID',
-    auth_cd VARCHAR(50) COMMENT '권한 코드',
-    auth_nm VARCHAR(50) COMMENT '권한 이름',
+    role_key VARCHAR(50) COMMENT '권한 코드',
+    role_name VARCHAR(50) COMMENT '권한 이름',
     auth_level INT COMMENT '권한 레벨',
-    top_auth_cd VARCHAR(50) COMMENT '상위 권한 코드',
+    parent_role_id INT NULL COMMENT '상위 권한 ID',
     -- STATE
     sort_order INT DEFAULT 0 COMMENT '정렬 순서',
     use_yn CHAR(1) DEFAULT 'Y' COMMENT '사용 여부 (Y/N)',
@@ -94,26 +94,23 @@ CREATE TABLE IF NOT EXISTS auth_role (
     updated_at DATETIME COMMENT '수정일시',
     deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
-    UNIQUE KEY uk_auth_role_auth_cd (auth_cd),
-    FOREIGN KEY (top_auth_cd) REFERENCES auth_role(auth_cd)
+    UNIQUE KEY uk_role_role_key (role_key),
+    FOREIGN KEY (parent_role_id) REFERENCES `role` (id)
 ) COMMENT = '권한';
 
--- 사용자 권한 (user_auth_role)
+-- 사용자 권한 (user_role)
 -- @extends: BaseCrudEntity
-CREATE TABLE IF NOT EXISTS user_auth_role (
+CREATE TABLE IF NOT EXISTS user_role (
     id INT PRIMARY KEY AUTO_INCREMENT COMMENT '사용자 권한 ID',
     user_id INT COMMENT '사용자 고유 번호',
-    auth_cd VARCHAR(50) COMMENT '권한 코드',
-    auth_role_id INT COMMENT '권한 ID',
+    role_id INT COMMENT '권한 ID',
     -- AUDIT
     deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
     FOREIGN KEY(user_id) REFERENCES user (id),
-    FOREIGN KEY(auth_role_id) REFERENCES auth_role (id),
-    FOREIGN KEY(auth_cd) REFERENCES auth_role (auth_cd),
+    FOREIGN KEY(role_id) REFERENCES `role` (id),
     INDEX (user_id),
-    INDEX (auth_role_id),
-    INDEX (auth_cd)
+    INDEX (role_id)
 ) COMMENT = '사용자 권한';
 
 -- -----------------------

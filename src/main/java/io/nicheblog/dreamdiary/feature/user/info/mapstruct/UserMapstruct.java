@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.user.info.mapstruct;
 
 import io.nicheblog.dreamdiary.feature.user.emplym.mapstruct.UserEmplymMapstruct;
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserAuthRoleEntity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
+import io.nicheblog.dreamdiary.feature.user.info.entity.UserRoleEntity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserStateEntity;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.feature.user.profile.mapstruct.UserProfileMapstruct;
@@ -42,7 +42,7 @@ public interface UserMapstruct
     @Mapping(target = "password", expression = "java(null)")      // Dto로 패스워드 전달하지 않음
     @Mapping(target = "emailId", expression = "java(StringUtils.isNotEmpty(entity.getEmail()) ? entity.getEmail().substring(0, entity.getEmail().indexOf('@')) : \"\")")
     @Mapping(target = "emailDomain", expression = "java(StringUtils.isNotEmpty(entity.getEmail()) ? entity.getEmail().substring(entity.getEmail().indexOf('@')+1) : \"\")")
-    @Mapping(target = "authStrList", expression = "java(entity.getAuthList().stream().map(UserAuthRoleEntity::getAuthCd).collect(Collectors.toList()))")      // 접속IP tagify 문자열 세팅
+    @Mapping(target = "roleKeyList", expression = "java(CollectionUtils.isEmpty(entity.getUserRoles()) ? java.util.List.of() : entity.getUserRoles().stream().map(UserRoleEntity::getRoleKey).collect(Collectors.toList()))")
     @Mapping(target = "useAllowedIp", expression = "java(\"Y\".equals(entity.getUseAllowedIpYn()))")
     @Mapping(target = "allowedIpListStr", expression = "java(CollectionUtils.isEmpty(entity.getAllowedIpStrList()) ? null : String.join(\",\", entity.getAllowedIpStrList()))")      // 접속IP tagify 문자열 세팅
     @Mapping(target = "profile", expression = "java(UserProfileMapstruct.INSTANCE.toDto(entity.getProfile()))")
@@ -66,7 +66,6 @@ public interface UserMapstruct
     @Override
     @Mapping(target = "email", expression = "java(dto.getEmailId() + \"@\" + dto.getEmailDomain())")
     @Mapping(target = "allowedIpList", expression = "java(dto.getAllowedIpListStr())")      // tagify 문자열 파싱
-    @Mapping(target = "authList", expression = "java(dto.getAuthListStr())")        // multiselect 문자열 파싱
     @Mapping(target = "profile", expression = "java(UserProfileMapstruct.INSTANCE.toEntity(dto.getProfile()))")
     @Mapping(target = "emplym", expression = "java(UserEmplymMapstruct.INSTANCE.toEntity(dto.getEmplym()))")
     UserEntity toEntity(final UserDto dto) throws Exception;
@@ -80,11 +79,11 @@ public interface UserMapstruct
     @AfterMapping
     private void mapToEntityFields(final UserDto dto, final @MappingTarget UserEntity entity) throws Exception {
         // multiselect에서 날아온 권한 문자열 세팅
-        String authListStr = dto.getAuthListStr();
-        if (!StringUtils.isEmpty(authListStr)) {
-            List<String> authStrList = List.of(authListStr.split(","));
-            entity.setAuthList(authStrList.stream()
-                    .map(UserAuthRoleEntity::new).collect(Collectors.toList()));
+        final String roleKeysStr = dto.getRoleKeysStr();
+        if (!StringUtils.isEmpty(roleKeysStr)) {
+            final List<String> keys = List.of(roleKeysStr.split(","));
+            entity.setUserRoles(keys.stream()
+                    .map(UserRoleEntity::new).collect(Collectors.toList()));
         }
     }
 
@@ -97,7 +96,6 @@ public interface UserMapstruct
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "allowedIpList", expression = "java(dto.getAllowedIpListStr())")      // tagify 문자열 파싱
-    @Mapping(target = "authList", expression = "java(dto.getAuthListStr())")        // multiselect 문자열 파싱
     @Mapping(target = "profile", expression = "java(entity.getProfileUpdt(dto.getProfile()))")            // 영속성 유지를 위해 update 로직을 타야 한다.
     @Mapping(target = "emplym", expression = "java(entity.getEmplymUpdt(dto.getEmplym()))")         // 영속성 유지를 위해 update 로직을 타야 한다.
     void updateFromDto(final UserDto dto, final @MappingTarget UserEntity entity) throws Exception;

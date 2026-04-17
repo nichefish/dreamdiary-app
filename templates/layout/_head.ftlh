@@ -78,12 +78,12 @@
                 email: "${(authInfo.email)!}",
                 profileImageUrl: "${(authInfo.profileImageUrl)!}",
                 isMngr: ${((authInfo.isMngr)!false)?c},
-                authList: [
-                    <#list (authInfo.authList)![] as auth>
+                roles: [
+                    <#list (authInfo.roles)![] as role>
                         {
-                            authCd: "${auth.authCd!}",
-                            authNm: "${auth.authNm!}",
-                        }<#if auth_has_next>,</#if>
+                            roleKey: "${role.roleKey!}",
+                            roleName: "${role.roleName!}",
+                        }<#if role_has_next>,</#if>
                     </#list>
                 ]
             });

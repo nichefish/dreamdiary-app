@@ -12,7 +12,7 @@ import lombok.experimental.SuperBuilder;
 import java.util.List;
 
 /**
- * AuthRoleDto
+ * RoleDto
  * <pre>
  *  (공통) 권한 정보 Dto.
  * </pre>
@@ -23,24 +23,24 @@ import java.util.List;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class AuthRoleDto
+public class RoleDto
         extends BaseCrudDto
         implements Identifiable<Integer>, StateCmpstnModule {
 
     /** 내부 PK (id) */
     private Integer id;
-    /** 권한 코드 */
-    private String authCd;
-    /** 권한 이름 */
-    private String authNm;
+    /** 역할 키 (비즈니스 키) */
+    private String roleKey;
+    /** 역할 표시명 */
+    private String roleName;
     /** 권한 레벨 */
     private Integer authLevel;
-    /** 상위 권한 코드 (null일시 최상위 권한) */
-    private String topAuthCd;
+    /** 상위 권한 ID (null이면 최상위) */
+    private Integer parentRoleId;
     /** 정렬 순서 */
     private Integer sortOrder;
-    /** 하위 권한 정보 */
-    private List<AuthRoleDto> subAuthList;
+    /** 하위 역할 목록 */
+    private List<RoleDto> subRoleList;
 
     /* ----- */
 

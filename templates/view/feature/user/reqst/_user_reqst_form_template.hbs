@@ -101,7 +101,7 @@
                 <div class="row mb-4">
                     <div class="col-xl-2">
                         <div class="fw-bold col-form-label text-lg-center text-sm-end required">
-                            <label for="authCd" class="cursor-help"
+                            <label for="roleKey" class="cursor-help"
                                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="계정 권한을 설정합니다.&#10;(계정 신청시 사용자 권한으로&#10;고정됩니다.)">
                                 권한
                                 <i class="bi bi-question-circle"></i>
@@ -111,8 +111,8 @@
                     <div class="col-xl-2 col-form-label">
                         <i class="bi bi-people-fill me-1 blink-slow"></i>
                         <span class="fw-bold text-gray-600">사용자</span>
-                        <input type="hidden" name="authList[0].authCd" id="authCd" value="${Code.AUTH_USER!}">
-                        <div id="authCd_validate_span"></div>
+                        <input type="hidden" name="userRoles[0].roleKey" id="roleKey" value="${Code.AUTH_USER!}">
+                        <div id="roleKey_validate_span"></div>
                     </div>
                 </div>
                 <#--begin::Row-->

@@ -42,8 +42,8 @@ public class AuthInfo
     /** 사용자 PW */
     private String password;
 
-    /** 권한 목록 */
-    private List<AuthRoleDto> authList;
+    /** Spring Security에 매핑할 부여 역할 목록 (RoleDto) */
+    private List<RoleDto> roles;
 
     /** 사용자 이름 */
     private String nickname;
@@ -130,13 +130,13 @@ public class AuthInfo
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (CollectionUtils.isEmpty(this.authList)) throw new RuntimeException(MessageUtils.getMessage("msg.user.auth.empty"));
+        if (CollectionUtils.isEmpty(this.roles)) throw new RuntimeException(MessageUtils.getMessage("msg.user.auth.empty"));
 
-        return this.authList.stream()
+        return this.roles.stream()
                 .map(entity -> {
                     try {
-                        if (Code.AUTH_DEV.equals(entity.getAuthCd())) return new SimpleGrantedAuthority(Constant.ROLE_MNGR);
-                        return new SimpleGrantedAuthority("ROLE_" + entity.getAuthCd());
+                        if (Code.AUTH_DEV.equals(entity.getRoleKey())) return new SimpleGrantedAuthority(Constant.ROLE_MNGR);
+                        return new SimpleGrantedAuthority("ROLE_" + entity.getRoleKey());
                     } catch (final Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -215,6 +215,14 @@ public class AuthInfo
     }
 
     /**
+     * 템플릿/헤더용: 첫 번째 부여 역할의 키 (아이콘 분기 등)
+     */
+    public String getPrimaryRoleKey() {
+        if (CollectionUtils.isEmpty(this.roles)) return null;
+        return this.roles.get(0).getRoleKey();
+    }
+
+    /**
      * UsernamePasswordAuthenticationToken 생성
      */
     public UsernamePasswordAuthenticationToken getAuthToken() {
@@ -237,9 +245,9 @@ public class AuthInfo
         this.needsPasswordReset = "N";
 
         // ===== 권한 처리 =====
-        this.authList = authorities.stream()
-                .map(auth -> AuthRoleDto.builder()
-                        .authCd(auth.getAuthority().replace("ROLE_", ""))
+        this.roles = authorities.stream()
+                .map(auth -> RoleDto.builder()
+                        .roleKey(auth.getAuthority().replace("ROLE_", ""))
                         .build())
                 .collect(Collectors.toList());
 

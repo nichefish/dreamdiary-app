@@ -1,6 +1,6 @@
  package io.nicheblog.dreamdiary.feature.user.info.controller;
 
- import io.nicheblog.dreamdiary.auth.security.service.AuthRoleService;
+ import io.nicheblog.dreamdiary.auth.security.service.RoleService;
  import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
  import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
  import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
@@ -52,7 +52,7 @@ public class UserPageController
 
     private final UserService userService;
     private final UserSignupRequestRepository userSignupRequestRepository;
-    private final AuthRoleService authRoleService;
+    private final RoleService roleService;
     private final CodeLookupService codeLookupService;
 
     /**
@@ -120,7 +120,7 @@ public class UserPageController
         final Map<String, Object> searchParamMap = new HashMap<>() {{
             put("useYn", "Y");
         }};
-        model.addAttribute("authRoleList", authRoleService.getListDto(searchParamMap));
+        model.addAttribute("roleList", roleService.getListDto(searchParamMap));
         // 코드 정보 모델에 추가
         codeLookupService.setCdListToModel(Code.AUTH_CD, model);
         codeLookupService.setCdListToModel(Code.TEAM_CD, model);
@@ -184,7 +184,7 @@ public class UserPageController
         final Map<String, Object> searchParamMap = new HashMap<>() {{
             put("useYn", "Y");
         }};
-        model.addAttribute("authRoleList", authRoleService.getListDto(searchParamMap));
+        model.addAttribute("roleList", roleService.getListDto(searchParamMap));
         // 코드 정보 모델에 추가
         codeLookupService.setCdListToModel(Code.AUTH_CD, model);
         codeLookupService.setCdListToModel(Code.TEAM_CD, model);

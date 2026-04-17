@@ -1,4 +1,4 @@
-﻿package io.nicheblog.dreamdiary.global;
+package io.nicheblog.dreamdiary.global;
 
 import org.junit.jupiter.api.Test;
 
@@ -9,7 +9,7 @@ class UrlScheduleNamingTest {
     @Test
     void scheduleAppUrlUsesRenamedPath() {
         assertEquals("/app/schedule/cal.do", Url.SCHEDULE_CAL);
-        assertFalse(Url.SCHEDULE_CAL.contains("schedule"));
+        assertTrue(Url.SCHEDULE_CAL.contains("/schedule/"));
     }
 
     @Test
@@ -31,4 +31,3 @@ class UrlScheduleNamingTest {
         assertEquals(Url.SCHEDULE_DEL_AJAX, Url.SCHEDULE_DEL_AJAX);
     }
 }
-

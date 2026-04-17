@@ -13,7 +13,7 @@ import javax.persistence.Table;
 import java.util.List;
 
 /**
- * AuthRoleEntity
+ * RoleEntity
  * <pre>
  *  (공통) 권한 정보 Entity.
  * </pre>
@@ -21,14 +21,14 @@ import java.util.List;
  * @author nichefish
  */
 @Entity
-@Table(name = "auth_role")
+@Table(name = "role")
 @Getter
 @Setter
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "deleted_at IS NULL")
-public class AuthRoleEntity
+public class RoleEntity
         extends BaseCrudEntity
         implements Usable {
 
@@ -38,21 +38,21 @@ public class AuthRoleEntity
     @Column(name = "id")
     private Integer id;
 
-    /** 권한 코드 (비즈니스 키, UNIQUE) */
-    @Column(name = "auth_cd", length = 50, unique = true)
-    private String authCd;
+    /** 역할 키 (비즈니스 키, UNIQUE) — DB: role_key */
+    @Column(name = "role_key", length = 50, unique = true)
+    private String roleKey;
 
-    /** 권한 이름 */
-    @Column(name = "auth_nm", length = 50)
-    private String authNm;
+    /** 역할 표시명 — DB: role_name */
+    @Column(name = "role_name", length = 50)
+    private String roleName;
 
     /** 권한 레벨 */
     @Column(name = "auth_level")
     private Integer authLevel;
 
-    /** 상위 권한 코드 (null일시 최상위 권한) */
-    @Column(name = "top_auth_cd", length = 50)
-    private String topAuthCd;
+    /** 상위 권한 ID (null이면 최상위) */
+    @Column(name = "parent_role_id")
+    private Integer parentRoleId;
 
     /** 정렬 순서 */
     @Column(name = "sort_order", columnDefinition = "INT DEFAULT 0")
@@ -63,13 +63,13 @@ public class AuthRoleEntity
     @Column(name = "use_yn", length = 1, columnDefinition = "CHAR DEFAULT 'Y'")
     private String useYn = "N";
 
-    /** 하위 권한 정보 */
+    /** 하위 역할 목록 */
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "auth_cd", referencedColumnName = "top_auth_cd", insertable = false, updatable = false)
+    @JoinColumn(name = "parent_role_id", referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(value = FetchMode.JOIN)
     @BatchSize(size = 10)
     @OrderBy("sortOrder ASC")
     @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("하위 권한 정보")
-    private List<AuthRoleEntity> subAuthList;
+    @Comment("하위 역할 목록")
+    private List<RoleEntity> subRoleList;
 }

@@ -6,8 +6,8 @@ import io.nicheblog.dreamdiary.feature.user.emplym.model.UserEmplymDtoTestFactor
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserAllowedIpEntity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.feature.user.info.mapstruct.UserMapstruct;
-import io.nicheblog.dreamdiary.feature.user.info.model.UserAuthRoleDto;
-import io.nicheblog.dreamdiary.feature.user.info.model.UserAuthRoleDtoTestFactory;
+import io.nicheblog.dreamdiary.feature.user.info.model.UserRoleDto;
+import io.nicheblog.dreamdiary.feature.user.info.model.UserRoleDtoTestFactory;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
 import io.nicheblog.dreamdiary.feature.user.info.model.UserDtoTestFactory;
 import io.nicheblog.dreamdiary.feature.user.info.model.emplym.UserEmplymDto;
@@ -75,9 +75,9 @@ class UserMapstructToEntityTest {
     void testToEntity_checkAuth() throws Exception {
         // Given::
         // AUTH
-        final UserAuthRoleDto aa = UserAuthRoleDtoTestFactory.create(Auth.USER);
-        final UserAuthRoleDto bb = UserAuthRoleDtoTestFactory.create(Auth.MNGR);
-        userDto.setAuthList(List.of(aa, bb));
+        final UserRoleDto aa = UserRoleDtoTestFactory.create(Auth.USER);
+        final UserRoleDto bb = UserRoleDtoTestFactory.create(Auth.MNGR);
+        userDto.setUserRoles(List.of(aa, bb));
 
         // When::
         final UserEntity entity = userMapstruct.toEntity(userDto);
@@ -85,10 +85,10 @@ class UserMapstructToEntityTest {
         // Then::
         assertNotNull(entity, "변환된 사용자 Entity는 null일 수 없습니다.");
         // 권한 관련 매핑 검증
-        assertNotNull(entity.getAuthList(), "변환된 사용자 권한 목록은 null일 수 없습니다.");
-        assertEquals(2, entity.getAuthList().size(), "사용자 권한 목록 크기가 일치하지 않습니다.");
-        assertEquals(Code.AUTH_USER, entity.getAuthList().get(0).getAuthCd(), "사용자 권한 목록에서 권한 정보가 제대로 매핑되지 않았습니다.");
-        assertEquals(Code.AUTH_MNGR, entity.getAuthList().get(1).getAuthCd(), "사용자 권한 목록에서 권한 정보가 제대로 매핑되지 않았습니다.");
+        assertNotNull(entity.getUserRoles(), "변환된 사용자 역할 목록은 null일 수 없습니다.");
+        assertEquals(2, entity.getUserRoles().size(), "사용자 역할 목록 크기가 일치하지 않습니다.");
+        assertEquals(Code.AUTH_USER, entity.getUserRoles().get(0).getRoleKey(), "사용자 역할 목록에서 역할 정보가 제대로 매핑되지 않았습니다.");
+        assertEquals(Code.AUTH_MNGR, entity.getUserRoles().get(1).getRoleKey(), "사용자 역할 목록에서 역할 정보가 제대로 매핑되지 않았습니다.");
     }
 
     /**

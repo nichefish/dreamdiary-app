@@ -62,8 +62,8 @@ dF.User = (function(): dfModule {
             // 연락처 포맷
             cF.validate.phoneNumber("#phoneNumber");
             // 권한 변경시 필드 재검증
-            $("#authCd").change(function(): void {
-                $("#authCd").valid();
+            $("#roleKey").change(function(): void {
+                $("#roleKey").valid();
             });
             // 등록화면:: 사용자 ID 변경입력시 중복체크 통과여부 초기화
             $("#username").on("input", function(): void {

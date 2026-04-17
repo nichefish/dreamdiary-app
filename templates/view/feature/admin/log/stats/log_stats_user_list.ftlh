@@ -48,10 +48,10 @@
                             </#if>
                         </td>
                         <td class="text-center">
-                            ${user.authNm!"-"}
-                            <#if (user.authCd! == Code.AUTH_MNGR)>
+                            ${user.roleName!"-"}
+                            <#if (user.roleKey! == Code.AUTH_MNGR)>
                                 <i class="bi bi-person-lines-fill text-info ms-1 opacity-75"></i>   <!-- 관리자 -->
-                            <#elseif (user.authCd! == Code.AUTH_USER)>
+                            <#elseif (user.roleKey! == Code.AUTH_USER)>
                                 <i class="bi bi-people-fill ms-1"></i>        <!-- 사용자 -->
                             </#if>
                         </td>

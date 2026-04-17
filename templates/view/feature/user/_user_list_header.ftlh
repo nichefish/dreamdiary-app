@@ -9,7 +9,7 @@
 
     <div>
         <#--헤더:: 인풋: 권한 코드-->
-        <select name="authCd" id="authCd" class="form-select form-select-sm form-select-solid">
+        <select name="roleKey" id="roleKey" class="form-select form-select-sm form-select-solid">
             <option value="">전체 권한</option>
             <#list AUTH_CD![] as auth>
                 <option value="${auth.dtlCd!}" id="${auth.dtlCd!}">${auth.dtlCdNm!}</option>

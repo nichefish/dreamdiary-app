@@ -2,13 +2,16 @@ package io.nicheblog.dreamdiary.feature.user.info.spec;
 
 import io.nicheblog.dreamdiary.auth.intrfc.spec.BaseAuditSpec;
 import io.nicheblog.dreamdiary.feature.user.emplym.entity.UserEmplymEntity;
+import io.nicheblog.dreamdiary.auth.security.entity.RoleEntity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
+import io.nicheblog.dreamdiary.feature.user.info.entity.UserRoleEntity;
 import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntity;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemEntity;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -141,6 +144,15 @@ public class UserSpec
                 case "rankCd":
                 case "teamCd":
                     predicate.add(builder.equal(profileJoin.get(key), value));
+                    continue;
+                case "authCd":
+                case "roleKey":
+                    if (value == null || StringUtils.isBlank(value.toString())) {
+                        continue;
+                    }
+                    final Join<UserEntity, UserRoleEntity> userRoleJoin = root.join("userRoles", JoinType.INNER);
+                    final Join<UserRoleEntity, RoleEntity> roleJoin = userRoleJoin.join("roleInfo", JoinType.INNER);
+                    predicate.add(builder.equal(roleJoin.get("roleKey"), value.toString()));
                     continue;
                 default:
                     // default :: 조건 파라미터에 대해 equal 검색

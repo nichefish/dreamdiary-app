@@ -107,9 +107,9 @@ class UserMapstructToDtoTest {
     void testToDto_checkAuth() throws Exception {
         // Given::
         // AUTH
-        final UserAuthRoleEntity aa = UserAuthRoleEntityTestFactory.create(Auth.USER);
-        final UserAuthRoleEntity bb = UserAuthRoleEntityTestFactory.create(Auth.MNGR);
-        userEntity.setAuthList(List.of(aa, bb));
+        final UserRoleEntity aa = UserRoleEntityTestFactory.create(Auth.USER);
+        final UserRoleEntity bb = UserRoleEntityTestFactory.create(Auth.MNGR);
+        userEntity.setUserRoles(List.of(aa, bb));
 
         // When::
         final UserDto userDto = userMapstruct.toDto(userEntity);
@@ -117,10 +117,10 @@ class UserMapstructToDtoTest {
         // Then::
         assertNotNull(userDto, "변환된 사용자 상세 Dto는 null일 수 없습니다.");
         // 권한 관련 매핑 검증
-        assertFalse(CollectionUtils.isEmpty(userDto.getAuthList()), "변환된 사용자 권한 목록 Dto는 null일 수 없습니다.");
-        assertEquals(2, userDto.getAuthList().size(), "사용자 권한 목록 크기가 일치하지 않습니다.");
-        assertEquals(Code.AUTH_USER, userDto.getAuthList().get(0).getAuthCd(), "사용자 권한 목록에서 권한 정보가 제대로 매핑되지 않았습니다.");
-        assertEquals(Code.AUTH_MNGR, userDto.getAuthList().get(1).getAuthCd(), "사용자 권한 목록에서 권한 정보가 제대로 매핑되지 않았습니다.");
+        assertFalse(CollectionUtils.isEmpty(userDto.getUserRoles()), "변환된 사용자 역할 목록 Dto는 null일 수 없습니다.");
+        assertEquals(2, userDto.getUserRoles().size(), "사용자 역할 목록 크기가 일치하지 않습니다.");
+        assertEquals(Code.AUTH_USER, userDto.getUserRoles().get(0).getRoleKey(), "사용자 역할 목록에서 역할 정보가 제대로 매핑되지 않았습니다.");
+        assertEquals(Code.AUTH_MNGR, userDto.getUserRoles().get(1).getRoleKey(), "사용자 역할 목록에서 역할 정보가 제대로 매핑되지 않았습니다.");
     }
 
     /**

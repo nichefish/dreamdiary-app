@@ -33,10 +33,10 @@ public class LogActvtyQueryDto
     private String username;
     /** 작업자 이름 */
     private String logUserNm;
-    /** 권한코드 */
-    private String authCd;
-    /** 권한명 */
-    private String authNm;
+    /** 역할 키 (작업자) */
+    private String roleKey;
+    /** 역할 표시명 (작업자) */
+    private String roleName;
     /** 작업일시 */
     private String logDt;
 

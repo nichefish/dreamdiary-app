@@ -3,10 +3,10 @@ package io.nicheblog.dreamdiary.auth.security.service;
 import io.nicheblog.dreamdiary.auth.policy.entity.AuthPolicyEntity;
 import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyQueryService;
 import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
-import io.nicheblog.dreamdiary.auth.security.entity.AuthRoleEntity;
+import io.nicheblog.dreamdiary.auth.security.entity.RoleEntity;
 import io.nicheblog.dreamdiary.auth.security.mapstruct.AuthInfoMapstruct;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
-import io.nicheblog.dreamdiary.auth.security.repository.jpa.AuthRoleRepository;
+import io.nicheblog.dreamdiary.auth.security.repository.jpa.RoleRepository;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
 import io.nicheblog.dreamdiary.feature.user.info.repository.jpa.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class AuthService
         implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final AuthRoleRepository authRoleRepository;
+    private final RoleRepository roleRepository;
     private final AuthPolicyQueryService authPolicyQueryService;
     private final AuthInfoMapstruct mapstruct = AuthInfoMapstruct.INSTANCE;
 
@@ -177,11 +177,11 @@ public class AuthService
      * 권한 정보 조회
      * TODO: 사이트 커지면 역할 분리해야 함
      *
-     * @param authCd 조회할 권한 코드
-     * @return {@link AuthRoleEntity} -- 권한 정보 객체
+     * @param roleKey 조회할 역할 키 (비즈니스 키)
+     * @return {@link RoleEntity} -- 권한 정보 객체
      */
-    public AuthRoleEntity getAuthRole(final String authCd) {
-        return authRoleRepository.findByAuthCd(authCd);
+    public RoleEntity getRole(final String roleKey) {
+        return roleRepository.findByRoleKey(roleKey);
     }
 
     /**

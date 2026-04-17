@@ -59,8 +59,8 @@ dF.UserReqst = (function(): dfModule {
                 $("#emailDomain").val($(this).val());
             });
             // 권한 변경시 필드 재검증
-            $("#authCd").change(function(): void {
-                $("#authCd").valid(); // 체크박스 상태 변경시 details 필드 재검증
+            $("#roleKey").change(function(): void {
+                $("#roleKey").valid(); // 체크박스 상태 변경시 details 필드 재검증
             });
             // 등록화면:: 사용자 ID 변경입력시 중복체크 통과여부 초기화
             $("#username").on("input", function(): void {

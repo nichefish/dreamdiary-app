@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.user.reqst.service;
 
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserAuthRoleEntity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
+import io.nicheblog.dreamdiary.feature.user.info.entity.UserRoleEntity;
 import io.nicheblog.dreamdiary.feature.user.info.entity.UserStateEntity;
 import io.nicheblog.dreamdiary.feature.user.info.repository.jpa.UserRepository;
 import io.nicheblog.dreamdiary.feature.user.reqst.entity.UserSignupRequestEntity;
@@ -134,7 +134,7 @@ public class UserReqstService {
                 .email(req.getEmail())
                 .phoneNumber(req.getPhoneNumber())
                 .content(req.getContent())
-                .authList(List.of(new UserAuthRoleEntity(Code.AUTH_USER)))
+                .userRoles(List.of(new UserRoleEntity(Code.AUTH_USER)))
                 .acntStus(UserStateEntity.getRegistStus())
                 .build();
         userEntity.cascade();

@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.auth.security.entity;
 
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserAuthRoleEntity;
+import io.nicheblog.dreamdiary.feature.user.info.entity.UserRoleEntity;
 import io.nicheblog.dreamdiary.global.Constant;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
@@ -54,8 +54,8 @@ public class AuditorInfo
     @JoinColumn(name = "user_id")
     @Fetch(FetchMode.SELECT)
     @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("사용자 권한 정보")
-    private List<UserAuthRoleEntity> authList;
+    @Comment("사용자 역할(user_role) 목록")
+    private List<UserRoleEntity> userRoles;
 
     /** 프로필 이미지 URL */
     @Column(name = "profile_image_url", length = 1000)
