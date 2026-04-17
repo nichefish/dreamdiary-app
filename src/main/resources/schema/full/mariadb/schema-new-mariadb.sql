@@ -128,14 +128,13 @@ CREATE TABLE IF NOT EXISTS tmplat_txt (
 
 -- 채팅 메세지
 -- @extends: BasePostEntity
-CREATE TABLE IF NOT EXISTS chat_msg (
+CREATE TABLE IF NOT EXISTS chat_message (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
-    content_type VARCHAR(30) DEFAULT 'CHAT' COMMENT '게시판 코드 (PK)',
+    content_type VARCHAR(30) DEFAULT 'CHAT_MESSAGE' COMMENT '컨텐츠 타입',
     -- POST
     title VARCHAR(200) COMMENT '제목',
     content LONGTEXT COMMENT '내용',
-    imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
-    fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
+    category_code VARCHAR(50) COMMENT '글 분류 코드',
     -- FILE_GROUP
     file_group_id INT COMMENT '첨부파일 번호',
     -- AUDIT
