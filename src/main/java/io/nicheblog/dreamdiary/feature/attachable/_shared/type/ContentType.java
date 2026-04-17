@@ -34,7 +34,7 @@ public enum ContentType {
     // 일정
     SCHEDULE("SCHEDULE", "일정"),
     // 채팅
-    CHAT_MSG("CHAT_MSG", "채팅 메세지"),
+    CHAT_MESSAGE("CHAT_MESSAGE", "채팅 메세지"),
 
     //
     SECTN("SECTN", "단락"),

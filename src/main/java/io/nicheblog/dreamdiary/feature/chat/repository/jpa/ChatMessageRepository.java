@@ -1,11 +1,11 @@
 package io.nicheblog.dreamdiary.feature.chat.repository.jpa;
 
-import io.nicheblog.dreamdiary.feature.chat.entity.ChatMsgEntity;
+import io.nicheblog.dreamdiary.feature.chat.entity.ChatMessageEntity;
 import io.nicheblog.dreamdiary.global.intrfc.repository.BaseStreamRepository;
 import org.springframework.stereotype.Repository;
 
 /**
- * ChatMsgRepository
+ * ChatMessageRepository
  * <pre>
  *  채팅 메세지 (JPA) Repository 인터페이스.
  * </pre>
@@ -13,9 +13,8 @@ import org.springframework.stereotype.Repository;
  * @author nichefish
  */
 @Repository
-public interface ChatMsgRepository
-        extends BaseStreamRepository<ChatMsgEntity, Integer> {
+public interface ChatMessageRepository
+        extends BaseStreamRepository<ChatMessageEntity, Integer> {
 
     //
 }
-

@@ -10,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 import java.util.Date;
 
 /**
- * ChatMsgSearchParam
+ * ChatMessageSearchParam
  * <pre>
  *  채팅 메세지 목록 검색 파라미터.
  * </pre>
@@ -25,13 +25,13 @@ import java.util.Date;
 @ToString(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ChatMsgSearchParam
+public class ChatMessageSearchParam
         extends BaseAttachableSearchParam {
 
     /** 컨텐츠 타입 */
     @Builder.Default
-    private String contentType = ContentType.CHAT_MSG.key;
-    
+    private String contentType = ContentType.CHAT_MESSAGE.key;
+
     /** 팝업 여부 */
     @Builder.Default
     private String popupYn = "N";

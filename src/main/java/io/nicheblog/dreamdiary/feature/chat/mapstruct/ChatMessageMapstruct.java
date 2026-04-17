@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.chat.mapstruct;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.mapstruct.BaseAttachableMapstruct;
-import io.nicheblog.dreamdiary.feature.chat.entity.ChatMsgEntity;
-import io.nicheblog.dreamdiary.feature.chat.model.ChatMsgDto;
+import io.nicheblog.dreamdiary.feature.chat.entity.ChatMessageEntity;
+import io.nicheblog.dreamdiary.feature.chat.model.ChatMessageDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -11,7 +11,7 @@ import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 /**
- * ChatMsgMapstruct
+ * ChatMessageMapstruct
  * <pre>
  *  채팅 메세지 MapStruct 기반 Mapper 인터페이스.
  * </pre>
@@ -19,10 +19,10 @@ import org.mapstruct.factory.Mappers;
  * @author nichefish
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, MarkdownUtils.class}, builder = @Builder(disableBuilder = true))
-public interface ChatMsgMapstruct
-        extends BaseWriteMapstruct<ChatMsgDto, ChatMsgEntity>, BaseAttachableMapstruct<ChatMsgDto, ChatMsgEntity> {
+public interface ChatMessageMapstruct
+        extends BaseWriteMapstruct<ChatMessageDto, ChatMessageEntity>, BaseAttachableMapstruct<ChatMessageDto, ChatMessageEntity> {
 
-    ChatMsgMapstruct INSTANCE = Mappers.getMapper(ChatMsgMapstruct.class);
+    ChatMessageMapstruct INSTANCE = Mappers.getMapper(ChatMessageMapstruct.class);
 
     /**
      * Entity -> Dto 변환
@@ -33,7 +33,7 @@ public interface ChatMsgMapstruct
     @Override
     @Named("toDto")
     @Mapping(target = "markdownContent", expression = "java(StringUtils.isEmpty(entity.getContent()) ? \"-\" : MarkdownUtils.markdown(entity.getContent()))")
-    ChatMsgDto toDto(final ChatMsgEntity entity) throws Exception;
+    ChatMessageDto toDto(final ChatMessageEntity entity) throws Exception;
 
     /**
      * Dto -> Entity 변환
@@ -43,7 +43,7 @@ public interface ChatMsgMapstruct
      */
     @Override
     @Mapping(target = "content", expression = "java(MarkdownUtils.normalize(dto.getContent()))")
-    ChatMsgEntity toEntity(final ChatMsgDto dto) throws Exception;
+    ChatMessageEntity toEntity(final ChatMessageDto dto) throws Exception;
 
     /**
      * update Entity from Dto (Dto에서 null이 아닌 값만 Entity로 매핑)
@@ -54,5 +54,5 @@ public interface ChatMsgMapstruct
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "content", expression = "java(MarkdownUtils.normalize(dto.getContent()))")
-    void updateFromDto(final ChatMsgDto dto, final @MappingTarget ChatMsgEntity entity) throws Exception;
+    void updateFromDto(final ChatMessageDto dto, final @MappingTarget ChatMessageEntity entity) throws Exception;
 }

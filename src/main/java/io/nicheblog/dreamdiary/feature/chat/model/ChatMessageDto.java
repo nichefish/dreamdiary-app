@@ -7,7 +7,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 /**
- * ChatMsgDto
+ * ChatMessageDto
  * <pre>
  *  채팅 메세지 Dto.
  * </pre>
@@ -19,13 +19,13 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class ChatMsgDto
+public class ChatMessageDto
         extends BaseAttachableDto
         implements Identifiable<Integer> {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
-    private static final ContentType CONTENT_TYPE = ContentType.CHAT_MSG;
+    private static final ContentType CONTENT_TYPE = ContentType.CHAT_MESSAGE;
     /** 필수(Override): 글분류 코드 */
     @Builder.Default
     private static final String CTGR_CL_CD = CONTENT_TYPE.name() + "_CTGR_CD";
@@ -37,7 +37,7 @@ public class ChatMsgDto
     /** 내 메세지(등록자) 여부 */
     private Boolean isCreatedBy;
 
-       /** 제목 */
+    /** 제목 */
     private String title;
 
     /** 내용 */
@@ -46,13 +46,8 @@ public class ChatMsgDto
     /** 마크다운 처리된 내용 */
     private String markdownContent;
 
-    /** 중요 여부 (Y/N) */
-    @Builder.Default
-    private String imprtcYn = "N";
-
-    /** 상단고정 여부 (Y/N) */
-    @Builder.Default
-    private String fxdYn = "N";
+    /** 글 분류 코드 */
+    private String categoryCode;
 
     /* ----- */
 

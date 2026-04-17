@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.chat.spec;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.spec.BaseAttachableSpec;
-import io.nicheblog.dreamdiary.feature.chat.entity.ChatMsgEntity;
+import io.nicheblog.dreamdiary.feature.chat.entity.ChatMessageEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * ChatMsgSpec
+ * ChatMessageSpec
  * <pre>
  *  채팅 메세지 목록 검색인자 세팅 Specification.
  * </pre>
@@ -22,8 +22,8 @@ import java.util.Map;
  */
 @Component
 @Log4j2
-public class ChatMsgSpec
-        implements BaseAttachableSpec<ChatMsgEntity> {
+public class ChatMessageSpec
+        implements BaseAttachableSpec<ChatMessageEntity> {
 
     /**
      * 검색 조건 세팅 후 쿼리 후처리. (override)
@@ -34,7 +34,7 @@ public class ChatMsgSpec
      */
     @Override
     public void postQuery(
-            final Root<ChatMsgEntity> root,
+            final Root<ChatMessageEntity> root,
             final CriteriaQuery<?> query,
             final CriteriaBuilder builder
     ) {
@@ -54,7 +54,7 @@ public class ChatMsgSpec
     @Override
     public List<Predicate> getPredicateWithParams(
             final Map<String, Object> searchParamMap,
-            final Root<ChatMsgEntity> root,
+            final Root<ChatMessageEntity> root,
             final CriteriaQuery<?> query,
             final CriteriaBuilder builder
     ) throws Exception {

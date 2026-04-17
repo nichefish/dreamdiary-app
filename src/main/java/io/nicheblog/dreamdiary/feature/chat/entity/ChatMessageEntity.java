@@ -11,28 +11,28 @@ import org.hibernate.annotations.Where;
 import javax.persistence.*;
 
 /**
- * ChatMsgEntity
+ * ChatMessageEntity
  * <pre>
- *  채팅 메세지 Entity.
+ *  채팅 메세지 Entity (테이블: chat_message).
  * </pre>
  *
  * @author nichefish
  */
 @Entity
-@Table(name = "chat_msg")
+@Table(name = "chat_message")
 @Getter
 @Setter
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Where(clause = "deleted_at IS NULL")
-@SQLDelete(sql = "UPDATE chat_msg SET deleted_at = NOW() WHERE id = ?")
-public class ChatMsgEntity
+@SQLDelete(sql = "UPDATE chat_message SET deleted_at = NOW() WHERE id = ?")
+public class ChatMessageEntity
         extends BaseAttachableEntity {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
-    private static final ContentType CONTENT_TYPE = ContentType.CHAT_MSG;
+    private static final ContentType CONTENT_TYPE = ContentType.CHAT_MESSAGE;
 
     /** 글 번호 :: 복합키 사용, 시퀀스 생성 로직을 위해 재정의 */
     @Id
@@ -43,7 +43,7 @@ public class ChatMsgEntity
 
     /** 컨텐츠 타입 */
     @Builder.Default
-    @Column(name = "content_type", columnDefinition = "VARCHAR(50) DEFAULT 'CHAT_MSG'")
+    @Column(name = "content_type", columnDefinition = "VARCHAR(50) DEFAULT 'CHAT_MESSAGE'")
     @Comment("컨텐츠 타입")
     private String contentType = CONTENT_TYPE.key;
 
@@ -55,17 +55,10 @@ public class ChatMsgEntity
     @Column(name = "content")
     private String content;
 
+    /** 글 분류 코드 */
+    @Column(name = "category_code", length = 50)
+    @Comment("글 분류 코드")
+    private String categoryCode;
+
     /* ----- */
-
-    /** 중요 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "imprtc_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("중요 여부")
-    private String imprtcYn = "N";
-
-    /** 상단고정 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "fxd_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("상단고정 여부")
-    private String fxdYn = "N";
 }
