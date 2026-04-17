@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDatePrecision;
 import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntity;
 import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamDto;
 import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamPostDto;
-import io.nicheblog.dreamdiary.feature.journal.intrpt.mapstruct.JournalIntrptMapstruct;
+import io.nicheblog.dreamdiary.feature.journal.interpretation.mapstruct.JournalInterpretationMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
@@ -26,7 +26,7 @@ import org.mapstruct.*;
     componentModel = "spring",
     unmappedTargetPolicy = ReportingPolicy.IGNORE,
     imports = { DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CodeUtils.class, JournalDatePrecision.class },
-    uses = { JournalIntrptMapstruct.class },
+    uses = { JournalInterpretationMapstruct.class },
     builder = @Builder(disableBuilder = true)
 )
 public abstract class JournalDreamMapstruct

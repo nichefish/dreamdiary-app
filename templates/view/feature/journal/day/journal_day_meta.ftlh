@@ -133,15 +133,15 @@
 <#include "/view/feature/journal/dream/_partial/_journal_dream_content_partial.hbs">
 <script type="text/javascript" src="/js/view/feature/journal/dream/journal_dream_module.js?${releaseDate!}"></script>
 
-<#--include::journal_intrpt_module-->
-<#include "/view/feature/journal/intrpt/_journal_intrpt_list_template.hbs">
-<#include "/view/feature/journal/intrpt/_modal/_journal_intrpt_reg_modal.ftlh">
-<#include "/view/feature/journal/intrpt/_partial/_journal_intrpt_item_partial.hbs">
-<#include "/view/feature/journal/intrpt/_partial/_journal_intrpt_copy_btn_partial.hbs">
-<#include "/view/feature/journal/intrpt/_partial/_journal_intrpt_context_btn_partial.hbs">
-<#include "/view/feature/journal/intrpt/_partial/_journal_intrpt_toggle_btn_partial.hbs">
-<#include "/view/feature/journal/intrpt/_partial/_journal_intrpt_content_partial.hbs">
-<script type="text/javascript" src="/js/view/feature/journal/intrpt/journal_intrpt_module.js?${releaseDate!}"></script>
+<#--include::journal_interpretation_module-->
+<#include "/view/feature/journal/interpretation/_journal_interpretation_list_template.hbs">
+<#include "/view/feature/journal/interpretation/_modal/_journal_interpretation_reg_modal.ftlh">
+<#include "/view/feature/journal/interpretation/_partial/_journal_interpretation_item_partial.hbs">
+<#include "/view/feature/journal/interpretation/_partial/_journal_interpretation_copy_btn_partial.hbs">
+<#include "/view/feature/journal/interpretation/_partial/_journal_interpretation_context_btn_partial.hbs">
+<#include "/view/feature/journal/interpretation/_partial/_journal_interpretation_toggle_btn_partial.hbs">
+<#include "/view/feature/journal/interpretation/_partial/_journal_interpretation_content_partial.hbs">
+<script type="text/javascript" src="/js/view/feature/journal/interpretation/journal_interpretation_module.js?${releaseDate!}"></script>
 
 <#--include::journal_todo_module-->
 <#include "/view/feature/journal/todo/_journal_todo_list_template.hbs">

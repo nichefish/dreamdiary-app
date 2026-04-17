@@ -117,13 +117,13 @@ CREATE TABLE IF NOT EXISTS journal_dream (
     INDEX (journal_day_id)
 ) COMMENT = '저널 꿈';
 
--- 저널 해석 (journal_intrpt)
+-- 저널 해석 (journal_interpretation)
 -- @extends: BasePostEntity
 -- @uses: CommentEmbed
-CREATE TABLE IF NOT EXISTS journal_intrpt (
+CREATE TABLE IF NOT EXISTS journal_interpretation (
     -- ATTACHABLE
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 해석 ID',
-    content_type VARCHAR(32) DEFAULT 'JOURNAL_INTRPT' COMMENT '컨텐츠 타입',
+    content_type VARCHAR(32) DEFAULT 'JOURNAL_INTERPRETATION' COMMENT '컨텐츠 타입',
     --
     journal_dream_id INT COMMENT '저널 꿈 번호',
     --

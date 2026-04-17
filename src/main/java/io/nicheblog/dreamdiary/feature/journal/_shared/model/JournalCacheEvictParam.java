@@ -7,7 +7,7 @@ import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryDto;
 import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryPostDto;
 import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamDto;
-import io.nicheblog.dreamdiary.feature.journal.intrpt.model.JournalIntrptDto;
+import io.nicheblog.dreamdiary.feature.journal.interpretation.model.JournalInterpretationDto;
 import io.nicheblog.dreamdiary.feature.journal.todo.model.JournalTodoDto;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.*;
@@ -153,10 +153,10 @@ public class JournalCacheEvictParam {
     /**
      * 팩토리 메서드 패턴
      *
-     * @param dto {@link JournalIntrptDto}
+     * @param dto {@link JournalInterpretationDto}
      * @return {@link JournalCacheEvictParam}
      */
-    public static JournalCacheEvictParam of(final JournalIntrptDto dto) throws Exception {
+    public static JournalCacheEvictParam of(final JournalInterpretationDto dto) throws Exception {
         return JournalCacheEvictParam.builder()
                 .createdBy(dto.getCreatedBy())
                 .id(dto.getId())

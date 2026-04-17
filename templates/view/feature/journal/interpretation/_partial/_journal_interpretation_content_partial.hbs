@@ -1,0 +1,23 @@
+<#--
+ * 저널 해석(journal_interpretation) - 글접기 버튼 partial
+ * @see handlebars.ts
+ -->
+
+<script type="text/x-handlebars-template" id="journal_interpretation_content_partial" data-partial>
+    <div class="d-flex-align-center title-wrap">
+        {{#if (exists title)}}<div class="d-inline-block fw-bold">{{title}}</div>{{/if}}
+    </div>
+    <div class="journal-content {{#if (hasState state 'COLLAPSED')}}collapsed{{/if}}">
+        {{{markdownContent}}}
+    </div>
+    <!-- "더 보기" 버튼, <p> child 3개 이상일 때만 보임 (css) -->
+    <button type="button" class="btn btn-xxs btn-active-light-info badge-light-primary btn-outlined expand-btn"
+            onclick="dF.JournalDayTag.expand(this);">
+    </button>
+
+    {{#if (exists comment.list)}}
+        {{#each comment.list}}
+            {{> comment_list_partial this}}
+        {{/each}}
+    {{/if}}
+</script>

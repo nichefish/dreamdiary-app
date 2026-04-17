@@ -46,7 +46,7 @@ class JournalDayCacheEvictorTest {
                     new SimpleKey("nichefish", 2026, 3)
             ));
             ehCacheUtils.verify(() -> EhCacheUtils.evictCacheByKey(
-                    "journalIntrptStateMapByUser",
+                    "journalInterpretationStateMapByUser",
                     new SimpleKey("nichefish", 2026, 3)
             ));
         }

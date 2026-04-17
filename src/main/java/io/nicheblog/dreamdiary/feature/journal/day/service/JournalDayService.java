@@ -95,7 +95,7 @@ public class JournalDayService
         EhCacheUtils.put("journalChapterStateMapByUser", cacheKey, maps.getChapterMap());
         EhCacheUtils.put("journalDiaryStateMapByUser", cacheKey, maps.getDiaryMap());
         EhCacheUtils.put("journalDreamStateMapByUser", cacheKey, maps.getDreamMap());
-        EhCacheUtils.put("journalIntrptStateMapByUser", cacheKey, maps.getIntrptMap());
+        EhCacheUtils.put("journalInterpretationStateMapByUser", cacheKey, maps.getInterpretationMap());
 
         return mapstruct.toDtoList(myJournalDayEntityList);
     }
@@ -138,7 +138,7 @@ public class JournalDayService
         EhCacheUtils.put("journalChapterWeeklyStateMapByUser", cacheKey, maps.getChapterMap());
         EhCacheUtils.put("journalDiaryWeeklyStateMapByUser", cacheKey, maps.getDiaryMap());
         EhCacheUtils.put("journalDreamWeeklyStateMapByUser", cacheKey, maps.getDreamMap());
-        EhCacheUtils.put("journalIntrptWeeklyStateMapByUser", cacheKey, maps.getIntrptMap());
+        EhCacheUtils.put("journalInterpretationWeeklyStateMapByUser", cacheKey, maps.getInterpretationMap());
 
         return mapstruct.toDtoList(myJournalDayEntityList);
     }

@@ -52,10 +52,9 @@ public interface ApiUrl {
     String JOURNAL_DREAM_TAG_GROUP_LIST_AJAX = Prefix.API + "/journal/dream/tag-group-list";
     String JOURNAL_DREAM_TAG_CTGR_MAP = Prefix.API + "/journal/dream/tag/ctgr-map";
     /** 저널 해석 */
-    String JOURNAL_INTRPTS = Prefix.API + "/journal/intrpts";
-    String JOURNAL_INTRPT = Prefix.API + "/journal/intrpt/{id}";
-    String JOURNAL_INTRPT_SET_COLLAPSE_AJAX = Prefix.API + "/journal/intrpt/set-collapse";
-
+    String JOURNAL_INTERPRETATIONS = Prefix.API + "/journal/interpretations";
+    String JOURNAL_INTERPRETATION = Prefix.API + "/journal/interpretation/{id}";
+    String JOURNAL_INTERPRETATION_SET_COLLAPSE_AJAX = Prefix.API + "/journal/interpretation/set-collapse";
     /** 저널 챕터 */
     String JOURNAL_CHAPTERS = Prefix.API + "/journal/chapters";
     String JOURNAL_CHAPTER = Prefix.API + "/journal/chapter/{id}";
@@ -81,7 +80,7 @@ public interface ApiUrl {
     String JOURNAL_SBJCT_DEL_AJAX = Prefix.API + "/journal/sbjct/del";
 
     /** 저널 연간 */
-    String JOURNAL_SUMRIES = Prefix.API + "/journal/annuals";
+    String JOURNAL_ANNUALS = Prefix.API + "/journal/annuals";
     String JOURNAL_ANNUAL = Prefix.API + "/journal/annual/{yy}";
     String JOURNAL_ANNUAL_DIARIES = Prefix.API + "/journal/annual/{yy}/diaries";
     String JOURNAL_ANNUAL_DREAMS = Prefix.API + "/journal/annual/{yy}/dreams";

@@ -65,7 +65,7 @@ public class JournalAnnualRestController
      * @param searchParam 검색 조건을 담은 파라미터 객체
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
-    @GetMapping(value = {Url.JOURNAL_SUMRIES})
+    @GetMapping(value = {Url.JOURNAL_ANNUALS})
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> journalAnnualListAjax(

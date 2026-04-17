@@ -40,7 +40,7 @@ dF.JournalAnnual = (function(): dfModule {
          * 상세 화면으로 이동 (key로 조회)
          */
         listAjax: function(): void {
-            const url: string = Url.JOURNAL_SUMRIES;
+            const url: string = Url.JOURNAL_ANNUALS;
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });

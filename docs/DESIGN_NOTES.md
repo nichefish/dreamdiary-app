@@ -5,7 +5,7 @@
   - journal-chapter
     - journal-diary
   - journal-dream
-    - journal-intrpt 
+    - journal-interpretation 
 - journal-annual
   - journal-annual-review
 
@@ -47,7 +47,7 @@
   - "dreamdiary가“상징-사례-변형” 구조로 진화한다. 즉, 꿈을 모으는 시스템 → 상징 체계를 구축하는 시스템으로 격상된다."
   - "이건 해석을 버리는 게 아니라 해석의 기준면을 하나 더 두는 것이다."
 
-### 저널 해석(journal-intrpt)
+### 저널 해석(journal-interpretation)
 
 ### 저널 결산(journal-annual)
 - 결산 주기: 연간으로 고정.

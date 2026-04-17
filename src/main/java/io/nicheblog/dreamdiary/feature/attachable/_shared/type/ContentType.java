@@ -23,10 +23,10 @@ public enum ContentType {
     BOARD("BOARD", "일반게시판"),
     // 저널
     JOURNAL_DAY("JOURNAL_DAY", "저널 일자", "calendar3"),
-    JOURNAL_DREAM("JOURNAL_DREAM", "저널 꿈", "moon-stars"),
-    JOURNAL_INTRPT("JOURNAL_INTRPT", "저널 해석", "book"),
     JOURNAL_CHAPTER("JOURNAL_CHAPTER", "저널 챕터", "book"),
     JOURNAL_DIARY("JOURNAL_DIARY", "저널 일기", "book"),
+    JOURNAL_DREAM("JOURNAL_DREAM", "저널 꿈", "moon-stars"),
+    JOURNAL_INTERPRETATION("JOURNAL_INTERPRETATION", "저널 해석", "book"),
     JOURNAL_SBJCT("JOURNAL_SBJCT", "저널 주제"),
     JOURNAL_ANNUAL("JOURNAL_ANNUAL", "저널 연간"),
     JOURNAL_ANNUAL_REVIEW("JOURNAL_ANNUAL_REVIEW", "저널 연간 리뷰"),
