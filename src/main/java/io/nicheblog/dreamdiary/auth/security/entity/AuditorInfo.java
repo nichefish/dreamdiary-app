@@ -46,8 +46,8 @@ public class AuditorInfo
     private String username;
 
     /** 사용자 이름 */
-    @Column(name = "nick_nm", length = 20, insertable = false, updatable = false)
-    private String nickNm;
+    @Column(name = "nickname", length = 20, insertable = false, updatable = false)
+    private String nickname;
 
     /** 사용자 권한 정보 */
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -58,17 +58,17 @@ public class AuditorInfo
     private List<UserAuthRoleEntity> authList;
 
     /** 프로필 이미지 URL */
-    @Column(name = "profl_img_url", length = 1000)
-    private String proflImgUrl;
+    @Column(name = "profile_image_url", length = 1000)
+    private String profileImageUrl;
 
     /* ----- */
 
     /**
      * 프로필 이미지 getter 재정의
      */
-    public String getProflImgUrl() {
-        if (StringUtils.isEmpty(this.proflImgUrl)) return (Constant.BLANK_AVATAR_URL);
+    public String getProfileImageUrl() {
+        if (StringUtils.isEmpty(this.profileImageUrl)) return (Constant.BLANK_AVATAR_URL);
 
-        return this.proflImgUrl;
+        return this.profileImageUrl;
     }
 }

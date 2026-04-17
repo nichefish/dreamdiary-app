@@ -46,10 +46,10 @@ public class AuthInfo
     private List<AuthRoleDto> authList;
 
     /** 사용자 이름 */
-    private String nickNm;
+    private String nickname;
 
     /** 프로필 이미지 URL */
-    private String proflImgUrl;
+    private String profileImageUrl;
 
     /** email */
     private String email;
@@ -73,10 +73,10 @@ public class AuthInfo
     private Date passwordChangedAt;
 
     /** 패스워드 리셋 필요 여부 (Y/N) */
-    private String needsPwReset;
+    private String needsPasswordReset;
 
     /** 패스워드 리셋 토큰 발급 시각 */
-    private Date pwResetTokenIssuedAt;
+    private Date passwordResetTokenIssuedAt;
 
     /** 사용자 정보 ID */
     private Integer userProfileId;
@@ -88,9 +88,9 @@ public class AuthInfo
     /**
      * Getter :: 사용자 프로필 정보
      */
-    public String getProflImgUrl() {
-        if (StringUtils.isEmpty(this.proflImgUrl)) return (Constant.BLANK_AVATAR_URL);
-        return this.proflImgUrl;
+    public String getProfileImageUrl() {
+        if (StringUtils.isEmpty(this.profileImageUrl)) return (Constant.BLANK_AVATAR_URL);
+        return this.profileImageUrl;
     }
 
     /**
@@ -228,13 +228,13 @@ public class AuthInfo
 
         // ===== 기본값 세팅 =====
         this.password = null;
-        this.nickNm = (String) attributes.getOrDefault("name", this.username);
-        this.proflImgUrl = (String) attributes.get("profile_image");
+        this.nickname = (String) attributes.getOrDefault("name", this.username);
+        this.profileImageUrl = (String) attributes.get("profile_image");
 
         // ===== OAuth 기본 상태 =====
         this.lockedYn = "N";
         this.useAllowedIpYn = "N";
-        this.needsPwReset = "N";
+        this.needsPasswordReset = "N";
 
         // ===== 권한 처리 =====
         this.authList = authorities.stream()

@@ -32,7 +32,7 @@ public interface ManagtEmbedMapstruct
      * @return Dto -- 변환된 Dto 객체
      */
     @Override
-    @Mapping(target = "managtrNm", expression = "java(entity.getManagtrInfo() != null ? entity.getManagtrInfo().getNickNm() : null)")
+    @Mapping(target = "managtrNm", expression = "java(entity.getManagtrInfo() != null ? entity.getManagtrInfo().getNickname() : null)")
     @Mapping(target = "list", expression = "java(ManagtrMapstruct.INSTANCE.toDtoList(entity.getList()))")
     @Mapping(target = "managtDt", expression = "java(DateUtils.asStr(entity.getManagtDt(), DatePtn.DATETIME))")
     ManagtCmpstn toDto(final ManagtEmbed entity) throws Exception;

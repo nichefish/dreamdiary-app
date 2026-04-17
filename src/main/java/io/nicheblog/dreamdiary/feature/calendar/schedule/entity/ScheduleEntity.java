@@ -48,7 +48,7 @@ public class ScheduleEntity
         if (!CollectionUtils.isEmpty(this.prtcpntList)) {
             this.prtcpntStr = this.prtcpntList.stream()
                     .filter(entity -> entity.getUser() != null)
-                    .map(entity -> entity.getUser().getNickNm())
+                    .map(entity -> entity.getUser().getNickname())
                     .collect(Collectors.joining(", "));
         }
     }

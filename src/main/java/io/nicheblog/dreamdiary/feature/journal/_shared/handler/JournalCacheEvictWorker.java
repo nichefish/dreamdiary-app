@@ -2,13 +2,13 @@ package io.nicheblog.dreamdiary.feature.journal._shared.handler;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalCacheEvictParam;
+import io.nicheblog.dreamdiary.feature.journal.annual.service.strategy.JournalAnnualCacheEvictor;
+import io.nicheblog.dreamdiary.feature.journal.annual.service.strategy.JournalAnnualReviewCacheEvictor;
 import io.nicheblog.dreamdiary.feature.journal.chapter.service.strategy.JournalChapterCacheEvictor;
 import io.nicheblog.dreamdiary.feature.journal.day.service.strategy.JournalDayCacheEvictor;
 import io.nicheblog.dreamdiary.feature.journal.diary.service.strategy.JournalDiaryCacheEvictor;
 import io.nicheblog.dreamdiary.feature.journal.dream.service.strategy.JournalDreamCacheEvictor;
 import io.nicheblog.dreamdiary.feature.journal.intrpt.service.strategy.JournalIntrptCacheEvictor;
-import io.nicheblog.dreamdiary.feature.journal.annual.service.strategy.JournalAnnualCacheEvictor;
-import io.nicheblog.dreamdiary.feature.journal.annual.service.strategy.JournalAnnualReviewCacheEvictor;
 import io.nicheblog.dreamdiary.feature.journal.todo.service.strategy.JournalTodoCacheEvictor;
 import io.nicheblog.dreamdiary.global.util.TransactionHookUtils;
 import lombok.RequiredArgsConstructor;

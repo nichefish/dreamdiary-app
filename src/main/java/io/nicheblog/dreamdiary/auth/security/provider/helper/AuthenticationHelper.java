@@ -2,7 +2,10 @@ package io.nicheblog.dreamdiary.auth.security.provider.helper;
 
 import io.nicheblog.dreamdiary.auth.policy.entity.AuthPolicyEntity;
 import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyQueryService;
-import io.nicheblog.dreamdiary.auth.security.exception.*;
+import io.nicheblog.dreamdiary.auth.security.exception.AccountDormantException;
+import io.nicheblog.dreamdiary.auth.security.exception.AccountNeedsPwResetException;
+import io.nicheblog.dreamdiary.auth.security.exception.DupIdLoginException;
+import io.nicheblog.dreamdiary.auth.security.exception.IpNotAllowedException;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLoginManager;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
@@ -100,8 +103,8 @@ public class AuthenticationHelper {
         if (!this.isPwExpryValid(authInfo)) throw new CredentialsExpiredException("AbstractUserDetailsAuthenticationProvider.CredentialsExpiredException");
 
         // 비밀번호 변경 필요 여부 체크
-        final boolean needsPwReset = "Y".equals(authInfo.getNeedsPwReset());
-        if (needsPwReset) {
+        final boolean needsPasswordReset = "Y".equals(authInfo.getNeedsPasswordReset());
+        if (needsPasswordReset) {
             if (!this.isPwResetTokenValid(authInfo)) {
                 throw new CredentialsExpiredException("AbstractUserDetailsAuthenticationProvider.CredentialsExpiredException");
             }
@@ -187,7 +190,7 @@ public class AuthenticationHelper {
         final Integer expiryMinutes = (authPolicy == null || authPolicy.getPasswordResetTokenExpiryMinutes() == null)
                 ? 30
                 : authPolicy.getPasswordResetTokenExpiryMinutes();
-        final Date issuedAt = authInfo.getPwResetTokenIssuedAt();
+        final Date issuedAt = authInfo.getPasswordResetTokenIssuedAt();
         if (issuedAt == null) return false;
 
         final Date expiresAt = new Date(issuedAt.getTime() + (expiryMinutes.longValue() * 60L * 1000L));

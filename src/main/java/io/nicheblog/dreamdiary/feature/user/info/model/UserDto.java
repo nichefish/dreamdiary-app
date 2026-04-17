@@ -39,9 +39,9 @@ public class UserDto
     private String username;
     /** 표시이름 */
     @NotEmpty
-    private String nickNm;
+    private String nickname;
     /** 프로필 이미지 URL */
-    private String proflImgUrl;
+    private String profileImageUrl;
 
     /** 이메일 */
     private String email;
@@ -52,7 +52,7 @@ public class UserDto
     @NotEmpty
     private String emailDomain;
     /** 연락처 */
-    private String cttpc;
+    private String phoneNumber;
 
     /** 사용자 권한 정보 */
     private List<UserAuthRoleDto> authList;

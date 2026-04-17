@@ -4,8 +4,6 @@ import io.nicheblog.dreamdiary.feature.attachable._shared.model.BaseAttachableDt
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.comment.model.cmpstn.CommentCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.comment.model.cmpstn.CommentCmpstnModule;
-import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstn;
-import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstnModule;
 import io.nicheblog.dreamdiary.feature.attachable.managt.model.cmpstn.ManagtCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.managt.model.cmpstn.ManagtCmpstnModule;
 import io.nicheblog.dreamdiary.feature.attachable.sectn.model.cmpstn.SectnCmpstn;
@@ -14,6 +12,8 @@ import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.feature.attachable.viewer.model.cmpstn.ViewerCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.viewer.model.cmpstn.ViewerCmpstnModule;
+import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstn;
+import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.validator.state.UpdateState;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;

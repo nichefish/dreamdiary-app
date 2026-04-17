@@ -72,9 +72,9 @@ public class UserEmplymEntity
     private String emplymEmail;
 
     /** 업무 연락처 */
-    @Column(name = "emplym_cttpc", length = 20)
+    @Column(name = "emplym_phone_number", length = 20)
     @Comment("업무 연락처")
-    private String emplymCttpc;
+    private String emplymPhoneNumber;
 
     /** 소속(회사) 코드 */
     @Column(name = "cmpy_cd", length = 20)

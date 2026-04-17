@@ -96,23 +96,23 @@
                 </div>
                 <#--begin::Row-->
                 <!-- 가리고 숨기고를 반복하는 곳은 style로 선언해야 한다. -->
-                <div class="row mb-4" id="nickNmShowDiv" <#if user.userInfo??>style="display:none;"</#if>>
+                <div class="row mb-4" id="nicknameShowDiv" <#if user.userInfo??>style="display:none;"</#if>>
                     <div class="col-xl-2">
                         <div class="fw-bold col-form-label text-lg-center text-sm-start required"
                              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="직원정보 미입력시&#10;사용할 이름입니다.&#10;(외부사용자, 임시계정 등)">
-                            <label for="nickNm" class="cursor-help">
+                            <label for="nickname" class="cursor-help">
                                 표시이름
                                 <i class="bi bi-question-circle"></i>
                             </label>
                         </div>
                     </div>
                     <div class="col-xl-2">
-                        <input type="text" name="nickNm" id="nickNm" class="form-control form-control-solid required"
-                               value="${user.nickNm!}" placeholder="표시이름" maxlength="20" />
+                        <input type="text" name="nickname" id="nickname" class="form-control form-control-solid required"
+                               value="${user.nickname!}" placeholder="표시이름" maxlength="20" />
                         <div class="form-text text-noti">
                             <@spring.message 'txt.req.nicknm'/>
                         </div>
-                        <span id="nickNm_validate_span"></span>
+                        <span id="nickname_validate_span"></span>
                     </div>
                 </div>
                 <#--begin::Row-->
@@ -160,16 +160,16 @@
                 <div class="row mb-4">
                     <div class="col-xl-2">
                         <div class="fw-bold col-form-label text-sm-start text-lg-center">
-                            <label for="cttpc">
+                            <label for="phoneNumber">
                                 전화번호
                             </label>
                         </div>
                     </div>
                     <div class="col-xl-2">
-                        <input type="text" name="cttpc" id="cttpc" class="form-control form-control-solid"
-                               value="${user.cttpc!}" maxlength="20" />
-                        <div class="form-text text-noti"><@spring.message 'txt.req.cttpc'/></div>
-                        <span id="cttpc_valid_span"></span>
+                        <input type="text" name="phoneNumber" id="phoneNumber" class="form-control form-control-solid"
+                               value="${user.phoneNumber!}" maxlength="20" />
+                        <div class="form-text text-noti"><@spring.message 'txt.req.phoneNumber'/></div>
+                        <span id="phoneNumber_valid_span"></span>
                     </div>
                 </div>
                 <#--begin::Row-->

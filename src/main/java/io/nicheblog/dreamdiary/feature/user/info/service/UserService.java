@@ -151,8 +151,8 @@ public class UserService
         final String pwForReset = authPolicy.getPwForReset();
         // update
         retrievedEntity.setPassword(pwForReset);
-        retrievedEntity.acntStus.setNeedsPwReset("Y");
-        retrievedEntity.acntStus.setPwResetTokenIssuedAt(DateUtils.getCurrDate());
+        retrievedEntity.acntStus.setNeedsPasswordReset("Y");
+        retrievedEntity.acntStus.setPasswordResetTokenIssuedAt(DateUtils.getCurrDate());
         retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrDate());
         final UserEntity updatedEntity = repository.saveAndFlush(retrievedEntity);
 

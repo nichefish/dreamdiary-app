@@ -87,7 +87,7 @@ public class AuthUtils {
     public static String getLoginUserNm() {
         final AuthInfo AuthInfo = getAuthenticatedUser();
         assert AuthInfo != null;
-        return AuthInfo.getNickNm();
+        return AuthInfo.getNickname();
     }
 
     /**

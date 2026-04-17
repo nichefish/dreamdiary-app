@@ -49,7 +49,7 @@ export default {
                     <div class="card-title">
                         <!--begin::User-->
                         <div class="d-flex justify-content-center flex-column me-3">
-                            <a href="#" class="fs-4 fw-bold text-gray-900 text-hover-primary me-1 mb-2 lh-1">{{ authInfo?.nickNm }}</a>
+                            <a href="#" class="fs-4 fw-bold text-gray-900 text-hover-primary me-1 mb-2 lh-1">{{ authInfo?.nickname }}</a>
                             <!--begin::Info-->
                             <div class="mb-0 lh-1">
                                 <span class="badge badge-success badge-circle w-10px h-10px me-1"></span>
@@ -158,8 +158,8 @@ export default {
                                     <!--begin::Avatar-->
                                     <div class="symbol symbol-35px symbol-circle">
                                         <!-- authInfo가 있을 때와 없을 때 렌더링 -->
-                                        <template v-if="authInfo?.proflImgUrl">
-                                            <img :src="authInfo?.proflImgUrl" class="img-thumbnail p-0 w-100" @error="handleImageError" />
+                                        <template v-if="authInfo?.profileImageUrl">
+                                            <img :src="authInfo?.profileImageUrl" class="img-thumbnail p-0 w-100" @error="handleImageError" />
                                         </template>
                                         <template v-else>
                                             <span class="svg-icon svg-icon-1">

@@ -21,7 +21,7 @@ const Page: Page = (function(): Page {
             /* 중복 로그인시 기존 로그인 끊기 팝업 호출 */
             if (Model.isDupIdLogin) Page.dupLoginAlert();
             /* 조건 일치시 비밀번호 변경 팝업 호출 */
-            if (Model.isCredentialExpired || Model.needsPwReset) dF.LoginPwChg.pwChgModal();
+            if (Model.isCredentialExpired || Model.needsPasswordReset) dF.LoginPwChg.pwChgModal();
         },
 
         /**

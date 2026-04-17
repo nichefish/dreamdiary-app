@@ -36,7 +36,7 @@ public interface ViewerMapstruct
     @Override
     @Named("toDto")
     @Mapping(target = "createdAt", expression = "java(DateUtils.asStr(entity.getCreatedAt(), DatePtn.DATETIME))")
-    @Mapping(target = "createdByNm", expression = "java(entity.getCreatedByInfo() != null ? entity.getCreatedByInfo().getNickNm() : null)")
+    @Mapping(target = "createdByNm", expression = "java(entity.getCreatedByInfo() != null ? entity.getCreatedByInfo().getNickname() : null)")
     ViewerDto toDto(final ViewerEntity entity) throws Exception;
 
     /**

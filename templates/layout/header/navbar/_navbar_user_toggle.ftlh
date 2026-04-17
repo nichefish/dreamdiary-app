@@ -10,8 +10,8 @@
         <div class="menu-content d-flex align-items-center px-3">
             <!--begin::Avatar-->
             <div class="d-flex flex-column align-items-center symbol symbol-50px me-5">
-                <#if (authInfo.proflImgUrl)??>
-                    <img src="${authInfo.proflImgUrl!}" class="img-thumbnail p-0 w-100" onerror="this.src='/metronic/assets/media/avatars/avatar_blank.png';" />
+                <#if (authInfo.profileImageUrl)??>
+                    <img src="${authInfo.profileImageUrl!}" class="img-thumbnail p-0 w-100" onerror="this.src='/metronic/assets/media/avatars/avatar_blank.png';" />
                 <#else>
                     <span class="svg-icon svg-icon-1">
                         <i class="fas fa-user-circle fs-2"></i>
@@ -27,7 +27,7 @@
             <!--begin::Username-->
             <div class="d-flex flex-column">
                 <div class="fw-bold d-flex align-items-center fs-5">
-                    ${(authInfo.nickNm)!}
+                    ${(authInfo.nickname)!}
                     <span class="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2">
                         <#if isMngr>
                             <i class="bi bi-person-lines-fill fs-3 text-info me-1 opacity-75"

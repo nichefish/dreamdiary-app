@@ -171,7 +171,7 @@ cF.validate = (function(): Module {
          * 핸드폰 번호 형식 유효성 검사를 수행하고, 유효하지 않으면 입력값을 초기화합니다. (onkeyup 이벤트)
          * @param {string|HTMLElement|JQuery} selector - 핸드폰 번호를 입력할 요소의 선택자, DOM 요소 또는 jQuery 객체.
          */
-        cttpc: function(selector: string|HTMLElement|JQuery): void {
+        phoneNumber: function(selector: string|HTMLElement|JQuery): void {
             const inputs: HTMLInputElement[] = cF.util.verifySelector(selector);
             if (inputs.length === 0) return;
 

@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.journal.dream.mapstuct;
 
 import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntity;
+import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntityTestFactory;
 import io.nicheblog.dreamdiary.feature.journal.dream.mapstruct.JournalDreamMapstruct;
 import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamDto;
-import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntityTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseEntityTestFactoryHelper;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;

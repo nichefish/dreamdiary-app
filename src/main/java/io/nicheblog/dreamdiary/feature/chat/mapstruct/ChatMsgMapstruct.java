@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.feature.chat.mapstruct;
 
+import io.nicheblog.dreamdiary.feature.attachable._shared.mapstruct.BaseAttachableMapstruct;
 import io.nicheblog.dreamdiary.feature.chat.entity.ChatMsgEntity;
 import io.nicheblog.dreamdiary.feature.chat.model.ChatMsgDto;
-import io.nicheblog.dreamdiary.feature.attachable._shared.mapstruct.BaseAttachableMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;

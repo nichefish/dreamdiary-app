@@ -30,7 +30,7 @@ public class UserEmplymDtoTestFactory {
                 .apntcYn("Y")
                 .emplymEmailId("test_emplym_email_id")
                 .emplymEmailDomain("test_emplym_email_domain")
-                .emplymCttpc("000-0000-0000")
+                .emplymPhoneNumber("000-0000-0000")
                 .ecnyDt("2000-01-01")
                 .retireYn("Y")
                 .retireDt("2000-01-01")

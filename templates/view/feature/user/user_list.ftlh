@@ -31,7 +31,7 @@
             <#list pendingSignupReqList as req>
                 <tr>
                     <td class="text-center">${req.id!}</td>
-                    <td class="text-start">${req.nickNm!'-'} (${req.username!'-'})</td>
+                    <td class="text-start">${req.nickname!'-'} (${req.username!'-'})</td>
                     <td class="text-start">${req.email!'-'}</td>
                     <td class="text-center">${req.createdAt?string("yyyy-MM-dd HH:mm")!'-'}</td>
                     <td class="text-center">
@@ -87,9 +87,9 @@
                         </td>
                         <td class="text-start ps-8">
                             <a href="javascript:void(0);" class="text-dark">
-                                <#if (user.proflImgUrl)??>
+                                <#if (user.profileImageUrl)??>
                                     <div class="btn btn-icon btn-active-light-primary position-relative w-15px h-15px w-md-20px h-md-20px me-1">
-                                        <img src="${(user.proflImgUrl)!}" class="img-thumbnail p-0 w-100" />
+                                        <img src="${(user.profileImageUrl)!}" class="img-thumbnail p-0 w-100" />
                                     </div>
                                 </#if>
                                 <span class="pe-1">${user.userNm!"-"} (${user.username!"-"})</span>

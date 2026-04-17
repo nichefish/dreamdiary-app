@@ -26,10 +26,10 @@ public class UserXlsxDto {
     private String username;
 
     /** 이름 */
-    private String nickNm;
+    private String nickname;
 
     /** 연락처(전화번호) */
-    private String cttpc;
+    private String phoneNumber;
 
     /** E-mail */
     private String email;

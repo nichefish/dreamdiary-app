@@ -1,13 +1,13 @@
 package io.nicheblog.dreamdiary.feature.board.post.mapstruct;
 
-import io.nicheblog.dreamdiary.feature.board.post.entity.BoardPostEntity;
-import io.nicheblog.dreamdiary.feature.board.post.entity.BoardPostSmpEntity;
-import io.nicheblog.dreamdiary.feature.board.post.model.BoardPostDto;
 import io.nicheblog.dreamdiary.feature.attachable._shared.mapstruct.BaseAttachableMapstruct;
 import io.nicheblog.dreamdiary.feature.attachable.comment.mapstruct.embed.CommentEmbedMapstruct;
 import io.nicheblog.dreamdiary.feature.attachable.managt.mapstruct.embed.ManagtEmbedMapstruct;
 import io.nicheblog.dreamdiary.feature.attachable.tag.mapstruct.embed.TagEmbedMapstruct;
 import io.nicheblog.dreamdiary.feature.attachable.viewer.mapstruct.embed.ViewerEmbedMapstruct;
+import io.nicheblog.dreamdiary.feature.board.post.entity.BoardPostEntity;
+import io.nicheblog.dreamdiary.feature.board.post.entity.BoardPostSmpEntity;
+import io.nicheblog.dreamdiary.feature.board.post.model.BoardPostDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;

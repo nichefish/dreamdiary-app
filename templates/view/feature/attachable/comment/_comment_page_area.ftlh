@@ -15,9 +15,9 @@
                     <div class="d-flex align-items-center py-1">
                         <div class="d-flex flex-column align-items-start justify-content-center">
                             <span class="text-gray-800 fs-6 fw-bold lh-1 mb-2">
-                                <#if (comment.createdByInfo.proflImgUrl)??>
+                                <#if (comment.createdByInfo.profileImageUrl)??>
                                     <div class="btn btn-icon btn-active-light-primary position-relative w-15px h-15px w-md-20px h-md-20px me-1">
-                                        <img src="${(comment.createdByInfo.proflImgUrl)!}" class="img-thumbnail p-0 w-100" />
+                                        <img src="${(comment.createdByInfo.profileImageUrl)!}" class="img-thumbnail p-0 w-100" />
                                     </div>
                                 </#if>
                                 ${comment.createdByNm!"-"}
@@ -82,12 +82,12 @@
         <div class="row">
             <div class="col-xl-1">
                 <div class="fs-6 fw-bold col-form-label vertical-center">
-                    <#if (authInfo.proflImgUrl)??>
+                    <#if (authInfo.profileImageUrl)??>
                         <div class="btn btn-icon btn-active-light-primary position-relative w-15px h-15px w-md-20px h-md-20px me-1">
-                            <img src="${(authInfo.proflImgUrl)!}" class="img-thumbnail p-0 w-100" />
+                            <img src="${(authInfo.profileImageUrl)!}" class="img-thumbnail p-0 w-100" />
                         </div>
                     </#if>
-                    ${authInfo.nickNm!}
+                    ${authInfo.nickname!}
                 </div>
             </div>
             <div class="row col-xl-11">

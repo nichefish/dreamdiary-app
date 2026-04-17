@@ -9,8 +9,8 @@ import io.nicheblog.dreamdiary.feature.attachable.tag.mapstruct.TagProfileMapstr
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagDto;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagProfileDto;
 import io.nicheblog.dreamdiary.feature.attachable.tag.repository.jpa.TagCategoryProfileRepository;
-import io.nicheblog.dreamdiary.feature.attachable.tag.repository.jpa.TagRepository;
 import io.nicheblog.dreamdiary.feature.attachable.tag.repository.jpa.TagProfileRepository;
+import io.nicheblog.dreamdiary.feature.attachable.tag.repository.jpa.TagRepository;
 import io.nicheblog.dreamdiary.feature.attachable.tag.spec.TagProfileSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;

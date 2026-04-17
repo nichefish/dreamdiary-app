@@ -89,28 +89,21 @@ public class UserStateEntity {
 
     /** 패스워드 리셋 필요 여부 (Y/N) */
     @Builder.Default
-    @Column(name = "needs_pw_reset", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Column(name = "needs_password_reset", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
     @Comment("패스워드 리셋 필요여부")
-    private String needsPwReset = "N";
+    private String needsPasswordReset = "N";
 
     /** 패스워드 리셋 토큰 발급 시각 */
     @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
-    @Column(name = "pw_reset_token_issued_at")
+    @Column(name = "password_reset_token_issued_at")
     @Comment("패스워드 리셋 토큰 발급 시각")
-    private Date pwResetTokenIssuedAt;
-
-    /** 장기 미로그인 패스 체크 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "dormant_bypass_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("장기 미로그인 패스 체크 여부")
-    private String dormantBypassYn = "N";
+    private Date passwordResetTokenIssuedAt;
 
     public static UserStateEntity getRegistStus() {
         return UserStateEntity.builder()
                 .lockedYn("N")
                 .loginFailCnt(0)
-                .needsPwReset("N")
-                .dormantBypassYn("N")
+                .needsPasswordReset("N")
                 .build();
     }
 }

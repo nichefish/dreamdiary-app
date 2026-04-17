@@ -22,7 +22,7 @@
         <#--헤더:: 인풋: searchType-->
         <select name="searchType" id="searchType" class="form-select form-select-sm form-select-solid">
             <option value="title" label="<@spring.message 'txt.title'/>" ${fn.selected(searchParam.searchType!, "title")} />
-            <option value="nickNm" label="작성자" ${fn.selected(searchParam.searchType!, "nickNm")} />
+            <option value="nickname" label="작성자" ${fn.selected(searchParam.searchType!, "nickname")} />
         </select>
     </div>
     <div>

@@ -65,7 +65,7 @@
     <div class="row mb-4">
         <div class="col-xl-2">
             <div class="fw-bold col-form-label text-sm-start text-lg-center required">
-                <label for="cttpc"
+                <label for="phoneNumber"
                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="업무용 연락처입니다.">
                     직원 전화번호
                     <i class="bi bi-question-circle"></i>
@@ -73,10 +73,10 @@
             </div>
         </div>
         <div class="col-xl-2">
-            <input type="text" name="emplym.emplymCttpc" id="emplymCttpc" class="form-control form-control-solid required"
-                   value="${(user.emplym.emplymCttpc)!}" maxlength="20" />
-            <div class="form-text text-noti"><@spring.message "txt.req.cttpc"/></div>
-            <span id="cttpc_validate_span"></span>
+            <input type="text" name="emplym.emplymPhoneNumber" id="emplymPhoneNumber" class="form-control form-control-solid required"
+                   value="${(user.emplym.emplymPhoneNumber)!}" maxlength="20" />
+            <div class="form-text text-noti"><@spring.message "txt.req.phoneNumber"/></div>
+            <span id="phoneNumber_validate_span"></span>
         </div>
     </div>
     <#--begin::Row-->

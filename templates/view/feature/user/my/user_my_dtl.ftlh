@@ -38,8 +38,8 @@
                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="프로필 이미지를 삭제합니다.">
                         <i class="bi bi-x icon-xs text-danger"></i>
                     </span>
-                    <#if user.proflImgUrl??>
-                        <img src="${user.proflImgUrl!}" class="img-thumbnail p-0 w-100" />
+                    <#if user.profileImageUrl??>
+                        <img src="${user.profileImageUrl!}" class="img-thumbnail p-0 w-100" />
                     <#else>
                         <span class="svg-icon svg-icon-1">
                             <i class="fas fa-user-circle fs-2 blink"></i>
@@ -84,10 +84,10 @@
         <#--begin::Row-->
         <div class="row mb-4">
             <div class="col-xl-2 col-4">
-                <div class="col-form-label text-center fs-6 fw-bold"><label for="nickNm">표시이름</label></div>
+                <div class="col-form-label text-center fs-6 fw-bold"><label for="nickname">표시이름</label></div>
             </div>
             <div class="col-xl-2 col-8 col-form-label">
-                ${user.nickNm!}
+                ${user.nickname!}
             </div>
         </div>
         <#--begin::Row-->
@@ -120,7 +120,7 @@
             <#--begin::Row-->
             <div class="row mb-4">
                 <div class="col-xl-2 col-4">
-                    <div class="col-form-label text-center fs-6 fw-bold"><label for="cttpc">부서</label></div>
+                    <div class="col-form-label text-center fs-6 fw-bold"><label for="phoneNumber">부서</label></div>
                 </div>
                 <div class="col-xl-2 col-8 col-form-label">
                     ${user.userInfo.cmpyNm!"-"} / ${user.userInfo.teamNm!"-"} / ${user.userInfo.emplymNm!"-"}
@@ -161,7 +161,7 @@
                     <div class="col-form-label text-center fs-6 fw-bold">전화번호</div>
                 </div>
                 <div class="col-xl-2 col-8 col-form-label">
-                    ${user.cttpc!"-"}
+                    ${user.phoneNumber!"-"}
                 </div>
             </div>
             <#--begin::Row-->

@@ -47,9 +47,9 @@
                 <#list post.managt.list![] as managtr>
                     <!--begin::Name-->
                     <div class="text-gray-600 fs-6 me-4">
-                        <#if (managtr.createdByInfo.proflImgUrl)??>
+                        <#if (managtr.createdByInfo.profileImageUrl)??>
                             <div class="btn btn-icon btn-active-light-primary position-relative w-15px h-15px w-md-20px h-md-20px me-1">
-                                <img src="${(managtr.createdByInfo.proflImgUrl)!}" class="img-thumbnail p-0 w-100" />
+                                <img src="${(managtr.createdByInfo.profileImageUrl)!}" class="img-thumbnail p-0 w-100" />
                             </div>
                         </#if>
                         <span class="cursor-help"

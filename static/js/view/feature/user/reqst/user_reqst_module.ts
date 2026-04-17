@@ -53,7 +53,7 @@ dF.UserReqst = (function(): dfModule {
             // 자동 대문자->소문자처리
             cF.validate.toLowerCase("#username");
             // 전화번호 형식 유효성 검사
-            cF.validate.cttpc("#cttpc");
+            cF.validate.phoneNumber("#phoneNumber");
             // 이메일 도메인 select시 자동입력
             $("#emailDomainSelect").on("change", function(): void {
                 $("#emailDomain").val($(this).val());

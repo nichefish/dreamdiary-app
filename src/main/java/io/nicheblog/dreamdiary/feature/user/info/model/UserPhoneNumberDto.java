@@ -6,9 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * UserCttpcXlsxDto
+ * UserPhoneNumberDto
  * <pre>
- *  사용자 연락처 엑셀 다운로드 Dto.
+ *  사용자 연락처 조회 Dto.
  * </pre>
  *
  * @author nichefish
@@ -17,7 +17,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode
-public class UserCttpcXlsxDto {
+public class UserPhoneNumberDto {
 
     /** 이름 */
     private String userNm;
@@ -25,11 +25,11 @@ public class UserCttpcXlsxDto {
     /** 직급이름 */
     private String rankNm;
 
-    /** 소속(팀) */
+    /** 소속(팀 부서) */
     private String teamNm;
 
     /** 연락처(전화번호) */
-    private String cttpc;
+    private String phoneNumber;
 
     /** E-mail */
     private String email;

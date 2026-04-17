@@ -27,9 +27,9 @@ public class UserEntityTestFactory {
         return UserEntity.builder()
                 .username(TestConstant.TEST_USER)
                 .password(TestConstant.TEST_PASSWORD_ENCODED)
-                .nickNm(TestConstant.TEST_NICK_NM)
+                .nickname(TestConstant.TEST_NICK_NM)
                 .email("test_email_id@test_email_domain")
-                .cttpc("010-0101-0101")
+                .phoneNumber("010-0101-0101")
                 .content("test_cn")
                 .acntStus(UserStateEntity.builder().build())
                 .build();

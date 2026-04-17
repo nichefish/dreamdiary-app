@@ -32,7 +32,7 @@ public interface HistoryEmbedMapstruct
      * @return Dto -- 변환된 Dto 객체
      */
     @Override
-    @Mapping(target = "historyTriggeredByNm", expression = "java(entity.getHistoryTriggeredByInfo() != null ? entity.getHistoryTriggeredByInfo().getNickNm() : null)")
+    @Mapping(target = "historyTriggeredByNm", expression = "java(entity.getHistoryTriggeredByInfo() != null ? entity.getHistoryTriggeredByInfo().getNickname() : null)")
     @Mapping(target = "historyTriggeredAt", expression = "java(DateUtils.asStr(entity.getHistoryTriggeredAt(), DatePtn.DATETIME))")
     HistoryCmpstn toDto(final HistoryEmbed entity) throws Exception;
 
