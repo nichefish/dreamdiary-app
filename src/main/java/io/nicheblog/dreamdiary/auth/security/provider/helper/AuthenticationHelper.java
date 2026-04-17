@@ -83,9 +83,6 @@ public class AuthenticationHelper {
 
         final String username = authInfo.getUsername();
 
-        // 승인여부 체크
-        if (!"Y".equals(authInfo.getCfYn())) throw new AccountNotCfException("AbstractUserDetailsAuthenticationProvider.AccountNotCfException");
-
         // 장기간 미로그인여부 체크 :: 시스템계정"system"은 제외
         if (userService.isDormant(username)) throw new AccountDormantException("AbstractUserDetailsAuthenticationProvider.AccountDormantException");
 

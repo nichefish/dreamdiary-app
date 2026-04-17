@@ -6,6 +6,7 @@
  import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
  import io.nicheblog.dreamdiary.feature.user.info.model.UserSearchParam;
  import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
+import io.nicheblog.dreamdiary.feature.user.reqst.repository.jpa.UserSignupRequestRepository;
  import io.nicheblog.dreamdiary.global.Constant;
  import io.nicheblog.dreamdiary.global.Url;
  import io.nicheblog.dreamdiary.infrastructure.code.Code;
@@ -50,6 +51,7 @@ public class UserPageController
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.USER;      // 작업 카테고리 (로그 적재용)
 
     private final UserService userService;
+    private final UserSignupRequestRepository userSignupRequestRepository;
     private final AuthRoleService authRoleService;
     private final CodeLookupService codeLookupService;
 
@@ -75,13 +77,13 @@ public class UserPageController
         // 상세/수정 화면에서 목록 화면 복귀시 세션에 목록 검색 인자 저장해둔 거 있는지 체크
         searchParam = (UserSearchParam) ParamUtils.checkPrevSearchParam(baseUrl, searchParam);
         // 페이징 정보 생성:: 공백시 pageSize=10, pageNo=1
-        final Sort sort = Sort.by(Sort.Direction.ASC, "acntStus.cfYn")
-                .and(Sort.by(Sort.Direction.ASC, "acntStus.lockedYn"))
+        final Sort sort = Sort.by(Sort.Direction.ASC, "acntStus.lockedYn")
                 .and(Sort.by(Sort.Direction.DESC, "createdAt"));
         final PageRequest pageRequest = ParamUtils.getPageRequest(searchParam, sort, model);
         // 목록 조회
         final Page<UserDto> userList = userService.getPageDto(searchParam, pageRequest);
         model.addAttribute("userList", userList.getContent());
+        model.addAttribute("pendingSignupReqList", userSignupRequestRepository.findByRequestStatusOrderByCreatedAtDesc("PENDING"));
         model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(userList));
         // 코드 정보 모델에 추가
         codeLookupService.setCdListToModel(Code.AUTH_CD, model);

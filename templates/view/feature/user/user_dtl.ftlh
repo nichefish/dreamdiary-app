@@ -10,37 +10,6 @@
     <#--begin::Card body-->
     <div class="card-body">
         <#--begin::Row-->
-        <div class="row mb-1">
-            <div class="col-xl-2 col-4 d-flex-center">
-                <label class="fw-bold">승인여부</label>
-            </div>
-            <div class="col-xl-1 col-2 d-flex align-items-center">
-                <#if (user.isCf)!true>
-                    <span class="text-success">
-                        승인<i class="bi bi-check text-success"></i>
-                    </span>
-                <#else>
-                    <span class="text-muted">
-                        미승인<i class="bi bi-dash fs-9 text-muted blink"></i>
-                    </span>
-                </#if>
-            </div>
-            <div class="col-xl-2 col-8 col-form-label">
-                <#if (user.isCf)!true>
-                    <div class="btn btn-sm btn-danger" onclick="dF.User.uncfAjax();">
-                        승인 취소
-                    </div>
-                <#else>
-                    <div class="btn btn-sm btn-secondary" onclick="dF.User.cfAjax();">
-                        승인 처리
-                    </div>
-                </#if>
-            </div>
-        </div>
-
-        <div class="separator my-8"></div>
-
-        <#--begin::Row-->
         <div class="row mb-4">
             <div class="col-xl-2 col-4 d-flex-center">
                 <label class="fw-bold">아이디</label>

@@ -54,9 +54,6 @@ public class AuthInfo
     /** email */
     private String email;
 
-    /** 승인 여부 (Y/N) */
-    private String cfYn;
-
     /** 잠금 여부 (Y/N) */
     private String lockedYn;
 
@@ -191,7 +188,7 @@ public class AuthInfo
      */
     @Override
     public boolean isEnabled() {
-        return !"Y".equals(this.getCfYn());
+        return true;
     }
 
     /**
@@ -235,7 +232,6 @@ public class AuthInfo
         this.proflImgUrl = (String) attributes.get("profile_image");
 
         // ===== OAuth 기본 상태 =====
-        this.cfYn = "N";
         this.lockedYn = "N";
         this.useAllowedIpYn = "N";
         this.needsPwReset = "N";

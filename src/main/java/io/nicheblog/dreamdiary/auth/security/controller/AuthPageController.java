@@ -3,8 +3,6 @@ package io.nicheblog.dreamdiary.auth.security.controller;
 import io.nicheblog.dreamdiary.auth.jwt.provider.JwtTokenProvider;
 import io.nicheblog.dreamdiary.auth.security.exception.AlreadyAuthenticatedException;
 import io.nicheblog.dreamdiary.auth.security.exception.AuthenticationFailureException;
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
-import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
 import io.nicheblog.dreamdiary.feature.user.reqst.service.UserReqstService;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
@@ -33,7 +31,6 @@ public class AuthPageController
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.AUTH_POLICY;        // 작업 카테고리 (로그 적재용)
 
-    private final UserService userService;
     private final UserReqstService userReqstService;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -55,12 +52,9 @@ public class AuthPageController
             if (!jwtTokenProvider.validateToken(token)) throw new AuthenticationFailureException("이미 만료된 인증 코드입니다.");
             
             final String username = jwtTokenProvider.getUsernameFromToken(token);
-            final UserEntity user = userService.getDtlEntity(username);
-            final boolean isAlreadyCf = "Y".equals(user.acntStus.getCfYn());
-            // 이미 가입된 계정이면 미처리.
-            if (isAlreadyCf) throw new AlreadyAuthenticatedException("이미 인증된 계정입니다.");
             // 계정 승인 처리
-            userReqstService.cf(user.getId());
+            final boolean approved = userReqstService.cfByUsername(username).getRslt();
+            if (!approved) throw new AlreadyAuthenticatedException("이미 처리된 신청이거나 승인할 수 없는 상태입니다.");
 
             return "/view/auth/security/verify_success";
         } catch (final Exception e) {
