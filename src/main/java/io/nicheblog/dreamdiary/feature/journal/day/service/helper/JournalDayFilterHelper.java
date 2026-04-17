@@ -107,9 +107,9 @@ public final class JournalDayFilterHelper {
 
     private static boolean matchesChapterCtgr(final JournalChapterDto chapter, final boolean hasNoneCategory, final Set<String> ctgrSet) {
         if (chapter == null) return false;
-        final String ctgrCd = StringUtils.trimToEmpty(chapter.getCtgrCd());
-        if (ctgrCd.isEmpty()) return true;
-        return ctgrSet.contains(ctgrCd);
+        final String categoryCode = StringUtils.trimToEmpty(chapter.getCategoryCode());
+        if (categoryCode.isEmpty()) return true;
+        return ctgrSet.contains(categoryCode);
     }
 
     private static List<JournalChapterCtgrHintDto> collectHiddenChapterCtgrList(
@@ -123,13 +123,13 @@ public final class JournalDayFilterHelper {
         for (final JournalChapterDto chapter : chapterList) {
             if (chapter == null || matchesChapterCtgr(chapter, hasNoneCategory, ctgrSet)) continue;
 
-            final String ctgrCd = StringUtils.trimToEmpty(chapter.getCtgrCd());
-            final String ctgrKey = StringUtils.isNotEmpty(ctgrCd) ? ctgrCd : CHAPTER_CTGR_NONE;
+            final String categoryCode = StringUtils.trimToEmpty(chapter.getCategoryCode());
+            final String ctgrKey = StringUtils.isNotEmpty(categoryCode) ? categoryCode : CHAPTER_CTGR_NONE;
             if (hiddenMap.containsKey(ctgrKey)) continue;
 
             hiddenMap.put(ctgrKey, JournalChapterCtgrHintDto.builder()
-                    .ctgrCd(ctgrCd)
-                    .ctgrNm(StringUtils.defaultIfBlank(chapter.getCtgrNm(), ctgrCd.isEmpty() ? "미분류" : ctgrCd))
+                    .categoryCode(categoryCode)
+                    .categoryName(StringUtils.defaultIfBlank(chapter.getCategoryName(), categoryCode.isEmpty() ? "미분류" : categoryCode))
                     .build());
         }
 

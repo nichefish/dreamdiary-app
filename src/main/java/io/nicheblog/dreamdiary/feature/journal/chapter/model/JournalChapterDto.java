@@ -42,9 +42,9 @@ public class JournalChapterDto
     /** 제목 */
     private String title;
     /** 글분류 코드 :: join을 제거하고 메모리 캐시 처리 */
-    private String ctgrCd;
+    private String categoryCode;
     /** 글분류 코드 이름 :: join을 제거하고 메모리 캐시 처리 */
-    private String ctgrNm;
+    private String categoryName;
 
     /** 마크다운 처리된 내용 */
     private String markdownContent;

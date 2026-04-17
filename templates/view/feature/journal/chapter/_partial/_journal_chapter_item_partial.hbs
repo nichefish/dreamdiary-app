@@ -7,10 +7,10 @@
     <div class="d-flex align-items-center mt-2">
         <div class="d-flex-align-center text-gray-700 fs-6 ps-1 ps-md-5 me-5 fw-bolder">
             <span class="{{#ifYn chapterResolvedYn}}text-success{{/ifYn}} me-2">
-                <@spring.message 'txt.diary'/>{{#if (exists ctgrCd)}}:{{/if}}
-                {{#if (exists ctgrCd)}}
-                    <span style=color:#287D94;">{{ctgrNm}}</span>
-                    <span class="text-muted fs-8 me-1">{{ctgrCd}}</span>
+                <@spring.message 'txt.diary'/>{{#if (exists categoryCode)}}:{{/if}}
+                {{#if (exists categoryCode)}}
+                    <span style=color:#287D94;">{{categoryName}}</span>
+                    <span class="text-muted fs-8 me-1">{{categoryCode}}</span>
                 {{/if}}
             </span>
             <i class="bi bi-book fs-4 {{#ifYn chapterResolvedYn}}text-success{{/ifYn}}"></i>

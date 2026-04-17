@@ -97,8 +97,8 @@ public class JournalChapterService
     public void preRegist(final JournalChapterDto registDto) throws Exception {
         // 정렬 순서 처리
         final int lastSortOrder = repository.findLastIndexByJournalDay(registDto.getJournalDayId()).orElse(0);
-        if (lastSortOrder == 0 && StringUtils.isBlank(registDto.getCtgrCd())) {
-            registDto.setCtgrCd(FIRST_CHAPTER_CTGR_CD);
+        if (lastSortOrder == 0 && StringUtils.isBlank(registDto.getCategoryCode())) {
+            registDto.setCategoryCode(FIRST_CHAPTER_CTGR_CD);
         }
         registDto.setSortOrder(lastSortOrder + 1);
     }

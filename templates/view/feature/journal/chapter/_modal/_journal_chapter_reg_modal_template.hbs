@@ -32,10 +32,10 @@
             </label>
         </div>
         <div class="col-lg-2">
-            <select name="ctgrCd" id="ctgrCd" class="form-select form-select-solid">
+            <select name="categoryCode" id="categoryCode" class="form-select form-select-solid">
                 <option value="">--글분류--</option>
                 <#list JOURNAL_CHAPTER_CTGR_CD![] as ctgr>
-                    <option value="${ctgr.dtlCd!}" {{#if (equals ctgrCd "${ctgr.dtlCd!}")}}selected{{/if}}>[${ctgr.dtlCdNm!}]</option>
+                    <option value="${ctgr.dtlCd!}" {{#if (equals categoryCode "${ctgr.dtlCd!}")}}selected{{/if}}>[${ctgr.dtlCdNm!}]</option>
                 </#list>
             </select>
         </div>

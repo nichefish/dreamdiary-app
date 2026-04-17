@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS journal_chapter (
     journal_day_id INT COMMENT '저널 일자 번호',
     --
     title VARCHAR(200) COMMENT '제목',
-    ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
+    category_code VARCHAR(50) COMMENT '글 분류 코드',
     sort_order INT DEFAULT 1 COMMENT '저널 챕터 인덱스',
     collapsed_yn CHAR(1) DEFAULT 'N' COMMENT '글접기 여부 (Y/N)',
     -- AUDIT

@@ -492,10 +492,10 @@ dF.JournalDay = (function(): dfModule {
             return list.map((day: Record<string, any>): Record<string, any> => {
                 const journalChapterList: Record<string, any>[] = Array.isArray(day.journalChapterList) ? day.journalChapterList : [];
                 const filteredChapterList: Record<string, any>[] = journalChapterList.filter((chapter: Record<string, any>): boolean => {
-                    const ctgrCd: string = (chapter?.ctgrCd ?? "").trim();
-                    if (cF.util.isEmpty(ctgrCd)) return true;
+                    const categoryCode: string = (chapter?.categoryCode ?? "").trim();
+                    if (cF.util.isEmpty(categoryCode)) return true;
 
-                    return ctgrSet.has(ctgrCd);
+                    return ctgrSet.has(categoryCode);
                 });
 
                 return { ...day, journalChapterList: filteredChapterList };
