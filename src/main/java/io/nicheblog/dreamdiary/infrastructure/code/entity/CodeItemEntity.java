@@ -15,8 +15,8 @@ import javax.persistence.*;
 /**
  * CodeItemEntity
  * <pre>
- *  상세 코드(dtlCd) Entity
- *  ※상세 코드(dtl_cd) = 분류 코드 하위의 상세 코드. 분류 코드(cl_cd)에 N:1로 귀속된다.
+ *  공통 코드 상세(code_item) Entity.
+ *  ※상세 행(code, code_name)은 분류 코드(group_code)에 N:1로 귀속된다.
  * </pre>
  *
  * @author nichefish
@@ -40,26 +40,26 @@ public class CodeItemEntity
     @Column(name = "id")
     private Integer id;
 
-    /** 상세 코드 */
-    @Column(name = "dtl_cd", length=50)
-    private String dtlCd;
+    /** 상세 코드 (비즈니스 값) */
+    @Column(name = "code", length = 50)
+    private String code;
 
-    /** 공통코드 */
-    @Column(name = "cl_cd", length=50)
-    private String clCd;
+    /** 분류 코드 */
+    @Column(name = "group_code", length = 50)
+    private String groupCode;
 
     /** 분류 코드 정보 */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "cl_cd", referencedColumnName = "cl_cd", insertable = false, updatable = false)
+    @JoinColumn(name = "group_code", referencedColumnName = "group_code", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    private CodeGroupEntity clCdInfo;
+    private CodeGroupEntity codeGroup;
 
-    /** 상세 코드이름 */
-    @Column(name = "dtl_cd_nm", length=50)
-    private String dtlCdNm;
+    /** 상세 코드 이름 */
+    @Column(name = "code_name", length = 50)
+    private String codeName;
 
     /** 상세 코드설명 */
-    @Column(name = "description", length=2000)
+    @Column(name = "description", length = 2000)
     private String description;
 
     /** 정렬 순서 */

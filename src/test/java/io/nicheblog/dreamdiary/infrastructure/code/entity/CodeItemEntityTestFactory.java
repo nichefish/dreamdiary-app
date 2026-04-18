@@ -10,9 +10,9 @@ public class CodeItemEntityTestFactory {
 
     public static CodeItemEntity create() throws Exception {
         return CodeItemEntity.builder()
-                .clCd(TestConstant.TEST_CL_CD)
-                .dtlCd(TestConstant.TEST_DTL_CD)
-                .dtlCdNm(TestConstant.TEST_DTL_CD_NM)
+                .groupCode(TestConstant.TEST_GROUP_CODE)
+                .code(TestConstant.TEST_CODE)
+                .codeName(TestConstant.TEST_CODE_NAME)
                 .description(TestConstant.TEST_DC)
                 .build();
     }

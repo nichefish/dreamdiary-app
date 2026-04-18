@@ -52,13 +52,13 @@ const Page: Page = (function(): Page {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                $("#clCdRegForm #regYn").val("Y");
+                $("#codeGroupRegForm #regYn").val("Y");
                 const url: string = Url.TMPLAT_DEF_REG_AJAX;
-                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#clCdRegForm");
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#codeGroupRegForm");
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
-                            if (res.rslt) cF.ui.blockUIReplace(Url.CL_CD_LIST);
+                            if (res.rslt) cF.ui.blockUIReplace(Url.TMPLAT_DEF_LIST);
                         });
                 });
             });

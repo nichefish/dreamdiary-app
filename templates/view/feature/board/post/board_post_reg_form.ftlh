@@ -32,7 +32,7 @@
                             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="湲遺꾨쪟瑜??좏깮?⑸땲??">
                         <option value="">--湲遺꾨쪟--</option>
                         <#list POST_CTGR_CD![] as ctgr>
-                            <option value="${ctgr.dtlCd!}" id="${ctgr.dtlCd!}"<#if ctgr.dtlCd == (post.categoryCode)!> selected="selected"</#if>>[${ctgr.dtlCdNm!}]</option>
+                            <option value="${ctgr.code!}" id="${ctgr.code!}"<#if ctgr.code == (post.categoryCode)!> selected="selected"</#if>>[${ctgr.codeName!}]</option>
                         </#list>
                     </select>
                 </div>

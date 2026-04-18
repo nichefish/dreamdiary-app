@@ -34,7 +34,7 @@ public interface NoticeMapstruct
      */
     @Override
     @Named("toDto")
-    @Mapping(target = "ctgrNm", expression = "java(CodeUtils.getDtlCdNm(\"NOTICE_CTGR_CD\", entity.getCtgrCd()))")
+    @Mapping(target = "ctgrNm", expression = "java(CodeUtils.getCodeName(\"NOTICE_CTGR_CD\", entity.getCtgrCd()))")
     @Mapping(target = "markdownContent", expression = "java(StringUtils.isEmpty(entity.getContent()) ? \"-\" : MarkdownUtils.markdown(entity.getContent()))")
     NoticeDto toDto(final NoticeEntity entity) throws Exception;
 

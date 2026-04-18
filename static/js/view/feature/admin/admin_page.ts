@@ -63,7 +63,7 @@ const Page: Page = (function(): Page {
          * 코드 관리 페이지로 이동
          */
         cdList: function(): void {
-            cF.form.blockUISubmit("#procForm", Url.CL_CD_LIST);
+            cF.form.blockUISubmit("#procForm", Url.CODE_GROUP_LIST);
         },
     }
 })();

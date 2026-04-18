@@ -9,8 +9,8 @@
 
     <div>
         <select name="searchType" id="searchType" class="form-select form-select-sm form-select-solid">
-            <option value="clCd" ${fn.selected(searchParam.searchType!, "clCd")}>분류 코드</option>
-            <option value="clCdNm" ${fn.selected(searchParam.searchType!, "clCdNm")}>분류 코드명</option>
+            <option value="groupCode" ${fn.selected(searchParam.searchType!, "groupCode")}>분류 코드</option>
+            <option value="groupName" ${fn.selected(searchParam.searchType!, "groupName")}>분류 코드명</option>
             <option value="description" ${fn.selected(searchParam.searchType!, "description")}>분류 코드 설명</option>
         </select>
     </div>

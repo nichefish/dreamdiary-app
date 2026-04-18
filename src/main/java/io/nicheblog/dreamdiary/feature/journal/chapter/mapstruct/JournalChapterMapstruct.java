@@ -47,7 +47,7 @@ public abstract class JournalChapterMapstruct
     @Mapping(target = "journalDateWeekDay", expression = "java(entity.getJournalDay() != null && entity.getJournalDay().getJournalDate() != null ? DateUtils.getDayOfWeekChinese(entity.getJournalDay().getJournalDate()) : null)")
     @Mapping(target = "yy", source = "journalDay.yy")
     @Mapping(target = "mnth", source = "journalDay.mnth")
-    @Mapping(target = "categoryName", expression = "java(CodeUtils.getDtlCdNm(\"JOURNAL_CHAPTER_CTGR_CD\", entity.getCategoryCode()))")
+    @Mapping(target = "categoryName", expression = "java(CodeUtils.getCodeName(\"JOURNAL_CHAPTER_CTGR_CD\", entity.getCategoryCode()))")
     public abstract JournalChapterDto toDto(final JournalChapterEntity entity) throws Exception;
 
     /**

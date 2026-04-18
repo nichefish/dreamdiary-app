@@ -35,7 +35,7 @@
             <select name="categoryCode" id="categoryCode" class="form-select form-select-solid">
                 <option value="">--글분류--</option>
                 <#list JOURNAL_CHAPTER_CTGR_CD![] as ctgr>
-                    <option value="${ctgr.dtlCd!}" {{#if (equals categoryCode "${ctgr.dtlCd!}")}}selected{{/if}}>[${ctgr.dtlCdNm!}]</option>
+                    <option value="${ctgr.code!}" {{#if (equals categoryCode "${ctgr.code!}")}}selected{{/if}}>[${ctgr.codeName!}]</option>
                 </#list>
             </select>
         </div>

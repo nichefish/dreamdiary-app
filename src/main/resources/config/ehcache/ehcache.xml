@@ -49,7 +49,7 @@
     <cache alias="boardMenu" uses-template="defaultTemplate" />
 
     <!-- 코드 ?�름 -->
-    <cache alias="dtlCdNm" uses-template="defaultTemplate" />
+    <cache alias="codeItemCodeName" uses-template="defaultTemplate" />
 
     <!-- ?�일 ?�보 -->
     <cache alias="holydayEntityList" uses-template="defaultTemplate" />

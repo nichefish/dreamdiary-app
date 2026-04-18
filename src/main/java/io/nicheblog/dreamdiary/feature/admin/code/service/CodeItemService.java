@@ -57,34 +57,34 @@ public class CodeItemService
     /**
      * 코드 정보를 Model 에 추가.
      */
-    public void setCdListToModel(final String clCd, final ModelMap model) {
-        codeLookupService.setCdListToModel(clCd, model);
+    public void setCdListToModel(final String groupCode, final ModelMap model) {
+        codeLookupService.setCdListToModel(groupCode, model);
     }
 
     /**
      * 분류코드 기준 상세코드 목록 조회 (entity level).
      */
     @Transactional(readOnly = true)
-    public List<CodeItemEntity> getCdEntityListByClCd(final String clCd) {
-        if (StringUtils.isEmpty(clCd)) return null;
-        return repository.findByClCdAndUseYnOrderBySortOrderAsc(clCd, "Y");
+    public List<CodeItemEntity> getCdEntityListByGroupCode(final String groupCode) {
+        if (StringUtils.isEmpty(groupCode)) return null;
+        return repository.findByGroupCodeAndUseYnOrderBySortOrderAsc(groupCode, "Y");
     }
 
     /**
      * 분류코드 기준 상세코드 목록 조회 (dto level).
      */
     @Transactional(readOnly = true)
-    public List<CodeItemDto> getCdDtoListByClCd(final String clCd) {
-        final List<CodeLookupItem> itemList = codeLookupService.getCdItemListByClCd(clCd);
+    public List<CodeItemDto> getCdDtoListByGroupCode(final String groupCode) {
+        final List<CodeLookupItem> itemList = codeLookupService.getCdItemListByGroupCode(groupCode);
         if (itemList == null) return null;
 
         final List<CodeItemDto> dtoList = new ArrayList<>(itemList.size());
         for (final CodeLookupItem item : itemList) {
             dtoList.add(
                     CodeItemDto.builder()
-                            .clCd(item.getClCd())
-                            .dtlCd(item.getDtlCd())
-                            .dtlCdNm(item.getDtlCdNm())
+                            .groupCode(item.getGroupCode())
+                            .code(item.getCode())
+                            .codeName(item.getCodeName())
                             .description(item.getDescription())
                             .sortOrder(item.getSortOrder())
                             .useYn(item.getUseYn())
@@ -96,19 +96,19 @@ public class CodeItemService
     }
 
     /**
-     * 분류코드 + 상세코드 기준 상세코드명 조회.
+     * 분류코드 + 상세 code 기준 표시명 조회.
      */
     @Transactional(readOnly = true)
-    public String getDtlCdNm(final String clCd, final String dtlCd) {
-        return codeLookupService.getDtlCdNm(clCd, dtlCd);
+    public String getCodeName(final String groupCode, final String code) {
+        return codeLookupService.getCodeName(groupCode, code);
     }
 
     @Override
     public void preRegist(final CodeItemDto registDto) {
-        if (StringUtils.isEmpty(registDto.getClCd())) return;
+        if (StringUtils.isEmpty(registDto.getGroupCode())) return;
         if (registDto.getSortOrder() != null && registDto.getSortOrder() > 0) return;
 
-        final List<CodeItemEntity> existingList = repository.findByClCd(registDto.getClCd());
+        final List<CodeItemEntity> existingList = repository.findByGroupCode(registDto.getGroupCode());
         int maxIdx = 0;
         if (existingList != null) {
             for (final CodeItemEntity entity : existingList) {
@@ -121,8 +121,8 @@ public class CodeItemService
 
     @Override
     public void postRegist(final CodeItemDto updatedDto) throws Exception {
-        this.normalizeSortOrderByClCd(updatedDto.getClCd());
-        this.evictCacheByClCd(updatedDto.getClCd());
+        this.normalizeSortOrderByGroupCode(updatedDto.getGroupCode());
+        this.evictCacheByGroupCode(updatedDto.getGroupCode());
     }
 
     @Override
@@ -132,28 +132,28 @@ public class CodeItemService
 
     @Override
     public void postDelete(final CodeItemDto deletedDto) throws Exception {
-        this.normalizeSortOrderByClCd(deletedDto.getClCd());
-        this.evictCacheByClCd(deletedDto.getClCd());
+        this.normalizeSortOrderByGroupCode(deletedDto.getGroupCode());
+        this.evictCacheByGroupCode(deletedDto.getGroupCode());
     }
 
     @Override
     public void postSortOrder(final List<CodeItemDto> sortOrders) throws Exception {
         if (sortOrders == null || sortOrders.isEmpty()) return;
         final CodeItemDto first = sortOrders.get(0);
-        if (first == null || StringUtils.isEmpty(first.getClCd())) return;
+        if (first == null || StringUtils.isEmpty(first.getGroupCode())) return;
 
-        this.normalizeSortOrderByClCd(first.getClCd());
-        this.evictCacheByClCd(first.getClCd());
+        this.normalizeSortOrderByGroupCode(first.getGroupCode());
+        this.evictCacheByGroupCode(first.getGroupCode());
     }
 
     /**
      * 분류코드 단위로 sortOrder를 1부터 순차 재정렬한다.
      */
     @Transactional
-    public void normalizeSortOrderByClCd(final String clCd) {
-        if (StringUtils.isEmpty(clCd)) return;
+    public void normalizeSortOrderByGroupCode(final String groupCode) {
+        if (StringUtils.isEmpty(groupCode)) return;
 
-        final List<CodeItemEntity> entityList = repository.findByClCdOrderBySortOrderAscDtlCdAsc(clCd);
+        final List<CodeItemEntity> entityList = repository.findByGroupCodeOrderBySortOrderAscCodeAsc(groupCode);
         if (entityList == null || entityList.isEmpty()) return;
 
         boolean hasChange = false;
@@ -173,13 +173,13 @@ public class CodeItemService
      * 코드 캐시 무효화.
      */
     public void evictCache(final CodeItemDto rslt) {
-        codeLookupService.evictDtlCdCache(rslt.getClCd(), rslt.getDtlCd());
+        codeLookupService.evictCodeItemCache(rslt.getGroupCode(), rslt.getCode());
     }
 
     /**
      * 분류코드 단위 코드 캐시 무효화.
      */
-    public void evictCacheByClCd(final String clCd) {
-        codeLookupService.evictClCdCache(clCd);
+    public void evictCacheByGroupCode(final String groupCode) {
+        codeLookupService.evictGroupCodeCache(groupCode);
     }
 }

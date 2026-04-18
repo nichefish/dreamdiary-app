@@ -11,5 +11,5 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class CodeItemSearchParam extends BaseSearchParam {
-    private String clCd;
+    private String groupCode;
 }

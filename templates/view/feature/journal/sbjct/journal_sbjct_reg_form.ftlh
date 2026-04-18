@@ -32,7 +32,7 @@
                     <select name="ctgrCd" id="ctgrCd" class="form-select form-select-solid">
                         <option value="">--글분류--</option>
                         <#list JOURNAL_SBJCT_CTGR_CD![] as ctgr>
-                            <option value="${ctgr.dtlCd!}" <#if ctgr.dtlCd == (post.ctgrCd)!>selected="selected"</#if>>[${ctgr.dtlCdNm!}]</option>
+                            <option value="${ctgr.code!}" <#if ctgr.code == (post.ctgrCd)!>selected="selected"</#if>>[${ctgr.codeName!}]</option>
                         </#list>
                     </select>
                 </div>
@@ -75,7 +75,7 @@
                 <div class="col-lg-2 col-9 d-flex align-items-center">
                     <select name="mdfable" id="mdfable" class="form-select form-select-solid">
                         <#list MDFABLE_CD![] as mdfable>
-                            <option value="${mdfable.dtlCd!}" id="${mdfable.dtlCd!}" <#if (post.mdfable!"REGSTR") == (mdfable.dtlCd)>selected="selected"</#if>>[${mdfable.dtlCdNm!}]</option>
+                            <option value="${mdfable.code!}" id="${mdfable.code!}" <#if (post.mdfable!"REGSTR") == (mdfable.code)>selected="selected"</#if>>[${mdfable.codeName!}]</option>
                         </#list>
                     </select>
                 </div>

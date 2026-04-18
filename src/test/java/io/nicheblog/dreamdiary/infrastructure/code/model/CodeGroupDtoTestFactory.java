@@ -11,16 +11,16 @@ public class CodeGroupDtoTestFactory {
 
     public static CodeGroupDto createCodeGroupDto() throws Exception {
         return CodeGroupDto.builder()
-                .clCd(TestConstant.TEST_CL_CD)
-                .clCdNm(TestConstant.TEST_CL_CD_NM)
+                .groupCode(TestConstant.TEST_GROUP_CODE)
+                .groupName(TestConstant.TEST_GROUP_NAME)
                 .description(TestConstant.TEST_DC)
                 .build();
     }
 
     public static CodeGroupDto createCodeGroupDto_1() throws Exception {
         return CodeGroupDto.builder()
-                .clCd(TestConstant.TEST_CL_CD_1)
-                .clCdNm(TestConstant.TEST_CL_CD_NM_1)
+                .groupCode(TestConstant.TEST_GROUP_CODE_1)
+                .groupName(TestConstant.TEST_GROUP_NAME_1)
                 .description(TestConstant.TEST_DC_1)
                 .build();
     }

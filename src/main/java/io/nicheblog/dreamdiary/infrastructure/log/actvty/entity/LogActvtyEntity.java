@@ -96,8 +96,8 @@ public class LogActvtyEntity
     /** 작업 구분 코드 정보 (복합키 조인) */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula = @JoinFormula(value = "\'" + Code.ACTVTY_CTGR_CD + "\'", referencedColumnName = "cl_cd")),
-            @JoinColumnOrFormula(column = @JoinColumn(name = "actvty_ctgr_cd", referencedColumnName = "dtl_cd", insertable = false, updatable = false))
+            @JoinColumnOrFormula(formula = @JoinFormula(value = "\'" + Code.ACTVTY_CTGR_CD + "\'", referencedColumnName = "group_code")),
+            @JoinColumnOrFormula(column = @JoinColumn(name = "actvty_ctgr_cd", referencedColumnName = "code", insertable = false, updatable = false))
     })
     @Fetch(value = FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)

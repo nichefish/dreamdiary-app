@@ -8,9 +8,8 @@
         <div class="row mb-4">
             <h1 class="fs-2x fw-bolder text-gray-900 mb-0 me-1">
                 <span class="vertical-middle">
-                    {{#if (exists clCtgrNm)}}<span class="fw-bolder fs-2 ctgr-span ctgr-imprtc">{{clCtgrNm}}</span>{{/if}}
-                    <span class="fw-bold">{{clCdNm}}</span>
-                    (<span class="border-bottom">{{clCd}}</span>)
+                    <span class="fw-bold">{{groupName}}</span>
+                    (<span class="border-bottom">{{groupCode}}</span>)
                 </span>
             </h1>
         </div>
@@ -34,17 +33,17 @@
                 <th class="col-1 text-center wb-keepall">관리</th>
             </tr>
         </thead>
-        <tbody class="draggable-zone-dtl-cd">
-            {{#each dtlCdList}}
-                <tr class="bg-hover-secondary cursor-pointer sortable-item draggable-dtl-cd" id="code-item-{{id}}" data-id="{{id}}" onclick="dF.CodeItem.mdfModal({{id}});">
+        <tbody class="draggable-zone-code-item">
+            {{#each codeItems}}
+                <tr class="bg-hover-secondary cursor-pointer sortable-item draggable-code-item" id="code-item-{{id}}" data-id="{{id}}" onclick="dF.CodeItem.mdfModal({{id}});">
                     <td class="text-center">
-                        <div class="draggable-handle-dtl-cd d-flex-center cursor-move px-2 py-1" onclick="event.stopPropagation();" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="순서 변경">
+                        <div class="draggable-handle-code-item d-flex-center cursor-move px-2 py-1" onclick="event.stopPropagation();" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="순서 변경">
                             <i class="ki-duotone ki-abstract-14 fs-1"><span class="path1"></span><span class="path2"></span></i>
                             <span class="ms-2">{{rnum}}</span>
                         </div>
                     </td>
-                    <td class="text-start ps-6"><span class="fw-bold border-bottom">{{dtlCd}}</span></td>
-                    <td class="text-start ps-6"><span class="border-bottom">{{dtlCdNm}}</span></td>
+                    <td class="text-start ps-6"><span class="fw-bold border-bottom">{{code}}</span></td>
+                    <td class="text-start ps-6"><span class="border-bottom">{{codeName}}</span></td>
                     <td class="text-start ps-6">{{description}}</td>
                     <td class="text-center">{{sortOrder}}</td>
                     <td class="text-center">

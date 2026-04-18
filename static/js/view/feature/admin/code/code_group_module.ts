@@ -29,11 +29,11 @@ dF.CodeGroup = (function(): dfModule {
             cF.handlebars.modal(obj, "code_group_reg");
 
             /* jquery validation */
-            cF.validate.validateForm("#clCdRegForm", dF.CodeGroup.regAjax);
+            cF.validate.validateForm("#codeGroupRegForm", dF.CodeGroup.regAjax);
             // checkbox init
-            cF.ui.chckboxLabel("#clCdRegForm #useYn", "사용//미사용", "blue//gray");
-            cF.validate.replaceBlankIfMatches("#clCdRegForm #clCd", cF.regex.nonCd);
-            cF.validate.toUpperCase("#clCdRegForm #clCd");
+            cF.ui.chckboxLabel("#codeGroupRegForm #useYn", "사용//미사용", "blue//gray");
+            cF.validate.replaceBlankIfMatches("#codeGroupRegForm #groupCode", cF.regex.nonCd);
+            cF.validate.toUpperCase("#codeGroupRegForm #groupCode");
         },
 
         /**
@@ -90,7 +90,7 @@ dF.CodeGroup = (function(): dfModule {
 
         submit: function(): void {
             event.stopPropagation();
-            $("#clCdRegForm").submit();
+            $("#codeGroupRegForm").submit();
         },
 
         regAjax: function(): void {
@@ -102,12 +102,12 @@ dF.CodeGroup = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const regYn: string = String($("#clCdRegForm #regYn").val() || "Y").toUpperCase();
-                const id: number = Number($("#clCdRegForm #id").val());
+                const regYn: string = String($("#codeGroupRegForm #regYn").val() || "Y").toUpperCase();
+                const id: number = Number($("#codeGroupRegForm #id").val());
                 const url: string = regYn === "Y"
                     ? Url.CODE_GROUPS
                     : cF.util.bindUrl(Url.CODE_GROUP, { id });
-                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#clCdRegForm");
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#codeGroupRegForm");
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message })
                         .then(function(): void {
@@ -128,7 +128,7 @@ dF.CodeGroup = (function(): dfModule {
                     return;
                 }
                 cF.handlebars.modal(res.rsltObj, "code_group_dtl");
-                $("#clCd").val(res.rsltObj?.clCd || "");
+                $("#groupCode").val(res.rsltObj?.groupCode || "");
                 dF.CodeGroup.key = res.rsltObj?.id;
                 dF.CodeItem.initDraggable();
             });
@@ -154,7 +154,7 @@ dF.CodeGroup = (function(): dfModule {
 
         toggleUseAjax: function(id: number): void {
             if (isNaN(Number(id))) return;
-            const item: HTMLElement | null = document.querySelector(`.cl-cd-item[data-id='${id}']`);
+            const item: HTMLElement | null = document.querySelector(`.code-group-item[data-id='${id}']`);
             const currentUseYn: string = (item?.dataset?.useYn || "N").toUpperCase();
             const nextUseYn: string = currentUseYn === "Y" ? "N" : "Y";
 

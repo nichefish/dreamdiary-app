@@ -31,8 +31,8 @@ public class CodeGroupSpec
         for (final String key : searchParamMap.keySet()) {
             final Object value = searchParamMap.get(key);
             switch (key) {
-                case "clCd":
-                case "clCdNm":
+                case "groupCode":
+                case "groupName":
                 case "description":
                     final Expression<String> keyExp = root.get(key);
                     predicate.add(builder.like(keyExp, "%" + value + "%"));

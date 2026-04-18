@@ -103,8 +103,8 @@ public class MenuEntity
     /** 메뉴 구분 코드 정보 (복합키 조인) */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula = @JoinFormula(value = "\'MENU_SUB_EXTEND_TY_CD\'", referencedColumnName = "cl_cd")),
-            @JoinColumnOrFormula(column = @JoinColumn(name = "menu_sub_extend_ty_cd", referencedColumnName = "dtl_cd", insertable = false, updatable = false))
+            @JoinColumnOrFormula(formula = @JoinFormula(value = "\'MENU_SUB_EXTEND_TY_CD\'", referencedColumnName = "group_code")),
+            @JoinColumnOrFormula(column = @JoinColumn(name = "menu_sub_extend_ty_cd", referencedColumnName = "code", insertable = false, updatable = false))
     })
     @Fetch(value = FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)

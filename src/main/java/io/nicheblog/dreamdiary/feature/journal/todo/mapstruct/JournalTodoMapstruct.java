@@ -34,7 +34,7 @@ public interface JournalTodoMapstruct
      */
     @Override
     @Named("toDto")
-    @Mapping(target = "ctgrNm", expression = "java(CodeUtils.getDtlCdNm(\"JOURNAL_TODO_CTGR_CD\", entity.getCtgrCd()))")
+    @Mapping(target = "ctgrNm", expression = "java(CodeUtils.getCodeName(\"JOURNAL_TODO_CTGR_CD\", entity.getCtgrCd()))")
     @Mapping(target = "markdownContent", expression = "java(StringUtils.isEmpty(entity.getContent()) ? \"-\" : MarkdownUtils.markdown(entity.getContent()))")
     JournalTodoDto toDto(final JournalTodoEntity entity) throws Exception;
 

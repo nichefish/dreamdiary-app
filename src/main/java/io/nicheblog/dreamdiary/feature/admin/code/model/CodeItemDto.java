@@ -19,17 +19,20 @@ public class CodeItemDto
         extends BaseAuditDto
         implements Identifiable<Integer>, Sortable {
 
+    private Long rnum;
     private Integer id;
-    private String dtlCd;
-    private String dtlCdNm;
+    private String groupCode;
+    private String code;
+    private String codeName;
     private String description;
-    private String clCd;
-    private Integer sortOrder;
-
     @Builder.Default
     private String protectedYn = "N";
     @Builder.Default
     private String useYn = "N";
+    @Builder.Default
+    private Integer sortOrder = 0;
+    @Builder.Default
+    private String regYn = "N";
 
     @Override
     public Integer getKey() {

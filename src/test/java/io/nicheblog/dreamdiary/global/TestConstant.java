@@ -28,18 +28,17 @@ public final class TestConstant {
     public static final String TEST_MDFUSR_ID = "test_mdfuser_id";
     public static final String TEST_MDFUSR_NM = "test_mdfuser_id";
     
-    // 코드 관련
-    public static final String TEST_CL_CD = "test_cl_cd";
-    public static final String TEST_CL_CD_NM = "테스트_분류 코드";
-    public static final String TEST_DTL_CD = "test_dtl_cd";
-    public static final String TEST_DTL_CD_NM = "테스트_상세 코드";
-    public static final String TEST_CL_CTGR_CD = "test_cl_ctgr_cd";
+    // 코드 관련 (code_group.group_code / group_name)
+    public static final String TEST_GROUP_CODE = "test_group_code";
+    public static final String TEST_GROUP_NAME = "테스트_분류 코드";
+    /** code_item.code */
+    public static final String TEST_CODE = "test_item_code";
+    public static final String TEST_CODE_NAME = "테스트_상세 코드";
 
-    public static final String TEST_CL_CD_1 = "test_cl_cd_1";
-    public static final String TEST_CL_CD_NM_1 = "테스트_분류 코드_1";
-    public static final String TEST_DTL_CD_1 = "test_dtl_cd_1";
-    public static final String TEST_DTL_CD_NM_1 = "테스트_상세 코드_1";
-    public static final String TEST_CL_CTGR_CD_1 = "test_cl_ctgr_cd_1";
+    public static final String TEST_GROUP_CODE_1 = "test_group_code_1";
+    public static final String TEST_GROUP_NAME_1 = "테스트_분류 코드_1";
+    public static final String TEST_CODE_1 = "test_item_code_1";
+    public static final String TEST_CODE_NAME_1 = "테스트_상세 코드_1";
 
     //
     public static final String TEST_DC = "테스트_설명";

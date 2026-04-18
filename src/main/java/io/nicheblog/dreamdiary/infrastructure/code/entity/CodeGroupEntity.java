@@ -17,8 +17,8 @@ import java.util.List;
 /**
  * CodeGroupEntity
  * <pre>
- *  분류 코드(clCd) Entity.
- *  ※분류 코드(cl_cd) = 상위 분류 코드. 상세 코드(dtl_cd)를 1:N 묶음으로 관리한다.
+ *  분류 코드(groupCode) Entity.
+ *  ※분류 코드(group_code) = 상위 분류. 하위 code_item을 1:N 묶음으로 관리한다.
  * </pre>
  *
  * @author nichefish
@@ -38,7 +38,7 @@ public class CodeGroupEntity
 
     @PostLoad
     private void onLoad() {
-        this.dtlCdCnt = (CollectionUtils.isEmpty(this.dtlCdList)) ? 0 : this.dtlCdList.size();
+        this.codeItemCnt = (CollectionUtils.isEmpty(this.codeItems)) ? 0 : this.codeItems.size();
     }
 
     /** 내부 PK (id) */
@@ -48,23 +48,15 @@ public class CodeGroupEntity
     private Integer id;
 
     /** 분류 코드 (비즈니스 키, UNIQUE) */
-    @Column(name = "cl_cd", length=50, unique = true)
-    private String clCd;
+    @Column(name = "group_code", length = 50, unique = true)
+    private String groupCode;
 
     /** 분류 코드 이름 */
-    @Column(name = "cl_cd_nm")
-    private String clCdNm;
-
-    /** 글분류 코드 :: join을 제거하고 메모리 캐시 처리 */
-    @Column(name = "cl_ctgr_cd", length=50)
-    private String clCtgrCd;
-
-    /** 글분류 코드 이름 :: join을 제거하고 메모리 캐시 처리 */
-    @Transient
-    private String clCtgrNm;
+    @Column(name = "group_name")
+    private String groupName;
 
     /** 분류 코드 설명 */
-    @Column(name = "description", length=2000)
+    @Column(name = "description", length = 2000)
     private String description;
 
     /** 정렬 순서 */
@@ -82,19 +74,19 @@ public class CodeGroupEntity
     @Comment("시스템 보호 여부 (Y/N)")
     private String protectedYn = "N";
 
-    /** 분류 코드 정보 */
+    /** 하위 code_item 목록 */
     @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "cl_cd", referencedColumnName = "cl_cd", insertable = false, updatable = false)
+    @JoinColumn(name = "group_code", referencedColumnName = "group_code", insertable = false, updatable = false)
     @BatchSize(size = 10)
     @OrderBy("sortOrder ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @ToString.Exclude
-    private List<CodeItemEntity> dtlCdList;
+    private List<CodeItemEntity> codeItems;
 
-    /** 상세 코드 개수 */
+    /** 하위 코드 개수 */
     @Transient
     @Builder.Default
-    private Integer dtlCdCnt = 0;
+    private Integer codeItemCnt = 0;
 
     /* ----- */
 
@@ -102,15 +94,15 @@ public class CodeGroupEntity
      * 서브엔티티 List 처리를 위한 Setter
      * 한 번 Entity가 생성된 이후부터는 새 List를 할당하면 안 되고 계속 JPA 이력이 추적되어야 한다.
      *
-     * @param dtlCdList 설정할 객체 리스트
+     * @param codeItems 설정할 객체 리스트
      */
-    public void setDtlCdList(final List<CodeItemEntity> dtlCdList) {
-        if (CollectionUtils.isEmpty(dtlCdList)) return;
-        if (this.dtlCdList == null) {
-            this.dtlCdList = new ArrayList<>(dtlCdList);
+    public void setCodeItems(final List<CodeItemEntity> codeItems) {
+        if (CollectionUtils.isEmpty(codeItems)) return;
+        if (this.codeItems == null) {
+            this.codeItems = new ArrayList<>(codeItems);
         } else {
-            this.dtlCdList.clear();
-            this.dtlCdList.addAll(dtlCdList);
+            this.codeItems.clear();
+            this.codeItems.addAll(codeItems);
         }
     }
 }

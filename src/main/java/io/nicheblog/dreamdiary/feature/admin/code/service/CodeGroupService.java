@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
  * CodeGroupService
  * <pre>
  *  분류 코드 관리 서비스 모듈.
- *  ※분류 코드(cl_cd) = 상위 분류 코드. 상세 코드(dtl_cd)를 1:N 묶음으로 관리한다.
+ *  ※분류 코드(group_code) = 상위 분류. code_item을 1:N 묶음으로 관리한다.
  * </pre>
  *
  * @author nichefish
@@ -88,7 +88,7 @@ public class CodeGroupService
      * @param dto 캐시 처리할 엔티티
      */
     public void evictCache(final CodeGroupDto dto) throws Exception {
-        codeLookupService.evictClCdCache(dto.getClCd());
+        codeLookupService.evictGroupCodeCache(dto.getGroupCode());
     }
 
     /**
@@ -116,6 +116,6 @@ public class CodeGroupService
      */
     @Override
     public void postSetUse(final CodeGroupEntity updateEntity) {
-        codeLookupService.evictClCdCache(updateEntity.getClCd());
+        codeLookupService.evictGroupCodeCache(updateEntity.getGroupCode());
     }
 }

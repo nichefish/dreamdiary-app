@@ -10,8 +10,8 @@ public class CodeGroupEntityTestFactory {
 
     public static CodeGroupEntity create() throws Exception {
         return CodeGroupEntity.builder()
-                .clCd(TestConstant.TEST_CL_CD)
-                .clCdNm(TestConstant.TEST_CL_CD_NM)
+                .groupCode(TestConstant.TEST_GROUP_CODE)
+                .groupName(TestConstant.TEST_GROUP_NAME)
                 .description(TestConstant.TEST_DC)
                 .build();
     }

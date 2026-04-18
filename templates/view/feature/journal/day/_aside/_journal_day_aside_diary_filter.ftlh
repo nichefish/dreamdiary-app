@@ -22,7 +22,7 @@
                 onchange="dF.JournalDay.changeChapterCtgr();">
             <option value="__ALL__"><@spring.message 'txt.ctgr.all'/></option>
             <#list JOURNAL_CHAPTER_CTGR_CD![] as ctgr>
-                <option value="${ctgr.dtlCd!}">[${ctgr.dtlCdNm!}]</option>
+                <option value="${ctgr.code!}">[${ctgr.codeName!}]</option>
             </#list>
         </select>
     </div>

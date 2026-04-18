@@ -34,7 +34,7 @@ public interface SectnMapstruct
      */
     @Override
     @Named("toDto")
-    @Mapping(target = "ctgrNm", expression = "java(CodeUtils.getDtlCdNm(\"SECTN_CTGR_CD\", entity.getCtgrCd()))")
+    @Mapping(target = "ctgrNm", expression = "java(CodeUtils.getCodeName(\"SECTN_CTGR_CD\", entity.getCtgrCd()))")
     @Mapping(target = "markdownContent", expression = "java(StringUtils.isEmpty(entity.getContent()) ? \"-\" : MarkdownUtils.markdown(entity.getContent()))")
     SectnDto toDto(final SectnEntity entity) throws Exception;
 
