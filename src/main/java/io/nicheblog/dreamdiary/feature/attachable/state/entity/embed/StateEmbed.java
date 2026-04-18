@@ -53,6 +53,6 @@ public class StateEmbed
     public boolean hasState(final StateCd stateCd) {
         if (stateCd == null || CollectionUtils.isEmpty(this.list)) return false;
         return this.list.stream()
-            .anyMatch(s -> stateCd.key.equals(s.getStateCd()));
+            .anyMatch(s -> stateCd.key.equals(s.getStateCode()));
     }
 }

@@ -451,7 +451,7 @@ cF.handlebars = (function(): Module {
     Handlebars.registerHelper('hasState', function (state: any, targetState: any): boolean {
         if (!state) return false;
         if (!state.list) return false;
-        return state.list.some((s: any): boolean => s.stateCd === targetState);
+        return state.list.some((s: any): boolean => s.stateCode === targetState);
     });
 
     /**
@@ -467,7 +467,7 @@ cF.handlebars = (function(): Module {
         if (!Array.isArray(state.list)) return "";
 
         return state.list
-            .map((s: any) => (s?.stateCd || "").toLowerCase())
+            .map((s: any) => (s?.stateCode || "").toLowerCase())
             .filter((v: string) => v.length > 0)
             .join(" ");
     });

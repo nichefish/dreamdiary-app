@@ -114,7 +114,7 @@ public class JournalStateCacheUpdater
         final JournalState state = map.get(toggle.getId());
         if (state == null) return;
 
-        JournalStateApplier.apply(state, toggle.getStateCd(), isEnabled);      // 같은 객체 수정. put 필요없음.
+        JournalStateApplier.apply(state, toggle.getStateCode(), isEnabled);      // 같은 객체 수정. put 필요없음.
         EhCacheUtils.put(cacheMapNm, cacheKey, map);
     }
 

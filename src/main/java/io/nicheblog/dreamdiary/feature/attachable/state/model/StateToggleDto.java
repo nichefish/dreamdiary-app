@@ -24,7 +24,7 @@ public class StateToggleDto {
     /** 컨텐츠 타입 */
     private ContentType contentType;
     /** 표시 코드 */
-    private StateCd stateCd;
+    private StateCd stateCode;
 
     /** 캐시 파라미터 */
     private CacheContext cacheContext;

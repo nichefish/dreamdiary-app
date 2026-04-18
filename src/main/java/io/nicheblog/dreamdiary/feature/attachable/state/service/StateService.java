@@ -132,12 +132,12 @@ public class StateService
      * @param stateToggle StateToggleDto
      */
     private void applyDerivedStates(final StateToggleDto stateToggle, final Boolean isEnabled) throws Exception {
-        if (StateCd.RESOLVED.equals(stateToggle.getStateCd())) {
+        if (StateCd.RESOLVED.equals(stateToggle.getStateCode())) {
             if (isEnabled) {
                 final StateToggleDto collapsedToggle = StateToggleDto.builder()
                         .id(stateToggle.getId())
                         .contentType(stateToggle.getContentType())
-                        .stateCd(StateCd.COLLAPSED)
+                        .stateCode(StateCd.COLLAPSED)
                         .cacheContext(stateToggle.getCacheContext())
                         .build();
 
@@ -163,7 +163,7 @@ public class StateService
                         "State cache update failed [{}:{}:{}]: {}",
                         stateToggle.getContentType(),
                         stateToggle.getId(),
-                        stateToggle.getStateCd(),
+                        stateToggle.getStateCode(),
                         e.getMessage(),
                         e
                 )
@@ -176,7 +176,7 @@ public class StateService
      * @return StateEntity 상태
      */
     public StateEntity getDtlEntity(StateToggleDto stateToggle) throws Exception {
-        return repository.findByRefIdAndRefContentTypeAndStateCd(stateToggle.getId(), stateToggle.getContentType().key, stateToggle.getStateCd().key);
+        return repository.findByRefIdAndRefContentTypeAndStateCode(stateToggle.getId(), stateToggle.getContentType().key, stateToggle.getStateCode().key);
     }
 }
 
