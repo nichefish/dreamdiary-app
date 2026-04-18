@@ -32,7 +32,4 @@ public class JournalTodoSearchParam
 
     /** 태그 ID */
     private Integer tagId;
-
-    /** 중요 여부 **/
-    private String imprtcYn;
 }

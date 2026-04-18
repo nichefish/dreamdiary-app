@@ -7,6 +7,12 @@
  * 게시물 상세 :: 타이틀
  -->
 <#macro post_header_title post>
+    <#assign categoryName = "" />
+    <#if (post.categoryName!"") != "">
+        <#assign categoryName = post.categoryName! />
+    <#elseif (post.ctgrNm!"") != "">
+        <#assign categoryName = post.ctgrNm! />
+    </#if>
     <div class="d-flex align-items-center mb-9">
         <#--begin::title-->
         <div class="col-12">
@@ -15,7 +21,7 @@
                     <span class="badge badge-danger me-2">중요</span>
                 </#if>
                 <span class="vertical-middle<#if (((post.imprtcYn)!"N") == "Y")!false> fw-bold</#if>">
-                    <#if (post.ctgrNm!"") != "">[${post.ctgrNm!}]</#if>
+                    <#if categoryName != "">[${categoryName}]</#if>
                     ${post.title!}
                  </span>
             </h1>
@@ -154,4 +160,3 @@
         </div>
     </div>
 </#macro>
-

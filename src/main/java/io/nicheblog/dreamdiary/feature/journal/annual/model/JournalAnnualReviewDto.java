@@ -43,6 +43,9 @@ public class JournalAnnualReviewDto
     /** 마크다운 처리된 내용 */
     private String markdownContent;
 
+    /** 글 분류 코드 */
+    private String categoryCode;
+
     /* ----- */
 
     /** 저널 결산 번호  */

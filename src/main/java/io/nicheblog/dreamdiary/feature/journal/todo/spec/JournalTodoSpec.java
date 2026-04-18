@@ -38,9 +38,11 @@ public class JournalTodoSpec
             final CriteriaQuery<?> query,
             final CriteriaBuilder builder
     ) {
-        // 정렬 순서 변경
         final List<Order> order = new ArrayList<>();
         order.add(builder.desc(root.get("yy")));
+        order.add(builder.asc(root.get("mnth")));
+        order.add(builder.asc(root.get("sortOrder")));
+        order.add(builder.asc(root.get("id")));
         query.orderBy(order);
     }
 

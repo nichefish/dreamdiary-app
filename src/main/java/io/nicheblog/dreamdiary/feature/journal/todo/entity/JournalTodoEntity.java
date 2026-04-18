@@ -4,7 +4,6 @@ import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableE
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbedModule;
-import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
@@ -52,10 +51,10 @@ public class JournalTodoEntity
     @Comment("컨텐츠 타입")
     private String contentType = CONTENT_TYPE.key;
 
-    /** 글분류 코드 :: join을 제거하고 메모리 캐시 처리 */
-    @Column(name = "ctgr_cd", length = 50)
-    @Comment("저널 일기 글분류 코드 정보")
-    private String ctgrCd;
+    /** 글분류 코드 */
+    @Column(name = "category_code", length = 50)
+    @Comment("저널 할일 글분류 코드")
+    private String categoryCode;
 
     /** 글분류 코드 이름 :: join을 제거하고 메모리 캐시 처리 */
     @Transient
@@ -68,31 +67,6 @@ public class JournalTodoEntity
     /** 내용 */
     @Column(name = "content")
     private String content;
-
-    /* ----- */
-
-    /** 중요 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "imprtc_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("중요 여부")
-    private String imprtcYn = "N";
-
-    /** 상단고정 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "fxd_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("상단고정 여부")
-    private String fxdYn = "N";
-
-    /** 조회수 */
-    @Builder.Default
-    @Column(name = "hit_cnt")
-    private Integer hitCnt = 0;
-
-    /** 수정권한 */
-    @Builder.Default
-    @Column(name = "mdfable")
-    @Comment("수정권한")
-    private String mdfable = Code.MDFABLE_REGSTR;
 
     /* ----- */
 

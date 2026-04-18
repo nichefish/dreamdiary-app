@@ -59,6 +59,11 @@ public class JournalAnnualReviewEntity
     @Column(name = "content")
     private String content;
 
+    /** 글 분류 코드 */
+    @Column(name = "category_code", length = 50)
+    @Comment("글 분류 코드")
+    private String categoryCode;
+
     /* ----- */
 
     /** 저널 결산 번호  */
