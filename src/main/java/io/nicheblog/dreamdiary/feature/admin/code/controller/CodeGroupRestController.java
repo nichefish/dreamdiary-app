@@ -7,8 +7,8 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.infrastructure.log.model.LogParam;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.Getter;
@@ -34,7 +34,7 @@ public class CodeGroupRestController extends BaseControllerImpl {
     @PostMapping(value = {Url.CODE_GROUPS})
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> codeGroupRegAjax(final @Valid CodeGroupDto codeGroupDto, final LogActvtyParam logParam) throws Exception {
+    public ResponseEntity<AjaxResponse> codeGroupRegAjax(final @Valid CodeGroupDto codeGroupDto, final LogParam logParam) throws Exception {
         final ServiceResponse result = codeGroupService.regist(codeGroupDto);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
@@ -45,7 +45,7 @@ public class CodeGroupRestController extends BaseControllerImpl {
     @PostMapping(value = {Url.CODE_GROUP})
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> codeGroupMdfAjax(final @PathVariable("id") Integer id, final @Valid CodeGroupDto codeGroupDto, final LogActvtyParam logParam) throws Exception {
+    public ResponseEntity<AjaxResponse> codeGroupMdfAjax(final @PathVariable("id") Integer id, final @Valid CodeGroupDto codeGroupDto, final LogParam logParam) throws Exception {
         codeGroupDto.setId(id);
         final ServiceResponse result = codeGroupService.modify(codeGroupDto);
         final boolean isSuccess = result.getRslt();
@@ -57,7 +57,7 @@ public class CodeGroupRestController extends BaseControllerImpl {
     @GetMapping(Url.CODE_GROUP)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> codeGroupDtlAjax(final @PathVariable("id") Integer id, final LogActvtyParam logParam) throws Exception {
+    public ResponseEntity<AjaxResponse> codeGroupDtlAjax(final @PathVariable("id") Integer id, final LogParam logParam) throws Exception {
         final CodeGroupDto codeGroup = codeGroupService.getDtlDto(id);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
@@ -68,7 +68,7 @@ public class CodeGroupRestController extends BaseControllerImpl {
     @PatchMapping(Url.CODE_GROUP)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> codeGroupPatchAjax(final @PathVariable("id") Integer id, final @RequestBody CodeGroupPatchDto patchDto, final LogActvtyParam logParam) throws Exception {
+    public ResponseEntity<AjaxResponse> codeGroupPatchAjax(final @PathVariable("id") Integer id, final @RequestBody CodeGroupPatchDto patchDto, final LogParam logParam) throws Exception {
         final ServiceResponse result = codeGroupService.patch(id, patchDto);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
@@ -79,7 +79,7 @@ public class CodeGroupRestController extends BaseControllerImpl {
     @DeleteMapping(Url.CODE_GROUP)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> codeGroupDelAjax(final @PathVariable("id") Integer id, final LogActvtyParam logParam) throws Exception {
+    public ResponseEntity<AjaxResponse> codeGroupDelAjax(final @PathVariable("id") Integer id, final LogParam logParam) throws Exception {
         final ServiceResponse result = codeGroupService.delete(id);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;

@@ -1,11 +1,7 @@
 package io.nicheblog.dreamdiary.feature.board.group.model;
 
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseParam;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;

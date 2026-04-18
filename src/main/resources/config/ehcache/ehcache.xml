@@ -109,10 +109,6 @@
     <cache alias="journalInterpretationDtlDtoByUser" uses-template="defaultTemplate" />
     <cache alias="journalInterpretationStateMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalInterpretationWeeklyStateMapByUser" uses-template="defaultTemplate" />
-    <!-- backward compatibility -->
-    <cache alias="journalInterpretationDtlDtoByUser" uses-template="defaultTemplate" />
-    <cache alias="journalInterpretationStateMapByUser" uses-template="defaultTemplate" />
-    <cache alias="journalInterpretationWeeklyStateMapByUser" uses-template="defaultTemplate" />
 
     <!-- ?�???�일 -->
     <cache alias="journalTodoListByUser" uses-template="defaultTemplate" />

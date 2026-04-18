@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.Getter;

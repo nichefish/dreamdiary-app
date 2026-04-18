@@ -76,7 +76,7 @@ public interface XlsxHeader {
     /**
      * 사용자
      */
-    List<XlsxCell> LOG_ACTVTY = List.of(
+    List<XlsxCell> LOG_LIST = List.of(
             new XlsxCell("작업일시", 10),
             new XlsxCell("작업자ID", 10),
             new XlsxCell("작업자이름", 10),

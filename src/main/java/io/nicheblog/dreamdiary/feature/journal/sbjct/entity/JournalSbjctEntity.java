@@ -8,24 +8,13 @@ import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbed;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbedModule;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 /**
  * JournalSbjctEntity

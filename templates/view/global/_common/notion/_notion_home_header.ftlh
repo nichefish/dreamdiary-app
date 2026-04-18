@@ -1,6 +1,6 @@
 <#--
  * 활동 로그 목록 > 검색 영역 Header
- * @included_in : log_sys_list_header
+ * @included_in : log_list_header
  -->
 
 <form name="listForm" id="listForm" class="d-none d-md-flex align-items-center flex-nowrap gap-2" data-url="${listUrl!}" method="get">

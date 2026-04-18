@@ -139,50 +139,30 @@ CREATE TABLE IF NOT EXISTS file_record (
 
 -- -----------------------
 
--- 활동 로그 (log_actvty)
+-- 통합 로그 (log) — 기존 log_actvty + log_sys
 -- @extends: BaseCrudEntity
-CREATE TABLE IF NOT EXISTS log_actvty (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '활동 로그 ID',
-    log_dt DATETIME COMMENT '로그 기록 일시',
-    username VARCHAR(20) COMMENT '로그 사용자 ID',
-    trace_id VARCHAR(64) COMMENT 'Trace ID',
-    log_type VARCHAR(20) COMMENT '로그 타입',
-    actvty_ctgr_cd VARCHAR(50) COMMENT '활동 카테고리 코드',
-    http_method VARCHAR(400) COMMENT 'HTTP 메소드',
-    request_uri VARCHAR(400) COMMENT '요청 URI',
-    param VARCHAR(500) COMMENT '요청 파라미터',
-
-    ip_addr VARCHAR(20) COMMENT 'IP 주소',
-    referer VARCHAR(1000) COMMENT '리퍼러 URL',
-
-    content LONGTEXT COMMENT '내용',
-
-    http_status int COMMENT 'HTTP 상태',
-    duration_ms long COMMENT '소요시간(ms)',
-    rslt TINYINT NOT NULL COMMENT '결과',
-    rslt_msg VARCHAR(50) COMMENT '결과 메시지',
-    exception_nm VARCHAR(100) COMMENT '예외 이름',
-    exception_msg VARCHAR(4000) COMMENT '예외 메시지',
-    -- AUDIT
-    deleted_at DATETIME COMMENT '삭제일시',
-    -- CONSTRAINT
-    INDEX idx_trace_id (trace_id),
-    INDEX idx_log_dt (log_dt),
-    INDEX idx_user_dt (username, log_dt)
-) COMMENT = '활동 로그';
-
--- 시스템 로그 (log_sys)
--- @extends: BaseCrudEntity
-CREATE TABLE IF NOT EXISTS log_sys (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '시스템 로그 ID',
-    log_dt DATETIME COMMENT '로그 날짜 및 시간',
-    username VARCHAR(20) COMMENT '로그 기록 사용자 ID',
-    actvty_ctgr_cd VARCHAR(50) COMMENT '활동 카테고리 코드',
-    content LONGTEXT COMMENT '내용',
-    rslt TINYINT NOT NULL COMMENT '결과',
-    rslt_msg VARCHAR(500) COMMENT '결과 메시지',
-    exception_nm VARCHAR(100) COMMENT '예외 이름',
-    exception_msg VARCHAR(4000) COMMENT '예외 메시지',
-    -- AUDIT
-    deleted_at DATETIME COMMENT '삭제일시'
-) COMMENT = '시스템 로그';
+CREATE TABLE IF NOT EXISTS `log` (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '로그 ID',
+    log_type VARCHAR(20) NULL COMMENT '로그 유형 (PAGE/VIEW/ACTION/SYSTEM)',
+    activity_code VARCHAR(400) NULL COMMENT '활동 카테고리 코드',
+    message LONGTEXT NULL COMMENT '본문/결과 통합 메시지',
+    result TINYINT(1) NULL COMMENT '성공 여부',
+    http_status INT NULL COMMENT 'HTTP 상태',
+    username VARCHAR(20) NULL COMMENT '작업자',
+    ip_address VARCHAR(20) NULL COMMENT 'IP',
+    http_method VARCHAR(1000) NULL COMMENT 'HTTP 메소드',
+    request_uri VARCHAR(400) NULL COMMENT '요청 URI',
+    request_param VARCHAR(1000) NULL COMMENT '요청 파라미터',
+    referer VARCHAR(1000) NULL COMMENT '리퍼러',
+    trace_id VARCHAR(72) NULL COMMENT 'Trace ID',
+    signature VARCHAR(200) NULL COMMENT '시그니처',
+    duration_ms BIGINT NULL COMMENT '소요시간(ms)',
+    exception_name VARCHAR(255) NULL COMMENT '예외 이름',
+    exception_message LONGTEXT NULL COMMENT '예외 메시지',
+    created_at DATETIME NULL COMMENT '기록 일시',
+    deleted_at DATETIME NULL COMMENT '삭제일시',
+    INDEX idx_log_created (created_at),
+    INDEX idx_log_user_dt (username, created_at),
+    INDEX idx_log_trace (trace_id),
+    INDEX idx_log_type (log_type)
+) COMMENT = '통합 로그';

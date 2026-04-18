@@ -5,8 +5,8 @@ import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.model.CacheParam;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.infrastructure.log.model.LogParam;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.Getter;
@@ -50,7 +50,7 @@ public class EhCacheRestController
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> cacheActiveListAjax(
-            final LogActvtyParam logParam
+            final LogParam logParam
     ) {
 
         // 현재 활성 중인 캐시(name) 목록 조회 :: 성공시 처리완료목록으로 출력
@@ -77,7 +77,7 @@ public class EhCacheRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> cacheActiveDtlAjax(
             final CacheParam cacheParam,
-            final LogActvtyParam logParam
+            final LogParam logParam
     ) {
 
         // 현재 활성 중인 캐시(name) 목록 조회 :: 성공시 처리완료목록으로 출력
@@ -104,7 +104,7 @@ public class EhCacheRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> cacheEvictAjax(
             final CacheParam cacheParam,
-            final LogActvtyParam logParam
+            final LogParam logParam
     ) {
 
         // 캐시 evict
@@ -131,7 +131,7 @@ public class EhCacheRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> cacheClearByNmAjax(
             final CacheParam cacheParam,
-            final LogActvtyParam logParam
+            final LogParam logParam
     ) {
 
         // 캐시 evict
@@ -156,7 +156,7 @@ public class EhCacheRestController
     @Secured(Constant.ROLE_MNGR)
     @ResponseBody
     public ResponseEntity<AjaxResponse> cacheClearAjax(
-            final LogActvtyParam logParam
+            final LogParam logParam
     ) {
 
         final List<String> activeCacheList = EhCacheUtils.chckActiveCacheNm();

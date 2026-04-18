@@ -5,13 +5,7 @@ import io.nicheblog.dreamdiary.feature.board.group.entity.BoardEntity;
 import io.nicheblog.dreamdiary.feature.board.group.model.BoardDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.Named;
-import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)

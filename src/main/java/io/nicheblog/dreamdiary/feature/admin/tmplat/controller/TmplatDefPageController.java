@@ -7,7 +7,7 @@ import io.nicheblog.dreamdiary.feature.admin.tmplat.model.TmplatDefSearchParam;
 import io.nicheblog.dreamdiary.feature.admin.tmplat.service.TmplatDefService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.PaginationInfo;
 import io.nicheblog.dreamdiary.infrastructure.web.util.ParamUtils;

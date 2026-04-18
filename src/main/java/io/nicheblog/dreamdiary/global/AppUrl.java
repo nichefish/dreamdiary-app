@@ -95,11 +95,8 @@ public interface AppUrl {
     /** 코드 관리 */
     String CODE_GROUP_LIST = Prefix.APP + "/code/list.do";
 
-    /** 활동 로그 조회 */
-    String LOG_ACTVTY_LIST = Prefix.APP + "/log/actvty/list.do";
-
-    /** 시스템 로그 조회 */
-    String LOG_SYS_LIST = Prefix.APP + "/log/sys/list.do";
+    /** 로그 조회 */
+    String LOG_LIST = Prefix.APP + "/log/list.do";
 
     /** 로그 통계 조회 (TODO) */
     String LOG_STATS_USER_LIST = Prefix.APP + "/log/stats/list.do";

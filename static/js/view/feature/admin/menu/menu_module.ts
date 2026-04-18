@@ -365,7 +365,7 @@ dF.Menu = (function(): dfModule {
          */
         search: function(): void {
             $("#listForm #pageNo").val(1);
-            cF.form.blockUISubmit("#listForm", Url.LOG_ACTVTY_LIST + "?actionTyCd=SEARCH");
+            cF.form.blockUISubmit("#listForm", Url.LOG_LIST + "?actionTyCd=SEARCH");
         },
     }
 })();

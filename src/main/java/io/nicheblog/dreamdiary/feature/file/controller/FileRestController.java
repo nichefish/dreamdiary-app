@@ -6,8 +6,8 @@ import io.nicheblog.dreamdiary.feature.file.service.FileRecordService;
 import io.nicheblog.dreamdiary.feature.file.utils.FileUtils;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.infrastructure.log.model.LogParam;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.Getter;
@@ -54,7 +54,7 @@ public class FileRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> fileChckAjax(
             final @RequestParam("fileId") @Nullable String fileId,
-            final LogActvtyParam logParam
+            final LogParam logParam
     ) {
 
         final boolean isSuccess = FileUtils.fileChck(fileId);
@@ -80,7 +80,7 @@ public class FileRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> getFileList(
             final @RequestParam("fileGroupId") @Nullable Integer fileGroupId,
-            final LogActvtyParam logParam
+            final LogParam logParam
     ) throws Exception {
 
         final List<FileRecordDto> fileList = fileRecordService.getPageDto(fileGroupId);
@@ -107,7 +107,7 @@ public class FileRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> fileDownload(
             final @RequestParam("fileRecordId") @Nullable Integer fileRecordId,
-            final LogActvtyParam logParam
+            final LogParam logParam
     ) throws Exception {
 
         // 파일 정보 조회
@@ -138,7 +138,7 @@ public class FileRestController
     @ResponseBody
     public ResponseEntity<AjaxResponse> uploadFileAjax(
             final MultipartHttpServletRequest request,
-            final LogActvtyParam logParam
+            final LogParam logParam
     ) throws Exception {
 
         // 파일 영역 처리 후 업로드 정보 받아서 반환

@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.infrastructure.log.stats.entity;
 
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.entity.LogActvtyEntity;
+import io.nicheblog.dreamdiary.infrastructure.log.entity.LogEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -55,12 +55,12 @@ public class LogStatsUserEntity
 
     /** 활동(접속) 목록 */
     @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "log_user_id", referencedColumnName = "username", insertable = false, updatable = false)
+    @JoinColumn(name = "username", referencedColumnName = "username", insertable = false, updatable = false)
     @Fetch(value = FetchMode.SELECT)
     @BatchSize(size = 10)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("활동(접속) 목록")
-    private List<LogActvtyEntity> actvtyList;
+    private List<LogEntity> actvtyList;
 
     /* ----- */
 

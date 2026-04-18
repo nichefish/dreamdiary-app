@@ -8,8 +8,8 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.infrastructure.log.model.LogParam;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.Getter;
@@ -37,7 +37,7 @@ public class CodeItemRestController extends BaseControllerImpl {
     @GetMapping(Url.CODE_ITEMS)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> codeItemListAjax(final @RequestParam("groupCode") String groupCode, final LogActvtyParam logParam) throws Exception {
+    public ResponseEntity<AjaxResponse> codeItemListAjax(final @RequestParam("groupCode") String groupCode, final LogParam logParam) throws Exception {
         final CodeItemSearchParam searchParam = CodeItemSearchParam.builder().groupCode(groupCode).build();
         final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder").and(Sort.by(Sort.Direction.ASC, "code"));
         final List<CodeItemDto> codeItemList = codeItemService.getListDto(searchParam, sort);
@@ -50,7 +50,7 @@ public class CodeItemRestController extends BaseControllerImpl {
     @PostMapping(value = {Url.CODE_ITEMS})
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> codeItemRegAjax(final @Valid CodeItemDto codeItemDto, final LogActvtyParam logParam) throws Exception {
+    public ResponseEntity<AjaxResponse> codeItemRegAjax(final @Valid CodeItemDto codeItemDto, final LogParam logParam) throws Exception {
         final ServiceResponse result = codeItemService.regist(codeItemDto);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
@@ -61,7 +61,7 @@ public class CodeItemRestController extends BaseControllerImpl {
     @PostMapping(value = {Url.CODE_ITEM})
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> codeItemMdfAjax(final @Valid CodeItemDto codeItemDto, final LogActvtyParam logParam) throws Exception {
+    public ResponseEntity<AjaxResponse> codeItemMdfAjax(final @Valid CodeItemDto codeItemDto, final LogParam logParam) throws Exception {
         final ServiceResponse result = codeItemService.modify(codeItemDto);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
@@ -72,7 +72,7 @@ public class CodeItemRestController extends BaseControllerImpl {
     @GetMapping(Url.CODE_ITEM)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> codeItemDtlAjax(final @RequestParam("id") Integer id, final LogActvtyParam logParam) throws Exception {
+    public ResponseEntity<AjaxResponse> codeItemDtlAjax(final @RequestParam("id") Integer id, final LogParam logParam) throws Exception {
         final CodeItemDto codeItemDto = codeItemService.getDtlDto(id);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
@@ -83,7 +83,7 @@ public class CodeItemRestController extends BaseControllerImpl {
     @DeleteMapping(Url.CODE_ITEM)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> codeItemDelAjax(final @RequestParam("id") Integer id, final LogActvtyParam logParam) throws Exception {
+    public ResponseEntity<AjaxResponse> codeItemDelAjax(final @RequestParam("id") Integer id, final LogParam logParam) throws Exception {
         final ServiceResponse result = codeItemService.delete(id);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
@@ -94,7 +94,7 @@ public class CodeItemRestController extends BaseControllerImpl {
     @PutMapping(Url.CODE_ITEMS_SORT_ORDERS)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> codeItemSortOrdrAjax(final @RequestBody CodeItemParam codeItemParam, final LogActvtyParam logParam) throws Exception {
+    public ResponseEntity<AjaxResponse> codeItemSortOrdrAjax(final @RequestBody CodeItemParam codeItemParam, final LogParam logParam) throws Exception {
         final ServiceResponse result = codeItemService.sortOrder(codeItemParam.getSortOrders());
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;

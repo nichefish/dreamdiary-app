@@ -103,13 +103,7 @@ INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 
 INSERT INTO menu ( upper_menu_id, menu_ty_cd, menu_nm, url, icon, sort_order, created_by, menu_sub_extend_ty_cd, menu_label, mngr_yn, protected_yn, required_yn, use_yn )
 WITH T AS ( SELECT 'LOG' AS upper_label )
-SELECT M.id, 'SUB', '활동 로그', '/app/log/actvty/list.do', NULL, 26, 'nichefish', 'NO_SUB', 'LOG_ACTVTY', 'N', 'Y', 'N', 'Y'
-FROM T
-INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
-
-INSERT INTO menu ( upper_menu_id, menu_ty_cd, menu_nm, url, icon, sort_order, created_by, menu_sub_extend_ty_cd, menu_label, mngr_yn, protected_yn, required_yn, use_yn )
-WITH T AS ( SELECT 'LOG' AS upper_label )
-SELECT M.id, 'SUB', '시스템 로그', '/app/log/sys/list.do', NULL, 27, 'nichefish', 'NO_SUB', 'LOG_SYS', 'N', 'Y', 'N', 'Y'
+SELECT M.id, 'SUB', '로그 목록', '/app/log/list.do', NULL, 26, 'nichefish', 'NO_SUB', 'LOG_LIST', 'N', 'Y', 'N', 'Y'
 FROM T
 INNER JOIN menu M ON M.menu_label = T.upper_label AND M.deleted_at IS NULL;
 
