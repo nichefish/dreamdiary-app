@@ -12,7 +12,7 @@
         <select name="roleKey" id="roleKey" class="form-select form-select-sm form-select-solid">
             <option value="">전체 권한</option>
             <#list AUTH_CD![] as auth>
-                <option value="${auth.dtlCd!}" id="${auth.dtlCd!}">${auth.dtlCdNm!}</option>
+                <option value="${auth.code!}" id="${auth.code!}">${auth.codeName!}</option>
             </#list>
         </select>
     </div>
@@ -21,7 +21,7 @@
         <select name="rankCd" id="rankCd" class="form-select form-select-sm form-select-solid">
             <option value="">직급</option>
             <#list RANK_CD![] as rank>
-                <option value="${rank.dtlCd!}" id="${rank.dtlCd!}">${rank.dtlCdNm!}</option>
+                <option value="${rank.code!}" id="${rank.code!}">${rank.codeName!}</option>
             </#list>
         </select>
     </div>
@@ -30,7 +30,7 @@
         <select name="teamCd" id="teamCd" class="form-select form-select-sm form-select-solid">
             <option value="">팀</option>
             <#list TEAM_CD![] as team>
-                <option value="${team.dtlCd!}" id="${team.dtlCd!}">${team.dtlCdNm!}</option>
+                <option value="${team.code!}" id="${team.code!}">${team.codeName!}</option>
             </#list>
         </select>
     </div>
@@ -39,7 +39,7 @@
         <select name="cmpyCd" id="cmpyCd" class="form-select form-select-sm form-select-solid">
             <option value="">회사</option>
             <#list CMPY_CD![] as cmpy>
-                <option value="${cmpy.dtlCd!}" id="${cmpy.dtlCd!}">${cmpy.dtlCdNm!}</option>
+                <option value="${cmpy.code!}" id="${cmpy.code!}">${cmpy.codeName!}</option>
             </#list>
         </select>
     </div>

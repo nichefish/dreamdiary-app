@@ -51,7 +51,8 @@ class CodeItemRepositoryTest {
                 .orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         assertNotNull(retrieved);
-        assertNotNull(retrieved.getClCd());
+        assertNotNull(retrieved.getGroupCode());
+        assertNotNull(retrieved.getCode());
         assertNotNull(retrieved.getCreatedAt());
         assertNotNull(retrieved.getCreatedBy());
         assertEquals(TestConstant.TEST_AUDITOR, retrieved.getCreatedBy());

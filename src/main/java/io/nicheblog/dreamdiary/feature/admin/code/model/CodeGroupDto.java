@@ -22,18 +22,16 @@ public class CodeGroupDto
 
     private Long rnum;
     private Integer id;
-    private String clCd;
-    private String clCdNm;
+    private String groupCode;
+    private String groupName;
     private String description;
     @Builder.Default
     private String protectedYn = "N";
-    private String clCtgrCd;
-    private String clCtgrNm;
-    List<CodeItemDto> dtlCdList;
+    List<CodeItemDto> codeItems;
     @Builder.Default
     private String useYn = "N";
     @Builder.Default
-    private Integer dtlCdCnt = 0;
+    private Integer codeItemCnt = 0;
     @Builder.Default
     private String regYn = "N";
 

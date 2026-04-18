@@ -16,14 +16,13 @@ CREATE TABLE IF NOT EXISTS sequence (
 
 -- -----------------------
 
--- 분류 코드 (cl_cd)
+-- 분류 코드 (code_group)
 -- @extends: BaseAuditEntity
 -- @implements: StateEmbed
 CREATE TABLE IF NOT EXISTS code_group  (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '분류 코드 ID',
-    cl_cd VARCHAR(50) NOT NULL COMMENT '분류 코드',
-    cl_cd_nm VARCHAR(50) COMMENT '분류 코드 이름',
-    cl_ctgr_cd VARCHAR(50) COMMENT '분류 코드 분류 코드',
+    group_code VARCHAR(50) NOT NULL COMMENT '분류 코드',
+    group_name VARCHAR(50) COMMENT '분류 코드 이름',
     description VARCHAR(1000) COMMENT '분류 코드 설명',
     -- STATE (module)
     sort_order INT DEFAULT 0 COMMENT '정렬 순서',
@@ -36,17 +35,17 @@ CREATE TABLE IF NOT EXISTS code_group  (
     updated_at DATETIME COMMENT '수정일시',
     deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
-    UNIQUE KEY uk_code_group_cl_cd (cl_cd)
+    UNIQUE KEY uk_code_group_group_code (group_code)
 ) COMMENT = '분류 코드';
 
--- 상세 코드 (dtl_cd)
+-- 상세 코드 (code_item)
 -- @extends: BaseAuditEntity
 -- @implements: StateEmbed
 CREATE TABLE IF NOT EXISTS code_item (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '상세 코드 ID',
-    cl_cd VARCHAR(50) COMMENT '분류 코드',
-    dtl_cd VARCHAR(50) COMMENT '상세 코드',
-    dtl_cd_nm VARCHAR(40) COMMENT '상세 코드 이름',
+    group_code VARCHAR(50) COMMENT '분류 코드',
+    code VARCHAR(50) COMMENT '상세 코드',
+    code_name VARCHAR(40) COMMENT '상세 코드 이름',
     description VARCHAR(1000) COMMENT '상세 코드 설명',
     -- STATE (module)
     sort_order INT DEFAULT 0 COMMENT '정렬 순서',
@@ -59,7 +58,7 @@ CREATE TABLE IF NOT EXISTS code_item (
     updated_at DATETIME COMMENT '수정일시',
     deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
-    UNIQUE KEY uk_code_item_cl_cd_dtl_cd (cl_cd, dtl_cd)
+    UNIQUE KEY uk_code_item_group_code_code (group_code, code)
 ) COMMENT = '상세 코드';
 
 -- -----------------------

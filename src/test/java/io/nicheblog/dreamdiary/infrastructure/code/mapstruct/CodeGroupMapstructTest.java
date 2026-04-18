@@ -23,15 +23,13 @@ class CodeGroupMapstructTest {
     @Test
     void testToDto_checkBasic() throws Exception {
         CodeGroupEntity entity = CodeGroupEntityTestFactory.create();
-        entity.setClCtgrCd(TestConstant.TEST_CL_CTGR_CD);
 
         CodeGroupDto dto = codeGroupMapstruct.toDto(entity);
 
         assertNotNull(dto);
-        assertEquals(TestConstant.TEST_CL_CD, dto.getClCd());
-        assertEquals(TestConstant.TEST_CL_CD_NM, dto.getClCdNm());
+        assertEquals(TestConstant.TEST_GROUP_CODE, dto.getGroupCode());
+        assertEquals(TestConstant.TEST_GROUP_NAME, dto.getGroupName());
         assertEquals(TestConstant.TEST_DC, dto.getDescription());
-        assertEquals(TestConstant.TEST_CL_CTGR_CD, dto.getClCtgrCd());
     }
 
     @Test
@@ -54,25 +52,23 @@ class CodeGroupMapstructTest {
     @Test
     void testToEntity_checkBasic() throws Exception {
         CodeGroupDto dto = CodeGroupDtoTestFactory.createCodeGroupDto();
-        dto.setClCtgrCd(TestConstant.TEST_CL_CTGR_CD);
 
         CodeGroupEntity entity = codeGroupMapstruct.toEntity(dto);
         assertNotNull(entity);
-        assertEquals(TestConstant.TEST_CL_CTGR_CD, entity.getClCtgrCd());
+        assertEquals(TestConstant.TEST_GROUP_CODE, entity.getGroupCode());
+        assertEquals(TestConstant.TEST_GROUP_NAME, entity.getGroupName());
     }
 
     @Test
     void testUpdateFromDto_checkBasic() throws Exception {
         CodeGroupEntity entity = CodeGroupEntityTestFactory.create();
         CodeGroupDto dto = CodeGroupDtoTestFactory.createCodeGroupDto_1();
-        dto.setClCtgrCd(TestConstant.TEST_CL_CTGR_CD_1);
 
         codeGroupMapstruct.updateFromDto(dto, entity);
 
         assertNotNull(entity);
-        assertEquals(TestConstant.TEST_CL_CD_1, dto.getClCd());
-        assertEquals(TestConstant.TEST_CL_CD_NM_1, dto.getClCdNm());
-        assertEquals(TestConstant.TEST_DC_1, dto.getDescription());
-        assertEquals(TestConstant.TEST_CL_CTGR_CD_1, dto.getClCtgrCd());
+        assertEquals(TestConstant.TEST_GROUP_CODE_1, entity.getGroupCode());
+        assertEquals(TestConstant.TEST_GROUP_NAME_1, entity.getGroupName());
+        assertEquals(TestConstant.TEST_DC_1, entity.getDescription());
     }
 }

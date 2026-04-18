@@ -63,7 +63,7 @@ public class BoardPostService
         for (BoardPostEntity entity : entityPage.getContent()) {
             final BoardPostDto listDto = mapstruct.toDto(entity);
             listDto.setRnum(CmmUtils.getPageRnum(entityPage, i));
-            final String ctgrNm = codeLookupService.getDtlCdNm(listDto.getCategoryGroupCode(), listDto.getCategoryCode());
+            final String ctgrNm = codeLookupService.getCodeName(listDto.getCategoryGroupCode(), listDto.getCategoryCode());
             listDto.setCtgrNm(ctgrNm);
             dtoList.add(listDto);
             i++;
@@ -97,7 +97,7 @@ public class BoardPostService
     public BoardPostDto getDtlDto(final Integer key) throws Exception {
         final BoardPostEntity retrievedEntity = this.getDtlEntity(key);       // Entity 레벨 조회
         final BoardPostDto retrievedDto = mapstruct.toDto(retrievedEntity);
-        final String ctgrNm = codeLookupService.getDtlCdNm(retrievedDto.getCategoryGroupCode(), retrievedDto.getCategoryCode());
+        final String ctgrNm = codeLookupService.getCodeName(retrievedDto.getCategoryGroupCode(), retrievedDto.getCategoryCode());
         retrievedDto.setCtgrNm(ctgrNm);
 
         return retrievedDto;

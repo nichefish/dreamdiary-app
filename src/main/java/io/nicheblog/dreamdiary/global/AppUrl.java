@@ -94,7 +94,6 @@ public interface AppUrl {
 
     /** 코드 관리 */
     String CODE_GROUP_LIST = Prefix.APP + "/code/list.do";
-    String CL_CD_LIST = CODE_GROUP_LIST; // backward compatibility
 
     /** 활동 로그 조회 */
     String LOG_ACTVTY_LIST = Prefix.APP + "/log/actvty/list.do";

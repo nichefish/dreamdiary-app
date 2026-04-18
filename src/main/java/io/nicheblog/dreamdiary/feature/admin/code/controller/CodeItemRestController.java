@@ -37,9 +37,9 @@ public class CodeItemRestController extends BaseControllerImpl {
     @GetMapping(Url.CODE_ITEMS)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> dtlCdListAjax(final @RequestParam("clCd") String clCd, final LogActvtyParam logParam) throws Exception {
-        final CodeItemSearchParam searchParam = CodeItemSearchParam.builder().clCd(clCd).build();
-        final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder").and(Sort.by(Sort.Direction.ASC, "dtlCd"));
+    public ResponseEntity<AjaxResponse> codeItemListAjax(final @RequestParam("groupCode") String groupCode, final LogActvtyParam logParam) throws Exception {
+        final CodeItemSearchParam searchParam = CodeItemSearchParam.builder().groupCode(groupCode).build();
+        final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder").and(Sort.by(Sort.Direction.ASC, "code"));
         final List<CodeItemDto> codeItemList = codeItemService.getListDto(searchParam, sort);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
@@ -50,8 +50,8 @@ public class CodeItemRestController extends BaseControllerImpl {
     @PostMapping(value = {Url.CODE_ITEMS})
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> dtlCdRegAjax(final @Valid CodeItemDto dtlCd, final LogActvtyParam logParam) throws Exception {
-        final ServiceResponse result = codeItemService.regist(dtlCd);
+    public ResponseEntity<AjaxResponse> codeItemRegAjax(final @Valid CodeItemDto codeItemDto, final LogActvtyParam logParam) throws Exception {
+        final ServiceResponse result = codeItemService.regist(codeItemDto);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
@@ -61,8 +61,8 @@ public class CodeItemRestController extends BaseControllerImpl {
     @PostMapping(value = {Url.CODE_ITEM})
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> dtlCdMdfAjax(final @Valid CodeItemDto dtlCd, final LogActvtyParam logParam) throws Exception {
-        final ServiceResponse result = codeItemService.modify(dtlCd);
+    public ResponseEntity<AjaxResponse> codeItemMdfAjax(final @Valid CodeItemDto codeItemDto, final LogActvtyParam logParam) throws Exception {
+        final ServiceResponse result = codeItemService.modify(codeItemDto);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
         logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
@@ -72,7 +72,7 @@ public class CodeItemRestController extends BaseControllerImpl {
     @GetMapping(Url.CODE_ITEM)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> dtlCdDtlAjax(final @RequestParam("id") Integer id, final LogActvtyParam logParam) throws Exception {
+    public ResponseEntity<AjaxResponse> codeItemDtlAjax(final @RequestParam("id") Integer id, final LogActvtyParam logParam) throws Exception {
         final CodeItemDto codeItemDto = codeItemService.getDtlDto(id);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
@@ -83,7 +83,7 @@ public class CodeItemRestController extends BaseControllerImpl {
     @DeleteMapping(Url.CODE_ITEM)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> dtlCdDelAjax(final @RequestParam("id") Integer id, final LogActvtyParam logParam) throws Exception {
+    public ResponseEntity<AjaxResponse> codeItemDelAjax(final @RequestParam("id") Integer id, final LogActvtyParam logParam) throws Exception {
         final ServiceResponse result = codeItemService.delete(id);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
@@ -94,7 +94,7 @@ public class CodeItemRestController extends BaseControllerImpl {
     @PutMapping(Url.CODE_ITEMS_SORT_ORDERS)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> dtlCdSortOrdrAjax(final @RequestBody CodeItemParam codeItemParam, final LogActvtyParam logParam) throws Exception {
+    public ResponseEntity<AjaxResponse> codeItemSortOrdrAjax(final @RequestBody CodeItemParam codeItemParam, final LogActvtyParam logParam) throws Exception {
         final ServiceResponse result = codeItemService.sortOrder(codeItemParam.getSortOrders());
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;

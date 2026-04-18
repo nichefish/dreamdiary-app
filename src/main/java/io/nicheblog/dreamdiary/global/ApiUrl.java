@@ -191,18 +191,6 @@ public interface ApiUrl {
     String CODE_ITEM_USE = Prefix.API + "/code/item/use";
     String CODE_ITEM_UNUSE = Prefix.API + "/code/item/unuse";
 
-    // backward compatibility
-    String CD_CLS = CODE_GROUPS;
-    String CD_CL = CODE_GROUP;
-    String DTL_CD_REG_AJAX = CODE_ITEMS;
-    String DTL_CD_DTL_AJAX = CODE_ITEM;
-    String DTL_CD_MDF_AJAX = CODE_ITEMS;
-    String DTL_CD_LIST_AJAX = CODE_ITEMS;
-    String DTL_CD_USE_AJAX = CODE_ITEM_USE;
-    String DTL_CD_UNUSE_AJAX = CODE_ITEM_UNUSE;
-    String DTL_CD_DEL_AJAX = CODE_ITEM;
-    String DTL_CD_SORT_ORDR_AJAX = CODE_ITEMS_SORT_ORDERS;
-    
     /** 활동 로그 조회 */
     String LOG_ACTVTY_DTL_AJAX = Prefix.API + "/log/actvty/log-actvty-dtl";
 

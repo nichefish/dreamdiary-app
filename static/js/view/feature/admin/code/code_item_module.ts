@@ -18,35 +18,35 @@ dF.CodeItem = (function(): dfModule {
 
         initForm: function(obj: Record<string, any> = {}): void {
             cF.handlebars.modal(obj, "code_item_reg");
-            cF.validate.validateForm("#dtlCdRegForm", dF.CodeItem.regAjax);
-            cF.ui.chckboxLabel("#dtlCdRegForm #useYn", "사용//미사용", "blue//gray");
-            cF.validate.replaceBlankIfMatches("#dtlCdRegForm #dtlCd", cF.regex.nonCd);
-            cF.validate.toUpperCase("#dtlCdRegForm #dtlCd");
+            cF.validate.validateForm("#codeItemRegForm", dF.CodeItem.regAjax);
+            cF.ui.chckboxLabel("#codeItemRegForm #useYn", "사용//미사용", "blue//gray");
+            cF.validate.replaceBlankIfMatches("#codeItemRegForm #code", cF.regex.nonCd);
+            cF.validate.toUpperCase("#codeItemRegForm #code");
         },
 
         initDraggable: function(): void {
-            const hasZone: boolean = !!document.querySelector(".draggable-zone-dtl-cd");
+            const hasZone: boolean = !!document.querySelector(".draggable-zone-code-item");
             if (!hasZone) return;
             const keyExtractor: Function = (item: HTMLElement) => ({ "id": Number(item.dataset.id || item.id) });
             const url: string = Url.CODE_ITEMS_SORT_ORDERS;
-            dF.CodeItem.swappable = cF.draggable.init("-dtl-cd", keyExtractor, url);
+            dF.CodeItem.swappable = cF.draggable.init("-code-item", keyExtractor, url);
         },
 
         regModal: function(): void {
             event.stopPropagation();
-            const obj: Record<string, any> = { "clCd": $("#clCd").val() };
+            const obj: Record<string, any> = { "groupCode": $("#groupCode").val() };
             $("#code_group_dtl_modal").modal("hide");
             dF.CodeItem.initForm(obj);
         },
 
-        submit: function(): void { $("#dtlCdRegForm").submit(); },
+        submit: function(): void { $("#codeItemRegForm").submit(); },
 
         regAjax: function(): void {
             Swal.fire({ text: Message.get("view.cnfm.save"), showCancelButton: true }).then(function(result: SwalResult): void {
                 if (!result.value) return;
-                const regYn: string = String($("#dtlCdRegForm #regYn").val() || "Y").toUpperCase();
+                const regYn: string = String($("#codeItemRegForm #regYn").val() || "Y").toUpperCase();
                 const url: string = regYn === "Y" ? Url.CODE_ITEMS : Url.CODE_ITEM;
-                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#dtlCdRegForm");
+                const ajaxData: Record<string, any> = cF.util.getJsonFormData("#codeItemRegForm");
                 cF.$ajax.post(url, ajaxData, function(res: AjaxResponse): void {
                     Swal.fire({ text: res.message }).then(function(): void { if (res.rslt) cF.ui.blockUIReload(); });
                 }, "block");

@@ -9,8 +9,7 @@ import java.util.List;
 /**
  * CodeItemRepository
  * <pre>
- *  상세 코드 repository 인터페이스
- *  ※상세 코드(dtl_cd) = 분류 코드 하위의 상세 코드. 분류 코드(cl_cd)에 N:1로 귀속된다.
+ *  code_item repository 인터페이스
  * </pre>
  *
  * @author nichefish
@@ -19,13 +18,13 @@ import java.util.List;
 public interface CodeItemRepository
         extends BaseStreamRepository<CodeItemEntity, Integer> {
 
-    List<CodeItemEntity> findByClCd(final String clCd);
+    List<CodeItemEntity> findByGroupCode(final String groupCode);
 
-    List<CodeItemEntity> findByClCdOrderBySortOrderAscDtlCdAsc(final String clCd);
+    List<CodeItemEntity> findByGroupCodeOrderBySortOrderAscCodeAsc(final String groupCode);
 
-    List<CodeItemEntity> findByClCdAndUseYnOrderBySortOrderAsc(final String clCd, final String useYn);
+    List<CodeItemEntity> findByGroupCodeAndUseYnOrderBySortOrderAsc(final String groupCode, final String useYn);
 
-    List<CodeItemEntity> findAllByUseYnOrderByClCdAscSortOrderAsc(final String useYn);
+    List<CodeItemEntity> findAllByUseYnOrderByGroupCodeAscSortOrderAsc(final String useYn);
 
-    CodeItemEntity findByClCdAndDtlCd(final String clCd, final String dtlCd);
+    CodeItemEntity findByGroupCodeAndCode(final String groupCode, final String code);
 }

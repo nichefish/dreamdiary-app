@@ -25,14 +25,14 @@ public class CodeUtils {
     }
 
     /**
-     * 분류 코드, 상세 코드로 상세 코드명 조회
+     * 분류 코드 + 상세 code 값으로 표시명(code_name) 조회
      *
-     * @param clCd 분류 코드 (String)
-     * @param dtlCd 상세 코드 (String)
+     * @param groupCode 분류 코드 (String)
+     * @param code 상세 코드 값 (String)
      * @return {@link String} -- 상세 코드명
      */
-    public static String getDtlCdNm(final String clCd, final String dtlCd) {
-        return codeLookupService.getDtlCdNm(clCd, dtlCd);
+    public static String getCodeName(final String groupCode, final String code) {
+        return codeLookupService.getCodeName(groupCode, code);
     }
 
 }

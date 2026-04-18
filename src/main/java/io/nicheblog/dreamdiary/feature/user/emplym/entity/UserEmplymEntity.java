@@ -40,10 +40,10 @@ public class UserEmplymEntity
     @PostLoad
     private void onLoad() {
         // 코드 이름 세팅
-        if (this.cmpyCdInfo != null) this.cmpyNm = this.cmpyCdInfo.getDtlCdNm();
-        if (this.teamCdInfo != null) this.teamNm = this.teamCdInfo.getDtlCdNm();
-        if (this.emplymCdInfo != null) this.emplymNm = this.emplymCdInfo.getDtlCdNm();
-        if (this.rankCdInfo != null) this.rankNm = this.rankCdInfo.getDtlCdNm();
+        if (this.cmpyCdInfo != null) this.cmpyNm = this.cmpyCdInfo.getCodeName();
+        if (this.teamCdInfo != null) this.teamNm = this.teamCdInfo.getCodeName();
+        if (this.emplymCdInfo != null) this.emplymNm = this.emplymCdInfo.getCodeName();
+        if (this.rankCdInfo != null) this.rankNm = this.rankCdInfo.getCodeName();
     }
 
     /** 사용자 인사정보 ID */
@@ -84,8 +84,8 @@ public class UserEmplymEntity
     /** 소속(회사) 코드 정보 (복합키 조인) */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula=@JoinFormula(value="'"+ Code.CMPY_CD+"'", referencedColumnName="cl_cd")),
-            @JoinColumnOrFormula(column=@JoinColumn(name="cmpy_cd", referencedColumnName="dtl_cd", insertable=false, updatable=false))
+            @JoinColumnOrFormula(formula=@JoinFormula(value="'"+ Code.CMPY_CD+"'", referencedColumnName="group_code")),
+            @JoinColumnOrFormula(column=@JoinColumn(name="cmpy_cd", referencedColumnName="code", insertable=false, updatable=false))
     })
     @Fetch(value= FetchMode.JOIN)
     @NotFound(action=NotFoundAction.IGNORE)
@@ -102,8 +102,8 @@ public class UserEmplymEntity
     /** 소속(팀) 코드 정보 (복합키 조인) */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula=@JoinFormula(value="'"+Code.TEAM_CD+"'", referencedColumnName="cl_cd")),
-            @JoinColumnOrFormula(column=@JoinColumn(name="team_cd", referencedColumnName="dtl_cd", insertable=false, updatable=false))
+            @JoinColumnOrFormula(formula=@JoinFormula(value="'"+Code.TEAM_CD+"'", referencedColumnName="group_code")),
+            @JoinColumnOrFormula(column=@JoinColumn(name="team_cd", referencedColumnName="code", insertable=false, updatable=false))
     })
     @Fetch(value= FetchMode.JOIN)
     @NotFound(action=NotFoundAction.IGNORE)
@@ -120,8 +120,8 @@ public class UserEmplymEntity
     /** 재직구분 코드 정보 (복합키 조인) */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula=@JoinFormula(value="'"+Code.RANK_CD+"'", referencedColumnName="cl_cd")),
-            @JoinColumnOrFormula(column=@JoinColumn(name="emplym_cd", referencedColumnName="dtl_cd", insertable=false, updatable=false))
+            @JoinColumnOrFormula(formula=@JoinFormula(value="'"+Code.RANK_CD+"'", referencedColumnName="group_code")),
+            @JoinColumnOrFormula(column=@JoinColumn(name="emplym_cd", referencedColumnName="code", insertable=false, updatable=false))
     })
     @Fetch(value= FetchMode.JOIN)
     @NotFound(action=NotFoundAction.IGNORE)
@@ -138,8 +138,8 @@ public class UserEmplymEntity
     /** 직급 코드 정보 (복합키 조인) */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumnsOrFormulas({
-        @JoinColumnOrFormula(formula=@JoinFormula(value="'"+ Code.RANK_CD+"'", referencedColumnName="cl_cd")),
-        @JoinColumnOrFormula(column=@JoinColumn(name="rank_cd", referencedColumnName="dtl_cd", insertable=false, updatable=false))
+        @JoinColumnOrFormula(formula=@JoinFormula(value="'"+ Code.RANK_CD+"'", referencedColumnName="group_code")),
+        @JoinColumnOrFormula(column=@JoinColumn(name="rank_cd", referencedColumnName="code", insertable=false, updatable=false))
     })
     @Fetch(value= FetchMode.JOIN)
     @NotFound(action=NotFoundAction.IGNORE)

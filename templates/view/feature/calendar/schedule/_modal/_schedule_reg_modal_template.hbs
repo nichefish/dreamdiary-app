@@ -18,15 +18,15 @@
                 <option value="">--구분--</option>
                 <#list SCHEDULE_CD![] as topic>
                     {{#if isPrvt}}
-                        {{#unless (equals "${topic.dtlCd!}" "HOLYDAY")}}
-                            {{#unless (equals "${topic.dtlCd!}" "CEREMONY")}}
-                                {{#unless (equals "${topic.dtlCd!}" "TLCMMT")}}
-                                    <option value="${topic.dtlCd!}" {{selectedIf (equals scheduleCd "${topic.dtlCd!}")}} >[${topic.dtlCdNm!}]</option>
+                        {{#unless (equals "${topic.code!}" "HOLYDAY")}}
+                            {{#unless (equals "${topic.code!}" "CEREMONY")}}
+                                {{#unless (equals "${topic.code!}" "TLCMMT")}}
+                                    <option value="${topic.code!}" {{selectedIf (equals scheduleCd "${topic.code!}")}} >[${topic.codeName!}]</option>
                                 {{/unless}}
                             {{/unless}}
                         {{/unless}}
                     {{else}}
-                        <option value="${topic.dtlCd!}" {{selectedIf (equals scheduleCd "${topic.dtlCd!}")}} >[${topic.dtlCdNm!}]</option>
+                        <option value="${topic.code!}" {{selectedIf (equals scheduleCd "${topic.code!}")}} >[${topic.codeName!}]</option>
                     {{/if}}
                 </#list>
             </select>

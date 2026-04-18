@@ -1,36 +1,26 @@
 package io.nicheblog.dreamdiary.infrastructure.code.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 /**
  * CodeLookupItem.
  * <pre>
- *  코드 조회/캐시 전용 인프라 모델.
+ *  화면/캐시용 코드 상세 한 줄.
  * </pre>
- *
- * @author nichefish
  */
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CodeLookupItem {
 
-    /** 분류 코드 */
-    private String clCd;
-    /** 상세 코드 */
-    private String dtlCd;
-    /** 상세 코드명 */
-    private String dtlCdNm;
-    /** 설명 */
+    private Integer id;
+    private String groupCode;
+    private String code;
+    private String codeName;
     private String description;
-    /** 정렬 순서 */
     private Integer sortOrder;
-    /** 사용 여부 */
     private String useYn;
-    /** 보호 여부 */
     private String protectedYn;
 }

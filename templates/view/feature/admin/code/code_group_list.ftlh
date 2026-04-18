@@ -35,22 +35,21 @@
 </div>
 
 <form name="procForm" id="procForm" method="get">
-    <input type="hidden" name="clCd" id="clCd" />
+    <input type="hidden" name="groupCode" id="groupCode" />
 </form>
 
 <script id="code_group_list_data" type="application/json">
 [
-<#list clCdList![] as clCd>
+<#list codeGroupList![] as codeGroup>
     {
-        "rnum": ${clCd.rnum!0},
-        "id": ${clCd.id!0},
-        "clCd": "${(clCd.clCd!'')?js_string}",
-        "clCdNm": "${(clCd.clCdNm!'')?js_string}",
-        "clCtgrNm": "${(clCd.clCtgrNm!'')?js_string}",
-        "description": "${(clCd.description!'')?js_string}",
-        "dtlCdCnt": ${clCd.dtlCdCnt!0},
-        "useYn": "${(clCd.useYn!'N')?js_string}"
-    }<#if clCd_has_next>,</#if>
+        "rnum": ${codeGroup.rnum!0},
+        "id": ${codeGroup.id!0},
+        "groupCode": "${(codeGroup.groupCode!'')?js_string}",
+        "groupName": "${(codeGroup.groupName!'')?js_string}",
+        "description": "${(codeGroup.description!'')?js_string}",
+        "codeItemCnt": ${codeGroup.codeItemCnt!0},
+        "useYn": "${(codeGroup.useYn!'N')?js_string}"
+    }<#if codeGroup_has_next>,</#if>
 </#list>
 ]
 </script>

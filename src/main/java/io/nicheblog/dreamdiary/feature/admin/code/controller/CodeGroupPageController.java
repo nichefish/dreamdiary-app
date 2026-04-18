@@ -39,7 +39,7 @@ public class CodeGroupPageController extends BaseControllerImpl {
 
     @GetMapping(Url.CODE_GROUP_LIST)
     @Secured({Constant.ROLE_MNGR})
-    public String clCdList(
+    public String codeGroupList(
             @ModelAttribute("searchParam") CodeGroupSearchParam searchParam,
             final ModelMap model
     ) throws Exception {
@@ -50,7 +50,7 @@ public class CodeGroupPageController extends BaseControllerImpl {
         final Sort sort = Sort.by(Sort.Direction.ASC, "sortOrder");
         final PageRequest pageRequest = ParamUtils.getPageRequest(searchParam, sort, model);
         final Page<CodeGroupDto> codeGroupList = codeGroupService.getPageDto(searchParam, pageRequest);
-        model.addAttribute("clCdList", codeGroupList.getContent());
+        model.addAttribute("codeGroupList", codeGroupList.getContent());
         model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(codeGroupList));
         ParamUtils.setModelAttrMap(searchParam, baseUrl, model);
         codeLookupService.setCdListToModel(Code.CL_CTGR_CD, model);

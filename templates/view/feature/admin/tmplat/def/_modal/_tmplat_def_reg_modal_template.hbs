@@ -20,7 +20,7 @@
             <div class="col-10">
                 <input type="text" name="tmplatDefCd" id="tmplatDefCd" class="form-control {{#isMdf}}bg-secondary{{/isMdf}}"
                        {{#isMdf}}data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="분류 코드는 수정할 수 없습니다."{{/isMdf}}
-                       value="{{clCd}}" maxlength="50" {{#isMdf}}readonly{{/isMdf}}>
+                       value="{{tmplatDefCd}}" maxlength="50" {{#isMdf}}readonly{{/isMdf}}>
             </div>
             <!--end::Title-->
         </div>
@@ -33,19 +33,8 @@
                 </label>
             </div>
             <div class="col-10">
-                <input type="text" name="tmplatDefNm" id="tmplatDefNm" class="form-control"
-                       value="{{clCdNm}}" maxlength="50">
-            </div>
-            <!--end::Title-->
-        </div>
-        <div class="row mb-4">
-            <#--begin::title-->
-            <div class="col-2 col-form-label">
-                템플릿 구분 코드
-            </div>
-            <div class="col-10">
-                <input type="text" class="form-control" name="ctgrClCd" id="ctgrClCd"
-                       value="{{ctgrClCd}}" maxlength="50">
+                <input type="text" name="title" id="title" class="form-control"
+                       value="{{title}}" maxlength="50">
             </div>
             <!--end::Title-->
         </div>

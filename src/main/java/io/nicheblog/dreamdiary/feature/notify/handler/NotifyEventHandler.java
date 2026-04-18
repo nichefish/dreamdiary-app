@@ -114,7 +114,7 @@ public class NotifyEventHandler {
         String jandiRsltMsg;
         try {
             // title
-            final String scheduleTyNm = codeLookupService.getDtlCdNm(Code.SCHEDULE_CD, result.getScheduleCd());
+            final String scheduleTyNm = codeLookupService.getCodeName(Code.SCHEDULE_CD, result.getScheduleCd());
             String title = "[" + scheduleTyNm + "] " + result.getBgnDt() + " / " + result.getScheduleNm();
             String prtcpntStr = result.getPrtcpntListStr();
             if (StringUtils.isNotEmpty(prtcpntStr)) {

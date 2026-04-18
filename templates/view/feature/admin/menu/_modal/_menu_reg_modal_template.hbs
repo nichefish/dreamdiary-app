@@ -124,8 +124,8 @@
                     onchange="dF.Menu.toggleUrlSpan(this);">
                 <option value="">----</option>
                 <#list MENU_SUB_EXTEND_TY_CD![] as menuSubExtend>
-                    <option value="${menuSubExtend.dtlCd!}" {{selectedIf (equals menuSubExtendTyCd "${menuSubExtend.dtlCd!}")}}>
-                        ${menuSubExtend.dtlCdNm!}
+                    <option value="${menuSubExtend.code!}" {{selectedIf (equals menuSubExtendTyCd "${menuSubExtend.code!}")}}>
+                        ${menuSubExtend.codeName!}
                     </option>
                 </#list>
             </select>

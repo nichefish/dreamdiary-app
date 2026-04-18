@@ -9,7 +9,7 @@
 <@modal.layout id="code_item_reg" size="lg">
     <@component.modal_header modal_title />
     <div class="modal-body modal-mbl-body my-5">
-        <form name="dtlCdRegForm" id="dtlCdRegForm">
+        <form name="codeItemRegForm" id="codeItemRegForm">
             <div id="code_item_reg_div">
                 <#--Handlebars template goes in here-->
             </div>

@@ -25,11 +25,11 @@
                 </label>
                 <select id="tagCategoryTextClassCd" name="categoryTextClassCd" class="form-select form-select-solid" {{#if tagCategoryId}}{{else}}disabled{{/if}}>
                     <#list TEXT_CLASS_CD![] as item>
-                        <option value="${item.dtlCd!}"
+                        <option value="${item.code!}"
                                 data-text-class="${item.description!}"
                                 class="${item.description!}"
-                                {{#if (equals categoryTextClassCd "${item.dtlCd!}")}}selected{{/if}}>
-                            ${item.dtlCdNm!}
+                                {{#if (equals categoryTextClassCd "${item.code!}")}}selected{{/if}}>
+                            ${item.codeName!}
                         </option>
                     </#list>
                 </select>
@@ -45,11 +45,11 @@
                         {{#if tagCategoryId}}카테고리와 동일 (상속){{else}}기본 (카테고리 없음){{/if}}
                     </option>
                     <#list TEXT_CLASS_CD![] as item>
-                        <option value="${item.dtlCd!}"
+                        <option value="${item.code!}"
                                 data-text-class="${item.description!}"
                                 class="${item.description!}"
-                                {{#if (equals textClassCd "${item.dtlCd!}")}}selected{{/if}}>
-                            ${item.dtlCdNm!}
+                                {{#if (equals textClassCd "${item.code!}")}}selected{{/if}}>
+                            ${item.codeName!}
                         </option>
                     </#list>
                 </select>

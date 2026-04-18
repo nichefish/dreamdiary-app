@@ -93,8 +93,8 @@
                         <option value="TEST">[테스트]</option>
                     </#if>
                     <#list JANDI_TOPIC_CD![] as topic>
-                        <#if topic.dtlCd == jandiTopic>
-                            <option value="${topic.dtlCd!}" id="${topic.dtlCd!}">[${topic.dtlCdNm!}]</option>
+                        <#if topic.code == jandiTopic>
+                            <option value="${topic.code!}" id="${topic.code!}">[${topic.codeName!}]</option>
                         </#if>
                     </#list>
                 </select>
