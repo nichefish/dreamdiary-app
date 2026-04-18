@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.auth.security.interceptor.CsrfInterceptor;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.infrastructure.freemarker.interceptor.FreemarkerInterceptor;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.interceptor.LogActvtyInterceptor;
+import io.nicheblog.dreamdiary.infrastructure.log.interceptor.LogInterceptor;
 import io.nicheblog.dreamdiary.infrastructure.web.handler.UTF8DecodeResourceResolver;
 import io.nicheblog.dreamdiary.infrastructure.web.interceptor.CookieInterceptor;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public class WebMvcContextConfig
     private final FreemarkerInterceptor freemarkerInterceptor;
     private final CookieInterceptor cookieInterceptor;
     private final CsrfInterceptor csrfInterceptor;
-    private final LogActvtyInterceptor logActvtyInterceptor;
+    private final LogInterceptor logActvtyInterceptor;
 
     private static final List<String> STATIC_RESOURCES_URL_PATTERN = List.of(Constant.STATIC_PATHS);
 

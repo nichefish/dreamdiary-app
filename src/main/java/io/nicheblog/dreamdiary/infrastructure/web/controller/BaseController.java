@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.infrastructure.web.controller;
 
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 
 /**
  * BaseController

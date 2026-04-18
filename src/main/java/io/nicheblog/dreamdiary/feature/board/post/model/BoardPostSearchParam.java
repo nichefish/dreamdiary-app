@@ -1,11 +1,7 @@
 package io.nicheblog.dreamdiary.feature.board.post.model;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.model.param.BaseAttachableSearchParam;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.Size;

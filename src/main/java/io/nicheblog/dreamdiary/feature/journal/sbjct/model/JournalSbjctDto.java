@@ -9,11 +9,7 @@ import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstnModu
 import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstn;
 import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.Size;

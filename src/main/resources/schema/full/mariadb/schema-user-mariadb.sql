@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS user (
     username VARCHAR(20) COMMENT '로그인 ID',
     password VARCHAR(64) COMMENT '비밀번호',
     nickname VARCHAR(50) COMMENT '사용자 표시이름',
-    profile_image_url VARCHAR(256) COMMENT '프로필 이미지 경로',
+    profile_image_url VARCHAR(1000) COMMENT '프로필 이미지 경로',
     content LONGTEXT COMMENT '사용자 설명 (관리자용)',
     email VARCHAR(100) COMMENT '이메일',        -- 기본 이메일:: 계정복구 등에 사용함
     phone_number VARCHAR(20) COMMENT '연락처',        -- 기본 연락처

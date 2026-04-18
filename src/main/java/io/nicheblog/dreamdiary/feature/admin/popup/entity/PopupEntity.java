@@ -24,7 +24,7 @@ import java.util.Date;
  * @author nichefish
  */
 @Entity
-@Table(name = "POPUP")
+@Table(name = "popup")
 @Getter
 @Setter
 @SuperBuilder(toBuilder = true)

@@ -8,10 +8,10 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.event.LoginSuccessCacheWarmupEvent;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.event.LogActvtyEvent;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.handler.LogActvtyEventListener;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.infrastructure.log.event.LogEvent;
+import io.nicheblog.dreamdiary.infrastructure.log.handler.LogEventListener;
+import io.nicheblog.dreamdiary.infrastructure.log.model.LogParam;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.util.HttpUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -55,7 +55,7 @@ public class LoginSuccessHandler
      * @param authentication 인증된 사용자 정보를 담은 {@link Authentication} 객체
      * @throws IOException 입출력 예외 발생 시
      * @throws ServletException 서블릿 예외 발생 시
-     * @see LogActvtyEventListener
+     * @see LogEventListener
      */
     @Override
     public void onAuthenticationSuccess(
@@ -82,8 +82,8 @@ public class LoginSuccessHandler
         DupIdLoginManager.addKey(username);
 
         // 로그인 로그 남기기
-        final LogActvtyParam logParam = new LogActvtyParam(true, MessageUtils.RSLT_SUCCESS, ActvtyCtgr.LGN);
-        publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
+        final LogParam logParam = new LogParam(true, MessageUtils.RSLT_SUCCESS, ActvtyCtgr.LGN);
+        publisher.publishAsyncEvent(new LogEvent(this, logParam));
 
         // 캐시 웜업 이벤트 발행
         publisher.publishAsyncEvent(new LoginSuccessCacheWarmupEvent(this, username));

@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.feature.user.account.repository.jpa;
 
 import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
-import io.nicheblog.dreamdiary.feature.user.emplym.entity.UserEmplymEntity;
-import io.nicheblog.dreamdiary.feature.user.emplym.entity.UserEmplymEntityTestFactory;
 import io.nicheblog.dreamdiary.feature.user.account.entity.UserEntity;
 import io.nicheblog.dreamdiary.feature.user.account.entity.UserEntityTestFactory;
+import io.nicheblog.dreamdiary.feature.user.emplym.entity.UserEmplymEntity;
+import io.nicheblog.dreamdiary.feature.user.emplym.entity.UserEmplymEntityTestFactory;
 import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntity;
 import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntityTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;

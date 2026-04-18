@@ -9,7 +9,7 @@ import io.nicheblog.dreamdiary.feature.user.account.model.UserPwChgParam;
 import io.nicheblog.dreamdiary.feature.user.my.service.UserMyService;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import io.nicheblog.dreamdiary.infrastructure.web.util.CookieUtils;
 import lombok.Getter;

@@ -2,22 +2,13 @@ package io.nicheblog.dreamdiary.feature.journal.sbjct.entity;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableEntity;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * JournalSbjctSmpEntity

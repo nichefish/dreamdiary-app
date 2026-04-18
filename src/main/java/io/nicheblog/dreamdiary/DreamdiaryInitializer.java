@@ -15,10 +15,9 @@ import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.event.CacheWarmupEvent;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.infrastructure.log.sys.event.LogSysEvent;
-import io.nicheblog.dreamdiary.infrastructure.log.sys.handler.LogSysEventListener;
-import io.nicheblog.dreamdiary.infrastructure.log.sys.model.LogSysParam;
+import io.nicheblog.dreamdiary.infrastructure.log.event.LogEvent;
+import io.nicheblog.dreamdiary.infrastructure.log.model.LogParam;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -76,8 +75,8 @@ public class DreamdiaryInitializer
 
         // 시스템 재기동 로그 적재:: 운영 환경 이외에는 적재하지 않음
         if (activeProfile.isProd()) {
-            final LogSysParam logParam = new LogSysParam(true, MessageUtils.getMessage("msg.rslt.system-restarted"), ActvtyCtgr.SYSTEM);
-            publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
+            final LogParam logParam = LogParam.forSystem(true, MessageUtils.getMessage("msg.rslt.system-restarted"), ActvtyCtgr.SYSTEM);
+            publisher.publishAsyncEvent(new LogEvent(this, logParam));
         }
         log.info("Application initialization completed. profile={}", activeProfile.getActive());
     }
@@ -87,7 +86,7 @@ public class DreamdiaryInitializer
      */
     public void regSystemAcntIfEmpty() {
 
-        final LogSysParam logParam = new LogSysParam();
+        final LogParam logParam = LogParam.forSystem();
 
         boolean isSuccess = false;
         boolean systemAcntExists = false;
@@ -112,7 +111,7 @@ public class DreamdiaryInitializer
             // 시스템 계정 등록 처리했을 경우 로그 적재
             if (!systemAcntExists) {
                 logParam.setResult(isSuccess, rsltMsg);
-                publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
+                publisher.publishAsyncEvent(new LogEvent(this, logParam));
             }
         }
     }
@@ -145,11 +144,11 @@ public class DreamdiaryInitializer
     /**
      * 최초 실행시 인증 정책이 공백이므로 기본값 자동 등록. (PW 암호화)
      *
-     * @see LogSysEventListener
+     * @see io.nicheblog.dreamdiary.infrastructure.log.handler.LogEventListener
      */
     public void regAuthPolicyIfEmpty() {
 
-        final LogSysParam logParam = new LogSysParam();
+        final LogParam logParam = LogParam.forSystem();
 
         boolean isSuccess = false;
         boolean authPolicyExists = false;
@@ -174,7 +173,7 @@ public class DreamdiaryInitializer
             // 인증 정책 등록 처리했을 경우 로그 적재
             if (!authPolicyExists) {
                 logParam.setResult(isSuccess, rsltMsg);
-                publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
+                publisher.publishAsyncEvent(new LogEvent(this, logParam));
             }
         }
     }

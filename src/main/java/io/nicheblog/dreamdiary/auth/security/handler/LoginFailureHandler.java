@@ -10,10 +10,10 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.event.LogAnonActvtyEvent;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.handler.LogActvtyEventListener;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.infrastructure.log.event.LogAnonymousEvent;
+import io.nicheblog.dreamdiary.infrastructure.log.handler.LogEventListener;
+import io.nicheblog.dreamdiary.infrastructure.log.model.LogParam;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.handler.HttpMethodRequestWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -57,7 +57,7 @@ public class LoginFailureHandler
      * @param request 로그인 요청 객체
      * @param response 응답 객체
      * @param exception 인증 실패 예외 객체 {@link AuthenticationException}
-     * @see LogActvtyEventListener
+     * @see LogEventListener
      */
     @SneakyThrows
     @Override
@@ -73,8 +73,8 @@ public class LoginFailureHandler
         String errorMsg = this.getLoginFailureMsg(exception);
         /* 존재하지 않는 계정 제외하고 로그인 실패 로그 저장 */
         if (!(exception instanceof InternalAuthenticationServiceException) && !(exception instanceof DupIdLoginException)) {
-            final LogActvtyParam logParam = new LogActvtyParam(username, false, errorMsg, ActvtyCtgr.LGN);
-            publisher.publishAsyncEvent(new LogAnonActvtyEvent(this, logParam));
+            final LogParam logParam = new LogParam(username, false, errorMsg, ActvtyCtgr.LGN);
+            publisher.publishAsyncEvent(new LogAnonymousEvent(this, logParam));
         }
         /* 비밀번호 불일치 */
         if (exception instanceof BadCredentialsException) {

@@ -9,7 +9,7 @@ import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.Getter;
@@ -173,7 +173,7 @@ public class NoticeRestController
         } finally {
             // 로그 관련 세팅
             logParam.setResult(isSuccess, rsltMsg);
-            publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
+            publisher.publishAsyncEvent(new LogEvent(this, logParam));
         }*/
 
         return ResponseEntity.ok(ajaxResponse);

@@ -5,7 +5,7 @@ import io.nicheblog.dreamdiary.auth.security.exception.AlreadyAuthenticatedExcep
 import io.nicheblog.dreamdiary.auth.security.exception.AuthenticationFailureException;
 import io.nicheblog.dreamdiary.feature.user.reqst.service.UserReqstService;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

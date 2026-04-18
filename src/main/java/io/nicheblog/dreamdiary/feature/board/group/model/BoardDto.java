@@ -3,12 +3,7 @@ package io.nicheblog.dreamdiary.feature.board.group.model;
 import io.nicheblog.dreamdiary.auth.intrfc.model.BaseAuditDto;
 import io.nicheblog.dreamdiary.global.intrfc.entity.Sortable;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.NotBlank;

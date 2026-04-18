@@ -187,11 +187,9 @@ public interface ApiUrl {
     String CODE_ITEM_USE = Prefix.API + "/code/item/use";
     String CODE_ITEM_UNUSE = Prefix.API + "/code/item/unuse";
 
-    /** 활동 로그 조회 */
-    String LOG_ACTVTY_DTL_AJAX = Prefix.API + "/log/actvty/log-actvty-dtl";
-
-    /** 시스템 로그 조회 */
-    String LOG_SYS_DTL_AJAX = Prefix.API + "/log/sys/log-sys-dtl";
+    /** 로그 조회 */
+    String LOG_DTL_AJAX = Prefix.API + "/log/dtl";
+    String LOG_LIST_XLSX_DOWNLOAD = Prefix.API + "/log/list-xlsx-download.do";
 
     /** (공통) 파일 */
     String FILE_DOWNLOAD_CHK_AJAX = Prefix.API + "/file/file-download-chk";

@@ -10,10 +10,9 @@ import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.infrastructure.log.sys.event.LogSysEvent;
-import io.nicheblog.dreamdiary.infrastructure.log.sys.handler.LogSysEventListener;
-import io.nicheblog.dreamdiary.infrastructure.log.sys.model.LogSysParam;
+import io.nicheblog.dreamdiary.infrastructure.log.event.LogEvent;
+import io.nicheblog.dreamdiary.infrastructure.log.model.LogParam;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.service.JandiApiService;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.type.JandiTopic;
 import lombok.RequiredArgsConstructor;
@@ -44,12 +43,12 @@ public class NotifyEventHandler {
     /**
      * 공지사항 등록 잔디 알림 메시지 발송
      *
-     * @see LogSysEventListener
+     * @see io.nicheblog.dreamdiary.infrastructure.log.handler.LogEventListener
      */
     public String notifyNoticeReg(
             final JandiTopic trgetTopic,
             final NoticeDto result,
-            final LogSysParam logParam
+            final LogParam logParam
     ) throws Exception {
         String jandiRsltMsg;
         try {
@@ -66,7 +65,7 @@ public class NotifyEventHandler {
         } catch (final Exception e) {
             jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);;
             logParam.setResult(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.JANDI);
-            publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
+            publisher.publishAsyncEvent(new LogEvent(this, logParam));
         }
         return jandiRsltMsg;
     }
@@ -74,12 +73,12 @@ public class NotifyEventHandler {
     /**
      * 게시판 등록 잔디 알림 메시지 발송
      *
-     * @see LogSysEventListener
+     * @see io.nicheblog.dreamdiary.infrastructure.log.handler.LogEventListener
      */
     public String notifyBoardPostReg(
             final JandiTopic trgetTopic,
             final BoardPostDto result,
-            final LogSysParam logParam
+            final LogParam logParam
     ) throws Exception {
         String jandiRsltMsg;
         try {
@@ -96,7 +95,7 @@ public class NotifyEventHandler {
         } catch (final Exception e) {
             logParam.setExceptionInfo(e);
             jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);;
-            publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
+            publisher.publishAsyncEvent(new LogEvent(this, logParam));
         }
         return jandiRsltMsg;
     }
@@ -104,12 +103,12 @@ public class NotifyEventHandler {
     /**
      * 일정 등록 잔디 알림 메시지 발송
      *
-     * @see LogSysEventListener
+     * @see io.nicheblog.dreamdiary.infrastructure.log.handler.LogEventListener
      */
     public String notifyScheduleReg(
             final JandiTopic trgetTopic,
             final ScheduleDto result,
-            final LogSysParam logParam
+            final LogParam logParam
     ) {
         String jandiRsltMsg;
         try {
@@ -131,7 +130,7 @@ public class NotifyEventHandler {
         } catch (final Exception e) {
             jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);;
             logParam.setResult(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.JANDI);
-            publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
+            publisher.publishAsyncEvent(new LogEvent(this, logParam));
         }
         return jandiRsltMsg;
     }
@@ -140,7 +139,7 @@ public class NotifyEventHandler {
      * 일정 > 생일인 현재 직원에 대하여 알림 발송
      */
     // public Boolean notifyCrdtUserBrthdy(
-    //         final LogSysParam logParam
+    //         final LogParam logParam
     // ) throws Exception {
     //     // 생일인 직원 목록 조회
     //     List<UserDto> brthdyUserList = userService.getBrthdyCrdtUser();
@@ -167,7 +166,7 @@ public class NotifyEventHandler {
     //     } catch (final Exception e) {
     //         jandiRsltMsg = MessageUtils.getMessage(MessageUtils.RSLT_JANDI_FAILURE);;
     //         logParam.setResult(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.JANDI);
-    //         publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
+    //         publisher.publishAsyncEvent(new LogEvent(this, logParam));
     //     }
     //     log.account("{}", jandiRsltMsg);
     //     return isSuccess;

@@ -12,7 +12,7 @@
 CREATE TABLE IF NOT EXISTS notice (
     -- ATTACHABLE
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
-    content_type VARCHAR(32) DEFAULT 'NOTICE' COMMENT '컨텐츠 타입',
+    content_type VARCHAR(50) DEFAULT 'NOTICE' COMMENT '컨텐츠 타입',
     --
     popup_yn CHAR(1) DEFAULT 'N' COMMENT '팝업 여부 (Y/N)',
     -- POST
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS notice (
 CREATE TABLE IF NOT EXISTS schedule (
     -- ATTACHABLE
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
-    content_type VARCHAR(32) DEFAULT 'SCHEDULE' COMMENT '컨텐츠 타입',
+    content_type VARCHAR(50) DEFAULT 'SCHEDULE' COMMENT '컨텐츠 타입',
     --
     schedule_cd VARCHAR(30) COMMENT '일정 코드',
     bgn_dt DATETIME DEFAULT NULL COMMENT '시작일자',
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS schedule (
 CREATE TABLE IF NOT EXISTS schedule_participant (
     id INT PRIMARY KEY AUTO_INCREMENT COMMENT '일정 참여자 ID',
     schedule_id INT COMMENT '일정 ID',
-    username VARCHAR(30) COMMENT '일정 참여자 ID',
+    username VARCHAR(20) COMMENT '일정 참여자 ID (user.username)',
     -- AUDIT
     deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS tmplat_txt (
 -- @extends: BasePostEntity
 CREATE TABLE IF NOT EXISTS chat_message (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '글 ID',
-    content_type VARCHAR(30) DEFAULT 'CHAT_MESSAGE' COMMENT '컨텐츠 타입',
+    content_type VARCHAR(50) DEFAULT 'CHAT_MESSAGE' COMMENT '컨텐츠 타입',
     -- POST
     title VARCHAR(200) COMMENT '제목',
     content LONGTEXT COMMENT '내용',
@@ -144,4 +144,22 @@ CREATE TABLE IF NOT EXISTS chat_message (
     updated_at DATETIME COMMENT '수정일시',
     deleted_at DATETIME COMMENT '삭제일시'
 );
+
+-- 팝업 (PopupEntity)
+-- @extends: BaseAuditEntity
+-- @implements: FileEmbed
+CREATE TABLE IF NOT EXISTS popup (
+    popup_cd VARCHAR(50) NOT NULL PRIMARY KEY COMMENT '팝업 코드',
+    popup_nm VARCHAR(200) NULL COMMENT '팝업 이름',
+    width INT NULL COMMENT '가로',
+    height INT NULL COMMENT '세로',
+    popup_start_dt DATETIME NULL COMMENT '게시시작일시',
+    popup_end_dt DATETIME NULL COMMENT '게시종료일시',
+    file_group_id INT NULL COMMENT '첨부파일 번호',
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정일시',
+    deleted_at DATETIME COMMENT '삭제일시'
+) COMMENT = '팝업';
 

@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.auth.security.filter;
 
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.event.LogAnonActvtyEvent;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.handler.LogActvtyEventListener;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.infrastructure.log.event.LogAnonymousEvent;
+import io.nicheblog.dreamdiary.infrastructure.log.handler.LogEventListener;
+import io.nicheblog.dreamdiary.infrastructure.log.model.LogParam;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.util.HttpUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -42,7 +42,7 @@ public class AjaxSessionTimeoutFilter
     /**
      * Ajax 요청에 대하여 응답 설정 및 로깅 처리
      *
-     * @see LogActvtyEventListener
+     * @see LogEventListener
      */
     @Override
     public void doFilter(
@@ -60,16 +60,16 @@ public class AjaxSessionTimeoutFilter
             if (HttpUtils.isAjaxRequest(request)) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED);     // 401
                 // 로그 관련 처리
-                final LogActvtyParam logParam = new LogActvtyParam(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.DEFAULT);
-                publisher.publishEvent(new LogAnonActvtyEvent(this, logParam));
+                final LogParam logParam = new LogParam(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.DEFAULT);
+                publisher.publishEvent(new LogAnonymousEvent(this, logParam));
             }
         } catch (final AccessDeniedException e) {
             // (Ajax 요청에 대해서만 처리)
             if (HttpUtils.isAjaxRequest(request)) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);        // 403
                 // 로그 관련 처리
-                final LogActvtyParam logParam = new LogActvtyParam(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.DEFAULT);
-                publisher.publishEvent(new LogAnonActvtyEvent(this, logParam));
+                final LogParam logParam = new LogParam(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.DEFAULT);
+                publisher.publishEvent(new LogAnonymousEvent(this, logParam));
             }
         }
     }

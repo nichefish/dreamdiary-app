@@ -50,8 +50,7 @@ public enum SiteMenu {
     SCHEDULE_CAL("일정 달력"),
 
     LOG("로그 관리"),
-    LOG_ACTVTY("활동 로그 관리"),
-    LOG_SYS("시스템 로그 관리"),
+    LOG_LIST("로그 목록"),
     LOG_STATS("로그 통계");
 
     private final String pageNm;

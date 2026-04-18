@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS journal_chapter (
     -- ATTACHABLE
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 챕터 ID',
     content_type VARCHAR(32) DEFAULT 'JOURNAL_CHAPTER' COMMENT '컨텐츠 타입',
+    chapter_type VARCHAR(30) NOT NULL DEFAULT 'DIARY' COMMENT 'container type',
     --
     journal_day_id INT COMMENT '저널 일자 번호',
     --
@@ -73,6 +74,9 @@ CREATE TABLE IF NOT EXISTS journal_diary (
     sort_order INT DEFAULT 1 COMMENT '저널 일기 인덱스',
     -- FILE_GROUP
     file_group_id INT COMMENT '첨부파일 번호',
+    -- history
+    history_triggered_by VARCHAR(20) COMMENT '최종 이력 트리거 발생자',
+    history_triggered_at DATETIME COMMENT '최종 이력 트리거 발생일시',
     -- AUDIT
     created_by VARCHAR(20) COMMENT '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',

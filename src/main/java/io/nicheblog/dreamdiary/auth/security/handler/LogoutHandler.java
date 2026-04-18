@@ -4,9 +4,9 @@ import io.nicheblog.dreamdiary.auth.jwt.service.RefreshTokenService;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.service.manager.DupIdLoginManager;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.event.LogActvtyEvent;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.handler.LogActvtyEventListener;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.infrastructure.log.event.LogEvent;
+import io.nicheblog.dreamdiary.infrastructure.log.handler.LogEventListener;
+import io.nicheblog.dreamdiary.infrastructure.log.model.LogParam;
 import io.nicheblog.dreamdiary.infrastructure.web.util.CookieUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -38,7 +38,7 @@ public class LogoutHandler
      * @param request 로그아웃 요청 객체
      * @param httpServletResponse 응답 객체
      * @param authentication 현재 인증된 사용자의 Authentication 객체
-     * @see LogActvtyEventListener
+     * @see LogEventListener
      */
     @Override
     public void logout(
@@ -48,7 +48,7 @@ public class LogoutHandler
     ) {
 
         // 로그 적재
-        publisher.publishAsyncEvent(new LogActvtyEvent(this, new LogActvtyParam(true)));
+        publisher.publishAsyncEvent(new LogEvent(this, new LogParam(true)));
         // 중복 로그인 관리용 arrayList에서 로그인 아이디 제거
         CookieUtils.deleteJwtCookie();
         CookieUtils.deleteRefreshTokenCookie();
