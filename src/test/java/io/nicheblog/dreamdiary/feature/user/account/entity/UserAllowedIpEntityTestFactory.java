@@ -1,0 +1,26 @@
+package io.nicheblog.dreamdiary.feature.user.account.entity;
+
+import lombok.experimental.UtilityClass;
+import org.springframework.test.context.ActiveProfiles;
+
+/**
+ * UserAllowedIpEntityTestFactory
+ * <pre>
+ *  사용자 접속 IP 테스트 Entity 생성 팩토리 모듈
+ * </pre>
+ *
+ * @author nichefish 
+ */
+@UtilityClass
+@ActiveProfiles("test")
+public class UserAllowedIpEntityTestFactory {
+
+    /**
+     * 테스트용 사용자 접속 IP Entity 생성
+     */
+    public static UserAllowedIpEntity create(final String allowedIp) {
+        return UserAllowedIpEntity.builder()
+                .allowedIp(allowedIp)
+                .build();
+    }
+}

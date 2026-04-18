@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.feature.user.reqst.controller;
 
 import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
-import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
+import io.nicheblog.dreamdiary.feature.user.account.model.UserDto;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;

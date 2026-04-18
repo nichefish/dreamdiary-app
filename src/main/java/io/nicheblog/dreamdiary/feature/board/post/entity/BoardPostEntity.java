@@ -51,7 +51,7 @@ import javax.persistence.Table;
 @SQLDelete(sql = "UPDATE board_post SET deleted_at = NOW() WHERE id = ?")
 public class BoardPostEntity
         extends BaseAttachableEntity
-        implements FileEmbedModule, CommentEmbedModule, TagEmbedModule, ViewerEmbedModule {
+        implements FileEmbedModule, CommentEmbedModule, TagEmbedModule, ManagtEmbedModule, ViewerEmbedModule {
 
     /** 글 번호 */
     @Id
@@ -72,7 +72,7 @@ public class BoardPostEntity
     @JoinColumn(name = "content_type", referencedColumnName = "board_key", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("board account")
-    private BoardEntity board;
+    private BoardEntity boardInfo;
 
     /** 제목 */
     @Column(name = "title", length = 200)
@@ -100,6 +100,9 @@ public class BoardPostEntity
     /** 위임 :: 태그 정보 모듈 */
     @Embedded
     public TagEmbed tag;
+    /** 위임 :: 조치 정보 모듈 */
+    @Embedded
+    public ManagtEmbed managt;
     /** 위임 :: 열람 정보 모듈 */
     @Embedded
     public ViewerEmbed viewer;

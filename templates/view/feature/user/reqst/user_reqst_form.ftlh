@@ -21,7 +21,7 @@
 <#include "/view/feature/user/reqst/_user_reqst_form_template.hbs">
 
 <#--include::user_modules-->
-<script type="text/javascript" src="/js/view/feature/user/user_module.js?${releaseDate!}"></script>
+<script type="text/javascript" src="/js/view/feature/user/account/user_module.js?${releaseDate!}"></script>
 <#--include::user_emplym_modules-->
 <#include "/view/feature/user/emplym/_user_emplym_reg_template.hbs">
 <script type="text/javascript" src="/js/view/feature/user/emplym/user_emplym_module.js?${releaseDate!}"></script>

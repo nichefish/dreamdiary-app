@@ -295,7 +295,7 @@ dF.RelatedContent = (function(): dfModule {
                 '      </select>',
                 '    </div>',
                 '    <div class="col-md-4 d-flex align-items-end">',
-                '      <button type="button" class="btn btn-light-info w-100" onclick="dF.RelatedContent.searchTargetsInPopup();">검색</button>',
+                '      <button type="button" class="btn btn-light-account w-100" onclick="dF.RelatedContent.searchTargetsInPopup();">검색</button>',
                 '    </div>',
                 '  </div>',
                 '  <div class="mb-4">',

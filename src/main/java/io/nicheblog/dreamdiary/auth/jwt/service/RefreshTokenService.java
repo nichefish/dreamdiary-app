@@ -1,8 +1,8 @@
 package io.nicheblog.dreamdiary.auth.jwt.service;
 
 import io.nicheblog.dreamdiary.auth.security.exception.AuthenticationFailureException;
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
-import io.nicheblog.dreamdiary.feature.user.info.repository.jpa.UserRepository;
+import io.nicheblog.dreamdiary.feature.user.account.entity.UserEntity;
+import io.nicheblog.dreamdiary.feature.user.account.repository.jpa.UserRepository;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

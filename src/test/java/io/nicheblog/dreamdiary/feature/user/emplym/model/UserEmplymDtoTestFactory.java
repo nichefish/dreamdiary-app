@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.user.emplym.model;
 
-import io.nicheblog.dreamdiary.feature.user.info.model.emplym.UserEmplymDto;
+import io.nicheblog.dreamdiary.feature.user.account.model.emplym.UserEmplymDto;
 import lombok.experimental.UtilityClass;
 import org.springframework.test.context.ActiveProfiles;
 

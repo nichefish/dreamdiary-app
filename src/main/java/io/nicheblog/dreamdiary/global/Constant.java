@@ -94,8 +94,8 @@ public final class Constant {
     public static final String BS_PRIMARY_700 = "primary-700";
     public static final String BS_SECONDARY = "secondary";
     public static final String BS_SUCCESS = "success";
-    public static final String BS_INFO = "info";
-    public static final String BS_INFO_700 = "info-700";
+    public static final String BS_INFO = "account";
+    public static final String BS_INFO_700 = "account-700";
     public static final String BS_DANGER = "danger";
     public static final String BS_WARNING = "warning";
     public static final String BS_DARK = "dark";

@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.user.profile.model;
 
-import io.nicheblog.dreamdiary.feature.user.info.model.profile.UserProfileDto;
+import io.nicheblog.dreamdiary.feature.user.account.model.profile.UserProfileDto;
 import lombok.experimental.UtilityClass;
 import org.springframework.test.context.ActiveProfiles;
 

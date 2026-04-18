@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.feature.user.emplym.entity.UserEmplymEntity;
 import io.nicheblog.dreamdiary.feature.user.emplym.entity.UserEmplymEntityTestFactory;
 import io.nicheblog.dreamdiary.feature.user.emplym.mapstruct.UserEmplymMapstruct;
 import io.nicheblog.dreamdiary.feature.user.emplym.model.UserEmplymDtoTestFactory;
-import io.nicheblog.dreamdiary.feature.user.info.model.emplym.UserEmplymDto;
+import io.nicheblog.dreamdiary.feature.user.account.model.emplym.UserEmplymDto;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;

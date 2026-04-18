@@ -20,7 +20,7 @@ public interface ApiUrl {
     String API_AUTH_REFRESH = Prefix.API + "/auth/refresh";
     String API_AUTH_EXPIRE_SESSION = Prefix.API + "/auth/expire-session";
     String API_AUTH_VERIFY = Prefix.API + "/auth/verify/{token}";
-    String API_AUTH_INFO = Prefix.API + "/auth/get-auth-info";
+    String API_AUTH_INFO = Prefix.API + "/auth/get-auth-account";
 
     /** 소셜 로그인 팝업 */
     String OAUTH2_GOOGLE = "/oauth2/authorization/google";
@@ -211,7 +211,7 @@ public interface ApiUrl {
 
     /** (공통) 파일 */
     String FILE_DOWNLOAD_CHK_AJAX = Prefix.API + "/file/file-download-chk";
-    String FILE_INFO_LIST_AJAX = Prefix.API + "/file/file-info-list";
+    String FILE_INFO_LIST_AJAX = Prefix.API + "/file/file-account-list";
     String FILE_DOWNLOAD = Prefix.API + "/file/file-download.do";
     String FILE_UPLOAD_AJAX = Prefix.API + "/file/file-upload";
 
@@ -237,7 +237,7 @@ public interface ApiUrl {
     String JANDI_CONNECT_WH = "https://wh.jandi.com/connect-api/webhook";
 
     /** (API) 한국천문연구원 : 특일 정보 조회 */
-    String API_HOLYDAY_GET = Prefix.API + "/holyday/get-holyday-info.do";
+    String API_HOLYDAY_GET = Prefix.API + "/holyday/get-holyday-account.do";
     
     /** (API) SNMP : 메세지 발신 */
     String URL_API_SNMP_SEND_AJAX = Prefix.API +"/snmp/send";

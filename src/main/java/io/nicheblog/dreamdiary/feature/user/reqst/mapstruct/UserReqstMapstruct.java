@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.user.reqst.mapstruct;
 
 import io.nicheblog.dreamdiary.feature.user.emplym.mapstruct.UserEmplymMapstruct;
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserRoleEntity;
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserStateEntity;
+import io.nicheblog.dreamdiary.feature.user.account.entity.UserEntity;
+import io.nicheblog.dreamdiary.feature.user.account.entity.UserRoleEntity;
+import io.nicheblog.dreamdiary.feature.user.account.entity.UserStateEntity;
 import io.nicheblog.dreamdiary.feature.user.profile.mapstruct.UserProfileMapstruct;
 import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;

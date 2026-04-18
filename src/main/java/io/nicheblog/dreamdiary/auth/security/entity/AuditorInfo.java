@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.auth.security.entity;
 
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserRoleEntity;
+import io.nicheblog.dreamdiary.feature.user.account.entity.UserRoleEntity;
 import io.nicheblog.dreamdiary.global.Constant;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
