@@ -239,22 +239,22 @@ dF.JournalDream = (function(): dfModule {
         /**
          * 상태 토글 (Ajax)
          * @param id
-         * @param stateCd
+         * @param stateCode
          * @param {object} object
          */
-        toggleStateAjax: function(id: string|number, stateCd: string, { onOffFunc }): void {
+        toggleStateAjax: function(id: string|number, stateCode: string, { onOffFunc }): void {
             if (isNaN(Number(id))) return;
 
             const item = document.querySelector(`.journal-dream-item[data-id='${id}']`) as HTMLElement;
             const cacheContext = dF.State.resolveJournalCacheContext(item);
-            const payload = { id, contentType: "JOURNAL_DREAM", stateCd, cacheContext };
+            const payload = { id, contentType: "JOURNAL_DREAM", stateCode, cacheContext };
             dF.State.toggleAjax(payload, function(res: AjaxResponse): void {
                 if (!item) return;
-                const lowerStateCd: string = stateCd.toLowerCase();
-                item.dataset[lowerStateCd] = res.rsltSts === "ON" ? "Y" : "N";
-                const icon: HTMLElement = item.querySelector(`.icon-${lowerStateCd}`);
+                const lowerStateCode: string = stateCode.toLowerCase();
+                item.dataset[lowerStateCode] = res.rsltSts === "ON" ? "Y" : "N";
+                const icon: HTMLElement = item.querySelector(`.icon-${lowerStateCode}`);
                 icon?.classList.toggle("d-none", res.rsltSts !== "ON");
-                const chk: HTMLInputElement = item.querySelector(`.dream-context-${lowerStateCd}-check`);
+                const chk: HTMLInputElement = item.querySelector(`.dream-context-${lowerStateCode}-check`);
                 if (chk) chk.checked = res.rsltSts === "ON";
                 onOffFunc(res, item);
             });

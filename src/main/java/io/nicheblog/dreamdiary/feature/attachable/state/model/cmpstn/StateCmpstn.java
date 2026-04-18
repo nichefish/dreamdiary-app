@@ -39,7 +39,7 @@ public class StateCmpstn
         if (stateCd == null) return;
         if (this.list == null) this.list = new ArrayList<>();
         final boolean exists = this.list.stream()
-            .anyMatch(s -> stateCd.key.equals(s.getStateCd()));
+            .anyMatch(s -> stateCd.key.equals(s.getStateCode()));
 
         if (exists) return;
 
@@ -54,7 +54,7 @@ public class StateCmpstn
         if (stateCd == null) return;
         if (this.list == null) return;
 
-        this.list.removeIf(s -> stateCd.key.equals(s.getStateCd()));
+        this.list.removeIf(s -> stateCd.key.equals(s.getStateCode()));
 
         if (this.list.isEmpty()) this.list = null; // 선택 사항: 직렬화/메모리 정리 목적
     }

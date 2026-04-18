@@ -177,25 +177,25 @@ dF.JournalChapter = (function(): dfModule {
         /**
          * 상태 토글 (Ajax)
          * @param id
-         * @param stateCd
+         * @param stateCode
          * @param {object} object
          */
-        toggleStateAjax: function(id: string|number, stateCd: string, { onOffFunc }): void {
+        toggleStateAjax: function(id: string|number, stateCode: string, { onOffFunc }): void {
             if (isNaN(Number(id))) return;
 
             const item = document.querySelector(`.journal-chapter-item[data-id='${id}']`) as HTMLElement;
             const cacheContext = dF.State.resolveJournalCacheContext(item);
-            const payload = { id: id, contentType: "JOURNAL_CHAPTER", stateCd, cacheContext };
+            const payload = { id: id, contentType: "JOURNAL_CHAPTER", stateCode, cacheContext };
             dF.State.toggleAjax(payload, function(res: AjaxResponse): void {
                 if (!item) return;
-                const lowerStateCd: string = stateCd.toLowerCase();
-                const icon: HTMLElement = item.querySelector(`.icon-${lowerStateCd}`);
+                const lowerStateCode: string = stateCode.toLowerCase();
+                const icon: HTMLElement = item.querySelector(`.icon-${lowerStateCode}`);
                 if (!icon) {
                     console.warn("icon not found.");
                 } else {
                     icon?.classList.toggle("d-none", res.rsltSts !== "ON");
                 }
-                const chk: HTMLInputElement = item.querySelector(`.chapter-context-${lowerStateCd}-check`);
+                const chk: HTMLInputElement = item.querySelector(`.chapter-context-${lowerStateCode}-check`);
                 if (!chk) {
                     console.warn("chk not found.");
                 } else {

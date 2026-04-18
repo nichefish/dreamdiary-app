@@ -33,7 +33,7 @@ public class StateDto
 
     /** 상태 코드 */
     @Size(max = 50)
-    private String stateCd;
+    private String stateCode;
 
     /** 참조 글 번호 */
     @Positive
@@ -49,6 +49,6 @@ public class StateDto
     }
 
     public StateDto(final StateCd stateCd) {
-        this.stateCd = stateCd.key;
+        this.stateCode = stateCd.key;
     }
 }
