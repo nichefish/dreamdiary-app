@@ -19,7 +19,7 @@ public enum TextClass {
 
     DEFAULT("DEFAULT", ""),
     SUCCESS("SUCCESS", "text-success"),
-    INFO("INFO", "text-info"),
+    INFO("INFO", "text-account"),
     WARNING("WARNING",  "text-warning"),
     DANGER("DANGER", "text-danger"),
     PRIMARY("PRIMARY", "text-primary"),

@@ -67,7 +67,7 @@ INSERT IGNORE INTO code_group (cl_cd, cl_cd_nm, cl_ctgr_cd, description) VALUES 
 -- text class detail codes
 INSERT IGNORE INTO code_item (cl_cd, dtl_cd, dtl_cd_nm, description, sort_order) VALUES ('TEXT_CLASS_CD', 'DEFAULT', 'DEFAULT', '', '1');
 INSERT IGNORE INTO code_item (cl_cd, dtl_cd, dtl_cd_nm, description, sort_order) VALUES ('TEXT_CLASS_CD', 'SUCCESS', 'SUCCESS', 'text-success', '2');
-INSERT IGNORE INTO code_item (cl_cd, dtl_cd, dtl_cd_nm, description, sort_order) VALUES ('TEXT_CLASS_CD', 'INFO', 'INFO', 'text-info', '3');
+INSERT IGNORE INTO code_item (cl_cd, dtl_cd, dtl_cd_nm, description, sort_order) VALUES ('TEXT_CLASS_CD', 'INFO', 'INFO', 'text-account', '3');
 INSERT IGNORE INTO code_item (cl_cd, dtl_cd, dtl_cd_nm, description, sort_order) VALUES ('TEXT_CLASS_CD', 'WARNING', 'WARNING', 'text-warning', '4');
 INSERT IGNORE INTO code_item (cl_cd, dtl_cd, dtl_cd_nm, description, sort_order) VALUES ('TEXT_CLASS_CD', 'DANGER', 'DANGER', 'text-danger', '5');
 INSERT IGNORE INTO code_item (cl_cd, dtl_cd, dtl_cd_nm, description, sort_order) VALUES ('TEXT_CLASS_CD', 'PRIMARY', 'PRIMARY', 'text-primary', '6');

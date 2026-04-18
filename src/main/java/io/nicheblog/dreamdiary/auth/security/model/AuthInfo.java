@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.auth.security.model;
 
-import io.nicheblog.dreamdiary.feature.user.info.model.profile.UserProfileDto;
+import io.nicheblog.dreamdiary.feature.user.account.model.profile.UserProfileDto;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;

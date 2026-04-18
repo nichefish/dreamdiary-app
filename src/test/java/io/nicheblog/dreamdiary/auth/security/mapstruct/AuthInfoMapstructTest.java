@@ -2,8 +2,8 @@ package io.nicheblog.dreamdiary.auth.security.mapstruct;
 
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.type.Auth;
-import io.nicheblog.dreamdiary.feature.user.info.entity.*;
-import io.nicheblog.dreamdiary.feature.user.info.model.profile.UserProfileDto;
+import io.nicheblog.dreamdiary.feature.user.account.entity.*;
+import io.nicheblog.dreamdiary.feature.user.account.model.profile.UserProfileDto;
 import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntity;
 import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntityTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;

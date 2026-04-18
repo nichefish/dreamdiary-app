@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.user.profile.entity;
 
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
+import io.nicheblog.dreamdiary.feature.user.account.entity.UserEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.*;

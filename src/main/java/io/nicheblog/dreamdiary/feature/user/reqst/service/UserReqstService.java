@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.user.reqst.service;
 
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserRoleEntity;
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserStateEntity;
-import io.nicheblog.dreamdiary.feature.user.info.repository.jpa.UserRepository;
+import io.nicheblog.dreamdiary.feature.user.account.entity.UserEntity;
+import io.nicheblog.dreamdiary.feature.user.account.entity.UserRoleEntity;
+import io.nicheblog.dreamdiary.feature.user.account.entity.UserStateEntity;
+import io.nicheblog.dreamdiary.feature.user.account.repository.jpa.UserRepository;
 import io.nicheblog.dreamdiary.feature.user.reqst.entity.UserSignupRequestEntity;
 import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDto;
 import io.nicheblog.dreamdiary.feature.user.reqst.repository.jpa.UserSignupRequestRepository;

@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.user.profile.mapstuct;
 
-import io.nicheblog.dreamdiary.feature.user.info.model.profile.UserProfileDto;
+import io.nicheblog.dreamdiary.feature.user.account.model.profile.UserProfileDto;
 import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntity;
 import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntityTestFactory;
 import io.nicheblog.dreamdiary.feature.user.profile.mapstruct.UserProfileMapstruct;

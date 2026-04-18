@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.user.reqst.model;
 
-import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
+import io.nicheblog.dreamdiary.feature.user.account.model.UserDto;
 import io.nicheblog.dreamdiary.global.validator.Regex;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

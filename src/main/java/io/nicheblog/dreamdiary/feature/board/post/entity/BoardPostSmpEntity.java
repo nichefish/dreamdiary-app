@@ -79,5 +79,5 @@ public class BoardPostSmpEntity extends BaseAttachableEntity {
     @JoinColumn(name = "content_type", referencedColumnName = "board_key", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("board account")
-    private BoardEntity board;
+    private BoardEntity boardInfo;
 }

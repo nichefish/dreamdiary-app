@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeDto;
 import io.nicheblog.dreamdiary.feature.board.post.model.BoardPostDto;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.model.ScheduleDto;
 import io.nicheblog.dreamdiary.feature.calendar.schedule.service.ScheduleService;
-import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
+import io.nicheblog.dreamdiary.feature.user.account.service.UserService;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
@@ -169,7 +169,7 @@ public class NotifyEventHandler {
     //         logParam.setResult(false, MessageUtils.getExceptionMsg(e), ActvtyCtgr.JANDI);
     //         publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
     //     }
-    //     log.info("{}", jandiRsltMsg);
+    //     log.account("{}", jandiRsltMsg);
     //     return isSuccess;
     // }
 

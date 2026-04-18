@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.admin.log.actvty.mapstruct;
 
 import io.nicheblog.dreamdiary.feature.admin.log.actvty.model.LogActvtyQueryDto;
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserRoleEntity;
+import io.nicheblog.dreamdiary.feature.user.account.entity.UserRoleEntity;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseReadMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;

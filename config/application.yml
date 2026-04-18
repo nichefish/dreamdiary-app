@@ -15,7 +15,7 @@ spring:
 
 logging:
     level:
-        web: info
+        web: account
         org.springframework: INFO
         io.nicheblog.dreamdiary: INFO
         org.hibernate.SQL: INFO
