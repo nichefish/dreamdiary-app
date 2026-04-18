@@ -90,25 +90,10 @@
     </div>
 </div>
 
-<#if isMdf!false>
-    <div class="card post">
-        <div class="card-body pt-0">
-            <#include "/view/feature/attachable/sectn/_sectn_page_reg_area.ftlh">
-        </div>
-    </div>
-</#if>
-
 <script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
 <script type="text/javascript" src="/js/common/helper/tinymce.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/lib/prism/js/prism.js"></script>
 <#include "/view/global/_tinymce_img.ftlh">
-
-<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
-<script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
-
-<#include "/view/feature/attachable/sectn/_modal/_sectn_reg_modal.ftlh">
-<#include "/view/feature/attachable/sectn/_sectn_list_template.hbs">
-<script type="text/javascript" src="/js/view/feature/attachable/sectn/sectn_module.js?${releaseDate!}"></script>
 
 <#include "/view/feature/attachable/comment/_modal/_comment_reg_modal.ftlh">
 <#include "/view/feature/attachable/comment/_partial/_comment_list_partial.hbs">

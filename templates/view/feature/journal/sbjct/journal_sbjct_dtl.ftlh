@@ -49,20 +49,11 @@
     </div>
 </div>
 
-<#if post.sectn?? && post.sectn.hasSectn>
-    <div class="card post">
-        <div class="card-body">
-            <#include "/view/feature/attachable/sectn/_sectn_page_dtl_area.ftlh">
-        </div>
-    </div>
-</#if>
-
 <form name="procForm" id="procForm" method="get">
     <input type="hidden" name="id" id="id" value="${post.id!}" />
 </form>
 
 <script type="text/javascript" src="/js/view/feature/journal/sbjct/journal_sbjct_module.js?${releaseDate!}"></script>
-<script type="text/javascript" src="/js/view/feature/attachable/sectn/sectn_module.js?${releaseDate!}"></script>
 
 <#include "/view/feature/attachable/comment/_modal/_comment_reg_modal.ftlh">
 <script type="text/javascript" src="/js/view/feature/attachable/comment/comment_modal_module.js?${releaseDate!}"></script>

@@ -138,10 +138,6 @@ public interface ApiUrl {
     String RELATED = Prefix.API + "/related/{relatedContentId}";
 
     /** 단락 */
-    String SECTNS = Prefix.API + "/sectns";
-    String SECTN = Prefix.API + "/sectn/{id}";
-    String SECTN_SORT_ORDR = Prefix.API + "/sectn/sort-ordr";
-
     /** 상태 */
     String STATES = Prefix.API + "/states";
 
