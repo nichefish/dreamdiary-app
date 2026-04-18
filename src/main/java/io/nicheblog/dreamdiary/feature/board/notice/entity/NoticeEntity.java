@@ -6,8 +6,6 @@ import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEm
 import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbedModule;
 import io.nicheblog.dreamdiary.feature.attachable.managt.entity.embed.ManagtEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.managt.entity.embed.ManagtEmbedModule;
-import io.nicheblog.dreamdiary.feature.attachable.sectn.entity.embed.SectnEmbed;
-import io.nicheblog.dreamdiary.feature.attachable.sectn.entity.embed.SectnEmbedModule;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.feature.attachable.viewer.entity.embed.ViewerEmbed;
@@ -42,7 +40,7 @@ import javax.persistence.*;
 @SQLDelete(sql = "UPDATE notice SET deleted_at = NOW() WHERE id = ?")
 public class NoticeEntity
         extends BaseAttachableEntity
-        implements FileEmbedModule, CommentEmbedModule, SectnEmbedModule, TagEmbedModule, ManagtEmbedModule, ViewerEmbedModule {
+        implements FileEmbedModule, CommentEmbedModule, TagEmbedModule, ManagtEmbedModule, ViewerEmbedModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -118,9 +116,6 @@ public class NoticeEntity
     /** 위임 :: 댓글 정보 모듈 */
     @Embedded
     public CommentEmbed comment;
-    /** 위임 :: 단락 정보 모듈 */
-    @Embedded
-    public SectnEmbed sectn;
     /** 위임 :: 태그 정보 모듈 */
     @Embedded
     public TagEmbed tag;

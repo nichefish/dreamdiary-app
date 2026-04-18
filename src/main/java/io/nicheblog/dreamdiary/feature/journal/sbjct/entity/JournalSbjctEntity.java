@@ -4,8 +4,6 @@ import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableE
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbedModule;
-import io.nicheblog.dreamdiary.feature.attachable.sectn.entity.embed.SectnEmbed;
-import io.nicheblog.dreamdiary.feature.attachable.sectn.entity.embed.SectnEmbedModule;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbed;
@@ -45,7 +43,7 @@ import javax.persistence.Transient;
 @SQLDelete(sql = "UPDATE journal_sbjct SET deleted_at = NOW() WHERE id = ?")
 public class JournalSbjctEntity
         extends BaseAttachableEntity
-        implements FileEmbedModule, CommentEmbedModule, TagEmbedModule, SectnEmbedModule {
+        implements FileEmbedModule, CommentEmbedModule, TagEmbedModule {
 
     @Builder.Default
     private static final ContentType CONTENT_TYPE = ContentType.JOURNAL_SBJCT;
@@ -79,9 +77,6 @@ public class JournalSbjctEntity
 
     @Embedded
     public CommentEmbed comment;
-
-    @Embedded
-    public SectnEmbed sectn;
 
     @Embedded
     public TagEmbed tag;

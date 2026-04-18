@@ -36,8 +36,6 @@ public enum ContentType {
     // 채팅
     CHAT_MESSAGE("CHAT_MESSAGE", "채팅 메세지"),
 
-    //
-    SECTN("SECTN", "단락"),
     COMMENT("COMMENT", "댓글");
 
     public final String key;

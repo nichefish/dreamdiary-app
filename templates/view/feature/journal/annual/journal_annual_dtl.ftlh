@@ -114,11 +114,6 @@
 <#--include::tag-->
 <#include "/view/feature/journal/tag/_journal_tag_list_modal.ftlh">
 
-<#--include::sectn-->
-<#include "/view/feature/attachable/sectn/_modal/_sectn_reg_modal.ftlh">
-<#include "/view/feature/attachable/sectn/_sectn_list_template.hbs">
-<script type="text/javascript" src="/js/view/feature/attachable/sectn/sectn_module.js?${releaseDate!}"></script>
-
 <#--include::tags-->
 <#include "/view/feature/journal/tag/_journal_tag_list_modal.ftlh">
 <#include "/view/feature/attachable/tag/_partial/_tag_list_partial.hbs">

@@ -19,30 +19,9 @@ const Page: Page = (function(): Page {
             /* initialize form. */
             dF.JournalSbjct.initForm();
 
-            if (Page.isMdf) {
-                /* 글 단락 init */
-                dF.Sectn.init({
-                    refreshFunc: function(): void {
-                        setTimeout(function(): void {
-                            Page.refreshFunc();
-                        });
-                    }
-                });
-                /* 글 단락 정렬순서 변경 init */
-                dF.Sectn.initDraggable({
-                    refreshFunc: Page.refreshFunc
-                });
-            } else {
+            if (!Page.isMdf) {
                 $("#jandiYn").click();
             }
-        },
-
-        refreshFunc: function({ refId, refContentType }): void {
-            dF.Sectn.listAjax({ "refId": refId, "refContentType": refContentType });
-            $("#sectn_reg_modal").modal("hide");
-            dF.Sectn.initDraggable({
-                refreshFunc: Page.refreshFunc
-            });
         },
     }
 })();

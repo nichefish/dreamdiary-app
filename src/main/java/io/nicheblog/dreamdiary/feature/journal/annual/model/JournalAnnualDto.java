@@ -2,8 +2,6 @@ package io.nicheblog.dreamdiary.feature.journal.annual.model;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.model.BaseAttachableDto;
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.attachable.sectn.model.cmpstn.SectnCmpstn;
-import io.nicheblog.dreamdiary.feature.attachable.sectn.model.cmpstn.SectnCmpstnModule;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
@@ -28,7 +26,7 @@ import java.util.List;
 @ToString(callSuper = true)
 public class JournalAnnualDto
         extends BaseAttachableDto
-        implements Identifiable<Integer>, TagCmpstnModule, SectnCmpstnModule {
+        implements Identifiable<Integer>, TagCmpstnModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -65,8 +63,6 @@ public class JournalAnnualDto
         return this.id;
     }
 
-    /** 위임 :: 단락 정보 모듈 */
-    public SectnCmpstn sectn;
     /** 위임 :: 태그 정보 모듈 */
     public TagCmpstn tag;
 }

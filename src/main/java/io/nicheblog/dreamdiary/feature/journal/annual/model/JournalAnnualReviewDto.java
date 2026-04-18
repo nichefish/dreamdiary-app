@@ -4,8 +4,6 @@ import io.nicheblog.dreamdiary.feature.attachable._shared.model.BaseAttachableDt
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.comment.model.cmpstn.CommentCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.comment.model.cmpstn.CommentCmpstnModule;
-import io.nicheblog.dreamdiary.feature.attachable.sectn.model.cmpstn.SectnCmpstn;
-import io.nicheblog.dreamdiary.feature.attachable.sectn.model.cmpstn.SectnCmpstnModule;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.feature.file.model.cmpstn.FileCmpstn;
@@ -30,7 +28,7 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 public class JournalAnnualReviewDto
         extends BaseAttachableDto
-        implements Identifiable<Integer>, CommentCmpstnModule, TagCmpstnModule, SectnCmpstnModule, FileCmpstnModule {
+        implements Identifiable<Integer>, CommentCmpstnModule, TagCmpstnModule, FileCmpstnModule {
 
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
@@ -64,8 +62,6 @@ public class JournalAnnualReviewDto
     public FileCmpstn file;
     /** 위임 :: 댓글 정보 모듈 */
     public CommentCmpstn comment;
-    /** 위임 :: 단락 정보 모듈 */
-    public SectnCmpstn sectn;
     /** 위임 :: 태그 정보 모듈 */
     public TagCmpstn tag;
 }

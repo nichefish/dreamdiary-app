@@ -114,13 +114,6 @@
                 <label class="mb-2" for="tinymce_content">
                     <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'txt.content'/></span>
                     <span class="text-gray-500 fs-9">&nbsp;</span>
-                    <#if isMdf>
-                        <#--begin::sectn button-->
-                        <div class="col d-flex justify-content-end">
-                            <#--헤더:: 버튼: 등록 모달 호출하기-->
-                            <@component.header_btn_reg_modal "dF.Sectn.regModal(${post.id!}, '${post.contentType!}');" />
-                        </div>
-                    </#if>
                 </label>
                 <!--end::Label-->
                 <!--begin::Form control-->
@@ -165,30 +158,11 @@
     </div>
 </div>
 
-<#if isMdf!false>
-    <div class="card post">
-        <#--begin::Card body-->
-        <div class="card-body pt-0">
-            <#--페이지:: 단락 영역-->
-            <#include "/view/feature/attachable/sectn/_sectn_page_reg_area.ftlh">
-        </div>
-    </div>
-</#if>
-
 <#--include::tinymce-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
 <script type="text/javascript" src="/js/common/helper/tinymce.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/lib/prism/js/prism.js"></script>
 <#include "/view/global/_tinymce_img.ftlh">
-
-<#--include::draggable-->
-<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
-<script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
-
-<#--include::sectn_module-->
-<#include "/view/feature/attachable/sectn/_modal/_sectn_reg_modal.ftlh">
-<#include "/view/feature/attachable/sectn/_sectn_list_template.hbs">
-<script type="text/javascript" src="/js/view/feature/attachable/sectn/sectn_module.js?${releaseDate!}"></script>
 
 <#--include::comment_module-->
 <#include "/view/feature/attachable/comment/_modal/_comment_reg_modal.ftlh">

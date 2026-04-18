@@ -23,11 +23,6 @@ import io.nicheblog.dreamdiary.feature.attachable.meta.entity.embed.MetaEmbedMod
 import io.nicheblog.dreamdiary.feature.attachable.meta.mapstruct.embed.MetaEmbedMapstruct;
 import io.nicheblog.dreamdiary.feature.attachable.meta.model.cmpstn.MetaCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.meta.model.cmpstn.MetaCmpstnModule;
-import io.nicheblog.dreamdiary.feature.attachable.sectn.entity.embed.SectnEmbed;
-import io.nicheblog.dreamdiary.feature.attachable.sectn.entity.embed.SectnEmbedModule;
-import io.nicheblog.dreamdiary.feature.attachable.sectn.mapstruct.embed.SectnEmbedMapstruct;
-import io.nicheblog.dreamdiary.feature.attachable.sectn.model.cmpstn.SectnCmpstn;
-import io.nicheblog.dreamdiary.feature.attachable.sectn.model.cmpstn.SectnCmpstnModule;
 import io.nicheblog.dreamdiary.feature.attachable.state.entity.embed.StateEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.feature.attachable.state.mapstruct.embed.StateEmbedMapstruct;
@@ -80,14 +75,6 @@ public class AttachableMapstructHelper {
             final CommentEmbed embed = ((CommentEmbedModule) entity).getComment();
             final CommentCmpstn cmpstn = CommentEmbedMapstruct.INSTANCE.toDto(embed);
             ((CommentCmpstnModule) dto).setComment(cmpstn);
-        }
-
-        // 단락 :: 공통 필드 매핑 로직
-        boolean usesSectnModule = (entity instanceof SectnEmbedModule && dto instanceof SectnCmpstnModule);
-        if (usesSectnModule) {
-            final SectnEmbed embed = ((SectnEmbedModule) entity).getSectn();
-            final SectnCmpstn cmpstn = SectnEmbedMapstruct.INSTANCE.toDto(embed);
-            ((SectnCmpstnModule) dto).setSectn(cmpstn);
         }
 
         // 상태 :: 공통 필드 매핑 로직
