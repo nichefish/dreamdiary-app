@@ -1,6 +1,6 @@
 <#--
  * 저널 주제(journal_sbjct) > 목록 툴바 Header
- * @included_in : notice_list.ftlh
+ * @included_in : journal_sbjct_list.ftlh
  -->
 
 <form name="listForm" id="listForm" class="d-none d-md-flex align-items-center flex-nowrap gap-2" data-url="${listUrl!}" method="get">
@@ -9,38 +9,29 @@
     <input type="hidden" name="tags" id="tags">
 
     <div>
-        <#--헤더:: 인풋: datepicker-->
         <@component.header_datepicker searchParam "searchStartDt" "" />
-        <#--헤더:: 인풋: datepicker-->
         <@component.header_datepicker searchParam "searchEndDt" "today" />
     </div>
     <div>
-        <#--헤더:: 인풋: 글분류 코드-->
-        <@component.header_input_ctgrCd searchParam NOTICE_CTGR_CD![] />
+        <@component.header_input_categoryCode searchParam JOURNAL_SBJCT_CTGR_CD![] />
     </div>
     <div>
-        <#--헤더:: 인풋: searchType-->
         <select name="searchType" id="searchType" class="form-select form-select-sm form-select-solid">
             <option value="title" label="<@spring.message 'txt.title'/>" ${fn.selected(searchParam.searchType!, "title")} />
             <option value="nickname" label="작성자" ${fn.selected(searchParam.searchType!, "nickname")} />
         </select>
     </div>
     <div>
-        <#--헤더:: 인풋: searchKeyword-->
         <@component.header_input_searchKeyword searchParam />
     </div>
     <div>
-        <#--헤더:: 버튼: 목록 검색-->
         <@component.header_btn_search "dF.JournalSbjct.search();" />
-        <#--헤더:: 버튼: 내 글 보기-->
         <@component.header_btn_mypapr "dF.JournalSbjct.myPaprList();" MY_PAPR!false />
     </div>
     <div>
-        <#--헤더:: 버튼: 등록 화면 이동하기-->
         <@component.header_btn_reg_form "dF.JournalSbjct.regForm();" />
     </div>
     <div>
-        <#--헤더:: 버튼: 엑셀 다운로드하기-->
         <@component.header_btn_xlsx_download "dF.JournalSbjct.xlsxDownload();" />
     </div>
 </form>

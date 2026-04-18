@@ -6,11 +6,9 @@ import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalPeriodModule;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
-import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 /**
@@ -57,7 +55,7 @@ public class JournalTodoDto
 
     /** 글분류 코드 */
     @Size(max = 50)
-    private String ctgrCd;
+    private String categoryCode;
 
     /** 글분류 코드 이름 */
     @Size(max = 50)
@@ -66,28 +64,6 @@ public class JournalTodoDto
     /** 글분류 존재 여부 */
     @Builder.Default
     private Boolean hasCtgrNm = false;
-
-    /** 중요 여부 (Y/N) */
-    @Builder.Default
-    private String imprtcYn = "N";
-
-    /** 상단고정 여부 (Y/N) */
-    @Builder.Default
-    private String fxdYn = "N";
-
-    /** 조회수 */
-    @Builder.Default
-    @Min(value = 0)
-    private Integer hitCnt = 0;
-
-    /** 수정권한 */
-    @Builder.Default
-    @Size(max = 50)
-    private String mdfable = Code.MDFABLE_REGSTR;
-
-    /** 수정 가능 여부 */
-    @Builder.Default
-    private Boolean isMdfable = false;
 
     /* ----- */
 

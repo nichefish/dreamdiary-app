@@ -117,7 +117,6 @@ public class JournalSbjctPageController
         model.addAttribute(Constant.FORM_MODE, "regist");
         // 코드 정보 모델에 추가
         codeLookupService.setCdListToModel(Code.JOURNAL_SBJCT_CTGR_CD, model);
-        codeLookupService.setCdListToModel(Code.MDFABLE_CD, model);
         codeLookupService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
 
         return "/view/feature/journal/sbjct/journal_sbjct_reg_form";
@@ -202,10 +201,8 @@ public class JournalSbjctPageController
         model.addAttribute(Constant.FORM_MODE, "modify");
         // 코드 정보 모델에 추가
         codeLookupService.setCdListToModel(Code.JOURNAL_SBJCT_CTGR_CD, model);
-        codeLookupService.setCdListToModel(Code.MDFABLE_CD, model);
         codeLookupService.setCdListToModel(Code.JANDI_TOPIC_CD, model);
 
         return "/view/feature/journal/sbjct/journal_sbjct_reg_form";
     }
 }
-

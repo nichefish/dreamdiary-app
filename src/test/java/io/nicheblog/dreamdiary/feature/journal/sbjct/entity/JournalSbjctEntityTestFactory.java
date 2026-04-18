@@ -24,7 +24,7 @@ public class JournalSbjctEntityTestFactory {
                 .contentType(ContentType.JOURNAL_SBJCT.key)
                 .title("test_title")
                 .content("test_cn")
-                .ctgrCd("test_ctgr_cd")
+                .categoryCode("test_category_code")
                 .build();
     }
 }

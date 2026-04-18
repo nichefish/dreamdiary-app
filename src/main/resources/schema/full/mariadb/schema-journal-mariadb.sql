@@ -163,11 +163,7 @@ CREATE TABLE IF NOT EXISTS journal_todo (
     -- POST
     title VARCHAR(200) COMMENT '제목',
     content LONGTEXT COMMENT '내용',
-    ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
-    fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
-    hit_cnt INT DEFAULT 0 COMMENT '조회수',
-    imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
-    mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
+    category_code VARCHAR(50) COMMENT '글 분류 코드',
     -- FILE_GROUP
     file_group_id INT COMMENT '첨부파일 번호',
     -- AUDIT
@@ -188,11 +184,7 @@ CREATE TABLE IF NOT EXISTS journal_sbjct(
     -- POST
     title VARCHAR(200) COMMENT '제목',
     content LONGTEXT COMMENT '내용',
-    ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
-    imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
-    fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
-    hit_cnt INT DEFAULT 0 COMMENT '조회수',
-    mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
+    category_code VARCHAR(50) COMMENT '글 분류 코드',
     -- FILE_GROUP
     file_group_id INT COMMENT '첨부파일 번호',
     -- AUDIT
@@ -238,11 +230,7 @@ CREATE TABLE IF NOT EXISTS journal_annual_review (
     -- POST
     title VARCHAR(200) COMMENT '제목',
     content LONGTEXT COMMENT '내용',
-    ctgr_cd VARCHAR(50) COMMENT '글 분류 코드',
-    imprtc_yn CHAR(1) DEFAULT 'N' COMMENT '중요 여부 (Y/N)',
-    fxd_yn CHAR(1) DEFAULT 'N' COMMENT '상단고정 여부 (Y/N)',
-    hit_cnt INT DEFAULT 0 COMMENT '조회수',
-    mdfable CHAR(50) DEFAULT 'REGSTR' COMMENT '수정권한',
+    category_code VARCHAR(50) COMMENT '글 분류 코드',
     -- FILE_GROUP
     file_group_id INT COMMENT '첨부파일 번호',
     -- AUDIT
@@ -252,4 +240,3 @@ CREATE TABLE IF NOT EXISTS journal_annual_review (
     updated_at DATETIME COMMENT '수정일시',
     deleted_at DATETIME COMMENT '삭제일시'
 ) COMMENT = '저널 연간 리뷰';
-

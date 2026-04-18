@@ -101,6 +101,31 @@ dF.JournalAnnualReview = (function(): dfModule {
                         });
                 }, "block");
             });
+        },
+
+        /**
+         * 삭제 (Ajax)
+         * @param {string|number} id - 글 번호.
+         */
+        delAjax: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
+
+            Swal.fire({
+                text: Message.get("view.cnfm.del"),
+                showCancelButton: true,
+            }).then(function(result: SwalResult): void {
+                if (!result.value) return;
+
+                const url: string = cF.util.bindUrl(Url.JOURNAL_ANNUAL_REVIEW, { id });
+                cF.$ajax.delete(url, null, function(res: AjaxResponse): void {
+                    Swal.fire({ text: res.message })
+                        .then(function(): void {
+                            if (!res.rslt) return;
+
+                            cF.ui.blockUIReload();
+                        });
+                }, "block");
+            });
         }
     }
 })();

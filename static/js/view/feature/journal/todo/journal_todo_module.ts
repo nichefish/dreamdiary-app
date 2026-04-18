@@ -33,8 +33,6 @@ dF.JournalTodo = (function(): dfModule {
 
             /* jquery validation */
             cF.validate.validateForm("#journalTodoRegForm", dF.JournalTodo.regAjax);
-            // checkbox init
-            cF.ui.chckboxLabel("#journalTodoRegForm #imprtcYn", "중요//해당없음", "red//gray");
             /* tinymce editor reset */
             cF.tinymce.init('#tinymce_journalTodoCn');
             cF.tinymce.setContentWhenReady("tinymce_journalTodoCn", obj.content || "");

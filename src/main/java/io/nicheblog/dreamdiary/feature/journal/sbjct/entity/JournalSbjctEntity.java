@@ -10,21 +10,27 @@ import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbed;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbedModule;
-import io.nicheblog.dreamdiary.infrastructure.code.Code;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * JournalSbjctEntity
- * <pre>
- *  저널 주제 Entity.
- *  Entity that contains distinctive subject.
- * </pre>
  *
  * @author nichefish
  */
@@ -41,78 +47,42 @@ public class JournalSbjctEntity
         extends BaseAttachableEntity
         implements FileEmbedModule, CommentEmbedModule, TagEmbedModule, SectnEmbedModule {
 
-    /** 필수: 컨텐츠 타입 */
     @Builder.Default
     private static final ContentType CONTENT_TYPE = ContentType.JOURNAL_SBJCT;
 
-    /** 저널 주제 고유 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     @Comment("저널 주제 고유 번호")
     private Integer id;
 
-    /** 컨텐츠 타입 */
     @Builder.Default
     @Column(name = "content_type", columnDefinition = "VARCHAR(50) DEFAULT 'JOURNAL_SBJCT'")
-    @Comment("컨텐츠 타입")
+    @Comment("콘텐츠 타입")
     private String contentType = CONTENT_TYPE.key;
 
-    /** 글분류 코드 :: join을 제거하고 메모리 캐시 처리 */
-    @Column(name = "ctgr_cd", length = 50)
+    @Column(name = "category_code", length = 50)
     @Comment("저널 주제 글분류 코드 정보")
-    private String ctgrCd;
+    private String categoryCode;
 
-    /** 글분류 코드 이름 :: join을 제거하고 메모리 캐시 처리 */
     @Transient
-    private String ctgrNm;
+    private String categoryName;
 
-    /** 제목 */
     @Column(name = "title")
     private String title;
 
-    /** 내용 */
     @Column(name = "content")
     private String content;
 
-    /* ----- */
-
-    /** 중요 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "imprtc_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("중요 여부")
-    private String imprtcYn = "N";
-
-    /** 상단고정 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "fxd_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("상단고정 여부")
-    private String fxdYn = "N";
-
-    /** 조회수 */
-    @Builder.Default
-    @Column(name = "hit_cnt")
-    private Integer hitCnt = 0;
-
-    /** 수정권한 */
-    @Builder.Default
-    @Column(name = "mdfable")
-    @Comment("수정권한")
-    private String mdfable = Code.MDFABLE_REGSTR;
-
-    /* ----- */
-
-    /** 위임 :: 첨부파일 모듈 */
     @Embedded
     public FileEmbed file;
-    /** 위임 :: 댓글 정보 모듈 */
+
     @Embedded
     public CommentEmbed comment;
-    /** 위임 :: 단락 정보 모듈 */
+
     @Embedded
     public SectnEmbed sectn;
-    /** 위임 :: 태그 정보 모듈 */
+
     @Embedded
     public TagEmbed tag;
 }
-
