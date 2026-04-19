@@ -4,7 +4,8 @@
 - journal-day
   - journal-chapter
     - journal-diary
-  - journal-dream
+    - journal-dream
+    - journal-note
     - journal-interpretation 
 - journal-annual
   - journal-annual-review
@@ -22,7 +23,6 @@
 - 검색 (search) 조회: 비정형 데이터. 월간 조회와 분리하여 DB 기반 조회 전략을 유지한다.
   - "검색은 범위가 비정형적이며(기간, 키워드 등) 캐시 효율이 낮고 관리 비용이 높다. 따라서: 캐시 적중률보다 정확성과 유연성을 우선한다."
   - 캐시를 사용하지 않거나, 매우 제한적으로만 사용. 모든 조건은 DB 쿼리로 직접 처리.
-
 
 ### 저널 챕터(journal-chapter)
 - 저널 일기를 담는 묶음.
