@@ -27,7 +27,7 @@ public enum SiteMenu {
     CD("코드 관리"),
 
     CONTENT("컨텐츠 관리"),
-    BOARD_DEF("게시판 관리"),
+    BOARD_GROUP("게시판 관리"),
     TMPLAT("템플릿 관리"),
     POPUP("팝업 관리"),
 
@@ -38,29 +38,20 @@ public enum SiteMenu {
 
     NOTICE("공지사항"),
 
-    JRNL("저널"),
-    JRNL_DAY("저널 일자"),
-    JRNL_CAL("저널 달력"),
-    JRNL_SBJCT("저널 주제"),
-    JRNL_SUMRY("저널 결산"),
+    JOURNAL("저널"),
+    JOURNAL_DAY("저널 일자"),
+    JOURNAL_CAL("저널 달력"),
+    JOURNAL_SBJCT("저널 주제"),
+    JOURNAL_ANNUAL("저널 연간"),
 
     BOARD("일반게시판"),
 
-    SCHDUL("일정"),
-    SCHDUL_CAL("일정 달력"),
-    VCATN_PAPR("휴가계획서"),
-    VCATN_ADMIN("휴가 관리"),
-    VCATN_SCHDUL("휴가사용일자 관리"),
-    VCATN_STATS("년도별 휴가 관리"),
+    SCHEDULE("일정"),
+    SCHEDULE_CAL("일정 달력"),
 
     LOG("로그 관리"),
-    LOG_ACTVTY("활동 로그 관리"),
-    LOG_SYS("시스템 로그 관리"),
-    LOG_STATS("로그 통계"),
-
-    TAG("태그"),
-
-    FLSYS("파일시스템");
+    LOG_LIST("로그 목록"),
+    LOG_STATS("로그 통계");
 
     private final String pageNm;
 }

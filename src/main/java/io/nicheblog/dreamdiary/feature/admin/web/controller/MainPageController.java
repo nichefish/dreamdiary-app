@@ -4,7 +4,7 @@ import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.Getter;
@@ -50,7 +50,7 @@ public class MainPageController
         // TODO: 접근 권한 통제
 
         // 메인 화면 꾸밀때까지 저널 일자 화면으로 리다이렉트
-        return "redirect:" + Url.JRNL_DAY_WEEKLY;
+        return "redirect:" + Url.JOURNAL_DAY_WEEKLY;
     }
 
     /**

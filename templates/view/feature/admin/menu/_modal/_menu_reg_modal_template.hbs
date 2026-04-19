@@ -5,9 +5,9 @@
 
 <script type="text/x-handlebars-template" id="menu_reg_modal_template">
     <!-- form start -->
-    <input type="hidden" name="menuNo" id="menuNo" value="{{menuNo}}">
+    <input type="hidden" name="id" id="id" value="{{id}}">
     <input type="hidden" name="menuTyCd" id="menuTyCd" value="{{menuTyCd}}">
-    <input type="hidden" name="upperMenuNo" id="upperMenuNo" value="{{upperMenuNo}}">
+    <input type="hidden" name="upperMenuId" id="upperMenuId" value="{{upperMenuId}}">
 
     <#--begin::Row-->
     <div class="row mb-4">
@@ -124,8 +124,8 @@
                     onchange="dF.Menu.toggleUrlSpan(this);">
                 <option value="">----</option>
                 <#list MENU_SUB_EXTEND_TY_CD![] as menuSubExtend>
-                    <option value="${menuSubExtend.dtlCd!}" {{selectedIf (equals menuSubExtendTyCd "${menuSubExtend.dtlCd!}")}}>
-                        ${menuSubExtend.dtlCdNm!}
+                    <option value="${menuSubExtend.code!}" {{selectedIf (equals menuSubExtendTyCd "${menuSubExtend.code!}")}}>
+                        ${menuSubExtend.codeName!}
                     </option>
                 </#list>
             </select>

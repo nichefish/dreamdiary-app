@@ -291,9 +291,9 @@ const Layout: Page = (function(): Page {
         /**
          * 로그아웃 처리
          */
-        lgout: function(): void {
+        logout: function(): void {
             Swal.fire({
-                text: Message.get("view.cnfm.lgout"),
+                text: Message.get("view.cnfm.logout"),
                 showCancelButton: true,
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;

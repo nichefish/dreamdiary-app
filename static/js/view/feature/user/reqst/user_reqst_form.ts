@@ -11,10 +11,14 @@ const Page: Page = (function(): Page {
          * Page 객체 초기화
          */
         init: function(): void {
+            /* render handlebars template. */
+            dF.UserReqst.renderRegFormFromPageData();
+
             /* initialize modules. */
             dF.User.init();
             dF.UserEmplym.init();
-            dF.UserProfl.init();
+            dF.UserProfile.init();
+            dF.UserReqst.init();
             /* initialize form. */
             dF.UserReqst.initForm();
         },

@@ -1,0 +1,57 @@
+<#--
+ * 저널 일기(journal_diary) 키워드/태그 검색 결과 Template (목록과 동일한 행·상태 표시)
+ * @included_in : journal_diary_search.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="journal_diary_search_template">
+    {{#each this}}
+        {{^if (equals this.mnth (lookup @root._locals "prevMnth"))}}
+            <div class="d-flex-center mt-6 mb-4 fs-5 text-dark">{{yy}}년 {{mnth}}월</div>
+        {{/if}}
+
+        <div class="journal-diary-item {{#if (hasState state 'COLLAPSED')}}is-collapsed{{/if}}"
+             data-id="{{id}}"
+             data-stdrd-dt="{{stdrdDt}}"
+             data-yy="{{yy}}"
+             data-mnth="{{mnth}}"
+             data-collapsed="{{#if (hasState state 'COLLAPSED')}}Y{{else}}N{{/if}}"
+             data-resolved="{{#if (hasState state 'RESOLVED')}}Y{{else}}N{{/if}}"
+             data-imprtc="{{#if (hasState state 'IMPRTC')}}Y{{else}}N{{/if}}"
+             data-refrnc="{{#if (hasState state 'REFRNC')}}Y{{else}}N{{/if}}">
+            <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 ps-5 me-2 h-75" style="width:85px;">
+                <div class="d-flex flex-column align-items-center">
+                    <span class="journal-diary-idx {{#if (hasState state 'RESOLVED')}}text-success{{/if}}">
+                        # {{sortOrder}}
+                    </span>
+                    {{> journal_diary_toggle_btn_partial this}}
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-flex flex-wrap align-items-center fs-5 fw-bold mb-2 ps-1">
+                    {{> journal_day_stdrd_dt_partial this}}
+                </div>
+                <div class="journal-diary-content p-2">
+                    {{> journal_diary_content_search_partial this collapse="collapse-4"}}
+                </div>
+            </div>
+            <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+            <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
+                {{> comment_reg_btn_partial this contentType="JOURNAL_DIARY"}}
+                {{> journal_diary_copy_btn_partial this}}
+                {{> journal_diary_search_context_btn_partial this}}
+            </div>
+        </div>
+        <div class="journal-item">
+            {{#each journalInterpretationList}}
+                {{> journal_interpretation_item_partial this}}
+            {{/each}}
+        </div>
+
+        {{!-- 현재 월을 previousMnth 변수로 저장 --}}
+        {{set "prevMnth" this.mnth}}
+    {{else}}
+        <div class="journal-day d-flex-center">
+            <@spring.message 'txt.journal.diary'/> <@spring.message 'view.list.empty'/>
+        </div>
+    {{/each}}
+</script>

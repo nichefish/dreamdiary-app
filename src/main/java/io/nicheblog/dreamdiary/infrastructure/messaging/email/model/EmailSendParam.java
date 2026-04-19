@@ -35,7 +35,7 @@ public class EmailSendParam {
     private List<EmailAddress> recipientList;
 
     /** 첨부파일 목록 */
-    private List<EmailAttachment> atchFileList;
+    private List<EmailAttachment> fileRecordList;
 
     /** 데이터:: freemarker 템플릿 처리 */
     private Map<String, Object> dataMap;

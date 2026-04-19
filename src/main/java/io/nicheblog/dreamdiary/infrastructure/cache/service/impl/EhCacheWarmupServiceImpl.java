@@ -6,10 +6,8 @@ import io.nicheblog.dreamdiary.infrastructure.cache.port.LoginCacheWarmupTask;
 import io.nicheblog.dreamdiary.infrastructure.cache.service.CacheWarmupService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -21,15 +19,11 @@ import java.util.List;
  * @author nichefish
  * @see DreamdiaryInitializer
  */
-@Service("cacheWarmupService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class EhCacheWarmupServiceImpl
         implements CacheWarmupService {
-
-    @Resource(name="jCacheManager")
-    @SuppressWarnings("unused")
-    private CacheManager cacheManager;
 
     private final List<CacheWarmupTask> cacheWarmupTasks;
     private final List<LoginCacheWarmupTask> loginCacheWarmupTasks;
@@ -48,9 +42,9 @@ public class EhCacheWarmupServiceImpl
      * 로그인시 캐시 웜업
      */
     @Override
-    public void warmupOnLgn(final String userId) throws Exception {
+    public void warmupOnLogin(final String username) throws Exception {
         for (final LoginCacheWarmupTask task : loginCacheWarmupTasks) {
-            task.warmupOnLgn(userId);
+            task.warmupOnLogin(username);
         }
     }
 }

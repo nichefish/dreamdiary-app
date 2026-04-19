@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.user.reqst.model;
 
-import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
+import io.nicheblog.dreamdiary.feature.user.account.model.UserDto;
 import io.nicheblog.dreamdiary.global.validator.Regex;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -31,7 +31,7 @@ public class UserReqstDto
 
     /** 아이디 */
     @NotEmpty
-    private String userId;
+    private String username;
     /** 비밀번호 */
     @NotEmpty
     @Size(min = 9, max = 15, message = "비밀번호는 9자 이상 15자 이하로 입력해야 합니다.")
@@ -39,7 +39,7 @@ public class UserReqstDto
     private String password;
     /** 표시이름 */
     @NotEmpty
-    private String nickNm;
+    private String nickname;
 
     /** 이메일 */
     private String email;
@@ -50,10 +50,10 @@ public class UserReqstDto
     @NotEmpty
     private String emailDomain;
     /** 연락처 */
-    private String cttpc;
+    private String phoneNumber;
 
     /** 계정 설명 (관리자용) */
-    private String cn;
+    private String content;
 
     /* ----- */
 

@@ -67,7 +67,7 @@ public class OAuth2Provider {
 
         // 인증 객체를 기반으로 JWT 생성, 임시로 세션에 저장
         final String accessToken = this.authenticateAndGenerateAccessToken(authToken);
-        final String refreshToken = refreshTokenService.issue(authInfo.getUserId());
+        final String refreshToken = refreshTokenService.issue(authInfo.getUsername());
         // 세션에 JWT 저장
         final ServletRequestAttributes servletRequestAttribute = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         final HttpSession session = servletRequestAttribute.getRequest().getSession();

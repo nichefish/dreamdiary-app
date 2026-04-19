@@ -1,12 +1,12 @@
 package io.nicheblog.dreamdiary.feature.admin.web.controller;
 
-import io.nicheblog.dreamdiary.auth.security.model.AuthRoleDto;
-import io.nicheblog.dreamdiary.auth.security.service.AuthRoleService;
+import io.nicheblog.dreamdiary.auth.security.model.RoleDto;
+import io.nicheblog.dreamdiary.auth.security.service.RoleService;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +38,7 @@ public class AdminPageController
     @Getter
     private final ActvtyCtgr actvtyCtgr = ActvtyCtgr.ADMIN;      // 작업 카테고리 (로그 적재용)
 
-    private final AuthRoleService authRoleService;
+    private final RoleService roleService;
 
     /**
      * 사이트 관리 > 사이트 관리 화면 조회
@@ -58,8 +58,8 @@ public class AdminPageController
         model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // 권한 정보 조회
-        List<AuthRoleDto> authRoleList = authRoleService.getListDto(new HashMap<>());
-        model.addAttribute("authRoleList", authRoleList);
+        List<RoleDto> roleList = roleService.getListDto(new HashMap<>());
+        model.addAttribute("roleList", roleList);
 
         return "/view/feature/admin/admin_page";
     }

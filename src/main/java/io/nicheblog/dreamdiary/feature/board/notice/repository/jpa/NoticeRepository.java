@@ -19,26 +19,27 @@ import java.util.Date;
  *
  * @author nichefish
  */
-@Repository("noticeRepository")
+@Repository
 public interface NoticeRepository
         extends BaseStreamRepository<NoticeEntity, Integer> {
 
     /**
      * 최종수정일이 조회기준일자 이내이고, 최종수정자(또는 작성자)가 내가 아니고, 내가 (수정 이후로) 조회하지 않은 글 갯수를 조회한다.
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      * @param stdrdDt 조회기준일자 (ex.1주일)
      * @return Integer
      */
     @Transactional(readOnly = true)
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
-    @Query("SELECT COUNT(notice.postNo) " +
+    @Query("SELECT COUNT(notice.id) " +
             "FROM NoticeEntity notice " +
-            "INNER JOIN ViewerEntity viewer ON viewer.refContentType = 'NOTICE' AND notice.postNo = viewer.refPostNo " +
-            "WHERE COALESCE(notice.mdfDt, notice.regDt) >= :stdrdDt " +
-            " AND COALESCE(notice.mdfusrId, notice.regstrId) != :userId " +
+            "INNER JOIN ViewerEntity viewer ON viewer.refContentType = 'NOTICE' AND notice.id = viewer.refId " +
+            "WHERE COALESCE(notice.updatedAt, notice.createdAt) >= :stdrdDt " +
+            " AND COALESCE(notice.updatedBy, notice.createdBy) != :username " +
             " AND ( " +
-            "  viewer.regstrId != :userId " +
-            "  OR (viewer.regstrId = :userId and viewer.lstVisitDt < COALESCE(notice.mdfDt, notice.regDt)) " +
+            "  viewer.createdBy != :username " +
+            "  OR (viewer.createdBy = :username and viewer.lastVisitedAt < COALESCE(notice.updatedAt, notice.createdAt)) " +
             ")")
-    Integer getUnreadCnt(final @Param("userId") String userId, final @Param("stdrdDt") Date stdrdDt);
+    Integer getUnreadCnt(final @Param("username") String username, final @Param("stdrdDt") Date stdrdDt);
 }
+

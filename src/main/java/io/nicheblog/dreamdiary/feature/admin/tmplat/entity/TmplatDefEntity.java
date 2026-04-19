@@ -27,17 +27,17 @@ import javax.persistence.*;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @ToString
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE tmplat_def SET del_yn = 'Y' WHERE tmplat_def_no = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE tmplat_def SET deleted_at = NOW() WHERE id = ?")
 public class TmplatDefEntity
         extends BaseAuditEntity {
 
-    /** 템플릿 정의 번호 (PK) */
+    /** 템플릿 정의 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "tmplat_def_no")
-    @Comment("템플릿 정의 번호 (PK)")
-    private Integer tmplatDefNo;
+    @Column(name = "id")
+    @Comment("템플릿 정의 ID")
+    private Integer id;
 
     /** 템플릿 정의 코드 */
     @Column(name = "tmplat_def_cd", length = 1000)

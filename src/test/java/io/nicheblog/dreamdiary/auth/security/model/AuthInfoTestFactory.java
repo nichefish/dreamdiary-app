@@ -23,7 +23,7 @@ public class AuthInfoTestFactory {
     public static AuthInfo createAuthInfo() {
         // 객체 생성
         return AuthInfo.builder()
-                .authList(List.of(AuthRoleDto.builder().build()))
+                .roles(List.of(RoleDto.builder().build()))
                 .build();
     }
 

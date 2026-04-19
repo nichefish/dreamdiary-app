@@ -1,13 +1,13 @@
 package io.nicheblog.dreamdiary.feature.user.reqst.mapstuct;
 
+import io.nicheblog.dreamdiary.feature.user.account.entity.UserAllowedIpEntity;
+import io.nicheblog.dreamdiary.feature.user.account.entity.UserEntity;
+import io.nicheblog.dreamdiary.feature.user.account.model.emplym.UserEmplymDto;
+import io.nicheblog.dreamdiary.feature.user.account.model.profile.UserProfileDto;
 import io.nicheblog.dreamdiary.feature.user.emplym.entity.UserEmplymEntity;
 import io.nicheblog.dreamdiary.feature.user.emplym.model.UserEmplymDtoTestFactory;
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserAcsIpEntity;
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
-import io.nicheblog.dreamdiary.feature.user.info.model.emplym.UserEmplymDto;
-import io.nicheblog.dreamdiary.feature.user.info.model.profl.UserProflDto;
-import io.nicheblog.dreamdiary.feature.user.profl.entity.UserProflEntity;
-import io.nicheblog.dreamdiary.feature.user.profl.model.UserProflDtoTestFactory;
+import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntity;
+import io.nicheblog.dreamdiary.feature.user.profile.model.UserProfileDtoTestFactory;
 import io.nicheblog.dreamdiary.feature.user.reqst.mapstruct.UserReqstMapstruct;
 import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDto;
 import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDtoTestFactory;
@@ -65,11 +65,11 @@ class UserReqstMapstructTest {
      * dto -> entity 변환 검증 :: 접속 IP 관련
      */
     @Test
-    void testToEntity_checkAcsIp() throws Exception {
+    void testToEntity_checkAllowedIp() throws Exception {
         // Given::
         // 접속 IP 세팅
-        userReqstDto.setUseAcsIpYn("Y");
-        userReqstDto.setAcsIpListStr("[{\"value\":\"1.1.1.1\"},{\"value\":\"2.2.2.2\"}]");
+        userReqstDto.setUseAllowedIpYn("Y");
+        userReqstDto.setAllowedIpListStr("[{\"value\":\"1.1.1.1\"},{\"value\":\"2.2.2.2\"}]");
 
         // When::
         final UserEntity entity = userReqstMapstruct.toEntity(userReqstDto);
@@ -77,12 +77,12 @@ class UserReqstMapstructTest {
         // Then::
         assertNotNull(entity, "변환된 사용자 계정 신청 Entity는 null일 수 없습니다.");
         // 접속 IP 관련
-        assertEquals(userReqstDto.getUseAcsIpYn(),  entity.getUseAcsIpYn(), "접속 IP 사용여부가 제대로 매핑되지 않았습니다.");
-        List<UserAcsIpEntity> acsIpEntityList = entity.getAcsIpList();
-        assertNotNull(acsIpEntityList, "변환된 접속 가능 IP 목록 Dto는 null일 수 없습니다.");
-        assertEquals(2, acsIpEntityList.size(), "접속 가능 IP 목록 크기가 일치하지 않습니다.");
-        assertEquals("1.1.1.1", acsIpEntityList.get(0).getAcsIp(), "접속 가능 IP 목록에서 IP 정보가 제대로 매핑되지 않았습니다.");
-        assertEquals("2.2.2.2", acsIpEntityList.get(1).getAcsIp(), "접속 가능 IP 목록에서 IP 정보가 제대로 매핑되지 않았습니다.");
+        assertEquals(userReqstDto.getUseAllowedIpYn(),  entity.getUseAllowedIpYn(), "접속 IP 사용여부가 제대로 매핑되지 않았습니다.");
+        List<UserAllowedIpEntity> allowedIpEntityList = entity.getAllowedIpList();
+        assertNotNull(allowedIpEntityList, "변환된 접속 가능 IP 목록 Dto는 null일 수 없습니다.");
+        assertEquals(2, allowedIpEntityList.size(), "접속 가능 IP 목록 크기가 일치하지 않습니다.");
+        assertEquals("1.1.1.1", allowedIpEntityList.get(0).getAllowedIp(), "접속 가능 IP 목록에서 IP 정보가 제대로 매핑되지 않았습니다.");
+        assertEquals("2.2.2.2", allowedIpEntityList.get(1).getAllowedIp(), "접속 가능 IP 목록에서 IP 정보가 제대로 매핑되지 않았습니다.");
     }
 
     /** 
@@ -91,18 +91,18 @@ class UserReqstMapstructTest {
     @Test
     void testToEntity_checkProfl() throws Exception {
         // Given::
-        final UserProflDto userProflDto = UserProflDtoTestFactory.create();
-        userReqstDto.setProfl(userProflDto);
+        final UserProfileDto userProfileDto = UserProfileDtoTestFactory.create();
+        userReqstDto.setProfile(userProfileDto);
 
         // When::
         final UserEntity entity = userReqstMapstruct.toEntity(userReqstDto);
 
         // Then::
         assertNotNull(entity, "변환된 사용자 계정 신청 Entity는 null일 수 없습니다.");
-        UserProflEntity userProflEntity = entity.getProfl();
-        assertNotNull(userProflEntity, "변환된 사용자 프로필 정보 Entity는 null일 수 없습니다.");
+        UserProfileEntity userProfileEntity = entity.getProfile();
+        assertNotNull(userProfileEntity, "변환된 사용자 프로필 정보 Entity는 null일 수 없습니다.");
         // 날짜 변환 체크
-        assertEquals(DateUtils.asDate("2000-01-01"), userProflEntity.getBrthdy(), "사용자 프로필 정보 생일 정보가 제대로 매핑되지 않았습니다.");
+        assertEquals(DateUtils.asDate("2000-01-01"), userProfileEntity.getBrthdy(), "사용자 프로필 정보 생일 정보가 제대로 매핑되지 않았습니다.");
     }
 
     /**

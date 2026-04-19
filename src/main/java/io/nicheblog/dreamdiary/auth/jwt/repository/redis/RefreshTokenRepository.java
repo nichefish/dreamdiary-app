@@ -14,7 +14,7 @@ import java.util.Optional;
 z *
  * @author nichefish
  */
-@Repository("refreshTokenRepository")
+@Repository
 public interface RefreshTokenRepository
         extends CrudRepository<RefreshToken, String> {
 
@@ -22,4 +22,5 @@ public interface RefreshTokenRepository
 
     Optional<RefreshToken> findByAuthId(final String authId);
 }
+
 

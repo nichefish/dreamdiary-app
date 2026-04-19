@@ -20,13 +20,20 @@ dF.UserReqst = (function(): dfModule {
         },
 
         /**
+         * 페이지에 포함된 사용자 신청 폼 템플릿 렌더링
+         */
+        renderRegFormFromPageData: function(): void {
+            cF.handlebars.template({}, "user_reqst_form");
+        },
+
+        /**
          * form init
          */
         initForm: function(): void {
             /* jquery validation */
             cF.validate.validateForm("#userReqstForm", dF.UserReqst.submitHandler, {
                 rules: {
-                    userId: { minlength: 4, maxlength: 16 },
+                    username: { minlength: 4, maxlength: 16 },
                     ipDupChckPassed: { dupChck: true },
                     emailDupChckPassed: { dupChck: true },
                     password: { minlength: 9, maxlength: 20, regex: cF.regex.pw },
@@ -44,20 +51,20 @@ dF.UserReqst = (function(): dfModule {
             });
 
             // 자동 대문자->소문자처리
-            cF.validate.toLowerCase("#userId");
+            cF.validate.toLowerCase("#username");
             // 전화번호 형식 유효성 검사
-            cF.validate.cttpc("#cttpc");
+            cF.validate.phoneNumber("#phoneNumber");
             // 이메일 도메인 select시 자동입력
             $("#emailDomainSelect").on("change", function(): void {
                 $("#emailDomain").val($(this).val());
             });
             // 권한 변경시 필드 재검증
-            $("#authCd").change(function(): void {
-                $("#authCd").valid(); // 체크박스 상태 변경시 details 필드 재검증
+            $("#roleKey").change(function(): void {
+                $("#roleKey").valid(); // 체크박스 상태 변경시 details 필드 재검증
             });
             // 등록화면:: 사용자 ID 변경입력시 중복체크 통과여부 초기화
-            $("#userId").on("input", function(): void {
-                $("#userId_validate_span").empty();
+            $("#username").on("input", function(): void {
+                $("#username_validate_span").empty();
                 $("#ipDupChckPassed").val("N");
                 $("#idDupChckBtn").addClass("blink").removeClass("btn-success").addClass("btn-secondary").removeAttr("disabled");
             });
@@ -80,20 +87,20 @@ dF.UserReqst = (function(): dfModule {
                 $("#emailDupChckBtn").addClass("blink").removeClass("btn-success").addClass("btn-secondary").removeAttr("disabled");
             });
             // 접속IP 사용 여부 클릭시 글씨 변경 + 입력창 토글 :: 메소드 분리
-            cF.ui.chckboxLabel("#useAcsIpYn", "사용//미사용", "blue//gray", function(): void{
-                $("#acsIpListSpan").show()
+            cF.ui.chckboxLabel("#useAllowedIpYn", "사용//미사용", "blue//gray", function(): void{
+                $("#allowedIpListSpan").show()
             }, function(){
-                $("#acsIpListSpan").hide()
+                $("#allowedIpListSpan").hide()
             });
             /* 접속IP tagify */
-            cF.tagify.init("#acsIpListStr");
+            cF.tagify.init("#allowedIpListStr");
         },
 
         /**
          * Custom SubmitHandler
          */
         submitHandler: function(): boolean {
-            if ($("#useAcsIpYn").is(":checked") && $("#acsIpListStr").val() === "") {
+            if ($("#useAllowedIpYn").is(":checked") && $("#allowedIpListStr").val() === "") {
                 Swal.fire("접속 IP는 최소 한 개 이상 입력해야 합니다.");
                 return false;
             }

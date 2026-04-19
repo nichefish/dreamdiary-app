@@ -28,30 +28,40 @@ import javax.persistence.*;
 public class AuthPolicyEntity
         extends BaseAuditEntity {
 
-    /** 인증 정책 번호 (PK) */
+    /** 인증 정책 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "auth_policy_no")
+    @Column(name = "id")
     @Comment("인증 정책 번호 (key)")
-    private Integer authPolicyNo;
+    private Integer id;
 
-    /** 로그인 최대 시도 횟수 */
-    @Column(name = "lgn_try_lmt")
-    @Comment("로그인 최대 시도 횟수")
-    private Integer lgnTryLmt;
+    /** 로그인 시도 제한 횟수 */
+    @Column(name = "login_attempt_limit")
+    @Comment("로그인 시도 제한 횟수")
+    private Integer loginAttemptLimit;
 
-    /** 비밀번호 변경 일자 */
-    @Column(name = "pw_chg_dy")
-    @Comment("비밀번호 변경 일자")
-    private Integer pwChgDy;
+    /** 로그인 시도 누적 시간 창(분) */
+    @Column(name = "login_attempt_window_minutes")
+    @Comment("로그인 시도 누적 시간 창(분)")
+    private Integer loginAttemptWindowMinutes;
 
-    /** 미접속시 계정 잠금 일자 */
-    @Column(name = "lgn_lock_dy")
-    @Comment("미접속시 계정 잠금 일자")
-    private Integer lgnLockDy;
+    /** 계정 잠금 지속 시간(분) */
+    @Column(name = "account_lock_duration_minutes")
+    @Comment("계정 잠금 지속 시간(분)")
+    private Integer accountLockDurationMinutes;
 
-    /** 비밀번호 초기화 값 */
-    @Column(name = "pw_for_reset", length = 20)
-    @Comment("비밀번호 초기화 값")
-    private String pwForReset;
+    /** 비밀번호 변경 주기(일) */
+    @Column(name = "password_change_cycle_days")
+    @Comment("비밀번호 변경 주기(일)")
+    private Integer passwordChangeCycleDays;
+
+    /** 미로그인 시 잠금 일수 */
+    @Column(name = "inactive_lock_days")
+    @Comment("미로그인 시 잠금 일수")
+    private Integer inactiveLockDays;
+
+    /** 비밀번호 재설정 토큰 만료 시간(분) */
+    @Column(name = "password_reset_token_expiry_minutes")
+    @Comment("비밀번호 재설정 토큰 만료 시간(분)")
+    private Integer passwordResetTokenExpiryMinutes;
 }

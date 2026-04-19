@@ -22,18 +22,18 @@ public class BaseAuditDto
         extends BaseAuditRegDto {
 
     /** 수정자 ID */
-    protected String mdfusrId;
+    protected String updatedBy;
 
     /** 수정자 이름 */
-    protected String mdfusrNm;
+    protected String updatedByNm;
 
     /** 수정일시 */
-    protected String mdfDt;
+    protected String updatedAt;
 
     /** 수정자 정보 */
-    protected AuditorDto mdfusrInfo;
+    protected AuditorDto updatedByInfo;
 
     /** 수정자 여부 */
     @Builder.Default
-    protected Boolean isMdfusr = false;
+    protected Boolean isUpdatedBy = false;
 }

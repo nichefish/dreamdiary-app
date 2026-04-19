@@ -29,7 +29,7 @@
             <tbody>
                 <!-- 공지사항 상단고정 목록 -->
                 <#list tmplatFxdList![] as tmplat>
-                    <tr class="bg-fxd-list bg-hover-secondary" onclick="Page.dtl('${tmplat.postNo!}');">
+                    <tr class="bg-fxd-list bg-hover-secondary" onclick="Page.dtl('${tmplat.id!}');">
                         <td class="text-center hidden-table">
                             -
                         </td>
@@ -51,14 +51,14 @@
                             </a>
                             <a class="badge badge-secondary p-2 btn-white blank blink-slow float-end"
                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="모달로 보기">
-                                <i class="bi bi-stickies fs-5 text-noti opacity-hover" onclick="Page.dtlModal('${tmplat.postNo!}');"></i>
+                                <i class="bi bi-stickies fs-5 text-noti opacity-hover" onclick="Page.dtlModal('${tmplat.id!}');"></i>
                             </a>
                         </td>
                         <td class="text-center col-form-label">
-                            ${tmplat.regstrNm!"-"}
+                            ${tmplat.createdByNm!"-"}
                         </td>
                         <td class="text-center hidden-table">
-                            ${tmplat.regDt!}
+                            ${tmplat.createdAt!}
                         </td>
                         <td class="text-center hidden-table">
                             ${tmplat.hitCnt!0?string.number}
@@ -67,7 +67,7 @@
                 </#list>
                 <!-- 공지사항 목록 -->
                 <#list tmplatList![] as tmplat>
-                    <tr class="bg-hover-secondary" onclick="Page.dtl('${tmplat.postNo!}');">
+                    <tr class="bg-hover-secondary" onclick="Page.dtl('${tmplat.id!}');">
                         <td class="text-center hidden-table">
                             ${tmplat.rnum!}
                         </td>
@@ -87,16 +87,16 @@
                             <@component.list_comment post />
                             <a class="badge badge-secondary p-2 btn-white blank blink-slow float-end"
                                data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="모달로 보기">
-                                <i class="bi bi-stickies fs-5 text-noti opacity-hover" onclick="Page.dtlModal('${tmplat.postNo!}');"></i>
+                                <i class="bi bi-stickies fs-5 text-noti opacity-hover" onclick="Page.dtlModal('${tmplat.id!}');"></i>
                             </a>
                         </td>
-                        <td class="text-center col-form-label">${tmplat.regstrNm!"-"}
-                            <#if tmplat.isRegstr!false>
+                        <td class="text-center col-form-label">${tmplat.createdByNm!"-"}
+                            <#if tmplat.isCreatedBy!false>
                                 <span class="badge badge-secondary opacity-75 mx-1 fs-9">나</span>
                             </#if>
                         </td>
                         <td class="text-center hidden-table">
-                            ${tmplat.regDt!}
+                            ${tmplat.createdAt!}
                         </td>
                         <td class="text-center hidden-table">
                             ${tmplat.hitCnt!0?string.number}
@@ -119,7 +119,7 @@
 </div>
 
 <form name="procForm" id="procForm" method="get">
-    <input type="hidden" name="postNo" id="postNo" value=""/>
+    <input type="hidden" name="id" id="id" value=""/>
 </form>
 
 <#--include::tmplat_def_module-->

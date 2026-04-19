@@ -2,10 +2,10 @@ package io.nicheblog.dreamdiary.feature.user.reqst.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.nicheblog.dreamdiary.feature.user.info.model.emplym.UserEmplymDto;
-import io.nicheblog.dreamdiary.feature.user.info.model.profl.UserProflDto;
+import io.nicheblog.dreamdiary.feature.user.account.model.emplym.UserEmplymDto;
+import io.nicheblog.dreamdiary.feature.user.account.model.profile.UserProfileDto;
 import io.nicheblog.dreamdiary.global.TestConstant;
-import io.nicheblog.dreamdiary.infrastructure.cd.Code;
+import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.experimental.UtilityClass;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -30,26 +30,25 @@ public class UserReqstDtoTestFactory {
     public static UserReqstDto create() {
         // 객체 생성
         return UserReqstDto.builder()
-                .userId(TestConstant.TEST_USER)
+                .username(TestConstant.TEST_USER)
                 .password("test_password")
                 // 권한:: 운영 로직에선 변환 전 서비스단에서 할당하여 넣어줌.
-                // .authList(List.of(UserAuthRoleDto.builder().authCd(Code.AUTH_USER).build()))
-                .authListStr(Code.AUTH_USER)
-                .nickNm("test_nick_nm")
+                .roleKeysStr(Code.AUTH_USER)
+                .nickname("test_nickname")
                 .emailId("test_email_id")
                 .emailDomain("test_email_domain")
-                .cttpc("010-0101-0101")
-                .cn("test_cn")
+                .phoneNumber("010-0101-0101")
+                .content("test_cn")
                 .build();
     }
 
     /**
      * 테스트용 사용자 신청 정보 Dto 객체 생성
      */
-    public static UserReqstDto create(UserProflDto profl) {
+    public static UserReqstDto create(UserProfileDto profile) {
         // 객체 생성
         UserReqstDto dto = create();
-        dto.setProfl(profl);
+        dto.setProfile(profile);
         return dto;
     }
 
@@ -66,10 +65,10 @@ public class UserReqstDtoTestFactory {
     /**
      * 테스트용 사용자 신청 정보 Dto 객체 생성
      */
-    public static UserReqstDto create(UserProflDto profl, UserEmplymDto emplym) {
+    public static UserReqstDto create(UserProfileDto profile, UserEmplymDto emplym) {
         // 객체 생성
         UserReqstDto dto = create();
-        dto.setProfl(profl);
+        dto.setProfile(profile);
         dto.setEmplym(emplym);
         return dto;
     }

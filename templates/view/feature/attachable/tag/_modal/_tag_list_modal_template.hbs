@@ -1,0 +1,33 @@
+<#--
+ * 게시판 > 태그 전체 목록 Template
+ -->
+
+<script type="text/x-handlebars-template" id="tag_list_modal_template">
+    <div class="card mt-0 py-4">
+        <!--begin::title-->
+        <div class="mb-0">
+            <#--begin::Head-->
+            <div class="d-flex align-items-center justify-content-between">
+                <h1 class="fs-2x fw-bolder text-gray-900 mb-0 me-1">
+                    <span class="vertical-middle">
+                        <@spring.message "view.tag.list-all"/>
+                    </span>
+                </h1>
+            </div>
+            <!--end::Head-->
+            <div class="separator separator-dashed border-gray-300 my-2"></div>
+            <#--begin::Head-->
+            <div class="d-flex align-items-center mb-4 py-4">
+                {{#each this}}
+                    <span class="ctgr-span ctgr-gray cursor-pointer"
+                          onclick="Tag.dtlModal('{{id}}');"
+                          data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "view.tag.content-list"/>">
+                        <span>&#35;</span><span class="border-bottom text-primary fw-normal">{{boardTag}}</span>
+                        <span class="fs-9 text-noti">[{{cnt}}]</span>
+                    </span>
+                {{/each}}
+            </div>
+            <!--end::Head-->
+        </div>
+    </div>
+</script>

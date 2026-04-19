@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.feature.user.reqst.service;
 
 import io.nicheblog.dreamdiary.auth.security.config.TestAuditConfig;
+import io.nicheblog.dreamdiary.feature.user.account.model.emplym.UserEmplymDto;
+import io.nicheblog.dreamdiary.feature.user.account.model.profile.UserProfileDto;
 import io.nicheblog.dreamdiary.feature.user.emplym.model.UserEmplymDtoTestFactory;
-import io.nicheblog.dreamdiary.feature.user.info.model.emplym.UserEmplymDto;
-import io.nicheblog.dreamdiary.feature.user.info.model.profl.UserProflDto;
-import io.nicheblog.dreamdiary.feature.user.profl.model.UserProflDtoTestFactory;
+import io.nicheblog.dreamdiary.feature.user.profile.model.UserProfileDtoTestFactory;
 import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDto;
 import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDtoTestFactory;
 import io.nicheblog.dreamdiary.global.TestConstant;
@@ -50,9 +50,9 @@ class UserReqstServiceTest {
     @Test
     void testRegist() throws Exception {
         // Given:: 등록할 사용자 계정 신청 정보를 준비한다.
-        final UserProflDto profl = UserProflDtoTestFactory.create();
+        final UserProfileDto profile = UserProfileDtoTestFactory.create();
         final UserEmplymDto emplym = UserEmplymDtoTestFactory.create();
-        final UserReqstDto registDto = UserReqstDtoTestFactory.create(profl, emplym);
+        final UserReqstDto registDto = UserReqstDtoTestFactory.create(profile, emplym);
 
         // When::
         when(passwordEncoder.encode(anyString())).thenReturn("encoded_password");       // 패스워드 인코딩 Mock
@@ -62,8 +62,8 @@ class UserReqstServiceTest {
         // Then::
         assertNotNull(registered, "사용자 계정 신청이 제대로 이루어지지 않았습니다.");
         // audit
-        assertNotNull(registered.getRegDt(), "등록일자 audit 처리가 되지 않았습니다.");
-        assertNotNull(registered.getRegstrId(),  "등록자 audit 처리가 되지 않았습니다.");
-        assertEquals(TestConstant.TEST_AUDITOR, registered.getRegstrId(), "등록자가 예상 값과 일치하지 않습니다.");
+        assertNotNull(registered.getCreatedAt(), "등록일자 audit 처리가 되지 않았습니다.");
+        assertNotNull(registered.getCreatedBy(),  "등록자 audit 처리가 되지 않았습니다.");
+        assertEquals(TestConstant.TEST_AUDITOR, registered.getCreatedBy(), "등록자가 예상 값과 일치하지 않습니다.");
     }
 }

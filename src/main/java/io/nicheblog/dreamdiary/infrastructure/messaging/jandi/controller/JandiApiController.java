@@ -2,7 +2,7 @@ package io.nicheblog.dreamdiary.infrastructure.messaging.jandi.controller;
 
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.model.JandiApiRespnsDto;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.model.JandiParam;
 import io.nicheblog.dreamdiary.infrastructure.messaging.jandi.service.JandiApiService;
@@ -75,12 +75,12 @@ public class JandiApiController
     // @PostMapping(Url.API_JANDI_RCV_MSG)
     // public ResponseEntity<JandiApiRespnsDto> receiveMsg(
     //         final @RequestBody @Nullable JandiApiRcvMsgDto rcvMsg,
-    //         final LogActvtyParam logParam
+    //         final LogParam logParam
     // ) {
 //
     //     JandiApiRespnsDto apiResponse = new JandiApiRespnsDto();
 //
-    //     log.info("requestUrl: {}", request.getRequestURL());
+    //     log.account("requestUrl: {}", request.getRequestURL());
 //
     //     final boolean isSuccess = false;
     //     final String rsltMsg = "";
@@ -95,7 +95,7 @@ public class JandiApiController
     //         apiResponse.setApiResult(isSuccess, rsltMsg);
     //         // 로그 관련 세팅
     //         logParam.setResult(isSuccess, rsltMsg);
-    //         publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
+    //         publisher.publishAsyncEvent(new LogEvent(this, logParam));
     //     }
     //
     //     return ResponseEntity

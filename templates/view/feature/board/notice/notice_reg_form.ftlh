@@ -16,9 +16,9 @@
     <div class="card-body">
         <!--begin:Form-->
         <form name="noticeRegForm" id="noticeRegForm" class="form" data-mode="${formMode!}" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="postNo" value="${post.postNo!}">
+            <input type="hidden" name="id" value="${post.id!}">
             <input type="hidden" name="contentType" value="NOTICE">
-            <input type="hidden" name="atchFileNo" value="${post.atchFileNo!}">
+            <input type="hidden" name="fileGroupId" value="${post.fileGroupId!}">
             <input type="hidden" name="hitCnt" value="${post.hitCnt!0?string.number}">
 
             <#--begin::Row-->
@@ -33,7 +33,7 @@
                     <select name="ctgrCd" id="ctgrCd" class="form-select form-select-solid">
                         <option value="">--글분류--</option>
                         <#list NOTICE_CTGR_CD![] as ctgr>
-                            <option value="${ctgr.dtlCd!}" <#if ctgr.dtlCd == (post.ctgrCd)!>selected="selected"</#if>>[${ctgr.dtlCdNm!}]</option>
+                            <option value="${ctgr.code!}" <#if ctgr.code == (post.ctgrCd)!>selected="selected"</#if>>[${ctgr.codeName!}]</option>
                         </#list>
                     </select>
                 </div>
@@ -86,7 +86,7 @@
                 <div class="col-lg-2 col-9 d-flex align-items-center">
                     <select name="mdfable" id="mdfable" class="form-select form-select-solid">
                         <#list MDFABLE_CD![] as mdfable>
-                            <option value="${mdfable.dtlCd!}" id="${mdfable.dtlCd!}" <#if (post.mdfable!"REGSTR") == (mdfable.dtlCd)>selected="selected"</#if>>[${mdfable.dtlCdNm!}]</option>
+                            <option value="${mdfable.code!}" id="${mdfable.code!}" <#if (post.mdfable!"REGSTR") == (mdfable.code)>selected="selected"</#if>>[${mdfable.codeName!}]</option>
                         </#list>
                     </select>
                 </div>
@@ -111,36 +111,28 @@
 
             <div class="d-flex flex-column mb-8">
                 <!--begin::Label-->
-                <label class="mb-2" for="tinymce_cn">
-                    <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'txt.cn'/></span>
+                <label class="mb-2" for="tinymce_content">
+                    <span class="text-gray-700 fs-6 fw-bolder"><@spring.message 'txt.content'/></span>
                     <span class="text-gray-500 fs-9">&nbsp;</span>
-                    <#if isMdf>
-                        <#--begin::sectn button-->
-                        <div class="col d-flex justify-content-end">
-                            <#--헤더:: 버튼: 등록 모달 호출하기-->
-                            <@component.header_btn_reg_modal "dF.Sectn.regModal(${post.postNo!}, '${post.contentType!}');" />
-                        </div>
-                    </#if>
                 </label>
                 <!--end::Label-->
                 <!--begin::Form control-->
                 <div class="mb-3">
-                    <textarea name="cn" id="tinymce_cn" class="form-control required" rows="10" placeholder="내용을 입력하세요.">${post.cn!}</textarea>
+                    <textarea name="content" id="tinymce_content" class="form-control required" rows="10" placeholder="내용을 입력하세요.">${post.content!}</textarea>
                 </div>
-                <div id="tinymce_cn_validate_span"></div>
+                <div id="tinymce_content_validate_span"></div>
                 <!--end::Form control-->
             </div>
 
             <#--begin::meta-->
             <div class="mb-0">
                 <#--페이지:: 첨부파일 추가추가 영역-->
-                <#include "/view/feature/clsf/file/_atch_file_page_reg_area.ftlh">
+                <#include "/view/feature/file/_file_page_reg_area.ftlh">
 
                 <!-- #include:: component:: 파일시스템 참조 -->
-<#--                <#include "/view/feature/flsys/_flsys_reg_area.ftlh">-->
 
                 <!-- #include:: component:: 태그 태그 -->
-                <#include "/view/feature/clsf/tag/_tag_page_reg_area.ftlh">
+                <#include "/view/feature/attachable/tag/_tag_page_reg_area.ftlh">
             </div>
 
             <div class="separator my-8"></div>
@@ -166,35 +158,16 @@
     </div>
 </div>
 
-<#if isMdf!false>
-    <div class="card post">
-        <#--begin::Card body-->
-        <div class="card-body pt-0">
-            <#--페이지:: 단락 영역-->
-            <#include "/view/feature/clsf/sectn/_sectn_page_reg_area.ftlh">
-        </div>
-    </div>
-</#if>
-
 <#--include::tinymce-->
 <script type="text/javascript" src="/metronic/assets/plugins/custom/tinymce/tinymce.bundle.js"></script>
 <script type="text/javascript" src="/js/common/helper/tinymce.js?${releaseDate!}"></script>
 <script type="text/javascript" src="/lib/prism/js/prism.js"></script>
 <#include "/view/global/_tinymce_img.ftlh">
 
-<#--include::draggable-->
-<script type="text/javascript" src="/metronic/assets/plugins/custom/draggable/draggable.bundle.js"></script>
-<script type="text/javascript" src="/js/common/helper/draggable.js?${releaseDate!}"></script>
-
-<#--include::sectn_module-->
-<#include "/view/feature/clsf/sectn/_modal/_sectn_reg_modal.ftlh">
-<#include "/view/feature/clsf/sectn/_sectn_list_template.hbs">
-<script type="text/javascript" src="/js/view/feature/clsf/sectn/sectn_module.js?${releaseDate!}"></script>
-
 <#--include::comment_module-->
-<#include "/view/feature/clsf/comment/_modal/_comment_reg_modal.ftlh">
-<#include "/view/feature/clsf/comment/_partial/_comment_list_partial.hbs">
-<script type="text/javascript" src="/js/view/feature/clsf/comment/comment_modal_module.js?${releaseDate!}"></script>
+<#include "/view/feature/attachable/comment/_modal/_comment_reg_modal.ftlh">
+<#include "/view/feature/attachable/comment/_partial/_comment_list_partial.hbs">
+<script type="text/javascript" src="/js/view/feature/attachable/comment/comment_modal_module.js?${releaseDate!}"></script>
 
 <#--include::notice_module-->
 <script type="text/javascript" src="/js/view/feature/board/notice/notice_module.js?${releaseDate!}"></script>

@@ -110,7 +110,7 @@
         </#if>
 
         <#--include:: Tag Module-->
-        <script type="text/javascript" src="/js/view/feature/clsf/tag/tag_module.js?${releaseDate!}"></script>
+        <script type="text/javascript" src="/js/view/feature/attachable/tag/tag_module.js?${releaseDate!}"></script>
 
         <!--scripts::layout-->
         <script type="text/javascript" src="/js/layout/layout.js?${releaseDate!}"></script>

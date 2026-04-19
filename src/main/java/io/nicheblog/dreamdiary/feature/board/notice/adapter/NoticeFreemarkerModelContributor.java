@@ -34,7 +34,7 @@ public class NoticeFreemarkerModelContributor
      */
     @Override
     public void contribute(final FreemarkerModelContext context) throws Exception {
-        final Integer noticeUnreadCnt = noticeService.getUnreadCnt(context.getUserId(), DateUtils.getCurrDateAddDay(-7));
+        final Integer noticeUnreadCnt = noticeService.getUnreadCnt(context.getUsername(), DateUtils.getCurrDateAddDay(-7));
         context.addObject("noticeUnreadCnt", noticeUnreadCnt);
     }
 }

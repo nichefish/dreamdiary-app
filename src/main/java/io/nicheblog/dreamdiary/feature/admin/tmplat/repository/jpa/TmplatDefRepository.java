@@ -12,8 +12,9 @@ import org.springframework.stereotype.Repository;
  *
  * @author nichefish
  */
-@Repository("tmplatDefRepository")
+@Repository
 public interface TmplatDefRepository
         extends BaseStreamRepository<TmplatDefEntity, Integer> {
     //
 }
+

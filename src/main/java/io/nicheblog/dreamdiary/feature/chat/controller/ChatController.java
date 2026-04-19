@@ -1,9 +1,9 @@
 package io.nicheblog.dreamdiary.feature.chat.controller;
 
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
-import io.nicheblog.dreamdiary.feature.chat.model.ChatMsgDto;
-import io.nicheblog.dreamdiary.feature.chat.model.ChatMsgSearchParam;
-import io.nicheblog.dreamdiary.feature.chat.service.ChatMsgService;
+import io.nicheblog.dreamdiary.feature.chat.model.ChatMessageDto;
+import io.nicheblog.dreamdiary.feature.chat.model.ChatMessageSearchParam;
+import io.nicheblog.dreamdiary.feature.chat.service.ChatMessageService;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
@@ -35,7 +35,7 @@ import java.util.Objects;
 @Log4j2
 public class ChatController {
 
-    private final ChatMsgService chatMsgService;
+    private final ChatMessageService chatMessageService;
 
     /**
      * 기존 채팅 메시지를 DB에서 가져온다.
@@ -46,10 +46,10 @@ public class ChatController {
     @GetMapping("/chat/messages")
     @ResponseBody
     public ResponseEntity<AjaxResponse> getChatMessages(
-            final ChatMsgSearchParam searchParam
+            final ChatMessageSearchParam searchParam
     ) throws Exception {
 
-        final List<ChatMsgDto> messageList = chatMsgService.getListDto(searchParam);
+        final List<ChatMessageDto> messageList = chatMessageService.getListDto(searchParam);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -79,11 +79,11 @@ public class ChatController {
         final Authentication authentication = (Authentication) Objects.requireNonNull(stompHeaderAccessor.getSessionAttributes()).get("authentication");
         AuthUtils.setAuthentication(authentication);
 
-        final ChatMsgDto chatMsg = ChatMsgDto.builder()
-                        .cn(message)
-                        .build();
+        final ChatMessageDto chatMessage = ChatMessageDto.builder()
+                .content(message)
+                .build();
 
-        final ServiceResponse result = chatMsgService.regist(chatMsg);  // 채팅 메시지 등록
+        final ServiceResponse result = chatMessageService.regist(chatMessage);  // 채팅 메시지 등록
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 

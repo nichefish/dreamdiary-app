@@ -1,0 +1,45 @@
+<#--
+ -- 코드 그룹 등록 Template
+ -- @included_in : _code_group_reg_modal.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="code_group_reg_modal_template">
+    <input type="hidden" name="id" value="{{id}}">
+    <input type="hidden" name="regYn" value="{{#if (notExists id)}}Y{{/if}}{{#if (exists id)}}N{{/if}}">
+    <div class="row mb-4">
+        <div class="col-3 col-form-label text-center">
+            <label class="cursor-help fw-bold required">분류 코드 <i class="bi bi-question-circle"></i></label>
+        </div>
+        <div class="col-9">
+            {{#if (exists groupCode)}}
+                <div class="col-form-label"><span class="text-noti fw-bold ps-1">{{groupCode}}</span><input type="hidden" name="groupCode" value="{{groupCode}}"></div>
+            {{else}}
+                <input type="text" name="groupCode" id="groupCode" class="form-control form-control-solid required" value="{{groupCode}}" maxlength="30">
+                <div class="text-noti">※영문 대문자 및 숫자만 가능, 1~30자</div>
+                <div id="groupCode_validate_span"></div>
+            {{/if}}
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-3 col-form-label text-center"><label class="cursor-help fw-bold required">분류 코드명 <i class="bi bi-question-circle"></i></label></div>
+        <div class="col-9">
+            <input type="text" name="groupName" id="groupName" class="form-control form-control-solid required" value="{{groupName}}" maxlength="50">
+            <div id="groupName_validate_span"></div>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-3 col-form-label text-center"><label class="fw-bold">분류 코드 설명</label></div>
+        <div class="col-9"><textarea name="description" id="description" class="form-control form-control-solid h-75px">{{description}}</textarea></div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-3 col-form-label text-center"><label class="cursor-help fw-bold">사용 여부 <i class="bi bi-question-circle"></i></label></div>
+        <div class="col-9">
+            <div class="form-check form-switch mt-2 form-check-custom form-check-solid">
+                <input type="checkbox" name="useYn" id="useYn" class="form-check-input cursor-pointer" value="Y" {{checkedYn useYn}} />
+                <label class="form-check-label ms-3" for="useYn" id="useYnLabel" {{checkedYnStyle useYn "color" "blue//gray"}}>
+                    {{^ifYn useYn}}미{{/ifYn}}사용
+                </label>
+            </div>
+        </div>
+    </div>
+</script>

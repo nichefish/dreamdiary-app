@@ -18,9 +18,9 @@ public class BoardPostEntityTestFactory {
     /**
      * 테스트용 게시물 정의 Entity 생성
      */
-    public static BoardPostEntity create(final String boardDef) throws Exception {
+    public static BoardPostEntity create(final String board) throws Exception {
         return BoardPostEntity.builder()
-                .contentType(boardDef)
+                .contentType(board)
                 .build();
     }
 }

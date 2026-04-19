@@ -54,7 +54,19 @@
     <select name="ctgrCd" id="ctgrCd" class="form-select form-select-sm form-select-solid">
         <option value="">글머리</option>
         <#list cd![] as ctgr>
-            <option value="${ctgr.dtlCd!}" label="[${ctgr.dtlCdNm!}]" ${fn.selected(param.ctgrCd!, ctgr.dtlCd!)} />
+            <option value="${ctgr.code!}" label="[${ctgr.codeName!}]" ${fn.selected(param.ctgrCd!, ctgr.code!)} />
+        </#list>
+    </select>
+</#macro>
+
+<!--
+ * 인풋 : categoryCode (select) — board_post 등 category_code 컬럼용
+ -->
+<#macro header_input_categoryCode param cd>
+    <select name="categoryCode" id="categoryCode" class="form-select form-select-sm form-select-solid">
+        <option value="">글머리</option>
+        <#list cd![] as ctgr>
+            <option value="${ctgr.code!}" label="[${ctgr.codeName!}]" ${fn.selected(param.categoryCode!, ctgr.code!)} />
         </#list>
     </select>
 </#macro>

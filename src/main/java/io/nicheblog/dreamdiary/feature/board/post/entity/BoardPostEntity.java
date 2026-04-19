@@ -1,19 +1,19 @@
 package io.nicheblog.dreamdiary.feature.board.post.entity;
 
-import io.nicheblog.dreamdiary.feature.board.def.entity.BoardDefEntity;
-import io.nicheblog.dreamdiary.feature.clsf._shared.entity.BaseClsfEntity;
-import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.comment.entity.embed.CommentEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.file.entity.embed.AtchFileEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.file.entity.embed.AtchFileEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.managt.entity.embed.ManagtEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.managt.entity.embed.ManagtEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.tag.entity.embed.TagEmbedModule;
-import io.nicheblog.dreamdiary.feature.clsf.viewer.entity.embed.ViewerEmbed;
-import io.nicheblog.dreamdiary.feature.clsf.viewer.entity.embed.ViewerEmbedModule;
-import io.nicheblog.dreamdiary.infrastructure.cd.Code;
-import lombok.*;
+import io.nicheblog.dreamdiary.feature.attachable._shared.entity.BaseAttachableEntity;
+import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbedModule;
+import io.nicheblog.dreamdiary.feature.attachable.viewer.entity.embed.ViewerEmbed;
+import io.nicheblog.dreamdiary.feature.attachable.viewer.entity.embed.ViewerEmbedModule;
+import io.nicheblog.dreamdiary.feature.board.group.entity.BoardEntity;
+import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbed;
+import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbedModule;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
 
@@ -36,82 +36,60 @@ import javax.persistence.Table;
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE board_post SET del_yn = 'Y' WHERE post_no = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE board_post SET deleted_at = NOW() WHERE id = ?")
 public class BoardPostEntity
-        extends BaseClsfEntity
-        implements AtchFileEmbedModule, CommentEmbedModule, TagEmbedModule, ManagtEmbedModule, ViewerEmbedModule {
+        extends BaseAttachableEntity
+        implements FileEmbedModule, CommentEmbedModule, TagEmbedModule, ViewerEmbedModule {
 
     /** 글 번호 */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "post_no")
-    @Comment("글 번호")
-    private Integer postNo;
+    @Column(name = "id")
+    @Comment("post id")
+    private Integer id;
 
     /** 컨텐츠 타입 :: Override */
-    @Column(name = "content_type")
-    @Comment("컨텐츠 타입")
+    @Column(name = "content_type", length = 30)
+    @Comment("board key via content type")
     private String contentType;
 
     /* ----- */
 
     /** 게시판 정의 정보 */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_def", referencedColumnName = "board_def", insertable = false, updatable = false)
+    @JoinColumn(name = "content_type", referencedColumnName = "board_key", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("게시판 정의 정보")
-    private BoardDefEntity boardDefInfo;
+    @Comment("board account")
+    private BoardEntity boardInfo;
 
     /** 제목 */
-    @Column(name = "title")
+    @Column(name = "title", length = 200)
+    @Comment("title")
     private String title;
 
     /** 내용 */
-    @Column(name = "cn")
-    private String cn;
+    @Column(name = "content")
+    @Comment("content")
+    private String content;
 
-    /* ----- */
-
-    /** 중요 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "imprtc_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("중요 여부")
-    private String imprtcYn = "N";
-
-    /** 상단고정 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "fxd_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("상단고정 여부")
-    private String fxdYn = "N";
-
-    /** 조회수 */
-    @Builder.Default
-    @Column(name = "hit_cnt")
-    private Integer hitCnt = 0;
-
-    /** 수정권한 */
-    @Builder.Default
-    @Column(name = "mdfable")
-    @Comment("수정권한")
-    private String mdfable = Code.MDFABLE_REGSTR;
+    /** 글 분류 코드 */
+    @Column(name = "category_code", length = 50)
+    @Comment("category code")
+    private String categoryCode;
 
     /* ----- */
 
     /** 위임 :: 첨부파일 모듈 */
     @Embedded
-    public AtchFileEmbed file;
+    public FileEmbed file;
     /** 위임 :: 댓글 정보 모듈 */
     @Embedded
     public CommentEmbed comment;
     /** 위임 :: 태그 정보 모듈 */
     @Embedded
     public TagEmbed tag;
-    /** 위임 :: 조치 정보 모듈 */
-    @Embedded
-    public ManagtEmbed managt;
     /** 위임 :: 열람 정보 모듈 */
     @Embedded
     public ViewerEmbed viewer;
 }
-

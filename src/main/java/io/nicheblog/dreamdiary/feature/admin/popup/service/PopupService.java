@@ -5,8 +5,8 @@ import io.nicheblog.dreamdiary.feature.admin.popup.mapstruct.PopupMapstruct;
 import io.nicheblog.dreamdiary.feature.admin.popup.model.PopupDto;
 import io.nicheblog.dreamdiary.feature.admin.popup.repository.jpa.PopupRepository;
 import io.nicheblog.dreamdiary.feature.admin.popup.spec.PopupSpec;
-import io.nicheblog.dreamdiary.feature.clsf._shared.service.BaseClsfService;
-import io.nicheblog.dreamdiary.feature.clsf.file.service.BaseMultipartWritableService;
+import io.nicheblog.dreamdiary.feature.attachable._shared.service.BaseAttachableService;
+import io.nicheblog.dreamdiary.feature.file.service.BaseMultipartWritableService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,10 +19,10 @@ import org.springframework.stereotype.Service;
  *
  * @author nichefish
  */
-@Service("popupService")
+@Service
 @RequiredArgsConstructor
 public class PopupService
-        implements BaseClsfService<PopupDto, PopupDto, Integer, PopupEntity>, BaseMultipartWritableService<PopupDto, PopupDto, Integer, PopupEntity> {
+        implements BaseAttachableService<PopupDto, PopupDto, Integer, PopupEntity>, BaseMultipartWritableService<PopupDto, PopupDto, Integer, PopupEntity> {
 
     @Getter
     private final PopupRepository repository;
@@ -48,3 +48,4 @@ public class PopupService
     //     return this.pageEntityToDto(entityPage);
     // }
 }
+

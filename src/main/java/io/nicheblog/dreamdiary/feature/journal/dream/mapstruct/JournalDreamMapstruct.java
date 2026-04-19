@@ -1,0 +1,92 @@
+package io.nicheblog.dreamdiary.feature.journal.dream.mapstruct;
+
+import io.nicheblog.dreamdiary.feature.attachable._shared.mapstruct.BaseAttachableMapstruct;
+import io.nicheblog.dreamdiary.feature.attachable.state.StateKey;
+import io.nicheblog.dreamdiary.feature.attachable.state.model.cmpstn.StateCmpstn;
+import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDatePrecision;
+import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntity;
+import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamDto;
+import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamPostDto;
+import io.nicheblog.dreamdiary.feature.journal.interpretation.mapstruct.JournalInterpretationMapstruct;
+import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
+import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
+import io.nicheblog.dreamdiary.global.util.date.DatePtn;
+import io.nicheblog.dreamdiary.global.util.date.DateUtils;
+import io.nicheblog.dreamdiary.infrastructure.code.utils.CodeUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.mapstruct.*;
+
+/**
+ * JournalDreamMapstruct
+ * <pre>
+ *  저널 꿈 MapStruct 기반 Mapper 인터페이스.
+ * </pre>
+ *
+ * @author nichefish
+ */
+@Mapper(
+    componentModel = "spring",
+    unmappedTargetPolicy = ReportingPolicy.IGNORE,
+    imports = { DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CodeUtils.class, JournalDatePrecision.class },
+    uses = { JournalInterpretationMapstruct.class },
+    builder = @Builder(disableBuilder = true)
+)
+public abstract class JournalDreamMapstruct
+        implements BaseWriteMapstruct<JournalDreamPostDto, JournalDreamEntity>, BaseAttachableMapstruct<JournalDreamDto, JournalDreamEntity> {
+
+    /**
+     * Dto -> Entity 변환
+     *
+     * @param dto 변환할 Dto 객체
+     * @return Entity -- 변환된 Entity 객체
+     */
+    @Override
+    @Mapping(target = "content", expression = "java(MarkdownUtils.normalize(dto.getContent()))")
+    public abstract JournalDreamEntity toEntity(final JournalDreamPostDto dto) throws Exception;
+
+    /**
+     * update Entity from Dto (Dto에서 null이 아닌 값만 Entity로 매핑)
+     *
+     * @param dto 업데이트할 Dto 객체
+     * @param entity 업데이트할 대상 Entity 객체
+     */
+    @Override
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "content", expression = "java(MarkdownUtils.normalize(dto.getContent()))")
+    public abstract void updateFromDto(final JournalDreamPostDto dto, final @MappingTarget JournalDreamEntity entity) throws Exception;
+
+    /**
+     * Entity -> Dto 변환
+     *
+     * @param entity 변환할 Entity 객체
+     * @return Dto -- 변환된 Dto 객체
+     */
+    @Override
+    @Mapping(target = "journalChapterId", source = "journalChapterId")
+    @Mapping(target = "journalDayId", source = "journalChapter.journalDayId")
+    @Mapping(target = "stdrdDt", expression = "java(entity.getJournalChapter() != null && entity.getJournalChapter().getJournalDay() != null ? DateUtils.asStr(entity.getJournalChapter().getJournalDay().getJournalDate(), DatePtn.DATE) : null)")
+    @Mapping(target = "journalDatePrecision", expression = "java(entity.getJournalChapter() != null && entity.getJournalChapter().getJournalDay() != null ? entity.getJournalChapter().getJournalDay().getJournalDatePrecision() : JournalDatePrecision.EXACT)")
+    @Mapping(target = "journalDateWeekDay", expression = "java(entity.getJournalChapter() != null && entity.getJournalChapter().getJournalDay() != null && entity.getJournalChapter().getJournalDay().getJournalDate() != null ? DateUtils.getDayOfWeekChinese(entity.getJournalChapter().getJournalDay().getJournalDate()) : null)")
+    @Mapping(target = "yy", source = "journalChapter.journalDay.yy")
+    @Mapping(target = "mnth", source = "journalChapter.journalDay.mnth")
+    @Mapping(target = "markdownContent", expression = "java(StringUtils.isEmpty(entity.getContent()) ? \"-\" : MarkdownUtils.markdown(entity.getContent()))")
+    public abstract JournalDreamDto toDto(final JournalDreamEntity entity) throws Exception;
+
+    /**
+     * 컬럼 {@code nhtmr_yn} / {@code halluc_yn} 이 아직 Y이고 {@code state} 행이 없는 기존 데이터를
+     * DTO {@code state.list} 에 반영해 배지·hasState 가 일치하도록 한다. (컬럼 드롭 전 이행기)
+     */
+    @AfterMapping
+    protected void mergeLegacyDreamFlagsIntoState(final JournalDreamEntity entity, @MappingTarget final JournalDreamDto dto) {
+        if (dto.getState() == null) {
+            dto.setState(StateCmpstn.builder().build());
+        }
+        if ("Y".equals(entity.getNhtmrYn())) {
+            dto.getState().put(StateKey.NHTMR);
+        }
+        if ("Y".equals(entity.getHallucYn())) {
+            dto.getState().put(StateKey.HALLUC);
+        }
+    }
+}
+

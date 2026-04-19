@@ -31,6 +31,6 @@ public class EhCacheEvictWorker {
     @Transactional
     public void handle(final EhCacheEvictEvent event) throws Exception {
         // 컨텐츠 타입별 캐시 evict
-        ehCacheEvictService.evictClsfCache(event.getContentType(), event.getPostNo());
+        ehCacheEvictService.evictAttachableCache(event.getContentType(), event.getId());
     }
 }

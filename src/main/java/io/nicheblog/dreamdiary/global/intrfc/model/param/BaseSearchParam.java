@@ -50,11 +50,11 @@ public class BaseSearchParam
 
     /** 등록자 ID */
     @Size(max = 20)
-    protected String regstrId;
+    protected String createdBy;
 
     /** 등록자 이름 */
     @Size(max = 50)
-    protected String regstrNm;
+    protected String createdByNm;
 
     /** 조치자 ID */
     @Size(max = 20)
@@ -65,7 +65,7 @@ public class BaseSearchParam
     protected String managtrNm;
 
     /** 로그인 유저 ID */
-    protected String lgnUserId;
+    protected String loginUsername;
 
     /* ----- */
 

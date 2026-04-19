@@ -41,15 +41,15 @@ public interface BaseAuditSpec<Entity extends BaseCrudEntity>
 
         for (final String key : searchParamMap.keySet()) {
             switch(key) {
-                case "regstrId":
+                case "createdBy":
                     predicate.add(builder.equal(root.get(key), searchParamMap.get(key)));
                     keysToRemove.add(key);      // 처리된 키 저장
                     continue;
-                case "nickNm":
+                case "nickname":
                     // 작성자 이름 = 조인 후 LIKE 검색
-                    Join<Entity, AuditorInfo> regstrJoin = root.join("regstrInfo", JoinType.LEFT);
-                    Expression<String> nickNmExp = regstrJoin.get("nickNm");
-                    predicate.add(builder.like(nickNmExp, "%" + searchParamMap.get(key) + "%"));
+                    Join<Entity, AuditorInfo> createdByJoin = root.join("createdByInfo", JoinType.LEFT);
+                    Expression<String> nicknameExp = createdByJoin.get("nickname");
+                    predicate.add(builder.like(nicknameExp, "%" + searchParamMap.get(key) + "%"));
                     keysToRemove.add(key);      // 처리된 키 저장
             }
         }

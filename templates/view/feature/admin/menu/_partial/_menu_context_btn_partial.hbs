@@ -22,7 +22,7 @@
                 <!--begin::Menu item-->
                 <div class="menu-item px-3 my-1 cursor-pointer"
                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.menu"/> <@spring.message 'bs.tooltip.modal.reg'/>">
-                    <div class="menu-link flex-stack px-3" onclick="dF.Menu.regModal('${Code.MENU_TY_SUB!}', '{{menuNo}}', '{{menuNm}}');">
+                    <div class="menu-link flex-stack px-3" onclick="dF.Menu.regModal('${Code.MENU_TY_SUB!}', '{{id}}', '{{menuNm}}');">
                         <@spring.message "txt.menu"/> <@spring.message 'txt.comm.reg'/>
                         <i class="bi bi-pencil-square fs-8"></i>
                     </div>
@@ -32,7 +32,7 @@
             <!--begin::Menu item-->
             <div class="menu-item px-3 my-1 cursor-pointer"
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.menu"/> <@spring.message 'bs.tooltip.modal.mdf'/>">
-                <div class="menu-link flex-stack px-3" onclick="dF.Menu.mdfModal('{{menuNo}}');">
+                <div class="menu-link flex-stack px-3" onclick="dF.Menu.mdfModal('{{id}}');">
                     <@spring.message 'txt.comm.edit'/>
                     <i class="bi bi-pencil-square fs-8"></i>
                 </div>
@@ -55,7 +55,7 @@
                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.resolved'/>">
                                     <!--begin::Input-->
                                     <input class="form-check-input w-30px h-20px cursor-pointer" type="checkbox" value="1" {{#ifYn useYn}}checked="checked"{{/ifYn}}
-                                           onclick="dF.Menu.toggleUseAjax({{menuNo}});">
+                                           onclick="dF.Menu.toggleUseAjax({{id}});">
                                     <!--end::Input-->
                                     <!--end::Label-->
                                     <span class="form-check-label text-muted fs-7"><@spring.message 'txt.status.use'/></span>
@@ -77,7 +77,7 @@
                 <!--begin::Menu item-->
                 <div class="menu-item px-3 my-1 cursor-pointer"
                      data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.menu"/> <@spring.message 'bs.tooltip.del'/>">
-                    <div class="menu-link flex-stack px-3 text-danger" onclick="dF.Menu.delAjax({{menuNo}});">
+                    <div class="menu-link flex-stack px-3 text-danger" onclick="dF.Menu.delAjax({{id}});">
                         <@spring.message 'txt.comm.del'/>
                         <i class="bi bi-trash text-danger p-0 fs-8"></i>
                     </div>

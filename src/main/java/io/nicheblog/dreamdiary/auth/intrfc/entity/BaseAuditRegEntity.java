@@ -42,40 +42,40 @@ public class BaseAuditRegEntity
 
     /** 등록자 ID */
     @CreatedBy
-    @Column(name = "regstr_id", length = 20, updatable = false)
-    protected String regstrId;
+    @Column(name = "created_by", length = 20, updatable = false)
+    protected String createdBy;
 
     /** 등록일시 */
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = DateUtils.PTN_DATETIME)
-    @Column(name = "reg_dt", updatable = false)
-    protected Date regDt;
+    @Column(name = "created_at", updatable = false)
+    protected Date createdAt;
 
     /** 등록자 정보 :: join 제거하고 캐시 처리 */
     @Transient
-    protected AuditorInfo regstrInfo;
+    protected AuditorInfo createdByInfo;
 
     /* ----- */
 
     /**
      * (현재 로그인 중인 사용자) 수정자 여부 체크
      */
-    public Boolean isRegstr() {
-        if (StringUtils.isEmpty(this.regstrId)) return false;
-        return this.regstrId.equals(AuthUtils.getLgnUserId());
+    public Boolean isCreatedBy() {
+        if (StringUtils.isEmpty(this.createdBy)) return false;
+        return this.createdBy.equals(AuthUtils.getLoginUsername());
     }
 
     /**
      * 등록자 정보 반환 :: 캐시 처리
      * @return AuditorInfo
      */
-    public AuditorInfo getRegstrInfo() {
-        if (StringUtils.isEmpty(this.regstrId)) return null;
-        if (this.regstrInfo == null) {
-            this.regstrInfo = AuditorUtils.getAuditorInfo(this.regstrId);
+    public AuditorInfo getCreatedByInfo() {
+        if (StringUtils.isEmpty(this.createdBy)) return null;
+        if (this.createdByInfo == null) {
+            this.createdByInfo = AuditorUtils.getAuditorInfo(this.createdBy);
         }
-        return this.regstrInfo;
+        return this.createdByInfo;
     }
 }
 

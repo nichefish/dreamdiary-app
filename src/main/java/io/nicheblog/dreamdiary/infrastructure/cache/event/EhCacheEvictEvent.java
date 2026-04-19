@@ -22,7 +22,7 @@ public class EhCacheEvictEvent
     /** 보안 컨텍스트 */
     private final SecurityContext securityContext;
     /** 컨텐츠 타입 */
-    private final Integer postNo;
+    private final Integer id;
     /** 컨텐츠 타입 */
     private final String contentType;
 
@@ -32,13 +32,17 @@ public class EhCacheEvictEvent
      * 생성자.
      *
      * @param source 이벤트의 출처를 나타내는 객체
-     * @param postNo 캐시를 제거할 게시글 번호
+     * @param id 캐시를 제거할 게시글 번호
      * @param contentType 캐시를 제거할 컨텐츠 타입
      */
-    public EhCacheEvictEvent(final Object source, final Integer postNo, final String contentType) {
+    public EhCacheEvictEvent(final Object source, final Integer id, final String contentType) {
         super(source);
         this.securityContext = SecurityContextHolder.getContext();
-        this.postNo = postNo;
+        this.id = id;
         this.contentType = contentType;
+    }
+
+    public Integer getId() {
+        return this.id;
     }
 }

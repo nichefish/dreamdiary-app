@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.infrastructure.log.stats.entity;
 
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.entity.LogActvtyEntity;
+import io.nicheblog.dreamdiary.infrastructure.log.entity.LogEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -30,21 +30,21 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Where(clause = "del_yn='N'")
+@Where(clause = "deleted_at IS NULL")
 public class LogStatsUserEntity
         extends BaseCrudEntity {
 
-    /** 사용자 번호 (PK) */
+    /** 사용자 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_no")
+    @Column(name = "id")
     @Comment("사용자 번호 (key)")
-    private Integer userNo;
+    private Integer id;
 
     /** 사용자 아이디 */
-    @Column(name = "user_id", length = 20, unique = true)
+    @Column(name = "username", length = 20, unique = true)
     @Comment("사용자 아이디")
-    private String userId;
+    private String username;
 
     /* ----- */
 
@@ -55,23 +55,23 @@ public class LogStatsUserEntity
 
     /** 활동(접속) 목록 */
     @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "log_user_id", referencedColumnName = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "username", referencedColumnName = "username", insertable = false, updatable = false)
     @Fetch(value = FetchMode.SELECT)
     @BatchSize(size = 10)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("활동(접속) 목록")
-    private List<LogActvtyEntity> actvtyList;
+    private List<LogEntity> actvtyList;
 
     /* ----- */
 
     /**
      * 생성자.
      *
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      * @param actvtyCnt 활동 횟수
      */
-    public LogStatsUserEntity(final String userId, final Long actvtyCnt) {
-        this.userId = userId;
+    public LogStatsUserEntity(final String username, final Long actvtyCnt) {
+        this.username = username;
         this.actvtyCnt = actvtyCnt;
     }
 }

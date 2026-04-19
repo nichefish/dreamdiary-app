@@ -30,7 +30,7 @@ dF.Notice = (function(): dfModule {
             /* jquery validation */
             cF.validate.validateForm("#noticeRegForm", dF.Notice.submitHandler);
             /* tinymce init */
-            cF.tinymce.init("#tinymce_cn");
+            cF.tinymce.init("#tinymce_content");
             /* tagify */
             dF.Notice.tagify = cF.tagify.initWithCtgr("#noticeRegForm #tagListStr");
             // 잔디발송여부 클릭시 글씨 변경
@@ -80,7 +80,7 @@ dF.Notice = (function(): dfModule {
          */
         myPaprList: function(): void {
             const url: string = Url.NOTICE_LIST;
-            const param: string = `?searchType=nickNm&searchKeyword=${AuthInfo.nickNm!}&regstrId=${AuthInfo.userId!}&pageSize=50&actionTyCd=MY_PAPR`;
+            const param: string = `?searchType=nickname&searchKeyword=${AuthInfo.nickname!}&createdBy=${AuthInfo.username!}&pageSize=50&actionTyCd=MY_PAPR`;
             cF.ui.blockUIReplace(url + param);
         },
 
@@ -140,25 +140,25 @@ dF.Notice = (function(): dfModule {
 
         /**
          * 상세 화면으로 이동
-         * @param {string|number} postNo - 조회할 글 번호.
+         * @param {string|number} id - 조회할 글 번호.
          */
-        dtl: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        dtl: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
-            $("#procForm #postNo").val(postNo);
+            $("#procForm #id").val(id);
             cF.form.blockUISubmit("#procForm", Url.NOTICE_DTL);
         },
 
         /**
          * 상세 모달 호출
-         * @param {string|number} postNo - 조회할 글 번호.
+         * @param {string|number} id - 조회할 글 번호.
          */
-        dtlModal: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        dtlModal: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
             event.stopPropagation();
 
-            const url: string = cF.util.bindUrl(Url.NOTICE, { postNo });
+            const url: string = cF.util.bindUrl(Url.NOTICE, { id });
             cF.ajax.get(url, null, function(res: AjaxResponse): void {
                 if (!res.rslt) {
                     if (cF.util.isNotEmpty(res.message)) Swal.fire({text: res.message});
@@ -177,10 +177,10 @@ dF.Notice = (function(): dfModule {
 
         /**
          * 삭제 (Ajax)
-         * @param {string|number} postNo - 글 번호.
+         * @param {string|number} id - 글 번호.
          */
-        delAjax: function(postNo: string|number): void {
-            if (isNaN(Number(postNo))) return;
+        delAjax: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
 
             Swal.fire({
                 text: Message.get("view.cnfm.del"),
@@ -188,7 +188,7 @@ dF.Notice = (function(): dfModule {
             }).then(function(result: SwalResult): void {
                 if (!result.value) return;
 
-                const url: string = cF.util.bindUrl(Url.NOTICE, { postNo });
+                const url: string = cF.util.bindUrl(Url.NOTICE, { id });
                 cF.$ajax.post(url, null, function(res: AjaxResponse): void {
                     Swal.fire({text: res.message})
                         .then(function(): void {

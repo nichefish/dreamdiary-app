@@ -1,0 +1,62 @@
+package io.nicheblog.dreamdiary.feature.journal.annual.scheduler;
+
+import io.nicheblog.dreamdiary.feature.journal.annual.service.JournalAnnualService;
+import io.nicheblog.dreamdiary.global.Constant;
+import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.nicheblog.dreamdiary.infrastructure.log.event.LogEvent;
+import io.nicheblog.dreamdiary.infrastructure.log.model.LogParam;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+/**
+ * JournalAnnualScheduler
+ * <pre>
+ *  저널 집계 Scheduler
+ * </pre>
+ *
+ * @author nichefish
+ */
+@Component
+@RequiredArgsConstructor
+@Log4j2
+public class JournalAnnualScheduler {
+
+    private final JournalAnnualService journalAnnualService;
+    private final ApplicationEventPublisherWrapper publisher;
+
+    /**
+     * 하루에 한 번 전체 집계 갱신
+     * 매일 00시 15분 실행
+     *
+     * @see io.nicheblog.dreamdiary.infrastructure.log.handler.LogEventListener
+     */
+    @Scheduled(cron = "0 15 0 * * *", zone = Constant.LOC_SEOUL)         // second min hour day month weekday
+    public void journalAnnualSchedule() {
+
+        log.info("journalAnnualSchedule...");
+
+        final LogParam logParam = LogParam.forSystem();
+
+        String rsltMsg = "";
+        try {
+            // TODO: 사용자 전체 결산 생성
+            // 결산 생성
+            journalAnnualService.makeTotalYyAnnualByUser(Constant.SYSTEM_ACNT);
+            // 캐시 재생성 위해 조회
+            journalAnnualService.getTotalAnnualByUser(Constant.SYSTEM_ACNT);
+        } catch (final Exception e) {
+            rsltMsg = MessageUtils.getExceptionMsg(e);
+            logParam.setExceptionInfo(e);
+        } finally {
+            // 로그 관련 처리
+            logParam.setResult(false, rsltMsg, ActvtyCtgr.JOURNAL);
+            publisher.publishAsyncEvent(new LogEvent(this, logParam));
+        }
+    }
+
+}
+

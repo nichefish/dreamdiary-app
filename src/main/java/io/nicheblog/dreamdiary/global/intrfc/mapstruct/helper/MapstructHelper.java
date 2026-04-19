@@ -37,7 +37,7 @@ public final class MapstructHelper {
             final @MappingTarget Dto dto
     ) throws Exception {
         mapAuthFields(entity, dto);
-        // CLSF fields are handled by BaseClsfMapstruct.
+        // ATTACHABLE fields are handled by BaseAttachableMapstruct.
     }
 
     /**

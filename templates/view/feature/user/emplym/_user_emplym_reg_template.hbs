@@ -65,7 +65,7 @@
     <div class="row mb-4">
         <div class="col-xl-2">
             <div class="fw-bold col-form-label text-sm-start text-lg-center required">
-                <label for="cttpc"
+                <label for="phoneNumber"
                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="업무용 연락처입니다.">
                     직원 전화번호
                     <i class="bi bi-question-circle"></i>
@@ -73,10 +73,10 @@
             </div>
         </div>
         <div class="col-xl-2">
-            <input type="text" name="emplym.emplymCttpc" id="emplymCttpc" class="form-control form-control-solid required"
-                   value="${(user.emplym.emplymCttpc)!}" maxlength="20" />
-            <div class="form-text text-noti"><@spring.message "txt.req.cttpc"/></div>
-            <span id="cttpc_validate_span"></span>
+            <input type="text" name="emplym.emplymPhoneNumber" id="emplymPhoneNumber" class="form-control form-control-solid required"
+                   value="${(user.emplym.emplymPhoneNumber)!}" maxlength="20" />
+            <div class="form-text text-noti"><@spring.message "txt.req.phoneNumber"/></div>
+            <span id="phoneNumber_validate_span"></span>
         </div>
     </div>
     <#--begin::Row-->
@@ -94,7 +94,7 @@
             <select name="emplym.cmpyCd" id="cmpyCd" class="form-select form-select-solid">
                 <option value="">--회사--</option>
                 <#list CMPY_CD![] as cmpy>
-                    <option value="${cmpy.dtlCd!}" <#if user.emplym?? && cmpy.dtlCd == (user.emplym.cmpyCd)!>"selected"</#if>>${cmpy.dtlCdNm!}</option>
+                    <option value="${cmpy.code!}" <#if user.emplym?? && cmpy.code == (user.emplym.cmpyCd)!>"selected"</#if>>${cmpy.codeName!}</option>
                 </#list>
             </select>
             <div id="cmpyCd_validate_span"></div>
@@ -103,7 +103,7 @@
             <select name="emplym.teamCd" id="teamCd" class="form-select form-select-solid">
                 <option value="">--팀--</option>
                 <#list TEAM_CD![] as team>
-                    <option value="${team.dtlCd!}" <#if user.emplym?? && team.dtlCd == (user.emplym.teamCd)!>"selected"</#if>>${team.dtlCdNm!}</option>
+                    <option value="${team.code!}" <#if user.emplym?? && team.code == (user.emplym.teamCd)!>"selected"</#if>>${team.codeName!}</option>
                 </#list>
             </select>
             <div id="teamCd_validate_span"></div>
@@ -112,7 +112,7 @@
             <select name="emplym.emplymCd" id="emplymCd" class="form-select form-select-solid">
                 <option value="">--재직구분--</option>
                 <#list EMPLYM_CD![] as emplym>
-                    <option value="${emplym.dtlCd!}" <#if emplym.dtlCd == (user.emplym.emplymCd)!>"selected"</#if>>${emplym.dtlCdNm!}</option>
+                    <option value="${emplym.code!}" <#if emplym.code == (user.emplym.emplymCd)!>"selected"</#if>>${emplym.codeName!}</option>
                 </#list>
             </select>
             <div id="emplymCd_validate_span"></div>
@@ -127,7 +127,7 @@
             <select name="emplym.rankCd" id="rankCd" class="form-select form-select-solid">
                 <option value="">--선택--</option>
                 <#list RANK_CD![] as rank>
-                    <option value="${rank.dtlCd!}" <#if rank.dtlCd == (user.emplym.rankCd)!>"selected"</#if>>${rank.dtlCdNm!}</option>
+                    <option value="${rank.code!}" <#if rank.code == (user.emplym.rankCd)!>"selected"</#if>>${rank.codeName!}</option>
                 </#list>
             </select>
             <div id="rankCd_validate_span"></div>

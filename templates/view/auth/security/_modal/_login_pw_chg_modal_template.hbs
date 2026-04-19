@@ -1,0 +1,53 @@
+<#--
+ * 로그인 화면 > 비밀번호 변경 Modal 템플릿
+ * @included_in : _login_pw_chg_modal.ftlh
+ -->
+
+<script type="text/x-handlebars-template" id="login_pw_chg_modal_template">
+    <input type="hidden" name="username" id="loginUsername" value="{{username}}">
+    <#--begin::Row-->
+    <div class="row">
+        <div class="col-xl-12 text-danger">
+            {{errorMsg}}
+        </div>
+    </div>
+    <#--begin::Row-->
+    <div class="row mb-5">
+        <div class="col-xl-3">
+            <div class="col-form-label text-center fs-6 fw-bold">
+                <label for="currPw">현재 비밀번호</label>
+            </div>
+        </div>
+        <div class="col-xl-9 text-start">
+            <input type="password" name="currPw" id="currPw" class="form-control required" maxlength="20">
+            <div id="currPw_validate_span"></div>
+        </div>
+    </div>
+    <#--begin::Row-->
+    <div class="row">
+        <div class="col-xl-3">
+            <div class="col-form-label text-center fs-6 fw-bold">
+                <label for="newPw">새 비밀번호</label>
+            </div>
+        </div>
+        <div class="col-xl-9 text-start">
+            <input type="password" name="newPw" id="newPw" class="form-control required" maxlength="20">
+            <div class="fs-8 form-text text-noti">
+                <@spring.message "txt.req.password"/>
+            </div>
+            <div id="newPw_validate_span"></div>
+        </div>
+    </div>
+    <#--begin::Row-->
+    <div class="row mb-5">
+        <div class="col-xl-3">
+            <div class="col-form-label text-center fs-6 fw-bold">
+                <label for="newPwCf">새 비밀번호 확인</label>
+            </div>
+        </div>
+        <div class="col-xl-9 text-start">
+            <input type="password" name="newPwCf" id="newPwCf" class="form-control required" maxlength="20">
+            <div id="newPwCf_validate_span"></div>
+        </div>
+    </div>
+</script>

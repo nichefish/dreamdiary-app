@@ -68,10 +68,10 @@
             <#--begin::Row-->
             <div class="row mb-8">
                 <div class="col-xl-2">
-                    <div class="fs-6 fw-bold col-form-label"><label for="hldyYy">한국천문연구원 특일정보 API</label></div>
+                    <div class="fs-6 fw-bold col-form-label"><label for="holydayYy">한국천문연구원 특일정보 API</label></div>
                 </div>
                 <div class="col-xl-2">
-                    <select name="hldyYy" id="hldyYy" class="form-select form-select-solid">
+                    <select name="holydayYy" id="holydayYy" class="form-select form-select-solid">
                         <#assign currYy = DateUtils.getCurrYyStr()!>
                         <#assign prevYy = ((currYy?number)-1)?c>
                         <#assign nextYy = ((currYy?number)+1)?c>
@@ -82,7 +82,7 @@
                 </div>
                 <div class="col-xl-2 mt-1">
                     <button type="button" class="btn btn-sm btn-primary"
-                            onclick="Page.hldyAjax();">
+                            onclick="Page.holydayAjax();">
                         휴일정보 조회+저장
                     </button>
                 </div>
@@ -134,38 +134,38 @@
                 </thead>
                 <#--begin::Table body-->
                 <tbody>
-                    <#list authRoleList![] as authRole>
+                    <#list roleList![] as authRole>
                         <tr>
                             <td class="text-center hidden-table">
-                                <div class="text-muted fw-bold">${authRole.authCd!}</div>
+                                <div class="text-muted fw-bold">${authRole.roleKey!}</div>
                             </td>
                             <td class="text-center">
                                 <div class="d-flex-center">
-                                    <#if (authRole.authCd! == Code.AUTH_MNGR)>
+                                    <#if (authRole.roleKey! == Code.AUTH_MNGR)>
                                         <!-- 관리자 -->
                                         <i class="bi bi-person-lines-fill text-info fs-2 me-2 opacity-75"
-                                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="${authRole.authNm!"-"}"></i>
-                                        <div class="text-info fw-bold">${authRole.authNm!}</div>
+                                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="${authRole.roleName!"-"}"></i>
+                                        <div class="text-info fw-bold">${authRole.roleName!}</div>
                                         <div class="badge badge-info ms-3">${authRole.authLevel!}</div>
-                                    <#elseif (authRole.authCd! == Code.AUTH_USER)>
+                                    <#elseif (authRole.roleKey! == Code.AUTH_USER)>
                                         <!-- 사용자 -->
                                         <i class="bi bi-people-fill me-2 fs-2"
-                                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="${authRole.authNm!"-"}"></i>
-                                        <div class="text-muted fw-bold">${authRole.authNm!}</div>
+                                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="${authRole.roleName!"-"}"></i>
+                                        <div class="text-muted fw-bold">${authRole.roleName!}</div>
                                         <div class="badge badge-dark ms-3 opacity-50">${authRole.authLevel!}</div>
-                                    <#elseif (authRole.authCd! == Code.AUTH_DEV)>
+                                    <#elseif (authRole.roleKey! == Code.AUTH_DEV)>
                                         <!-- 사용자 -->
                                         <i class="bi bi-person-fill-gear text-info fs-2 me-2 opacity-75"
-                                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="${authRole.authNm!"-"}"></i>
+                                           data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="${authRole.roleName!"-"}"></i>
                                         <div class="text-info fw-bold">
-                                            <#if authRole.topAuthCd??>(${authRole.topAuthCd!} </#if>${authRole.authNm!}
+                                            <#if authRole.parentRoleId??>(${authRole.parentRoleId!} </#if>${authRole.roleName!}
                                         </div>
                                         <div class="badge badge-info ms-3">${authRole.authLevel!}</div>
                                     </#if>
                                 </div>
                             </td>
                             <td class="text-center hidden-table">
-                                ${authRole.idx!}
+                                ${authRole.sortOrder!}
                             </td>
                             <td class="text-center hidden-table">
                                 ${authRole.useYn!}

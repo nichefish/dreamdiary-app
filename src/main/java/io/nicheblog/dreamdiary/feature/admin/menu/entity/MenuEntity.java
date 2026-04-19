@@ -3,7 +3,7 @@ package io.nicheblog.dreamdiary.feature.admin.menu.entity;
 import io.nicheblog.dreamdiary.auth.intrfc.entity.BaseAuditEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.Sortable;
 import io.nicheblog.dreamdiary.global.intrfc.entity.Usable;
-import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
+import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
@@ -29,23 +29,23 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE menu SET del_yn = 'Y' WHERE menu_no = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE menu SET deleted_at = NOW() WHERE id = ?")
 public class MenuEntity
         extends BaseAuditEntity
         implements Usable, Sortable {
 
-    /** 메뉴 번호 (PK) */
+    /** 메뉴 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "menu_no")
-    @Comment("메뉴 번호 (PK)")
-    private Integer menuNo;
+    @Column(name = "id")
+    @Comment("메뉴 ID")
+    private Integer id;
 
     /** 상위메뉴 ID */
-    @Column(name = "upper_menu_no")
+    @Column(name = "upper_menu_id")
     @Comment("상위 메뉴 번호")
-    private Integer upperMenuNo;
+    private Integer upperMenuId;
 
     /** 메뉴 구분 코드 */
     @Column(name = "menu_ty_cd")
@@ -103,21 +103,21 @@ public class MenuEntity
     /** 메뉴 구분 코드 정보 (복합키 조인) */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula = @JoinFormula(value = "\'MENU_SUB_EXTEND_TY_CD\'", referencedColumnName = "cl_cd")),
-            @JoinColumnOrFormula(column = @JoinColumn(name = "menu_sub_extend_ty_cd", referencedColumnName = "dtl_cd", insertable = false, updatable = false))
+            @JoinColumnOrFormula(formula = @JoinFormula(value = "\'MENU_SUB_EXTEND_TY_CD\'", referencedColumnName = "group_code")),
+            @JoinColumnOrFormula(column = @JoinColumn(name = "menu_sub_extend_ty_cd", referencedColumnName = "code", insertable = false, updatable = false))
     })
     @Fetch(value = FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("메뉴 구분 코드 정보")
-    private DtlCdEntity menuSubExtendTyCdInfo;
+    private CodeItemEntity menuSubExtendTyCdInfo;
 
     /** 하위메뉴 확장유형 이름 */
     @Transient
     private String menuSubExtendTyNm;
 
     /** 정렬 순서 */
-    @Column(name = "idx", columnDefinition = "INT DEFAULT 0")
-    private Integer idx;
+    @Column(name = "sort_order", columnDefinition = "INT DEFAULT 0")
+    private Integer sortOrder;
 
     /** 사용 여부 (Y/N) */
     @Builder.Default
@@ -126,7 +126,7 @@ public class MenuEntity
 
     /** 셀프 참조 :: 상위메뉴 조회 */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "upper_menu_no", referencedColumnName = "menu_no", insertable = false, updatable = false)
+    @JoinColumn(name = "upper_menu_id", referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(value = FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("상위메뉴 조회")
@@ -134,10 +134,10 @@ public class MenuEntity
 
     /** 셀프 참조 :: 하위메뉴 목록 조회 */
     @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "upper_menu_no", referencedColumnName = "menu_no", insertable = false, updatable = false)
+    @JoinColumn(name = "upper_menu_id", referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 10)
-    @OrderBy("idx ASC")
+    @OrderBy("sortOrder ASC")
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("하위메뉴 목록 조회")
     private List<MenuEntity> subMenuList;

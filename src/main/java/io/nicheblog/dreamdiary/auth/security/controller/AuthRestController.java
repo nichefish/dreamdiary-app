@@ -5,11 +5,11 @@ import io.nicheblog.dreamdiary.auth.jwt.provider.JwtTokenProvider;
 import io.nicheblog.dreamdiary.auth.jwt.service.RefreshTokenService;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
-import io.nicheblog.dreamdiary.feature.user.info.model.UserPwChgParam;
+import io.nicheblog.dreamdiary.feature.user.account.model.UserPwChgParam;
 import io.nicheblog.dreamdiary.feature.user.my.service.UserMyService;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import io.nicheblog.dreamdiary.infrastructure.web.util.CookieUtils;
 import lombok.Getter;
@@ -110,12 +110,12 @@ public class AuthRestController {
             }
 
             final RefreshTokenService.RefreshResult refreshResult = refreshTokenService.rotate(refreshToken);
-            final AuthInfo authInfo = authService.loadUserByUsername(refreshResult.getUserId());
+            final AuthInfo authInfo = authService.loadUserByUsername(refreshResult.getUsername());
             final List<String> roles = authInfo.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList());
 
-            final String accessToken = jwtTokenProvider.createAccessToken(authInfo.getUserId(), roles);
+            final String accessToken = jwtTokenProvider.createAccessToken(authInfo.getUsername(), roles);
 
             CookieUtils.setJwtCookie(accessToken, (int) jwtTokenProvider.getAccessTokenValiditySeconds());
             CookieUtils.setRefreshTokenCookie(refreshResult.getRefreshToken(), (int) refreshTokenService.getRefreshTokenValiditySeconds());
@@ -145,11 +145,11 @@ public class AuthRestController {
     @PostMapping(Url.API_AUTH_LGN_PW_CHG)
     @PermitAll
     @ResponseBody
-    public ResponseEntity<AjaxResponse> lgnPwChgAjax(
+    public ResponseEntity<AjaxResponse> loginPwChgAjax(
             final @Valid UserPwChgParam userPwChgParam
     ) throws Exception {
 
-        final boolean isSuccess = userMyService.lgnPwChg(userPwChgParam);
+        final boolean isSuccess = userMyService.loginPwChg(userPwChgParam);
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));

@@ -18,8 +18,8 @@ import lombok.Setter;
 public class MenuTreeMoveItemDto {
 
     /** 메뉴 번호 */
-    private Integer menuNo;
+    private Integer id;
 
     /** 정렬 순서 */
-    private Integer idx;
+    private Integer sortOrder;
 }

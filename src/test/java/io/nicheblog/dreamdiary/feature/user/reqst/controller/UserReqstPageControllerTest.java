@@ -1,12 +1,12 @@
 package io.nicheblog.dreamdiary.feature.user.reqst.controller;
 
-import io.nicheblog.dreamdiary.feature.admin.cd.service.DtlCdService;
 import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDto;
 import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDtoTestFactory;
 import io.nicheblog.dreamdiary.feature.user.reqst.service.UserReqstService;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
+import io.nicheblog.dreamdiary.infrastructure.code.service.CodeLookupService;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerTestHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,8 +49,8 @@ class UserReqstPageControllerTest {
     private MockMvc mockMvc;
     @MockBean(name = "userReqstService")
     private UserReqstService userReqstService;
-    @MockBean(name = "dtlCdService")
-    private DtlCdService dtlCdService;
+    @MockBean(name = "codeLookupService")
+    private CodeLookupService codeLookupService;
 
     @BeforeEach
     public void setup(final WebApplicationContext webApplicationContext) {
@@ -69,7 +69,7 @@ class UserReqstPageControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        verify(dtlCdService, times(5)).setCdListToModel(anyString(), any());
+        verify(codeLookupService, times(5)).setCdListToModel(anyString(), any());
 
         // then::
         final String viewName = Objects.requireNonNull(result.getModelAndView()).getViewName();
@@ -90,7 +90,7 @@ class UserReqstPageControllerTest {
         final MockMultipartFile jsonFile = new MockMultipartFile("userReqst", "", "application/json", userReqstJsonContent.getBytes());
         // 응답 객체 설정
         final UserReqstDto rsltDto = UserReqstDtoTestFactory.create();
-        rsltDto.setUserNo(0);
+        rsltDto.setId(0);
         final ServiceResponse result = ServiceResponse.builder().rsltObj(rsltDto).rslt(true).message("신규계정이 성공적으로 신청되었습니다.").build();
         when(userReqstService.regist(any(UserReqstDto.class))).thenReturn(result);
 
@@ -111,7 +111,7 @@ class UserReqstPageControllerTest {
         when(userReqstService.cf(anyInt())).thenReturn(result);
 
         mockMvc.perform(post(Url.USER_REQST_CF_AJAX)
-                .param("userNo", "123"))
+                .param("id", "123"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.rslt").value(true));
     }
@@ -122,7 +122,7 @@ class UserReqstPageControllerTest {
         when(userReqstService.uncf(anyInt())).thenReturn(result);
 
         mockMvc.perform(post(Url.USER_REQST_UNCF_AJAX)
-                        .param("userNo", "123"))
+                        .param("id", "123"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.rslt").value(true));
     }

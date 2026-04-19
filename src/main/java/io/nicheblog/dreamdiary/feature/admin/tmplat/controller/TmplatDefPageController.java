@@ -7,7 +7,7 @@ import io.nicheblog.dreamdiary.feature.admin.tmplat.model.TmplatDefSearchParam;
 import io.nicheblog.dreamdiary.feature.admin.tmplat.service.TmplatDefService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.PaginationInfo;
 import io.nicheblog.dreamdiary.infrastructure.web.util.ParamUtils;
@@ -67,7 +67,7 @@ public class TmplatDefPageController
         searchParam = (TmplatDefSearchParam) ParamUtils.checkPrevSearchParam(baseUrl, searchParam);
 
         // 목록 조회
-        final PageRequest pageRequest = ParamUtils.getPageRequest(searchParam, "regDt", model);
+        final PageRequest pageRequest = ParamUtils.getPageRequest(searchParam, "createdAt", model);
         final Page<TmplatDefDto> tmplatList = tmplatDefService.getPageDto(searchParam, pageRequest);
         model.addAttribute("tmplatList", tmplatList.getContent());
         model.addAttribute(Constant.PAGINATION_INFO, new PaginationInfo(tmplatList));

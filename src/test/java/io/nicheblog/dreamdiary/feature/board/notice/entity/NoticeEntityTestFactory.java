@@ -1,6 +1,6 @@
 package io.nicheblog.dreamdiary.feature.board.notice.entity;
 
-import io.nicheblog.dreamdiary.feature.clsf._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import lombok.experimental.UtilityClass;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -21,11 +21,11 @@ public class NoticeEntityTestFactory {
      */
     public static NoticeEntity create() throws Exception {
         return NoticeEntity.builder()
-                .postNo(0)
+                .id(0)
                 .contentType(ContentType.NOTICE.key)
                 .popupYn("Y")
                 .title("test_title")
-                .cn("test_cn")
+                .content("test_cn")
                 .ctgrCd("test_ctgr_cd")
                 .build();
     }

@@ -1,10 +1,10 @@
 package io.nicheblog.dreamdiary.feature.user.emplym.entity;
 
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
+import io.nicheblog.dreamdiary.feature.user.account.entity.UserEntity;
 import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.cd.Code;
-import io.nicheblog.dreamdiary.infrastructure.cd.entity.DtlCdEntity;
+import io.nicheblog.dreamdiary.infrastructure.code.Code;
+import io.nicheblog.dreamdiary.infrastructure.code.entity.CodeItemEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
@@ -32,30 +32,30 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = {"user"}, callSuper = true)
-@Where(clause = "del_yn='N'")
-@SQLDelete(sql = "UPDATE user_emplym SET DEL_YN = 'Y' WHERE user_emplym_no = ?")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE user_emplym SET DELETED_AT = 'Y' WHERE id = ?")
 public class UserEmplymEntity
         extends BaseCrudEntity {
 
     @PostLoad
     private void onLoad() {
         // 코드 이름 세팅
-        if (this.cmpyCdInfo != null) this.cmpyNm = this.cmpyCdInfo.getDtlCdNm();
-        if (this.teamCdInfo != null) this.teamNm = this.teamCdInfo.getDtlCdNm();
-        if (this.emplymCdInfo != null) this.emplymNm = this.emplymCdInfo.getDtlCdNm();
-        if (this.rankCdInfo != null) this.rankNm = this.rankCdInfo.getDtlCdNm();
+        if (this.cmpyCdInfo != null) this.cmpyNm = this.cmpyCdInfo.getCodeName();
+        if (this.teamCdInfo != null) this.teamNm = this.teamCdInfo.getCodeName();
+        if (this.emplymCdInfo != null) this.emplymNm = this.emplymCdInfo.getCodeName();
+        if (this.rankCdInfo != null) this.rankNm = this.rankCdInfo.getCodeName();
     }
 
-    /** 사용자 인사정보 번호 (PK) */
+    /** 사용자 인사정보 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_emplym_no")
-    @Comment("사용자 인사정보 번호 (PK)")
-    private Integer userEmplymNo;
+    @Column(name = "id")
+    @Comment("사용자 인사정보 ID")
+    private Integer id;
 
     /** 사용자 정보 (FK) */
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_no", referencedColumnName = "user_no")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     @Fetch(FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("계정 정보")
@@ -72,9 +72,9 @@ public class UserEmplymEntity
     private String emplymEmail;
 
     /** 업무 연락처 */
-    @Column(name = "emplym_cttpc", length = 20)
+    @Column(name = "emplym_phone_number", length = 20)
     @Comment("업무 연락처")
-    private String emplymCttpc;
+    private String emplymPhoneNumber;
 
     /** 소속(회사) 코드 */
     @Column(name = "cmpy_cd", length = 20)
@@ -84,12 +84,12 @@ public class UserEmplymEntity
     /** 소속(회사) 코드 정보 (복합키 조인) */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula=@JoinFormula(value="'"+ Code.CMPY_CD+"'", referencedColumnName="cl_cd")),
-            @JoinColumnOrFormula(column=@JoinColumn(name="cmpy_cd", referencedColumnName="dtl_cd", insertable=false, updatable=false))
+            @JoinColumnOrFormula(formula=@JoinFormula(value="'"+ Code.CMPY_CD+"'", referencedColumnName="group_code")),
+            @JoinColumnOrFormula(column=@JoinColumn(name="cmpy_cd", referencedColumnName="code", insertable=false, updatable=false))
     })
     @Fetch(value= FetchMode.JOIN)
     @NotFound(action=NotFoundAction.IGNORE)
-    private DtlCdEntity cmpyCdInfo;
+    private CodeItemEntity cmpyCdInfo;
 
     @Transient
     private String cmpyNm;
@@ -102,12 +102,12 @@ public class UserEmplymEntity
     /** 소속(팀) 코드 정보 (복합키 조인) */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula=@JoinFormula(value="'"+Code.TEAM_CD+"'", referencedColumnName="cl_cd")),
-            @JoinColumnOrFormula(column=@JoinColumn(name="team_cd", referencedColumnName="dtl_cd", insertable=false, updatable=false))
+            @JoinColumnOrFormula(formula=@JoinFormula(value="'"+Code.TEAM_CD+"'", referencedColumnName="group_code")),
+            @JoinColumnOrFormula(column=@JoinColumn(name="team_cd", referencedColumnName="code", insertable=false, updatable=false))
     })
     @Fetch(value= FetchMode.JOIN)
     @NotFound(action=NotFoundAction.IGNORE)
-    private DtlCdEntity teamCdInfo;
+    private CodeItemEntity teamCdInfo;
 
     @Transient
     private String teamNm;
@@ -120,12 +120,12 @@ public class UserEmplymEntity
     /** 재직구분 코드 정보 (복합키 조인) */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumnsOrFormulas({
-            @JoinColumnOrFormula(formula=@JoinFormula(value="'"+Code.RANK_CD+"'", referencedColumnName="cl_cd")),
-            @JoinColumnOrFormula(column=@JoinColumn(name="emplym_cd", referencedColumnName="dtl_cd", insertable=false, updatable=false))
+            @JoinColumnOrFormula(formula=@JoinFormula(value="'"+Code.RANK_CD+"'", referencedColumnName="group_code")),
+            @JoinColumnOrFormula(column=@JoinColumn(name="emplym_cd", referencedColumnName="code", insertable=false, updatable=false))
     })
     @Fetch(value= FetchMode.JOIN)
     @NotFound(action=NotFoundAction.IGNORE)
-    private DtlCdEntity emplymCdInfo;
+    private CodeItemEntity emplymCdInfo;
 
     @Transient
     private String emplymNm;
@@ -138,12 +138,12 @@ public class UserEmplymEntity
     /** 직급 코드 정보 (복합키 조인) */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumnsOrFormulas({
-        @JoinColumnOrFormula(formula=@JoinFormula(value="'"+ Code.RANK_CD+"'", referencedColumnName="cl_cd")),
-        @JoinColumnOrFormula(column=@JoinColumn(name="rank_cd", referencedColumnName="dtl_cd", insertable=false, updatable=false))
+        @JoinColumnOrFormula(formula=@JoinFormula(value="'"+ Code.RANK_CD+"'", referencedColumnName="group_code")),
+        @JoinColumnOrFormula(column=@JoinColumn(name="rank_cd", referencedColumnName="code", insertable=false, updatable=false))
     })
     @Fetch(value= FetchMode.JOIN)
     @NotFound(action=NotFoundAction.IGNORE)
-    private DtlCdEntity rankCdInfo;
+    private CodeItemEntity rankCdInfo;
 
     @Transient
     private String rankNm;

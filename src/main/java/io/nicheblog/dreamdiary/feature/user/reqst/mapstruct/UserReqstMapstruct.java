@@ -1,9 +1,10 @@
 package io.nicheblog.dreamdiary.feature.user.reqst.mapstruct;
 
+import io.nicheblog.dreamdiary.feature.user.account.entity.UserEntity;
+import io.nicheblog.dreamdiary.feature.user.account.entity.UserRoleEntity;
+import io.nicheblog.dreamdiary.feature.user.account.entity.UserStateEntity;
 import io.nicheblog.dreamdiary.feature.user.emplym.mapstruct.UserEmplymMapstruct;
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserEntity;
-import io.nicheblog.dreamdiary.feature.user.info.entity.UserStusEmbed;
-import io.nicheblog.dreamdiary.feature.user.profl.mapstruct.UserProflMapstruct;
+import io.nicheblog.dreamdiary.feature.user.profile.mapstruct.UserProfileMapstruct;
 import io.nicheblog.dreamdiary.feature.user.reqst.model.UserReqstDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, CollectionUtils.class, Collectors.class, UserStusEmbed.class, UserProflMapstruct.class, UserEmplymMapstruct.class}, builder = @Builder(disableBuilder = true))
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, CollectionUtils.class, Collectors.class, UserStateEntity.class, UserProfileMapstruct.class, UserEmplymMapstruct.class, UserRoleEntity.class}, builder = @Builder(disableBuilder = true))
 public interface UserReqstMapstruct
         extends BaseMapstruct<UserReqstDto, UserEntity> {
 
@@ -41,8 +42,8 @@ public interface UserReqstMapstruct
     @Mapping(target = "password", expression = "java(null)")      // Dto로 패스워드 전달하지 않음
     @Mapping(target = "emailId", expression = "java(StringUtils.isNotEmpty(entity.getEmail()) ? entity.getEmail().substring(0, entity.getEmail().indexOf('@')) : \"\")")
     @Mapping(target = "emailDomain", expression = "java(StringUtils.isNotEmpty(entity.getEmail()) ? entity.getEmail().substring(entity.getEmail().indexOf('@')+1) : \"\")")
-    @Mapping(target = "authStrList", expression = "java(entity.getAuthList().stream().map(UserAuthRoleEntity::getAuthCd).collect(Collectors.toList()))")      // 접속IP tagify 문자열 세팅
-    @Mapping(target = "acsIpListStr", expression = "java(CollectionUtils.isEmpty(entity.getAcsIpStrList()) ? null : String.join(\",\", entity.getAcsIpStrList()))")      // 접속IP tagify 문자열 세팅
+    @Mapping(target = "roleKeyList", expression = "java(CollectionUtils.isEmpty(entity.getUserRoles()) ? java.util.List.of() : entity.getUserRoles().stream().map(UserRoleEntity::getRoleKey).collect(Collectors.toList()))")
+    @Mapping(target = "allowedIpListStr", expression = "java(CollectionUtils.isEmpty(entity.getAllowedIpStrList()) ? null : String.join(\",\", entity.getAllowedIpStrList()))")      // 접속IP tagify 문자열 세팅
     UserReqstDto toDto(final UserEntity entity) throws Exception;
 
     /**
@@ -52,8 +53,8 @@ public interface UserReqstMapstruct
      * @return Entity -- 변환된 Entity 객체
      */
     @Mapping(target = "email", expression = "java(dto.getEmailId() + \"@\" + dto.getEmailDomain())")
-    @Mapping(target = "acsIpList", expression = "java(dto.getAcsIpListStr())")      // tagify 문자열 파싱
-    @Mapping(target = "profl", expression = "java(UserProflMapstruct.INSTANCE.toEntity(dto.getProfl()))")
+    @Mapping(target = "allowedIpList", expression = "java(dto.getAllowedIpListStr())")      // tagify 문자열 파싱
+    @Mapping(target = "profile", expression = "java(UserProfileMapstruct.INSTANCE.toEntity(dto.getProfile()))")
     @Mapping(target = "emplym", expression = "java(UserEmplymMapstruct.INSTANCE.toEntity(dto.getEmplym()))")
     UserEntity toEntity(final UserReqstDto dto) throws Exception;
 }

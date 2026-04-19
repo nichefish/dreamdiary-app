@@ -17,7 +17,7 @@ import java.util.Optional;
  *
  * @author nichefish
  */
-@Repository("tmplatTxtRepository")
+@Repository
 public interface TmplatTxtRepository
         extends BaseStreamRepository<TmplatTxtEntity, Integer> {
 
@@ -37,3 +37,4 @@ public interface TmplatTxtRepository
             final String defaultYn
     );
 }
+

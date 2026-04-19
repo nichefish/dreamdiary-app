@@ -1,15 +1,15 @@
 package io.nicheblog.dreamdiary.feature.board.notice.controller;
 
+import io.nicheblog.dreamdiary.feature.attachable.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeDto;
 import io.nicheblog.dreamdiary.feature.board.notice.model.NoticeSearchParam;
 import io.nicheblog.dreamdiary.feature.board.notice.service.NoticeService;
-import io.nicheblog.dreamdiary.feature.clsf.viewer.handler.ViewerEventListener;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import lombok.Getter;
@@ -109,7 +109,7 @@ public class NoticeRestController
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> noticeDtlAjax(
-            final @PathVariable("postNo") Integer key
+            final @PathVariable("id") Integer key
     ) throws Exception {
 
         final NoticeDto retrievedDto = noticeService.viewDtlPage(key);
@@ -123,17 +123,17 @@ public class NoticeRestController
      * 공지사항 삭제 (Ajax)
      * (사용자USER, 관리자MNGR만 접근 가능.)
      *
-     * @param postNo 식별자
+     * @param id 식별자
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @DeleteMapping(Url.NOTICE)
     @Secured({Constant.ROLE_USER, Constant.ROLE_MNGR})
     @ResponseBody
     public ResponseEntity<AjaxResponse> noticeDelAjax(
-            final @PathVariable("postNo") Integer postNo
+            final @PathVariable("id") Integer id
     ) throws Exception {
 
-        final ServiceResponse result = noticeService.delete(postNo);
+        final ServiceResponse result = noticeService.delete(id);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
@@ -169,14 +169,15 @@ public class NoticeRestController
         } catch (final Exception e) {
             rsltMsg = MessageUtils.getExceptionMsg(e);
             logParam.setExceptionInfo(e);
-            MessageUtils.alertMessage(rsltMsg, Url.VCATN_SCHDUL_LIST);
+            MessageUtils.alertMessage(rsltMsg, Url.VCATN_SCHEDULE_LIST);
         } finally {
             // 로그 관련 세팅
             logParam.setResult(isSuccess, rsltMsg);
-            publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
+            publisher.publishAsyncEvent(new LogEvent(this, logParam));
         }*/
 
         return ResponseEntity.ok(ajaxResponse);
     }
 
 }
+

@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * ContentType
  * <pre>
- *  ClsfEntity를 상속받은 클래스들이 사용하는 컨텐츠 타입 정보
+ *  AttachableEntity를 상속받은 클래스들이 사용하는 컨텐츠 타입 정보
  * </pre>
  *
  * @author nichefish

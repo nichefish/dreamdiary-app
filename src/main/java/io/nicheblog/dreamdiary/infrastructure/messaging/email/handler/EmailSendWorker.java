@@ -1,10 +1,9 @@
 package io.nicheblog.dreamdiary.infrastructure.messaging.email.handler;
 
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
-import io.nicheblog.dreamdiary.infrastructure.log.sys.event.LogSysEvent;
-import io.nicheblog.dreamdiary.infrastructure.log.sys.handler.LogSysEventListener;
-import io.nicheblog.dreamdiary.infrastructure.log.sys.model.LogSysParam;
+import io.nicheblog.dreamdiary.infrastructure.log.event.LogEvent;
+import io.nicheblog.dreamdiary.infrastructure.log.model.LogParam;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.messaging.email.event.EmailSendEvent;
 import io.nicheblog.dreamdiary.infrastructure.messaging.email.model.EmailSendParam;
 import io.nicheblog.dreamdiary.infrastructure.messaging.email.service.EmailService;
@@ -47,7 +46,7 @@ public class EmailSendWorker implements Runnable {
 	/**
  	 * 메일 큐에서 MailSendEvent를 가져와 메일을 발송합니다.
 	 *
-	 * @see LogSysEventListener
+	 * @see io.nicheblog.dreamdiary.infrastructure.log.handler.LogEventListener
 	 */
 	@Override
 	public void run() {
@@ -63,9 +62,9 @@ public class EmailSendWorker implements Runnable {
 			} catch (final Exception e) {
 				log.warn("mail send failed", e);
 				Thread.currentThread().interrupt();
-				final LogSysParam logParam = new LogSysParam(true, "메일 발송에 실패했습니다.", ActvtyCtgr.SYSTEM);
+				final LogParam logParam = LogParam.forSystem(true, "메일 발송에 실패했습니다.", ActvtyCtgr.SYSTEM);
 				logParam.setExceptionInfo(e);
-				publisher.publishAsyncEvent(new LogSysEvent(this, logParam));
+				publisher.publishAsyncEvent(new LogEvent(this, logParam));
 			}
 		}
 	}

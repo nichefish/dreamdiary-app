@@ -31,7 +31,7 @@ dF.UserEmplym = (function(): dfModule {
             $btn.attr("title", "직원 인사정보를&#10;삭제합니다.");
 
             // 전화번호 형식 유효성 검사
-            cF.validate.cttpc("#emplymCttpc");
+            cF.validate.phoneNumber("#emplymPhoneNumber");
             // 이메일 도메인 select시 자동입력
             $("#emplymEmailDomainSelect").on("change", function(): void {
                 $("#emplymEmailDomain").val($(this).val());

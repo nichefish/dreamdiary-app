@@ -1,0 +1,65 @@
+package io.nicheblog.dreamdiary.feature.user.account.entity;
+
+import io.nicheblog.dreamdiary.global.intrfc.entity.BaseCrudEntity;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.*;
+
+import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+/**
+ * UserAllowedIpEntity
+ * <pre>
+ *  사용자(계정) 정보 > 접속가능 IP Entity.
+ * </pre>
+ *
+ * @author nichefish
+ */
+@Entity
+@Table(name = "user_allowed_ip")
+@DynamicInsert      // null인 값은 (null로 insert하는 대신) insert에서 제외
+@Getter
+@Setter
+@SuperBuilder(toBuilder = true)
+@RequiredArgsConstructor
+@AllArgsConstructor
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE user_allowed_ip SET deleted_at = NOW() WHERE id = ?")
+public class UserAllowedIpEntity
+        extends BaseCrudEntity {
+
+    /** 사용자 정보 접속가능 IP ID */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    @Comment("사용자 정보 접속가능 IP ID")
+    private Integer id;
+
+    /** 사용자 정보 */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @Fetch(FetchMode.JOIN)
+    @NotFound(action = NotFoundAction.IGNORE)
+    @Comment("사용자 정보")
+    private UserEntity user;
+
+    /** 접속가능 IP */
+    @Column(name = "allowed_ip", length = 20)
+    @Comment("접속가능 IP")
+    private String allowedIp;
+
+    /* ----- */
+
+    /**
+     * 생성자.
+     * @param allowedIp - 사용자 접근 IP 주소
+     */
+    public UserAllowedIpEntity(final String allowedIp) {
+        this.setAllowedIp(allowedIp);
+    }
+}

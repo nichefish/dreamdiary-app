@@ -2,9 +2,9 @@ package io.nicheblog.dreamdiary.infrastructure.web.handler;
 
 import io.nicheblog.dreamdiary.global.handler.ApplicationEventPublisherWrapper;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.event.LogActvtyEvent;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.handler.LogActvtyEventListener;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.model.LogActvtyParam;
+import io.nicheblog.dreamdiary.infrastructure.log.event.LogEvent;
+import io.nicheblog.dreamdiary.infrastructure.log.handler.LogEventListener;
+import io.nicheblog.dreamdiary.infrastructure.log.model.LogParam;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
 import io.nicheblog.dreamdiary.infrastructure.web.util.HttpUtils;
 import lombok.RequiredArgsConstructor;
@@ -59,15 +59,15 @@ public class BaseExceptionHandler {
      * @param status 반환할 HTTP 상태 코드
      * @param view 예외 발생 시 렌더링할 뷰 이름 (AJAX 요청이 아닐 때 사용)
      * @return Ajax 요청의 경우 {@link ResponseEntity}, 페이지 요청의 경우 {@link ModelAndView} 객체
-     * @see LogActvtyEventListener
+     * @see LogEventListener
      */
     private Object handleException(final Exception e, final WebRequest request, final HttpStatus status, final String view) {
         final String errorMsg = MessageUtils.getExceptionMsg(e);
         log.warn("Exception handled: ", e);
 
         // 로그 처리
-        final LogActvtyParam logParam = new LogActvtyParam(false, errorMsg);
-        publisher.publishAsyncEvent(new LogActvtyEvent(this, logParam));
+        final LogParam logParam = new LogParam(false, errorMsg);
+        publisher.publishAsyncEvent(new LogEvent(this, logParam));
 
         // Ajax 요청인 경우
         if (HttpUtils.isAjaxRequest(request)) {

@@ -12,16 +12,16 @@
 <@layout.layout toolbar=toolbar!"">
 
 <#--#include:: component:: 태그 클릭 필터링-->
-<#include "/view/feature/clsf/tag/_tag_list_header.ftlh">
+<#include "/view/feature/attachable/tag/_tag_list_header.ftlh">
 
 <div class="card post">
     <div class="px-8">
         <button type="button" class="btn btn-sm btn-light btn-outline btn-active-secondary mx-1"
-                onclick="$('#crdt_user_cttpc_modal').modal('show');"
+                onclick="$('#crdt_user_phoneNumber_modal').modal('show');"
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="직원 연락처 팝업을 호출합니다.">
             <i class="bi bi-telephone"></i>직원 연락처
         </button>
-        <#include "/view/feature/board/notice/_modal/_notice_list_crdt_user_cttpc_modal.ftlh">
+        <#include "/view/feature/board/notice/_modal/_notice_list_crdt_user_phoneNumber_modal.ftlh">
         <button type="button" class="btn btn-sm btn-light btn-outline btn-active-secondary mx-1"
                 onclick="$('#extn_phone_modal').modal('show');"
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="내선전화 관련 안내 팝업을&#10;호출합니다.">
@@ -56,7 +56,7 @@
                             <div class="row d-flex align-items-center justify-content-between">
                                 <div class="col-xl-8 col-12 d-flex flex-column">
                                     <div class="my-1">
-                                        <a href="${Url.NOTICE_DTL!}?postNo=${post.postNo!}"
+                                        <a href="${Url.NOTICE_DTL!}?id=${post.id!}"
                                            class="title-fxd vertical-middle text-underline-dotted <#if (((post.imprtcYn)!"N") == "Y")!false>fw-bold</#if>"
                                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.page.dtl'/>">
                                             <#if (post.ctgrNm!"") != "">
@@ -89,7 +89,7 @@
                         </td>
                         <td class="text-center col-form-label hidden-table">
                             <#--목록:: 첨부파일 모달 열기 버튼 표시-->
-                            <@component.list_atch_file post />
+                            <@component.list_file_group post />
                         </td>
                         <td class="text-center col-form-label">
                             <#--목록:: 최종수정자 표시-->
@@ -114,7 +114,7 @@
                             <div class="row d-flex align-items-center justify-content-between">
                                 <div class="col-xl-8 col-12 d-flex flex-column">
                                     <div class="my-1">
-                                        <a href="${Url.NOTICE_DTL!}?postNo=${post.postNo!}"
+                                        <a href="${Url.NOTICE_DTL!}?id=${post.id!}"
                                            class="text-dark vertical-middle text-underline-dotted <#if (((post.imprtcYn)!"N") == "Y")!false>fw-bold text-danger</#if>"
                                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.page.dtl'/>">
                                             <#if (post.ctgrNm!"") != "">
@@ -147,7 +147,7 @@
                         </td>
                         <td class="text-center col-form-label hidden-table">
                             <#--목록:: 첨부파일 모달 열기 버튼 표시-->
-                            <@component.list_atch_file post />
+                            <@component.list_file_group post />
                         </td>
                         <td class="text-center col-form-label">
                             <#--목록:: 최종수정자 표시-->
@@ -178,12 +178,12 @@
 </div>
 
 <form name="procForm" id="procForm" method="get">
-    <input type="hidden" name="postNo" id="postNo" value="" />
+    <input type="hidden" name="id" id="id" value="" />
 </form>
 
 <#--include::modals-->
-<#include "/view/feature/clsf/comment/_modal/_comment_list_modal.ftlh">
-<#include "/view/feature/clsf/file/_modal/_atch_file_list_modal.ftlh">
+<#include "/view/feature/attachable/comment/_modal/_comment_list_modal.ftlh">
+<#include "/view/feature/file/_modal/_file_group_list_modal.ftlh">
 
 <#--include::notice_modules-->
 <#include "/view/feature/board/notice/_modal/_notice_dtl_modal.ftlh">

@@ -29,10 +29,10 @@ public class AuditorUtils {
     /**
      * getAuditorInfo
      *
-     * @param userId 사용자 ID
+     * @param username 사용자 계정명
      * @return AuditorInfo
      */
-    public static AuditorInfo getAuditorInfo(final String userId) {
-        return authService.getAuditorInfo(userId);
+    public static AuditorInfo getAuditorInfo(final String username) {
+        return authService.getAuditorInfo(username);
     };
 }

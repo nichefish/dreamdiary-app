@@ -1,6 +1,6 @@
 <#--
  * 템플릿 관리(tmplat) > 등록 Modal
- * @included_in : cl_cd_list
+ * @included_in : tmplat_def_list
  -->
 
 <#import "/layout/modal_layout.ftlh" as modal>

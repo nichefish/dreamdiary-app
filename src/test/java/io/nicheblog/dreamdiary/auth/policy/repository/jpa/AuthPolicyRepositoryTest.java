@@ -59,16 +59,16 @@ class AuthPolicyRepositoryTest {
 
         // When::
         final AuthPolicyEntity registered = authPolicyRepository.save(authPolicyEntity);
-        final Integer key = registered.getAuthPolicyNo();
+        final Integer key = registered.getId();
         final AuthPolicyEntity retrieved = authPolicyRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.registered")));
 
         // Then::
         assertNotNull(retrieved, "저장한 데이터를 조회할 수 없습니다.");
-        assertNotNull(retrieved.getAuthPolicyNo(), "저장된 엔티티의 key 값이 없습니다.");
+        assertNotNull(retrieved.getId(), "저장된 엔티티의 key 값이 없습니다.");
         // audit
-        assertNotNull(retrieved.getRegDt(), "등록일자 audit 처리가 되지 않았습니다.");
-        assertNotNull(retrieved.getRegstrId(),  "등록자 audit 처리가 되지 않았습니다.");
-        assertEquals(TestConstant.TEST_AUDITOR, retrieved.getRegstrId(), "등록자가 예상 값과 일치하지 않습니다.");
+        assertNotNull(retrieved.getCreatedAt(), "등록일자 audit 처리가 되지 않았습니다.");
+        assertNotNull(retrieved.getCreatedBy(),  "등록자 audit 처리가 되지 않았습니다.");
+        assertEquals(TestConstant.TEST_AUDITOR, retrieved.getCreatedBy(), "등록자가 예상 값과 일치하지 않습니다.");
     }
 
     /**
@@ -78,22 +78,22 @@ class AuthPolicyRepositoryTest {
     public void testModify() throws Exception {
         // Given::
         AuthPolicyEntity registered = authPolicyRepository.save(authPolicyEntity);
-        Integer key = registered.getAuthPolicyNo();
+        Integer key = registered.getId();
 
         // When::
         AuthPolicyEntity toModify = authPolicyRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-modify")));
-        toModify.setLgnTryLmt(25);
+        toModify.setLoginAttemptLimit(25);
         AuthPolicyEntity modified = authPolicyRepository.save(toModify);
 
         // Then::
         assertNotNull(modified, "저장한 데이터를 조회할 수 없습니다.");
-        assertNotNull(modified.getAuthPolicyNo(), "저장된 엔티티의 key 값이 없습니다.");
+        assertNotNull(modified.getId(), "저장된 엔티티의 key 값이 없습니다.");
         // audit
-        assertNotNull(modified.getMdfDt(), "수정일자 audit 처리가 되지 않았습니다.");
-        assertNotNull(modified.getMdfusrId(),  "수정자 audit 처리가 되지 않았습니다.");
-        assertEquals(TestConstant.TEST_AUDITOR, modified.getMdfusrId(), "수정자가 예상 값과 일치하지 않습니다.");
+        assertNotNull(modified.getUpdatedAt(), "수정일자 audit 처리가 되지 않았습니다.");
+        assertNotNull(modified.getUpdatedBy(),  "수정자 audit 처리가 되지 않았습니다.");
+        assertEquals(TestConstant.TEST_AUDITOR, modified.getUpdatedBy(), "수정자가 예상 값과 일치하지 않습니다.");
         // value
-        assertEquals(25, modified.getLgnTryLmt(), "값이 정상적으로 수정되지 않았습니다.");
+        assertEquals(25, modified.getLoginAttemptLimit(), "값이 정상적으로 수정되지 않았습니다.");
     }
 
     /**
@@ -103,7 +103,7 @@ class AuthPolicyRepositoryTest {
     public void testDelete() throws Exception {
         // Given::
         final AuthPolicyEntity registered = authPolicyRepository.save(authPolicyEntity);
-        final Integer key = registered.getAuthPolicyNo();
+        final Integer key = registered.getId();
 
         // When::
         final AuthPolicyEntity toDelete = authPolicyRepository.findById(key).orElseThrow(() -> new EntityNotFoundException(MessageUtils.getMessage("exception.EntityNotFoundException.to-delete")));

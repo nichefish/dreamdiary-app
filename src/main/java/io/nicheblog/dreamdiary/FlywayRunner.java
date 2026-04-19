@@ -10,7 +10,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /**
@@ -29,7 +28,6 @@ import java.sql.SQLException;
 public class FlywayRunner
         implements CommandLineRunner {
 
-    private final DataSource dataSource;
     private final FlywayProperties flywayProperties;
 
     /**

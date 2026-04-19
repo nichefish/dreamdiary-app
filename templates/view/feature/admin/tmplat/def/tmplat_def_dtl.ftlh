@@ -30,8 +30,8 @@
                 <div class="d-flex align-items-center">
                     <!--begin::Name-->
                     <div class="d-flex flex-column align-items-start justify-content-center">
-                        <span class="text-gray-800 fs-6 fw-bold lh-1 mb-2">${tmplat.regstrNm!"-"}</span>
-                        <span class="text-muted fs-7 lh-1">${tmplat.regDt!}</span>
+                        <span class="text-gray-800 fs-6 fw-bold lh-1 mb-2">${tmplat.createdByNm!"-"}</span>
+                        <span class="text-muted fs-7 lh-1">${tmplat.createdAt!}</span>
                     </div>
                 </div>
                 <!--begin::Info-->
@@ -45,14 +45,14 @@
 
         <div class="separator separator-dashed border-gray-300 my-8"></div>
 
-        <!--begin::cn-->
+        <!--begin::content-->
         <div class="fs-4 fw-normal text-gray-800 px-5 py-1 pb-6 min-h-150px">
-            ${tmplat.cn?no_esc}
+            ${tmplat.content?no_esc}
         </div>
 
         <#--begin::meta-->
         <div class="mb-0">
-            <#if (tmplat.atchFileInfo.atchFileList)?has_content>
+            <#if (tmplat.fileGroupInfo.fileRecordList)?has_content>
                 <div class="d-flex flex-stack flex-wrap mb-3 bg-light">
                     <div class="col-xl-1">
                         <div class="fs-6 fw-bold col-form-label px-5">
@@ -60,10 +60,10 @@
                         </div>
                     </div>
                     <div class="col-xl-11 my-3">
-                        <#list (tmplat.atchFileInfo.atchFileList)![] as file>
+                        <#list (tmplat.fileGroupInfo.fileRecordList)![] as file>
                             <div class="row my-1">
                                 <div class="col-xl-8">
-                                    <a href="javascript:void(0);" onclick="cF.util.fileDownload('${file.atchFileNo!}', '${file.atchFileDtlNo!}');"
+                                    <a href="javascript:void(0);" onclick="cF.util.fileDownload('${file.fileGroupId!}', '${file.fileRecordId!}');"
                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'bs.tooltip.file.download'/>">
                                         <i class="fas fa-file-download fs-15 me-1"></i>
                                         ${file.orgnFileNm!}(${file.fileSize!}byte)
@@ -88,7 +88,7 @@
             <#--페이지:: 버튼: 수정하기-->
             <@component.post_btn_modify "Page.mdfForm();" post isMngr />
             <#--페이지:: 버튼: 삭제하기-->
-            <@component.post_btn_delete "Page.delAjax(${post.postNo});" post isMngr />
+            <@component.post_btn_delete "Page.delAjax(${post.id});" post isMngr />
             <#--페이지:: 버튼: 목록으로 가기-->
             <@component.post_btn_toList "Page.list();" />
         </div>
@@ -96,11 +96,11 @@
 
     <#--페이지:: 댓글 영역-->
     <#assign post = tmplat>
-    <#include "/view/feature/clsf/comment/_comment_page_area.ftlh">
+    <#include "/view/feature/attachable/comment/_comment_page_area.ftlh">
 </div>
 
 <form name="procForm" id="procForm" method="get">
-    <input type="hidden" name="postNo" id="postNo" value="${tmplat.postNo!}" />
+    <input type="hidden" name="id" id="id" value="${tmplat.id!}" />
 </form>
 
 <#--include::tmplat_def_module-->

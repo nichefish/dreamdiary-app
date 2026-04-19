@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.board.notice.spec;
 
+import io.nicheblog.dreamdiary.feature.attachable._shared.spec.BaseAttachableSpec;
 import io.nicheblog.dreamdiary.feature.board.notice.entity.NoticeEntity;
-import io.nicheblog.dreamdiary.feature.clsf._shared.spec.BaseClsfSpec;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -23,7 +23,7 @@ import java.util.Map;
 @Component
 @Log4j2
 public class NoticeSpec
-        implements BaseClsfSpec<NoticeEntity> {
+        implements BaseAttachableSpec<NoticeEntity> {
 
     /**
      * 검색 조건 세팅 후 쿼리 후처리. (override)
@@ -62,7 +62,7 @@ public class NoticeSpec
         final List<Predicate> predicate = new ArrayList<>();
 
         // expressions
-        final Expression<Date> regDtExp = root.get("regDt");
+        final Expression<Date> createdAtExp = root.get("createdAt");
         final Expression<Date> managtDtExp = root.get("managt").get("managtDt");
 
         // 파라미터 비교
@@ -71,11 +71,11 @@ public class NoticeSpec
             switch (key) {
                 case "searchStartDt":
                     // 기간 검색
-                    predicate.add(builder.greaterThanOrEqualTo(regDtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.greaterThanOrEqualTo(createdAtExp, DateUtils.asDate(value)));
                     continue;
                 case "searchEndDt":
                     // 기간 검색
-                    predicate.add(builder.lessThanOrEqualTo(regDtExp, DateUtils.asDate(value)));
+                    predicate.add(builder.lessThanOrEqualTo(createdAtExp, DateUtils.asDate(value)));
                     continue;
                 case "managtStartDt":
                     // 기간 검색

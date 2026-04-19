@@ -1,4 +1,4 @@
-##
+﻿##
 # application-local.yml
 # 로컬(local) 프로필용 설정 파일
 ##
@@ -57,7 +57,8 @@ api:
         topics:
             - name: NOTICE
               id:  ${JANDI_TOPIC_NOTICE}
-            - name: SCHDUL
-              id: ${JANDI_TOPIC_SCHDUL}
+            - name: SCHEDULE
+              id: ${JANDI_TOPIC_SCHEDULE}
             - name: TEST
               id: ${TEST}
+

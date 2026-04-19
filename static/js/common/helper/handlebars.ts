@@ -451,23 +451,23 @@ cF.handlebars = (function(): Module {
     Handlebars.registerHelper('hasState', function (state: any, targetState: any): boolean {
         if (!state) return false;
         if (!state.list) return false;
-        return state.list.some((s: any): boolean => s.stateCd === targetState);
+        return state.list.some((s: any): boolean => s.stateKey === targetState);
     });
 
     /**
-     * Handlebars 헬퍼 함수 'cnStateClass'를 등록합니다.
+     * Handlebars 헬퍼 함수 'contentStateClass'를 등록합니다.
      * 상태값에 따른 기본 state 클래스를 생성합니다.
      *
      * @param {any} state - 상태 목록
      * @returns {string} - 상태 클래스
      */
-    Handlebars.registerHelper('cnStateClass', function (state: any): string {
+    Handlebars.registerHelper('contentStateClass', function (state: any): string {
         if (!state) return "";
         if (!state.list) return "";
         if (!Array.isArray(state.list)) return "";
 
         return state.list
-            .map((s: any) => (s?.stateCd || "").toLowerCase())
+            .map((s: any) => (s?.stateKey || "").toLowerCase())
             .filter((v: string) => v.length > 0)
             .join(" ");
     });

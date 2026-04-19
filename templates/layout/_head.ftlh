@@ -73,17 +73,17 @@
         /** AuthInfo 객체 생성 */
         const AuthInfo = (function() {
             return Object.freeze({
-                userId: "${(authInfo.userId)!}",
-                nickNm: "${(authInfo.nickNm)!}",
+                username: "${(authInfo.username)!}",
+                nickname: "${(authInfo.nickname)!}",
                 email: "${(authInfo.email)!}",
-                proflImgUrl: "${(authInfo.proflImgUrl)!}",
+                profileImageUrl: "${(authInfo.profileImageUrl)!}",
                 isMngr: ${((authInfo.isMngr)!false)?c},
-                authList: [
-                    <#list (authInfo.authList)![] as auth>
+                roles: [
+                    <#list (authInfo.roles)![] as role>
                         {
-                            authCd: "${auth.authCd!}",
-                            authNm: "${auth.authNm!}",
-                        }<#if auth_has_next>,</#if>
+                            roleKey: "${role.roleKey!}",
+                            roleName: "${role.roleName!}",
+                        }<#if role_has_next>,</#if>
                     </#list>
                 ]
             });

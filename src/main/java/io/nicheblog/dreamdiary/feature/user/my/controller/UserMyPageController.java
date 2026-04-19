@@ -3,11 +3,11 @@ package io.nicheblog.dreamdiary.feature.user.my.controller;
 import io.nicheblog.dreamdiary.auth.security.util.AuthUtils;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.PageNm;
 import io.nicheblog.dreamdiary.feature.admin.menu.type.SiteMenu;
-import io.nicheblog.dreamdiary.feature.user.info.model.UserDto;
-import io.nicheblog.dreamdiary.feature.user.info.service.UserService;
+import io.nicheblog.dreamdiary.feature.user.account.model.UserDto;
+import io.nicheblog.dreamdiary.feature.user.account.service.UserService;
 import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
-import io.nicheblog.dreamdiary.infrastructure.log.actvty.ActvtyCtgr;
+import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -56,8 +56,8 @@ public class UserMyPageController
         model.addAttribute("pageNm", PageNm.DEFAULT);
 
         // 내 정보 조회 및 모델에 추가
-        final String lgnUserId = AuthUtils.getLgnUserId();
-        final UserDto retrievedDto = userService.getDtlDto(lgnUserId);
+        final String loginUsername = AuthUtils.getLoginUsername();
+        final UserDto retrievedDto = userService.getDtlDto(loginUsername);
         model.addAttribute("user", retrievedDto);
 
         return "/view/feature/user/my/user_my_dtl";

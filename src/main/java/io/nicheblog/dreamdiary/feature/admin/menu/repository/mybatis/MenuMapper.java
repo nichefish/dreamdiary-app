@@ -16,8 +16,8 @@ public interface MenuMapper {
 
     /**
      * 최상위(MAIN) 메뉴의 관리자 메뉴 여부 (Y/N) 조회
-     * @param menuNo 체크할 메뉴 번호
+     * @param id 체크할 메뉴 번호
      * @return {@link String} -- 관리자 메뉴 여부 (Y/N)
      */
-    String getMngrYn(final @Param("menuNo") Integer menuNo);
+    String getMngrYn(final @Param("id") Integer id);
 }

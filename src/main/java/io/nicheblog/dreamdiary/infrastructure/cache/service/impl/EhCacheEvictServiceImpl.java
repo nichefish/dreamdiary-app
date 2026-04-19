@@ -19,41 +19,42 @@ import java.util.Map;
  *
  * @author nichefish
  */
-@Service("ehCacheEvictService")
+@Service
 @RequiredArgsConstructor
 @Log4j2
 public class EhCacheEvictServiceImpl
         implements CacheEvictService {
 
-    // private final JrnlDayCacheEvictor jrnlDayCacheEvictor;
-    // private final JrnlDiaryCacheEvictor jrnlDiaryCacheEvictor;
-    // private final JrnlDreamCacheEvictor jrnlDreamCacheEvictor;
-    // private final JrnlSumryCacheEvictor jrnlSumryCacheEvictor;
+    // private final JournalDayCacheEvictor journalDayCacheEvictor;
+    // private final JournalDiaryCacheEvictor journalDiaryCacheEvictor;
+    // private final JournalDreamCacheEvictor journalDreamCacheEvictor;
+    // private final JournalAnnualCacheEvictor journalAnnualCacheEvictor;
 
     // CacheEvictor를 매핑하는 Map
     private final Map<String, CacheEvictor<Integer>> evictorMap = new HashMap<>();
 
     @PostConstruct
     private void initEvictorMap() {
-        // evictorMap.put(ContentType.JRNL_DAY.key, jrnlDayCacheEvictor);
-        // evictorMap.put(ContentType.JRNL_DIARY.key, jrnlDiaryCacheEvictor);
-        // evictorMap.put(ContentType.JRNL_DREAM.key, jrnlDreamCacheEvictor);
-        // evictorMap.put(ContentType.JRNL_SUMRY.key, jrnlSumryCacheEvictor);
+        // evictorMap.put(ContentType.JOURNAL_DAY.key, journalDayCacheEvictor);
+        // evictorMap.put(ContentType.JOURNAL_DIARY.key, journalDiaryCacheEvictor);
+        // evictorMap.put(ContentType.JOURNAL_DREAM.key, journalDreamCacheEvictor);
+        // evictorMap.put(ContentType.JOURNAL_ANNUAL.key, journalAnnualCacheEvictor);
     }
 
     /**
      * 관련 캐시 삭제
      * 
      * @param refContentType - 캐시를 삭제할 컨텐츠 타입
-     * @param refPostNo - 캐시를 삭제할 게시글 번호
+     * @param refId - 캐시를 삭제할 게시글 번호
      */
     @Override
-    public void evictClsfCache(final String refContentType, final Integer refPostNo) throws Exception {
+    public void evictAttachableCache(final String refContentType, final Integer refId) throws Exception {
         final CacheEvictor<Integer> evictor = evictorMap.get(refContentType);
         if (evictor == null) {
             log.warn("No CacheEvictor found for ContentType: {}", refContentType);
             return;
         }
-        evictor.evict(refPostNo);
+        evictor.evict(refId);
     }
 }
+

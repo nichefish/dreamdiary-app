@@ -22,7 +22,7 @@
 <#macro list_comment post >
     <#if post.comment?? && post.comment.cnt gt 0>
         <span class="mx-1 text-noti btn-active-warning fs-x-small cursor-pointer opacity-hover"
-              onclick="CommentList.modal(${post.postNo!}, '${post.contentType}');"
+              onclick="CommentList.modal(${post.id!}, '${post.contentType}');"
               data-bs-toggle="tooltip" data-bs-placement="top" title="<@spring.message 'txt.comment'/> 모달 호출">
         [${post.comment.cnt!0}]
         </span>
@@ -33,7 +33,7 @@
  * 목록 모달 팝업 열기 버튼 표시
  -->
 <#macro list_dtl_modal post func>
-    <#assign fullFunc = (func + "(" + post.postNo?c + ")") />
+    <#assign fullFunc = (func + "(" + post.id?c + ")") />
     <a class="badge badge-secondary p-2 btn-white bg-hover-white blank blink-slow float-end"
        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="모달로 보기">
         <i class="bi bi-stickies fs-5 text-noti opacity-hover" onclick="${fullFunc!}"></i>
@@ -44,13 +44,13 @@
  * 목록 등록자(조치자) 표시
  -->
 <#macro list_managtr post >
-    <#if (post.managtrInfo)?? && (post.managtrInfo.proflImgUrl)??>
+    <#if (post.managtrInfo)?? && (post.managtrInfo.profileImageUrl)??>
         <div class="btn btn-icon btn-active-light-primary position-relative w-15px h-15px w-md-20px h-md-20px me-1">
-            <img src="${(post.managtrInfo.proflImgUrl)!}" class="img-thumbnail p-0 w-100" />
+            <img src="${(post.managtrInfo.profileImageUrl)!}" class="img-thumbnail p-0 w-100" />
         </div>
     </#if>
     <span class="cursor-help"
-          data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="최초 작성자:&#10;${post.regstrNm!"-"}">
+          data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="최초 작성자:&#10;${post.createdByNm!"-"}">
         ${post.managt.managtrNm!"-"}
         <#if post.managt.isManagtr!false>
             <span class="badge badge-secondary opacity-75 mx-1 fs-9">나</span>
@@ -63,7 +63,7 @@
 -->
 <#macro list_managtDt post >
     <span class="cursor-help"
-          data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="최초 작성일:&#10;${post.regDt!"-"}">
+          data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="최초 작성일:&#10;${post.createdAt!"-"}">
         ${post.managt.managtDt!}
     </span>
 </#macro>
@@ -71,11 +71,11 @@
 <!--
  * 목록 첨부파일 영역 표시
  -->
-<#macro list_atch_file post >
-    <#if post.atchFileInfo?? && (post.atchFileInfo.atchFileList)?has_content>
+<#macro list_file_group post >
+    <#if post.fileGroupInfo?? && (post.fileGroupInfo.fileRecordList)?has_content>
         <a class="badge badge-secondary p-2 btn-white bg-hover-white blank blink-slow"
            data-bs-toggle="tooltip" data-bs-placement="top" title="<@spring.message 'txt.atch-file'/>">
-            <i class="bi bi-file-earmark-arrow-down fs-5 text-info opacity-hover" onclick="AtchFileList.modal('${post.atchFileNo!}');"></i>
+            <i class="bi bi-file-earmark-arrow-down fs-5 text-info opacity-hover" onclick="FileGroupList.modal('${post.fileGroupId!}');"></i>
         </a>
     <#else>
         -

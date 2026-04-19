@@ -1,28 +1,30 @@
 # DESIGN NOTES
 
-## 저널(jrnl)
-- jrnl-day
-  - jrnl-chapter
-    - jrnl-diary
-  - jrnl-dream
-    - jrnl-intrpt 
-- jrnl-sumry
-  - jrnl-sumry-review
+## 저널(journal)
+- journal-day
+  - journal-chapter
+    - journal-diary
+    - journal-dream
+    - journal-note
+    - journal-interpretation 
+- journal-annual
+  - journal-annual-review
 
 ---
 
-### 저널 일자(jrnl-day)
+### 저널 일자(journal-day)
 - 사용자별 일자 데이터.
 - 월간(monthly)/달력(calendar) 조회: 정형 데이터. 성능 최적화 및 응답 일관성 확보를 위해 캐시 기반 조회 유지.
   - "월 단위 데이터는 해당 월 이후부턴 조회 빈도 대비 변경 빈도가 낮다. DB 조회 비용보다 캐시 유지 + 서버 필터링이 더 효율적이다."
   - 특정 년월(yyyy-mm) 단위로 데이터를 캐싱.
   - 조회 시 DB 재조회 없이 캐시 데이터 사용. 필터링은 DB가 아닌 서버(Java) 레벨에서 수행. 동일한 캐시 데이터를 기반으로 다양한 필터 조건 대응.
   - 등록/수정/삭제 발생 시 → 해당 년월 캐시 전체 무효화(invalidate).
+  - 인덱스 처리 위해 journal_date에서 파생된 yy, mnth 컬럼 유지
 - 검색 (search) 조회: 비정형 데이터. 월간 조회와 분리하여 DB 기반 조회 전략을 유지한다.
   - "검색은 범위가 비정형적이며(기간, 키워드 등) 캐시 효율이 낮고 관리 비용이 높다. 따라서: 캐시 적중률보다 정확성과 유연성을 우선한다."
   - 캐시를 사용하지 않거나, 매우 제한적으로만 사용. 모든 조건은 DB 쿼리로 직접 처리.
 
-### 저널 챕터(jrnl-chapter)
+### 저널 챕터(journal-chapter)
 - 저널 일기를 담는 묶음.
   - "단순 컨테이너가 아니라, 일기들의 상위 서사 프레임에 더 가깝다. '구조적 구획'이면서 동시에 '의미 있는 묶음'이다."
   - "chapter는 삭제하면 안 된다. 오히려 앞으로 더 중요해질 테이블이다."
@@ -30,7 +32,7 @@
 - 최초 등록 챕터는 카테고리 미지정시 자동으로 "SUMMARY"로 지정한다.
 - 글접기시 하위 일기 태그 묶음을 요약해서 보여준다.
 
-### 저널 일기(jrnl-diary)
+### 저널 일기(journal-diary)
 
 ### 검색
 - 새 창
@@ -38,16 +40,16 @@
   - "검색은 상태다. 검색 결과는 재현 가능해야 하고 주소 기반 공유가 가능해야 한다."
 - 중복 키워드, 중복 태그 검색 처리
 
-### 저널 꿈(jrnl-dream)
+### 저널 꿈(journal-dream)
 
 - 저널 꿈 태그 해석 추가
   - "태그에 해석을 붙이면 해석의 일관성이 생긴다. 상징 데이터가 누적된다. 반복 상징의 변주를 추적할 수 있다."
   - "dreamdiary가“상징-사례-변형” 구조로 진화한다. 즉, 꿈을 모으는 시스템 → 상징 체계를 구축하는 시스템으로 격상된다."
   - "이건 해석을 버리는 게 아니라 해석의 기준면을 하나 더 두는 것이다."
 
-### 저널 해석(jrnl-intrpt)
+### 저널 해석(journal-interpretation)
 
-### 저널 결산(jrnl-sumry)
+### 저널 결산(journal-annual)
 - 결산 주기: 연간으로 고정.
   - "월간 결산은 지금 기준으로 투머치다."
   - "결산의 베스트 프랙티스는: 시간이 충분히 지나 사건이 ‘정리되고’, 의미가 ‘침전된 뒤’에 하는 해석이다."
@@ -64,7 +66,7 @@
   - "Filter에서 모든 요청에 traceId를 생성한다."
   - "이 구조면 서버 로그 ↔ DB access 로그 ↔ audit 로그, 전부 하나의 traceId로 묶인다. 이게 운영 관측성(Observability)의 최소 단위다."
 
-## 분류(clsf)
+## 분류(attachable)
 
 ### 댓글(comment)
 
@@ -83,7 +85,7 @@
 ### 조회자(viewer)
 
 ### 관련글(related)
-- "기존 BaseClsfKey(postNo + contentType) 체계 위에 명시적 관계 레이어를 하나 더 얹는다."
+- "기존 BaseAttachableKey(postNo + contentType) 체계 위에 명시적 관계 레이어를 하나 더 얹는다."
 - 컬럼은 방향성을 드러내는 `src/dst`보다 중립적인 `left/right`를 사용한다.
 - "A-B"와 "B-A"를 같은 관계로 보고, 물리적으로는 1행만 저장한다. 조회는 양방향으로 푼다. 자기 자신과의 관계는 금지한다.
 - 저장 전에 항상 pair를 정규화한다. 정규화 후 앞쪽을 `left_*`, 뒤쪽을 `right_*`에 저장한다.
@@ -102,3 +104,4 @@
 - "이동 규칙은 서버에서 강제한다. 허용: MAIN끼리 순서 변경. SUB를 MAIN 아래로 이동. SUB를 SUB 아래로 이동. 금지: MAIN을 다른 메뉴 아래로 이동. NO_SUB 메뉴 아래로 드롭. 자기 자신/자기 자손 아래로 이동. protectedYn=Y 메뉴 이동."
 - "라벨 수정 불가: 이건 UI가 아니라 서버 계약으로 박아야 한다. 수정 시 menuLabel이 들어와도 무시하거나, 기존 값과 다르면 예외를 던지는 게 맞다."
 - "프론트는 “A를 B 밑으로 옮겼고, source/target 형제 순서는 이렇다”까지만 보내면 된다. 그걸 허용할지, 순환인지, NO_SUB인지, protected인지, 실제 upperMenuNo와 idx를 어떻게 반영할지는 서버가 판단해야 한다."
+

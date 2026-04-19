@@ -1,0 +1,94 @@
+<#--
+ * Board > register template
+ * @included_in : _board_reg_modal.ftlh
+-->
+
+<script type="text/x-handlebars-template" id="board_reg_modal_template">
+    <input type="hidden" name="regYn" value="{{#if (notExists id)}}Y{{/if}}{{#if (exists id)}}N{{/if}}">
+    <input type="hidden" name="id" value="{{id}}">
+    <input type="hidden" name="useYn" value="N">
+
+    <div class="row mb-4">
+        <div class="col-3 col-form-label text-center">
+            <label class="cursor-help fw-bold required"
+                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
+                   title="게시판을 식별하는 고유 코드입니다. 등록 이후에는 수정하지 않습니다.">
+                게시판 코드
+                <i class="bi bi-question-circle"></i>
+            </label>
+        </div>
+        <div class="col-6">
+            {{#if (exists boardKey)}}
+                <div class="col-form-label">
+                    <span class="text-noti fw-bold ps-1">{{boardKey}}</span>
+                    <input type="hidden" name="boardKey" value="{{boardKey}}">
+                </div>
+            {{else}}
+                <input type="text" name="boardKey" id="boardKey" class="form-control form-control-solid required cddata"
+                       value="" placeholder="게시판 코드" maxlength="16">
+                <div class="text-noti">영문 소문자와 숫자만 사용 가능합니다.</div>
+                <div id="boardKey_validate_span"></div>
+            {{/if}}
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-3 col-form-label text-center">
+            <label class="cursor-help fw-bold required"
+                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
+                   title="게시판 이름입니다.">
+                게시판 이름
+                <i class="bi bi-question-circle"></i>
+            </label>
+        </div>
+        <div class="col-9">
+            <input type="text" name="boardName" id="boardName" class="form-control form-control-solid required"
+                   value="{{boardName}}" placeholder="게시판 이름" maxlength="32">
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-3 col-form-label text-center">
+            <label class="cursor-help fw-bold required"
+                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
+                   title="게시글 분류에 사용할 코드입니다.">
+                글분류 코드
+                <i class="bi bi-question-circle"></i>
+            </label>
+        </div>
+        <div class="col-9">
+            <input type="text" name="categoryGroupCode" id="categoryGroupCode" class="form-control form-control-solid required"
+                   value="{{categoryGroupCode}}" placeholder="글분류 코드" maxlength="32">
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-3 col-form-label text-center">
+            <label class="fw-bold">게시판 설명</label>
+        </div>
+        <div class="col-9">
+            <textarea name="description" id="description" class="form-control form-control-solid h-100px"
+                      wrap="hard" maxlength="1000" placeholder="게시판 설명을 입력합니다.">{{description}}</textarea>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-3 col-form-label text-center">
+            <label class="cursor-help fw-bold"
+                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click"
+                   title="사용 여부를 설정합니다.">
+                사용 여부
+                <i class="bi bi-question-circle"></i>
+            </label>
+        </div>
+        <div class="col-9 text-center d-flex align-items-center">
+            <div class="form-check form-switch form-check-custom form-check-solid">
+                <input type="checkbox" name="useYn" id="useYn" class="form-check-input cursor-pointer"
+                       value="Y" {{checkedYn useYn}}>
+                <label class="form-check-label ms-3" for="useYn" id="useYnLabel" {{checkedYnStyle useYn "color" "blue//gray"}}>
+                    {{#ifYn useYn}}미{{/ifYn}}사용
+                </label>
+            </div>
+        </div>
+    </div>
+</script>

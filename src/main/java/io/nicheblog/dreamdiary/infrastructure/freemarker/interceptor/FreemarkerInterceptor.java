@@ -82,7 +82,7 @@ public class FreemarkerInterceptor
                 .request(request)
                 .session(session)
                 .mav(mav)
-                .userId(authInfo.getUserId())
+                .username(authInfo.getUsername())
                 .build();
 
         for (final FreemarkerModelContributor contributor : modelContributors) {

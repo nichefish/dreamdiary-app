@@ -33,7 +33,7 @@
             <div class="col-form-label text-center fw-bold">업무용 연락처</div>
         </div>
         <div class="col-xl-2 col-8 col-form-label">
-            ${user.emplym.emplymCttpc!}
+            ${user.emplym.emplymPhoneNumber!}
         </div>
     </div>
     <#--begin::Row-->
