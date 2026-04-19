@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.feature.attachable._shared.spec.BaseAttachableSpe
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
+import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDaySmpEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.extern.log4j.Log4j2;
@@ -45,6 +46,13 @@ public class JournalChapterSpec
         final List<Order> order = new ArrayList<>();
         final Join<JournalChapterEntity, JournalDaySmpEntity> journalDayJoin = root.join("journalDay", JoinType.INNER);
         order.add(builder.desc(journalDayJoin.get("journalDate")));
+        // 동일 일자(또는 동일 조회 묶음) 내: 일기 → 노트 → 꿈, 그 다음 sort_order
+        final Expression<Integer> chapterTypeRank = builder.<Integer>selectCase()
+                .when(builder.equal(root.get("chapterType"), ChapterType.DIARY), builder.literal(1))
+                .when(builder.equal(root.get("chapterType"), ChapterType.NOTE), builder.literal(2))
+                .when(builder.equal(root.get("chapterType"), ChapterType.DREAM), builder.literal(3))
+                .otherwise(builder.literal(99));
+        order.add(builder.asc(chapterTypeRank));
         order.add(builder.asc(root.get("sortOrder")));
         query.orderBy(order);
         // distinct
