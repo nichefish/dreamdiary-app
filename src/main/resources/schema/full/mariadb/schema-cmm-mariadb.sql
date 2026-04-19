@@ -100,7 +100,6 @@ CREATE TABLE IF NOT EXISTS auth_policy (
     password_change_cycle_days INT COMMENT '패스워드 변경 주기(일)',
     inactive_lock_days INT COMMENT '미로그인 시 잠금 일수',
     password_reset_token_expiry_minutes INT COMMENT '비밀번호 재설정 토큰 만료 시간(분)',
-    pw_for_reset VARCHAR(20) COMMENT '리셋할 패스워드',
     -- AUDIT
     created_by VARCHAR(20) comment '등록자 ID',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',

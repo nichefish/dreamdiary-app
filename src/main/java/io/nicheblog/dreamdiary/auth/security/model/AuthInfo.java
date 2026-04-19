@@ -7,6 +7,7 @@ import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -130,7 +131,9 @@ public class AuthInfo
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (CollectionUtils.isEmpty(this.roles)) throw new RuntimeException(MessageUtils.getMessage("msg.user.auth.empty"));
+        if (CollectionUtils.isEmpty(this.roles)) {
+            throw new AuthenticationServiceException(MessageUtils.getMessage("msg.user.auth.empty"));
+        }
 
         return this.roles.stream()
                 .map(entity -> {

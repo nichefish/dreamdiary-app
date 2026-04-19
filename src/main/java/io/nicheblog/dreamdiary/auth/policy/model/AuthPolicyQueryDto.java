@@ -43,7 +43,4 @@ public class AuthPolicyQueryDto
 
     /** 비밀번호 재설정 토큰 만료 시간(분) */
     private Integer passwordResetTokenExpiryMinutes;
-
-    /** 비밀번호 초기화 값 */
-    private String pwForReset;
 }

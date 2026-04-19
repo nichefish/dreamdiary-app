@@ -32,10 +32,6 @@ dF.AuthPolicy = (function(): dfModule {
                     accountLockDurationMinutes: { maxlength: 4 },
                     passwordChangeCycleDays: { maxlength: 3 },
                     passwordResetTokenExpiryMinutes: { maxlength: 5 },
-                    pwForReset: { minlength: 8, maxlength: 20, regex: cF.regex.pw },
-                },
-                messages: {
-                    pwForReset: { regex: "비밀번호가 형식에 맞지 않습니다." },
                 },
             });
         },

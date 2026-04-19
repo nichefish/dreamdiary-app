@@ -26,7 +26,6 @@ public class AuthPolicyEntityTestFactory {
                 .passwordChangeCycleDays(30)
                 .inactiveLockDays(30)
                 .passwordResetTokenExpiryMinutes(30)
-                .pwForReset("test_password")
                 .build();
     }
 }

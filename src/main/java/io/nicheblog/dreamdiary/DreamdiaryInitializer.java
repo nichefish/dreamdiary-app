@@ -191,7 +191,6 @@ public class DreamdiaryInitializer
                 .passwordChangeCycleDays(90)
                 .inactiveLockDays(90)
                 .passwordResetTokenExpiryMinutes(30)
-                .pwForReset(SYSTEM_INIT_TEMP_PW)
                 .build();
 
         return authPolicyService.regist(authPolicy).getRslt();

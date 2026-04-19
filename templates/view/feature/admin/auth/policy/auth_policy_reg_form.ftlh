@@ -102,21 +102,6 @@
                     ※ 비밀번호 재설정 링크/토큰 유효 시간
                 </div>
             </div>
-            <#--begin::Row-->
-            <div class="row mb-4">
-                <div class="col-xl-2 col-form-label fs-6 fw-bold">
-                    <label for="pwForReset">비밀번호 초기화 설정값</label>
-                </div>
-                <div class="col-xl-2">
-                    <input type="password" name="pwForReset" id="pwForReset" class="form-control form-control-solid required"
-                           value="${authPolicy.pwForReset!}" maxlength="16" autocomplete="off" />
-                    <div id="pwForReset_validate_span"></div>
-                </div>
-                <div class="col-xl-8 text-noti">
-                    ※ 계정 '비밀번호 초기화'시 초기값으로 설정할 비밀번호<br/>
-                    ※ 개인에게 초기화 비밀번호 발급시 변경 필수 + 평소 주기적으로 변경 요망
-                </div>
-            </div>
         </form>
     </div>
     <#--begin::Card footer-->

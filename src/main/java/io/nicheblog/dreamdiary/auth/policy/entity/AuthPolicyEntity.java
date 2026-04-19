@@ -64,9 +64,4 @@ public class AuthPolicyEntity
     @Column(name = "password_reset_token_expiry_minutes")
     @Comment("비밀번호 재설정 토큰 만료 시간(분)")
     private Integer passwordResetTokenExpiryMinutes;
-
-    /** 비밀번호 초기화 값 */
-    @Column(name = "pw_for_reset", length = 20)
-    @Comment("비밀번호 초기화 값")
-    private String pwForReset;
 }
