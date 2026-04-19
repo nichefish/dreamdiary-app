@@ -94,6 +94,7 @@ public class JournalDayService
         final SimpleKey cacheKey = new SimpleKey(resolvedUsername, yy, mnth);
         EhCacheUtils.put("journalChapterStateMapByUser", cacheKey, maps.getChapterMap());
         EhCacheUtils.put("journalDiaryStateMapByUser", cacheKey, maps.getDiaryMap());
+        EhCacheUtils.put("journalNoteStateMapByUser", cacheKey, maps.getNoteMap());
         EhCacheUtils.put("journalDreamStateMapByUser", cacheKey, maps.getDreamMap());
         EhCacheUtils.put("journalInterpretationStateMapByUser", cacheKey, maps.getInterpretationMap());
 
@@ -137,6 +138,7 @@ public class JournalDayService
         final SimpleKey cacheKey = new SimpleKey(resolvedUsername, weekStartDt);
         EhCacheUtils.put("journalChapterWeeklyStateMapByUser", cacheKey, maps.getChapterMap());
         EhCacheUtils.put("journalDiaryWeeklyStateMapByUser", cacheKey, maps.getDiaryMap());
+        EhCacheUtils.put("journalNoteWeeklyStateMapByUser", cacheKey, maps.getNoteMap());
         EhCacheUtils.put("journalDreamWeeklyStateMapByUser", cacheKey, maps.getDreamMap());
         EhCacheUtils.put("journalInterpretationWeeklyStateMapByUser", cacheKey, maps.getInterpretationMap());
 

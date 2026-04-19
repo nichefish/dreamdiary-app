@@ -10,6 +10,7 @@ import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDaySmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.diary.entity.JournalDiaryEntity;
 import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntity;
+import io.nicheblog.dreamdiary.feature.journal.note.entity.JournalNoteEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
@@ -104,6 +105,12 @@ public class JournalChapterEntity
     @OrderBy("sortOrder ASC")
     @Comment("저널 일기 목록")
     private List<JournalDiaryEntity> journalDiaryList;
+
+    /** 저널 노트 목록 */
+    @OneToMany(mappedBy = "journalChapter", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("sortOrder ASC")
+    @Comment("저널 노트 목록")
+    private List<JournalNoteEntity> journalNoteList;
 
     /** 저널 꿈 목록 (chapter_type = DREAM인 경우) */
     @OneToMany(mappedBy = "journalChapter", cascade = CascadeType.ALL, orphanRemoval = true)

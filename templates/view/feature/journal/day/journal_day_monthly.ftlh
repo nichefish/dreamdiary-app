@@ -128,6 +128,18 @@
 <#include "/view/feature/journal/diary/_partial/_journal_diary_content_partial.hbs">
 <script type="text/javascript" src="/js/view/feature/journal/diary/journal_diary_module.js?${releaseDate!}"></script>
 
+<#--include::journal_note_module-->
+<#include "/view/feature/journal/note/_modal/_journal_note_reg_modal.ftlh">
+<#include "/view/feature/journal/note/_partial/_journal_note_reg_btn_partial.hbs">
+<#include "/view/feature/journal/note/_partial/_journal_note_item_partial.hbs">
+<#include "/view/feature/journal/note/_partial/_journal_note_content_partial.hbs">
+<#include "/view/feature/journal/note/_partial/_journal_note_copy_btn_partial.hbs">
+<#include "/view/feature/journal/note/_partial/_journal_note_context_btn_partial.hbs">
+<#include "/view/feature/journal/note/_partial/_journal_note_toggle_btn_partial.hbs">
+<#include "/view/feature/journal/note/_modal/_journal_note_reg_modal_header_template.hbs">
+<#include "/view/feature/journal/note/_modal/_journal_note_reg_modal_template.hbs">
+<script type="text/javascript" src="/js/view/feature/journal/note/journal_note_module.js?${releaseDate!}"></script>
+
 <#--include::journal_dream_module-->
 <#include "/view/feature/journal/dream/_journal_dream_list_template.hbs">
 <#include "/view/feature/journal/dream/_modal/_journal_dream_reg_modal.ftlh">

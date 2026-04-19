@@ -33,6 +33,7 @@ public class JournalStateCacheUpdater
         return switch (contentType) {
             case JOURNAL_CHAPTER,
                  JOURNAL_DIARY,
+                 JOURNAL_NOTE,
                  JOURNAL_DREAM,
                  JOURNAL_INTERPRETATION -> true;
             default -> false;
@@ -96,6 +97,7 @@ public class JournalStateCacheUpdater
     private String getEvictCacheNm(final ContentType contentType) {
         return switch (contentType) {
             case JOURNAL_DIARY -> "journalDiaryYyAnnualStatedListByUser";
+            case JOURNAL_NOTE -> "journalNoteYyAnnualStatedListByUser";
             case JOURNAL_DREAM -> "journalDreamYyAnnualStatedListByUser";
             default -> null;
         };
@@ -127,6 +129,7 @@ public class JournalStateCacheUpdater
         return switch (contentType) {
             case JOURNAL_CHAPTER -> "journalChapterStateMapByUser";
             case JOURNAL_DIARY -> "journalDiaryStateMapByUser";
+            case JOURNAL_NOTE -> "journalNoteStateMapByUser";
             case JOURNAL_DREAM -> "journalDreamStateMapByUser";
             case JOURNAL_INTERPRETATION -> "journalInterpretationStateMapByUser";
             default -> throw new IllegalStateException("Unexpected value: " + contentType);
@@ -142,6 +145,7 @@ public class JournalStateCacheUpdater
         return switch (contentType) {
             case JOURNAL_CHAPTER -> "journalChapterWeeklyStateMapByUser";
             case JOURNAL_DIARY -> "journalDiaryWeeklyStateMapByUser";
+            case JOURNAL_NOTE -> "journalNoteWeeklyStateMapByUser";
             case JOURNAL_DREAM -> "journalDreamWeeklyStateMapByUser";
             case JOURNAL_INTERPRETATION -> "journalInterpretationWeeklyStateMapByUser";
             default -> throw new IllegalStateException("Unexpected value: " + contentType);

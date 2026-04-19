@@ -65,33 +65,73 @@
                                     {{/ifYn}}
                                 </div>
                                 <div class="col-3 d-none d-md-flex align-items-center gap-2">
-                                    {{> journal_diary_reg_btn_partial this}}
+                                    {{#if (equals chapterType "DIARY")}}
+                                        {{> journal_diary_reg_btn_partial this}}
+                                        {{> journal_note_reg_btn_partial this}}
+                                    {{/if}}
                                     {{> journal_chapter_context_btn_partial this}}
                                     {{> journal_chapter_toggle_btn_partial this}}
                                 </div>
                             </div>
                             <div class="journal-chapter journal-item" data-id={{id}}>
-                                {{#each journalDiaryList}}
-                                    <div class="journal-diary-item" data-id={{id}} data-collapsed="{{collapsedYn}}" data-resolved="{{resolvedYn}}" data-imprtc="{{imprtcYn}}">
-                                        <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
-                                            <div class="d-flex flex-column align-items-center">
-                                                <span class="journal-diary-idx {{#if (hasState state 'RESOLVED')}}text-success{{/if}}">
-                                                    # {{sortOrder}}
-                                                </span>
-                                                {{> journal_diary_toggle_btn_partial this}}
+                                {{#if (equals chapterType "DIARY")}}
+                                    {{#each journalDiaryList}}
+                                        <div class="journal-diary-item" data-id={{id}} data-collapsed="{{collapsedYn}}" data-resolved="{{resolvedYn}}" data-imprtc="{{imprtcYn}}">
+                                            <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
+                                                <div class="d-flex flex-column align-items-center">
+                                                    <span class="journal-diary-idx {{#if (hasState state 'RESOLVED')}}text-success{{/if}}">
+                                                        # {{sortOrder}}
+                                                    </span>
+                                                    {{> journal_diary_toggle_btn_partial this}}
+                                                </div>
+                                            </div>
+                                            <div class="col journal-diary-content">
+                                                {{> journal_diary_content_partial this}}
+                                            </div>
+                                            <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                                            <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
+                                                {{> comment_reg_btn_partial this contentType="JOURNAL_DIARY"}}
+                                                {{> journal_diary_copy_btn_partial this}}
+                                                {{> journal_diary_context_btn_partial this}}
                                             </div>
                                         </div>
-                                        <div class="col journal-diary-content">
-                                            {{> journal_diary_content_partial this}}
-                                        </div>
-                                        <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
-                                        <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
-                                            {{> comment_reg_btn_partial this contentType="JOURNAL_DIARY"}}
-                                            {{> journal_diary_copy_btn_partial this}}
-                                            {{> journal_diary_context_btn_partial this}}
-                                        </div>
-                                    </div>
-                                {{/each}}
+                                    {{/each}}
+                                {{else}}
+                                    {{#if (equals chapterType "NOTE")}}
+                                        {{#each journalNoteList}}
+                                            <div class="journal-note-item {{#if (hasState state 'COLLAPSED')}}is-collapsed{{/if}}"
+                                                 data-id="{{id}}"
+                                                 data-stdrd-dt="{{stdrdDt}}"
+                                                 data-yy="{{yy}}"
+                                                 data-mnth="{{mnth}}"
+                                                 data-collapsed="{{#if (hasState state 'COLLAPSED')}}Y{{else}}N{{/if}}"
+                                                 data-resolved="{{#if (hasState state 'RESOLVED')}}Y{{else}}N{{/if}}"
+                                                 data-imprtc="{{#if (hasState state 'IMPRTC')}}Y{{else}}N{{/if}}"
+                                                 data-refrnc="{{#if (hasState state 'REFRNC')}}Y{{else}}N{{/if}}">
+                                                <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-5 me-4 h-75" style="width:85px;">
+                                                    <div class="d-flex flex-column align-items-center">
+                                                        <span class="journal-diary-idx {{#if (hasState state 'RESOLVED')}}text-success{{/if}}">
+                                                            # {{sortOrder}}
+                                                        </span>
+                                                        {{> journal_note_toggle_btn_partial this}}
+                                                    </div>
+                                                </div>
+                                                <div class="col journal-note-content">
+                                                    {{#if (exists title)}}
+                                                        <div class="fw-semibold text-gray-800 mb-2">{{title}}</div>
+                                                    {{/if}}
+                                                    {{> journal_note_content_partial this}}
+                                                </div>
+                                                <div class="col-1 ms-4 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
+                                                <div class="col-1 py-3 d-none d-md-flex-between w-75px ps-2 gap-1">
+                                                    {{> comment_reg_btn_partial this contentType="JOURNAL_NOTE"}}
+                                                    {{> journal_note_copy_btn_partial this}}
+                                                    {{> journal_note_context_btn_partial this}}
+                                                </div>
+                                            </div>
+                                        {{/each}}
+                                    {{/if}}
+                                {{/if}}
                             </div>
                         {{/each}}
                         {{#if hasDream}}

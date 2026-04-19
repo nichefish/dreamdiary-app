@@ -12,6 +12,7 @@ import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayFilt
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayHolydayHelper;
 import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayViewHelper;
 import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryDto;
+import io.nicheblog.dreamdiary.feature.journal.note.model.JournalNoteDto;
 import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamDto;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
@@ -202,11 +203,19 @@ public class JournalDayQueryService {
             final List<JournalChapterDto> journalChapterList = journalDay.getJournalChapterList();
             if (journalChapterList != null) {
                 for (final JournalChapterDto journalChapter : journalChapterList) {
-                    if (journalChapter == null || journalChapter.getJournalDiaryList() == null) continue;
+                    if (journalChapter == null) continue;
 
+                    if (journalChapter.getJournalDiaryList() != null) {
                     for (final JournalDiaryDto journalDiary : journalChapter.getJournalDiaryList()) {
                         if (journalDiary == null || journalDiary.getId() == null) continue;
                         refKeyList.add(new BaseAttachableKey(journalDiary.getId(), ContentType.JOURNAL_DIARY));
+                    }
+                    }
+                    if (journalChapter.getJournalNoteList() != null) {
+                        for (final JournalNoteDto journalNote : journalChapter.getJournalNoteList()) {
+                            if (journalNote == null || journalNote.getId() == null) continue;
+                            refKeyList.add(new BaseAttachableKey(journalNote.getId(), ContentType.JOURNAL_NOTE));
+                        }
                     }
                 }
             }
@@ -223,11 +232,19 @@ public class JournalDayQueryService {
             final List<JournalChapterDto> journalChapterList = journalDay.getJournalChapterList();
             if (journalChapterList != null) {
                 for (final JournalChapterDto journalChapter : journalChapterList) {
-                    if (journalChapter == null || journalChapter.getJournalDiaryList() == null) continue;
+                    if (journalChapter == null) continue;
 
+                    if (journalChapter.getJournalDiaryList() != null) {
                     for (final JournalDiaryDto journalDiary : journalChapter.getJournalDiaryList()) {
                         if (journalDiary == null || journalDiary.getId() == null) continue;
                         journalDiary.setRelatedContentList(this.getRelatedList(relatedMap, ContentType.JOURNAL_DIARY.key, journalDiary.getId()));
+                    }
+                    }
+                    if (journalChapter.getJournalNoteList() != null) {
+                        for (final JournalNoteDto journalNote : journalChapter.getJournalNoteList()) {
+                            if (journalNote == null || journalNote.getId() == null) continue;
+                            journalNote.setRelatedContentList(this.getRelatedList(relatedMap, ContentType.JOURNAL_NOTE.key, journalNote.getId()));
+                        }
                     }
                 }
             }

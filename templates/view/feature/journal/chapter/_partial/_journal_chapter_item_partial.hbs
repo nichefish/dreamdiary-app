@@ -16,7 +16,10 @@
             <i class="bi bi-book fs-4 {{#ifYn chapterResolvedYn}}text-success{{/ifYn}}"></i>
         </div>
         <div class="col-3 d-none d-md-flex align-items-center gap-2">
-            {{> journal_diary_reg_btn_partial this}}
+            {{#if (equals chapterType "DIARY")}}
+                {{> journal_diary_reg_btn_partial this}}
+                {{> journal_note_reg_btn_partial this}}
+            {{/if}}
             {{> journal_chapter_copy_btn_partial this}}
             {{> journal_chapter_export_btn_partial this}}
             {{> journal_chapter_context_btn_partial this}}
@@ -31,9 +34,17 @@
          data-collapsed="{{hasState state 'COLLAPSED'}}"
          data-resolved="{{#ifYn chapterResolvedYn}}Y{{else}}N{{/ifYn}}">
         <div class="journal-chapter-content {{#if (hasState state 'COLLAPSED')}}collapsed{{/if}}">
-            {{#each journalDiaryList}}
-                {{> journal_diary_item_partial this}}
-            {{/each}}
+            {{#if (equals chapterType "DIARY")}}
+                {{#each journalDiaryList}}
+                    {{> journal_diary_item_partial this}}
+                {{/each}}
+            {{else}}
+                {{#if (equals chapterType "NOTE")}}
+                    {{#each journalNoteList}}
+                        {{> journal_note_item_partial this}}
+                    {{/each}}
+                {{/if}}
+            {{/if}}
         </div>
         <div class="tags journal-chapter-tags ms-2 mt-3 {{#unless (hasState state 'COLLAPSED')}}d-none{{/unless}}">
             <i class="bi bi-tag"></i>

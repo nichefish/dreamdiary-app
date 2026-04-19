@@ -87,6 +87,27 @@ CREATE TABLE IF NOT EXISTS journal_diary (
     INDEX (journal_chapter_id)
 ) COMMENT = '저널 일기';
 
+-- 저널 노트 (journal_note)
+-- @extends: BasePostEntity
+-- @uses: CommentEmbed
+CREATE TABLE IF NOT EXISTS journal_note (
+    id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 노트 ID',
+    content_type VARCHAR(32) DEFAULT 'JOURNAL_NOTE' COMMENT '컨텐츠 타입',
+    journal_chapter_id INT COMMENT '저널 챕터 번호',
+    title VARCHAR(200) COMMENT '제목',
+    content LONGTEXT COMMENT '내용',
+    sort_order INT DEFAULT 1 COMMENT '저널 노트 인덱스',
+    file_group_id INT COMMENT '첨부파일 번호',
+    history_triggered_by VARCHAR(20) COMMENT '최종 이력 트리거 발생자',
+    history_triggered_at DATETIME COMMENT '최종 이력 트리거 발생일시',
+    created_by VARCHAR(20) COMMENT '등록자 ID',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_by VARCHAR(20) COMMENT '수정자 ID',
+    updated_at DATETIME COMMENT '수정일시',
+    deleted_at DATETIME COMMENT '삭제일시',
+    INDEX (journal_chapter_id)
+) COMMENT = '저널 노트';
+
 -- 저널 꿈 (journal_dream)
 -- @extends: BasePostEntity
 -- @uses: CommentEmbed

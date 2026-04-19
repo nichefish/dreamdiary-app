@@ -8,6 +8,8 @@ import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryDto;
 import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryPostDto;
 import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamDto;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.model.JournalInterpretationDto;
+import io.nicheblog.dreamdiary.feature.journal.note.model.JournalNoteDto;
+import io.nicheblog.dreamdiary.feature.journal.note.model.JournalNotePostDto;
 import io.nicheblog.dreamdiary.feature.journal.todo.model.JournalTodoDto;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.*;
@@ -144,6 +146,29 @@ public class JournalCacheEvictParam {
                 .createdBy(dto.getCreatedBy())
                 .id(dto.getId())
                 .journalDayId(dto.getJournalDayId())
+                .yy(dto.getYy())
+                .mnth(dto.getMnth())
+                .weekStartDt(DateUtils.getWeekStartDateStr(dto.getStdrdDt()))
+                .build();
+    }
+
+    public static JournalCacheEvictParam of(final JournalNotePostDto dto) {
+        return JournalCacheEvictParam.builder()
+                .createdBy(dto.getCreatedBy())
+                .id(dto.getId())
+                .journalDayId(dto.getJournalDayId())
+                .journalChapterId(dto.getJournalChapterId())
+                .yy(dto.getYy())
+                .mnth(dto.getMnth())
+                .build();
+    }
+
+    public static JournalCacheEvictParam of(final JournalNoteDto dto) throws Exception {
+        return JournalCacheEvictParam.builder()
+                .createdBy(dto.getCreatedBy())
+                .id(dto.getId())
+                .journalDayId(dto.getJournalDayId())
+                .journalChapterId(dto.getJournalChapterId())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
                 .weekStartDt(DateUtils.getWeekStartDateStr(dto.getStdrdDt()))

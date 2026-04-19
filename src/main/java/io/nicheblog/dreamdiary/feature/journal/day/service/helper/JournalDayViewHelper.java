@@ -7,6 +7,7 @@ import io.nicheblog.dreamdiary.feature.journal.chapter.service.helper.JournaaCha
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDaySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryDto;
+import io.nicheblog.dreamdiary.feature.journal.note.model.JournalNoteDto;
 import io.nicheblog.dreamdiary.feature.journal.dream.service.helper.JournalDreamViewHelper;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.experimental.UtilityClass;
@@ -38,10 +39,11 @@ public final class JournalDayViewHelper {
 
         final Map<Integer, JournalState> chapterMap = Optional.ofNullable((Map<Integer, JournalState>) EhCacheUtils.getObjectFromCache("journalChapterStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JournalState> diaryMap = Optional.ofNullable((Map<Integer, JournalState>) EhCacheUtils.getObjectFromCache("journalDiaryStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
+        final Map<Integer, JournalState> noteMap = Optional.ofNullable((Map<Integer, JournalState>) EhCacheUtils.getObjectFromCache("journalNoteStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JournalState> dreamMap = Optional.ofNullable((Map<Integer, JournalState>) EhCacheUtils.getObjectFromCache("journalDreamStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JournalState> interpretationMap = Optional.ofNullable((Map<Integer, JournalState>) EhCacheUtils.getObjectFromCache("journalInterpretationStateMapByUser", cacheKey)).orElse(Collections.emptyMap());
 
-        JournalDayViewHelper.applyStates(listDto, chapterMap, diaryMap, dreamMap, interpretationMap, searchParam);
+        JournalDayViewHelper.applyStates(listDto, chapterMap, diaryMap, noteMap, dreamMap, interpretationMap, searchParam);
     }
 
     /**
@@ -62,10 +64,11 @@ public final class JournalDayViewHelper {
 
         final Map<Integer, JournalState> chapterMap = Optional.ofNullable((Map<Integer, JournalState>) EhCacheUtils.getObjectFromCache("journalChapterWeeklyStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JournalState> diaryMap = Optional.ofNullable((Map<Integer, JournalState>) EhCacheUtils.getObjectFromCache("journalDiaryWeeklyStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
+        final Map<Integer, JournalState> noteMap = Optional.ofNullable((Map<Integer, JournalState>) EhCacheUtils.getObjectFromCache("journalNoteWeeklyStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JournalState> dreamMap = Optional.ofNullable((Map<Integer, JournalState>) EhCacheUtils.getObjectFromCache("journalDreamWeeklyStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JournalState> interpretationMap = Optional.ofNullable((Map<Integer, JournalState>) EhCacheUtils.getObjectFromCache("journalInterpretationWeeklyStateMapByUser", cacheKey)).orElse(Collections.emptyMap());
 
-        JournalDayViewHelper.applyStates(listDto, chapterMap, diaryMap, dreamMap, interpretationMap, searchParam);
+        JournalDayViewHelper.applyStates(listDto, chapterMap, diaryMap, noteMap, dreamMap, interpretationMap, searchParam);
     }
 
     /**
@@ -81,19 +84,21 @@ public final class JournalDayViewHelper {
 
         final Map<Integer, JournalState> chapterMap = Optional.ofNullable((Map<Integer, JournalState>) EhCacheUtils.getObjectFromCache("journalChapterStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JournalState> diaryMap = Optional.ofNullable((Map<Integer, JournalState>) EhCacheUtils.getObjectFromCache("journalDiaryStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
+        final Map<Integer, JournalState> noteMap = Optional.ofNullable((Map<Integer, JournalState>) EhCacheUtils.getObjectFromCache("journalNoteStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JournalState> dreamMap = Optional.ofNullable((Map<Integer, JournalState>) EhCacheUtils.getObjectFromCache("journalDreamStateMapByUser",  cacheKey)).orElse(Collections.emptyMap());
         final Map<Integer, JournalState> interpretationMap = Optional.ofNullable((Map<Integer, JournalState>) EhCacheUtils.getObjectFromCache("journalInterpretationStateMapByUser", cacheKey)).orElse(Collections.emptyMap());
 
         final List<JournalDayDto> listDto = List.of(journalDay);
-        JournalDayViewHelper.applyStates(listDto, chapterMap, diaryMap, dreamMap, interpretationMap);
+        JournalDayViewHelper.applyStates(listDto, chapterMap, diaryMap, noteMap, dreamMap, interpretationMap);
     }
 
     /**
-     * 캐시에 저장된 상태 맵(chapter/diary/dream/interpretation)을 기준으로 조회된 {@link JournalDayDto} 트리 구조에 상태를 반영한다.
+     * 캐시에 저장된 상태 맵(chapter/diary/note/dream/interpretation)을 기준으로 조회된 {@link JournalDayDto} 트리 구조에 상태를 반영한다.
      *
      * @param listDto 조회된 저널 일자 목록 DTO
      * @param chapterMap chapter id → {@link JournalState} 맵
      * @param diaryMap diary id → {@link JournalState} 맵
+     * @param noteMap note id → {@link JournalState} 맵
      * @param dreamMap dream id → {@link JournalState} 맵
      * @param interpretationMap interpretation id -> {@link JournalState} map
      */
@@ -101,22 +106,24 @@ public final class JournalDayViewHelper {
         final List<JournalDayDto> listDto,
         final Map<Integer, JournalState> chapterMap,
         final Map<Integer, JournalState> diaryMap,
+        final Map<Integer, JournalState> noteMap,
         final Map<Integer, JournalState> dreamMap,
         final Map<Integer, JournalState> interpretationMap
     ) {
         for (JournalDayDto day : listDto) {
-            JournaaChapterViewHelper.applyStates(day.getJournalChapterList(), chapterMap, diaryMap, interpretationMap);
+            JournaaChapterViewHelper.applyStates(day.getJournalChapterList(), chapterMap, diaryMap, noteMap, interpretationMap);
             JournalDreamViewHelper.applyStates(day.getJournalDreamList(), dreamMap, interpretationMap);
             JournalDreamViewHelper.applyStates(day.getJournalElseDreamList(), dreamMap, interpretationMap);
         }
     }
 
     /**
-     * 캐시에 저장된 상태 맵(chapter/diary/dream/interpretation)을 기준으로 조회된 {@link JournalDayDto} 트리 구조에 상태를 반영한다.
+     * 캐시에 저장된 상태 맵(chapter/diary/note/dream/interpretation)을 기준으로 조회된 {@link JournalDayDto} 트리 구조에 상태를 반영한다.
      *
      * @param listDto 조회된 저널 일자 목록 DTO
      * @param chapterMap chapter id → {@link JournalState} 맵
      * @param diaryMap diary id → {@link JournalState} 맵
+     * @param noteMap note id → {@link JournalState} 맵
      * @param dreamMap dream id → {@link JournalState} 맵
      * @param interpretationMap interpretation id -> {@link JournalState} map
      * @param searchParam JournalDaySearchParam
@@ -125,6 +132,7 @@ public final class JournalDayViewHelper {
         final List<JournalDayDto> listDto,
         final Map<Integer, JournalState> chapterMap,
         final Map<Integer, JournalState> diaryMap,
+        final Map<Integer, JournalState> noteMap,
         final Map<Integer, JournalState> dreamMap,
         final Map<Integer, JournalState> interpretationMap,
         final JournalDaySearchParam searchParam
@@ -132,7 +140,7 @@ public final class JournalDayViewHelper {
         for (JournalDayDto day : listDto) {
 
             if (searchParam.isShowDiaries()) {
-                JournaaChapterViewHelper.applyStates(day.getJournalChapterList(), chapterMap, diaryMap, interpretationMap);
+                JournaaChapterViewHelper.applyStates(day.getJournalChapterList(), chapterMap, diaryMap, noteMap, interpretationMap);
             }
 
             if (searchParam.isShowDreams()) {
@@ -155,16 +163,31 @@ public final class JournalDayViewHelper {
             if (CollectionUtils.isEmpty(day.getJournalChapterList())) continue;
 
             for (final JournalChapterDto chapter : day.getJournalChapterList()) {
-                if (CollectionUtils.isEmpty(chapter.getJournalDiaryList())) continue;
+                if (CollectionUtils.isEmpty(chapter.getJournalDiaryList())
+                        && CollectionUtils.isEmpty(chapter.getJournalNoteList())) continue;
 
                 final Map<Integer, TagContentDto> tagMap = new LinkedHashMap<>();
 
+                if (CollectionUtils.isNotEmpty(chapter.getJournalDiaryList())) {
                 for (final JournalDiaryDto diary : chapter.getJournalDiaryList()) {
                     final List<TagContentDto> tagList = diary.getTag().getList();
                     if (CollectionUtils.isEmpty(tagList)) continue;
 
                     for (final TagContentDto tag : tagList) {
                         tagMap.putIfAbsent(tag.getTagId(), tag);
+                    }
+                }
+                }
+
+                if (CollectionUtils.isNotEmpty(chapter.getJournalNoteList())) {
+                    for (final JournalNoteDto note : chapter.getJournalNoteList()) {
+                        if (note == null || note.getTag() == null) continue;
+                        final List<TagContentDto> tagList = note.getTag().getList();
+                        if (CollectionUtils.isEmpty(tagList)) continue;
+
+                        for (final TagContentDto tag : tagList) {
+                            tagMap.putIfAbsent(tag.getTagId(), tag);
+                        }
                     }
                 }
 

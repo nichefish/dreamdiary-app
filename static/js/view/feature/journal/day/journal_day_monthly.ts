@@ -14,6 +14,7 @@ const Page: Page = (function(): Page {
             /* initialize modules. */
             dF.JournalDay.init('LIST');
             dF.JournalDiary.init('LIST');
+            void dF.JournalNote.init("LIST");
             dF.JournalDream.init('LIST');
             dF.JournalTodo.init();
             dF.Comment.modal.init({

@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayEntity;
 import io.nicheblog.dreamdiary.feature.journal.diary.entity.JournalDiaryEntity;
 import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntity;
+import io.nicheblog.dreamdiary.feature.journal.note.entity.JournalNoteEntity;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.entity.JournalInterpretationEntity;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,22 +26,30 @@ import java.util.Map;
 public final class JournalDayStateMapHelper {
 
     /**
-     * JournalDayEntity 리스트를 순회하여 각 id 기준의 JournalState 맵(entry, diary, dream, interpretation)을 생성한다.
+     * JournalDayEntity 리스트를 순회하여 각 id 기준의 JournalState 맵(entry, diary, note, dream, interpretation)을 생성한다.
      * @param journalDayEntityList 조회된 JournalDayEntity 리스트
      * @return {@link JournalStateMaps}
      *  chapterMap: entry id -> JournalState
      *  diaryMap: diary id -> JournalState
+     *  noteMap: note id -> JournalState
      *  dreamMap: dream id -> JournalState
      *  interpretationMap: interpretation id -> JournalState
      */
     public static JournalStateMaps makeJournalStateMaps(final List<JournalDayEntity> journalDayEntityList) {
         final Map<Integer, JournalState> chapterMap = new HashMap<>();
         final Map<Integer, JournalState> diaryMap = new HashMap<>();
+        final Map<Integer, JournalState> noteMap = new HashMap<>();
         final Map<Integer, JournalState> dreamMap = new HashMap<>();
         final Map<Integer, JournalState> interpretationMap = new HashMap<>();
 
         if (CollectionUtils.isEmpty(journalDayEntityList)) {
-            return JournalStateMaps.builder().chapterMap(chapterMap).diaryMap(diaryMap).dreamMap(dreamMap).interpretationMap(interpretationMap).build();
+            return JournalStateMaps.builder()
+                    .chapterMap(chapterMap)
+                    .diaryMap(diaryMap)
+                    .noteMap(noteMap)
+                    .dreamMap(dreamMap)
+                    .interpretationMap(interpretationMap)
+                    .build();
         }
 
         for (final JournalDayEntity day : journalDayEntityList) {
@@ -114,10 +123,28 @@ public final class JournalDayStateMapHelper {
                                 }
                             }
                         }
+                        final List<JournalNoteEntity> journalNoteList = entry.getJournalNoteList();
+                        if (CollectionUtils.isNotEmpty(journalNoteList)) {
+                            for (final JournalNoteEntity note : journalNoteList) {
+                                final JournalState noteState = JournalState.builder()
+                                        .resolved(note.state.hasState(StateCd.RESOLVED))
+                                        .collapsed(note.state.hasState(StateCd.COLLAPSED))
+                                        .imprtc(note.state.hasState(StateCd.IMPRTC))
+                                        .refrnc(note.state.hasState(StateCd.REFRNC))
+                                        .build();
+                                noteMap.put(note.getId(), noteState);
+                            }
+                        }
                     }
                 }
             }
         }
-        return JournalStateMaps.builder().chapterMap(chapterMap).diaryMap(diaryMap).dreamMap(dreamMap).interpretationMap(interpretationMap).build();
+        return JournalStateMaps.builder()
+                .chapterMap(chapterMap)
+                .diaryMap(diaryMap)
+                .noteMap(noteMap)
+                .dreamMap(dreamMap)
+                .interpretationMap(interpretationMap)
+                .build();
     }
 }

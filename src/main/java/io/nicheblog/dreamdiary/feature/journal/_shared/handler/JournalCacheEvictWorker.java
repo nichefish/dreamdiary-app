@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.feature.journal.day.service.strategy.JournalDayCa
 import io.nicheblog.dreamdiary.feature.journal.diary.service.strategy.JournalDiaryCacheEvictor;
 import io.nicheblog.dreamdiary.feature.journal.dream.service.strategy.JournalDreamCacheEvictor;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.service.strategy.JournalInterpretationCacheEvictor;
+import io.nicheblog.dreamdiary.feature.journal.note.service.strategy.JournalNoteCacheEvictor;
 import io.nicheblog.dreamdiary.feature.journal.todo.service.strategy.JournalTodoCacheEvictor;
 import io.nicheblog.dreamdiary.global.util.TransactionHookUtils;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class JournalCacheEvictWorker {
     private final JournalDayCacheEvictor journalDayCacheEvictor;
     private final JournalChapterCacheEvictor journalChapterCacheEvictor;
     private final JournalDiaryCacheEvictor journalDiaryCacheEvictor;
+    private final JournalNoteCacheEvictor journalNoteCacheEvictor;
     private final JournalDreamCacheEvictor journalDreamCacheEvictor;
     private final JournalInterpretationCacheEvictor journalInterpretationCacheEvictor;
     private final JournalTodoCacheEvictor journalTodoCacheEvictor;
@@ -51,6 +53,7 @@ public class JournalCacheEvictWorker {
         evictorMap.put(ContentType.JOURNAL_DAY, journalDayCacheEvictor);
         evictorMap.put(ContentType.JOURNAL_CHAPTER, journalChapterCacheEvictor);
         evictorMap.put(ContentType.JOURNAL_DIARY, journalDiaryCacheEvictor);
+        evictorMap.put(ContentType.JOURNAL_NOTE, journalNoteCacheEvictor);
         evictorMap.put(ContentType.JOURNAL_DREAM, journalDreamCacheEvictor);
         evictorMap.put(ContentType.JOURNAL_INTERPRETATION, journalInterpretationCacheEvictor);
         evictorMap.put(ContentType.JOURNAL_TODO, journalTodoCacheEvictor);
@@ -67,6 +70,7 @@ public class JournalCacheEvictWorker {
                 ContentType.JOURNAL_DAY,
                 ContentType.JOURNAL_CHAPTER,
                 ContentType.JOURNAL_DIARY,
+                ContentType.JOURNAL_NOTE,
                 ContentType.JOURNAL_DREAM,
                 ContentType.JOURNAL_INTERPRETATION,
                 ContentType.JOURNAL_TODO,
@@ -112,4 +116,3 @@ public class JournalCacheEvictWorker {
         evictor.evict(cacheEvictParam);
     }
 }
-

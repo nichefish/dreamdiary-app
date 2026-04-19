@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEnti
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterSmpDto;
 import io.nicheblog.dreamdiary.feature.journal.diary.mapstruct.JournalDiaryMapstruct;
+import io.nicheblog.dreamdiary.feature.journal.note.mapstruct.JournalNoteMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.MarkdownUtils;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
@@ -29,7 +30,7 @@ import java.util.stream.Collectors;
     componentModel = "spring",
     unmappedTargetPolicy = ReportingPolicy.IGNORE,
     imports = { DateUtils.class, StringUtils.class, DatePtn.class, MarkdownUtils.class, CodeUtils.class },
-    uses = { JournalDiaryMapstruct.class },
+    uses = { JournalDiaryMapstruct.class, JournalNoteMapstruct.class },
     builder = @Builder(disableBuilder = true)
 )
 public abstract class JournalChapterMapstruct
