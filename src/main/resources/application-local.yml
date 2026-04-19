@@ -62,3 +62,9 @@ api:
             - name: TEST
               id: ${TEST}
 
+app:
+    logging:
+        service-entry:
+            enabled: true
+            log-finish: false
+

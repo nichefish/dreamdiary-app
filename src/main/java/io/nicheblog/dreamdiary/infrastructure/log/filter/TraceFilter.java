@@ -16,6 +16,10 @@ public class TraceFilter
 
     private static final String TRACE_ID = "traceId";
     private static final String TRACE_HEADER = "X-Trace-Id";
+    /** MDC: HTTP 메서드 (요청 단위, 로그 패턴에서 한 줄에 맥락 부여) */
+    public static final String MDC_REQ_METHOD = "reqMethod";
+    /** MDC: 요청 URI (동일) */
+    public static final String MDC_REQ_URI = "reqUri";
 
     @Override
     public void doFilter(final ServletRequest req, final ServletResponse res, final FilterChain chain)
@@ -26,6 +30,8 @@ public class TraceFilter
         final String traceId = resolveTraceId(request);
 
         MDC.put(TRACE_ID, traceId);
+        MDC.put(MDC_REQ_METHOD, request.getMethod());
+        MDC.put(MDC_REQ_URI, request.getRequestURI());
         request.setAttribute(TRACE_ID, traceId);
         response.setHeader(TRACE_HEADER, traceId);
 

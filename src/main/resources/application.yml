@@ -189,6 +189,13 @@ springdoc:
         #groups:
         #    enabled: true
 
+# 서비스 진입 AOP (ServiceEntryLogAspect). 로컬에서 켜 두고 운영은 기본 false 권장.
+app:
+    logging:
+        service-entry:
+            enabled: false
+            log-finish: false
+
 system:
     init-temp-pw: ${SYSTEM_INIT_TEMP_PW}
 
