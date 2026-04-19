@@ -23,4 +23,8 @@ public class JournalState {
     private Boolean imprtc;
     /** 참조 여부 */
     private Boolean refrnc;
+    /** 악몽 (꿈 전용, {@link io.nicheblog.dreamdiary.feature.attachable.state.StateKey#NHTMR}) */
+    private Boolean nhtmr;
+    /** 입면 환각 (꿈 전용, {@link io.nicheblog.dreamdiary.feature.attachable.state.StateKey#HALLUC}) */
+    private Boolean halluc;
 }

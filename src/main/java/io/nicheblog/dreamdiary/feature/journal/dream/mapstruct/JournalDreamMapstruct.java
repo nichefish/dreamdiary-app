@@ -1,6 +1,8 @@
 package io.nicheblog.dreamdiary.feature.journal.dream.mapstruct;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.mapstruct.BaseAttachableMapstruct;
+import io.nicheblog.dreamdiary.feature.attachable.state.StateKey;
+import io.nicheblog.dreamdiary.feature.attachable.state.model.cmpstn.StateCmpstn;
 import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDatePrecision;
 import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntity;
 import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamDto;
@@ -69,5 +71,22 @@ public abstract class JournalDreamMapstruct
     @Mapping(target = "mnth", source = "journalChapter.journalDay.mnth")
     @Mapping(target = "markdownContent", expression = "java(StringUtils.isEmpty(entity.getContent()) ? \"-\" : MarkdownUtils.markdown(entity.getContent()))")
     public abstract JournalDreamDto toDto(final JournalDreamEntity entity) throws Exception;
+
+    /**
+     * 컬럼 {@code nhtmr_yn} / {@code halluc_yn} 이 아직 Y이고 {@code state} 행이 없는 기존 데이터를
+     * DTO {@code state.list} 에 반영해 배지·hasState 가 일치하도록 한다. (컬럼 드롭 전 이행기)
+     */
+    @AfterMapping
+    protected void mergeLegacyDreamFlagsIntoState(final JournalDreamEntity entity, @MappingTarget final JournalDreamDto dto) {
+        if (dto.getState() == null) {
+            dto.setState(StateCmpstn.builder().build());
+        }
+        if ("Y".equals(entity.getNhtmrYn())) {
+            dto.getState().put(StateKey.NHTMR);
+        }
+        if ("Y".equals(entity.getHallucYn())) {
+            dto.getState().put(StateKey.HALLUC);
+        }
+    }
 }
 

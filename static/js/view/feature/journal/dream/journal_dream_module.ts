@@ -98,8 +98,6 @@ dF.JournalDream = (function(): dfModule {
             // checkbox init
             cF.ui.chckboxLabel("#journalDreamRegForm #resolvedYn", "정리완료//정리중", "green//gray");
             cF.ui.chckboxLabel("#journalDreamRegForm #imprtcYn", "중요//해당없음", "red//gray");
-            cF.ui.chckboxLabel("#journalDreamRegForm #nhtmrYn", "악몽//해당없음", "red//gray");
-            cF.ui.chckboxLabel("#journalDreamRegForm #hallucYn", "입면환각//해당없음", "blue//gray");
             cF.ui.chckboxLabel("#journalDreamRegForm #elseDreamYn", "해당//미해당", "blue//gray", function(): void {
                 $("#elseDreamerNmDiv").removeClass("d-none");
             }, function(): void {
@@ -405,6 +403,30 @@ dF.JournalDream = (function(): dfModule {
                 content.classList.toggle("refrnc", res.rsltSts === "ON");
             }
             this.toggleStateAjax(id, "REFRNC", { onOffFunc });
+        },
+
+        /**
+         * 악몽(NHTMR) 상태 토글
+         */
+        nhtmrAjax: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
+
+            const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
+                item.querySelector(".dream-nhtmr-badge")?.classList.toggle("d-none", res.rsltSts !== "ON");
+            };
+            this.toggleStateAjax(id, "NHTMR", { onOffFunc });
+        },
+
+        /**
+         * 입면 환각(HALLUC) 상태 토글
+         */
+        hallucAjax: function(id: string|number): void {
+            if (isNaN(Number(id))) return;
+
+            const onOffFunc = function(res: AjaxResponse, item: HTMLElement): void {
+                item.querySelector(".dream-halluc-badge")?.classList.toggle("d-none", res.rsltSts !== "ON");
+            };
+            this.toggleStateAjax(id, "HALLUC", { onOffFunc });
         },
 
         /**

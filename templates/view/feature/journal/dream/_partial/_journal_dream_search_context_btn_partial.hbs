@@ -132,6 +132,26 @@
                         </div>
                     </div>
                     <!--end::Menu item-->
+                    <div class="menu-item px-3">
+                        <div class="menu-content px-3">
+                            <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
+                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.dream.nhtmr'/>">
+                                <input class="form-check-input w-30px h-20px cursor-pointer dream-context-nhtmr-check" type="checkbox" value="1" {{#if (hasState state 'NHTMR')}}checked="checked"{{/if}}
+                                       onclick="dF.JournalDream.nhtmrAjax({{id}});">
+                                <span class="form-check-label text-muted fs-7"><@spring.message 'txt.dream.nhtmr'/></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="menu-item px-3">
+                        <div class="menu-content px-3">
+                            <label class="form-check form-switch form-check-custom form-check-solid cursor-pointer"
+                                   data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message 'txt.dream.halluc'/>">
+                                <input class="form-check-input w-30px h-20px cursor-pointer dream-context-halluc-check" type="checkbox" value="1" {{#if (hasState state 'HALLUC')}}checked="checked"{{/if}}
+                                       onclick="dF.JournalDream.hallucAjax({{id}});">
+                                <span class="form-check-label text-muted fs-7"><@spring.message 'txt.dream.halluc'/></span>
+                            </label>
+                        </div>
+                    </div>
                     <!--begin::Menu item-->
                     <div class="menu-item px-3">
                         <div class="menu-content px-3">

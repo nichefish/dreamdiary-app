@@ -36,6 +36,8 @@ public class JournalDreamViewHelper {
                 dream.state.apply(StateKey.RESOLVED, s.getResolved());
                 dream.state.apply(StateKey.IMPRTC, s.getImprtc());
                 dream.state.apply(StateKey.REFRNC, s.getRefrnc());
+                dream.state.apply(StateKey.NHTMR, Boolean.TRUE.equals(s.getNhtmr()));
+                dream.state.apply(StateKey.HALLUC, Boolean.TRUE.equals(s.getHalluc()));
             }
 
             JournalInterpretationViewHelper.applyState(dream.getJournalInterpretationList(), interpretationMap);

@@ -169,12 +169,25 @@
                         {{/each}}
                         {{#if hasDream}}
                             {{#each journalDreamList}}
-                                <div class="journal-item">
+                                <div class="journal-dream-item journal-item d-flex flex-wrap {{#if (hasState state 'COLLAPSED')}}is-collapsed{{/if}}"
+                                     data-id="{{id}}"
+                                     data-stdrd-dt="{{stdrdDt}}"
+                                     data-yy="{{yy}}"
+                                     data-mnth="{{mnth}}"
+                                     data-collapsed="{{#if (hasState state 'COLLAPSED')}}Y{{else}}N{{/if}}"
+                                     data-resolved="{{#if (hasState state 'RESOLVED')}}Y{{else}}N{{/if}}"
+                                     data-imprtc="{{#if (hasState state 'IMPRTC')}}Y{{else}}N{{/if}}"
+                                     data-refrnc="{{#if (hasState state 'REFRNC')}}Y{{else}}N{{/if}}"
+                                     data-nhtmr="{{#if (hasState state 'NHTMR')}}Y{{else}}N{{/if}}"
+                                     data-halluc="{{#if (hasState state 'HALLUC')}}Y{{else}}N{{/if}}">
                                     <div class="col-1 py-3 d-none d-md-flex-between border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
                                         <div># {{sortOrder}}</div>
                                     </div>
-                                    <div class="col py-3 journal-dream-content {{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}">
-                                        {{> journal_dream_content_partial this collapse="collapse-4"}}
+                                    <div class="col py-3">
+                                        {{> journal_dream_states_partial this}}
+                                        <div class="journal-dream-content {{#if (hasState state 'IMPRTC')}}bg-secondary{{/if}}">
+                                            {{> journal_dream_content_partial this collapse="collapse-4"}}
+                                        </div>
                                     </div>
                                     <div class="col-1 bd-none d-md-flex order-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                                     <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">
@@ -185,12 +198,25 @@
                                 </div>
                             {{/each}}
                             {{#each journalElseDreamList}}
-                                <div class="journal-item">
+                                <div class="journal-dream-item journal-item d-flex flex-wrap {{#if (hasState state 'COLLAPSED')}}is-collapsed{{/if}}"
+                                     data-id="{{id}}"
+                                     data-stdrd-dt="{{stdrdDt}}"
+                                     data-yy="{{yy}}"
+                                     data-mnth="{{mnth}}"
+                                     data-collapsed="{{#if (hasState state 'COLLAPSED')}}Y{{else}}N{{/if}}"
+                                     data-resolved="{{#if (hasState state 'RESOLVED')}}Y{{else}}N{{/if}}"
+                                     data-imprtc="{{#if (hasState state 'IMPRTC')}}Y{{else}}N{{/if}}"
+                                     data-refrnc="{{#if (hasState state 'REFRNC')}}Y{{else}}N{{/if}}"
+                                     data-nhtmr="{{#if (hasState state 'NHTMR')}}Y{{else}}N{{/if}}"
+                                     data-halluc="{{#if (hasState state 'HALLUC')}}Y{{else}}N{{/if}}">
                                     <div class="col-1 py-3 d-none d-md-flex border-2 border-gray-300 border-end ps-10 me-4 h-75" style="width:85px;">
                                         -
                                     </div>
-                                    <div class="col py-3 journal-dream-content bg-secondary">
-                                        {{> journal_dream_content_partial this collapse="collapse-4" elseDreamYn="Y"}}
+                                    <div class="col py-3">
+                                        {{> journal_dream_states_partial this}}
+                                        <div class="journal-dream-content bg-secondary">
+                                            {{> journal_dream_content_partial this collapse="collapse-4" elseDreamYn="Y"}}
+                                        </div>
                                     </div>
                                     <div class="col-1 d-none d-md-flex border-2 border-gray-300 border-end h-75 w-10px">&nbsp;</div>
                                     <div class="col-1 py-3 d-none d-md-flex-between w-75px gap-1">

@@ -7,6 +7,7 @@ import io.nicheblog.dreamdiary.feature.attachable.state.entity.StateEntity;
 import io.nicheblog.dreamdiary.feature.attachable.state.mapstruct.StateMapstruct;
 import io.nicheblog.dreamdiary.feature.attachable.state.model.StateDto;
 import io.nicheblog.dreamdiary.feature.attachable.state.model.StateToggleDto;
+import io.nicheblog.dreamdiary.feature.attachable.state.policy.AttachableContentStatePolicy;
 import io.nicheblog.dreamdiary.feature.attachable.state.repository.jpa.StateRepository;
 import io.nicheblog.dreamdiary.feature.attachable.state.spec.StateSpec;
 import io.nicheblog.dreamdiary.global.intrfc.service.BaseDtoWritableService;
@@ -71,6 +72,10 @@ public class StateService
             if (supportsCount > 1) {
                 throw new IllegalStateException("Duplicate StateCacheUpdater mapping for ContentType: " + requiredType);
             }
+            if (!AttachableContentStatePolicy.registeredContentTypes().contains(requiredType)) {
+                throw new IllegalStateException(
+                        "AttachableContentStatePolicy must define allowed StateKeys for cache-backed type: " + requiredType);
+            }
         }
     }
 
@@ -93,6 +98,22 @@ public class StateService
      */
     @Transactional
     public ServiceResponse toggle(final StateToggleDto stateToggle) throws Exception {
+
+        if (stateToggle.getContentType() == null || stateToggle.getStateKey() == null) {
+            return ServiceResponse.builder()
+                    .rslt(false)
+                    .message("contentType 또는 stateKey가 비어 있습니다.")
+                    .build();
+        }
+        if (!AttachableContentStatePolicy.isAllowed(stateToggle.getContentType(), stateToggle.getStateKey())) {
+            return ServiceResponse.builder()
+                    .rslt(false)
+                    .message(String.format(
+                            "해당 컨텐츠 타입에서 허용되지 않는 상태입니다. (contentType=%s, stateKey=%s)",
+                            stateToggle.getContentType().key,
+                            stateToggle.getStateKey().key))
+                    .build();
+        }
 
         final StateEntity existingEntity = this.getSelf().getDtlEntity(stateToggle);
         final boolean isEnabled = existingEntity == null;
