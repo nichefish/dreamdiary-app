@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.dream.spec;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterSmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDaySmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamSmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamTagContentEntity;
@@ -66,7 +67,8 @@ public class JournalDreamTagSpec
 
         final Join<JournalDreamTagEntity, JournalDreamTagContentEntity> journalDreamTagJoin = root.join("journalDreamTagList", JoinType.INNER);
         final Join<JournalDreamTagContentEntity, JournalDreamSmpEntity> journalDreamJoin = journalDreamTagJoin.join("journalDream", JoinType.INNER);
-        final Join<JournalDreamSmpEntity, JournalDaySmpEntity> journalDayJoin = journalDreamJoin.join("journalDay", JoinType.INNER);
+        final Join<JournalDreamSmpEntity, JournalChapterSmpEntity> chapterJoin = journalDreamJoin.join("journalChapter", JoinType.INNER);
+        final Join<JournalChapterSmpEntity, JournalDaySmpEntity> journalDayJoin = chapterJoin.join("journalDay", JoinType.INNER);
         final Expression<Date> effectiveDtExp = journalDayJoin.get("journalDate");
 
         predicate.add(builder.equal(journalDreamTagJoin.get("refContentType"), ContentType.JOURNAL_DREAM.key));

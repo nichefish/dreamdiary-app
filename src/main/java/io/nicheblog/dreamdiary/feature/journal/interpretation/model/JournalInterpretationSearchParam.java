@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.interpretation.model;
 
+import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.global.intrfc.model.param.BaseSearchParam;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -26,11 +27,10 @@ public class JournalInterpretationSearchParam
     /** 월 */
     private Integer mnth;
 
-    /** 저널 꿈 번호 */
-    private Integer journalDreamId;
-
-    /** 컨텐츠 타입 */
-    private String contentType;
+    /** 참조 엔티티 번호 */
+    private Integer refId;
+    /** 참조 컨텐츠 타입 */
+    private ContentType refContentType;
 
     /** 항목 키워드 */
     private String dreamKeyword;

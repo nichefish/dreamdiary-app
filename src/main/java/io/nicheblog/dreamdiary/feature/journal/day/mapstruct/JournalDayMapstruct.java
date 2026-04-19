@@ -1,15 +1,23 @@
 package io.nicheblog.dreamdiary.feature.journal.day.mapstruct;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.mapstruct.BaseAttachableMapstruct;
+import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
 import io.nicheblog.dreamdiary.feature.journal.chapter.mapstruct.JournalChapterMapstruct;
+import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayEntity;
 import io.nicheblog.dreamdiary.feature.journal.day.model.JournalDayDto;
+import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntity;
 import io.nicheblog.dreamdiary.feature.journal.dream.mapstruct.JournalDreamMapstruct;
+import io.nicheblog.dreamdiary.feature.journal.dream.model.JournalDreamDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DatePtn;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JournalDayMapstruct
@@ -28,6 +36,9 @@ import org.mapstruct.*;
 )
 public abstract class JournalDayMapstruct
         implements BaseWriteMapstruct<JournalDayDto, JournalDayEntity>, BaseAttachableMapstruct<JournalDayDto, JournalDayEntity> {
+
+    @Autowired
+    protected JournalDreamMapstruct journalDreamMapstruct;
 
     /**
      * Dto -> Entity 변환
@@ -67,5 +78,37 @@ public abstract class JournalDayMapstruct
     @Mapping(target = "weekStartDt", expression = "java(DateUtils.asStr(entity.getWeekStartDt(), DatePtn.DATE))")
     @Mapping(target = "chapterList", source = "journalChapterList")
     public abstract JournalDayDto toDto(final JournalDayEntity entity) throws Exception;
+
+    /**
+     * toDto 후처리: DREAM 챕터에서 꿈 목록을 JournalDayDto로 플래트닝
+     *
+     * @param entity 원본 엔티티
+     * @param dto 변환된 Dto (MappingTarget)
+     */
+    @AfterMapping
+    protected void flattenDreamLists(final JournalDayEntity entity, final @MappingTarget JournalDayDto dto) throws Exception {
+        if (entity.getJournalChapterList() == null) return;
+
+        final List<JournalDreamDto> dreamList = new ArrayList<>();
+        final List<JournalDreamDto> elseDreamList = new ArrayList<>();
+
+        for (final JournalChapterEntity chapter : entity.getJournalChapterList()) {
+            if (ChapterType.DREAM != chapter.getChapterType()) continue;
+
+            if (chapter.getJournalDreamList() != null) {
+                for (final JournalDreamEntity dream : chapter.getJournalDreamList()) {
+                    dreamList.add(journalDreamMapstruct.toDto(dream));
+                }
+            }
+            if (chapter.getJournalElseDreamList() != null) {
+                for (final JournalDreamEntity dream : chapter.getJournalElseDreamList()) {
+                    elseDreamList.add(journalDreamMapstruct.toDto(dream));
+                }
+            }
+        }
+
+        if (!dreamList.isEmpty()) dto.setJournalDreamList(dreamList);
+        if (!elseDreamList.isEmpty()) dto.setJournalElseDreamList(elseDreamList);
+    }
 }
 

@@ -103,7 +103,7 @@ public class JournalDreamService
     @Override
     public void preRegist(final JournalDreamPostDto registDto) throws Exception {
         // 정렬 순서 처리
-        final Integer lastSortOrder = repository.findLastIndexByJournalDay(registDto.getJournalDayId()).orElse(0);
+        final Integer lastSortOrder = repository.findLastIndexByJournalChapter(registDto.getJournalChapterId()).orElse(0);
         registDto.setSortOrder(lastSortOrder + 1);
     }
 
@@ -241,13 +241,13 @@ public class JournalDreamService
     }
 
     /**
-     * 해당 그룹 전체를 sortOrder = 1부터 다시 정렬한다.
+     * 해당 챕터 그룹 전체를 sortOrder = 1부터 다시 정렬한다.
      *
-     * @param journalDayId 정렬을 수행할 상위 키
+     * @param journalChapterId 정렬을 수행할 챕터 키
      */
     @Transactional
-    public void normalizeSortOrder(final Integer journalDayId) {
-        final List<JournalDreamDto> list = mapper.findAllForReorder(journalDayId);
+    public void normalizeSortOrder(final Integer journalChapterId) {
+        final List<JournalDreamDto> list = mapper.findAllForReorder(journalChapterId);
         if (CollectionUtils.isEmpty(list)) return;
 
         int sortOrder = 1;
@@ -260,15 +260,15 @@ public class JournalDreamService
     }
 
     /**
-     * 대상 상위 키에 엔티티를 특정 위치에 삽입 후 재정렬한다.
+     * 대상 챕터에 엔티티를 특정 위치에 삽입 후 재정렬한다.
      *
-     * @param journalDayId 정렬을 수행할 상위 키
+     * @param journalChapterId 정렬을 수행할 챕터 키
      * @param id 게시물 PK
      * @param targetSortOrder 삽입할 목표 위치(1-based). null이면 맨 뒤에 삽입됨
      */
     @Transactional
-    public void insert(final Integer journalDayId, final Integer id, Integer targetSortOrder) throws Exception {
-        final List<JournalDreamDto> list = mapper.findAllForReorder(journalDayId);
+    public void insert(final Integer journalChapterId, final Integer id, Integer targetSortOrder) throws Exception {
+        final List<JournalDreamDto> list = mapper.findAllForReorder(journalChapterId);
 
         // target 조회
         final JournalDreamEntity targetEntity = findDtlEntity(id);
@@ -278,8 +278,8 @@ public class JournalDreamService
         // 혹시 이미 포함되어 있으면 제거
         list.removeIf(e -> Objects.equals(e.getId(), id));
 
-        // chapterNo 변경
-        target.setJournalDayId(journalDayId);
+        // journalChapterId 변경
+        target.setJournalChapterId(journalChapterId);
 
         // targetSortOrder 보정 (upper bound)
         final int maxIdx = list.size() + 1;
@@ -306,10 +306,10 @@ public class JournalDreamService
      */
     @Transactional
     public void reorderSortOrder(final JournalDreamDto updatedDto) throws Exception {
-        // 1단계: 현재 chapter 그룹 정리 (기존 sortOrder 값을 normalize하여 안정화)
-        normalizeSortOrder(updatedDto.getJournalDayId());
+        // 1단계: 현재 챕터 그룹 정리 (기존 sortOrder 값을 normalize하여 안정화)
+        normalizeSortOrder(updatedDto.getJournalChapterId());
         // 2단계: 해당 group에 새 위치로 target 삽입
-        insert(updatedDto.getJournalDayId(), updatedDto.getId(), updatedDto.getSortOrder());
+        insert(updatedDto.getJournalChapterId(), updatedDto.getId(), updatedDto.getSortOrder());
     }
 
     /**

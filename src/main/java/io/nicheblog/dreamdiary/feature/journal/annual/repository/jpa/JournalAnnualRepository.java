@@ -41,7 +41,8 @@ public interface JournalAnnualRepository
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     @Query("SELECT COUNT(dream.id) " +
             "FROM JournalDreamEntity dream " +
-            "INNER JOIN FETCH JournalDayEntity day ON dream.journalDayId = day.id " +
+            "INNER JOIN JournalChapterEntity chapter ON dream.journalChapterId = chapter.id " +
+            "INNER JOIN JournalDayEntity day ON chapter.journalDayId = day.id " +
             "WHERE day.yy = :yy " +
             "   AND day.createdBy = :createdBy")
     Integer getDreamCntByYy(final @Param("yy") Integer yy, final @Param("createdBy") String createdBy);
@@ -68,7 +69,8 @@ public interface JournalAnnualRepository
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     @Query("SELECT COUNT(distinct day.id) " +
             "FROM JournalDayEntity day " +
-            "INNER JOIN FETCH JournalDreamEntity dream ON day.id = dream.journalDayId " +
+            "INNER JOIN JournalChapterEntity chapter ON chapter.journalDayId = day.id AND chapter.chapterType = io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType.DREAM " +
+            "INNER JOIN JournalDreamEntity dream ON dream.journalChapterId = chapter.id " +
             "WHERE day.yy = :yy " +
             "   AND day.createdBy = :createdBy")
     Integer getDreamDayCntByYy(final @Param("yy") Integer yy, final @Param("createdBy") String createdBy);

@@ -1,7 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.dream.entity;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
-import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDaySmpEntity;
+import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterSmpEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
@@ -53,17 +53,17 @@ public class JournalDreamSmpEntity {
     @Column(name = "sort_order", columnDefinition = "INT DEFAULT 1")
     private Integer sortOrder;
 
-    /** 저널 일자 번호  */
-    @Column(name = "journal_day_id")
-    @Comment("저널 일자 번호")
-    private Integer journalDayId;
+    /** 저널 챕터 번호 */
+    @Column(name = "journal_chapter_id")
+    @Comment("저널 챕터 번호")
+    private Integer journalChapterId;
 
-    /** 저널 일자 정보 */
+    /** 저널 챕터 정보 */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "journal_day_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "journal_chapter_id", referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("저널 일자 정보")
-    private JournalDaySmpEntity journalDay;
+    @Comment("저널 챕터 정보")
+    private JournalChapterSmpEntity journalChapter;
 }
 

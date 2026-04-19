@@ -23,7 +23,7 @@
             <div class="menu-item px-3 my-1 cursor-pointer"
                  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-dismiss="click" title="<@spring.message "txt.journal.interpretation"/> <@spring.message 'bs.tooltip.modal.reg'/>">
                 <div class="menu-link flex-stack px-3"
-                     onclick="dF.JournalInterpretation.regModal({ journalDayId: {{journalDayId}}, journalDreamId: {{id}}, stdrdDt: '{{stdrdDt}}', journalDateWeekDay: '{{journalDateWeekDay}}' });">
+                     onclick="dF.JournalInterpretation.regModal({ journalDayId: {{journalDayId}}, refId: {{id}}, refContentType: 'JOURNAL_DREAM', stdrdDt: '{{stdrdDt}}', journalDateWeekDay: '{{journalDateWeekDay}}' });">
                     <@spring.message 'txt.journal.interpretation.reg'/>
                     <i class="bi bi-layers-half fs-8"></i>
                 </div>

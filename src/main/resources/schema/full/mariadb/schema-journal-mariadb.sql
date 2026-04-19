@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS journal_chapter (
     -- ATTACHABLE
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 챕터 ID',
     content_type VARCHAR(32) DEFAULT 'JOURNAL_CHAPTER' COMMENT '컨텐츠 타입',
-    chapter_type VARCHAR(30) NOT NULL DEFAULT 'DIARY' COMMENT 'container type',
+    chapter_type VARCHAR(30) NOT NULL DEFAULT 'DIARY' COMMENT 'container type (DIARY | DREAM)',
     --
     journal_day_id INT COMMENT '저널 일자 번호',
     --
@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS journal_dream (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 꿈 ID',
     content_type VARCHAR(32) DEFAULT 'JOURNAL_DREAM' COMMENT '컨텐츠 타입',
     --
-    journal_day_id INT COMMENT '저널 일자 번호',
+    journal_chapter_id INT COMMENT '저널 챕터 번호',
     --
     title VARCHAR(200) COMMENT '제목',
     content LONGTEXT COMMENT '내용',
@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS journal_dream (
     updated_at DATETIME COMMENT '수정일시',
     deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
-    INDEX (journal_day_id)
+    INDEX (journal_chapter_id)
 ) COMMENT = '저널 꿈';
 
 -- 저널 해석 (journal_interpretation)
@@ -129,7 +129,9 @@ CREATE TABLE IF NOT EXISTS journal_interpretation (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '저널 해석 ID',
     content_type VARCHAR(32) DEFAULT 'JOURNAL_INTERPRETATION' COMMENT '컨텐츠 타입',
     --
-    journal_dream_id INT COMMENT '저널 꿈 번호',
+    ref_id INT COMMENT '참조 엔티티 번호',
+    ref_content_type VARCHAR(50) COMMENT '참조 컨텐츠 타입 (JOURNAL_DREAM | JOURNAL_DIARY | ...)',
+    journal_day_id INT COMMENT '저널 일자 번호 (정렬/필터용 비정규화)',
     --
     title VARCHAR(200) COMMENT '제목',
     content LONGTEXT COMMENT '내용',
@@ -150,7 +152,9 @@ CREATE TABLE IF NOT EXISTS journal_interpretation (
     updated_at DATETIME COMMENT '수정일시',
     deleted_at DATETIME COMMENT '삭제일시',
     -- CONSTRAINT
-    INDEX (journal_dream_id)
+    INDEX (ref_id),
+    INDEX (ref_content_type),
+    INDEX (journal_day_id)
 ) COMMENT = '저널 해석';
 
 -- 저널 할일 (journal_todo)

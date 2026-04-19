@@ -44,14 +44,35 @@ dF.JournalInterpretation = (function(): dfModule {
          * 등록 모달 호출
          * @param {Object} param - 파라미터 객체
          * @param {string|number} param.journalDayId - 저널 일자 번호.
-         * @param {string|number} param.journalDreamId - 저널 꿈 번호.
+         * @param {string|number} param.refId - 참조 컨텐츠 번호.
+         * @param {string} param.refContentType - 참조 컨텐츠 타입.
          * @param {string} param.stdrdDt - 기준 날짜.
          * @param {string} param.journalDateWeekDay - 기준 날짜 요일.
          */
-        regModal: function({ journalDayId, journalDreamId, stdrdDt, journalDateWeekDay }: { journalDayId: string | number; journalDreamId: string | number; stdrdDt: string; journalDateWeekDay: string; }): void {
+        regModal: function({
+            journalDayId,
+            refId,
+            refContentType,
+            stdrdDt,
+            journalDateWeekDay
+        }: {
+            journalDayId: string | number;
+            refId: string | number;
+            refContentType: string;
+            stdrdDt: string;
+            journalDateWeekDay: string;
+        }): void {
             if (isNaN(Number(journalDayId))) return;
+            if (isNaN(Number(refId))) return;
+            if (cF.util.isEmpty(refContentType)) return;
 
-            const obj: Record<string, any> = { journalDayId: journalDayId, journalDreamId: journalDreamId, stdrdDt: stdrdDt, journalDateWeekDay: journalDateWeekDay };
+            const obj: Record<string, any> = {
+                journalDayId,
+                refId,
+                refContentType,
+                stdrdDt,
+                journalDateWeekDay
+            };
             /* initialize form. */
             dF.JournalInterpretation.initForm(obj);
         },
@@ -296,4 +317,3 @@ dF.JournalInterpretation = (function(): dfModule {
         },
     }
 })();
-

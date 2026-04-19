@@ -33,9 +33,22 @@ public interface JournalDreamRepository
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     @Query("SELECT MAX(dream.sortOrder) " +
             "FROM JournalDreamEntity dream " +
-            "INNER JOIN FETCH JournalDayEntity day ON dream.journalDayId = day.id " +
-            "WHERE dream.journalDayId = :journalDayId AND (dream.elseDreamYn IS NULL OR dream.elseDreamYn = 'N')")
+            "INNER JOIN dream.journalChapter chapter " +
+            "WHERE chapter.journalDayId = :journalDayId AND (dream.elseDreamYn IS NULL OR dream.elseDreamYn = 'N')")
     Optional<Integer> findLastIndexByJournalDay(final @Param("journalDayId") Integer journalDayId);
+
+    /**
+     * 해당 챕터에서 꿈 마지막 인덱스 조회
+     *
+     * @param journalChapterId 조회할 챕터 번호
+     * @return {@link Optional} -- 해당 챕터에서 꿈의 마지막 인덱스
+     */
+    @Transactional(readOnly = true)
+    @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
+    @Query("SELECT MAX(dream.sortOrder) " +
+            "FROM JournalDreamEntity dream " +
+            "WHERE dream.journalChapterId = :journalChapterId AND (dream.elseDreamYn IS NULL OR dream.elseDreamYn = 'N')")
+    Optional<Integer> findLastIndexByJournalChapter(final @Param("journalChapterId") Integer journalChapterId);
 }
 
 

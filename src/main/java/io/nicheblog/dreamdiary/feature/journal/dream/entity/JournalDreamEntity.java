@@ -12,7 +12,7 @@ import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbed;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbedModule;
-import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDaySmpEntity;
+import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterSmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.entity.JournalInterpretationEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -74,18 +74,18 @@ public class JournalDreamEntity
 
     /* ----- */
 
-    /** 저널 일자 번호  */
-    @Column(name = "journal_day_id")
-    @Comment("저널 일자 번호")
-    private Integer journalDayId;
+    /** 저널 챕터 번호 */
+    @Column(name = "journal_chapter_id")
+    @Comment("저널 챕터 번호")
+    private Integer journalChapterId;
 
-    /** 저널 일자 정보 */
+    /** 저널 챕터 정보 */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "journal_day_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "journal_chapter_id", referencedColumnName = "id", insertable = false, updatable = false)
     @Fetch(FetchMode.JOIN)
     @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("저널 일자 정보")
-    private JournalDaySmpEntity journalDay;
+    @Comment("저널 챕터 정보")
+    private JournalChapterSmpEntity journalChapter;
 
     /** 순번 */
     @Column(name = "sort_order", columnDefinition = "INT DEFAULT 1")
@@ -114,7 +114,9 @@ public class JournalDreamEntity
     private String elseDreamerNm;
 
     /** 저널 해석 목록 */
-    @OneToMany(mappedBy = "journalDream", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ref_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @Where(clause = "ref_content_type = 'JOURNAL_DREAM'")
     @OrderBy("sortOrder ASC")
     @Comment("저널 해석 목록")
     private List<JournalInterpretationEntity> journalInterpretationList;

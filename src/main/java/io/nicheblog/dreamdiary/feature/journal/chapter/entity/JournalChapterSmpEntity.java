@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.chapter.entity;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
+import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDaySmpEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -48,6 +49,13 @@ public class JournalChapterSmpEntity {
     private String contentType = CONTENT_TYPE.key;
 
     /* ----- */
+
+    /** 챕터 타입 (DIARY | DREAM) */
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(name = "chapter_type", length = 30, columnDefinition = "VARCHAR(30) DEFAULT 'DIARY'")
+    @Comment("챕터 타입")
+    private ChapterType chapterType = ChapterType.DIARY;
 
     /** 순번 */
     @Column(name = "sort_order", columnDefinition = "INT DEFAULT 1")

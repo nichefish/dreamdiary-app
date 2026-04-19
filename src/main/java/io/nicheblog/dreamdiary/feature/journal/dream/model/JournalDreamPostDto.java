@@ -44,8 +44,8 @@ public class JournalDreamPostDto
 
     /* ----- */
 
-    /** 저널 일자 번호 */
-    private Integer journalDayId;
+    /** 저널 챕터 번호 */
+    private Integer journalChapterId;
     /** 저널 기준일자 */
     private Integer yy;
     /** 저널 기준일자 */

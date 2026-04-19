@@ -161,7 +161,6 @@ public class JournalCacheEvictParam {
                 .createdBy(dto.getCreatedBy())
                 .id(dto.getId())
                 .journalDayId(dto.getJournalDayId())
-                .journalDreamId(dto.getJournalDreamId())
                 .yy(dto.getYy())
                 .mnth(dto.getMnth())
                 .weekStartDt(DateUtils.getWeekStartDateStr(dto.getStdrdDt()))

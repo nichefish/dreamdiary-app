@@ -5,6 +5,7 @@ import io.nicheblog.dreamdiary.feature.attachable._shared.type.ContentType;
 import io.nicheblog.dreamdiary.feature.attachable.state.entity.StateEntity;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.TagContentEntity;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
+import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterSmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDaySmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -46,7 +47,8 @@ public class JournalDreamSpec
     ) {
         // 정렬 순서 변경
         final List<Order> order = new ArrayList<>();
-        final Join<JournalDreamEntity, JournalDaySmpEntity> journalDayJoin = root.join("journalDay", JoinType.INNER);
+        final Join<JournalDreamEntity, JournalChapterSmpEntity> chapterJoin = root.join("journalChapter", JoinType.INNER);
+        final Join<JournalChapterSmpEntity, JournalDaySmpEntity> journalDayJoin = chapterJoin.join("journalDay", JoinType.INNER);
         final String sort = String.valueOf(searchParamMap.getOrDefault("sort", "desc")).toLowerCase();
         final Expression<Date> dateExp = journalDayJoin.get("journalDate");
         if ("desc".equals(sort)) {
@@ -80,7 +82,8 @@ public class JournalDreamSpec
 
         final List<Predicate> predicate = new ArrayList<>();
         // expressions
-        final Join<JournalDreamEntity, JournalDaySmpEntity> journalDayJoin = root.join("journalDay", JoinType.INNER);
+        final Join<JournalDreamEntity, JournalChapterSmpEntity> chapterJoin = root.join("journalChapter", JoinType.INNER);
+        final Join<JournalChapterSmpEntity, JournalDaySmpEntity> journalDayJoin = chapterJoin.join("journalDay", JoinType.INNER);
         final Expression<Date> effectiveDtExp = journalDayJoin.get("journalDate");
         final String createdBy = resolveCreatedBy(searchParamMap);
 
@@ -109,8 +112,7 @@ public class JournalDreamSpec
                     if (mnth != 99) predicate.add(builder.equal(journalDayJoin.get(key), mnth));
                     continue;
                 case "journalDayId":
-                    // 99 = 모든 월
-                    predicate.add(builder.equal(journalDayJoin.get("id"), value));
+                    predicate.add(builder.equal(chapterJoin.get("journalDayId"), value));
                     continue;
                 case "searchKeywords":
                     // 내용 like 검색

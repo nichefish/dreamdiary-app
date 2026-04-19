@@ -10,7 +10,7 @@ import io.nicheblog.dreamdiary.feature.attachable.state.entity.embed.StateEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbed;
 import io.nicheblog.dreamdiary.feature.file.entity.embed.FileEmbedModule;
-import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntity;
+import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDaySmpEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
@@ -64,11 +64,27 @@ public class JournalInterpretationEntity
 
     /* ----- */
 
-    /** 저널 꿈 정보 */
+    /** 참조 엔티티 번호 */
+    @Column(name = "ref_id")
+    @Comment("참조 엔티티 번호")
+    private Integer refId;
+
+    /** 참조 컨텐츠 타입 */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "ref_content_type", length = 50)
+    @Comment("참조 컨텐츠 타입")
+    private ContentType refContentType;
+
+    /** 저널 일자 번호 */
+    @Column(name = "journal_day_id")
+    @Comment("저널 일자 번호")
+    private Integer journalDayId;
+
+    /** 저널 일자 정보 */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "journal_dream_id", nullable = false)
-    @Comment("저널 꿈 정보")
-    private JournalDreamEntity journalDream;
+    @JoinColumn(name = "journal_day_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @Comment("저널 일자 정보")
+    private JournalDaySmpEntity journalDay;
 
     /** 순번 */
     @Column(name = "sort_order", columnDefinition = "INT DEFAULT 1")

@@ -6,8 +6,10 @@ import io.nicheblog.dreamdiary.feature.attachable.state.entity.embed.StateEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.state.entity.embed.StateEmbedModule;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbedModule;
+import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDaySmpEntity;
 import io.nicheblog.dreamdiary.feature.journal.diary.entity.JournalDiaryEntity;
+import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.*;
@@ -58,6 +60,13 @@ public class JournalChapterEntity
     @Comment("컨텐츠 타입")
     private String contentType = CONTENT_TYPE.key;
 
+    /** 챕터 타입 (DIARY | DREAM) */
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(name = "chapter_type", length = 30, columnDefinition = "VARCHAR(30) DEFAULT 'DIARY'")
+    @Comment("챕터 타입")
+    private ChapterType chapterType = ChapterType.DIARY;
+
     /** 제목 */
     @Column(name = "title")
     private String title;
@@ -95,6 +104,20 @@ public class JournalChapterEntity
     @OrderBy("sortOrder ASC")
     @Comment("저널 일기 목록")
     private List<JournalDiaryEntity> journalDiaryList;
+
+    /** 저널 꿈 목록 (chapter_type = DREAM인 경우) */
+    @OneToMany(mappedBy = "journalChapter", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Where(clause = "else_dream_yn = 'N'")
+    @OrderBy("sortOrder ASC")
+    @Comment("저널 꿈 목록")
+    private List<JournalDreamEntity> journalDreamList;
+
+    /** 저널 꿈 (타인) 목록 (chapter_type = DREAM인 경우) */
+    @OneToMany(mappedBy = "journalChapter", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Where(clause = "else_dream_yn = 'Y'")
+    @OrderBy("sortOrder ASC")
+    @Comment("저널 꿈 (타인) 목록")
+    private List<JournalDreamEntity> journalElseDreamList;
 
     /** 인덱스 변경 여부 */
     @Builder.Default

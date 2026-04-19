@@ -34,9 +34,9 @@ public interface JournalDreamMapper {
     /**
      * 인덱스 갱신용 전체 목록 조회
      *
-     * @param journalDayId 상위 키값
-     * @return Integer -- 업데이트된 행 개수
+     * @param journalChapterId 상위 챕터 키값
+     * @return {@link List} -- 재정렬 대상 목록
      */
-    List<JournalDreamDto> findAllForReorder(final @Param("journalDayId") Integer journalDayId);
+    List<JournalDreamDto> findAllForReorder(final @Param("journalChapterId") Integer journalChapterId);
 }
 

@@ -8,7 +8,6 @@ import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbedModule;
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
 import io.nicheblog.dreamdiary.feature.journal.day.type.JournalDatePrecision;
-import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntity;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -116,28 +115,6 @@ public class JournalDayEntity
     @NotFound(action = NotFoundAction.IGNORE)
     @Comment("저널 챕터 목록")
     private List<JournalChapterEntity> journalChapterList;
-
-    /** 저널 꿈 목록 */
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "journal_day_id", referencedColumnName = "id", insertable = false, updatable = false)
-    @Fetch(FetchMode.SUBSELECT)
-    @BatchSize(size = 10)
-    @Where(clause = "else_dream_yn = 'N'")
-    @OrderBy("sortOrder ASC")
-    @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("저널 꿈 목록")
-    private List<JournalDreamEntity> journalDreamList;
-
-    /** 저널 꿈 (타인) 목록 */
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "journal_day_id", referencedColumnName = "id", insertable = false, updatable = false)
-    @Fetch(FetchMode.SUBSELECT)
-    @BatchSize(size = 10)
-    @Where(clause = "else_dream_yn = 'Y'")
-    @OrderBy("sortOrder ASC")
-    @NotFound(action = NotFoundAction.IGNORE)
-    @Comment("저널 꿈 (타인) 목록")
-    private List<JournalDreamEntity> journalElseDreamList;
 
     /* ----- */
 
