@@ -1,6 +1,7 @@
 package io.nicheblog.dreamdiary.feature.journal.diary.service.helper;
 
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState;
+import io.nicheblog.dreamdiary.feature.journal.day.service.helper.JournalDayViewHelper;
 import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryDto;
 import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.experimental.UtilityClass;
