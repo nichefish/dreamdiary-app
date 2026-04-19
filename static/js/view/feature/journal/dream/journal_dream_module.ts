@@ -562,12 +562,17 @@ dF.JournalDream = (function(): dfModule {
 
             if (!profile) throw new Error(`Unknown render profile: ${profileName}`);
 
+            const hasState = (targetState: string): boolean =>
+                Array.isArray(dream.state?.list) && dream.state.list.some((state: any): boolean => state?.stateCode === targetState);
+
             return {
                 ...dream,
                 view: profile,
                 contentClass: [
                     'journal-content',
-                    profile.collapsed && dream.state?.includes('COLLAPSED') ? 'collapsed' : null
+                    profile.collapsed && hasState('COLLAPSED') ? 'collapsed collapse-4' : null,
+                    hasState('IMPRTC') ? 'imprtc' : null,
+                    hasState('REFRNC') ? 'refrnc' : null
                 ].filter(Boolean).join(' ')
             };
         }

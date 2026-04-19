@@ -8,6 +8,7 @@ import io.nicheblog.dreamdiary.feature.attachable.related.service.RelatedContent
 import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryDto;
 import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiarySearchParam;
 import io.nicheblog.dreamdiary.feature.journal.diary.service.JournalDiaryService;
+import io.nicheblog.dreamdiary.feature.journal.diary.service.helper.JournalDiarySearchViewHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,7 @@ public class MyJournalDiaryService {
         final String username = AuthUtils.requireLoginUsername();
         final List<JournalDiaryDto> listDto = journalDiaryService.getListDtoByUser(username, searchParam);
         this.mergeRelatedContents(username, listDto);
+        JournalDiarySearchViewHelper.mergeStatesFromUserCaches(username, listDto);
         return listDto;
     }
 
@@ -55,6 +57,7 @@ public class MyJournalDiaryService {
         final String username = AuthUtils.requireLoginUsername();
         final List<JournalDiaryDto> listDto = journalDiaryService.getAnnualDiaryListByUser(username, searchParam);
         this.mergeRelatedContents(username, listDto);
+        JournalDiarySearchViewHelper.mergeStatesFromUserCaches(username, listDto);
         return listDto;
     }
 
