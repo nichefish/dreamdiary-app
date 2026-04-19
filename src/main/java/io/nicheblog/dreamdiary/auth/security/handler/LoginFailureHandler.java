@@ -18,6 +18,8 @@ import io.nicheblog.dreamdiary.infrastructure.web.handler.HttpMethodRequestWrapp
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -124,6 +126,16 @@ public class LoginFailureHandler
      * @return {@link String} -- 예외에 해당하는 에러 메시지
      */
     public String getLoginFailureMsg(final Exception e) {
+        if (e instanceof InternalAuthenticationServiceException) {
+            final InternalAuthenticationServiceException iae = (InternalAuthenticationServiceException) e;
+            if (StringUtils.isNotBlank(iae.getMessage())) {
+                return iae.getMessage();
+            }
+            final Throwable root = ExceptionUtils.getRootCause(e);
+            if (root != null && root != e && StringUtils.isNotBlank(root.getMessage())) {
+                return MessageUtils.getExceptionMsg(root);
+            }
+        }
         final String fullExceptionNm = e.getClass().toString();
         final String exceptionNm = fullExceptionNm.substring(fullExceptionNm.lastIndexOf('.') + 1);
         return MessageUtils.getMessage("AbstractUserDetailsAuthenticationProvider." + exceptionNm);

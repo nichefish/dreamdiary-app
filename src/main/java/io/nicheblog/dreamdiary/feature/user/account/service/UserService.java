@@ -19,6 +19,7 @@ import io.nicheblog.dreamdiary.infrastructure.cache.util.EhCacheUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +60,10 @@ public class UserService
     private final AuthPolicyQueryService authPolicyQueryService;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+
+    /** 관리자 '비밀번호 초기화' 시 적용할 임시 비밀번호(평문) — 초기 설치와 동일 설정 사용 */
+    @Value("${system.init-temp-pw:}")
+    private String systemInitTempPw;
 
     /**
      * 사용자 관리 > 사용자 단일 조회 (Dto Level) (Long id와 별도로 String username)
@@ -146,11 +151,10 @@ public class UserService
         final UserEntity retrievedEntity = this.getDtlEntity(key);
         if (retrievedEntity == null) throw new EntityNotFoundException("exception.EntityNotFoundException");
 
-        // 로그인 설정 조회 (cachable)
-        final AuthPolicyEntity authPolicy = authPolicyQueryService.getDtlEntity();
-        final String pwForReset = authPolicy.getPwForReset();
-        // update
-        retrievedEntity.setPassword(pwForReset);
+        if (StringUtils.isBlank(systemInitTempPw)) {
+            throw new IllegalStateException("system.init-temp-pw 가 설정되어 있지 않아 비밀번호 초기화를 수행할 수 없습니다.");
+        }
+        retrievedEntity.setPassword(passwordEncoder.encode(systemInitTempPw));
         retrievedEntity.acntStus.setNeedsPasswordReset("Y");
         retrievedEntity.acntStus.setPasswordResetTokenIssuedAt(DateUtils.getCurrDate());
         retrievedEntity.acntStus.setPasswordChangedAt(DateUtils.getCurrDate());

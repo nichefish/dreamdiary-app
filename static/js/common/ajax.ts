@@ -111,12 +111,14 @@ cF.ajax = (function(): Module {
     const originalFetch = window.fetch;
 
     window.fetch = async function (url: RequestInfo, options: RequestInit = {}): Promise<Response> {
-        const defaultOptions: RequestInit = {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            ...options,
-        };
+        const hdrs = new Headers(options.headers as HeadersInit | undefined);
+        if (!hdrs.has("X-Requested-With")) {
+            hdrs.set("X-Requested-With", "XMLHttpRequest");
+        }
+        if (!(options.body instanceof FormData) && !hdrs.has("Content-Type")) {
+            hdrs.set("Content-Type", "application/json");
+        }
+        const defaultOptions: RequestInit = { ...options, headers: hdrs };
 
         try {
             // UI 차단
@@ -146,8 +148,20 @@ cF.ajax = (function(): Module {
      */
     const handleError = async (response: Response): Promise<void> => {
         const statusCode: number = response.status;
-        const msgObject: Record<string, string> = await response.json().catch(() => Message.get("view.error.access-denied"));      // "접근이 거부되었습니다. (ACCESS DENIED)"
-        const msg:string = msgObject.message;
+        const bodyText: string = await response.text();
+        let msg = "";
+        if (bodyText) {
+            try {
+                const parsed = JSON.parse(bodyText) as { message?: unknown; rsltMsg?: unknown; error?: unknown };
+                const raw = parsed.message ?? parsed.rsltMsg ?? parsed.error;
+                msg = typeof raw === "string" ? raw : "";
+            } catch {
+                msg = bodyText.length > 500 ? bodyText.substring(0, 500) + "…" : bodyText;
+            }
+        }
+        if (!msg) {
+            msg = statusCode >= 500 ? Message.get("view.error.request") : Message.get("view.error.access-denied");
+        }
         const loginFormUrl: string = "/app/auth/login-form.do";
 
         switch(statusCode) {

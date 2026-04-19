@@ -2,19 +2,15 @@ package io.nicheblog.dreamdiary.auth.security.mapstruct;
 
 import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
-import io.nicheblog.dreamdiary.auth.security.model.RoleDto;
 import io.nicheblog.dreamdiary.feature.user.account.entity.UserEntity;
-import io.nicheblog.dreamdiary.feature.user.account.entity.UserRoleEntity;
 import io.nicheblog.dreamdiary.feature.user.profile.mapstruct.UserProfileMapstruct;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseMapstruct;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * AuthInfoMapstruct
@@ -24,7 +20,7 @@ import java.util.List;
  *
  * @author nichefish
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, UserProfileMapstruct.class})
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = {DateUtils.class, StringUtils.class, UserProfileMapstruct.class}, uses = AuthInfoRoleFillHelper.class)
 public interface AuthInfoMapstruct
         extends BaseMapstruct<AuthInfo, UserEntity> {
 
@@ -47,24 +43,6 @@ public interface AuthInfoMapstruct
     @Mapping(target = "userProfileId", expression = "java(entity.getProfile() != null ? entity.getProfile().getUserProfileId() : null)")
     @Mapping(target = "roles", ignore = true)
     AuthInfo toDto(final UserEntity entity) throws Exception;
-
-    /**
-     * UserEntity.userRoles → AuthInfo.roles (RoleDto 목록)
-     */
-    @AfterMapping
-    default void mapRolesFromUserRoles(final UserEntity entity, final @MappingTarget AuthInfo dto) throws Exception {
-        if (CollectionUtils.isEmpty(entity.getUserRoles())) {
-            dto.setRoles(List.of());
-            return;
-        }
-        final List<RoleDto> roles = new ArrayList<>();
-        for (final UserRoleEntity ur : entity.getUserRoles()) {
-            if (ur.getRoleInfo() != null) {
-                roles.add(RoleMapstruct.INSTANCE.toDto(ur.getRoleInfo()));
-            }
-        }
-        dto.setRoles(roles);
-    }
 
     /**
      * toAuditorInfo

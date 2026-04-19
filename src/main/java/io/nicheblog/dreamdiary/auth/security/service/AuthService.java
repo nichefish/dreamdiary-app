@@ -5,9 +5,12 @@ import io.nicheblog.dreamdiary.auth.policy.service.AuthPolicyQueryService;
 import io.nicheblog.dreamdiary.auth.security.entity.AuditorInfo;
 import io.nicheblog.dreamdiary.auth.security.entity.RoleEntity;
 import io.nicheblog.dreamdiary.auth.security.mapstruct.AuthInfoMapstruct;
+import io.nicheblog.dreamdiary.auth.security.mapstruct.RoleMapstruct;
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
+import io.nicheblog.dreamdiary.auth.security.model.RoleDto;
 import io.nicheblog.dreamdiary.auth.security.repository.jpa.RoleRepository;
 import io.nicheblog.dreamdiary.feature.user.account.entity.UserEntity;
+import io.nicheblog.dreamdiary.feature.user.account.entity.UserRoleEntity;
 import io.nicheblog.dreamdiary.feature.user.account.repository.jpa.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -15,10 +18,13 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -39,7 +45,7 @@ public class AuthService
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final AuthPolicyQueryService authPolicyQueryService;
-    private final AuthInfoMapstruct mapstruct = AuthInfoMapstruct.INSTANCE;
+    private final AuthInfoMapstruct authInfoMapstruct;
 
     /**
      * username으로 계정 + 사용자 정보 조회
@@ -64,7 +70,9 @@ public class AuthService
         //     rsUserEntity.setUserProfl(rsUserInfo);
         // }
 
-        return AuthInfoMapstruct.INSTANCE.toDto(rsUser);
+        final AuthInfo authInfo = authInfoMapstruct.toDto(rsUser);
+        this.fillRolesFromUserByRoleIdIfMissing(rsUser, authInfo);
+        return authInfo;
     }
 
     /**
@@ -78,7 +86,35 @@ public class AuthService
         if (rsWrapper.isEmpty()) throw new UsernameNotFoundException("exception.UsernameNotFoundException");
         final UserEntity rsUser = rsWrapper.get();
 
-        return AuthInfoMapstruct.INSTANCE.toDto(rsUser);
+        final AuthInfo authInfo = authInfoMapstruct.toDto(rsUser);
+        this.fillRolesFromUserByRoleIdIfMissing(rsUser, authInfo);
+        return authInfo;
+    }
+
+    /**
+     * user_role.role_id 만 있고 연관 role 이 로드되지 않은 경우 보강.
+     */
+    private void fillRolesFromUserByRoleIdIfMissing(final UserEntity user, final AuthInfo authInfo) throws Exception {
+        if (!CollectionUtils.isEmpty(authInfo.getRoles())) {
+            return;
+        }
+        if (CollectionUtils.isEmpty(user.getUserRoles())) {
+            return;
+        }
+        final List<RoleDto> roles = new ArrayList<>();
+        for (final UserRoleEntity ur : user.getUserRoles()) {
+            if (ur.getRoleInfo() != null) {
+                roles.add(RoleMapstruct.INSTANCE.toDto(ur.getRoleInfo()));
+                continue;
+            }
+            if (ur.getRoleId() != null) {
+                final Optional<RoleEntity> roleOpt = roleRepository.findById(ur.getRoleId());
+                if (roleOpt.isPresent()) {
+                    roles.add(RoleMapstruct.INSTANCE.toDto(roleOpt.get()));
+                }
+            }
+        }
+        authInfo.setRoles(roles);
     }
 
     /**
@@ -197,7 +233,7 @@ public class AuthService
         if (userEntityWrapper.isEmpty()) return null;
 
         final UserEntity userEntity = userEntityWrapper.get();
-        return mapstruct.toAuditorInfo(userEntity);
+        return authInfoMapstruct.toAuditorInfo(userEntity);
     }
 }
 

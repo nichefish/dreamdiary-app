@@ -1,14 +1,11 @@
 package io.nicheblog.dreamdiary.feature.admin.auth.policy.model;
 
 import io.nicheblog.dreamdiary.auth.intrfc.model.BaseAuditDto;
-import io.nicheblog.dreamdiary.global.validator.Regex;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.Max;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
 
 /**
  * AuthPolicyDto
@@ -59,9 +56,4 @@ public class AuthPolicyDto
     @Positive
     @Max(value = 10080)
     private Integer passwordResetTokenExpiryMinutes;
-
-    /** 비밀번호 초기화 값 */
-    @Size(min = 9, max = 20)
-    @Pattern(regexp = Regex.PW_REGEX, message = "비밀번호가 형식에 맞지 않습니다.")
-    private String pwForReset;
 }

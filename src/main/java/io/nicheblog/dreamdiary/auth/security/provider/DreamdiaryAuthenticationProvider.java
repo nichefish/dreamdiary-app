@@ -6,6 +6,7 @@ import io.nicheblog.dreamdiary.auth.security.exception.AuthenticationFailureExce
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
 import io.nicheblog.dreamdiary.auth.security.provider.helper.AuthenticationHelper;
 import io.nicheblog.dreamdiary.auth.security.service.AuthService;
+import io.nicheblog.dreamdiary.global.util.MessageUtils;
 import io.nicheblog.dreamdiary.infrastructure.web.util.CookieUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -13,11 +14,14 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -62,6 +66,9 @@ public class DreamdiaryAuthenticationProvider
         // 인증 객체 생성
         final Boolean isValidated = authenticationHelper.validateAuth(authentication, authInfo);
         if (!isValidated) throw new AuthenticationFailureException("exception.AuthenticationFailureException");
+        if (CollectionUtils.isEmpty(authInfo.getRoles())) {
+            throw new InternalAuthenticationServiceException(MessageUtils.getMessage("msg.user.auth.empty"));
+        }
         final UsernamePasswordAuthenticationToken generatedAuthToken = authInfo.getAuthToken();
 
         // 인증 객체를 기반으로 JWT 생성, 임시로 세션에 저장

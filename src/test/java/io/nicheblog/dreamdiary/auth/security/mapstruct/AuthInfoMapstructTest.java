@@ -1,20 +1,25 @@
 package io.nicheblog.dreamdiary.auth.security.mapstruct;
 
 import io.nicheblog.dreamdiary.auth.security.model.AuthInfo;
+import io.nicheblog.dreamdiary.auth.security.model.RoleDto;
 import io.nicheblog.dreamdiary.auth.type.Auth;
 import io.nicheblog.dreamdiary.feature.user.account.entity.*;
 import io.nicheblog.dreamdiary.feature.user.account.model.profile.UserProfileDto;
 import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntity;
 import io.nicheblog.dreamdiary.feature.user.profile.entity.UserProfileEntityTestFactory;
+import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.TestConstant;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -92,6 +97,33 @@ class AuthInfoMapstructTest {
         assertEquals(Code.AUTH_MNGR, dto.getRoles().get(1).getRoleKey());
         assertEquals("N", dto.getLockedYn());
         assertEquals("Y", dto.getNeedsPasswordReset());
+    }
+
+    /**
+     * MapStruct uses + @AfterMapping 으로 roles 가 채워지면 Spring Security GrantedAuthority 도 유효해야 한다.
+     */
+    @Test
+    @DisplayName("toDto 이후 roles·getAuthorities가 user_role(roleInfo) 기준으로 채워진다")
+    void testToDto_rolesAndAuthoritiesPopulatedFromUserRoles() throws Exception {
+        final UserEntity userEntity = UserEntityTestFactory.create();
+        userEntity.setUserRoles(List.of(
+                UserRoleEntityTestFactory.create(Auth.USER),
+                UserRoleEntityTestFactory.create(Auth.DEV)
+        ));
+
+        final AuthInfo dto = authInfoMapstruct.toDto(userEntity);
+
+        assertNotNull(dto.getRoles());
+        assertEquals(2, dto.getRoles().size());
+        final Set<String> keys = dto.getRoles().stream().map(RoleDto::getRoleKey).collect(Collectors.toSet());
+        assertTrue(keys.contains(Code.AUTH_USER));
+        assertTrue(keys.contains(Code.AUTH_DEV));
+
+        final List<String> authorities = dto.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+        assertTrue(authorities.contains(Constant.ROLE_USER));
+        assertTrue(authorities.contains(Constant.ROLE_MNGR), "DEV 역할은 GrantedAuthority 로 ROLE_MNGR 로 매핑된다");
     }
 
     /**
