@@ -124,7 +124,7 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     margin-left: 1rem !important;
 }
 
-.journal-diary-item, .journal-dream-item, .journal-interpretation-item, .journal-sumry-review-item {
+.journal-diary-item, .journal-dream-item, .journal-note-item, .journal-interpretation-item, .journal-sumry-review-item {
     display: flex !important;
     flex-direction: row !important;
     justify-content: start;
@@ -133,7 +133,8 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     margin-bottom: 1rem !important;
 }
 
-.journal-diary-content, .journal-dream-content, .journal-interpretation-content, .journal-sumry-content, .journal-sumry-review-content {
+.journal-diary-content, .journal-dream-content, .journal-interpretation-content, .journal-sumry-content, .journal-sumry-review-content,
+.journal-note-content .journal-content {
     p {
         margin-top: 0.1rem !important;
         margin-bottom: 0.1rem !important;
@@ -412,7 +413,8 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
 }
 
 .toggle-diary-btn,
-.toggle-dream-btn {
+.toggle-dream-btn,
+.toggle-note-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -467,6 +469,36 @@ $color-dream: #5F0082; // 꿈 텍스트 색깔 (연보라)
     &.is-collapsed {
         .toggle-diary-btn,
         .toggle-dream-btn {
+            background: rgba(14, 165, 233, 0.1);
+            border-color: rgba(14, 165, 233, 0.2);
+            color: #0284c7;
+        }
+    }
+}
+
+.journal-note-item {
+    .journal-note-content {
+        position: relative;
+        border: 1px solid transparent;
+        border-radius: 0 0.5rem 0.5rem 0;
+        padding-left: 0.75rem !important;
+        background: transparent;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+
+        &::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0.3rem;
+            bottom: 0.3rem;
+            width: 1px;
+            background: rgba(148, 163, 184, 0.42);
+            pointer-events: none;
+        }
+    }
+
+    &.is-collapsed {
+        .toggle-note-btn {
             background: rgba(14, 165, 233, 0.1);
             border-color: rgba(14, 165, 233, 0.2);
             color: #0284c7;

@@ -9,6 +9,7 @@ import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstnModu
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalPeriodModule;
 import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryDto;
+import io.nicheblog.dreamdiary.feature.journal.note.model.JournalNoteDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import lombok.*;
@@ -75,6 +76,9 @@ public class JournalChapterDto
 
     /** 저널 일기 목록 */
     private List<JournalDiaryDto> journalDiaryList;
+
+    /** 저널 노트 목록 */
+    private List<JournalNoteDto> journalNoteList;
 
     /* ----- */
 

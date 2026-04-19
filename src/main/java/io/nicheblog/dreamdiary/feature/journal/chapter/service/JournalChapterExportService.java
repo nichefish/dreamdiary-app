@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.feature.attachable.tag.model.TagContentDto;
 import io.nicheblog.dreamdiary.feature.attachable.tag.service.TagService;
 import io.nicheblog.dreamdiary.feature.journal.chapter.model.JournalChapterDto;
 import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryDto;
+import io.nicheblog.dreamdiary.feature.journal.note.model.JournalNoteDto;
 import io.nicheblog.dreamdiary.global.util.cmm.CmmUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -43,36 +44,59 @@ public class JournalChapterExportService {
         sb.append("\r\n").append(date).append("\r\n");
 
         final List<JournalDiaryDto> journalDiaryList = entry.getJournalDiaryList();
+        final List<JournalNoteDto> journalNoteList = entry.getJournalNoteList();
 
-        sb.append("total: ")
-          .append(CollectionUtils.isEmpty(journalDiaryList) ? 0 : journalDiaryList.size())
-          .append("\r\n");
+        final int diaryCnt = CollectionUtils.isEmpty(journalDiaryList) ? 0 : journalDiaryList.size();
+        final int noteCnt = CollectionUtils.isEmpty(journalNoteList) ? 0 : journalNoteList.size();
+        sb.append("diaries: ").append(diaryCnt).append(", notes: ").append(noteCnt).append("\r\n");
         sb.append("================================\r\n\n");
-        if (CollectionUtils.isEmpty(journalDiaryList)) return sb.toString();
 
-        // =========================
-        // 2. 본문
-        // =========================
-        for (final JournalDiaryDto diary : journalDiaryList) {
-            sb.append("#")
-              .append(diary.getSortOrder())
-              .append("\r\n")
-              .append(CmmUtils.htmlToText(diary.getContent()))
-              .append("\r\n");
-            // 태그 처리
-            if (diary.getTag() == null || CollectionUtils.isEmpty(diary.getTag().getList())) {
-                sb.append("\r\n\n");
-                continue;
-            }
-            final List<TagContentDto> tagDtoList = diary.getTag().getList();
-            for (final TagContentDto tagDto : tagDtoList) {
-                final String ctgr = StringUtils.isEmpty(tagDto.getCtgr()) ? "" : "[" + tagDto.getCtgr() + "] ";
-                final String tagStr = ctgr + tagDto.getTagNm();
+        if (CollectionUtils.isNotEmpty(journalDiaryList)) {
+            sb.append("[diaries]\r\n");
+            for (final JournalDiaryDto diary : journalDiaryList) {
                 sb.append("#")
-                  .append(tagStr)
-                  .append(" ");
+                  .append(diary.getSortOrder())
+                  .append("\r\n")
+                  .append(CmmUtils.htmlToText(diary.getContent()))
+                  .append("\r\n");
+                if (diary.getTag() == null || CollectionUtils.isEmpty(diary.getTag().getList())) {
+                    sb.append("\r\n\n");
+                    continue;
+                }
+                final List<TagContentDto> tagDtoList = diary.getTag().getList();
+                for (final TagContentDto tagDto : tagDtoList) {
+                    final String ctgr = StringUtils.isEmpty(tagDto.getCtgr()) ? "" : "[" + tagDto.getCtgr() + "] ";
+                    final String tagStr = ctgr + tagDto.getTagNm();
+                    sb.append("#")
+                      .append(tagStr)
+                      .append(" ");
+                }
+                sb.append("\r\n\n");
             }
-            sb.append("\r\n\n");
+        }
+
+        if (CollectionUtils.isNotEmpty(journalNoteList)) {
+            sb.append("[notes]\r\n");
+            for (final JournalNoteDto note : journalNoteList) {
+                sb.append("#")
+                  .append(note.getSortOrder())
+                  .append("\r\n")
+                  .append(CmmUtils.htmlToText(note.getContent()))
+                  .append("\r\n");
+                if (note.getTag() == null || CollectionUtils.isEmpty(note.getTag().getList())) {
+                    sb.append("\r\n\n");
+                    continue;
+                }
+                final List<TagContentDto> tagDtoList = note.getTag().getList();
+                for (final TagContentDto tagDto : tagDtoList) {
+                    final String ctgr = StringUtils.isEmpty(tagDto.getCtgr()) ? "" : "[" + tagDto.getCtgr() + "] ";
+                    final String tagStr = ctgr + tagDto.getTagNm();
+                    sb.append("#")
+                      .append(tagStr)
+                      .append(" ");
+                }
+                sb.append("\r\n\n");
+            }
         }
 
         return sb.toString();

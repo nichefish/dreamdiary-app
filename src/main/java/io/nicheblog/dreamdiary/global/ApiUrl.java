@@ -64,6 +64,9 @@ public interface ApiUrl {
     String JOURNAL_DIARIES = Prefix.API + "/journal/diaries";
     String JOURNAL_DIARY = Prefix.API + "/journal/diary/{id}";
     String JOURNAL_DIARIES_EXPORT = Prefix.API + "/journal/diaries/export";
+    /** 저널 노트 */
+    String JOURNAL_NOTES = Prefix.API + "/journal/notes";
+    String JOURNAL_NOTE = Prefix.API + "/journal/note/{id}";
     /** 저널 일기 태그 */
     String JOURNAL_DIARY_TAGS = Prefix.API + "/journal/diary/tags";
     String JOURNAL_DIARY_TAG_GROUP_LIST_AJAX = Prefix.API + "/journal/diary/tag/group-list";

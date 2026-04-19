@@ -92,6 +92,19 @@
     <cache alias="journalDiaryWeeklyStateMapByUser" uses-template="defaultTemplate" />
     <cache alias="journalDiaryYyAnnualStatedListByUser" uses-template="defaultTemplate" />
 
+    <!-- journal note -->
+    <cache alias="journalNoteDtlDtoByUser" uses-template="defaultTemplate" />
+    <cache alias="journalNoteTagListByUser" uses-template="defaultTemplate" />
+    <cache alias="journalNoteYyMnthTagListByUser" uses-template="defaultTemplate" />
+    <cache alias="journalNoteWeeklyTagListByUser" uses-template="defaultTemplate" />
+    <cache alias="journalNoteYyMnthSizedTagListByUser" uses-template="defaultTemplate" />
+    <cache alias="journalNoteWeeklySizedTagListByUser" uses-template="defaultTemplate" />
+    <cache alias="journalNoteTagCtgrMapByUser" uses-template="defaultTemplate" />
+    <cache alias="journalNoteCountMapByUser" uses-template="defaultTemplate" />
+    <cache alias="journalNoteStateMapByUser" uses-template="defaultTemplate" />
+    <cache alias="journalNoteWeeklyStateMapByUser" uses-template="defaultTemplate" />
+    <cache alias="journalNoteYyAnnualStatedListByUser" uses-template="defaultTemplate" />
+
     <!-- ?�??�?-->
     <cache alias="journalDreamDtlDtoByUser" uses-template="defaultTemplate" />
     <cache alias="journalDreamTagListByUser" uses-template="defaultTemplate" />

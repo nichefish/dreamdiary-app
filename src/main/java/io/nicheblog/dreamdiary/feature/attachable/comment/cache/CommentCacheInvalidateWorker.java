@@ -33,6 +33,7 @@ public class CommentCacheInvalidateWorker {
         final Set<ContentType> requiredTypes = EnumSet.of(
                 ContentType.JOURNAL_DAY,
                 ContentType.JOURNAL_DIARY,
+                ContentType.JOURNAL_NOTE,
                 ContentType.JOURNAL_DREAM,
                 ContentType.JOURNAL_INTERPRETATION,
                 ContentType.JOURNAL_ANNUAL_REVIEW

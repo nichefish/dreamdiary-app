@@ -1,5 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.chapter.model;
 
+import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,4 +28,7 @@ public class JournalChapterSmpDto {
     private String title;
     /** 순번 */
     private Integer sortOrder;
+
+    /** 챕터 타입 (DIARY | DREAM | …) */
+    private ChapterType chapterType;
 }

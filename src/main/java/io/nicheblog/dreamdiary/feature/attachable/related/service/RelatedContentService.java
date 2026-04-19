@@ -14,6 +14,8 @@ import io.nicheblog.dreamdiary.feature.journal.diary.entity.JournalDiaryEntity;
 import io.nicheblog.dreamdiary.feature.journal.diary.repository.jpa.JournalDiaryRepository;
 import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntity;
 import io.nicheblog.dreamdiary.feature.journal.dream.repository.jpa.JournalDreamRepository;
+import io.nicheblog.dreamdiary.feature.journal.note.entity.JournalNoteEntity;
+import io.nicheblog.dreamdiary.feature.journal.note.repository.jpa.JournalNoteRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +41,7 @@ public class RelatedContentService {
 
     private static final EnumSet<ContentType> SUPPORTED_TYPES = EnumSet.of(
             ContentType.JOURNAL_DIARY,
+            ContentType.JOURNAL_NOTE,
             ContentType.JOURNAL_DREAM
     );
 
@@ -48,6 +51,7 @@ public class RelatedContentService {
     private final RelatedContentMapstruct mapstruct;
 
     private final JournalDiaryRepository journalDiaryRepository;
+    private final JournalNoteRepository journalNoteRepository;
     private final JournalDreamRepository journalDreamRepository;
 
     @Transactional
@@ -230,6 +234,9 @@ public class RelatedContentService {
             case JOURNAL_DIARY -> journalDiaryRepository.findById(refKey.getId())
                     .map(JournalDiaryEntity::getCreatedBy)
                     .orElse(null);
+            case JOURNAL_NOTE -> journalNoteRepository.findById(refKey.getId())
+                    .map(JournalNoteEntity::getCreatedBy)
+                    .orElse(null);
             case JOURNAL_DREAM -> journalDreamRepository.findById(refKey.getId())
                     .map(JournalDreamEntity::getCreatedBy)
                     .orElse(null);
@@ -241,6 +248,9 @@ public class RelatedContentService {
         return switch (refKey.getContentTypeEnum()) {
             case JOURNAL_DIARY -> journalDiaryRepository.findById(refKey.getId())
                     .map(JournalDiaryEntity::getTitle)
+                    .orElse(null);
+            case JOURNAL_NOTE -> journalNoteRepository.findById(refKey.getId())
+                    .map(JournalNoteEntity::getTitle)
                     .orElse(null);
             case JOURNAL_DREAM -> journalDreamRepository.findById(refKey.getId())
                     .map(JournalDreamEntity::getTitle)

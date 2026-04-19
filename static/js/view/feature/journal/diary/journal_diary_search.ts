@@ -14,6 +14,7 @@ const Page: Page = (function(): Page {
          init: async function(): Promise<void> {
             /* initialize modules. */
             await dF.JournalDiary.init("SEARCH");
+            await dF.JournalNote.init("SEARCH");
             dF.JournalDiarySearch.init();
             dF.Comment.modal.init({
                 "refreshFunc": dF.JournalDay.yyMnthListAjax

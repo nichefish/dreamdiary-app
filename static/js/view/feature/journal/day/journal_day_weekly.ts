@@ -15,6 +15,7 @@ const Page: Page = (function(): Page {
         init: function(): void {
             dF.JournalDay.init('WEEKLY');
             dF.JournalDiary.init('WEEKLY');
+            void dF.JournalNote.init("WEEKLY");
             dF.JournalDream.init('WEEKLY');
             // dF.JournalTodo.init();
             dF.Comment.modal.init({
