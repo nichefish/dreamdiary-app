@@ -83,7 +83,7 @@ public interface ScheduleCalMapstruct
                 break;
         }
 
-        boolean isPrvt = "Y".equals(dto.getPrvtYn());
+        boolean isPrvt = "Y".equals(dto.getPrivateYn());
         if (isPrvt) title = "\uD83D\uDD07" + title;
         title += dto.hasPassed() ? " \uD83D\uDDF8" : " ⋯";
         dto.setTitle(title);

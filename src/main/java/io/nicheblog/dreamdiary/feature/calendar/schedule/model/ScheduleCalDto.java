@@ -72,7 +72,7 @@ public class ScheduleCalDto
     private String prtcpnt;
 
     /** 개인일정 여부 (Y/N) */
-    private String prvtYn;
+    private String privateYn;
 
     /* ----- */
 

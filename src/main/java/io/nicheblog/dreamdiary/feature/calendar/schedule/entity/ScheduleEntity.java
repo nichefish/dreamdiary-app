@@ -6,7 +6,6 @@ import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEm
 import io.nicheblog.dreamdiary.feature.attachable.comment.entity.embed.CommentEmbedModule;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbed;
 import io.nicheblog.dreamdiary.feature.attachable.tag.entity.embed.TagEmbedModule;
-import io.nicheblog.dreamdiary.infrastructure.code.Code;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.apache.commons.collections4.CollectionUtils;
@@ -73,6 +72,14 @@ public class ScheduleEntity
     @Comment("컨텐츠 타입")
     private String contentType = CONTENT_TYPE.key;
 
+    /** 글 분류 코드 */
+    @Column(name = "category_code", length = 50)
+    private String categoryCode;
+
+    /** 글 분류 표시명 :: join을 제거하고 메모리 캐시 처리 */
+    @Transient
+    private String categoryName;
+
     /* ----- */
 
     /** 제목 */
@@ -84,29 +91,6 @@ public class ScheduleEntity
     private String content;
 
     /* ----- */
-
-    /** 중요 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "imprtc_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("중요 여부")
-    private String imprtcYn = "N";
-
-    /** 상단고정 여부 (Y/N) */
-    @Builder.Default
-    @Column(name = "fxd_yn", length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
-    @Comment("상단고정 여부")
-    private String fxdYn = "N";
-
-    /** 조회수 */
-    @Builder.Default
-    @Column(name = "hit_cnt")
-    private Integer hitCnt = 0;
-
-    /** 수정권한 */
-    @Builder.Default
-    @Column(name = "mdfable")
-    @Comment("수정권한")
-    private String mdfable = Code.MDFABLE_REGSTR;
 
     /** 출처 (ex.KASI) */
     @Column(name = "src")
@@ -134,9 +118,9 @@ public class ScheduleEntity
 
     /** 개인일정 여부 (Y/N) */
     @Builder.Default
-    @Column(name = "prvt_yn")
+    @Column(name = "private_yn")
     @Comment("개인일정 여부 (Y/N)")
-    private String prvtYn = "N";
+    private String privateYn = "N";
 
     /** 참여자 정보 */
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
