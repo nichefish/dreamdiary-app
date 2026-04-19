@@ -4,6 +4,7 @@ import io.nicheblog.dreamdiary.feature.attachable.state.StateCd;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalState;
 import io.nicheblog.dreamdiary.feature.journal._shared.state.JournalStateMaps;
 import io.nicheblog.dreamdiary.feature.journal.chapter.entity.JournalChapterEntity;
+import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 import io.nicheblog.dreamdiary.feature.journal.day.entity.JournalDayEntity;
 import io.nicheblog.dreamdiary.feature.journal.diary.entity.JournalDiaryEntity;
 import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntity;
@@ -51,40 +52,56 @@ public final class JournalDayStateMapHelper {
                             .build();
                     chapterMap.put(entry.getId(), entryState);
 
-                    final List<JournalDiaryEntity> journalDiaryList = entry.getJournalDiaryList();
-                    if (CollectionUtils.isNotEmpty(journalDiaryList)) {
-                        for (final JournalDiaryEntity diary : journalDiaryList) {
-                            final JournalState diaryState = JournalState.builder()
-                                    .resolved(diary.state.hasState(StateCd.RESOLVED))
-                                    .collapsed(diary.state.hasState(StateCd.COLLAPSED))
-                                    .imprtc(diary.state.hasState(StateCd.IMPRTC))
-                                    .refrnc(diary.state.hasState(StateCd.REFRNC))
-                                    .build();
-                            diaryMap.put(diary.getId(), diaryState);
+                    if (ChapterType.DREAM == entry.getChapterType()) {
+                        // DREAM 챕터: 꿈 및 해몽 상태 처리
+                        final List<JournalDreamEntity> dreamList = entry.getJournalDreamList();
+                        if (CollectionUtils.isNotEmpty(dreamList)) {
+                            for (final JournalDreamEntity dream : dreamList) {
+                                final JournalState dreamState = JournalState.builder()
+                                        .resolved(dream.state.hasState(StateCd.RESOLVED))
+                                        .collapsed(dream.state.hasState(StateCd.COLLAPSED))
+                                        .imprtc(dream.state.hasState(StateCd.IMPRTC))
+                                        .refrnc(dream.state.hasState(StateCd.REFRNC))
+                                        .build();
+                                dreamMap.put(dream.getId(), dreamState);
+
+                                final List<JournalInterpretationEntity> journalInterpretationList = dream.getJournalInterpretationList();
+                                if (CollectionUtils.isNotEmpty(journalInterpretationList)) {
+                                    for (final JournalInterpretationEntity interpretation : journalInterpretationList) {
+                                        final JournalState interpretationState = JournalState.builder()
+                                                .resolved(interpretation.state.hasState(StateCd.RESOLVED))
+                                                .collapsed(interpretation.state.hasState(StateCd.COLLAPSED))
+                                                .build();
+                                        interpretationMap.put(interpretation.getId(), interpretationState);
+                                    }
+                                }
+                            }
                         }
-                    }
-                }
-            }
-
-            final List<JournalDreamEntity> journalDreamList = day.getJournalDreamList();
-            if (CollectionUtils.isNotEmpty(journalDreamList)) {
-                for (final JournalDreamEntity dream : journalDreamList) {
-                    final JournalState dreamState = JournalState.builder()
-                            .resolved(dream.state.hasState(StateCd.RESOLVED))
-                            .collapsed(dream.state.hasState(StateCd.COLLAPSED))
-                            .imprtc(dream.state.hasState(StateCd.IMPRTC))
-                            .refrnc(dream.state.hasState(StateCd.REFRNC))
-                            .build();
-                    dreamMap.put(dream.getId(), dreamState);
-
-                    final List<JournalInterpretationEntity> journalInterpretationList = dream.getJournalInterpretationList();
-                    if (CollectionUtils.isNotEmpty(journalInterpretationList)) {
-                        for (final JournalInterpretationEntity interpretation : journalInterpretationList) {
-                            final JournalState interpretationState = JournalState.builder()
-                                    .resolved(interpretation.state.hasState(StateCd.RESOLVED))
-                                    .collapsed(interpretation.state.hasState(StateCd.COLLAPSED))
-                                    .build();
-                            interpretationMap.put(interpretation.getId(), interpretationState);
+                        final List<JournalDreamEntity> elseDreamList = entry.getJournalElseDreamList();
+                        if (CollectionUtils.isNotEmpty(elseDreamList)) {
+                            for (final JournalDreamEntity dream : elseDreamList) {
+                                final JournalState dreamState = JournalState.builder()
+                                        .resolved(dream.state.hasState(StateCd.RESOLVED))
+                                        .collapsed(dream.state.hasState(StateCd.COLLAPSED))
+                                        .imprtc(dream.state.hasState(StateCd.IMPRTC))
+                                        .refrnc(dream.state.hasState(StateCd.REFRNC))
+                                        .build();
+                                dreamMap.put(dream.getId(), dreamState);
+                            }
+                        }
+                    } else if (ChapterType.DIARY == entry.getChapterType()) {
+                        // DIARY 챕터: 일기 상태 처리
+                        final List<JournalDiaryEntity> journalDiaryList = entry.getJournalDiaryList();
+                        if (CollectionUtils.isNotEmpty(journalDiaryList)) {
+                            for (final JournalDiaryEntity diary : journalDiaryList) {
+                                final JournalState diaryState = JournalState.builder()
+                                        .resolved(diary.state.hasState(StateCd.RESOLVED))
+                                        .collapsed(diary.state.hasState(StateCd.COLLAPSED))
+                                        .imprtc(diary.state.hasState(StateCd.IMPRTC))
+                                        .refrnc(diary.state.hasState(StateCd.REFRNC))
+                                        .build();
+                                diaryMap.put(diary.getId(), diaryState);
+                            }
                         }
                     }
                 }

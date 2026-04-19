@@ -45,10 +45,12 @@ public class JournalInterpretationDto
 
     /* ----- */
 
+    /** 참조 엔티티 번호 */
+    private Integer refId;
+    /** 참조 컨텐츠 타입 */
+    private ContentType refContentType;
     /** 저널 일자 번호 */
     private Integer journalDayId;
-    /** 저널 꿈 번호 */
-    private Integer journalDreamId;
     /** 저널 기준일자 */
     private String stdrdDt;
     /** 저널 일자 요일 */

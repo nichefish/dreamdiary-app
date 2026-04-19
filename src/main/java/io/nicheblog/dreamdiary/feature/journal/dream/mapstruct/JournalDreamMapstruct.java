@@ -60,11 +60,13 @@ public abstract class JournalDreamMapstruct
      * @return Dto -- 변환된 Dto 객체
      */
     @Override
-    @Mapping(target = "stdrdDt", expression = "java(entity.getJournalDay() != null ? DateUtils.asStr(entity.getJournalDay().getJournalDate(), DatePtn.DATE) : null)")
-    @Mapping(target = "journalDatePrecision", expression = "java(entity.getJournalDay() != null ? entity.getJournalDay().getJournalDatePrecision() : JournalDatePrecision.EXACT)")
-    @Mapping(target = "journalDateWeekDay", expression = "java(entity.getJournalDay() != null && entity.getJournalDay().getJournalDate() != null ? DateUtils.getDayOfWeekChinese(entity.getJournalDay().getJournalDate()) : null)")
-    @Mapping(target = "yy", source = "journalDay.yy")
-    @Mapping(target = "mnth", source = "journalDay.mnth")
+    @Mapping(target = "journalChapterId", source = "journalChapterId")
+    @Mapping(target = "journalDayId", source = "journalChapter.journalDayId")
+    @Mapping(target = "stdrdDt", expression = "java(entity.getJournalChapter() != null && entity.getJournalChapter().getJournalDay() != null ? DateUtils.asStr(entity.getJournalChapter().getJournalDay().getJournalDate(), DatePtn.DATE) : null)")
+    @Mapping(target = "journalDatePrecision", expression = "java(entity.getJournalChapter() != null && entity.getJournalChapter().getJournalDay() != null ? entity.getJournalChapter().getJournalDay().getJournalDatePrecision() : JournalDatePrecision.EXACT)")
+    @Mapping(target = "journalDateWeekDay", expression = "java(entity.getJournalChapter() != null && entity.getJournalChapter().getJournalDay() != null && entity.getJournalChapter().getJournalDay().getJournalDate() != null ? DateUtils.getDayOfWeekChinese(entity.getJournalChapter().getJournalDay().getJournalDate()) : null)")
+    @Mapping(target = "yy", source = "journalChapter.journalDay.yy")
+    @Mapping(target = "mnth", source = "journalChapter.journalDay.mnth")
     @Mapping(target = "markdownContent", expression = "java(StringUtils.isEmpty(entity.getContent()) ? \"-\" : MarkdownUtils.markdown(entity.getContent()))")
     public abstract JournalDreamDto toDto(final JournalDreamEntity entity) throws Exception;
 }

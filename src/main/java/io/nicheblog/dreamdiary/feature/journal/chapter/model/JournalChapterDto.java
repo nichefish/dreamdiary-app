@@ -7,6 +7,7 @@ import io.nicheblog.dreamdiary.feature.attachable.state.model.cmpstn.StateCmpstn
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstn;
 import io.nicheblog.dreamdiary.feature.attachable.tag.model.cmpstn.TagCmpstnModule;
 import io.nicheblog.dreamdiary.feature.journal._shared.model.JournalPeriodModule;
+import io.nicheblog.dreamdiary.feature.journal.chapter.type.ChapterType;
 import io.nicheblog.dreamdiary.feature.journal.diary.model.JournalDiaryDto;
 import io.nicheblog.dreamdiary.global.intrfc.model.Identifiable;
 import io.nicheblog.dreamdiary.global.util.date.DateUtils;
@@ -38,6 +39,10 @@ public class JournalChapterDto
     /** 필수: 컨텐츠 타입 */
     @Builder.Default
     private String contentType = ContentType.JOURNAL_CHAPTER.key;
+
+    /** 챕터 타입 (DIARY | DREAM) */
+    @Builder.Default
+    private ChapterType chapterType = ChapterType.DIARY;
 
     /** 제목 */
     private String title;

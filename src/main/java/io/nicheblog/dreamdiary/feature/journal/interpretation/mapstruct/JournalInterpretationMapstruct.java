@@ -1,7 +1,6 @@
 package io.nicheblog.dreamdiary.feature.journal.interpretation.mapstruct;
 
 import io.nicheblog.dreamdiary.feature.attachable._shared.mapstruct.BaseAttachableMapstruct;
-import io.nicheblog.dreamdiary.feature.journal.dream.entity.JournalDreamEntity;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.entity.JournalInterpretationEntity;
 import io.nicheblog.dreamdiary.feature.journal.interpretation.model.JournalInterpretationDto;
 import io.nicheblog.dreamdiary.global.intrfc.mapstruct.BaseWriteMapstruct;
@@ -11,9 +10,6 @@ import io.nicheblog.dreamdiary.global.util.date.DateUtils;
 import io.nicheblog.dreamdiary.infrastructure.code.utils.CodeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.*;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 /**
  * JournalInterpretationMapstruct
@@ -32,9 +28,6 @@ import javax.persistence.PersistenceContext;
 public abstract class JournalInterpretationMapstruct
         implements BaseWriteMapstruct<JournalInterpretationDto, JournalInterpretationEntity>, BaseAttachableMapstruct<JournalInterpretationDto, JournalInterpretationEntity> {
 
-    @PersistenceContext
-    protected EntityManager em;
-
     /**
      * Dto -> Entity 변환
      *
@@ -43,7 +36,6 @@ public abstract class JournalInterpretationMapstruct
      */
     @Override
     @Mapping(target = "content", expression = "java(MarkdownUtils.normalize(dto.getContent()))")
-    @Mapping(target = "journalDream", source = "journalDreamId", qualifiedByName = "mapJournalDream")
     public abstract JournalInterpretationEntity toEntity(final JournalInterpretationDto dto) throws Exception;
 
     /**
@@ -55,7 +47,6 @@ public abstract class JournalInterpretationMapstruct
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "content", expression = "java(MarkdownUtils.normalize(dto.getContent()))")
-    @Mapping(target = "journalDream", source = "journalDreamId", qualifiedByName = "mapJournalDream")
     public abstract void updateFromDto(final JournalInterpretationDto dto, final @MappingTarget JournalInterpretationEntity entity) throws Exception;
 
     /**
@@ -66,24 +57,10 @@ public abstract class JournalInterpretationMapstruct
      */
     @Override
     @Named("toDto")
-    @Mapping(target = "journalDreamId", source = "journalDream.id")
-    @Mapping(target = "journalDayId", source = "journalDream.journalDayId")
-    @Mapping(target = "stdrdDt", expression = "java((entity.getJournalDream() != null && entity.getJournalDream().getJournalDay() != null) ? DateUtils.asStr(entity.getJournalDream().getJournalDay().getJournalDate(), DatePtn.DATE) : null)")
-    @Mapping(target = "journalDateWeekDay", expression = "java((entity.getJournalDream() != null && entity.getJournalDream().getJournalDay() != null) && entity.getJournalDream().getJournalDay().getJournalDate() != null ? DateUtils.getDayOfWeekChinese(entity.getJournalDream().getJournalDay().getJournalDate()) : null)")
-    @Mapping(target = "yy", source = "journalDream.journalDay.yy")
-    @Mapping(target = "mnth", source = "journalDream.journalDay.mnth")
+    @Mapping(target = "stdrdDt", expression = "java((entity.getJournalDay() != null && entity.getJournalDay().getJournalDate() != null) ? DateUtils.asStr(entity.getJournalDay().getJournalDate(), DatePtn.DATE) : null)")
+    @Mapping(target = "journalDateWeekDay", expression = "java((entity.getJournalDay() != null && entity.getJournalDay().getJournalDate() != null) ? DateUtils.getDayOfWeekChinese(entity.getJournalDay().getJournalDate()) : null)")
+    @Mapping(target = "yy", source = "journalDay.yy")
+    @Mapping(target = "mnth", source = "journalDay.mnth")
     @Mapping(target = "markdownContent", expression = "java(StringUtils.isEmpty(entity.getContent()) ? \"-\" : MarkdownUtils.markdown(entity.getContent()))")
     public abstract JournalInterpretationDto toDto(final JournalInterpretationEntity entity) throws Exception;
-
-    /**
-     * journalDreamId로부터 JournalDreamEntity 객체 생성
-     * @param journalDreamId JournalDreamId
-     * @return JournalDreamEntity
-     */
-    @Named("mapJournalDream")
-    protected JournalDreamEntity mapJournalDream(final Integer journalDreamId) {
-        if (journalDreamId == null) return null;
-        return em.getReference(JournalDreamEntity.class, journalDreamId);
-    }
 }
-

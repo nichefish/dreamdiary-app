@@ -59,7 +59,9 @@ public class JournalDreamDto
 
     /* ----- */
 
-    /** 저널 일자 번호 */
+    /** 저널 챕터 번호 */
+    private Integer journalChapterId;
+    /** 저널 일자 번호 (챕터 경유, 표시용) */
     private Integer journalDayId;
     /** 저널 기준일자 */
     private String stdrdDt;

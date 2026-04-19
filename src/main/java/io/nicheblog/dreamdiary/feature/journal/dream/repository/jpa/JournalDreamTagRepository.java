@@ -35,8 +35,9 @@ public interface JournalDreamTagRepository
     @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value = "true"))
     @Query("SELECT new io.nicheblog.dreamdiary.feature.attachable.tag.model.TagContentCntDto(ct.tagId, COUNT(ct.id)) " +
             "FROM JournalDreamTagContentEntity ct " +
-            "INNER JOIN FETCH JournalDreamEntity diary ON ct.refId = diary.id " +
-            "INNER JOIN FETCH JournalDayEntity day ON diary.journalDayId = day.id " +
+            "INNER JOIN JournalDreamEntity diary ON ct.refId = diary.id " +
+            "INNER JOIN JournalChapterEntity chapter ON diary.journalChapterId = chapter.id " +
+            "INNER JOIN JournalDayEntity day ON chapter.journalDayId = day.id " +
             "WHERE ct.createdBy = :#{#param.createdBy} " +
             " AND (:#{#param.yy} IS NULL OR day.yy = :#{#param.yy} OR :#{#param.yy} = 9999) " +
             " AND (:#{#param.mnth} IS NULL OR day.mnth = :#{#param.mnth} OR :#{#param.mnth} = 99) " +

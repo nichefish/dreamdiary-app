@@ -112,6 +112,73 @@ dF.JournalDream = (function(): dfModule {
             dF.JournalDream.tagify = cF.tagify.initWithCtgr("#journalDreamRegForm #tagListStr", dF.JournalDreamTag.ctgrMap);
         },
 
+        resolveDreamChapterList: function(day: Record<string, any> = {}): Record<string, any>[] {
+            const chapterList: Record<string, any>[] = Array.isArray(day?.journalChapterList) ? day.journalChapterList : [];
+            return chapterList.filter((chapter: Record<string, any>): boolean => chapter?.chapterType === "DREAM");
+        },
+
+        createDreamChapterAndOpenModal: function(
+            journalDayId: string | number,
+            stdrdDt: string,
+            journalDateWeekDay: string,
+            onReady?: () => void
+        ): void {
+            const ajaxData: FormData = new FormData();
+            ajaxData.append("journalDayId", String(journalDayId));
+            ajaxData.append("chapterType", "DREAM");
+            ajaxData.append("title", "꿈");
+
+            cF.$ajax.multipart(Url.JOURNAL_CHAPTERS, ajaxData, function(res: AjaxResponse): void {
+                if (!res.rslt) {
+                    if (cF.util.isNotEmpty(res.message)) Swal.fire({ text: res.message });
+                    return;
+                }
+
+                dF.JournalDream.openRegModalWithDayContext(
+                    journalDayId,
+                    res?.rsltObj?.id,
+                    stdrdDt,
+                    journalDateWeekDay,
+                    onReady
+                );
+            }, "block");
+        },
+
+        openRegModalWithDayContext: function(
+            journalDayId: string | number,
+            journalChapterId: string | number | undefined,
+            stdrdDt: string,
+            journalDateWeekDay: string,
+            onReady?: () => void
+        ): void {
+            const url: string = cF.util.bindUrl(Url.JOURNAL_DAY, { id: journalDayId });
+            cF.ajax.get(url, null, function(res: AjaxResponse): void {
+                if (!res.rslt) return;
+
+                const chapterList: Record<string, any>[] = dF.JournalDream.resolveDreamChapterList(res.rsltObj);
+                if (chapterList.length === 0) {
+                    dF.JournalDream.createDreamChapterAndOpenModal(journalDayId, stdrdDt, journalDateWeekDay, onReady);
+                    return;
+                }
+
+                const resolvedChapterId: number = chapterList.some((chapter: Record<string, any>): boolean => {
+                    return Number(chapter?.id) === Number(journalChapterId);
+                })
+                    ? Number(journalChapterId)
+                    : Number(chapterList[0]?.id);
+
+                const obj: Record<string, any> = {
+                    journalDayId,
+                    journalChapterId: resolvedChapterId,
+                    stdrdDt,
+                    journalDateWeekDay,
+                    chapterList
+                };
+                dF.JournalDream.initForm(obj);
+                onReady?.();
+            });
+        },
+
         /**
          * 키워드 검색 팝업 호출
          */
@@ -131,12 +198,19 @@ dF.JournalDream = (function(): dfModule {
          * @param {string} param.stdrdDt - 기준 날짜.
          * @param {string} param.journalDateWeekDay - 기준 날짜 요일.
          */
-        regModal: function({ journalDayId, stdrdDt, journalDateWeekDay }: { journalDayId: string | number; stdrdDt: string; journalDateWeekDay: string; }): void {
+        regModal: function({
+            journalDayId,
+            journalChapterId,
+            stdrdDt,
+            journalDateWeekDay
+        }: {
+            journalDayId: string | number;
+            journalChapterId?: string | number;
+            stdrdDt: string;
+            journalDateWeekDay: string;
+        }): void {
             if (isNaN(Number(journalDayId))) return;
-
-            const obj: Record<string, any> = { journalDayId: journalDayId, stdrdDt: stdrdDt, journalDateWeekDay: journalDateWeekDay };
-            /* initialize form. */
-            dF.JournalDream.initForm(obj);
+            dF.JournalDream.openRegModalWithDayContext(journalDayId, journalChapterId, stdrdDt, journalDateWeekDay);
         },
 
         /**
@@ -228,11 +302,15 @@ dF.JournalDream = (function(): dfModule {
                     return;
                 }
                 const { rsltObj } = res;
-                /* initialize form. */
-                dF.JournalDream.initForm(rsltObj);
-
-                /* modal history push */
-                ModalHistory.push(self, func, args);
+                dF.JournalDream.openRegModalWithDayContext(
+                    rsltObj.journalDayId,
+                    rsltObj.journalChapterId,
+                    rsltObj.stdrdDt,
+                    rsltObj.journalDateWeekDay,
+                    function(): void {
+                        ModalHistory.push(self, func, args);
+                    }
+                );
             });
         },
 
@@ -497,4 +575,3 @@ dF.JournalDream = (function(): dfModule {
         }
     }
 })();
-

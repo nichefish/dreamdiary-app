@@ -45,10 +45,25 @@ dF.JournalChapter = (function(): dfModule {
          * @param {string} param.stdrdDt - 기준 날짜.
          * @param {string} param.journalDateWeekDay - 기준 날짜 요일.
          */
-        regModal: function({ journalDayId, stdrdDt, journalDateWeekDay }: { journalDayId: string | number; stdrdDt: string; journalDateWeekDay: string; }): void {
+        regModal: function({
+            journalDayId,
+            stdrdDt,
+            journalDateWeekDay,
+            chapterType
+        }: {
+            journalDayId: string | number;
+            stdrdDt: string;
+            journalDateWeekDay: string;
+            chapterType?: string;
+        }): void {
             if (isNaN(Number(journalDayId))) return;
 
-            const obj: Record<string, any> = { journalDayId: journalDayId, stdrdDt: stdrdDt, journalDateWeekDay: journalDateWeekDay };
+            const obj: Record<string, any> = {
+                journalDayId: journalDayId,
+                stdrdDt: stdrdDt,
+                journalDateWeekDay: journalDateWeekDay,
+                chapterType: chapterType ?? "DIARY"
+            };
             /* initialize form. */
             dF.JournalChapter.initForm(obj);
         },
@@ -322,4 +337,3 @@ dF.JournalChapter = (function(): dfModule {
         }
     }
 })();
-

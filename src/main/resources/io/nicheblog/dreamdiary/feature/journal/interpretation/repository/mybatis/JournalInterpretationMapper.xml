@@ -6,7 +6,8 @@
     <resultMap id="JournalInterpretationMap" type="io.nicheblog.dreamdiary.feature.journal.interpretation.model.JournalInterpretationDto">
         <id property="id" column="id"/>
         <result property="createdBy" column="created_by"/>
-        <result property="journalDreamId" column="journal_dream_id"/>
+        <result property="refId" column="ref_id"/>
+        <result property="refContentType" column="ref_content_type"/>
         <result property="journalDayId" column="journal_day_id"/>
         <result property="sortOrder" column="sort_order"/>
         <result property="yy" column="yy"/>
@@ -19,14 +20,14 @@
         SELECT
             ji.id,
             ji.created_by,
-            ji.journal_dream_id,
+            ji.ref_id,
+            ji.ref_content_type,
+            ji.journal_day_id,
             ji.sort_order,
-            day.id AS journal_day_id,
             day.yy,
             day.mnth
         FROM journal_interpretation ji
-            LEFT JOIN journal_dream dream ON ji.journal_dream_id = dream.id
-            LEFT JOIN journal_day day ON dream.journal_day_id = day.id
+            LEFT JOIN journal_day day ON ji.journal_day_id = day.id
         WHERE ji.id = #{id}
     </select>
 
@@ -35,7 +36,9 @@
         /* JournalInterpretationMapper.findAllForReorder */
         SELECT *
         FROM journal_interpretation
-        WHERE journal_dream_id = #{journalDreamId} AND deleted_at IS NULL
+        WHERE ref_id = #{refId}
+          AND ref_content_type = #{refContentType}
+          AND deleted_at IS NULL
         ORDER BY sort_order
     </select>
 
@@ -49,4 +52,3 @@
         </foreach>
     </update>
 </mapper>
-
