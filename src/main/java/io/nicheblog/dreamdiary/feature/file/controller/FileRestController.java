@@ -6,7 +6,6 @@ import io.nicheblog.dreamdiary.feature.file.service.FileRecordService;
 import io.nicheblog.dreamdiary.feature.file.utils.FileUtils;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.log.model.LogParam;
 import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
@@ -46,24 +45,19 @@ public class FileRestController
      * (로그인 사용자만 접근 가능.)
      *
      * @param fileId 파일 ID. 체크할 파일의 고유 식별자
-     * @param logParam 로그 관련 파라미터. 처리 과정에서 필요한 로그 정보를 포함
      * @return ResponseEntity -- 응답 객체
      */
     @GetMapping(Url.FILE_DOWNLOAD_CHK_AJAX)
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
     public ResponseEntity<AjaxResponse> fileChckAjax(
-            final @RequestParam("fileId") @Nullable String fileId,
-            final LogParam logParam
+            final @RequestParam("fileId") @Nullable String fileId
     ) {
 
         final boolean isSuccess = FileUtils.fileChck(fileId);
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
 
         // TODO: 실패시에만 로그 적용하도록
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
@@ -73,22 +67,17 @@ public class FileRestController
      * 비로그인 사용자도 외부에서 접근 가능. (인증 없음)
      *
      * @param fileGroupId - 파일 번호. 조회할 파일의 고유 식별자
-     * @param logParam 로그 관련 파라미터. 처리 과정에서 필요한 로그 정보를 포함
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.FILE_INFO_LIST_AJAX)
     @ResponseBody
     public ResponseEntity<AjaxResponse> getFileList(
-            final @RequestParam("fileGroupId") @Nullable Integer fileGroupId,
-            final LogParam logParam
+            final @RequestParam("fileGroupId") @Nullable Integer fileGroupId
     ) throws Exception {
 
         final List<FileRecordDto> fileList = fileRecordService.getPageDto(fileGroupId);
         final boolean isSuccess = (fileList != null);
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withList(fileList));
     }
@@ -99,15 +88,13 @@ public class FileRestController
      * (로그인 사용자만 접근 가능.)
      *
      * @param fileRecordId 파일 상세 번호. 다운로드할 파일의 고유 식별자
-     * @param logParam 로그 관련 파라미터. 처리 과정에서 필요한 로그 정보를 포함
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @GetMapping(Url.FILE_DOWNLOAD)
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
     public ResponseEntity<AjaxResponse> fileDownload(
-            final @RequestParam("fileRecordId") @Nullable Integer fileRecordId,
-            final LogParam logParam
+            final @RequestParam("fileRecordId") @Nullable Integer fileRecordId
     ) throws Exception {
 
         // 파일 정보 조회
@@ -120,9 +107,6 @@ public class FileRestController
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
 
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
-
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg));
     }
 
@@ -130,15 +114,13 @@ public class FileRestController
      * 파일 업로드 : 업로드 후 AtchDtlFileDto 반환 (filepath 정보 포함)
      * (로그인 사용자만 접근 가능.)
      *
-     * @param logParam 로그 기록을 위한 파라미터 객체
      * @param request Multipart 요청
      * @return {@link ResponseEntity} -- 처리 결과와 메시지
      */
     @PostMapping(Url.FILE_UPLOAD_AJAX)
     @ResponseBody
     public ResponseEntity<AjaxResponse> uploadFileAjax(
-            final MultipartHttpServletRequest request,
-            final LogParam logParam
+            final MultipartHttpServletRequest request
     ) throws Exception {
 
         // 파일 영역 처리 후 업로드 정보 받아서 반환
@@ -146,9 +128,6 @@ public class FileRestController
         assert atchfileDtl != null;
         final boolean isSuccess = (atchfileDtl.getId() != null);
         final String rsltMsg =  isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
-
-        // 로그 관련 세팅
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
 
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(atchfileDtl));
     }

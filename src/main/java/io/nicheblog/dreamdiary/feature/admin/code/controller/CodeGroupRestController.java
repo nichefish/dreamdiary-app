@@ -7,7 +7,6 @@ import io.nicheblog.dreamdiary.global.Constant;
 import io.nicheblog.dreamdiary.global.Url;
 import io.nicheblog.dreamdiary.global.model.ServiceResponse;
 import io.nicheblog.dreamdiary.global.util.MessageUtils;
-import io.nicheblog.dreamdiary.infrastructure.log.model.LogParam;
 import io.nicheblog.dreamdiary.infrastructure.log.type.ActvtyCtgr;
 import io.nicheblog.dreamdiary.infrastructure.web.controller.impl.BaseControllerImpl;
 import io.nicheblog.dreamdiary.infrastructure.web.model.AjaxResponse;
@@ -34,56 +33,51 @@ public class CodeGroupRestController extends BaseControllerImpl {
     @PostMapping(value = {Url.CODE_GROUPS})
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> codeGroupRegAjax(final @Valid CodeGroupDto codeGroupDto, final LogParam logParam) throws Exception {
+    public ResponseEntity<AjaxResponse> codeGroupRegAjax(final @Valid CodeGroupDto codeGroupDto) throws Exception {
         final ServiceResponse result = codeGroupService.regist(codeGroupDto);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 
     @PostMapping(value = {Url.CODE_GROUP})
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> codeGroupMdfAjax(final @PathVariable("id") Integer id, final @Valid CodeGroupDto codeGroupDto, final LogParam logParam) throws Exception {
+    public ResponseEntity<AjaxResponse> codeGroupMdfAjax(final @PathVariable("id") Integer id, final @Valid CodeGroupDto codeGroupDto) throws Exception {
         codeGroupDto.setId(id);
         final ServiceResponse result = codeGroupService.modify(codeGroupDto);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = isSuccess ? MessageUtils.RSLT_SUCCESS : MessageUtils.RSLT_FAILURE;
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 
     @GetMapping(Url.CODE_GROUP)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> codeGroupDtlAjax(final @PathVariable("id") Integer id, final LogParam logParam) throws Exception {
+    public ResponseEntity<AjaxResponse> codeGroupDtlAjax(final @PathVariable("id") Integer id) throws Exception {
         final CodeGroupDto codeGroup = codeGroupService.getDtlDto(id);
         final boolean isSuccess = true;
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
         return ResponseEntity.ok(AjaxResponse.withAjaxResult(isSuccess, rsltMsg).withObj(codeGroup));
     }
 
     @PatchMapping(Url.CODE_GROUP)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> codeGroupPatchAjax(final @PathVariable("id") Integer id, final @RequestBody CodeGroupPatchDto patchDto, final LogParam logParam) throws Exception {
+    public ResponseEntity<AjaxResponse> codeGroupPatchAjax(final @PathVariable("id") Integer id, final @RequestBody CodeGroupPatchDto patchDto) throws Exception {
         final ServiceResponse result = codeGroupService.patch(id, patchDto);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
         return ResponseEntity.ok(AjaxResponse.fromResponseWithObj(result, rsltMsg));
     }
 
     @DeleteMapping(Url.CODE_GROUP)
     @Secured({Constant.ROLE_MNGR})
     @ResponseBody
-    public ResponseEntity<AjaxResponse> codeGroupDelAjax(final @PathVariable("id") Integer id, final LogParam logParam) throws Exception {
+    public ResponseEntity<AjaxResponse> codeGroupDelAjax(final @PathVariable("id") Integer id) throws Exception {
         final ServiceResponse result = codeGroupService.delete(id);
         final boolean isSuccess = result.getRslt();
         final String rsltMsg = MessageUtils.RSLT_SUCCESS;
-        logParam.setResult(isSuccess, rsltMsg, actvtyCtgr);
         return ResponseEntity.ok(AjaxResponse.fromResponse(result, rsltMsg));
     }
 }
